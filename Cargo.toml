@@ -1,0 +1,7 @@
+[package]
+name = "rsass"
+version = "0.1.0"
+authors = ["Rasmus Kaj <kaj@kth.se>"]
+
+[dependencies]
+nom = "*"
