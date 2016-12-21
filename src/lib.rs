@@ -6,12 +6,17 @@ use nom::IResult::*;
 use std::str::from_utf8;
 use std::io::{self, Write};
 
+mod variablescope;
+mod valueexpression;
+use variablescope::Scope;
+use valueexpression::{Value, value_expression};
+
 pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
     match sassfile(input) {
-        Done(b"", styles) =>  {
+        Done(b"", (globals, styles)) =>  {
             let mut result = Vec::new();
             for rule in styles {
-                rule.write(&mut result, None, 0).unwrap();
+                rule.write(&mut result, &globals, None, 0).unwrap();
             }
             Ok(result)
         },
@@ -30,10 +35,11 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
     }
 }
 
-named!(sassfile<&[u8], Vec<Rule> >,
+named!(sassfile<&[u8], (Scope, Vec<Rule>)>,
        chain!(multispace? ~
+              globals: many0!(variable_declaration) ~
               rules: many0!(rule),
-              || rules));
+              || (Scope::new(&globals), rules)));
 
 struct Rule {
     selector: String,
@@ -42,7 +48,7 @@ struct Rule {
 }
 
 impl Rule {
-    fn write(&self, out: &mut Write, parent: Option<&str>, indent: usize) -> io::Result<()> {
+    fn write(&self, out: &mut Write, scope: &Scope, parent: Option<&str>, indent: usize) -> io::Result<()> {
         let selector = if let Some(parent) = parent {
             format!("{} {}", parent, self.selector)
         } else {
@@ -51,12 +57,12 @@ impl Rule {
         if !self.properties.is_empty() {
             try!(write!(out, "{} {{\n", selector));
             for ref p in &self.properties {
-                try!(p.write(out, indent + 2));
+                try!(p.write(out, scope, indent + 2));
             }
             try!(write!(out, "}}\n"));
         }
         for ref r in &self.subrules {
-            try!(r.write(out, Some(&selector), indent));
+            try!(r.write(out, scope, Some(&selector), indent));
         }
         Ok(())
     }
@@ -80,15 +86,15 @@ named!(rule<&[u8], Rule>,
 
 struct Property {
     name: String,
-    value: String,
+    value: Value,
 }
 
 impl Property {
-    fn write(&self, out: &mut Write, indent: usize) -> io::Result<()> {
+    fn write(&self, out: &mut Write, scope: &Scope, indent: usize) -> io::Result<()> {
         for _i in 0..indent {
             try!(write!(out, " "));
         }
-        write!(out, "{}: {};\n", self.name, self.value)
+        write!(out, "{}: {};\n", self.name, scope.evaluate(&self.value))
     }
 }
 
@@ -98,11 +104,29 @@ named!(property<&[u8], Property>,
               multispace? ~
               tag!(":") ~
               multispace? ~
-              value: is_not!(";") ~
+              val: value_expression ~
               multispace? ~
               tag!(";") ~
               multispace?,
               || Property {
                   name: from_utf8(name).unwrap().into(),
-                  value: from_utf8(value).unwrap().into(),
+                  value: val,
               }));
+
+named!(variable_declaration<&[u8], (&str, Value)>,
+       chain!(tag!("$") ~
+              name: alphanumeric ~
+              multispace? ~
+              tag!(":") ~
+              multispace? ~
+              val: value_expression ~
+              multispace? ~
+              tag!(";") ~
+              multispace?,
+              || (from_utf8(name).unwrap(), val)));
+
+#[test]
+fn test_simple_variable_declaration() {
+    assert_eq!(variable_declaration(b"$foo: bar;\n"),
+               Done(&b""[..], ("foo", Value::Literal("bar".into()))))
+}

@@ -35,6 +35,18 @@ fn t02_simple_nesting() {
             }\n")
 }
 
+#[test]
+fn t03_simple_variable() {
+    check(b"$color: red;\n\
+            \n\
+            a {\n  \
+            color: $color;\n\
+            }",
+          b"a {\n  \
+            color: red;\n\
+            }\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);
