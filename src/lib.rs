@@ -13,15 +13,31 @@ use valueexpression::{Value, value_expression};
 
 pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
     match sassfile(input) {
-        Done(b"", (globals, styles)) =>  {
+        Done(b"", items) =>  {
+            let mut globals = Scope::new();
             let mut result = Vec::new();
-            for rule in styles {
-                rule.write(&mut result, &globals, None, 0).unwrap();
+            let mut first = true;
+            for item in items {
+                match item {
+                    SassItem::Rule(rule) => {
+                        if first {
+                            first = false;
+                        } else {
+                            write!(result, "\n").unwrap();
+                        }
+                        rule.write(&mut result, &globals, None, 0).unwrap();
+                    }
+                    SassItem::VariableDeclaration{name, val} => {
+                        globals.define(&name, &val);
+                    }
+                    SassItem::None => ()
+                }
             }
             Ok(result)
         },
         Done(rest, _styles) => {
-            println!("Failed to parse entire input: {:?} remains.", rest);
+            let t = from_utf8(&rest).map(|s| s.to_string()).unwrap_or_else(|_| format!("{:?}", rest));
+            println!("Failed to parse entire input: `{}` remains.", t);
             Err(())
         }
         Incomplete(x) => {
@@ -35,11 +51,21 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
     }
 }
 
-named!(sassfile<&[u8], (Scope, Vec<Rule>)>,
-       chain!(multispace? ~
-              globals: many0!(variable_declaration) ~
-              rules: many0!(rule),
-              || (Scope::new(&globals), rules)));
+named!(sassfile<&[u8], Vec<SassItem> >,
+       many0!(alt!(chain!(multispace, || SassItem::None) |
+                   chain!(d: variable_declaration,
+                          || SassItem::VariableDeclaration{
+                              name: d.0.to_string(),
+                              val: d.1.clone(),
+                          }) |
+                   chain!(r: rule, || SassItem::Rule(r))
+                   )));
+
+enum SassItem {
+    None,
+    Rule(Rule),
+    VariableDeclaration { name: String, val: Value },
+}
 
 struct Rule {
     selector: String,

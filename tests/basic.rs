@@ -1,3 +1,8 @@
+//! These are from the "basic" directory in the sass specification.
+//! See https://github.com/sass/sass-spec for source material.
+//! I add one a test function for one specification at a time and then
+//! try to implement that functionality without breaking those already
+//! added.
 extern crate rsass;
 use rsass::compile_scss;
 
@@ -45,6 +50,45 @@ fn t03_simple_variable() {
           b"a {\n  \
             color: red;\n\
             }\n")
+}
+
+#[test]
+fn t04_basic_variables() {
+    check(b"$color: \"black\";\n\
+            $color: red;\n\
+            $background: \"blue\";\n\
+            \n\
+            a {\n  \
+            color: $color;\n  \
+            background: $background;\n\
+            }\n\
+            \n\
+            $y: before;\n\
+            \n\
+            $x: 1 2 $y;\n\
+            \n\
+            foo {\n  \
+            a: $x;\n\
+            }\n\
+            \n\
+            $y: after;\n\
+            \n\
+            foo {\n  \
+            a: $x;\n\
+            }",
+          b"a {\n  \
+            color: red;\n  \
+            background: \"blue\";\n\
+            }\n\
+            \n\
+            foo {\n  \
+            a: 1 2 before;\n\
+            }\n\
+            \n\
+            foo {\n  \
+            a: 1 2 before;\n\
+            }\n\
+            ")
 }
 
 fn check(input: &[u8], expected: &[u8]) {

@@ -1,4 +1,4 @@
-use nom::{alphanumeric};
+use nom::{alphanumeric, multispace};
 use nom::IResult::*;
 use std::str::from_utf8;
 
@@ -7,15 +7,23 @@ use std::str::from_utf8;
 pub enum Value {
     Literal(String),
     Variable(String),
+    Multi(Vec<Value>),
 }
 
 // This should support complex exressions, will get complicated.
-// For now, only literal value or single variable reference.
 named!(pub value_expression<&[u8], Value>,
-       alt!(chain!(tag!("$") ~ name: alphanumeric,
-                   || Value::Variable(from_utf8(name).unwrap().into())) |
-            chain!(val: is_not!(";"),
-                   || Value::Literal(from_utf8(val).unwrap().into()))));
+       chain!(v: many0!(single_value),
+              || if v.len() == 1 {
+                  v[0].clone()
+              } else {
+                  Value::Multi(v)
+              }));
+
+named!(single_value<&[u8], Value>,
+       alt!(chain!(tag!("$") ~ name: alphanumeric ~ multispace?,
+                   || Value::Variable(from_utf8(name).unwrap().to_string())) |
+            chain!(val: is_not!(";$ \n\t") ~ multispace?,
+                   || Value::Literal(from_utf8(val).unwrap().to_string()))));
 
 #[test]
 fn test_simple_value_literal() {
