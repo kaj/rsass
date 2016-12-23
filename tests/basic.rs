@@ -11,6 +11,7 @@ fn t00_empty() {
     check(b"\n",
           b"")
 }
+
 #[test]
 fn txx_empty_rule() {
     check(b"foo{}",
@@ -89,6 +90,31 @@ fn t04_basic_variables() {
             a: 1 2 before;\n\
             }\n\
             ")
+}
+
+#[test]
+fn t05_empty_levels() {
+    check(b"div {\n  span {\n    color: red;\n    background: blue;\n  }\n}\n\
+            \n\
+            div {\n  color: gray;\n  empty {\n    \
+            span {\n      color: red;\n      background: blue;\n    }\n  \
+            }\n}\n\
+            \n\
+            empty1 {\n  empty2 {\n    div {\n      blah: blah;\n    }\n  }\n}\n\
+            \n\
+            empty1 {\n  empty2 {\n    div {\n      \
+            bloo: blee;\n      empty3 {\n        \
+            span {\n          blah: blah;\n          blah: blah;\n        \
+            }\n      }\n    }\n  }\n}\n",
+          b"div span {\n  color: red;\n  background: blue;\n}\n\
+            \n\
+            div {\n  color: gray;\n}\n\
+            div empty span {\n  color: red;\n  background: blue;\n}\n\
+            \n\
+            empty1 empty2 div {\n  blah: blah;\n}\n\
+            \n\
+            empty1 empty2 div {\n  bloo: blee;\n}\n\
+            empty1 empty2 div empty3 span {\n  blah: blah;\n  blah: blah;\n}\n")
 }
 
 fn check(input: &[u8], expected: &[u8]) {
