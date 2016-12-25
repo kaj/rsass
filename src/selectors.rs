@@ -7,7 +7,7 @@ named!(pub selector<&[u8], Vec<u8> >,
        ));
 
 named!(selector_part,
-       alt!(take_while1!(is_foo_char) | tag!(">") | tag!("+")));
+       alt!(take_while1!(is_foo_char) | tag!(">") | tag!("+") | tag!("~")));
 
 fn is_foo_char(chr: u8) -> bool {
     use nom::is_alphanumeric;
