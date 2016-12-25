@@ -297,23 +297,11 @@ fn t07_nested_simple_selector_groups() {
 
 #[test]
 fn t08_selector_combinators() {
-    check(b"a   +   b  >  c {
-  d e {
-    color: blue;
-    background: white;
-  }
-  color: red;
-  background: gray;
-}",
-          b"a + b > c {
-  color: red;
-  background: gray;
-}
-a + b > c d e {
-  color: blue;
-  background: white;
-}
-")
+    check(b"a   +   b  >  c {\n  \
+            d e {\n    color: blue;\n    background: white;\n  }\n  \
+            color: red;\n  background: gray;\n}",
+          b"a + b > c {\n  color: red;\n  background: gray;\n}\n\
+            a + b > c d e {\n  color: blue;\n  background: white;\n}\n")
 }
 
 fn check(input: &[u8], expected: &[u8]) {
