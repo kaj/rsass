@@ -6,8 +6,12 @@ use nom::IResult::*;
 use std::str::from_utf8;
 use std::io::{self, Write};
 
-mod variablescope;
+mod selectors;
+mod spacelike;
 mod valueexpression;
+mod variablescope;
+use spacelike::spacelike;
+use selectors::selector;
 use variablescope::Scope;
 use valueexpression::{Value, value_expression};
 
@@ -132,16 +136,12 @@ impl Rule {
     }
 }
 
-fn is_foo_char(chr: u8) -> bool {
-    use nom::is_alphanumeric;
-    is_alphanumeric(chr) || chr == b'_'
-}
 
 named!(rule<&[u8], Rule>,
        chain!(spacelike? ~
               selectors: separated_nonempty_list!(chain!(spacelike? ~ tag!(",") ~ spacelike?,
                                                          || ()),
-                                                  take_while!(is_foo_char)) ~
+                                                  selector) ~
               spacelike? ~
               tag!("{") ~
               body: many0!(alt!(
@@ -162,11 +162,6 @@ named!(rule<&[u8], Rule>,
                   selectors: selectors.iter().map(|s| from_utf8(s).unwrap().into()).collect(),
                   body: body,
               }));
-
-named!(spacelike<&[u8], Vec<&[u8]> >,
-       many1!(alt!(multispace |
-                   chain!(tag!("//") ~ c: is_not!("\n"), || c))));
-
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct Property {

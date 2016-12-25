@@ -295,6 +295,27 @@ fn t07_nested_simple_selector_groups() {
             wow: we are far inside;\n  but: it still works;\n}\n")
 }
 
+#[test]
+fn t08_selector_combinators() {
+    check(b"a   +   b  >  c {
+  d e {
+    color: blue;
+    background: white;
+  }
+  color: red;
+  background: gray;
+}",
+          b"a + b > c {
+  color: red;
+  background: gray;
+}
+a + b > c d e {
+  color: blue;
+  background: white;
+}
+")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);
