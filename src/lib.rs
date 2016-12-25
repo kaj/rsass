@@ -16,19 +16,29 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
         Done(b"", items) =>  {
             let mut globals = Scope::new();
             let mut result = Vec::new();
-            let mut first = true;
+            let mut separate = false;
             for item in items {
                 match item {
                     SassItem::Rule(rule) => {
-                        if first {
-                            first = false;
-                        } else {
+                        if separate {
                             write!(result, "\n").unwrap();
+                        } else {
+                            separate = true;
                         }
                         rule.write(&mut result, &globals, None, 0).unwrap();
                     }
                     SassItem::VariableDeclaration{name, val} => {
                         globals.define(&name, &val);
+                    }
+                    SassItem::Comment(c) => {
+                        if separate {
+                            separate = false;
+                            write!(result, "\n").unwrap();
+                        }
+                        writeln!(result, "/*{}*/", c).unwrap();
+                    }
+                    SassItem::Property(_) => {
+                        panic!("Global property not allowed");
                     }
                     SassItem::None => ()
                 }
@@ -52,25 +62,29 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
 }
 
 named!(sassfile<&[u8], Vec<SassItem> >,
-       many0!(alt!(chain!(multispace, || SassItem::None) |
+       many0!(alt!(chain!(spacelike, || SassItem::None) |
                    chain!(d: variable_declaration,
                           || SassItem::VariableDeclaration{
                               name: d.0.to_string(),
                               val: d.1.clone(),
                           }) |
-                   chain!(r: rule, || SassItem::Rule(r))
-                   )));
+                   chain!(r: rule, || SassItem::Rule(r)) |
+                   chain!(c: comment, || {
+                       SassItem::Comment(from_utf8(c).unwrap().into())
+                   }
+                   ))));
 
 enum SassItem {
     None,
+    Comment(String),
+    Property(Property),
     Rule(Rule),
     VariableDeclaration { name: String, val: Value },
 }
 
 struct Rule {
     selector: String,
-    properties: Vec<Property>,
-    subrules: Vec<Rule>,
+    body: Vec<SassItem>,
 }
 
 impl Rule {
@@ -80,36 +94,73 @@ impl Rule {
         } else {
             self.selector.clone()
         };
-        if !self.properties.is_empty() {
-            try!(write!(out, "{} {{\n", selector));
-            for ref p in &self.properties {
-                try!(p.write(out, scope, indent + 2));
+        let mut scope = Scope::sub(scope);
+        let mut direct = Vec::new();
+        let mut sub = Vec::new();
+
+        for b in &self.body {
+            match b {
+                &SassItem::Comment(ref c) => {
+                    try!(do_indent(&mut direct, indent + 2));
+                    try!(writeln!(&mut direct, "/*{}*/", c));
+                },
+                &SassItem::Property(ref p) => {
+                    try!(p.write(&mut direct, &scope, indent + 2));
+                },
+                &SassItem::Rule(ref r) => {
+                    try!(r.write(&mut sub, &scope, Some(&selector), indent));
+                },
+                &SassItem::VariableDeclaration{ref name, ref val} => {
+                    scope.define(&name, &val);
+                }
+                &SassItem::None => (),
             }
+        }
+        if !direct.is_empty() {
+            try!(write!(out, "{} {{\n", selector));
+            try!(out.write(&direct));
             try!(write!(out, "}}\n"));
         }
-        for ref r in &self.subrules {
-            try!(r.write(out, scope, Some(&selector), indent));
-        }
+        try!(out.write(&sub));
         Ok(())
     }
 }
 
+fn is_foo_char(chr: u8) -> bool {
+    use nom::is_alphanumeric;
+    is_alphanumeric(chr) || chr == b'_'
+}
+
 named!(rule<&[u8], Rule>,
-       chain!(multispace? ~
-              selector: alphanumeric ~
-              multispace? ~
+       chain!(spacelike? ~
+              selector: take_while!(is_foo_char) ~
+              spacelike? ~
               tag!("{") ~
-              multispace? ~
-              properties: many0!(property) ~
-              subrules: many0!(rule) ~
-              multispace? ~
+              body: many0!(alt!(
+                  chain!(spacelike, || SassItem::None) |
+                  chain!(d: variable_declaration,
+                         || SassItem::VariableDeclaration{
+                             name: d.0.to_string(),
+                             val: d.1.clone(),
+                         }) |
+                  chain!(r: rule, || SassItem::Rule(r)) |
+                  chain!(p: property, || SassItem::Property(p)) |
+                  chain!(c: comment, || {
+                      SassItem::Comment(from_utf8(c).unwrap().into())
+                  })
+                      )) ~
               tag!("}"),
               || Rule {
                   selector: from_utf8(selector).unwrap().into(),
-                  properties: properties,
-                  subrules: subrules,
+                  body: body,
               }));
 
+named!(spacelike<&[u8], Vec<&[u8]> >,
+       many1!(alt!(multispace |
+                   chain!(tag!("//") ~ c: is_not!("\n"), || c))));
+
+
+#[derive(Clone, Debug, PartialEq, Eq)]
 struct Property {
     name: String,
     value: Value,
@@ -117,27 +168,55 @@ struct Property {
 
 impl Property {
     fn write(&self, out: &mut Write, scope: &Scope, indent: usize) -> io::Result<()> {
-        for _i in 0..indent {
-            try!(write!(out, " "));
-        }
+        try!(do_indent(out, indent));
         write!(out, "{}: {};\n", self.name, scope.evaluate(&self.value))
     }
 }
 
+fn do_indent(out: &mut Write, steps: usize) -> io::Result<()> {
+    for _i in 0..steps {
+        try!(write!(out, " "));
+    }
+    Ok(())
+}
+
 named!(property<&[u8], Property>,
        chain!(multispace? ~
-              name: alphanumeric ~
+              name: take_while!(is_property_name_char) ~
               multispace? ~
               tag!(":") ~
               multispace? ~
               val: value_expression ~
               multispace? ~
               tag!(";") ~
-              multispace?,
+              spacelike?,
               || Property {
                   name: from_utf8(name).unwrap().into(),
                   value: val,
               }));
+
+fn is_property_name_char(chr: u8) -> bool {
+    use nom::is_alphanumeric;
+    is_alphanumeric(chr) || chr == b'-'
+}
+
+#[test]
+fn test_simple_property() {
+    assert_eq!(property(b"color: red;\n"),
+               Done(&b""[..], Property {
+                   name: "color".to_string(),
+                   value: Value::Literal("red".to_string()),
+               }));
+}
+#[test]
+fn test_property_2() {
+    assert_eq!(property(b"background-position: 90% 50%;\n"),
+               Done(&b""[..], Property {
+                   name: "background-position".to_string(),
+                   value: Value::Multi(vec![Value::Literal("90%".to_string()),
+                                            Value::Literal("50%".to_string())]),
+               }));
+}
 
 named!(variable_declaration<&[u8], (&str, Value)>,
        chain!(tag!("$") ~
@@ -156,3 +235,6 @@ fn test_simple_variable_declaration() {
     assert_eq!(variable_declaration(b"$foo: bar;\n"),
                Done(&b""[..], ("foo", Value::Literal("bar".into()))))
 }
+
+named!(comment,
+       delimited!(tag!("/*"), is_not!("*"), tag!("*/")));

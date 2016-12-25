@@ -2,13 +2,23 @@
 use std::collections::BTreeMap;
 use valueexpression::Value;
 
-pub struct Scope {
+pub struct Scope<'a> {
+    parent: Option<&'a Scope<'a>>,
     variables: BTreeMap<String, Value>,
 }
 
-impl Scope {
+impl<'a> Scope<'a> {
     pub fn new() -> Self {
-        Scope { variables: BTreeMap::new() }
+        Scope {
+            parent: None,
+            variables: BTreeMap::new(),
+        }
+    }
+    pub fn sub(parent: &'a Scope) -> Self {
+        Scope {
+            parent: Some(parent),
+            variables: BTreeMap::new(),
+        }
     }
     pub fn define(&mut self, name: &str, val: &Value) {
         let val = Value::Literal(self.evaluate(val));
@@ -16,6 +26,7 @@ impl Scope {
     }
     pub fn get(&self, name: &str) -> Option<&Value> {
         self.variables.get(name)
+            .or_else(|| self.parent.and_then(|p| p.get(name)))
     }
     pub fn evaluate(&self, val: &Value) -> String {
         match val {
