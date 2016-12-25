@@ -83,16 +83,22 @@ enum SassItem {
 }
 
 struct Rule {
-    selector: String,
+    selectors: Vec<String>,
     body: Vec<SassItem>,
 }
 
 impl Rule {
-    fn write(&self, out: &mut Write, scope: &Scope, parent: Option<&str>, indent: usize) -> io::Result<()> {
-        let selector = if let Some(parent) = parent {
-            format!("{} {}", parent, self.selector)
+    fn write(&self, out: &mut Write, scope: &Scope, parent: Option<&Vec<String>>, indent: usize) -> io::Result<()> {
+        let selectors = if let Some(parent) = parent {
+            let mut result = Vec::new();
+            for p in parent {
+                for s in &self.selectors {
+                    result.push(format!("{} {}", p, s));
+                }
+            }
+            result
         } else {
-            self.selector.clone()
+            self.selectors.clone()
         };
         let mut scope = Scope::sub(scope);
         let mut direct = Vec::new();
@@ -108,7 +114,7 @@ impl Rule {
                     try!(p.write(&mut direct, &scope, indent + 2));
                 },
                 &SassItem::Rule(ref r) => {
-                    try!(r.write(&mut sub, &scope, Some(&selector), indent));
+                    try!(r.write(&mut sub, &scope, Some(&selectors), indent));
                 },
                 &SassItem::VariableDeclaration{ref name, ref val} => {
                     scope.define(&name, &val);
@@ -117,7 +123,7 @@ impl Rule {
             }
         }
         if !direct.is_empty() {
-            try!(write!(out, "{} {{\n", selector));
+            try!(write!(out, "{} {{\n", selectors.join(", ")));
             try!(out.write(&direct));
             try!(write!(out, "}}\n"));
         }
@@ -133,7 +139,9 @@ fn is_foo_char(chr: u8) -> bool {
 
 named!(rule<&[u8], Rule>,
        chain!(spacelike? ~
-              selector: take_while!(is_foo_char) ~
+              selectors: separated_nonempty_list!(chain!(spacelike? ~ tag!(",") ~ spacelike?,
+                                                         || ()),
+                                                  take_while!(is_foo_char)) ~
               spacelike? ~
               tag!("{") ~
               body: many0!(alt!(
@@ -151,7 +159,7 @@ named!(rule<&[u8], Rule>,
                       )) ~
               tag!("}"),
               || Rule {
-                  selector: from_utf8(selector).unwrap().into(),
+                  selectors: selectors.iter().map(|s| from_utf8(s).unwrap().into()).collect(),
                   body: body,
               }));
 
