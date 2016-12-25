@@ -313,6 +313,17 @@ fn t09_selector_groups_and_combinators() {
             {\n  bloo: bloo;\n  blee: blee;\n}\n")
 }
 
+#[test]
+fn t10_classes_and_ids() {
+    check(b"a + b, .class {\n  blah: blah;\n  bleh: bleh;\n  \
+            d #id, f ~ g.other + h, > i#grar \
+            {\n    bloo: bloo;\n    blee: blee;\n  }\n}",
+          b"a + b, .class {\n  blah: blah;\n  bleh: bleh;\n}\n\
+            a + b d #id, a + b f ~ g.other + h, a + b > i#grar, \
+            .class d #id, .class f ~ g.other + h, .class > i#grar \
+            {\n  bloo: bloo;\n  blee: blee;\n}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);
