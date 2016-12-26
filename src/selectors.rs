@@ -87,7 +87,7 @@ impl SelectorPart {
             &SelectorPart::Simple(_) => false,
             &SelectorPart::Descendant => true,
             &SelectorPart::RelOp(_) => true,
-            &SelectorPart::Attribute{..} => false,
+            &SelectorPart::Attribute { .. } => false,
             &SelectorPart::BackRef => false,
         }
     }
@@ -108,7 +108,12 @@ impl fmt::Display for SelectorPart {
             &SelectorPart::Simple(ref s) => write!(out, "{}", from_utf8(s).unwrap()),
             &SelectorPart::Descendant => write!(out, " "),
             &SelectorPart::RelOp(ref c) => write!(out, " {} ", c.clone() as char),
-            &SelectorPart::Attribute{ref name, ref op, ref val} => write!(out, "[{}{}{}]", from_utf8(name).unwrap(), from_utf8(op).unwrap(), from_utf8(val).unwrap()),
+            &SelectorPart::Attribute { ref name, ref op, ref val } => {
+                write!(out, "[{}{}{}]",
+                       from_utf8(name).unwrap(),
+                       from_utf8(op).unwrap(),
+                       from_utf8(val).unwrap())
+            }
             &SelectorPart::BackRef => write!(out, "&"),
         }
     }

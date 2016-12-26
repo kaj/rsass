@@ -25,7 +25,8 @@ impl<'a> Scope<'a> {
         self.variables.insert(name.to_string(), val);
     }
     pub fn get(&self, name: &str) -> Option<&Value> {
-        self.variables.get(name)
+        self.variables
+            .get(name)
             .or_else(|| self.parent.and_then(|p| p.get(name)))
     }
     pub fn evaluate(&self, val: &Value) -> String {
@@ -35,10 +36,10 @@ impl<'a> Scope<'a> {
                 self.get(&name)
                     .map(|n| self.evaluate(n))
                     .unwrap_or_else(|| format!("${}", name))
-            },
+            }
             &Value::Multi(ref v) => {
                 v.iter().map(|v| self.evaluate(v)).collect::<Vec<_>>().join(" ")
-            },
+            }
         }
     }
 }

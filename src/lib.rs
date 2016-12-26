@@ -17,7 +17,7 @@ use valueexpression::{Value, value_expression};
 
 pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
     match sassfile(input) {
-        Done(b"", items) =>  {
+        Done(b"", items) => {
             let mut globals = Scope::new();
             let mut result = Vec::new();
             let mut separate = false;
@@ -31,7 +31,7 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
                         }
                         rule.write(&mut result, &globals, None, 0).unwrap();
                     }
-                    SassItem::VariableDeclaration{name, val} => {
+                    SassItem::VariableDeclaration { name, val } => {
                         globals.define(&name, &val);
                     }
                     SassItem::Comment(c) => {
@@ -44,13 +44,15 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
                     SassItem::Property(_) => {
                         panic!("Global property not allowed");
                     }
-                    SassItem::None => ()
+                    SassItem::None => (),
                 }
             }
             Ok(result)
-        },
+        }
         Done(rest, _styles) => {
-            let t = from_utf8(&rest).map(|s| s.to_string()).unwrap_or_else(|_| format!("{:?}", rest));
+            let t = from_utf8(&rest)
+                .map(|s| s.to_string())
+                .unwrap_or_else(|_| format!("{:?}", rest));
             println!("Failed to parse entire input: `{}` remains.", t);
             Err(())
         }
@@ -92,7 +94,12 @@ struct Rule {
 }
 
 impl Rule {
-    fn write(&self, out: &mut Write, scope: &Scope, parent: Option<&Vec<Selector>>, indent: usize) -> io::Result<()> {
+    fn write(&self,
+             out: &mut Write,
+             scope: &Scope,
+             parent: Option<&Vec<Selector>>,
+             indent: usize)
+             -> io::Result<()> {
         let selectors = if let Some(parent) = parent {
             let mut result = Vec::new();
             for p in parent {
@@ -113,21 +120,25 @@ impl Rule {
                 &SassItem::Comment(ref c) => {
                     try!(do_indent(&mut direct, indent + 2));
                     try!(writeln!(&mut direct, "/*{}*/", c));
-                },
+                }
                 &SassItem::Property(ref p) => {
                     try!(p.write(&mut direct, &scope, indent + 2));
-                },
+                }
                 &SassItem::Rule(ref r) => {
                     try!(r.write(&mut sub, &scope, Some(&selectors), indent));
-                },
-                &SassItem::VariableDeclaration{ref name, ref val} => {
+                }
+                &SassItem::VariableDeclaration { ref name, ref val } => {
                     scope.define(&name, &val);
                 }
                 &SassItem::None => (),
             }
         }
         if !direct.is_empty() {
-            try!(write!(out, "{} {{\n", selectors.iter().map(|s| format!("{}", s)).collect::<Vec<_> >().join(", ")));
+            try!(write!(out, "{} {{\n",
+                        selectors.iter()
+                        .map(|s| format!("{}", s))
+                        .collect::<Vec<_> >()
+                        .join(", ")));
             try!(out.write(&direct));
             try!(write!(out, "}}\n"));
         }

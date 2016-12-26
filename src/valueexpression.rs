@@ -1,5 +1,4 @@
 use nom::{alphanumeric, multispace};
-use nom::IResult::*;
 use std::str::from_utf8;
 
 /// A sass value.
@@ -25,14 +24,20 @@ named!(single_value<&[u8], Value>,
             chain!(val: is_not!(";$ \n\t") ~ multispace?,
                    || Value::Literal(from_utf8(val).unwrap().to_string()))));
 
-#[test]
-fn test_simple_value_literal() {
-    assert_eq!(value_expression(b"red;"),
-               Done(&b";"[..], Value::Literal("red".into())))
-}
+#[cfg(test)]
+mod test {
+    use nom::IResult::*;
+    use valueexpression::*;
 
-#[test]
-fn test_simple_value_variable() {
-    assert_eq!(value_expression(b"$red;"),
-               Done(&b";"[..], Value::Variable("red".into())))
+    #[test]
+    fn simple_value_literal() {
+        assert_eq!(value_expression(b"red;"),
+                   Done(&b";"[..], Value::Literal("red".into())))
+    }
+
+    #[test]
+    fn simple_value_variable() {
+        assert_eq!(value_expression(b"$red;"),
+                   Done(&b";"[..], Value::Variable("red".into())))
+    }
 }

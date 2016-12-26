@@ -8,14 +8,12 @@ use rsass::compile_scss;
 
 #[test]
 fn t00_empty() {
-    check(b"\n",
-          b"")
+    check(b"\n", b"")
 }
 
 #[test]
 fn txx_empty_rule() {
-    check(b"foo{}",
-          b"")
+    check(b"foo{}", b"")
 }
 
 #[test]
@@ -26,7 +24,6 @@ fn t01_simple_css() {
           b"a {\n  \
             color: blue;\n\
             }\n")
-          
 }
 
 #[test]
@@ -208,7 +205,7 @@ div {
 }
 /* last comment, top level again --
    compare the indentation! */
-   
+
 div {
   f: g;
   empty {
@@ -291,7 +288,10 @@ fn t07_nested_simple_selector_groups() {
             c g, c h, d g, d h {\n  blah: blah;\n  bloo: bloo;\n}\n\
             c i, c j, d i, d j {\n  foo: goo;\n}\n\
             c i k, c i l, c j k, c j l, d i k, d i l, d j k, d j l {\n  hoo: boo;\n}\n\
-            c i k m, c i k n, c i k o, c i l m, c i l n, c i l o, c j k m, c j k n, c j k o, c j l m, c j l n, c j l o, d i k m, d i k n, d i k o, d i l m, d i l n, d i l o, d j k m, d j k n, d j k o, d j l m, d j l n, d j l o {\n  \
+            c i k m, c i k n, c i k o, c i l m, c i l n, c i l o, c j k m, \
+            c j k n, c j k o, c j l m, c j l n, c j l o, d i k m, d i k n, \
+            d i k o, d i l m, d i l n, d i l o, d j k m, d j k n, d j k o, \
+            d j l m, d j l n, d j l o {\n  \
             wow: we are far inside;\n  but: it still works;\n}\n")
 }
 
