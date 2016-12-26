@@ -1,0 +1,16 @@
+language: rust
+cache: cargo
+before_script:
+- cargo update || true
+- cargo install rustfmt || true
+rust:
+  - stable
+  - beta
+  - nightly
+matrix:
+  allow_failures:
+    - rust: nightly
+script:
+- |
+  PATH=${HOME}/.cargo/bin:$PATH cargo fmt -- --write-mode=diff &&
+  cargo test
