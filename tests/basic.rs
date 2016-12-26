@@ -324,6 +324,15 @@ fn t10_classes_and_ids() {
             {\n  bloo: bloo;\n  blee: blee;\n}\n")
 }
 
+#[test]
+fn t11_attribute_selectors() {
+    check(b"[hey  =  'ho'], a > b {\n  blah: blah;\n  \
+            c, [hoo *=    \"ha\" ] {\n    bloo: bloo;\n  }\n}",
+          b"[hey='ho'], a > b {\n  blah: blah;\n}\n\
+            [hey='ho'] c, [hey='ho'] [hoo*=\"ha\"], a > b c, \
+            a > b [hoo*=\"ha\"] {\n  bloo: bloo;\n}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);

@@ -11,7 +11,7 @@ mod spacelike;
 mod valueexpression;
 mod variablescope;
 use spacelike::spacelike;
-use selectors::selector;
+use selectors::{Selector, selector};
 use variablescope::Scope;
 use valueexpression::{Value, value_expression};
 
@@ -87,17 +87,17 @@ enum SassItem {
 }
 
 struct Rule {
-    selectors: Vec<String>,
+    selectors: Vec<Selector>,
     body: Vec<SassItem>,
 }
 
 impl Rule {
-    fn write(&self, out: &mut Write, scope: &Scope, parent: Option<&Vec<String>>, indent: usize) -> io::Result<()> {
+    fn write(&self, out: &mut Write, scope: &Scope, parent: Option<&Vec<Selector>>, indent: usize) -> io::Result<()> {
         let selectors = if let Some(parent) = parent {
             let mut result = Vec::new();
             for p in parent {
                 for s in &self.selectors {
-                    result.push(format!("{} {}", p, s));
+                    result.push(p.join(s));
                 }
             }
             result
@@ -127,7 +127,7 @@ impl Rule {
             }
         }
         if !direct.is_empty() {
-            try!(write!(out, "{} {{\n", selectors.join(", ")));
+            try!(write!(out, "{} {{\n", selectors.iter().map(|s| format!("{}", s)).collect::<Vec<_> >().join(", ")));
             try!(out.write(&direct));
             try!(write!(out, "}}\n"));
         }
@@ -139,7 +139,7 @@ impl Rule {
 
 named!(rule<&[u8], Rule>,
        chain!(spacelike? ~
-              selectors: separated_nonempty_list!(chain!(spacelike? ~ tag!(",") ~ spacelike?,
+              selectors: separated_nonempty_list!(chain!(tag!(",") ~ spacelike?,
                                                          || ()),
                                                   selector) ~
               spacelike? ~
@@ -159,7 +159,7 @@ named!(rule<&[u8], Rule>,
                       )) ~
               tag!("}"),
               || Rule {
-                  selectors: selectors.iter().map(|s| from_utf8(s).unwrap().into()).collect(),
+                  selectors: selectors,
                   body: body,
               }));
 
