@@ -333,6 +333,16 @@ fn t11_attribute_selectors() {
             a > b [hoo*=\"ha\"] {\n  bloo: bloo;\n}\n")
 }
 
+#[test]
+fn t13_back_references() {
+    check(b"hey, ho {\n  \
+            & > boo, foo &.goo {\n    bloo: bloo;\n  }\n  \
+            blah: blah;\n\
+            }",
+          b"hey, ho {\n  blah: blah;\n}\n\
+            hey > boo, foo hey.goo, ho > boo, foo ho.goo {\n  bloo: bloo;\n}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);

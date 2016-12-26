@@ -8,12 +8,21 @@ pub struct Selector(Vec<SelectorPart>);
 
 impl Selector {
     pub fn join(&self, other: &Selector) -> Selector {
-        let mut c = self.0.clone();
-        if !other.0.first().map(|p| p.is_operator()).unwrap_or(false) {
-            c.push(SelectorPart::Descendant);
+        let mut split = other.0.splitn(2, |p| p == &SelectorPart::BackRef);
+        let o1 = split.next().unwrap();
+        if let Some(o2) = split.next() {
+            let mut result = o1.to_vec();
+            result.extend(self.0.iter().cloned());
+            result.extend(o2.iter().cloned());
+            Selector(result)
+        } else {
+            let mut result = self.0.clone();
+            if !other.0.first().map(|p| p.is_operator()).unwrap_or(false) {
+                result.push(SelectorPart::Descendant);
+            }
+            result.extend(other.0.iter().cloned());
+            Selector(result)
         }
-        c.extend(other.0.iter().cloned());
-        Selector(c)
     }
 }
 
@@ -26,7 +35,8 @@ pub enum SelectorPart {
         name: Vec<u8>,
         op: Vec<u8>,
         val: Vec<u8>,
-    }
+    },
+    BackRef,
 }
 
 named!(pub selector<&[u8], Selector>,
@@ -57,6 +67,7 @@ named!(selector_part<&[u8], SelectorPart>,
                       op: op.to_vec(),
                       val: val.as_bytes().to_vec(),
                   }) |
+           chain!(tag!("&"), || SelectorPart::BackRef) |
            chain!(spacelike? ~ tag!(">") ~ spacelike?,
                   || SelectorPart::RelOp(b'>')) |
            chain!(spacelike? ~ tag!("+") ~ spacelike?,
@@ -77,6 +88,7 @@ impl SelectorPart {
             &SelectorPart::Descendant => true,
             &SelectorPart::RelOp(_) => true,
             &SelectorPart::Attribute{..} => false,
+            &SelectorPart::BackRef => false,
         }
     }
 }
@@ -97,6 +109,7 @@ impl fmt::Display for SelectorPart {
             &SelectorPart::Descendant => write!(out, " "),
             &SelectorPart::RelOp(ref c) => write!(out, " {} ", c.clone() as char),
             &SelectorPart::Attribute{ref name, ref op, ref val} => write!(out, "[{}{}{}]", from_utf8(name).unwrap(), from_utf8(op).unwrap(), from_utf8(val).unwrap()),
+            &SelectorPart::BackRef => write!(out, "&"),
         }
     }
 }
