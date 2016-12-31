@@ -1,6 +1,8 @@
 //! A scope is something that contains variable values.
 
+use num_rational::Rational;
 use std::collections::BTreeMap;
+use std::ops::Neg;
 use valueexpression::{Value, Unit};
 
 pub struct Scope<'a> {
@@ -23,7 +25,6 @@ impl<'a> Scope<'a> {
     }
     pub fn define(&mut self, name: &str, val: &Value) {
         let val = self.do_evaluate(val, true);
-        println!("Defining var {} to {:?}", name, val);
         self.variables.insert(name.to_string(), val);
     }
     pub fn get(&self, name: &str) -> Option<&Value> {
@@ -38,6 +39,7 @@ impl<'a> Scope<'a> {
         match val {
             &Value::Literal(ref v) => Value::Literal(v.clone()),
             &Value::Paren(ref v) => self.do_evaluate(v, true),
+            &Value::HexColor(_, _, _, _) => val.clone(),
             &Value::Variable(ref name) => {
                 self.get(&name)
                     .map(|n| self.do_evaluate(n, true))
@@ -54,31 +56,59 @@ impl<'a> Scope<'a> {
             &Value::Sum(ref a, ref b) => {
                 let a = self.do_evaluate(a, true);
                 let b = self.do_evaluate(b, true);
-                if let (&Value::Numeric(ref a, ref au, _),
-                        &Value::Numeric(ref b, ref bu, _)) = (&a, &b) {
-                    if au == bu || bu == &Unit::None {
-                        Value::Numeric(a + b, au.clone(), true)
-                    } else if au == &Unit::None {
-                        Value::Numeric(a + b, bu.clone(), true)
-                    } else {
-                        Value::Literal(format!("{}{}", a, b))
+                match (&a, &b) {
+                    (&Value::HexColor(ref r, ref g, ref b, _),
+                     &Value::Numeric(ref n, ref u, _)) if u == &Unit::None => {
+                        Value::HexColor(add(r, n), add(g, n), add(b, n), None)
                     }
-                } else {
-                    Value::Literal(format!("{}{}", a, b))
+                    (&Value::HexColor(ref ar, ref ag, ref ab, _),
+                     &Value::HexColor(ref br, ref bg, ref bb, _)) => {
+                        Value::HexColor(add8(ar, br),
+                                        add8(ag, bg),
+                                        add8(ab, bb),
+                                        None)
+                    }
+                    (&Value::Numeric(ref a, ref au, _),
+                     &Value::Numeric(ref b, ref bu, _)) => {
+                        if au == bu || bu == &Unit::None {
+                            Value::Numeric(a + b, au.clone(), true)
+                        } else if au == &Unit::None {
+                            Value::Numeric(a + b, bu.clone(), true)
+                        } else {
+                            Value::Literal(format!("{}{}", a, b))
+                        }
+                    }
+                    (a, b) => Value::Literal(format!("{}{}", a, b)),
                 }
             }
             &Value::Minus(ref a, ref b) => {
                 let a = self.evaluate(a);
                 let b = self.evaluate(b);
-                if let (&Value::Numeric(ref a, ref au, _),
-                        &Value::Numeric(ref b, ref bu, _)) = (&a, &b) {
-                    if au == bu {
-                        Value::Numeric(a - b, au.clone(), true)
-                    } else {
-                        Value::Literal(format!("{}-{}", a, b))
+                match (&a, &b) {
+                    (&Value::HexColor(ref r, ref g, ref b, _),
+                     &Value::Numeric(ref n, ref u, _)) if u == &Unit::None => {
+                        let n = n.neg();
+                        Value::HexColor(add(r, &n),
+                                        add(g, &n),
+                                        add(b, &n),
+                                        None)
                     }
-                } else {
-                    Value::Literal(format!("{}-{}", a, b))
+                    (&Value::HexColor(ref ar, ref ag, ref ab, _),
+                     &Value::HexColor(ref br, ref bg, ref bb, _)) => {
+                        Value::HexColor(sub8(ar, br),
+                                        sub8(ag, bg),
+                                        sub8(ab, bb),
+                                        None)
+                    }
+                    (&Value::Numeric(ref a, ref au, _),
+                     &Value::Numeric(ref b, ref bu, _)) => {
+                        if au == bu {
+                            Value::Numeric(a - b, au.clone(), true)
+                        } else {
+                            Value::Literal(format!("{}-{}", a, b))
+                        }
+                    }
+                    (a, b) => Value::Literal(format!("{}-{}", a, b)),
                 }
             }
             &Value::Product(ref a, ref b) => {
@@ -108,20 +138,32 @@ impl<'a> Scope<'a> {
                         (aa, b)
                     }
                 };
-                if let (&Value::Numeric(ref a, ref au, ref ac),
-                        &Value::Numeric(ref b, ref bu, ref bc)) = (&a, &b) {
-                    if arithmetic || *ac || *bc {
-                        if bu == &Unit::None {
-                            return Value::Numeric(a / b, au.clone(), true);
-                        } else if au == bu {
-                            return Value::Numeric(a / b, Unit::None, true);
+                if arithmetic || a.is_calculated() || b.is_calculated() {
+                    match (&a, &b) {
+                        (&Value::HexColor(ref r, ref g, ref b, _),
+                         &Value::Numeric(ref n, Unit::None, _)) => {
+                            return Value::HexColor(div(r, n),
+                                                   div(g, n),
+                                                   div(b, n),
+                                                   None);
                         }
+                        (&Value::Numeric(ref a, ref au, _),
+                         &Value::Numeric(ref b, ref bu, _)) => {
+                            if bu == &Unit::None {
+                                return Value::Numeric(a / b, au.clone(), true);
+                            } else if au == bu {
+                                return Value::Numeric(a / b, Unit::None, true);
+                            }
+                        }
+                        _ => (),
                     }
                 }
                 Value::Literal(format!("{}{}/{}{}",
                                        a,
-                                       if *space1 { " " } else { "" },
-                                       if *space2 { " " } else { "" },
+                                       if *space1 && !arithmetic { " " }
+                                       else { "" },
+                                       if *space2 && !arithmetic { " " }
+                                       else { "" },
                                        b))
             }
             &Value::Numeric(ref v, ref u, ref is_calculated) => {
@@ -131,6 +173,38 @@ impl<'a> Scope<'a> {
             }
         }
     }
+}
+
+fn add(x: &u8, y: &Rational) -> u8 {
+    let v = *x as f32 + *y.numer() as f32 / *y.denom() as f32;
+    if v < 0.0 {
+        0
+    } else if v > 255.0 {
+        0xff
+    } else {
+        v as u8
+    }
+}
+fn div(x: &u8, y: &Rational) -> u8 {
+    let v = *x as f32 * *y.denom() as f32 / *y.numer() as f32;
+    if v < 0.0 {
+        0
+    } else if v > 255.0 {
+        0xff
+    } else {
+        v as u8
+    }
+}
+
+fn add8(x: &u8, y: &u8) -> u8 {
+    match x.overflowing_add(*y) {
+        (_, true) => 0xff,
+        (s, false) => s,
+    }
+}
+
+fn sub8(x: &u8, y: &u8) -> u8 {
+    if *x > *y { *x - *y } else { 0 }
 }
 
 #[cfg(test)]
@@ -266,6 +340,108 @@ mod test {
         let scope = Scope::new();
         assert_eq!("black url(starfield.png) repeat",
                    do_evaluate(&scope, b"black url(starfield.png) repeat;"))
+    }
+
+    #[test]
+    fn color_unchanged_1() {
+        let scope = Scope::new();
+        assert_eq!("#AbC",
+                   do_evaluate(&scope, b"#AbC;"))
+    }
+
+    #[test]
+    fn color_unchanged_2() {
+        let scope = Scope::new();
+        assert_eq!("#AAbbCC",
+                   do_evaluate(&scope, b"#AAbbCC;"))
+    }
+
+    #[test]
+    fn color_add_each_component() {
+        let scope = Scope::new();
+        assert_eq!("#abbccd",
+                   do_evaluate(&scope, b"#AbC + 1;"))
+    }
+    #[test]
+    fn color_add_each_component_overflow() {
+        let scope = Scope::new();
+        assert_eq!("#0101ff",
+                   do_evaluate(&scope, b"#00f + 1;"))
+    }
+
+    #[test]
+    fn color_add_components() {
+        let scope = Scope::new();
+        assert_eq!("#aabbdd",
+                   do_evaluate(&scope, b"#AbC + #001;"))
+    }
+
+    #[test]
+    fn color_add_components_overflow() {
+        let scope = Scope::new();
+        assert_eq!("#1000ff",
+                   do_evaluate(&scope, b"#1000ff + #001;"))
+    }
+
+    #[test]
+    fn color_add_components_to_named_overflow() {
+        let scope = Scope::new();
+        assert_eq!("blue",
+                   do_evaluate(&scope, b"#0000ff + #001;"))
+    }
+    #[test]
+    fn color_add_components_to_named() {
+        let scope = Scope::new();
+        assert_eq!("white",
+                   do_evaluate(&scope, b"#00f + #0f0 + #f00;"))
+    }
+
+    #[test]
+    fn color_subtract() {
+        let scope = Scope::new();
+        assert_eq!("#fefefe",
+                   do_evaluate(&scope, b"#fff - 1;"))
+    }
+
+    #[test]
+    fn color_subtract_underflow() {
+        let scope = Scope::new();
+        assert_eq!("black",
+                   do_evaluate(&scope, b"#000 - 1;"))
+    }
+
+    #[test]
+    fn color_subtract_components() {
+        let scope = Scope::new();
+        assert_eq!("#000077", // Or should it be #007?
+                   do_evaluate(&scope, b"#fff - #ff8;"))
+    }
+
+    #[test]
+    fn color_subtract_components_underflow() {
+        let scope = Scope::new();
+        assert_eq!("black",
+                   do_evaluate(&scope, b"#000001 - #001;"))
+    }
+
+    #[test]
+    fn color_division() {
+        let scope = Scope::new();
+        assert_eq!("#020202",
+                   do_evaluate(&scope, b"(#101010 / 7);"))
+    }
+
+    #[test]
+    fn color_add_rgb_1() {
+        let scope = Scope::new();
+        assert_eq!("#0b0a0b",
+                   do_evaluate(&scope, b"rgb(10,10,10) + #010001;"))
+    }
+    #[test]
+    fn color_add_rgb_2() {
+        let scope = Scope::new();
+        assert_eq!("white",
+                   do_evaluate(&scope, b"#010000 + rgb(255, 255, 255);"))
     }
 
     fn do_evaluate(scope: &Scope, expression: &[u8]) -> String {

@@ -1,4 +1,6 @@
 #[macro_use]
+extern crate lazy_static;
+#[macro_use]
 extern crate nom;
 extern crate num_rational;
 
@@ -7,6 +9,7 @@ use nom::IResult::*;
 use std::io::{self, Write};
 use std::str::from_utf8;
 
+mod colors;
 mod selectors;
 mod spacelike;
 mod valueexpression;

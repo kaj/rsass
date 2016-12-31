@@ -430,6 +430,33 @@ fn t15_arithmetic_and_lists() {
             t: 120.754/5 6/7;\n}\n")
 }
 
+#[test]
+fn t16_hex_arithmetic() {
+    check(b"div {\n  p01: #AbC;\n  p02: #AAbbCC;\n  p03: #AbC + hello;\n  \
+            p04: #AbC + 1; // add 1 to each triplet\n  \
+            p05: #AbC + #001; // triplet-wise addition\n  \
+            p06: #0000ff + 1; // add 1 to each triplet; \
+            ignore overflow because it doesn't correspond to a color name\n  \
+            p07: #0000ff + #000001; // convert overflow to name of color \
+            (blue)\n  \
+            p08: #00ffff + #000101; // aqua\n  \
+            p09: #000000;\n  p10: #000000 - 1; // black\n  \
+            p11: #000000 - #000001; // black\n  \
+            p12: #ffff00 + #010100; // yellow\n  \
+            p13: (#101010 / 7);\n  p14: #000 + 0;\n  p15a: 10 - #a2B;\n  \
+            p15b: 10 - #aa22BB;\n  p16: #000 - #001;\n  p17: #f0F + #101;\n  \
+            p18: 10 #a2B + 1;\n  p19a: (10 / #a2B);\n  \
+            p19b: (10 / #aa22BB);\n  p20: rgb(10,10,10) + #010001;\n  \
+            p21: #010000 + rgb(255, 255, 255);\n}",
+          b"div {\n  p01: #AbC;\n  p02: #AAbbCC;\n  p03: #AbChello;\n  \
+            p04: #abbccd;\n  p05: #aabbdd;\n  p06: #0101ff;\n  p07: blue;\n  \
+            p08: cyan;\n  p09: #000000;\n  p10: black;\n  p11: black;\n  \
+            p12: yellow;\n  p13: #020202;\n  p14: black;\n  p15a: 10-#a2B;\n  \
+            p15b: 10-#aa22BB;\n  p16: black;\n  p17: magenta;\n  \
+            p18: 10 #ab23bc;\n  p19a: 10/#a2B;\n  p19b: 10/#aa22BB;\n  \
+            p20: #0b0a0b;\n  p21: white;\n}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);
