@@ -56,10 +56,11 @@ named!(selector_part<&[u8], SelectorPart>,
            chain!(tag!("[") ~ spacelike? ~
                   name: take_while1!(is_selector_char) ~ spacelike? ~
                   op: alt_complete!(tag!("*=") | tag!("=")) ~ spacelike? ~
-                  val: alt_complete!(chain!(tag!("\"") ~ v: is_not!("\"") ~ tag!("\""),
-                                            || format!("\"{}\"", from_utf8(v).unwrap())) |
-                                     chain!(tag!("'") ~ v: is_not!("'") ~ tag!("'"),
-                                            || format!("'{}'", from_utf8(v).unwrap()))) ~
+                  val: alt_complete!(
+                      chain!(tag!("\"") ~ v: is_not!("\"") ~ tag!("\""),
+                             || format!("\"{}\"", from_utf8(v).unwrap())) |
+                      chain!(tag!("'") ~ v: is_not!("'") ~ tag!("'"),
+                             || format!("'{}'", from_utf8(v).unwrap()))) ~
                   spacelike? ~
                   tag!("]"),
                   || SelectorPart::Attribute {
@@ -105,9 +106,13 @@ impl fmt::Display for Selector {
 impl fmt::Display for SelectorPart {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            &SelectorPart::Simple(ref s) => write!(out, "{}", from_utf8(s).unwrap()),
+            &SelectorPart::Simple(ref s) => {
+                write!(out, "{}", from_utf8(s).unwrap())
+            }
             &SelectorPart::Descendant => write!(out, " "),
-            &SelectorPart::RelOp(ref c) => write!(out, " {} ", c.clone() as char),
+            &SelectorPart::RelOp(ref c) => {
+                write!(out, " {} ", c.clone() as char)
+            }
             &SelectorPart::Attribute { ref name, ref op, ref val } => {
                 write!(out, "[{}{}{}]",
                        from_utf8(name).unwrap(),

@@ -5,3 +5,4 @@ authors = ["Rasmus Kaj <kaj@kth.se>"]
 
 [dependencies]
 nom = "*"
+num-rational = "^0.1"

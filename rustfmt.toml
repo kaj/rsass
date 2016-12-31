@@ -1,0 +1,5 @@
+max_width = 80
+ideal_width = 72
+
+report_fixme = "Always"
+reorder_imports = true

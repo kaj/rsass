@@ -1,19 +1,20 @@
 #[macro_use]
 extern crate nom;
+extern crate num_rational;
 
 use nom::{alphanumeric, multispace};
 use nom::IResult::*;
-use std::str::from_utf8;
 use std::io::{self, Write};
+use std::str::from_utf8;
 
 mod selectors;
 mod spacelike;
 mod valueexpression;
 mod variablescope;
-use spacelike::spacelike;
 use selectors::{Selector, selector};
-use variablescope::Scope;
+use spacelike::spacelike;
 use valueexpression::{Value, value_expression};
+use variablescope::Scope;
 
 pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
     match sassfile(input) {
@@ -181,7 +182,11 @@ struct Property {
 }
 
 impl Property {
-    fn write(&self, out: &mut Write, scope: &Scope, indent: usize) -> io::Result<()> {
+    fn write(&self,
+             out: &mut Write,
+             scope: &Scope,
+             indent: usize)
+             -> io::Result<()> {
         try!(do_indent(out, indent));
         write!(out, "{}: {};\n", self.name, scope.evaluate(&self.value))
     }
@@ -227,9 +232,16 @@ fn test_property_2() {
     assert_eq!(property(b"background-position: 90% 50%;\n"),
                Done(&b""[..], Property {
                    name: "background-position".to_string(),
-                   value: Value::Multi(vec![Value::Literal("90%".to_string()),
-                                            Value::Literal("50%".to_string())]),
+                   value: Value::Multi(vec![percentage(90),
+                                            percentage(50)]),
                }));
+}
+
+#[cfg(test)]
+fn percentage(v: isize) -> Value {
+    use num_rational::Rational;
+    use valueexpression::Unit;
+    Value::Numeric(Rational::from_integer(v), Unit::Percent, false)
 }
 
 named!(variable_declaration<&[u8], (&str, Value)>,

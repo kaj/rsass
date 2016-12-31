@@ -280,14 +280,17 @@ fn t07_nested_simple_selector_groups() {
             foo: goo;\n    \
             k, l {\n      \
             m, n, o {\n        \
-            wow: we are far inside;\n        but: it still works;\n      }\n      \
+            wow: we are far inside;\n        but: it still works;\n      \
+            }\n      \
             hoo: boo;\n    }\n  }\n}",
           b"a, b {\n  color: red;\n  background: blue;\n}\n\n\
             c, d {\n  color: gray;\n}\n\
-            c e, c f, d e, d f {\n  background: blue;\n  padding: 10px 5px;\n}\n\
+            c e, c f, d e, d f {\n  \
+            background: blue;\n  padding: 10px 5px;\n}\n\
             c g, c h, d g, d h {\n  blah: blah;\n  bloo: bloo;\n}\n\
             c i, c j, d i, d j {\n  foo: goo;\n}\n\
-            c i k, c i l, c j k, c j l, d i k, d i l, d j k, d j l {\n  hoo: boo;\n}\n\
+            c i k, c i l, c j k, c j l, d i k, d i l, d j k, d j l {\n  \
+            hoo: boo;\n}\n\
             c i k m, c i k n, c i k o, c i l m, c i l n, c i l o, c j k m, \
             c j k n, c j k o, c j l m, c j l n, c j l o, d i k m, d i k n, \
             d i k o, d i l m, d i l n, d i l o, d j k m, d j k n, d j k o, \
@@ -343,11 +346,96 @@ fn t13_back_references() {
             hey > boo, foo hey.goo, ho > boo, foo ho.goo {\n  bloo: bloo;\n}\n")
 }
 
+#[test]
+fn t15_arithmetic_and_lists_abcd() {
+    check(b"div {\n  a: 1 + 2;\n  b: 3 + 3/4;\n  c: 1/2 + 1/2;\n  \
+            /* shouldn't eval the following \"300\" */\n  \
+            d: 300;\n}",
+          b"div {\n  a: 3;\n  b: 3.75;\n  c: 1;\n  \
+            /* shouldn't eval the following \"300\" */\n  \
+            d: 300;\n}\n")
+}
+
+#[test]
+fn t15_arithmetic_and_lists_efg() {
+    check(b"div {\n  e: 1 + (5/10 2 3);\n  f: 1 + ((2+(3 4) 5) 6);\n  \
+            g: 1 + ((1+(14/7 8) 9) 6);\n}",
+          b"div {\n  e: 15/10 2 3;\n  f: 123 4 5 6;\n  g: 1114/7 8 9 6;\n}\n")
+}
+#[test]
+fn t15_arithmetic_and_lists_hijklmt_div_or_not() {
+    check(b"$stuff: 1 2 3;\n\
+            $three: 3;\n\
+            div {\n  \
+            /* shouldn't perform the following division */\n  \
+            h: 15 / 3 / 5;\n  \
+            /* should perform the following division now */\n  \
+            i: (15 / 3 / 5);\n  /* this too */\n  j: (15 / 3) / 5;\n  \
+            /* and this */\n  k: 15 / $three;\n  l: 15 / 5 / $three;\n  \
+            m: 1/2, $stuff url(\"www.foo.com/blah.png\") blah blah;\n  \
+            t: 1 + (2 + (3/4 + (4/5 6/7)));\n}",
+          b"div {\n  /* shouldn't perform the following division */\n  \
+            h: 15 / 3 / 5;\n  \
+            /* should perform the following division now */\n  \
+            i: 1;\n  /* this too */\n  j: 1;\n  /* and this */\n  k: 5;\n  \
+            l: 1;\n  \
+            m: 1/2, 1 2 3 url(\"www.foo.com/blah.png\") blah blah;\n  \
+            t: 120.754/5 6/7;\n}\n")
+}
+
+#[test]
+fn t15_arithmetic_and_lists_nopqrs() {
+    check(b"$stuff: 1 2 3;\n\
+            div {\n  n: 1 2 3, $stuff 4 5 (6, 7 8 9);\n  \
+            o: 3px + 3px + 3px;\n  p: 4 + 1px;\n  q: (20pt / 10pt);\n  \
+            r: 16em * 4;\n  s: (5em / 2);\n}",
+          b"div {\n  n: 1 2 3, 1 2 3 4 5 6, 7 8 9;\n  \
+            o: 9px;\n  p: 5px;\n  q: 2;\n  r: 64em;\n  s: 2.5em;\n}\n")
+}
+
+#[test]
+fn t15_arithmetic_and_lists() {
+    check(b"$stuff: 1 2 3;\n\n\
+            $three: 3;\n\n\
+            div {\n  \
+            a: 1 + 2;\n  b: 3 + 3/4;\n  c: 1/2 + 1/2;\n  \
+            /* shouldn't eval the following \"300\" */\n  d: 300;\n\
+            /* increasingly jacked-up edge cases that combine \
+            arithmetic with lists */\n  \
+            e: 1 + (5/10 2 3);\n  f: 1 + ((2+(3 4) 5) 6);\n  \
+            g: 1 + ((1+(14/7 8) 9) 6);\n  \
+            /* shouldn't perform the following division */\n  \
+            h: 15 / 3 / 5;\n  \
+            /* should perform the following division now */\n  \
+            i: (15 / 3 / 5);\n  \
+            /* this too */\n  j: (15 / 3) / 5;\n  \
+            /* and this */\n  k: 15 / $three;\n  l: 15 / 5 / $three;\n  \
+            m: 1/2, $stuff url(\"www.foo.com/blah.png\") blah blah;\n  \
+            n: 1 2 3, $stuff 4 5 (6, 7 8 9);\n  \
+            o: 3px + 3px + 3px;\n  p: 4 + 1px;\n  q: (20pt / 10pt);\n  \
+            r: 16em * 4;\n  s: (5em / 2);\n  \
+            t: 1 + (2 + (3/4 + (4/5 6/7)));\n}",
+          b"div {\n  a: 3;\n  b: 3.75;\n  c: 1;\n  \
+            /* shouldn't eval the following \"300\" */\n  d: 300;\n  \
+            /* increasingly jacked-up edge cases that combine \
+            arithmetic with lists */\n  \
+            e: 15/10 2 3;\n  f: 123 4 5 6;\n  g: 1114/7 8 9 6;\n  \
+            /* shouldn't perform the following division */\n  \
+            h: 15 / 3 / 5;\n  \
+            /* should perform the following division now */\n  i: 1;\n  \
+            /* this too */\n  j: 1;\n  /* and this */\n  k: 5;\n  l: 1;\n  \
+            m: 1/2, 1 2 3 url(\"www.foo.com/blah.png\") blah blah;\n  \
+            n: 1 2 3, 1 2 3 4 5 6, 7 8 9;\n  \
+            o: 9px;\n  p: 5px;\n  q: 2;\n  r: 64em;\n  s: 2.5em;\n  \
+            t: 120.754/5 6/7;\n}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);
     if let Ok(output) = result {
-        if let (Ok(output), Ok(expected)) = (from_utf8(&output), from_utf8(expected)) {
+        if let (Ok(output), Ok(expected)) =
+            (from_utf8(&output), from_utf8(expected)) {
             assert_eq!(output, expected)
         } else {
             assert_eq!(output, expected)
