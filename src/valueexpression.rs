@@ -116,7 +116,7 @@ named!(pub value_expression<&[u8], Value>,
                   Value::MultiComma(v)
               }));
 
-named!(space_list<&[u8], Value>,
+named!(pub space_list<&[u8], Value>,
        chain!(v: separated_nonempty_list!(multispace, single_expression),
               || if v.len() == 1 {
                   v[0].clone()
@@ -124,7 +124,7 @@ named!(space_list<&[u8], Value>,
                   Value::MultiSpace(v)
               }));
 
-named!(single_expression<Value>,
+named!(pub single_expression<Value>,
        alt!(complete!(chain!(a: term_value ~ multispace? ~ tag!("+") ~
                              multispace? ~ b: single_expression,
                              || Value::Sum(Box::new(a), Box::new(b)))) |

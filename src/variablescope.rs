@@ -3,11 +3,13 @@
 use num_rational::Rational;
 use std::collections::BTreeMap;
 use std::ops::Neg;
+use super::MixinDeclaration;
 use valueexpression::{Value, Unit};
 
 pub struct Scope<'a> {
     parent: Option<&'a Scope<'a>>,
     variables: BTreeMap<String, Value>,
+    mixins: BTreeMap<String, MixinDeclaration>,
 }
 
 impl<'a> Scope<'a> {
@@ -15,17 +17,27 @@ impl<'a> Scope<'a> {
         Scope {
             parent: None,
             variables: BTreeMap::new(),
+            mixins: BTreeMap::new(),
         }
     }
     pub fn sub(parent: &'a Scope) -> Self {
         Scope {
             parent: Some(parent),
             variables: BTreeMap::new(),
+            mixins: BTreeMap::new(),
         }
     }
     pub fn define(&mut self, name: &str, val: &Value) {
         let val = self.do_evaluate(val, true);
         self.variables.insert(name.to_string(), val);
+    }
+    pub fn define_mixin(&mut self, m: &MixinDeclaration) {
+        self.mixins.insert(m.name.to_string(), m.clone());
+    }
+    pub fn get_mixin(&self, name: &str) -> Option<&MixinDeclaration> {
+        self.mixins
+            .get(name)
+            .or_else(|| self.parent.and_then(|p| p.get_mixin(name)))
     }
     pub fn get(&self, name: &str) -> Option<&Value> {
         self.variables

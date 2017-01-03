@@ -16,7 +16,7 @@ mod valueexpression;
 mod variablescope;
 use selectors::{Selector, selector};
 use spacelike::spacelike;
-use valueexpression::{Value, value_expression};
+use valueexpression::{Value, value_expression, single_expression, space_list};
 use variablescope::Scope;
 
 pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
@@ -37,6 +37,10 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
                     }
                     SassItem::VariableDeclaration { name, val } => {
                         globals.define(&name, &val);
+                    }
+                    SassItem::MixinDeclaration(m) => globals.define_mixin(&m),
+                    SassItem::MixinCall { name, args } => {
+                        writeln!(result, "mixin {}({:?})", name, args).unwrap();
                     }
                     SassItem::Comment(c) => {
                         if separate {
@@ -78,20 +82,29 @@ named!(sassfile<&[u8], Vec<SassItem> >,
                               name: d.0.to_string(),
                               val: d.1.clone(),
                           }) |
+                   chain!(d: mixin_declaration,
+                          || SassItem::MixinDeclaration(d)) |
                    chain!(r: rule, || SassItem::Rule(r)) |
                    chain!(c: comment, || {
                        SassItem::Comment(from_utf8(c).unwrap().into())
                    }
                    ))));
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 enum SassItem {
     None,
     Comment(String),
     Property(Property),
     Rule(Rule),
     VariableDeclaration { name: String, val: Value },
+    MixinDeclaration(MixinDeclaration),
+    MixinCall {
+        name: String,
+        args: Option<Vec<(Option<String>, Value)>>,
+    },
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 struct Rule {
     selectors: Vec<Selector>,
     body: Vec<SassItem>,
@@ -115,28 +128,10 @@ impl Rule {
         } else {
             self.selectors.clone()
         };
-        let mut scope = Scope::sub(scope);
         let mut direct = Vec::new();
         let mut sub = Vec::new();
-
-        for b in &self.body {
-            match b {
-                &SassItem::Comment(ref c) => {
-                    try!(do_indent(&mut direct, indent + 2));
-                    try!(writeln!(&mut direct, "/*{}*/", c));
-                }
-                &SassItem::Property(ref p) => {
-                    try!(p.write(&mut direct, &scope, indent + 2));
-                }
-                &SassItem::Rule(ref r) => {
-                    try!(r.write(&mut sub, &scope, Some(&selectors), indent));
-                }
-                &SassItem::VariableDeclaration { ref name, ref val } => {
-                    scope.define(&name, &val);
-                }
-                &SassItem::None => (),
-            }
-        }
+        try!(handle_body(&mut direct, &mut sub, &mut Scope::sub(scope),
+                         &selectors, &self.body, indent));
         if !direct.is_empty() {
             try!(write!(out, "{} {{\n",
                         selectors.iter()
@@ -151,6 +146,63 @@ impl Rule {
     }
 }
 
+fn handle_body(direct: &mut Vec<u8>,
+               sub: &mut Vec<u8>,
+               scope: &mut Scope,
+               selectors: &Vec<Selector>,
+               body: &Vec<SassItem>,
+               indent: usize)
+               -> io::Result<()> {
+    for b in body {
+        match b {
+            &SassItem::Comment(ref c) => {
+                try!(do_indent(direct, indent + 2));
+                try!(writeln!(direct, "/*{}*/", c));
+            }
+            &SassItem::Property(ref p) => {
+                try!(p.write(direct, &scope, indent + 2));
+            }
+            &SassItem::Rule(ref r) => {
+                try!(r.write(sub, &scope, Some(&selectors), indent));
+            }
+            &SassItem::VariableDeclaration { ref name, ref val } => {
+                scope.define(&name, &val);
+            }
+            &SassItem::MixinDeclaration(ref m) => {
+                scope.define_mixin(m);
+            }
+            &SassItem::MixinCall { ref name, ref args } => {
+                if let Some(mixin) = scope.get_mixin(name) {
+                    let mut argscope = Scope::sub(&scope);
+                    for (fi, &(ref name, ref default)) in
+                        mixin.args.iter().enumerate() {
+                        args.clone()
+                            .and_then(|ref a| {
+                                a.iter()
+                                    .find(|&&(ref k, ref _v)| {
+                                        k.as_ref() == Some(name)
+                                    })
+                                    .or_else(|| a.get(fi))
+                                    .map(|&(ref _k, ref v)| v.clone())
+                            })
+                            .or_else(|| default.clone())
+                            .map(|value| argscope.define(&name, &value));
+                    }
+                    try!(handle_body(direct, sub, &mut argscope, selectors,
+                                     &mixin.body, indent));
+                } else {
+                    writeln!(direct,
+                             "/* Unknown mixin {}({:?}) */",
+                             name,
+                             args)
+                        .unwrap();
+                }
+            }
+            &SassItem::None => (),
+        }
+    }
+    Ok(())
+}
 
 named!(rule<&[u8], Rule>,
        chain!(spacelike? ~
@@ -159,24 +211,175 @@ named!(rule<&[u8], Rule>,
                                                   selector) ~
               spacelike? ~
               tag!("{") ~
-              body: many0!(alt!(
-                  chain!(spacelike, || SassItem::None) |
-                  chain!(d: variable_declaration,
-                         || SassItem::VariableDeclaration{
-                             name: d.0.to_string(),
-                             val: d.1.clone(),
-                         }) |
-                  chain!(r: rule, || SassItem::Rule(r)) |
-                  chain!(p: property, || SassItem::Property(p)) |
-                  chain!(c: comment, || {
-                      SassItem::Comment(from_utf8(c).unwrap().into())
-                  })
-                      )) ~
+              body: many0!(body_item) ~
               tag!("}"),
               || Rule {
                   selectors: selectors,
                   body: body,
               }));
+
+named!(body_item<SassItem>,
+       alt_complete!(
+           chain!(spacelike, || SassItem::None) |
+           chain!(d: mixin_declaration,
+                  || SassItem::MixinDeclaration(d)) |
+           chain!(d: variable_declaration,
+                  || SassItem::VariableDeclaration{
+                      name: d.0.to_string(),
+                      val: d.1.clone(),
+                  }) |
+           chain!(r: rule, || SassItem::Rule(r)) |
+           chain!(p: property, || SassItem::Property(p)) |
+           chain!(m: mixin_call,
+                  || SassItem::MixinCall {
+                      name: m.0.clone(),
+                      args: m.1.clone(),
+                  }) |
+           chain!(c: comment,
+                  || SassItem::Comment(from_utf8(c).unwrap().into()))
+               ));
+
+named!(mixin_call<&[u8], (String, Option<Vec<(Option<String>, Value)>>)>,
+       chain!(tag!("@include") ~ spacelike ~
+              name: alphanumeric ~ // spacelike? ~
+              args: opt!(chain!(tag!("(") ~
+                                a: separated_nonempty_list!(
+                                    chain!(tag!(",") ~ spacelike?, || ()),
+                                    alt_complete!(
+                                        chain!(tag!("$") ~
+                                               name: alphanumeric ~
+                                               multispace? ~
+                                               tag!(":") ~
+                                               multispace? ~
+                                               val: space_list ~
+                                               multispace?,
+                                               || (Some(from_utf8(name)
+                                                        .unwrap().into()),
+                                                   val)) |
+                                        chain!(e: single_expression,
+                                               || (None, e))
+                                            )) ~
+                                tag!(")") ~
+                                spacelike?,
+                                || a)) ~
+              tag!(";"),
+              || (from_utf8(name).unwrap().to_string(), args)
+              ));
+
+#[test]
+fn test_mixin_call_noargs() {
+    assert_eq!(mixin_call(b"@include foo;\n"),
+               Done(&b"\n"[..],
+                    ("foo".to_string(), None)));
+}
+
+#[test]
+fn test_mixin_call_pos_args() {
+    assert_eq!(mixin_call(b"@include foo(bar, baz);\n"),
+               Done(&b"\n"[..],
+                    ("foo".to_string(),
+                     Some(vec![(None, Value::Literal("bar".to_string())),
+                               (None, Value::Literal("baz".to_string()))]))));
+}
+
+#[test]
+fn test_mixin_call_named_args() {
+    assert_eq!(mixin_call(b"@include foo($x: bar, $y: baz);\n"),
+               Done(&b"\n"[..],
+                    ("foo".to_string(),
+                     Some(vec![(Some("x".into()), Value::Literal("bar".into())),
+                               (Some("y".into()), Value::Literal("baz".into()))
+                               ]))));
+}
+
+named!(mixin_declaration<&[u8], MixinDeclaration>,
+       chain!(tag!("@mixin") ~ spacelike ~
+              name: alphanumeric ~ spacelike? ~
+              tag!("(") ~ spacelike? ~
+              args: separated_list!(
+                  chain!(tag!(",") ~ spacelike?, || ()),
+                  chain!(tag!("$") ~ name: alphanumeric ~
+                         d: opt!(chain!(tag!(":") ~ spacelike? ~
+                                        d: value_expression ~ spacelike?,
+                                        || d)),
+                         || (from_utf8(name).unwrap().to_string(), d))) ~
+              tag!(")") ~ spacelike? ~
+              tag!("{") ~ spacelike? ~
+              body: many0!(body_item) ~
+              tag!("}"),
+              || MixinDeclaration{
+                  name: from_utf8(name).unwrap().into(),
+                  args: args,
+                  body: body,
+              }));
+
+#[test]
+fn test_mixin_declaration_empty() {
+    assert_eq!(mixin_declaration(b"@mixin foo() {}\n"),
+               Done(&b"\n"[..], MixinDeclaration {
+                   name: "foo".into(),
+                   args: vec![],
+                   body: vec![],
+               }))
+}
+
+#[test]
+fn test_mixin_declaration() {
+    assert_eq!(mixin_declaration(b"@mixin foo($x) {\n  \
+                                   foo-bar: baz $x;\n\
+                                   }\n"),
+               Done(&b"\n"[..], MixinDeclaration {
+                   name: "foo".into(),
+                   args: vec![("x".into(), None)],
+                   body: vec![SassItem::Property(Property {
+                       name: "foo-bar".into(),
+                       value: Value::MultiSpace(
+                           vec![Value::Literal("baz".into()),
+                                Value::Variable("x".into())]),
+                   })],
+               }))
+}
+
+#[test]
+fn test_mixin_declaration_default_and_subrules() {
+    assert_eq!(mixin_declaration(b"@mixin bar($a, $b: flug) {\n  \
+                                   foo-bar: baz;\n  \
+                                   foo, bar {\n    \
+                                   property: $b;\n  \
+                                   }\n\
+                                   }\n"),
+               Done(&b"\n"[..], MixinDeclaration {
+                   name: "bar".into(),
+                   args: vec![("a".into(), None),
+                              ("b".into(),
+                               Some(Value::Literal("flug".into())))],
+                   body: vec![
+                       SassItem::Property(Property {
+                           name: "foo-bar".into(),
+                           value: Value::Literal("baz".into()),
+                       }),
+                       SassItem::Rule(Rule {
+                           selectors: vec![
+                               selector(b"foo").unwrap().1,
+                               selector(b"bar").unwrap().1,
+                               ],
+                           body: vec![
+                               SassItem::None,
+                               SassItem::Property(Property {
+                                   name: "property".into(),
+                                   value: Value::Variable("b".into())
+                               })],
+                       }),
+                       SassItem::None,
+                       ]}))
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MixinDeclaration {
+    name: String,
+    args: Vec<(String, Option<Value>)>,
+    body: Vec<SassItem>,
+}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct Property {

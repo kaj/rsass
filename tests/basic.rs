@@ -457,6 +457,33 @@ fn t16_hex_arithmetic() {
             p20: #0b0a0b;\n  p21: white;\n}\n")
 }
 
+#[test]
+fn t17_basic_mixins() {
+    check(b"@mixin foo($x, $y) {\n  hugabug: $y $x;\n}\n\n\
+            @mixin bar($a, $b: flug) {\n  flugablug: $a $b glug;\n}\n\n\
+            @mixin hux() {\n  \
+            no: parameters here;\n  \
+            div, span {\n    \
+            some: nested stuff;\n    \
+            foo, bar {\n      more: stuff so forth;\n      blah: blah;\n    \
+            }\n  }\n  /* end of hux */\n}\n\n\
+            a {\n  \
+            hey: ho;\n  @include foo(second, third);\n  \
+            @include foo($y: kwd-y, $x: kwd-x);\n  goo: boo hoo;\n  \
+            @include hux;\n  @include bar(pug);\n  @include bar(pug, mug);\n\
+            }\n\n\
+            $x: from a variable;\n\n\
+            div {\n  blah: blah $x blah;\n}",
+          b"a {\n  hey: ho;\n  hugabug: third second;\n  \
+            hugabug: kwd-y kwd-x;\n  goo: boo hoo;\n  no: parameters here;\n  \
+            /* end of hux */\n  \
+            flugablug: pug flug glug;\n  flugablug: pug mug glug;\n}\n\
+            a div, a span {\n  some: nested stuff;\n}\n\
+            a div foo, a div bar, a span foo, a span bar {\n  \
+            more: stuff so forth;\n  blah: blah;\n}\n\n\
+            div {\n  blah: blah from a variable blah;\n}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);
