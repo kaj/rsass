@@ -235,8 +235,8 @@ fn test_property_2() {
     assert_eq!(property(b"background-position: 90% 50%;\n"),
                Done(&b""[..], Property {
                    name: "background-position".to_string(),
-                   value: Value::Multi(vec![percentage(90),
-                                            percentage(50)]),
+                   value: Value::MultiSpace(vec![percentage(90),
+                                                 percentage(50)]),
                }));
 }
 

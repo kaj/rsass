@@ -15,7 +15,8 @@ pub enum Value {
     Div(Box<Value>, Box<Value>, bool, bool),
     Literal(String),
     Minus(Box<Value>, Box<Value>),
-    Multi(Vec<Value>),
+    MultiSpace(Vec<Value>),
+    MultiComma(Vec<Value>),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and a flag which is true for calculated values and
     /// false for literal values.
@@ -85,13 +86,18 @@ impl fmt::Display for Value {
                     }
                 }
             }
-            &Value::Multi(ref v) => {
+            &Value::MultiSpace(ref v) => {
                 let t = v.iter()
                     .map(|v| format!("{}", v))
                     .collect::<Vec<_>>()
                     .join(" ");
-                // NOTE: This is an ugly workaround and should not be needed.
-                let t = t.replace(" ,", ",");
+                write!(out, "{}", t)
+            }
+            &Value::MultiComma(ref v) => {
+                let t = v.iter()
+                    .map(|v| format!("{}", v))
+                    .collect::<Vec<_>>()
+                    .join(", ");
                 write!(out, "{}", t)
             }
             &Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
@@ -101,12 +107,21 @@ impl fmt::Display for Value {
 }
 
 named!(pub value_expression<&[u8], Value>,
-       chain!(v: many1!(chain!(expr: single_expression ~ multispace?,
-                               || expr)),
+       chain!(v: separated_nonempty_list!(chain!(tag!(",") ~ multispace?,
+                                                 || ()),
+                                          space_list),
               || if v.len() == 1 {
                   v[0].clone()
               } else {
-                  Value::Multi(v)
+                  Value::MultiComma(v)
+              }));
+
+named!(space_list<&[u8], Value>,
+       chain!(v: separated_nonempty_list!(multispace, single_expression),
+              || if v.len() == 1 {
+                  v[0].clone()
+              } else {
+                  Value::MultiSpace(v)
               }));
 
 named!(single_expression<Value>,
@@ -181,7 +196,7 @@ named!(single_value<&[u8], Value>,
                   tag!(")"),
                   || Value::Call(from_utf8(name).unwrap().into(),
                                  Box::new(arg))) |
-           chain!(val: is_not!("+-*/;$() \n\t"),
+           chain!(val: is_not!("+-*/;,$() \n\t"),
                   || Value::Literal(from_utf8(val).unwrap().to_string())) |
            chain!(tag!("(") ~ multispace? ~
                   val: value_expression ~ multispace? ~
@@ -253,8 +268,9 @@ mod test {
         assert_eq!(value_expression(b"(red blue);"),
                    Done(&b";"[..],
                         Value::Paren(Box::new(
-                            Value::Multi(vec![Value::Literal("red".into()),
-                                              Value::Literal("blue".into())])
+                            Value::MultiSpace(vec![
+                                Value::Literal("red".into()),
+                                Value::Literal("blue".into())])
                                 ))))
     }
 
@@ -262,12 +278,13 @@ mod test {
     fn multi_expression() {
         assert_eq!(value_expression(b"15/10 2 3;"),
                    Done(&b";"[..],
-                        Value::Multi(vec![Value::Div(Box::new(scalar(15)),
-                                                     Box::new(scalar(10)),
-                                                     false,
-                                                     false),
-                                          scalar(2),
-                                          scalar(3)])))
+                        Value::MultiSpace(vec![
+                            Value::Div(Box::new(scalar(15)),
+                                       Box::new(scalar(10)),
+                                       false,
+                                       false),
+                            scalar(2),
+                            scalar(3)])))
     }
 
     #[test]

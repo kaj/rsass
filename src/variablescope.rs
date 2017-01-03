@@ -45,8 +45,13 @@ impl<'a> Scope<'a> {
                     .map(|n| self.do_evaluate(n, true))
                     .unwrap_or_else(|| Value::Literal(format!("${}", name)))
             }
-            &Value::Multi(ref v) => {
-                Value::Multi(v.iter()
+            &Value::MultiSpace(ref v) => {
+                Value::MultiSpace(v.iter()
+                    .map(|v| self.do_evaluate(v, false))
+                    .collect::<Vec<_>>())
+            }
+            &Value::MultiComma(ref v) => {
+                Value::MultiComma(v.iter()
                     .map(|v| self.do_evaluate(v, false))
                     .collect::<Vec<_>>())
             }
@@ -160,10 +165,16 @@ impl<'a> Scope<'a> {
                 }
                 Value::Literal(format!("{}{}/{}{}",
                                        a,
-                                       if *space1 && !arithmetic { " " }
-                                       else { "" },
-                                       if *space2 && !arithmetic { " " }
-                                       else { "" },
+                                       if *space1 && !arithmetic {
+                                           " "
+                                       } else {
+                                           ""
+                                       },
+                                       if *space2 && !arithmetic {
+                                           " "
+                                       } else {
+                                           ""
+                                       },
                                        b))
             }
             &Value::Numeric(ref v, ref u, ref is_calculated) => {
@@ -420,22 +431,19 @@ mod test {
     #[test]
     fn color_subtract_components_underflow() {
         let scope = Scope::new();
-        assert_eq!("black",
-                   do_evaluate(&scope, b"#000001 - #001;"))
+        assert_eq!("black", do_evaluate(&scope, b"#000001 - #001;"))
     }
 
     #[test]
     fn color_division() {
         let scope = Scope::new();
-        assert_eq!("#020202",
-                   do_evaluate(&scope, b"(#101010 / 7);"))
+        assert_eq!("#020202", do_evaluate(&scope, b"(#101010 / 7);"))
     }
 
     #[test]
     fn color_add_rgb_1() {
         let scope = Scope::new();
-        assert_eq!("#0b0a0b",
-                   do_evaluate(&scope, b"rgb(10,10,10) + #010001;"))
+        assert_eq!("#0b0a0b", do_evaluate(&scope, b"rgb(10,10,10) + #010001;"))
     }
     #[test]
     fn color_add_rgb_2() {
