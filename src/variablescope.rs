@@ -356,69 +356,59 @@ mod test {
     #[test]
     fn color_unchanged_1() {
         let scope = Scope::new();
-        assert_eq!("#AbC",
-                   do_evaluate(&scope, b"#AbC;"))
+        assert_eq!("#AbC", do_evaluate(&scope, b"#AbC;"))
     }
 
     #[test]
     fn color_unchanged_2() {
         let scope = Scope::new();
-        assert_eq!("#AAbbCC",
-                   do_evaluate(&scope, b"#AAbbCC;"))
+        assert_eq!("#AAbbCC", do_evaluate(&scope, b"#AAbbCC;"))
     }
 
     #[test]
     fn color_add_each_component() {
         let scope = Scope::new();
-        assert_eq!("#abbccd",
-                   do_evaluate(&scope, b"#AbC + 1;"))
+        assert_eq!("#abbccd", do_evaluate(&scope, b"#AbC + 1;"))
     }
     #[test]
     fn color_add_each_component_overflow() {
         let scope = Scope::new();
-        assert_eq!("#0101ff",
-                   do_evaluate(&scope, b"#00f + 1;"))
+        assert_eq!("#0101ff", do_evaluate(&scope, b"#00f + 1;"))
     }
 
     #[test]
     fn color_add_components() {
         let scope = Scope::new();
-        assert_eq!("#aabbdd",
-                   do_evaluate(&scope, b"#AbC + #001;"))
+        assert_eq!("#aabbdd", do_evaluate(&scope, b"#AbC + #001;"))
     }
 
     #[test]
     fn color_add_components_overflow() {
         let scope = Scope::new();
-        assert_eq!("#1000ff",
-                   do_evaluate(&scope, b"#1000ff + #001;"))
+        assert_eq!("#1000ff", do_evaluate(&scope, b"#1000ff + #001;"))
     }
 
     #[test]
     fn color_add_components_to_named_overflow() {
         let scope = Scope::new();
-        assert_eq!("blue",
-                   do_evaluate(&scope, b"#0000ff + #001;"))
+        assert_eq!("blue", do_evaluate(&scope, b"#0000ff + #001;"))
     }
     #[test]
     fn color_add_components_to_named() {
         let scope = Scope::new();
-        assert_eq!("white",
-                   do_evaluate(&scope, b"#00f + #0f0 + #f00;"))
+        assert_eq!("white", do_evaluate(&scope, b"#00f + #0f0 + #f00;"))
     }
 
     #[test]
     fn color_subtract() {
         let scope = Scope::new();
-        assert_eq!("#fefefe",
-                   do_evaluate(&scope, b"#fff - 1;"))
+        assert_eq!("#fefefe", do_evaluate(&scope, b"#fff - 1;"))
     }
 
     #[test]
     fn color_subtract_underflow() {
         let scope = Scope::new();
-        assert_eq!("black",
-                   do_evaluate(&scope, b"#000 - 1;"))
+        assert_eq!("black", do_evaluate(&scope, b"#000 - 1;"))
     }
 
     #[test]
