@@ -6,46 +6,64 @@ use std::ops::Neg;
 use super::MixinDeclaration;
 use valueexpression::{Value, Unit};
 
-pub struct Scope<'a> {
-    parent: Option<&'a Scope<'a>>,
+pub struct ScopeImpl<'a> {
+    parent: Option<&'a mut Scope>,
     variables: BTreeMap<String, Value>,
     mixins: BTreeMap<String, MixinDeclaration>,
 }
 
-impl<'a> Scope<'a> {
+pub trait Scope {
+    fn define(&mut self, name: &str, val: &Value, global: bool);
+    fn get(&self, name: &str) -> Option<Value>;
+
+    fn define_mixin(&mut self, m: &MixinDeclaration);
+    fn get_mixin(&self, name: &str) -> Option<MixinDeclaration>;
+
+    fn evaluate(&self, val: &Value) -> Value;
+}
+
+impl<'a> Scope for ScopeImpl<'a> {
+    fn define(&mut self, name: &str, val: &Value, global: bool) {
+        if let (true, Some(parent)) = (global, self.parent.as_mut()) {
+            return parent.define(name, val, global);
+        }
+        let val = self.do_evaluate(val, true);
+        self.variables.insert(name.to_string(), val);
+    }
+    fn get_mixin(&self, name: &str) -> Option<MixinDeclaration> {
+        self.mixins
+            .get(name)
+            .map(|m| m.clone())
+            .or_else(|| self.parent.as_ref().and_then(|p| p.get_mixin(name)))
+    }
+    fn get(&self, name: &str) -> Option<Value> {
+        self.variables
+            .get(name)
+            .map(|v| v.clone())
+            .or_else(|| self.parent.as_ref().and_then(|p| p.get(name)))
+    }
+    fn define_mixin(&mut self, m: &MixinDeclaration) {
+        self.mixins.insert(m.name.to_string(), m.clone());
+    }
+    fn evaluate(&self, val: &Value) -> Value {
+        self.do_evaluate(val, false)
+    }
+}
+
+impl<'a> ScopeImpl<'a> {
     pub fn new() -> Self {
-        Scope {
+        ScopeImpl {
             parent: None,
             variables: BTreeMap::new(),
             mixins: BTreeMap::new(),
         }
     }
-    pub fn sub(parent: &'a Scope) -> Self {
-        Scope {
+    pub fn sub<'c>(parent: &'a mut Scope) -> Self {
+        ScopeImpl {
             parent: Some(parent),
             variables: BTreeMap::new(),
             mixins: BTreeMap::new(),
         }
-    }
-    pub fn define(&mut self, name: &str, val: &Value) {
-        let val = self.do_evaluate(val, true);
-        self.variables.insert(name.to_string(), val);
-    }
-    pub fn define_mixin(&mut self, m: &MixinDeclaration) {
-        self.mixins.insert(m.name.to_string(), m.clone());
-    }
-    pub fn get_mixin(&self, name: &str) -> Option<&MixinDeclaration> {
-        self.mixins
-            .get(name)
-            .or_else(|| self.parent.and_then(|p| p.get_mixin(name)))
-    }
-    pub fn get(&self, name: &str) -> Option<&Value> {
-        self.variables
-            .get(name)
-            .or_else(|| self.parent.and_then(|p| p.get(name)))
-    }
-    pub fn evaluate(&self, val: &Value) -> Value {
-        self.do_evaluate(val, false)
     }
     fn do_evaluate(&self, val: &Value, arithmetic: bool) -> Value {
         match val {
@@ -54,7 +72,7 @@ impl<'a> Scope<'a> {
             &Value::HexColor(_, _, _, _) => val.clone(),
             &Value::Variable(ref name) => {
                 self.get(&name)
-                    .map(|n| self.do_evaluate(n, true))
+                    .map(|n| self.do_evaluate(&n, true))
                     .unwrap_or_else(|| Value::Literal(format!("${}", name)))
             }
             &Value::MultiSpace(ref v) => {
@@ -238,38 +256,38 @@ mod test {
 
     #[test]
     fn variable_value() {
-        let mut scope = Scope::new();
+        let mut scope = ScopeImpl::new();
         let red = Value::Literal("#f02a42".to_string());
-        scope.define("red", &red);
+        scope.define("red", &red, false);
         assert_eq!("#f02a42", do_evaluate(&scope, b"$red;"));
     }
 
     #[test]
     fn partial_variable_value() {
-        let mut scope = Scope::new();
+        let mut scope = ScopeImpl::new();
         let red = Value::Literal("#f02a42".to_string());
-        scope.define("red", &red);
+        scope.define("red", &red, false);
         assert_eq!("solid 1px #f02a42",
                    do_evaluate(&scope, b"solid 1px $red;"));
     }
 
     #[test]
     fn simple_arithmetic() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("6", do_evaluate(&scope, b"3 + 3;"));
     }
 
     #[test]
     fn simple_arithmetic_2() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("14", do_evaluate(&scope, b"2 + 3 * 4;"));
     }
 
     #[test]
     fn simple_arithmetic_3() {
-        let mut scope = Scope::new();
+        let mut scope = ScopeImpl::new();
         let four = Value::Numeric(Rational::from_integer(4), Unit::None, false);
-        scope.define("four", &four);
+        scope.define("four", &four, false);
         assert_eq!("14", do_evaluate(&scope, b"2 + 3 * $four;"));
     }
 
@@ -278,34 +296,34 @@ mod test {
     // Section "Divison and /"
     #[test]
     fn div_slash_1() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("10px/8px", do_evaluate(&scope, b"10px/8px;"));
     }
 
     #[test]
     fn div_slash_2() {
-        let mut scope = Scope::new();
+        let mut scope = ScopeImpl::new();
         let width =
             Value::Numeric(Rational::from_integer(1000), Unit::Px, false);
-        scope.define("width", &width);
+        scope.define("width", &width, false);
         assert_eq!("500px", do_evaluate(&scope, b"$width/2;"));
     }
 
     #[test]
     fn div_slash_4() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("250px", do_evaluate(&scope, b"(500px/2);"));
     }
 
     #[test]
     fn div_slash_5() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("9px", do_evaluate(&scope, b"5px + 8px/2px;"));
     }
 
     #[test]
     fn div_slash_6() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("italic bold 10px/8px",
                    do_evaluate(&scope, b"(italic bold 10px/8px);"));
     }
@@ -314,142 +332,142 @@ mod test {
     // ...
     #[test]
     fn double_div_1() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("15/3/5", do_evaluate(&scope, b"15/3/5;"));
     }
 
     #[test]
     fn double_div_2() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("15 / 3 / 5", do_evaluate(&scope, b"15 / 3 / 5;"));
     }
 
     #[test]
     fn double_div_3() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("1", do_evaluate(&scope, b"(15 / 3 / 5);"));
     }
 
     #[test]
     fn double_div_4() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("1", do_evaluate(&scope, b"(15 / 3) / 5;"));
     }
 
     #[test]
     fn double_div_5() {
-        let mut scope = Scope::new();
+        let mut scope = ScopeImpl::new();
         let five = do_parse(b"5;");
-        scope.define("five", &five);
+        scope.define("five", &five, false);
         assert_eq!("1", do_evaluate(&scope, b"15 / 3 / $five;"));
     }
 
     #[test]
     fn sum_w_unit() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("9px", do_evaluate(&scope, b"3px + 3px + 3px;"));
     }
     #[test]
     fn multi_multi() {
-        let mut scope = Scope::new();
+        let mut scope = ScopeImpl::new();
         let stuff = do_parse(b"1 2 3;");
-        scope.define("stuff", &stuff);
+        scope.define("stuff", &stuff, false);
         assert_eq!("1 2 3, 1 2 3 4 5 6, 7 8 9",
                    do_evaluate(&scope, b"1 2 3, $stuff 4 5 (6, 7 8 9);"))
     }
 
     #[test]
     fn url_keeps_parens() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("black url(starfield.png) repeat",
                    do_evaluate(&scope, b"black url(starfield.png) repeat;"))
     }
 
     #[test]
     fn color_unchanged_1() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("#AbC", do_evaluate(&scope, b"#AbC;"))
     }
 
     #[test]
     fn color_unchanged_2() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("#AAbbCC", do_evaluate(&scope, b"#AAbbCC;"))
     }
 
     #[test]
     fn color_add_each_component() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("#abbccd", do_evaluate(&scope, b"#AbC + 1;"))
     }
     #[test]
     fn color_add_each_component_overflow() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("#0101ff", do_evaluate(&scope, b"#00f + 1;"))
     }
 
     #[test]
     fn color_add_components() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("#aabbdd", do_evaluate(&scope, b"#AbC + #001;"))
     }
 
     #[test]
     fn color_add_components_overflow() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("#1000ff", do_evaluate(&scope, b"#1000ff + #001;"))
     }
 
     #[test]
     fn color_add_components_to_named_overflow() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("blue", do_evaluate(&scope, b"#0000ff + #001;"))
     }
     #[test]
     fn color_add_components_to_named() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("white", do_evaluate(&scope, b"#00f + #0f0 + #f00;"))
     }
 
     #[test]
     fn color_subtract() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("#fefefe", do_evaluate(&scope, b"#fff - 1;"))
     }
 
     #[test]
     fn color_subtract_underflow() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("black", do_evaluate(&scope, b"#000 - 1;"))
     }
 
     #[test]
     fn color_subtract_components() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("#000077", // Or should it be #007?
                    do_evaluate(&scope, b"#fff - #ff8;"))
     }
 
     #[test]
     fn color_subtract_components_underflow() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("black", do_evaluate(&scope, b"#000001 - #001;"))
     }
 
     #[test]
     fn color_division() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("#020202", do_evaluate(&scope, b"(#101010 / 7);"))
     }
 
     #[test]
     fn color_add_rgb_1() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("#0b0a0b", do_evaluate(&scope, b"rgb(10,10,10) + #010001;"))
     }
     #[test]
     fn color_add_rgb_2() {
-        let scope = Scope::new();
+        let scope = ScopeImpl::new();
         assert_eq!("white",
                    do_evaluate(&scope, b"#010000 + rgb(255, 255, 255);"))
     }

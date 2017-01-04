@@ -17,12 +17,12 @@ mod variablescope;
 use selectors::{Selector, selector};
 use spacelike::spacelike;
 use valueexpression::{Value, value_expression, single_expression, space_list};
-use variablescope::Scope;
+use variablescope::{ScopeImpl, Scope};
 
 pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
     match sassfile(input) {
         Done(b"", items) => {
-            let mut globals = Scope::new();
+            let mut globals = ScopeImpl::new();
             let mut result = Vec::new();
             let mut separate = false;
             for item in items {
@@ -33,10 +33,10 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
                         } else {
                             separate = true;
                         }
-                        rule.write(&mut result, &globals, None, 0).unwrap();
+                        rule.write(&mut result, &mut globals, None, 0).unwrap();
                     }
-                    SassItem::VariableDeclaration { name, val } => {
-                        globals.define(&name, &val);
+                    SassItem::VariableDeclaration { name, val, global } => {
+                        globals.define(&name, &val, global);
                     }
                     SassItem::MixinDeclaration(m) => globals.define_mixin(&m),
                     SassItem::MixinCall { name, args } => {
@@ -81,6 +81,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
                           || SassItem::VariableDeclaration{
                               name: d.0.to_string(),
                               val: d.1.clone(),
+                              global: d.2,
                           }) |
                    chain!(d: mixin_declaration,
                           || SassItem::MixinDeclaration(d)) |
@@ -96,7 +97,11 @@ enum SassItem {
     Comment(String),
     Property(Property),
     Rule(Rule),
-    VariableDeclaration { name: String, val: Value },
+    VariableDeclaration {
+        name: String,
+        val: Value,
+        global: bool,
+    },
     MixinDeclaration(MixinDeclaration),
     MixinCall {
         name: String,
@@ -113,7 +118,7 @@ struct Rule {
 impl Rule {
     fn write(&self,
              out: &mut Write,
-             scope: &Scope,
+             scope: &mut Scope,
              parent: Option<&Vec<Selector>>,
              indent: usize)
              -> io::Result<()> {
@@ -130,7 +135,7 @@ impl Rule {
         };
         let mut direct = Vec::new();
         let mut sub = Vec::new();
-        try!(handle_body(&mut direct, &mut sub, &mut Scope::sub(scope),
+        try!(handle_body(&mut direct, &mut sub, &mut ScopeImpl::sub(scope),
                          &selectors, &self.body, indent));
         if !direct.is_empty() {
             try!(write!(out, "{} {{\n",
@@ -160,20 +165,20 @@ fn handle_body(direct: &mut Vec<u8>,
                 try!(writeln!(direct, "/*{}*/", c));
             }
             &SassItem::Property(ref p) => {
-                try!(p.write(direct, &scope, indent + 2));
+                try!(p.write(direct, scope, indent + 2));
             }
             &SassItem::Rule(ref r) => {
-                try!(r.write(sub, &scope, Some(&selectors), indent));
+                try!(r.write(sub, scope, Some(&selectors), indent));
             }
-            &SassItem::VariableDeclaration { ref name, ref val } => {
-                scope.define(&name, &val);
+            &SassItem::VariableDeclaration { ref name, ref val, global } => {
+                scope.define(&name, &val, global);
             }
             &SassItem::MixinDeclaration(ref m) => {
                 scope.define_mixin(m);
             }
             &SassItem::MixinCall { ref name, ref args } => {
                 if let Some(mixin) = scope.get_mixin(name) {
-                    let mut argscope = Scope::sub(&scope);
+                    let mut argscope = ScopeImpl::sub(scope);
                     for (fi, &(ref name, ref default)) in
                         mixin.args.iter().enumerate() {
                         args.as_ref()
@@ -186,7 +191,7 @@ fn handle_body(direct: &mut Vec<u8>,
                                     .map(|&(ref _k, ref v)| v)
                             })
                             .or_else(|| default.as_ref())
-                            .map(|value| argscope.define(&name, &value));
+                            .map(|value| argscope.define(&name, &value, false));
                     }
                     try!(handle_body(direct, sub, &mut argscope, selectors,
                                      &mixin.body, indent));
@@ -227,6 +232,7 @@ named!(body_item<SassItem>,
                   || SassItem::VariableDeclaration{
                       name: d.0.to_string(),
                       val: d.1.clone(),
+                      global: d.2,
                   }) |
            chain!(r: rule, || SassItem::Rule(r)) |
            chain!(p: property, || SassItem::Property(p)) |
@@ -450,7 +456,7 @@ fn percentage(v: isize) -> Value {
     Value::Numeric(Rational::from_integer(v), Unit::Percent, false)
 }
 
-named!(variable_declaration<&[u8], (&str, Value)>,
+named!(variable_declaration<&[u8], (&str, Value, bool)>,
        chain!(tag!("$") ~
               name: alphanumeric ~
               multispace? ~
@@ -458,14 +464,26 @@ named!(variable_declaration<&[u8], (&str, Value)>,
               multispace? ~
               val: value_expression ~
               multispace? ~
+              global: opt!(tag!("!global")) ~
+              multispace? ~
               tag!(";") ~
               multispace?,
-              || (from_utf8(name).unwrap(), val)));
+              || (from_utf8(name).unwrap(), val, global.is_some())));
 
 #[test]
-fn test_simple_variable_declaration() {
+fn test_variable_declaration_simple() {
     assert_eq!(variable_declaration(b"$foo: bar;\n"),
-               Done(&b""[..], ("foo", Value::Literal("bar".into()))))
+               Done(&b""[..], ("foo", Value::Literal("bar".into()), false)))
+}
+
+#[test]
+fn test_variable_declaration_global() {
+    assert_eq!(variable_declaration(b"$y: some value !global;\n"),
+               Done(&b""[..], ("y",
+                               Value::MultiSpace(
+                                   vec![Value::Literal("some".into()),
+                                        Value::Literal("value".into())]),
+                               true)))
 }
 
 named!(comment,

@@ -484,6 +484,22 @@ fn t17_basic_mixins() {
             div {\n  blah: blah from a variable blah;\n}\n")
 }
 
+#[test]
+fn t18_mixin_scope() {
+    check(b"$x: global x;\n$y: global y;\n\n\
+            @mixin foo($x) {\n  \
+            f-a: $x;\n  f-b: $y;\n  $x: local x changed by foo;\n  \
+            $y: global y changed by foo !global;\n  $z: new local z;\n  \
+            f-a: $x;\n  f-b: $y;\n  f-c: $z;\n}\n\n\
+            div {\n  \
+            a: $x;\n  b: $y;\n  @include foo(arg);\n  a: $x;\n  b: $y;\n}\n",
+          b"div {\n  \
+            a: global x;\n  b: global y;\n  f-a: arg;\n  f-b: global y;\n  \
+            f-a: local x changed by foo;\n  f-b: global y changed by foo;\n  \
+            f-c: new local z;\n  a: global x;\n  \
+            b: global y changed by foo;\n}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);

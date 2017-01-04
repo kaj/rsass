@@ -196,7 +196,7 @@ named!(single_value<&[u8], Value>,
                   tag!(")"),
                   || Value::Call(from_utf8(name).unwrap().into(),
                                  Box::new(arg))) |
-           chain!(val: is_not!("+-*/;,$() \n\t"),
+           chain!(val: is_not!("+-*/;,$()! \n\t"),
                   || Value::Literal(from_utf8(val).unwrap().to_string())) |
            chain!(tag!("(") ~ multispace? ~
                   val: value_expression ~ multispace? ~
