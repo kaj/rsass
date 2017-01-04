@@ -176,16 +176,16 @@ fn handle_body(direct: &mut Vec<u8>,
                     let mut argscope = Scope::sub(&scope);
                     for (fi, &(ref name, ref default)) in
                         mixin.args.iter().enumerate() {
-                        args.clone()
+                        args.as_ref()
                             .and_then(|ref a| {
                                 a.iter()
                                     .find(|&&(ref k, ref _v)| {
                                         k.as_ref() == Some(name)
                                     })
                                     .or_else(|| a.get(fi))
-                                    .map(|&(ref _k, ref v)| v.clone())
+                                    .map(|&(ref _k, ref v)| v)
                             })
-                            .or_else(|| default.clone())
+                            .or_else(|| default.as_ref())
                             .map(|value| argscope.define(&name, &value));
                     }
                     try!(handle_body(direct, sub, &mut argscope, selectors,
