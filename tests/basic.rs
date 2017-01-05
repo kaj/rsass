@@ -565,6 +565,18 @@ fn t19_full_mixin_craziness() {
             a: global-x;\n  b: changed global y;\n}\n")
 }
 
+#[test]
+fn t20_scoped_variables() {
+    check(b"@mixin foo() {\n  /* begin foo */\n  /* assigning to $x */\n  \
+            $x: inside foo;\n  x: $x;\n  /* end foo */\n}\n\n\
+            outer {\n  /* assigning to $x */\n  \
+            $x: inside outer scope;\n  blah: blah;\n  \
+            inner {\n    @include foo();\n    x: $x;\n  }\n}",
+          b"outer {\n  /* assigning to $x */\n  blah: blah;\n}\n\
+            outer inner {\n  /* begin foo */\n  /* assigning to $x */\n  \
+            x: inside foo;\n  /* end foo */\n  x: inside outer scope;\n}\n")
+}
+    
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);
