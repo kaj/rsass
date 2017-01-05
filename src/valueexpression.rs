@@ -134,28 +134,22 @@ named!(pub single_expression<Value>,
             term_value));
 
 named!(term_value<Value>,
-       alt!(complete!(chain!(a: single_value ~ multispace? ~ tag!("*") ~
-                             multispace? ~ b: term_value,
-                             || Value::Product(Box::new(a), Box::new(b)))) |
-            complete!(chain!(a: single_value ~
-                             s1: multispace? ~ tag!("/") ~ s2: multispace? ~
-                             b: single_value ~
-                             s3: multispace? ~ tag!("/") ~ s4: multispace? ~
-                             c: single_value,
-                             || Value::Div(
-                                 Box::new(Value::Div(Box::new(a),
-                                                     Box::new(b),
-                                                     s1.is_some(),
-                                                     s2.is_some())),
-                                 Box::new(c),
-                                 s3.is_some(),
-                                 s4.is_some()))) |
-            complete!(chain!(a: single_value ~
-                             s1: multispace? ~ tag!("/") ~ s2: multispace? ~
-                             b: single_value,
-                             || Value::Div(Box::new(a), Box::new(b),
-                                           s1.is_some(), s2.is_some()))) |
-            single_value));
+       do_parse!(a: single_value >>
+                 r: fold_many0!(
+                     do_parse!(s1: opt!(multispace) >>
+                               op: alt_complete!(tag!("*") | tag!("/")) >>
+                               s2: opt!(multispace) >>
+                               b: single_value >>
+                               (s1.is_some(), op, s2.is_some(), b)),
+                     a,
+                     |a, (s1, op, s2, b)| {
+                         if op == b"*" {
+                             Value::Product(Box::new(a), Box::new(b))
+                         } else {
+                             Value::Div(Box::new(a), Box::new(b), s1, s2)
+                         }
+                     }) >>
+                 (r)));
 
 named!(single_value<&[u8], Value>,
        alt_complete!(
@@ -285,6 +279,20 @@ mod test {
                                        false),
                             scalar(2),
                             scalar(3)])))
+    }
+
+    #[test]
+    fn double_div() {
+        assert_eq!(value_expression(b"15/5/3;"),
+                   Done(&b";"[..],
+                        Value::Div(
+                            Box::new(Value::Div(Box::new(scalar(15)),
+                                                Box::new(scalar(5)),
+                                                false,
+                                                false)),
+                            Box::new(scalar(3)),
+                            false,
+                            false)))
     }
 
     #[test]

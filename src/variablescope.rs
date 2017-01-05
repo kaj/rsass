@@ -349,6 +349,12 @@ mod test {
     }
 
     #[test]
+    fn long_div_and_mul_sequence() {
+        let scope = ScopeImpl::new();
+        assert_eq!("3", do_evaluate(&scope, b"(3 / 2 / 2 / 2 * 32 / 2 / 2);"));
+    }
+
+    #[test]
     fn double_div_4() {
         let scope = ScopeImpl::new();
         assert_eq!("1", do_evaluate(&scope, b"(15 / 3) / 5;"));
