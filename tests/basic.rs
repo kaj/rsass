@@ -576,7 +576,7 @@ fn t20_scoped_variables() {
             outer inner {\n  /* begin foo */\n  /* assigning to $x */\n  \
             x: inside foo;\n  /* end foo */\n  x: inside outer scope;\n}\n")
 }
-    
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);
