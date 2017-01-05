@@ -250,45 +250,34 @@ fn sub8(x: &u8, y: &u8) -> u8 {
 
 #[cfg(test)]
 mod test {
-    use num_rational::Rational;
+    use std::str::from_utf8;
     use valueexpression::*;
     use variablescope::*;
 
     #[test]
     fn variable_value() {
-        let mut scope = ScopeImpl::new();
-        let red = Value::Literal("#f02a42".to_string());
-        scope.define("red", &red, false);
-        assert_eq!("#f02a42", do_evaluate(&scope, b"$red;"));
+        assert_eq!("#f02a42", do_evaluate(&[("red", "#f02a42")], b"$red;"))
     }
 
     #[test]
     fn partial_variable_value() {
-        let mut scope = ScopeImpl::new();
-        let red = Value::Literal("#f02a42".to_string());
-        scope.define("red", &red, false);
-        assert_eq!("solid 1px #f02a42",
-                   do_evaluate(&scope, b"solid 1px $red;"));
+        let scope = [("red", "#f02a42")];
+        assert_eq!("solid 1px #f02a42", do_evaluate(&scope, b"solid 1px $red;"))
     }
 
     #[test]
     fn simple_arithmetic() {
-        let scope = ScopeImpl::new();
-        assert_eq!("6", do_evaluate(&scope, b"3 + 3;"));
+        assert_eq!("6", do_evaluate(&[], b"3 + 3;"))
     }
 
     #[test]
     fn simple_arithmetic_2() {
-        let scope = ScopeImpl::new();
-        assert_eq!("14", do_evaluate(&scope, b"2 + 3 * 4;"));
+        assert_eq!("14", do_evaluate(&[], b"2 + 3 * 4;"))
     }
 
     #[test]
     fn simple_arithmetic_3() {
-        let mut scope = ScopeImpl::new();
-        let four = Value::Numeric(Rational::from_integer(4), Unit::None, false);
-        scope.define("four", &four, false);
-        assert_eq!("14", do_evaluate(&scope, b"2 + 3 * $four;"));
+        assert_eq!("14", do_evaluate(&[("four", "4")], b"2 + 3 * $four;"))
     }
 
     // The following tests are from aboud division are from
@@ -296,204 +285,167 @@ mod test {
     // Section "Divison and /"
     #[test]
     fn div_slash_1() {
-        let scope = ScopeImpl::new();
-        assert_eq!("10px/8px", do_evaluate(&scope, b"10px/8px;"));
+        assert_eq!("10px/8px", do_evaluate(&[], b"10px/8px;"))
     }
 
     #[test]
     fn div_slash_2() {
-        let mut scope = ScopeImpl::new();
-        let width =
-            Value::Numeric(Rational::from_integer(1000), Unit::Px, false);
-        scope.define("width", &width, false);
-        assert_eq!("500px", do_evaluate(&scope, b"$width/2;"));
+        assert_eq!("500px", do_evaluate(&[("width", "1000px")], b"$width/2;"))
     }
 
     #[test]
     fn div_slash_4() {
-        let scope = ScopeImpl::new();
-        assert_eq!("250px", do_evaluate(&scope, b"(500px/2);"));
+        assert_eq!("250px", do_evaluate(&[], b"(500px/2);"))
     }
 
     #[test]
     fn div_slash_5() {
-        let scope = ScopeImpl::new();
-        assert_eq!("9px", do_evaluate(&scope, b"5px + 8px/2px;"));
+        assert_eq!("9px", do_evaluate(&[], b"5px + 8px/2px;"))
     }
 
     #[test]
     fn div_slash_6() {
-        let scope = ScopeImpl::new();
         assert_eq!("italic bold 10px/8px",
-                   do_evaluate(&scope, b"(italic bold 10px/8px);"));
+                   do_evaluate(&[], b"(italic bold 10px/8px);"))
     }
 
 
     // ...
     #[test]
     fn double_div_1() {
-        let scope = ScopeImpl::new();
-        assert_eq!("15/3/5", do_evaluate(&scope, b"15/3/5;"));
+        assert_eq!("15/3/5", do_evaluate(&[], b"15/3/5;"))
     }
 
     #[test]
     fn double_div_2() {
-        let scope = ScopeImpl::new();
-        assert_eq!("15 / 3 / 5", do_evaluate(&scope, b"15 / 3 / 5;"));
+        assert_eq!("15 / 3 / 5", do_evaluate(&[], b"15 / 3 / 5;"))
     }
 
     #[test]
     fn double_div_3() {
-        let scope = ScopeImpl::new();
-        assert_eq!("1", do_evaluate(&scope, b"(15 / 3 / 5);"));
+        assert_eq!("1", do_evaluate(&[], b"(15 / 3 / 5);"))
     }
 
     #[test]
     fn long_div_and_mul_sequence() {
-        let scope = ScopeImpl::new();
-        assert_eq!("3", do_evaluate(&scope, b"(3 / 2 / 2 / 2 * 32 / 2 / 2);"));
+        assert_eq!("3", do_evaluate(&[], b"(3 / 2 / 2 / 2 * 32 / 2 / 2);"))
     }
 
     #[test]
     fn double_div_4() {
-        let scope = ScopeImpl::new();
-        assert_eq!("1", do_evaluate(&scope, b"(15 / 3) / 5;"));
+        assert_eq!("1", do_evaluate(&[], b"(15 / 3) / 5;"));
     }
 
     #[test]
     fn double_div_5() {
-        let mut scope = ScopeImpl::new();
-        let five = do_parse(b"5;");
-        scope.define("five", &five, false);
-        assert_eq!("1", do_evaluate(&scope, b"15 / 3 / $five;"));
+        assert_eq!("1", do_evaluate(&[("five", "5")], b"15 / 3 / $five;"))
     }
 
     #[test]
     fn sum_w_unit() {
-        let scope = ScopeImpl::new();
-        assert_eq!("9px", do_evaluate(&scope, b"3px + 3px + 3px;"));
+        assert_eq!("9px", do_evaluate(&[], b"3px + 3px + 3px;"))
     }
     #[test]
     fn multi_multi() {
-        let mut scope = ScopeImpl::new();
-        let stuff = do_parse(b"1 2 3;");
-        scope.define("stuff", &stuff, false);
+        let scope = [("stuff", "1 2 3")];
         assert_eq!("1 2 3, 1 2 3 4 5 6, 7 8 9",
                    do_evaluate(&scope, b"1 2 3, $stuff 4 5 (6, 7 8 9);"))
     }
 
     #[test]
     fn url_keeps_parens() {
-        let scope = ScopeImpl::new();
         assert_eq!("black url(starfield.png) repeat",
-                   do_evaluate(&scope, b"black url(starfield.png) repeat;"))
+                   do_evaluate(&[], b"black url(starfield.png) repeat;"))
     }
 
     #[test]
     fn color_unchanged_1() {
-        let scope = ScopeImpl::new();
-        assert_eq!("#AbC", do_evaluate(&scope, b"#AbC;"))
+        assert_eq!("#AbC", do_evaluate(&[], b"#AbC;"))
     }
 
     #[test]
     fn color_unchanged_2() {
-        let scope = ScopeImpl::new();
-        assert_eq!("#AAbbCC", do_evaluate(&scope, b"#AAbbCC;"))
+        assert_eq!("#AAbbCC", do_evaluate(&[], b"#AAbbCC;"))
     }
 
     #[test]
     fn color_add_each_component() {
-        let scope = ScopeImpl::new();
-        assert_eq!("#abbccd", do_evaluate(&scope, b"#AbC + 1;"))
+        assert_eq!("#abbccd", do_evaluate(&[], b"#AbC + 1;"))
     }
     #[test]
     fn color_add_each_component_overflow() {
-        let scope = ScopeImpl::new();
-        assert_eq!("#0101ff", do_evaluate(&scope, b"#00f + 1;"))
+        assert_eq!("#0101ff", do_evaluate(&[], b"#00f + 1;"))
     }
 
     #[test]
     fn color_add_components() {
-        let scope = ScopeImpl::new();
-        assert_eq!("#aabbdd", do_evaluate(&scope, b"#AbC + #001;"))
+        assert_eq!("#aabbdd", do_evaluate(&[], b"#AbC + #001;"))
     }
 
     #[test]
     fn color_add_components_overflow() {
-        let scope = ScopeImpl::new();
-        assert_eq!("#1000ff", do_evaluate(&scope, b"#1000ff + #001;"))
+        assert_eq!("#1000ff", do_evaluate(&[], b"#1000ff + #001;"))
     }
 
     #[test]
     fn color_add_components_to_named_overflow() {
-        let scope = ScopeImpl::new();
-        assert_eq!("blue", do_evaluate(&scope, b"#0000ff + #001;"))
+        assert_eq!("blue", do_evaluate(&[], b"#0000ff + #001;"))
     }
     #[test]
     fn color_add_components_to_named() {
-        let scope = ScopeImpl::new();
-        assert_eq!("white", do_evaluate(&scope, b"#00f + #0f0 + #f00;"))
+        assert_eq!("white", do_evaluate(&[], b"#00f + #0f0 + #f00;"))
     }
 
     #[test]
     fn color_subtract() {
-        let scope = ScopeImpl::new();
-        assert_eq!("#fefefe", do_evaluate(&scope, b"#fff - 1;"))
+        assert_eq!("#fefefe", do_evaluate(&[], b"#fff - 1;"))
     }
 
     #[test]
     fn color_subtract_underflow() {
-        let scope = ScopeImpl::new();
-        assert_eq!("black", do_evaluate(&scope, b"#000 - 1;"))
+        assert_eq!("black", do_evaluate(&[], b"#000 - 1;"))
     }
 
     #[test]
     fn color_subtract_components() {
-        let scope = ScopeImpl::new();
         assert_eq!("#000077", // Or should it be #007?
-                   do_evaluate(&scope, b"#fff - #ff8;"))
+                   do_evaluate(&[], b"#fff - #ff8;"))
     }
 
     #[test]
     fn color_subtract_components_underflow() {
-        let scope = ScopeImpl::new();
-        assert_eq!("black", do_evaluate(&scope, b"#000001 - #001;"))
+        assert_eq!("black", do_evaluate(&[], b"#000001 - #001;"))
     }
 
     #[test]
     fn color_division() {
-        let scope = ScopeImpl::new();
-        assert_eq!("#020202", do_evaluate(&scope, b"(#101010 / 7);"))
+        assert_eq!("#020202", do_evaluate(&[], b"(#101010 / 7);"))
     }
 
     #[test]
     fn color_add_rgb_1() {
-        let scope = ScopeImpl::new();
-        assert_eq!("#0b0a0b", do_evaluate(&scope, b"rgb(10,10,10) + #010001;"))
+        assert_eq!("#0b0a0b", do_evaluate(&[], b"rgb(10,10,10) + #010001;"))
     }
     #[test]
     fn color_add_rgb_2() {
-        let scope = ScopeImpl::new();
-        assert_eq!("white",
-                   do_evaluate(&scope, b"#010000 + rgb(255, 255, 255);"))
+        assert_eq!("white", do_evaluate(&[], b"#010000 + rgb(255, 255, 255);"))
     }
 
     #[test]
     fn value_multiple_dashes() {
-        let scope = ScopeImpl::new();
-        assert_eq!("foo-bar-baz 17%",
-                   do_evaluate(&scope, b"foo-bar-baz 17%;"))
+        assert_eq!("foo-bar-baz 17%", do_evaluate(&[], b"foo-bar-baz 17%;"))
     }
 
-    fn do_evaluate(scope: &Scope, expression: &[u8]) -> String {
+    fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
+        let mut scope = ScopeImpl::new();
+        for &(name, ref val) in s {
+            let val = format!("{};", val);
+            let (end, value) = value_expression(val.as_bytes()).unwrap();
+            assert_eq!(Ok(";"), from_utf8(end));
+            scope.define(name, &value, true)
+        }
         let (end, foo) = value_expression(expression).unwrap();
-        assert_eq!(b";", end);
+        assert_eq!(Ok(";"), from_utf8(end));
         format!("{}", scope.evaluate(&foo))
-    }
-
-    fn do_parse(expression: &[u8]) -> Value {
-        let (end, foo) = value_expression(expression).unwrap();
-        assert_eq!(b";", end);
-        foo
     }
 }
