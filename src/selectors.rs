@@ -7,6 +7,10 @@ use std::str::from_utf8;
 pub struct Selector(Vec<SelectorPart>);
 
 impl Selector {
+    pub fn root() -> Self {
+        Selector(vec![])
+    }
+
     pub fn join(&self, other: &Selector) -> Selector {
         let mut split = other.0.splitn(2, |p| p == &SelectorPart::BackRef);
         let o1 = split.next().unwrap();
@@ -17,7 +21,8 @@ impl Selector {
             Selector(result)
         } else {
             let mut result = self.0.clone();
-            if !other.0.first().map(|p| p.is_operator()).unwrap_or(false) {
+            if !result.is_empty() &&
+               !other.0.first().map(|p| p.is_operator()).unwrap_or(false) {
                 result.push(SelectorPart::Descendant);
             }
             result.extend(other.0.iter().cloned());
@@ -128,6 +133,12 @@ impl fmt::Display for SelectorPart {
 mod test {
     use nom::IResult::*;
     use selectors::*;
+
+    #[test]
+    fn root_join() {
+        let s = Selector(vec![SelectorPart::Simple(b"foo"[..].into())]);
+        assert_eq!(Selector::root().join(&s), s)
+    }
 
     #[test]
     fn simple_selector() {

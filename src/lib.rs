@@ -4,7 +4,7 @@ extern crate lazy_static;
 extern crate nom;
 extern crate num_rational;
 
-use nom::{alphanumeric, multispace};
+use nom::{alphanumeric, is_alphanumeric, multispace};
 use nom::IResult::*;
 use std::io::{self, Write};
 use std::str::from_utf8;
@@ -40,7 +40,27 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
                     }
                     SassItem::MixinDeclaration(m) => globals.define_mixin(&m),
                     SassItem::MixinCall { name, args } => {
-                        writeln!(result, "mixin {}({:?})", name, args).unwrap();
+                        if separate {
+                            write!(result, "\n").unwrap();
+                        } else {
+                            separate = true;
+                        }
+                        if let Some(mixin) = globals.get_mixin(&name) {
+                            let mut direct = vec![];
+                            handle_body(
+                                &mut direct,
+                                &mut result,
+                                &mut mixin.argscope(&mut globals, &args),
+                                &vec![Selector::root()],
+                                &mixin.body,
+                                0)
+                                .unwrap();
+                            assert_eq!(direct, &[]);
+                        } else {
+                            panic!(format!("Unknown mixin {}({:?})",
+                                           name,
+                                           args))
+                        }
                     }
                     SassItem::Comment(c) => {
                         if separate {
@@ -85,6 +105,11 @@ named!(sassfile<&[u8], Vec<SassItem> >,
                           }) |
                    chain!(d: mixin_declaration,
                           || SassItem::MixinDeclaration(d)) |
+                   chain!(m: mixin_call,
+                          || SassItem::MixinCall {
+                              name: m.0.clone(),
+                              args: m.1.clone(),
+                          }) |
                    chain!(r: rule, || SassItem::Rule(r)) |
                    chain!(c: comment, || {
                        SassItem::Comment(from_utf8(c).unwrap().into())
@@ -105,7 +130,7 @@ enum SassItem {
     MixinDeclaration(MixinDeclaration),
     MixinCall {
         name: String,
-        args: Option<Vec<(Option<String>, Value)>>,
+        args: Vec<(Option<String>, Value)>,
     },
 }
 
@@ -178,21 +203,7 @@ fn handle_body(direct: &mut Vec<u8>,
             }
             &SassItem::MixinCall { ref name, ref args } => {
                 if let Some(mixin) = scope.get_mixin(name) {
-                    let mut argscope = ScopeImpl::sub(scope);
-                    for (fi, &(ref name, ref default)) in
-                        mixin.args.iter().enumerate() {
-                        args.as_ref()
-                            .and_then(|ref a| {
-                                a.iter()
-                                    .find(|&&(ref k, ref _v)| {
-                                        k.as_ref() == Some(name)
-                                    })
-                                    .or_else(|| a.get(fi))
-                                    .map(|&(ref _k, ref v)| v)
-                            })
-                            .or_else(|| default.as_ref())
-                            .map(|value| argscope.define(&name, &value, false));
-                    }
+                    let mut argscope = mixin.argscope(scope, &args);
                     try!(handle_body(direct, sub, &mut argscope, selectors,
                                      &mixin.body, indent));
                 } else {
@@ -245,15 +256,17 @@ named!(body_item<SassItem>,
                   || SassItem::Comment(from_utf8(c).unwrap().into()))
                ));
 
-named!(mixin_call<&[u8], (String, Option<Vec<(Option<String>, Value)>>)>,
+named!(mixin_call<&[u8], (String, Vec<(Option<String>, Value)>)>,
        chain!(tag!("@include") ~ spacelike ~
-              name: alphanumeric ~ // spacelike? ~
+              name: name ~ spacelike? ~
               args: opt!(chain!(tag!("(") ~
-                                a: separated_nonempty_list!(
+                                a: separated_list!(
                                     chain!(tag!(",") ~ spacelike?, || ()),
                                     alt_complete!(
                                         chain!(tag!("$") ~
                                                name: alphanumeric ~
+                                               multispace? ~
+                                               comment? ~
                                                multispace? ~
                                                tag!(":") ~
                                                multispace? ~
@@ -269,14 +282,14 @@ named!(mixin_call<&[u8], (String, Option<Vec<(Option<String>, Value)>>)>,
                                 spacelike?,
                                 || a)) ~
               tag!(";"),
-              || (from_utf8(name).unwrap().to_string(), args)
+              || (from_utf8(name).unwrap().to_string(), args.unwrap_or(vec![]))
               ));
 
 #[test]
 fn test_mixin_call_noargs() {
     assert_eq!(mixin_call(b"@include foo;\n"),
                Done(&b"\n"[..],
-                    ("foo".to_string(), None)));
+                    ("foo".to_string(), vec![])));
 }
 
 #[test]
@@ -284,8 +297,8 @@ fn test_mixin_call_pos_args() {
     assert_eq!(mixin_call(b"@include foo(bar, baz);\n"),
                Done(&b"\n"[..],
                     ("foo".to_string(),
-                     Some(vec![(None, Value::Literal("bar".to_string())),
-                               (None, Value::Literal("baz".to_string()))]))));
+                     vec![(None, Value::Literal("bar".to_string())),
+                          (None, Value::Literal("baz".to_string()))])));
 }
 
 #[test]
@@ -293,14 +306,14 @@ fn test_mixin_call_named_args() {
     assert_eq!(mixin_call(b"@include foo($x: bar, $y: baz);\n"),
                Done(&b"\n"[..],
                     ("foo".to_string(),
-                     Some(vec![(Some("x".into()), Value::Literal("bar".into())),
-                               (Some("y".into()), Value::Literal("baz".into()))
-                               ]))));
+                     vec![(Some("x".into()), Value::Literal("bar".into())),
+                          (Some("y".into()), Value::Literal("baz".into()))
+                          ])));
 }
 
 named!(mixin_declaration<&[u8], MixinDeclaration>,
        chain!(tag!("@mixin") ~ spacelike ~
-              name: alphanumeric ~ spacelike? ~
+              name: name ~ spacelike? ~
               tag!("(") ~ spacelike? ~
               args: separated_list!(
                   chain!(tag!(",") ~ spacelike?, || ()),
@@ -318,6 +331,12 @@ named!(mixin_declaration<&[u8], MixinDeclaration>,
                   args: args,
                   body: body,
               }));
+
+named!(name, take_while1!(is_name_char));
+
+fn is_name_char(c: u8) -> bool {
+    is_alphanumeric(c) || c == b'_' || c == b'-'
+}
 
 #[test]
 fn test_mixin_declaration_empty() {
@@ -385,6 +404,24 @@ pub struct MixinDeclaration {
     name: String,
     args: Vec<(String, Option<Value>)>,
     body: Vec<SassItem>,
+}
+
+impl MixinDeclaration {
+    fn argscope<'a>(&self,
+                    scope: &'a mut Scope,
+                    args: &[(Option<String>, Value)])
+                    -> ScopeImpl<'a> {
+        let mut argscope = ScopeImpl::sub(scope);
+        for (i, &(ref name, ref default)) in self.args.iter().enumerate() {
+            args.iter()
+                .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
+                .or_else(|| args.get(i))
+                .map(|&(ref _k, ref v)| v)
+                .or_else(|| default.as_ref())
+                .map(|value| argscope.define(&name, &value, false));
+        }
+        argscope
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
