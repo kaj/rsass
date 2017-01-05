@@ -478,6 +478,13 @@ mod test {
                    do_evaluate(&scope, b"#010000 + rgb(255, 255, 255);"))
     }
 
+    #[test]
+    fn value_multiple_dashes() {
+        let scope = ScopeImpl::new();
+        assert_eq!("foo-bar-baz 17%",
+                   do_evaluate(&scope, b"foo-bar-baz 17%;"))
+    }
+
     fn do_evaluate(scope: &Scope, expression: &[u8]) -> String {
         let (end, foo) = value_expression(expression).unwrap();
         assert_eq!(b";", end);

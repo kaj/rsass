@@ -125,13 +125,22 @@ named!(pub space_list<&[u8], Value>,
               }));
 
 named!(pub single_expression<Value>,
-       alt!(complete!(chain!(a: term_value ~ multispace? ~ tag!("+") ~
-                             multispace? ~ b: single_expression,
-                             || Value::Sum(Box::new(a), Box::new(b)))) |
-            complete!(chain!(a: term_value ~ multispace? ~ tag!("-") ~
-                             multispace? ~ b: term_value,
-                             || Value::Minus(Box::new(a), Box::new(b)))) |
-            term_value));
+       do_parse!(a: term_value >>
+                 r: fold_many0!(
+                     do_parse!(opt!(multispace) >>
+                               op: alt_complete!(tag!("+") | tag!("-")) >>
+                               opt!(multispace) >>
+                               b: term_value >>
+                               (op, b)),
+                     a,
+                     |a, (op, b)| {
+                         if op == b"+" {
+                             Value::Sum(Box::new(a), Box::new(b))
+                         } else {
+                             Value::Minus(Box::new(a), Box::new(b))
+                         }
+                     }) >>
+                 (r)));
 
 named!(term_value<Value>,
        do_parse!(a: single_value >>
