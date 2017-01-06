@@ -1,5 +1,6 @@
 use colors::rgb_to_name;
-use nom::{alphanumeric, digit, multispace};
+use formalargs::{CallArgs, call_args};
+use nom::{alphanumeric, multispace};
 use num_rational::Rational;
 use std::fmt;
 use std::str::{FromStr, from_utf8};
@@ -8,7 +9,7 @@ use std::str::{FromStr, from_utf8};
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Value {
     /// A call has a name and an argument (which may be multi).
-    Call(String, Box<Value>),
+    Call(String, CallArgs),
     /// Sometimes an actual division, sometimes "a/b".
     /// In the later case, the booleans tell if there should be whitespace
     /// before / after the slash.
@@ -186,19 +187,8 @@ named!(single_value<&[u8], Value>,
                                                   from_utf8(r).unwrap(),
                                                   from_utf8(g).unwrap(),
                                                   from_utf8(b).unwrap())))) |
-           chain!(tag!("rgb(") ~ multispace? ~
-                  r: digit ~ tag!(",") ~ multispace? ~
-                  g: digit ~ tag!(",") ~ multispace? ~
-                  b: digit ~ multispace? ~ tag!(")"),
-                  || Value::HexColor(from_dec(r),
-                                     from_dec(g),
-                                     from_dec(b),
-                                     None)) |
-           chain!(name: alphanumeric ~ tag!("(") ~
-                  multispace? ~ arg: value_expression ~ multispace? ~
-                  tag!(")"),
-                  || Value::Call(from_utf8(name).unwrap().into(),
-                                 Box::new(arg))) |
+           chain!(name: alphanumeric ~ args: call_args,
+                  || Value::Call(from_utf8(name).unwrap().into(), args)) |
            chain!(val: is_not!("+-*/;,$()! \n\t"),
                   || Value::Literal(from_utf8(val).unwrap().to_string())) |
            chain!(tag!("(") ~ multispace? ~
@@ -225,10 +215,6 @@ named!(hexchar2<&[u8], &[u8]>,
 
 fn from_hex(v: &[u8]) -> u8 {
     u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap()
-}
-
-fn from_dec(v: &[u8]) -> u8 {
-    u8::from_str(from_utf8(v).unwrap()).unwrap()
 }
 
 #[cfg(test)]
@@ -316,13 +302,6 @@ mod test {
         assert_eq!(value_expression(b"#AaBbCc;"),
                    Done(&b";"[..],
                         Value::HexColor(170, 187, 204, Some("#AaBbCc".into()))))
-    }
-
-    #[test]
-    fn color_rgb() {
-        assert_eq!(value_expression(b"rgb(1,1,1);"),
-                   Done(&b";"[..],
-                        Value::HexColor(1, 1, 1, None))) // TODO Origin!
     }
 
     fn scalar(v: isize) -> Value {

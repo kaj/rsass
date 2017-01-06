@@ -10,13 +10,15 @@ use std::io::{self, Write};
 use std::str::from_utf8;
 
 mod colors;
+mod formalargs;
 mod selectors;
 mod spacelike;
 mod valueexpression;
 mod variablescope;
+use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
 use selectors::{Selector, selector};
 use spacelike::spacelike;
-use valueexpression::{Value, value_expression, single_expression, space_list};
+use valueexpression::{Value, value_expression};
 use variablescope::{ScopeImpl, Scope};
 
 pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
@@ -128,10 +130,7 @@ enum SassItem {
         global: bool,
     },
     MixinDeclaration(MixinDeclaration),
-    MixinCall {
-        name: String,
-        args: Vec<(Option<String>, Value)>,
-    },
+    MixinCall { name: String, args: CallArgs },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -256,40 +255,21 @@ named!(body_item<SassItem>,
                   || SassItem::Comment(from_utf8(c).unwrap().into()))
                ));
 
-named!(mixin_call<&[u8], (String, Vec<(Option<String>, Value)>)>,
+named!(mixin_call<&[u8], (String, CallArgs)>,
        chain!(tag!("@include") ~ spacelike ~
               name: name ~ spacelike? ~
-              args: opt!(chain!(tag!("(") ~
-                                a: separated_list!(
-                                    chain!(tag!(",") ~ spacelike?, || ()),
-                                    alt_complete!(
-                                        chain!(tag!("$") ~
-                                               name: alphanumeric ~
-                                               multispace? ~
-                                               comment? ~
-                                               multispace? ~
-                                               tag!(":") ~
-                                               multispace? ~
-                                               val: space_list ~
-                                               multispace?,
-                                               || (Some(from_utf8(name)
-                                                        .unwrap().into()),
-                                                   val)) |
-                                        chain!(e: single_expression,
-                                               || (None, e))
-                                            )) ~
-                                tag!(")") ~
-                                spacelike?,
-                                || a)) ~
+              args: call_args? ~
+              spacelike? ~
               tag!(";"),
-              || (from_utf8(name).unwrap().to_string(), args.unwrap_or(vec![]))
+              || (from_utf8(name).unwrap().to_string(),
+                  args.unwrap_or_default())
               ));
 
 #[test]
 fn test_mixin_call_noargs() {
     assert_eq!(mixin_call(b"@include foo;\n"),
                Done(&b"\n"[..],
-                    ("foo".to_string(), vec![])));
+                    ("foo".to_string(), CallArgs::new(vec![]))))
 }
 
 #[test]
@@ -297,8 +277,9 @@ fn test_mixin_call_pos_args() {
     assert_eq!(mixin_call(b"@include foo(bar, baz);\n"),
                Done(&b"\n"[..],
                     ("foo".to_string(),
-                     vec![(None, Value::Literal("bar".to_string())),
-                          (None, Value::Literal("baz".to_string()))])));
+                     CallArgs::new(
+                         vec![(None, Value::Literal("bar".to_string())),
+                              (None, Value::Literal("baz".to_string()))]))))
 }
 
 #[test]
@@ -306,23 +287,16 @@ fn test_mixin_call_named_args() {
     assert_eq!(mixin_call(b"@include foo($x: bar, $y: baz);\n"),
                Done(&b"\n"[..],
                     ("foo".to_string(),
-                     vec![(Some("x".into()), Value::Literal("bar".into())),
-                          (Some("y".into()), Value::Literal("baz".into()))
-                          ])));
+                     CallArgs::new(
+                         vec![(Some("x".into()), Value::Literal("bar".into())),
+                              (Some("y".into()), Value::Literal("baz".into()))
+                              ]))))
 }
 
 named!(mixin_declaration<&[u8], MixinDeclaration>,
        chain!(tag!("@mixin") ~ spacelike ~
               name: name ~ spacelike? ~
-              tag!("(") ~ spacelike? ~
-              args: separated_list!(
-                  chain!(tag!(",") ~ spacelike?, || ()),
-                  chain!(tag!("$") ~ name: alphanumeric ~
-                         d: opt!(chain!(tag!(":") ~ spacelike? ~
-                                        d: value_expression ~ spacelike?,
-                                        || d)),
-                         || (from_utf8(name).unwrap().to_string(), d))) ~
-              tag!(")") ~ spacelike? ~
+              args: formal_args ~ spacelike? ~
               tag!("{") ~ spacelike? ~
               body: many0!(body_item) ~
               tag!("}"),
@@ -343,7 +317,7 @@ fn test_mixin_declaration_empty() {
     assert_eq!(mixin_declaration(b"@mixin foo() {}\n"),
                Done(&b"\n"[..], MixinDeclaration {
                    name: "foo".into(),
-                   args: vec![],
+                   args: FormalArgs::new(vec![]),
                    body: vec![],
                }))
 }
@@ -355,7 +329,7 @@ fn test_mixin_declaration() {
                                    }\n"),
                Done(&b"\n"[..], MixinDeclaration {
                    name: "foo".into(),
-                   args: vec![("x".into(), None)],
+                   args: FormalArgs::new(vec![("x".into(), None)]),
                    body: vec![SassItem::Property(Property {
                        name: "foo-bar".into(),
                        value: Value::MultiSpace(
@@ -375,9 +349,10 @@ fn test_mixin_declaration_default_and_subrules() {
                                    }\n"),
                Done(&b"\n"[..], MixinDeclaration {
                    name: "bar".into(),
-                   args: vec![("a".into(), None),
-                              ("b".into(),
-                               Some(Value::Literal("flug".into())))],
+                   args: FormalArgs::new(
+                       vec![("a".into(), None),
+                            ("b".into(),
+                             Some(Value::Literal("flug".into())))]),
                    body: vec![
                        SassItem::Property(Property {
                            name: "foo-bar".into(),
@@ -402,27 +377,19 @@ fn test_mixin_declaration_default_and_subrules() {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct MixinDeclaration {
     name: String,
-    args: Vec<(String, Option<Value>)>,
+    args: FormalArgs,
     body: Vec<SassItem>,
 }
 
 impl MixinDeclaration {
     fn argscope<'a>(&self,
                     scope: &'a mut Scope,
-                    args: &[(Option<String>, Value)])
+                    args: &CallArgs)
                     -> ScopeImpl<'a> {
-        let mut argscope = ScopeImpl::sub(scope);
-        for (i, &(ref name, ref default)) in self.args.iter().enumerate() {
-            args.iter()
-                .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
-                .or_else(|| args.get(i))
-                .map(|&(ref _k, ref v)| v)
-                .or_else(|| default.as_ref())
-                .map(|value| argscope.define(&name, &value, false));
-        }
-        argscope
+        self.args.eval(scope, args)
     }
 }
+
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct Property {
@@ -433,7 +400,7 @@ struct Property {
 impl Property {
     fn write(&self,
              out: &mut Write,
-             scope: &Scope,
+             scope: &mut Scope,
              indent: usize)
              -> io::Result<()> {
         try!(do_indent(out, indent));

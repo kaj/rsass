@@ -1,5 +1,6 @@
 //! A scope is something that contains variable values.
 
+use formalargs::formal_args;
 use num_rational::Rational;
 use std::collections::BTreeMap;
 use std::ops::Neg;
@@ -19,7 +20,7 @@ pub trait Scope {
     fn define_mixin(&mut self, m: &MixinDeclaration);
     fn get_mixin(&self, name: &str) -> Option<MixinDeclaration>;
 
-    fn evaluate(&self, val: &Value) -> Value;
+    fn evaluate(&mut self, val: &Value) -> Value;
 }
 
 impl<'a> Scope for ScopeImpl<'a> {
@@ -45,7 +46,7 @@ impl<'a> Scope for ScopeImpl<'a> {
     fn define_mixin(&mut self, m: &MixinDeclaration) {
         self.mixins.insert(m.name.to_string(), m.clone());
     }
-    fn evaluate(&self, val: &Value) -> Value {
+    fn evaluate(&mut self, val: &Value) -> Value {
         self.do_evaluate(val, false)
     }
 }
@@ -65,7 +66,7 @@ impl<'a> ScopeImpl<'a> {
             mixins: BTreeMap::new(),
         }
     }
-    fn do_evaluate(&self, val: &Value, arithmetic: bool) -> Value {
+    fn do_evaluate(&mut self, val: &Value, arithmetic: bool) -> Value {
         match val {
             &Value::Literal(ref v) => Value::Literal(v.clone()),
             &Value::Paren(ref v) => self.do_evaluate(v, true),
@@ -85,8 +86,29 @@ impl<'a> ScopeImpl<'a> {
                     .map(|v| self.do_evaluate(v, false))
                     .collect::<Vec<_>>())
             }
-            &Value::Call(ref name, ref arg) => {
-                Value::Call(name.clone(), Box::new(self.evaluate(arg)))
+            &Value::Call(ref name, ref args) => {
+                if name == "rgb" {
+                    let (_, f) = formal_args(b"($red: 0, $green: 0, $blue: 0)")
+                        .unwrap();
+                    let s = f.eval(&mut *self, args);
+                    fn i(v: Value) -> u8 {
+                        match v {
+                            Value::Numeric(v, _, _) => v.to_integer() as u8,
+                            v => {
+                                format!("{}", v)
+                                    .parse::<u8>()
+                                    .expect(&format!("Should be integer: {:?}",
+                                                     v))
+                            }
+                        }
+                    }
+                    Value::HexColor(s.get("red").map(i).unwrap_or(0),
+                                    s.get("green").map(i).unwrap_or(0),
+                                    s.get("blue").map(i).unwrap_or(0),
+                                    None)
+                } else {
+                    Value::Call(name.clone(), args.xyzzy(self))
+                }
             }
             &Value::Sum(ref a, ref b) => {
                 let a = self.do_evaluate(a, true);
@@ -429,6 +451,17 @@ mod test {
     #[test]
     fn color_add_rgb_2() {
         assert_eq!("white", do_evaluate(&[], b"#010000 + rgb(255, 255, 255);"))
+    }
+
+    #[test]
+    fn color_named_args() {
+        assert_eq!("#010203",
+                   do_evaluate(&[], b"rgb($blue: 3, $red: 1, $green: 2);"))
+    }
+
+    #[test]
+    fn color_mixed_args() {
+        assert_eq!("#010203", do_evaluate(&[], b"rgb(1, $blue: 3, $green: 2);"))
     }
 
     #[test]

@@ -577,6 +577,13 @@ fn t20_scoped_variables() {
             x: inside foo;\n  /* end foo */\n  x: inside outer scope;\n}\n")
 }
 
+#[test]
+fn t21_one_builtin_function() {
+    check(b"div {\n  color: rgb(255, $blue: 0, $green: 255);\n  \
+            background: rgb(123, 45, 6);\n}\n",
+          b"div {\n  color: yellow;\n  background: #7b2d06;\n}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);
