@@ -1,8 +1,7 @@
-use nom::{alphanumeric, multispace};
-use spacelike::spacelike;
+use nom::multispace;
+use parseutil::{name, spacelike};
 use std::default::Default;
 use std::fmt;
-use std::str::from_utf8;
 use super::comment;
 use valueexpression::{Value, single_expression, space_list};
 use variablescope::{Scope, ScopeImpl};
@@ -86,11 +85,11 @@ named!(pub formal_args<FormalArgs>,
        chain!(tag!("(") ~ spacelike? ~
               args: separated_list!(
                   chain!(tag!(",") ~ spacelike?, || ()),
-                  chain!(tag!("$") ~ name: alphanumeric ~
+                  chain!(tag!("$") ~ name: name ~
                          d: opt!(chain!(tag!(":") ~ spacelike? ~
                                         d: space_list ~ spacelike?,
                                         || d)),
-                         || (from_utf8(name).unwrap().to_string(), d))) ~
+                         || (name, d))) ~
               tag!(")"),
               || FormalArgs(args)));
 
@@ -100,7 +99,7 @@ named!(pub call_args<CallArgs>,
                   chain!(tag!(",") ~ spacelike?, || ()),
                   alt_complete!(
                       chain!(tag!("$") ~
-                             name: alphanumeric ~
+                             name: name ~
                              multispace? ~
                              comment? ~
                              multispace? ~
@@ -108,9 +107,7 @@ named!(pub call_args<CallArgs>,
                              multispace? ~
                              val: space_list ~
                              multispace?,
-                             || (Some(from_utf8(name)
-                                      .unwrap().into()),
-                                 val)) |
+                             || (Some(name), val)) |
                       chain!(e: single_expression,
                              || (None, e))
                           )) ~

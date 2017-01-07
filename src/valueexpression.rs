@@ -1,7 +1,8 @@
 use colors::rgb_to_name;
 use formalargs::{CallArgs, call_args};
-use nom::{alphanumeric, multispace};
+use nom::multispace;
 use num_rational::Rational;
+use parseutil::name;
 use std::fmt;
 use std::str::{FromStr, from_utf8};
 
@@ -209,8 +210,7 @@ named!(single_value<&[u8], Value>,
                                      u.unwrap_or(Unit::None),
                                      false)
                   }) |
-           chain!(tag!("$") ~ name: alphanumeric,
-                  || Value::Variable(from_utf8(name).unwrap().to_string())) |
+           chain!(tag!("$") ~ name: name, || Value::Variable(name)) |
            chain!(tag!("#") ~ r: hexchar2 ~ g: hexchar2 ~ b: hexchar2,
                   || Value::HexColor(from_hex(r),
                                      from_hex(g),
@@ -229,8 +229,7 @@ named!(single_value<&[u8], Value>,
                                                   from_utf8(r).unwrap(),
                                                   from_utf8(g).unwrap(),
                                                   from_utf8(b).unwrap())))) |
-           chain!(name: alphanumeric ~ args: call_args,
-                  || Value::Call(from_utf8(name).unwrap().into(), args)) |
+           chain!(name: name ~ args: call_args, || Value::Call(name, args)) |
            chain!(val: is_not!("+-*/;,$()! \n\t"),
                   || Value::Literal(from_utf8(val).unwrap().to_string())) |
            chain!(tag!("(") ~ multispace? ~

@@ -1,5 +1,5 @@
 use nom::is_alphanumeric;
-use spacelike::spacelike;
+use parseutil::spacelike;
 use std::fmt;
 use std::str::from_utf8;
 

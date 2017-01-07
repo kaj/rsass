@@ -4,8 +4,8 @@ extern crate lazy_static;
 extern crate nom;
 extern crate num_rational;
 
-use nom::{alphanumeric, is_alphanumeric, multispace};
 use nom::IResult::*;
+use nom::multispace;
 use std::io::{self, Write};
 use std::str::from_utf8;
 
@@ -13,12 +13,12 @@ mod colors;
 mod formalargs;
 mod sassfunction;
 mod selectors;
-mod spacelike;
+mod parseutil;
 mod valueexpression;
 mod variablescope;
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
+use parseutil::{name, spacelike};
 use selectors::{Selector, selector};
-use spacelike::spacelike;
 use valueexpression::{Value, value_expression};
 use variablescope::{ScopeImpl, Scope};
 
@@ -102,7 +102,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
        many0!(alt!(chain!(spacelike, || SassItem::None) |
                    chain!(d: variable_declaration,
                           || SassItem::VariableDeclaration{
-                              name: d.0.to_string(),
+                              name: d.0.clone(),
                               val: d.1.clone(),
                               global: d.2,
                           }) |
@@ -262,8 +262,7 @@ named!(mixin_call<&[u8], (String, CallArgs)>,
               args: call_args? ~
               spacelike? ~
               tag!(";"),
-              || (from_utf8(name).unwrap().to_string(),
-                  args.unwrap_or_default())
+              || (name, args.unwrap_or_default())
               ));
 
 #[test]
@@ -302,16 +301,10 @@ named!(mixin_declaration<&[u8], MixinDeclaration>,
               body: many0!(body_item) ~
               tag!("}"),
               || MixinDeclaration{
-                  name: from_utf8(name).unwrap().into(),
+                  name: name,
                   args: args,
                   body: body,
               }));
-
-named!(name, take_while1!(is_name_char));
-
-fn is_name_char(c: u8) -> bool {
-    is_alphanumeric(c) || c == b'_' || c == b'-'
-}
 
 #[test]
 fn test_mixin_declaration_empty() {
@@ -418,7 +411,7 @@ fn do_indent(out: &mut Write, steps: usize) -> io::Result<()> {
 
 named!(property<&[u8], Property>,
        chain!(multispace? ~
-              name: take_while!(is_property_name_char) ~
+              name: name ~
               multispace? ~
               tag!(":") ~
               multispace? ~
@@ -426,15 +419,7 @@ named!(property<&[u8], Property>,
               multispace? ~
               tag!(";") ~
               spacelike?,
-              || Property {
-                  name: from_utf8(name).unwrap().into(),
-                  value: val,
-              }));
-
-fn is_property_name_char(chr: u8) -> bool {
-    use nom::is_alphanumeric;
-    is_alphanumeric(chr) || chr == b'-'
-}
+              || Property { name: name, value: val }));
 
 #[test]
 fn test_simple_property() {
@@ -461,9 +446,9 @@ fn percentage(v: isize) -> Value {
     Value::Numeric(Rational::from_integer(v), Unit::Percent, false)
 }
 
-named!(variable_declaration<&[u8], (&str, Value, bool)>,
+named!(variable_declaration<&[u8], (String, Value, bool)>,
        chain!(tag!("$") ~
-              name: alphanumeric ~
+              name: name ~
               multispace? ~
               tag!(":") ~
               multispace? ~
@@ -473,18 +458,19 @@ named!(variable_declaration<&[u8], (&str, Value, bool)>,
               multispace? ~
               tag!(";") ~
               multispace?,
-              || (from_utf8(name).unwrap(), val, global.is_some())));
+              || (name, val, global.is_some())));
 
 #[test]
 fn test_variable_declaration_simple() {
     assert_eq!(variable_declaration(b"$foo: bar;\n"),
-               Done(&b""[..], ("foo", Value::Literal("bar".into()), false)))
+               Done(&b""[..],
+                    ("foo".into(), Value::Literal("bar".into()), false)))
 }
 
 #[test]
 fn test_variable_declaration_global() {
     assert_eq!(variable_declaration(b"$y: some value !global;\n"),
-               Done(&b""[..], ("y",
+               Done(&b""[..], ("y".into(),
                                Value::MultiSpace(
                                    vec![Value::Literal("some".into()),
                                         Value::Literal("value".into())]),
