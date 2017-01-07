@@ -7,3 +7,4 @@ authors = ["Rasmus Kaj <kaj@kth.se>"]
 lazy_static = "^0.2"
 nom = "*"
 num-rational = "^0.1"
+clap = "*"

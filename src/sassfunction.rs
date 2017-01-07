@@ -228,7 +228,6 @@ fn test_rgb() {
 }
 
 fn to_int(v: Value) -> u8 {
-    println!("Try to get int value of {:?}", v);
     match v {
         Value::Numeric(v, _, _) => v.to_integer() as u8,
         v => format!("{}", v).parse().unwrap(),

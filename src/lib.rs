@@ -22,7 +22,7 @@ use selectors::{Selector, selector};
 use valueexpression::{Value, value_expression};
 use variablescope::{ScopeImpl, Scope};
 
-pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
+pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, String> {
     match sassfile(input) {
         Done(b"", items) => {
             let mut globals = ScopeImpl::new();
@@ -84,16 +84,13 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, ()> {
             let t = from_utf8(&rest)
                 .map(|s| s.to_string())
                 .unwrap_or_else(|_| format!("{:?}", rest));
-            println!("Failed to parse entire input: `{}` remains.", t);
-            Err(())
+            Err(format!("Failed to parse entire input: `{}` remains.", t))
         }
         Incomplete(x) => {
-            println!("Incomplete: {:?}", x);
-            Err(())
+            Err(format!("Incomplete: {:?}", x))
         }
         Error(x) => {
-            println!("Error: {}", x);
-            Err(())
+            Err(format!("Error: {}", x))
         }
     }
 }
