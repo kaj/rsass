@@ -86,12 +86,8 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, String> {
                 .unwrap_or_else(|_| format!("{:?}", rest));
             Err(format!("Failed to parse entire input: `{}` remains.", t))
         }
-        Incomplete(x) => {
-            Err(format!("Incomplete: {:?}", x))
-        }
-        Error(x) => {
-            Err(format!("Error: {}", x))
-        }
+        Incomplete(x) => Err(format!("Incomplete: {:?}", x)),
+        Error(x) => Err(format!("Error: {}", x)),
     }
 }
 

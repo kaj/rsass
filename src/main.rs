@@ -13,13 +13,13 @@ fn main() {
         .author("Rasmus Kaj <rasmus@krats.se>")
         .about("Transform sass to css.")
         .arg(Arg::with_name("PRECISION")
-             .long("precision")
-             .takes_value(true)
-             .help("Ignored"))
+            .long("precision")
+            .takes_value(true)
+            .help("Ignored"))
         .arg(Arg::with_name("T")
-             .short("t")
-             .takes_value(true)
-             .help("Ignored"))
+            .short("t")
+            .takes_value(true)
+            .help("Ignored"))
         .arg(Arg::with_name("INPUT")
             .required(true)
             .multiple(true)
@@ -40,14 +40,14 @@ fn run(args: ArgMatches) -> Result<(), String> {
     if let Some(inputs) = args.values_of("INPUT") {
         for name in inputs {
             let mut source = try!(File::open(&name)
-                                  .map_err(|e| format!("Read {}: {}", name, e)));
+                .map_err(|e| format!("Read {}: {}", name, e)));
             let mut data = vec![];
             try!(source.read_to_end(&mut data).map_err(|e| format!("{}", e)));
             let out = std::io::stdout();
-            try!(out.lock().write_all(&try!(compile_scss(&data)))
-                 .map_err(|e| format!("{}", e)));
+            try!(out.lock()
+                .write_all(&try!(compile_scss(&data)))
+                .map_err(|e| format!("{}", e)));
         }
     }
     Ok(())
 }
-
