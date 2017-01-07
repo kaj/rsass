@@ -423,10 +423,12 @@ named!(property<&[u8], Property>,
 
 #[test]
 fn test_simple_property() {
+    use num_rational::Rational;
+    let one = Rational::from_integer(1);
     assert_eq!(property(b"color: red;\n"),
                Done(&b""[..], Property {
                    name: "color".to_string(),
-                   value: Value::Literal("red".to_string()),
+                   value: Value::HexColor(255, 0, 0, one, Some("red".into())),
                }));
 }
 #[test]

@@ -12,6 +12,8 @@ pub fn get_function(name: &str) -> Option<SassFunction> {
         "blue" => Some(blue()),
         "mix" => Some(mix()),
         "invert" => Some(invert()),
+        "type-of" => Some(type_of()),
+        "type_of" => Some(type_of()),
         _ => None,
     }
 }
@@ -198,6 +200,23 @@ fn mix() -> SassFunction {
     }
 }
 
+fn type_of() -> SassFunction {
+    SassFunction {
+        args: formal_args(b"($value)")
+            .unwrap()
+            .1,
+        body: Box::new(|s: &Scope| {
+            let value = s.get("value");
+            Value::Literal(match value {
+                    Some(Value::HexColor(..)) => "color",
+                    Some(Value::Literal(..)) => "string",
+                    Some(Value::Numeric(..)) => "number",
+                    _ => "unknown",
+                }
+                .into())
+        }),
+    }
+}
 
 #[test]
 fn test_rgb() {

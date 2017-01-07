@@ -7,6 +7,10 @@ pub fn rgb_to_name(r: u8, g: u8, b: u8) -> Option<&'static str> {
     LOOKUP.v2n.get(&c).map(|n| *n)
 }
 
+pub fn name_to_rgb(name: &str) -> Option<(u8, u8, u8)> {
+    LOOKUP.n2v.get(name).map(|n| ((n >> 16) as u8, (n >> 8) as u8, *n as u8))
+}
+
 #[test]
 fn get_black() {
     assert_eq!(rgb_to_name(0, 0, 0), Some("black"))
@@ -15,6 +19,16 @@ fn get_black() {
 #[test]
 fn get_none() {
     assert_eq!(rgb_to_name(0, 1, 2), None)
+}
+
+#[test]
+fn get_red_by_name() {
+    assert_eq!(Some((0xff, 0, 0)), name_to_rgb("red"));
+}
+
+#[test]
+fn get_none_by_name() {
+    assert_eq!(None, name_to_rgb("xyzzy"));
 }
 
 struct Lookup {

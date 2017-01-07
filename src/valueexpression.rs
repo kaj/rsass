@@ -1,4 +1,4 @@
-use colors::rgb_to_name;
+use colors::{name_to_rgb, rgb_to_name};
 use formalargs::{CallArgs, call_args};
 use nom::multispace;
 use num_rational::Rational;
@@ -231,7 +231,15 @@ named!(single_value<&[u8], Value>,
                                                   from_utf8(b).unwrap())))) |
            chain!(name: name ~ args: call_args, || Value::Call(name, args)) |
            chain!(val: is_not!("+-*/;,$()! \n\t"),
-                  || Value::Literal(from_utf8(val).unwrap().to_string())) |
+                  || {
+                      let val = from_utf8(val).unwrap().to_string();
+                      if let Some((r, g, b)) = name_to_rgb(&val) {
+                          Value::HexColor(r, g, b, Rational::from_integer(1),
+                                          Some(val))
+                      } else {
+                          Value::Literal(val)
+                      }
+                  }) |
            chain!(tag!("(") ~ multispace? ~
                   val: value_expression ~ multispace? ~
                   tag!(")"),
@@ -277,8 +285,16 @@ mod test {
 
     #[test]
     fn simple_value_literal() {
+        assert_eq!(value_expression(b"rad;"),
+                   Done(&b";"[..], Value::Literal("rad".into())))
+    }
+
+    #[test]
+    fn simple_value_literal_color() {
+        let one = Rational::from_integer(1);
         assert_eq!(value_expression(b"red;"),
-                   Done(&b";"[..], Value::Literal("red".into())))
+                   Done(&b";"[..],
+                        Value::HexColor(0xff, 0, 0, one, Some("red".into()))))
     }
 
     #[test]
@@ -288,19 +304,19 @@ mod test {
     }
     #[test]
     fn paren_literal() {
-        assert_eq!(value_expression(b"(red);"),
+        assert_eq!(value_expression(b"(rad);"),
                    Done(&b";"[..],
-                        Value::Paren(Box::new(Value::Literal("red".into())))))
+                        Value::Paren(Box::new(Value::Literal("rad".into())))))
     }
 
     #[test]
     fn paren_multi() {
-        assert_eq!(value_expression(b"(red blue);"),
+        assert_eq!(value_expression(b"(rod bloe);"),
                    Done(&b";"[..],
                         Value::Paren(Box::new(
                             Value::MultiSpace(vec![
-                                Value::Literal("red".into()),
-                                Value::Literal("blue".into())])
+                                Value::Literal("rod".into()),
+                                Value::Literal("bloe".into())])
                                 ))))
     }
 
