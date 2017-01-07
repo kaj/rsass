@@ -31,14 +31,14 @@ pub enum Value {
     Variable(String),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
-    HexColor(u8, u8, u8, Option<String>),
+    HexColor(u8, u8, u8, Rational, Option<String>),
 }
 
 impl Value {
     pub fn is_calculated(&self) -> bool {
         match self {
             &Value::Numeric(_, _, calculated) => calculated,
-            &Value::HexColor(_, _, _, None) => true,
+            &Value::HexColor(_, _, _, _, None) => true,
             _ => false,
         }
     }
@@ -72,17 +72,26 @@ impl fmt::Display for Value {
         match self {
             &Value::Literal(ref s) => write!(out, "{}", s),
             &Value::Numeric(ref v, ref u, ref _is_calculated) => {
-                let n = v.numer().clone();
-                let d = v.denom().clone();
-                write!(out, "{}{}", n as f64 / d as f64, u)
+                write!(out, "{}{}", rational2str(v, false), u)
             }
-            &Value::HexColor(ref r, ref g, ref b, ref s) => {
+            &Value::HexColor(ref r, ref g, ref b, ref a, ref s) => {
                 match s {
                     &Some(ref s) => write!(out, "{}", s),
                     &None => {
-                        match rgb_to_name(*r, *g, *b) {
-                            Some(name) => write!(out, "{}", name),
-                            None => write!(out, "#{:02x}{:02x}{:02x}", r, g, b),
+                        if a >= &Rational::from_integer(1) {
+                            match rgb_to_name(*r, *g, *b) {
+                                Some(name) => write!(out, "{}", name),
+                                None => {
+                                    write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
+                                }
+                            }
+                        } else {
+                            write!(out,
+                                   "rgba({}, {}, {}, {})",
+                                   r,
+                                   g,
+                                   b,
+                                   rational2str(a, false))
                         }
                     }
                 }
@@ -105,6 +114,16 @@ impl fmt::Display for Value {
             x => write!(out, "TODO {:?}", x),
         }
     }
+}
+
+fn rational2str(r: &Rational, skipzero: bool) -> String {
+    let n = r.numer().clone();
+    let d = r.denom().clone();
+    let mut result = format!("{}", n as f64 / d as f64);
+    if skipzero && result.starts_with("0.") {
+        result.remove(0);
+    }
+    result
 }
 
 named!(pub value_expression<&[u8], Value>,
@@ -163,18 +182,40 @@ named!(term_value<Value>,
 
 named!(single_value<&[u8], Value>,
        alt_complete!(
-           chain!(r: is_a!("0123456789") ~ u: unit?,
-                  || Value::Numeric(
-                      Rational::from_str(from_utf8(r).unwrap()).unwrap(),
-                      u.unwrap_or(Unit::None),
-                      false,
-                      )) |
+           chain!(r: is_a!("0123456789") ~
+                  d: opt!(preceded!(tag!("."), is_a!("0123456789"))) ~
+                  u: unit?,
+                  || {
+                      let mut n =
+                          Rational::from_str(from_utf8(r).unwrap()).unwrap();
+                      if let Some(d) = d {
+                          let ten: isize = 10;
+                          n = n +
+                              Rational::from_str(from_utf8(d).unwrap()).unwrap()
+                              / Rational::from_integer(ten.pow(d.len() as u32));
+                      }
+                      Value::Numeric(n,
+                                     u.unwrap_or(Unit::None),
+                                     false)
+                  }) |
+           chain!(tag!(".") ~
+                  d: is_a!("0123456789") ~
+                  u: unit?,
+                  || {
+                      let ten: isize = 10;
+                      let n = Rational::from_str(from_utf8(d).unwrap()).unwrap()
+                          / Rational::from_integer(ten.pow(d.len() as u32));
+                      Value::Numeric(n,
+                                     u.unwrap_or(Unit::None),
+                                     false)
+                  }) |
            chain!(tag!("$") ~ name: alphanumeric,
                   || Value::Variable(from_utf8(name).unwrap().to_string())) |
            chain!(tag!("#") ~ r: hexchar2 ~ g: hexchar2 ~ b: hexchar2,
                   || Value::HexColor(from_hex(r),
                                      from_hex(g),
                                      from_hex(b),
+                                     Rational::from_integer(1),
                                      Some(format!("#{}{}{}",
                                                   from_utf8(r).unwrap(),
                                                   from_utf8(g).unwrap(),
@@ -183,6 +224,7 @@ named!(single_value<&[u8], Value>,
                   || Value::HexColor(from_hex(r) * 0x11,
                                      from_hex(g) * 0x11,
                                      from_hex(b) * 0x11,
+                                     Rational::from_integer(1),
                                      Some(format!("#{}{}{}",
                                                   from_utf8(r).unwrap(),
                                                   from_utf8(g).unwrap(),
@@ -294,14 +336,18 @@ mod test {
     fn color_short() {
         assert_eq!(value_expression(b"#AbC;"),
                    Done(&b";"[..],
-                        Value::HexColor(170, 187, 204, Some("#AbC".into()))))
+                        Value::HexColor(170, 187, 204,
+                                        Rational::from_integer(1),
+                                        Some("#AbC".into()))))
     }
 
     #[test]
     fn color_long() {
         assert_eq!(value_expression(b"#AaBbCc;"),
                    Done(&b";"[..],
-                        Value::HexColor(170, 187, 204, Some("#AaBbCc".into()))))
+                        Value::HexColor(170, 187, 204,
+                                        Rational::from_integer(1),
+                                        Some("#AaBbCc".into()))))
     }
 
     fn scalar(v: isize) -> Value {

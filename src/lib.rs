@@ -11,6 +11,7 @@ use std::str::from_utf8;
 
 mod colors;
 mod formalargs;
+mod sassfunction;
 mod selectors;
 mod spacelike;
 mod valueexpression;

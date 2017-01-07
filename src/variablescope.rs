@@ -1,7 +1,7 @@
 //! A scope is something that contains variable values.
 
-use formalargs::formal_args;
 use num_rational::Rational;
+use sassfunction::get_function;
 use std::collections::BTreeMap;
 use std::ops::Neg;
 use super::MixinDeclaration;
@@ -70,7 +70,7 @@ impl<'a> ScopeImpl<'a> {
         match val {
             &Value::Literal(ref v) => Value::Literal(v.clone()),
             &Value::Paren(ref v) => self.do_evaluate(v, true),
-            &Value::HexColor(_, _, _, _) => val.clone(),
+            &Value::HexColor(_, _, _, _, _) => val.clone(),
             &Value::Variable(ref name) => {
                 self.get(&name)
                     .map(|n| self.do_evaluate(&n, true))
@@ -87,25 +87,8 @@ impl<'a> ScopeImpl<'a> {
                     .collect::<Vec<_>>())
             }
             &Value::Call(ref name, ref args) => {
-                if name == "rgb" {
-                    let (_, f) = formal_args(b"($red: 0, $green: 0, $blue: 0)")
-                        .unwrap();
-                    let s = f.eval(&mut *self, args);
-                    fn i(v: Value) -> u8 {
-                        match v {
-                            Value::Numeric(v, _, _) => v.to_integer() as u8,
-                            v => {
-                                format!("{}", v)
-                                    .parse::<u8>()
-                                    .expect(&format!("Should be integer: {:?}",
-                                                     v))
-                            }
-                        }
-                    }
-                    Value::HexColor(s.get("red").map(i).unwrap_or(0),
-                                    s.get("green").map(i).unwrap_or(0),
-                                    s.get("blue").map(i).unwrap_or(0),
-                                    None)
+                if let Some(function) = get_function(name) {
+                    function.call(&mut *self, args)
                 } else {
                     Value::Call(name.clone(), args.xyzzy(self))
                 }
@@ -114,15 +97,20 @@ impl<'a> ScopeImpl<'a> {
                 let a = self.do_evaluate(a, true);
                 let b = self.do_evaluate(b, true);
                 match (&a, &b) {
-                    (&Value::HexColor(ref r, ref g, ref b, _),
+                    (&Value::HexColor(ref r, ref g, ref b, ref a, _),
                      &Value::Numeric(ref n, ref u, _)) if u == &Unit::None => {
-                        Value::HexColor(add(r, n), add(g, n), add(b, n), None)
+                        Value::HexColor(add(r, n),
+                                        add(g, n),
+                                        add(b, n),
+                                        a.clone(),
+                                        None)
                     }
-                    (&Value::HexColor(ref ar, ref ag, ref ab, _),
-                     &Value::HexColor(ref br, ref bg, ref bb, _)) => {
+                    (&Value::HexColor(ref ar, ref ag, ref ab, ref aa, _),
+                     &Value::HexColor(ref br, ref bg, ref bb, ref ba, _)) => {
                         Value::HexColor(add8(ar, br),
                                         add8(ag, bg),
                                         add8(ab, bb),
+                                        aa + ba, // TODO or average?
                                         None)
                     }
                     (&Value::Numeric(ref a, ref au, _),
@@ -142,19 +130,21 @@ impl<'a> ScopeImpl<'a> {
                 let a = self.evaluate(a);
                 let b = self.evaluate(b);
                 match (&a, &b) {
-                    (&Value::HexColor(ref r, ref g, ref b, _),
+                    (&Value::HexColor(ref r, ref g, ref b, ref a, _),
                      &Value::Numeric(ref n, ref u, _)) if u == &Unit::None => {
                         let n = n.neg();
                         Value::HexColor(add(r, &n),
                                         add(g, &n),
                                         add(b, &n),
+                                        a.clone(),
                                         None)
                     }
-                    (&Value::HexColor(ref ar, ref ag, ref ab, _),
-                     &Value::HexColor(ref br, ref bg, ref bb, _)) => {
+                    (&Value::HexColor(ref ar, ref ag, ref ab, ref aa, _),
+                     &Value::HexColor(ref br, ref bg, ref bb, ref ba, _)) => {
                         Value::HexColor(sub8(ar, br),
                                         sub8(ag, bg),
                                         sub8(ab, bb),
+                                        (aa + ba) / Rational::from_integer(2),
                                         None)
                     }
                     (&Value::Numeric(ref a, ref au, _),
@@ -197,11 +187,12 @@ impl<'a> ScopeImpl<'a> {
                 };
                 if arithmetic || a.is_calculated() || b.is_calculated() {
                     match (&a, &b) {
-                        (&Value::HexColor(ref r, ref g, ref b, _),
+                        (&Value::HexColor(ref r, ref g, ref b, ref a, _),
                          &Value::Numeric(ref n, Unit::None, _)) => {
                             return Value::HexColor(div(r, n),
                                                    div(g, n),
                                                    div(b, n),
+                                                   a.clone(),
                                                    None);
                         }
                         (&Value::Numeric(ref a, ref au, _),
@@ -419,6 +410,16 @@ mod test {
     }
 
     #[test]
+    fn color_simple_rgba() {
+        assert_eq!("rgba(1, 2, 3, 0.6)", do_evaluate(&[], b"rgba(1,2,3,.6);"))
+    }
+
+    #[test]
+    fn color_add_to_rgba() {
+        assert_eq!("#111111", do_evaluate(&[], b"rgba(0, 0, 0, 1) + #111;"))
+    }
+
+    #[test]
     fn color_subtract() {
         assert_eq!("#fefefe", do_evaluate(&[], b"#fff - 1;"))
     }
@@ -462,6 +463,18 @@ mod test {
     #[test]
     fn color_mixed_args() {
         assert_eq!("#010203", do_evaluate(&[], b"rgb(1, $blue: 3, $green: 2);"))
+    }
+
+    #[test]
+    fn color_mixed_with_alpha_1() {
+        assert_eq!("rgba(64, 0, 191, 0.75)",
+                   do_evaluate(&[], b"mix(rgba(255, 0, 0, 0.5), #00f);"))
+    }
+
+    #[test]
+    fn color_mixed_with_alpha_2() {
+        assert_eq!("rgba(64, 0, 191, 0.75)",
+                   do_evaluate(&[], b"mix(#00f, rgba(255, 0, 0, 0.5));"))
     }
 
     #[test]
