@@ -17,7 +17,7 @@ mod parseutil;
 mod valueexpression;
 mod variablescope;
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
-use parseutil::{name, spacelike};
+use parseutil::{comment, name, spacelike};
 use selectors::{Selector, selector};
 use valueexpression::{Value, value_expression};
 use variablescope::{ScopeImpl, Scope};
@@ -471,6 +471,3 @@ fn test_variable_declaration_global() {
                                         Value::Literal("value".into())]),
                                true)))
 }
-
-named!(comment,
-       delimited!(tag!("/*"), is_not!("*"), tag!("*/")));

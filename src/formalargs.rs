@@ -1,9 +1,7 @@
-use nom::multispace;
-use parseutil::{name, spacelike};
+use parseutil::{ignore_comments, name, spacelike};
 use std::default::Default;
 use std::fmt;
-use super::comment;
-use valueexpression::{Value, single_expression, space_list};
+use valueexpression::{Value, space_list};
 use variablescope::{Scope, ScopeImpl};
 
 /// The declared arguments of a mixin or function declaration.
@@ -100,17 +98,13 @@ named!(pub call_args<CallArgs>,
                   alt_complete!(
                       chain!(tag!("$") ~
                              name: name ~
-                             multispace? ~
-                             comment? ~
-                             multispace? ~
+                             ignore_comments ~
                              tag!(":") ~
-                             multispace? ~
+                             ignore_comments ~
                              val: space_list ~
-                             multispace?,
+                             ignore_comments,
                              || (Some(name), val)) |
-                      chain!(e: single_expression,
-                             || (None, e))
-                          )) ~
+                      chain!(e: space_list, || (None, e)))) ~
               tag!(")"),
               || CallArgs(args)
               ));
