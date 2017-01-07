@@ -137,8 +137,7 @@ fn invert() -> SassFunction {
                 &color {
                 Value::HexColor(0xff - r, 0xff - g, 0xff - b, *a, None)
             } else {
-                panic!(format!("Unexpected arguments to invert: ({:?})",
-                               color))
+                panic!(format!("Unexpected arguments to invert: ({:?})", color))
             }
         }),
     }
