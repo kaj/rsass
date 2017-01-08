@@ -622,6 +622,14 @@ fn t32_percentages() {
             grah: 900%;\n  nyah: 5%;\n}\n")
 }
 
+// TODO Implement tests 33 - 35 ...
+
+#[test]
+fn t36_extra_commas_in_selectors() {
+    check(b"div,, , span, ,, {\n  color: red;\n}",
+          b"div, span {\n  color: red;\n}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);

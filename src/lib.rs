@@ -17,7 +17,7 @@ mod parseutil;
 mod valueexpression;
 mod variablescope;
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
-use parseutil::{comment, name, spacelike};
+use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
 use valueexpression::{Value, value_expression};
 use variablescope::{ScopeImpl, Scope};
@@ -214,18 +214,18 @@ fn handle_body(direct: &mut Vec<u8>,
 }
 
 named!(rule<&[u8], Rule>,
-       chain!(spacelike? ~
-              selectors: separated_nonempty_list!(chain!(tag!(",") ~ spacelike?,
-                                                         || ()),
-                                                  selector) ~
-              spacelike? ~
-              tag!("{") ~
-              body: many0!(body_item) ~
-              tag!("}"),
-              || Rule {
-                  selectors: selectors,
-                  body: body,
-              }));
+       do_parse!(opt_spacelike >>
+                 selectors: separated_nonempty_list!(
+                     do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ()),
+                     selector) >>
+                 opt!(is_a!(", \t\n")) >>
+                 tag!("{") >>
+                 body: many0!(body_item) >>
+                 tag!("}") >>
+                 (Rule {
+                     selectors: selectors,
+                     body: body,
+                 })));
 
 named!(body_item<SassItem>,
        alt_complete!(
