@@ -1,27 +1,17 @@
 use formalargs::{CallArgs, FormalArgs};
 use num_rational::Rational;
+use std::collections::BTreeMap;
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
 
-pub fn get_function(name: &str) -> Option<SassFunction> {
-    match name {
-        "rgb" => Some(rgb()),
-        "rgba" => Some(rgba()),
-        "red" => Some(red()),
-        "green" => Some(green()),
-        "blue" => Some(blue()),
-        "mix" => Some(mix()),
-        "invert" => Some(invert()),
-        "type-of" => Some(type_of()),
-        "type_of" => Some(type_of()),
-        "if" => Some(if_function()),
-        _ => None,
-    }
+pub fn get_function(name: &str) -> Option<&SassFunction> {
+    let name = name.to_string().replace("-", "_");
+    FUNCTIONS.get(&name)
 }
 
 pub struct SassFunction {
     args: FormalArgs,
-    body: Box<Fn(&Scope) -> Value>,
+    body: Box<Fn(&Scope) -> Value + Send + Sync>,
 }
 
 impl SassFunction {
@@ -41,78 +31,26 @@ macro_rules! one_arg {
     }};
 }
 
-macro_rules! fargs {
-    ( $($arg:ident $( = $value:expr )* ),* ) => {
-        FormalArgs::new(vec![ $( one_arg!($arg $( = $value)* ) ),* ])
+macro_rules! func {
+    (( $($arg:ident $( = $value:expr )* ),* ), $body:expr) => {
+        SassFunction {
+            args: FormalArgs::new(vec![ $( one_arg!($arg $( = $value)* ) ),* ]),
+            body: Box::new($body),
+        }
     };
 }
 
-fn rgb() -> SassFunction {
-    SassFunction {
-        args: fargs!(red, green, blue),
-        body: Box::new(|s: &Scope| {
+lazy_static! {
+    static ref FUNCTIONS: BTreeMap<String, SassFunction> = {
+        let mut f = BTreeMap::new();
+        f.insert("rgb".into(), func!((red, green, blue), |s| {
             Value::HexColor(s.get("red").map(to_int).unwrap_or(0),
                             s.get("green").map(to_int).unwrap_or(0),
                             s.get("blue").map(to_int).unwrap_or(0),
                             Rational::from_integer(1),
                             None)
-        }),
-    }
-}
-
-fn red() -> SassFunction {
-    SassFunction {
-        args: fargs!(color),
-        body: Box::new(|s: &Scope| {
-            match s.get("color") {
-                Some(Value::HexColor(red, _, _, _, _)) => {
-                    Value::Numeric(b2rat(red), Unit::None, true)
-                }
-                Some(value) => value,
-                None => Value::Literal("".into()),
-            }
-        }),
-    }
-}
-
-fn green() -> SassFunction {
-    SassFunction {
-        args: fargs!(color),
-        body: Box::new(|s: &Scope| {
-            match s.get("color") {
-                Some(Value::HexColor(_, green, _, _, _)) => {
-                    Value::Numeric(b2rat(green), Unit::None, true)
-                }
-                Some(value) => value,
-                None => Value::Literal("".into()),
-            }
-        }),
-    }
-}
-
-fn blue() -> SassFunction {
-    SassFunction {
-        args: fargs!(color),
-        body: Box::new(|s: &Scope| {
-            match s.get("color") {
-                Some(Value::HexColor(_, _, blue, _, _)) => {
-                    Value::Numeric(b2rat(blue), Unit::None, true)
-                }
-                Some(value) => value,
-                None => Value::Literal("".into()),
-            }
-        }),
-    }
-}
-
-fn b2rat(byte: u8) -> Rational {
-    Rational::from_integer(byte as isize)
-}
-
-fn rgba() -> SassFunction {
-    SassFunction {
-        args: fargs!(red, green, blue, alpha),
-        body: Box::new(|s: &Scope| {
+        }));
+        f.insert("rgba".into(), func!((red, green, blue, alpha), |s: &Scope| {
             let red = s.get("red");
             let alpha = s.get("alpha");
             if let Some(Value::HexColor(r, g, b, _, _)) = red {
@@ -120,40 +58,56 @@ fn rgba() -> SassFunction {
                                 g,
                                 b,
                                 alpha.or_else(|| s.get("green"))
-                                    .map(to_rational)
-                                    .unwrap_or(Rational::from_integer(1)),
+                                .map(to_rational)
+                                .unwrap_or(Rational::from_integer(1)),
                                 None)
             } else {
                 Value::HexColor(red.map(to_int).unwrap_or(0),
                                 s.get("green").map(to_int).unwrap_or(0),
                                 s.get("blue").map(to_int).unwrap_or(0),
                                 alpha.map(to_rational)
-                                    .unwrap_or(Rational::from_integer(1)),
+                                .unwrap_or(Rational::from_integer(1)),
                                 None)
             }
-        }),
-    }
-}
-
-fn invert() -> SassFunction {
-    SassFunction {
-        args: fargs!(color),
-        body: Box::new(|s: &Scope| {
+        }));
+        f.insert("red".into(), func!((color), |s: &Scope| {
+            match s.get("color") {
+                Some(Value::HexColor(red, _, _, _, _)) => {
+                    Value::Numeric(b2rat(red), Unit::None, true)
+                }
+                Some(value) => value,
+                None => Value::Literal("".into()),
+            }
+        }));
+        f.insert("green".into(), func!((color), |s: &Scope| {
+            match s.get("color") {
+                Some(Value::HexColor(_, green, _, _, _)) => {
+                    Value::Numeric(b2rat(green), Unit::None, true)
+                }
+                Some(value) => value,
+                None => Value::Literal("".into()),
+            }
+        }));
+        f.insert("blue".into(), func!((color), |s: &Scope| {
+            match s.get("color") {
+                Some(Value::HexColor(_, _, blue, _, _)) => {
+                    Value::Numeric(b2rat(blue), Unit::None, true)
+                }
+                Some(value) => value,
+                None => Value::Literal("".into()),
+            }
+        }));
+        f.insert("invert".into(), func!((color), |s: &Scope| {
             let color = s.get("color");
             if let &Some(Value::HexColor(ref r, ref g, ref b, ref a, _)) =
                 &color {
-                Value::HexColor(0xff - r, 0xff - g, 0xff - b, *a, None)
-            } else {
-                panic!(format!("Unexpected arguments to invert: ({:?})", color))
-            }
-        }),
-    }
-}
-
-fn mix() -> SassFunction {
-    SassFunction {
-        args: fargs!(color1, color2, weight=b"50%"),
-        body: Box::new(|s: &Scope| {
+                    Value::HexColor(0xff - r, 0xff - g, 0xff - b, *a, None)
+                } else {
+                    panic!(format!("Unexpected arguments to invert: ({:?})",
+                                   color))
+                }
+        }));
+        f.insert("mix".into(), func!((color1, color2, weight=b"50%"), |s| {
             let color1 = s.get("color1");
             let color2 = s.get("color2");
             let weight = s.get("weight");
@@ -199,46 +153,29 @@ fn mix() -> SassFunction {
                                color2,
                                weight))
             }
-        }),
-    }
-}
-
-fn type_of() -> SassFunction {
-    SassFunction {
-        args: fargs!(value),
-        body: Box::new(|s: &Scope| {
+        }));
+        f.insert("type_of".into(), func!((value), |s: &Scope| {
             let value = s.get("value");
             Value::Literal(match value {
-                    Some(Value::HexColor(..)) => "color",
-                    Some(Value::Literal(..)) => "string",
-                    Some(Value::Numeric(..)) => "number",
-                    _ => "unknown",
-                }
-                .into())
-        }),
-    }
-}
-
-fn if_function() -> SassFunction {
-    SassFunction {
-        args: fargs!(condition, if_true, if_false),
-        body: Box::new(|s: &Scope| {
+                Some(Value::HexColor(..)) => "color",
+                Some(Value::Literal(..)) => "string",
+                Some(Value::Numeric(..)) => "number",
+                _ => "unknown",
+            }.into())
+        }));
+        f.insert("if".into(), func!((condition, if_true, if_false), |s| {
             if s.get("condition").map(|v| v.is_true()).unwrap_or(false) {
                 s.get("if_true").unwrap()
             } else {
                 s.get("if_false").unwrap()
             }
-        }),
-    }
+        }));
+        f
+    };
 }
 
-#[test]
-fn test_rgb() {
-    use formalargs::call_args;
-    use variablescope::ScopeImpl;
-    assert_eq!(Value::HexColor(17, 0, 225, Rational::from_integer(1), None),
-               rgb().call(&mut ScopeImpl::new(),
-                          &call_args(b"(17, 0, 225)").unwrap().1))
+fn b2rat(byte: u8) -> Rational {
+    Rational::from_integer(byte as isize)
 }
 
 fn to_int(v: Value) -> u8 {
@@ -255,19 +192,13 @@ fn to_rational(v: Value) -> Rational {
     }
 }
 
-#[cfg(test)]
-mod test {
-    use formalargs::{FormalArgs, formal_args};
-
-    #[test]
-    fn parse_and_macro() {
-        assert_eq!(formal_args(b"($red, $green, $blue)").unwrap().1,
-                   fargs!(red, green, blue))
-    }
-
-    #[test]
-    fn parse_and_with_default() {
-        assert_eq!(formal_args(b"($one, $other, $mix: 50%)").unwrap().1,
-                   fargs!(one, other, mix=b"50%"))
-    }
+#[test]
+fn test_rgb() {
+    use formalargs::call_args;
+    use variablescope::ScopeImpl;
+    assert_eq!(Value::HexColor(17, 0, 225, Rational::from_integer(1), None),
+               FUNCTIONS.get("rgb")
+               .unwrap()
+               .call(&mut ScopeImpl::new(),
+                     &call_args(b"(17, 0, 225)").unwrap().1))
 }
