@@ -122,7 +122,8 @@ impl fmt::Display for Value {
                 write!(out, "{}", t)
             }
             &Value::Div(ref a, ref b, ref s1, ref s2) => {
-                write!(out, "{}{}/{}{}",
+                write!(out,
+                       "{}{}/{}{}",
                        a,
                        if *s1 { " " } else { "" },
                        if *s2 { " " } else { "" },
