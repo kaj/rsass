@@ -30,13 +30,14 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, String> {
             let mut separate = false;
             for item in items {
                 match item {
-                    SassItem::Rule(rule) => {
+                    SassItem::Rule(s, b) => {
                         if separate {
                             write!(result, "\n").unwrap();
                         } else {
                             separate = true;
                         }
-                        rule.write(&mut result, &mut globals, None, 0).unwrap();
+                        write_rule(&s, &b, &mut result, &mut globals, None, 0)
+                            .unwrap();
                     }
                     SassItem::VariableDeclaration { name, val, global } => {
                         globals.define(&name, &val, global);
@@ -106,7 +107,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
                               name: m.0.clone(),
                               args: m.1.clone(),
                           }) |
-                   chain!(r: rule, || SassItem::Rule(r)) |
+                   rule |
                    chain!(c: comment, || {
                        SassItem::Comment(from_utf8(c).unwrap().into())
                    }
@@ -117,7 +118,7 @@ enum SassItem {
     None,
     Comment(String),
     Property(String, Value),
-    Rule(Rule),
+    Rule(Vec<Selector>, Vec<SassItem>),
     VariableDeclaration {
         name: String,
         val: Value,
@@ -127,53 +128,46 @@ enum SassItem {
     MixinCall { name: String, args: CallArgs },
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
-struct Rule {
-    selectors: Vec<Selector>,
-    body: Vec<SassItem>,
-}
-
-impl Rule {
-    fn write(&self,
-             out: &mut Write,
-             scope: &mut Scope,
-             parent: Option<&Vec<Selector>>,
-             indent: usize)
-             -> io::Result<()> {
-        let selectors = if let Some(parent) = parent {
-            let mut result = Vec::new();
-            for p in parent {
-                for s in &self.selectors {
-                    result.push(p.join(s));
-                }
+fn write_rule(selectors: &[Selector],
+              body: &[SassItem],
+              out: &mut Write,
+              scope: &mut Scope,
+              parent: Option<&[Selector]>,
+              indent: usize)
+              -> io::Result<()> {
+    let selectors = if let Some(parent) = parent {
+        let mut result = Vec::new();
+        for p in parent {
+            for s in selectors {
+                result.push(p.join(s));
             }
-            result
-        } else {
-            self.selectors.clone()
-        };
-        let mut direct = Vec::new();
-        let mut sub = Vec::new();
-        try!(handle_body(&mut direct, &mut sub, &mut ScopeImpl::sub(scope),
-                         &selectors, &self.body, indent));
-        if !direct.is_empty() {
-            try!(write!(out, "{} {{\n",
-                        selectors.iter()
-                        .map(|s| format!("{}", s))
-                        .collect::<Vec<_> >()
-                        .join(", ")));
-            try!(out.write(&direct));
-            try!(write!(out, "}}\n"));
         }
-        try!(out.write(&sub));
-        Ok(())
+        result
+    } else {
+        selectors.into()
+    };
+    let mut direct = Vec::new();
+    let mut sub = Vec::new();
+    try!(handle_body(&mut direct, &mut sub, &mut ScopeImpl::sub(scope),
+                     &selectors, &body, indent));
+    if !direct.is_empty() {
+        try!(write!(out, "{} {{\n",
+                    selectors.iter()
+                    .map(|s| format!("{}", s))
+                    .collect::<Vec<_> >()
+                    .join(", ")));
+        try!(out.write(&direct));
+        try!(write!(out, "}}\n"));
     }
+    try!(out.write(&sub));
+    Ok(())
 }
 
 fn handle_body(direct: &mut Vec<u8>,
                sub: &mut Vec<u8>,
                scope: &mut Scope,
-               selectors: &Vec<Selector>,
-               body: &Vec<SassItem>,
+               selectors: &[Selector],
+               body: &[SassItem],
                indent: usize)
                -> io::Result<()> {
     for b in body {
@@ -186,8 +180,8 @@ fn handle_body(direct: &mut Vec<u8>,
                 try!(do_indent(direct, indent + 2));
                 try!(write!(direct, "{}: {};\n", name, scope.evaluate(value)));
             }
-            &SassItem::Rule(ref r) => {
-                try!(r.write(sub, scope, Some(&selectors), indent));
+            &SassItem::Rule(ref s, ref b) => {
+                try!(write_rule(s, b, sub, scope, Some(&selectors), indent));
             }
             &SassItem::VariableDeclaration { ref name, ref val, global } => {
                 scope.define(&name, &val, global);
@@ -214,7 +208,7 @@ fn handle_body(direct: &mut Vec<u8>,
     Ok(())
 }
 
-named!(rule<&[u8], Rule>,
+named!(rule<SassItem>,
        do_parse!(opt_spacelike >>
                  selectors: separated_nonempty_list!(
                      do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ()),
@@ -223,10 +217,7 @@ named!(rule<&[u8], Rule>,
                  tag!("{") >>
                  body: many0!(body_item) >>
                  tag!("}") >>
-                 (Rule {
-                     selectors: selectors,
-                     body: body,
-                 })));
+                 (SassItem::Rule(selectors, body))));
 
 named!(body_item<SassItem>,
        alt_complete!(
@@ -239,7 +230,7 @@ named!(body_item<SassItem>,
                       val: d.1.clone(),
                       global: d.2,
                   }) |
-           chain!(r: rule, || SassItem::Rule(r)) |
+           rule |
            property |
            chain!(m: mixin_call,
                   || SassItem::MixinCall {
@@ -344,16 +335,13 @@ fn test_mixin_declaration_default_and_subrules() {
                    body: vec![
                        SassItem::Property("foo-bar".into(),
                                           Value::Literal("baz".into())),
-                       SassItem::Rule(Rule {
-                           selectors: vec![
-                               selector(b"foo").unwrap().1,
-                               selector(b"bar").unwrap().1,
-                               ],
-                           body: vec![
-                               SassItem::None,
-                               SassItem::Property("property".into(),
-                                                  Value::Variable("b".into()))],
-                       }),
+                       SassItem::Rule(
+                           vec![selector(b"foo").unwrap().1,
+                                selector(b"bar").unwrap().1],
+                           vec![SassItem::None,
+                                SassItem::Property(
+                                    "property".into(),
+                                    Value::Variable("b".into()))]),
                        SassItem::None,
                        ]}))
 }
