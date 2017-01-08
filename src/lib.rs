@@ -72,7 +72,7 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, String> {
                         }
                         writeln!(result, "/*{}*/", c).unwrap();
                     }
-                    SassItem::Property(_) => {
+                    SassItem::Property(_, _) => {
                         panic!("Global property not allowed");
                     }
                     SassItem::None => (),
@@ -116,7 +116,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
 enum SassItem {
     None,
     Comment(String),
-    Property(Property),
+    Property(String, Value),
     Rule(Rule),
     VariableDeclaration {
         name: String,
@@ -182,8 +182,9 @@ fn handle_body(direct: &mut Vec<u8>,
                 try!(do_indent(direct, indent + 2));
                 try!(writeln!(direct, "/*{}*/", c));
             }
-            &SassItem::Property(ref p) => {
-                try!(p.write(direct, scope, indent + 2));
+            &SassItem::Property(ref name, ref value) => {
+                try!(do_indent(direct, indent + 2));
+                try!(write!(direct, "{}: {};\n", name, scope.evaluate(value)));
             }
             &SassItem::Rule(ref r) => {
                 try!(r.write(sub, scope, Some(&selectors), indent));
@@ -239,7 +240,7 @@ named!(body_item<SassItem>,
                       global: d.2,
                   }) |
            chain!(r: rule, || SassItem::Rule(r)) |
-           chain!(p: property, || SassItem::Property(p)) |
+           property |
            chain!(m: mixin_call,
                   || SassItem::MixinCall {
                       name: m.0.clone(),
@@ -317,12 +318,12 @@ fn test_mixin_declaration() {
                Done(&b"\n"[..], MixinDeclaration {
                    name: "foo".into(),
                    args: FormalArgs::new(vec![("x".into(), None)]),
-                   body: vec![SassItem::Property(Property {
-                       name: "foo-bar".into(),
-                       value: Value::MultiSpace(
+                   body: vec![SassItem::Property(
+                       "foo-bar".into(),
+                       Value::MultiSpace(
                            vec![Value::Literal("baz".into()),
                                 Value::Variable("x".into())]),
-                   })],
+                       )],
                }))
 }
 
@@ -341,10 +342,8 @@ fn test_mixin_declaration_default_and_subrules() {
                             ("b".into(),
                              Some(Value::Literal("flug".into())))]),
                    body: vec![
-                       SassItem::Property(Property {
-                           name: "foo-bar".into(),
-                           value: Value::Literal("baz".into()),
-                       }),
+                       SassItem::Property("foo-bar".into(),
+                                          Value::Literal("baz".into())),
                        SassItem::Rule(Rule {
                            selectors: vec![
                                selector(b"foo").unwrap().1,
@@ -352,10 +351,8 @@ fn test_mixin_declaration_default_and_subrules() {
                                ],
                            body: vec![
                                SassItem::None,
-                               SassItem::Property(Property {
-                                   name: "property".into(),
-                                   value: Value::Variable("b".into())
-                               })],
+                               SassItem::Property("property".into(),
+                                                  Value::Variable("b".into()))],
                        }),
                        SassItem::None,
                        ]}))
@@ -378,23 +375,6 @@ impl MixinDeclaration {
 }
 
 
-#[derive(Clone, Debug, PartialEq, Eq)]
-struct Property {
-    name: String,
-    value: Value,
-}
-
-impl Property {
-    fn write(&self,
-             out: &mut Write,
-             scope: &mut Scope,
-             indent: usize)
-             -> io::Result<()> {
-        try!(do_indent(out, indent));
-        write!(out, "{}: {};\n", self.name, scope.evaluate(&self.value))
-    }
-}
-
 fn do_indent(out: &mut Write, steps: usize) -> io::Result<()> {
     for _i in 0..steps {
         try!(write!(out, " "));
@@ -402,7 +382,7 @@ fn do_indent(out: &mut Write, steps: usize) -> io::Result<()> {
     Ok(())
 }
 
-named!(property<&[u8], Property>,
+named!(property<&[u8], SassItem>,
        chain!(multispace? ~
               name: name ~
               multispace? ~
@@ -412,26 +392,23 @@ named!(property<&[u8], Property>,
               multispace? ~
               tag!(";") ~
               spacelike?,
-              || Property { name: name, value: val }));
+              || SassItem::Property(name, val)));
 
 #[test]
 fn test_simple_property() {
     use num_rational::Rational;
     let one = Rational::from_integer(1);
     assert_eq!(property(b"color: red;\n"),
-               Done(&b""[..], Property {
-                   name: "color".to_string(),
-                   value: Value::HexColor(255, 0, 0, one, Some("red".into())),
-               }));
+               Done(&b""[..], SassItem::Property(
+                   "color".to_string(),
+                   Value::HexColor(255, 0, 0, one, Some("red".into())))))
 }
 #[test]
 fn test_property_2() {
     assert_eq!(property(b"background-position: 90% 50%;\n"),
-               Done(&b""[..], Property {
-                   name: "background-position".to_string(),
-                   value: Value::MultiSpace(vec![percentage(90),
-                                                 percentage(50)]),
-               }));
+               Done(&b""[..], SassItem::Property(
+                   "background-position".to_string(),
+                   Value::MultiSpace(vec![percentage(90), percentage(50)]))))
 }
 
 #[cfg(test)]
