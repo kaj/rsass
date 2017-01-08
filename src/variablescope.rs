@@ -70,7 +70,7 @@ impl<'a> ScopeImpl<'a> {
         match val {
             &Value::Literal(ref v) => Value::Literal(v.clone()),
             &Value::Paren(ref v) => self.do_evaluate(v, true),
-            &Value::HexColor(_, _, _, _, _) => val.clone(),
+            &Value::Color(_, _, _, _, _) => val.clone(),
             &Value::Variable(ref name) => {
                 self.get(&name)
                     .map(|n| self.do_evaluate(&n, true))
@@ -97,21 +97,21 @@ impl<'a> ScopeImpl<'a> {
                 let a = self.do_evaluate(a, true);
                 let b = self.do_evaluate(b, true);
                 match (&a, &b) {
-                    (&Value::HexColor(ref r, ref g, ref b, ref a, _),
+                    (&Value::Color(ref r, ref g, ref b, ref a, _),
                      &Value::Numeric(ref n, ref u, _)) if u == &Unit::None => {
-                        Value::HexColor(add(r, n),
-                                        add(g, n),
-                                        add(b, n),
-                                        a.clone(),
-                                        None)
+                        Value::Color(add(r, n),
+                                     add(g, n),
+                                     add(b, n),
+                                     a.clone(),
+                                     None)
                     }
-                    (&Value::HexColor(ref ar, ref ag, ref ab, ref aa, _),
-                     &Value::HexColor(ref br, ref bg, ref bb, ref ba, _)) => {
-                        Value::HexColor(add8(ar, br),
-                                        add8(ag, bg),
-                                        add8(ab, bb),
-                                        aa + ba, // TODO or average?
-                                        None)
+                    (&Value::Color(ref ar, ref ag, ref ab, ref aa, _),
+                     &Value::Color(ref br, ref bg, ref bb, ref ba, _)) => {
+                        Value::Color(add8(ar, br),
+                                     add8(ag, bg),
+                                     add8(ab, bb),
+                                     aa + ba, // TODO or average?
+                                     None)
                     }
                     (&Value::Numeric(ref a, ref au, _),
                      &Value::Numeric(ref b, ref bu, _)) => {
@@ -130,22 +130,22 @@ impl<'a> ScopeImpl<'a> {
                 let a = self.evaluate(a);
                 let b = self.evaluate(b);
                 match (&a, &b) {
-                    (&Value::HexColor(ref r, ref g, ref b, ref a, _),
+                    (&Value::Color(ref r, ref g, ref b, ref a, _),
                      &Value::Numeric(ref n, ref u, _)) if u == &Unit::None => {
                         let n = n.neg();
-                        Value::HexColor(add(r, &n),
-                                        add(g, &n),
-                                        add(b, &n),
-                                        a.clone(),
-                                        None)
+                        Value::Color(add(r, &n),
+                                     add(g, &n),
+                                     add(b, &n),
+                                     a.clone(),
+                                     None)
                     }
-                    (&Value::HexColor(ref ar, ref ag, ref ab, ref aa, _),
-                     &Value::HexColor(ref br, ref bg, ref bb, ref ba, _)) => {
-                        Value::HexColor(sub8(ar, br),
-                                        sub8(ag, bg),
-                                        sub8(ab, bb),
-                                        (aa + ba) / Rational::from_integer(2),
-                                        None)
+                    (&Value::Color(ref ar, ref ag, ref ab, ref aa, _),
+                     &Value::Color(ref br, ref bg, ref bb, ref ba, _)) => {
+                        Value::Color(sub8(ar, br),
+                                     sub8(ag, bg),
+                                     sub8(ab, bb),
+                                     (aa + ba) / Rational::from_integer(2),
+                                     None)
                     }
                     (&Value::Numeric(ref av, ref au, _),
                      &Value::Numeric(ref bv, ref bu, _)) => {
@@ -189,13 +189,13 @@ impl<'a> ScopeImpl<'a> {
                 };
                 if arithmetic || a.is_calculated() || b.is_calculated() {
                     match (&a, &b) {
-                        (&Value::HexColor(ref r, ref g, ref b, ref a, _),
+                        (&Value::Color(ref r, ref g, ref b, ref a, _),
                          &Value::Numeric(ref n, Unit::None, _)) => {
-                            return Value::HexColor(div(r, n),
-                                                   div(g, n),
-                                                   div(b, n),
-                                                   a.clone(),
-                                                   None);
+                            return Value::Color(div(r, n),
+                                                div(g, n),
+                                                div(b, n),
+                                                a.clone(),
+                                                None);
                         }
                         (&Value::Numeric(ref a, ref au, _),
                          &Value::Numeric(ref b, ref bu, _)) => {

@@ -389,7 +389,7 @@ fn test_simple_property() {
     assert_eq!(property(b"color: red;\n"),
                Done(&b""[..], SassItem::Property(
                    "color".to_string(),
-                   Value::HexColor(255, 0, 0, one, Some("red".into())))))
+                   Value::Color(255, 0, 0, one, Some("red".into())))))
 }
 #[test]
 fn test_property_2() {

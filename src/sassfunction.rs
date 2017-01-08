@@ -44,35 +44,32 @@ lazy_static! {
     static ref FUNCTIONS: BTreeMap<String, SassFunction> = {
         let mut f = BTreeMap::new();
         f.insert("rgb".into(), func!((red, green, blue), |s| {
-            Value::HexColor(s.get("red").map(to_int).unwrap_or(0),
-                            s.get("green").map(to_int).unwrap_or(0),
-                            s.get("blue").map(to_int).unwrap_or(0),
-                            Rational::from_integer(1),
-                            None)
+            Value::Color(s.get("red").map(to_int).unwrap_or(0),
+                         s.get("green").map(to_int).unwrap_or(0),
+                         s.get("blue").map(to_int).unwrap_or(0),
+                         Rational::from_integer(1),
+                         None)
         }));
         f.insert("rgba".into(), func!((red, green, blue, alpha), |s: &Scope| {
             let red = s.get("red");
             let alpha = s.get("alpha");
-            if let Some(Value::HexColor(r, g, b, _, _)) = red {
-                Value::HexColor(r,
-                                g,
-                                b,
-                                alpha.or_else(|| s.get("green"))
-                                .map(to_rational)
-                                .unwrap_or(Rational::from_integer(1)),
-                                None)
+            if let Some(Value::Color(r, g, b, _, _)) = red {
+                let a = alpha.or_else(|| s.get("green"))
+                    .map(to_rational)
+                    .unwrap_or(Rational::from_integer(1));
+                Value::Color(r, g, b, a, None)
             } else {
-                Value::HexColor(red.map(to_int).unwrap_or(0),
-                                s.get("green").map(to_int).unwrap_or(0),
-                                s.get("blue").map(to_int).unwrap_or(0),
-                                alpha.map(to_rational)
-                                .unwrap_or(Rational::from_integer(1)),
-                                None)
+                Value::Color(red.map(to_int).unwrap_or(0),
+                             s.get("green").map(to_int).unwrap_or(0),
+                             s.get("blue").map(to_int).unwrap_or(0),
+                             alpha.map(to_rational)
+                             .unwrap_or(Rational::from_integer(1)),
+                             None)
             }
         }));
         f.insert("red".into(), func!((color), |s: &Scope| {
             match s.get("color") {
-                Some(Value::HexColor(red, _, _, _, _)) => {
+                Some(Value::Color(red, _, _, _, _)) => {
                     Value::Numeric(b2rat(red), Unit::None, true)
                 }
                 Some(value) => value,
@@ -81,7 +78,7 @@ lazy_static! {
         }));
         f.insert("green".into(), func!((color), |s: &Scope| {
             match s.get("color") {
-                Some(Value::HexColor(_, green, _, _, _)) => {
+                Some(Value::Color(_, green, _, _, _)) => {
                     Value::Numeric(b2rat(green), Unit::None, true)
                 }
                 Some(value) => value,
@@ -90,7 +87,7 @@ lazy_static! {
         }));
         f.insert("blue".into(), func!((color), |s: &Scope| {
             match s.get("color") {
-                Some(Value::HexColor(_, _, blue, _, _)) => {
+                Some(Value::Color(_, _, blue, _, _)) => {
                     Value::Numeric(b2rat(blue), Unit::None, true)
                 }
                 Some(value) => value,
@@ -99,9 +96,9 @@ lazy_static! {
         }));
         f.insert("invert".into(), func!((color), |s: &Scope| {
             let color = s.get("color");
-            if let &Some(Value::HexColor(ref r, ref g, ref b, ref a, _)) =
+            if let &Some(Value::Color(ref r, ref g, ref b, ref a, _)) =
                 &color {
-                    Value::HexColor(0xff - r, 0xff - g, 0xff - b, *a, None)
+                    Value::Color(0xff - r, 0xff - g, 0xff - b, *a, None)
                 } else {
                     panic!(format!("Unexpected arguments to invert: ({:?})",
                                    color))
@@ -111,16 +108,8 @@ lazy_static! {
             let color1 = s.get("color1");
             let color2 = s.get("color2");
             let weight = s.get("weight");
-            if let (&Some(Value::HexColor(ref r1,
-                                          ref g1,
-                                          ref b1,
-                                          ref a1,
-                                          _)),
-                    &Some(Value::HexColor(ref r2,
-                                          ref g2,
-                                          ref b2,
-                                          ref a2,
-                                          _)),
+            if let (&Some(Value::Color(ref r1, ref g1, ref b1, ref a1, _)),
+                    &Some(Value::Color(ref r2, ref g2, ref b2, ref a2, _)),
                     &Some(Value::Numeric(ref w, ref wu, _))) =
                 (&color1, &color2, &weight) {
                 let w = if wu == &Unit::Percent {
@@ -141,11 +130,11 @@ lazy_static! {
                 fn rb(r: Rational) -> u8 {
                     (r + Rational::new(1, 2)).to_integer() as u8
                 }
-                Value::HexColor(rb(mv(*r1, *r2, w2)),
-                                rb(mv(*g1, *g2, w2)),
-                                rb(mv(*b1, *b2, w2)),
-                                mr(*a1, *a2, w),
-                                None)
+                Value::Color(rb(mv(*r1, *r2, w2)),
+                             rb(mv(*g1, *g2, w2)),
+                             rb(mv(*b1, *b2, w2)),
+                             mr(*a1, *a2, w),
+                             None)
             } else {
                 panic!(format!("Unexpected arguments to mix: \
                                 ({:?}, {:?}, {:?})",
@@ -157,7 +146,7 @@ lazy_static! {
         f.insert("type_of".into(), func!((value), |s: &Scope| {
             let value = s.get("value");
             Value::Literal(match value {
-                Some(Value::HexColor(..)) => "color",
+                Some(Value::Color(..)) => "color",
                 Some(Value::Literal(..)) => "string",
                 Some(Value::Numeric(..)) => "number",
                 _ => "unknown",
@@ -196,9 +185,9 @@ fn to_rational(v: Value) -> Rational {
 fn test_rgb() {
     use formalargs::call_args;
     use variablescope::ScopeImpl;
-    assert_eq!(Value::HexColor(17, 0, 225, Rational::from_integer(1), None),
+    assert_eq!(Value::Color(17, 0, 225, Rational::from_integer(1), None),
                FUNCTIONS.get("rgb")
-               .unwrap()
-               .call(&mut ScopeImpl::new(),
-                     &call_args(b"(17, 0, 225)").unwrap().1))
+                   .unwrap()
+                   .call(&mut ScopeImpl::new(),
+                         &call_args(b"(17, 0, 225)").unwrap().1))
 }

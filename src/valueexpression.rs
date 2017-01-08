@@ -32,14 +32,14 @@ pub enum Value {
     Variable(String),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
-    HexColor(u8, u8, u8, Rational, Option<String>),
+    Color(u8, u8, u8, Rational, Option<String>),
 }
 
 impl Value {
     pub fn is_calculated(&self) -> bool {
         match self {
             &Value::Numeric(_, _, calculated) => calculated,
-            &Value::HexColor(_, _, _, _, None) => true,
+            &Value::Color(_, _, _, _, None) => true,
             _ => false,
         }
     }
@@ -84,7 +84,7 @@ impl fmt::Display for Value {
             &Value::Numeric(ref v, ref u, ref _is_calculated) => {
                 write!(out, "{}{}", rational2str(v, false), u)
             }
-            &Value::HexColor(ref r, ref g, ref b, ref a, ref s) => {
+            &Value::Color(ref r, ref g, ref b, ref a, ref s) => {
                 match s {
                     &Some(ref s) => write!(out, "{}", s),
                     &None => {
@@ -221,30 +221,30 @@ named!(single_value<&[u8], Value>,
                   }) |
            chain!(tag!("$") ~ name: name, || Value::Variable(name)) |
            chain!(tag!("#") ~ r: hexchar2 ~ g: hexchar2 ~ b: hexchar2,
-                  || Value::HexColor(from_hex(r),
-                                     from_hex(g),
-                                     from_hex(b),
-                                     Rational::from_integer(1),
-                                     Some(format!("#{}{}{}",
-                                                  from_utf8(r).unwrap(),
-                                                  from_utf8(g).unwrap(),
-                                                  from_utf8(b).unwrap())))) |
+                  || Value::Color(from_hex(r),
+                                  from_hex(g),
+                                  from_hex(b),
+                                  Rational::from_integer(1),
+                                  Some(format!("#{}{}{}",
+                                               from_utf8(r).unwrap(),
+                                               from_utf8(g).unwrap(),
+                                               from_utf8(b).unwrap())))) |
            chain!(tag!("#") ~ r: hexchar ~ g: hexchar ~ b: hexchar,
-                  || Value::HexColor(from_hex(r) * 0x11,
-                                     from_hex(g) * 0x11,
-                                     from_hex(b) * 0x11,
-                                     Rational::from_integer(1),
-                                     Some(format!("#{}{}{}",
-                                                  from_utf8(r).unwrap(),
-                                                  from_utf8(g).unwrap(),
-                                                  from_utf8(b).unwrap())))) |
+                  || Value::Color(from_hex(r) * 0x11,
+                                  from_hex(g) * 0x11,
+                                  from_hex(b) * 0x11,
+                                  Rational::from_integer(1),
+                                  Some(format!("#{}{}{}",
+                                               from_utf8(r).unwrap(),
+                                               from_utf8(g).unwrap(),
+                                               from_utf8(b).unwrap())))) |
            chain!(name: name ~ args: call_args, || Value::Call(name, args)) |
            chain!(val: is_not!("+-*/;,$()! \n\t"),
                   || {
                       let val = from_utf8(val).unwrap().to_string();
                       if let Some((r, g, b)) = name_to_rgb(&val) {
-                          Value::HexColor(r, g, b, Rational::from_integer(1),
-                                          Some(val))
+                          Value::Color(r, g, b, Rational::from_integer(1),
+                                       Some(val))
                       } else {
                           Value::Literal(val)
                       }
@@ -303,7 +303,7 @@ mod test {
         let one = Rational::from_integer(1);
         assert_eq!(value_expression(b"red;"),
                    Done(&b";"[..],
-                        Value::HexColor(0xff, 0, 0, one, Some("red".into()))))
+                        Value::Color(0xff, 0, 0, one, Some("red".into()))))
     }
 
     #[test]
@@ -360,7 +360,7 @@ mod test {
     fn color_short() {
         assert_eq!(value_expression(b"#AbC;"),
                    Done(&b";"[..],
-                        Value::HexColor(170, 187, 204,
+                        Value::Color(170, 187, 204,
                                         Rational::from_integer(1),
                                         Some("#AbC".into()))))
     }
@@ -369,7 +369,7 @@ mod test {
     fn color_long() {
         assert_eq!(value_expression(b"#AaBbCc;"),
                    Done(&b";"[..],
-                        Value::HexColor(170, 187, 204,
+                        Value::Color(170, 187, 204,
                                         Rational::from_integer(1),
                                         Some("#AaBbCc".into()))))
     }
