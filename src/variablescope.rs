@@ -521,6 +521,12 @@ mod test {
     fn function_if_named() {
         assert_eq!("hey", do_evaluate(
             &[],
+            b"if($if_true: hey, $if_false: ho, $condition: true);"))
+    }
+    #[test]
+    fn function_if_named_dash() {
+        assert_eq!("hey", do_evaluate(
+            &[],
             b"if($if-true: hey, $if-false: ho, $condition: true);"))
     }
 

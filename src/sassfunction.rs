@@ -1,4 +1,4 @@
-use formalargs::{CallArgs, FormalArgs, formal_args};
+use formalargs::{CallArgs, FormalArgs};
 use num_rational::Rational;
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
@@ -31,11 +31,25 @@ impl SassFunction {
     }
 }
 
+macro_rules! one_arg {
+    ($name:ident) => {
+        (stringify!($name).into(), None)
+    };
+    ($name:ident = $value:expr) => {{
+        use valueexpression::value_expression;
+        (stringify!($name).into(), Some(value_expression($value).unwrap().1))
+    }};
+}
+
+macro_rules! fargs {
+    ( $($arg:ident $( = $value:expr )* ),* ) => {
+        FormalArgs::new(vec![ $( one_arg!($arg $( = $value)* ) ),* ])
+    };
+}
+
 fn rgb() -> SassFunction {
     SassFunction {
-        args: formal_args(b"($red, $green, $blue)")
-            .unwrap()
-            .1,
+        args: fargs!(red, green, blue),
         body: Box::new(|s: &Scope| {
             Value::HexColor(s.get("red").map(to_int).unwrap_or(0),
                             s.get("green").map(to_int).unwrap_or(0),
@@ -48,11 +62,9 @@ fn rgb() -> SassFunction {
 
 fn red() -> SassFunction {
     SassFunction {
-        args: formal_args(b"($c)")
-            .unwrap()
-            .1,
+        args: fargs!(color),
         body: Box::new(|s: &Scope| {
-            match s.get("c") {
+            match s.get("color") {
                 Some(Value::HexColor(red, _, _, _, _)) => {
                     Value::Numeric(b2rat(red), Unit::None, true)
                 }
@@ -65,11 +77,9 @@ fn red() -> SassFunction {
 
 fn green() -> SassFunction {
     SassFunction {
-        args: formal_args(b"($c)")
-            .unwrap()
-            .1,
+        args: fargs!(color),
         body: Box::new(|s: &Scope| {
-            match s.get("c") {
+            match s.get("color") {
                 Some(Value::HexColor(_, green, _, _, _)) => {
                     Value::Numeric(b2rat(green), Unit::None, true)
                 }
@@ -82,11 +92,9 @@ fn green() -> SassFunction {
 
 fn blue() -> SassFunction {
     SassFunction {
-        args: formal_args(b"($c)")
-            .unwrap()
-            .1,
+        args: fargs!(color),
         body: Box::new(|s: &Scope| {
-            match s.get("c") {
+            match s.get("color") {
                 Some(Value::HexColor(_, _, blue, _, _)) => {
                     Value::Numeric(b2rat(blue), Unit::None, true)
                 }
@@ -103,9 +111,7 @@ fn b2rat(byte: u8) -> Rational {
 
 fn rgba() -> SassFunction {
     SassFunction {
-        args: formal_args(b"($red, $green, $blue, $alpha)")
-            .unwrap()
-            .1,
+        args: fargs!(red, green, blue, alpha),
         body: Box::new(|s: &Scope| {
             let red = s.get("red");
             let alpha = s.get("alpha");
@@ -131,9 +137,7 @@ fn rgba() -> SassFunction {
 
 fn invert() -> SassFunction {
     SassFunction {
-        args: formal_args(b"($color)")
-            .unwrap()
-            .1,
+        args: fargs!(color),
         body: Box::new(|s: &Scope| {
             let color = s.get("color");
             if let &Some(Value::HexColor(ref r, ref g, ref b, ref a, _)) =
@@ -148,9 +152,7 @@ fn invert() -> SassFunction {
 
 fn mix() -> SassFunction {
     SassFunction {
-        args: formal_args(b"($color1, $color2, $weight:50%)")
-            .unwrap()
-            .1,
+        args: fargs!(color1, color2, weight=b"50%"),
         body: Box::new(|s: &Scope| {
             let color1 = s.get("color1");
             let color2 = s.get("color2");
@@ -203,9 +205,7 @@ fn mix() -> SassFunction {
 
 fn type_of() -> SassFunction {
     SassFunction {
-        args: formal_args(b"($value)")
-            .unwrap()
-            .1,
+        args: fargs!(value),
         body: Box::new(|s: &Scope| {
             let value = s.get("value");
             Value::Literal(match value {
@@ -221,14 +221,12 @@ fn type_of() -> SassFunction {
 
 fn if_function() -> SassFunction {
     SassFunction {
-        args: formal_args(b"($condition, $if-true, $if-false)")
-            .unwrap()
-            .1,
+        args: fargs!(condition, if_true, if_false),
         body: Box::new(|s: &Scope| {
             if s.get("condition").map(|v| v.is_true()).unwrap_or(false) {
-                s.get("if-true").unwrap()
+                s.get("if_true").unwrap()
             } else {
-                s.get("if-false").unwrap()
+                s.get("if_false").unwrap()
             }
         }),
     }
@@ -254,5 +252,22 @@ fn to_rational(v: Value) -> Rational {
     match v {
         Value::Numeric(v, _, _) => v,
         v => panic!("Expected rational, got {:?}", v),
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use formalargs::{FormalArgs, formal_args};
+
+    #[test]
+    fn parse_and_macro() {
+        assert_eq!(formal_args(b"($red, $green, $blue)").unwrap().1,
+                   fargs!(red, green, blue))
+    }
+
+    #[test]
+    fn parse_and_with_default() {
+        assert_eq!(formal_args(b"($one, $other, $mix: 50%)").unwrap().1,
+                   fargs!(one, other, mix=b"50%"))
     }
 }

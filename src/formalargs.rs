@@ -12,7 +12,6 @@ use variablescope::{Scope, ScopeImpl};
 pub struct FormalArgs(Vec<(String, Option<Value>)>);
 
 impl FormalArgs {
-    #[cfg(test)]
     pub fn new(a: Vec<(String, Option<Value>)>) -> Self {
         FormalArgs(a)
     }
@@ -103,7 +102,7 @@ named!(pub call_args<CallArgs>,
                              ignore_comments ~
                              val: space_list ~
                              ignore_comments,
-                             || (Some(name), val)) |
+                             || (Some(name.replace("-", "_")), val)) |
                       chain!(e: space_list, || (None, e)))) ~
               tag!(")"),
               || CallArgs(args)
