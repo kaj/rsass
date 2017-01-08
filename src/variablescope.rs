@@ -509,6 +509,20 @@ mod test {
         assert_eq!("magenta", do_evaluate(&[], b"red + blue;"))
     }
 
+    #[test]
+    fn function_if() {
+        assert_eq!("foo", do_evaluate(&[], b"if(true, foo, bar);"))
+    }
+    #[test]
+    fn function_if_false() {
+        assert_eq!("bar", do_evaluate(&[], b"if(false, foo, bar);"))
+    }
+    #[test]
+    fn function_if_named() {
+        assert_eq!("hey", do_evaluate(&[], b"if($if-true: hey, $if-false: ho, \
+                                             $condition: true);"))
+    }
+
     fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
         let mut scope = ScopeImpl::new();
         for &(name, ref val) in s {

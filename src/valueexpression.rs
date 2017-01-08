@@ -43,6 +43,15 @@ impl Value {
             _ => false,
         }
     }
+
+    /// All values other than `false` and `null` should be considered true.
+    /// Not properly implemented yet, because if limited Value type.
+    pub fn is_true(&self) -> bool {
+        match self {
+            &Value::Literal(ref s) => s != "false",
+            _ => true,
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

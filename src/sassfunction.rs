@@ -14,6 +14,7 @@ pub fn get_function(name: &str) -> Option<SassFunction> {
         "invert" => Some(invert()),
         "type-of" => Some(type_of()),
         "type_of" => Some(type_of()),
+        "if" => Some(if_function()),
         _ => None,
     }
 }
@@ -32,7 +33,7 @@ impl SassFunction {
 
 fn rgb() -> SassFunction {
     SassFunction {
-        args: formal_args(b"($red: 0, $green: 0, $blue: 0)")
+        args: formal_args(b"($red, $green, $blue)")
             .unwrap()
             .1,
         body: Box::new(|s: &Scope| {
@@ -214,6 +215,21 @@ fn type_of() -> SassFunction {
                     _ => "unknown",
                 }
                 .into())
+        }),
+    }
+}
+
+fn if_function() -> SassFunction {
+    SassFunction {
+        args: formal_args(b"($condition, $if-true, $if-false)")
+            .unwrap()
+            .1,
+        body: Box::new(|s: &Scope| {
+            if s.get("condition").map(|v| v.is_true()).unwrap_or(false) {
+                s.get("if-true").unwrap()
+            } else {
+                s.get("if-false").unwrap()
+            }
         }),
     }
 }
