@@ -15,7 +15,7 @@ pub struct ScopeImpl<'a> {
 
 pub trait Scope {
     fn define(&mut self, name: &str, val: &Value, global: bool);
-    fn get(&self, name: &str) -> Option<Value>;
+    fn get(&self, name: &str) -> Value;
 
     fn define_mixin(&mut self, m: &MixinDeclaration);
     fn get_mixin(&self, name: &str) -> Option<MixinDeclaration>;
@@ -37,11 +37,12 @@ impl<'a> Scope for ScopeImpl<'a> {
             .map(|m| m.clone())
             .or_else(|| self.parent.as_ref().and_then(|p| p.get_mixin(name)))
     }
-    fn get(&self, name: &str) -> Option<Value> {
+    fn get(&self, name: &str) -> Value {
         self.variables
             .get(name)
             .map(|v| v.clone())
-            .or_else(|| self.parent.as_ref().and_then(|p| p.get(name)))
+            .or_else(|| self.parent.as_ref().map(|p| p.get(name)))
+            .unwrap_or(Value::Null)
     }
     fn define_mixin(&mut self, m: &MixinDeclaration) {
         self.mixins.insert(m.name.to_string(), m.clone());
@@ -72,9 +73,8 @@ impl<'a> ScopeImpl<'a> {
             &Value::Paren(ref v) => self.do_evaluate(v, true),
             &Value::Color(_, _, _, _, _) => val.clone(),
             &Value::Variable(ref name) => {
-                self.get(&name)
-                    .map(|n| self.do_evaluate(&n, true))
-                    .unwrap_or_else(|| Value::Literal(format!("${}", name)))
+                let v = self.get(&name);
+                self.do_evaluate(&v, true)
             }
             &Value::MultiSpace(ref v) => {
                 Value::MultiSpace(v.iter()
@@ -227,6 +227,7 @@ impl<'a> ScopeImpl<'a> {
                                u.clone(),
                                arithmetic || *is_calculated)
             }
+            &Value::Null => Value::Null,
         }
     }
 }

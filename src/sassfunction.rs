@@ -23,11 +23,11 @@ impl SassFunction {
 
 macro_rules! one_arg {
     ($name:ident) => {
-        (stringify!($name).into(), None)
+        (stringify!($name).into(), Value::Null)
     };
     ($name:ident = $value:expr) => {{
         use valueexpression::value_expression;
-        (stringify!($name).into(), Some(value_expression($value).unwrap().1))
+        (stringify!($name).into(), value_expression($value).unwrap().1)
     }};
 }
 
@@ -44,73 +44,66 @@ lazy_static! {
     static ref FUNCTIONS: BTreeMap<String, SassFunction> = {
         let mut f = BTreeMap::new();
         f.insert("rgb".into(), func!((red, green, blue), |s| {
-            Value::Color(s.get("red").map(to_int).unwrap_or(0),
-                         s.get("green").map(to_int).unwrap_or(0),
-                         s.get("blue").map(to_int).unwrap_or(0),
+            Value::Color(to_int(s.get("red")),
+                         to_int(s.get("green")),
+                         to_int(s.get("blue")),
                          Rational::from_integer(1),
                          None)
         }));
         f.insert("rgba".into(), func!((red, green, blue, alpha), |s: &Scope| {
             let red = s.get("red");
             let alpha = s.get("alpha");
-            if let Some(Value::Color(r, g, b, _, _)) = red {
-                let a = alpha.or_else(|| s.get("green"))
-                    .map(to_rational)
-                    .unwrap_or(Rational::from_integer(1));
+            if let Value::Color(r, g, b, _, _) = red {
+                let a = to_rational(if alpha == Value::Null { s.get("green") }
+                                    else { alpha });
                 Value::Color(r, g, b, a, None)
             } else {
-                Value::Color(red.map(to_int).unwrap_or(0),
-                             s.get("green").map(to_int).unwrap_or(0),
-                             s.get("blue").map(to_int).unwrap_or(0),
-                             alpha.map(to_rational)
-                             .unwrap_or(Rational::from_integer(1)),
+                Value::Color(to_int(red),
+                             to_int(s.get("green")),
+                             to_int(s.get("blue")),
+                             to_rational(alpha),
                              None)
             }
         }));
         f.insert("red".into(), func!((color), |s: &Scope| {
             match s.get("color") {
-                Some(Value::Color(red, _, _, _, _)) => {
+                Value::Color(red, _, _, _, _) => {
                     Value::Numeric(b2rat(red), Unit::None, true)
                 }
-                Some(value) => value,
-                None => Value::Literal("".into()),
+                value => value,
             }
         }));
         f.insert("green".into(), func!((color), |s: &Scope| {
             match s.get("color") {
-                Some(Value::Color(_, green, _, _, _)) => {
+                Value::Color(_, green, _, _, _) => {
                     Value::Numeric(b2rat(green), Unit::None, true)
                 }
-                Some(value) => value,
-                None => Value::Literal("".into()),
+                value => value,
             }
         }));
         f.insert("blue".into(), func!((color), |s: &Scope| {
             match s.get("color") {
-                Some(Value::Color(_, _, blue, _, _)) => {
+                Value::Color(_, _, blue, _, _) => {
                     Value::Numeric(b2rat(blue), Unit::None, true)
                 }
-                Some(value) => value,
-                None => Value::Literal("".into()),
+                value => value,
             }
         }));
         f.insert("invert".into(), func!((color), |s: &Scope| {
             let color = s.get("color");
-            if let &Some(Value::Color(ref r, ref g, ref b, ref a, _)) =
-                &color {
-                    Value::Color(0xff - r, 0xff - g, 0xff - b, *a, None)
-                } else {
-                    panic!(format!("Unexpected arguments to invert: ({:?})",
-                                   color))
-                }
+            if let &Value::Color(ref r, ref g, ref b, ref a, _) = &color {
+                Value::Color(0xff - r, 0xff - g, 0xff - b, *a, None)
+            } else {
+                panic!(format!("Unexpected arguments to invert: ({:?})", color))
+            }
         }));
         f.insert("mix".into(), func!((color1, color2, weight=b"50%"), |s| {
             let color1 = s.get("color1");
             let color2 = s.get("color2");
             let weight = s.get("weight");
-            if let (&Some(Value::Color(ref r1, ref g1, ref b1, ref a1, _)),
-                    &Some(Value::Color(ref r2, ref g2, ref b2, ref a2, _)),
-                    &Some(Value::Numeric(ref w, ref wu, _))) =
+            if let (&Value::Color(ref r1, ref g1, ref b1, ref a1, _),
+                    &Value::Color(ref r2, ref g2, ref b2, ref a2, _),
+                    &Value::Numeric(ref w, ref wu, _)) =
                 (&color1, &color2, &weight) {
                 let w = if wu == &Unit::Percent {
                     w / Rational::from_integer(100)
@@ -146,17 +139,17 @@ lazy_static! {
         f.insert("type_of".into(), func!((value), |s: &Scope| {
             let value = s.get("value");
             Value::Literal(match value {
-                Some(Value::Color(..)) => "color",
-                Some(Value::Literal(..)) => "string",
-                Some(Value::Numeric(..)) => "number",
+                Value::Color(..) => "color",
+                Value::Literal(..) => "string",
+                Value::Numeric(..) => "number",
                 _ => "unknown",
             }.into())
         }));
         f.insert("if".into(), func!((condition, if_true, if_false), |s| {
-            if s.get("condition").map(|v| v.is_true()).unwrap_or(false) {
-                s.get("if_true").unwrap()
+            if s.get("condition").is_true() {
+                s.get("if_true")
             } else {
-                s.get("if_false").unwrap()
+                s.get("if_false")
             }
         }));
         f

@@ -308,7 +308,7 @@ fn test_mixin_declaration() {
                                    }\n"),
                Done(&b"\n"[..], MixinDeclaration {
                    name: "foo".into(),
-                   args: FormalArgs::new(vec![("x".into(), None)]),
+                   args: FormalArgs::new(vec![("x".into(), Value::Null)]),
                    body: vec![SassItem::Property(
                        "foo-bar".into(),
                        Value::MultiSpace(
@@ -329,9 +329,8 @@ fn test_mixin_declaration_default_and_subrules() {
                Done(&b"\n"[..], MixinDeclaration {
                    name: "bar".into(),
                    args: FormalArgs::new(
-                       vec![("a".into(), None),
-                            ("b".into(),
-                             Some(Value::Literal("flug".into())))]),
+                       vec![("a".into(), Value::Null),
+                            ("b".into(), Value::Literal("flug".into()))]),
                    body: vec![
                        SassItem::Property("foo-bar".into(),
                                           Value::Literal("baz".into())),

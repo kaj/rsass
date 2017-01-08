@@ -33,6 +33,7 @@ pub enum Value {
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
     Color(u8, u8, u8, Rational, Option<String>),
+    Null,
 }
 
 impl Value {

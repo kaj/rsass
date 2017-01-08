@@ -9,10 +9,10 @@ use variablescope::{Scope, ScopeImpl};
 /// The arguments are ordered (so they have a position).
 /// Each argument also has a name and may have a default value.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct FormalArgs(Vec<(String, Option<Value>)>);
+pub struct FormalArgs(Vec<(String, Value)>);
 
 impl FormalArgs {
-    pub fn new(a: Vec<(String, Option<Value>)>) -> Self {
+    pub fn new(a: Vec<(String, Value)>) -> Self {
         FormalArgs(a)
     }
 
@@ -22,13 +22,13 @@ impl FormalArgs {
                     -> ScopeImpl<'a> {
         let mut argscope = ScopeImpl::sub(scope);
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
-            args.0
+            let value = args.0
                 .iter()
                 .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
                 .or_else(|| args.0.get(i))
                 .map(|&(ref _k, ref v)| v)
-                .or_else(|| default.as_ref())
-                .map(|value| argscope.define(&name, &value, false));
+                .unwrap_or(default);
+            argscope.define(&name, &value, false);
         }
         argscope
     }
@@ -86,7 +86,7 @@ named!(pub formal_args<FormalArgs>,
                          d: opt!(chain!(tag!(":") ~ spacelike? ~
                                         d: space_list ~ spacelike?,
                                         || d)),
-                         || (name, d))) ~
+                         || (name, d.unwrap_or(Value::Null)))) ~
               tag!(")"),
               || FormalArgs(args)));
 
