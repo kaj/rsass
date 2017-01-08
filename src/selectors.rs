@@ -1,5 +1,5 @@
 use nom::is_alphanumeric;
-use parseutil::spacelike;
+use parseutil::{opt_spacelike, spacelike};
 use std::fmt;
 use std::str::from_utf8;
 
@@ -58,15 +58,15 @@ named!(selector_part<&[u8], SelectorPart>,
        alt_complete!(
            chain!(r: take_while1!(is_selector_char),
                   || SelectorPart::Simple(r.to_vec())) |
-           chain!(tag!("[") ~ spacelike? ~
-                  name: take_while1!(is_selector_char) ~ spacelike? ~
-                  op: alt_complete!(tag!("*=") | tag!("=")) ~ spacelike? ~
+           chain!(tag!("[") ~ opt_spacelike ~
+                  name: take_while1!(is_selector_char) ~ opt_spacelike ~
+                  op: alt_complete!(tag!("*=") | tag!("=")) ~ opt_spacelike ~
                   val: alt_complete!(
                       chain!(tag!("\"") ~ v: is_not!("\"") ~ tag!("\""),
                              || format!("\"{}\"", from_utf8(v).unwrap())) |
                       chain!(tag!("'") ~ v: is_not!("'") ~ tag!("'"),
                              || format!("'{}'", from_utf8(v).unwrap()))) ~
-                  spacelike? ~
+                  opt_spacelike ~
                   tag!("]"),
                   || SelectorPart::Attribute {
                       name: name.to_vec(),
@@ -74,11 +74,11 @@ named!(selector_part<&[u8], SelectorPart>,
                       val: val.as_bytes().to_vec(),
                   }) |
            chain!(tag!("&"), || SelectorPart::BackRef) |
-           chain!(spacelike? ~ tag!(">") ~ spacelike?,
+           chain!(opt_spacelike ~ tag!(">") ~ opt_spacelike,
                   || SelectorPart::RelOp(b'>')) |
-           chain!(spacelike? ~ tag!("+") ~ spacelike?,
+           chain!(opt_spacelike ~ tag!("+") ~ opt_spacelike,
                   || SelectorPart::RelOp(b'+')) |
-           chain!(spacelike? ~ tag!("~") ~ spacelike?,
+           chain!(opt_spacelike ~ tag!("~") ~ opt_spacelike,
                   || SelectorPart::RelOp(b'~')) |
            chain!(spacelike, || SelectorPart::Descendant)
            ));

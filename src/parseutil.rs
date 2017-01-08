@@ -2,10 +2,16 @@ use nom::{is_alphanumeric, multispace};
 use std::str::from_utf8;
 
 named!(pub spacelike<()>,
-       fold_many1!(alt_complete!(chain!(multispace, ||()) |
-                                 chain!(tag!("//") ~ c: is_not!("\n"), || ())),
+       fold_many1!(alt_complete!(ignore_space |ignore_lcomment),
                    (),
                    |(), ()| ()));
+named!(pub opt_spacelike<()>,
+       fold_many0!(alt_complete!(ignore_space | ignore_lcomment),
+                   (),
+                   |(), ()| ()));
+
+named!(ignore_space<()>, chain!(multispace, ||()));
+named!(ignore_lcomment<()>, chain!(tag!("//") ~ c: is_not!("\n"), || ()));
 
 named!(pub ignore_comments<()>,
        fold_many0!(alt_complete!(chain!(multispace, || ()) |
