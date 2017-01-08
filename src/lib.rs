@@ -3,6 +3,7 @@ extern crate lazy_static;
 #[macro_use]
 extern crate nom;
 extern crate num_rational;
+extern crate num_traits;
 
 use nom::IResult::*;
 use nom::multispace;

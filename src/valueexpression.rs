@@ -121,6 +121,13 @@ impl fmt::Display for Value {
                     .join(", ");
                 write!(out, "{}", t)
             }
+            &Value::Div(ref a, ref b, ref s1, ref s2) => {
+                write!(out, "{}{}/{}{}",
+                       a,
+                       if *s1 { " " } else { "" },
+                       if *s2 { " " } else { "" },
+                       b)
+            }
             &Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
             x => write!(out, "TODO {:?}", x),
         }

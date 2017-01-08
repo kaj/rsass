@@ -1,6 +1,7 @@
 //! A scope is something that contains variable values.
 
 use num_rational::Rational;
+use num_traits::identities::Zero;
 use sassfunction::get_function;
 use std::collections::BTreeMap;
 use std::ops::Neg;
@@ -197,12 +198,21 @@ impl<'a> ScopeImpl<'a> {
                                                 a.clone(),
                                                 None);
                         }
-                        (&Value::Numeric(ref a, ref au, _),
-                         &Value::Numeric(ref b, ref bu, _)) => {
-                            if bu == &Unit::None {
-                                return Value::Numeric(a / b, au.clone(), true);
+                        (&Value::Numeric(ref av, ref au, _),
+                         &Value::Numeric(ref bv, ref bu, _)) => {
+                            if bv.is_zero() {
+                                return Value::Div(Box::new(a.clone()),
+                                                  Box::new(b.clone()),
+                                                  *space1,
+                                                  *space2);
+                            } else if bu == &Unit::None {
+                                return Value::Numeric(av / bv,
+                                                      au.clone(),
+                                                      true);
                             } else if au == bu {
-                                return Value::Numeric(a / b, Unit::None, true);
+                                return Value::Numeric(av / bv,
+                                                      Unit::None,
+                                                      true);
                             }
                         }
                         _ => (),
@@ -327,6 +337,11 @@ mod test {
 
 
     // ...
+    #[test]
+    fn div_by_zero() {
+        assert_eq!("500px/0", do_evaluate(&[], b"(500px/0);"))
+    }
+
     #[test]
     fn double_div_1() {
         assert_eq!("15/3/5", do_evaluate(&[], b"15/3/5;"))
