@@ -5,8 +5,9 @@ use valueexpression::{Unit, Value};
 use variablescope::Scope;
 
 pub fn get_function(name: &str) -> Option<&SassFunction> {
-    let name = name.to_string().replace("-", "_");
-    FUNCTIONS.get(&name)
+    let name = name.replace("-", "_");
+    let name: &str = &name;
+    FUNCTIONS.get(name)
 }
 
 pub struct SassFunction {
@@ -41,16 +42,16 @@ macro_rules! func {
 }
 
 lazy_static! {
-    static ref FUNCTIONS: BTreeMap<String, SassFunction> = {
+    static ref FUNCTIONS: BTreeMap<&'static str, SassFunction> = {
         let mut f = BTreeMap::new();
-        f.insert("rgb".into(), func!((red, green, blue), |s| {
+        f.insert("rgb", func!((red, green, blue), |s| {
             Value::Color(to_int(s.get("red")),
                          to_int(s.get("green")),
                          to_int(s.get("blue")),
                          Rational::from_integer(1),
                          None)
         }));
-        f.insert("rgba".into(), func!((red, green, blue, alpha), |s: &Scope| {
+        f.insert("rgba", func!((red, green, blue, alpha), |s: &Scope| {
             let red = s.get("red");
             let alpha = s.get("alpha");
             if let Value::Color(r, g, b, _, _) = red {
@@ -65,7 +66,7 @@ lazy_static! {
                              None)
             }
         }));
-        f.insert("red".into(), func!((color), |s: &Scope| {
+        f.insert("red", func!((color), |s: &Scope| {
             match s.get("color") {
                 Value::Color(red, _, _, _, _) => {
                     Value::Numeric(b2rat(red), Unit::None, true)
@@ -73,7 +74,7 @@ lazy_static! {
                 value => value,
             }
         }));
-        f.insert("green".into(), func!((color), |s: &Scope| {
+        f.insert("green", func!((color), |s: &Scope| {
             match s.get("color") {
                 Value::Color(_, green, _, _, _) => {
                     Value::Numeric(b2rat(green), Unit::None, true)
@@ -81,7 +82,7 @@ lazy_static! {
                 value => value,
             }
         }));
-        f.insert("blue".into(), func!((color), |s: &Scope| {
+        f.insert("blue", func!((color), |s: &Scope| {
             match s.get("color") {
                 Value::Color(_, _, blue, _, _) => {
                     Value::Numeric(b2rat(blue), Unit::None, true)
@@ -89,7 +90,7 @@ lazy_static! {
                 value => value,
             }
         }));
-        f.insert("invert".into(), func!((color), |s: &Scope| {
+        f.insert("invert", func!((color), |s: &Scope| {
             let color = s.get("color");
             if let &Value::Color(ref r, ref g, ref b, ref a, _) = &color {
                 Value::Color(0xff - r, 0xff - g, 0xff - b, *a, None)
@@ -97,7 +98,7 @@ lazy_static! {
                 panic!(format!("Unexpected arguments to invert: ({:?})", color))
             }
         }));
-        f.insert("mix".into(), func!((color1, color2, weight=b"50%"), |s| {
+        f.insert("mix", func!((color1, color2, weight=b"50%"), |s| {
             let color1 = s.get("color1");
             let color2 = s.get("color2");
             let weight = s.get("weight");
@@ -136,7 +137,7 @@ lazy_static! {
                                weight))
             }
         }));
-        f.insert("type_of".into(), func!((value), |s: &Scope| {
+        f.insert("type_of", func!((value), |s: &Scope| {
             let value = s.get("value");
             Value::Literal(match value {
                 Value::Color(..) => "color",
@@ -145,7 +146,7 @@ lazy_static! {
                 _ => "unknown",
             }.into())
         }));
-        f.insert("if".into(), func!((condition, if_true, if_false), |s| {
+        f.insert("if", func!((condition, if_true, if_false), |s| {
             if s.get("condition").is_true() {
                 s.get("if_true")
             } else {
