@@ -519,8 +519,9 @@ mod test {
     }
     #[test]
     fn function_if_named() {
-        assert_eq!("hey", do_evaluate(&[], b"if($if-true: hey, $if-false: ho, \
-                                             $condition: true);"))
+        assert_eq!("hey", do_evaluate(
+            &[],
+            b"if($if-true: hey, $if-false: ho, $condition: true);"))
     }
 
     fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
