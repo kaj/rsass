@@ -336,6 +336,8 @@ fn t11_attribute_selectors() {
             a > b [hoo*=\"ha\"] {\n  bloo: bloo;\n}\n")
 }
 
+// Note: There does not seem to exist a test 12 in the spec.
+
 #[test]
 fn t13_back_references() {
     check(b"hey, ho {\n  \
@@ -345,6 +347,8 @@ fn t13_back_references() {
           b"hey, ho {\n  blah: blah;\n}\n\
             hey > boo, foo hey.goo, ho > boo, foo ho.goo {\n  bloo: bloo;\n}\n")
 }
+
+// TODO Implement test 14 imports.
 
 #[test]
 fn t15_arithmetic_and_lists_abcd() {
@@ -602,6 +606,20 @@ fn t22_colors_with_alpha() {
             bloo: rgba(0, 255, 255, 0.7);\n  groo: cyan;\n  \
             hoo: 123;\n  moo: 45;\n  poo: 6;\n  \
             goo: rgba(64, 0, 191, 0.75);\n  boo: #edcba9;\n}\n")
+}
+
+// TODO Implement tests 23 - 31 ...
+
+#[test]
+fn t32_percentages() {
+    check(b"div {\n  width: 10% + 20%;\n  height: 10% - 20%;\n  \
+            width: 10% + 10;\n  width: 10 + 10%;\n  height: 10% - 10;\n  \
+            height: 10 - 10%;\n  blah: (20% / 4%);\n  flah: 12 * 75%;\n  \
+            grah: 75% * 12;\n  // hwah: (24 / 8%);\n  nyah: (35% / 7);\n}",
+          b"div {\n  width: 30%;\n  height: -10%;\n  \
+            width: 20%;\n  width: 20%;\n  height: 0%;\n  \
+            height: 0%;\n  blah: 5;\n  flah: 900%;\n  \
+            grah: 900%;\n  nyah: 5%;\n}\n")
 }
 
 fn check(input: &[u8], expected: &[u8]) {

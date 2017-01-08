@@ -147,10 +147,12 @@ impl<'a> ScopeImpl<'a> {
                                         (aa + ba) / Rational::from_integer(2),
                                         None)
                     }
-                    (&Value::Numeric(ref a, ref au, _),
-                     &Value::Numeric(ref b, ref bu, _)) => {
-                        if au == bu {
-                            Value::Numeric(a - b, au.clone(), true)
+                    (&Value::Numeric(ref av, ref au, _),
+                     &Value::Numeric(ref bv, ref bu, _)) => {
+                        if au == bu || bu == &Unit::None {
+                            Value::Numeric(av - bv, au.clone(), true)
+                        } else if au == &Unit::None {
+                            Value::Numeric(av - bv, bu.clone(), true)
                         } else {
                             Value::Literal(format!("{}-{}", a, b))
                         }
