@@ -163,7 +163,6 @@ lazy_static! {
             }
         }));
         f.insert("unquote", func!((contents), |s| {
-            println!("Should unqoute {:?}", s.get("contents"));
             match s.get("contents") {
                 Value::Literal(v, _) => Value::Literal(v, false),
                 v => v,

@@ -19,7 +19,6 @@ pub enum Value {
     /// The boolean is true for quoted strings and false for unquoted
     /// (keywords).
     Literal(String, bool),
-    Minus(Box<Value>, Box<Value>),
     MultiSpace(Vec<Value>),
     MultiComma(Vec<Value>),
     /// A Numeric value is a rational value with a Unit (which may be
@@ -31,7 +30,6 @@ pub enum Value {
     /// is not allways division.
     Paren(Box<Value>),
     Product(Box<Value>, Box<Value>),
-    Sum(Box<Value>, Box<Value>),
     Variable(String),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
@@ -211,13 +209,10 @@ named!(pub sum_expression<Value>,
                                b: term_value >>
                                (op, b)),
                      a,
-                     |a, (op, b)| {
-                         if op == b"+" {
-                             Value::Sum(Box::new(a), Box::new(b))
-                         } else {
-                             Value::Minus(Box::new(a), Box::new(b))
-                         }
-                     }) >>
+                     |a, (op, b)| Value::BinOp(Box::new(a),
+                                               if op == b"+" { Operator::Plus }
+                                               else { Operator::Minus },
+                                               Box::new(b))) >>
                  (r)));
 
 named!(term_value<Value>,
