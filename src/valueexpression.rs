@@ -237,7 +237,8 @@ named!(single_value<&[u8], Value>,
        alt_complete!(
            map!(tag!("true"), |_| Value::True) |
            map!(tag!("false"), |_| Value::False) |
-           chain!(r: is_a!("0123456789") ~
+           chain!(neg: tag!("-")? ~
+                  r: is_a!("0123456789") ~
                   d: opt!(preceded!(tag!("."), is_a!("0123456789"))) ~
                   u: unit?,
                   || {
@@ -248,6 +249,9 @@ named!(single_value<&[u8], Value>,
                           n = n +
                               Rational::from_str(from_utf8(d).unwrap()).unwrap()
                               / Rational::from_integer(ten.pow(d.len() as u32));
+                      }
+                      if neg.is_some() {
+                          n = -n;
                       }
                       Value::Numeric(n,
                                      u.unwrap_or(Unit::None),

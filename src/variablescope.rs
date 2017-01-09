@@ -251,7 +251,11 @@ mod test {
         assert_eq!("italic bold 10px/8px",
                    do_evaluate(&[], b"(italic bold 10px/8px);"))
     }
-
+    #[test]
+    fn negative_in_arithmetic() {
+        assert_eq!("960px",
+                   do_evaluate(&[("m", "20")], b"1000px + $m * -2;"))
+    }
 
     // ...
     #[test]
