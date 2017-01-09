@@ -239,6 +239,11 @@ impl<'a> ScopeImpl<'a> {
                                arithmetic || *is_calculated)
             }
             &Value::Null => Value::Null,
+            &Value::True => Value::True,
+            &Value::False => Value::False,
+            &Value::BinOp(ref a, ref op, ref b) => {
+                op.eval(self.do_evaluate(a, true), self.do_evaluate(b, true))
+            }
         }
     }
 }
@@ -568,6 +573,23 @@ mod test {
     #[test]
     fn unquote_quote() {
         assert_eq!("foo bar", do_evaluate(&[], b"unquote(quote(foo bar));"))
+    }
+
+    #[test]
+    fn equal_true() {
+        assert_eq!("true", do_evaluate(&[], b"17 == 10 + 7;"))
+    }
+    #[test]
+    fn equal_false() {
+        assert_eq!("false", do_evaluate(&[], b"17 == 10 + 8;"))
+    }
+    #[test]
+    fn not_equal_true() {
+        assert_eq!("true", do_evaluate(&[], b"17 != 10 + 8;"))
+    }
+    #[test]
+    fn not_equal_false() {
+        assert_eq!("false", do_evaluate(&[], b"18 != 10 + 8;"))
     }
 
     fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {

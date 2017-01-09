@@ -630,6 +630,19 @@ fn t36_extra_commas_in_selectors() {
           b"div, span {\n  color: red;\n}\n")
 }
 
+#[test]
+fn t59_if_expression() {
+    check(b"$x: 0;\n$if-false: whatever;\n\n\
+            div {\n  \
+            foo: if($if-true: hey, $if-false: ho, $condition: true);\n  \
+            foo: if($if-true: hey, $if-false: ho, $condition: false);\n  \
+            foo: if($x != 0, if($x, true, false), unquote(\"x is zero\"));\n  \
+            foo: if(false, 1/0, $if-false: $if-false);\n}",
+          b"div {\n  \
+            foo: hey;\n  foo: ho;\n  foo: x is zero;\n  foo: whatever;\n}\n")
+
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input);

@@ -2,6 +2,7 @@ use colors::{name_to_rgb, rgb_to_name};
 use formalargs::{CallArgs, call_args};
 use nom::multispace;
 use num_rational::Rational;
+use operator::Operator;
 use parseutil::name;
 use std::fmt;
 use std::str::{FromStr, from_utf8};
@@ -36,6 +37,10 @@ pub enum Value {
     /// since case and length should be preserved (#AbC vs #aabbcc).
     Color(u8, u8, u8, Rational, Option<String>),
     Null,
+    True,
+    False,
+    /// A binary operation, two operands and an operator.
+    BinOp(Box<Value>, Operator, Box<Value>),
 }
 
 impl Value {
@@ -47,11 +52,10 @@ impl Value {
         }
     }
 
-    /// All values other than `false` and `null` should be considered true.
-    /// Not properly implemented yet, because if limited Value type.
+    /// All values other than `False` and `Null` should be considered true.
     pub fn is_true(&self) -> bool {
         match self {
-            &Value::Literal(ref s, _) => s != "false",
+            &Value::False => false,
             &Value::Null => false,
             _ => true,
         }
@@ -139,6 +143,11 @@ impl fmt::Display for Value {
                        b)
             }
             &Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
+            &Value::BinOp(ref a, ref op, ref b) => {
+                write!(out, "{} {} {}", a, op, b)
+            }
+            &Value::True => write!(out, "true"),
+            &Value::False => write!(out, "false"),
             x => write!(out, "TODO {:?}", x),
         }
     }
@@ -173,6 +182,27 @@ named!(pub space_list<&[u8], Value>,
               }));
 
 named!(pub single_expression<Value>,
+       do_parse!(a: sum_expression >>
+                 r: fold_many0!(
+                     do_parse!(opt!(multispace) >>
+                               op: alt_complete!(tag!("==") | tag!("!=")) >>
+                               opt!(multispace) >>
+                               b: sum_expression >>
+                               (op, b)),
+                     a,
+                     |a, (op, b)| {
+                         Value::BinOp(
+                             Box::new(a),
+                             if op == b"==" {
+                                 Operator::Equal
+                             } else {
+                                 Operator::NotEqual
+                             },
+                             Box::new(b))
+                     }) >>
+                 (r)));
+
+named!(pub sum_expression<Value>,
        do_parse!(a: term_value >>
                  r: fold_many0!(
                      do_parse!(opt!(multispace) >>
@@ -210,6 +240,8 @@ named!(term_value<Value>,
 
 named!(single_value<&[u8], Value>,
        alt_complete!(
+           map!(tag!("true"), |_| Value::True) |
+           map!(tag!("false"), |_| Value::False) |
            chain!(r: is_a!("0123456789") ~
                   d: opt!(preceded!(tag!("."), is_a!("0123456789"))) ~
                   u: unit?,
@@ -257,7 +289,7 @@ named!(single_value<&[u8], Value>,
                                                from_utf8(g).unwrap(),
                                                from_utf8(b).unwrap())))) |
            chain!(name: name ~ args: call_args, || Value::Call(name, args)) |
-           chain!(val: is_not!("+-*/;,$()! \n\t\""),
+           chain!(val: is_not!("+-*/=;,$()! \n\t\""),
                   || {
                       let val = from_utf8(val).unwrap().to_string();
                       if let Some((r, g, b)) = name_to_rgb(&val) {
