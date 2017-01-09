@@ -264,8 +264,8 @@ fn test_mixin_call_pos_args() {
                Done(&b"\n"[..],
                     ("foo".to_string(),
                      CallArgs::new(
-                         vec![(None, Value::Literal("bar".to_string())),
-                              (None, Value::Literal("baz".to_string()))]))))
+                         vec![(None, string("bar")),
+                              (None, string("baz"))]))))
 }
 
 #[test]
@@ -274,8 +274,8 @@ fn test_mixin_call_named_args() {
                Done(&b"\n"[..],
                     ("foo".to_string(),
                      CallArgs::new(
-                         vec![(Some("x".into()), Value::Literal("bar".into())),
-                              (Some("y".into()), Value::Literal("baz".into()))
+                         vec![(Some("x".into()), string("bar")),
+                              (Some("y".into()), string("baz"))
                               ]))))
 }
 
@@ -313,7 +313,7 @@ fn test_mixin_declaration() {
                    body: vec![SassItem::Property(
                        "foo-bar".into(),
                        Value::MultiSpace(
-                           vec![Value::Literal("baz".into()),
+                           vec![string("baz"),
                                 Value::Variable("x".into())]),
                        )],
                }))
@@ -331,10 +331,10 @@ fn test_mixin_declaration_default_and_subrules() {
                    name: "bar".into(),
                    args: FormalArgs::new(
                        vec![("a".into(), Value::Null),
-                            ("b".into(), Value::Literal("flug".into()))]),
+                            ("b".into(), string("flug"))]),
                    body: vec![
                        SassItem::Property("foo-bar".into(),
-                                          Value::Literal("baz".into())),
+                                          string("baz")),
                        SassItem::Rule(
                            vec![selector(b"foo").unwrap().1,
                                 selector(b"bar").unwrap().1],
@@ -424,7 +424,7 @@ named!(variable_declaration<&[u8], (String, Value, bool)>,
 fn test_variable_declaration_simple() {
     assert_eq!(variable_declaration(b"$foo: bar;\n"),
                Done(&b""[..],
-                    ("foo".into(), Value::Literal("bar".into()), false)))
+                    ("foo".into(), string("bar"), false)))
 }
 
 #[test]
@@ -432,7 +432,11 @@ fn test_variable_declaration_global() {
     assert_eq!(variable_declaration(b"$y: some value !global;\n"),
                Done(&b""[..], ("y".into(),
                                Value::MultiSpace(
-                                   vec![Value::Literal("some".into()),
-                                        Value::Literal("value".into())]),
+                                   vec![string("some"), string("value")]),
                                true)))
+}
+
+#[cfg(test)]
+fn string(v: &str) -> Value {
+    Value::Literal(v.into(), false)
 }

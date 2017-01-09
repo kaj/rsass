@@ -139,18 +139,34 @@ lazy_static! {
         }));
         f.insert("type_of", func!((value), |s: &Scope| {
             let value = s.get("value");
-            Value::Literal(match value {
-                Value::Color(..) => "color",
-                Value::Literal(..) => "string",
-                Value::Numeric(..) => "number",
-                _ => "unknown",
-            }.into())
+            Value::Literal(
+                match value {
+                    Value::Color(..) => "color",
+                    Value::Literal(..) => "string",
+                    Value::Numeric(..) => "number",
+                    _ => "unknown",
+                }.into(),
+                false)
         }));
         f.insert("if", func!((condition, if_true, if_false), |s| {
             if s.get("condition").is_true() {
                 s.get("if_true")
             } else {
                 s.get("if_false")
+            }
+        }));
+
+        f.insert("quote", func!((contents), |s| {
+            match s.get("contents") {
+                Value::Literal(v, _) => Value::Literal(v, true),
+                v => Value::Literal(format!("{}", v), true),
+            }
+        }));
+        f.insert("unquote", func!((contents), |s| {
+            println!("Should unqoute {:?}", s.get("contents"));
+            match s.get("contents") {
+                Value::Literal(v, _) => Value::Literal(v, false),
+                v => v,
             }
         }));
         f

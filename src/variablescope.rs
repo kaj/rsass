@@ -70,7 +70,7 @@ impl<'a> ScopeImpl<'a> {
     }
     fn do_evaluate(&mut self, val: &Value, arithmetic: bool) -> Value {
         match val {
-            &Value::Literal(ref v) => Value::Literal(v.clone()),
+            &Value::Literal(ref v, ref q) => Value::Literal(v.clone(), *q),
             &Value::Paren(ref v) => self.do_evaluate(v, true),
             &Value::Color(_, _, _, _, _) => val.clone(),
             &Value::Variable(ref name) => {
@@ -121,10 +121,10 @@ impl<'a> ScopeImpl<'a> {
                         } else if au == &Unit::None {
                             Value::Numeric(a + b, bu.clone(), true)
                         } else {
-                            Value::Literal(format!("{}{}", a, b))
+                            Value::Literal(format!("{}{}", a, b), false)
                         }
                     }
-                    (a, b) => Value::Literal(format!("{}{}", a, b)),
+                    (a, b) => Value::Literal(format!("{}{}", a, b), false),
                 }
             }
             &Value::Minus(ref a, ref b) => {
@@ -155,10 +155,10 @@ impl<'a> ScopeImpl<'a> {
                         } else if au == &Unit::None {
                             Value::Numeric(av - bv, bu.clone(), true)
                         } else {
-                            Value::Literal(format!("{}-{}", a, b))
+                            Value::Literal(format!("{}-{}", a, b), false)
                         }
                     }
-                    (a, b) => Value::Literal(format!("{}-{}", a, b)),
+                    (a, b) => Value::Literal(format!("{}-{}", a, b), false),
                 }
             }
             &Value::Product(ref a, ref b) => {
@@ -171,10 +171,10 @@ impl<'a> ScopeImpl<'a> {
                     } else if au == &Unit::None {
                         Value::Numeric(a * b, bu.clone(), true)
                     } else {
-                        Value::Literal(format!("{}*{}", a, b))
+                        Value::Literal(format!("{}*{}", a, b), false)
                     }
                 } else {
-                    Value::Literal(format!("{}*{}", a, b))
+                    Value::Literal(format!("{}*{}", a, b), false)
                 }
             }
             &Value::Div(ref a, ref b, ref space1, ref space2) => {
@@ -230,7 +230,8 @@ impl<'a> ScopeImpl<'a> {
                                        } else {
                                            ""
                                        },
-                                       b))
+                                       b),
+                               false)
             }
             &Value::Numeric(ref v, ref u, ref is_calculated) => {
                 Value::Numeric(v.clone(),
@@ -544,6 +545,29 @@ mod test {
         assert_eq!("hey", do_evaluate(
             &[],
             b"if($if-true: hey, $if-false: ho, $condition: true);"))
+    }
+
+    #[test]
+    fn quote_keywords() {
+        assert_eq!("\"foo bar\"", do_evaluate(&[], b"quote(foo bar);"))
+    }
+    #[test]
+    fn quote_expr() {
+        assert_eq!("\"foo 17\"",
+                   do_evaluate(&[("s", "foo"), ("n", "5")],
+                               b"quote($s $n * 3 + 2);"))
+    }
+    #[test]
+    fn quoted_string() {
+        assert_eq!("\"foobar\"", do_evaluate(&[], b"\"foobar\";"))
+    }
+    #[test]
+    fn unquote_string() {
+        assert_eq!("foo bar", do_evaluate(&[], b"unquote(\"foo bar\");"))
+    }
+    #[test]
+    fn unquote_quote() {
+        assert_eq!("foo bar", do_evaluate(&[], b"unquote(quote(foo bar));"))
     }
 
     fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {

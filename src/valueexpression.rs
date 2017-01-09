@@ -15,7 +15,9 @@ pub enum Value {
     /// In the later case, the booleans tell if there should be whitespace
     /// before / after the slash.
     Div(Box<Value>, Box<Value>, bool, bool),
-    Literal(String),
+    /// The boolean is true for quoted strings and false for unquoted
+    /// (keywords).
+    Literal(String, bool),
     Minus(Box<Value>, Box<Value>),
     MultiSpace(Vec<Value>),
     MultiComma(Vec<Value>),
@@ -49,7 +51,8 @@ impl Value {
     /// Not properly implemented yet, because if limited Value type.
     pub fn is_true(&self) -> bool {
         match self {
-            &Value::Literal(ref s) => s != "false",
+            &Value::Literal(ref s, _) => s != "false",
+            &Value::Null => false,
             _ => true,
         }
     }
@@ -81,7 +84,13 @@ impl fmt::Display for Unit {
 impl fmt::Display for Value {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            &Value::Literal(ref s) => write!(out, "{}", s),
+            &Value::Literal(ref s, ref q) => {
+                if *q {
+                    write!(out, "\"{}\"", s)
+                } else {
+                    write!(out, "{}", s)
+                }
+            }
             &Value::Numeric(ref v, ref u, ref _is_calculated) => {
                 write!(out, "{}{}", rational2str(v, false), u)
             }
@@ -248,16 +257,20 @@ named!(single_value<&[u8], Value>,
                                                from_utf8(g).unwrap(),
                                                from_utf8(b).unwrap())))) |
            chain!(name: name ~ args: call_args, || Value::Call(name, args)) |
-           chain!(val: is_not!("+-*/;,$()! \n\t"),
+           chain!(val: is_not!("+-*/;,$()! \n\t\""),
                   || {
                       let val = from_utf8(val).unwrap().to_string();
                       if let Some((r, g, b)) = name_to_rgb(&val) {
                           Value::Color(r, g, b, Rational::from_integer(1),
                                        Some(val))
                       } else {
-                          Value::Literal(val)
+                          Value::Literal(val, false)
                       }
                   }) |
+           map!(delimited!(tag!("\""),
+                           escaped!(is_not!("\\\""), '\\', one_of!("\"\\")),
+                           tag!("\"")),
+                |s| Value::Literal(from_utf8(s).unwrap().to_string(), true)) |
            chain!(tag!("(") ~ multispace? ~
                   val: value_expression ~ multispace? ~
                   tag!(")"),
@@ -304,7 +317,7 @@ mod test {
     #[test]
     fn simple_value_literal() {
         assert_eq!(value_expression(b"rad;"),
-                   Done(&b";"[..], Value::Literal("rad".into())))
+                   Done(&b";"[..], Value::Literal("rad".into(), false)))
     }
 
     #[test]
@@ -324,7 +337,8 @@ mod test {
     fn paren_literal() {
         assert_eq!(value_expression(b"(rad);"),
                    Done(&b";"[..],
-                        Value::Paren(Box::new(Value::Literal("rad".into())))))
+                        Value::Paren(Box::new(Value::Literal("rad".into(),
+                                                             false)))))
     }
 
     #[test]
@@ -333,8 +347,8 @@ mod test {
                    Done(&b";"[..],
                         Value::Paren(Box::new(
                             Value::MultiSpace(vec![
-                                Value::Literal("rod".into()),
-                                Value::Literal("bloe".into())])
+                                Value::Literal("rod".into(), false),
+                                Value::Literal("bloe".into(), false)])
                                 ))))
     }
 
