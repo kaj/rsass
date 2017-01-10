@@ -39,11 +39,12 @@ impl OutputStyle {
                               &body,
                               indent));
         if !direct.is_empty() {
-            try!(write!(out, "{}{}{{",
+            try!(write!(out,
+                        "{}{}{{",
                         selectors.iter()
-                        .map(|s| format!("{}", s))
-                        .collect::<Vec<_> >()
-                        .join(", "),
+                            .map(|s| format!("{}", s))
+                            .collect::<Vec<_> >()
+                            .join(", "),
                         self.opt_space()));
             try!(out.write(&direct));
             try!(self.do_indent(out, indent));
@@ -75,8 +76,11 @@ impl OutputStyle {
                                 name,
                                 self.opt_space(),
                                 scope.evaluate(value),
-                                if !is_last || !self.is_compressed() { ";" }
-                                else { "" }
+                                if !is_last || !self.is_compressed() {
+                                    ";"
+                                } else {
+                                    ""
+                                }
                                 ));
                 }
                 &SassItem::Rule(ref s, ref b) => {

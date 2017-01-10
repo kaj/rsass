@@ -30,10 +30,11 @@ impl<I> Iterator for Iter<I>
 #[test]
 fn test_identify_last() {
     assert_eq!("1, 2, 3, 4.",
-               (1..5).identify_last()
-               .map(|(is_last, e)| {
-                   format!("{}{}", e, if is_last { "." } else { "," })
-               })
-               .collect::<Vec<_>>()
-               .join(" "))
+               (1..5)
+                   .identify_last()
+                   .map(|(is_last, e)| {
+                       format!("{}{}", e, if is_last { "." } else { "," })
+                   })
+                   .collect::<Vec<_>>()
+                   .join(" "))
 }
