@@ -253,8 +253,7 @@ mod test {
     }
     #[test]
     fn negative_in_arithmetic() {
-        assert_eq!("960px",
-                   do_evaluate(&[("m", "20")], b"1000px + $m * -2;"))
+        assert_eq!("960px", do_evaluate(&[("m", "20")], b"1000px + $m * -2;"))
     }
 
     // ...

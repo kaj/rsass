@@ -7,7 +7,7 @@ extern crate num_traits;
 
 use nom::IResult::*;
 use nom::multispace;
-use std::io::{self, Write};
+use std::io::Write;
 use std::str::from_utf8;
 
 mod colors;
@@ -18,13 +18,18 @@ mod selectors;
 mod parseutil;
 mod valueexpression;
 mod variablescope;
+mod output_style;
+
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
+pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
 use valueexpression::{Value, value_expression};
 use variablescope::{ScopeImpl, Scope};
 
-pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, String> {
+pub fn compile_scss(input: &[u8],
+                    style: OutputStyle)
+                    -> Result<Vec<u8>, String> {
     match sassfile(input) {
         Done(b"", items) => {
             let mut globals = ScopeImpl::new();
@@ -38,7 +43,12 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, String> {
                         } else {
                             separate = true;
                         }
-                        write_rule(&s, &b, &mut result, &mut globals, None, 0)
+                        style.write_rule(&s,
+                                        &b,
+                                        &mut result,
+                                        &mut globals,
+                                        None,
+                                        0)
                             .unwrap();
                     }
                     SassItem::VariableDeclaration { name, val, global } => {
@@ -53,13 +63,13 @@ pub fn compile_scss(input: &[u8]) -> Result<Vec<u8>, String> {
                         }
                         if let Some(mixin) = globals.get_mixin(&name) {
                             let mut direct = vec![];
-                            handle_body(
-                                &mut direct,
-                                &mut result,
-                                &mut mixin.argscope(&mut globals, &args),
-                                &vec![Selector::root()],
-                                &mixin.body,
-                                0)
+                            style.handle_body(&mut direct,
+                                             &mut result,
+                                             &mut mixin.argscope(&mut globals,
+                                                                 &args),
+                                             &vec![Selector::root()],
+                                             &mixin.body,
+                                             0)
                                 .unwrap();
                             assert_eq!(direct, &[]);
                         } else {
@@ -116,7 +126,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
                    ))));
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-enum SassItem {
+pub enum SassItem {
     None,
     Comment(String),
     Property(String, Value),
@@ -130,85 +140,7 @@ enum SassItem {
     MixinCall { name: String, args: CallArgs },
 }
 
-fn write_rule(selectors: &[Selector],
-              body: &[SassItem],
-              out: &mut Write,
-              scope: &mut Scope,
-              parent: Option<&[Selector]>,
-              indent: usize)
-              -> io::Result<()> {
-    let selectors = if let Some(parent) = parent {
-        let mut result = Vec::new();
-        for p in parent {
-            for s in selectors {
-                result.push(p.join(s));
-            }
-        }
-        result
-    } else {
-        selectors.into()
-    };
-    let mut direct = Vec::new();
-    let mut sub = Vec::new();
-    try!(handle_body(&mut direct, &mut sub, &mut ScopeImpl::sub(scope),
-                     &selectors, &body, indent));
-    if !direct.is_empty() {
-        try!(write!(out, "{} {{\n",
-                    selectors.iter()
-                    .map(|s| format!("{}", s))
-                    .collect::<Vec<_> >()
-                    .join(", ")));
-        try!(out.write(&direct));
-        try!(write!(out, "}}\n"));
-    }
-    try!(out.write(&sub));
-    Ok(())
-}
 
-fn handle_body(direct: &mut Vec<u8>,
-               sub: &mut Vec<u8>,
-               scope: &mut Scope,
-               selectors: &[Selector],
-               body: &[SassItem],
-               indent: usize)
-               -> io::Result<()> {
-    for b in body {
-        match b {
-            &SassItem::Comment(ref c) => {
-                try!(do_indent(direct, indent + 2));
-                try!(writeln!(direct, "/*{}*/", c));
-            }
-            &SassItem::Property(ref name, ref value) => {
-                try!(do_indent(direct, indent + 2));
-                try!(write!(direct, "{}: {};\n", name, scope.evaluate(value)));
-            }
-            &SassItem::Rule(ref s, ref b) => {
-                try!(write_rule(s, b, sub, scope, Some(&selectors), indent));
-            }
-            &SassItem::VariableDeclaration { ref name, ref val, global } => {
-                scope.define(&name, &val, global);
-            }
-            &SassItem::MixinDeclaration(ref m) => {
-                scope.define_mixin(m);
-            }
-            &SassItem::MixinCall { ref name, ref args } => {
-                if let Some(mixin) = scope.get_mixin(name) {
-                    let mut argscope = mixin.argscope(scope, &args);
-                    try!(handle_body(direct, sub, &mut argscope, selectors,
-                                     &mixin.body, indent));
-                } else {
-                    writeln!(direct,
-                             "/* Unknown mixin {}({:?}) */",
-                             name,
-                             args)
-                        .unwrap();
-                }
-            }
-            &SassItem::None => (),
-        }
-    }
-    Ok(())
-}
 
 named!(rule<SassItem>,
        do_parse!(opt_spacelike >>
@@ -361,14 +293,6 @@ impl MixinDeclaration {
                     -> ScopeImpl<'a> {
         self.args.eval(scope, args)
     }
-}
-
-
-fn do_indent(out: &mut Write, steps: usize) -> io::Result<()> {
-    for _i in 0..steps {
-        try!(write!(out, " "));
-    }
-    Ok(())
 }
 
 named!(property<&[u8], SassItem>,

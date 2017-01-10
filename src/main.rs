@@ -2,7 +2,7 @@ extern crate clap;
 extern crate rsass;
 
 use clap::{App, Arg, ArgMatches};
-use rsass::compile_scss;
+use rsass::{OutputStyle, compile_scss};
 use std::fs::File;
 use std::io::{Read, Write};
 use std::process::exit;
@@ -45,7 +45,7 @@ fn run(args: ArgMatches) -> Result<(), String> {
             try!(source.read_to_end(&mut data).map_err(|e| format!("{}", e)));
             let out = std::io::stdout();
             try!(out.lock()
-                .write_all(&try!(compile_scss(&data)))
+                .write_all(&try!(compile_scss(&data, OutputStyle::Normal)))
                 .map_err(|e| format!("{}", e)));
         }
     }

@@ -4,7 +4,7 @@
 //! try to implement that functionality without breaking those already
 //! added.
 extern crate rsass;
-use rsass::compile_scss;
+use rsass::{OutputStyle, compile_scss};
 
 #[test]
 fn t00_empty() {
@@ -645,7 +645,7 @@ fn t59_if_expression() {
 
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
-    let result = compile_scss(input);
+    let result = compile_scss(input, OutputStyle::Normal);
     if let Ok(output) = result {
         if let (Ok(output), Ok(expected)) =
             (from_utf8(&output), from_utf8(expected)) {
