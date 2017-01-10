@@ -1,3 +1,4 @@
+use identify_last_iterator::IdentifyLast;
 use selectors::Selector;
 use std::io::{self, Write};
 use super::SassItem;
@@ -46,18 +47,11 @@ impl OutputStyle {
                         self.opt_space()));
             try!(out.write(&direct));
             try!(self.do_indent(out, indent));
-            try!(write!(out, "}}\n"));
+            try!(write!(out, "}}"));
+            try!(self.do_indent(out, 0));
         }
         try!(out.write(&sub));
         Ok(())
-    }
-
-    fn opt_space(&self) -> &'static str {
-        if self != &OutputStyle::Compressed {
-            " "
-        } else {
-            ""
-        }
     }
 
     pub fn handle_body(&self,
@@ -68,7 +62,7 @@ impl OutputStyle {
                        body: &[SassItem],
                        indent: usize)
                        -> io::Result<()> {
-        for b in body {
+        for (is_last, b) in body.iter().identify_last() {
             match b {
                 &SassItem::Comment(ref c) => {
                     try!(self.do_indent(direct, indent + 2));
@@ -81,7 +75,7 @@ impl OutputStyle {
                                 name,
                                 self.opt_space(),
                                 scope.evaluate(value),
-                                if self != &OutputStyle::Compressed { ";" }
+                                if !is_last || !self.is_compressed() { ";" }
                                 else { "" }
                                 ));
                 }
@@ -124,13 +118,21 @@ impl OutputStyle {
         Ok(())
     }
 
-    fn do_indent(&self, out: &mut Write, steps: usize) -> io::Result<()> {
-        if self != &OutputStyle::Compressed {
+    pub fn do_indent(&self, out: &mut Write, steps: usize) -> io::Result<()> {
+        if !self.is_compressed() {
             try!(write!(out, "\n"));
             for _i in 0..steps {
                 try!(write!(out, " "));
             }
         }
         Ok(())
+    }
+
+    fn opt_space(&self) -> &'static str {
+        if self.is_compressed() { "" } else { " " }
+    }
+
+    fn is_compressed(&self) -> bool {
+        self == &OutputStyle::Compressed
     }
 }

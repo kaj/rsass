@@ -14,6 +14,31 @@ fn t01_simple_css() {
           b"a{color:blue}\n")
 }
 
+#[test]
+fn t02_simple_nesting() {
+    check(b"div {\n  img {\n    border: 0px;\n  }\n}",
+          b"div img{border:0px}\n")
+}
+
+#[test]
+fn t03_simple_variable() {
+    check(b"$color: red;\n\na {\n  color: $color;\n}",
+          b"a{color:red}\n")
+}
+
+#[test]
+fn t04_basic_variables() {
+    check(b"$color: \"black\";\n$color: red;\n$background: \"blue\";\n\n\
+            a {\n  color: $color;\n  background: $background;\n}\n\n\
+            $y: before;\n\n\
+            $x: 1 2 $y;\n\n\
+            foo {\n  a: $x;\n}\n\n\
+            $y: after;\n\n\
+            foo {\n  a: $x;\n}",
+          b"a{color:red;background:\"blue\"}foo{a:1 2 before}\
+            foo{a:1 2 before}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input, OutputStyle::Compressed);

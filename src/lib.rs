@@ -19,6 +19,7 @@ mod parseutil;
 mod valueexpression;
 mod variablescope;
 mod output_style;
+mod identify_last_iterator;
 
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
 pub use output_style::OutputStyle;
@@ -39,7 +40,7 @@ pub fn compile_scss(input: &[u8],
                 match item {
                     SassItem::Rule(s, b) => {
                         if separate {
-                            write!(result, "\n").unwrap();
+                            style.do_indent(&mut result, 0).unwrap();
                         } else {
                             separate = true;
                         }
@@ -80,16 +81,20 @@ pub fn compile_scss(input: &[u8],
                     }
                     SassItem::Comment(c) => {
                         if separate {
-                            separate = false;
-                            write!(result, "\n").unwrap();
+                            style.do_indent(&mut result, 0).unwrap();
+                        } else {
+                            separate = true;
                         }
-                        writeln!(result, "/*{}*/", c).unwrap();
+                        write!(result, "/*{}*/", c).unwrap();
                     }
                     SassItem::Property(_, _) => {
                         panic!("Global property not allowed");
                     }
                     SassItem::None => (),
                 }
+            }
+            if result != b"" && result[result.len() - 1] != b'\n' {
+                write!(result, "\n").unwrap();
             }
             Ok(result)
         }
