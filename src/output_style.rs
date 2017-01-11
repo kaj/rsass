@@ -1,4 +1,3 @@
-use identify_last_iterator::IdentifyLast;
 use selectors::Selector;
 use std::io::{self, Write};
 use super::SassItem;
@@ -46,6 +45,9 @@ impl OutputStyle {
                             .collect::<Vec<_>>()
                             .join(", "),
                         self.opt_space()));
+            if self.is_compressed() && direct.last() == Some(&b';') {
+                direct.pop();
+            }
             try!(out.write(&direct));
             try!(self.do_indent(out, indent));
             try!(write!(out, "}}"));
@@ -63,7 +65,7 @@ impl OutputStyle {
                        body: &[SassItem],
                        indent: usize)
                        -> io::Result<()> {
-        for (is_last, b) in body.iter().identify_last() {
+        for b in body {
             match b {
                 &SassItem::Comment(ref c) => {
                     try!(self.do_indent(direct, indent + 2));
@@ -72,15 +74,10 @@ impl OutputStyle {
                 &SassItem::Property(ref name, ref value) => {
                     try!(self.do_indent(direct, indent + 2));
                     try!(write!(direct,
-                                "{}:{}{}{}",
+                                "{}:{}{};",
                                 name,
                                 self.opt_space(),
-                                scope.evaluate(value),
-                                if !is_last || !self.is_compressed() {
-                                    ";"
-                                } else {
-                                    ""
-                                }));
+                                scope.evaluate(value)));
                 }
                 &SassItem::Rule(ref s, ref b) => {
                     try!(self.write_rule(s,

@@ -39,6 +39,26 @@ fn t04_basic_variables() {
             foo{a:1 2 before}\n")
 }
 
+#[test]
+fn t05_empty_levels() {
+    check(b"div {\n  \
+            span {\n    color: red;\n    background: blue;\n  }\n}\n\n\
+            div {\n  color: gray;\n\
+            empty {\n    \
+            span {\n      color: red;\n      background: blue;\n    }\n  \
+            }\n}\n\n\
+            empty1 {\n  empty2 {\n    \
+            div {\n      blah: blah;\n    }\n  }\n}\n\n\
+            empty1 {\n  empty2 {\n    div {\n      bloo: blee;\n      \
+            empty3 {\n        \
+            span {\n          blah: blah;\n          blah: blah;\n        \
+            }\n      }\n    }\n  }\n}\n",
+          b"div span{color:red;background:blue}div{color:gray}\
+            div empty span{color:red;background:blue}\
+            empty1 empty2 div{blah:blah}empty1 empty2 div{bloo:blee}\
+            empty1 empty2 div empty3 span{blah:blah;blah:blah}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input, OutputStyle::Compressed);
