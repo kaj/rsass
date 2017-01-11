@@ -43,7 +43,7 @@ impl OutputStyle {
                         "{}{}{{",
                         selectors.iter()
                             .map(|s| format!("{}", s))
-                            .collect::<Vec<_> >()
+                            .collect::<Vec<_>>()
                             .join(", "),
                         self.opt_space()));
             try!(out.write(&direct));
@@ -80,8 +80,7 @@ impl OutputStyle {
                                     ";"
                                 } else {
                                     ""
-                                }
-                                ));
+                                }));
                 }
                 &SassItem::Rule(ref s, ref b) => {
                     try!(self.write_rule(s,
