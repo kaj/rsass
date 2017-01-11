@@ -44,43 +44,49 @@ pub enum SelectorPart {
     BackRef,
 }
 
-named!(pub selector<&[u8], Selector>,
-       chain!(s: many1!(selector_part),
-              || {
-                  let mut s = s;
-                  if s.last() == Some(&SelectorPart::Descendant) {
-                      s.pop();
-                  }
-                  Selector(s)
-              }));
+named!(pub selector<Selector>,
+       map!(many1!(selector_part),
+            |s: Vec<SelectorPart>| {
+                let mut s = s;
+                if s.last() == Some(&SelectorPart::Descendant) {
+                    s.pop();
+                }
+                Selector(s)
+            }));
 
 named!(selector_part<&[u8], SelectorPart>,
        alt_complete!(
-           chain!(r: take_while1!(is_selector_char),
-                  || SelectorPart::Simple(r.to_vec())) |
-           chain!(tag!("[") ~ opt_spacelike ~
-                  name: take_while1!(is_selector_char) ~ opt_spacelike ~
-                  op: alt_complete!(tag!("*=") | tag!("=")) ~ opt_spacelike ~
-                  val: alt_complete!(
-                      chain!(tag!("\"") ~ v: is_not!("\"") ~ tag!("\""),
-                             || format!("\"{}\"", from_utf8(v).unwrap())) |
-                      chain!(tag!("'") ~ v: is_not!("'") ~ tag!("'"),
-                             || format!("'{}'", from_utf8(v).unwrap()))) ~
-                  opt_spacelike ~
-                  tag!("]"),
-                  || SelectorPart::Attribute {
-                      name: name.to_vec(),
-                      op: op.to_vec(),
-                      val: val.as_bytes().to_vec(),
-                  }) |
-           chain!(tag!("&"), || SelectorPart::BackRef) |
-           chain!(opt_spacelike ~ tag!(">") ~ opt_spacelike,
-                  || SelectorPart::RelOp(b'>')) |
-           chain!(opt_spacelike ~ tag!("+") ~ opt_spacelike,
-                  || SelectorPart::RelOp(b'+')) |
-           chain!(opt_spacelike ~ tag!("~") ~ opt_spacelike,
-                  || SelectorPart::RelOp(b'~')) |
-           chain!(spacelike, || SelectorPart::Descendant)
+           map!(take_while1!(is_selector_char),
+                |s: &[u8]| SelectorPart::Simple(s.to_vec())) |
+           do_parse!(tag!("[") >> opt_spacelike >>
+                     name: take_while1!(is_selector_char) >> opt_spacelike >>
+                     op: alt_complete!(tag!("*=") | tag!("=")) >>
+                     opt_spacelike >>
+                     val: alt_complete!(
+                         map!(delimited!(tag!("\""),
+                                         escaped!(is_not!("\\\""), '\\',
+                                                  one_of!("\"\\")),
+                                         tag!("\"")),
+                              |s| format!("\"{}\"", from_utf8(s).unwrap())) |
+                         map!(delimited!(tag!("'"),
+                                         escaped!(is_not!("\\'"), '\\',
+                                                  one_of!("'\\")),
+                                         tag!("'")),
+                              |s| format!("'{}'", from_utf8(s).unwrap()))) >>
+                     opt_spacelike >>
+                     tag!("]") >>
+                     (SelectorPart::Attribute {
+                         name: name.to_vec(),
+                         op: op.to_vec(),
+                         val: val.as_bytes().to_vec(),
+                     })) |
+           value!(SelectorPart::BackRef, tag!("&")) |
+           delimited!(opt_spacelike,
+                      alt!(value!(SelectorPart::RelOp(b'>'), tag!(">")) |
+                           value!(SelectorPart::RelOp(b'+'), tag!("+")) |
+                           value!(SelectorPart::RelOp(b'~'), tag!("~"))),
+                      opt_spacelike) |
+           value!(SelectorPart::Descendant, spacelike)
            ));
 
 fn is_selector_char(chr: u8) -> bool {

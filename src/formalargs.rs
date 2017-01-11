@@ -1,4 +1,4 @@
-use parseutil::{ignore_comments, name, spacelike};
+use parseutil::{ignore_comments, name, opt_spacelike};
 use std::default::Default;
 use std::fmt;
 use valueexpression::{Value, space_list};
@@ -79,31 +79,30 @@ impl fmt::Display for CallArgs {
 }
 
 named!(pub formal_args<FormalArgs>,
-       chain!(tag!("(") ~ spacelike? ~
-              args: separated_list!(
-                  chain!(tag!(",") ~ spacelike?, || ()),
-                  chain!(tag!("$") ~ name: name ~
-                         d: opt!(chain!(tag!(":") ~ spacelike? ~
-                                        d: space_list ~ spacelike?,
-                                        || d)),
-                         || (name, d.unwrap_or(Value::Null)))) ~
-              tag!(")"),
-              || FormalArgs(args)));
+       delimited!(preceded!(tag!("("), opt_spacelike),
+                  map!(separated_list!(
+                      preceded!(tag!(","), opt_spacelike),
+                      do_parse!(tag!("$") >> name: name >>
+                                d: opt!(do_parse!(
+                                    tag!(":") >> opt_spacelike >>
+                                        d: space_list >> opt_spacelike >>
+                                        (d))) >>
+                                (name, d.unwrap_or(Value::Null)))),
+                       |v| FormalArgs(v)),
+                  tag!(")")));
 
 named!(pub call_args<CallArgs>,
-       chain!(tag!("(") ~
-              args: separated_list!(
-                  chain!(tag!(",") ~ spacelike?, || ()),
-                  alt_complete!(
-                      chain!(tag!("$") ~
-                             name: name ~
-                             ignore_comments ~
-                             tag!(":") ~
-                             ignore_comments ~
-                             val: space_list ~
-                             ignore_comments,
-                             || (Some(name.replace("-", "_")), val)) |
-                      chain!(e: space_list, || (None, e)))) ~
-              tag!(")"),
-              || CallArgs(args)
-              ));
+       delimited!(
+           tag!("("),
+           map!(separated_list!(
+               preceded!(tag!(","), opt_spacelike),
+               pair!(opt!(delimited!(
+                        tag!("$"),
+                        map!(name, |n: String| n.replace("-", "_")),
+                        preceded!(ignore_comments,
+                                  tag!(":")))),
+                     delimited!(ignore_comments,
+                                space_list,
+                                ignore_comments))),
+                |args| CallArgs(args)),
+           tag!(")")));

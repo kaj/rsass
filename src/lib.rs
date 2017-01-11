@@ -6,7 +6,6 @@ extern crate num_rational;
 extern crate num_traits;
 
 use nom::IResult::*;
-use nom::multispace;
 use std::io::Write;
 use std::str::from_utf8;
 
@@ -110,25 +109,14 @@ pub fn compile_scss(input: &[u8],
 }
 
 named!(sassfile<&[u8], Vec<SassItem> >,
-       many0!(alt!(chain!(spacelike, || SassItem::None) |
-                   chain!(d: variable_declaration,
-                          || SassItem::VariableDeclaration{
-                              name: d.0.clone(),
-                              val: d.1.clone(),
-                              global: d.2,
-                          }) |
-                   chain!(d: mixin_declaration,
-                          || SassItem::MixinDeclaration(d)) |
-                   chain!(m: mixin_call,
-                          || SassItem::MixinCall {
-                              name: m.0.clone(),
-                              args: m.1.clone(),
-                          }) |
+       many0!(alt!(value!(SassItem::None, spacelike) |
+                   variable_declaration |
+                   map!(mixin_declaration, |d| SassItem::MixinDeclaration(d)) |
+                   mixin_call |
                    rule |
-                   chain!(c: comment, || {
-                       SassItem::Comment(from_utf8(c).unwrap().into())
-                   }
-                   ))));
+                   map!(comment,
+                        |c| SassItem::Comment(from_utf8(c).unwrap().into()))
+                   )));
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SassItem {
@@ -160,75 +148,72 @@ named!(rule<SassItem>,
 
 named!(body_item<SassItem>,
        alt_complete!(
-           chain!(spacelike, || SassItem::None) |
-           chain!(d: mixin_declaration,
-                  || SassItem::MixinDeclaration(d)) |
-           chain!(d: variable_declaration,
-                  || SassItem::VariableDeclaration{
-                      name: d.0.to_string(),
-                      val: d.1.clone(),
-                      global: d.2,
-                  }) |
+           value!(SassItem::None, spacelike) |
+           map!(mixin_declaration,
+                |d| SassItem::MixinDeclaration(d)) |
+           variable_declaration |
            rule |
            property |
-           chain!(m: mixin_call,
-                  || SassItem::MixinCall {
-                      name: m.0.clone(),
-                      args: m.1.clone(),
-                  }) |
-           chain!(c: comment,
-                  || SassItem::Comment(from_utf8(c).unwrap().into()))
+           mixin_call |
+           map!(comment, |c| SassItem::Comment(from_utf8(c).unwrap().into()))
                ));
 
-named!(mixin_call<&[u8], (String, CallArgs)>,
-       chain!(tag!("@include") ~ spacelike ~
-              name: name ~ spacelike? ~
-              args: call_args? ~
-              spacelike? ~
-              tag!(";"),
-              || (name, args.unwrap_or_default())
-              ));
+named!(mixin_call<SassItem>,
+       do_parse!(tag!("@include") >> spacelike >>
+                 name: name >> opt_spacelike >>
+                 args: opt!(call_args) >> opt_spacelike >>
+                 tag!(";") >>
+                 (SassItem::MixinCall {
+                     name: name,
+                     args: args.unwrap_or_default(),
+                 })));
 
 #[test]
 fn test_mixin_call_noargs() {
     assert_eq!(mixin_call(b"@include foo;\n"),
                Done(&b"\n"[..],
-                    ("foo".to_string(), CallArgs::new(vec![]))))
+                    SassItem::MixinCall {
+                        name: "foo".to_string(),
+                        args: CallArgs::new(vec![]),
+                    }))
 }
 
 #[test]
 fn test_mixin_call_pos_args() {
     assert_eq!(mixin_call(b"@include foo(bar, baz);\n"),
                Done(&b"\n"[..],
-                    ("foo".to_string(),
-                     CallArgs::new(
-                         vec![(None, string("bar")),
-                              (None, string("baz"))]))))
+                    SassItem::MixinCall {
+                        name: "foo".to_string(),
+                        args: CallArgs::new(
+                            vec![(None, string("bar")),
+                                 (None, string("baz"))]),
+                    }))
 }
 
 #[test]
 fn test_mixin_call_named_args() {
     assert_eq!(mixin_call(b"@include foo($x: bar, $y: baz);\n"),
                Done(&b"\n"[..],
-                    ("foo".to_string(),
-                     CallArgs::new(
-                         vec![(Some("x".into()), string("bar")),
-                              (Some("y".into()), string("baz"))
-                              ]))))
+                    SassItem::MixinCall {
+                        name: "foo".to_string(),
+                        args: CallArgs::new(
+                            vec![(Some("x".into()), string("bar")),
+                                 (Some("y".into()), string("baz"))]),
+                    }))
 }
 
 named!(mixin_declaration<&[u8], MixinDeclaration>,
-       chain!(tag!("@mixin") ~ spacelike ~
-              name: name ~ spacelike? ~
-              args: formal_args ~ spacelike? ~
-              tag!("{") ~ spacelike? ~
-              body: many0!(body_item) ~
-              tag!("}"),
-              || MixinDeclaration{
-                  name: name,
-                  args: args,
-                  body: body,
-              }));
+       do_parse!(tag!("@mixin") >> spacelike >>
+                 name: name >> opt_spacelike >>
+                 args: formal_args >> opt_spacelike >>
+                 tag!("{") >> opt_spacelike >>
+                 body: many0!(body_item) >>
+                 tag!("}") >>
+                 (MixinDeclaration{
+                     name: name,
+                     args: args,
+                     body: body,
+                 })));
 
 #[test]
 fn test_mixin_declaration_empty() {
@@ -332,34 +317,40 @@ fn percentage(v: isize) -> Value {
     Value::Numeric(Rational::from_integer(v), Unit::Percent, false)
 }
 
-named!(variable_declaration<&[u8], (String, Value, bool)>,
-       chain!(tag!("$") ~
-              name: name ~
-              multispace? ~
-              tag!(":") ~
-              multispace? ~
-              val: value_expression ~
-              multispace? ~
-              global: opt!(tag!("!global")) ~
-              multispace? ~
-              tag!(";") ~
-              multispace?,
-              || (name, val, global.is_some())));
+named!(variable_declaration<SassItem>,
+       do_parse!(tag!("$") >>
+                 name: name >> opt_spacelike >>
+                 tag!(":") >> opt_spacelike >>
+                 val: value_expression >> opt_spacelike >>
+                 global: opt!(tag!("!global")) >> opt_spacelike >>
+                 tag!(";") >> opt_spacelike >>
+                 (SassItem::VariableDeclaration {
+                     name: name,
+                     val: val.clone(),
+                     global: global.is_some(),
+                 })));
 
 #[test]
 fn test_variable_declaration_simple() {
     assert_eq!(variable_declaration(b"$foo: bar;\n"),
                Done(&b""[..],
-                    ("foo".into(), string("bar"), false)))
+                    SassItem::VariableDeclaration {
+                        name: "foo".into(),
+                        val: string("bar"),
+                        global: false,
+                    }))
 }
 
 #[test]
 fn test_variable_declaration_global() {
     assert_eq!(variable_declaration(b"$y: some value !global;\n"),
-               Done(&b""[..], ("y".into(),
-                               Value::MultiSpace(
-                                   vec![string("some"), string("value")]),
-                               true)))
+               Done(&b""[..],
+                    SassItem::VariableDeclaration {
+                        name: "y".into(),
+                        val: Value::MultiSpace(
+                            vec![string("some"), string("value")]),
+                        global: true,
+                    }))
 }
 
 #[cfg(test)]

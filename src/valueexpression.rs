@@ -2,8 +2,9 @@ use colors::{name_to_rgb, rgb_to_name};
 use formalargs::{CallArgs, call_args};
 use nom::multispace;
 use num_rational::Rational;
+use num_traits::Zero;
 use operator::Operator;
-use parseutil::name;
+use parseutil::{opt_spacelike, name};
 use std::fmt;
 use std::str::{FromStr, from_utf8};
 
@@ -162,57 +163,49 @@ fn rational2str(r: &Rational, skipzero: bool) -> String {
 }
 
 named!(pub value_expression<&[u8], Value>,
-       chain!(v: separated_nonempty_list!(chain!(tag!(",") ~ multispace?,
-                                                 || ()),
-                                          space_list),
-              || if v.len() == 1 {
-                  v[0].clone()
-              } else {
-                  Value::MultiComma(v)
-              }));
+       map!(separated_nonempty_list!(
+                do_parse!(tag!(",") >> opt_spacelike >> ()),
+                space_list),
+            |v: Vec<Value>| if v.len() == 1 {
+                v[0].clone()
+            } else {
+                Value::MultiComma(v)
+            }));
 
 named!(pub space_list<&[u8], Value>,
-       chain!(v: separated_nonempty_list!(multispace, single_expression),
-              || if v.len() == 1 {
-                  v[0].clone()
-              } else {
-                  Value::MultiSpace(v)
-              }));
+       map!(separated_nonempty_list!(multispace, single_expression),
+            |v: Vec<Value>| if v.len() == 1 {
+                v[0].clone()
+            } else {
+                Value::MultiSpace(v)
+            }));
 
 named!(pub single_expression<Value>,
        do_parse!(a: sum_expression >>
                  r: fold_many0!(
                      do_parse!(opt!(multispace) >>
-                               op: alt_complete!(tag!("==") | tag!("!=")) >>
+                               op: alt_complete!(
+                                   value!(Operator::Equal, tag!("==")) |
+                                   value!(Operator::NotEqual, tag!("!="))) >>
                                opt!(multispace) >>
                                b: sum_expression >>
                                (op, b)),
                      a,
-                     |a, (op, b)| {
-                         Value::BinOp(
-                             Box::new(a),
-                             if op == b"==" {
-                                 Operator::Equal
-                             } else {
-                                 Operator::NotEqual
-                             },
-                             Box::new(b))
-                     }) >>
+                     |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))) >>
                  (r)));
 
 named!(pub sum_expression<Value>,
        do_parse!(a: term_value >>
                  r: fold_many0!(
-                     do_parse!(opt!(multispace) >>
-                               op: alt_complete!(tag!("+") | tag!("-")) >>
-                               opt!(multispace) >>
+                     do_parse!(opt_spacelike >>
+                               op: alt_complete!(
+                                   value!(Operator::Plus, tag!("+")) |
+                                   value!(Operator::Minus, tag!("-"))) >>
+                               opt_spacelike >>
                                b: term_value >>
                                (op, b)),
                      a,
-                     |a, (op, b)| Value::BinOp(Box::new(a),
-                                               if op == b"+" { Operator::Plus }
-                                               else { Operator::Minus },
-                                               Box::new(b))) >>
+                     |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))) >>
                  (r)));
 
 named!(term_value<Value>,
@@ -235,59 +228,48 @@ named!(term_value<Value>,
 
 named!(single_value<&[u8], Value>,
        alt_complete!(
-           map!(tag!("true"), |_| Value::True) |
-           map!(tag!("false"), |_| Value::False) |
-           chain!(neg: tag!("-")? ~
-                  r: is_a!("0123456789") ~
-                  d: opt!(preceded!(tag!("."), is_a!("0123456789"))) ~
-                  u: unit?,
-                  || {
-                      let mut n =
-                          Rational::from_str(from_utf8(r).unwrap()).unwrap();
-                      if let Some(d) = d {
-                          let ten: isize = 10;
-                          n = n +
-                              Rational::from_str(from_utf8(d).unwrap()).unwrap()
-                              / Rational::from_integer(ten.pow(d.len() as u32));
-                      }
-                      if neg.is_some() {
-                          n = -n;
-                      }
-                      Value::Numeric(n,
+           value!(Value::True, tag!("true")) |
+           value!(Value::False, tag!("false")) |
+           do_parse!(neg: opt!(tag!("-")) >>
+                     r: is_a!("0123456789") >>
+                     d: opt!(preceded!(tag!("."), is_a!("0123456789"))) >>
+                     u: opt!(unit) >>
+                     (Value::Numeric(
+                         {
+                             let d = Rational::from_str(
+                                 from_utf8(r).unwrap()).unwrap() +
+                                 d.map(decimals_to_rational)
+                                 .unwrap_or(Rational::zero());
+                             if neg.is_some() { -d } else { d }
+                         }
+                         , u.unwrap_or(Unit::None), false))) |
+           do_parse!(tag!(".") >>
+                     d: is_a!("0123456789") >>
+                     u: opt!(unit) >>
+                     (Value::Numeric(decimals_to_rational(d),
                                      u.unwrap_or(Unit::None),
-                                     false)
-                  }) |
-           chain!(tag!(".") ~
-                  d: is_a!("0123456789") ~
-                  u: unit?,
-                  || {
-                      let ten: isize = 10;
-                      let n = Rational::from_str(from_utf8(d).unwrap()).unwrap()
-                          / Rational::from_integer(ten.pow(d.len() as u32));
-                      Value::Numeric(n,
-                                     u.unwrap_or(Unit::None),
-                                     false)
-                  }) |
-           chain!(tag!("$") ~ name: name, || Value::Variable(name)) |
-           chain!(tag!("#") ~ r: hexchar2 ~ g: hexchar2 ~ b: hexchar2,
-                  || Value::Color(from_hex(r),
-                                  from_hex(g),
-                                  from_hex(b),
-                                  Rational::from_integer(1),
-                                  Some(format!("#{}{}{}",
-                                               from_utf8(r).unwrap(),
-                                               from_utf8(g).unwrap(),
-                                               from_utf8(b).unwrap())))) |
-           chain!(tag!("#") ~ r: hexchar ~ g: hexchar ~ b: hexchar,
-                  || Value::Color(from_hex(r) * 0x11,
-                                  from_hex(g) * 0x11,
-                                  from_hex(b) * 0x11,
-                                  Rational::from_integer(1),
-                                  Some(format!("#{}{}{}",
-                                               from_utf8(r).unwrap(),
-                                               from_utf8(g).unwrap(),
-                                               from_utf8(b).unwrap())))) |
-           chain!(name: name ~ args: call_args, || Value::Call(name, args)) |
+                                     false))) |
+           do_parse!(tag!("$") >>  name: name >> (Value::Variable(name))) |
+           do_parse!(tag!("#") >> r: hexchar2 >> g: hexchar2 >> b: hexchar2 >>
+                     (Value::Color(from_hex(r),
+                                   from_hex(g),
+                                   from_hex(b),
+                                   Rational::from_integer(1),
+                                   Some(format!("#{}{}{}",
+                                                from_utf8(r).unwrap(),
+                                                from_utf8(g).unwrap(),
+                                                from_utf8(b).unwrap()))))) |
+           do_parse!(tag!("#") >> r: hexchar >> g: hexchar >> b: hexchar >>
+                     (Value::Color(from_hex(r) * 0x11,
+                                   from_hex(g) * 0x11,
+                                   from_hex(b) * 0x11,
+                                   Rational::from_integer(1),
+                                   Some(format!("#{}{}{}",
+                                                from_utf8(r).unwrap(),
+                                                from_utf8(g).unwrap(),
+                                                from_utf8(b).unwrap()))))) |
+           do_parse!(name: name >> args: call_args >>
+                     (Value::Call(name, args))) |
            map!(is_not!("+-*/=;,$(){{}}! \n\t\""), |val| {
                let val = from_utf8(val).unwrap().to_string();
                if let Some((r, g, b)) = name_to_rgb(&val) {
@@ -300,10 +282,15 @@ named!(single_value<&[u8], Value>,
                            escaped!(is_not!("\\\""), '\\', one_of!("\"\\")),
                            tag!("\"")),
                 |s| Value::Literal(from_utf8(s).unwrap().to_string(), true)) |
-           chain!(tag!("(") ~ multispace? ~
-                  val: value_expression ~ multispace? ~
-                  tag!(")"),
-                  || Value::Paren(Box::new(val)))));
+           map!(delimited!(preceded!(tag!("("), opt_spacelike),
+                           value_expression,
+                           terminated!(opt_spacelike, tag!(")"))),
+                |val| Value::Paren(Box::new(val)))));
+
+fn decimals_to_rational(d: &[u8]) -> Rational {
+    Rational::new(from_utf8(d).unwrap().parse().unwrap(),
+                  10_isize.pow(d.len() as u32))
+}
 
 named!(unit<&[u8], Unit>,
        alt!(value!(Unit::Percent, tag!("%")) |
@@ -313,14 +300,11 @@ named!(unit<&[u8], Unit>,
             value!(Unit::Ex, tag!("ex")) |
             value!(Unit::None, tag!(""))));
 
-named!(hexchar<&[u8], &[u8]>,
-       recognize!(one_of!("0123456789ABCDEFabcdef")));
+named!(hexchar, recognize!(one_of!("0123456789ABCDEFabcdef")));
 
-named!(hexchar2<&[u8], &[u8]>,
-       recognize!(chain!(one_of!("0123456789ABCDEFabcdef") ~
-                         one_of!("0123456789ABCDEFabcdef"),
-                         || ()))
-       );
+named!(hexchar2,
+       recognize!(do_parse!(one_of!("0123456789ABCDEFabcdef") >>
+                            one_of!("0123456789ABCDEFabcdef") >> ())));
 
 fn from_hex(v: &[u8]) -> u8 {
     u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap()
