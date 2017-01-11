@@ -288,16 +288,14 @@ named!(single_value<&[u8], Value>,
                                                from_utf8(g).unwrap(),
                                                from_utf8(b).unwrap())))) |
            chain!(name: name ~ args: call_args, || Value::Call(name, args)) |
-           chain!(val: is_not!("+-*/=;,$()! \n\t\""),
-                  || {
-                      let val = from_utf8(val).unwrap().to_string();
-                      if let Some((r, g, b)) = name_to_rgb(&val) {
-                          Value::Color(r, g, b, Rational::from_integer(1),
-                                       Some(val))
-                      } else {
-                          Value::Literal(val, false)
-                      }
-                  }) |
+           map!(is_not!("+-*/=;,$(){{}}! \n\t\""), |val| {
+               let val = from_utf8(val).unwrap().to_string();
+               if let Some((r, g, b)) = name_to_rgb(&val) {
+                   Value::Color(r, g, b, Rational::from_integer(1), Some(val))
+               } else {
+                   Value::Literal(val, false)
+               }
+           }) |
            map!(delimited!(tag!("\""),
                            escaped!(is_not!("\\\""), '\\', one_of!("\"\\")),
                            tag!("\"")),

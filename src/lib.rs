@@ -301,16 +301,12 @@ impl MixinDeclaration {
 }
 
 named!(property<&[u8], SassItem>,
-       chain!(multispace? ~
-              name: name ~
-              multispace? ~
-              tag!(":") ~
-              multispace? ~
-              val: value_expression ~
-              multispace? ~
-              tag!(";") ~
-              spacelike?,
-              || SassItem::Property(name, val)));
+       do_parse!(opt_spacelike >>
+                 name: name >> opt_spacelike >>
+                 tag!(":") >> opt_spacelike >>
+                 val: value_expression >> opt_spacelike >>
+                 opt!(tag!(";")) >> opt_spacelike >>
+                 (SassItem::Property(name, val))));
 
 #[test]
 fn test_simple_property() {
