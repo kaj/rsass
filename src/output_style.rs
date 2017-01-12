@@ -40,16 +40,7 @@ impl OutputStyle {
         if !direct.is_empty() {
             try!(write!(out,
                         "{}{}{{",
-                        selectors.iter()
-                            .map(|s| {
-                                if self.is_compressed() {
-                                    format!("{:#}", s)
-                                } else {
-                                    format!("{}", s)
-                                }
-                            })
-                            .collect::<Vec<_>>()
-                            .join(", "),
+                        self.join_selectors(&selectors),
                         self.opt_space()));
             if self.is_compressed() && direct.last() == Some(&b';') {
                 direct.pop();
@@ -61,6 +52,19 @@ impl OutputStyle {
         }
         try!(out.write(&sub));
         Ok(())
+    }
+
+    fn join_selectors(&self, selectors: &[Selector]) -> String {
+        selectors.iter()
+            .map(|s| {
+                if self.is_compressed() {
+                    format!("{:#}", s)
+                } else {
+                    format!("{}", s)
+                }
+            })
+            .collect::<Vec<_>>()
+            .join(", ")
     }
 
     pub fn handle_body(&self,
