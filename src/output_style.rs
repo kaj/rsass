@@ -41,7 +41,13 @@ impl OutputStyle {
             try!(write!(out,
                         "{}{}{{",
                         selectors.iter()
-                            .map(|s| format!("{}", s))
+                            .map(|s| {
+                                if self.is_compressed() {
+                                    format!("{:#}", s)
+                                } else {
+                                    format!("{}", s)
+                                }
+                            })
                             .collect::<Vec<_>>()
                             .join(", "),
                         self.opt_space()));

@@ -97,6 +97,15 @@ fn t06_nesting_and_comments() {
             div{f:g}div empty span{a:b}div empty_with_comment span{c:d}\n")
 }
 
+#[test]
+fn t08_selector_combinators() {
+    check(b"a   +   b  >  c {\n  \
+            d e {\n    color: blue;\n    background: white;\n  }\n  \
+            color: red;\n  background: gray;\n}",
+          b"a+b>c{color:red;background:gray}\
+            a+b>c d e{color:blue;background:white}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input, OutputStyle::Compressed);
