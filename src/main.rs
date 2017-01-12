@@ -20,7 +20,7 @@ fn main() {
             .short("t")
             .long("style")
             .takes_value(true)
-            .help("Output style. Can be nested (default) or compressed."))
+            .help("Output style. Can be compact (default) or compressed."))
         .arg(Arg::with_name("INPUT")
             .required(true)
             .multiple(true)
