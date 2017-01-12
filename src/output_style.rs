@@ -68,8 +68,10 @@ impl OutputStyle {
         for b in body {
             match b {
                 &SassItem::Comment(ref c) => {
-                    try!(self.do_indent(direct, indent + 2));
-                    try!(write!(direct, "/*{}*/", c));
+                    if !self.is_compressed() {
+                        try!(self.do_indent(direct, indent + 2));
+                        try!(write!(direct, "/*{}*/", c));
+                    }
                 }
                 &SassItem::Property(ref name, ref value) => {
                     try!(self.do_indent(direct, indent + 2));
@@ -132,7 +134,7 @@ impl OutputStyle {
         if self.is_compressed() { "" } else { " " }
     }
 
-    fn is_compressed(&self) -> bool {
+    pub fn is_compressed(&self) -> bool {
         self == &OutputStyle::Compressed
     }
 }

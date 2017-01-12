@@ -59,6 +59,44 @@ fn t05_empty_levels() {
             empty1 empty2 div empty3 span{blah:blah;blah:blah}\n")
 }
 
+#[test]
+fn t06_nesting_and_comments() {
+    // No comments preserved in compressed output!
+    check(b"$blah: bloo blee;\n$blip: \"a 'red' and \\\"blue\\\" value\";\n\n\
+            /* top level comment -- should be preserved */\n\
+            div {\n  /* another comment that should be preserved */\n  \
+            color: red;\n  background: blue;\n  $blux: hux; // gone!\n  \
+            span {\n    font-weight: bold;\n    \
+            a {\n      \
+            text-decoration: none; /* where will this comment go? */\n      \
+            color: green;\n      \
+            /* what about this comment? */ border: 1px $blah red;\n    \
+            }\n    \
+            /* yet another comment that should be preserved */\n    \
+            display: inline-block;\n  }  // gone!\n  \
+            /* the next selector should be indented two spaces */\n  \
+            empty {\n    \
+            not_empty {\n      blah: blah; // gone!\n      bloo: bloo;\n    \
+            }\n  }\n  \
+            p {\n    padding: 10px 8%;\n    -webkit-box-sizing: $blux;\n  }\n  \
+            margin: 10px 5px;\n  h1 {\n    color: $blip;\n  }\n}\n\
+            /* last comment, top level again --\n   \
+            compare the indentation! */\n\n\
+            div {\n\n\
+            f: g;\n  \
+            empty {\n    span {\n      a: b;\n    }\n  }\n  \
+            empty_with_comment {\n    /* hey now */\n    \
+            span {\n      c: d;\n    }\n  }\n}",
+          b"div{color:red;background:blue;margin:10px 5px}\
+            div span{font-weight:bold;display:inline-block}\
+            div span a{text-decoration:none;color:green;\
+            border:1px bloo blee red}\
+            div empty not_empty{blah:blah;bloo:bloo}\
+            div p{padding:10px 8%;-webkit-box-sizing:hux}\
+            div h1{color:\"a 'red' and \\\"blue\\\" value\"}\
+            div{f:g}div empty span{a:b}div empty_with_comment span{c:d}\n")
+}
+
 fn check(input: &[u8], expected: &[u8]) {
     use std::str::from_utf8;
     let result = compile_scss(input, OutputStyle::Compressed);

@@ -79,12 +79,14 @@ pub fn compile_scss(input: &[u8],
                         }
                     }
                     SassItem::Comment(c) => {
-                        if separate {
-                            style.do_indent(&mut result, 0).unwrap();
-                        } else {
-                            separate = true;
+                        if !style.is_compressed() {
+                            if separate {
+                                style.do_indent(&mut result, 0).unwrap();
+                            } else {
+                                separate = true;
+                            }
+                            write!(result, "/*{}*/", c).unwrap();
                         }
-                        write!(result, "/*{}*/", c).unwrap();
                     }
                     SassItem::Property(_, _) => {
                         panic!("Global property not allowed");
