@@ -1,4 +1,5 @@
-//! These are from the "basic" directory in the sass specification.
+//! These are from the "output_styles/compressed/basic" directory in the
+//! sass specification.
 //! See https://github.com/sass/sass-spec for source material.
 //! I add one a test function for one specification at a time and then
 //! try to implement that functionality without breaking those already
@@ -11,19 +12,19 @@ fn t01_simple_css() {
     check(b"a {\n  \
             color: blue;\n\
             }",
-          b"a{color:blue}\n")
+          "a{color:blue}\n")
 }
 
 #[test]
 fn t02_simple_nesting() {
     check(b"div {\n  img {\n    border: 0px;\n  }\n}",
-          b"div img{border:0px}\n")
+          "div img{border:0px}\n")
 }
 
 #[test]
 fn t03_simple_variable() {
     check(b"$color: red;\n\na {\n  color: $color;\n}",
-          b"a{color:red}\n")
+          "a{color:red}\n")
 }
 
 #[test]
@@ -35,8 +36,8 @@ fn t04_basic_variables() {
             foo {\n  a: $x;\n}\n\n\
             $y: after;\n\n\
             foo {\n  a: $x;\n}",
-          b"a{color:red;background:\"blue\"}foo{a:1 2 before}\
-            foo{a:1 2 before}\n")
+          "a{color:red;background:\"blue\"}foo{a:1 2 before}\
+           foo{a:1 2 before}\n")
 }
 
 #[test]
@@ -53,10 +54,10 @@ fn t05_empty_levels() {
             empty3 {\n        \
             span {\n          blah: blah;\n          blah: blah;\n        \
             }\n      }\n    }\n  }\n}\n",
-          b"div span{color:red;background:blue}div{color:gray}\
-            div empty span{color:red;background:blue}\
-            empty1 empty2 div{blah:blah}empty1 empty2 div{bloo:blee}\
-            empty1 empty2 div empty3 span{blah:blah;blah:blah}\n")
+          "div span{color:red;background:blue}div{color:gray}\
+           div empty span{color:red;background:blue}\
+           empty1 empty2 div{blah:blah}empty1 empty2 div{bloo:blee}\
+           empty1 empty2 div empty3 span{blah:blah;blah:blah}\n")
 }
 
 #[test]
@@ -87,14 +88,14 @@ fn t06_nesting_and_comments() {
             empty {\n    span {\n      a: b;\n    }\n  }\n  \
             empty_with_comment {\n    /* hey now */\n    \
             span {\n      c: d;\n    }\n  }\n}",
-          b"div{color:red;background:blue;margin:10px 5px}\
-            div span{font-weight:bold;display:inline-block}\
-            div span a{text-decoration:none;color:green;\
-            border:1px bloo blee red}\
-            div empty not_empty{blah:blah;bloo:bloo}\
-            div p{padding:10px 8%;-webkit-box-sizing:hux}\
-            div h1{color:\"a 'red' and \\\"blue\\\" value\"}\
-            div{f:g}div empty span{a:b}div empty_with_comment span{c:d}\n")
+          "div{color:red;background:blue;margin:10px 5px}\
+           div span{font-weight:bold;display:inline-block}\
+           div span a{text-decoration:none;color:green;\
+           border:1px bloo blee red}\
+           div empty not_empty{blah:blah;bloo:bloo}\
+           div p{padding:10px 8%;-webkit-box-sizing:hux}\
+           div h1{color:\"a 'red' and \\\"blue\\\" value\"}\
+           div{f:g}div empty span{a:b}div empty_with_comment span{c:d}\n")
 }
 
 #[test]
@@ -102,21 +103,14 @@ fn t08_selector_combinators() {
     check(b"a   +   b  >  c {\n  \
             d e {\n    color: blue;\n    background: white;\n  }\n  \
             color: red;\n  background: gray;\n}",
-          b"a+b>c{color:red;background:gray}\
-            a+b>c d e{color:blue;background:white}\n")
+          "a+b>c{color:red;background:gray}\
+           a+b>c d e{color:blue;background:white}\n")
 }
 
-fn check(input: &[u8], expected: &[u8]) {
-    use std::str::from_utf8;
-    let result = compile_scss(input, OutputStyle::Compressed);
-    if let Ok(output) = result {
-        if let (Ok(output), Ok(expected)) =
-            (from_utf8(&output), from_utf8(expected)) {
-            assert_eq!(output, expected)
-        } else {
-            assert_eq!(output, expected)
-        }
-    } else {
-        assert_eq!(result, Ok(expected.into()))
-    }
+fn check(input: &[u8], expected: &str) {
+    assert_eq!(compile_scss(input, OutputStyle::Compressed).and_then(|s| {
+                   String::from_utf8(s)
+                       .map_err(|e| format!("Non-utf8 output: {}", e))
+               }),
+               Ok(expected.into()));
 }

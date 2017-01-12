@@ -8,12 +8,12 @@ use rsass::{OutputStyle, compile_scss};
 
 #[test]
 fn t00_empty() {
-    check(b"\n", b"")
+    check(b"\n", "")
 }
 
 #[test]
 fn txx_empty_rule() {
-    check(b"foo{}", b"")
+    check(b"foo{}", "")
 }
 
 #[test]
@@ -21,7 +21,7 @@ fn t01_simple_css() {
     check(b"a {\n  \
             color: blue;\n\
             }",
-          b"a {\n  \
+          "a {\n  \
             color: blue;\n\
             }\n")
 }
@@ -34,7 +34,7 @@ fn t02_simple_nesting() {
             border: 0px;\n  \
             }\n\
             } // gone!",
-          b"div {\n  \
+          "div {\n  \
             color: black;\n\
             }\n\
             div img {\n  \
@@ -49,7 +49,7 @@ fn t03_simple_variable() {
             a {\n  \
             color: $color;\n\
             }",
-          b"a {\n  \
+          "a {\n  \
             color: red;\n\
             }\n")
 }
@@ -78,7 +78,7 @@ fn t04_basic_variables() {
             foo {\n  \
             a: $x;\n\
             }",
-          b"a {\n  \
+          "a {\n  \
             color: red;\n  \
             background: \"blue\";\n\
             }\n\
@@ -107,7 +107,7 @@ fn t05_empty_levels() {
             bloo: blee;\n      empty3 {\n        \
             span {\n          blah: blah;\n          blah: blah;\n        \
             }\n      }\n    }\n  }\n}\n",
-          b"div span {\n  color: red;\n  background: blue;\n}\n\
+          "div span {\n  color: red;\n  background: blue;\n}\n\
             \n\
             div {\n  color: gray;\n}\n\
             div empty span {\n  color: red;\n  background: blue;\n}\n\
@@ -128,7 +128,7 @@ fn t06b_simpler_comments() {
             /* Yet another preserved comment. */\n\
             }\n\
             /* Final preserved comment */\n",
-          b"/* top level comment\n   \
+          "/* top level comment\n   \
             should be preserved */\n\
             div {\n  \
             /* another comment that should be preserved */\n  \
@@ -143,7 +143,7 @@ fn t06c_simple_line_comment() {
     check(b"span {\n  \
             color: red; // line comment goes away\n\
             }\n",
-          b"span {\n  \
+          "span {\n  \
             color: red;\n\
             }\n")
 }
@@ -158,7 +158,7 @@ fn t06d_simple_local_variable() {
             div {\n\
             color: $red; // global value\n\
             }\n",
-          b"span {\n  \
+          "span {\n  \
             color: #ff3040;\n\
             }\n\n\
             div {\n  \
@@ -220,7 +220,7 @@ div {
     }
   }
 }",
-          b"/* top level comment -- should be preserved */
+          "/* top level comment -- should be preserved */
 div {
   /* another comment that should be preserved */
   color: red;
@@ -283,7 +283,7 @@ fn t07_nested_simple_selector_groups() {
             wow: we are far inside;\n        but: it still works;\n      \
             }\n      \
             hoo: boo;\n    }\n  }\n}",
-          b"a, b {\n  color: red;\n  background: blue;\n}\n\n\
+          "a, b {\n  color: red;\n  background: blue;\n}\n\n\
             c, d {\n  color: gray;\n}\n\
             c e, c f, d e, d f {\n  \
             background: blue;\n  padding: 10px 5px;\n}\n\
@@ -303,7 +303,7 @@ fn t08_selector_combinators() {
     check(b"a   +   b  >  c {\n  \
             d e {\n    color: blue;\n    background: white;\n  }\n  \
             color: red;\n  background: gray;\n}",
-          b"a + b > c {\n  color: red;\n  background: gray;\n}\n\
+          "a + b > c {\n  color: red;\n  background: gray;\n}\n\
             a + b > c d e {\n  color: blue;\n  background: white;\n}\n")
 }
 
@@ -311,7 +311,7 @@ fn t08_selector_combinators() {
 fn t09_selector_groups_and_combinators() {
     check(b"a + b, c {\n  blah: blah;\n  bleh: bleh;\n  \
             d e, f ~ g + h, > i {\n    bloo: bloo;\n    blee: blee;\n  }\n}",
-          b"a + b, c {\n  blah: blah;\n  bleh: bleh;\n}\n\
+          "a + b, c {\n  blah: blah;\n  bleh: bleh;\n}\n\
             a + b d e, a + b f ~ g + h, a + b > i, c d e, c f ~ g + h, c > i \
             {\n  bloo: bloo;\n  blee: blee;\n}\n")
 }
@@ -321,7 +321,7 @@ fn t10_classes_and_ids() {
     check(b"a + b, .class {\n  blah: blah;\n  bleh: bleh;\n  \
             d #id, f ~ g.other + h, > i#grar \
             {\n    bloo: bloo;\n    blee: blee;\n  }\n}",
-          b"a + b, .class {\n  blah: blah;\n  bleh: bleh;\n}\n\
+          "a + b, .class {\n  blah: blah;\n  bleh: bleh;\n}\n\
             a + b d #id, a + b f ~ g.other + h, a + b > i#grar, \
             .class d #id, .class f ~ g.other + h, .class > i#grar \
             {\n  bloo: bloo;\n  blee: blee;\n}\n")
@@ -331,7 +331,7 @@ fn t10_classes_and_ids() {
 fn t11_attribute_selectors() {
     check(b"[hey  =  'ho'], a > b {\n  blah: blah;\n  \
             c, [hoo *=    \"ha\" ] {\n    bloo: bloo;\n  }\n}",
-          b"[hey='ho'], a > b {\n  blah: blah;\n}\n\
+          "[hey='ho'], a > b {\n  blah: blah;\n}\n\
             [hey='ho'] c, [hey='ho'] [hoo*=\"ha\"], a > b c, \
             a > b [hoo*=\"ha\"] {\n  bloo: bloo;\n}\n")
 }
@@ -344,7 +344,7 @@ fn t13_back_references() {
             & > boo, foo &.goo {\n    bloo: bloo;\n  }\n  \
             blah: blah;\n\
             }",
-          b"hey, ho {\n  blah: blah;\n}\n\
+          "hey, ho {\n  blah: blah;\n}\n\
             hey > boo, foo hey.goo, ho > boo, foo ho.goo {\n  bloo: bloo;\n}\n")
 }
 
@@ -355,7 +355,7 @@ fn t15_arithmetic_and_lists_abcd() {
     check(b"div {\n  a: 1 + 2;\n  b: 3 + 3/4;\n  c: 1/2 + 1/2;\n  \
             /* shouldn't eval the following \"300\" */\n  \
             d: 300;\n}",
-          b"div {\n  a: 3;\n  b: 3.75;\n  c: 1;\n  \
+          "div {\n  a: 3;\n  b: 3.75;\n  c: 1;\n  \
             /* shouldn't eval the following \"300\" */\n  \
             d: 300;\n}\n")
 }
@@ -364,7 +364,7 @@ fn t15_arithmetic_and_lists_abcd() {
 fn t15_arithmetic_and_lists_efg() {
     check(b"div {\n  e: 1 + (5/10 2 3);\n  f: 1 + ((2+(3 4) 5) 6);\n  \
             g: 1 + ((1+(14/7 8) 9) 6);\n}",
-          b"div {\n  e: 15/10 2 3;\n  f: 123 4 5 6;\n  g: 1114/7 8 9 6;\n}\n")
+          "div {\n  e: 15/10 2 3;\n  f: 123 4 5 6;\n  g: 1114/7 8 9 6;\n}\n")
 }
 #[test]
 fn t15_arithmetic_and_lists_hijklmt_div_or_not() {
@@ -378,7 +378,7 @@ fn t15_arithmetic_and_lists_hijklmt_div_or_not() {
             /* and this */\n  k: 15 / $three;\n  l: 15 / 5 / $three;\n  \
             m: 1/2, $stuff url(\"www.foo.com/blah.png\") blah blah;\n  \
             t: 1 + (2 + (3/4 + (4/5 6/7)));\n}",
-          b"div {\n  /* shouldn't perform the following division */\n  \
+          "div {\n  /* shouldn't perform the following division */\n  \
             h: 15 / 3 / 5;\n  \
             /* should perform the following division now */\n  \
             i: 1;\n  /* this too */\n  j: 1;\n  /* and this */\n  k: 5;\n  \
@@ -393,7 +393,7 @@ fn t15_arithmetic_and_lists_nopqrs() {
             div {\n  n: 1 2 3, $stuff 4 5 (6, 7 8 9);\n  \
             o: 3px + 3px + 3px;\n  p: 4 + 1px;\n  q: (20pt / 10pt);\n  \
             r: 16em * 4;\n  s: (5em / 2);\n}",
-          b"div {\n  n: 1 2 3, 1 2 3 4 5 6, 7 8 9;\n  \
+          "div {\n  n: 1 2 3, 1 2 3 4 5 6, 7 8 9;\n  \
             o: 9px;\n  p: 5px;\n  q: 2;\n  r: 64em;\n  s: 2.5em;\n}\n")
 }
 
@@ -419,7 +419,7 @@ fn t15_arithmetic_and_lists() {
             o: 3px + 3px + 3px;\n  p: 4 + 1px;\n  q: (20pt / 10pt);\n  \
             r: 16em * 4;\n  s: (5em / 2);\n  \
             t: 1 + (2 + (3/4 + (4/5 6/7)));\n}",
-          b"div {\n  a: 3;\n  b: 3.75;\n  c: 1;\n  \
+          "div {\n  a: 3;\n  b: 3.75;\n  c: 1;\n  \
             /* shouldn't eval the following \"300\" */\n  d: 300;\n  \
             /* increasingly jacked-up edge cases that combine \
             arithmetic with lists */\n  \
@@ -452,7 +452,7 @@ fn t16_hex_arithmetic() {
             p18: 10 #a2B + 1;\n  p19a: (10 / #a2B);\n  \
             p19b: (10 / #aa22BB);\n  p20: rgb(10,10,10) + #010001;\n  \
             p21: #010000 + rgb(255, 255, 255);\n}",
-          b"div {\n  p01: #AbC;\n  p02: #AAbbCC;\n  p03: #AbChello;\n  \
+          "div {\n  p01: #AbC;\n  p02: #AAbbCC;\n  p03: #AbChello;\n  \
             p04: #abbccd;\n  p05: #aabbdd;\n  p06: #0101ff;\n  p07: blue;\n  \
             p08: cyan;\n  p09: #000000;\n  p10: black;\n  p11: black;\n  \
             p12: yellow;\n  p13: #020202;\n  p14: black;\n  p15a: 10-#a2B;\n  \
@@ -478,7 +478,7 @@ fn t17_basic_mixins() {
             }\n\n\
             $x: from a variable;\n\n\
             div {\n  blah: blah $x blah;\n}",
-          b"a {\n  hey: ho;\n  hugabug: third second;\n  \
+          "a {\n  hey: ho;\n  hugabug: third second;\n  \
             hugabug: kwd-y kwd-x;\n  goo: boo hoo;\n  no: parameters here;\n  \
             /* end of hux */\n  \
             flugablug: pug flug glug;\n  flugablug: pug mug glug;\n}\n\
@@ -497,7 +497,7 @@ fn t18_mixin_scope() {
             f-a: $x;\n  f-b: $y;\n  f-c: $z;\n}\n\n\
             div {\n  \
             a: $x;\n  b: $y;\n  @include foo(arg);\n  a: $x;\n  b: $y;\n}\n",
-          b"div {\n  \
+          "div {\n  \
             a: global x;\n  b: global y;\n  f-a: arg;\n  f-b: global y;\n  \
             f-a: local x changed by foo;\n  f-b: global y changed by foo;\n  \
             f-c: new local z;\n  a: global x;\n  \
@@ -540,7 +540,7 @@ fn t19_full_mixin_craziness() {
             @mixin set-x($x) {\n  $x: changed local x;\n  arg: $x;\n  \
             $y: changed global y !global;\n  blarg: $y;\n}\n\n\
             div {\n  @include set-x(blah);\n  a: $x;\n  b: $y;\n}\n",
-          b"div {\n  /* begin foo */\n  margin: 1 2;\n  /* end foo */\n  \
+          "div {\n  /* begin foo */\n  margin: 1 2;\n  /* end foo */\n  \
             /* begin foo */\n  margin: 1 3;\n  /* end foo */\n  \
             margin: 1 2 zee;\n  margin: 1 kwd-y kwd-z;\n}\n\
             div blip {\n  hey: now;\n}\n\
@@ -576,7 +576,7 @@ fn t20_scoped_variables() {
             outer {\n  /* assigning to $x */\n  \
             $x: inside outer scope;\n  blah: blah;\n  \
             inner {\n    @include foo();\n    x: $x;\n  }\n}",
-          b"outer {\n  /* assigning to $x */\n  blah: blah;\n}\n\
+          "outer {\n  /* assigning to $x */\n  blah: blah;\n}\n\
             outer inner {\n  /* begin foo */\n  /* assigning to $x */\n  \
             x: inside foo;\n  /* end foo */\n  x: inside outer scope;\n}\n")
 }
@@ -585,7 +585,7 @@ fn t20_scoped_variables() {
 fn t21_one_builtin_function() {
     check(b"div {\n  color: rgb(255, $blue: 0, $green: 255);\n  \
             background: rgb(123, 45, 6);\n}\n",
-          b"div {\n  color: yellow;\n  background: #7b2d06;\n}\n")
+          "div {\n  color: yellow;\n  background: #7b2d06;\n}\n")
 }
 
 #[test]
@@ -600,7 +600,7 @@ fn t22_colors_with_alpha() {
             hoo: red($x);\n  moo: green($x);\n  poo: blue($x);\n\n  \
             goo: mix(rgba(255, 0, 0, 0.5), #00f);\n\n\
             boo: invert(#123456);\n}\n",
-          b"div {\n  color: yellow;\n  background: #7b2d06;\n  \
+          "div {\n  color: yellow;\n  background: #7b2d06;\n  \
             flah: #111111;\n  grah: rgba(255, 0, 238, 0.5);\n  \
             blah: rgba(1, 2, 3, 0.6);\n  floo: cyan;\n  \
             bloo: rgba(0, 255, 255, 0.7);\n  groo: cyan;\n  \
@@ -616,7 +616,7 @@ fn t32_percentages() {
             width: 10% + 10;\n  width: 10 + 10%;\n  height: 10% - 10;\n  \
             height: 10 - 10%;\n  blah: (20% / 4%);\n  flah: 12 * 75%;\n  \
             grah: 75% * 12;\n  // hwah: (24 / 8%);\n  nyah: (35% / 7);\n}",
-          b"div {\n  width: 30%;\n  height: -10%;\n  \
+          "div {\n  width: 30%;\n  height: -10%;\n  \
             width: 20%;\n  width: 20%;\n  height: 0%;\n  \
             height: 0%;\n  blah: 5;\n  flah: 900%;\n  \
             grah: 900%;\n  nyah: 5%;\n}\n")
@@ -627,7 +627,7 @@ fn t32_percentages() {
 #[test]
 fn t36_extra_commas_in_selectors() {
     check(b"div,, , span, ,, {\n  color: red;\n}",
-          b"div, span {\n  color: red;\n}\n")
+          "div, span {\n  color: red;\n}\n")
 }
 
 #[test]
@@ -638,22 +638,15 @@ fn t59_if_expression() {
             foo: if($if-true: hey, $if-false: ho, $condition: false);\n  \
             foo: if($x != 0, if($x, true, false), unquote(\"x is zero\"));\n  \
             foo: if(false, 1/0, $if-false: $if-false);\n}",
-          b"div {\n  \
-            foo: hey;\n  foo: ho;\n  foo: x is zero;\n  foo: whatever;\n}\n")
+          "div {\n  \
+           foo: hey;\n  foo: ho;\n  foo: x is zero;\n  foo: whatever;\n}\n")
 
 }
 
-fn check(input: &[u8], expected: &[u8]) {
-    use std::str::from_utf8;
-    let result = compile_scss(input, OutputStyle::Normal);
-    if let Ok(output) = result {
-        if let (Ok(output), Ok(expected)) =
-            (from_utf8(&output), from_utf8(expected)) {
-            assert_eq!(output, expected)
-        } else {
-            assert_eq!(output, expected)
-        }
-    } else {
-        assert_eq!(result, Ok(expected.into()))
-    }
+fn check(input: &[u8], expected: &str) {
+    assert_eq!(compile_scss(input, OutputStyle::Normal).and_then(|s| {
+                   String::from_utf8(s)
+                       .map_err(|e| format!("Non-utf8 output: {}", e))
+               }),
+               Ok(expected.into()));
 }
