@@ -177,11 +177,44 @@ fn b2rat(byte: u8) -> Rational {
 }
 
 fn to_int(v: Value) -> u8 {
-    match v {
-        Value::Numeric(v, _, _) => v.to_integer() as u8,
+    let v = match v {
+        Value::Numeric(v, Unit::Percent, _) => {
+            (Rational::new(255, 100) * v).to_integer()
+        }
+        Value::Numeric(v, _, _) => v.to_integer(),
         v => format!("{}", v).parse().unwrap(),
+    };
+    if v > 255 {
+        255
+    } else if v < 0 {
+        0
+    } else {
+        v as u8
     }
 }
+
+#[test]
+fn percent_to_int_0() {
+    assert_eq!(to_int(percent(0)), 0)
+}
+#[test]
+fn percent_to_int_50() {
+    assert_eq!(to_int(percent(50)), 127)
+}
+#[test]
+fn percent_to_int_100() {
+    assert_eq!(to_int(percent(100)), 255)
+}
+#[test]
+fn percent_to_int_overflow() {
+    assert_eq!(to_int(percent(130)), 255)
+}
+
+#[cfg(test)]
+fn percent(n: isize) -> Value {
+    Value::Numeric(Rational::from_integer(n), Unit::Percent, false)
+}
+
 
 fn to_rational(v: Value) -> Rational {
     match v {
