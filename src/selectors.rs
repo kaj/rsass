@@ -117,13 +117,9 @@ impl fmt::Display for Selector {
 impl fmt::Display for SelectorPart {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            &SelectorPart::Simple(ref s) => {
-                write!(out, "{}", s)
-            }
+            &SelectorPart::Simple(ref s) => write!(out, "{}", s),
             &SelectorPart::Descendant => write!(out, " "),
-            &SelectorPart::RelOp(ref c) => {
-                write!(out, " {} ", c.clone() as char)
-            }
+            &SelectorPart::RelOp(ref c) => write!(out, " {} ", *c as char),
             &SelectorPart::Attribute { ref name, ref op, ref val } => {
                 write!(out, "[{}{}{}]", name, op, val)
             }
