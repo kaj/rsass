@@ -33,13 +33,13 @@ impl Selector {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SelectorPart {
-    Simple(Vec<u8>),
+    Simple(String),
     Descendant,
     RelOp(u8), // >, +, ~
     Attribute {
-        name: Vec<u8>,
-        op: Vec<u8>,
-        val: Vec<u8>,
+        name: String,
+        op: String,
+        val: String,
     },
     BackRef,
 }
@@ -57,7 +57,7 @@ named!(pub selector<Selector>,
 named!(selector_part<&[u8], SelectorPart>,
        alt_complete!(
            map!(take_while1!(is_selector_char),
-                |s: &[u8]| SelectorPart::Simple(s.to_vec())) |
+                |s: &[u8]| SelectorPart::Simple(from_utf8(s).unwrap().into())) |
            do_parse!(tag!("[") >> opt_spacelike >>
                      name: take_while1!(is_selector_char) >> opt_spacelike >>
                      op: alt_complete!(tag!("*=") | tag!("=")) >>
@@ -76,9 +76,9 @@ named!(selector_part<&[u8], SelectorPart>,
                      opt_spacelike >>
                      tag!("]") >>
                      (SelectorPart::Attribute {
-                         name: name.to_vec(),
-                         op: op.to_vec(),
-                         val: val.as_bytes().to_vec(),
+                         name: from_utf8(name).unwrap().into(),
+                         op: from_utf8(op).unwrap().into(),
+                         val: val,
                      })) |
            value!(SelectorPart::BackRef, tag!("&")) |
            delimited!(opt_spacelike,
@@ -118,17 +118,14 @@ impl fmt::Display for SelectorPart {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
             &SelectorPart::Simple(ref s) => {
-                write!(out, "{}", from_utf8(s).unwrap())
+                write!(out, "{}", s)
             }
             &SelectorPart::Descendant => write!(out, " "),
             &SelectorPart::RelOp(ref c) => {
                 write!(out, " {} ", c.clone() as char)
             }
             &SelectorPart::Attribute { ref name, ref op, ref val } => {
-                write!(out, "[{}{}{}]",
-                       from_utf8(name).unwrap(),
-                       from_utf8(op).unwrap(),
-                       from_utf8(val).unwrap())
+                write!(out, "[{}{}{}]", name, op, val)
             }
             &SelectorPart::BackRef => write!(out, "&"),
         }
@@ -142,7 +139,7 @@ mod test {
 
     #[test]
     fn root_join() {
-        let s = Selector(vec![SelectorPart::Simple(b"foo"[..].into())]);
+        let s = Selector(vec![SelectorPart::Simple("foo".into())]);
         assert_eq!(Selector::root().join(&s), s)
     }
 
@@ -150,24 +147,24 @@ mod test {
     fn simple_selector() {
         assert_eq!(selector(b"foo "),
                    Done(&b""[..], Selector(
-                       vec![SelectorPart::Simple(b"foo"[..].into())])))
+                       vec![SelectorPart::Simple("foo".into())])))
     }
 
     #[test]
     fn selector2() {
         assert_eq!(selector(b"foo bar "),
                    Done(&b""[..], Selector(
-                       vec![SelectorPart::Simple(b"foo"[..].into()),
+                       vec![SelectorPart::Simple("foo".into()),
                             SelectorPart::Descendant,
-                            SelectorPart::Simple(b"bar"[..].into())])))
+                            SelectorPart::Simple("bar".into())])))
     }
 
     #[test]
     fn child_selector() {
         assert_eq!(selector(b"foo > bar "),
                    Done(&b""[..], Selector(
-                       vec![SelectorPart::Simple(b"foo"[..].into()),
+                       vec![SelectorPart::Simple("foo".into()),
                             SelectorPart::RelOp(b'>'),
-                            SelectorPart::Simple(b"bar"[..].into())])))
+                            SelectorPart::Simple("bar".into())])))
     }
 }
