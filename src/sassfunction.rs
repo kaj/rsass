@@ -206,7 +206,6 @@ lazy_static! {
                         let h = a_comb(h, h_adj);
                         let s = sl_comb(s, s_adj);
                         let l = sl_comb(l, l_adj);
-                        println!("Adjusted to hsl({}, {}, {})", h, s, l);
                         let (r, g, b) =
                             hsl_to_rgb(h * Rational::new(1, 360), s, l);
                         Value::Color(frac_to_int(r),
@@ -265,7 +264,6 @@ fn hsl_to_rgb(h: Rational,
               s: Rational,
               l: Rational)
               -> (Rational, Rational, Rational) {
-    println!("hsl({}, {}, {})", h, s, l);
     let one = Rational::from_integer(1);
     if s.is_zero() {
         (l, l, l)
@@ -331,8 +329,6 @@ fn rgb_to_hsl(r: Rational,
             1 => (b - r) / d + Rational::from_integer(2),
             _ => (r - g) / d + Rational::from_integer(4),
         } * Rational::new(360, 6);
-        // h /= 6;
-        println!("rgb({}, {}, {}) => hsl({}, {}, {})", r, g, b, h, s, mid);
         (h, s, mid)
     }
 }
