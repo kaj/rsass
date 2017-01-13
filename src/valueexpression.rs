@@ -230,7 +230,7 @@ named!(single_value<&[u8], Value>,
        alt_complete!(
            value!(Value::True, tag!("true")) |
            value!(Value::False, tag!("false")) |
-           do_parse!(neg: opt!(tag!("-")) >>
+           do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
                      r: is_a!("0123456789") >>
                      d: opt!(preceded!(tag!("."), is_a!("0123456789"))) >>
                      u: opt!(unit) >>
@@ -240,7 +240,7 @@ named!(single_value<&[u8], Value>,
                                  from_utf8(r).unwrap()).unwrap() +
                                  d.map(decimals_to_rational)
                                  .unwrap_or(Rational::zero());
-                             if neg.is_some() { -d } else { d }
+                             if sign == Some(b"-") { -d } else { d }
                          }
                          , u.unwrap_or(Unit::None), false))) |
            do_parse!(tag!(".") >>
