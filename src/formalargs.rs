@@ -25,8 +25,12 @@ impl FormalArgs {
             let value = args.0
                 .iter()
                 .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
-                .or_else(|| args.0.get(i))
                 .map(|&(ref _k, ref v)| v)
+                .or_else(|| {
+                    args.0.get(i).and_then(|&(ref k, ref v)| {
+                        if k.is_some() { None } else { Some(v) }
+                    })
+                })
                 .unwrap_or(default);
             argscope.define(&name, &value, false);
         }
