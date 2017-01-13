@@ -224,6 +224,32 @@ lazy_static! {
                 v => v,
             }
         }));
+        f.insert("adjust_hue", func!((color, degrees), |s: &Scope| {
+            fn a_comb(orig: Rational, x: Value) -> Rational {
+                match x {
+                    Value::Null => orig,
+                    Value::Numeric(..) => orig + to_rational(x),
+                    _ => orig, // Or error?
+                }
+            }
+            match s.get("color") {
+                Value::Color(red, green, blue, alpha, _) => {
+                    let h_adj = s.get("degrees");
+                    let (h, s, l) = rgb_to_hsl(u8_to_frac(red),
+                                               u8_to_frac(green),
+                                               u8_to_frac(blue));
+                    let h = a_comb(h, h_adj);
+                    let (r, g, b) =
+                        hsl_to_rgb(h * Rational::new(1, 360), s, l);
+                    Value::Color(frac_to_int(r),
+                                 frac_to_int(g),
+                                 frac_to_int(b),
+                                 alpha,
+                                 None)
+                }
+                v => v,
+            }
+        }));
         f.insert("type_of", func!((value), |s: &Scope| {
             let value = s.get("value");
             Value::Literal(

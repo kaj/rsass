@@ -31,6 +31,19 @@ fn adjust_color_xx() {
            color: rgba(255, 108, 0, 0.6);\n}\n")
 }
 
+#[test]
+fn adjust_hue() {
+    check(b"p {\n  color: adjust-hue(#f00, 10);\n   \
+            color: adjust-hue(#900, 90);\n  \
+            color: adjust-hue(#000, 30);\n  \
+            color: adjust-hue(#fff, -30);\n  \
+            color: adjust-hue(#999, -530);\n  \
+            color: adjust-hue(#000, +720);\n  \
+            // error in libsass\n  // color: adjust-hue(#333, + 720);\n}\n",
+          "p {\n  color: #ff2b00;\n  color: #4d9900;\n  color: black;\n  \
+           color: white;\n  color: #999999;\n  color: black;\n}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Normal).and_then(|s| {
                    String::from_utf8(s)
