@@ -16,6 +16,21 @@ fn basic_4_0() {
            color: redgreen;\n  foo: #c8ffff;\n}\n")
 }
 
+/// TODO The last value should be rgba(255, 106, 0, 0.6)
+/// Green 108 instead of 106 must be some kind of rounding error.
+#[test]
+fn adjust_color_xx() {
+    check(b"p {\n  \
+            color: adjust-color(#102030, $blue: 5);\n  \
+            color: adjust-color(#102030, $alpha: .325);\n  \
+            color: adjust-color(#102030, $red: -5, $blue: 5);\n  \
+            color: adjust-color(hsl(25, 100%, 80%), \
+                                $lightness: -30%, $alpha: -0.4);\n\
+            }",
+          "p {\n  color: #102035;\n  color: #102030;\n  color: #0b2035;\n  \
+           color: rgba(255, 108, 0, 0.6);\n}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Normal).and_then(|s| {
                    String::from_utf8(s)

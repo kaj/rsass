@@ -192,7 +192,7 @@ fn div(x: &u8, y: &Rational) -> u8 {
 }
 
 #[cfg(test)]
-mod test {
+pub mod test {
     use std::str::from_utf8;
     use valueexpression::*;
     use variablescope::*;
@@ -506,7 +506,7 @@ mod test {
         assert_eq!("false", do_evaluate(&[], b"18 != 10 + 8;"))
     }
 
-    fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
+    pub fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
         let mut scope = ScopeImpl::new();
         for &(name, ref val) in s {
             let val = format!("{};", val);
