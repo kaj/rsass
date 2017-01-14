@@ -224,6 +224,66 @@ lazy_static! {
                 v => v,
             }
         }));
+        f.insert("change_color",
+                 func!((color, red, green, blue,
+                        hue, saturation, lightness, alpha),
+                       |s: &Scope| {
+            fn c_or(orig: u8, x: Value) -> u8 {
+                match x {
+                    Value::Null => orig,
+                    Value::Numeric(..) => {
+                        cap_u8(to_rational(x).round().to_integer())
+                    }
+                    _ => orig, // Or error?
+                }
+            }
+            fn a_or(orig: Rational, x: Value) -> Rational {
+                match x {
+                    Value::Null => orig,
+                    Value::Numeric(..) => to_rational(x),
+                    _ => orig, // Or error?
+                }
+            }
+            fn sl_or(orig: Rational, x: Value) -> Rational {
+                match x {
+                    Value::Null => orig,
+                    Value::Numeric(..) => to_rational_percent(x),
+                    _ => orig, // Or error?
+                }
+            }
+            match s.get("color") {
+                Value::Color(red, green, blue, alpha, _) => {
+                    let h_adj = s.get("hue");
+                    let s_adj = s.get("saturation");
+                    let l_adj = s.get("lightness");
+                    let a_adj = s.get("alpha");
+                    if h_adj != Value::Null
+                        || s_adj != Value::Null
+                        || l_adj != Value::Null {
+                        let (h, s, l) = rgb_to_hsl(u8_to_frac(red),
+                                                   u8_to_frac(green),
+                                                   u8_to_frac(blue));
+                        let h = a_or(h, h_adj);
+                        let s = sl_or(s, s_adj);
+                        let l = sl_or(l, l_adj);
+                        let (r, g, b) =
+                            hsl_to_rgb(h * Rational::new(1, 360), s, l);
+                        Value::Color(frac_to_int(r),
+                                     frac_to_int(g),
+                                     frac_to_int(b),
+                                     a_or(alpha, a_adj),
+                                     None)
+                    } else {
+                        Value::Color(c_or(red, s.get("red")),
+                                     c_or(green, s.get("green")),
+                                     c_or(blue, s.get("blue")),
+                                     a_or(alpha, s.get("alpha")),
+                                     None)
+                    }
+                }
+                v => v,
+            }
+        }));
         f.insert("adjust_hue", func!((color, degrees), |s: &Scope| {
             fn a_comb(orig: Rational, x: Value) -> Rational {
                 match x {
