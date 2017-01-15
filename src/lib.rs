@@ -57,7 +57,7 @@ pub fn compile_scss(input: &[u8],
                     SassItem::MixinDeclaration(m) => globals.define_mixin(&m),
                     SassItem::MixinCall { name, args } => {
                         if separate {
-                            write!(result, "\n").unwrap();
+                            style.do_indent(&mut result, 0).unwrap();
                         } else {
                             separate = true;
                         }
@@ -93,7 +93,7 @@ pub fn compile_scss(input: &[u8],
                     }
                     SassItem::IfStatement(cond, do_if, do_else) => {
                         if separate {
-                            write!(result, "\n").unwrap();
+                            style.do_indent(&mut result, 0).unwrap();
                         } else {
                             separate = true;
                         }
