@@ -665,6 +665,18 @@ fn t36_extra_commas_in_selectors() {
 }
 
 #[test]
+fn t54_adjacent_identifiers_with_hyphens() {
+    check(b"input {\n    outline: 5px auto -webkit-focus-ring-color;\n    \
+            foo: random -hello-this-is-dog;\n    \
+            bar: rando -two-or-more -things-that-start -with-hyphens;\n    \
+            baz: foo - bar;\n}",
+          "input {\n  outline: 5px auto -webkit-focus-ring-color;\n  \
+           foo: random -hello-this-is-dog;\n  \
+           bar: rando -two-or-more -things-that-start -with-hyphens;\n  \
+           baz: foo-bar;\n}\n")
+}
+
+#[test]
 fn t59_if_expression() {
     check(b"$x: 0;\n$if-false: whatever;\n\n\
             div {\n  \

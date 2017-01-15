@@ -4,7 +4,7 @@ use nom::multispace;
 use num_rational::Rational;
 use num_traits::{One, Zero};
 use operator::Operator;
-use parseutil::{opt_spacelike, name};
+use parseutil::{opt_spacelike, name, spacelike};
 use std::fmt;
 use std::str::{FromStr, from_utf8};
 
@@ -232,13 +232,19 @@ named!(pub single_expression<Value>,
 named!(pub sum_expression<Value>,
        do_parse!(a: term_value >>
                  r: fold_many0!(
-                     do_parse!(opt_spacelike >>
-                               op: alt_complete!(
-                                   value!(Operator::Plus, tag!("+")) |
-                                   value!(Operator::Minus, tag!("-"))) >>
-                               opt_spacelike >>
-                               b: term_value >>
-                               (op, b)),
+                     alt_complete!(
+                         do_parse!(op: alt_complete!(
+                                       value!(Operator::Plus, tag!("+")) |
+                                       value!(Operator::Minus, tag!("-"))) >>
+                                   b: term_value >>
+                                   (op, b)) |
+                         do_parse!(spacelike >>
+                                   op: alt_complete!(
+                                       value!(Operator::Plus, tag!("+")) |
+                                       value!(Operator::Minus, tag!("-"))) >>
+                                   spacelike >>
+                                   b: term_value >>
+                                   (op, b))),
                      a,
                      |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))) >>
                  (r)));
@@ -305,7 +311,7 @@ named!(single_value<&[u8], Value>,
                                                 from_utf8(b).unwrap()))))) |
            do_parse!(name: name >> args: call_args >>
                      (Value::Call(name, args))) |
-           map!(is_not!("+-*/=;,$(){{}}! \n\t\""), |val| {
+           map!(is_not!("+*/=;,$(){{}}! \n\t\""), |val| {
                let val = from_utf8(val).unwrap().to_string();
                if let Some((r, g, b)) = name_to_rgb(&val) {
                    Value::Color(r, g, b, Rational::from_integer(1), Some(val))
