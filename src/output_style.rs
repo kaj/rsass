@@ -124,6 +124,25 @@ impl OutputStyle {
                             .unwrap();
                     }
                 }
+                &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
+                    if scope.evaluate(&cond).is_true() {
+                        self.handle_body(direct,
+                                         sub,
+                                         &mut ScopeImpl::sub(scope),
+                                         selectors,
+                                         &do_if,
+                                         0)
+                            .unwrap();
+                    } else {
+                        self.handle_body(direct,
+                                         sub,
+                                         &mut ScopeImpl::sub(scope),
+                                         selectors,
+                                         &do_else,
+                                         0)
+                            .unwrap();
+                    }
+                }
                 &SassItem::None => (),
             }
         }

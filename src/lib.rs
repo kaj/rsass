@@ -91,6 +91,34 @@ pub fn compile_scss(input: &[u8],
                     SassItem::Property(_, _) => {
                         panic!("Global property not allowed");
                     }
+                    SassItem::IfStatement(cond, do_if, do_else) => {
+                        if separate {
+                            write!(result, "\n").unwrap();
+                        } else {
+                            separate = true;
+                        }
+                        if globals.evaluate(&cond).is_true() {
+                            let mut direct = vec![];
+                            style.handle_body(&mut direct,
+                                             &mut result,
+                                             &mut ScopeImpl::sub(&mut globals),
+                                             &vec![Selector::root()],
+                                             &do_if,
+                                             0)
+                                .unwrap();
+                            assert_eq!(direct, &[]);
+                        } else {
+                            let mut direct = vec![];
+                            style.handle_body(&mut direct,
+                                             &mut result,
+                                             &mut ScopeImpl::sub(&mut globals),
+                                             &vec![Selector::root()],
+                                             &do_else,
+                                             0)
+                                .unwrap();
+                            assert_eq!(direct, &[]);
+                        }
+                    }
                     SassItem::None => (),
                 }
             }
@@ -115,6 +143,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
                    variable_declaration |
                    map!(mixin_declaration, |d| SassItem::MixinDeclaration(d)) |
                    mixin_call |
+                   if_statement |
                    rule |
                    map!(comment,
                         |c| SassItem::Comment(from_utf8(c).unwrap().into()))
@@ -133,6 +162,7 @@ pub enum SassItem {
     },
     MixinDeclaration(MixinDeclaration),
     MixinCall { name: String, args: CallArgs },
+    IfStatement(Value, Vec<SassItem>, Vec<SassItem>),
 }
 
 
@@ -157,6 +187,7 @@ named!(body_item<SassItem>,
            rule |
            property |
            mixin_call |
+           if_statement |
            map!(comment, |c| SassItem::Comment(from_utf8(c).unwrap().into()))
                ));
 
@@ -169,6 +200,45 @@ named!(mixin_call<SassItem>,
                      name: name,
                      args: args.unwrap_or_default(),
                  })));
+
+named!(if_statement<SassItem>,
+       preceded!(tag!("@"), if_statement_inner));
+
+named!(if_statement_inner<SassItem>,
+       do_parse!(tag!("if") >> spacelike >>
+                 cond: value_expression >> opt_spacelike >>
+                 body: delimited!(preceded!(tag!("{"), opt_spacelike),
+                                  many0!(body_item),
+                                  tag!("}")) >>
+                 else_body: opt!(complete!(preceded!(
+                     delimited!(opt_spacelike, tag!("@else"), opt_spacelike),
+                     alt_complete!(
+                         delimited!(preceded!(tag!("{"), opt_spacelike),
+                                    many0!(body_item),
+                                    preceded!(tag!("}"), opt_spacelike)) |
+                         map!(if_statement_inner, |s| vec![s]))))) >>
+                 (SassItem::IfStatement(cond,
+                                        body,
+                                        else_body.unwrap_or_default()))));
+
+#[test]
+fn if_with_no_else() {
+    use operator::Operator;
+
+    assert_eq!(if_statement(b"@if 1 == 1 { p { color: black; } }\n"),
+               Done(&b"\n"[..],
+                    SassItem::IfStatement(
+                        Value::BinOp(Box::new(Value::scalar(1)),
+                                     Operator::Equal,
+                                     Box::new(Value::scalar(1))),
+                        vec![SassItem::Rule(
+                            vec![selector(b"p").unwrap().1],
+                            vec![SassItem::None,
+                                 SassItem::Property("color".into(),
+                                                    Value::black())]),
+                             SassItem::None],
+                        vec![])))
+}
 
 #[test]
 fn test_mixin_call_noargs() {

@@ -2,7 +2,7 @@ use colors::{name_to_rgb, rgb_to_name};
 use formalargs::{CallArgs, call_args};
 use nom::multispace;
 use num_rational::Rational;
-use num_traits::Zero;
+use num_traits::{One, Zero};
 use operator::Operator;
 use parseutil::{opt_spacelike, name};
 use std::fmt;
@@ -43,6 +43,13 @@ pub enum Value {
 }
 
 impl Value {
+    pub fn scalar(v: isize) -> Self {
+        Value::Numeric(Rational::from_integer(v), Unit::None, false)
+    }
+    pub fn black() -> Self {
+        Value::Color(0, 0, 0, Rational::one(), Some("black".into()))
+    }
+
     pub fn is_calculated(&self) -> bool {
         match self {
             &Value::Numeric(_, _, calculated) => calculated,
@@ -370,12 +377,12 @@ mod test {
         assert_eq!(value_expression(b"15/10 2 3;"),
                    Done(&b";"[..],
                         Value::MultiSpace(vec![
-                            Value::Div(Box::new(scalar(15)),
-                                       Box::new(scalar(10)),
+                            Value::Div(Box::new(Value::scalar(15)),
+                                       Box::new(Value::scalar(10)),
                                        false,
                                        false),
-                            scalar(2),
-                            scalar(3)])))
+                            Value::scalar(2),
+                            Value::scalar(3)])))
     }
 
     #[test]
@@ -383,11 +390,11 @@ mod test {
         assert_eq!(value_expression(b"15/5/3;"),
                    Done(&b";"[..],
                         Value::Div(
-                            Box::new(Value::Div(Box::new(scalar(15)),
-                                                Box::new(scalar(5)),
+                            Box::new(Value::Div(Box::new(Value::scalar(15)),
+                                                Box::new(Value::scalar(5)),
                                                 false,
                                                 false)),
-                            Box::new(scalar(3)),
+                            Box::new(Value::scalar(3)),
                             false,
                             false)))
     }
@@ -408,9 +415,5 @@ mod test {
                         Value::Color(170, 187, 204,
                                         Rational::from_integer(1),
                                         Some("#AaBbCc".into()))))
-    }
-
-    fn scalar(v: isize) -> Value {
-        Value::Numeric(Rational::from_integer(v), Unit::None, false)
     }
 }

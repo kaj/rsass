@@ -608,7 +608,28 @@ fn t22_colors_with_alpha() {
             goo: rgba(64, 0, 191, 0.75);\n  boo: #edcba9;\n}\n")
 }
 
-// TODO Implement tests 23 - 31 ...
+// TODO Implement tests 23 - 28 ...
+
+#[test]
+fn t29_if() {
+    check(b"$x: a, b, 1+2;\n\n\
+            @if type-of(nth($x, 3)) == number {\n  \
+            div {\n    background: gray;\n  }\n}\n\n\
+            @if type-of(nth($x, 2)) == number {\n  \
+            div {\n    background: gray;\n  }\n}\n\
+            @else if type-of(nth($x, 2)) == string {\n  \
+            div {\n    background: blue;\n  }\n}\n\n\
+            @if type-of(nth($x, 2)) == number {\n  \
+            div {\n    background: gray;\n  }\n}\n\
+            @else if type-of(nth($x, 2)) == color {\n  \
+            div {\n    background: blue;\n  }\n}\n\
+            @else {\n  div {\n    background: red;\n  }\n}",
+          "div {\n  background: gray;\n}\n\n\
+           div {\n  background: blue;\n}\n\n\
+           div {\n  background: red;\n}\n")
+}
+
+// TODO Implement tests 30 - 31 ...
 
 #[test]
 fn t32_percentages() {
