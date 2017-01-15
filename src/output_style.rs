@@ -85,11 +85,17 @@ impl OutputStyle {
                 }
                 &SassItem::Property(ref name, ref value) => {
                     try!(self.do_indent(direct, indent + 2));
-                    try!(write!(direct,
-                                "{}:{}{};",
-                                name,
-                                self.opt_space(),
-                                scope.evaluate(value)));
+                    if self.is_compressed() {
+                        try!(write!(direct,
+                                    "{}:{:#};",
+                                    name,
+                                    scope.evaluate(value)));
+                    } else {
+                        try!(write!(direct,
+                                    "{}: {};",
+                                    name,
+                                    scope.evaluate(value)));
+                    }
                 }
                 &SassItem::Rule(ref s, ref b) => {
                     try!(self.write_rule(s,

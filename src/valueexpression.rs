@@ -109,19 +109,47 @@ impl fmt::Display for Value {
                     &Some(ref s) => write!(out, "{}", s),
                     &None => {
                         if a >= &Rational::from_integer(1) {
-                            match rgb_to_name(*r, *g, *b) {
-                                Some(name) => write!(out, "{}", name),
-                                None => {
+                            if out.alternate() {
+                                // E.g. #ff00cc can be written #f0c in css.
+                                // 0xff / 17 = 0xf (since 17 = 0x11).
+                                let hex = if r % 17 == 0 && g % 17 == 0 &&
+                                             b % 17 == 0 {
+                                    format!("#{:x}{:x}{:x}",
+                                            r / 17,
+                                            g / 17,
+                                            b / 17)
+                                } else {
+                                    format!("#{:02x}{:02x}{:02x}", r, g, b)
+                                };
+                                match rgb_to_name(*r, *g, *b) {
+                                    Some(name) if name.len() <= hex.len() => {
+                                        write!(out, "{}", name)
+                                    }
+                                    _ => write!(out, "{}", hex),
+                                }
+                            } else {
+                                if let Some(name) = rgb_to_name(*r, *g, *b) {
+                                    write!(out, "{}", name)
+                                } else {
                                     write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
                                 }
                             }
                         } else {
-                            write!(out,
-                                   "rgba({}, {}, {}, {})",
-                                   r,
-                                   g,
-                                   b,
-                                   rational2str(a, false))
+                            if out.alternate() {
+                                write!(out,
+                                       "rgba({},{},{},{})",
+                                       r,
+                                       g,
+                                       b,
+                                       rational2str(a, false))
+                            } else {
+                                write!(out,
+                                       "rgba({}, {}, {}, {})",
+                                       r,
+                                       g,
+                                       b,
+                                       rational2str(a, false))
+                            }
                         }
                     }
                 }

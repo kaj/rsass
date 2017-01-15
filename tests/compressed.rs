@@ -107,6 +107,24 @@ fn t08_selector_combinators() {
            a+b>c d e{color:blue;background:white}\n")
 }
 
+#[test]
+fn t22_colors_with_alpha() {
+    check(b"$x: rgb(0, 255, 255);\n\n\
+            div {\n  color: rgb(255, $blue: 0, $green: 255);\n  \
+            background: rgb(123, 45, 6);\n  flah: rgba(0, 0, 0, 1) + #111;\n  \
+            grah: rgba(#f0e, $alpha: .5);\n  blah: rgba(1,2,3,.6);\n  \n  \
+            floo: $x;\n  bloo: rgba($x, 0.7);\n  groo: $x;\n\n\
+            $x: rgb(123, 45, 6);\n  \n  \
+            hoo: red($x);\n  moo: green($x);\n  poo: blue($x);\n  \n  \
+            goo: mix(rgba(255, 0, 0, 0.5), #00f);\n  \n  \
+            boo: invert(#123456);\n}\n",
+          "div{color:#ff0;background:#7b2d06;flah:#111;\
+           grah:rgba(255,0,238,0.5);blah:rgba(1,2,3,0.6);floo:cyan;\
+           bloo:rgba(0,255,255,0.7);groo:cyan;hoo:123;moo:45;poo:6;\
+           goo:rgba(64,0,191,0.75);boo:#edcba9}
+")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Compressed).and_then(|s| {
                    String::from_utf8(s)
