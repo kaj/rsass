@@ -629,7 +629,20 @@ fn t29_if() {
            div {\n  background: red;\n}\n")
 }
 
-// TODO Implement tests 30 - 31 ...
+// TODO Implement tests 30 ...
+
+#[test]
+fn t31_if_in_mixin() {
+    check(b"$x: true;\n\n\
+            @mixin foobar() {\n  \
+            @if $x {\n    $x: false !global;\n    content: foo;\n  }\n  \
+            @else {\n    $x: true !global;\n    content: bar;\n  }\n}\n\n\
+            div {\n  @include foobar();\n  @include foobar();\n  \
+            @include foobar();\n  $x: true !global;\n  \
+            @include foobar();\n}\n",
+          "div {\n  content: foo;\n  content: bar;\n  content: foo;\n  \
+           content: foo;\n}\n")
+}
 
 #[test]
 fn t32_percentages() {
