@@ -609,6 +609,12 @@ fn t36_extra_commas_in_selectors() {
 }
 
 #[test]
+fn t39_dash_match_attribute_selector() {
+    check(b"div[class|=\"blah\"] {\n  color: blue;\n}\n",
+          "div[class|=\"blah\"] {\n  color: blue;\n}\n")
+}
+
+#[test]
 fn t54_adjacent_identifiers_with_hyphens() {
     check(b"input {\n    outline: 5px auto -webkit-focus-ring-color;\n    \
             foo: random -hello-this-is-dog;\n    \

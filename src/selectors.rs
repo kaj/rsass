@@ -60,7 +60,7 @@ named!(selector_part<&[u8], SelectorPart>,
                 |s: &[u8]| SelectorPart::Simple(from_utf8(s).unwrap().into())) |
            do_parse!(tag!("[") >> opt_spacelike >>
                      name: take_while1!(is_selector_char) >> opt_spacelike >>
-                     op: alt_complete!(tag!("*=") | tag!("=")) >>
+                     op: alt_complete!(tag!("*=") | tag!("|=") | tag!("=")) >>
                      opt_spacelike >>
                      val: alt_complete!(
                          map!(delimited!(tag!("\""),
