@@ -170,103 +170,47 @@ fn t06d_simple_local_variable() {
 fn t06_nesting_and_comments() {
     check(b"$blah: bloo blee;\n\
             $blip: \"a 'red' and \\\"blue\\\" value\";\n\
-            \n\
-/* top level comment -- should be preserved */
-div {
-  /* another comment that should be preserved */
-  color: red;
-  background: blue;
-  $blux: hux; // gone!
-  span {
-    font-weight: bold;
-    a {
-      text-decoration: none; /* where will this comment go? */
-      color: green;
-      /* what about this comment? */ border: 1px $blah red;
-    }
-    /* yet another comment that should be preserved */
-    display: inline-block;
-  }  // gone!
-  /* the next selector should be indented two spaces */
-  empty {
-    not_empty {
-      blah: blah; // gone!
-      bloo: bloo;
-    }
-  }
-  p {
-    padding: 10px 8%;
-    -webkit-box-sizing: $blux;
-  }
-  margin: 10px 5px;
-  h1 {
-    color: $blip;
-  }
-}
-/* last comment, top level again --
-   compare the indentation! */
-
-div {
-  f: g;
-  empty {
-    span {
-      a: b;
-    }
-  }
-  empty_with_comment {
-    /* hey now */
-    span {
-      c: d;
-    }
-  }
-}",
-          "/* top level comment -- should be preserved */
-div {
-  /* another comment that should be preserved */
-  color: red;
-  background: blue;
-  /* the next selector should be indented two spaces */
-  margin: 10px 5px;
-}
-div span {
-  font-weight: bold;
-  /* yet another comment that should be preserved */
-  display: inline-block;
-}
-div span a {
-  text-decoration: none;
-  /* where will this comment go? */
-  color: green;
-  /* what about this comment? */
-  border: 1px bloo blee red;
-}
-div empty not_empty {
-  blah: blah;
-  bloo: bloo;
-}
-div p {
-  padding: 10px 8%;
-  -webkit-box-sizing: hux;
-}
-div h1 {
-  color: \"a 'red' and \\\"blue\\\" value\";
-}
-
-/* last comment, top level again --
-   compare the indentation! */
-div {
-  f: g;
-}
-div empty span {
-  a: b;
-}
-div empty_with_comment {
-  /* hey now */
-}
-div empty_with_comment span {
-  c: d;
-}
-")
+            /* top level comment -- should be preserved */\n\
+            div {\n  /* another comment that should be preserved */\n  \
+            color: red;\n  background: blue;\n  $blux: hux; // gone!\n  \
+            span {\n    font-weight: bold;\n    \
+            a {\n      text-decoration: none; \
+            /* where will this comment go? */\n      color: green;\n      \
+            /* what about this comment? */ border: 1px $blah red;\n    }\n    \
+            /* yet another comment that should be preserved */\n    \
+            display: inline-block;\n  }  // gone!\n  \
+            /* the next selector should be indented two spaces */\n  \
+            empty {\n    \
+            not_empty {\n      blah: blah; // gone!\n      bloo: bloo;\n    \
+            }\n  }\n  \
+            p {\n    padding: 10px 8%;\n    -webkit-box-sizing: $blux;\n  }\n  \
+            margin: 10px 5px;  \
+            h1 {\n    color: $blip;\n  }\n}\n\
+            /* last comment, top level again --\n   \
+            compare the indentation! */\n\n\
+            div {\n  f: g;\n  empty {\n    span {\n      a: b;\n    }\n  }\n  \
+            empty_with_comment {\n    /* hey now */\n    \
+            span {\n      c: d;\n    }\n  }\n}",
+          "/* top level comment -- should be preserved */\n\
+           div {\n  /* another comment that should be preserved */\n  \
+           color: red;\n  background: blue;\n  \
+           /* the next selector should be indented two spaces */\n  \
+           margin: 10px 5px;\n}\n\
+           div span {\n  font-weight: bold;\n  \
+           /* yet another comment that should be preserved */\n  \
+           display: inline-block;\n}\n\
+           div span a {\n  text-decoration: none;\n  \
+           /* where will this comment go? */\n  color: green;\n  \
+           /* what about this comment? */\n  border: 1px bloo blee red;\n}\n\
+           div empty not_empty {\n  blah: blah;\n  bloo: bloo;\n}\n\
+           div p {\n  padding: 10px 8%;\n  -webkit-box-sizing: hux;\n}\n\
+           div h1 {\n  color: \"a 'red' and \\\"blue\\\" value\";\n}\n\n\
+           /* last comment, top level again --\n   \
+           compare the indentation! */\n\
+           div {\n  f: g;\n}\n\
+           div empty span {\n  a: b;\n}\n\
+           div empty_with_comment {\n  /* hey now */\n}\n\
+           div empty_with_comment span {\n  c: d;\n}\n")
 }
 
 #[test]
