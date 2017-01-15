@@ -341,6 +341,20 @@ lazy_static! {
                 v => v,
             }
         }));
+        f.insert("nth", func!((list, n), |s| {
+            let n = if let Value::Numeric(val, _, _) = s.get("n") {
+                assert!(*val.denom() == 1);
+                val.to_integer()
+            } else {
+                panic!("n argument must be integer")
+            };
+            let list = match s.get("list") {
+                Value::MultiComma(v) => v,
+                Value::MultiSpace(v) => v,
+                v => panic!("list argument must be list, was {}", v),
+            };
+            list[n as usize - 1].clone()
+        }));
         f
     };
 }
@@ -526,6 +540,11 @@ fn test_hsl_yellow() {
 #[test]
 fn test_hsl_blue_magenta() {
     assert_eq!("#6118aa", do_evaluate(&[], b"hsl(270, 75%, 38%);"))
+}
+
+#[test]
+fn test_nth() {
+    assert_eq!("foo", do_evaluate(&[("x", "foo, bar")], b"nth($x, 1);"))
 }
 
 #[cfg(test)]
