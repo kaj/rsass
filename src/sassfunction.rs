@@ -1,6 +1,6 @@
 use formalargs::{CallArgs, FormalArgs};
 use num_rational::Rational;
-use num_traits::Zero;
+use num_traits::{Signed, Zero};
 use std::collections::BTreeMap;
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
@@ -354,6 +354,12 @@ lazy_static! {
                 v => panic!("list argument must be list, was {}", v),
             };
             list[n as usize - 1].clone()
+        }));
+        f.insert("abs", func!((number), |s| {
+            match s.get("number") {
+                Value::Numeric(val, unit, _) => Value::Numeric(val.abs(), unit, true),
+                v => panic!("abs function needs a number, got {}", v),
+            }
         }));
         f
     };
