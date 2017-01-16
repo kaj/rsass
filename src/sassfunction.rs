@@ -357,7 +357,9 @@ lazy_static! {
         }));
         f.insert("abs", func!((number), |s| {
             match s.get("number") {
-                Value::Numeric(val, unit, _) => Value::Numeric(val.abs(), unit, true),
+                Value::Numeric(val, unit, _) => {
+                    Value::Numeric(val.abs(), unit, true)
+                }
                 v => panic!("abs function needs a number, got {}", v),
             }
         }));
