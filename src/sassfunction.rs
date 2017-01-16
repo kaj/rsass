@@ -385,7 +385,7 @@ lazy_static! {
                     Value::Numeric(val * Rational::from_integer(100),
                                    Unit::Percent, true)
                 }
-                v => panic!("percentage function needs a unitless number, got {}", v),
+                v => panic!("percentage needs unitless number, got {}", v),
             }
         }));
         f
