@@ -28,6 +28,16 @@ fn floor() {
           "foo{foo:4;foo:4px;foo:4px}\n")
 }
 
+// TODO Test and implement varargs functions max and min.
+
+#[test]
+fn percentage() {
+    check(b"foo {\n  foo: percentage(.5);\n  foo: percentage(1);\n  \
+            foo: percentage(25px / 100px);\n  \
+            foo: percentage($number: 0.5);\n}\n",
+          "foo{foo:50%;foo:100%;foo:25%;foo:50%}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Compressed).and_then(|s| {
                    String::from_utf8(s)

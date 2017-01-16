@@ -368,7 +368,7 @@ lazy_static! {
                 Value::Numeric(val, unit, _) => {
                     Value::Numeric(val.ceil(), unit, true)
                 }
-                v => panic!("abs function needs a number, got {}", v),
+                v => panic!("ceil function needs a number, got {}", v),
             }
         }));
         f.insert("floor", func!((number), |s| {
@@ -376,7 +376,16 @@ lazy_static! {
                 Value::Numeric(val, unit, _) => {
                     Value::Numeric(val.floor(), unit, true)
                 }
-                v => panic!("abs function needs a number, got {}", v),
+                v => panic!("floor function needs a number, got {}", v),
+            }
+        }));
+        f.insert("percentage", func!((number), |s| {
+            match s.get("number") {
+                Value::Numeric(val, Unit::None, _) => {
+                    Value::Numeric(val * Rational::from_integer(100),
+                                   Unit::Percent, true)
+                }
+                v => panic!("percentage function needs a unitless number, got {}", v),
             }
         }));
         f
