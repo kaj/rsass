@@ -14,6 +14,13 @@ fn abs() {
           "foo{foo:5;foo:5px;foo:5;foo:5px;foo:5px}\n")
 }
 
+#[test]
+fn ceil() {
+    check(b"foo {\n  foo: ceil(4.1);\n  foo: ceil(4.8px);\n  \
+            foo: ceil($number: 4.8px);\n}\n",
+          "foo{foo:5;foo:5px;foo:5px}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Compressed).and_then(|s| {
                    String::from_utf8(s)

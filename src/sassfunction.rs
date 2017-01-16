@@ -363,6 +363,14 @@ lazy_static! {
                 v => panic!("abs function needs a number, got {}", v),
             }
         }));
+        f.insert("ceil", func!((number), |s| {
+            match s.get("number") {
+                Value::Numeric(val, unit, _) => {
+                    Value::Numeric(val.ceil(), unit, true)
+                }
+                v => panic!("abs function needs a number, got {}", v),
+            }
+        }));
         f
     };
 }
