@@ -38,6 +38,15 @@ fn percentage() {
           "foo{foo:50%;foo:100%;foo:25%;foo:50%}\n")
 }
 
+// TODO Test and implement random() (more boolean logic needed for test)
+
+#[test]
+fn round() {
+    check(b"foo {\n  foo: round(4.8);\n  foo: round(4.8px);\n  \
+            foo: round(5.49px);\n  foo: round($number: 5.49px);\n}\n",
+          "foo{foo:5;foo:5px;foo:5px;foo:5px}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Compressed).and_then(|s| {
                    String::from_utf8(s)

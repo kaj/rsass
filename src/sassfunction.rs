@@ -388,6 +388,14 @@ lazy_static! {
                 v => panic!("percentage needs unitless number, got {}", v),
             }
         }));
+        f.insert("round", func!((number), |s| {
+            match s.get("number") {
+                Value::Numeric(val, unit, _) => {
+                    Value::Numeric(val.round(), unit, true)
+                }
+                v => panic!("round function needs a number, got {}", v),
+            }
+        }));
         f
     };
 }
