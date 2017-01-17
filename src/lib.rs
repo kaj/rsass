@@ -4,6 +4,7 @@ extern crate lazy_static;
 extern crate nom;
 extern crate num_rational;
 extern crate num_traits;
+extern crate rand;
 
 use nom::IResult::*;
 use std::io::Write;

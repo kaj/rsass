@@ -38,7 +38,16 @@ fn percentage() {
           "foo{foo:50%;foo:100%;foo:25%;foo:50%}\n")
 }
 
-// TODO Test and implement random() (more boolean logic needed for test)
+#[test]
+fn random() {
+    check(b"foo {\n  $number: random();\n  \
+            foo: $number >= 0 and $number <= 1;\n  $number: random(1.0);\n  \
+            foo: $number >= 0 and $number <= 1;\n  foo: random(1) == 1;\n  \
+            foo: type-of(random()) == number;\n  \
+            foo: type-of(random(1)) == number;\n  \
+            foo: type-of(random(1.0)) == number;\n}\n",
+          "foo{foo:true;foo:true;foo:true;foo:true;foo:true;foo:true}\n")
+}
 
 #[test]
 fn round() {

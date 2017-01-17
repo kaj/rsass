@@ -396,6 +396,21 @@ lazy_static! {
                 v => panic!("round function needs a number, got {}", v),
             }
         }));
+        f.insert("random", func!((limit), |s| {
+            match s.get("limit") {
+                Value::Null => {
+                    let rez = 1000000;
+                    Value::Numeric(Rational::new(intrand(rez), rez),
+                                   Unit::None, true)
+                }
+                Value::Numeric(val, unit, _) => {
+                    let res = 1 + intrand(val.to_integer());
+                    Value::Numeric(Rational::from_integer(res),
+                                   unit, true)
+                }
+                v => panic!("random needs a unitless number, got {}", v),
+            }
+        }));
         f
     };
 }
@@ -545,6 +560,14 @@ fn to_rational_percent(v: Value) -> Rational {
         Value::Numeric(v, _, _) => v,
         v => panic!("Expected rational, got {:?}", v),
     }
+}
+
+fn intrand(lim: isize) -> isize {
+    use rand::thread_rng;
+    use rand::distributions::{IndependentSample, Range};
+    let between = Range::new(0, lim);
+    let mut rng = thread_rng();
+    between.ind_sample(&mut rng)
 }
 
 #[test]
