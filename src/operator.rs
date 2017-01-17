@@ -5,8 +5,14 @@ use valueexpression::{Unit, Value};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Operator {
+    And,
+    Or,
     Equal,
     NotEqual,
+    Greater,
+    GreaterE,
+    Lesser,
+    LesserE,
 
     Plus,
     Minus,
@@ -15,10 +21,14 @@ pub enum Operator {
 impl Operator {
     pub fn eval(&self, a: Value, b: Value) -> Value {
         match self {
-            &Operator::Equal => if a == b { Value::True } else { Value::False },
-            &Operator::NotEqual => {
-                if a != b { Value::True } else { Value::False }
-            }
+            &Operator::And => bool_val(a.is_true() && b.is_true()),
+            &Operator::Or => bool_val(a.is_true() || b.is_true()),
+            &Operator::Equal => bool_val(a == b),
+            &Operator::NotEqual => bool_val(a != b),
+            &Operator::Greater => bool_val(a > b),
+            &Operator::GreaterE => bool_val(a >= b),
+            &Operator::Lesser => bool_val(a < b),
+            &Operator::LesserE => bool_val(a <= b),
             &Operator::Plus => {
                 match (&a, &b) {
                     (&Value::Color(ref r, ref g, ref b, ref a, _),
@@ -93,12 +103,22 @@ impl fmt::Display for Operator {
         write!(out,
                "{}",
                match self {
+                   &Operator::And => "and",
+                   &Operator::Or => "or",
                    &Operator::Equal => "==",
                    &Operator::NotEqual => "!=",
+                   &Operator::Greater => ">",
+                   &Operator::GreaterE => ">=",
+                   &Operator::Lesser => "<",
+                   &Operator::LesserE => "<=",
                    &Operator::Plus => "+",
                    &Operator::Minus => "-",
                })
     }
+}
+
+fn bool_val(v: bool) -> Value {
+    if v { Value::True } else { Value::False }
 }
 
 fn add(x: &u8, y: &Rational) -> u8 {

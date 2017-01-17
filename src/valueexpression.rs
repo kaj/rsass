@@ -187,6 +187,18 @@ impl fmt::Display for Value {
     }
 }
 
+use std::cmp::Ordering;
+impl PartialOrd for Value {
+    fn partial_cmp(&self, b: &Value) -> Option<Ordering> {
+        match (self, b) {
+            (&Value::Numeric(ref a, _, _), &Value::Numeric(ref b, _, _)) => {
+                a.partial_cmp(b)
+            }
+            _ => None,
+        }
+    }
+}
+
 fn rational2str(r: &Rational, skipzero: bool) -> String {
     let n = r.numer().clone();
     let d = r.denom().clone();
@@ -216,12 +228,34 @@ named!(pub space_list<&[u8], Value>,
             }));
 
 named!(pub single_expression<Value>,
+       do_parse!(a: logic_expression >>
+                 r: fold_many0!(
+                     do_parse!(opt!(multispace) >>
+                               op: alt_complete!(
+                                   value!(Operator::And,
+                                          preceded!(tag!("and"),
+                                                    spacelike)) |
+                                   value!(Operator::Or,
+                                          preceded!(tag!("or"),
+                                                    spacelike))) >>
+                               opt!(multispace) >>
+                               b: single_expression >>
+                               (op, b)),
+                     a,
+                     |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))) >>
+                 (r)));
+
+named!(pub logic_expression<Value>,
        do_parse!(a: sum_expression >>
                  r: fold_many0!(
                      do_parse!(opt!(multispace) >>
                                op: alt_complete!(
                                    value!(Operator::Equal, tag!("==")) |
-                                   value!(Operator::NotEqual, tag!("!="))) >>
+                                   value!(Operator::NotEqual, tag!("!=")) |
+                                   value!(Operator::GreaterE, tag!(">=")) |
+                                   value!(Operator::Greater, tag!(">")) |
+                                   value!(Operator::LesserE, tag!("<=")) |
+                                   value!(Operator::Lesser, tag!("<"))) >>
                                opt!(multispace) >>
                                b: sum_expression >>
                                (op, b)),

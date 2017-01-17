@@ -506,6 +506,11 @@ pub mod test {
         assert_eq!("false", do_evaluate(&[], b"18 != 10 + 8;"))
     }
 
+    #[test]
+    fn simple_boolean() {
+        assert_eq!("true", do_evaluate(&[], b"3 >= 2 and 1 < 10;"))
+    }
+
     pub fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
         let mut scope = ScopeImpl::new();
         for &(name, ref val) in s {
