@@ -1,8 +1,8 @@
 //! A scope is something that contains variable values.
 
+use functions::get_function;
 use num_rational::Rational;
 use num_traits::identities::Zero;
-use sassfunction::get_function;
 use std::collections::BTreeMap;
 use super::MixinDeclaration;
 use valueexpression::{Value, Unit};

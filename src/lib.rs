@@ -13,7 +13,7 @@ use std::str::from_utf8;
 mod colors;
 mod formalargs;
 mod operator;
-mod sassfunction;
+mod functions;
 mod selectors;
 mod parseutil;
 mod valueexpression;
