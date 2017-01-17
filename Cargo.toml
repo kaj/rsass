@@ -4,9 +4,9 @@ version = "0.1.0"
 authors = ["Rasmus Kaj <kaj@kth.se>"]
 
 [dependencies]
+clap = "^2.19"
 lazy_static = "^0.2"
-nom = "*"
+nom = "^2.0"
 num-rational = "^0.1"
 num-traits = "^0.1"
-clap = "*"
 rand = "^0.3"
