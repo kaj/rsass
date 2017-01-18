@@ -64,7 +64,7 @@ impl OutputStyle {
                 }
             })
             .collect::<Vec<_>>()
-            .join(", ")
+            .join(if self.is_compressed() { "," } else { ", " })
     }
 
     pub fn handle_body(&self,
