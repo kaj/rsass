@@ -128,6 +128,31 @@ fn t08_selector_combinators() {
 }
 
 #[test]
+fn t15_arithmetic_and_lists() {
+    check(b"$stuff: 1 2 3;\n\n\
+            $three: 3;\n\n\
+            div {\n  a: 1 + 2;\n  b: 3 + 3/4;\n  c: 1/2 + 1/2;\n  \
+            /* shouldn't eval the following \"300\" */\n  d: 300;\n  \
+            /* increasingly jacked-up edge cases that combine arithmetic \
+            with lists */\n  e: 1 + (5/10 2 3);\n  \
+            f: 1 + ((2+(3 4) 5) 6);\n  g: 1 + ((1+(14/7 8) 9) 6);\n  \
+            /* shouldn't perform the following division */\n  \
+            h: 15 / 3 / 5;\n  \
+            /* should perform the following division now */\n  \
+            i: (15 / 3 / 5);\n  /* this too */\n  j: (15 / 3) / 5;\n  \
+            /* and this */\n  k: 15 / $three;\n  l: 15 / 5 / $three;\n  \
+            m: 1/2, $stuff url(\"www.foo.com/blah.png\") blah blah;\n  \
+            n: 1 2 3, $stuff 4 5 (6, 7 8 9);\n  o: 3px + 3px + 3px;\n  \
+            p: 4 + 1px;\n  q: (20pt / 10pt);\n  r: 16em * 4;\n  \
+            s: (5em / 2);\n  t: 1 + (2 + (3/4 + (4/5 6/7)));\n}",
+          "div{a:3;b:3.75;c:1;d:300;e:15/10 2 3;f:123 4 5 6;g:1114/7 8 9 6;\
+           h:15 / 3 / 5;i:1;j:1;k:5;l:1;\
+           m:1/2,1 2 3 url(\"www.foo.com/blah.png\") blah blah;\
+           n:1 2 3,1 2 3 4 5 6,7 8 9;o:9px;p:5px;q:2;r:64em;s:2.5em;\
+           t:12.754/5 6/7}\n")
+}
+
+#[test]
 fn t19_full_mixin_craziness() {
     check(b"$x: global-x;\n$y: global-y;\n$z: global-z;\n\n\
             @mixin foo($x, $y) {\n  /* begin foo */\n  \

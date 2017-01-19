@@ -102,7 +102,8 @@ impl fmt::Display for Value {
                 }
             }
             &Value::Numeric(ref v, ref u, ref _is_calculated) => {
-                write!(out, "{}{}", rational2str(v, false), u)
+                let short = out.alternate();
+                write!(out, "{}{}", rational2str(v, short), u)
             }
             &Value::Color(ref r, ref g, ref b, ref a, ref s) => {
                 match s {
@@ -156,16 +157,28 @@ impl fmt::Display for Value {
             }
             &Value::MultiSpace(ref v) => {
                 let t = v.iter()
-                    .map(|v| format!("{}", v))
+                    .map(|v| {
+                        if out.alternate() {
+                            format!("{:#}", v)
+                        } else {
+                            format!("{}", v)
+                        }
+                    })
                     .collect::<Vec<_>>()
                     .join(" ");
                 write!(out, "{}", t)
             }
             &Value::MultiComma(ref v) => {
                 let t = v.iter()
-                    .map(|v| format!("{}", v))
+                    .map(|v| {
+                        if out.alternate() {
+                            format!("{:#}", v)
+                        } else {
+                            format!("{}", v)
+                        }
+                    })
                     .collect::<Vec<_>>()
-                    .join(", ");
+                    .join(if out.alternate() { "," } else { ", " });
                 write!(out, "{}", t)
             }
             &Value::Div(ref a, ref b, ref s1, ref s2) => {
@@ -178,7 +191,20 @@ impl fmt::Display for Value {
             }
             &Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
             &Value::BinOp(ref a, ref op, ref b) => {
-                write!(out, "{} {} {}", a, op, b)
+                if op == &Operator::Plus {
+                    // The plus operator is also a concat operator
+                    if out.alternate() {
+                        write!(out, "{:#}{:#}", a, b)
+                    } else {
+                        write!(out, "{}{}", a, b)
+                    }
+                } else {
+                    if out.alternate() {
+                        write!(out, "{:#} {} {:#}", a, op, b)
+                    } else {
+                        write!(out, "{} {} {}", a, op, b)
+                    }
+                }
             }
             &Value::True => write!(out, "true"),
             &Value::False => write!(out, "false"),

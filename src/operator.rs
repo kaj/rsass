@@ -57,7 +57,11 @@ impl Operator {
                             Value::Literal(format!("{}{}", a, b), false)
                         }
                     }
-                    (a, b) => Value::Literal(format!("{}{}", a, b), false),
+                    (a, b) => {
+                        Value::BinOp(Box::new(a.clone()),
+                                     Operator::Plus,
+                                     Box::new(b.clone()))
+                    }
                 }
             }
             &Operator::Minus => {
