@@ -2,6 +2,12 @@
 name = "rsass"
 version = "0.1.0"
 authors = ["Rasmus Kaj <kaj@kth.se>"]
+categories = ["command-line-utilities", "web-programming"]
+keywords = ["scss", "sass", "css"]
+description = "Early-stage sass implementation in pure rust"
+repository = "https://github.com/kaj/rsass"
+readme = "README.md"
+license = "MIT/Apache-2.0"
 
 [dependencies]
 clap = "^2.19"
@@ -10,3 +16,6 @@ nom = "^2.0"
 num-rational = "^0.1"
 num-traits = "^0.1"
 rand = "^0.3"
+
+[badges]
+travis-ci = { repository = "kaj/rsass" }
