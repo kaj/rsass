@@ -1,7 +1,8 @@
 use formalargs::FormalArgs;
 use functions::SassFunction;
+use num_rational::Rational;
 use std::collections::BTreeMap;
-use valueexpression::Value;
+use valueexpression::{Value, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     f.insert("quote",
@@ -18,4 +19,21 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                      v => v,
                  }
              }));
+    f.insert("str_index",
+             func!((string, substring), |s| {
+        match (s.get("string"), s.get("substring")) {
+            (Value::Literal(s, _), Value::Literal(sub, _)) => {
+                match s.find(&sub) {
+                    Some(o) => {
+                        let n = s[0..o].chars().count() as isize;
+                        Value::Numeric(Rational::from_integer(1 + n),
+                                       Unit::None,
+                                       true)
+                    }
+                    None => Value::Null,
+                }
+            }
+            _ => panic!("Parameter of wrong type"),
+        }
+    }));
 }

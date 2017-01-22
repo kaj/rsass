@@ -632,6 +632,28 @@ fn t39_dash_match_attribute_selector() {
 }
 
 #[test]
+fn t46_str_index() {
+    check("div {\n\n  bar: a str-index(\"abcde\", \"bc\");\n  \
+           bar: a str-index(\"abcde\", \"a\");\n  \
+           bar: a str-index(\"abcde\", \"e\");\n  \
+           bar: a str-index(\"abcde\", \"xyz\");\n  \
+           bar: a str-index(\"\", \"abc\");\n  \
+           bar: a str-index(\"abcde\", \"abcdefg\");\n  \
+           bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\", \
+           \"Ɋ\"); // 15\n  \
+           bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\", \
+           \"úüñ\"); // 6\n  \
+           bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\", \
+           \"abcde\");\n  \
+           bar: a str-index(\"abcde\", \"\");\n  \
+           bar: a str-index(\"\", \"\");\n\n}"
+              .as_bytes(),
+          "div {\n  bar: a 2;\n  bar: a 1;\n  bar: a 5;\n  bar: a;\n  \
+           bar: a;\n  bar: a;\n  bar: a 15;\n  bar: a 6;\n  bar: a;\n  \
+           bar: a 1;\n  bar: a 1;\n}\n")
+}
+
+#[test]
 fn t54_adjacent_identifiers_with_hyphens() {
     check(b"input {\n    outline: 5px auto -webkit-focus-ring-color;\n    \
             foo: random -hello-this-is-dog;\n    \

@@ -66,6 +66,13 @@ impl Value {
             _ => true,
         }
     }
+
+    pub fn is_null(&self) -> bool {
+        match self {
+            &Value::Null => true,
+            _ => false,
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -157,6 +164,7 @@ impl fmt::Display for Value {
             }
             &Value::MultiSpace(ref v) => {
                 let t = v.iter()
+                    .filter(|v| !v.is_null())
                     .map(|v| {
                         if out.alternate() {
                             format!("{:#}", v)
@@ -170,6 +178,7 @@ impl fmt::Display for Value {
             }
             &Value::MultiComma(ref v) => {
                 let t = v.iter()
+                    .filter(|v| !v.is_null())
                     .map(|v| {
                         if out.alternate() {
                             format!("{:#}", v)
@@ -379,6 +388,8 @@ named!(single_value<&[u8], Value>,
                    Value::Literal(val, false)
                }
            }) |
+           map!(tag!("\"\""),
+                |_| Value::Literal("".into(), true)) |
            map!(delimited!(tag!("\""),
                            escaped!(is_not!("\\\""), '\\', one_of!("\"\\")),
                            tag!("\"")),
