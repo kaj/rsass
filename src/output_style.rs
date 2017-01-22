@@ -1,6 +1,7 @@
 use selectors::Selector;
 use std::io::{self, Write};
-use super::SassItem;
+use super::{FileContext, SassItem, parse_scss_file};
+use valueexpression::Value;
 use variablescope::{ScopeImpl, Scope};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -10,12 +11,136 @@ pub enum OutputStyle {
 }
 
 impl OutputStyle {
+    pub fn write_root(&self,
+                      items: &[SassItem],
+                      file_context: FileContext)
+                      -> Result<Vec<u8>, String> {
+        let mut globals = ScopeImpl::new();
+        let mut result = Vec::new();
+        let mut separate = false;
+        for item in items {
+            self.handle_root_item(&item,
+                                  &mut globals,
+                                  &mut separate,
+                                  &file_context,
+                                  &mut result);
+        }
+        if result != b"" && result[result.len() - 1] != b'\n' {
+            write!(result, "\n").unwrap();
+        }
+        Ok(result)
+    }
+    fn handle_root_item(&self,
+                        item: &SassItem,
+                        globals: &mut Scope,
+                        separate: &mut bool,
+                        file_context: &FileContext,
+                        result: &mut Write) {
+        match item {
+            &SassItem::Rule(ref s, ref b) => {
+                if *separate {
+                    self.do_indent(result, 0).unwrap();
+                } else {
+                    *separate = true;
+                }
+                self.write_rule(&s, &b, result, globals, None, file_context, 0)
+                    .unwrap();
+            }
+            &SassItem::VariableDeclaration { ref name,
+                                             ref val,
+                                             ref global } => {
+                globals.define(&name, &val, *global);
+            }
+            &SassItem::MixinDeclaration(ref m) => globals.define_mixin(&m),
+            &SassItem::MixinCall { ref name, ref args } => {
+                if *separate {
+                    self.do_indent(result, 0).unwrap();
+                } else {
+                    *separate = true;
+                }
+                if let Some(mixin) = globals.get_mixin(&name) {
+                    let mut direct = vec![];
+                    self.handle_body(&mut direct,
+                                     result,
+                                     &mut mixin.argscope(globals, &args),
+                                     &vec![Selector::root()],
+                                     &mixin.body,
+                                     file_context,
+                                     0)
+                        .unwrap();
+                    assert_eq!(direct, &[]);
+                } else {
+                    panic!(format!("Unknown mixin {}({:?})", name, args))
+                }
+            }
+            &SassItem::Import(ref name) => {
+                let name = globals.evaluate(&name);
+                if let &Value::Literal(ref x, _) = &name {
+                    let (sub_context, file) = file_context.file(x.as_ref());
+                    for item in parse_scss_file(&file).unwrap() {
+                        self.handle_root_item(&item,
+                                              globals,
+                                              separate,
+                                              &sub_context,
+                                              result);
+                    }
+                } else {
+                    writeln!(result, "@import {};", name).unwrap();
+                }
+            }
+            &SassItem::Comment(ref c) => {
+                if !self.is_compressed() {
+                    if *separate {
+                        self.do_indent(result, 0).unwrap();
+                    } else {
+                        *separate = true;
+                    }
+                    write!(result, "/*{}*/", c).unwrap();
+                }
+            }
+            &SassItem::Property(_, _) => {
+                panic!("Global property not allowed");
+            }
+            &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
+                if *separate {
+                    self.do_indent(result, 0).unwrap();
+                } else {
+                    *separate = true;
+                }
+                if globals.evaluate(&cond).is_true() {
+                    let mut direct = vec![];
+                    self.handle_body(&mut direct,
+                                     result,
+                                     &mut ScopeImpl::sub(globals),
+                                     &vec![Selector::root()],
+                                     &do_if,
+                                     file_context,
+                                     0)
+                        .unwrap();
+                    assert_eq!(direct, &[]);
+                } else {
+                    let mut direct = vec![];
+                    self.handle_body(&mut direct,
+                                     result,
+                                     &mut ScopeImpl::sub(globals),
+                                     &vec![Selector::root()],
+                                     &do_else,
+                                     file_context,
+                                     0)
+                        .unwrap();
+                    assert_eq!(direct, &[]);
+                }
+            }
+            &SassItem::None => (),
+        }
+    }
     pub fn write_rule(&self,
                       selectors: &[Selector],
                       body: &[SassItem],
                       out: &mut Write,
                       scope: &mut Scope,
                       parent: Option<&[Selector]>,
+                      file_context: &FileContext,
                       indent: usize)
                       -> io::Result<()> {
         let selectors = if let Some(parent) = parent {
@@ -36,6 +161,7 @@ impl OutputStyle {
                               &mut ScopeImpl::sub(scope),
                               &selectors,
                               &body,
+                              file_context,
                               indent));
         if !direct.is_empty() {
             try!(write!(out,
@@ -69,10 +195,11 @@ impl OutputStyle {
 
     pub fn handle_body(&self,
                        direct: &mut Vec<u8>,
-                       sub: &mut Vec<u8>,
+                       sub: &mut Write,
                        scope: &mut Scope,
                        selectors: &[Selector],
                        body: &[SassItem],
+                       file_context: &FileContext,
                        indent: usize)
                        -> io::Result<()> {
         for b in body {
@@ -103,6 +230,7 @@ impl OutputStyle {
                                          sub,
                                          scope,
                                          Some(&selectors),
+                                         file_context,
                                          indent));
                 }
                 &SassItem::VariableDeclaration { ref name,
@@ -121,6 +249,7 @@ impl OutputStyle {
                                               &mut argscope,
                                               selectors,
                                               &mixin.body,
+                                              file_context,
                                               indent));
                     } else {
                         writeln!(direct,
@@ -130,6 +259,23 @@ impl OutputStyle {
                             .unwrap();
                     }
                 }
+                &SassItem::Import(ref name) => {
+                    let name = scope.evaluate(&name);
+                    if let &Value::Literal(ref x, _) = &name {
+                        let (sub_context, file) = file_context.file(x.as_ref());
+                        let items = parse_scss_file(&file).unwrap();
+                        self.handle_body(direct,
+                                         sub,
+                                         scope,
+                                         selectors,
+                                         &items,
+                                         &sub_context,
+                                         0)
+                            .unwrap()
+                    } else {
+                        writeln!(direct, "@import {};", name).unwrap();
+                    }
+                }
                 &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
                     if scope.evaluate(&cond).is_true() {
                         self.handle_body(direct,
@@ -137,6 +283,7 @@ impl OutputStyle {
                                          &mut ScopeImpl::sub(scope),
                                          selectors,
                                          &do_if,
+                                         file_context,
                                          0)
                             .unwrap();
                     } else {
@@ -145,6 +292,7 @@ impl OutputStyle {
                                          &mut ScopeImpl::sub(scope),
                                          selectors,
                                          &do_else,
+                                         file_context,
                                          0)
                             .unwrap();
                     }

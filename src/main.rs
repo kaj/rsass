@@ -2,9 +2,8 @@ extern crate clap;
 extern crate rsass;
 
 use clap::{App, Arg, ArgMatches};
-use rsass::{OutputStyle, compile_scss};
-use std::fs::File;
-use std::io::{Read, Write};
+use rsass::{OutputStyle, compile_scss_file};
+use std::io::Write;
 use std::process::exit;
 
 fn main() {
@@ -45,13 +44,10 @@ fn run(args: ArgMatches) -> Result<(), String> {
     };
     if let Some(inputs) = args.values_of("INPUT") {
         for name in inputs {
-            let mut source = try!(File::open(&name)
-                .map_err(|e| format!("Read {}: {}", name, e)));
-            let mut data = vec![];
-            try!(source.read_to_end(&mut data).map_err(|e| format!("{}", e)));
+            let result = try!(compile_scss_file(name.as_ref(), style.clone()));
             let out = std::io::stdout();
             try!(out.lock()
-                .write_all(&try!(compile_scss(&data, style.clone())))
+                .write_all(&result)
                 .map_err(|e| format!("{}", e)));
         }
     }

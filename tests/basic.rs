@@ -4,7 +4,7 @@
 //! try to implement that functionality without breaking those already
 //! added.
 extern crate rsass;
-use rsass::{OutputStyle, compile_scss};
+use rsass::{OutputStyle, compile_scss, compile_scss_file};
 
 #[test]
 fn t00_empty() {
@@ -292,7 +292,24 @@ fn t13_back_references() {
             hey > boo, foo hey.goo, ho > boo, foo ho.goo {\n  bloo: bloo;\n}\n")
 }
 
-// TODO Implement test 14 imports.
+#[test]
+fn t14_imports() {
+    assert_eq!(compile_scss_file("tests/basic/14_imports/input.scss".as_ref(),
+                                 OutputStyle::Normal)
+                   .and_then(|s| {
+                       String::from_utf8(s)
+                           .map_err(|e| format!("Non-utf8 output: {}", e))
+                   }),
+               Ok("div span {\n  moo: goo;\n}\n\n\
+                   foo {\n  blah: blah;\n}\n\
+                   foo goo {\n  blee: blee;\n  hello: world;\n}\n\
+                   foo goo hoo {\n  mux: scooba-dee-doo;\n  \
+                   flux: gooboo boo;\n}\n\
+                   foo goo hoo d {\n  inside: d now;\n}\n\
+                   foo blux {\n  hey: another thing;\n  \
+                   ho: will this work;\n}\n"
+                   .into()))
+}
 
 #[test]
 fn t15_arithmetic_and_lists_abcd() {

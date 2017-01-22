@@ -7,7 +7,9 @@ extern crate num_traits;
 extern crate rand;
 
 use nom::IResult::*;
-use std::io::Write;
+use std::fs::File;
+use std::io::Read;
+use std::path::{Path, PathBuf};
 use std::str::from_utf8;
 
 mod colors;
@@ -31,103 +33,52 @@ use variablescope::{ScopeImpl, Scope};
 pub fn compile_scss(input: &[u8],
                     style: OutputStyle)
                     -> Result<Vec<u8>, String> {
-    match sassfile(input) {
-        Done(b"", items) => {
-            let mut globals = ScopeImpl::new();
-            let mut result = Vec::new();
-            let mut separate = false;
-            for item in items {
-                match item {
-                    SassItem::Rule(s, b) => {
-                        if separate {
-                            style.do_indent(&mut result, 0).unwrap();
-                        } else {
-                            separate = true;
-                        }
-                        style.write_rule(&s,
-                                        &b,
-                                        &mut result,
-                                        &mut globals,
-                                        None,
-                                        0)
-                            .unwrap();
-                    }
-                    SassItem::VariableDeclaration { name, val, global } => {
-                        globals.define(&name, &val, global);
-                    }
-                    SassItem::MixinDeclaration(m) => globals.define_mixin(&m),
-                    SassItem::MixinCall { name, args } => {
-                        if separate {
-                            style.do_indent(&mut result, 0).unwrap();
-                        } else {
-                            separate = true;
-                        }
-                        if let Some(mixin) = globals.get_mixin(&name) {
-                            let mut direct = vec![];
-                            style.handle_body(&mut direct,
-                                             &mut result,
-                                             &mut mixin.argscope(&mut globals,
-                                                                 &args),
-                                             &vec![Selector::root()],
-                                             &mixin.body,
-                                             0)
-                                .unwrap();
-                            assert_eq!(direct, &[]);
-                        } else {
-                            panic!(format!("Unknown mixin {}({:?})",
-                                           name,
-                                           args))
-                        }
-                    }
-                    SassItem::Comment(c) => {
-                        if !style.is_compressed() {
-                            if separate {
-                                style.do_indent(&mut result, 0).unwrap();
-                            } else {
-                                separate = true;
-                            }
-                            write!(result, "/*{}*/", c).unwrap();
-                        }
-                    }
-                    SassItem::Property(_, _) => {
-                        panic!("Global property not allowed");
-                    }
-                    SassItem::IfStatement(cond, do_if, do_else) => {
-                        if separate {
-                            style.do_indent(&mut result, 0).unwrap();
-                        } else {
-                            separate = true;
-                        }
-                        if globals.evaluate(&cond).is_true() {
-                            let mut direct = vec![];
-                            style.handle_body(&mut direct,
-                                             &mut result,
-                                             &mut ScopeImpl::sub(&mut globals),
-                                             &vec![Selector::root()],
-                                             &do_if,
-                                             0)
-                                .unwrap();
-                            assert_eq!(direct, &[]);
-                        } else {
-                            let mut direct = vec![];
-                            style.handle_body(&mut direct,
-                                             &mut result,
-                                             &mut ScopeImpl::sub(&mut globals),
-                                             &vec![Selector::root()],
-                                             &do_else,
-                                             0)
-                                .unwrap();
-                            assert_eq!(direct, &[]);
-                        }
-                    }
-                    SassItem::None => (),
-                }
-            }
-            if result != b"" && result[result.len() - 1] != b'\n' {
-                write!(result, "\n").unwrap();
-            }
-            Ok(result)
+    let file_context = FileContext::new();
+    let items = try!(parse_scss_data(input));
+    style.write_root(&items, file_context)
+}
+
+pub fn compile_scss_file(file: &Path,
+                         style: OutputStyle)
+                         -> Result<Vec<u8>, String> {
+    let file_context = FileContext::new();
+    let (sub_context, file) = file_context.file(file);
+    let items = try!(parse_scss_file(&file));
+    style.write_root(&items, sub_context)
+}
+
+#[derive(Clone, Debug)]
+pub struct FileContext {
+    path: PathBuf,
+}
+
+impl FileContext {
+    fn new() -> Self {
+        FileContext { path: PathBuf::new() }
+    }
+    fn file(&self, file: &Path) -> (Self, PathBuf) {
+        let t = self.path.join(file);
+        if let Some(dir) = t.parent() {
+            (FileContext { path: PathBuf::from(dir) }, t.clone())
+        } else {
+            (FileContext::new(), t.clone())
         }
+    }
+}
+
+
+pub fn parse_scss_file(file: &Path) -> Result<Vec<SassItem>, String> {
+    let mut f = try!(File::open(file)
+        .map_err(|e| format!("Failed to open {:?}: {}", file, e)));
+    let mut data = vec![];
+    try!(f.read_to_end(&mut data)
+        .map_err(|e| format!("Failed to read {:?}: {}", file, e)));
+    parse_scss_data(&data)
+}
+
+fn parse_scss_data(data: &[u8]) -> Result<Vec<SassItem>, String> {
+    match sassfile(&data) {
+        Done(b"", items) => Ok(items),
         Done(rest, _styles) => {
             let t = from_utf8(&rest)
                 .map(|s| s.to_string())
@@ -139,8 +90,10 @@ pub fn compile_scss(input: &[u8],
     }
 }
 
+
 named!(sassfile<&[u8], Vec<SassItem> >,
        many0!(alt!(value!(SassItem::None, spacelike) |
+                   import |
                    variable_declaration |
                    map!(mixin_declaration, |d| SassItem::MixinDeclaration(d)) |
                    mixin_call |
@@ -154,6 +107,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
 pub enum SassItem {
     None,
     Comment(String),
+    Import(Value),
     Property(String, Value),
     Rule(Vec<Selector>, Vec<SassItem>),
     VariableDeclaration {
@@ -165,8 +119,6 @@ pub enum SassItem {
     MixinCall { name: String, args: CallArgs },
     IfStatement(Value, Vec<SassItem>, Vec<SassItem>),
 }
-
-
 
 named!(rule<SassItem>,
        do_parse!(opt_spacelike >>
@@ -188,9 +140,14 @@ named!(body_item<SassItem>,
            rule |
            property |
            mixin_call |
+           import |
            if_statement |
            map!(comment, |c| SassItem::Comment(from_utf8(c).unwrap().into()))
                ));
+
+named!(import<SassItem>,
+       map!(delimited!(tag!("@import "), value_expression, tag!(";")),
+            |v| SassItem::Import(v)));
 
 named!(mixin_call<SassItem>,
        do_parse!(tag!("@include") >> spacelike >>
