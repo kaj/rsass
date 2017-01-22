@@ -5,6 +5,7 @@ the name might stand for the Rust programming language, or for my name
 Rasmus.
 
 [![Build Status](https://travis-ci.org/kaj/rsass.svg?branch=master)](https://travis-ci.org/kaj/rsass)
+[![Crate](https://meritbadge.herokuapp.com/rsass)](https://crates.io/crates/rsass)
 
 The build contains a small but growing number of tests from
 https://github.com/sass/sass-spec .
