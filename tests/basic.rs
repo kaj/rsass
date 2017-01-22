@@ -654,6 +654,26 @@ fn t46_str_index() {
 }
 
 #[test]
+fn t48_case_conversion() {
+    check(b"div {\n\n  bar: to-upper-case(\"blah\");\n  \
+            bar: to-upper-case(\"BLAH\");\n  bar: to-upper-case(\"bLaH\");\n  \
+            bar: to-upper-case(\"1232178942\");\n  \
+            bar: to-upper-case(blah);\n  bar: to-upper-case(BLAH);\n  \
+            bar: to-upper-case(bLaH);\n  bar: to-upper-case(\"\");\n\n  \
+            bar: to-lower-case(\"blah\");\n  bar: to-lower-case(\"BLAH\");\n  \
+            bar: to-lower-case(\"bLaH\");\n  \
+            bar: to-lower-case(\"1232178942\");\n  \
+            bar: to-lower-case(blah);\n  bar: to-lower-case(BLAH);\n  \
+            bar: to-lower-case(bLaH);\n  bar: to-lower-case(\"\");\n\n}\n",
+          "div {\n  bar: \"BLAH\";\n  bar: \"BLAH\";\n  bar: \"BLAH\";\n  \
+           bar: \"1232178942\";\n  \
+           bar: BLAH;\n  bar: BLAH;\n  bar: BLAH;\n  bar: \"\";\n  \
+           bar: \"blah\";\n  bar: \"blah\";\n  bar: \"blah\";\n  \
+           bar: \"1232178942\";\n  \
+           bar: blah;\n  bar: blah;\n  bar: blah;\n  bar: \"\";\n}\n")
+}
+
+#[test]
 fn t54_adjacent_identifiers_with_hyphens() {
     check(b"input {\n    outline: 5px auto -webkit-focus-ring-color;\n    \
             foo: random -hello-this-is-dog;\n    \

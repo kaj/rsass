@@ -36,4 +36,18 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             _ => panic!("Parameter of wrong type"),
         }
     }));
+    f.insert("to_upper_case",
+             func!((string), |s| {
+        match s.get("string") {
+            Value::Literal(v, q) => Value::Literal(v.to_uppercase(), q),
+            v => v,
+        }
+    }));
+    f.insert("to_lower_case",
+             func!((string), |s| {
+        match s.get("string") {
+            Value::Literal(v, q) => Value::Literal(v.to_lowercase(), q),
+            v => v,
+        }
+    }));
 }
