@@ -19,6 +19,16 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                      v => v,
                  }
              }));
+    f.insert("str_length",
+             func!((string), |s| {
+        match s.get("string") {
+            Value::Literal(v, _) => {
+                let n = v.chars().count() as isize;
+                Value::Numeric(Rational::from_integer(n), Unit::None, true)
+            }
+            v => v,
+        }
+    }));
     f.insert("str_index",
              func!((string, substring), |s| {
         match (s.get("string"), s.get("substring")) {

@@ -632,6 +632,18 @@ fn t39_dash_match_attribute_selector() {
 }
 
 #[test]
+fn t43_str_length() {
+    check("div {\n  foo: str-length(\"protégé\");\n  \
+           foo: str-length(protégé);\n  foo: str-length(\"\");\n  \
+           foo: str-length(\"hello there\");\n  \
+           foo: str-length(\"Façade\");\n  foo: str-length(\"Tromsø\");\n  \
+           foo: str-length(\"Ãlso\");\n}"
+              .as_bytes(),
+          "div {\n  foo: 7;\n  foo: 7;\n  foo: 0;\n  foo: 11;\n  foo: 6;\n  \
+           foo: 6;\n  foo: 4;\n}\n")
+}
+
+#[test]
 fn t46_str_index() {
     check("div {\n\n  bar: a str-index(\"abcde\", \"bc\");\n  \
            bar: a str-index(\"abcde\", \"a\");\n  \
