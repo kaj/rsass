@@ -1,24 +1,50 @@
 use formalargs::FormalArgs;
 use functions::SassFunction;
 use num_rational::Rational;
+use num_traits::Signed;
 use std::collections::BTreeMap;
-use valueexpression::{Value, Unit};
+use valueexpression::{Quotes, Value, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     f.insert("quote",
              func!((contents), |s| {
                  match s.get("contents") {
-                     Value::Literal(v, _) => Value::Literal(v, true),
-                     v => Value::Literal(format!("{}", v), true),
+                     Value::Literal(v, _) => Value::Literal(v, Quotes::Double),
+                     v => Value::Literal(format!("{}", v), Quotes::Double),
                  }
              }));
     f.insert("unquote",
              func!((contents), |s| {
                  match s.get("contents") {
-                     Value::Literal(v, _) => Value::Literal(v, false),
+                     Value::Literal(v, _) => Value::Literal(v, Quotes::None),
                      v => v,
                  }
              }));
+    f.insert("str_insert",
+             func!((string, insert, index), |s| {
+        match (s.get("string"), s.get("insert"), s.get("index")) {
+            (Value::Literal(s, q),
+             Value::Literal(insert, _),
+             Value::Numeric(index, Unit::None, _)) => {
+                let i = if index.is_negative() {
+                    let l = s.chars().count();
+                    let i = index.to_integer().abs() as usize;
+                    if l > i { l - i + 1 } else { 0 }
+                } else if index.is_positive() {
+                    index.to_integer() as usize - 1
+                } else {
+                    0
+                };
+                let c = s.chars();
+                Value::Literal(format!("{}{}{}",
+                                       c.clone().take(i).collect::<String>(),
+                                       insert,
+                                       c.skip(i).collect::<String>()),
+                               q)
+            }
+            _ => panic!("Parameter of wrong type"),
+        }
+    }));
     f.insert("str_length",
              func!((string), |s| {
         match s.get("string") {

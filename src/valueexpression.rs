@@ -17,9 +17,7 @@ pub enum Value {
     /// In the later case, the booleans tell if there should be whitespace
     /// before / after the slash.
     Div(Box<Value>, Box<Value>, bool, bool),
-    /// The boolean is true for quoted strings and false for unquoted
-    /// (keywords).
-    Literal(String, bool),
+    Literal(String, Quotes),
     MultiSpace(Vec<Value>),
     MultiComma(Vec<Value>),
     /// A Numeric value is a rational value with a Unit (which may be
@@ -98,14 +96,41 @@ impl fmt::Display for Unit {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Quotes {
+    Double,
+    Single,
+    None,
+}
+
 impl fmt::Display for Value {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
             &Value::Literal(ref s, ref q) => {
-                if *q {
-                    write!(out, "\"{}\"", s)
-                } else {
-                    write!(out, "{}", s)
+                match q {
+                    &Quotes::Double => {
+                        write!(out,
+                               "\"{}\"",
+                               s.chars()
+                                   .flat_map(|c| match c {
+                                       '\\' => vec!['\\', '\\'],
+                                       '"' => vec!['\\', '"'],
+                                       c => vec![c],
+                                   })
+                                   .collect::<String>())
+                    }
+                    &Quotes::Single => {
+                        write!(out,
+                               "'{}'",
+                               s.chars()
+                                   .flat_map(|c| match c {
+                                       '\\' => vec!['\\', '\\'],
+                                       '\'' => vec!['\\', '\''],
+                                       c => vec![c],
+                                   })
+                                   .collect::<String>())
+                    }
+                    &Quotes::None => write!(out, "{}", s),
                 }
             }
             &Value::Numeric(ref v, ref u, ref _is_calculated) => {
@@ -380,20 +405,28 @@ named!(single_value<&[u8], Value>,
                                                 from_utf8(b).unwrap()))))) |
            do_parse!(name: name >> args: call_args >>
                      (Value::Call(name, args))) |
-           map!(is_not!("+*/=;,$(){{}}! \n\t\""), |val| {
+           map!(is_not!("+*/=;,$(){{}}! \n\t'\""), |val| {
                let val = from_utf8(val).unwrap().to_string();
                if let Some((r, g, b)) = name_to_rgb(&val) {
                    Value::Color(r, g, b, Rational::from_integer(1), Some(val))
                } else {
-                   Value::Literal(val, false)
+                   Value::Literal(val, Quotes::None)
                }
            }) |
            map!(tag!("\"\""),
-                |_| Value::Literal("".into(), true)) |
+                |_| Value::Literal("".into(), Quotes::Double)) |
            map!(delimited!(tag!("\""),
                            escaped!(is_not!("\\\""), '\\', one_of!("\"\\")),
                            tag!("\"")),
-                |s| Value::Literal(from_utf8(s).unwrap().to_string(), true)) |
+                |s| Value::Literal(unescape(from_utf8(s).unwrap()),
+                                   Quotes::Double)) |
+           map!(tag!("''"),
+                |_| Value::Literal("".into(), Quotes::Single)) |
+           map!(delimited!(tag!("'"),
+                           escaped!(is_not!("\\'"), '\\', one_of!("'\\")),
+                           tag!("'")),
+                |s| Value::Literal(unescape(from_utf8(s).unwrap()),
+                                   Quotes::Single)) |
            map!(delimited!(preceded!(tag!("("), opt_spacelike),
                            value_expression,
                            terminated!(opt_spacelike, tag!(")"))),
@@ -422,6 +455,25 @@ fn from_hex(v: &[u8]) -> u8 {
     u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap()
 }
 
+fn unescape(s: &str) -> String {
+    let mut i = s.chars();
+    let mut result = String::new();
+    while let Some(c) = i.next() {
+        result.push(match c {
+            '\\' => {
+                match i.next() {
+                    Some('n') => '\n',
+                    Some('t') => '\t',
+                    Some(c) => c,
+                    None => '\\',
+                }
+            }
+            c => c,
+        });
+    }
+    result
+}
+
 #[cfg(test)]
 mod test {
     use nom::IResult::*;
@@ -442,7 +494,24 @@ mod test {
     #[test]
     fn simple_value_literal() {
         assert_eq!(value_expression(b"rad;"),
-                   Done(&b";"[..], Value::Literal("rad".into(), false)))
+                   Done(&b";"[..], Value::Literal("rad".into(), Quotes::None)))
+    }
+
+    #[test]
+    fn strings_misc_quotes() {
+        assert_eq!(value_expression(b"foo \"bar\" 'baz';"),
+                   Done(&b";"[..], Value::MultiSpace(
+                       vec![Value::Literal("foo".into(), Quotes::None),
+                            Value::Literal("bar".into(), Quotes::Double),
+                            Value::Literal("baz".into(), Quotes::Single)])))
+    }
+
+    #[test]
+    fn strings_escaped_quotes() {
+        assert_eq!(value_expression(b"\"b'a\\\"r\" 'b\\'a\"z';"),
+                   Done(&b";"[..], Value::MultiSpace(
+                       vec![Value::Literal("b'a\"r".into(), Quotes::Double),
+                            Value::Literal("b'a\"z".into(), Quotes::Single)])))
     }
 
     #[test]
@@ -463,7 +532,7 @@ mod test {
         assert_eq!(value_expression(b"(rad);"),
                    Done(&b";"[..],
                         Value::Paren(Box::new(Value::Literal("rad".into(),
-                                                             false)))))
+                                                             Quotes::None)))))
     }
 
     #[test]
@@ -472,8 +541,8 @@ mod test {
                    Done(&b";"[..],
                         Value::Paren(Box::new(
                             Value::MultiSpace(vec![
-                                Value::Literal("rod".into(), false),
-                                Value::Literal("bloe".into(), false)])
+                                Value::Literal("rod".into(), Quotes::None),
+                                Value::Literal("bloe".into(), Quotes::None)])
                                 ))))
     }
 

@@ -644,6 +644,62 @@ fn t43_str_length() {
 }
 
 #[test]
+fn t45_str_insert() {
+    check("div {\n  bar: str-insert(\"abcd\", \"X\", 1);\n  \
+           bar: str-insert(\"abcd\", 'X', 1);\n  \
+           bar: str-insert(\"abcd\", 'X\\'fjd\\'sk', 1);\n  \
+           bar: str-insert(\"abcd\", \"e\", 3);\n  \
+           bar: str-insert(\"abcd\", \"e\", 18);\n  \
+           bar: str-insert(\"abcd\", \"e\", -2);\n  \
+           bar: str-insert(\"abcd\", \"e\", -18);\n  \
+           bar: str-insert(\"abcd\", \"e\", 0);\n  \
+           bar: str-insert(\"abcd\", e, 0);\n  \
+           bar: str-insert(abcd, \"e\", 0);\n  \
+           bar: str-insert(abcd, e, 0);\n  \
+           bar: str-insert(\"Déjà vu\", \"abcd\", 0);\n  \
+           bar: str-insert(\"Déjà vu\", \"abcd\", 2);\n  \
+           bar: str-insert(\"Déjà vu\", \"abcd\", -3);\n  \
+           bar: str-insert(\"Déjà vu\", \"abcd\", 18);\n\n  \
+           bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\", \
+           \" ABCD \", 0);\n  \
+           bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\", \
+           \" ABCD \", 2);\n  \
+           bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\", \
+           \" ABCD \", 5);\n  \
+           bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\", \
+           \" ABCD \", 9);\n  \
+           bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\", \
+           \" ABCD \", 28);\n  \
+           bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\", \
+           \" ABCD \", -3);\n  \
+           bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\", \
+           \" ABCD \", -28);\n\n}"
+              .as_bytes(),
+          "@charset \"UTF-8\";\n\
+           div {\n  bar: \"Xabcd\";\n  bar: \"Xabcd\";\n  \
+           bar: \"X'fjd'skabcd\";\n  bar: \"abecd\";\n  bar: \"abcde\";\n  \
+           bar: \"abced\";\n  bar: \"eabcd\";\n  bar: \"eabcd\";\n  \
+           bar: \"eabcd\";\n  bar: eabcd;\n  bar: eabcd;\n  \
+           bar: \"abcdDéjà vu\";\n  \
+           bar: \"Dabcdéjà vu\";\n  \
+           bar: \"Déjà abcdvu\";\n  \
+           bar: \"Déjà vuabcd\";\n  \
+           bar: \" ABCD øáéíóúüñ¿éàŤǅǂɊ\
+           ɱʭʬѪ҈ݓ\";\n  \
+           bar: \"ø ABCD áéíóúüñ¿éàŤǅǂɊ\
+           ɱʭʬѪ҈ݓ\";\n  \
+           bar: \"øáéí ABCD óúüñ¿éàŤǅǂɊ\
+           ɱʭʬѪ҈ݓ\";\n  \
+           bar: \"øáéíóúüñ ABCD ¿éàŤǅǂɊ\
+           ɱʭʬѪ҈ݓ\";\n  \
+           bar: \"øáéíóúüñ¿éàŤǅǂɊ\
+           ɱʭʬѪ҈ݓ ABCD \";\n  \
+           bar: \"øáéíóúüñ¿éàŤǅǂ\
+           ɊɱʭʬѪ ABCD ҈ݓ\";\n  \
+           bar: \" ABCD øáéíóúüñ¿éàŤǅǂɊ\
+           ɱʭʬѪ҈ݓ\";\n}\n")
+}
+#[test]
 fn t46_str_index() {
     check("div {\n\n  bar: a str-index(\"abcde\", \"bc\");\n  \
            bar: a str-index(\"abcde\", \"a\");\n  \

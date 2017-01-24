@@ -385,5 +385,6 @@ fn test_variable_declaration_global() {
 
 #[cfg(test)]
 fn string(v: &str) -> Value {
-    Value::Literal(v.into(), false)
+    use valueexpression::Quotes;
+    Value::Literal(v.into(), Quotes::None)
 }

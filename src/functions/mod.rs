@@ -1,6 +1,6 @@
 use formalargs::{CallArgs, FormalArgs};
 use std::collections::BTreeMap;
-use valueexpression::Value;
+use valueexpression::{Quotes, Value};
 use variablescope::Scope;
 
 #[macro_use]
@@ -42,7 +42,7 @@ lazy_static! {
                     Value::Numeric(..) => "number",
                     _ => "unknown",
                 }.into(),
-                false)
+                Quotes::None)
         }));
         f.insert("if", func!((condition, if_true, if_false), |s| {
             if s.get("condition").is_true() {

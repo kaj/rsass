@@ -1,7 +1,7 @@
 use num_rational::Rational;
 use std::fmt;
 use std::ops::Neg;
-use valueexpression::{Unit, Value};
+use valueexpression::{Quotes, Unit, Value};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Operator {
@@ -54,7 +54,7 @@ impl Operator {
                         } else if au == &Unit::None {
                             Value::Numeric(a + b, bu.clone(), true)
                         } else {
-                            Value::Literal(format!("{}{}", a, b), false)
+                            Value::Literal(format!("{}{}", a, b), Quotes::None)
                         }
                     }
                     (a, b) => {
@@ -90,10 +90,12 @@ impl Operator {
                         } else if au == &Unit::None {
                             Value::Numeric(av - bv, bu.clone(), true)
                         } else {
-                            Value::Literal(format!("{}-{}", a, b), false)
+                            Value::Literal(format!("{}-{}", a, b), Quotes::None)
                         }
                     }
-                    (a, b) => Value::Literal(format!("{}-{}", a, b), false),
+                    (a, b) => {
+                        Value::Literal(format!("{}-{}", a, b), Quotes::None)
+                    }
                 }
             }
         }

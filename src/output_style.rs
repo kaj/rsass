@@ -1,4 +1,5 @@
 use selectors::Selector;
+use std::ascii::AsciiExt;
 use std::io::{self, Write};
 use super::{FileContext, SassItem, parse_scss_file};
 use valueexpression::Value;
@@ -28,7 +29,19 @@ impl OutputStyle {
         if result != b"" && result[result.len() - 1] != b'\n' {
             write!(result, "\n").unwrap();
         }
-        Ok(result)
+        if result.is_ascii() {
+            Ok(result)
+        } else {
+            let mut r2 = vec![];
+            if self.is_compressed() {
+                // Byte order mark U+FEFF as utf-8.
+                r2.extend_from_slice(b"\xEF\xBB\xBF");
+            } else {
+                r2.extend_from_slice(b"@charset \"UTF-8\";\n");
+            }
+            r2.extend(result);
+            Ok(r2)
+        }
     }
     fn handle_root_item(&self,
                         item: &SassItem,

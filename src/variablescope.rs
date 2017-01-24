@@ -5,7 +5,7 @@ use num_rational::Rational;
 use num_traits::identities::Zero;
 use std::collections::BTreeMap;
 use super::MixinDeclaration;
-use valueexpression::{Value, Unit};
+use valueexpression::{Quotes, Value, Unit};
 
 pub struct ScopeImpl<'a> {
     parent: Option<&'a mut Scope>,
@@ -69,7 +69,9 @@ impl<'a> ScopeImpl<'a> {
     }
     fn do_evaluate(&mut self, val: &Value, arithmetic: bool) -> Value {
         match val {
-            &Value::Literal(ref v, ref q) => Value::Literal(v.clone(), *q),
+            &Value::Literal(ref v, ref q) => {
+                Value::Literal(v.clone(), q.clone())
+            }
             &Value::Paren(ref v) => self.do_evaluate(v, true),
             &Value::Color(_, _, _, _, _) => val.clone(),
             &Value::Variable(ref name) => {
@@ -103,10 +105,10 @@ impl<'a> ScopeImpl<'a> {
                     } else if au == &Unit::None {
                         Value::Numeric(a * b, bu.clone(), true)
                     } else {
-                        Value::Literal(format!("{}*{}", a, b), false)
+                        Value::Literal(format!("{}*{}", a, b), Quotes::None)
                     }
                 } else {
-                    Value::Literal(format!("{}*{}", a, b), false)
+                    Value::Literal(format!("{}*{}", a, b), Quotes::None)
                 }
             }
             &Value::Div(ref a, ref b, ref space1, ref space2) => {
@@ -163,7 +165,7 @@ impl<'a> ScopeImpl<'a> {
                                            ""
                                        },
                                        b),
-                               false)
+                               Quotes::None)
             }
             &Value::Numeric(ref v, ref u, ref is_calculated) => {
                 Value::Numeric(v.clone(),
