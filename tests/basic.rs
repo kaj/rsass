@@ -766,6 +766,15 @@ fn t59_if_expression() {
 
 }
 
+/// No proper spec-test for str-slice, this is from
+/// spec/libsass-closed-issues/issue_760/input.scss
+#[test]
+fn ti815_str_slice() {
+    check(b"foo {\n  foo: str-slice(\"bar\", 1, 2);\n  \
+            bar: str-slice(\"bar\", 3);\n}\n",
+          "foo {\n  foo: \"ba\";\n  bar: \"r\";\n}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Normal).and_then(|s| {
                    String::from_utf8(s)

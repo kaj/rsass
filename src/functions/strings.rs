@@ -26,15 +26,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             (Value::Literal(s, q),
              Value::Literal(insert, _),
              Value::Numeric(index, Unit::None, _)) => {
-                let i = if index.is_negative() {
-                    let l = s.chars().count();
-                    let i = index.to_integer().abs() as usize;
-                    if l > i { l - i + 1 } else { 0 }
-                } else if index.is_positive() {
-                    index.to_integer() as usize - 1
-                } else {
-                    0
-                };
+                let i = index_to_rust(index, &s);
                 let c = s.chars();
                 Value::Literal(format!("{}{}{}",
                                        c.clone().take(i).collect::<String>(),
@@ -43,6 +35,22 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                                q)
             }
             _ => panic!("Parameter of wrong type"),
+        }
+    }));
+    f.insert("str_slice",
+             func!((string, start_at, end_at = b"-1;"), |s| {
+        match (s.get("string"), s.get("start_at"), s.get("end_at")) {
+            (Value::Literal(s, q),
+             Value::Numeric(start_at, Unit::None, _),
+             Value::Numeric(end_at, Unit::None, _)) => {
+                let start_at = index_to_rust(start_at, &s);
+                let end_at = index_to_rust(end_at, &s);
+                let c = s.chars();
+                Value::Literal(c.skip(start_at).take(end_at + 1 - start_at).collect::<String>(),
+                               q)
+            }
+            _ => panic!("Parameter of wrong type, expeced s, n, n, got {:?}, {:?}, {:?}",
+                        s.get("string"), s.get("start_at"), s.get("end_at")),
         }
     }));
     f.insert("str_length",
@@ -86,4 +94,19 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             v => v,
         }
     }));
+}
+
+/// Convert index from sass (rational number, first is one) to rust
+/// (usize, first is zero).  Sass values might be negative, then -1 is
+/// the last char in the string.
+fn index_to_rust(index: Rational, s: &str) -> usize {
+    if index.is_negative() {
+        let l = s.chars().count();
+        let i = index.to_integer().abs() as usize;
+        if l > i { l - i + 1 } else { 0 }
+    } else if index.is_positive() {
+        index.to_integer() as usize - 1
+    } else {
+        0
+    }
 }
