@@ -47,13 +47,17 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let end_at = index_to_rust(end_at, &s);
                 let c = s.chars();
                 Value::Literal(c.skip(start_at)
-                               .take(end_at + 1 - start_at)
-                               .collect::<String>(),
+                                   .take(end_at + 1 - start_at)
+                                   .collect::<String>(),
                                q)
             }
-            _ => panic!("Parameter of wrong type, expeced s, n, n, \
-                         got {:?}, {:?}, {:?}",
-                        s.get("string"), s.get("start_at"), s.get("end_at")),
+            _ => {
+                panic!("Parameter of wrong type, expeced s, n, n, \
+                        got {:?}, {:?}, {:?}",
+                       s.get("string"),
+                       s.get("start_at"),
+                       s.get("end_at"))
+            }
         }
     }));
     f.insert("str_length",

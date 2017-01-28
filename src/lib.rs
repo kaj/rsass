@@ -1,3 +1,7 @@
+//! Sass reimplemented in rust with nom (very early stage).
+//! The "r" in the name might stand for the Rust programming language,
+//! or for my name Rasmus.
+
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
@@ -30,6 +34,16 @@ use selectors::{Selector, selector};
 use valueexpression::{Value, value_expression};
 use variablescope::{ScopeImpl, Scope};
 
+/// Parse scss data and write css in the given style.
+///
+/// # Examples
+///
+/// ```
+/// use rsass::{OutputStyle, compile_scss};
+///
+/// assert_eq!(compile_scss(b"foo{bar{baz:value}}", OutputStyle::Compressed),
+///            Ok("foo bar{baz:value}\n".into()))
+/// ```
 pub fn compile_scss(input: &[u8],
                     style: OutputStyle)
                     -> Result<Vec<u8>, String> {
@@ -90,7 +104,6 @@ fn parse_scss_data(data: &[u8]) -> Result<Vec<SassItem>, String> {
     }
 }
 
-
 named!(sassfile<&[u8], Vec<SassItem> >,
        many0!(alt!(value!(SassItem::None, spacelike) |
                    import |
@@ -103,6 +116,8 @@ named!(sassfile<&[u8], Vec<SassItem> >,
                         |c| SassItem::Comment(from_utf8(c).unwrap().into()))
                    )));
 
+/// Every sass file is a sequence of sass items.
+/// Scoping items contains further sequences of items.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SassItem {
     None,

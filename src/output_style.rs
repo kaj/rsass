@@ -5,6 +5,8 @@ use super::{FileContext, SassItem, parse_scss_file};
 use valueexpression::Value;
 use variablescope::{ScopeImpl, Scope};
 
+/// Selected target format.
+/// Only formats that are variants of this type are supported by rsass.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum OutputStyle {
     Normal, // TODO What should be the name of this format?
@@ -12,6 +14,9 @@ pub enum OutputStyle {
 }
 
 impl OutputStyle {
+    /// Write a slice of sass items in this format.
+    /// The `file_context` is needed if there are `@import` statements
+    /// in the sass file.
     pub fn write_root(&self,
                       items: &[SassItem],
                       file_context: FileContext)
@@ -147,15 +152,15 @@ impl OutputStyle {
             &SassItem::None => (),
         }
     }
-    pub fn write_rule(&self,
-                      selectors: &[Selector],
-                      body: &[SassItem],
-                      out: &mut Write,
-                      scope: &mut Scope,
-                      parent: Option<&[Selector]>,
-                      file_context: &FileContext,
-                      indent: usize)
-                      -> io::Result<()> {
+    fn write_rule(&self,
+                  selectors: &[Selector],
+                  body: &[SassItem],
+                  out: &mut Write,
+                  scope: &mut Scope,
+                  parent: Option<&[Selector]>,
+                  file_context: &FileContext,
+                  indent: usize)
+                  -> io::Result<()> {
         let selectors = if let Some(parent) = parent {
             let mut result = Vec::new();
             for p in parent {
@@ -206,15 +211,15 @@ impl OutputStyle {
             .join(if self.is_compressed() { "," } else { ", " })
     }
 
-    pub fn handle_body(&self,
-                       direct: &mut Vec<u8>,
-                       sub: &mut Write,
-                       scope: &mut Scope,
-                       selectors: &[Selector],
-                       body: &[SassItem],
-                       file_context: &FileContext,
-                       indent: usize)
-                       -> io::Result<()> {
+    fn handle_body(&self,
+                   direct: &mut Vec<u8>,
+                   sub: &mut Write,
+                   scope: &mut Scope,
+                   selectors: &[Selector],
+                   body: &[SassItem],
+                   file_context: &FileContext,
+                   indent: usize)
+                   -> io::Result<()> {
         for b in body {
             match b {
                 &SassItem::Comment(ref c) => {
@@ -316,7 +321,7 @@ impl OutputStyle {
         Ok(())
     }
 
-    pub fn do_indent(&self, out: &mut Write, steps: usize) -> io::Result<()> {
+    fn do_indent(&self, out: &mut Write, steps: usize) -> io::Result<()> {
         if !self.is_compressed() {
             try!(write!(out, "\n"));
             for _i in 0..steps {
@@ -330,7 +335,7 @@ impl OutputStyle {
         if self.is_compressed() { "" } else { " " }
     }
 
-    pub fn is_compressed(&self) -> bool {
+    fn is_compressed(&self) -> bool {
         self == &OutputStyle::Compressed
     }
 }
