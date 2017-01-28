@@ -24,7 +24,10 @@ pub struct SassFunction {
 }
 
 impl SassFunction {
-    pub fn call(&self, scope: &mut Scope, args: &CallArgs) -> Result<Value, Error> {
+    pub fn call(&self,
+                scope: &mut Scope,
+                args: &CallArgs)
+                -> Result<Value, Error> {
         let s = self.args.eval(scope, args);
         (self.body)(&s)
     }
@@ -44,9 +47,7 @@ fn badarg(expected: &str, actual: &Value) -> Error {
 
 fn badargs(expected: &[&str], actual: &[&Value]) -> Error {
     // TODO Better message!
-    Error::BadArguments(format!("expected {:?}, got {:?}",
-                                expected,
-                                actual))
+    Error::BadArguments(format!("expected {:?}, got {:?}", expected, actual))
 }
 
 lazy_static! {
@@ -64,7 +65,9 @@ lazy_static! {
         }));
         f.insert("nth", func!((list, n), |s| {
             let n = match s.get("n") {
-                Value::Numeric(val, _, _) if val.denom() == &1 => val.to_integer(),
+                Value::Numeric(val, _, _) if val.denom() == &1 => {
+                    val.to_integer()
+                }
                 x => return Err(badarg("integer", &x))
             };
             let list = match s.get("list") {

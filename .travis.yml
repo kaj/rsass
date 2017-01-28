@@ -1,8 +1,8 @@
 language: rust
 cache: cargo
 before_script:
-- cargo update || true
-- cargo install rustfmt || true
+  - cargo update || true
+  - cargo install -f rustfmt
 rust:
   - stable
   - beta

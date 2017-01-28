@@ -26,10 +26,9 @@ impl FormalArgs {
                 .iter()
                 .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
                 .map(|&(ref _k, ref v)| v)
-                .or_else(|| {
-                    args.0.get(i).and_then(|&(ref k, ref v)| {
-                        if k.is_some() { None } else { Some(v) }
-                    })
+                .or_else(|| match args.0.get(i) {
+                    Some(&(None, ref v)) => Some(v),
+                    _ => None,
                 })
                 .unwrap_or(default);
             argscope.define(&name, &value, false);
@@ -69,12 +68,9 @@ impl fmt::Display for CallArgs {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         let t = self.0
             .iter()
-            .map(|&(ref k, ref v)| {
-                if let &Some(ref k) = k {
-                    format!("${}: {}", k, v)
-                } else {
-                    format!("{}", v)
-                }
+            .map(|kv| match kv {
+                &(Some(ref k), ref v) => format!("${}: {}", k, v),
+                &(None, ref v) => format!("{}", v),
             })
             .collect::<Vec<_>>()
             .join(", ");

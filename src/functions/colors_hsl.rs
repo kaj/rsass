@@ -1,8 +1,8 @@
+use super::{Error, SassFunction, badarg};
 use formalargs::FormalArgs;
 use num_rational::Rational;
 use num_traits::Zero;
 use std::collections::BTreeMap;
-use super::{Error, SassFunction, badarg};
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
 

@@ -152,25 +152,25 @@ mod test {
     #[test]
     fn simple_selector() {
         assert_eq!(selector(b"foo "),
-                   Done(&b""[..], Selector(
-                       vec![SelectorPart::Simple("foo".into())])))
+                   Done(&b""[..],
+                        Selector(vec![SelectorPart::Simple("foo".into())])))
     }
 
     #[test]
     fn selector2() {
         assert_eq!(selector(b"foo bar "),
-                   Done(&b""[..], Selector(
-                       vec![SelectorPart::Simple("foo".into()),
-                            SelectorPart::Descendant,
-                            SelectorPart::Simple("bar".into())])))
+                   Done(&b""[..],
+                        Selector(vec![SelectorPart::Simple("foo".into()),
+                                      SelectorPart::Descendant,
+                                      SelectorPart::Simple("bar".into())])))
     }
 
     #[test]
     fn child_selector() {
         assert_eq!(selector(b"foo > bar "),
-                   Done(&b""[..], Selector(
-                       vec![SelectorPart::Simple("foo".into()),
-                            SelectorPart::RelOp(b'>'),
-                            SelectorPart::Simple("bar".into())])))
+                   Done(&b""[..],
+                        Selector(vec![SelectorPart::Simple("foo".into()),
+                                      SelectorPart::RelOp(b'>'),
+                                      SelectorPart::Simple("bar".into())])))
     }
 }

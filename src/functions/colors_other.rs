@@ -1,8 +1,8 @@
+use super::{Error, SassFunction, badarg};
 use formalargs::FormalArgs;
 use num_rational::Rational;
 use num_traits::Zero;
 use std::collections::BTreeMap;
-use super::{Error, SassFunction, badarg};
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
 
@@ -21,7 +21,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             match x {
                 Value::Null => Ok(orig),
                 x => {
-                    Ok(cap_u8(orig as isize + try!(to_rational(x)).round().to_integer()))
+                    Ok(cap_u8(orig as isize +
+                              try!(to_rational(x)).round().to_integer()))
                 }
             }
         }

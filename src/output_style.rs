@@ -1,7 +1,7 @@
+use super::{FileContext, SassItem, parse_scss_file};
 use selectors::Selector;
 use std::ascii::AsciiExt;
 use std::io::{self, Write};
-use super::{FileContext, SassItem, parse_scss_file};
 use valueexpression::Value;
 use variablescope::{ScopeImpl, Scope};
 
@@ -200,12 +200,10 @@ impl OutputStyle {
 
     fn join_selectors(&self, selectors: &[Selector]) -> String {
         selectors.iter()
-            .map(|s| {
-                if self.is_compressed() {
-                    format!("{:#}", s)
-                } else {
-                    format!("{}", s)
-                }
+            .map(|s| if self.is_compressed() {
+                format!("{:#}", s)
+            } else {
+                format!("{}", s)
             })
             .collect::<Vec<_>>()
             .join(if self.is_compressed() { "," } else { ", " })

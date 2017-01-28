@@ -1,10 +1,10 @@
 //! A scope is something that contains variable values.
 
+use super::MixinDeclaration;
 use functions::get_function;
 use num_rational::Rational;
 use num_traits::identities::Zero;
 use std::collections::BTreeMap;
-use super::MixinDeclaration;
 use valueexpression::{Quotes, Value, Unit};
 
 pub struct ScopeImpl<'a> {

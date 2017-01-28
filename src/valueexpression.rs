@@ -199,12 +199,10 @@ impl fmt::Display for Value {
             &Value::MultiSpace(ref v) => {
                 let t = v.iter()
                     .filter(|v| !v.is_null())
-                    .map(|v| {
-                        if out.alternate() {
-                            format!("{:#}", v)
-                        } else {
-                            format!("{}", v)
-                        }
+                    .map(|v| if out.alternate() {
+                        format!("{:#}", v)
+                    } else {
+                        format!("{}", v)
                     })
                     .collect::<Vec<_>>()
                     .join(" ");
@@ -213,12 +211,10 @@ impl fmt::Display for Value {
             &Value::MultiComma(ref v) => {
                 let t = v.iter()
                     .filter(|v| !v.is_null())
-                    .map(|v| {
-                        if out.alternate() {
-                            format!("{:#}", v)
-                        } else {
-                            format!("{}", v)
-                        }
+                    .map(|v| if out.alternate() {
+                        format!("{:#}", v)
+                    } else {
+                        format!("{}", v)
                     })
                     .collect::<Vec<_>>()
                     .join(if out.alternate() { "," } else { ", " });
