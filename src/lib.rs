@@ -1,6 +1,18 @@
 //! Sass reimplemented in rust with nom (very early stage).
+//!
 //! The "r" in the name might stand for the Rust programming language,
 //! or for my name Rasmus.
+//!
+//! # Example
+//!
+//! ```
+//! use rsass::{OutputStyle, compile_scss_file};
+//!
+//! let sass = "tests/basic/14_imports/a.scss".as_ref();
+//! let css = compile_scss_file(sass, OutputStyle::Compressed);
+//!
+//! assert_eq!(css, Ok("div span{moo:goo}\n".into()))
+//! ```
 
 #[macro_use]
 extern crate lazy_static;
@@ -36,12 +48,16 @@ use variablescope::{ScopeImpl, Scope};
 
 /// Parse scss data and write css in the given style.
 ///
-/// # Examples
+/// # Example
 ///
 /// ```
 /// use rsass::{OutputStyle, compile_scss};
 ///
-/// assert_eq!(compile_scss(b"foo{bar{baz:value}}", OutputStyle::Compressed),
+/// assert_eq!(compile_scss(b"foo {\n\
+///                             bar {\n\
+///                               baz:value;\n\
+///                             }\n\
+///                           }", OutputStyle::Compressed),
 ///            Ok("foo bar{baz:value}\n".into()))
 /// ```
 pub fn compile_scss(input: &[u8],
@@ -52,6 +68,20 @@ pub fn compile_scss(input: &[u8],
     style.write_root(&items, file_context)
 }
 
+/// Parse a file of scss data and write css in the given style.
+///
+/// Any `@import` directives will be handled relative to the directory
+/// part of `file`.
+///
+/// # Example
+///
+/// ```
+/// use rsass::{OutputStyle, compile_scss_file};
+///
+/// assert_eq!(compile_scss_file("tests/basic/14_imports/a.scss".as_ref(),
+///                              OutputStyle::Compressed),
+///            Ok("div span{moo:goo}\n".into()))
+/// ```
 pub fn compile_scss_file(file: &Path,
                          style: OutputStyle)
                          -> Result<Vec<u8>, String> {
