@@ -2,7 +2,7 @@ use formalargs::FormalArgs;
 use num_rational::Rational;
 use num_traits::Zero;
 use std::collections::BTreeMap;
-use super::SassFunction;
+use super::{Error, SassFunction, badarg};
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
 
@@ -17,27 +17,24 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     lightness,
                     alpha),
                    |s: &Scope| {
-        fn c_comb(orig: u8, x: Value) -> u8 {
+        fn c_comb(orig: u8, x: Value) -> Result<u8, Error> {
             match x {
-                Value::Null => orig,
-                Value::Numeric(..) => {
-                    cap_u8(orig as isize + to_rational(x).round().to_integer())
+                Value::Null => Ok(orig),
+                x => {
+                    Ok(cap_u8(orig as isize + try!(to_rational(x)).round().to_integer()))
                 }
-                _ => orig, // Or error?
             }
         }
-        fn a_comb(orig: Rational, x: Value) -> Rational {
+        fn a_comb(orig: Rational, x: Value) -> Result<Rational, Error> {
             match x {
-                Value::Null => orig,
-                Value::Numeric(..) => orig + to_rational(x),
-                _ => orig, // Or error?
+                Value::Null => Ok(orig),
+                x => Ok(orig + try!(to_rational(x))),
             }
         }
-        fn sl_comb(orig: Rational, x: Value) -> Rational {
+        fn sl_comb(orig: Rational, x: Value) -> Result<Rational, Error> {
             match x {
-                Value::Null => orig,
-                Value::Numeric(..) => orig + to_rational_percent(x),
-                _ => orig, // Or error?
+                Value::Null => Ok(orig),
+                x => Ok(orig + try!(to_rational_percent(x))),
             }
         }
         match s.get("color") {
@@ -51,24 +48,24 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     let (h, s, l) = rgb_to_hsl(u8_to_frac(red),
                                                u8_to_frac(green),
                                                u8_to_frac(blue));
-                    let h = a_comb(h, h_adj);
-                    let s = sl_comb(s, s_adj);
-                    let l = sl_comb(l, l_adj);
+                    let h = try!(a_comb(h, h_adj));
+                    let s = try!(sl_comb(s, s_adj));
+                    let l = try!(sl_comb(l, l_adj));
                     let (r, g, b) = hsl_to_rgb(h * Rational::new(1, 360), s, l);
-                    Value::Color(frac_to_int(r),
-                                 frac_to_int(g),
-                                 frac_to_int(b),
-                                 a_comb(alpha, a_adj),
-                                 None)
+                    Ok(Value::Color(frac_to_int(r),
+                                    frac_to_int(g),
+                                    frac_to_int(b),
+                                    try!(a_comb(alpha, a_adj)),
+                                    None))
                 } else {
-                    Value::Color(c_comb(red, s.get("red")),
-                                 c_comb(green, s.get("green")),
-                                 c_comb(blue, s.get("blue")),
-                                 a_comb(alpha, s.get("alpha")),
-                                 None)
+                    Ok(Value::Color(try!(c_comb(red, s.get("red"))),
+                                    try!(c_comb(green, s.get("green"))),
+                                    try!(c_comb(blue, s.get("blue"))),
+                                    try!(a_comb(alpha, s.get("alpha"))),
+                                    None))
                 }
             }
-            v => v,
+            v => Err(badarg("color", &v)),
         }
     }));
     f.insert("change_color",
@@ -81,27 +78,22 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     lightness,
                     alpha),
                    |s: &Scope| {
-        fn c_or(orig: u8, x: Value) -> u8 {
+        fn c_or(orig: u8, x: Value) -> Result<u8, Error> {
             match x {
-                Value::Null => orig,
-                Value::Numeric(..) => {
-                    cap_u8(to_rational(x).round().to_integer())
-                }
-                _ => orig, // Or error?
+                Value::Null => Ok(orig),
+                x => Ok(cap_u8(try!(to_rational(x)).round().to_integer())),
             }
         }
-        fn a_or(orig: Rational, x: Value) -> Rational {
+        fn a_or(orig: Rational, x: Value) -> Result<Rational, Error> {
             match x {
-                Value::Null => orig,
-                Value::Numeric(..) => to_rational(x),
-                _ => orig, // Or error?
+                Value::Null => Ok(orig),
+                x => to_rational(x),
             }
         }
-        fn sl_or(orig: Rational, x: Value) -> Rational {
+        fn sl_or(orig: Rational, x: Value) -> Result<Rational, Error> {
             match x {
-                Value::Null => orig,
-                Value::Numeric(..) => to_rational_percent(x),
-                _ => orig, // Or error?
+                Value::Null => Ok(orig),
+                x => to_rational_percent(x),
             }
         }
         match s.get("color") {
@@ -115,24 +107,24 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     let (h, s, l) = rgb_to_hsl(u8_to_frac(red),
                                                u8_to_frac(green),
                                                u8_to_frac(blue));
-                    let h = a_or(h, h_adj);
-                    let s = sl_or(s, s_adj);
-                    let l = sl_or(l, l_adj);
+                    let h = try!(a_or(h, h_adj));
+                    let s = try!(sl_or(s, s_adj));
+                    let l = try!(sl_or(l, l_adj));
                     let (r, g, b) = hsl_to_rgb(h * Rational::new(1, 360), s, l);
-                    Value::Color(frac_to_int(r),
-                                 frac_to_int(g),
-                                 frac_to_int(b),
-                                 a_or(alpha, a_adj),
-                                 None)
+                    Ok(Value::Color(frac_to_int(r),
+                                    frac_to_int(g),
+                                    frac_to_int(b),
+                                    try!(a_or(alpha, a_adj)),
+                                    None))
                 } else {
-                    Value::Color(c_or(red, s.get("red")),
-                                 c_or(green, s.get("green")),
-                                 c_or(blue, s.get("blue")),
-                                 a_or(alpha, s.get("alpha")),
-                                 None)
+                    Ok(Value::Color(try!(c_or(red, s.get("red"))),
+                                    try!(c_or(green, s.get("green"))),
+                                    try!(c_or(blue, s.get("blue"))),
+                                    try!(a_or(alpha, s.get("alpha"))),
+                                    None))
                 }
             }
-            v => v,
+            v => Err(badarg("color", &v)),
         }
     }));
 }
@@ -230,19 +222,19 @@ fn cap_u8(n: isize) -> u8 {
     }
 }
 
-fn to_rational(v: Value) -> Rational {
+fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, _, _) => v,
-        v => panic!("Expected rational, got {:?}", v),
+        Value::Numeric(v, _, _) => Ok(v),
+        v => Err(badarg("number", &v)),
     }
 }
 
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-fn to_rational_percent(v: Value) -> Rational {
+fn to_rational_percent(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, Unit::Percent, _) => v / Rational::from_integer(100),
-        Value::Numeric(v, _, _) => v,
-        v => panic!("Expected rational, got {:?}", v),
+        Value::Numeric(v, Unit::Percent, _) => Ok(v * Rational::new(1, 100)),
+        Value::Numeric(v, _, _) => Ok(v),
+        v => Err(badarg("number", &v)),
     }
 }

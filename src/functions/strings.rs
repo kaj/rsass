@@ -1,5 +1,5 @@
 use formalargs::FormalArgs;
-use functions::SassFunction;
+use functions::{SassFunction, badarg, badargs};
 use num_rational::Rational;
 use num_traits::Signed;
 use std::collections::BTreeMap;
@@ -8,17 +8,17 @@ use valueexpression::{Quotes, Value, Unit};
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     f.insert("quote",
              func!((contents), |s| {
-                 match s.get("contents") {
+                 Ok(match s.get("contents") {
                      Value::Literal(v, _) => Value::Literal(v, Quotes::Double),
                      v => Value::Literal(format!("{}", v), Quotes::Double),
-                 }
+                 })
              }));
     f.insert("unquote",
              func!((contents), |s| {
-                 match s.get("contents") {
+                 Ok(match s.get("contents") {
                      Value::Literal(v, _) => Value::Literal(v, Quotes::None),
                      v => v,
-                 }
+                 })
              }));
     f.insert("str_insert",
              func!((string, insert, index), |s| {
@@ -28,13 +28,14 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
              Value::Numeric(index, Unit::None, _)) => {
                 let i = index_to_rust(index, &s);
                 let c = s.chars();
-                Value::Literal(format!("{}{}{}",
-                                       c.clone().take(i).collect::<String>(),
-                                       insert,
-                                       c.skip(i).collect::<String>()),
-                               q)
+                Ok(Value::Literal(format!("{}{}{}",
+                                          c.clone().take(i).collect::<String>(),
+                                          insert,
+                                          c.skip(i).collect::<String>()),
+                                  q))
             }
-            _ => panic!("Parameter of wrong type"),
+            (s, i, v) => Err(badargs(&["string", "string", "number"],
+                                     &[&s, &i, &v])),
         }
     }));
     f.insert("str_slice",
@@ -46,35 +47,31 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let start_at = index_to_rust(start_at, &s);
                 let end_at = index_to_rust(end_at, &s);
                 let c = s.chars();
-                Value::Literal(c.skip(start_at)
-                                   .take(end_at + 1 - start_at)
-                                   .collect::<String>(),
-                               q)
+                Ok(Value::Literal(c.skip(start_at)
+                                      .take(end_at + 1 - start_at)
+                                      .collect::<String>(),
+                                  q))
             }
-            _ => {
-                panic!("Parameter of wrong type, expeced s, n, n, \
-                        got {:?}, {:?}, {:?}",
-                       s.get("string"),
-                       s.get("start_at"),
-                       s.get("end_at"))
+            (v, s, e) => {
+                Err(badargs(&["string", "number", "number"], &[&v, &s, &e]))
             }
         }
     }));
     f.insert("str_length",
              func!((string), |s| {
-        match s.get("string") {
-            Value::Literal(v, _) => {
+        match &s.get("string") {
+            &Value::Literal(ref v, _) => {
                 let n = v.chars().count() as isize;
-                Value::Numeric(Rational::from_integer(n), Unit::None, true)
+                Ok(Value::Numeric(Rational::from_integer(n), Unit::None, true))
             }
-            v => v,
+            v => Err(badarg("string", v)),
         }
     }));
     f.insert("str_index",
              func!((string, substring), |s| {
         match (s.get("string"), s.get("substring")) {
             (Value::Literal(s, _), Value::Literal(sub, _)) => {
-                match s.find(&sub) {
+                Ok(match s.find(&sub) {
                     Some(o) => {
                         let n = s[0..o].chars().count() as isize;
                         Value::Numeric(Rational::from_integer(1 + n),
@@ -82,24 +79,24 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                                        true)
                     }
                     None => Value::Null,
-                }
+                })
             }
-            _ => panic!("Parameter of wrong type"),
+            (full, sub) => Err(badargs(&["string", "string"], &[&full, &sub])),
         }
     }));
     f.insert("to_upper_case",
              func!((string), |s| {
-        match s.get("string") {
+        Ok(match s.get("string") {
             Value::Literal(v, q) => Value::Literal(v.to_uppercase(), q),
             v => v,
-        }
+        })
     }));
     f.insert("to_lower_case",
              func!((string), |s| {
-        match s.get("string") {
+        Ok(match s.get("string") {
             Value::Literal(v, q) => Value::Literal(v.to_lowercase(), q),
             v => v,
-        }
+        })
     }));
 }
 

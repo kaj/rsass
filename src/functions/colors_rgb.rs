@@ -2,18 +2,18 @@ use formalargs::FormalArgs;
 use num_rational::Rational;
 use num_traits::One;
 use std::collections::BTreeMap;
-use super::SassFunction;
+use super::{Error, SassFunction, badarg, badargs};
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     f.insert("rgb",
              func!((red, green, blue), |s| {
-        Value::Color(to_int(s.get("red")),
-                     to_int(s.get("green")),
-                     to_int(s.get("blue")),
-                     Rational::one(),
-                     None)
+        Ok(Value::Color(to_int(s.get("red")),
+                        to_int(s.get("green")),
+                        to_int(s.get("blue")),
+                        Rational::one(),
+                        None))
     }));
     f.insert("rgba",
              func!((red, green, blue, alpha), |s: &Scope| {
@@ -25,41 +25,41 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             } else {
                 s.get("green")
             };
-            let a = to_rational(a);
-            Value::Color(r, g, b, a, None)
+            let a = try!(to_rational(a));
+            Ok(Value::Color(r, g, b, a, None))
         } else {
-            Value::Color(to_int(red),
-                         to_int(s.get("green")),
-                         to_int(s.get("blue")),
-                         to_rational(alpha),
-                         None)
+            Ok(Value::Color(to_int(red),
+                            to_int(s.get("green")),
+                            to_int(s.get("blue")),
+                            try!(to_rational(alpha)),
+                            None))
         }
     }));
     f.insert("red",
              func!((color), |s: &Scope| {
-        match s.get("color") {
-            Value::Color(red, _, _, _, _) => {
-                Value::Numeric(b2rat(red), Unit::None, true)
+        match &s.get("color") {
+            &Value::Color(ref red, _, _, _, _) => {
+                Ok(Value::Numeric(b2rat(*red), Unit::None, true))
             }
-            value => value,
+            value => Err(badarg("color", value)),
         }
     }));
     f.insert("green",
              func!((color), |s: &Scope| {
-        match s.get("color") {
-            Value::Color(_, green, _, _, _) => {
-                Value::Numeric(b2rat(green), Unit::None, true)
+        match &s.get("color") {
+            &Value::Color(_, ref green, _, _, _) => {
+                Ok(Value::Numeric(b2rat(*green), Unit::None, true))
             }
-            value => value,
+            value => Err(badarg("color", value)),
         }
     }));
     f.insert("blue",
              func!((color), |s: &Scope| {
-        match s.get("color") {
-            Value::Color(_, _, blue, _, _) => {
-                Value::Numeric(b2rat(blue), Unit::None, true)
+        match &s.get("color") {
+            &Value::Color(_, _, ref blue, _, _) => {
+                Ok(Value::Numeric(b2rat(*blue), Unit::None, true))
             }
-            value => value,
+            value => Err(badarg("color", value)),
         }
     }));
     f.insert("mix",
@@ -89,25 +89,23 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             fn rb(r: Rational) -> u8 {
                 cap_u8(r.round().to_integer())
             }
-            Value::Color(rb(mv(*r1, *r2, w2)),
-                         rb(mv(*g1, *g2, w2)),
-                         rb(mv(*b1, *b2, w2)),
-                         mr(*a1, *a2, w),
-                         None)
+            Ok(Value::Color(rb(mv(*r1, *r2, w2)),
+                            rb(mv(*g1, *g2, w2)),
+                            rb(mv(*b1, *b2, w2)),
+                            mr(*a1, *a2, w),
+                            None))
         } else {
-            panic!(format!("Unexpected arguments to mix: ({:?}, {:?}, {:?})",
-                           color1,
-                           color2,
-                           weight))
+            Err(badargs(&["color", "color", "number"],
+                        &[&color1, &color2, &weight]))
         }
     }));
     f.insert("invert",
              func!((color), |s: &Scope| {
-        let color = s.get("color");
-        if let &Value::Color(ref r, ref g, ref b, ref a, _) = &color {
-            Value::Color(0xff - r, 0xff - g, 0xff - b, *a, None)
-        } else {
-            panic!(format!("Unexpected arguments to invert: ({:?})", color))
+        match &s.get("color") {
+            &Value::Color(ref r, ref g, ref b, ref a, _) => {
+                Ok(Value::Color(0xff - r, 0xff - g, 0xff - b, *a, None))
+            }
+            value => Err(badarg("color", value)),
         }
     }));
 }
@@ -159,10 +157,10 @@ fn percent(n: isize) -> Value {
 }
 
 
-fn to_rational(v: Value) -> Rational {
+fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, _, _) => v,
-        v => panic!("Expected rational, got {:?}", v),
+        Value::Numeric(v, _, _) => Ok(v),
+        v => Err(badarg("number", &v)),
     }
 }
 

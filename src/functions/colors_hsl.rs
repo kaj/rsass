@@ -2,57 +2,59 @@ use formalargs::FormalArgs;
 use num_rational::Rational;
 use num_traits::Zero;
 use std::collections::BTreeMap;
-use super::SassFunction;
+use super::{Error, SassFunction, badarg};
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     f.insert("hsl",
              func!((hue, saturation, lightness), |s: &Scope| {
-        let hue = to_rational(s.get("hue")) * Rational::new(1, 360);
-        let sat = to_rational_percent(s.get("saturation"));
-        let light = to_rational_percent(s.get("lightness"));
+        let hue = try!(to_rational(s.get("hue"))) * Rational::new(1, 360);
+        let sat = try!(to_rational_percent(s.get("saturation")));
+        let light = try!(to_rational_percent(s.get("lightness")));
         let (r, g, b) = hsl_to_rgb(hue, sat, light);
-        let one = Rational::from_integer(1);
-        Value::Color(frac_to_int(r), frac_to_int(g), frac_to_int(b), one, None)
+        Ok(Value::Color(frac_to_int(r),
+                        frac_to_int(g),
+                        frac_to_int(b),
+                        Rational::from_integer(1),
+                        None))
     }));
     f.insert("hsla",
              func!((hue, saturation, lightness, alpha), |s: &Scope| {
-        let hue = to_rational(s.get("hue")) * Rational::new(1, 360);
-        let sat = to_rational_percent(s.get("saturation"));
-        let light = to_rational_percent(s.get("lightness"));
-        let alpha = s.get("alpha");
+        let hue = try!(to_rational(s.get("hue"))) * Rational::new(1, 360);
+        let sat = try!(to_rational_percent(s.get("saturation")));
+        let light = try!(to_rational_percent(s.get("lightness")));
+        let alpha = try!(to_rational(s.get("alpha")));
         let (r, g, b) = hsl_to_rgb(hue, sat, light);
-        Value::Color(frac_to_int(r),
-                     frac_to_int(g),
-                     frac_to_int(b),
-                     to_rational(alpha),
-                     None)
+        Ok(Value::Color(frac_to_int(r),
+                        frac_to_int(g),
+                        frac_to_int(b),
+                        alpha,
+                        None))
     }));
     f.insert("adjust_hue",
              func!((color, degrees), |s: &Scope| {
-        fn a_comb(orig: Rational, x: Value) -> Rational {
+        fn a_comb(orig: Rational, x: Value) -> Result<Rational, Error> {
             match x {
-                Value::Null => orig,
-                Value::Numeric(..) => orig + to_rational(x),
-                _ => orig, // Or error?
+                Value::Null => Ok(orig),
+                x => Ok(orig + try!(to_rational(x))),
             }
         }
-        match s.get("color") {
-            Value::Color(red, green, blue, alpha, _) => {
+        match &s.get("color") {
+            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
                 let h_adj = s.get("degrees");
-                let (h, s, l) = rgb_to_hsl(u8_to_frac(red),
-                                           u8_to_frac(green),
-                                           u8_to_frac(blue));
-                let h = a_comb(h, h_adj);
+                let (h, s, l) = rgb_to_hsl(u8_to_frac(*red),
+                                           u8_to_frac(*green),
+                                           u8_to_frac(*blue));
+                let h = try!(a_comb(h, h_adj));
                 let (r, g, b) = hsl_to_rgb(h * Rational::new(1, 360), s, l);
-                Value::Color(frac_to_int(r),
-                             frac_to_int(g),
-                             frac_to_int(b),
-                             alpha,
-                             None)
+                Ok(Value::Color(frac_to_int(r),
+                                frac_to_int(g),
+                                frac_to_int(b),
+                                alpha.clone(),
+                                None))
             }
-            v => v,
+            v => Err(badarg("color", v)),
         }
     }));
 }
@@ -150,20 +152,20 @@ fn cap_u8(n: isize) -> u8 {
     }
 }
 
-fn to_rational(v: Value) -> Rational {
+fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, _, _) => v,
-        v => panic!("Expected rational, got {:?}", v),
+        Value::Numeric(v, _, _) => Ok(v),
+        v => Err(badarg("number", &v)),
     }
 }
 
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-fn to_rational_percent(v: Value) -> Rational {
+fn to_rational_percent(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, Unit::Percent, _) => v / Rational::from_integer(100),
-        Value::Numeric(v, _, _) => v,
-        v => panic!("Expected rational, got {:?}", v),
+        Value::Numeric(v, Unit::Percent, _) => Ok(v * Rational::new(1, 100)),
+        Value::Numeric(v, _, _) => Ok(v),
+        v => Err(badarg("number", &v)),
     }
 }
 

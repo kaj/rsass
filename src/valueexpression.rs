@@ -48,6 +48,15 @@ impl Value {
         Value::Color(0, 0, 0, Rational::one(), Some("black".into()))
     }
 
+    pub fn type_name(&self) -> &'static str {
+        match self {
+            &Value::Color(..) => "color",
+            &Value::Literal(..) => "string",
+            &Value::Numeric(..) => "number",
+            _ => "unknown",
+        }
+    }
+
     pub fn is_calculated(&self) -> bool {
         match self {
             &Value::Numeric(_, _, calculated) => calculated,

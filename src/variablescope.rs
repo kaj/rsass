@@ -90,7 +90,10 @@ impl<'a> ScopeImpl<'a> {
             }
             &Value::Call(ref name, ref args) => {
                 if let Some(function) = get_function(name) {
-                    function.call(&mut *self, args)
+                    match function.call(&mut *self, args) {
+                        Ok(v) => v,
+                        Err(e) => panic!("Error in function {}: {:?}", name, e),
+                    }
                 } else {
                     Value::Call(name.clone(), args.xyzzy(self))
                 }

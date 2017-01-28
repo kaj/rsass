@@ -1,5 +1,5 @@
 use formalargs::FormalArgs;
-use functions::SassFunction;
+use functions::{SassFunction, badarg};
 use num_rational::Rational;
 use num_traits::Signed;
 use std::collections::BTreeMap;
@@ -10,42 +10,42 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     f.insert("abs",
              func!((number), |s: &Scope| {
         match s.get("number") {
-            Value::Numeric(v, u, _) => Value::Numeric(v.abs(), u, true),
-            v => panic!("abs function needs a number, got {}", v),
+            Value::Numeric(v, u, _) => Ok(Value::Numeric(v.abs(), u, true)),
+            v => Err(badarg("number", &v)),
         }
     }));
     f.insert("ceil",
              func!((number), |s| {
         match s.get("number") {
-            Value::Numeric(v, u, _) => Value::Numeric(v.ceil(), u, true),
-            v => panic!("ceil function needs a number, got {}", v),
+            Value::Numeric(v, u, _) => Ok(Value::Numeric(v.ceil(), u, true)),
+            v => Err(badarg("number", &v)),
         }
     }));
     f.insert("floor",
              func!((number), |s| {
         match s.get("number") {
-            Value::Numeric(v, u, _) => Value::Numeric(v.floor(), u, true),
-            v => panic!("floor function needs a number, got {}", v),
+            Value::Numeric(v, u, _) => Ok(Value::Numeric(v.floor(), u, true)),
+            v => Err(badarg("number", &v)),
         }
     }));
     f.insert("percentage",
              func!((number), |s| {
         match s.get("number") {
             Value::Numeric(val, Unit::None, _) => {
-                Value::Numeric(val * Rational::from_integer(100),
-                               Unit::Percent,
-                               true)
+                Ok(Value::Numeric(val * Rational::from_integer(100),
+                                  Unit::Percent,
+                                  true))
             }
-            v => panic!("percentage needs unitless number, got {}", v),
+            v => Err(badarg("number", &v)),
         }
     }));
     f.insert("round",
              func!((number), |s| {
         match s.get("number") {
             Value::Numeric(val, unit, _) => {
-                Value::Numeric(val.round(), unit, true)
+                Ok(Value::Numeric(val.round(), unit, true))
             }
-            v => panic!("round function needs a number, got {}", v),
+            v => Err(badarg("number", &v)),
         }
     }));
     f.insert("random",
@@ -53,15 +53,15 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         match s.get("limit") {
             Value::Null => {
                 let rez = 1000000;
-                Value::Numeric(Rational::new(intrand(rez), rez),
-                               Unit::None,
-                               true)
+                Ok(Value::Numeric(Rational::new(intrand(rez), rez),
+                                  Unit::None,
+                                  true))
             }
             Value::Numeric(val, unit, _) => {
                 let res = 1 + intrand(val.to_integer());
-                Value::Numeric(Rational::from_integer(res), unit, true)
+                Ok(Value::Numeric(Rational::from_integer(res), unit, true))
             }
-            v => panic!("random needs a unitless number, got {}", v),
+            v => Err(badarg("number or null", &v)),
         }
     }));
 }
