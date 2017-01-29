@@ -36,32 +36,26 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     }));
     f.insert("red",
-             func!((color), |s: &Scope| {
-        match &s.get("color") {
-            &Value::Color(ref red, _, _, _, _) => {
-                Ok(Value::Numeric(b2rat(*red), Unit::None, true))
-            }
-            value => Err(badarg("color", value)),
-        }
-    }));
+             func!((color), |s: &Scope| match &s.get("color") {
+                 &Value::Color(ref red, _, _, _, _) => {
+                     Ok(Value::Numeric(b2rat(*red), Unit::None, true))
+                 }
+                 value => Err(badarg("color", value)),
+             }));
     f.insert("green",
-             func!((color), |s: &Scope| {
-        match &s.get("color") {
-            &Value::Color(_, ref green, _, _, _) => {
-                Ok(Value::Numeric(b2rat(*green), Unit::None, true))
-            }
-            value => Err(badarg("color", value)),
-        }
-    }));
+             func!((color), |s: &Scope| match &s.get("color") {
+                 &Value::Color(_, ref green, _, _, _) => {
+                     Ok(Value::Numeric(b2rat(*green), Unit::None, true))
+                 }
+                 value => Err(badarg("color", value)),
+             }));
     f.insert("blue",
-             func!((color), |s: &Scope| {
-        match &s.get("color") {
-            &Value::Color(_, _, ref blue, _, _) => {
-                Ok(Value::Numeric(b2rat(*blue), Unit::None, true))
-            }
-            value => Err(badarg("color", value)),
-        }
-    }));
+             func!((color), |s: &Scope| match &s.get("color") {
+                 &Value::Color(_, _, ref blue, _, _) => {
+                     Ok(Value::Numeric(b2rat(*blue), Unit::None, true))
+                 }
+                 value => Err(badarg("color", value)),
+             }));
     f.insert("mix",
              func!((color1, color2, weight = b"50%"), |s| {
         let color1 = s.get("color1");
@@ -100,14 +94,12 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     }));
     f.insert("invert",
-             func!((color), |s: &Scope| {
-        match &s.get("color") {
-            &Value::Color(ref r, ref g, ref b, ref a, _) => {
-                Ok(Value::Color(0xff - r, 0xff - g, 0xff - b, *a, None))
-            }
-            value => Err(badarg("color", value)),
-        }
-    }));
+             func!((color), |s: &Scope| match &s.get("color") {
+                 &Value::Color(ref r, ref g, ref b, ref a, _) => {
+                     Ok(Value::Color(0xff - r, 0xff - g, 0xff - b, *a, None))
+                 }
+                 value => Err(badarg("color", value)),
+             }));
 }
 
 fn b2rat(byte: u8) -> Rational {
