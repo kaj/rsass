@@ -41,6 +41,7 @@ pub enum SelectorPart {
         op: String,
         val: String,
     },
+    Pseudo { name: String, arg: Option<String> },
     BackRef,
 }
 
@@ -58,6 +59,14 @@ named!(selector_part<&[u8], SelectorPart>,
        alt_complete!(
            map!(take_while1!(is_selector_char),
                 |s: &[u8]| SelectorPart::Simple(from_utf8(s).unwrap().into())) |
+           do_parse!(tag!(":") >>
+                     name: take_while1!(is_selector_char) >>
+                     arg: opt!(delimited!(tag!("("), is_not!(")"),
+                                          tag!(")"))) >>
+                     (SelectorPart::Pseudo {
+                         name: from_utf8(name).unwrap().into(),
+                         arg: arg.map(|a| from_utf8(a).unwrap().into())
+                     })) |
            do_parse!(tag!("[") >> opt_spacelike >>
                      name: take_while1!(is_selector_char) >> opt_spacelike >>
                      op: alt_complete!(tag!("*=") | tag!("|=") | tag!("=")) >>
@@ -100,6 +109,7 @@ impl SelectorPart {
             &SelectorPart::Descendant => true,
             &SelectorPart::RelOp(_) => true,
             &SelectorPart::Attribute { .. } => false,
+            &SelectorPart::Pseudo { .. } => false,
             &SelectorPart::BackRef => false,
         }
     }
@@ -132,6 +142,13 @@ impl fmt::Display for SelectorPart {
             }
             &SelectorPart::Attribute { ref name, ref op, ref val } => {
                 write!(out, "[{}{}{}]", name, op, val)
+            }
+            &SelectorPart::Pseudo { ref name, ref arg } => {
+                if let &Some(ref arg) = arg {
+                    write!(out, ":{}({})", name, arg)
+                } else {
+                    write!(out, ":{}", name)
+                }
             }
             &SelectorPart::BackRef => write!(out, "&"),
         }

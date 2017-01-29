@@ -632,6 +632,12 @@ fn t39_dash_match_attribute_selector() {
 }
 
 #[test]
+fn t40_pseudo_class_identifier_starting_with_n() {
+    check(b"div:lang(nb) {\n  color: blue;\n}",
+          "div:lang(nb) {\n  color: blue;\n}\n")
+}
+
+#[test]
 fn t43_str_length() {
     check("div {\n  foo: str-length(\"protégé\");\n  \
            foo: str-length(protégé);\n  foo: str-length(\"\");\n  \
