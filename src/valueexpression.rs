@@ -421,7 +421,7 @@ named!(single_value<&[u8], Value>,
            map!(tag!("\"\""),
                 |_| Value::Literal("".into(), Quotes::Double)) |
            map!(delimited!(tag!("\""),
-                           escaped!(is_not!("\\\""), '\\', one_of!("\"\\")),
+                           escaped!(is_not!("\\\""), '\\', one_of!("\"\\ ")),
                            tag!("\"")),
                 |s| Value::Literal(unescape(from_utf8(s).unwrap()),
                                    Quotes::Double)) |

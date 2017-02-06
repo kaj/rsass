@@ -218,10 +218,10 @@ mod test {
         assert_eq!(selector(b"[data-icon='test-1'] "),
                    Done(&b""[..],
                         Selector(vec![SelectorPart::Attribute {
-                                          name: "data-icon".into(),
-                                          op: "=".into(),
-                                          val: "'test-1'".into(),
-                                      }])))
+                            name: "data-icon".into(),
+                            op: "=".into(),
+                            val: "'test-1'".into(),
+                        }])))
     }
 
     #[test]

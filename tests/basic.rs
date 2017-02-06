@@ -617,7 +617,22 @@ fn t32_percentages() {
             grah: 900%;\n  nyah: 5%;\n}\n")
 }
 
-// TODO Implement tests 33 - 35 ...
+#[test]
+fn t33_ambigous_imports() {
+    assert_eq!(compile_scss_file("tests/basic/33_ambiguous_imports/input.scss"
+                                     .as_ref(),
+                                 OutputStyle::Normal)
+                   .and_then(|s| {
+                       String::from_utf8(s)
+                           .map_err(|e| format!("Non-utf8 output: {}", e))
+                   }),
+               Ok("main {\n  color: red;\n}\n\n\
+                   dir {\n  color: blue;\n}\n\n\
+                   fudge {\n  color: brown;\n}\n"
+                   .into()))
+}
+
+// TODO Implement test 35 ...
 
 #[test]
 fn t36_extra_commas_in_selectors() {

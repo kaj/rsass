@@ -94,13 +94,17 @@ impl OutputStyle {
             &SassItem::Import(ref name) => {
                 let name = globals.evaluate(&name);
                 if let &Value::Literal(ref x, _) = &name {
-                    let (sub_context, file) = file_context.file(x.as_ref());
-                    for item in parse_scss_file(&file).unwrap() {
-                        self.handle_root_item(&item,
-                                              globals,
-                                              separate,
-                                              &sub_context,
-                                              result);
+                    if let Some((sub_context, file)) =
+                        file_context.find_file(x.as_ref()) {
+                        for item in parse_scss_file(&file).unwrap() {
+                            self.handle_root_item(&item,
+                                                  globals,
+                                                  separate,
+                                                  &sub_context,
+                                                  result);
+                        }
+                    } else {
+                        writeln!(result, "@import url({});", x).unwrap();
                     }
                 } else {
                     writeln!(result, "@import {};", name).unwrap();
