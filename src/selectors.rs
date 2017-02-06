@@ -57,18 +57,17 @@ named!(pub selector<Selector>,
 
 named!(selector_part<&[u8], SelectorPart>,
        alt_complete!(
-           map!(take_while1!(is_selector_char),
-                |s: &[u8]| SelectorPart::Simple(from_utf8(s).unwrap().into())) |
+           map!(selector_string, |s| SelectorPart::Simple(s)) |
            do_parse!(tag!(":") >>
-                     name: take_while1!(is_selector_char) >>
+                     name: selector_string >>
                      arg: opt!(delimited!(tag!("("), is_not!(")"),
                                           tag!(")"))) >>
                      (SelectorPart::Pseudo {
-                         name: from_utf8(name).unwrap().into(),
+                         name: name,
                          arg: arg.map(|a| from_utf8(a).unwrap().into())
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>
-                     name: take_while1!(is_selector_char) >> opt_spacelike >>
+                     name: selector_string >> opt_spacelike >>
                      op: alt_complete!(tag!("*=") | tag!("|=") | tag!("=")) >>
                      opt_spacelike >>
                      val: alt_complete!(
@@ -85,7 +84,7 @@ named!(selector_part<&[u8], SelectorPart>,
                      opt_spacelike >>
                      tag!("]") >>
                      (SelectorPart::Attribute {
-                         name: from_utf8(name).unwrap().into(),
+                         name: name,
                          op: from_utf8(op).unwrap().into(),
                          val: val,
                      })) |
@@ -97,6 +96,22 @@ named!(selector_part<&[u8], SelectorPart>,
                       opt_spacelike) |
            value!(SelectorPart::Descendant, spacelike)
            ));
+
+
+named!(selector_string<String>,
+       fold_many1!(alt_complete!(selector_plain_part | selector_escaped_part),
+                   String::new(),
+                   |mut acc: String, item: &[u8]| {
+                       acc.push_str(from_utf8(item).unwrap());
+                       acc
+                   }));
+named!(selector_plain_part<&[u8]>,
+       take_while1!(is_selector_char));
+named!(selector_escaped_part<&[u8]>,
+       recognize!(preceded!(tag!("\\"), many_m_n!(1, 3, hexpair))));
+named!(hexpair,
+       recognize!(do_parse!(one_of!("0123456789ABCDEFabcdef") >>
+                            one_of!("0123456789ABCDEFabcdef") >> ())));
 
 fn is_selector_char(chr: u8) -> bool {
     is_alphanumeric(chr) || chr == b'_' || chr == b'-' || chr == b'.' ||
@@ -172,6 +187,12 @@ mod test {
         assert_eq!(selector(b"foo "),
                    Done(&b""[..],
                         Selector(vec![SelectorPart::Simple("foo".into())])))
+    }
+    #[test]
+    fn escaped_simple_selector() {
+        assert_eq!(selector(b"\\E9m "),
+                   Done(&b""[..],
+                        Selector(vec![SelectorPart::Simple("\\E9m".into())])))
     }
 
     #[test]

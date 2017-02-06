@@ -748,6 +748,29 @@ fn t48_case_conversion() {
 }
 
 #[test]
+fn t53_escaped_quotes() {
+    check("[data-icon='test-1']:before {\n    content:'\\\\';\n}\n\n\
+           [data-icon='test-2']:before {\n    content:'\\'';\n}\n\n\
+           [data-icon='test-3']:before {\n    content:\"\\\"\";\n}\n\n\
+           [data-icon='test-4']:before {\n    content:'\\\\';\n}\n\n\
+           [data-icon='test-5']:before {\n    content:'\\'';\n}\n\n\
+           [data-icon='test-6']:before {\n    content:\"\\\"\";\n}\n\n\
+           $open-quote:    «;\n$close-quote:   »;\n\n\
+           $open-quote: \\201C;\n$close-quote: \\201D;\n\n\
+           .\\E9motion { \nblah: hi; }\n.\\E9 dition { \nblah: hi; }\n.\
+           \\0000E9dition { \nblah: hi; }\n"
+              .as_bytes(),
+          "[data-icon='test-1']:before {\n  content: '\\\\';\n}\n\n\
+           [data-icon='test-2']:before {\n  content: '\\'';\n}\n\n\
+           [data-icon='test-3']:before {\n  content: \"\\\"\";\n}\n\n\
+           [data-icon='test-4']:before {\n  content: '\\\\';\n}\n\n\
+           [data-icon='test-5']:before {\n  content: '\\'';\n}\n\n\
+           [data-icon='test-6']:before {\n  content: \"\\\"\";\n}\n\n\
+           .\\E9motion {\n  blah: hi;\n}\n\n.\\E9 dition {\n  blah: hi;\n}\n\n\
+           .\\0000E9dition {\n  blah: hi;\n}\n")
+}
+
+#[test]
 fn t54_adjacent_identifiers_with_hyphens() {
     check(b"input {\n    outline: 5px auto -webkit-focus-ring-color;\n    \
             foo: random -hello-this-is-dog;\n    \
