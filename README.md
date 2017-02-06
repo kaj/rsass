@@ -6,6 +6,7 @@ Rasmus.
 
 [![Build Status](https://travis-ci.org/kaj/rsass.svg?branch=master)](https://travis-ci.org/kaj/rsass)
 [![Crate](https://meritbadge.herokuapp.com/rsass)](https://crates.io/crates/rsass)
+[![docs](https://docs.rs/rsass/badge.svg)](https://docs.rs/rsass)
 
 The build contains a small but growing number of tests from
 https://github.com/sass/sass-spec .
