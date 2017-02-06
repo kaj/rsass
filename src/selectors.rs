@@ -99,7 +99,8 @@ named!(selector_part<&[u8], SelectorPart>,
            ));
 
 fn is_selector_char(chr: u8) -> bool {
-    is_alphanumeric(chr) || chr == b'_' || chr == b'.' || chr == b'#'
+    is_alphanumeric(chr) || chr == b'_' || chr == b'-' || chr == b'.' ||
+    chr == b'#'
 }
 
 impl SelectorPart {
@@ -189,5 +190,36 @@ mod test {
                         Selector(vec![SelectorPart::Simple("foo".into()),
                                       SelectorPart::RelOp(b'>'),
                                       SelectorPart::Simple("bar".into())])))
+    }
+
+    #[test]
+    fn foo1_selector() {
+        assert_eq!(selector(b"[data-icon='test-1'] "),
+                   Done(&b""[..],
+                        Selector(vec![SelectorPart::Attribute {
+                            name: "data-icon".into(),
+                            op: "=".into(),
+                            val: "'test-1'".into(),
+                        }])))
+    }
+
+    #[test]
+    fn pseudo_selector() {
+        assert_eq!(selector(b":before "),
+                   Done(&b""[..],
+                        Selector(vec![SelectorPart::Pseudo {
+                            name: "before".into(),
+                            arg: None,
+                        }])))
+    }
+    #[test]
+    fn pseudo_on_simple_selector() {
+        assert_eq!(selector(b"figure:before "),
+                   Done(&b""[..],
+                        Selector(vec![SelectorPart::Simple("figure".into()),
+                                      SelectorPart::Pseudo {
+                                          name: "before".into(),
+                                          arg: None,
+                                      }])))
     }
 }
