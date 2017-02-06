@@ -57,6 +57,26 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             v => Err(badarg("color", v)),
         }
     }));
+    f.insert("complement",
+             func!((color), |s: &Scope| {
+        match &s.get("color") {
+            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
+                let (h, s, l) = rgb_to_hsl(u8_to_frac(*red),
+                                           u8_to_frac(*green),
+                                           u8_to_frac(*blue));
+                let (r, g, b) = hsl_to_rgb((h  + Rational::from_integer(180)) *
+                                           Rational::new(1, 360),
+                                           s,
+                                           l);
+                Ok(Value::Color(frac_to_int(r),
+                                frac_to_int(g),
+                                frac_to_int(b),
+                                alpha.clone(),
+                                None))
+            }
+            v => Err(badarg("color", v)),
+        }
+    }));
 }
 
 /// Convert hue (degrees) / sat (0 .. 1) / lighness (0 .. 1) ro rgb (0 .. 1)

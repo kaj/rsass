@@ -61,6 +61,17 @@ fn change_color() {
            color: rgba(204, 85, 0, 0.8);\n}\n")
 }
 
+#[test]
+fn complement() {
+    check(b"p {\n  color: complement(#f00);\n  color: complement(#900);\n  \
+            color: complement(#000);\n  color: complement(#fff);\n  \
+            color: complement(#999);\n  color: complement(#000);\n  \
+            color: complement(#333);\n}",
+          "p {\n  color: cyan;\n  color: #009999;\n  color: black;\n  \
+           color: white;\n  color: #999999;\n  color: black;\n  \
+           color: #333333;\n}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Normal).and_then(|s| {
                    String::from_utf8(s)
