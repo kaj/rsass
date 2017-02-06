@@ -25,13 +25,12 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             } else {
                 s.get("green")
             };
-            let a = try!(to_rational(a));
-            Ok(Value::Color(r, g, b, a, None))
+            Ok(Value::Color(r, g, b, to_rational(a)?, None))
         } else {
             Ok(Value::Color(to_int(red),
                             to_int(s.get("green")),
                             to_int(s.get("blue")),
-                            try!(to_rational(alpha)),
+                            to_rational(alpha)?,
                             None))
         }
     }));

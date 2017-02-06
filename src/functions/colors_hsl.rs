@@ -9,9 +9,9 @@ use variablescope::Scope;
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     f.insert("hsl",
              func!((hue, saturation, lightness), |s: &Scope| {
-        let hue = try!(to_rational(s.get("hue"))) * Rational::new(1, 360);
-        let sat = try!(to_rational_percent(s.get("saturation")));
-        let light = try!(to_rational_percent(s.get("lightness")));
+        let hue = to_rational(s.get("hue"))? * Rational::new(1, 360);
+        let sat = to_rational_percent(s.get("saturation"))?;
+        let light = to_rational_percent(s.get("lightness"))?;
         let (r, g, b) = hsl_to_rgb(hue, sat, light);
         Ok(Value::Color(frac_to_int(r),
                         frac_to_int(g),
@@ -21,10 +21,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     }));
     f.insert("hsla",
              func!((hue, saturation, lightness, alpha), |s: &Scope| {
-        let hue = try!(to_rational(s.get("hue"))) * Rational::new(1, 360);
-        let sat = try!(to_rational_percent(s.get("saturation")));
-        let light = try!(to_rational_percent(s.get("lightness")));
-        let alpha = try!(to_rational(s.get("alpha")));
+        let hue = to_rational(s.get("hue"))? * Rational::new(1, 360);
+        let sat = to_rational_percent(s.get("saturation"))?;
+        let light = to_rational_percent(s.get("lightness"))?;
+        let alpha = to_rational(s.get("alpha"))?;
         let (r, g, b) = hsl_to_rgb(hue, sat, light);
         Ok(Value::Color(frac_to_int(r),
                         frac_to_int(g),
@@ -37,7 +37,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         fn a_comb(orig: Rational, x: Value) -> Result<Rational, Error> {
             match x {
                 Value::Null => Ok(orig),
-                x => Ok(orig + try!(to_rational(x))),
+                x => Ok(orig + to_rational(x)?),
             }
         }
         match &s.get("color") {
@@ -46,7 +46,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let (h, s, l) = rgb_to_hsl(u8_to_frac(*red),
                                            u8_to_frac(*green),
                                            u8_to_frac(*blue));
-                let h = try!(a_comb(h, h_adj));
+                let h = a_comb(h, h_adj)?;
                 let (r, g, b) = hsl_to_rgb(h * Rational::new(1, 360), s, l);
                 Ok(Value::Color(frac_to_int(r),
                                 frac_to_int(g),

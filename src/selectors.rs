@@ -135,9 +135,9 @@ impl fmt::Display for Selector {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         for ref p in &self.0 {
             if out.alternate() {
-                try!(write!(out, "{}", p));
+                write!(out, "{}", p)?;
             } else {
-                try!(write!(out, "{:#}", p));
+                write!(out, "{:#}", p)?;
             }
         }
         Ok(())

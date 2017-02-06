@@ -44,11 +44,9 @@ fn run(args: ArgMatches) -> Result<(), String> {
     };
     if let Some(inputs) = args.values_of("INPUT") {
         for name in inputs {
-            let result = try!(compile_scss_file(name.as_ref(), style.clone()));
+            let result = compile_scss_file(name.as_ref(), style.clone())?;
             let out = std::io::stdout();
-            try!(out.lock()
-                .write_all(&result)
-                .map_err(|e| format!("{}", e)));
+            out.lock().write_all(&result).map_err(|e| format!("{}", e))?;
         }
     }
     Ok(())

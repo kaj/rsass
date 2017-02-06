@@ -64,7 +64,7 @@ pub fn compile_scss(input: &[u8],
                     style: OutputStyle)
                     -> Result<Vec<u8>, String> {
     let file_context = FileContext::new();
-    let items = try!(parse_scss_data(input));
+    let items = parse_scss_data(input)?;
     style.write_root(&items, file_context)
 }
 
@@ -87,7 +87,7 @@ pub fn compile_scss_file(file: &Path,
                          -> Result<Vec<u8>, String> {
     let file_context = FileContext::new();
     let (sub_context, file) = file_context.file(file);
-    let items = try!(parse_scss_file(&file));
+    let items = parse_scss_file(&file)?;
     style.write_root(&items, sub_context)
 }
 
@@ -112,11 +112,11 @@ impl FileContext {
 
 
 pub fn parse_scss_file(file: &Path) -> Result<Vec<SassItem>, String> {
-    let mut f = try!(File::open(file)
-        .map_err(|e| format!("Failed to open {:?}: {}", file, e)));
+    let mut f = File::open(file)
+        .map_err(|e| format!("Failed to open {:?}: {}", file, e))?;
     let mut data = vec![];
-    try!(f.read_to_end(&mut data)
-        .map_err(|e| format!("Failed to read {:?}: {}", file, e)));
+    f.read_to_end(&mut data)
+        .map_err(|e| format!("Failed to read {:?}: {}", file, e))?;
     parse_scss_data(&data)
 }
 

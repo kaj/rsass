@@ -174,27 +174,27 @@ impl OutputStyle {
         };
         let mut direct = Vec::new();
         let mut sub = Vec::new();
-        try!(self.handle_body(&mut direct,
-                              &mut sub,
-                              &mut ScopeImpl::sub(scope),
-                              &selectors,
-                              &body,
-                              file_context,
-                              indent));
+        self.handle_body(&mut direct,
+                         &mut sub,
+                         &mut ScopeImpl::sub(scope),
+                         &selectors,
+                         &body,
+                         file_context,
+                         indent)?;
         if !direct.is_empty() {
-            try!(write!(out,
-                        "{}{}{{",
-                        self.join_selectors(&selectors),
-                        self.opt_space()));
+            write!(out,
+                   "{}{}{{",
+                   self.join_selectors(&selectors),
+                   self.opt_space())?;
             if self.is_compressed() && direct.last() == Some(&b';') {
                 direct.pop();
             }
-            try!(out.write(&direct));
-            try!(self.do_indent(out, indent));
-            try!(write!(out, "}}"));
-            try!(self.do_indent(out, 0));
+            out.write(&direct)?;
+            self.do_indent(out, indent)?;
+            write!(out, "}}")?;
+            self.do_indent(out, 0)?;
         }
-        try!(out.write(&sub));
+        out.write(&sub)?;
         Ok(())
     }
 
@@ -222,32 +222,29 @@ impl OutputStyle {
             match b {
                 &SassItem::Comment(ref c) => {
                     if !self.is_compressed() {
-                        try!(self.do_indent(direct, indent + 2));
-                        try!(write!(direct, "/*{}*/", c));
+                        self.do_indent(direct, indent + 2)?;
+                        write!(direct, "/*{}*/", c)?;
                     }
                 }
                 &SassItem::Property(ref name, ref value) => {
-                    try!(self.do_indent(direct, indent + 2));
+                    self.do_indent(direct, indent + 2)?;
                     if self.is_compressed() {
-                        try!(write!(direct,
-                                    "{}:{:#};",
-                                    name,
-                                    scope.evaluate(value)));
+                        write!(direct,
+                               "{}:{:#};",
+                               name,
+                               scope.evaluate(value))?;
                     } else {
-                        try!(write!(direct,
-                                    "{}: {};",
-                                    name,
-                                    scope.evaluate(value)));
+                        write!(direct, "{}: {};", name, scope.evaluate(value))?;
                     }
                 }
                 &SassItem::Rule(ref s, ref b) => {
-                    try!(self.write_rule(s,
-                                         b,
-                                         sub,
-                                         scope,
-                                         Some(&selectors),
-                                         file_context,
-                                         indent));
+                    self.write_rule(s,
+                                    b,
+                                    sub,
+                                    scope,
+                                    Some(&selectors),
+                                    file_context,
+                                    indent)?;
                 }
                 &SassItem::VariableDeclaration { ref name,
                                                  ref val,
@@ -260,13 +257,13 @@ impl OutputStyle {
                 &SassItem::MixinCall { ref name, ref args } => {
                     if let Some(mixin) = scope.get_mixin(name) {
                         let mut argscope = mixin.argscope(scope, &args);
-                        try!(self.handle_body(direct,
-                                              sub,
-                                              &mut argscope,
-                                              selectors,
-                                              &mixin.body,
-                                              file_context,
-                                              indent));
+                        self.handle_body(direct,
+                                         sub,
+                                         &mut argscope,
+                                         selectors,
+                                         &mixin.body,
+                                         file_context,
+                                         indent)?;
                     } else {
                         writeln!(direct,
                                  "/* Unknown mixin {}({:?}) */",
@@ -321,9 +318,9 @@ impl OutputStyle {
 
     fn do_indent(&self, out: &mut Write, steps: usize) -> io::Result<()> {
         if !self.is_compressed() {
-            try!(write!(out, "\n"));
+            write!(out, "\n")?;
             for _i in 0..steps {
-                try!(write!(out, " "));
+                write!(out, " ")?;
             }
         }
         Ok(())

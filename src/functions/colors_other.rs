@@ -22,20 +22,20 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 Value::Null => Ok(orig),
                 x => {
                     Ok(cap_u8(orig as isize +
-                              try!(to_rational(x)).round().to_integer()))
+                              to_rational(x)?.round().to_integer()))
                 }
             }
         }
         fn a_comb(orig: Rational, x: Value) -> Result<Rational, Error> {
             match x {
                 Value::Null => Ok(orig),
-                x => Ok(orig + try!(to_rational(x))),
+                x => Ok(orig + to_rational(x)?),
             }
         }
         fn sl_comb(orig: Rational, x: Value) -> Result<Rational, Error> {
             match x {
                 Value::Null => Ok(orig),
-                x => Ok(orig + try!(to_rational_percent(x))),
+                x => Ok(orig + to_rational_percent(x)?),
             }
         }
         match s.get("color") {
@@ -49,20 +49,20 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     let (h, s, l) = rgb_to_hsl(u8_to_frac(red),
                                                u8_to_frac(green),
                                                u8_to_frac(blue));
-                    let h = try!(a_comb(h, h_adj));
-                    let s = try!(sl_comb(s, s_adj));
-                    let l = try!(sl_comb(l, l_adj));
+                    let h = a_comb(h, h_adj)?;
+                    let s = sl_comb(s, s_adj)?;
+                    let l = sl_comb(l, l_adj)?;
                     let (r, g, b) = hsl_to_rgb(h * Rational::new(1, 360), s, l);
                     Ok(Value::Color(frac_to_int(r),
                                     frac_to_int(g),
                                     frac_to_int(b),
-                                    try!(a_comb(alpha, a_adj)),
+                                    a_comb(alpha, a_adj)?,
                                     None))
                 } else {
-                    Ok(Value::Color(try!(c_comb(red, s.get("red"))),
-                                    try!(c_comb(green, s.get("green"))),
-                                    try!(c_comb(blue, s.get("blue"))),
-                                    try!(a_comb(alpha, s.get("alpha"))),
+                    Ok(Value::Color(c_comb(red, s.get("red"))?,
+                                    c_comb(green, s.get("green"))?,
+                                    c_comb(blue, s.get("blue"))?,
+                                    a_comb(alpha, s.get("alpha"))?,
                                     None))
                 }
             }
@@ -82,7 +82,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         fn c_or(orig: u8, x: Value) -> Result<u8, Error> {
             match x {
                 Value::Null => Ok(orig),
-                x => Ok(cap_u8(try!(to_rational(x)).round().to_integer())),
+                x => Ok(cap_u8(to_rational(x)?.round().to_integer())),
             }
         }
         fn a_or(orig: Rational, x: Value) -> Result<Rational, Error> {
@@ -108,20 +108,20 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     let (h, s, l) = rgb_to_hsl(u8_to_frac(red),
                                                u8_to_frac(green),
                                                u8_to_frac(blue));
-                    let h = try!(a_or(h, h_adj));
-                    let s = try!(sl_or(s, s_adj));
-                    let l = try!(sl_or(l, l_adj));
+                    let h = a_or(h, h_adj)?;
+                    let s = sl_or(s, s_adj)?;
+                    let l = sl_or(l, l_adj)?;
                     let (r, g, b) = hsl_to_rgb(h * Rational::new(1, 360), s, l);
                     Ok(Value::Color(frac_to_int(r),
                                     frac_to_int(g),
                                     frac_to_int(b),
-                                    try!(a_or(alpha, a_adj)),
+                                    a_or(alpha, a_adj)?,
                                     None))
                 } else {
-                    Ok(Value::Color(try!(c_or(red, s.get("red"))),
-                                    try!(c_or(green, s.get("green"))),
-                                    try!(c_or(blue, s.get("blue"))),
-                                    try!(a_or(alpha, s.get("alpha"))),
+                    Ok(Value::Color(c_or(red, s.get("red"))?,
+                                    c_or(green, s.get("green"))?,
+                                    c_or(blue, s.get("blue"))?,
+                                    a_or(alpha, s.get("alpha"))?,
                                     None))
                 }
             }
