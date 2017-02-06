@@ -72,6 +72,46 @@ fn complement() {
            color: #333333;\n}\n")
 }
 
+#[test]
+fn saturate() {
+    check(b"p {\n  color: saturate(#f00, 10%);\n  \
+            color: saturate(#900, 10%);\n  color: saturate(#000, 10%);\n  \
+            color: saturate(#fff, 10%);\n  color: saturate(#999, 10%);\n  \
+            color: saturate(#000, 10%);\n}",
+          "p {\n  color: red;\n  color: #990000;\n  color: black;\n  \
+           color: white;\n  color: #a38f8f;\n  color: black;\n}\n")
+}
+
+#[test]
+fn saturation() {
+    check(b"p {\n  test-01: saturation(red);\n  test-01: saturation(#333);\n  \
+            test-02: saturation(hsl(60, 30, 20));\n  \
+            test-03: saturation(saturate(#f00, 10%));\n  \
+            test-04: saturation(saturate(#900, 10%));\n  \
+            // this is probably a ruby sass bug\n  \
+            // test-05: saturation(saturate(#000, 10%));\n  \
+            // test-06: saturation(saturate(#fff, 10%));\n  \
+            test-07: saturation(saturate(#999, 10%));\n  \
+            test-08: saturation(desaturate(#fff, 10%));\n  \
+            test-09: saturation(desaturate(#999, 10%));\n  \
+            test-10: saturation(desaturate(#000, 10%));\n  \
+            test-11: saturation(desaturate(#f00, 10%));\n  \
+            test-12: saturation(desaturate(#900, 10%));\n}",
+          "p {\n  test-01: 100%;\n  test-01: 0%;\n  test-02: 30%;\n  \
+           test-03: 100%;\n  test-04: 100%;\n  test-07: 10%;\n  \
+           test-08: 0%;\n  test-09: 0%;\n  test-10: 0%;\n  test-11: 90%;\n  \
+           test-12: 90%;\n}\n")
+}
+
+#[test]
+fn desaturate() {
+    check(b"p {\n  color: desaturate(#fff, 10%);\n  \
+            color: desaturate(#999, 10%);\n  color: desaturate(#000, 10%);\n  \
+            color: desaturate(#f00, 10%);\n  color: desaturate(#900, 10%);\n}",
+          "p {\n  color: white;\n  color: #999999;\n  color: black;\n  \
+           color: #f20d0d;\n  color: #910808;\n}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Normal).and_then(|s| {
                    String::from_utf8(s)

@@ -1,7 +1,7 @@
 use super::{Error, SassFunction, badarg};
 use formalargs::FormalArgs;
 use num_rational::Rational;
-use num_traits::Zero;
+use num_traits::{One, Zero};
 use std::collections::BTreeMap;
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
@@ -68,6 +68,68 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                                            Rational::new(1, 360),
                                            s,
                                            l);
+                Ok(Value::Color(frac_to_int(r),
+                                frac_to_int(g),
+                                frac_to_int(b),
+                                alpha.clone(),
+                                None))
+            }
+            v => Err(badarg("color", v)),
+        }
+    }));
+    f.insert("saturate",
+             func!((color, amount), |args: &Scope| {
+        fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
+            match x {
+                Value::Null => Ok(orig),
+                x => Ok(cap_percentage(orig + to_rational_percent(x)?)),
+            }
+        }
+        match &args.get("color") {
+            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
+                let (h, s, l) = rgb_to_hsl(u8_to_frac(*red),
+                                           u8_to_frac(*green),
+                                           u8_to_frac(*blue));
+                let s = comb(s, args.get("amount"))?;
+                let (r, g, b) = hsl_to_rgb(h * Rational::new(1, 360), s, l);
+                Ok(Value::Color(frac_to_int(r),
+                                frac_to_int(g),
+                                frac_to_int(b),
+                                alpha.clone(),
+                                None))
+            }
+            v => Err(badarg("color", v)),
+        }
+    }));
+    f.insert("saturation",
+             func!((color), |args: &Scope| {
+        match &args.get("color") {
+            &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
+                let (_h, s, _l) = rgb_to_hsl(u8_to_frac(*red),
+                                             u8_to_frac(*green),
+                                             u8_to_frac(*blue));
+                Ok(Value::Numeric((s * Rational::from_integer(100)),
+                                  Unit::Percent,
+                                  true))
+            }
+            v => Err(badarg("color", v)),
+        }
+    }));
+    f.insert("desaturate",
+             func!((color, amount), |args: &Scope| {
+        fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
+            match x {
+                Value::Null => Ok(orig),
+                x => Ok(cap_percentage(orig - to_rational_percent(x)?)),
+            }
+        }
+        match &args.get("color") {
+            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
+                let (h, s, l) = rgb_to_hsl(u8_to_frac(*red),
+                                           u8_to_frac(*green),
+                                           u8_to_frac(*blue));
+                let s = comb(s, args.get("amount"))?;
+                let (r, g, b) = hsl_to_rgb(h * Rational::new(1, 360), s, l);
                 Ok(Value::Color(frac_to_int(r),
                                 frac_to_int(g),
                                 frac_to_int(b),
@@ -184,8 +246,25 @@ fn to_rational(v: Value) -> Result<Rational, Error> {
 fn to_rational_percent(v: Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(v, Unit::Percent, _) => Ok(v * Rational::new(1, 100)),
-        Value::Numeric(v, _, _) => Ok(v),
+        Value::Numeric(v, _, _) => {
+            if v <= Rational::new(1, 1) {
+                Ok(v)
+            } else {
+                Ok(v * Rational::new(1, 100))
+            }
+        }
         v => Err(badarg("number", &v)),
+    }
+}
+
+fn cap_percentage(r: Rational) -> Rational {
+    let zero = Rational::zero();
+    if r < zero {
+        zero
+    } else if r > Rational::one() {
+        Rational::one()
+    } else {
+        r
     }
 }
 
