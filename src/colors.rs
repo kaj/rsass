@@ -1,5 +1,6 @@
 //! Color names from https://www.w3.org/TR/css3-color/
 
+use num_rational::Rational;
 use std::collections::BTreeMap;
 
 pub fn rgb_to_name(r: u8, g: u8, b: u8) -> Option<&'static str> {
@@ -7,8 +8,12 @@ pub fn rgb_to_name(r: u8, g: u8, b: u8) -> Option<&'static str> {
     LOOKUP.v2n.get(&c).map(|n| *n)
 }
 
-pub fn name_to_rgb(name: &str) -> Option<(u8, u8, u8)> {
-    LOOKUP.n2v.get(name).map(|n| ((n >> 16) as u8, (n >> 8) as u8, *n as u8))
+pub fn name_to_rgb(name: &str) -> Option<(Rational, Rational, Rational)> {
+    fn r(n: u32) -> Rational {
+        let n = n % 256;
+        Rational::from_integer(n as isize)
+    }
+    LOOKUP.n2v.get(name).map(|n| (r(n >> 16), r(n >> 8), r(*n)))
 }
 
 #[test]
@@ -23,7 +28,11 @@ fn get_none() {
 
 #[test]
 fn get_red_by_name() {
-    assert_eq!(Some((0xff, 0, 0)), name_to_rgb("red"));
+    use num_traits::Zero;
+    assert_eq!(Some((Rational::new(255, 1),
+                     Rational::zero(),
+                     Rational::zero())),
+               name_to_rgb("red"));
 }
 
 #[test]

@@ -2,7 +2,6 @@
 
 use super::MixinDeclaration;
 use functions::get_function;
-use num_rational::Rational;
 use num_traits::identities::Zero;
 use std::collections::BTreeMap;
 use valueexpression::{Quotes, Value, Unit};
@@ -129,11 +128,7 @@ impl<'a> ScopeImpl<'a> {
                     match (&a, &b) {
                         (&Value::Color(ref r, ref g, ref b, ref a, _),
                          &Value::Numeric(ref n, Unit::None, _)) => {
-                            return Value::Color(div(r, n),
-                                                div(g, n),
-                                                div(b, n),
-                                                a.clone(),
-                                                None);
+                            return Value::rgba(r / n, g / n, b / n, *a);
                         }
                         (&Value::Numeric(ref av, ref au, _),
                          &Value::Numeric(ref bv, ref bu, _)) => {
@@ -182,17 +177,6 @@ impl<'a> ScopeImpl<'a> {
                 op.eval(self.do_evaluate(a, true), self.do_evaluate(b, true))
             }
         }
-    }
-}
-
-fn div(x: &u8, y: &Rational) -> u8 {
-    let v = *x as f32 * *y.denom() as f32 / *y.numer() as f32;
-    if v < 0.0 {
-        0
-    } else if v > 255.0 {
-        0xff
-    } else {
-        v as u8
     }
 }
 

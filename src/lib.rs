@@ -388,10 +388,13 @@ named!(property<&[u8], SassItem>,
 fn test_simple_property() {
     use num_rational::Rational;
     let one = Rational::from_integer(1);
+    fn r(v: u8) -> Rational {
+        Rational::from_integer(v as isize)
+    }
     assert_eq!(property(b"color: red;\n"),
                Done(&b""[..], SassItem::Property(
                    "color".to_string(),
-                   Value::Color(255, 0, 0, one, Some("red".into())))))
+                   Value::Color(r(255), r(0), r(0), one, Some("red".into())))))
 }
 #[test]
 fn test_property_2() {

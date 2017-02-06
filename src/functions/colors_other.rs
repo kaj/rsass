@@ -1,7 +1,8 @@
 use super::{Error, SassFunction, badarg};
+use super::colors_hsl::hsla_to_rgba;
 use formalargs::FormalArgs;
 use num_rational::Rational;
-use num_traits::Zero;
+use num_traits::{Signed, Zero};
 use std::collections::BTreeMap;
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
@@ -17,13 +18,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     lightness,
                     alpha),
                    |s: &Scope| {
-        fn c_comb(orig: u8, x: Value) -> Result<u8, Error> {
+        fn c_comb(orig: Rational, x: Value) -> Result<Rational, Error> {
             match x {
                 Value::Null => Ok(orig),
-                x => {
-                    Ok(cap_u8(orig as isize +
-                              to_rational(x)?.round().to_integer()))
-                }
+                x => Ok(orig + to_rational(x)?),
             }
         }
         fn a_comb(orig: Rational, x: Value) -> Result<Rational, Error> {
@@ -49,21 +47,15 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     let (h, s, l) = rgb_to_hsl(u8_to_frac(red),
                                                u8_to_frac(green),
                                                u8_to_frac(blue));
-                    let h = a_comb(h, h_adj)?;
-                    let s = sl_comb(s, s_adj)?;
-                    let l = sl_comb(l, l_adj)?;
-                    let (r, g, b) = hsl_to_rgb(h * Rational::new(1, 360), s, l);
-                    Ok(Value::Color(frac_to_int(r),
-                                    frac_to_int(g),
-                                    frac_to_int(b),
-                                    a_comb(alpha, a_adj)?,
-                                    None))
+                    Ok(hsla_to_rgba(a_comb(h, h_adj)? * Rational::new(1, 360),
+                                    sl_comb(s, s_adj)?,
+                                    sl_comb(l, l_adj)?,
+                                    a_comb(alpha, a_adj)?))
                 } else {
-                    Ok(Value::Color(c_comb(red, s.get("red"))?,
-                                    c_comb(green, s.get("green"))?,
-                                    c_comb(blue, s.get("blue"))?,
-                                    a_comb(alpha, s.get("alpha"))?,
-                                    None))
+                    Ok(Value::rgba(c_comb(red, s.get("red"))?,
+                                   c_comb(green, s.get("green"))?,
+                                   c_comb(blue, s.get("blue"))?,
+                                   a_comb(alpha, s.get("alpha"))?))
                 }
             }
             v => Err(badarg("color", &v)),
@@ -79,10 +71,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     lightness,
                     alpha),
                    |s: &Scope| {
-        fn c_or(orig: u8, x: Value) -> Result<u8, Error> {
+        fn c_or(orig: Rational, x: Value) -> Result<Rational, Error> {
             match x {
                 Value::Null => Ok(orig),
-                x => Ok(cap_u8(to_rational(x)?.round().to_integer())),
+                x => Ok(cap_u8(to_rational(x)?)),
             }
         }
         fn a_or(orig: Rational, x: Value) -> Result<Rational, Error> {
@@ -108,61 +100,20 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     let (h, s, l) = rgb_to_hsl(u8_to_frac(red),
                                                u8_to_frac(green),
                                                u8_to_frac(blue));
-                    let h = a_or(h, h_adj)?;
-                    let s = sl_or(s, s_adj)?;
-                    let l = sl_or(l, l_adj)?;
-                    let (r, g, b) = hsl_to_rgb(h * Rational::new(1, 360), s, l);
-                    Ok(Value::Color(frac_to_int(r),
-                                    frac_to_int(g),
-                                    frac_to_int(b),
-                                    a_or(alpha, a_adj)?,
-                                    None))
+                    Ok(hsla_to_rgba(a_or(h, h_adj)? * Rational::new(1, 360),
+                                    sl_or(s, s_adj)?,
+                                    sl_or(l, l_adj)?,
+                                    a_or(alpha, a_adj)?))
                 } else {
-                    Ok(Value::Color(c_or(red, s.get("red"))?,
-                                    c_or(green, s.get("green"))?,
-                                    c_or(blue, s.get("blue"))?,
-                                    a_or(alpha, s.get("alpha"))?,
-                                    None))
+                    Ok(Value::rgba(c_or(red, s.get("red"))?,
+                                   c_or(green, s.get("green"))?,
+                                   c_or(blue, s.get("blue"))?,
+                                   a_or(alpha, s.get("alpha"))?))
                 }
             }
             v => Err(badarg("color", &v)),
         }
     }));
-}
-
-/// Convert hue (degrees) / sat (0 .. 1) / lighness (0 .. 1) ro rgb (0 .. 1)
-fn hsl_to_rgb(h: Rational,
-              s: Rational,
-              l: Rational)
-              -> (Rational, Rational, Rational) {
-    let one = Rational::from_integer(1);
-    if s.is_zero() {
-        (l, l, l)
-    } else {
-        fn hue2rgb(p: Rational, q: Rational, t: Rational) -> Rational {
-            let t = t - t.floor();
-            if t < Rational::new(1, 6) {
-                p + (q - p) * Rational::from_integer(6) * t
-            } else if t < Rational::new(1, 2) {
-                q
-            } else if t < Rational::new(2, 3) {
-                p +
-                (q - p) * (Rational::new(2, 3) - t) * Rational::from_integer(6)
-            } else {
-                p
-            }
-        }
-        let q = if l < Rational::new(1, 2) {
-            l * (one + s)
-        } else {
-            l + s - l * s
-        };
-        let p = Rational::from_integer(2) * l - q;
-
-        (hue2rgb(p, q, h + Rational::new(1, 3)),
-         hue2rgb(p, q, h),
-         hue2rgb(p, q, h - Rational::new(1, 3)))
-    }
 }
 
 /// Convert rgb (0 .. 1) to hue (degrees) / sat (0 .. 1) / lighness (0 .. 1)
@@ -204,22 +155,18 @@ fn rgb_to_hsl(r: Rational,
     }
 }
 
-/// Convert a value in the 0 .. 1 range to u8
-fn frac_to_int(v: Rational) -> u8 {
-    cap_u8((Rational::from_integer(255) * v).round().to_integer())
+fn u8_to_frac(v: Rational) -> Rational {
+    v * Rational::new(1, 255)
 }
 
-fn u8_to_frac(v: u8) -> Rational {
-    Rational::new(v as isize, 255)
-}
-
-fn cap_u8(n: isize) -> u8 {
-    if n > 255 {
-        255
-    } else if n < 0 {
-        0
+fn cap_u8(n: Rational) -> Rational {
+    let ff = Rational::new(255, 1);
+    if n > ff {
+        ff
+    } else if n.is_negative() {
+        Rational::zero()
     } else {
-        n as u8
+        n
     }
 }
 

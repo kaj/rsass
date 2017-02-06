@@ -2,7 +2,7 @@ use colors::{name_to_rgb, rgb_to_name};
 use formalargs::{CallArgs, call_args};
 use nom::multispace;
 use num_rational::Rational;
-use num_traits::{One, Zero};
+use num_traits::{One, Signed, Zero};
 use operator::Operator;
 use parseutil::{opt_spacelike, name, spacelike};
 use std::fmt;
@@ -32,7 +32,7 @@ pub enum Value {
     Variable(String),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
-    Color(u8, u8, u8, Rational, Option<String>),
+    Color(Rational, Rational, Rational, Rational, Option<String>),
     Null,
     True,
     False,
@@ -45,7 +45,22 @@ impl Value {
         Value::Numeric(Rational::from_integer(v), Unit::None, false)
     }
     pub fn black() -> Self {
-        Value::Color(0, 0, 0, Rational::one(), Some("black".into()))
+        let z = Rational::zero();
+        Value::Color(z, z, z, Rational::one(), Some("black".into()))
+    }
+    pub fn rgba(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
+        fn cap(n: Rational, ff: &Rational) -> Rational {
+            if n > *ff {
+                *ff
+            } else if n.is_negative() {
+                Rational::zero()
+            } else {
+                n
+            }
+        }
+        let ff = Rational::new(255, 1);
+        let one = Rational::one();
+        Value::Color(cap(r, &ff), cap(g, &ff), cap(b, &ff), cap(a, &one), None)
     }
 
     pub fn type_name(&self) -> &'static str {
@@ -147,6 +162,9 @@ impl fmt::Display for Value {
                 write!(out, "{}{}", rational2str(v, short), u)
             }
             &Value::Color(ref r, ref g, ref b, ref a, ref s) => {
+                let r = r.round().to_integer() as u8;
+                let g = g.round().to_integer() as u8;
+                let b = b.round().to_integer() as u8;
                 match s {
                     &Some(ref s) => write!(out, "{}", s),
                     &None => {
@@ -163,14 +181,14 @@ impl fmt::Display for Value {
                                 } else {
                                     format!("#{:02x}{:02x}{:02x}", r, g, b)
                                 };
-                                match rgb_to_name(*r, *g, *b) {
+                                match rgb_to_name(r, g, b) {
                                     Some(name) if name.len() <= hex.len() => {
                                         write!(out, "{}", name)
                                     }
                                     _ => write!(out, "{}", hex),
                                 }
                             } else {
-                                if let Some(name) = rgb_to_name(*r, *g, *b) {
+                                if let Some(name) = rgb_to_name(r, g, b) {
                                     write!(out, "{}", name)
                                 } else {
                                     write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
@@ -400,9 +418,9 @@ named!(single_value<&[u8], Value>,
                                                 from_utf8(g).unwrap(),
                                                 from_utf8(b).unwrap()))))) |
            do_parse!(tag!("#") >> r: hexchar >> g: hexchar >> b: hexchar >>
-                     (Value::Color(from_hex(r) * 0x11,
-                                   from_hex(g) * 0x11,
-                                   from_hex(b) * 0x11,
+                     (Value::Color(from_hex(r) * Rational::new(17, 1),
+                                   from_hex(g) * Rational::new(17, 1),
+                                   from_hex(b) * Rational::new(17, 1),
                                    Rational::from_integer(1),
                                    Some(format!("#{}{}{}",
                                                 from_utf8(r).unwrap(),
@@ -456,8 +474,9 @@ named!(hexchar2,
        recognize!(do_parse!(one_of!("0123456789ABCDEFabcdef") >>
                             one_of!("0123456789ABCDEFabcdef") >> ())));
 
-fn from_hex(v: &[u8]) -> u8 {
-    u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap()
+fn from_hex(v: &[u8]) -> Rational {
+    Rational::from_integer(u8::from_str_radix(from_utf8(v).unwrap(), 16)
+        .unwrap() as isize)
 }
 
 fn unescape(s: &str) -> String {
@@ -483,6 +502,7 @@ fn unescape(s: &str) -> String {
 mod test {
     use nom::IResult::*;
     use num_rational::Rational;
+    use num_traits::{One, Zero};
     use valueexpression::*;
 
     #[test]
@@ -521,10 +541,13 @@ mod test {
 
     #[test]
     fn simple_value_literal_color() {
-        let one = Rational::from_integer(1);
         assert_eq!(value_expression(b"red;"),
                    Done(&b";"[..],
-                        Value::Color(0xff, 0, 0, one, Some("red".into()))))
+                        Value::Color(Rational::new(255, 1),
+                                     Rational::zero(),
+                                     Rational::zero(),
+                                     Rational::one(),
+                                     Some("red".into()))))
     }
 
     #[test]
@@ -582,17 +605,21 @@ mod test {
     fn color_short() {
         assert_eq!(value_expression(b"#AbC;"),
                    Done(&b";"[..],
-                        Value::Color(170, 187, 204,
-                                        Rational::from_integer(1),
-                                        Some("#AbC".into()))))
+                        Value::Color(Rational::new(170, 1),
+                                     Rational::new(187, 1),
+                                     Rational::new(204, 1),
+                                     Rational::one(),
+                                     Some("#AbC".into()))))
     }
 
     #[test]
     fn color_long() {
         assert_eq!(value_expression(b"#AaBbCc;"),
                    Done(&b";"[..],
-                        Value::Color(170, 187, 204,
-                                        Rational::from_integer(1),
-                                        Some("#AaBbCc".into()))))
+                        Value::Color(Rational::new(170, 1),
+                                     Rational::new(187, 1),
+                                     Rational::new(204, 1),
+                                     Rational::one(),
+                                     Some("#AaBbCc".into()))))
     }
 }

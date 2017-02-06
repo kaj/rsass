@@ -90,8 +90,13 @@ lazy_static! {
 fn test_rgb() {
     use formalargs::call_args;
     use num_rational::Rational;
+    use num_traits::{One, Zero};
     use variablescope::ScopeImpl;
-    assert_eq!(Ok(Value::Color(17, 0, 225, Rational::from_integer(1), None)),
+    assert_eq!(Ok(Value::Color(Rational::new(17, 1),
+                               Rational::zero(),
+                               Rational::new(225, 1),
+                               Rational::one(),
+                               None)),
                FUNCTIONS.get("rgb")
                    .unwrap()
                    .call(&mut ScopeImpl::new(),

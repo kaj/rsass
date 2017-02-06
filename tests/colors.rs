@@ -16,8 +16,6 @@ fn basic_4_0() {
            color: redgreen;\n  foo: #c8ffff;\n}\n")
 }
 
-/// TODO The last value should be rgba(255, 106, 0, 0.6)
-/// Green 108 instead of 106 must be some kind of rounding error.
 #[test]
 fn adjust_color_xx() {
     check(b"p {\n  \
@@ -28,7 +26,7 @@ fn adjust_color_xx() {
                                 $lightness: -30%, $alpha: -0.4);\n\
             }",
           "p {\n  color: #102035;\n  color: #102030;\n  color: #0b2035;\n  \
-           color: rgba(255, 108, 0, 0.6);\n}\n")
+           color: rgba(255, 106, 0, 0.6);\n}\n")
 }
 
 #[test]
@@ -44,21 +42,15 @@ fn adjust_hue() {
            color: white;\n  color: #999999;\n  color: black;\n}\n")
 }
 
-/// TODO Another rouding error here; the last color in the spec should be
-/// rgba(204, 85, 0, 0.8), with 85 rather than 86.  The last color in this
-/// check is the adjusted hsl value without an extra hsl->rgb->hsl
-/// conversions, for reference
 #[test]
 fn change_color() {
     check(b"p {\n  color: change-color(#102030, $blue: 5);\n  \
             color: change-color(#102030, $alpha: .325);\n  \
             color: change-color(#102030, $red: 120, $blue: 5);\n  \
             color: change-color(hsl(25, 100%, 80%), $lightness: 40%, \
-            $alpha: 0.8);\n  \
-            color: hsla(25, 100%, 40%, 0.8);\n}\n",
+            $alpha: 0.8);\n}\n",
           "p {\n  color: #102005;\n  color: rgba(16, 32, 48, 0.325);\n  \
-           color: #782005;\n  color: rgba(204, 86, 0, 0.8);\n  \
-           color: rgba(204, 85, 0, 0.8);\n}\n")
+           color: #782005;\n  color: rgba(204, 85, 0, 0.8);\n}\n")
 }
 
 #[test]
