@@ -401,12 +401,17 @@ named!(single_value<&[u8], Value>,
                              if sign == Some(b"-") { -d } else { d }
                          }
                          , u.unwrap_or(Unit::None), false))) |
-           do_parse!(tag!(".") >>
+           do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
+                     tag!(".") >>
                      d: is_a!("0123456789") >>
                      u: opt!(unit) >>
-                     (Value::Numeric(decimals_to_rational(d),
-                                     u.unwrap_or(Unit::None),
-                                     false))) |
+                     (Value::Numeric(
+                         {
+                             let d = decimals_to_rational(d);
+                             if sign == Some(b"-") { -d } else { d }
+                         },
+                         u.unwrap_or(Unit::None),
+                         false))) |
            do_parse!(tag!("$") >>  name: name >> (Value::Variable(name))) |
            do_parse!(tag!("#") >> r: hexchar2 >> g: hexchar2 >> b: hexchar2 >>
                      (Value::Color(from_hex(r),
@@ -508,14 +513,45 @@ mod test {
     #[test]
     fn simple_number() {
         assert_eq!(value_expression(b"4;"),
-                   Done(&b";"[..],
-                        Value::Numeric (
-                            Rational::from_integer(4),
-                            Unit::None,
-                            false,
-                        )))
+                   Done(&b";"[..], number(4, 1)))
     }
 
+    #[test]
+    fn simple_number_neg() {
+        assert_eq!(value_expression(b"-4;"),
+                   Done(&b";"[..], number(-4, 1)))
+    }
+
+    #[test]
+    fn simple_number_pos() {
+        assert_eq!(value_expression(b"+4;"),
+                   Done(&b";"[..], number(4, 1)))
+    }
+
+    #[test]
+    fn simple_number_dec() {
+        assert_eq!(value_expression(b"4.34;"),
+                   Done(&b";"[..], number(434, 100)))
+    }
+    #[test]
+    fn simple_number_onlydec() {
+        assert_eq!(value_expression(b".34;"),
+                   Done(&b";"[..], number(34, 100)))
+    }
+    #[test]
+    fn simple_number_onlydec_neg() {
+        assert_eq!(value_expression(b"-.34;"),
+                   Done(&b";"[..], number(-34, 100)))
+    }
+    #[test]
+    fn simple_number_onlydec_pos() {
+        assert_eq!(value_expression(b"+.34;"),
+                   Done(&b";"[..], number(34, 100)))
+    }
+
+    fn number(nom: isize, denom: isize) -> Value {
+        Value::Numeric(Rational::new(nom, denom), Unit::None, false)
+    }
     #[test]
     fn simple_value_literal() {
         assert_eq!(value_expression(b"rad;"),
