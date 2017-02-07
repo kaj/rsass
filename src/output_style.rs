@@ -123,6 +123,26 @@ impl OutputStyle {
             &SassItem::Property(_, _) => {
                 panic!("Global property not allowed");
             }
+            &SassItem::MediaRule(ref query, ref body) => {
+                if *separate {
+                    self.do_indent(result, 0).unwrap();
+                } else {
+                    *separate = true;
+                }
+                write!(result, "@media {}{{", query).unwrap();
+                self.do_indent(result, 0).unwrap();
+                let mut direct = vec![];
+                self.handle_body(&mut direct,
+                                 result,
+                                 &mut ScopeImpl::sub(globals),
+                                 &vec![Selector::root()],
+                                 &body,
+                                 file_context,
+                                 2)
+                    .unwrap();
+                assert_eq!(direct, &[]);
+                write!(result, "}}").unwrap();
+            }
             &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
                 if *separate {
                     self.do_indent(result, 0).unwrap();
@@ -186,6 +206,7 @@ impl OutputStyle {
                          file_context,
                          indent)?;
         if !direct.is_empty() {
+            self.do_indent_no_lf(out, indent)?;
             write!(out,
                    "{}{}{{",
                    self.join_selectors(&selectors),
@@ -293,6 +314,38 @@ impl OutputStyle {
                         writeln!(direct, "@import {};", name).unwrap();
                     }
                 }
+                &SassItem::MediaRule(ref query, ref body) => {
+                    let mut s1 = vec![];
+                    let mut s2 = vec![];
+                    self.handle_body(&mut s1,
+                                     &mut s2,
+                                     &mut ScopeImpl::sub(scope),
+                                     selectors,
+                                     &body,
+                                     file_context,
+                                     2)
+                        .unwrap();
+
+                    write!(sub, "@media {}{{", query).unwrap();
+                    if !s1.is_empty() {
+                        self.do_indent(sub, 2)?;
+                        write!(sub,
+                               "{}{}{{",
+                               self.join_selectors(&selectors),
+                               self.opt_space())?;
+                        if self.is_compressed() && s1.last() == Some(&b';') {
+                            s1.pop();
+                        }
+                        sub.write(&s1)?;
+                        self.do_indent(sub, 2)?;
+                        write!(sub, "}}")?;
+                    }
+                    if !s2.is_empty() {
+                        self.do_indent(sub, 0)?;
+                        sub.write_all(&s2).unwrap();
+                    }
+                    write!(sub, "}}").unwrap();
+                }
                 &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
                     if scope.evaluate(&cond).is_true() {
                         self.handle_body(direct,
@@ -323,6 +376,14 @@ impl OutputStyle {
     fn do_indent(&self, out: &mut Write, steps: usize) -> io::Result<()> {
         if !self.is_compressed() {
             write!(out, "\n")?;
+            for _i in 0..steps {
+                write!(out, " ")?;
+            }
+        }
+        Ok(())
+    }
+    fn do_indent_no_lf(&self, out: &mut Write, steps: usize) -> io::Result<()> {
+        if !self.is_compressed() {
             for _i in 0..steps {
                 write!(out, " ")?;
             }

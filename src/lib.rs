@@ -154,6 +154,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
        many0!(alt!(value!(SassItem::None, spacelike) |
                    import |
                    variable_declaration |
+                   media_rule |
                    map!(mixin_declaration, |d| SassItem::MixinDeclaration(d)) |
                    mixin_call |
                    if_statement |
@@ -176,6 +177,7 @@ pub enum SassItem {
         val: Value,
         global: bool,
     },
+    MediaRule(String, Vec<SassItem>),
     MixinDeclaration(MixinDeclaration),
     MixinCall { name: String, args: CallArgs },
     IfStatement(Value, Vec<SassItem>, Vec<SassItem>),
@@ -195,6 +197,7 @@ named!(rule<SassItem>,
 named!(body_item<SassItem>,
        alt_complete!(
            value!(SassItem::None, spacelike) |
+           media_rule |
            map!(mixin_declaration,
                 |d| SassItem::MixinDeclaration(d)) |
            variable_declaration |
@@ -219,6 +222,15 @@ named!(mixin_call<SassItem>,
                      name: name,
                      args: args.unwrap_or_default(),
                  })));
+
+named!(media_rule<SassItem>,
+       do_parse!(tag!("@media") >> opt_spacelike >>
+                 query: is_not!("{}") >>
+                 tag!("{") >>
+                 body: many0!(body_item) >>
+                 tag!("}") >>
+                 (SassItem::MediaRule(from_utf8(query).unwrap().into(),
+                                      body))));
 
 named!(if_statement<SassItem>,
        preceded!(tag!("@"), if_statement_inner));
