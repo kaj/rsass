@@ -17,3 +17,9 @@ macro_rules! func {
         }
     };
 }
+macro_rules! func2 {
+    ($name:ident( $($arg:ident $( = $value:expr )* ),* )) => {
+        func!(($($arg $( = $value )* ),*),
+              |s: &Scope| $name($(s.get(stringify!($arg))),*))
+    };
+}

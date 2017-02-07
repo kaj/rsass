@@ -96,6 +96,48 @@ fn saturation() {
 }
 
 #[test]
+fn fade_in() {
+    check(b"p {\n  color: fade-in(#f00, 0.3);\n  color: fade-in(#900, 0.8);\n  \
+            color: fade-in(#000, .6);\n  color: fade-in(#fff, .2);\n  \
+            color: fade-in(#999, .4);\n  color: fade-in(#000, .5);\n  \
+            color: fade-in(#333, +.99);\n  // test old function name\n  \
+            color: opacify(#f00, 0.3);\n  color: opacify(#900, 0.8);\n  \
+            color: opacify(#000, .6);\n  color: opacify(#fff, .2);\n  \
+            color: opacify(#999, .4);\n  color: opacify(#000, .5);\n  \
+            color: opacify(#333, +.99);\n}",
+          "p {\n  color: red;\n  color: #990000;\n  color: black;\n  \
+           color: white;\n  color: #999999;\n  color: black;\n  \
+           color: #333333;\n  color: red;\n  color: #990000;\n  \
+           color: black;\n  color: white;\n  color: #999999;\n  \
+           color: black;\n  color: #333333;\n}\n")
+}
+
+#[test]
+fn fade_out() {
+    check(b"p {\n  color: fade-out(#f00, 0.3);\n  \
+            color: fade-out(#900, 0.8);\n  color: fade-out(#000, .6);\n  \
+            color: fade-out(#fff, .2);\n  color: fade-out(#999, .4);\n  \
+            color: fade-out(#000, .5);\n  color: fade-out(#333, +.99);\n  \
+            // test old function name\n  \
+            color: transparentize(#f00, 0.3);\n  \
+            color: transparentize(#900, 0.8);\n  \
+            color: transparentize(#000, .6);\n  \
+            color: transparentize(#fff, .2);\n  \
+            color: transparentize(#999, .4);\n  \
+            color: transparentize(#000, .5);\n  \
+            color: transparentize(#333, +.99);\n}",
+          "p {\n  color: rgba(255, 0, 0, 0.7);\n  \
+           color: rgba(153, 0, 0, 0.2);\n  color: rgba(0, 0, 0, 0.4);\n  \
+           color: rgba(255, 255, 255, 0.8);\n  \
+           color: rgba(153, 153, 153, 0.6);\n  color: rgba(0, 0, 0, 0.5);\n  \
+           color: rgba(51, 51, 51, 0.01);\n  color: rgba(255, 0, 0, 0.7);\n  \
+           color: rgba(153, 0, 0, 0.2);\n  color: rgba(0, 0, 0, 0.4);\n  \
+           color: rgba(255, 255, 255, 0.8);\n  \
+           color: rgba(153, 153, 153, 0.6);\n  color: rgba(0, 0, 0, 0.5);\n  \
+           color: rgba(51, 51, 51, 0.01);\n}\n")
+}
+
+#[test]
 fn desaturate() {
     check(b"p {\n  color: desaturate(#fff, 10%);\n  \
             color: desaturate(#999, 10%);\n  color: desaturate(#000, 10%);\n  \
