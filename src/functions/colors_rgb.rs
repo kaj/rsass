@@ -1,7 +1,7 @@
 use super::{Error, SassFunction, badarg, badargs};
 use formalargs::FormalArgs;
 use num_rational::Rational;
-use num_traits::{One, Signed, Zero};
+use num_traits::One;
 use std::collections::BTreeMap;
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
@@ -32,25 +32,22 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                            to_rational(alpha)?))
         }
     }));
+    fn num(v: &Rational) -> Result<Value, Error> {
+        Ok(Value::Numeric(*v, Unit::None, true))
+    }
     f.insert("red",
              func!((color), |s: &Scope| match &s.get("color") {
-                 &Value::Color(ref red, _, _, _, _) => {
-                     Ok(Value::Numeric(*red, Unit::None, true))
-                 }
+                 &Value::Color(ref red, _, _, _, _) => num(red),
                  value => Err(badarg("color", value)),
              }));
     f.insert("green",
              func!((color), |s: &Scope| match &s.get("color") {
-                 &Value::Color(_, ref green, _, _, _) => {
-                     Ok(Value::Numeric(*green, Unit::None, true))
-                 }
+                 &Value::Color(_, ref green, _, _, _) => num(green),
                  value => Err(badarg("color", value)),
              }));
     f.insert("blue",
              func!((color), |s: &Scope| match &s.get("color") {
-                 &Value::Color(_, _, ref blue, _, _) => {
-                     Ok(Value::Numeric(*blue, Unit::None, true))
-                 }
+                 &Value::Color(_, _, ref blue, _, _) => num(blue),
                  value => Err(badarg("color", value)),
              }));
     f.insert("mix",
@@ -92,46 +89,12 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 }
 
 fn to_int(v: Value) -> Result<Rational, Error> {
-    Ok(cap_u8(match v {
+    Ok(match v {
         Value::Numeric(v, Unit::Percent, _) => Rational::new(255, 100) * v,
         Value::Numeric(v, _, _) => v,
         v => return Err(badarg("number", &v)),
-    }))
+    })
 }
-
-fn cap_u8(n: Rational) -> Rational {
-    let ff = Rational::new(255, 1);
-    if n > ff {
-        ff
-    } else if n.is_negative() {
-        Rational::zero()
-    } else {
-        n
-    }
-}
-
-#[test]
-fn percent_to_int_0() {
-    assert_eq!(to_int(percent(0)), Ok(Rational::zero()))
-}
-#[test]
-fn percent_to_int_50() {
-    assert_eq!(to_int(percent(50)), Ok(Rational::new(255, 2)))
-}
-#[test]
-fn percent_to_int_100() {
-    assert_eq!(to_int(percent(100)), Ok(Rational::new(255, 1)))
-}
-#[test]
-fn percent_to_int_overflow() {
-    assert_eq!(to_int(percent(130)), Ok(Rational::new(255, 1)))
-}
-
-#[cfg(test)]
-fn percent(n: isize) -> Value {
-    Value::Numeric(Rational::from_integer(n), Unit::Percent, false)
-}
-
 
 fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
@@ -140,10 +103,25 @@ fn to_rational(v: Value) -> Result<Rational, Error> {
     }
 }
 
-#[test]
-fn test_nth() {
-    assert_eq!("foo", do_evaluate(&[("x", "foo, bar")], b"nth($x, 1);"))
-}
-
 #[cfg(test)]
-use super::super::variablescope::test::do_evaluate;
+mod test {
+    use variablescope::test::do_evaluate;
+
+    #[test]
+    fn test_high() {
+        assert_eq!("white", do_evaluate(&[], b"rgb(150%, 300, 256);"));
+    }
+
+    #[test]
+    fn test_low() {
+        assert_eq!("black", do_evaluate(&[], b"rgb(-3, -2%, 0);"));
+    }
+    #[test]
+    fn test_mid() {
+        assert_eq!("grey", do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"));
+    }
+    #[test]
+    fn test_named() {
+        assert_eq!("grey", do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"));
+    }
+}

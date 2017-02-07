@@ -42,18 +42,17 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let s_adj = s.get("saturation");
                 let l_adj = s.get("lightness");
                 let a_adj = s.get("alpha");
-                if h_adj != Value::Null || s_adj != Value::Null ||
-                   l_adj != Value::Null {
+                if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
+                    Ok(Value::rgba(c_comb(*red, s.get("red"))?,
+                                   c_comb(*green, s.get("green"))?,
+                                   c_comb(*blue, s.get("blue"))?,
+                                   a_comb(*alpha, a_adj)?))
+                } else {
                     let (h, s, l) = rgb_to_hsl(red, green, blue);
                     Ok(hsla_to_rgba(a_comb(h, h_adj)? * Rational::new(1, 360),
                                     sl_comb(s, s_adj)?,
                                     sl_comb(l, l_adj)?,
                                     a_comb(*alpha, a_adj)?))
-                } else {
-                    Ok(Value::rgba(c_comb(*red, s.get("red"))?,
-                                   c_comb(*green, s.get("green"))?,
-                                   c_comb(*blue, s.get("blue"))?,
-                                   a_comb(*alpha, s.get("alpha"))?))
                 }
             }
             v => Err(badarg("color", &v)),
