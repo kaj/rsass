@@ -25,7 +25,35 @@ fn is_name_char(c: u8) -> bool {
 }
 
 named!(pub comment,
-       delimited!(tag!("/*"), is_not!("*"), tag!("*/")));
+       delimited!(tag!("/*"),
+                  recognize!(many0!(alt_complete!(
+                      is_not!("*") |
+                      preceded!(tag!("*"), not!(tag!("/")))))),
+                  tag!("*/")));
 
 named!(ignore_space<()>, map!(multispace, |_|()));
 named!(ignore_lcomment<()>, do_parse!(tag!("//") >> c: is_not!("\n") >> ()));
+
+#[cfg(test)]
+mod test {
+    use super::comment;
+    use nom::IResult::*;
+
+    #[test]
+    fn comment_simple() {
+        assert_eq!(comment(b"/* hello */\n"),
+                   Done(&b"\n"[..], &b" hello "[..]))
+    }
+
+    #[test]
+    fn comment_with_stars() {
+        assert_eq!(comment(b"/**** hello ****/\n"),
+                   Done(&b"\n"[..], &b"*** hello ***"[..]))
+    }
+
+    #[test]
+    fn comment_with_stars2() {
+        assert_eq!(comment(b"/* / * / * / * hello * \\ * \\ * \\ */\n"),
+                   Done(&b"\n"[..], &b" / * / * / * hello * \\ * \\ * \\ "[..]))
+    }
+}
