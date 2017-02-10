@@ -102,6 +102,7 @@ pub enum Unit {
     Percent,
     Pt,
     Px,
+    Rem,
     Em,
     Ex,
     None,
@@ -113,6 +114,7 @@ impl fmt::Display for Unit {
             &Unit::Percent => write!(out, "%"),
             &Unit::Pt => write!(out, "pt"),
             &Unit::Px => write!(out, "px"),
+            &Unit::Rem => write!(out, "rem"),
             &Unit::Em => write!(out, "em"),
             &Unit::Ex => write!(out, "ex"),
             &Unit::None => Ok(()),
@@ -469,6 +471,7 @@ named!(unit<&[u8], Unit>,
        alt!(value!(Unit::Percent, tag!("%")) |
             value!(Unit::Pt, tag!("pt")) |
             value!(Unit::Px, tag!("px")) |
+            value!(Unit::Rem, tag!("rem")) |
             value!(Unit::Em, tag!("em")) |
             value!(Unit::Ex, tag!("ex")) |
             value!(Unit::None, tag!(""))));
