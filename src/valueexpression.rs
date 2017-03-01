@@ -99,6 +99,7 @@ impl Value {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Unit {
+    Deg,
     Percent,
     Pt,
     Px,
@@ -111,6 +112,7 @@ pub enum Unit {
 impl fmt::Display for Unit {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            &Unit::Deg => write!(out, "deg"),
             &Unit::Percent => write!(out, "%"),
             &Unit::Pt => write!(out, "pt"),
             &Unit::Px => write!(out, "px"),
@@ -469,6 +471,7 @@ fn decimals_to_rational(d: &[u8]) -> Rational {
 
 named!(unit<&[u8], Unit>,
        alt!(value!(Unit::Percent, tag!("%")) |
+            value!(Unit::Deg, tag!("deg")) |
             value!(Unit::Pt, tag!("pt")) |
             value!(Unit::Px, tag!("px")) |
             value!(Unit::Rem, tag!("rem")) |

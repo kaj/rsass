@@ -118,10 +118,10 @@ mod test {
     }
     #[test]
     fn test_mid() {
-        assert_eq!("grey", do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"));
+        assert_eq!("gray", do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"));
     }
     #[test]
     fn test_named() {
-        assert_eq!("grey", do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"));
+        assert_eq!("gray", do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"));
     }
 }

@@ -2,7 +2,7 @@ use super::{Error, SassFunction, badarg};
 use super::colors_hsl::{hsla_to_rgba, rgb_to_hsl};
 use formalargs::FormalArgs;
 use num_rational::Rational;
-use num_traits::{Signed, Zero};
+use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
 use valueexpression::{Unit, Value};
 use variablescope::Scope;
@@ -53,6 +53,55 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                                     sl_comb(s, s_adj)?,
                                     sl_comb(l, l_adj)?,
                                     a_comb(*alpha, a_adj)?))
+                }
+            }
+            v => Err(badarg("color", &v)),
+        }
+    }));
+    f.insert("scale_color",
+             func!((color,
+                    red,
+                    green,
+                    blue,
+                    hue,
+                    saturation,
+                    lightness,
+                    alpha),
+                   |s: &Scope| {
+        fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
+            match x {
+                Value::Null => Ok(orig),
+                x => {
+                    let x = to_rational_percent(x)?;
+                    Ok(if x.is_positive() {
+                        orig + (Rational::one() - orig) * x
+                    } else {
+                        orig - orig * x.abs()
+                    })
+                }
+            }
+        }
+        fn c_comb(orig: Rational, x: Value) -> Result<Rational, Error> {
+            let ff = Rational::new(255, 1);
+            Ok(ff * comb(orig / ff, x)?)
+        }
+        match &s.get("color") {
+            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
+                let h_adj = s.get("hue");
+                let s_adj = s.get("saturation");
+                let l_adj = s.get("lightness");
+                let a_adj = s.get("alpha");
+                if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
+                    Ok(Value::rgba(c_comb(*red, s.get("red"))?,
+                                   c_comb(*green, s.get("green"))?,
+                                   c_comb(*blue, s.get("blue"))?,
+                                   comb(*alpha, a_adj)?))
+                } else {
+                    let (h, s, l) = rgb_to_hsl(red, green, blue);
+                    Ok(hsla_to_rgba(comb(h, h_adj)? * Rational::new(1, 360),
+                                    comb(s, s_adj)?,
+                                    comb(l, l_adj)?,
+                                    comb(*alpha, a_adj)?))
                 }
             }
             v => Err(badarg("color", &v)),

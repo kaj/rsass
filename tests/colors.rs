@@ -17,7 +17,7 @@ fn basic_4_0() {
 }
 
 #[test]
-fn adjust_color_xx() {
+fn adjust_color() {
     check(b"p {\n  \
             color: adjust-color(#102030, $blue: 5);\n  \
             color: adjust-color(#102030, $alpha: .325);\n  \
@@ -144,6 +144,20 @@ fn desaturate() {
             color: desaturate(#f00, 10%);\n  color: desaturate(#900, 10%);\n}",
           "p {\n  color: white;\n  color: #999999;\n  color: black;\n  \
            color: #f20d0d;\n  color: #910808;\n}\n")
+}
+
+#[test]
+fn scale_color() {
+    check(b"p {\n\
+            color: scale-color(hsl(120, 70%, 80%), $lightness: 50%);\n  \
+            color: scale-color(hsla(120, 70%, 80%, 0.3), $alpha: 35%);\n  \
+            color: scale-color(rgb(200, 150%, 170%), $green: -40%, \
+            $blue: 70%);\n  \
+            color: scale-color(hsl(200, 70%, 80%), $saturation: -90%, \
+            $alpha: -30%);\n\
+            }",
+          "p {\n  color: #d4f7d4;\n  color: rgba(168, 240, 168, 0.545);\n  \
+           color: #c899ff;\n  color: rgba(200, 205, 208, 0.7);\n}\n")
 }
 
 fn check(input: &[u8], expected: &str) {

@@ -66,11 +66,63 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             v => Err(badarg("color", v)),
         }
     }));
+    f.insert("lighten",
+             func!((color, amount), |args: &Scope| {
+        fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
+            match x {
+                Value::Null => Ok(orig),
+                x => Ok(cap_percentage(orig + to_rational_percent(x)?)),
+            }
+        }
+        match &args.get("color") {
+            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
+                let (h, s, l) = rgb_to_hsl(red, green, blue);
+                let l = comb(l, args.get("amount"))?;
+                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
+            }
+            v => Err(badarg("color", v)),
+        }
+    }));
+    f.insert("darken",
+             func!((color, amount), |args: &Scope| {
+        fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
+            match x {
+                Value::Null => Ok(orig),
+                x => Ok(cap_percentage(orig - to_rational_percent(x)?)),
+            }
+        }
+        match &args.get("color") {
+            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
+                let (h, s, l) = rgb_to_hsl(red, green, blue);
+                let l = comb(l, args.get("amount"))?;
+                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
+            }
+            v => Err(badarg("color", v)),
+        }
+    }));
+    f.insert("hue",
+             func!((color), |args: &Scope| match &args.get("color") {
+                 &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
+                     let (h, _s, _l) = rgb_to_hsl(red, green, blue);
+                     Ok(Value::Numeric(h, Unit::Deg, true))
+                 }
+                 v => Err(badarg("color", v)),
+             }));
     f.insert("saturation",
              func!((color), |args: &Scope| match &args.get("color") {
                  &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
                      let (_h, s, _l) = rgb_to_hsl(red, green, blue);
                      Ok(Value::Numeric((s * Rational::from_integer(100)),
+                                       Unit::Percent,
+                                       true))
+                 }
+                 v => Err(badarg("color", v)),
+             }));
+    f.insert("lightness",
+             func!((color), |args: &Scope| match &args.get("color") {
+                 &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
+                     let (_h, _s, l) = rgb_to_hsl(red, green, blue);
+                     Ok(Value::Numeric((l * Rational::from_integer(100)),
                                        Unit::Percent,
                                        true))
                  }
@@ -147,11 +199,11 @@ pub fn rgb_to_hsl(r: &Rational,
     let ff = Rational::from_integer(255);
     let (r, g, b) = (r / ff, g / ff, b / ff);
     let (max, min) = {
-        let v = [(0, r), (0, g), (0, b)];
+        let v = [(r, 0), (g, 1), (b, 2)];
         (v.iter().max().unwrap().clone(), v.iter().min().unwrap().clone())
     };
-    let largest = max.0;
-    let (max, min) = (max.1, min.1);
+    let largest = max.1;
+    let (max, min) = (max.0, min.0);
     let half = Rational::new(1, 2);
     let mid = (max + min) * half;
 
@@ -240,7 +292,7 @@ fn test_hsl_white() {
 }
 #[test]
 fn test_hsl_gray() {
-    assert_eq!("grey", do_evaluate(&[], b"hsl(300, 0%, 50%);"))
+    assert_eq!("gray", do_evaluate(&[], b"hsl(300, 0%, 50%);"))
 }
 #[test]
 fn test_hsl_red() {
