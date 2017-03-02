@@ -123,13 +123,13 @@ impl OutputStyle {
             &SassItem::Property(_, _) => {
                 panic!("Global property not allowed");
             }
-            &SassItem::MediaRule(ref query, ref body) => {
+            &SassItem::AtRule(ref query, ref body) => {
                 if *separate {
                     self.do_indent(result, 0).unwrap();
                 } else {
                     *separate = true;
                 }
-                write!(result, "@media {}{{", query).unwrap();
+                write!(result, "@{}{{", query).unwrap();
                 self.do_indent(result, 0).unwrap();
                 let mut direct = vec![];
                 self.handle_body(&mut direct,
@@ -314,7 +314,7 @@ impl OutputStyle {
                         writeln!(direct, "@import {};", name).unwrap();
                     }
                 }
-                &SassItem::MediaRule(ref query, ref body) => {
+                &SassItem::AtRule(ref query, ref body) => {
                     let mut s1 = vec![];
                     let mut s2 = vec![];
                     self.handle_body(&mut s1,
@@ -326,7 +326,7 @@ impl OutputStyle {
                                      2)
                         .unwrap();
 
-                    write!(sub, "@media {}{{", query).unwrap();
+                    write!(sub, "@{}{{", query).unwrap();
                     if !s1.is_empty() {
                         self.do_indent(sub, 2)?;
                         write!(sub,

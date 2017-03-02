@@ -657,6 +657,16 @@ fn t36_extra_commas_in_selectors() {
 }
 
 #[test]
+fn t38_expressions_in_at_directives() {
+    // Note: This actually checks that expressions are _not_
+    // evalutated in at directives!
+    check(b"$x: 1;\n$y: 2;\n\n\
+            @foo $x $y, hux {\n  \
+            bar {\n    whatever: whatever;\n  }\n}\n",
+          "@foo $x $y, hux {\n  bar {\n    whatever: whatever;\n  }\n}\n")
+}
+
+#[test]
 fn t39_dash_match_attribute_selector() {
     check(b"div[class|=\"blah\"] {\n  color: blue;\n}\n",
           "div[class|=\"blah\"] {\n  color: blue;\n}\n")
