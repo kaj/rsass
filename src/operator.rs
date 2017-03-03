@@ -20,14 +20,14 @@ pub enum Operator {
 impl Operator {
     pub fn eval(&self, a: Value, b: Value) -> Value {
         match self {
-            &Operator::And => bool_val(a.is_true() && b.is_true()),
-            &Operator::Or => bool_val(a.is_true() || b.is_true()),
-            &Operator::Equal => bool_val(a == b),
-            &Operator::NotEqual => bool_val(a != b),
-            &Operator::Greater => bool_val(a > b),
-            &Operator::GreaterE => bool_val(a >= b),
-            &Operator::Lesser => bool_val(a < b),
-            &Operator::LesserE => bool_val(a <= b),
+            &Operator::And => Value::bool(a.is_true() && b.is_true()),
+            &Operator::Or => Value::bool(a.is_true() || b.is_true()),
+            &Operator::Equal => Value::bool(a == b),
+            &Operator::NotEqual => Value::bool(a != b),
+            &Operator::Greater => Value::bool(a > b),
+            &Operator::GreaterE => Value::bool(a >= b),
+            &Operator::Lesser => Value::bool(a < b),
+            &Operator::LesserE => Value::bool(a <= b),
             &Operator::Plus => {
                 match (&a, &b) {
                     (&Value::Color(ref r, ref g, ref b, ref a, _),
@@ -108,8 +108,4 @@ impl fmt::Display for Operator {
                    &Operator::Minus => "-",
                })
     }
-}
-
-fn bool_val(v: bool) -> Value {
-    if v { Value::True } else { Value::False }
 }

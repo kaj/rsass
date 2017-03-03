@@ -9,6 +9,7 @@ mod macros;
 mod colors_rgb;
 mod colors_hsl;
 mod colors_other;
+mod introspection;
 mod numbers;
 mod strings;
 
@@ -80,6 +81,7 @@ lazy_static! {
         colors_hsl::register(&mut f);
         colors_rgb::register(&mut f);
         colors_other::register(&mut f);
+        introspection::register(&mut f);
         strings::register(&mut f);
         numbers::register(&mut f);
         f

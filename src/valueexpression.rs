@@ -44,6 +44,9 @@ impl Value {
     pub fn scalar(v: isize) -> Self {
         Value::Numeric(Rational::from_integer(v), Unit::None, false)
     }
+    pub fn bool(v: bool) -> Self {
+        if v { Value::True } else { Value::False }
+    }
     pub fn black() -> Self {
         let z = Rational::zero();
         Value::Color(z, z, z, Rational::one(), Some("black".into()))
