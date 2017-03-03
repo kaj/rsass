@@ -416,26 +416,6 @@ pub mod test {
     }
 
     #[test]
-    fn type_of_number() {
-        assert_eq!("number", do_evaluate(&[], b"type_of(100px);"))
-    }
-
-    #[test]
-    fn type_of_string() {
-        assert_eq!("string", do_evaluate(&[], b"type_of(asdf);"))
-    }
-
-    #[test]
-    fn type_of_color() {
-        assert_eq!("color", do_evaluate(&[], b"type_of(#fff);"))
-    }
-
-    #[test]
-    fn type_of_color_by_name() {
-        assert_eq!("color", do_evaluate(&[], b"type_of(red);"))
-    }
-
-    #[test]
     fn color_arithemtic_by_name() {
         assert_eq!("magenta", do_evaluate(&[], b"red + blue;"))
     }

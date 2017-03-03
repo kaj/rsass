@@ -1,6 +1,6 @@
 use formalargs::{CallArgs, FormalArgs};
 use std::collections::BTreeMap;
-use valueexpression::{Quotes, Value};
+use valueexpression::Value;
 use variablescope::Scope;
 
 #[macro_use]
@@ -54,9 +54,6 @@ fn badargs(expected: &[&str], actual: &[&Value]) -> Error {
 lazy_static! {
     static ref FUNCTIONS: BTreeMap<&'static str, SassFunction> = {
         let mut f = BTreeMap::new();
-        f.insert("type_of", func!((value), |s: &Scope| {
-            Ok(Value::Literal(s.get("value").type_name().into(), Quotes::None))
-        }));
         f.insert("if", func!((condition, if_true, if_false), |s| {
             if s.get("condition").is_true() {
                 Ok(s.get("if_true"))
