@@ -14,6 +14,7 @@ pub struct ScopeImpl<'a> {
 
 pub trait Scope {
     fn define(&mut self, name: &str, val: &Value, global: bool);
+    fn define_default(&mut self, name: &str, val: &Value, global: bool);
     fn get(&self, name: &str) -> Value;
 
     fn define_mixin(&mut self, m: &MixinDeclaration);
@@ -29,6 +30,11 @@ impl<'a> Scope for ScopeImpl<'a> {
         }
         let val = self.do_evaluate(val, true);
         self.variables.insert(name.to_string(), val);
+    }
+    fn define_default(&mut self, name: &str, val: &Value, global: bool) {
+        if self.get(name) == Value::Null {
+            self.define(name, val, global)
+        }
     }
     fn get_mixin(&self, name: &str) -> Option<MixinDeclaration> {
         self.mixins

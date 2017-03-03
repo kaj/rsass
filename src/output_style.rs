@@ -66,8 +66,13 @@ impl OutputStyle {
             }
             &SassItem::VariableDeclaration { ref name,
                                              ref val,
+                                             ref default,
                                              ref global } => {
-                globals.define(&name, &val, *global);
+                if *default {
+                    globals.define_default(&name, &val, *global);
+                } else {
+                    globals.define(&name, &val, *global);
+                }
             }
             &SassItem::MixinDeclaration(ref m) => globals.define_mixin(&m),
             &SassItem::MixinCall { ref name, ref args } => {
@@ -273,8 +278,13 @@ impl OutputStyle {
                 }
                 &SassItem::VariableDeclaration { ref name,
                                                  ref val,
+                                                 default,
                                                  global } => {
-                    scope.define(&name, &val, global);
+                    if default {
+                        scope.define_default(&name, &val, global);
+                    } else {
+                        scope.define(&name, &val, global);
+                    }
                 }
                 &SassItem::MixinDeclaration(ref m) => {
                     scope.define_mixin(m);

@@ -175,6 +175,7 @@ pub enum SassItem {
     VariableDeclaration {
         name: String,
         val: Value,
+        default: bool,
         global: bool,
     },
     AtRule(String, Vec<SassItem>),
@@ -428,11 +429,13 @@ named!(variable_declaration<SassItem>,
                  name: name >> opt_spacelike >>
                  tag!(":") >> opt_spacelike >>
                  val: value_expression >> opt_spacelike >>
+                 default: opt!(tag!("!default")) >> opt_spacelike >>
                  global: opt!(tag!("!global")) >> opt_spacelike >>
                  tag!(";") >> opt_spacelike >>
                  (SassItem::VariableDeclaration {
                      name: name,
                      val: val.clone(),
+                     default: default.is_some(),
                      global: global.is_some(),
                  })));
 
@@ -443,6 +446,7 @@ fn test_variable_declaration_simple() {
                     SassItem::VariableDeclaration {
                         name: "foo".into(),
                         val: string("bar"),
+                        default: false,
                         global: false,
                     }))
 }
@@ -455,7 +459,21 @@ fn test_variable_declaration_global() {
                         name: "y".into(),
                         val: Value::MultiSpace(
                             vec![string("some"), string("value")]),
+                        default: false,
                         global: true,
+                    }))
+}
+
+#[test]
+fn test_variable_declaration_default() {
+    assert_eq!(variable_declaration(b"$y: some value !default;\n"),
+               Done(&b""[..],
+                    SassItem::VariableDeclaration {
+                        name: "y".into(),
+                        val: Value::MultiSpace(
+                            vec![string("some"), string("value")]),
+                        default: true,
+                        global: false,
                     }))
 }
 
