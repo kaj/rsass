@@ -38,6 +38,7 @@ mod valueexpression;
 mod variablescope;
 mod output_style;
 mod identify_last_iterator;
+mod unit;
 
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
 pub use output_style::OutputStyle;
@@ -420,7 +421,7 @@ fn test_property_2() {
 #[cfg(test)]
 fn percentage(v: isize) -> Value {
     use num_rational::Rational;
-    use valueexpression::Unit;
+    use unit::Unit;
     Value::Numeric(Rational::from_integer(v), Unit::Percent, false)
 }
 

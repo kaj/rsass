@@ -4,7 +4,8 @@ use super::MixinDeclaration;
 use functions::get_function;
 use num_traits::identities::Zero;
 use std::collections::BTreeMap;
-use valueexpression::{Quotes, Value, Unit};
+use unit::Unit;
+use valueexpression::{Quotes, Value};
 
 pub struct ScopeImpl<'a> {
     parent: Option<&'a mut Scope>,

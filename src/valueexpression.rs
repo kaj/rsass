@@ -7,6 +7,7 @@ use operator::Operator;
 use parseutil::{opt_spacelike, name, spacelike};
 use std::fmt;
 use std::str::{FromStr, from_utf8};
+use unit::{Unit, unit};
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -96,33 +97,6 @@ impl Value {
         match self {
             &Value::Null => true,
             _ => false,
-        }
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Unit {
-    Deg,
-    Percent,
-    Pt,
-    Px,
-    Rem,
-    Em,
-    Ex,
-    None,
-}
-
-impl fmt::Display for Unit {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &Unit::Deg => write!(out, "deg"),
-            &Unit::Percent => write!(out, "%"),
-            &Unit::Pt => write!(out, "pt"),
-            &Unit::Px => write!(out, "px"),
-            &Unit::Rem => write!(out, "rem"),
-            &Unit::Em => write!(out, "em"),
-            &Unit::Ex => write!(out, "ex"),
-            &Unit::None => Ok(()),
         }
     }
 }
@@ -472,16 +446,6 @@ fn decimals_to_rational(d: &[u8]) -> Rational {
                   10_isize.pow(d.len() as u32))
 }
 
-named!(unit<&[u8], Unit>,
-       alt!(value!(Unit::Percent, tag!("%")) |
-            value!(Unit::Deg, tag!("deg")) |
-            value!(Unit::Pt, tag!("pt")) |
-            value!(Unit::Px, tag!("px")) |
-            value!(Unit::Rem, tag!("rem")) |
-            value!(Unit::Em, tag!("em")) |
-            value!(Unit::Ex, tag!("ex")) |
-            value!(Unit::None, tag!(""))));
-
 named!(hexchar, recognize!(one_of!("0123456789ABCDEFabcdef")));
 
 named!(hexchar2,
@@ -517,6 +481,7 @@ mod test {
     use nom::IResult::*;
     use num_rational::Rational;
     use num_traits::{One, Zero};
+    use unit::Unit;
     use valueexpression::*;
 
     #[test]

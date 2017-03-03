@@ -3,7 +3,8 @@ use functions::{SassFunction, badarg, badargs};
 use num_rational::Rational;
 use num_traits::Signed;
 use std::collections::BTreeMap;
-use valueexpression::{Quotes, Value, Unit};
+use unit::Unit;
+use valueexpression::{Quotes, Value};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     f.insert("quote",

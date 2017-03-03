@@ -3,7 +3,8 @@ use functions::{SassFunction, badarg};
 use num_rational::Rational;
 use num_traits::Signed;
 use std::collections::BTreeMap;
-use valueexpression::{Unit, Value};
+use unit::Unit;
+use valueexpression::Value;
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {

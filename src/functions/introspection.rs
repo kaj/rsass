@@ -13,8 +13,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
              }));
     f.insert("type_of",
              func!((value), |s| {
-        Ok(Value::Literal(s.get("value").type_name().into(), Quotes::None))
-    }));
+                 Ok(Value::Literal(s.get("value").type_name().into(),
+                                   Quotes::None))
+             }));
 }
 
 #[cfg(test)]
