@@ -109,6 +109,17 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     }));
 
+    fn opacity(color: Value) -> Result<Value, Error> {
+        match color {
+            Value::Color(_r, _g, _b, a, _) => {
+                Ok(Value::Numeric(a, Unit::None, true))
+            }
+            v => Err(badarg("color", &v)),
+        }
+    }
+    f.insert("opacity", func2!(opacity(color)));
+    f.insert("alpha", func2!(opacity(color)));
+
     fn fade_in(color: Value, amount: Value) -> Result<Value, Error> {
         match color {
             Value::Color(red, green, blue, alpha, _) => {
