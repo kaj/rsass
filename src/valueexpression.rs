@@ -175,6 +175,9 @@ impl fmt::Display for Value {
                                     write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
                                 }
                             }
+                        } else if a.is_zero() && r.is_zero() && g.is_zero() &&
+                                  b.is_zero() {
+                            write!(out, "transparent")
                         } else {
                             if out.alternate() {
                                 write!(out,
