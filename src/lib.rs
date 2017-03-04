@@ -171,7 +171,7 @@ pub enum SassItem {
     None,
     Comment(String),
     Import(Value),
-    Property(String, Value),
+    Property(String, Value, bool),
     Rule(Vec<Selector>, Vec<SassItem>),
     VariableDeclaration {
         name: String,
@@ -268,7 +268,8 @@ fn if_with_no_else() {
                             vec![selector(b"p").unwrap().1],
                             vec![SassItem::None,
                                  SassItem::Property("color".into(),
-                                                    Value::black())]),
+                                                    Value::black(),
+                                                    false)]),
                              SassItem::None],
                         vec![])))
 }
@@ -343,7 +344,7 @@ fn test_mixin_declaration() {
                        Value::MultiSpace(
                            vec![string("baz"),
                                 Value::Variable("x".into())]),
-                       )],
+                       false)],
                }))
 }
 
@@ -362,14 +363,16 @@ fn test_mixin_declaration_default_and_subrules() {
                             ("b".into(), string("flug"))]),
                    body: vec![
                        SassItem::Property("foo-bar".into(),
-                                          string("baz")),
+                                          string("baz"),
+                                          false),
                        SassItem::Rule(
                            vec![selector(b"foo").unwrap().1,
                                 selector(b"bar").unwrap().1],
                            vec![SassItem::None,
                                 SassItem::Property(
                                     "property".into(),
-                                    Value::Variable("b".into()))]),
+                                    Value::Variable("b".into()),
+                                    false)]),
                        SassItem::None,
                        ]}))
 }
@@ -394,10 +397,16 @@ named!(property<&[u8], SassItem>,
        do_parse!(opt_spacelike >>
                  name: name >> opt_spacelike >>
                  tag!(":") >> opt_spacelike >>
-                 val: value_expression >> opt_spacelike >>
+                 val: value_expression >>
+                 imp: opt_important >> opt_spacelike >>
                  opt!(tag!(";")) >> opt_spacelike >>
-                 (SassItem::Property(name, val))));
+                 (SassItem::Property(name, val, imp))));
 
+named!(opt_important<bool>,
+       map!(opt!(do_parse!(opt_spacelike >> tag!("!") >>
+                           opt_spacelike >> tag!("important") >>
+                           (()))),
+            |o: Option<()>| o.is_some()));
 #[test]
 fn test_simple_property() {
     use num_rational::Rational;
@@ -408,14 +417,16 @@ fn test_simple_property() {
     assert_eq!(property(b"color: red;\n"),
                Done(&b""[..], SassItem::Property(
                    "color".to_string(),
-                   Value::Color(r(255), r(0), r(0), one, Some("red".into())))))
+                   Value::Color(r(255), r(0), r(0), one, Some("red".into())),
+                   false)))
 }
 #[test]
 fn test_property_2() {
     assert_eq!(property(b"background-position: 90% 50%;\n"),
                Done(&b""[..], SassItem::Property(
                    "background-position".to_string(),
-                   Value::MultiSpace(vec![percentage(90), percentage(50)]))))
+                   Value::MultiSpace(vec![percentage(90), percentage(50)]),
+                   false)))
 }
 
 #[cfg(test)]

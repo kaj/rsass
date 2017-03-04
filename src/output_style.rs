@@ -125,7 +125,7 @@ impl OutputStyle {
                     write!(result, "/*{}*/", c).unwrap();
                 }
             }
-            &SassItem::Property(_, _) => {
+            &SassItem::Property(_, _, _) => {
                 panic!("Global property not allowed");
             }
             &SassItem::AtRule(ref query, ref body) => {
@@ -256,15 +256,20 @@ impl OutputStyle {
                         write!(direct, "/*{}*/", c)?;
                     }
                 }
-                &SassItem::Property(ref name, ref value) => {
+                &SassItem::Property(ref name, ref value, ref important) => {
                     self.do_indent(direct, indent + 2)?;
                     if self.is_compressed() {
                         write!(direct,
-                               "{}:{:#};",
+                               "{}:{:#}{};",
                                name,
-                               scope.evaluate(value))?;
+                               scope.evaluate(value),
+                               if *important { "!important" } else { "" })?;
                     } else {
-                        write!(direct, "{}: {};", name, scope.evaluate(value))?;
+                        write!(direct,
+                               "{}: {}{};",
+                               name,
+                               scope.evaluate(value),
+                               if *important { " !important" } else { "" })?;
                     }
                 }
                 &SassItem::Rule(ref s, ref b) => {
