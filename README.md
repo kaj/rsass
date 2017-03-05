@@ -10,8 +10,8 @@ Rasmus.
 
 The build contains a small but growing number of tests from
 https://github.com/sass/sass-spec .
-A default run of sass-spec found 420 of 3286 tests running (or 449 of
-6041 when claiming to be libsass).
+A default run of sass-spec found 502 of 3289 tests running (or 532 of
+6044 when claiming to be libsass).
 So this project is really not done yet.
 
 If you want a working rust library for sass, you will probably be
