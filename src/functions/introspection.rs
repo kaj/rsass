@@ -17,24 +17,24 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                                    Quotes::None))
              }));
     f.insert("unit",
-             func!((value), |s| {
-                 Ok(Value::Literal(match &s.get("value") {
-                         &Value::Numeric(_, ref unit, _) => format!("{}", unit),
-                         _ => "".into(),
-                     },
-                     Quotes::Double))
-             }));
+             func!((value), |s| Ok(Value::Literal(match &s.get("value") {
+                 &Value::Numeric(_, ref unit, _) => format!("{}", unit),
+                 _ => "".into(),
+             },
+                                                  Quotes::Double))
+             ));
     f.insert("comparable",
-             func!((number1, number2), |s| {
-                 match (&s.get("number1"), &s.get("number2")) {
-                     (&Value::Numeric(_, ref u1, _),
-                      &Value::Numeric(_, ref u2, _)) => {
-                         // TODO e.g. cm and mm are comparable too!
-                         Ok(Value::bool(u1 == u2))
-                     }
-                     (v1, v2) => Err(badargs(&["number", "number"], &[v1, v2])),
-                 }
-             }));
+             func!((number1, number2),
+                   |s| match (&s.get("number1"), &s.get("number2")) {
+                       (&Value::Numeric(_, ref u1, _),
+                        &Value::Numeric(_, ref u2, _)) => {
+                           // TODO e.g. cm and mm are comparable too!
+                           Ok(Value::bool(u1 == u2))
+                       }
+                       (v1, v2) => {
+                           Err(badargs(&["number", "number"], &[v1, v2]))
+                       }
+                   }));
 }
 
 #[cfg(test)]
