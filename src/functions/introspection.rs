@@ -17,12 +17,13 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                                    Quotes::None))
              }));
     f.insert("unit",
-             func!((value), |s| Ok(Value::Literal(match &s.get("value") {
-                 &Value::Numeric(_, ref unit, _) => format!("{}", unit),
-                 _ => "".into(),
-             },
-                                                  Quotes::Double))
-             ));
+             func!((value), |s| {
+        let v = match &s.get("value") {
+            &Value::Numeric(_, ref unit, _) => format!("{}", unit),
+            _ => "".into(),
+        };
+        Ok(Value::Literal(v, Quotes::Double))
+    }));
     f.insert("comparable",
              func!((number1, number2),
                    |s| match (&s.get("number1"), &s.get("number2")) {
