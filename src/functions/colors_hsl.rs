@@ -199,12 +199,7 @@ pub fn rgb_to_hsl(r: &Rational,
                   -> (Rational, Rational, Rational) {
     let ff = Rational::from_integer(255);
     let (r, g, b) = (r / ff, g / ff, b / ff);
-    let (max, min) = {
-        let v = [(r, 0), (g, 1), (b, 2)];
-        (v.iter().max().unwrap().clone(), v.iter().min().unwrap().clone())
-    };
-    let largest = max.1;
-    let (max, min) = (max.0, min.0);
+    let (max, min, largest) = max_min_largest(r, g, b);
     let half = Rational::new(1, 2);
     let mid = (max + min) * half;
 
@@ -231,6 +226,15 @@ pub fn rgb_to_hsl(r: &Rational,
         } * Rational::new(360, 6);
         (h, s, mid)
     }
+}
+
+// Find which of three numbers are largest and smallest
+fn max_min_largest(a: Rational, b: Rational, c: Rational)
+                   -> (Rational, Rational, u32) {
+    let v = [(a, 0), (b, 1), (c, 2)];
+    let max = v.iter().max().unwrap().clone();
+    let min = v.iter().min().unwrap().clone();
+    (max.0, min.0, max.1)
 }
 
 /// Convert a value in the 0 .. 1 range to u8
