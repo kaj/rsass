@@ -37,7 +37,6 @@ mod parseutil;
 mod valueexpression;
 mod variablescope;
 mod output_style;
-mod identify_last_iterator;
 mod unit;
 
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
