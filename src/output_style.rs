@@ -219,12 +219,12 @@ impl OutputStyle {
             if self.is_compressed() && direct.last() == Some(&b';') {
                 direct.pop();
             }
-            out.write(&direct)?;
+            out.write_all(&direct)?;
             self.do_indent(out, indent)?;
             write!(out, "}}")?;
             self.do_indent(out, 0)?;
         }
-        out.write(&sub)?;
+        out.write_all(&sub)?;
         Ok(())
     }
 
@@ -351,7 +351,7 @@ impl OutputStyle {
                         if self.is_compressed() && s1.last() == Some(&b';') {
                             s1.pop();
                         }
-                        sub.write(&s1)?;
+                        sub.write_all(&s1)?;
                         self.do_indent(sub, 2)?;
                         write!(sub, "}}")?;
                     }
