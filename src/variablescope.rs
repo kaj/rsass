@@ -86,13 +86,13 @@ impl<'a> ScopeImpl<'a> {
             }
             &Value::MultiSpace(ref v) => {
                 Value::MultiSpace(v.iter()
-                    .map(|v| self.do_evaluate(v, false))
-                    .collect::<Vec<_>>())
+                                      .map(|v| self.do_evaluate(v, false))
+                                      .collect::<Vec<_>>())
             }
             &Value::MultiComma(ref v) => {
                 Value::MultiComma(v.iter()
-                    .map(|v| self.do_evaluate(v, false))
-                    .collect::<Vec<_>>())
+                                      .map(|v| self.do_evaluate(v, false))
+                                      .collect::<Vec<_>>())
             }
             &Value::Call(ref name, ref args) => {
                 if let Some(function) = get_function(name) {

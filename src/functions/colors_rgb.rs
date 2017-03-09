@@ -8,15 +8,13 @@ use valueexpression::Value;
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    f.insert("rgb",
-             func!((red, green, blue), |s| {
-                 Ok(Value::rgba(to_int(s.get("red"))?,
-                                to_int(s.get("green"))?,
-                                to_int(s.get("blue"))?,
-                                Rational::one()))
-             }));
-    f.insert("rgba",
-             func!((red, green, blue, alpha), |s: &Scope| {
+    def!(f, rgb(red, green, blue), |s| {
+        Ok(Value::rgba(to_int(s.get("red"))?,
+                       to_int(s.get("green"))?,
+                       to_int(s.get("blue"))?,
+                       Rational::one()))
+    });
+    def!(f, rgba(red, green, blue, alpha), |s: &Scope| {
         let red = s.get("red");
         let alpha = s.get("alpha");
         if let Value::Color(r, g, b, _, _) = red {
@@ -32,27 +30,23 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                            to_int(s.get("blue"))?,
                            to_rational(alpha)?))
         }
-    }));
+    });
     fn num(v: &Rational) -> Result<Value, Error> {
         Ok(Value::Numeric(*v, Unit::None, true))
     }
-    f.insert("red",
-             func!((color), |s: &Scope| match &s.get("color") {
-                 &Value::Color(ref red, _, _, _, _) => num(red),
-                 value => Err(badarg("color", value)),
-             }));
-    f.insert("green",
-             func!((color), |s: &Scope| match &s.get("color") {
-                 &Value::Color(_, ref green, _, _, _) => num(green),
-                 value => Err(badarg("color", value)),
-             }));
-    f.insert("blue",
-             func!((color), |s: &Scope| match &s.get("color") {
-                 &Value::Color(_, _, ref blue, _, _) => num(blue),
-                 value => Err(badarg("color", value)),
-             }));
-    f.insert("mix",
-             func!((color1, color2, weight = b"50%"), |s| {
+    def!(f, red(color), |s: &Scope| match &s.get("color") {
+        &Value::Color(ref red, _, _, _, _) => num(red),
+        value => Err(badarg("color", value)),
+    });
+    def!(f, green(color), |s: &Scope| match &s.get("color") {
+        &Value::Color(_, ref green, _, _, _) => num(green),
+        value => Err(badarg("color", value)),
+    });
+    def!(f, blue(color), |s: &Scope| match &s.get("color") {
+        &Value::Color(_, _, ref blue, _, _) => num(blue),
+        value => Err(badarg("color", value)),
+    });
+    def!(f, mix(color1, color2, weight = b"50%"), |s| {
         let color1 = s.get("color1");
         let color2 = s.get("color2");
         let weight = s.get("weight");
@@ -78,23 +72,22 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Err(badargs(&["color", "color", "number"],
                         &[&color1, &color2, &weight]))
         }
-    }));
-    f.insert("invert",
-             func!((color), |s: &Scope| match &s.get("color") {
-                 &Value::Color(ref r, ref g, ref b, ref a, _) => {
-                     let ff = Rational::new(255, 1);
-                     Ok(Value::rgba(ff - r, ff - g, ff - b, *a))
-                 }
-                 value => Err(badarg("color", value)),
-             }));
+    });
+    def!(f, invert(color), |s: &Scope| match &s.get("color") {
+        &Value::Color(ref r, ref g, ref b, ref a, _) => {
+            let ff = Rational::new(255, 1);
+            Ok(Value::rgba(ff - r, ff - g, ff - b, *a))
+        }
+        value => Err(badarg("color", value)),
+    });
 }
 
 fn to_int(v: Value) -> Result<Rational, Error> {
-    Ok(match v {
-        Value::Numeric(v, Unit::Percent, _) => Rational::new(255, 100) * v,
-        Value::Numeric(v, _, _) => v,
-        v => return Err(badarg("number", &v)),
-    })
+    match v {
+        Value::Numeric(v, Unit::Percent, _) => Ok(Rational::new(255, 100) * v),
+        Value::Numeric(v, _, _) => Ok(v),
+        v => Err(badarg("number", &v)),
+    }
 }
 
 fn to_rational(v: Value) -> Result<Rational, Error> {

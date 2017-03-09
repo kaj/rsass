@@ -4,7 +4,7 @@ use nom::multispace;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use operator::Operator;
-use parseutil::{opt_spacelike, name, spacelike};
+use parseutil::{name, opt_spacelike, spacelike};
 use std::fmt;
 use std::str::{FromStr, from_utf8};
 use unit::{Unit, unit};
@@ -118,10 +118,10 @@ impl fmt::Display for Value {
                                "\"{}\"",
                                s.chars()
                                    .flat_map(|c| match c {
-                                       '\\' => vec!['\\', '\\'],
-                                       '"' => vec!['\\', '"'],
-                                       c => vec![c],
-                                   })
+                                                 '\\' => vec!['\\', '\\'],
+                                                 '"' => vec!['\\', '"'],
+                                                 c => vec![c],
+                                             })
                                    .collect::<String>())
                     }
                     &Quotes::Single => {
@@ -202,10 +202,10 @@ impl fmt::Display for Value {
                 let t = v.iter()
                     .filter(|v| !v.is_null())
                     .map(|v| if out.alternate() {
-                        format!("{:#}", v)
-                    } else {
-                        format!("{}", v)
-                    })
+                             format!("{:#}", v)
+                         } else {
+                             format!("{}", v)
+                         })
                     .collect::<Vec<_>>()
                     .join(" ");
                 write!(out, "{}", t)
@@ -214,10 +214,10 @@ impl fmt::Display for Value {
                 let t = v.iter()
                     .filter(|v| !v.is_null())
                     .map(|v| if out.alternate() {
-                        format!("{:#}", v)
-                    } else {
-                        format!("{}", v)
-                    })
+                             format!("{:#}", v)
+                         } else {
+                             format!("{}", v)
+                         })
                     .collect::<Vec<_>>()
                     .join(if out.alternate() { "," } else { ", " });
                 write!(out, "{}", t)
@@ -457,7 +457,7 @@ named!(hexchar2,
 
 fn from_hex(v: &[u8]) -> Rational {
     Rational::from_integer(u8::from_str_radix(from_utf8(v).unwrap(), 16)
-        .unwrap() as isize)
+                               .unwrap() as isize)
 }
 
 fn unescape(s: &str) -> String {
@@ -465,16 +465,16 @@ fn unescape(s: &str) -> String {
     let mut result = String::new();
     while let Some(c) = i.next() {
         result.push(match c {
-            '\\' => {
-                match i.next() {
-                    Some('n') => '\n',
-                    Some('t') => '\t',
-                    Some(c) => c,
-                    None => '\\',
-                }
-            }
-            c => c,
-        });
+                        '\\' => {
+                            match i.next() {
+                                Some('n') => '\n',
+                                Some('t') => '\t',
+                                Some(c) => c,
+                                None => '\\',
+                            }
+                        }
+                        c => c,
+                    });
     }
     result
 }

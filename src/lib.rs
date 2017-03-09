@@ -44,7 +44,7 @@ pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
 use valueexpression::{Value, value_expression};
-use variablescope::{ScopeImpl, Scope};
+use variablescope::{Scope, ScopeImpl};
 
 /// Parse scss data and write css in the given style.
 ///

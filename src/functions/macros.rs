@@ -17,6 +17,13 @@ macro_rules! func {
         }
     };
 }
+macro_rules! def {
+    ($f:expr, $name:ident( $($arg:ident$(=$value:expr)* ),* ), $body:expr) => {
+        $f.insert(stringify!($name),
+                  func!(($($arg $( = $value )* ),*), $body))
+    }
+}
+
 macro_rules! func2 {
     ($name:ident( $($arg:ident $( = $value:expr )* ),* )) => {
         func!(($($arg $( = $value )* ),*),

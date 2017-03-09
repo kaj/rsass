@@ -27,9 +27,9 @@ impl FormalArgs {
                 .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
                 .map(|&(ref _k, ref v)| v)
                 .or_else(|| match args.0.get(i) {
-                    Some(&(None, ref v)) => Some(v),
-                    _ => None,
-                })
+                             Some(&(None, ref v)) => Some(v),
+                             _ => None,
+                         })
                 .unwrap_or(default);
             argscope.define(&name, &value, false);
         }
@@ -52,9 +52,11 @@ impl CallArgs {
 
     pub fn xyzzy(&self, scope: &mut Scope) -> Self {
         CallArgs(self.0
-            .iter()
-            .map(|&(ref n, ref v)| (n.clone(), scope.evaluate(&v)))
-            .collect())
+                     .iter()
+                     .map(|&(ref n, ref v)| {
+                              (n.clone(), scope.evaluate(&v))
+                          })
+                     .collect())
     }
 }
 
@@ -69,9 +71,9 @@ impl fmt::Display for CallArgs {
         let t = self.0
             .iter()
             .map(|kv| match kv {
-                &(Some(ref k), ref v) => format!("${}: {}", k, v),
-                &(None, ref v) => format!("{}", v),
-            })
+                     &(Some(ref k), ref v) => format!("${}: {}", k, v),
+                     &(None, ref v) => format!("{}", v),
+                 })
             .collect::<Vec<_>>()
             .join(", ");
         write!(out, "{}", t)

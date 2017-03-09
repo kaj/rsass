@@ -1,5 +1,8 @@
 max_width = 80
 ideal_width = 72
 
-report_fixme = "Always"
+chain_one_line_max = 7
+reorder_imported_names = true
 reorder_imports = true
+report_fixme = "Always"
+write_mode = "Diff"

@@ -54,14 +54,14 @@ fn badargs(expected: &[&str], actual: &[&Value]) -> Error {
 lazy_static! {
     static ref FUNCTIONS: BTreeMap<&'static str, SassFunction> = {
         let mut f = BTreeMap::new();
-        f.insert("if", func!((condition, if_true, if_false), |s| {
+        def!(f, if(condition, if_true, if_false), |s| {
             if s.get("condition").is_true() {
                 Ok(s.get("if_true"))
             } else {
                 Ok(s.get("if_false"))
             }
-        }));
-        f.insert("nth", func!((list, n), |s| {
+        });
+        def!(f, nth(list, n), |s| {
             let n = match s.get("n") {
                 Value::Numeric(val, _, _) if val.denom() == &1 => {
                     val.to_integer()
@@ -74,7 +74,7 @@ lazy_static! {
                 v => return Err(badarg("list", &v)),
             };
             Ok(list[n as usize - 1].clone())
-        }));
+        });
         colors_hsl::register(&mut f);
         colors_rgb::register(&mut f);
         colors_other::register(&mut f);
@@ -96,10 +96,10 @@ fn test_rgb() {
                                Rational::new(225, 1),
                                Rational::one(),
                                None)),
-               FUNCTIONS.get("rgb")
-                   .unwrap()
-                   .call(&mut ScopeImpl::new(),
-                         &call_args(b"(17, 0, 225)").unwrap().1))
+               FUNCTIONS.get("rgb").unwrap().call(&mut ScopeImpl::new(),
+                                                  &call_args(b"(17, 0, 225)")
+                                                      .unwrap()
+                                                      .1))
 }
 
 #[test]

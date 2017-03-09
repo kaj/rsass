@@ -3,7 +3,7 @@ use selectors::Selector;
 use std::ascii::AsciiExt;
 use std::io::{self, Write};
 use valueexpression::Value;
-use variablescope::{ScopeImpl, Scope};
+use variablescope::{Scope, ScopeImpl};
 
 /// Selected target format.
 /// Only formats that are variants of this type are supported by rsass.
@@ -231,10 +231,10 @@ impl OutputStyle {
     fn join_selectors(&self, selectors: &[Selector]) -> String {
         selectors.iter()
             .map(|s| if self.is_compressed() {
-                format!("{:#}", s)
-            } else {
-                format!("{}", s)
-            })
+                     format!("{:#}", s)
+                 } else {
+                     format!("{}", s)
+                 })
             .collect::<Vec<_>>()
             .join(if self.is_compressed() { "," } else { ", " })
     }
@@ -309,7 +309,7 @@ impl OutputStyle {
                                  "/* Unknown mixin {}({:?}) */",
                                  name,
                                  args)
-                            .unwrap();
+                                .unwrap();
                     }
                 }
                 &SassItem::Import(ref name) => {

@@ -296,10 +296,10 @@ fn t13_back_references() {
 fn t14_imports() {
     assert_eq!(compile_scss_file("tests/basic/14_imports/input.scss".as_ref(),
                                  OutputStyle::Normal)
-                   .and_then(|s| {
-                       String::from_utf8(s)
+                       .and_then(|s| {
+                                     String::from_utf8(s)
                            .map_err(|e| format!("Non-utf8 output: {}", e))
-                   }),
+                                 }),
                Ok("div span {\n  moo: goo;\n}\n\n\
                    foo {\n  blah: blah;\n}\n\
                    foo goo {\n  blee: blee;\n  hello: world;\n}\n\
@@ -308,7 +308,7 @@ fn t14_imports() {
                    foo goo hoo d {\n  inside: d now;\n}\n\
                    foo blux {\n  hey: another thing;\n  \
                    ho: will this work;\n}\n"
-                   .into()))
+                          .into()))
 }
 
 #[test]
@@ -638,14 +638,14 @@ fn t33_ambigous_imports() {
     assert_eq!(compile_scss_file("tests/basic/33_ambiguous_imports/input.scss"
                                      .as_ref(),
                                  OutputStyle::Normal)
-                   .and_then(|s| {
-                       String::from_utf8(s)
-                           .map_err(|e| format!("Non-utf8 output: {}", e))
-                   }),
+                       .and_then(|s| {
+                                     String::from_utf8(s)
+                               .map_err(|e| format!("Non-utf8 output: {}", e))
+                                 }),
                Ok("main {\n  color: red;\n}\n\n\
                    dir {\n  color: blue;\n}\n\n\
                    fudge {\n  color: brown;\n}\n"
-                   .into()))
+                          .into()))
 }
 
 // TODO Implement test 35 ...
@@ -685,7 +685,7 @@ fn t43_str_length() {
            foo: str-length(\"hello there\");\n  \
            foo: str-length(\"Façade\");\n  foo: str-length(\"Tromsø\");\n  \
            foo: str-length(\"Ãlso\");\n}"
-              .as_bytes(),
+                  .as_bytes(),
           "div {\n  foo: 7;\n  foo: 7;\n  foo: 0;\n  foo: 11;\n  foo: 6;\n  \
            foo: 6;\n  foo: 4;\n}\n")
 }
@@ -721,7 +721,7 @@ fn t45_str_insert() {
            \" ABCD \", -3);\n  \
            bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\", \
            \" ABCD \", -28);\n\n}"
-              .as_bytes(),
+                  .as_bytes(),
           "@charset \"UTF-8\";\n\
            div {\n  bar: \"Xabcd\";\n  bar: \"Xabcd\";\n  \
            bar: \"X'fjd'skabcd\";\n  bar: \"abecd\";\n  bar: \"abcde\";\n  \
@@ -762,7 +762,7 @@ fn t46_str_index() {
            \"abcde\");\n  \
            bar: a str-index(\"abcde\", \"\");\n  \
            bar: a str-index(\"\", \"\");\n\n}"
-              .as_bytes(),
+                  .as_bytes(),
           "div {\n  bar: a 2;\n  bar: a 1;\n  bar: a 5;\n  bar: a;\n  \
            bar: a;\n  bar: a;\n  bar: a 15;\n  bar: a 6;\n  bar: a;\n  \
            bar: a 1;\n  bar: a 1;\n}\n")
@@ -800,7 +800,7 @@ fn t53_escaped_quotes() {
            $open-quote: \\201C;\n$close-quote: \\201D;\n\n\
            .\\E9motion { \nblah: hi; }\n.\\E9 dition { \nblah: hi; }\n.\
            \\0000E9dition { \nblah: hi; }\n"
-              .as_bytes(),
+                  .as_bytes(),
           "[data-icon='test-1']:before {\n  content: '\\\\';\n}\n\n\
            [data-icon='test-2']:before {\n  content: '\\'';\n}\n\n\
            [data-icon='test-3']:before {\n  content: \"\\\"\";\n}\n\n\
