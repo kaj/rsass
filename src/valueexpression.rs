@@ -129,10 +129,10 @@ impl fmt::Display for Value {
                                "'{}'",
                                s.chars()
                                    .flat_map(|c| match c {
-                                       '\\' => vec!['\\', '\\'],
-                                       '\'' => vec!['\\', '\''],
-                                       c => vec![c],
-                                   })
+                                                 '\\' => vec!['\\', '\\'],
+                                                 '\'' => vec!['\\', '\''],
+                                                 c => vec![c],
+                                             })
                                    .collect::<String>())
                     }
                     &Quotes::None => write!(out, "{}", s),
