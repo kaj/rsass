@@ -53,10 +53,7 @@ impl Lookup {
             n2v.insert(n, v);
             v2n.insert(v, n);
         }
-        Lookup {
-            n2v: n2v,
-            v2n: v2n,
-        }
+        Lookup { n2v: n2v, v2n: v2n }
     }
 }
 

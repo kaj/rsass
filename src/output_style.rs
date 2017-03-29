@@ -64,10 +64,12 @@ impl OutputStyle {
                 self.write_rule(&s, &b, result, globals, None, file_context, 0)
                     .unwrap();
             }
-            &SassItem::VariableDeclaration { ref name,
-                                             ref val,
-                                             ref default,
-                                             ref global } => {
+            &SassItem::VariableDeclaration {
+                 ref name,
+                 ref val,
+                 ref default,
+                 ref global,
+             } => {
                 if *default {
                     globals.define_default(&name, &val, *global);
                 } else {
@@ -229,7 +231,8 @@ impl OutputStyle {
     }
 
     fn join_selectors(&self, selectors: &[Selector]) -> String {
-        selectors.iter()
+        selectors
+            .iter()
             .map(|s| if self.is_compressed() {
                      format!("{:#}", s)
                  } else {
@@ -281,10 +284,12 @@ impl OutputStyle {
                                     file_context,
                                     indent)?;
                 }
-                &SassItem::VariableDeclaration { ref name,
-                                                 ref val,
-                                                 default,
-                                                 global } => {
+                &SassItem::VariableDeclaration {
+                     ref name,
+                     ref val,
+                     default,
+                     global,
+                 } => {
                     if default {
                         scope.define_default(&name, &val, global);
                     } else {

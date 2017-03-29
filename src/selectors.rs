@@ -36,11 +36,7 @@ pub enum SelectorPart {
     Simple(String),
     Descendant,
     RelOp(u8), // >, +, ~
-    Attribute {
-        name: String,
-        op: String,
-        val: String,
-    },
+    Attribute { name: String, op: String, val: String },
     Pseudo { name: String, arg: Option<String> },
     BackRef,
 }

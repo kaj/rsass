@@ -96,10 +96,11 @@ fn test_rgb() {
                                Rational::new(225, 1),
                                Rational::one(),
                                None)),
-               FUNCTIONS.get("rgb").unwrap().call(&mut ScopeImpl::new(),
-                                                  &call_args(b"(17, 0, 225)")
-                                                       .unwrap()
-                                                       .1))
+               FUNCTIONS
+                   .get("rgb")
+                   .unwrap()
+                   .call(&mut ScopeImpl::new(),
+                         &call_args(b"(17, 0, 225)").unwrap().1))
 }
 
 #[test]
