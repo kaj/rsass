@@ -77,6 +77,9 @@ impl OutputStyle {
                 }
             }
             &SassItem::MixinDeclaration(ref m) => globals.define_mixin(&m),
+            &SassItem::FunctionDeclaration { ref name, ref func } => {
+                globals.define_function(name, func.clone())
+            }
             &SassItem::MixinCall { ref name, ref args } => {
                 if *separate {
                     self.do_indent(result, 0).unwrap();
@@ -179,6 +182,9 @@ impl OutputStyle {
                         .unwrap();
                     assert_eq!(direct, &[]);
                 }
+            }
+            &SassItem::Return(_) => {
+                panic!("Return not allowed in global context");
             }
             &SassItem::None => (),
         }
@@ -299,6 +305,9 @@ impl OutputStyle {
                 &SassItem::MixinDeclaration(ref m) => {
                     scope.define_mixin(m);
                 }
+                &SassItem::FunctionDeclaration { ref name, ref func } => {
+                    scope.define_function(name, func.clone())
+                }
                 &SassItem::MixinCall { ref name, ref args } => {
                     if let Some(mixin) = scope.get_mixin(name) {
                         let mut argscope = mixin.argscope(scope, &args);
@@ -386,6 +395,9 @@ impl OutputStyle {
                                          0)
                             .unwrap();
                     }
+                }
+                &SassItem::Return(_) => {
+                    panic!("Return not allowed in global context");
                 }
                 &SassItem::None => (),
             }

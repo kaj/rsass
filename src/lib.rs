@@ -40,6 +40,7 @@ mod output_style;
 mod unit;
 
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
+use functions::SrcFunction;
 pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
@@ -155,6 +156,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
                    import |
                    variable_declaration |
                    map!(mixin_declaration, |d| SassItem::MixinDeclaration(d)) |
+                   function_declaration |
                    mixin_call |
                    if_statement |
                    at_rule |
@@ -172,6 +174,7 @@ pub enum SassItem {
     Import(Value),
     Property(String, Value, bool),
     Rule(Vec<Selector>, Vec<SassItem>),
+    Return(Value),
     VariableDeclaration {
         name: String,
         val: Value,
@@ -180,6 +183,7 @@ pub enum SassItem {
     },
     AtRule(String, Vec<SassItem>),
     MixinDeclaration(MixinDeclaration),
+    FunctionDeclaration { name: String, func: SrcFunction },
     MixinCall { name: String, args: CallArgs },
     IfStatement(Value, Vec<SassItem>, Vec<SassItem>),
 }
@@ -206,6 +210,7 @@ named!(body_item<SassItem>,
            mixin_call |
            import |
            if_statement |
+           return_stmt |
            at_rule |
            map!(comment, |c| SassItem::Comment(from_utf8(c).unwrap().into()))
                ));
@@ -375,6 +380,24 @@ fn test_mixin_declaration_default_and_subrules() {
                        SassItem::None,
                        ]}))
 }
+
+named!(function_declaration<SassItem>,
+       do_parse!(tag!("@function") >> spacelike >>
+                 name: name >> opt_spacelike >>
+                 args: formal_args >> opt_spacelike >>
+                 tag!("{") >> opt_spacelike >>
+                 body: many0!(body_item) >>
+                 tag!("}") >>
+                 (SassItem::FunctionDeclaration{
+                     name: name,
+                     func: SrcFunction::new(args, body),
+                 })));
+
+named!(return_stmt<SassItem>,
+       do_parse!(tag!("@return") >> spacelike >>
+                 v: value_expression >> opt_spacelike >>
+                 tag!(";") >>
+                 (SassItem::Return(v))));
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct MixinDeclaration {

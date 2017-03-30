@@ -1,3 +1,4 @@
+use super::SassItem;
 use formalargs::{CallArgs, FormalArgs};
 use std::collections::BTreeMap;
 use valueexpression::Value;
@@ -13,7 +14,7 @@ mod introspection;
 mod numbers;
 mod strings;
 
-pub fn get_function(name: &str) -> Option<&SassFunction> {
+pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
     let name = name.replace("-", "_");
     let name: &str = &name;
     FUNCTIONS.get(name)
@@ -31,6 +32,23 @@ impl SassFunction {
                 -> Result<Value, Error> {
         let s = self.args.eval(scope, args);
         (self.body)(&s)
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SrcFunction {
+    args: FormalArgs,
+    body: Vec<SassItem>,
+}
+
+impl SrcFunction {
+    pub fn new(args: FormalArgs, body: Vec<SassItem>) -> Self {
+        SrcFunction { args: args, body: body }
+    }
+
+    pub fn call(&self, scope: &mut Scope, args: &CallArgs) -> Value {
+        let mut s2 = self.args.eval(scope, args);
+        s2.eval_body(&self.body).unwrap_or(Value::Null)
     }
 }
 

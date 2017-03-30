@@ -1,7 +1,8 @@
 //! A scope is something that contains variable values.
 
-use super::MixinDeclaration;
-use functions::get_function;
+use super::{MixinDeclaration, SassItem};
+use formalargs::CallArgs;
+use functions::{SrcFunction, get_builtin_function};
 use num_traits::identities::Zero;
 use std::collections::BTreeMap;
 use unit::Unit;
@@ -11,6 +12,7 @@ pub struct ScopeImpl<'a> {
     parent: Option<&'a mut Scope>,
     variables: BTreeMap<String, Value>,
     mixins: BTreeMap<String, MixinDeclaration>,
+    functions: BTreeMap<String, SrcFunction>,
 }
 
 pub trait Scope {
@@ -21,7 +23,12 @@ pub trait Scope {
     fn define_mixin(&mut self, m: &MixinDeclaration);
     fn get_mixin(&self, name: &str) -> Option<MixinDeclaration>;
 
+    fn define_function(&mut self, name: &str, func: SrcFunction);
+    fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value>;
+
     fn evaluate(&mut self, val: &Value) -> Value;
+
+    fn eval_body(&mut self, body: &Vec<SassItem>) -> Option<Value>;
 }
 
 impl<'a> Scope for ScopeImpl<'a> {
@@ -53,8 +60,54 @@ impl<'a> Scope for ScopeImpl<'a> {
     fn define_mixin(&mut self, m: &MixinDeclaration) {
         self.mixins.insert(m.name.to_string(), m.clone());
     }
+    fn define_function(&mut self, name: &str, func: SrcFunction) {
+        self.functions.insert(name.to_string(), func);
+    }
+    fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value> {
+        if let Some(f) = self.functions.get(name).map(|f| f.clone()) {
+            return Some(f.call(self, args));
+        }
+        let a2 = args.xyzzy(self);
+        if let Some(ref mut p) = self.parent {
+            return p.call_function(name, &a2);
+        }
+        None
+    }
     fn evaluate(&mut self, val: &Value) -> Value {
         self.do_evaluate(val, false)
+    }
+
+    fn eval_body(&mut self, body: &Vec<SassItem>) -> Option<Value> {
+        for b in body {
+            let result = match b {
+                &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
+                    if self.evaluate(cond).is_true() {
+                        self.eval_body(do_if)
+                    } else {
+                        self.eval_body(do_else)
+                    }
+                }
+                &SassItem::VariableDeclaration {
+                     ref name,
+                     ref val,
+                     default,
+                     global,
+                 } => {
+                    if default {
+                        self.define_default(&name, &val, global);
+                    } else {
+                        self.define(&name, &val, global);
+                    }
+                    None
+                }
+                &SassItem::Return(ref v) => Some(v.clone()),
+                _ => None,
+            };
+            if let Some(result) = result {
+                return Some(result);
+            }
+        }
+        None
     }
 }
 
@@ -64,6 +117,7 @@ impl<'a> ScopeImpl<'a> {
             parent: None,
             variables: BTreeMap::new(),
             mixins: BTreeMap::new(),
+            functions: BTreeMap::new(),
         }
     }
     pub fn sub<'c>(parent: &'a mut Scope) -> Self {
@@ -71,6 +125,7 @@ impl<'a> ScopeImpl<'a> {
             parent: Some(parent),
             variables: BTreeMap::new(),
             mixins: BTreeMap::new(),
+            functions: BTreeMap::new(),
         }
     }
     fn do_evaluate(&mut self, val: &Value, arithmetic: bool) -> Value {
@@ -95,13 +150,21 @@ impl<'a> ScopeImpl<'a> {
                                       .collect::<Vec<_>>())
             }
             &Value::Call(ref name, ref args) => {
-                if let Some(function) = get_function(name) {
-                    match function.call(&mut *self, args) {
-                        Ok(v) => v,
-                        Err(e) => panic!("Error in function {}: {:?}", name, e),
+                match self.call_function(name, args) {
+                    Some(value) => value,
+                    None => {
+                        if let Some(function) = get_builtin_function(name) {
+                            match function.call(&mut *self, args) {
+                                Ok(v) => v,
+                                Err(e) => {
+                                    panic!("Error in function {}: {:?}",
+                                           name, e)
+                                }
+                            }
+                        } else {
+                            Value::Call(name.clone(), args.xyzzy(self))
+                        }
                     }
-                } else {
-                    Value::Call(name.clone(), args.xyzzy(self))
                 }
             }
             &Value::Product(ref a, ref b) => {
