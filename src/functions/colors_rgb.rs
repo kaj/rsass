@@ -1,5 +1,4 @@
 use super::{Error, SassFunction, badarg, badargs};
-use formalargs::FormalArgs;
 use num_rational::Rational;
 use num_traits::One;
 use std::collections::BTreeMap;

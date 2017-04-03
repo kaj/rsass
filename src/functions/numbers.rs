@@ -1,4 +1,3 @@
-use formalargs::FormalArgs;
 use functions::{SassFunction, badarg};
 use num_rational::Rational;
 use num_traits::Signed;

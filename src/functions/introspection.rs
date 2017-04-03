@@ -1,4 +1,3 @@
-use formalargs::FormalArgs;
 use functions::{SassFunction, badarg, badargs};
 use std::collections::BTreeMap;
 use valueexpression::{Quotes, Value};

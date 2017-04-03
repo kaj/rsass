@@ -11,10 +11,8 @@ macro_rules! one_arg {
 
 macro_rules! func {
     (( $($arg:ident $( = $value:expr )* ),* ), $body:expr) => {
-        SassFunction {
-            args: FormalArgs::new(vec![ $( one_arg!($arg $( = $value)* ) ),* ]),
-            body: Box::new($body),
-        }
+        SassFunction::builtin(vec![ $( one_arg!($arg $( = $value)* ) ),* ],
+                              Box::new($body))
     };
 }
 macro_rules! def {

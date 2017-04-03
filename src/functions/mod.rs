@@ -20,12 +20,18 @@ pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
     FUNCTIONS.get(name)
 }
 
+type BuiltinFn = Fn(&Scope) -> Result<Value, Error> + Send + Sync;
+
 pub struct SassFunction {
     args: FormalArgs,
-    body: Box<Fn(&Scope) -> Result<Value, Error> + Send + Sync>,
+    body: Box<BuiltinFn>,
 }
 
 impl SassFunction {
+    pub fn builtin(args: Vec<(String, Value)>, body: Box<BuiltinFn>) -> Self {
+        SassFunction { args: FormalArgs::new(args), body: body }
+    }
+
     pub fn call(&self,
                 scope: &mut Scope,
                 args: &CallArgs)
