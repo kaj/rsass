@@ -19,6 +19,7 @@ pub trait Scope {
     fn define(&mut self, name: &str, val: &Value, global: bool);
     fn define_default(&mut self, name: &str, val: &Value, global: bool);
     fn get(&self, name: &str) -> Value;
+    fn get_global(&self, name: &str) -> Value;
 
     fn define_mixin(&mut self, m: &MixinDeclaration);
     fn get_mixin(&self, name: &str) -> Option<MixinDeclaration>;
@@ -56,6 +57,13 @@ impl<'a> Scope for ScopeImpl<'a> {
             .map(|v| v.clone())
             .or_else(|| self.parent.as_ref().map(|p| p.get(name)))
             .unwrap_or(Value::Null)
+    }
+    fn get_global(&self, name: &str) -> Value {
+        if let Some(ref p) = self.parent.as_ref() {
+            p.get_global(name)
+        } else {
+            self.variables.get(name).map(|v| v.clone()).unwrap_or(Value::Null)
+        }
     }
     fn define_mixin(&mut self, m: &MixinDeclaration) {
         self.mixins.insert(m.name.to_string(), m.clone());

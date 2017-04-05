@@ -858,6 +858,41 @@ fn t55_variable_exists() {
 }
 
 #[test]
+fn t56_global_variable_exists() {
+    check(b"@function exists($name) {\n  \
+            @return global-variable-exists($name);\n}\n\n\
+            @function f() {\n  $foo: hi;\n  @return g();\n}\n\n\
+            @function g() {\n  @return global-variable-exists(foo);\n}\n\n\
+            $z: hi;\n\n\
+            div {\n  foo: global-variable-exists(x);    \n  \
+            foo: global-variable-exists(\"x\");    \n  \
+            foo: global-variable-exists(z);\n  \
+            foo: global-variable-exists(\"z\");    \n\n  \
+            span {\n    $x: false;\n\n    \
+            foo: global-variable-exists(x);\n    \
+            foo: global-variable-exists(\"x\");    \n    \
+            foo: global-variable-exists(y);\n    \
+            foo: global-variable-exists(\"y\");    \n\n    \
+            foo: global-variable-exists(z);\n    \
+            foo: global-variable-exists(\"z\");    \n\n    \
+            p {\n      foo: global-variable-exists(x);\n      \
+            foo: global-variable-exists(\"x\");    \n      \
+            foo: exists(x);\n      foo: exists(\"x\");    \n      \
+            foo: global-variable-exists(z);\n      \
+            foo: global-variable-exists(\"z\");    \n      \
+            foo: global-variable-exists(y);\n      \
+            foo: global-variable-exists(\"y\");   \n      \
+            foo: f();\n      $y: blah;\n      //TODO: check for shadowing\n    \
+            }\n  }\n\n}\n",
+          "div {\n  foo: false;\n  foo: false;\n  foo: true;\n  foo: true;\n}\n\
+           div span {\n  foo: false;\n  foo: false;\n  foo: false;\n  \
+           foo: false;\n  foo: true;\n  foo: true;\n}\n\
+           div span p {\n  foo: false;\n  foo: false;\n  foo: false;\n  \
+           foo: false;\n  foo: true;\n  foo: true;\n  foo: false;\n  \
+           foo: false;\n  foo: false;\n}\n")
+}
+
+#[test]
 fn t59_if_expression() {
     check(b"$x: 0;\n$if-false: whatever;\n\n\
             div {\n  \
