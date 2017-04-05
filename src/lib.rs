@@ -315,13 +315,13 @@ fn test_mixin_call_named_args() {
 named!(mixin_declaration<&[u8], MixinDeclaration>,
        do_parse!(tag!("@mixin") >> spacelike >>
                  name: name >> opt_spacelike >>
-                 args: formal_args >> opt_spacelike >>
+                 args: opt!(formal_args) >> opt_spacelike >>
                  tag!("{") >> opt_spacelike >>
                  body: many0!(body_item) >>
                  tag!("}") >>
                  (MixinDeclaration{
                      name: name,
-                     args: args,
+                     args: args.unwrap_or_default(),
                      body: body,
                  })));
 

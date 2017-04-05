@@ -150,7 +150,9 @@ impl OutputStyle {
                                  file_context,
                                  2)
                     .unwrap();
-                assert_eq!(direct, &[]);
+                assert!(direct.is_empty(),
+                        "Direct output in @-rule {:?}",
+                        query);
                 write!(result, "}}").unwrap();
             }
             &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {

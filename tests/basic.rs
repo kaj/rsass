@@ -942,6 +942,52 @@ fn t57_function_exists() {
 }
 
 #[test]
+fn t58_mixin_exists() {
+    check(b"@function exists($name) {\n  @return mixin-exists($name);\n}\n\n\
+            @function f() {\n  $foo: hi;\n  @return g();\n}\n\n\
+            @function g() {\n  @return mixin-exists(foo);\n}\n\n\
+            @function h() {\n  @return mixin-exists(lighten);\n}\n\n\
+            @mixin red-text { color: red; }\n\
+            @mixin blue-text { color: red; }\n\
+            @mixin green-text { color: red; }\n\n\
+            div {\n  foo: mixin-exists(red-text); \n  \
+            foo: mixin-exists(\"red-text\"); \n  \
+            foo: mixin-exists(blue-text); \n  \
+            foo: mixin-exists(\"blue-text\"); \n  \
+            foo: mixin-exists(green-text);   \n  \
+            foo: mixin-exists(\"green-text\");\n  foo: mixin-exists(nope);\n  \
+            foo: mixin-exists(\"nope\");\n  \
+            foo: g();\n  foo: f();\n  foo: h();\n\n\n  \
+            span {\n    foo: mixin-exists(red-text); \n    \
+            foo: mixin-exists(\"red-text\"); \n    \
+            foo: mixin-exists(blue-text); \n    \
+            foo: mixin-exists(\"blue-text\"); \n    \
+            foo: mixin-exists(green-text);   \n    \
+            foo: mixin-exists(\"green-text\"); \n    \
+            foo: mixin-exists(nope);\n    \
+            foo: mixin-exists(\"nope\");\n    \
+            foo: g();\n    foo: f();\n    foo: h();\n    \
+            p {\n      foo: mixin-exists(red-text); \n      \
+            foo: mixin-exists(\"red-text\"); \n      \
+            foo: mixin-exists(blue-text); \n      \
+            foo: mixin-exists(\"blue-text\"); \n      \
+            foo: mixin-exists(green-text);   \n      \
+            foo: mixin-exists(\"green-text\"); \n      \
+            foo: mixin-exists(nope);\n      \
+            foo: mixin-exists(\"nope\");\n      \
+            foo: g();\n      foo: f();\n      foo: h();\n    }\n  }\n\n}",
+          "div {\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  \
+           foo: true;\n  foo: true;\n  foo: false;\n  foo: false;\n  \
+           foo: false;\n  foo: false;\n  foo: false;\n}\n\
+           div span {\n  foo: true;\n  foo: true;\n  foo: true;\n  \
+           foo: true;\n  foo: true;\n  foo: true;\n  foo: false;\n  \
+           foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n}\n\
+           div span p {\n  foo: true;\n  foo: true;\n  foo: true;\n  \
+           foo: true;\n  foo: true;\n  foo: true;\n  foo: false;\n  \
+           foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n}\n")
+}
+
+#[test]
 fn t59_if_expression() {
     check(b"$x: 0;\n$if-false: whatever;\n\n\
             div {\n  \

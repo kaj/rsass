@@ -19,6 +19,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(badarg("string", v)),
     });
+    def!(f, mixin_exists(name), |s| match &s.get("name") {
+        &Value::Literal(ref v, _) => Ok(Value::bool(s.get_mixin(v).is_some())),
+        v => Err(badarg("string", v)),
+    });
     def!(f, type_of(value), |s| {
         Ok(Value::Literal(s.get("value").type_name().into(), Quotes::None))
     });

@@ -37,6 +37,12 @@ impl FormalArgs {
     }
 }
 
+impl Default for FormalArgs {
+    fn default() -> Self {
+        FormalArgs::new(vec![])
+    }
+}
+
 /// the actual arguments of a function or mixin call.
 ///
 /// Each argument has a Value.  Arguments may be named.
