@@ -40,7 +40,7 @@ mod output_style;
 mod unit;
 
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
-use functions::SrcFunction;
+use functions::SassFunction;
 pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
@@ -183,7 +183,7 @@ pub enum SassItem {
     },
     AtRule(String, Vec<SassItem>),
     MixinDeclaration(MixinDeclaration),
-    FunctionDeclaration { name: String, func: SrcFunction },
+    FunctionDeclaration { name: String, func: SassFunction },
     MixinCall { name: String, args: CallArgs },
     IfStatement(Value, Vec<SassItem>, Vec<SassItem>),
 }
@@ -388,9 +388,9 @@ named!(function_declaration<SassItem>,
                  tag!("{") >> opt_spacelike >>
                  body: many0!(body_item) >>
                  tag!("}") >>
-                 (SassItem::FunctionDeclaration{
+                 (SassItem::FunctionDeclaration {
                      name: name,
-                     func: SrcFunction::new(args, body),
+                     func: SassFunction::new(args, body),
                  })));
 
 named!(return_stmt<SassItem>,

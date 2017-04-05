@@ -10,10 +10,11 @@ macro_rules! one_arg {
 }
 
 macro_rules! func {
-    (( $($arg:ident $( = $value:expr )* ),* ), $body:expr) => {
+    (( $($arg:ident $( = $value:expr )* ),* ), $body:expr) => {{
+        use std::sync::Arc;
         SassFunction::builtin(vec![ $( one_arg!($arg $( = $value)* ) ),* ],
-                              Box::new($body))
-    };
+                              Arc::new($body))
+    }};
 }
 macro_rules! def {
     ($f:expr, $name:ident( $($arg:ident$(=$value:expr)* ),* ), $body:expr) => {

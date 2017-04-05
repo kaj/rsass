@@ -1,6 +1,8 @@
 use super::SassItem;
 use formalargs::{CallArgs, FormalArgs};
+use std::{cmp, fmt};
 use std::collections::BTreeMap;
+use std::sync::Arc;
 use valueexpression::Value;
 use variablescope::Scope;
 
@@ -22,39 +24,62 @@ pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
 
 type BuiltinFn = Fn(&Scope) -> Result<Value, Error> + Send + Sync;
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SassFunction {
     args: FormalArgs,
-    body: Box<BuiltinFn>,
+    body: FuncImpl,
+}
+
+#[derive(Clone)]
+pub enum FuncImpl {
+    Builtin(Arc<BuiltinFn>),
+    UserDefined(Vec<SassItem>),
+}
+
+impl cmp::PartialEq for FuncImpl {
+    fn eq(&self, rhs: &FuncImpl) -> bool {
+        match (self, rhs) {
+            (&FuncImpl::UserDefined(ref a), &FuncImpl::UserDefined(ref b)) => {
+                a == b
+            }
+            // Note: Maybe consider builtins equal if same Arc?
+            _ => false,
+        }
+    }
+}
+impl cmp::Eq for FuncImpl {}
+
+impl fmt::Debug for FuncImpl {
+    fn fmt(&self, out: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        match self {
+            &FuncImpl::Builtin(_) => write!(out, "(builtin function)"),
+            &FuncImpl::UserDefined(_) => write!(out, "(user-defined function)"),
+        }
+    }
 }
 
 impl SassFunction {
-    pub fn builtin(args: Vec<(String, Value)>, body: Box<BuiltinFn>) -> Self {
-        SassFunction { args: FormalArgs::new(args), body: body }
+    pub fn builtin(args: Vec<(String, Value)>, body: Arc<BuiltinFn>) -> Self {
+        SassFunction {
+            args: FormalArgs::new(args),
+            body: FuncImpl::Builtin(body),
+        }
+    }
+    pub fn new(args: FormalArgs, body: Vec<SassItem>) -> Self {
+        SassFunction { args: args, body: FuncImpl::UserDefined(body) }
     }
 
     pub fn call(&self,
                 scope: &mut Scope,
                 args: &CallArgs)
                 -> Result<Value, Error> {
-        let s = self.args.eval(scope, args);
-        (self.body)(&s)
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct SrcFunction {
-    args: FormalArgs,
-    body: Vec<SassItem>,
-}
-
-impl SrcFunction {
-    pub fn new(args: FormalArgs, body: Vec<SassItem>) -> Self {
-        SrcFunction { args: args, body: body }
-    }
-
-    pub fn call(&self, scope: &mut Scope, args: &CallArgs) -> Value {
-        let mut s2 = self.args.eval(scope, args);
-        s2.eval_body(&self.body).unwrap_or(Value::Null)
+        let mut s = self.args.eval(scope, args);
+        match self.body {
+            FuncImpl::Builtin(ref body) => body(&s),
+            FuncImpl::UserDefined(ref body) => {
+                Ok(s.eval_body(&body).unwrap_or(Value::Null))
+            }
+        }
     }
 }
 

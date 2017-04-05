@@ -78,7 +78,7 @@ impl OutputStyle {
             }
             &SassItem::MixinDeclaration(ref m) => globals.define_mixin(&m),
             &SassItem::FunctionDeclaration { ref name, ref func } => {
-                globals.define_function(name, func.clone())
+                globals.define_function(name, func.clone());
             }
             &SassItem::MixinCall { ref name, ref args } => {
                 if *separate {
@@ -306,7 +306,7 @@ impl OutputStyle {
                     scope.define_mixin(m);
                 }
                 &SassItem::FunctionDeclaration { ref name, ref func } => {
-                    scope.define_function(name, func.clone())
+                    scope.define_function(name, func.clone());
                 }
                 &SassItem::MixinCall { ref name, ref args } => {
                     if let Some(mixin) = scope.get_mixin(name) {

@@ -2,7 +2,7 @@
 
 use super::{MixinDeclaration, SassItem};
 use formalargs::CallArgs;
-use functions::{SrcFunction, get_builtin_function};
+use functions::{SassFunction, get_builtin_function};
 use num_traits::identities::Zero;
 use std::collections::BTreeMap;
 use unit::Unit;
@@ -12,7 +12,7 @@ pub struct ScopeImpl<'a> {
     parent: Option<&'a mut Scope>,
     variables: BTreeMap<String, Value>,
     mixins: BTreeMap<String, MixinDeclaration>,
-    functions: BTreeMap<String, SrcFunction>,
+    functions: BTreeMap<String, SassFunction>,
 }
 
 pub trait Scope {
@@ -23,7 +23,7 @@ pub trait Scope {
     fn define_mixin(&mut self, m: &MixinDeclaration);
     fn get_mixin(&self, name: &str) -> Option<MixinDeclaration>;
 
-    fn define_function(&mut self, name: &str, func: SrcFunction);
+    fn define_function(&mut self, name: &str, func: SassFunction);
     fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value>;
 
     fn evaluate(&mut self, val: &Value) -> Value;
@@ -60,12 +60,12 @@ impl<'a> Scope for ScopeImpl<'a> {
     fn define_mixin(&mut self, m: &MixinDeclaration) {
         self.mixins.insert(m.name.to_string(), m.clone());
     }
-    fn define_function(&mut self, name: &str, func: SrcFunction) {
+    fn define_function(&mut self, name: &str, func: SassFunction) {
         self.functions.insert(name.to_string(), func);
     }
     fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value> {
         if let Some(f) = self.functions.get(name).map(|f| f.clone()) {
-            return Some(f.call(self, args));
+            return f.call(self, args).ok();
         }
         let a2 = args.xyzzy(self);
         if let Some(ref mut p) = self.parent {
