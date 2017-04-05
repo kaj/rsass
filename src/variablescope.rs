@@ -25,6 +25,7 @@ pub trait Scope {
     fn get_mixin(&self, name: &str) -> Option<MixinDeclaration>;
 
     fn define_function(&mut self, name: &str, func: SassFunction);
+    fn get_function(&self, name: &str) -> Option<&SassFunction>;
     fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value>;
 
     fn evaluate(&mut self, val: &Value) -> Value;
@@ -70,6 +71,16 @@ impl<'a> Scope for ScopeImpl<'a> {
     }
     fn define_function(&mut self, name: &str, func: SassFunction) {
         self.functions.insert(name.to_string(), func);
+    }
+    fn get_function(&self, name: &str) -> Option<&SassFunction> {
+        if let Some(ref f) = self.functions.get(name) {
+            return Some(f);
+        }
+        if let Some(ref p) = self.parent {
+            p.get_function(name)
+        } else {
+            get_builtin_function(name)
+        }
     }
     fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value> {
         if let Some(f) = self.functions.get(name).map(|f| f.clone()) {

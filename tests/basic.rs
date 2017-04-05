@@ -893,6 +893,55 @@ fn t56_global_variable_exists() {
 }
 
 #[test]
+fn t57_function_exists() {
+    check(b"@function exists($name) {\n  @return function-exists($name);\n}\
+            \n\n\
+            @function f() {\n  $foo: hi;\n  @return g();\n}\n\n\
+            @function g() {\n  @return function-exists(foo);\n}\n\n\
+            @function h() {\n  @return function-exists(lighten);\n}\n\n\
+            div {\n  foo: function-exists(lighten); \n  \
+            foo: function-exists(\"lighten\"); \n  \
+            foo: function-exists(exists);\n  \
+            foo: function-exists(\"exists\"); \n  \
+            foo: function-exists(f);\n  foo: function-exists(\"f\"); \n  \
+            foo: function-exists(g);\n  foo: function-exists(\"g\"); \n  \
+            foo: function-exists(nope);\n  foo: function-exists(\"nope\"); \n  \
+            foo: g();\n  foo: f();\n  foo: h();\n\n\n  \
+            span {\n    foo: function-exists(lighten); \n    \
+            foo: function-exists(\"lighten\"); \n    \
+            foo: function-exists(exists);\n    \
+            foo: function-exists(\"exists\"); \n    \
+            foo: function-exists(f);\n    foo: function-exists(\"f\"); \n    \
+            foo: function-exists(g);\n    foo: function-exists(\"g\"); \n    \
+            foo: function-exists(nope);\n    \
+            foo: function-exists(\"nope\"); \n    \
+            foo: g();\n    foo: f();\n    foo: h();\n    \
+            p {\n      foo: function-exists(lighten); \n      \
+            foo: function-exists(\"lighten\"); \n      \
+            foo: function-exists(exists);\n      \
+            foo: function-exists(\"exists\"); \n      \
+            foo: function-exists(f);\n      \
+            foo: function-exists(\"f\"); \n      \
+            foo: function-exists(g);\n      \
+            foo: function-exists(\"g\"); \n      \
+            foo: function-exists(nope);\n      \
+            foo: function-exists(\"nope\"); \n      \
+            foo: g();\n      foo: f();\n      foo: h();\n    }\n  }\n\n}\n",
+          "div {\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  \
+           foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  \
+           foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n  \
+           foo: true;\n}\n\
+           div span {\n  foo: true;\n  foo: true;\n  foo: true;\n  \
+           foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  \
+           foo: true;\n  foo: false;\n  foo: false;\n  foo: false;\n  \
+           foo: false;\n  foo: true;\n}\n\
+           div span p {\n  foo: true;\n  foo: true;\n  foo: true;\n  \
+           foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  \
+           foo: true;\n  foo: false;\n  foo: false;\n  foo: false;\n  \
+           foo: false;\n  foo: true;\n}\n")
+}
+
+#[test]
 fn t59_if_expression() {
     check(b"$x: 0;\n$if-false: whatever;\n\n\
             div {\n  \
