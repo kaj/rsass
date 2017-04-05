@@ -835,6 +835,29 @@ fn t54_adjacent_identifiers_with_hyphens() {
 }
 
 #[test]
+fn t55_variable_exists() {
+    check(b"@function exists($name) {\n  @return variable-exists($name);\n}\n\n\
+            @function f() {\n  $foo: hi;\n  @return g();\n}\n\n\
+            @function g() {\n  @return variable-exists(foo);\n}\n\n\
+            div {\n  foo: variable-exists(x);\n  \
+            foo: variable-exists(\"x\");\n\n  \
+            span {\n    $x: false;\n\n    foo: variable-exists(x);\n    \
+            foo: variable-exists(\"x\");\n    foo: variable-exists(y);\n    \
+            foo: variable-exists(\"y\");\n    foo: exists(x);\n    \
+            foo: exists(\"x\");\n\n\
+            p {\n      foo: variable-exists(x);\n      \
+            foo: variable-exists(\"x\");\n      foo: exists(x);\n      \
+            foo: exists(\"x\");\n      foo: variable-exists(y);\n      \
+            foo: variable-exists(\"y\");\n      foo: f();\n      \
+            $y: blah;\n    }\n  }\n}\n",
+          "div {\n  foo: false;\n  foo: false;\n}\n\
+           div span {\n  foo: true;\n  foo: true;\n  foo: false;\n  \
+           foo: false;\n  foo: false;\n  foo: false;\n}\n\
+           div span p {\n  foo: true;\n  foo: true;\n  foo: false;\n  \
+           foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n}\n")
+}
+
+#[test]
 fn t59_if_expression() {
     check(b"$x: 0;\n$if-false: whatever;\n\n\
             div {\n  \

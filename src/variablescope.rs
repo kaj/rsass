@@ -100,7 +100,7 @@ impl<'a> Scope for ScopeImpl<'a> {
                     }
                     None
                 }
-                &SassItem::Return(ref v) => Some(v.clone()),
+                &SassItem::Return(ref v) => Some(self.evaluate(v)),
                 _ => None,
             };
             if let Some(result) = result {
