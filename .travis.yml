@@ -10,6 +10,7 @@ rust:
 matrix:
   include:
    - rust: stable
+     env: TASK=rustfmt
      script: cargo install -f rustfmt && PATH=${HOME}/.cargo/bin:$PATH cargo fmt
   allow_failures:
     - rust: nightly
