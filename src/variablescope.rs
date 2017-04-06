@@ -39,7 +39,7 @@ impl<'a> Scope for ScopeImpl<'a> {
             return parent.define(name, val, global);
         }
         let val = self.do_evaluate(val, true);
-        self.variables.insert(name.to_string(), val);
+        self.variables.insert(name.replace('-', "_"), val);
     }
     fn define_default(&mut self, name: &str, val: &Value, global: bool) {
         if self.get(name) == Value::Null {
@@ -53,10 +53,11 @@ impl<'a> Scope for ScopeImpl<'a> {
             .or_else(|| self.parent.as_ref().and_then(|p| p.get_mixin(name)))
     }
     fn get(&self, name: &str) -> Value {
+        let name = name.replace('-', "_");
         self.variables
-            .get(name)
+            .get(&name)
             .map(|v| v.clone())
-            .or_else(|| self.parent.as_ref().map(|p| p.get(name)))
+            .or_else(|| self.parent.as_ref().map(|p| p.get(&name)))
             .unwrap_or(Value::Null)
     }
     fn get_global(&self, name: &str) -> Value {

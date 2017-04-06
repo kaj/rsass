@@ -801,8 +801,8 @@ fn t48_case_conversion() {
 
 #[test]
 fn t52a_each_loop() {
-    check(b"@each $my_cool_var in a, b, c {\n  \
-            div {\n    color: $my_cool_var;\n  }\n}",
+    check(b"@each $my_cool-var in a, b, c {\n  \
+            div {\n    color: $my-cool_var;\n  }\n}",
           "div {\n  color: a;\n}\n\
            div {\n  color: b;\n}\n\
            div {\n  color: c;\n}\n")
