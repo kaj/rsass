@@ -68,36 +68,32 @@ impl Value {
     }
 
     pub fn type_name(&self) -> &'static str {
-        match self {
-            &Value::Color(..) => "color",
-            &Value::Literal(..) => "string",
-            &Value::Numeric(..) => "number",
+        match *self {
+            Value::Color(..) => "color",
+            Value::Literal(..) => "string",
+            Value::Numeric(..) => "number",
             _ => "unknown",
         }
     }
 
     pub fn is_calculated(&self) -> bool {
-        match self {
-            &Value::Numeric(_, _, calculated) => calculated,
-            &Value::Color(_, _, _, _, None) => true,
+        match *self {
+            Value::Numeric(_, _, calculated) => calculated,
+            Value::Color(_, _, _, _, None) => true,
             _ => false,
         }
     }
 
     /// All values other than `False` and `Null` should be considered true.
     pub fn is_true(&self) -> bool {
-        match self {
-            &Value::False => false,
-            &Value::Null => false,
+        match *self {
+            Value::False | Value::Null => false,
             _ => true,
         }
     }
 
     pub fn is_null(&self) -> bool {
-        match self {
-            &Value::Null => true,
-            _ => false,
-        }
+        *self == Value::Null
     }
 }
 
@@ -112,8 +108,8 @@ impl fmt::Display for Value {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
             &Value::Literal(ref s, ref q) => {
-                match q {
-                    &Quotes::Double => {
+                match *q {
+                    Quotes::Double => {
                         write!(out,
                                "\"{}\"",
                                s.chars()
@@ -124,7 +120,7 @@ impl fmt::Display for Value {
                                              })
                                    .collect::<String>())
                     }
-                    &Quotes::Single => {
+                    Quotes::Single => {
                         write!(out,
                                "'{}'",
                                s.chars()
@@ -135,7 +131,7 @@ impl fmt::Display for Value {
                                              })
                                    .collect::<String>())
                     }
-                    &Quotes::None => write!(out, "{}", s),
+                    Quotes::None => write!(out, "{}", s),
                 }
             }
             &Value::Numeric(ref v, ref u, ref _is_calculated) => {
@@ -146,56 +142,49 @@ impl fmt::Display for Value {
                 let r = r.round().to_integer() as u8;
                 let g = g.round().to_integer() as u8;
                 let b = b.round().to_integer() as u8;
-                match s {
-                    &Some(ref s) => write!(out, "{}", s),
-                    &None => {
-                        if a >= &Rational::from_integer(1) {
-                            if out.alternate() {
-                                // E.g. #ff00cc can be written #f0c in css.
-                                // 0xff / 17 = 0xf (since 17 = 0x11).
-                                let hex = if r % 17 == 0 && g % 17 == 0 &&
-                                             b % 17 == 0 {
-                                    format!("#{:x}{:x}{:x}",
-                                            r / 17,
-                                            g / 17,
-                                            b / 17)
-                                } else {
-                                    format!("#{:02x}{:02x}{:02x}", r, g, b)
-                                };
-                                match rgb_to_name(r, g, b) {
-                                    Some(name) if name.len() <= hex.len() => {
-                                        write!(out, "{}", name)
-                                    }
-                                    _ => write!(out, "{}", hex),
-                                }
-                            } else {
-                                if let Some(name) = rgb_to_name(r, g, b) {
-                                    write!(out, "{}", name)
-                                } else {
-                                    write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
-                                }
-                            }
-                        } else if a.is_zero() && r.is_zero() && g.is_zero() &&
-                                  b.is_zero() {
-                            write!(out, "transparent")
+                if let Some(ref s) = *s {
+                    write!(out, "{}", s)
+                } else if a >= &Rational::from_integer(1) {
+                    if out.alternate() {
+                        // E.g. #ff00cc can be written #f0c in css.
+                        // 0xff / 17 = 0xf (since 17 = 0x11).
+                        let hex = if r % 17 == 0 && g % 17 == 0 &&
+                                     b % 17 == 0 {
+                            format!("#{:x}{:x}{:x}",
+                                    r / 17,
+                                    g / 17,
+                                    b / 17)
                         } else {
-                            if out.alternate() {
-                                write!(out,
-                                       "rgba({},{},{},{})",
-                                       r,
-                                       g,
-                                       b,
-                                       rational2str(a, false))
-                            } else {
-                                write!(out,
-                                       "rgba({}, {}, {}, {})",
-                                       r,
-                                       g,
-                                       b,
-                                       rational2str(a, false))
+                            format!("#{:02x}{:02x}{:02x}", r, g, b)
+                        };
+                        match rgb_to_name(r, g, b) {
+                            Some(name) if name.len() <= hex.len() => {
+                                write!(out, "{}", name)
                             }
+                            _ => write!(out, "{}", hex),
                         }
+                    } else if let Some(name) = rgb_to_name(r, g, b) {
+                        write!(out, "{}", name)
+                    } else {
+                        write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
                     }
+                } else if a.is_zero() && r.is_zero() && g.is_zero() &&
+                          b.is_zero() {
+                    write!(out, "transparent")
+                } else if out.alternate() {
+                    write!(out,
+                           "rgba({},{},{},{})",
+                           r,
+                           g,
+                           b,
+                           rational2str(a, false))
+                } else {
+                    write!(out,
+                           "rgba({}, {}, {}, {})",
+                           r,
+                           g,
+                           b,
+                           rational2str(a, false))
                 }
             }
             &Value::MultiSpace(ref v) => {
@@ -231,20 +220,20 @@ impl fmt::Display for Value {
                        b)
             }
             &Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
-            &Value::BinOp(ref a, ref op, ref b) => {
-                if op == &Operator::Plus {
-                    // The plus operator is also a concat operator
-                    if out.alternate() {
-                        write!(out, "{:#}{:#}", a, b)
-                    } else {
-                        write!(out, "{}{}", a, b)
-                    }
+            &Value::BinOp(ref a, Operator::Plus, ref b) => {
+                // The plus operator is also a concat operator
+                if out.alternate() {
+                    write!(out, "{:#}{:#}", a, b)
                 } else {
-                    if out.alternate() {
-                        write!(out, "{:#} {} {:#}", a, op, b)
-                    } else {
-                        write!(out, "{} {} {}", a, op, b)
-                    }
+                    write!(out, "{}{}", a, b)
+
+                }
+            }
+            &Value::BinOp(ref a, ref op, ref b) => {
+                if out.alternate() {
+                    write!(out, "{:#} {} {:#}", a, op, b)
+                } else {
+                    write!(out, "{} {} {}", a, op, b)
                 }
             }
             &Value::True => write!(out, "true"),
@@ -267,9 +256,9 @@ impl PartialOrd for Value {
 }
 
 fn rational2str(r: &Rational, skipzero: bool) -> String {
-    let n = r.numer().clone();
-    let d = r.denom().clone();
-    let mut result = format!("{}", n as f64 / d as f64);
+    let n = r.numer();
+    let d = r.denom();
+    let mut result = format!("{}", *n as f64 / *d as f64);
     if skipzero && result.starts_with("0.") {
         result.remove(0);
     }

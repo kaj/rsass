@@ -51,9 +51,9 @@ impl cmp::Eq for FuncImpl {}
 
 impl fmt::Debug for FuncImpl {
     fn fmt(&self, out: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        match self {
-            &FuncImpl::Builtin(_) => write!(out, "(builtin function)"),
-            &FuncImpl::UserDefined(_) => write!(out, "(user-defined function)"),
+        match *self {
+            FuncImpl::Builtin(_) => write!(out, "(builtin function)"),
+            FuncImpl::UserDefined(_) => write!(out, "(user-defined function)"),
         }
     }
 }
@@ -77,7 +77,7 @@ impl SassFunction {
         match self.body {
             FuncImpl::Builtin(ref body) => body(&s),
             FuncImpl::UserDefined(ref body) => {
-                Ok(s.eval_body(&body).unwrap_or(Value::Null))
+                Ok(s.eval_body(body).unwrap_or(Value::Null))
             }
         }
     }

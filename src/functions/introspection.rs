@@ -27,8 +27,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         Ok(Value::Literal(s.get("value").type_name().into(), Quotes::None))
     });
     def!(f, unit(value), |s| {
-        let v = match &s.get("value") {
-            &Value::Numeric(_, ref unit, _) => format!("{}", unit),
+        let v = match s.get("value") {
+            Value::Numeric(_, ref unit, _) => format!("{}", unit),
             _ => "".into(),
         };
         Ok(Value::Literal(v, Quotes::Double))

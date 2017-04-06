@@ -27,7 +27,7 @@ fn main() {
         .after_help("At least one INPUT file is required.")
         .get_matches();
 
-    match run(args) {
+    match run(&args) {
         Ok(()) => (),
         Err(err) => {
             writeln!(&mut std::io::stderr(), "Error: {}!", err).unwrap();
@@ -36,7 +36,7 @@ fn main() {
     }
 }
 
-fn run(args: ArgMatches) -> Result<(), String> {
+fn run(args: &ArgMatches) -> Result<(), String> {
     let style = if args.value_of("STYLE") == Some("compressed") {
         OutputStyle::Compressed
     } else {

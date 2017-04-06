@@ -116,7 +116,8 @@ impl FileContext {
             for name in &[name,
                           &format!("{}.scss", name),
                           &format!("_{}.scss", name)] {
-                let full = parent.map(|p| p.join(name)).unwrap_or(name.into());
+                let full = parent.map(|p| p.join(name))
+                    .unwrap_or_else(|| name.into());
                 let (c, p) = self.file(&full);
                 if p.is_file() {
                     return Some((c, p));
@@ -138,10 +139,10 @@ pub fn parse_scss_file(file: &Path) -> Result<Vec<SassItem>, String> {
 }
 
 fn parse_scss_data(data: &[u8]) -> Result<Vec<SassItem>, String> {
-    match sassfile(&data) {
+    match sassfile(data) {
         Done(b"", items) => Ok(items),
         Done(rest, _styles) => {
-            let t = from_utf8(&rest)
+            let t = from_utf8(rest)
                 .map(|s| s.to_string())
                 .unwrap_or_else(|_| format!("{:?}", rest));
             Err(format!("Failed to parse entire input: `{}` remains.", t))
@@ -441,7 +442,7 @@ named!(property<&[u8], SassItem>,
 named!(opt_important<bool>,
        map!(opt!(do_parse!(opt_spacelike >> tag!("!") >>
                            opt_spacelike >> tag!("important") >>
-                           (()))),
+                           ())),
             |o: Option<()>| o.is_some()));
 #[test]
 fn test_simple_property() {

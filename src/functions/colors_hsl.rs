@@ -221,14 +221,14 @@ fn max_min_largest(a: Rational,
                    c: Rational)
                    -> (Rational, Rational, u32) {
     let v = [(a, 0), (b, 1), (c, 2)];
-    let max = v.iter().max().unwrap().clone();
-    let min = v.iter().min().unwrap().clone();
+    let max = v.iter().max().unwrap();
+    let min = v.iter().min().unwrap();
     (max.0, min.0, max.1)
 }
 
 /// Convert a value in the 0 .. 1 range to u8
 fn frac_to_int(v: Rational) -> Rational {
-    cap_u8((Rational::from_integer(255) * v))
+    cap_u8(Rational::from_integer(255) * v)
 }
 
 fn cap_u8(n: Rational) -> Rational {

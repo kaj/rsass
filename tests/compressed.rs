@@ -1,4 +1,4 @@
-//! These are from the "output_styles/compressed/basic" directory in the
+//! These are from the `output_styles/compressed/basic` directory in the
 //! sass specification.
 //! See https://github.com/sass/sass-spec for source material.
 //! I add one a test function for one specification at a time and then

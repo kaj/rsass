@@ -20,20 +20,20 @@ pub enum Operator {
 
 impl Operator {
     pub fn eval(&self, a: Value, b: Value) -> Value {
-        match self {
-            &Operator::And => Value::bool(a.is_true() && b.is_true()),
-            &Operator::Or => Value::bool(a.is_true() || b.is_true()),
-            &Operator::Equal => Value::bool(a == b),
-            &Operator::NotEqual => Value::bool(a != b),
-            &Operator::Greater => Value::bool(a > b),
-            &Operator::GreaterE => Value::bool(a >= b),
-            &Operator::Lesser => Value::bool(a < b),
-            &Operator::LesserE => Value::bool(a <= b),
-            &Operator::Plus => {
+        match *self {
+            Operator::And => Value::bool(a.is_true() && b.is_true()),
+            Operator::Or => Value::bool(a.is_true() || b.is_true()),
+            Operator::Equal => Value::bool(a == b),
+            Operator::NotEqual => Value::bool(a != b),
+            Operator::Greater => Value::bool(a > b),
+            Operator::GreaterE => Value::bool(a >= b),
+            Operator::Lesser => Value::bool(a < b),
+            Operator::LesserE => Value::bool(a <= b),
+            Operator::Plus => {
                 match (&a, &b) {
                     (&Value::Color(ref r, ref g, ref b, ref a, _),
                      &Value::Numeric(ref n, ref u, _)) if u == &Unit::None => {
-                        Value::rgba(r + n, g + n, b + n, a.clone())
+                        Value::rgba(r + n, g + n, b + n, *a)
                     }
                     (&Value::Color(ref ar, ref ag, ref ab, ref aa, _),
                      &Value::Color(ref br, ref bg, ref bb, ref ba, _)) => {
@@ -57,11 +57,11 @@ impl Operator {
                     }
                 }
             }
-            &Operator::Minus => {
+            Operator::Minus => {
                 match (&a, &b) {
                     (&Value::Color(ref r, ref g, ref b, ref a, _),
                      &Value::Numeric(ref n, ref u, _)) if u == &Unit::None => {
-                        Value::rgba(r - n, g - n, b - n, a.clone())
+                        Value::rgba(r - n, g - n, b - n, *a)
                     }
                     (&Value::Color(ref ar, ref ag, ref ab, ref aa, _),
                      &Value::Color(ref br, ref bg, ref bb, ref ba, _)) => {

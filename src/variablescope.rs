@@ -8,6 +8,7 @@ use std::collections::BTreeMap;
 use unit::Unit;
 use valueexpression::{Quotes, Value};
 
+#[derive(Default)]
 pub struct ScopeImpl<'a> {
     parent: Option<&'a mut Scope>,
     variables: BTreeMap<String, Value>,
@@ -30,7 +31,7 @@ pub trait Scope {
 
     fn evaluate(&mut self, val: &Value) -> Value;
 
-    fn eval_body(&mut self, body: &Vec<SassItem>) -> Option<Value>;
+    fn eval_body(&mut self, body: &[SassItem]) -> Option<Value>;
 }
 
 impl<'a> Scope for ScopeImpl<'a> {
@@ -49,22 +50,22 @@ impl<'a> Scope for ScopeImpl<'a> {
     fn get_mixin(&self, name: &str) -> Option<MixinDeclaration> {
         self.mixins
             .get(name)
-            .map(|m| m.clone())
+            .cloned()
             .or_else(|| self.parent.as_ref().and_then(|p| p.get_mixin(name)))
     }
     fn get(&self, name: &str) -> Value {
         let name = name.replace('-', "_");
         self.variables
             .get(&name)
-            .map(|v| v.clone())
+            .cloned()
             .or_else(|| self.parent.as_ref().map(|p| p.get(&name)))
             .unwrap_or(Value::Null)
     }
     fn get_global(&self, name: &str) -> Value {
-        if let Some(ref p) = self.parent.as_ref() {
+        if let Some(ref p) = self.parent {
             p.get_global(name)
         } else {
-            self.variables.get(name).map(|v| v.clone()).unwrap_or(Value::Null)
+            self.variables.get(name).cloned().unwrap_or(Value::Null)
         }
     }
     fn define_mixin(&mut self, m: &MixinDeclaration) {
@@ -74,7 +75,7 @@ impl<'a> Scope for ScopeImpl<'a> {
         self.functions.insert(name.to_string(), func);
     }
     fn get_function(&self, name: &str) -> Option<&SassFunction> {
-        if let Some(ref f) = self.functions.get(name) {
+        if let Some(f) = self.functions.get(name) {
             return Some(f);
         }
         if let Some(ref p) = self.parent {
@@ -84,7 +85,7 @@ impl<'a> Scope for ScopeImpl<'a> {
         }
     }
     fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value> {
-        if let Some(f) = self.functions.get(name).map(|f| f.clone()) {
+        if let Some(f) = self.functions.get(name).cloned() {
             return f.call(self, args).ok();
         }
         let a2 = args.xyzzy(self);
@@ -97,30 +98,30 @@ impl<'a> Scope for ScopeImpl<'a> {
         self.do_evaluate(val, false)
     }
 
-    fn eval_body(&mut self, body: &Vec<SassItem>) -> Option<Value> {
+    fn eval_body(&mut self, body: &[SassItem]) -> Option<Value> {
         for b in body {
-            let result = match b {
-                &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
+            let result = match *b {
+                SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
                     if self.evaluate(cond).is_true() {
                         self.eval_body(do_if)
                     } else {
                         self.eval_body(do_else)
                     }
                 }
-                &SassItem::VariableDeclaration {
-                     ref name,
-                     ref val,
-                     default,
-                     global,
-                 } => {
+                SassItem::VariableDeclaration {
+                    ref name,
+                    ref val,
+                    default,
+                    global,
+                } => {
                     if default {
-                        self.define_default(&name, &val, global);
+                        self.define_default(name, val, global);
                     } else {
-                        self.define(&name, &val, global);
+                        self.define(name, val, global);
                     }
                     None
                 }
-                &SassItem::Return(ref v) => Some(self.evaluate(v)),
+                SassItem::Return(ref v) => Some(self.evaluate(v)),
                 _ => None,
             };
             if let Some(result) = result {
@@ -140,7 +141,7 @@ impl<'a> ScopeImpl<'a> {
             functions: BTreeMap::new(),
         }
     }
-    pub fn sub<'c>(parent: &'a mut Scope) -> Self {
+    pub fn sub(parent: &'a mut Scope) -> Self {
         ScopeImpl {
             parent: Some(parent),
             variables: BTreeMap::new(),
@@ -156,7 +157,7 @@ impl<'a> ScopeImpl<'a> {
             &Value::Paren(ref v) => self.do_evaluate(v, true),
             &Value::Color(_, _, _, _, _) => val.clone(),
             &Value::Variable(ref name) => {
-                let v = self.get(&name);
+                let v = self.get(name);
                 self.do_evaluate(&v, true)
             }
             &Value::MultiSpace(ref v) => {
@@ -256,9 +257,7 @@ impl<'a> ScopeImpl<'a> {
                                Quotes::None)
             }
             &Value::Numeric(ref v, ref u, ref is_calculated) => {
-                Value::Numeric(v.clone(),
-                               u.clone(),
-                               arithmetic || *is_calculated)
+                Value::Numeric(*v, u.clone(), arithmetic || *is_calculated)
             }
             &Value::Null => Value::Null,
             &Value::True => Value::True,

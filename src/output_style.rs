@@ -25,7 +25,7 @@ impl OutputStyle {
         let mut result = Vec::new();
         let mut separate = false;
         for item in items {
-            self.handle_root_item(&item,
+            self.handle_root_item(item,
                                   &mut globals,
                                   &mut separate,
                                   &file_context,
@@ -61,7 +61,7 @@ impl OutputStyle {
                 } else {
                     *separate = true;
                 }
-                self.write_rule(&s, &b, result, globals, None, file_context, 0)
+                self.write_rule(s, b, result, globals, None, file_context, 0)
                     .unwrap();
             }
             &SassItem::VariableDeclaration {
@@ -71,12 +71,12 @@ impl OutputStyle {
                  ref global,
              } => {
                 if *default {
-                    globals.define_default(&name, &val, *global);
+                    globals.define_default(name, val, *global);
                 } else {
-                    globals.define(&name, &val, *global);
+                    globals.define(name, val, *global);
                 }
             }
-            &SassItem::MixinDeclaration(ref m) => globals.define_mixin(&m),
+            &SassItem::MixinDeclaration(ref m) => globals.define_mixin(m),
             &SassItem::FunctionDeclaration { ref name, ref func } => {
                 globals.define_function(name, func.clone());
             }
@@ -86,12 +86,12 @@ impl OutputStyle {
                 } else {
                     *separate = true;
                 }
-                if let Some(mixin) = globals.get_mixin(&name) {
+                if let Some(mixin) = globals.get_mixin(name) {
                     let mut direct = vec![];
                     self.handle_body(&mut direct,
                                      result,
-                                     &mut mixin.argscope(globals, &args),
-                                     &vec![Selector::root()],
+                                     &mut mixin.argscope(globals, args),
+                                     &[Selector::root()],
                                      &mixin.body,
                                      file_context,
                                      0)
@@ -102,8 +102,8 @@ impl OutputStyle {
                 }
             }
             &SassItem::Import(ref name) => {
-                let name = globals.evaluate(&name);
-                if let &Value::Literal(ref x, _) = &name {
+                let name = globals.evaluate(name);
+                if let Value::Literal(ref x, _) = name {
                     if let Some((sub_context, file)) =
                         file_context.find_file(x.as_ref()) {
                         for item in parse_scss_file(&file).unwrap() {
@@ -145,8 +145,8 @@ impl OutputStyle {
                 self.handle_body(&mut direct,
                                  result,
                                  &mut ScopeImpl::sub(globals),
-                                 &vec![Selector::root()],
-                                 &body,
+                                 &[Selector::root()],
+                                 body,
                                  file_context,
                                  2)
                     .unwrap();
@@ -161,13 +161,13 @@ impl OutputStyle {
                 } else {
                     *separate = true;
                 }
-                if globals.evaluate(&cond).is_true() {
+                if globals.evaluate(cond).is_true() {
                     let mut direct = vec![];
                     self.handle_body(&mut direct,
                                      result,
                                      &mut ScopeImpl::sub(globals),
-                                     &vec![Selector::root()],
-                                     &do_if,
+                                     &[Selector::root()],
+                                     do_if,
                                      file_context,
                                      0)
                         .unwrap();
@@ -177,8 +177,8 @@ impl OutputStyle {
                     self.handle_body(&mut direct,
                                      result,
                                      &mut ScopeImpl::sub(globals),
-                                     &vec![Selector::root()],
-                                     &do_else,
+                                     &[Selector::root()],
+                                     do_else,
                                      file_context,
                                      0)
                         .unwrap();
@@ -198,7 +198,7 @@ impl OutputStyle {
                     self.handle_body(&mut direct,
                                      result,
                                      &mut scope,
-                                     &vec![Selector::root()],
+                                     &[Selector::root()],
                                      body,
                                      file_context,
                                      0)
@@ -238,7 +238,7 @@ impl OutputStyle {
                          &mut sub,
                          &mut ScopeImpl::sub(scope),
                          &selectors,
-                         &body,
+                         body,
                          file_context,
                          indent)?;
         if !direct.is_empty() {
@@ -309,7 +309,7 @@ impl OutputStyle {
                                     b,
                                     sub,
                                     scope,
-                                    Some(&selectors),
+                                    Some(selectors),
                                     file_context,
                                     indent)?;
                 }
@@ -320,9 +320,9 @@ impl OutputStyle {
                      global,
                  } => {
                     if default {
-                        scope.define_default(&name, &val, global);
+                        scope.define_default(name, val, global);
                     } else {
-                        scope.define(&name, &val, global);
+                        scope.define(name, val, global);
                     }
                 }
                 &SassItem::MixinDeclaration(ref m) => {
@@ -333,7 +333,7 @@ impl OutputStyle {
                 }
                 &SassItem::MixinCall { ref name, ref args } => {
                     if let Some(mixin) = scope.get_mixin(name) {
-                        let mut argscope = mixin.argscope(scope, &args);
+                        let mut argscope = mixin.argscope(scope, args);
                         self.handle_body(direct,
                                          sub,
                                          &mut argscope,
@@ -350,8 +350,8 @@ impl OutputStyle {
                     }
                 }
                 &SassItem::Import(ref name) => {
-                    let name = scope.evaluate(&name);
-                    if let &Value::Literal(ref x, _) = &name {
+                    let name = scope.evaluate(name);
+                    if let Value::Literal(ref x, _) = name {
                         let (sub_context, file) = file_context.file(x.as_ref());
                         let items = parse_scss_file(&file).unwrap();
                         self.handle_body(direct,
@@ -373,7 +373,7 @@ impl OutputStyle {
                                      &mut s2,
                                      &mut ScopeImpl::sub(scope),
                                      selectors,
-                                     &body,
+                                     body,
                                      file_context,
                                      2)
                         .unwrap();
@@ -399,12 +399,12 @@ impl OutputStyle {
                     write!(sub, "}}").unwrap();
                 }
                 &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
-                    if scope.evaluate(&cond).is_true() {
+                    if scope.evaluate(cond).is_true() {
                         self.handle_body(direct,
                                          sub,
                                          &mut ScopeImpl::sub(scope),
                                          selectors,
-                                         &do_if,
+                                         do_if,
                                          file_context,
                                          0)
                             .unwrap();
@@ -413,7 +413,7 @@ impl OutputStyle {
                                          sub,
                                          &mut ScopeImpl::sub(scope),
                                          selectors,
-                                         &do_else,
+                                         do_else,
                                          file_context,
                                          0)
                             .unwrap();

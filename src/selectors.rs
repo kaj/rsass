@@ -116,20 +116,20 @@ fn is_selector_char(chr: u8) -> bool {
 
 impl SelectorPart {
     fn is_operator(&self) -> bool {
-        match self {
-            &SelectorPart::Simple(_) => false,
-            &SelectorPart::Descendant => true,
-            &SelectorPart::RelOp(_) => true,
-            &SelectorPart::Attribute { .. } => false,
-            &SelectorPart::Pseudo { .. } => false,
-            &SelectorPart::BackRef => false,
+        match *self {
+            SelectorPart::Simple(_) => false,
+            SelectorPart::Descendant => true,
+            SelectorPart::RelOp(_) => true,
+            SelectorPart::Attribute { .. } => false,
+            SelectorPart::Pseudo { .. } => false,
+            SelectorPart::BackRef => false,
         }
     }
 }
 
 impl fmt::Display for Selector {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        for ref p in &self.0 {
+        for p in &self.0 {
             if out.alternate() {
                 write!(out, "{}", p)?;
             } else {
@@ -142,27 +142,27 @@ impl fmt::Display for Selector {
 
 impl fmt::Display for SelectorPart {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &SelectorPart::Simple(ref s) => write!(out, "{}", s),
-            &SelectorPart::Descendant => write!(out, " "),
-            &SelectorPart::RelOp(ref c) => {
+        match *self {
+            SelectorPart::Simple(ref s) => write!(out, "{}", s),
+            SelectorPart::Descendant => write!(out, " "),
+            SelectorPart::RelOp(ref c) => {
                 if out.alternate() {
                     write!(out, " {} ", *c as char)
                 } else {
                     write!(out, "{}", *c as char)
                 }
             }
-            &SelectorPart::Attribute { ref name, ref op, ref val } => {
+            SelectorPart::Attribute { ref name, ref op, ref val } => {
                 write!(out, "[{}{}{}]", name, op, val)
             }
-            &SelectorPart::Pseudo { ref name, ref arg } => {
-                if let &Some(ref arg) = arg {
+            SelectorPart::Pseudo { ref name, ref arg } => {
+                if let Some(ref arg) = *arg {
                     write!(out, ":{}({})", name, arg)
                 } else {
                     write!(out, ":{}", name)
                 }
             }
-            &SelectorPart::BackRef => write!(out, "&"),
+            SelectorPart::BackRef => write!(out, "&"),
         }
     }
 }
