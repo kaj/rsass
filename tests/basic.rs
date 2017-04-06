@@ -800,6 +800,15 @@ fn t48_case_conversion() {
 }
 
 #[test]
+fn t52a_each_loop() {
+    check(b"@each $my_cool_var in a, b, c {\n  \
+            div {\n    color: $my_cool_var;\n  }\n}",
+          "div {\n  color: a;\n}\n\
+           div {\n  color: b;\n}\n\
+           div {\n  color: c;\n}\n")
+}
+
+#[test]
 fn t53_escaped_quotes() {
     check("[data-icon='test-1']:before {\n    content:'\\\\';\n}\n\n\
            [data-icon='test-2']:before {\n    content:'\\'';\n}\n\n\

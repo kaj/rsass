@@ -185,6 +185,27 @@ impl OutputStyle {
                     assert_eq!(direct, &[]);
                 }
             }
+            &SassItem::Each(ref name, ref values, ref body) => {
+                if *separate {
+                    self.do_indent(result, 0).unwrap();
+                } else {
+                    *separate = true;
+                }
+                for value in values {
+                    let mut scope = ScopeImpl::sub(globals);
+                    scope.define(name, value, false);
+                    let mut direct = vec![];
+                    self.handle_body(&mut direct,
+                                     result,
+                                     &mut scope,
+                                     &vec![Selector::root()],
+                                     body,
+                                     file_context,
+                                     0)
+                        .unwrap();
+                    assert_eq!(direct, &[]);
+                }
+            }
             &SassItem::Return(_) => {
                 panic!("Return not allowed in global context");
             }
@@ -396,6 +417,21 @@ impl OutputStyle {
                                          file_context,
                                          0)
                             .unwrap();
+                    }
+                }
+                &SassItem::Each(ref name, ref values, ref body) => {
+                    for value in values {
+                        let mut scope = ScopeImpl::sub(scope);
+                        scope.define(name, value, false);
+                        self.handle_body(direct,
+                                         sub,
+                                         &mut scope,
+                                         selectors,
+                                         body,
+                                         file_context,
+                                         0)
+                            .unwrap();
+                        assert_eq!(direct, &[]);
                     }
                 }
                 &SassItem::Return(_) => {
