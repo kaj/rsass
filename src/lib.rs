@@ -116,8 +116,8 @@ impl FileContext {
             for name in &[name,
                           &format!("{}.scss", name),
                           &format!("_{}.scss", name)] {
-                let full = parent.map(|p| p.join(name))
-                    .unwrap_or_else(|| name.into());
+                let full =
+                    parent.map(|p| p.join(name)).unwrap_or_else(|| name.into());
                 let (c, p) = self.file(&full);
                 if p.is_file() {
                     return Some((c, p));
