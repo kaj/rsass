@@ -803,33 +803,56 @@ fn t48_case_conversion() {
 fn t52a_each_loop() {
     check(b"@each $my_cool-var in a, b, c {\n  \
             div {\n    color: $my-cool_var;\n  }\n}",
-          "div {\n  color: a;\n}\n\
-           div {\n  color: b;\n}\n\
+          "div {\n  color: a;\n}\n\n\
+           div {\n  color: b;\n}\n\n\
            div {\n  color: c;\n}\n")
 }
 
 #[test]
 fn t52b_for_loop() {
-    check(b"@for $my_cool_var from 1 to 4 {
-  div {
-    color: $my-cool-var;
-  }
-}\n",
-          "div {\n  color: 1;\n}\n\
-           div {\n  color: 2;\n}\n\
+    check(b"@for $my_cool_var from 1 to 4 {\n  \
+            div {\n    color: $my-cool-var;\n  }\n}\n",
+          "div {\n  color: 1;\n}\n\n\
+           div {\n  color: 2;\n}\n\n\
            div {\n  color: 3;\n}\n")
 }
 #[test]
 fn t52b_for_loop_through() {
-    check(b"@for $my_cool_var from 1 through 4 {
-  div {
-    color: $my-cool-var;
-  }
-}\n",
-          "div {\n  color: 1;\n}\n\
-           div {\n  color: 2;\n}\n\
-           div {\n  color: 3;\n}\n\
+    check(b"@for $my_cool_var from 1 through 4 {\n  \
+            div {\n    color: $my-cool-var;\n  }\n}\n",
+          "div {\n  color: 1;\n}\n\n\
+           div {\n  color: 2;\n}\n\n\
+           div {\n  color: 3;\n}\n\n\
            div {\n  color: 4;\n}\n")
+}
+
+#[test]
+fn t52_interchangeable_hyphens_underscores() {
+    check(b"$my-cool-var: \"hello\";\n\
+            @mixin my-cool-mixin($yada-yada) {\n  blah: blah;\n  \
+            hi: $yada_yada;\n}\n\
+            @function my-cool-function($cool_arg) {\n  \
+            @return $cool-arg;\n}\n\n\
+            div {\n  @include my_cool-mixin($yada_yada: \"hi\");\n  \
+            @include my_cool-mixin($my_cool-var);\n  \
+            foo: my-cool_function($cool-arg: \"boop\");\n  \
+            foo: my-cool_function($my-cool_var);\n  bar: $my_cool_var;\n}\n\n\
+            @each $my_cool_var in a, b, c {\n  \
+            div {\n    color: $my-cool-var;\n  }\n}\n\n\
+            @for $my_cool_var from 1 to 10 {\n  \
+            div {\n    color: $my-cool-var;\n  }\n}\n\n\n\
+            @function blah_blah() {\n  @return blah;\n}\n\n\
+            div {\n  foo: blah-blah();\n}",
+          "div {\n  blah: blah;\n  hi: \"hi\";\n  blah: blah;\n  \
+           hi: \"hello\";\n  foo: \"boop\";\n  foo: \"hello\";\n  \
+           bar: \"hello\";\n}\n\n\
+           div {\n  color: a;\n}\n\ndiv {\n  color: b;\n}\n\n\
+           div {\n  color: c;\n}\n\ndiv {\n  color: 1;\n}\n\n\
+           div {\n  color: 2;\n}\n\ndiv {\n  color: 3;\n}\n\n\
+           div {\n  color: 4;\n}\n\ndiv {\n  color: 5;\n}\n\n\
+           div {\n  color: 6;\n}\n\ndiv {\n  color: 7;\n}\n\n\
+           div {\n  color: 8;\n}\n\ndiv {\n  color: 9;\n}\n\n\
+           div {\n  foo: blah;\n}\n")
 }
 
 #[test]

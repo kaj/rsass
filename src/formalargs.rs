@@ -93,7 +93,8 @@ named!(pub formal_args<FormalArgs>,
                                     tag!(":") >> opt_spacelike >>
                                         d: space_list >> opt_spacelike >>
                                         (d))) >>
-                                (name, d.unwrap_or(Value::Null)))),
+                                (name.replace('-', "_"),
+                                 d.unwrap_or(Value::Null)))),
                        |v| FormalArgs(v)),
                   tag!(")")));
 

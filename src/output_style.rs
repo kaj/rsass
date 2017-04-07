@@ -186,12 +186,12 @@ impl OutputStyle {
                 }
             }
             &SassItem::Each(ref name, ref values, ref body) => {
-                if *separate {
-                    self.do_indent(result, 0).unwrap();
-                } else {
-                    *separate = true;
-                }
                 for value in values {
+                    if *separate {
+                        self.do_indent(result, 0).unwrap();
+                    } else {
+                        *separate = true;
+                    }
                     let mut scope = ScopeImpl::sub(globals);
                     scope.define(name, value, false);
                     let mut direct = vec![];
@@ -213,15 +213,15 @@ impl OutputStyle {
                  inclusive,
                  ref body,
              } => {
-                if *separate {
-                    self.do_indent(result, 0).unwrap();
-                } else {
-                    *separate = true;
-                }
                 let from = from.integer_value().unwrap();
                 let to = to.integer_value().unwrap();
                 let to = if inclusive { to + 1 } else { to };
                 for value in from..to {
+                    if *separate {
+                        self.do_indent(result, 0).unwrap();
+                    } else {
+                        *separate = true;
+                    }
                     let mut scope = ScopeImpl::sub(globals);
                     scope.define(name, &Value::scalar(value), false);
                     let mut direct = vec![];

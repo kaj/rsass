@@ -49,7 +49,7 @@ impl<'a> Scope for ScopeImpl<'a> {
     }
     fn get_mixin(&self, name: &str) -> Option<MixinDeclaration> {
         self.mixins
-            .get(name)
+            .get(&name.replace('-', "_"))
             .cloned()
             .or_else(|| self.parent.as_ref().and_then(|p| p.get_mixin(name)))
     }
@@ -69,28 +69,30 @@ impl<'a> Scope for ScopeImpl<'a> {
         }
     }
     fn define_mixin(&mut self, m: &MixinDeclaration) {
-        self.mixins.insert(m.name.to_string(), m.clone());
+        self.mixins.insert(m.name.replace('-', "_"), m.clone());
     }
     fn define_function(&mut self, name: &str, func: SassFunction) {
-        self.functions.insert(name.to_string(), func);
+        self.functions.insert(name.replace('-', "_"), func);
     }
     fn get_function(&self, name: &str) -> Option<&SassFunction> {
-        if let Some(f) = self.functions.get(name) {
+        let name = name.replace('-', "_");
+        if let Some(f) = self.functions.get(&name) {
             return Some(f);
         }
         if let Some(ref p) = self.parent {
-            p.get_function(name)
+            p.get_function(&name)
         } else {
-            get_builtin_function(name)
+            get_builtin_function(&name)
         }
     }
     fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value> {
-        if let Some(f) = self.functions.get(name).cloned() {
+        let name = name.replace('-', "_");
+        if let Some(f) = self.functions.get(&name).cloned() {
             return f.call(self, args).ok();
         }
         let a2 = args.xyzzy(self);
         if let Some(ref mut p) = self.parent {
-            return p.call_function(name, &a2);
+            return p.call_function(&name, &a2);
         }
         None
     }
