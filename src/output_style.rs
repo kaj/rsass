@@ -206,6 +206,36 @@ impl OutputStyle {
                     assert_eq!(direct, &[]);
                 }
             }
+            &SassItem::For {
+                 ref name,
+                 ref from,
+                 ref to,
+                 inclusive,
+                 ref body,
+             } => {
+                if *separate {
+                    self.do_indent(result, 0).unwrap();
+                } else {
+                    *separate = true;
+                }
+                let from = from.integer_value().unwrap();
+                let to = to.integer_value().unwrap();
+                let to = if inclusive { to + 1 } else { to };
+                for value in from..to {
+                    let mut scope = ScopeImpl::sub(globals);
+                    scope.define(name, &Value::scalar(value), false);
+                    let mut direct = vec![];
+                    self.handle_body(&mut direct,
+                                     result,
+                                     &mut scope,
+                                     &[Selector::root()],
+                                     body,
+                                     file_context,
+                                     0)
+                        .unwrap();
+                    assert_eq!(direct, &[]);
+                }
+            }
             &SassItem::Return(_) => {
                 panic!("Return not allowed in global context");
             }
@@ -423,6 +453,30 @@ impl OutputStyle {
                     for value in values {
                         let mut scope = ScopeImpl::sub(scope);
                         scope.define(name, value, false);
+                        self.handle_body(direct,
+                                         sub,
+                                         &mut scope,
+                                         selectors,
+                                         body,
+                                         file_context,
+                                         0)
+                            .unwrap();
+                        assert_eq!(direct, &[]);
+                    }
+                }
+                &SassItem::For {
+                     ref name,
+                     ref from,
+                     ref to,
+                     inclusive,
+                     ref body,
+                 } => {
+                    let from = from.integer_value().unwrap();
+                    let to = to.integer_value().unwrap();
+                    let to = if inclusive { to + 1 } else { to };
+                    for value in from..to {
+                        let mut scope = ScopeImpl::sub(scope);
+                        scope.define(name, &Value::scalar(value), false);
                         self.handle_body(direct,
                                          sub,
                                          &mut scope,

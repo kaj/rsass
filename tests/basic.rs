@@ -809,6 +809,30 @@ fn t52a_each_loop() {
 }
 
 #[test]
+fn t52b_for_loop() {
+    check(b"@for $my_cool_var from 1 to 4 {
+  div {
+    color: $my-cool-var;
+  }
+}\n",
+          "div {\n  color: 1;\n}\n\
+           div {\n  color: 2;\n}\n\
+           div {\n  color: 3;\n}\n")
+}
+#[test]
+fn t52b_for_loop_through() {
+    check(b"@for $my_cool_var from 1 through 4 {
+  div {
+    color: $my-cool-var;
+  }
+}\n",
+          "div {\n  color: 1;\n}\n\
+           div {\n  color: 2;\n}\n\
+           div {\n  color: 3;\n}\n\
+           div {\n  color: 4;\n}\n")
+}
+
+#[test]
 fn t53_escaped_quotes() {
     check("[data-icon='test-1']:before {\n    content:'\\\\';\n}\n\n\
            [data-icon='test-2']:before {\n    content:'\\'';\n}\n\n\

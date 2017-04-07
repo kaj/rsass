@@ -95,6 +95,15 @@ impl Value {
     pub fn is_null(&self) -> bool {
         *self == Value::Null
     }
+
+    pub fn integer_value(&self) -> Result<isize, String> {
+        match self {
+            &Value::Numeric(ref num, _, _) if num.is_integer() => {
+                Ok(num.to_integer())
+            }
+            v => Err(format!("Not an integer: {}", v)),
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -357,7 +366,7 @@ named!(term_value<Value>,
                      }) >>
                  (r)));
 
-named!(single_value<&[u8], Value>,
+named!(pub single_value<&[u8], Value>,
        alt_complete!(
            value!(Value::True, tag!("true")) |
            value!(Value::False, tag!("false")) |

@@ -44,7 +44,7 @@ use functions::SassFunction;
 pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
-use valueexpression::{Value, space_list, value_expression};
+use valueexpression::{Value, single_value, space_list, value_expression};
 use variablescope::{Scope, ScopeImpl};
 
 /// Parse scss data and write css in the given style.
@@ -158,6 +158,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
                    variable_declaration |
                    map!(mixin_declaration, |d| SassItem::MixinDeclaration(d)) |
                    each_loop |
+                   for_loop |
                    function_declaration |
                    mixin_call |
                    if_statement |
@@ -189,6 +190,13 @@ pub enum SassItem {
     MixinCall { name: String, args: CallArgs },
     IfStatement(Value, Vec<SassItem>, Vec<SassItem>),
     Each(String, Vec<Value>, Vec<SassItem>),
+    For {
+        name: String,
+        from: Value,
+        to: Value,
+        inclusive: bool,
+        body: Vec<SassItem>,
+    },
 }
 
 named!(rule<SassItem>,
@@ -211,6 +219,7 @@ named!(body_item<SassItem>,
            rule |
            property |
            each_loop |
+           for_loop |
            mixin_call |
            import |
            if_statement |
@@ -272,6 +281,25 @@ named!(each_loop<SassItem>,
                                   many0!(body_item),
                                   tag!("}")) >>
                  (SassItem::Each(name, values, body))));
+
+named!(for_loop<SassItem>,
+       do_parse!(tag!("@for") >> spacelike >> tag!("$") >>
+                 name: name >> spacelike >>
+                 tag!("from") >> spacelike >>
+                 from: single_value >> spacelike >>
+                 inclusive: alt!(value!(true, tag!("through")) |
+                                 value!(false, tag!("to"))) >> spacelike >>
+                 to: single_value >> spacelike >>
+                 body: delimited!(preceded!(tag!("{"), opt_spacelike),
+                                  many0!(body_item),
+                                  tag!("}")) >>
+                 (SassItem::For {
+                     name: name,
+                     from: from,
+                     to: to,
+                     inclusive: inclusive,
+                     body: body
+                 })));
 
 #[test]
 fn if_with_no_else() {
