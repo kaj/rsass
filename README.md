@@ -8,17 +8,20 @@ Rasmus.
 [![Crate](https://meritbadge.herokuapp.com/rsass)](https://crates.io/crates/rsass)
 [![docs](https://docs.rs/rsass/badge.svg)](https://docs.rs/rsass)
 
-The build contains a small but growing number of tests from
-https://github.com/sass/sass-spec .
-A default run of sass-spec found 502 of 3289 tests running (or 532 of
-6044 when claiming to be libsass).
-So this project is really not done yet.
+## Sass language and implemetation status
 
-If you want a working rust library for sass, you will probably be
-better of with [sass-rs](https://crates.io/crates/sass-rs) which is a
-rust wrapper around libsass, or possibly
-[sassers](https://crates.io/crates/sassers) which is another early
-stage pure rust implementation.
+The sass language [is defined in its reference
+doc](http://sass-lang.com/documentation/file.SASS_REFERENCE.html).
+This implementation is incomplete but getting there, if slowly.
+
+Progress: ![576](http://progressed.io/bar/576?scale=3294&suffix=+)
+of 3294 tests passed (or 619 of 6049 when claiming to be libsass).
+
+If you want a working rust library for sass right now, you will
+probably be better of with [sass-rs](https://crates.io/crates/sass-rs)
+which is a rust wrapper around libsass.
+Another alternative is [sassers](https://crates.io/crates/sassers)
+which is another early stage pure rust implementation.
 That said, this implementation has reached a version where I find it
 usable for my personal projects, and the number of working tests are
 improving.

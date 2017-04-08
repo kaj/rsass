@@ -1,4 +1,4 @@
-//! Sass reimplemented in rust with nom (very early stage).
+//! Sass reimplemented in rust with nom.
 //!
 //! The "r" in the name might stand for the Rust programming language,
 //! or for my name Rasmus.
@@ -8,12 +8,29 @@
 //! ```
 //! use rsass::{OutputStyle, compile_scss_file};
 //!
-//! let sass = "tests/basic/14_imports/a.scss".as_ref();
-//! let css = compile_scss_file(sass, OutputStyle::Compressed);
+//! let file = "tests/basic/14_imports/a.scss".as_ref();
+//! let css = compile_scss_file(file, OutputStyle::Compressed);
 //!
 //! assert_eq!(css, Ok("div span{moo:goo}\n".into()))
 //! ```
-
+//!
+//! # Sass language and implemetation status
+//!
+//! The sass language [is defined in its reference
+//! doc](http://sass-lang.com/documentation/file.SASS_REFERENCE.html).
+//! This implementation is incomplete but getting there, if slowly.
+//!
+//! Progress: ![576](http://progressed.io/bar/576?scale=3294&suffix=+)
+//! of 3294 tests passed (or 619 of 6049 when claiming to be libsass).
+//!
+//! If you want a working rust library for sass right now, you will
+//! probably be better of with [sass-rs](https://crates.io/crates/sass-rs)
+//! which is a rust wrapper around libsass.
+//! Another alternative is [sassers](https://crates.io/crates/sassers)
+//! which is another early stage pure rust implementation.
+//! That said, this implementation has reached a version where I find it
+//! usable for my personal projects, and the number of working tests are
+//! improving.
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
@@ -92,13 +109,21 @@ pub fn compile_scss_file(file: &Path,
     style.write_root(&items, sub_context)
 }
 
+/// A file context specifies where to find files to load.
+///
+/// When opening an included file, an extended file context is
+/// created, to find further included files relative to the file they
+/// are inlcuded from.
 #[derive(Clone, Debug)]
 pub struct FileContext {
     path: PathBuf,
 }
 
 impl FileContext {
-    fn new() -> Self {
+    /// Create a new FileContext.
+    ///
+    /// Files will be resolved from the current working directory.
+    pub fn new() -> Self {
         FileContext { path: PathBuf::new() }
     }
     fn file(&self, file: &Path) -> (Self, PathBuf) {
@@ -128,7 +153,9 @@ impl FileContext {
     }
 }
 
-
+/// Parse a scss file.
+///
+/// Returns a vec of the top level items of the file (or an error message).
 pub fn parse_scss_file(file: &Path) -> Result<Vec<SassItem>, String> {
     let mut f = File::open(file)
         .map_err(|e| format!("Failed to open {:?}: {}", file, e))?;
