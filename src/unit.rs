@@ -46,41 +46,41 @@ pub enum Unit {
 
 impl fmt::Display for Unit {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        match self {
+        match *self {
             // Distance units, <length> type
-            &Unit::Em => write!(out, "em"),
-            &Unit::Ex => write!(out, "ex"),
-            &Unit::Ch => write!(out, "ch"),
-            &Unit::Rem => write!(out, "rem"),
-            &Unit::Vw => write!(out, "vw"),
-            &Unit::Vh => write!(out, "vh"),
-            &Unit::Vmin => write!(out, "vmin"),
-            &Unit::Vmax => write!(out, "vmax"),
-            &Unit::Cm => write!(out, "cm"),
-            &Unit::Mm => write!(out, "mm"),
-            &Unit::Q => write!(out, "q"),
-            &Unit::In => write!(out, "in"),
-            &Unit::Pt => write!(out, "pt"),
-            &Unit::Pc => write!(out, "pc"),
-            &Unit::Px => write!(out, "px"),
+            Unit::Em => write!(out, "em"),
+            Unit::Ex => write!(out, "ex"),
+            Unit::Ch => write!(out, "ch"),
+            Unit::Rem => write!(out, "rem"),
+            Unit::Vw => write!(out, "vw"),
+            Unit::Vh => write!(out, "vh"),
+            Unit::Vmin => write!(out, "vmin"),
+            Unit::Vmax => write!(out, "vmax"),
+            Unit::Cm => write!(out, "cm"),
+            Unit::Mm => write!(out, "mm"),
+            Unit::Q => write!(out, "q"),
+            Unit::In => write!(out, "in"),
+            Unit::Pt => write!(out, "pt"),
+            Unit::Pc => write!(out, "pc"),
+            Unit::Px => write!(out, "px"),
             // <angle> type
-            &Unit::Deg => write!(out, "deg"),
-            &Unit::Grad => write!(out, "grad"),
-            &Unit::Rad => write!(out, "rad"),
-            &Unit::Turn => write!(out, "turn"),
+            Unit::Deg => write!(out, "deg"),
+            Unit::Grad => write!(out, "grad"),
+            Unit::Rad => write!(out, "rad"),
+            Unit::Turn => write!(out, "turn"),
             // <time> type
-            &Unit::S => write!(out, "s"),
-            &Unit::Ms => write!(out, "ms"),
+            Unit::S => write!(out, "s"),
+            Unit::Ms => write!(out, "ms"),
             // <frequency> type
-            &Unit::Hz => write!(out, "Hz"),
-            &Unit::Khz => write!(out, "kHz"),
+            Unit::Hz => write!(out, "Hz"),
+            Unit::Khz => write!(out, "kHz"),
             // <resolution>
-            &Unit::Dpi => write!(out, "dpi"),
-            &Unit::Dpcm => write!(out, "dpcm"),
-            &Unit::Dppx => write!(out, "dppx"),
+            Unit::Dpi => write!(out, "dpi"),
+            Unit::Dpcm => write!(out, "dpcm"),
+            Unit::Dppx => write!(out, "dppx"),
             // Special units
-            &Unit::Percent => write!(out, "%"),
-            &Unit::None => Ok(()),
+            Unit::Percent => write!(out, "%"),
+            Unit::None => Ok(()),
         }
     }
 }

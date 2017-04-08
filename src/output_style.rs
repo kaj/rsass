@@ -89,7 +89,7 @@ impl OutputStyle {
                         self.handle_root_item(&item,
                                               &mut scope,
                                               separate,
-                                              &file_context,
+                                              file_context,
                                               result);
                     }
                 } else {
@@ -153,18 +153,18 @@ impl OutputStyle {
             &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
                 if globals.evaluate(cond).is_true() {
                     for item in do_if {
-                        self.handle_root_item(&item,
+                        self.handle_root_item(item,
                                               globals,
                                               separate,
-                                              &file_context,
+                                              file_context,
                                               result);
                     }
                 } else {
                     for item in do_else {
-                        self.handle_root_item(&item,
+                        self.handle_root_item(item,
                                               globals,
                                               separate,
-                                              &file_context,
+                                              file_context,
                                               result);
                     }
                 }
@@ -174,10 +174,10 @@ impl OutputStyle {
                     let mut scope = ScopeImpl::sub(globals);
                     scope.define(name, value, false);
                     for item in body {
-                        self.handle_root_item(&item,
+                        self.handle_root_item(item,
                                               &mut scope,
                                               separate,
-                                              &file_context,
+                                              file_context,
                                               result);
                     }
                 }
@@ -196,10 +196,10 @@ impl OutputStyle {
                     let mut scope = ScopeImpl::sub(globals);
                     scope.define(name, &Value::scalar(value), false);
                     for item in body {
-                        self.handle_root_item(&item,
+                        self.handle_root_item(item,
                                               &mut scope,
                                               separate,
-                                              &file_context,
+                                              file_context,
                                               result);
                     }
                 }
@@ -208,10 +208,10 @@ impl OutputStyle {
                 let mut scope = ScopeImpl::sub(globals);
                 while scope.evaluate(cond).is_true() {
                     for item in body {
-                        self.handle_root_item(&item,
+                        self.handle_root_item(item,
                                               &mut scope,
                                               separate,
-                                              &file_context,
+                                              file_context,
                                               result);
                     }
                 }
