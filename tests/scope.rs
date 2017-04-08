@@ -1,0 +1,91 @@
+//! These are from the "scope" directory in the sass specification.
+//! See https://github.com/sass/sass-spec for source material.
+//! I add one a test function for one specification at a time and then
+//! try to implement that functionality without breaking those already
+//! added.
+extern crate rsass;
+use rsass::{OutputStyle, compile_scss};
+
+#[test]
+fn clash() {
+    check("$foo: 42;\n$bar: 43;\n$baz: 45;\n\n\
+           foo {\n  foo: $foo;\n  bar: $bar;\n  baz: $baz;\n\n\
+           $bar: 4; // this is a different $bar than `$bar !global`\n\n  \
+           foo: $foo;\n  bar: $bar;\n  baz: $baz;\n\n  \
+           @if true {\n    \
+           $foo: 3; // this is a different $foo than `$foo !global`\n    \
+           $bar: 5; // this is a different $bar than `$bar !global`\n\n    \
+           foo: $foo;\n    bar: $bar;\n    baz: $baz;\n  }\n}\n",
+          "foo {\n  foo: 42;\n  bar: 43;\n  baz: 45;\n  foo: 42;\n  \
+           bar: 4;\n  baz: 45;\n  foo: 3;\n  bar: 5;\n  baz: 45;\n}\n")
+}
+
+#[test]
+fn function() {
+    check("$foo: 42;\n\n.foo {\n  content: $foo;\n}\n\n\
+           @function foo() {\n  $foo: 1337 !global;\n  @return $foo;\n}\n\n\
+           @if foo() {}\n\n\
+           .bar {\n  content: $foo;\n}\n",
+          ".foo {\n  content: 42;\n}\n\n\
+           .bar {\n  content: 1337;\n}\n")
+}
+
+#[test]
+fn test_if() {
+    check("$foo: 42;\n\n\
+           .foo {\n  content: $foo;\n}\n\n\
+           @if true {\n  $foo: 1337 !global;\n}\n\n\
+           .bar {\n  content: $foo;\n}\n",
+          ".foo {\n  content: 42;\n}\n\n\
+           .bar {\n  content: 1337;\n}\n")
+}
+
+#[test]
+fn mixin() {
+    check("$foo: 42;\n\n\
+           @mixin foo {\n  $foo: 1337 !global;\n}\n\n\
+           .foo {\n  content: $foo;\n}\n\n\
+           @include foo;\n\n\
+           .bar {\n  content: $foo;\n}\n",
+          ".foo {\n  content: 42;\n}\n\n\
+           .bar {\n  content: 1337;\n}\n")
+}
+
+#[test]
+fn nested() {
+    check("$foo: 42;\n\n\
+           .foo {\n  content: $foo;\n\n  \
+           > .bar {\n    $foo: 1337 !global;\n  }\n}\n\n\
+           .bar {\n  content: $foo;\n}\n",
+          ".foo {\n  content: 42;\n}\n\n\
+           .bar {\n  content: 1337;\n}\n")
+}
+
+#[test]
+fn root() {
+    check("$foo: 42;\n\n\
+           .foo {\n  content: $foo;\n}\n\n\
+           $foo: 1337 !global;\n\n\
+           .bar {\n  content: $foo;\n}\n",
+          ".foo {\n  content: 42;\n}\n\n\
+           .bar {\n  content: 1337;\n}\n")
+}
+
+#[test]
+fn ruleset() {
+    check("$foo: 42;\n\n\
+           .foo {\n  content: $foo;\n  $foo: 1337 !global;\n  \
+           content: $foo;\n}\n\n\
+           .bar {\n  content: $foo;\n}\n",
+          ".foo {\n  content: 42;\n  content: 1337;\n}\n\n\
+           .bar {\n  content: 1337;\n}\n")
+}
+
+fn check(input: &str, expected: &str) {
+    assert_eq!(compile_scss(input.as_bytes(), OutputStyle::Normal)
+                   .and_then(|s| {
+                                 String::from_utf8(s)
+                                 .map_err(|e| format!("Non-utf8 output: {}", e))
+                             }),
+               Ok(expected.to_string()));
+}

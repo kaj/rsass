@@ -81,22 +81,15 @@ impl OutputStyle {
                 globals.define_function(name, func.clone());
             }
             &SassItem::MixinCall { ref name, ref args } => {
-                if *separate {
-                    self.do_indent(result, 0).unwrap();
-                } else {
-                    *separate = true;
-                }
                 if let Some(mixin) = globals.get_mixin(name) {
-                    let mut direct = vec![];
-                    self.handle_body(&mut direct,
-                                     result,
-                                     &mut mixin.argscope(globals, args),
-                                     &[Selector::root()],
-                                     &mixin.body,
-                                     file_context,
-                                     0)
-                        .unwrap();
-                    assert_eq!(direct, &[]);
+                    let mut scope = mixin.argscope(globals, args);
+                    for item in mixin.body {
+                        self.handle_root_item(&item,
+                                              &mut scope,
+                                              separate,
+                                              &file_context,
+                                              result);
+                    }
                 } else {
                     panic!(format!("Unknown mixin {}({:?})", name, args))
                 }
@@ -156,33 +149,22 @@ impl OutputStyle {
                 write!(result, "}}").unwrap();
             }
             &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
-                if *separate {
-                    self.do_indent(result, 0).unwrap();
-                } else {
-                    *separate = true;
-                }
                 if globals.evaluate(cond).is_true() {
-                    let mut direct = vec![];
-                    self.handle_body(&mut direct,
-                                     result,
-                                     &mut ScopeImpl::sub(globals),
-                                     &[Selector::root()],
-                                     do_if,
-                                     file_context,
-                                     0)
-                        .unwrap();
-                    assert_eq!(direct, &[]);
+                    for item in do_if {
+                        self.handle_root_item(&item,
+                                              globals,
+                                              separate,
+                                              &file_context,
+                                              result);
+                    }
                 } else {
-                    let mut direct = vec![];
-                    self.handle_body(&mut direct,
-                                     result,
-                                     &mut ScopeImpl::sub(globals),
-                                     &[Selector::root()],
-                                     do_else,
-                                     file_context,
-                                     0)
-                        .unwrap();
-                    assert_eq!(direct, &[]);
+                    for item in do_else {
+                        self.handle_root_item(&item,
+                                              globals,
+                                              separate,
+                                              &file_context,
+                                              result);
+                    }
                 }
             }
             &SassItem::Each(ref name, ref values, ref body) => {
