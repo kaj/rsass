@@ -159,6 +159,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
                    map!(mixin_declaration, |d| SassItem::MixinDeclaration(d)) |
                    each_loop |
                    for_loop |
+                   while_loop |
                    function_declaration |
                    mixin_call |
                    if_statement |
@@ -197,6 +198,7 @@ pub enum SassItem {
         inclusive: bool,
         body: Vec<SassItem>,
     },
+    While(Value, Vec<SassItem>),
 }
 
 named!(rule<SassItem>,
@@ -220,6 +222,7 @@ named!(body_item<SassItem>,
            property |
            each_loop |
            for_loop |
+           while_loop |
            mixin_call |
            import |
            if_statement |
@@ -300,6 +303,14 @@ named!(for_loop<SassItem>,
                      inclusive: inclusive,
                      body: body
                  })));
+
+named!(while_loop<SassItem>,
+       do_parse!(tag!("@while") >> spacelike >>
+                 cond: value_expression >> spacelike >>
+                 body: delimited!(preceded!(tag!("{"), opt_spacelike),
+                                  many0!(body_item),
+                                  tag!("}")) >>
+                 (SassItem::While(cond, body))));
 
 #[test]
 fn if_with_no_else() {

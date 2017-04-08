@@ -202,6 +202,18 @@ impl OutputStyle {
                     }
                 }
             }
+            &SassItem::While(ref cond, ref body) => {
+                let mut scope = ScopeImpl::sub(globals);
+                while scope.evaluate(cond).is_true() {
+                    for item in body {
+                        self.handle_root_item(&item,
+                                              &mut scope,
+                                              separate,
+                                              &file_context,
+                                              result);
+                    }
+                }
+            }
             &SassItem::Return(_) => {
                 panic!("Return not allowed in global context");
             }
@@ -443,6 +455,20 @@ impl OutputStyle {
                     for value in from..to {
                         let mut scope = ScopeImpl::sub(scope);
                         scope.define(name, &Value::scalar(value), false);
+                        self.handle_body(direct,
+                                         sub,
+                                         &mut scope,
+                                         selectors,
+                                         body,
+                                         file_context,
+                                         0)
+                            .unwrap();
+                        assert_eq!(direct, &[]);
+                    }
+                }
+                &SassItem::While(ref cond, ref body) => {
+                    while scope.evaluate(cond).is_true() {
+                        let mut scope = ScopeImpl::sub(scope);
                         self.handle_body(direct,
                                          sub,
                                          &mut scope,
