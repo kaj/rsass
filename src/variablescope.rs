@@ -8,7 +8,6 @@ use std::collections::BTreeMap;
 use unit::Unit;
 use valueexpression::{Quotes, Value};
 
-#[derive(Default)]
 pub struct ScopeImpl<'a> {
     parent: Option<&'a mut Scope>,
     variables: BTreeMap<String, Value>,
@@ -36,10 +35,10 @@ pub trait Scope {
 
 impl<'a> Scope for ScopeImpl<'a> {
     fn define(&mut self, name: &str, val: &Value, global: bool) {
-        if let (true, Some(parent)) = (global, self.parent.as_mut()) {
-            return parent.define(name, val, global);
-        }
         let val = self.do_evaluate(val, true);
+        if let (true, Some(parent)) = (global, self.parent.as_mut()) {
+            return parent.define(name, &val, global);
+        }
         self.variables.insert(name.replace('-', "_"), val);
     }
     fn define_default(&mut self, name: &str, val: &Value, global: bool) {

@@ -169,23 +169,15 @@ impl OutputStyle {
             }
             &SassItem::Each(ref name, ref values, ref body) => {
                 for value in values {
-                    if *separate {
-                        self.do_indent(result, 0).unwrap();
-                    } else {
-                        *separate = true;
-                    }
                     let mut scope = ScopeImpl::sub(globals);
                     scope.define(name, value, false);
-                    let mut direct = vec![];
-                    self.handle_body(&mut direct,
-                                     result,
-                                     &mut scope,
-                                     &[Selector::root()],
-                                     body,
-                                     file_context,
-                                     0)
-                        .unwrap();
-                    assert_eq!(direct, &[]);
+                    for item in body {
+                        self.handle_root_item(&item,
+                                              &mut scope,
+                                              separate,
+                                              &file_context,
+                                              result);
+                    }
                 }
             }
             &SassItem::For {
@@ -199,23 +191,15 @@ impl OutputStyle {
                 let to = to.integer_value().unwrap();
                 let to = if inclusive { to + 1 } else { to };
                 for value in from..to {
-                    if *separate {
-                        self.do_indent(result, 0).unwrap();
-                    } else {
-                        *separate = true;
-                    }
                     let mut scope = ScopeImpl::sub(globals);
                     scope.define(name, &Value::scalar(value), false);
-                    let mut direct = vec![];
-                    self.handle_body(&mut direct,
-                                     result,
-                                     &mut scope,
-                                     &[Selector::root()],
-                                     body,
-                                     file_context,
-                                     0)
-                        .unwrap();
-                    assert_eq!(direct, &[]);
+                    for item in body {
+                        self.handle_root_item(&item,
+                                              &mut scope,
+                                              separate,
+                                              &file_context,
+                                              result);
+                    }
                 }
             }
             &SassItem::Return(_) => {

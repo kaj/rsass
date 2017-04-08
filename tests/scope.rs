@@ -21,6 +21,26 @@ fn clash() {
 }
 
 #[test]
+fn each() {
+    check("$foo: 42;\n\n\
+           .foo {\n  content: $foo;\n}\n\n\
+           @each $item in 1337 {\n  $foo: $item !global;\n}\n\n\
+           .bar {\n  content: $foo;\n}\n",
+          ".foo {\n  content: 42;\n}\n\n\
+           .bar {\n  content: 1337;\n}\n")
+}
+
+#[test]
+fn test_for() {
+    check("$foo: 42;\n\n\
+           .foo {\n  content: $foo;\n}\n\n\
+           @for $i from 1337 to 1338 {\n  $foo: $i !global;\n}\n\n\
+           .bar {\n  content: $foo;\n}\n",
+          ".foo {\n  content: 42;\n}\n\n\
+           .bar {\n  content: 1337;\n}\n")
+}
+
+#[test]
 fn function() {
     check("$foo: 42;\n\n.foo {\n  content: $foo;\n}\n\n\
            @function foo() {\n  $foo: 1337 !global;\n  @return $foo;\n}\n\n\
