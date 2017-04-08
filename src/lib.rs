@@ -62,7 +62,6 @@ pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
 use valueexpression::{Value, single_value, space_list, value_expression};
-use variablescope::{Scope, ScopeImpl};
 
 /// Parse scss data and write css in the given style.
 ///
@@ -183,7 +182,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
        many0!(alt!(value!(SassItem::None, spacelike) |
                    import |
                    variable_declaration |
-                   map!(mixin_declaration, |d| SassItem::MixinDeclaration(d)) |
+                   mixin_declaration |
                    each_loop |
                    for_loop |
                    while_loop |
@@ -213,7 +212,11 @@ pub enum SassItem {
         global: bool,
     },
     AtRule(String, Vec<SassItem>),
-    MixinDeclaration(MixinDeclaration),
+    MixinDeclaration {
+        name: String,
+        args: FormalArgs,
+        body: Vec<SassItem>,
+    },
     FunctionDeclaration { name: String, func: SassFunction },
     MixinCall { name: String, args: CallArgs },
     IfStatement(Value, Vec<SassItem>, Vec<SassItem>),
@@ -242,8 +245,7 @@ named!(rule<SassItem>,
 named!(body_item<SassItem>,
        alt_complete!(
            value!(SassItem::None, spacelike) |
-           map!(mixin_declaration,
-                |d| SassItem::MixinDeclaration(d)) |
+           mixin_declaration |
            variable_declaration |
            rule |
            property |
@@ -393,14 +395,14 @@ fn test_mixin_call_named_args() {
                     }))
 }
 
-named!(mixin_declaration<&[u8], MixinDeclaration>,
+named!(mixin_declaration<&[u8], SassItem>,
        do_parse!(tag!("@mixin") >> spacelike >>
                  name: name >> opt_spacelike >>
                  args: opt!(formal_args) >> opt_spacelike >>
                  tag!("{") >> opt_spacelike >>
                  body: many0!(body_item) >>
                  tag!("}") >>
-                 (MixinDeclaration{
+                 (SassItem::MixinDeclaration{
                      name: name,
                      args: args.unwrap_or_default(),
                      body: body,
@@ -409,7 +411,7 @@ named!(mixin_declaration<&[u8], MixinDeclaration>,
 #[test]
 fn test_mixin_declaration_empty() {
     assert_eq!(mixin_declaration(b"@mixin foo() {}\n"),
-               Done(&b"\n"[..], MixinDeclaration {
+               Done(&b"\n"[..], SassItem::MixinDeclaration {
                    name: "foo".into(),
                    args: FormalArgs::new(vec![]),
                    body: vec![],
@@ -421,7 +423,7 @@ fn test_mixin_declaration() {
     assert_eq!(mixin_declaration(b"@mixin foo($x) {\n  \
                                    foo-bar: baz $x;\n\
                                    }\n"),
-               Done(&b"\n"[..], MixinDeclaration {
+               Done(&b"\n"[..], SassItem::MixinDeclaration {
                    name: "foo".into(),
                    args: FormalArgs::new(vec![("x".into(), Value::Null)]),
                    body: vec![SassItem::Property(
@@ -441,7 +443,7 @@ fn test_mixin_declaration_default_and_subrules() {
                                    property: $b;\n  \
                                    }\n\
                                    }\n"),
-               Done(&b"\n"[..], MixinDeclaration {
+               Done(&b"\n"[..], SassItem::MixinDeclaration {
                    name: "bar".into(),
                    args: FormalArgs::new(
                        vec![("a".into(), Value::Null),
@@ -479,22 +481,6 @@ named!(return_stmt<SassItem>,
                  v: value_expression >> opt_spacelike >>
                  tag!(";") >>
                  (SassItem::Return(v))));
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct MixinDeclaration {
-    name: String,
-    args: FormalArgs,
-    body: Vec<SassItem>,
-}
-
-impl MixinDeclaration {
-    fn argscope<'a>(&self,
-                    scope: &'a mut Scope,
-                    args: &CallArgs)
-                    -> ScopeImpl<'a> {
-        self.args.eval(scope, args)
-    }
-}
 
 named!(property<&[u8], SassItem>,
        do_parse!(opt_spacelike >>

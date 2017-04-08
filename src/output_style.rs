@@ -76,14 +76,16 @@ impl OutputStyle {
                     globals.define(name, val, *global);
                 }
             }
-            &SassItem::MixinDeclaration(ref m) => globals.define_mixin(m),
+            &SassItem::MixinDeclaration { ref name, ref args, ref body } => {
+                globals.define_mixin(name, args, body)
+            }
             &SassItem::FunctionDeclaration { ref name, ref func } => {
                 globals.define_function(name, func.clone());
             }
             &SassItem::MixinCall { ref name, ref args } => {
-                if let Some(mixin) = globals.get_mixin(name) {
-                    let mut scope = mixin.argscope(globals, args);
-                    for item in mixin.body {
+                if let Some((m_args, m_body)) = globals.get_mixin(name) {
+                    let mut scope = m_args.eval(globals, args);
+                    for item in m_body {
                         self.handle_root_item(&item,
                                               &mut scope,
                                               separate,
@@ -333,20 +335,24 @@ impl OutputStyle {
                         scope.define(name, val, global);
                     }
                 }
-                &SassItem::MixinDeclaration(ref m) => {
-                    scope.define_mixin(m);
+                &SassItem::MixinDeclaration {
+                     ref name,
+                     ref args,
+                     ref body,
+                 } => {
+                    scope.define_mixin(name, args, body);
                 }
                 &SassItem::FunctionDeclaration { ref name, ref func } => {
                     scope.define_function(name, func.clone());
                 }
                 &SassItem::MixinCall { ref name, ref args } => {
-                    if let Some(mixin) = scope.get_mixin(name) {
-                        let mut argscope = mixin.argscope(scope, args);
+                    if let Some((m_args, m_body)) = scope.get_mixin(name) {
+                        let mut argscope = m_args.eval(scope, args);
                         self.handle_body(direct,
                                          sub,
                                          &mut argscope,
                                          selectors,
-                                         &mixin.body,
+                                         &m_body,
                                          file_context,
                                          indent)?;
                     } else {

@@ -1,7 +1,7 @@
 //! A scope is something that contains variable values.
 
-use super::{MixinDeclaration, SassItem};
-use formalargs::CallArgs;
+use super::SassItem;
+use formalargs::{CallArgs, FormalArgs};
 use functions::{SassFunction, get_builtin_function};
 use num_traits::identities::Zero;
 use std::collections::BTreeMap;
@@ -11,7 +11,7 @@ use valueexpression::{Quotes, Value};
 pub struct ScopeImpl<'a> {
     parent: Option<&'a mut Scope>,
     variables: BTreeMap<String, Value>,
-    mixins: BTreeMap<String, MixinDeclaration>,
+    mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
     functions: BTreeMap<String, SassFunction>,
 }
 
@@ -21,8 +21,11 @@ pub trait Scope {
     fn get(&self, name: &str) -> Value;
     fn get_global(&self, name: &str) -> Value;
 
-    fn define_mixin(&mut self, m: &MixinDeclaration);
-    fn get_mixin(&self, name: &str) -> Option<MixinDeclaration>;
+    fn define_mixin(&mut self,
+                    name: &str,
+                    args: &FormalArgs,
+                    body: &[SassItem]);
+    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)>;
 
     fn define_function(&mut self, name: &str, func: SassFunction);
     fn get_function(&self, name: &str) -> Option<&SassFunction>;
@@ -46,7 +49,7 @@ impl<'a> Scope for ScopeImpl<'a> {
             self.define(name, val, global)
         }
     }
-    fn get_mixin(&self, name: &str) -> Option<MixinDeclaration> {
+    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)> {
         self.mixins
             .get(&name.replace('-', "_"))
             .cloned()
@@ -67,8 +70,11 @@ impl<'a> Scope for ScopeImpl<'a> {
             self.variables.get(name).cloned().unwrap_or(Value::Null)
         }
     }
-    fn define_mixin(&mut self, m: &MixinDeclaration) {
-        self.mixins.insert(m.name.replace('-', "_"), m.clone());
+    fn define_mixin(&mut self,
+                    name: &str,
+                    args: &FormalArgs,
+                    body: &[SassItem]) {
+        self.mixins.insert(name.replace('-', "_"), (args.clone(), body.into()));
     }
     fn define_function(&mut self, name: &str, func: SassFunction) {
         self.functions.insert(name.replace('-', "_"), func);
