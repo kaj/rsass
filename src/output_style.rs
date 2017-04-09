@@ -189,8 +189,8 @@ impl OutputStyle {
                  inclusive,
                  ref body,
              } => {
-                let from = from.integer_value().unwrap();
-                let to = to.integer_value().unwrap();
+                let from = globals.evaluate(from).integer_value().unwrap();
+                let to = globals.evaluate(to).integer_value().unwrap();
                 let to = if inclusive { to + 1 } else { to };
                 for value in from..to {
                     let mut scope = ScopeImpl::sub(globals);
@@ -445,7 +445,6 @@ impl OutputStyle {
                                          file_context,
                                          0)
                             .unwrap();
-                        assert_eq!(direct, &[]);
                     }
                 }
                 &SassItem::For {
@@ -455,8 +454,8 @@ impl OutputStyle {
                      inclusive,
                      ref body,
                  } => {
-                    let from = from.integer_value().unwrap();
-                    let to = to.integer_value().unwrap();
+                    let from = scope.evaluate(from).integer_value().unwrap();
+                    let to = scope.evaluate(to).integer_value().unwrap();
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
                         let mut scope = ScopeImpl::sub(scope);
@@ -469,7 +468,6 @@ impl OutputStyle {
                                          file_context,
                                          0)
                             .unwrap();
-                        assert_eq!(direct, &[]);
                     }
                 }
                 &SassItem::While(ref cond, ref body) => {
@@ -483,7 +481,6 @@ impl OutputStyle {
                                          file_context,
                                          0)
                             .unwrap();
-                        assert_eq!(direct, &[]);
                     }
                 }
                 &SassItem::Return(_) => {
