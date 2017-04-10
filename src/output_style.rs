@@ -173,9 +173,13 @@ impl OutputStyle {
                 }
             }
             &SassItem::Each(ref name, ref values, ref body) => {
+                let values = match globals.evaluate(values) {
+                    Value::MultiComma(v) => v,
+                    v => vec![v],
+                };
                 for value in values {
                     let mut scope = ScopeImpl::sub(globals);
-                    scope.define(name, value, false);
+                    scope.define(name, &value, false);
                     for item in body {
                         self.handle_root_item(item,
                                               &mut scope,
@@ -436,9 +440,13 @@ impl OutputStyle {
                     }
                 }
                 &SassItem::Each(ref name, ref values, ref body) => {
+                    let values = match scope.evaluate(values) {
+                        Value::MultiComma(v) => v,
+                        v => vec![v],
+                    };
                     for value in values {
                         let mut scope = ScopeImpl::sub(scope);
-                        scope.define(name, value, false);
+                        scope.define(name, &value, false);
                         self.handle_body(direct,
                                          sub,
                                          &mut scope,

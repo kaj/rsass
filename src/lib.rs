@@ -61,7 +61,7 @@ use functions::SassFunction;
 pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
-use valueexpression::{Value, single_value, space_list, value_expression};
+use valueexpression::{Value, single_value, value_expression};
 
 /// Parse scss data and write css in the given style.
 ///
@@ -221,7 +221,8 @@ pub enum SassItem {
     FunctionDeclaration { name: String, func: SassFunction },
     MixinCall { name: String, args: CallArgs },
     IfStatement(Value, Vec<SassItem>, Vec<SassItem>),
-    Each(String, Vec<Value>, Vec<SassItem>),
+    /// The value may be or evaluate to a list.
+    Each(String, Value, Vec<SassItem>),
     For {
         name: String,
         from: Value,
@@ -308,9 +309,7 @@ named!(if_statement_inner<SassItem>,
 named!(each_loop<SassItem>,
        do_parse!(tag!("@each") >> spacelike >> tag!("$") >>
                  name: name >> spacelike >> tag!("in") >> spacelike >>
-                 values: separated_nonempty_list!(
-                     do_parse!(tag!(",") >> opt_spacelike >> ()),
-                     space_list) >> opt_spacelike >>
+                 values: value_expression >> opt_spacelike >>
                  body: delimited!(preceded!(tag!("{"), opt_spacelike),
                                   many0!(body_item),
                                   tag!("}")) >>
