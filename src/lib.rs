@@ -481,7 +481,7 @@ named!(function_declaration<SassItem>,
 named!(return_stmt<SassItem>,
        do_parse!(tag!("@return") >> spacelike >>
                  v: value_expression >> opt_spacelike >>
-                 tag!(";") >>
+                 opt!(tag!(";")) >>
                  (SassItem::Return(v))));
 
 named!(property<&[u8], SassItem>,

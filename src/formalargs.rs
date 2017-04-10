@@ -90,9 +90,10 @@ named!(pub formal_args<FormalArgs>,
                       preceded!(tag!(","), opt_spacelike),
                       do_parse!(tag!("$") >> name: name >>
                                 d: opt!(do_parse!(
+                                    opt_spacelike >>
                                     tag!(":") >> opt_spacelike >>
-                                        d: space_list >> opt_spacelike >>
-                                        (d))) >>
+                                    d: space_list >> opt_spacelike >>
+                                    (d))) >>
                                 (name.replace('-', "_"),
                                  d.unwrap_or(Value::Null)))),
                        |v| FormalArgs(v)),
