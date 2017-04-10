@@ -204,6 +204,7 @@ pub enum SassItem {
     Import(Value),
     Property(String, Value, bool),
     Rule(Vec<Selector>, Vec<SassItem>),
+    NamespaceRule(String, Value, Vec<SassItem>),
     Return(Value),
     VariableDeclaration {
         name: String,
@@ -248,6 +249,7 @@ named!(body_item<SassItem>,
            mixin_declaration |
            variable_declaration |
            rule |
+           namespace_rule |
            property |
            each_loop |
            for_loop |
@@ -490,6 +492,18 @@ named!(property<&[u8], SassItem>,
                  imp: opt_important >> opt_spacelike >>
                  opt!(tag!(";")) >> opt_spacelike >>
                  (SassItem::Property(name, val, imp))));
+
+named!(namespace_rule<SassItem>,
+       do_parse!(opt_spacelike >>
+                 n1: name >> opt_spacelike >>
+                 tag!(":") >> opt_spacelike >>
+                 value: opt!(value_expression) >> opt_spacelike >>
+                 tag!("{") >>
+                 body: many0!(body_item) >> opt_spacelike >>
+                 tag!("}") >>
+                 (SassItem::NamespaceRule(n1,
+                                          value.unwrap_or(Value::Null),
+                                          body))));
 
 named!(opt_important<bool>,
        map!(opt!(do_parse!(opt_spacelike >> tag!("!") >>

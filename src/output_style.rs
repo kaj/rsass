@@ -125,8 +125,11 @@ impl OutputStyle {
                     write!(result, "/*{}*/", c).unwrap();
                 }
             }
-            &SassItem::Property(_, _, _) => {
+            &SassItem::Property(..) => {
                 panic!("Global property not allowed");
+            }
+            &SassItem::NamespaceRule(..) => {
+                panic!("Global namespaced property not allowed");
             }
             &SassItem::AtRule(ref query, ref body) => {
                 if *separate {
@@ -299,20 +302,19 @@ impl OutputStyle {
                     }
                 }
                 &SassItem::Property(ref name, ref value, ref important) => {
-                    self.do_indent(direct, indent + 2)?;
-                    if self.is_compressed() {
-                        write!(direct,
-                               "{}:{:#}{};",
-                               name,
-                               scope.evaluate(value),
-                               if *important { "!important" } else { "" })?;
-                    } else {
-                        write!(direct,
-                               "{}: {}{};",
-                               name,
-                               scope.evaluate(value),
-                               if *important { " !important" } else { "" })?;
-                    }
+                    self.write_property(direct,
+                                        name,
+                                        &scope.evaluate(value),
+                                        *important,
+                                        indent + 2)?;
+                }
+                &SassItem::NamespaceRule(ref name, ref value, ref body) => {
+                    self.write_nsrule(direct,
+                                      scope,
+                                      name,
+                                      value,
+                                      body,
+                                      indent + 2)?;
                 }
                 &SassItem::Rule(ref s, ref b) => {
                     self.write_rule(s,
@@ -487,6 +489,58 @@ impl OutputStyle {
                     panic!("Return not allowed in global context");
                 }
                 &SassItem::None => (),
+            }
+        }
+        Ok(())
+    }
+
+    fn write_nsrule(&self,
+                    out: &mut Write,
+                    scope: &mut Scope,
+                    name: &str,
+                    value: &Value,
+                    body: &[SassItem],
+                    indent: usize)
+                    -> io::Result<()> {
+        self.write_property(out, name, &scope.evaluate(value), false, indent)?;
+        for item in body {
+            match item {
+                &SassItem::Property(ref name2, ref value, ref important) => {
+                    self.write_property(out,
+                                        &format!("{}-{}", name, name2),
+                                        &scope.evaluate(value),
+                                        *important,
+                                        indent)?;
+                }
+                &SassItem::NamespaceRule(ref name2, ref value, ref body) => {
+                    self.write_nsrule(out,
+                                      scope,
+                                      &format!("{}-{}", name, name2),
+                                      value,
+                                      body,
+                                      indent)?;
+                }
+                &SassItem::None => (),
+                x => panic!("Item {:?} not supported in scoped rule", x),
+            }
+        }
+        Ok(())
+    }
+    fn write_property(&self,
+                      out: &mut Write,
+                      name: &str,
+                      value: &Value,
+                      important: bool,
+                      indent: usize)
+                      -> io::Result<()> {
+        if !value.is_null() {
+            self.do_indent(out, indent)?;
+            if self.is_compressed() {
+                let important = if important { "!important" } else { "" };
+                write!(out, "{}:{:#}{};", name, value, important)?;
+            } else {
+                let important = if important { " !important" } else { "" };
+                write!(out, "{}: {}{};", name, value, important)?;
             }
         }
         Ok(())
