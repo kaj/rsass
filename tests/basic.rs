@@ -675,7 +675,13 @@ fn t33_ambigous_imports() {
                           .into()))
 }
 
-// TODO Implement test 35 ...
+#[test]
+fn t35_varargs_false() {
+    check(b"@mixin foo($args...) {\n  @each $arg in $args {\n    \
+            @if $arg {\n      thing: $arg;\n    }\n  }\n}\n\n\
+            div {\n  @include foo(a, b, false);\n}\n",
+          "div {\n  thing: a;\n  thing: b;\n}\n")
+}
 
 #[test]
 fn t36_extra_commas_in_selectors() {

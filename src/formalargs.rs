@@ -9,11 +9,11 @@ use variablescope::{Scope, ScopeImpl};
 /// The arguments are ordered (so they have a position).
 /// Each argument also has a name and may have a default value.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct FormalArgs(Vec<(String, Value)>);
+pub struct FormalArgs(Vec<(String, Value)>, bool);
 
 impl FormalArgs {
     pub fn new(a: Vec<(String, Value)>) -> Self {
-        FormalArgs(a)
+        FormalArgs(a, false)
     }
 
     pub fn eval<'a>(&self,
@@ -21,17 +21,25 @@ impl FormalArgs {
                     args: &CallArgs)
                     -> ScopeImpl<'a> {
         let mut argscope = ScopeImpl::sub(scope);
+        let n = self.0.len();
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
-            let value = args.0
-                .iter()
-                .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
-                .map(|&(ref _k, ref v)| v)
-                .or_else(|| match args.0.get(i) {
-                             Some(&(None, ref v)) => Some(v),
-                             _ => None,
-                         })
-                .unwrap_or(default);
-            argscope.define(name, value, false);
+            if let Some(value) = args.0
+                   .iter()
+                   .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
+                   .map(|&(ref _k, ref v)| v) {
+                argscope.define(name, value, false);
+            } else if self.1 && i + 1 == n && args.0.len() > n {
+                let args =
+                    args.0[i..].iter().map(|&(_, ref v)| v.clone()).collect();
+                argscope.define(name, &Value::MultiComma(args), false);
+            } else {
+                argscope.define(name,
+                                match args.0.get(i) {
+                                    Some(&(None, ref v)) => v,
+                                    _ => default,
+                                },
+                                false);
+            }
         }
         argscope
     }
@@ -85,19 +93,20 @@ impl fmt::Display for CallArgs {
 }
 
 named!(pub formal_args<FormalArgs>,
-       delimited!(preceded!(tag!("("), opt_spacelike),
-                  map!(separated_list!(
-                      preceded!(tag!(","), opt_spacelike),
-                      do_parse!(tag!("$") >> name: name >>
-                                d: opt!(do_parse!(
-                                    opt_spacelike >>
-                                    tag!(":") >> opt_spacelike >>
-                                    d: space_list >> opt_spacelike >>
-                                    (d))) >>
-                                (name.replace('-', "_"),
-                                 d.unwrap_or(Value::Null)))),
-                       |v| FormalArgs(v)),
-                  tag!(")")));
+       do_parse!(tag!("(") >> opt_spacelike >>
+                 v: separated_list!(
+                     preceded!(tag!(","), opt_spacelike),
+                     do_parse!(tag!("$") >> name: name >>
+                               d: opt!(do_parse!(
+                                   opt_spacelike >>
+                                   tag!(":") >> opt_spacelike >>
+                                   d: space_list >> opt_spacelike >>
+                                   (d))) >>
+                               (name.replace('-', "_"),
+                                d.unwrap_or(Value::Null)))) >>
+                 va: opt!(tag!("...")) >> opt_spacelike >>
+                 tag!(")") >>
+                 (FormalArgs(v, va.is_some()))));
 
 named!(pub call_args<CallArgs>,
        delimited!(
