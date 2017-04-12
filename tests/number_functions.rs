@@ -28,7 +28,19 @@ fn floor() {
           "foo{foo:4;foo:4px;foo:4px}\n")
 }
 
-// TODO Test and implement varargs functions max and min.
+#[test]
+fn max() {
+    check(b"foo {\n  foo: max(1, 2, 3);\n  foo: max(3, 2px, 1px);\n  \
+            foo: max(4em);\n  foo: max(10cm, 6in);\n}\n",
+          "foo{foo:3;foo:3;foo:4em;foo:6in}\n")
+}
+
+#[test]
+fn min() {
+    check(b"foo {\n  foo: min(1, 2, 3);\n  foo: min(3px, 2px, 1);\n  \
+            foo: min(4em);\n  foo: min(10cm, 6in);\n}\n",
+          "foo{foo:1;foo:1;foo:4em;foo:10cm}\n")
+}
 
 #[test]
 fn percentage() {

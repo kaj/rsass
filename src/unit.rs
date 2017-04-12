@@ -1,5 +1,7 @@
 //! The Unit enum defines css units
 
+use num_rational::Rational;
+use num_traits::One;
 use std::fmt;
 
 /// Units in css.
@@ -42,6 +44,63 @@ pub enum Unit {
     // Special units
     Percent,
     None,
+}
+
+impl Unit {
+    pub fn dimension(&self) -> &'static str {
+        match *self {
+            Unit::Em | Unit::Ex | Unit::Ch | Unit::Rem | Unit::Vw |
+            Unit::Vh | Unit::Vmin | Unit::Vmax | Unit::Cm | Unit::Mm |
+            Unit::Q | Unit::In | Unit::Pt | Unit::Pc | Unit::Px => "length",
+
+            Unit::Deg | Unit::Grad | Unit::Rad | Unit::Turn => "angle",
+
+            Unit::S | Unit::Ms => "time",
+
+            Unit::Hz | Unit::Khz => "frequency",
+
+            Unit::Dpi | Unit::Dpcm | Unit::Dppx => "resolution",
+
+            Unit::Percent | Unit::None => "none",
+        }
+    }
+
+    /// Some of these are exact and correct, others are more arbitrary.
+    /// When comparing 10cm to 4in, these factors will give correct results.
+    /// When comparing rems to vw, who can say?
+    pub fn scale_factor(&self) -> Rational {
+        match *self {
+            Unit::Em | Unit::Rem => Rational::new(10, 2),
+            Unit::Ex => Rational::new(10, 3),
+            Unit::Ch => Rational::new(10, 4),
+            Unit::Vw | Unit::Vh | Unit::Vmin | Unit::Vmax => Rational::one(),
+            Unit::Cm => Rational::new(10, 1),
+            Unit::Mm => Rational::one(),
+            Unit::Q => Rational::new(1, 4),
+            Unit::In => Rational::new(254, 10),
+            Unit::Pt => Rational::new(254, 720),
+            Unit::Pc => Rational::new(254, 60),
+            Unit::Px => Rational::new(254, 960),
+
+            Unit::Deg => Rational::new(360, 1),
+            Unit::Grad => Rational::new(400, 1),
+            Unit::Rad => Rational::new(62832, 10000), // approximate
+            Unit::Turn => Rational::one(),
+
+            Unit::S => Rational::one(),
+            Unit::Ms => Rational::new(1, 1000),
+
+            Unit::Hz => Rational::one(),
+            Unit::Khz => Rational::new(1000, 1),
+
+            Unit::Dpi => Rational::new(96, 1),
+            Unit::Dpcm => Rational::new(9600, 254),
+            Unit::Dppx => Rational::one(),
+
+            Unit::Percent => Rational::new(1, 100),
+            Unit::None => Rational::one(),
+        }
+    }
 }
 
 impl fmt::Display for Unit {

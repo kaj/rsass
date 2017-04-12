@@ -1,6 +1,7 @@
 use functions::{SassFunction, badarg};
 use num_rational::Rational;
 use num_traits::Signed;
+use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use unit::Unit;
 use valueexpression::Value;
@@ -32,6 +33,14 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(badarg("number", &v)),
     });
+    def_va!(f, max(numbers), |s| match s.get("numbers") {
+        Value::MultiComma(v) => Ok(find_extreme(&v, Ordering::Greater).clone()),
+        single_value => Ok(single_value),
+    });
+    def_va!(f, min(numbers), |s| match s.get("numbers") {
+        Value::MultiComma(v) => Ok(find_extreme(&v, Ordering::Less).clone()),
+        single_value => Ok(single_value),
+    });
     def!(f, random(limit), |s| match s.get("limit") {
         Value::Null => {
             let rez = 1000000;
@@ -46,6 +55,34 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         v => Err(badarg("number or null", &v)),
     });
 }
+
+fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
+    match v.split_first() {
+        Some((first, rest)) => {
+            let second = find_extreme(rest, pref);
+            match (first, second) {
+                (&Value::Null, b) => b,
+                (a, &Value::Null) => a,
+                (&Value::Numeric(ref va, ref ua, _),
+                 &Value::Numeric(ref vb, ref ub, _)) => {
+                    if ua == &Unit::None || ua == ub || ub == &Unit::None {
+                        if va.cmp(vb) == pref { first } else { second }
+                    } else if ua.dimension() == ub.dimension() {
+                        let sa = va * ua.scale_factor();
+                        let sb = vb * ub.scale_factor();
+                        if sa.cmp(&sb) == pref { first } else { second }
+                    } else {
+                        &NULL_VALUE
+                    }
+                }
+                (_, _) => &NULL_VALUE,
+            }
+        }
+        None => &NULL_VALUE,
+    }
+}
+
+static NULL_VALUE: Value = Value::Null;
 
 fn intrand(lim: isize) -> isize {
     use rand::thread_rng;

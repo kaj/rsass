@@ -13,6 +13,15 @@ macro_rules! func {
     (( $($arg:ident $( = $value:expr )* ),* ), $body:expr) => {{
         use std::sync::Arc;
         SassFunction::builtin(vec![ $( one_arg!($arg $( = $value)* ) ),* ],
+                              false,
+                              Arc::new($body))
+    }};
+}
+macro_rules! func_va {
+    (( $($arg:ident $( = $value:expr )* ),* ), $body:expr) => {{
+        use std::sync::Arc;
+        SassFunction::builtin(vec![ $( one_arg!($arg $( = $value)* ) ),* ],
+                              true,
                               Arc::new($body))
     }};
 }
@@ -20,6 +29,12 @@ macro_rules! def {
     ($f:expr, $name:ident( $($arg:ident$(=$value:expr)* ),* ), $body:expr) => {
         $f.insert(stringify!($name),
                   func!(($($arg $( = $value )* ),*), $body))
+    }
+}
+macro_rules! def_va {
+    ($f:expr, $name:ident( $($arg:ident$(=$value:expr)* ),*), $body:expr) => {
+        $f.insert(stringify!($name),
+                  func_va!(($($arg $( = $value )* ),*), $body))
     }
 }
 

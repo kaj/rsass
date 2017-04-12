@@ -12,8 +12,8 @@ use variablescope::{Scope, ScopeImpl};
 pub struct FormalArgs(Vec<(String, Value)>, bool);
 
 impl FormalArgs {
-    pub fn new(a: Vec<(String, Value)>) -> Self {
-        FormalArgs(a, false)
+    pub fn new(a: Vec<(String, Value)>, is_varargs: bool) -> Self {
+        FormalArgs(a, is_varargs)
     }
 
     pub fn eval<'a>(&self,
@@ -47,7 +47,7 @@ impl FormalArgs {
 
 impl Default for FormalArgs {
     fn default() -> Self {
-        FormalArgs::new(vec![])
+        FormalArgs::new(vec![], false)
     }
 }
 

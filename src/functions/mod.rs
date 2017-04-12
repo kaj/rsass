@@ -59,9 +59,12 @@ impl fmt::Debug for FuncImpl {
 }
 
 impl SassFunction {
-    pub fn builtin(args: Vec<(String, Value)>, body: Arc<BuiltinFn>) -> Self {
+    pub fn builtin(args: Vec<(String, Value)>,
+                   is_varargs: bool,
+                   body: Arc<BuiltinFn>)
+                   -> Self {
         SassFunction {
-            args: FormalArgs::new(args),
+            args: FormalArgs::new(args, is_varargs),
             body: FuncImpl::Builtin(body),
         }
     }
