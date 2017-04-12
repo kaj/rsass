@@ -51,6 +51,13 @@ fn comparable() {
 ")
 }
 
+#[test]
+fn index() {
+    check(b"div {\n  foo: index(hello goodbye futz, goodbye);\n  \
+            bar: index(hello goodbye futz, badbye);\n  \
+            baz: index((hello world) (my name) (is aaron), is aaron);\n}",
+          "div {\n  foo: 2;\n  baz: 3;\n}\n")
+}
 
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Normal).and_then(|s| {

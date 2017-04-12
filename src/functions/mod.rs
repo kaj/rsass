@@ -15,6 +15,7 @@ mod colors_other;
 mod introspection;
 mod numbers;
 mod strings;
+mod lists;
 
 pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
     let name = name.replace("-", "_");
@@ -113,26 +114,13 @@ lazy_static! {
                 Ok(s.get("if_false"))
             }
         });
-        def!(f, nth(list, n), |s| {
-            let n = match s.get("n") {
-                Value::Numeric(val, _, _) if val.denom() == &1 => {
-                    val.to_integer()
-                }
-                x => return Err(badarg("integer", &x))
-            };
-            let list = match s.get("list") {
-                Value::MultiComma(v) => v,
-                Value::MultiSpace(v) => v,
-                v => return Err(badarg("list", &v)),
-            };
-            Ok(list[n as usize - 1].clone())
-        });
         colors_hsl::register(&mut f);
         colors_rgb::register(&mut f);
         colors_other::register(&mut f);
         introspection::register(&mut f);
         strings::register(&mut f);
         numbers::register(&mut f);
+        lists::register(&mut f);
         f
     };
 }
