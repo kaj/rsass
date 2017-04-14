@@ -112,6 +112,12 @@ fn index() {
           "div {\n  foo: 2;\n  baz: 3;\n}\n")
 }
 
+#[test]
+fn star_plus_and_parent() {
+    check(b"foo {*+html & {a: b}}\n",
+          "* + html foo {\n  a: b;\n}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Normal).and_then(|s| {
                    String::from_utf8(s)

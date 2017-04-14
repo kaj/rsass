@@ -54,6 +54,7 @@ named!(pub selector<Selector>,
 named!(selector_part<&[u8], SelectorPart>,
        alt_complete!(
            map!(selector_string, |s| SelectorPart::Simple(s)) |
+           value!(SelectorPart::Simple("*".to_string()), tag!("*")) |
            do_parse!(tag!(":") >>
                      name: selector_string >>
                      arg: opt!(delimited!(tag!("("), is_not!(")"),
