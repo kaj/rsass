@@ -88,7 +88,8 @@ named!(selector_part<&[u8], SelectorPart>,
            delimited!(opt_spacelike,
                       alt!(value!(SelectorPart::RelOp(b'>'), tag!(">")) |
                            value!(SelectorPart::RelOp(b'+'), tag!("+")) |
-                           value!(SelectorPart::RelOp(b'~'), tag!("~"))),
+                           value!(SelectorPart::RelOp(b'~'), tag!("~")) |
+                           value!(SelectorPart::RelOp(b'\\'), tag!("\\"))),
                       opt_spacelike) |
            value!(SelectorPart::Descendant, spacelike)
            ));

@@ -42,7 +42,12 @@ fn backrefs_in_selector_groups() {
            a b:c, a b d {\n  hey: ho;\n}\n")
 }
 
-// TODO backslash
+#[test]
+fn backslash() {
+    check(b"div, span {\n  color: red;\n  \\ foo {\n    color: blue;\n  }\n}",
+          "div, span {\n  color: red;\n}\n\
+           div \\ foo, span \\ foo {\n  color: blue;\n}\n")
+}
 
 #[test]
 fn basic_function() {
