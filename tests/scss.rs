@@ -114,8 +114,7 @@ fn index() {
 
 #[test]
 fn star_plus_and_parent() {
-    check(b"foo {*+html & {a: b}}\n",
-          "* + html foo {\n  a: b;\n}\n")
+    check(b"foo {*+html & {a: b}}\n", "* + html foo {\n  a: b;\n}\n")
 }
 
 fn check(input: &[u8], expected: &str) {
