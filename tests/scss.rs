@@ -20,6 +20,13 @@ fn alpha() {
 }
 
 #[test]
+fn append() {
+    check(b"div {\n  \
+            $l: append(a b, c d);\n  foo: nth($l, 3);\n  bar: type-of($l);\n}",
+          "div {\n  foo: c d;\n  bar: list;\n}\n")
+}
+
+#[test]
 fn important() {
     check(b"div {\n  color: red ! important;\n  width: 5px ! important;\n}",
           "div {\n  color: red !important;\n  width: 5px !important;\n}\n")

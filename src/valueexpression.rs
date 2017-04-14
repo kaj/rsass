@@ -72,6 +72,8 @@ impl Value {
             Value::Color(..) => "color",
             Value::Literal(..) => "string",
             Value::Numeric(..) => "number",
+            Value::MultiComma(..) => "list",
+            Value::MultiSpace(..) => "list",
             _ => "unknown",
         }
     }
@@ -243,6 +245,13 @@ impl fmt::Display for Value {
                     write!(out, "{:#} {} {:#}", a, op, b)
                 } else {
                     write!(out, "{} {} {}", a, op, b)
+                }
+            }
+            &Value::Paren(ref v) => {
+                if out.alternate() {
+                    write!(out, "({:#})", v)
+                } else {
+                    write!(out, "({})", v)
                 }
             }
             &Value::True => write!(out, "true"),

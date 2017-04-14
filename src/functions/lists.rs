@@ -20,6 +20,29 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         };
         Ok(list[n as usize - 1].clone())
     });
+    def!(f, append(list, val, separator), |s| {
+        let (comma_sep, mut list) = match s.get("list") {
+            Value::MultiComma(v) => (true, v),
+            Value::MultiSpace(v) => (false, v),
+            v => (false, vec![v]),
+        };
+        let comma_sep = match (s.get("separator"), comma_sep) {
+            (Value::Literal(ref s, _), _) if s == "comma" => true,
+            (Value::Literal(ref s, _), _) if s == "space" => false,
+            (_, s) => s,
+        };
+        list.push(match s.get("val") {
+                      Value::MultiSpace(v) => {
+                          Value::Paren(Box::new(Value::MultiSpace(v)))
+                      }
+                      v => v,
+                  });
+        Ok(if comma_sep {
+               Value::MultiComma(list)
+           } else {
+               Value::MultiSpace(list)
+           })
+    });
     def!(f, index(list, value), |s| {
         let v = match s.get("list") {
             Value::MultiComma(v) => v,
@@ -34,4 +57,37 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         Ok(Value::Null)
     });
+}
+
+#[cfg(test)]
+mod test {
+    use variablescope::test::do_evaluate;
+
+    // Append fuction tests from
+    // http://sass-lang.com/documentation/Sass/Script/Functions.html
+    #[test]
+    fn append_a() {
+        assert_eq!(do_evaluate(&[], b"append(10px 20px, 30px);"),
+                   "10px 20px 30px")
+    }
+    #[test]
+    fn append_b() {
+        assert_eq!(do_evaluate(&[], b"append((blue, red), green);"),
+                   "blue, red, green")
+    }
+    #[test]
+    fn append_c() {
+        assert_eq!(do_evaluate(&[], b"append(10px 20px, 30px 40px);"),
+                   "10px 20px (30px 40px)")
+    }
+    #[test]
+    fn append_d() {
+        assert_eq!(do_evaluate(&[], b"append(10px, 20px, comma);"),
+                   "10px, 20px")
+    }
+    #[test]
+    fn append_e() {
+        assert_eq!(do_evaluate(&[], b"append((blue, red), green, space);"),
+                   "blue red green")
+    }
 }
