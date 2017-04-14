@@ -27,6 +27,31 @@ fn append() {
 }
 
 #[test]
+fn arglist() {
+    check(b"@mixin foo($x, $y, $zs...) {\n  \
+            foo-x: $x;\n  foo-y: $y;\n  foo-zs: $zs;\n}\n\n\
+            div {\n  @include foo(a, b, c, d, e);\n}",
+          "div {\n  foo-x: a;\n  foo-y: b;\n  foo-zs: c, d, e;\n}\n")
+}
+
+#[test]
+fn backrefs_in_selector_groups() {
+    check(b"a {\n  &:c, & d {\n    hey: ho;\n  }\n}\n\n\
+            a b {\n  &:c, & d {\n    hey: ho;\n  }\n}\n",
+          "a:c, a d {\n  hey: ho;\n}\n\n\
+           a b:c, a b d {\n  hey: ho;\n}\n")
+}
+
+// TODO backslash
+
+#[test]
+fn basic_function() {
+    check(b"@function foo() {\n  @return 1 + 2;\n}\n\n\
+            bar {\n  a: foo();\n}\n",
+          "bar {\n  a: 3;\n}\n")
+}
+
+#[test]
 fn important() {
     check(b"div {\n  color: red ! important;\n  width: 5px ! important;\n}",
           "div {\n  color: red !important;\n  width: 5px !important;\n}\n")
