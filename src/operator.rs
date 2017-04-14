@@ -50,6 +50,15 @@ impl Operator {
                             Value::Literal(format!("{}{}", a, b), Quotes::None)
                         }
                     }
+                    (&Value::Literal(ref a, ref q), &Value::Literal(ref b, _)) => {
+                        Value::Literal(format!("{}{}", a, b), q.clone())
+                    }
+                    (&Value::Literal(ref a, ref q), ref b) => {
+                        Value::Literal(format!("{}{}", a, b), q.clone())
+                    }
+                    (ref a, &Value::Literal(ref b, ref q)) => {
+                        Value::Literal(format!("{}{}", a, b), q.clone())
+                    }
                     (a, b) => {
                         Value::BinOp(Box::new(a.clone()),
                                      Operator::Plus,

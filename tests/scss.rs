@@ -57,6 +57,14 @@ fn basic_function() {
 }
 
 #[test]
+fn concat() {
+    check(b"div {\n  a: hello + \"goodbye\";\n  b: \"hello\" + goodbye;\n  \
+            c: 3 + \"hello\";\n  d: \"hello\" + 3;\n}",
+          "div {\n  a: hellogoodbye;\n  b: \"hellogoodbye\";\n  \
+           c: \"3hello\";\n  d: \"hello3\";\n}\n")
+}
+
+#[test]
 fn important() {
     check(b"div {\n  color: red ! important;\n  width: 5px ! important;\n}",
           "div {\n  color: red !important;\n  width: 5px !important;\n}\n")
