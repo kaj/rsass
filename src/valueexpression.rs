@@ -483,6 +483,7 @@ fn unescape(s: &str) -> String {
 
 #[cfg(test)]
 mod test {
+    use formalargs::CallArgs;
     use nom::IResult::*;
     use num_rational::Rational;
     use num_traits::{One, Zero};
