@@ -283,7 +283,7 @@ named!(pub value_expression<&[u8], Value>,
                                    opt_spacelike >>
                                    ())) >>
            (if result.len() == 1 && trail.is_empty() {
-               result[0].clone()
+               result.into_iter().next().unwrap()
            } else {
                Value::MultiComma(result)
            })));
@@ -291,7 +291,7 @@ named!(pub value_expression<&[u8], Value>,
 named!(pub space_list<&[u8], Value>,
        map!(separated_nonempty_list!(multispace, single_expression),
             |v: Vec<Value>| if v.len() == 1 {
-                v[0].clone()
+                v.into_iter().next().unwrap()
             } else {
                 Value::MultiSpace(v)
             }));

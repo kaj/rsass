@@ -550,7 +550,7 @@ named!(variable_declaration<SassItem>,
                  tag!(";") >> opt_spacelike >>
                  (SassItem::VariableDeclaration {
                      name: name,
-                     val: val.clone(),
+                     val: val,
                      default: default.is_some(),
                      global: global.is_some(),
                  })));
