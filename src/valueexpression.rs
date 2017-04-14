@@ -275,14 +275,18 @@ fn rational2str(r: &Rational, skipzero: bool) -> String {
 }
 
 named!(pub value_expression<&[u8], Value>,
-       map!(separated_nonempty_list!(
-                do_parse!(tag!(",") >> opt_spacelike >> ()),
-                space_list),
-            |v: Vec<Value>| if v.len() == 1 {
-                v[0].clone()
-            } else {
-                Value::MultiComma(v)
-            }));
+       do_parse!(
+           result: separated_nonempty_list!(
+               do_parse!(tag!(",") >> opt_spacelike >> ()),
+               space_list) >>
+           trail: many0!(do_parse!(opt_spacelike >> tag!(",") >>
+                                   opt_spacelike >>
+                                   ())) >>
+           (if result.len() == 1 && trail.is_empty() {
+               result[0].clone()
+           } else {
+               Value::MultiComma(result)
+           })));
 
 named!(pub space_list<&[u8], Value>,
        map!(separated_nonempty_list!(multispace, single_expression),
@@ -583,6 +587,65 @@ mod test {
                                 Value::Literal("rod".into(), Quotes::None),
                                 Value::Literal("bloe".into(), Quotes::None)])
                                 ))))
+    }
+
+    #[test]
+    fn paren_multi_comma() {
+        assert_eq!(value_expression(b"(rod, bloe);"),
+                   Done(&b";"[..],
+                        Value::Paren(Box::new(
+                            Value::MultiComma(vec![
+                                Value::Literal("rod".into(), Quotes::None),
+                                Value::Literal("bloe".into(), Quotes::None)])
+                                ))))
+    }
+
+    #[test]
+    fn multi_comma() {
+        assert_eq!(value_expression(b"rod, bloe;"),
+                   Done(&b";"[..],
+                        Value::MultiComma(vec![
+                            Value::Literal("rod".into(), Quotes::None),
+                            Value::Literal("bloe".into(), Quotes::None)])
+                        ))
+    }
+
+    #[test]
+    fn paren_multi_comma_trailing() {
+        assert_eq!(value_expression(b"(rod, bloe, );"),
+                   Done(&b";"[..],
+                        Value::Paren(Box::new(
+                            Value::MultiComma(vec![
+                                Value::Literal("rod".into(), Quotes::None),
+                                Value::Literal("bloe".into(), Quotes::None)])
+                                ))))
+    }
+
+    #[test]
+    fn multi_comma_trailing() {
+        assert_eq!(value_expression(b"rod, bloe, ;"),
+                   Done(&b";"[..],
+                        Value::MultiComma(vec![
+                            Value::Literal("rod".into(), Quotes::None),
+                            Value::Literal("bloe".into(), Quotes::None)])
+                        ))
+    }
+
+    #[test]
+    fn call_no_args() {
+        assert_eq!(value_expression(b"foo();"),
+                   Done(&b";"[..],
+                        Value::Call("foo".to_string(),
+                                    CallArgs::default())))
+    }
+
+    #[test]
+    fn call_one_arg() {
+        assert_eq!(value_expression(b"foo(17);"),
+                   Done(&b";"[..],
+                        Value::Call("foo".to_string(),
+                                    CallArgs::new(
+                                        vec![(None, Value::scalar(17))]))))
     }
 
     #[test]

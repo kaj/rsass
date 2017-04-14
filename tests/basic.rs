@@ -822,6 +822,16 @@ fn t48_case_conversion() {
 }
 
 #[test]
+fn t51_trailing_commas_in_list() {
+    check(b"$mylist: (alpha, beta, gamma, );\n\
+            $my-single-item-list: (alpha,);\n\
+            .test { \n  out1: length($mylist);\n  \
+            blah: type-of(nth($mylist,3));\n  \
+            out: length($my-single-item-list); \n}",
+          ".test {\n  out1: 3;\n  blah: string;\n  out: 1;\n}\n")
+}
+
+#[test]
 fn t52a_each_loop() {
     check(b"@each $my_cool-var in a, b, c {\n  \
             div {\n    color: $my-cool_var;\n  }\n}",
