@@ -30,39 +30,36 @@ impl Operator {
             Operator::Lesser => Value::bool(a < b),
             Operator::LesserE => Value::bool(a <= b),
             Operator::Plus => {
-                match (&a, &b) {
-                    (&Value::Color(ref r, ref g, ref b, ref a, _),
-                     &Value::Numeric(ref n, ref u, _)) if u == &Unit::None => {
-                        Value::rgba(r + n, g + n, b + n, *a)
+                match (a, b) {
+                    (Value::Color(r, g, b, a, _),
+                     Value::Numeric(n, Unit::None, _)) => {
+                        Value::rgba(r + n, g + n, b + n, a)
                     }
-                    (&Value::Color(ref ar, ref ag, ref ab, ref aa, _),
-                     &Value::Color(ref br, ref bg, ref bb, ref ba, _)) => {
+                    (Value::Color(ar, ag, ab, aa, _),
+                     Value::Color(br, bg, bb, ba, _)) => {
                         // TODO Sum or average the alpha?
                         Value::rgba(ar + br, ag + bg, ab + bb, aa + ba)
                     }
-                    (&Value::Numeric(ref a, ref au, _),
-                     &Value::Numeric(ref b, ref bu, _)) => {
-                        if au == bu || bu == &Unit::None {
-                            Value::Numeric(a + b, au.clone(), true)
-                        } else if au == &Unit::None {
-                            Value::Numeric(a + b, bu.clone(), true)
+                    (Value::Numeric(a, au, _), Value::Numeric(b, bu, _)) => {
+                        if au == bu || bu == Unit::None {
+                            Value::Numeric(a + b, au, true)
+                        } else if au == Unit::None {
+                            Value::Numeric(a + b, bu, true)
                         } else {
                             Value::Literal(format!("{}{}", a, b), Quotes::None)
                         }
                     }
-                    (&Value::Literal(ref a, ref q), &Value::Literal(ref b, _)) => {
-                        Value::Literal(format!("{}{}", a, b), q.clone())
+                    (Value::Literal(a, q), Value::Literal(b, _)) => {
+                        Value::Literal(format!("{}{}", a, b), q)
                     }
-                    (&Value::Literal(ref a, ref q), ref b) => {
-                        Value::Literal(format!("{}{}", a, b), q.clone())
+                    (Value::Literal(a, q), b) => {
+                        Value::Literal(format!("{}{}", a, b), q)
                     }
-                    (ref a, &Value::Literal(ref b, ref q)) => {
-                        Value::Literal(format!("{}{}", a, b), q.clone())
+                    (a, Value::Literal(b, q)) => {
+                        Value::Literal(format!("{}{}", a, b), q)
                     }
                     (a, b) => {
-                        Value::BinOp(Box::new(a.clone()),
-                                     Operator::Plus,
-                                     Box::new(b.clone()))
+                        Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
                     }
                 }
             }
