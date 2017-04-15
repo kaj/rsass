@@ -262,6 +262,8 @@ named!(body_item<SassItem>,
            if_statement |
            return_stmt |
            at_rule |
+           value!(SassItem::None,
+                  delimited!(opt_spacelike, tag!(";"), opt_spacelike)) |
            map!(comment, |c| SassItem::Comment(from_utf8(c).unwrap().into()))
                ));
 

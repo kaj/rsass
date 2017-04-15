@@ -3,6 +3,20 @@ extern crate rsass;
 use rsass::{OutputStyle, compile_scss};
 
 #[test]
+fn almost_ambiguous_nested_rules_and_declarations() {
+    check(b"foo {\n  \
+            bar:baz:bang:bop:biddle:woo:look:at:all:these:pseudoclasses \
+            {a: b};\n  \
+            bar:baz bang bop biddle woo look at all these elems {a: b};\n  \
+            bar:baz bang bop biddle woo look at all these elems; }\n",
+          "foo {\n  bar: baz bang bop biddle woo look at all these elems;\n}\n\
+           foo bar:baz:bang:bop:biddle:woo:look:at:all:these:pseudoclasses \
+           {\n  a: b;\n}\n\
+           foo bar:baz bang bop biddle woo look at all these elems \
+           {\n  a: b;\n}\n")
+}
+
+#[test]
 fn alpha() {
     check(b"$x: rgb(0, 255, 255);\n\n\
             div {\n  color: rgb(255, $blue: 0, $green: 255);\n  \
