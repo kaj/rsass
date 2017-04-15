@@ -174,7 +174,7 @@ impl OutputStyle {
             }
             &SassItem::Each(ref name, ref values, ref body) => {
                 let values = match globals.evaluate(values) {
-                    Value::MultiComma(v) => v,
+                    Value::List(v, _) => v,
                     v => vec![v],
                 };
                 for value in values {
@@ -441,7 +441,7 @@ impl OutputStyle {
                 }
                 &SassItem::Each(ref name, ref values, ref body) => {
                     let values = match scope.evaluate(values) {
-                        Value::MultiComma(v) => v,
+                        Value::List(v, _) => v,
                         v => vec![v],
                     };
                     for value in values {

@@ -1,11 +1,10 @@
 use functions::{SassFunction, badarg};
 use std::collections::BTreeMap;
-use valueexpression::Value;
+use valueexpression::{ListSeparator, Value};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, length(list), |s| match s.get("list") {
-        Value::MultiComma(v) => Ok(Value::scalar(v.len() as isize)),
-        Value::MultiSpace(v) => Ok(Value::scalar(v.len() as isize)),
+        Value::List(v, _) => Ok(Value::scalar(v.len() as isize)),
         v => Err(badarg("list", &v)),
     });
     def!(f, nth(list, n), |s| {
@@ -13,40 +12,36 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Numeric(val, _, _) if val.denom() == &1 => val.to_integer(),
             x => return Err(badarg("integer", &x)),
         };
-        let list = match s.get("list") {
-            Value::MultiComma(v) => v,
-            Value::MultiSpace(v) => v,
-            v => return Err(badarg("list", &v)),
-        };
-        Ok(list[n as usize - 1].clone())
+        match s.get("list") {
+            Value::List(list, _) => Ok(list[n as usize - 1].clone()),
+            v => Err(badarg("list", &v)),
+        }
     });
     def!(f, append(list, val, separator), |s| {
-        let (comma_sep, mut list) = match s.get("list") {
-            Value::MultiComma(v) => (true, v),
-            Value::MultiSpace(v) => (false, v),
-            v => (false, vec![v]),
+        let (mut list, sep) = match s.get("list") {
+            Value::List(v, s) => (v, Some(s)),
+            v => (vec![v], None),
         };
-        let comma_sep = match (s.get("separator"), comma_sep) {
-            (Value::Literal(ref s, _), _) if s == "comma" => true,
-            (Value::Literal(ref s, _), _) if s == "space" => false,
-            (_, s) => s,
+        let sep = match (s.get("separator"), sep) {
+            (Value::Literal(ref s, _), _) if s == "comma" => {
+                ListSeparator::Comma
+            }
+            (Value::Literal(ref s, _), _) if s == "space" => {
+                ListSeparator::Space
+            }
+            (_, s) => s.unwrap_or(ListSeparator::Space),
         };
         list.push(match s.get("val") {
-                      Value::MultiSpace(v) => {
-                          Value::Paren(Box::new(Value::MultiSpace(v)))
+                      Value::List(v, s) => {
+                          Value::Paren(Box::new(Value::List(v, s)))
                       }
                       v => v,
                   });
-        Ok(if comma_sep {
-               Value::MultiComma(list)
-           } else {
-               Value::MultiSpace(list)
-           })
+        Ok(Value::List(list, sep))
     });
     def!(f, index(list, value), |s| {
         let v = match s.get("list") {
-            Value::MultiComma(v) => v,
-            Value::MultiSpace(v) => v,
+            Value::List(v, _) => v,
             v => return Err(badarg("list", &v)),
         };
         let value = s.get("value");

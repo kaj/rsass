@@ -62,6 +62,8 @@ pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
 use valueexpression::{Value, single_value, value_expression};
+#[cfg(test)]
+use valueexpression::ListSeparator;
 
 /// Parse scss data and write css in the given style.
 ///
@@ -430,9 +432,10 @@ fn test_mixin_declaration() {
                                          false),
                    body: vec![SassItem::Property(
                        "foo-bar".into(),
-                       Value::MultiSpace(
+                       Value::List(
                            vec![string("baz"),
-                                Value::Variable("x".into())]),
+                                Value::Variable("x".into())],
+                           ListSeparator::Space),
                        false)],
                }))
 }
@@ -529,7 +532,8 @@ fn test_property_2() {
     assert_eq!(property(b"background-position: 90% 50%;\n"),
                Done(&b""[..], SassItem::Property(
                    "background-position".to_string(),
-                   Value::MultiSpace(vec![percentage(90), percentage(50)]),
+                   Value::List(vec![percentage(90), percentage(50)],
+                               ListSeparator::Space),
                    false)))
 }
 
@@ -573,8 +577,9 @@ fn test_variable_declaration_global() {
                Done(&b""[..],
                     SassItem::VariableDeclaration {
                         name: "y".into(),
-                        val: Value::MultiSpace(
-                            vec![string("some"), string("value")]),
+                        val: Value::List(
+                            vec![string("some"), string("value")],
+                            ListSeparator::Space),
                         default: false,
                         global: true,
                     }))
@@ -586,8 +591,9 @@ fn test_variable_declaration_default() {
                Done(&b""[..],
                     SassItem::VariableDeclaration {
                         name: "y".into(),
-                        val: Value::MultiSpace(
-                            vec![string("some"), string("value")]),
+                        val: Value::List(
+                            vec![string("some"), string("value")],
+                            ListSeparator::Space),
                         default: true,
                         global: false,
                     }))

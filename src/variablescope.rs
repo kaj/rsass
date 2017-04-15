@@ -167,15 +167,11 @@ impl<'a> ScopeImpl<'a> {
                 let v = self.get(name);
                 self.do_evaluate(&v, true)
             }
-            &Value::MultiSpace(ref v) => {
-                Value::MultiSpace(v.iter()
-                                      .map(|v| self.do_evaluate(v, false))
-                                      .collect::<Vec<_>>())
-            }
-            &Value::MultiComma(ref v) => {
-                Value::MultiComma(v.iter()
-                                      .map(|v| self.do_evaluate(v, false))
-                                      .collect::<Vec<_>>())
+            &Value::List(ref v, ref s) => {
+                Value::List(v.iter()
+                                .map(|v| self.do_evaluate(v, false))
+                                .collect::<Vec<_>>(),
+                            s.clone())
             }
             &Value::Call(ref name, ref args) => {
                 match self.call_function(name, args) {

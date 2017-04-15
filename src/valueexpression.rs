@@ -19,8 +19,7 @@ pub enum Value {
     /// before / after the slash.
     Div(Box<Value>, Box<Value>, bool, bool),
     Literal(String, Quotes),
-    MultiSpace(Vec<Value>),
-    MultiComma(Vec<Value>),
+    List(Vec<Value>, ListSeparator),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and a flag which is true for calculated values and
     /// false for literal values.
@@ -39,6 +38,11 @@ pub enum Value {
     False,
     /// A binary operation, two operands and an operator.
     BinOp(Box<Value>, Operator, Box<Value>),
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum ListSeparator {
+    Comma,
+    Space,
 }
 
 impl Value {
@@ -72,8 +76,7 @@ impl Value {
             Value::Color(..) => "color",
             Value::Literal(..) => "string",
             Value::Numeric(..) => "number",
-            Value::MultiComma(..) => "list",
-            Value::MultiSpace(..) => "list",
+            Value::List(..) => "list",
             _ => "unknown",
         }
     }
@@ -198,7 +201,7 @@ impl fmt::Display for Value {
                            rational2str(a, false))
                 }
             }
-            &Value::MultiSpace(ref v) => {
+            &Value::List(ref v, ref sep) => {
                 let t = v.iter()
                     .filter(|v| !v.is_null())
                     .map(|v| if out.alternate() {
@@ -207,19 +210,12 @@ impl fmt::Display for Value {
                              format!("{}", v)
                          })
                     .collect::<Vec<_>>()
-                    .join(" ");
-                write!(out, "{}", t)
-            }
-            &Value::MultiComma(ref v) => {
-                let t = v.iter()
-                    .filter(|v| !v.is_null())
-                    .map(|v| if out.alternate() {
-                             format!("{:#}", v)
-                         } else {
-                             format!("{}", v)
-                         })
-                    .collect::<Vec<_>>()
-                    .join(if out.alternate() { "," } else { ", " });
+                    .join(match sep {
+                              &ListSeparator::Comma => {
+                                  if out.alternate() { "," } else { ", " }
+                              }
+                              &ListSeparator::Space => " ",
+                          });
                 write!(out, "{}", t)
             }
             &Value::Div(ref a, ref b, ref s1, ref s2) => {
@@ -294,7 +290,7 @@ named!(pub value_expression<&[u8], Value>,
            (if result.len() == 1 && trail.is_empty() {
                result.into_iter().next().unwrap()
            } else {
-               Value::MultiComma(result)
+               Value::List(result, ListSeparator::Comma)
            })));
 
 named!(pub space_list<&[u8], Value>,
@@ -302,7 +298,7 @@ named!(pub space_list<&[u8], Value>,
             |v: Vec<Value>| if v.len() == 1 {
                 v.into_iter().next().unwrap()
             } else {
-                Value::MultiSpace(v)
+                Value::List(v, ListSeparator::Space)
             }));
 
 named!(pub single_expression<Value>,
@@ -550,18 +546,20 @@ mod test {
     #[test]
     fn strings_misc_quotes() {
         assert_eq!(value_expression(b"foo \"bar\" 'baz';"),
-                   Done(&b";"[..], Value::MultiSpace(
+                   Done(&b";"[..], Value::List(
                        vec![Value::Literal("foo".into(), Quotes::None),
                             Value::Literal("bar".into(), Quotes::Double),
-                            Value::Literal("baz".into(), Quotes::Single)])))
+                            Value::Literal("baz".into(), Quotes::Single)],
+                       ListSeparator::Space)))
     }
 
     #[test]
     fn strings_escaped_quotes() {
         assert_eq!(value_expression(b"\"b'a\\\"r\" 'b\\'a\"z';"),
-                   Done(&b";"[..], Value::MultiSpace(
+                   Done(&b";"[..], Value::List(
                        vec![Value::Literal("b'a\"r".into(), Quotes::Double),
-                            Value::Literal("b'a\"z".into(), Quotes::Single)])))
+                            Value::Literal("b'a\"z".into(), Quotes::Single)],
+                       ListSeparator::Space)))
     }
 
     #[test]
@@ -592,11 +590,11 @@ mod test {
     fn paren_multi() {
         assert_eq!(value_expression(b"(rod bloe);"),
                    Done(&b";"[..],
-                        Value::Paren(Box::new(
-                            Value::MultiSpace(vec![
+                        Value::Paren(Box::new(Value::List(
+                            vec![
                                 Value::Literal("rod".into(), Quotes::None),
-                                Value::Literal("bloe".into(), Quotes::None)])
-                                ))))
+                                Value::Literal("bloe".into(), Quotes::None)],
+                            ListSeparator::Space)))))
     }
 
     #[test]
@@ -604,9 +602,10 @@ mod test {
         assert_eq!(value_expression(b"(rod, bloe);"),
                    Done(&b";"[..],
                         Value::Paren(Box::new(
-                            Value::MultiComma(vec![
+                            Value::List(vec![
                                 Value::Literal("rod".into(), Quotes::None),
-                                Value::Literal("bloe".into(), Quotes::None)])
+                                Value::Literal("bloe".into(), Quotes::None)],
+                                        ListSeparator::Comma)
                                 ))))
     }
 
@@ -614,9 +613,10 @@ mod test {
     fn multi_comma() {
         assert_eq!(value_expression(b"rod, bloe;"),
                    Done(&b";"[..],
-                        Value::MultiComma(vec![
-                            Value::Literal("rod".into(), Quotes::None),
-                            Value::Literal("bloe".into(), Quotes::None)])
+                        Value::List(
+                            vec![Value::Literal("rod".into(), Quotes::None),
+                                 Value::Literal("bloe".into(), Quotes::None)],
+                            ListSeparator::Comma)
                         ))
     }
 
@@ -624,21 +624,20 @@ mod test {
     fn paren_multi_comma_trailing() {
         assert_eq!(value_expression(b"(rod, bloe, );"),
                    Done(&b";"[..],
-                        Value::Paren(Box::new(
-                            Value::MultiComma(vec![
-                                Value::Literal("rod".into(), Quotes::None),
-                                Value::Literal("bloe".into(), Quotes::None)])
-                                ))))
+                        Value::Paren(Box::new(Value::List(
+                            vec![Value::Literal("rod".into(), Quotes::None),
+                                 Value::Literal("bloe".into(), Quotes::None)],
+                            ListSeparator::Comma)))))
     }
 
     #[test]
     fn multi_comma_trailing() {
         assert_eq!(value_expression(b"rod, bloe, ;"),
                    Done(&b";"[..],
-                        Value::MultiComma(vec![
-                            Value::Literal("rod".into(), Quotes::None),
-                            Value::Literal("bloe".into(), Quotes::None)])
-                        ))
+                        Value::List(
+                            vec![Value::Literal("rod".into(), Quotes::None),
+                                 Value::Literal("bloe".into(), Quotes::None)],
+                            ListSeparator::Comma)))
     }
 
     #[test]
@@ -662,13 +661,14 @@ mod test {
     fn multi_expression() {
         assert_eq!(value_expression(b"15/10 2 3;"),
                    Done(&b";"[..],
-                        Value::MultiSpace(vec![
-                            Value::Div(Box::new(Value::scalar(15)),
-                                       Box::new(Value::scalar(10)),
-                                       false,
-                                       false),
-                            Value::scalar(2),
-                            Value::scalar(3)])))
+                        Value::List(
+                            vec![Value::Div(Box::new(Value::scalar(15)),
+                                            Box::new(Value::scalar(10)),
+                                            false,
+                                            false),
+                                 Value::scalar(2),
+                                 Value::scalar(3)],
+                            ListSeparator::Space)))
     }
 
     #[test]

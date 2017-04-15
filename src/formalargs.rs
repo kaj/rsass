@@ -1,7 +1,7 @@
 use parseutil::{ignore_comments, name, opt_spacelike};
 use std::default::Default;
 use std::fmt;
-use valueexpression::{Value, space_list};
+use valueexpression::{ListSeparator, Value, space_list};
 use variablescope::{Scope, ScopeImpl};
 
 /// The declared arguments of a mixin or function declaration.
@@ -31,7 +31,9 @@ impl FormalArgs {
             } else if self.1 && i + 1 == n && args.0.len() > n {
                 let args =
                     args.0[i..].iter().map(|&(_, ref v)| v.clone()).collect();
-                argscope.define(name, &Value::MultiComma(args), false);
+                argscope.define(name,
+                                &Value::List(args, ListSeparator::Comma),
+                                false);
             } else {
                 argscope.define(name,
                                 match args.0.get(i) {
