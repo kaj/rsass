@@ -115,6 +115,19 @@ impl<'a> Scope for ScopeImpl<'a> {
                         self.eval_body(do_else)
                     }
                 }
+                SassItem::Each(ref name, ref values, ref body) => {
+                    let values = match self.evaluate(values) {
+                        Value::List(v, _) => v,
+                        v => vec![v],
+                    };
+                    for value in values {
+                        self.define(name, &value, false);
+                        if let Some(r) = self.eval_body(body) {
+                            return Some(r);
+                        }
+                    }
+                    None
+                }
                 SassItem::For {
                     ref name,
                     ref from,

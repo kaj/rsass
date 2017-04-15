@@ -64,6 +64,26 @@ fn concat() {
            c: \"3hello\";\n  d: \"hello3\";\n}\n")
 }
 
+// TODO This test should include an each over a map.
+// Since I have not implemented map type yet, that is skipped.
+#[test]
+fn each_in_functions() {
+    check(b"$GLOBAL: global;\n\n\
+            @function foo($g1, $g2, $g3) {\n  \
+            @each $value in $g1, $g2, $g3 {\n    \
+            $GLOBAL: $GLOBAL each $value !global;\n    \
+            $GLOBAL: $GLOBAL type1 type-of(nth($value, 1)) !global;\n    \
+            $GLOBAL: $GLOBAL type2 type-of(nth($value, 2)) !global;\n  }\n  \
+            @return 0;\n}\n\n\
+            div {\n  a: foo(50% 50%, cover circle, red blue);\n  \
+            b: $GLOBAL;\n  $colors: red green blue;\n  \
+            c: a, b, type-of(nth($colors, 2)), d;\n}\n",
+          "div {\n  a: 0;\n  \
+           b: global each 50% 50% type1 number type2 number each cover circle \
+           type1 string type2 string each red blue type1 color type2 color;\n  \
+           c: a, b, color, d;\n}\n")
+}
+
 #[test]
 fn for_in_functions() {
     check(b"@function foo() {\n  $limit: 10;\n  $y: 0;\n  \
