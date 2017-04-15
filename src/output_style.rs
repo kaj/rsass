@@ -481,8 +481,8 @@ impl OutputStyle {
                     }
                 }
                 &SassItem::While(ref cond, ref body) => {
+                    let mut scope = ScopeImpl::sub(scope);
                     while scope.evaluate(cond).is_true() {
-                        let mut scope = ScopeImpl::sub(scope);
                         self.handle_body(direct,
                                          sub,
                                          &mut scope,

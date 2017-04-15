@@ -125,6 +125,13 @@ fn star_plus_and_parent() {
     check(b"foo {*+html & {a: b}}\n", "* + html foo {\n  a: b;\n}\n")
 }
 
+#[test]
+fn while_directive() {
+    check(b"$i: 1;\n\n\
+            .foo {\n  @while $i != 5 {\n    a: $i;\n    $i: $i + 1;\n  }\n}\n",
+          ".foo {\n  a: 1;\n  a: 2;\n  a: 3;\n  a: 4;\n}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Normal).and_then(|s| {
                    String::from_utf8(s)
