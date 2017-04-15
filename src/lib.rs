@@ -257,6 +257,7 @@ named!(body_item<SassItem>,
            each_loop |
            for_loop |
            while_loop |
+           function_declaration |
            mixin_call |
            import |
            if_statement |

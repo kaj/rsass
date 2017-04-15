@@ -137,6 +137,20 @@ fn for_in_functions() {
 }
 
 #[test]
+fn functions_and_mixins() {
+    check(b"@function foo() {\n  @return \"hello\";\n}\n\n\
+            @mixin foo() {\n  content: \"hello\";\n}\n\n\
+            div {\n  span {\n    @function length($a, $b, $c, $d) {\n      \
+            @return $a + $b + $c + $d;\n    }\n\n    \
+            div {\n      content: foo();\n      @include foo();\n      \
+            width: length(1,2,2,3);\n    }\n  }\n\n  \
+            height: length(a b c d e);\n\n}",
+          "div {\n  height: 5;\n}\n\
+           div span div {\n  content: \"hello\";\n  content: \"hello\";\n  \
+           width: 8;\n}\n")
+}
+
+#[test]
 fn important() {
     check(b"div {\n  color: red ! important;\n  width: 5px ! important;\n}",
           "div {\n  color: red !important;\n  width: 5px !important;\n}\n")
