@@ -207,6 +207,12 @@ fn index() {
 }
 
 #[test]
+fn keyword_args_in_functions() {
+    check(b".keyed { color: rgba($color: #a7c, $alpha: 0.4) }\n",
+          ".keyed {\n  color: rgba(170, 119, 204, 0.4);\n}\n")
+}
+
+#[test]
 fn star_plus_and_parent() {
     check(b"foo {*+html & {a: b}}\n", "* + html foo {\n  a: b;\n}\n")
 }

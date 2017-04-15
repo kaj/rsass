@@ -13,21 +13,18 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                        to_int(s.get("blue"))?,
                        Rational::one()))
     });
-    def!(f, rgba(red, green, blue, alpha), |s: &Scope| {
+    def!(f, rgba(red, green, blue, alpha, color), |s: &Scope| {
+        let a = s.get("alpha");
         let red = s.get("red");
-        let alpha = s.get("alpha");
+        let red = if red.is_null() { s.get("color") } else { red };
         if let Value::Color(r, g, b, _, _) = red {
-            let a = if alpha != Value::Null {
-                alpha
-            } else {
-                s.get("green")
-            };
+            let a = if a.is_null() { s.get("green") } else { a };
             Ok(Value::rgba(r, g, b, to_rational(a)?))
         } else {
             Ok(Value::rgba(to_int(red)?,
                            to_int(s.get("green"))?,
                            to_int(s.get("blue"))?,
-                           to_rational(alpha)?))
+                           to_rational(a)?))
         }
     });
     fn num(v: &Rational) -> Result<Value, Error> {
