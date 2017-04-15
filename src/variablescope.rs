@@ -115,6 +115,24 @@ impl<'a> Scope for ScopeImpl<'a> {
                         self.eval_body(do_else)
                     }
                 }
+                SassItem::For {
+                    ref name,
+                    ref from,
+                    ref to,
+                    inclusive,
+                    ref body,
+                } => {
+                    let from = self.evaluate(from).integer_value().unwrap();
+                    let to = self.evaluate(to).integer_value().unwrap();
+                    let to = if inclusive { to + 1 } else { to };
+                    for value in from..to {
+                        self.define(name, &Value::scalar(value), false);
+                        if let Some(r) = self.eval_body(body) {
+                            return Some(r);
+                        }
+                    }
+                    None
+                }
                 SassItem::VariableDeclaration {
                     ref name,
                     ref val,
@@ -138,6 +156,7 @@ impl<'a> Scope for ScopeImpl<'a> {
                     }
                     None
                 }
+                SassItem::None => None,
                 ref x => {
                     panic!("Not implemented in fuction: {:?}", x);
                 }

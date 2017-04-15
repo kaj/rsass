@@ -65,6 +65,16 @@ fn concat() {
 }
 
 #[test]
+fn for_in_functions() {
+    check(b"@function foo() {\n  $limit: 10;\n  $y: 0;\n  \
+            @for $x from 1 through $limit {\n    \
+            $limit: 4;\n    $y: $y + $x;\n  }\n  \
+            @return $y;\n}\n\n\
+            div {\n	width: foo();\n}",
+          "div {\n  width: 55;\n}\n")
+}
+
+#[test]
 fn important() {
     check(b"div {\n  color: red ! important;\n  width: 5px ! important;\n}",
           "div {\n  color: red !important;\n  width: 5px !important;\n}\n")
