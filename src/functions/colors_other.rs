@@ -4,7 +4,7 @@ use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
 use unit::Unit;
-use valueexpression::Value;
+use valueexpression::{Quotes, Value};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
@@ -132,6 +132,17 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     }
              v => Err(badarg("color", &v)),
          });
+    def!(f, ie_hex_str(color), |s| match s.get("color") {
+        Value::Color(r, g, b, a, _) => {
+            let r = r.round().to_integer() as u8;
+            let g = g.round().to_integer() as u8;
+            let b = b.round().to_integer() as u8;
+            let a = (a * Rational::new(255, 1)).round().to_integer() as u8;
+            Ok(Value::Literal(format!("#{:02X}{:02X}{:02X}{:02X}", a, r, g, b),
+                              Quotes::None))
+        }
+        v => Err(badarg("color", &v)),
+    });
 }
 
 fn c_add(orig: Rational, x: Value) -> Result<Rational, Error> {
@@ -209,5 +220,24 @@ fn to_rational_percent(v: Value) -> Result<Rational, Error> {
         Value::Numeric(v, Unit::Percent, _) => Ok(v * Rational::new(1, 100)),
         Value::Numeric(v, _, _) => Ok(v),
         v => Err(badarg("number", &v)),
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use variablescope::test::do_evaluate;
+
+    #[test]
+    fn ie_hex_str_a() {
+        assert_eq!(do_evaluate(&[], b"ie-hex-str(#abc);"), "#FFAABBCC")
+    }
+    #[test]
+    fn ie_hex_str_b() {
+        assert_eq!(do_evaluate(&[], b"ie-hex-str(#3322BB);"), "#FF3322BB")
+    }
+    #[test]
+    fn ie_hex_str_c() {
+        assert_eq!(do_evaluate(&[], b"ie-hex-str(rgba(0, 255, 0, 0.5));"),
+                   "#8000FF00")
     }
 }
