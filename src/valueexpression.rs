@@ -28,7 +28,6 @@ pub enum Value {
     /// should be evaluated numerically if possible, without parens /
     /// is not allways division.
     Paren(Box<Value>),
-    Product(Box<Value>, Box<Value>),
     Variable(String),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
@@ -368,7 +367,9 @@ named!(term_value<Value>,
                      a,
                      |a, (s1, op, s2, b)| {
                          if op == b"*" {
-                             Value::Product(Box::new(a), Box::new(b))
+                             Value::BinOp(Box::new(a),
+                                          Operator::Multiply,
+                                          Box::new(b))
                          } else {
                              Value::Div(Box::new(a), Box::new(b), s1, s2)
                          }

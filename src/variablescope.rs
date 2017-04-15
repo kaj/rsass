@@ -191,22 +191,6 @@ impl<'a> ScopeImpl<'a> {
                     }
                 }
             }
-            &Value::Product(ref a, ref b) => {
-                let a = self.do_evaluate(a, true);
-                let b = self.do_evaluate(b, true);
-                if let (&Value::Numeric(ref a, ref au, _),
-                        &Value::Numeric(ref b, ref bu, _)) = (&a, &b) {
-                    if bu == &Unit::None {
-                        Value::Numeric(a * b, au.clone(), true)
-                    } else if au == &Unit::None {
-                        Value::Numeric(a * b, bu.clone(), true)
-                    } else {
-                        Value::Literal(format!("{}*{}", a, b), Quotes::None)
-                    }
-                } else {
-                    Value::Literal(format!("{}*{}", a, b), Quotes::None)
-                }
-            }
             &Value::Div(ref a, ref b, ref space1, ref space2) => {
                 let (a, b) = {
                     let aa = self.do_evaluate(a, arithmetic);

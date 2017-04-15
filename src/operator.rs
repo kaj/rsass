@@ -16,6 +16,7 @@ pub enum Operator {
 
     Plus,
     Minus,
+    Multiply,
 }
 
 impl Operator {
@@ -88,6 +89,20 @@ impl Operator {
                     }
                 }
             }
+            Operator::Multiply => {
+                if let (&Value::Numeric(ref a, ref au, _),
+                        &Value::Numeric(ref b, ref bu, _)) = (&a, &b) {
+                    if bu == &Unit::None {
+                        Value::Numeric(a * b, au.clone(), true)
+                    } else if au == &Unit::None {
+                        Value::Numeric(a * b, bu.clone(), true)
+                    } else {
+                        Value::Literal(format!("{}*{}", a, b), Quotes::None)
+                    }
+                } else {
+                    Value::Literal(format!("{}*{}", a, b), Quotes::None)
+                }
+            }
         }
         // Fallback, might be needed later:
         // Value::BinOp(Box::new(a), self.clone(), Box::new(b))
@@ -113,6 +128,7 @@ impl fmt::Display for Operator {
                    &Operator::LesserE => "<=",
                    &Operator::Plus => "+",
                    &Operator::Minus => "-",
+                   &Operator::Multiply => "*",
                })
     }
 }
