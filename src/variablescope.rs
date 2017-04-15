@@ -129,7 +129,18 @@ impl<'a> Scope for ScopeImpl<'a> {
                     None
                 }
                 SassItem::Return(ref v) => Some(self.evaluate(v)),
-                _ => None,
+                SassItem::While(ref cond, ref body) => {
+                    let mut scope = ScopeImpl::sub(self);
+                    while scope.evaluate(cond).is_true() {
+                        if let Some(r) = scope.eval_body(body) {
+                            return Some(r);
+                        }
+                    }
+                    None
+                }
+                ref x => {
+                    panic!("Not implemented in fuction: {:?}", x);
+                }
             };
             if let Some(result) = result {
                 return Some(result);

@@ -132,6 +132,14 @@ fn while_directive() {
           ".foo {\n  a: 1;\n  a: 2;\n  a: 3;\n  a: 4;\n}\n")
 }
 
+#[test]
+fn while_in_functions() {
+    check(b"@function test-while() {\n  \
+            $x : true;\n  @while $x {\n    @return $x\n  }\n}\n\n\
+            div {\n  y: test-while();\n}",
+          "div {\n  y: true;\n}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Normal).and_then(|s| {
                    String::from_utf8(s)
