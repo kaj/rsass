@@ -178,11 +178,10 @@ impl OutputStyle {
                     v => vec![v],
                 };
                 for value in values {
-                    let mut scope = ScopeImpl::sub(globals);
-                    scope.define(name, &value, false);
+                    globals.define(name, &value, false);
                     for item in body {
                         self.handle_root_item(item,
-                                              &mut scope,
+                                              globals,
                                               separate,
                                               file_context,
                                               result);

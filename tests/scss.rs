@@ -78,6 +78,34 @@ fn concat() {
            c: \"3hello\";\n  d: \"hello3\";\n}\n")
 }
 
+#[test]
+fn cons_up() {
+    check(b"$inputs-list: 'input[type=\"email\"]',\n\t'\
+            input[type=\"number\"]',\n\t'input[type=\"password\"]',\n\t\
+            'input[type=\"search\"]',\n\t'input[type=\"tel\"]',\n\t\
+            'input[type=\"text\"]',\n\t'input[type=\"url\"]',\n\n\
+            // Webkit & Gecko may change the display of these in the future\
+            \n\t'input[type=\"color\"]',\n\t'input[type=\"date\"]',\n\t\
+            'input[type=\"datetime\"]',\n\t\
+            'input[type=\"datetime-local\"]',\n\t'input[type=\"month\"]',\n\t\
+            'input[type=\"time\"]',\n\t'input[type=\"week\"]';\n\n\
+            $unquoted-inputs-list: ();\n\n\
+            @each $input-type in $inputs-list {\n  \
+            $unquoted-inputs-list: append($unquoted-inputs-list, \
+            unquote($input-type), comma);\n}\n\n\
+            div {\n  content: $unquoted-inputs-list;\n  \
+            content: append((), hello);\n  content: length(());\n}",
+          "div {\n  \
+           content: input[type=\"email\"], input[type=\"number\"], \
+           input[type=\"password\"], input[type=\"search\"], \
+           input[type=\"tel\"], input[type=\"text\"], input[type=\"url\"], \
+           input[type=\"color\"], input[type=\"date\"], \
+           input[type=\"datetime\"], input[type=\"datetime-local\"], \
+           input[type=\"month\"], input[type=\"time\"], \
+           input[type=\"week\"];\n  \
+           content: hello;\n  content: 0;\n}\n")
+}
+
 // TODO This test should include an each over a map.
 // Since I have not implemented map type yet, that is skipped.
 #[test]

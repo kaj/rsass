@@ -448,9 +448,12 @@ named!(pub single_value<&[u8], Value>,
                 |s| Value::Literal(unescape(from_utf8(s).unwrap()),
                                    Quotes::Single)) |
            map!(delimited!(preceded!(tag!("("), opt_spacelike),
-                           value_expression,
+                           opt!(value_expression),
                            terminated!(opt_spacelike, tag!(")"))),
-                |val| Value::Paren(Box::new(val)))));
+                |val: Option<Value>| match val {
+                    Some(v) => Value::Paren(Box::new(v)),
+                    None => Value::List(vec![], ListSeparator::Space),
+                })));
 
 fn decimals_to_rational(d: &[u8]) -> Rational {
     Rational::new(from_utf8(d).unwrap().parse().unwrap(),
