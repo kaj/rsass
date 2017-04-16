@@ -717,6 +717,18 @@ fn t43_str_length() {
 }
 
 #[test]
+fn t44_bem_selectors() {
+    check(b"div {\n\n  &_foo {\n    blah: blah;\n  }\n  \
+            &--modifier {\n    blach: blah;\n  }\n  \
+            &hux {\n    blah: blah;\n  }\n  \
+            &div.foo#bar[hux] {\n    blah: blah;\n  }\n\n}",
+          "div_foo {\n  blah: blah;\n}\n\
+           div--modifier {\n  blach: blah;\n}\n\
+           divhux {\n  blah: blah;\n}\n\
+           divdiv.foo#bar[hux] {\n  blah: blah;\n}\n")
+}
+
+#[test]
 fn t45_str_insert() {
     check("div {\n  bar: str-insert(\"abcd\", \"X\", 1);\n  \
            bar: str-insert(\"abcd\", 'X', 1);\n  \

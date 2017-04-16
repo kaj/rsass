@@ -85,6 +85,14 @@ named!(selector_part<&[u8], SelectorPart>,
                          op: from_utf8(op).unwrap().into(),
                          val: val,
                      })) |
+           do_parse!(tag!("[") >> opt_spacelike >>
+                     name: selector_string >> opt_spacelike >>
+                     tag!("]") >>
+                     (SelectorPart::Attribute {
+                         name: name,
+                         op: "".to_string(),
+                         val: "".to_string(),
+                     })) |
            value!(SelectorPart::BackRef, tag!("&")) |
            delimited!(opt_spacelike,
                       alt!(value!(SelectorPart::RelOp(b'>'), tag!(">")) |
