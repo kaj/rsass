@@ -77,6 +77,14 @@ fn css_block_directive_with_semicolon() {
 }
 
 #[test]
+fn css_unary_ops() {
+    check(b"foo {\n  a: -0.5em;\n  b: 0.5em;\n  \
+            c: -foo(12px);\n  d: +foo(12px); }\n",
+          "foo {\n  a: -0.5em;\n  b: 0.5em;\n  \
+           c: -foo(12px);\n  d: +foo(12px);\n}\n")
+}
+
+#[test]
 fn concat() {
     check(b"div {\n  a: hello + \"goodbye\";\n  b: \"hello\" + goodbye;\n  \
             c: 3 + \"hello\";\n  d: \"hello\" + 3;\n}",

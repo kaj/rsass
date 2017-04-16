@@ -38,6 +38,7 @@ pub enum Value {
     False,
     /// A binary operation, two operands and an operator.
     BinOp(Box<Value>, Operator, Box<Value>),
+    UnaryOp(Operator, Box<Value>),
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ListSeparator {
@@ -252,6 +253,13 @@ impl fmt::Display for Value {
             }
             &Value::True => write!(out, "true"),
             &Value::False => write!(out, "false"),
+            &Value::UnaryOp(ref op, ref v) => {
+                if out.alternate() {
+                    write!(out, "{}{:#}", op, v)
+                } else {
+                    write!(out, "{}{}", op, v)
+                }
+            }
             x => write!(out, "TODO {:?}", x),
         }
     }
@@ -448,6 +456,10 @@ named!(pub single_value<&[u8], Value>,
                            tag!("'")),
                 |s| Value::Literal(unescape(from_utf8(s).unwrap()),
                                    Quotes::Single)) |
+           map!(preceded!(tag!("-"), single_value),
+                |s| Value::UnaryOp(Operator::Minus, Box::new(s))) |
+           map!(preceded!(tag!("+"), single_value),
+                |s| Value::UnaryOp(Operator::Plus, Box::new(s))) |
            map!(delimited!(preceded!(tag!("("), opt_spacelike),
                            opt!(value_expression),
                            terminated!(opt_spacelike, tag!(")"))),

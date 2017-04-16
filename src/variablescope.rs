@@ -295,6 +295,9 @@ impl<'a> ScopeImpl<'a> {
             &Value::BinOp(ref a, ref op, ref b) => {
                 op.eval(self.do_evaluate(a, true), self.do_evaluate(b, true))
             }
+            &Value::UnaryOp(ref op, ref v) => {
+                Value::UnaryOp(op.clone(), Box::new(self.do_evaluate(v, true)))
+            }
         }
     }
 }
