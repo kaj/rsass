@@ -277,7 +277,7 @@ named!(mixin_call<SassItem>,
        do_parse!(tag!("@include") >> spacelike >>
                  name: name >> opt_spacelike >>
                  args: opt!(call_args) >> opt_spacelike >>
-                 tag!(";") >>
+                 opt!(tag!(";")) >>
                  (SassItem::MixinCall {
                      name: name,
                      args: args.unwrap_or_default(),
