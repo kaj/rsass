@@ -39,7 +39,7 @@ extern crate num_rational;
 extern crate num_traits;
 extern crate rand;
 
-use nom::IResult::*;
+use nom::IResult;
 use std::fs::File;
 use std::io::Read;
 use std::path::{Path, PathBuf};
@@ -168,16 +168,16 @@ pub fn parse_scss_file(file: &Path) -> Result<Vec<SassItem>, Error> {
 
 fn parse_scss_data(data: &[u8]) -> Result<Vec<SassItem>, Error> {
     match sassfile(data) {
-        Done(b"", items) => Ok(items),
-        Done(rest, _styles) => {
+        IResult::Done(b"", items) => Ok(items),
+        IResult::Done(rest, _styles) => {
             let t = from_utf8(rest)
                 .map(|s| s.to_string())
                 .unwrap_or_else(|_| format!("{:?}", rest));
             Err(Error::S(format!("Failed to parse entire input: `{}` remains.",
                                  t)))
         }
-        Incomplete(x) => Err(Error::S(format!("Incomplete: {:?}", x))),
-        Error(x) => Err(Error::S(format!("Error: {}", x))),
+        IResult::Incomplete(x) => Err(Error::S(format!("Incomplete: {:?}", x))),
+        IResult::Error(x) => Err(Error::S(format!("Error: {}", x))),
     }
 }
 
@@ -353,7 +353,7 @@ fn if_with_no_else() {
     use operator::Operator;
 
     assert_eq!(if_statement(b"@if 1 == 1 { p { color: black; } }\n"),
-               Done(&b"\n"[..],
+               IResult::Done(&b"\n"[..],
                     SassItem::IfStatement(
                         Value::BinOp(Box::new(Value::scalar(1)),
                                      Operator::Equal,
@@ -371,7 +371,7 @@ fn if_with_no_else() {
 #[test]
 fn test_mixin_call_noargs() {
     assert_eq!(mixin_call(b"@include foo;\n"),
-               Done(&b"\n"[..],
+               IResult::Done(&b"\n"[..],
                     SassItem::MixinCall {
                         name: "foo".to_string(),
                         args: CallArgs::new(vec![]),
@@ -381,7 +381,7 @@ fn test_mixin_call_noargs() {
 #[test]
 fn test_mixin_call_pos_args() {
     assert_eq!(mixin_call(b"@include foo(bar, baz);\n"),
-               Done(&b"\n"[..],
+               IResult::Done(&b"\n"[..],
                     SassItem::MixinCall {
                         name: "foo".to_string(),
                         args: CallArgs::new(
@@ -393,7 +393,7 @@ fn test_mixin_call_pos_args() {
 #[test]
 fn test_mixin_call_named_args() {
     assert_eq!(mixin_call(b"@include foo($x: bar, $y: baz);\n"),
-               Done(&b"\n"[..],
+               IResult::Done(&b"\n"[..],
                     SassItem::MixinCall {
                         name: "foo".to_string(),
                         args: CallArgs::new(
@@ -418,7 +418,7 @@ named!(mixin_declaration<&[u8], SassItem>,
 #[test]
 fn test_mixin_declaration_empty() {
     assert_eq!(mixin_declaration(b"@mixin foo() {}\n"),
-               Done(&b"\n"[..], SassItem::MixinDeclaration {
+               IResult::Done(&b"\n"[..], SassItem::MixinDeclaration {
                    name: "foo".into(),
                    args: FormalArgs::default(),
                    body: vec![],
@@ -430,7 +430,7 @@ fn test_mixin_declaration() {
     assert_eq!(mixin_declaration(b"@mixin foo($x) {\n  \
                                    foo-bar: baz $x;\n\
                                    }\n"),
-               Done(&b"\n"[..], SassItem::MixinDeclaration {
+               IResult::Done(&b"\n"[..], SassItem::MixinDeclaration {
                    name: "foo".into(),
                    args: FormalArgs::new(vec![("x".into(), Value::Null)],
                                          false),
@@ -452,7 +452,7 @@ fn test_mixin_declaration_default_and_subrules() {
                                    property: $b;\n  \
                                    }\n\
                                    }\n"),
-               Done(&b"\n"[..], SassItem::MixinDeclaration {
+               IResult::Done(&b"\n"[..], SassItem::MixinDeclaration {
                    name: "bar".into(),
                    args: FormalArgs::new(
                        vec![("a".into(), Value::Null),
@@ -526,7 +526,7 @@ fn test_simple_property() {
         Rational::from_integer(v as isize)
     }
     assert_eq!(property(b"color: red;\n"),
-               Done(&b""[..], SassItem::Property(
+               IResult::Done(&b""[..], SassItem::Property(
                    "color".to_string(),
                    Value::Color(r(255), r(0), r(0), one, Some("red".into())),
                    false)))
@@ -534,7 +534,7 @@ fn test_simple_property() {
 #[test]
 fn test_property_2() {
     assert_eq!(property(b"background-position: 90% 50%;\n"),
-               Done(&b""[..], SassItem::Property(
+               IResult::Done(&b""[..], SassItem::Property(
                    "background-position".to_string(),
                    Value::List(vec![percentage(90), percentage(50)],
                                ListSeparator::Space),
@@ -566,7 +566,7 @@ named!(variable_declaration<SassItem>,
 #[test]
 fn test_variable_declaration_simple() {
     assert_eq!(variable_declaration(b"$foo: bar;\n"),
-               Done(&b""[..],
+               IResult::Done(&b""[..],
                     SassItem::VariableDeclaration {
                         name: "foo".into(),
                         val: string("bar"),
@@ -578,7 +578,7 @@ fn test_variable_declaration_simple() {
 #[test]
 fn test_variable_declaration_global() {
     assert_eq!(variable_declaration(b"$y: some value !global;\n"),
-               Done(&b""[..],
+               IResult::Done(&b""[..],
                     SassItem::VariableDeclaration {
                         name: "y".into(),
                         val: Value::List(
@@ -592,7 +592,7 @@ fn test_variable_declaration_global() {
 #[test]
 fn test_variable_declaration_default() {
     assert_eq!(variable_declaration(b"$y: some value !default;\n"),
-               Done(&b""[..],
+               IResult::Done(&b""[..],
                     SassItem::VariableDeclaration {
                         name: "y".into(),
                         val: Value::List(
