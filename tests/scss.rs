@@ -71,6 +71,12 @@ fn basic_function() {
 }
 
 #[test]
+fn css_block_directive_with_semicolon() {
+    check(b"@foo {\n  a: b; }\n\n@bar {\n  a: b; }\n",
+          "@foo {\n  a: b;\n}\n@bar {\n  a: b;\n}\n")
+}
+
+#[test]
 fn concat() {
     check(b"div {\n  a: hello + \"goodbye\";\n  b: \"hello\" + goodbye;\n  \
             c: 3 + \"hello\";\n  d: \"hello\" + 3;\n}",
@@ -210,6 +216,14 @@ fn index() {
 fn keyword_args_in_functions() {
     check(b".keyed { color: rgba($color: #a7c, $alpha: 0.4) }\n",
           ".keyed {\n  color: rgba(170, 119, 204, 0.4);\n}\n")
+}
+
+#[test]
+fn nested_namespace_properties() {
+    check(b"foo {\n  bar: baz;\n  bang: {\n    \
+            bip: 1px;\n    bop: bar;\n    blat:{baf:bort}}}\n",
+          "foo {\n  bar: baz;\n  bang-bip: 1px;\n  bang-bop: bar;\n  \
+           bang-blat-baf: bort;\n}\n")
 }
 
 #[test]

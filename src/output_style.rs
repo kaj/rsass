@@ -1,6 +1,7 @@
 use super::{FileContext, SassItem, parse_scss_file};
 use selectors::Selector;
 use std::ascii::AsciiExt;
+use std::fmt;
 use std::io::{self, Write};
 use valueexpression::Value;
 use variablescope::{Scope, ScopeImpl};
@@ -138,19 +139,21 @@ impl OutputStyle {
                     *separate = true;
                 }
                 write!(result, "@{}{{", query).unwrap();
-                self.do_indent(result, 0).unwrap();
                 let mut direct = vec![];
+                let mut sub = vec![];
                 self.handle_body(&mut direct,
-                                 result,
+                                 &mut sub,
                                  &mut ScopeImpl::sub(globals),
                                  &[Selector::root()],
                                  body,
                                  file_context,
                                  2)
                     .unwrap();
-                assert!(direct.is_empty(),
-                        "Direct output in @-rule {:?}",
-                        query);
+                if !sub.is_empty() {
+                    self.do_indent(result, 0).unwrap();
+                    result.write_all(&sub).unwrap();
+                }
+                self.write_items(result, &direct, 2).unwrap();
                 write!(result, "}}").unwrap();
             }
             &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
@@ -263,11 +266,7 @@ impl OutputStyle {
                    "{}{}{{",
                    self.join_selectors(&selectors),
                    self.opt_space())?;
-            if self.is_compressed() && direct.last() == Some(&b';') {
-                direct.pop();
-            }
-            out.write_all(&direct)?;
-            self.do_indent(out, indent)?;
+            self.write_items(out, &direct, indent + 2)?;
             write!(out, "}}")?;
             self.do_indent(out, 0)?;
         }
@@ -288,7 +287,7 @@ impl OutputStyle {
     }
 
     fn handle_body(&self,
-                   direct: &mut Vec<u8>,
+                   direct: &mut Vec<CssBodyItem>,
                    sub: &mut Write,
                    scope: &mut Scope,
                    selectors: &[Selector],
@@ -300,24 +299,42 @@ impl OutputStyle {
             match b {
                 &SassItem::Comment(ref c) => {
                     if !self.is_compressed() {
-                        self.do_indent(direct, indent + 2)?;
-                        write!(direct, "/*{}*/", c)?;
+                        direct.push(CssBodyItem::Comment(c.clone()));
                     }
                 }
                 &SassItem::Property(ref name, ref value, ref important) => {
-                    self.write_property(direct,
-                                        name,
-                                        &scope.evaluate(value),
-                                        *important,
-                                        indent + 2)?;
+                    let v = scope.evaluate(value);
+                    if !v.is_null() {
+                        direct.push(CssBodyItem::Property(name.clone(),
+                                                          v,
+                                                          *important));
+                    }
                 }
                 &SassItem::NamespaceRule(ref name, ref value, ref body) => {
-                    self.write_nsrule(direct,
-                                      scope,
-                                      name,
-                                      value,
-                                      body,
-                                      indent + 2)?;
+                    if !value.is_null() {
+                        direct.push(CssBodyItem::Property(name.clone(),
+                                                          scope.evaluate(value),
+                                                          false));
+                    }
+                    let mut t = Vec::new();
+                    self.handle_body(&mut t,
+                                     sub,
+                                     scope,
+                                     selectors,
+                                     body,
+                                     file_context,
+                                     indent)?;
+                    for item in t.into_iter() {
+                        direct.push(
+                            match item {
+                                CssBodyItem::Property(n, v, i) => {
+                                    CssBodyItem::Property(format!("{}-{}", name, n),
+                                                v,
+                                                i)
+                                }
+                                c => c,
+                            })
+                    }
                 }
                 &SassItem::Rule(ref s, ref b) => {
                     self.write_rule(s,
@@ -361,11 +378,8 @@ impl OutputStyle {
                                          file_context,
                                          indent)?;
                     } else {
-                        writeln!(direct,
-                                 "/* Unknown mixin {}({:?}) */",
-                                 name,
-                                 args)
-                                .unwrap();
+                        direct.push(CssBodyItem::Comment(
+                            format!("Unknown mixin {}({:?})", name, args)));
                     }
                 }
                 &SassItem::Import(ref name) => {
@@ -382,7 +396,7 @@ impl OutputStyle {
                                          0)
                             .unwrap()
                     } else {
-                        writeln!(direct, "@import {};", name).unwrap();
+                        // TODO writeln!(direct, "@import {};", name).unwrap();
                     }
                 }
                 &SassItem::AtRule(ref query, ref body) => {
@@ -404,11 +418,7 @@ impl OutputStyle {
                                "{}{}{{",
                                self.join_selectors(&selectors),
                                self.opt_space())?;
-                        if self.is_compressed() && s1.last() == Some(&b';') {
-                            s1.pop();
-                        }
-                        sub.write_all(&s1)?;
-                        self.do_indent(sub, 2)?;
+                        self.write_items(sub, &s1, 4)?;
                         write!(sub, "}}")?;
                     }
                     if !s2.is_empty() {
@@ -501,54 +511,22 @@ impl OutputStyle {
         Ok(())
     }
 
-    fn write_nsrule(&self,
-                    out: &mut Write,
-                    scope: &mut Scope,
-                    name: &str,
-                    value: &Value,
-                    body: &[SassItem],
-                    indent: usize)
-                    -> io::Result<()> {
-        self.write_property(out, name, &scope.evaluate(value), false, indent)?;
-        for item in body {
-            match item {
-                &SassItem::Property(ref name2, ref value, ref important) => {
-                    self.write_property(out,
-                                        &format!("{}-{}", name, name2),
-                                        &scope.evaluate(value),
-                                        *important,
-                                        indent)?;
+    fn write_items(&self, out: &mut Write, items: &[CssBodyItem], indent: usize) -> io::Result<()> {
+        if !items.is_empty() {
+            let mut buf = Vec::new();
+            for item in items {
+                self.do_indent(&mut buf, indent)?;
+                if self.is_compressed() {
+                    write!(buf, "{:#}", item)?;
+                } else {
+                    write!(buf, "{}", item)?;
                 }
-                &SassItem::NamespaceRule(ref name2, ref value, ref body) => {
-                    self.write_nsrule(out,
-                                      scope,
-                                      &format!("{}-{}", name, name2),
-                                      value,
-                                      body,
-                                      indent)?;
-                }
-                &SassItem::None => (),
-                x => panic!("Item {:?} not supported in scoped rule", x),
             }
-        }
-        Ok(())
-    }
-    fn write_property(&self,
-                      out: &mut Write,
-                      name: &str,
-                      value: &Value,
-                      important: bool,
-                      indent: usize)
-                      -> io::Result<()> {
-        if !value.is_null() {
-            self.do_indent(out, indent)?;
-            if self.is_compressed() {
-                let important = if important { "!important" } else { "" };
-                write!(out, "{}:{:#}{};", name, value, important)?;
-            } else {
-                let important = if important { " !important" } else { "" };
-                write!(out, "{}: {}{};", name, value, important)?;
+            if self.is_compressed() && buf.last() == Some(&b';') {
+                buf.pop();
             }
+            out.write_all(&buf)?;
+            self.do_indent(out, indent - 2)?;
         }
         Ok(())
     }
@@ -577,5 +555,29 @@ impl OutputStyle {
 
     fn is_compressed(&self) -> bool {
         self == &OutputStyle::Compressed
+    }
+}
+
+enum CssBodyItem {
+    Property(String, Value, bool),
+    Comment(String),
+}
+
+impl fmt::Display for CssBodyItem {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            CssBodyItem::Property(ref name, ref val, ref imp) => {
+                if out.alternate() {
+                    let important = if *imp { "!important" } else { "" };
+                    write!(out, "{}:{:#}{};", name, val, important)
+                } else {
+                    let important = if *imp { " !important" } else { "" };
+                    write!(out, "{}: {}{};", name, val, important)
+                }
+            }
+            CssBodyItem::Comment(ref c) => {
+                write!(out, "/*{}*/", c)
+            }
+        }
     }
 }
