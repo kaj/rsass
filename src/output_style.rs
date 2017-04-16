@@ -325,15 +325,15 @@ impl OutputStyle {
                                      file_context,
                                      indent)?;
                     for item in t.into_iter() {
-                        direct.push(
-                            match item {
-                                CssBodyItem::Property(n, v, i) => {
-                                    CssBodyItem::Property(format!("{}-{}", name, n),
+                        direct.push(match item {
+                                        CssBodyItem::Property(n, v, i) => {
+                                            CssBodyItem::Property(
+                                                format!("{}-{}", name, n),
                                                 v,
                                                 i)
-                                }
-                                c => c,
-                            })
+                                        }
+                                        c => c,
+                                    })
                     }
                 }
                 &SassItem::Rule(ref s, ref b) => {
@@ -511,7 +511,11 @@ impl OutputStyle {
         Ok(())
     }
 
-    fn write_items(&self, out: &mut Write, items: &[CssBodyItem], indent: usize) -> io::Result<()> {
+    fn write_items(&self,
+                   out: &mut Write,
+                   items: &[CssBodyItem],
+                   indent: usize)
+                   -> io::Result<()> {
         if !items.is_empty() {
             let mut buf = Vec::new();
             for item in items {
@@ -575,9 +579,7 @@ impl fmt::Display for CssBodyItem {
                     write!(out, "{}: {}{};", name, val, important)
                 }
             }
-            CssBodyItem::Comment(ref c) => {
-                write!(out, "/*{}*/", c)
-            }
+            CssBodyItem::Comment(ref c) => write!(out, "/*{}*/", c),
         }
     }
 }
