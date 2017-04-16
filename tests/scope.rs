@@ -115,9 +115,7 @@ fn test_while() {
 
 fn check(input: &str, expected: &str) {
     assert_eq!(compile_scss(input.as_bytes(), OutputStyle::Normal)
-                   .and_then(|s| {
-                                 String::from_utf8(s)
-                                 .map_err(|e| format!("Non-utf8 output: {}", e))
-                             }),
-               Ok(expected.to_string()));
+                   .and_then(|s| Ok(String::from_utf8(s)?))
+                   .unwrap(),
+               expected);
 }

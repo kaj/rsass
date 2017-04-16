@@ -1,4 +1,5 @@
 use colors::{name_to_rgb, rgb_to_name};
+use error::Error;
 use formalargs::{CallArgs, call_args};
 use nom::multispace;
 use num_rational::Rational;
@@ -100,12 +101,12 @@ impl Value {
         *self == Value::Null
     }
 
-    pub fn integer_value(&self) -> Result<isize, String> {
+    pub fn integer_value(&self) -> Result<isize, Error> {
         match self {
             &Value::Numeric(ref num, _, _) if num.is_integer() => {
                 Ok(num.to_integer())
             }
-            v => Err(format!("Not an integer: {}", v)),
+            v => Err(Error::bad_value("integer", v)),
         }
     }
 }

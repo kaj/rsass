@@ -1,8 +1,9 @@
 use super::{FileContext, SassItem, parse_scss_file};
+use error::Error;
 use selectors::Selector;
 use std::ascii::AsciiExt;
 use std::fmt;
-use std::io::{self, Write};
+use std::io::Write;
 use valueexpression::Value;
 use variablescope::{Scope, ScopeImpl};
 
@@ -21,7 +22,7 @@ impl OutputStyle {
     pub fn write_root(&self,
                       items: &[SassItem],
                       file_context: FileContext)
-                      -> Result<Vec<u8>, String> {
+                      -> Result<Vec<u8>, Error> {
         let mut globals = ScopeImpl::new();
         let mut result = Vec::new();
         let mut separate = false;
@@ -30,10 +31,10 @@ impl OutputStyle {
                                   &mut globals,
                                   &mut separate,
                                   &file_context,
-                                  &mut result);
+                                  &mut result)?;
         }
         if result != b"" && result[result.len() - 1] != b'\n' {
-            write!(result, "\n").unwrap();
+            write!(result, "\n")?;
         }
         if result.is_ascii() {
             Ok(result)
@@ -54,16 +55,16 @@ impl OutputStyle {
                         globals: &mut Scope,
                         separate: &mut bool,
                         file_context: &FileContext,
-                        result: &mut Write) {
+                        result: &mut Write)
+                        -> Result<(), Error> {
         match item {
             &SassItem::Rule(ref s, ref b) => {
                 if *separate {
-                    self.do_indent(result, 0).unwrap();
+                    self.do_indent(result, 0)?;
                 } else {
                     *separate = true;
                 }
-                self.write_rule(s, b, result, globals, None, file_context, 0)
-                    .unwrap();
+                self.write_rule(s, b, result, globals, None, file_context, 0)?;
             }
             &SassItem::VariableDeclaration {
                  ref name,
@@ -91,7 +92,7 @@ impl OutputStyle {
                                               &mut scope,
                                               separate,
                                               file_context,
-                                              result);
+                                              result)?;
                     }
                 } else {
                     panic!(format!("Unknown mixin {}({:?})", name, args))
@@ -102,28 +103,28 @@ impl OutputStyle {
                 if let Value::Literal(ref x, _) = name {
                     if let Some((sub_context, file)) =
                         file_context.find_file(x.as_ref()) {
-                        for item in parse_scss_file(&file).unwrap() {
+                        for item in parse_scss_file(&file)? {
                             self.handle_root_item(&item,
                                                   globals,
                                                   separate,
                                                   &sub_context,
-                                                  result);
+                                                  result)?;
                         }
                     } else {
-                        writeln!(result, "@import url({});", x).unwrap();
+                        writeln!(result, "@import url({});", x)?;
                     }
                 } else {
-                    writeln!(result, "@import {};", name).unwrap();
+                    writeln!(result, "@import {};", name)?;
                 }
             }
             &SassItem::Comment(ref c) => {
                 if !self.is_compressed() {
                     if *separate {
-                        self.do_indent(result, 0).unwrap();
+                        self.do_indent(result, 0)?;
                     } else {
                         *separate = true;
                     }
-                    write!(result, "/*{}*/", c).unwrap();
+                    write!(result, "/*{}*/", c)?;
                 }
             }
             &SassItem::Property(..) => {
@@ -134,11 +135,11 @@ impl OutputStyle {
             }
             &SassItem::AtRule(ref query, ref body) => {
                 if *separate {
-                    self.do_indent(result, 0).unwrap();
+                    self.do_indent(result, 0)?;
                 } else {
                     *separate = true;
                 }
-                write!(result, "@{}{{", query).unwrap();
+                write!(result, "@{}{{", query)?;
                 let mut direct = vec![];
                 let mut sub = vec![];
                 self.handle_body(&mut direct,
@@ -147,14 +148,13 @@ impl OutputStyle {
                                  &[Selector::root()],
                                  body,
                                  file_context,
-                                 2)
-                    .unwrap();
+                                 2)?;
                 if !sub.is_empty() {
-                    self.do_indent(result, 0).unwrap();
-                    result.write_all(&sub).unwrap();
+                    self.do_indent(result, 0)?;
+                    result.write_all(&sub)?;
                 }
-                self.write_items(result, &direct, 2).unwrap();
-                write!(result, "}}").unwrap();
+                self.write_items(result, &direct, 2)?;
+                write!(result, "}}")?;
             }
             &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
                 if globals.evaluate(cond).is_true() {
@@ -163,7 +163,7 @@ impl OutputStyle {
                                               globals,
                                               separate,
                                               file_context,
-                                              result);
+                                              result)?;
                     }
                 } else {
                     for item in do_else {
@@ -171,7 +171,7 @@ impl OutputStyle {
                                               globals,
                                               separate,
                                               file_context,
-                                              result);
+                                              result)?;
                     }
                 }
             }
@@ -187,7 +187,7 @@ impl OutputStyle {
                                               globals,
                                               separate,
                                               file_context,
-                                              result);
+                                              result)?;
                     }
                 }
             }
@@ -198,8 +198,8 @@ impl OutputStyle {
                  inclusive,
                  ref body,
              } => {
-                let from = globals.evaluate(from).integer_value().unwrap();
-                let to = globals.evaluate(to).integer_value().unwrap();
+                let from = globals.evaluate(from).integer_value()?;
+                let to = globals.evaluate(to).integer_value()?;
                 let to = if inclusive { to + 1 } else { to };
                 for value in from..to {
                     let mut scope = ScopeImpl::sub(globals);
@@ -209,7 +209,7 @@ impl OutputStyle {
                                               &mut scope,
                                               separate,
                                               file_context,
-                                              result);
+                                              result)?;
                     }
                 }
             }
@@ -221,7 +221,7 @@ impl OutputStyle {
                                               &mut scope,
                                               separate,
                                               file_context,
-                                              result);
+                                              result)?;
                     }
                 }
             }
@@ -230,6 +230,7 @@ impl OutputStyle {
             }
             &SassItem::None => (),
         }
+        Ok(())
     }
     fn write_rule(&self,
                   selectors: &[Selector],
@@ -239,7 +240,7 @@ impl OutputStyle {
                   parent: Option<&[Selector]>,
                   file_context: &FileContext,
                   indent: usize)
-                  -> io::Result<()> {
+                  -> Result<(), Error> {
         let selectors = if let Some(parent) = parent {
             let mut result = Vec::new();
             for p in parent {
@@ -294,7 +295,7 @@ impl OutputStyle {
                    body: &[SassItem],
                    file_context: &FileContext,
                    indent: usize)
-                   -> io::Result<()> {
+                   -> Result<(), Error> {
         for b in body {
             match b {
                 &SassItem::Comment(ref c) => {
@@ -386,17 +387,16 @@ impl OutputStyle {
                     let name = scope.evaluate(name);
                     if let Value::Literal(ref x, _) = name {
                         let (sub_context, file) = file_context.file(x.as_ref());
-                        let items = parse_scss_file(&file).unwrap();
+                        let items = parse_scss_file(&file)?;
                         self.handle_body(direct,
                                          sub,
                                          scope,
                                          selectors,
                                          &items,
                                          &sub_context,
-                                         0)
-                            .unwrap()
+                                         0)?;
                     } else {
-                        // TODO writeln!(direct, "@import {};", name).unwrap();
+                        // TODO writeln!(direct, "@import {};", name)?;
                     }
                 }
                 &SassItem::AtRule(ref query, ref body) => {
@@ -408,10 +408,9 @@ impl OutputStyle {
                                      selectors,
                                      body,
                                      file_context,
-                                     2)
-                        .unwrap();
+                                     2)?;
 
-                    write!(sub, "@{}{{", query).unwrap();
+                    write!(sub, "@{}{{", query)?;
                     if !s1.is_empty() {
                         self.do_indent(sub, 2)?;
                         write!(sub,
@@ -423,9 +422,9 @@ impl OutputStyle {
                     }
                     if !s2.is_empty() {
                         self.do_indent(sub, 0)?;
-                        sub.write_all(&s2).unwrap();
+                        sub.write_all(&s2)?;
                     }
-                    write!(sub, "}}").unwrap();
+                    write!(sub, "}}")?;
                 }
                 &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
                     if scope.evaluate(cond).is_true() {
@@ -435,8 +434,7 @@ impl OutputStyle {
                                          selectors,
                                          do_if,
                                          file_context,
-                                         0)
-                            .unwrap();
+                                         0)?;
                     } else {
                         self.handle_body(direct,
                                          sub,
@@ -444,8 +442,7 @@ impl OutputStyle {
                                          selectors,
                                          do_else,
                                          file_context,
-                                         0)
-                            .unwrap();
+                                         0)?;
                     }
                 }
                 &SassItem::Each(ref name, ref values, ref body) => {
@@ -462,8 +459,7 @@ impl OutputStyle {
                                          selectors,
                                          body,
                                          file_context,
-                                         0)
-                            .unwrap();
+                                         0)?;
                     }
                 }
                 &SassItem::For {
@@ -473,8 +469,8 @@ impl OutputStyle {
                      inclusive,
                      ref body,
                  } => {
-                    let from = scope.evaluate(from).integer_value().unwrap();
-                    let to = scope.evaluate(to).integer_value().unwrap();
+                    let from = scope.evaluate(from).integer_value()?;
+                    let to = scope.evaluate(to).integer_value()?;
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
                         let mut scope = ScopeImpl::sub(scope);
@@ -485,8 +481,7 @@ impl OutputStyle {
                                          selectors,
                                          body,
                                          file_context,
-                                         0)
-                            .unwrap();
+                                         0)?;
                     }
                 }
                 &SassItem::While(ref cond, ref body) => {
@@ -498,8 +493,7 @@ impl OutputStyle {
                                          selectors,
                                          body,
                                          file_context,
-                                         0)
-                            .unwrap();
+                                         0)?;
                     }
                 }
                 &SassItem::Return(_) => {
@@ -515,7 +509,7 @@ impl OutputStyle {
                    out: &mut Write,
                    items: &[CssBodyItem],
                    indent: usize)
-                   -> io::Result<()> {
+                   -> Result<(), Error> {
         if !items.is_empty() {
             let mut buf = Vec::new();
             for item in items {
@@ -535,7 +529,7 @@ impl OutputStyle {
         Ok(())
     }
 
-    fn do_indent(&self, out: &mut Write, steps: usize) -> io::Result<()> {
+    fn do_indent(&self, out: &mut Write, steps: usize) -> Result<(), Error> {
         if !self.is_compressed() {
             write!(out, "\n")?;
             for _i in 0..steps {
@@ -544,7 +538,10 @@ impl OutputStyle {
         }
         Ok(())
     }
-    fn do_indent_no_lf(&self, out: &mut Write, steps: usize) -> io::Result<()> {
+    fn do_indent_no_lf(&self,
+                       out: &mut Write,
+                       steps: usize)
+                       -> Result<(), Error> {
         if !self.is_compressed() {
             for _i in 0..steps {
                 write!(out, " ")?;

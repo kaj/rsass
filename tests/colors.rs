@@ -161,9 +161,8 @@ fn scale_color() {
 }
 
 fn check(input: &[u8], expected: &str) {
-    assert_eq!(compile_scss(input, OutputStyle::Normal).and_then(|s| {
-                   String::from_utf8(s)
-                       .map_err(|e| format!("Non-utf8 output: {}", e))
-               }),
-               Ok(expected.into()));
+    assert_eq!(compile_scss(input, OutputStyle::Normal)
+                   .and_then(|s| Ok(String::from_utf8(s)?))
+                   .unwrap(),
+               expected);
 }

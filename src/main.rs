@@ -2,8 +2,8 @@ extern crate clap;
 extern crate rsass;
 
 use clap::{App, Arg, ArgMatches};
-use rsass::{OutputStyle, compile_scss_file};
-use std::io::Write;
+use rsass::{Error, OutputStyle, compile_scss_file};
+use std::io::{Write, stderr, stdout};
 use std::process::exit;
 
 fn main() {
@@ -30,13 +30,13 @@ fn main() {
     match run(&args) {
         Ok(()) => (),
         Err(err) => {
-            writeln!(&mut std::io::stderr(), "Error: {}!", err).unwrap();
+            writeln!(&mut stderr(), "Error: {}!", err).unwrap();
             exit(1);
         }
     }
 }
 
-fn run(args: &ArgMatches) -> Result<(), String> {
+fn run(args: &ArgMatches) -> Result<(), Error> {
     let style = if args.value_of("STYLE") == Some("compressed") {
         OutputStyle::Compressed
     } else {
@@ -45,8 +45,8 @@ fn run(args: &ArgMatches) -> Result<(), String> {
     if let Some(inputs) = args.values_of("INPUT") {
         for name in inputs {
             let result = compile_scss_file(name.as_ref(), style.clone())?;
-            let out = std::io::stdout();
-            out.lock().write_all(&result).map_err(|e| format!("{}", e))?;
+            let out = stdout();
+            out.lock().write_all(&result)?;
         }
     }
     Ok(())

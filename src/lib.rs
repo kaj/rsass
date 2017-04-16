@@ -9,9 +9,9 @@
 //! use rsass::{OutputStyle, compile_scss_file};
 //!
 //! let file = "tests/basic/14_imports/a.scss".as_ref();
-//! let css = compile_scss_file(file, OutputStyle::Compressed);
+//! let css = compile_scss_file(file, OutputStyle::Compressed).unwrap();
 //!
-//! assert_eq!(css, Ok("div span{moo:goo}\n".into()))
+//! assert_eq!(css, b"div span{moo:goo}\n")
 //! ```
 //!
 //! # Sass language and implemetation status
@@ -46,6 +46,7 @@ use std::path::{Path, PathBuf};
 use std::str::from_utf8;
 
 mod colors;
+mod error;
 mod formalargs;
 mod operator;
 mod functions;
@@ -56,6 +57,7 @@ mod variablescope;
 mod output_style;
 mod unit;
 
+pub use error::Error;
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
 use functions::SassFunction;
 pub use output_style::OutputStyle;
@@ -76,12 +78,12 @@ use valueexpression::ListSeparator;
 ///                             bar {\n\
 ///                               baz:value;\n\
 ///                             }\n\
-///                           }", OutputStyle::Compressed),
-///            Ok("foo bar{baz:value}\n".into()))
+///                           }", OutputStyle::Compressed).unwrap(),
+///            b"foo bar{baz:value}\n")
 /// ```
 pub fn compile_scss(input: &[u8],
                     style: OutputStyle)
-                    -> Result<Vec<u8>, String> {
+                    -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
     let items = parse_scss_data(input)?;
     style.write_root(&items, file_context)
@@ -98,12 +100,12 @@ pub fn compile_scss(input: &[u8],
 /// use rsass::{OutputStyle, compile_scss_file};
 ///
 /// assert_eq!(compile_scss_file("tests/basic/14_imports/a.scss".as_ref(),
-///                              OutputStyle::Compressed),
-///            Ok("div span{moo:goo}\n".into()))
+///                              OutputStyle::Compressed).unwrap(),
+///            b"div span{moo:goo}\n")
 /// ```
 pub fn compile_scss_file(file: &Path,
                          style: OutputStyle)
-                         -> Result<Vec<u8>, String> {
+                         -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
     let (sub_context, file) = file_context.file(file);
     let items = parse_scss_file(&file)?;
@@ -157,26 +159,25 @@ impl FileContext {
 /// Parse a scss file.
 ///
 /// Returns a vec of the top level items of the file (or an error message).
-pub fn parse_scss_file(file: &Path) -> Result<Vec<SassItem>, String> {
-    let mut f = File::open(file)
-        .map_err(|e| format!("Failed to open {:?}: {}", file, e))?;
+pub fn parse_scss_file(file: &Path) -> Result<Vec<SassItem>, Error> {
+    let mut f = File::open(file).map_err(|e| Error::Input(file.into(), e))?;
     let mut data = vec![];
-    f.read_to_end(&mut data)
-        .map_err(|e| format!("Failed to read {:?}: {}", file, e))?;
+    f.read_to_end(&mut data).map_err(|e| Error::Input(file.into(), e))?;
     parse_scss_data(&data)
 }
 
-fn parse_scss_data(data: &[u8]) -> Result<Vec<SassItem>, String> {
+fn parse_scss_data(data: &[u8]) -> Result<Vec<SassItem>, Error> {
     match sassfile(data) {
         Done(b"", items) => Ok(items),
         Done(rest, _styles) => {
             let t = from_utf8(rest)
                 .map(|s| s.to_string())
                 .unwrap_or_else(|_| format!("{:?}", rest));
-            Err(format!("Failed to parse entire input: `{}` remains.", t))
+            Err(Error::S(format!("Failed to parse entire input: `{}` remains.",
+                                 t)))
         }
-        Incomplete(x) => Err(format!("Incomplete: {:?}", x)),
-        Error(x) => Err(format!("Error: {}", x)),
+        Incomplete(x) => Err(Error::S(format!("Incomplete: {:?}", x))),
+        Error(x) => Err(Error::S(format!("Error: {}", x))),
     }
 }
 
