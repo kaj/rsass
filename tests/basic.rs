@@ -705,6 +705,14 @@ fn t40_pseudo_class_identifier_starting_with_n() {
 }
 
 #[test]
+fn t41_slashy_urls() {
+    check(b"div {\n  blah: url(//some/absolute/path);\n  \
+            blee: url(/*looks-like-a*/comment);\n}",
+          "div {\n  blah: url(//some/absolute/path);\n  \
+           blee: url(/*looks-like-a*/comment);\n}\n")
+}
+
+#[test]
 fn t43_str_length() {
     check("div {\n  foo: str-length(\"protégé\");\n  \
            foo: str-length(protégé);\n  foo: str-length(\"\");\n  \

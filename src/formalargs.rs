@@ -1,7 +1,8 @@
-use parseutil::{ignore_comments, name, opt_spacelike};
+use parseutil::{ignore_comments, is_name_char, name, opt_spacelike};
 use std::default::Default;
 use std::fmt;
-use valueexpression::{ListSeparator, Value, space_list};
+use std::str::from_utf8;
+use valueexpression::{ListSeparator, Quotes, Value, space_list};
 use variablescope::{Scope, ScopeImpl};
 
 /// The declared arguments of a mixin or function declaration.
@@ -120,8 +121,18 @@ named!(pub call_args<CallArgs>,
                         map!(name, |n: String| n.replace("-", "_")),
                         preceded!(ignore_comments,
                                   tag!(":")))),
-                     delimited!(ignore_comments,
-                                space_list,
-                                ignore_comments))),
+                     alt!(space_list |
+                          extended_literal |
+                          delimited!(ignore_comments,
+                                     space_list,
+                                     ignore_comments)))),
                 |args| CallArgs(args)),
            tag!(")")));
+
+named!(extended_literal<Value>,
+       map!(take_while1!(is_ext_str_char),
+            |v| Value::Literal(from_utf8(v).unwrap().into(), Quotes::None)));
+
+fn is_ext_str_char(c: u8) -> bool {
+    is_name_char(c) || c == b'.' || c == b'/' || c == b'*'
+}
