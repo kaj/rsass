@@ -31,8 +31,6 @@ pub trait Scope {
     fn get_function(&self, name: &str) -> Option<&SassFunction>;
     fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value>;
 
-    fn evaluate(&mut self, val: &Value) -> Value;
-
     fn eval_body(&mut self, body: &[SassItem]) -> Option<Value>;
 }
 
@@ -101,22 +99,19 @@ impl<'a> Scope for ScopeImpl<'a> {
         }
         None
     }
-    fn evaluate(&mut self, val: &Value) -> Value {
-        self.do_evaluate(val, false)
-    }
 
     fn eval_body(&mut self, body: &[SassItem]) -> Option<Value> {
         for b in body {
             let result = match *b {
                 SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
-                    if self.evaluate(cond).is_true() {
+                    if cond.evaluate(self).is_true() {
                         self.eval_body(do_if)
                     } else {
                         self.eval_body(do_else)
                     }
                 }
                 SassItem::Each(ref name, ref values, ref body) => {
-                    let values = match self.evaluate(values) {
+                    let values = match values.evaluate(self) {
                         Value::List(v, _) => v,
                         v => vec![v],
                     };
@@ -135,8 +130,8 @@ impl<'a> Scope for ScopeImpl<'a> {
                     inclusive,
                     ref body,
                 } => {
-                    let from = self.evaluate(from).integer_value().unwrap();
-                    let to = self.evaluate(to).integer_value().unwrap();
+                    let from = from.evaluate(self).integer_value().unwrap();
+                    let to = to.evaluate(self).integer_value().unwrap();
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
                         self.define(name, &Value::scalar(value), false);
@@ -159,10 +154,10 @@ impl<'a> Scope for ScopeImpl<'a> {
                     }
                     None
                 }
-                SassItem::Return(ref v) => Some(self.evaluate(v)),
+                SassItem::Return(ref v) => Some(v.evaluate(self)),
                 SassItem::While(ref cond, ref body) => {
                     let mut scope = ScopeImpl::sub(self);
-                    while scope.evaluate(cond).is_true() {
+                    while cond.evaluate(&mut scope).is_true() {
                         if let Some(r) = scope.eval_body(body) {
                             return Some(r);
                         }
@@ -612,6 +607,6 @@ pub mod test {
         }
         let (end, foo) = value_expression(expression).unwrap();
         assert_eq!(Ok(";"), from_utf8(end));
-        format!("{}", scope.evaluate(&foo))
+        format!("{}", foo.evaluate(&mut scope))
     }
 }

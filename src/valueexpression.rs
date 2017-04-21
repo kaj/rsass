@@ -1,6 +1,7 @@
 use colors::{name_to_rgb, rgb_to_name};
 use error::Error;
 use formalargs::{CallArgs, call_args};
+use functions::get_builtin_function;
 use nom::multispace;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
@@ -9,6 +10,7 @@ use parseutil::{name, opt_spacelike, spacelike};
 use std::fmt;
 use std::str::{FromStr, from_utf8};
 use unit::{Unit, unit};
+use variablescope::Scope;
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -108,6 +110,111 @@ impl Value {
                 Ok(num.to_integer())
             }
             v => Err(Error::bad_value("integer", v)),
+        }
+    }
+
+    pub fn evaluate(&self, scope: &mut Scope) -> Value {
+        self.do_evaluate(scope, false)
+    }
+    fn do_evaluate(&self, scope: &mut Scope, arithmetic: bool) -> Value {
+        match self {
+            &Value::Literal(ref v, ref q) => {
+                Value::Literal(v.clone(), q.clone())
+            }
+            &Value::Paren(ref v) => v.do_evaluate(scope, true),
+            &Value::Color(_, _, _, _, _) => self.clone(),
+            &Value::Variable(ref name) => {
+                let v = scope.get(name);
+                v.do_evaluate(scope, true)
+            }
+            &Value::List(ref v, ref s) => {
+                Value::List(v.iter()
+                                .map(|v| v.do_evaluate(scope, false))
+                                .collect::<Vec<_>>(),
+                            s.clone())
+            }
+            &Value::Call(ref name, ref args) => {
+                match scope.call_function(name, args) {
+                    Some(value) => value,
+                    None => {
+                        if let Some(function) = get_builtin_function(name) {
+                            match function.call(scope, args) {
+                                Ok(v) => v,
+                                Err(e) => {
+                                    panic!("Error in function {}: {:?}",
+                                           name, e)
+                                }
+                            }
+                        } else {
+                            Value::Call(name.clone(), args.xyzzy(scope))
+                        }
+                    }
+                }
+            }
+            &Value::Div(ref a, ref b, ref space1, ref space2) => {
+                let (a, b) = {
+                    let aa = a.do_evaluate(scope, arithmetic);
+                    let b =
+                        b.do_evaluate(scope, arithmetic || a.is_calculated());
+                    if !arithmetic && b.is_calculated() && !a.is_calculated() {
+                        (a.do_evaluate(scope, true), b)
+                    } else {
+                        (aa, b)
+                    }
+                };
+                if arithmetic || a.is_calculated() || b.is_calculated() {
+                    match (&a, &b) {
+                        (&Value::Color(ref r, ref g, ref b, ref a, _),
+                         &Value::Numeric(ref n, Unit::None, _)) => {
+                            return Value::rgba(r / n, g / n, b / n, *a);
+                        }
+                        (&Value::Numeric(ref av, ref au, _),
+                         &Value::Numeric(ref bv, ref bu, _)) => {
+                            if bv.is_zero() {
+                                return Value::Div(Box::new(a.clone()),
+                                                  Box::new(b.clone()),
+                                                  *space1,
+                                                  *space2);
+                            } else if bu == &Unit::None {
+                                return Value::Numeric(av / bv,
+                                                      au.clone(),
+                                                      true);
+                            } else if au == bu {
+                                return Value::Numeric(av / bv,
+                                                      Unit::None,
+                                                      true);
+                            }
+                        }
+                        _ => (),
+                    }
+                }
+                Value::Literal(format!("{}{}/{}{}",
+                                       a,
+                                       if *space1 && !arithmetic {
+                                           " "
+                                       } else {
+                                           ""
+                                       },
+                                       if *space2 && !arithmetic {
+                                           " "
+                                       } else {
+                                           ""
+                                       },
+                                       b),
+                               Quotes::None)
+            }
+            &Value::Numeric(ref v, ref u, ref is_calculated) => {
+                Value::Numeric(*v, u.clone(), arithmetic || *is_calculated)
+            }
+            &Value::Null => Value::Null,
+            &Value::True => Value::True,
+            &Value::False => Value::False,
+            &Value::BinOp(ref a, ref op, ref b) => {
+                op.eval(a.do_evaluate(scope, true), b.do_evaluate(scope, true))
+            }
+            &Value::UnaryOp(ref op, ref v) => {
+                Value::UnaryOp(op.clone(), Box::new(v.do_evaluate(scope, true)))
+            }
         }
     }
 }

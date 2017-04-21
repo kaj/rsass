@@ -70,7 +70,7 @@ impl CallArgs {
     pub fn xyzzy(&self, scope: &mut Scope) -> Self {
         CallArgs(self.0
                      .iter()
-                     .map(|&(ref n, ref v)| (n.clone(), scope.evaluate(v)))
+                     .map(|&(ref n, ref v)| (n.clone(), v.evaluate(scope)))
                      .collect())
     }
 }

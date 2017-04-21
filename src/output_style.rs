@@ -99,7 +99,7 @@ impl OutputStyle {
                 }
             }
             &SassItem::Import(ref name) => {
-                let name = globals.evaluate(name);
+                let name = name.evaluate(globals);
                 if let Value::Literal(ref x, _) = name {
                     if let Some((sub_context, file)) =
                         file_context.find_file(x.as_ref()) {
@@ -157,7 +157,7 @@ impl OutputStyle {
                 write!(result, "}}")?;
             }
             &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
-                if globals.evaluate(cond).is_true() {
+                if cond.evaluate(globals).is_true() {
                     for item in do_if {
                         self.handle_root_item(item,
                                               globals,
@@ -176,7 +176,7 @@ impl OutputStyle {
                 }
             }
             &SassItem::Each(ref name, ref values, ref body) => {
-                let values = match globals.evaluate(values) {
+                let values = match values.evaluate(globals) {
                     Value::List(v, _) => v,
                     v => vec![v],
                 };
@@ -198,8 +198,8 @@ impl OutputStyle {
                  inclusive,
                  ref body,
              } => {
-                let from = globals.evaluate(from).integer_value()?;
-                let to = globals.evaluate(to).integer_value()?;
+                let from = from.evaluate(globals).integer_value()?;
+                let to = to.evaluate(globals).integer_value()?;
                 let to = if inclusive { to + 1 } else { to };
                 for value in from..to {
                     let mut scope = ScopeImpl::sub(globals);
@@ -215,7 +215,7 @@ impl OutputStyle {
             }
             &SassItem::While(ref cond, ref body) => {
                 let mut scope = ScopeImpl::sub(globals);
-                while scope.evaluate(cond).is_true() {
+                while cond.evaluate(&mut scope).is_true() {
                     for item in body {
                         self.handle_root_item(item,
                                               &mut scope,
@@ -304,7 +304,7 @@ impl OutputStyle {
                     }
                 }
                 &SassItem::Property(ref name, ref value, ref important) => {
-                    let v = scope.evaluate(value);
+                    let v = value.evaluate(scope);
                     if !v.is_null() {
                         direct.push(CssBodyItem::Property(name.clone(),
                                                           v,
@@ -314,7 +314,7 @@ impl OutputStyle {
                 &SassItem::NamespaceRule(ref name, ref value, ref body) => {
                     if !value.is_null() {
                         direct.push(CssBodyItem::Property(name.clone(),
-                                                          scope.evaluate(value),
+                                                          value.evaluate(scope),
                                                           false));
                     }
                     let mut t = Vec::new();
@@ -384,7 +384,7 @@ impl OutputStyle {
                     }
                 }
                 &SassItem::Import(ref name) => {
-                    let name = scope.evaluate(name);
+                    let name = name.evaluate(scope);
                     if let Value::Literal(ref x, _) = name {
                         let (sub_context, file) = file_context.file(x.as_ref());
                         let items = parse_scss_file(&file)?;
@@ -427,7 +427,7 @@ impl OutputStyle {
                     write!(sub, "}}")?;
                 }
                 &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
-                    if scope.evaluate(cond).is_true() {
+                    if cond.evaluate(scope).is_true() {
                         self.handle_body(direct,
                                          sub,
                                          &mut ScopeImpl::sub(scope),
@@ -446,7 +446,7 @@ impl OutputStyle {
                     }
                 }
                 &SassItem::Each(ref name, ref values, ref body) => {
-                    let values = match scope.evaluate(values) {
+                    let values = match values.evaluate(scope) {
                         Value::List(v, _) => v,
                         v => vec![v],
                     };
@@ -469,8 +469,8 @@ impl OutputStyle {
                      inclusive,
                      ref body,
                  } => {
-                    let from = scope.evaluate(from).integer_value()?;
-                    let to = scope.evaluate(to).integer_value()?;
+                    let from = from.evaluate(scope).integer_value()?;
+                    let to = to.evaluate(scope).integer_value()?;
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
                         let mut scope = ScopeImpl::sub(scope);
@@ -486,7 +486,7 @@ impl OutputStyle {
                 }
                 &SassItem::While(ref cond, ref body) => {
                     let mut scope = ScopeImpl::sub(scope);
-                    while scope.evaluate(cond).is_true() {
+                    while cond.evaluate(&mut scope).is_true() {
                         self.handle_body(direct,
                                          sub,
                                          &mut scope,
