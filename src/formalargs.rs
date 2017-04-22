@@ -29,8 +29,7 @@ impl FormalArgs {
             } else if self.1 && i + 1 == n && args.0.len() > n {
                 let args =
                     args.0[i..].iter().map(|&(_, ref v)| v.clone()).collect();
-                argscope.define(name,
-                                &Value::List(args, ListSeparator::Comma));
+                argscope.define(name, &Value::List(args, ListSeparator::Comma));
             } else {
                 argscope.define(name,
                                 match args.0.get(i) {
