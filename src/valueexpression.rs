@@ -172,37 +172,31 @@ impl Value {
                         (&Value::Numeric(ref av, ref au, _),
                          &Value::Numeric(ref bv, ref bu, _)) => {
                             if bv.is_zero() {
-                                return Value::Div(Box::new(a.clone()),
-                                                  Box::new(b.clone()),
-                                                  *space1,
-                                                  *space2);
+                                Value::Div(Box::new(a.clone()),
+                                           Box::new(b.clone()),
+                                           *space1,
+                                           *space2)
                             } else if bu == &Unit::None {
-                                return Value::Numeric(av / bv,
-                                                      au.clone(),
-                                                      true);
+                                Value::Numeric(av / bv, au.clone(), true)
                             } else if au == bu {
-                                return Value::Numeric(av / bv,
-                                                      Unit::None,
-                                                      true);
+                                Value::Numeric(av / bv, Unit::None, true)
+                            } else {
+                                Value::Div(Box::new(a.clone()),
+                                           Box::new(b.clone()),
+                                           false,
+                                           false)
                             }
                         }
-                        _ => (),
+                        (a, b) => {
+                            Value::Div(Box::new(a.clone()),
+                                       Box::new(b.clone()),
+                                       false,
+                                       false)
+                        }
                     }
+                } else {
+                    Value::Div(Box::new(a), Box::new(b), *space1, *space2)
                 }
-                Value::Literal(format!("{}{}/{}{}",
-                                       a,
-                                       if *space1 && !arithmetic {
-                                           " "
-                                       } else {
-                                           ""
-                                       },
-                                       if *space2 && !arithmetic {
-                                           " "
-                                       } else {
-                                           ""
-                                       },
-                                       b),
-                               Quotes::None)
             }
             &Value::Numeric(ref v, ref u, ref is_calculated) => {
                 Value::Numeric(*v, u.clone(), arithmetic || *is_calculated)
@@ -328,12 +322,22 @@ impl fmt::Display for Value {
                 write!(out, "{}", t)
             }
             &Value::Div(ref a, ref b, ref s1, ref s2) => {
-                write!(out,
-                       "{}{}/{}{}",
-                       a,
-                       if *s1 { " " } else { "" },
-                       if *s2 { " " } else { "" },
-                       b)
+                let alt = out.alternate();
+                if alt {
+                    write!(out,
+                           "{:#}{}/{}{:#}",
+                           a,
+                           if *s1 { " " } else { "" },
+                           if *s2 { " " } else { "" },
+                           b)
+                } else {
+                    write!(out,
+                           "{}{}/{}{}",
+                           a,
+                           if *s1 { " " } else { "" },
+                           if *s2 { " " } else { "" },
+                           b)
+                }
             }
             &Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
             &Value::BinOp(ref a, Operator::Plus, ref b) => {
@@ -347,9 +351,9 @@ impl fmt::Display for Value {
             }
             &Value::BinOp(ref a, ref op, ref b) => {
                 if out.alternate() {
-                    write!(out, "{:#} {} {:#}", a, op, b)
+                    write!(out, "{:#}{}{:#}", a, op, b)
                 } else {
-                    write!(out, "{} {} {}", a, op, b)
+                    write!(out, "{}{}{}", a, op, b)
                 }
             }
             &Value::Paren(ref v) => {

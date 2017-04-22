@@ -81,11 +81,15 @@ impl Operator {
                         } else if au == &Unit::None {
                             Value::Numeric(av - bv, bu.clone(), true)
                         } else {
-                            Value::Literal(format!("{}-{}", a, b), Quotes::None)
+                            Value::BinOp(Box::new(a.clone()),
+                                         Operator::Minus,
+                                         Box::new(b.clone()))
                         }
                     }
-                    (a, b) => {
-                        Value::Literal(format!("{}-{}", a, b), Quotes::None)
+                    _ => {
+                        Value::BinOp(Box::new(a.clone()),
+                                     Operator::Minus,
+                                     Box::new(b.clone()))
                     }
                 }
             }
