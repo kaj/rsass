@@ -116,7 +116,8 @@ impl Value {
     pub fn evaluate(&self, scope: &mut Scope) -> Value {
         self.do_evaluate(scope, false)
     }
-    fn do_evaluate(&self, scope: &mut Scope, arithmetic: bool) -> Value {
+    // TODO Maybe this should be private?
+    pub fn do_evaluate(&self, scope: &mut Scope, arithmetic: bool) -> Value {
         match self {
             &Value::Literal(ref v, ref q) => {
                 Value::Literal(v.clone(), q.clone())
