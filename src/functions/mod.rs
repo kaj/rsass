@@ -130,7 +130,7 @@ fn test_rgb() {
     use formalargs::call_args;
     use num_rational::Rational;
     use num_traits::{One, Zero};
-    use variablescope::ScopeImpl;
+    use variablescope::GlobalScope;
     assert_eq!(Ok(Value::Color(Rational::new(17, 1),
                                Rational::zero(),
                                Rational::new(225, 1),
@@ -139,7 +139,7 @@ fn test_rgb() {
                FUNCTIONS
                    .get("rgb")
                    .unwrap()
-                   .call(&mut ScopeImpl::new(),
+                   .call(&mut GlobalScope::new(),
                          &call_args(b"(17, 0, 225)").unwrap().1))
 }
 

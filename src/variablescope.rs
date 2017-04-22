@@ -102,19 +102,18 @@ pub trait Scope {
 }
 
 pub struct ScopeImpl<'a> {
-    parent: Option<&'a mut Scope>,
-    variables: BTreeMap<String, Value>,
-    mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
-    functions: BTreeMap<String, SassFunction>,
+    parent: &'a mut Scope,
+    data: ScopeData,
 }
 
 impl<'a> Scope for ScopeImpl<'a> {
     fn define(&mut self, name: &str, val: &Value, global: bool) {
         let val = val.do_evaluate(self, true);
-        if let (true, Some(parent)) = (global, self.parent.as_mut()) {
-            return parent.define(name, &val, global);
+        if global {
+            self.parent.define(name, &val, global);
+        } else {
+            self.data.variables.insert(name.replace('-', "_"), val);
         }
-        self.variables.insert(name.replace('-', "_"), val);
     }
     fn define_default(&mut self, name: &str, val: &Value, global: bool) {
         if self.get(name) == Value::Null {
@@ -122,71 +121,122 @@ impl<'a> Scope for ScopeImpl<'a> {
         }
     }
     fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)> {
-        self.mixins
+        self.data
+            .mixins
             .get(&name.replace('-', "_"))
             .cloned()
-            .or_else(|| self.parent.as_ref().and_then(|p| p.get_mixin(name)))
+            .or_else(|| self.parent.get_mixin(name))
     }
     fn get(&self, name: &str) -> Value {
         let name = name.replace('-', "_");
-        self.variables
+        self.data
+            .variables
             .get(&name)
             .cloned()
-            .or_else(|| self.parent.as_ref().map(|p| p.get(&name)))
-            .unwrap_or(Value::Null)
+            .unwrap_or_else(|| self.parent.get(&name))
     }
     fn get_global(&self, name: &str) -> Value {
-        if let Some(ref p) = self.parent {
-            p.get_global(name)
-        } else {
-            self.variables.get(name).cloned().unwrap_or(Value::Null)
-        }
+        self.parent.get_global(name)
     }
     fn define_mixin(&mut self,
                     name: &str,
                     args: &FormalArgs,
                     body: &[SassItem]) {
-        self.mixins.insert(name.replace('-', "_"), (args.clone(), body.into()));
+        let name = name.replace('-', "_");
+        self.data.mixins.insert(name, (args.clone(), body.into()));
     }
     fn define_function(&mut self, name: &str, func: SassFunction) {
-        self.functions.insert(name.replace('-', "_"), func);
+        self.data.functions.insert(name.replace('-', "_"), func);
     }
     fn get_function(&self, name: &str) -> Option<&SassFunction> {
         let name = name.replace('-', "_");
-        if let Some(f) = self.functions.get(&name) {
+        if let Some(f) = self.data.functions.get(&name) {
             return Some(f);
         }
-        if let Some(ref p) = self.parent {
-            p.get_function(&name)
-        } else {
-            get_builtin_function(&name)
-        }
+        self.parent.get_function(&name)
     }
     fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value> {
         let name = name.replace('-', "_");
-        if let Some(f) = self.functions.get(&name).cloned() {
+        if let Some(f) = self.data.functions.get(&name).cloned() {
             return f.call(self, args).ok();
         }
         let a2 = args.xyzzy(self);
-        if let Some(ref mut p) = self.parent {
-            return p.call_function(&name, &a2);
+        self.parent.call_function(&name, &a2)
+    }
+}
+
+impl<'a> ScopeImpl<'a> {
+    pub fn sub(parent: &'a mut Scope) -> Self {
+        ScopeImpl { parent: parent, data: ScopeData::new() }
+    }
+}
+
+pub struct GlobalScope {
+    data: ScopeData,
+}
+
+impl GlobalScope {
+    pub fn new() -> Self {
+        GlobalScope { data: ScopeData::new() }
+    }
+}
+
+impl Scope for GlobalScope {
+    fn define(&mut self, name: &str, val: &Value, _global: bool) {
+        let val = val.do_evaluate(self, true);
+        self.data.variables.insert(name.replace('-', "_"), val);
+    }
+    fn define_default(&mut self, name: &str, val: &Value, global: bool) {
+        if self.get(name) == Value::Null {
+            self.define(name, val, global)
+        }
+    }
+    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)> {
+        self.data.mixins.get(&name.replace('-', "_")).cloned()
+    }
+    fn get(&self, name: &str) -> Value {
+        self.get_global(name)
+    }
+    fn get_global(&self, name: &str) -> Value {
+        let name = name.replace('-', "_");
+        self.data.variables.get(&name).cloned().unwrap_or(Value::Null)
+    }
+    fn define_mixin(&mut self,
+                    name: &str,
+                    args: &FormalArgs,
+                    body: &[SassItem]) {
+        let name = name.replace('-', "_");
+        self.data.mixins.insert(name, (args.clone(), body.into()));
+    }
+    fn define_function(&mut self, name: &str, func: SassFunction) {
+        self.data.functions.insert(name.replace('-', "_"), func);
+    }
+    fn get_function(&self, name: &str) -> Option<&SassFunction> {
+        let name = name.replace('-', "_");
+        if let Some(f) = self.data.functions.get(&name) {
+            return Some(f);
+        }
+        get_builtin_function(&name)
+    }
+    fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value> {
+        let name = name.replace('-', "_");
+        if let Some(f) = self.data.functions.get(&name).cloned() {
+            return f.call(self, args).ok();
         }
         None
     }
 }
 
-impl<'a> ScopeImpl<'a> {
-    pub fn new() -> Self {
-        ScopeImpl {
-            parent: None,
-            variables: BTreeMap::new(),
-            mixins: BTreeMap::new(),
-            functions: BTreeMap::new(),
-        }
-    }
-    pub fn sub(parent: &'a mut Scope) -> Self {
-        ScopeImpl {
-            parent: Some(parent),
+
+struct ScopeData {
+    variables: BTreeMap<String, Value>,
+    mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
+    functions: BTreeMap<String, SassFunction>,
+}
+
+impl ScopeData {
+    fn new() -> Self {
+        ScopeData {
             variables: BTreeMap::new(),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
@@ -495,7 +545,7 @@ pub mod test {
     }
 
     pub fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
-        let mut scope = ScopeImpl::new();
+        let mut scope = GlobalScope::new();
         for &(name, ref val) in s {
             let val = format!("{};", val);
             let (end, value) = value_expression(val.as_bytes()).unwrap();

@@ -5,7 +5,7 @@ use std::ascii::AsciiExt;
 use std::fmt;
 use std::io::Write;
 use valueexpression::Value;
-use variablescope::{Scope, ScopeImpl};
+use variablescope::{GlobalScope, Scope, ScopeImpl};
 
 /// Selected target format.
 /// Only formats that are variants of this type are supported by rsass.
@@ -23,7 +23,7 @@ impl OutputStyle {
                       items: &[SassItem],
                       file_context: FileContext)
                       -> Result<Vec<u8>, Error> {
-        let mut globals = ScopeImpl::new();
+        let mut globals = GlobalScope::new();
         let mut result = Vec::new();
         let mut separate = false;
         for item in items {
