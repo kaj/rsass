@@ -17,10 +17,7 @@ impl FormalArgs {
         FormalArgs(a, is_varargs)
     }
 
-    pub fn eval<'a>(&self,
-                    scope: &'a mut Scope,
-                    args: &CallArgs)
-                    -> ScopeImpl<'a> {
+    pub fn eval<'a>(&self, scope: &'a Scope, args: &CallArgs) -> ScopeImpl<'a> {
         let mut argscope = ScopeImpl::sub(scope);
         let n = self.0.len();
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
@@ -28,20 +25,17 @@ impl FormalArgs {
                    .iter()
                    .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
                    .map(|&(ref _k, ref v)| v) {
-                argscope.define(name, value, false);
+                argscope.define(name, value);
             } else if self.1 && i + 1 == n && args.0.len() > n {
                 let args =
                     args.0[i..].iter().map(|&(_, ref v)| v.clone()).collect();
-                argscope.define(name,
-                                &Value::List(args, ListSeparator::Comma),
-                                false);
+                argscope.define(name, &Value::List(args, ListSeparator::Comma));
             } else {
                 argscope.define(name,
                                 match args.0.get(i) {
                                     Some(&(None, ref v)) => v,
                                     _ => default,
-                                },
-                                false);
+                                });
             }
         }
         argscope
@@ -67,10 +61,10 @@ impl CallArgs {
         CallArgs(v)
     }
 
-    pub fn xyzzy(&self, scope: &mut Scope) -> Self {
+    pub fn xyzzy(&self, scope: &Scope) -> Self {
         CallArgs(self.0
                      .iter()
-                     .map(|&(ref n, ref v)| (n.clone(), scope.evaluate(v)))
+                     .map(|&(ref n, ref v)| (n.clone(), v.evaluate(scope)))
                      .collect())
     }
 }

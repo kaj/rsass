@@ -5,7 +5,7 @@ use std::ascii::AsciiExt;
 use std::fmt;
 use std::io::Write;
 use valueexpression::Value;
-use variablescope::{Scope, ScopeImpl};
+use variablescope::{GlobalScope, Scope, ScopeImpl};
 
 /// Selected target format.
 /// Only formats that are variants of this type are supported by rsass.
@@ -23,7 +23,7 @@ impl OutputStyle {
                       items: &[SassItem],
                       file_context: FileContext)
                       -> Result<Vec<u8>, Error> {
-        let mut globals = ScopeImpl::new();
+        let mut globals = GlobalScope::new();
         let mut result = Vec::new();
         let mut separate = false;
         for item in items {
@@ -75,7 +75,11 @@ impl OutputStyle {
                 if *default {
                     globals.define_default(name, val, *global);
                 } else {
-                    globals.define(name, val, *global);
+                    if *global {
+                        globals.define_global(name, val);
+                    } else {
+                        globals.define(name, val);
+                    }
                 }
             }
             &SassItem::MixinDeclaration { ref name, ref args, ref body } => {
@@ -99,7 +103,7 @@ impl OutputStyle {
                 }
             }
             &SassItem::Import(ref name) => {
-                let name = globals.evaluate(name);
+                let name = name.evaluate(globals);
                 if let Value::Literal(ref x, _) = name {
                     if let Some((sub_context, file)) =
                         file_context.find_file(x.as_ref()) {
@@ -157,7 +161,7 @@ impl OutputStyle {
                 write!(result, "}}")?;
             }
             &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
-                if globals.evaluate(cond).is_true() {
+                if cond.evaluate(globals).is_true() {
                     for item in do_if {
                         self.handle_root_item(item,
                                               globals,
@@ -176,12 +180,12 @@ impl OutputStyle {
                 }
             }
             &SassItem::Each(ref name, ref values, ref body) => {
-                let values = match globals.evaluate(values) {
+                let values = match values.evaluate(globals) {
                     Value::List(v, _) => v,
                     v => vec![v],
                 };
                 for value in values {
-                    globals.define(name, &value, false);
+                    globals.define(name, &value);
                     for item in body {
                         self.handle_root_item(item,
                                               globals,
@@ -198,12 +202,12 @@ impl OutputStyle {
                  inclusive,
                  ref body,
              } => {
-                let from = globals.evaluate(from).integer_value()?;
-                let to = globals.evaluate(to).integer_value()?;
+                let from = from.evaluate(globals).integer_value()?;
+                let to = to.evaluate(globals).integer_value()?;
                 let to = if inclusive { to + 1 } else { to };
                 for value in from..to {
                     let mut scope = ScopeImpl::sub(globals);
-                    scope.define(name, &Value::scalar(value), false);
+                    scope.define(name, &Value::scalar(value));
                     for item in body {
                         self.handle_root_item(item,
                                               &mut scope,
@@ -215,7 +219,7 @@ impl OutputStyle {
             }
             &SassItem::While(ref cond, ref body) => {
                 let mut scope = ScopeImpl::sub(globals);
-                while scope.evaluate(cond).is_true() {
+                while cond.evaluate(&mut scope).is_true() {
                     for item in body {
                         self.handle_root_item(item,
                                               &mut scope,
@@ -304,7 +308,7 @@ impl OutputStyle {
                     }
                 }
                 &SassItem::Property(ref name, ref value, ref important) => {
-                    let v = scope.evaluate(value);
+                    let v = value.evaluate(scope);
                     if !v.is_null() {
                         direct.push(CssBodyItem::Property(name.clone(),
                                                           v,
@@ -314,7 +318,7 @@ impl OutputStyle {
                 &SassItem::NamespaceRule(ref name, ref value, ref body) => {
                     if !value.is_null() {
                         direct.push(CssBodyItem::Property(name.clone(),
-                                                          scope.evaluate(value),
+                                                          value.evaluate(scope),
                                                           false));
                     }
                     let mut t = Vec::new();
@@ -355,7 +359,11 @@ impl OutputStyle {
                     if default {
                         scope.define_default(name, val, global);
                     } else {
-                        scope.define(name, val, global);
+                        if global {
+                            scope.define_global(name, val);
+                        } else {
+                            scope.define(name, val);
+                        }
                     }
                 }
                 &SassItem::MixinDeclaration {
@@ -384,7 +392,7 @@ impl OutputStyle {
                     }
                 }
                 &SassItem::Import(ref name) => {
-                    let name = scope.evaluate(name);
+                    let name = name.evaluate(scope);
                     if let Value::Literal(ref x, _) = name {
                         let (sub_context, file) = file_context.file(x.as_ref());
                         let items = parse_scss_file(&file)?;
@@ -427,7 +435,7 @@ impl OutputStyle {
                     write!(sub, "}}")?;
                 }
                 &SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
-                    if scope.evaluate(cond).is_true() {
+                    if cond.evaluate(scope).is_true() {
                         self.handle_body(direct,
                                          sub,
                                          &mut ScopeImpl::sub(scope),
@@ -446,13 +454,13 @@ impl OutputStyle {
                     }
                 }
                 &SassItem::Each(ref name, ref values, ref body) => {
-                    let values = match scope.evaluate(values) {
+                    let values = match values.evaluate(scope) {
                         Value::List(v, _) => v,
                         v => vec![v],
                     };
                     for value in values {
                         let mut scope = ScopeImpl::sub(scope);
-                        scope.define(name, &value, false);
+                        scope.define(name, &value);
                         self.handle_body(direct,
                                          sub,
                                          &mut scope,
@@ -469,12 +477,12 @@ impl OutputStyle {
                      inclusive,
                      ref body,
                  } => {
-                    let from = scope.evaluate(from).integer_value()?;
-                    let to = scope.evaluate(to).integer_value()?;
+                    let from = from.evaluate(scope).integer_value()?;
+                    let to = to.evaluate(scope).integer_value()?;
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
                         let mut scope = ScopeImpl::sub(scope);
-                        scope.define(name, &Value::scalar(value), false);
+                        scope.define(name, &Value::scalar(value));
                         self.handle_body(direct,
                                          sub,
                                          &mut scope,
@@ -486,7 +494,7 @@ impl OutputStyle {
                 }
                 &SassItem::While(ref cond, ref body) => {
                     let mut scope = ScopeImpl::sub(scope);
-                    while scope.evaluate(cond).is_true() {
+                    while cond.evaluate(&mut scope).is_true() {
                         self.handle_body(direct,
                                          sub,
                                          &mut scope,

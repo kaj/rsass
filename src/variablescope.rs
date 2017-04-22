@@ -3,21 +3,14 @@
 use super::SassItem;
 use formalargs::{CallArgs, FormalArgs};
 use functions::{SassFunction, get_builtin_function};
-use num_traits::identities::Zero;
 use std::collections::BTreeMap;
-use unit::Unit;
-use valueexpression::{Quotes, Value};
-
-pub struct ScopeImpl<'a> {
-    parent: Option<&'a mut Scope>,
-    variables: BTreeMap<String, Value>,
-    mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
-    functions: BTreeMap<String, SassFunction>,
-}
+use std::sync::Mutex;
+use valueexpression::Value;
 
 pub trait Scope {
-    fn define(&mut self, name: &str, val: &Value, global: bool);
+    fn define(&mut self, name: &str, val: &Value);
     fn define_default(&mut self, name: &str, val: &Value, global: bool);
+    fn define_global(&self, name: &str, val: &Value);
     fn get(&self, name: &str) -> Value;
     fn get_global(&self, name: &str) -> Value;
 
@@ -29,99 +22,27 @@ pub trait Scope {
 
     fn define_function(&mut self, name: &str, func: SassFunction);
     fn get_function(&self, name: &str) -> Option<&SassFunction>;
-    fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value>;
+    fn call_function(&self, name: &str, args: &CallArgs) -> Option<Value>;
 
-    fn evaluate(&mut self, val: &Value) -> Value;
-
-    fn eval_body(&mut self, body: &[SassItem]) -> Option<Value>;
-}
-
-impl<'a> Scope for ScopeImpl<'a> {
-    fn define(&mut self, name: &str, val: &Value, global: bool) {
-        let val = self.do_evaluate(val, true);
-        if let (true, Some(parent)) = (global, self.parent.as_mut()) {
-            return parent.define(name, &val, global);
-        }
-        self.variables.insert(name.replace('-', "_"), val);
-    }
-    fn define_default(&mut self, name: &str, val: &Value, global: bool) {
-        if self.get(name) == Value::Null {
-            self.define(name, val, global)
-        }
-    }
-    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)> {
-        self.mixins
-            .get(&name.replace('-', "_"))
-            .cloned()
-            .or_else(|| self.parent.as_ref().and_then(|p| p.get_mixin(name)))
-    }
-    fn get(&self, name: &str) -> Value {
-        let name = name.replace('-', "_");
-        self.variables
-            .get(&name)
-            .cloned()
-            .or_else(|| self.parent.as_ref().map(|p| p.get(&name)))
-            .unwrap_or(Value::Null)
-    }
-    fn get_global(&self, name: &str) -> Value {
-        if let Some(ref p) = self.parent {
-            p.get_global(name)
-        } else {
-            self.variables.get(name).cloned().unwrap_or(Value::Null)
-        }
-    }
-    fn define_mixin(&mut self,
-                    name: &str,
-                    args: &FormalArgs,
-                    body: &[SassItem]) {
-        self.mixins.insert(name.replace('-', "_"), (args.clone(), body.into()));
-    }
-    fn define_function(&mut self, name: &str, func: SassFunction) {
-        self.functions.insert(name.replace('-', "_"), func);
-    }
-    fn get_function(&self, name: &str) -> Option<&SassFunction> {
-        let name = name.replace('-', "_");
-        if let Some(f) = self.functions.get(&name) {
-            return Some(f);
-        }
-        if let Some(ref p) = self.parent {
-            p.get_function(&name)
-        } else {
-            get_builtin_function(&name)
-        }
-    }
-    fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value> {
-        let name = name.replace('-', "_");
-        if let Some(f) = self.functions.get(&name).cloned() {
-            return f.call(self, args).ok();
-        }
-        let a2 = args.xyzzy(self);
-        if let Some(ref mut p) = self.parent {
-            return p.call_function(&name, &a2);
-        }
-        None
-    }
-    fn evaluate(&mut self, val: &Value) -> Value {
-        self.do_evaluate(val, false)
-    }
-
-    fn eval_body(&mut self, body: &[SassItem]) -> Option<Value> {
+    fn eval_body(&mut self, body: &[SassItem]) -> Option<Value>
+        where Self: Sized
+    {
         for b in body {
             let result = match *b {
                 SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
-                    if self.evaluate(cond).is_true() {
+                    if cond.evaluate(self).is_true() {
                         self.eval_body(do_if)
                     } else {
                         self.eval_body(do_else)
                     }
                 }
                 SassItem::Each(ref name, ref values, ref body) => {
-                    let values = match self.evaluate(values) {
+                    let values = match values.evaluate(self) {
                         Value::List(v, _) => v,
                         v => vec![v],
                     };
                     for value in values {
-                        self.define(name, &value, false);
+                        self.define(name, &value);
                         if let Some(r) = self.eval_body(body) {
                             return Some(r);
                         }
@@ -135,11 +56,11 @@ impl<'a> Scope for ScopeImpl<'a> {
                     inclusive,
                     ref body,
                 } => {
-                    let from = self.evaluate(from).integer_value().unwrap();
-                    let to = self.evaluate(to).integer_value().unwrap();
+                    let from = from.evaluate(self).integer_value().unwrap();
+                    let to = to.evaluate(self).integer_value().unwrap();
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
-                        self.define(name, &Value::scalar(value), false);
+                        self.define(name, &Value::scalar(value));
                         if let Some(r) = self.eval_body(body) {
                             return Some(r);
                         }
@@ -155,14 +76,18 @@ impl<'a> Scope for ScopeImpl<'a> {
                     if default {
                         self.define_default(name, val, global);
                     } else {
-                        self.define(name, val, global);
+                        if global {
+                            self.define_global(name, val);
+                        } else {
+                            self.define(name, val);
+                        }
                     }
                     None
                 }
-                SassItem::Return(ref v) => Some(self.evaluate(v)),
+                SassItem::Return(ref v) => Some(v.evaluate(self)),
                 SassItem::While(ref cond, ref body) => {
                     let mut scope = ScopeImpl::sub(self);
-                    while scope.evaluate(cond).is_true() {
+                    while cond.evaluate(&mut scope).is_true() {
                         if let Some(r) = scope.eval_body(body) {
                             return Some(r);
                         }
@@ -182,123 +107,152 @@ impl<'a> Scope for ScopeImpl<'a> {
     }
 }
 
+pub struct ScopeImpl<'a> {
+    parent: &'a Scope,
+    variables: BTreeMap<String, Value>,
+    mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
+    functions: BTreeMap<String, SassFunction>,
+}
+
+impl<'a> Scope for ScopeImpl<'a> {
+    fn define(&mut self, name: &str, val: &Value) {
+        let val = val.do_evaluate(self, true);
+        self.variables.insert(name.replace('-', "_"), val);
+    }
+    fn define_default(&mut self, name: &str, val: &Value, global: bool) {
+        if self.get(name) == Value::Null {
+            if global {
+                self.define_global(name, val)
+            } else {
+                self.define(name, val)
+            }
+        }
+    }
+    fn define_global(&self, name: &str, val: &Value) {
+        let val = val.do_evaluate(self, true);
+        self.parent.define_global(name, &val);
+    }
+    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)> {
+        self.mixins
+            .get(&name.replace('-', "_"))
+            .cloned()
+            .or_else(|| self.parent.get_mixin(name))
+    }
+    fn get(&self, name: &str) -> Value {
+        let name = name.replace('-', "_");
+        self.variables
+            .get(&name)
+            .cloned()
+            .unwrap_or_else(|| self.parent.get(&name))
+    }
+    fn get_global(&self, name: &str) -> Value {
+        self.parent.get_global(name)
+    }
+    fn define_mixin(&mut self,
+                    name: &str,
+                    args: &FormalArgs,
+                    body: &[SassItem]) {
+        let name = name.replace('-', "_");
+        self.mixins.insert(name, (args.clone(), body.into()));
+    }
+    fn define_function(&mut self, name: &str, func: SassFunction) {
+        self.functions.insert(name.replace('-', "_"), func);
+    }
+    fn get_function(&self, name: &str) -> Option<&SassFunction> {
+        let name = name.replace('-', "_");
+        if let Some(f) = self.functions.get(&name) {
+            return Some(f);
+        }
+        self.parent.get_function(&name)
+    }
+    fn call_function(&self, name: &str, args: &CallArgs) -> Option<Value> {
+        let name = name.replace('-', "_");
+        if let Some(f) = self.functions.get(&name).cloned() {
+            return f.call(self, args).ok();
+        }
+        let a2 = args.xyzzy(self);
+        self.parent.call_function(&name, &a2)
+    }
+}
+
 impl<'a> ScopeImpl<'a> {
+    pub fn sub(parent: &'a Scope) -> Self {
+        ScopeImpl {
+            parent: parent,
+            variables: BTreeMap::new(),
+            mixins: BTreeMap::new(),
+            functions: BTreeMap::new(),
+        }
+    }
+}
+
+pub struct GlobalScope {
+    variables: Mutex<BTreeMap<String, Value>>,
+    mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
+    functions: BTreeMap<String, SassFunction>,
+}
+
+impl GlobalScope {
     pub fn new() -> Self {
-        ScopeImpl {
-            parent: None,
-            variables: BTreeMap::new(),
+        GlobalScope {
+            variables: Mutex::new(BTreeMap::new()),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
         }
     }
-    pub fn sub(parent: &'a mut Scope) -> Self {
-        ScopeImpl {
-            parent: Some(parent),
-            variables: BTreeMap::new(),
-            mixins: BTreeMap::new(),
-            functions: BTreeMap::new(),
+}
+
+impl Scope for GlobalScope {
+    fn define(&mut self, name: &str, val: &Value) {
+        self.define_global(name, val)
+    }
+    fn define_default(&mut self, name: &str, val: &Value, _global: bool) {
+        if self.get(name) == Value::Null {
+            self.define(name, val)
         }
     }
-    fn do_evaluate(&mut self, val: &Value, arithmetic: bool) -> Value {
-        match val {
-            &Value::Literal(ref v, ref q) => {
-                Value::Literal(v.clone(), q.clone())
-            }
-            &Value::Paren(ref v) => self.do_evaluate(v, true),
-            &Value::Color(_, _, _, _, _) => val.clone(),
-            &Value::Variable(ref name) => {
-                let v = self.get(name);
-                self.do_evaluate(&v, true)
-            }
-            &Value::List(ref v, ref s) => {
-                Value::List(v.iter()
-                                .map(|v| self.do_evaluate(v, false))
-                                .collect::<Vec<_>>(),
-                            s.clone())
-            }
-            &Value::Call(ref name, ref args) => {
-                match self.call_function(name, args) {
-                    Some(value) => value,
-                    None => {
-                        if let Some(function) = get_builtin_function(name) {
-                            match function.call(&mut *self, args) {
-                                Ok(v) => v,
-                                Err(e) => {
-                                    panic!("Error in function {}: {:?}",
-                                           name, e)
-                                }
-                            }
-                        } else {
-                            Value::Call(name.clone(), args.xyzzy(self))
-                        }
-                    }
-                }
-            }
-            &Value::Div(ref a, ref b, ref space1, ref space2) => {
-                let (a, b) = {
-                    let aa = self.do_evaluate(a, arithmetic);
-                    let b =
-                        self.do_evaluate(b, arithmetic || a.is_calculated());
-                    if !arithmetic && b.is_calculated() && !a.is_calculated() {
-                        (self.do_evaluate(a, true), b)
-                    } else {
-                        (aa, b)
-                    }
-                };
-                if arithmetic || a.is_calculated() || b.is_calculated() {
-                    match (&a, &b) {
-                        (&Value::Color(ref r, ref g, ref b, ref a, _),
-                         &Value::Numeric(ref n, Unit::None, _)) => {
-                            return Value::rgba(r / n, g / n, b / n, *a);
-                        }
-                        (&Value::Numeric(ref av, ref au, _),
-                         &Value::Numeric(ref bv, ref bu, _)) => {
-                            if bv.is_zero() {
-                                return Value::Div(Box::new(a.clone()),
-                                                  Box::new(b.clone()),
-                                                  *space1,
-                                                  *space2);
-                            } else if bu == &Unit::None {
-                                return Value::Numeric(av / bv,
-                                                      au.clone(),
-                                                      true);
-                            } else if au == bu {
-                                return Value::Numeric(av / bv,
-                                                      Unit::None,
-                                                      true);
-                            }
-                        }
-                        _ => (),
-                    }
-                }
-                Value::Literal(format!("{}{}/{}{}",
-                                       a,
-                                       if *space1 && !arithmetic {
-                                           " "
-                                       } else {
-                                           ""
-                                       },
-                                       if *space2 && !arithmetic {
-                                           " "
-                                       } else {
-                                           ""
-                                       },
-                                       b),
-                               Quotes::None)
-            }
-            &Value::Numeric(ref v, ref u, ref is_calculated) => {
-                Value::Numeric(*v, u.clone(), arithmetic || *is_calculated)
-            }
-            &Value::Null => Value::Null,
-            &Value::True => Value::True,
-            &Value::False => Value::False,
-            &Value::BinOp(ref a, ref op, ref b) => {
-                op.eval(self.do_evaluate(a, true), self.do_evaluate(b, true))
-            }
-            &Value::UnaryOp(ref op, ref v) => {
-                Value::UnaryOp(op.clone(), Box::new(self.do_evaluate(v, true)))
-            }
+    fn define_global(&self, name: &str, val: &Value) {
+        let val = val.do_evaluate(self, true);
+        self.variables.lock().unwrap().insert(name.replace('-', "_"), val);
+    }
+    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)> {
+        self.mixins.get(&name.replace('-', "_")).cloned()
+    }
+    fn get(&self, name: &str) -> Value {
+        self.get_global(name)
+    }
+    fn get_global(&self, name: &str) -> Value {
+        let name = name.replace('-', "_");
+        self.variables
+            .lock()
+            .unwrap()
+            .get(&name)
+            .cloned()
+            .unwrap_or(Value::Null)
+    }
+    fn define_mixin(&mut self,
+                    name: &str,
+                    args: &FormalArgs,
+                    body: &[SassItem]) {
+        let name = name.replace('-', "_");
+        self.mixins.insert(name, (args.clone(), body.into()));
+    }
+    fn define_function(&mut self, name: &str, func: SassFunction) {
+        self.functions.insert(name.replace('-', "_"), func);
+    }
+    fn get_function(&self, name: &str) -> Option<&SassFunction> {
+        let name = name.replace('-', "_");
+        if let Some(f) = self.functions.get(&name) {
+            return Some(f);
         }
+        get_builtin_function(&name)
+    }
+    fn call_function(&self, name: &str, args: &CallArgs) -> Option<Value> {
+        let name = name.replace('-', "_");
+        if let Some(f) = self.functions.get(&name).cloned() {
+            return f.call(self, args).ok();
+        }
+        None
     }
 }
 
@@ -603,15 +557,15 @@ pub mod test {
     }
 
     pub fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
-        let mut scope = ScopeImpl::new();
+        let mut scope = GlobalScope::new();
         for &(name, ref val) in s {
             let val = format!("{};", val);
             let (end, value) = value_expression(val.as_bytes()).unwrap();
             assert_eq!(Ok(";"), from_utf8(end));
-            scope.define(name, &value, true)
+            scope.define(name, &value);
         }
         let (end, foo) = value_expression(expression).unwrap();
         assert_eq!(Ok(";"), from_utf8(end));
-        format!("{}", scope.evaluate(&foo))
+        format!("{}", foo.evaluate(&mut scope))
     }
 }
