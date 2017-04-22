@@ -17,10 +17,7 @@ impl FormalArgs {
         FormalArgs(a, is_varargs)
     }
 
-    pub fn eval<'a>(&self,
-                    scope: &'a mut Scope,
-                    args: &CallArgs)
-                    -> ScopeImpl<'a> {
+    pub fn eval<'a>(&self, scope: &'a Scope, args: &CallArgs) -> ScopeImpl<'a> {
         let mut argscope = ScopeImpl::sub(scope);
         let n = self.0.len();
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
@@ -67,7 +64,7 @@ impl CallArgs {
         CallArgs(v)
     }
 
-    pub fn xyzzy(&self, scope: &mut Scope) -> Self {
+    pub fn xyzzy(&self, scope: &Scope) -> Self {
         CallArgs(self.0
                      .iter()
                      .map(|&(ref n, ref v)| (n.clone(), v.evaluate(scope)))

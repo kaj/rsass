@@ -4,11 +4,13 @@ use super::SassItem;
 use formalargs::{CallArgs, FormalArgs};
 use functions::{SassFunction, get_builtin_function};
 use std::collections::BTreeMap;
+use std::sync::Mutex;
 use valueexpression::Value;
 
 pub trait Scope {
     fn define(&mut self, name: &str, val: &Value, global: bool);
     fn define_default(&mut self, name: &str, val: &Value, global: bool);
+    fn define_global(&self, name: &str, val: &Value);
     fn get(&self, name: &str) -> Value;
     fn get_global(&self, name: &str) -> Value;
 
@@ -20,7 +22,7 @@ pub trait Scope {
 
     fn define_function(&mut self, name: &str, func: SassFunction);
     fn get_function(&self, name: &str) -> Option<&SassFunction>;
-    fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value>;
+    fn call_function(&self, name: &str, args: &CallArgs) -> Option<Value>;
 
     fn eval_body(&mut self, body: &[SassItem]) -> Option<Value>
         where Self: Sized
@@ -102,17 +104,19 @@ pub trait Scope {
 }
 
 pub struct ScopeImpl<'a> {
-    parent: &'a mut Scope,
-    data: ScopeData,
+    parent: &'a Scope,
+    variables: BTreeMap<String, Value>,
+    mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
+    functions: BTreeMap<String, SassFunction>,
 }
 
 impl<'a> Scope for ScopeImpl<'a> {
     fn define(&mut self, name: &str, val: &Value, global: bool) {
-        let val = val.do_evaluate(self, true);
         if global {
-            self.parent.define(name, &val, global);
+            self.define_global(name, &val);
         } else {
-            self.data.variables.insert(name.replace('-', "_"), val);
+            let val = val.do_evaluate(self, true);
+            self.variables.insert(name.replace('-', "_"), val);
         }
     }
     fn define_default(&mut self, name: &str, val: &Value, global: bool) {
@@ -120,17 +124,19 @@ impl<'a> Scope for ScopeImpl<'a> {
             self.define(name, val, global)
         }
     }
+    fn define_global(&self, name: &str, val: &Value) {
+        let val = val.do_evaluate(self, true);
+        self.parent.define_global(name, &val);
+    }
     fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)> {
-        self.data
-            .mixins
+        self.mixins
             .get(&name.replace('-', "_"))
             .cloned()
             .or_else(|| self.parent.get_mixin(name))
     }
     fn get(&self, name: &str) -> Value {
         let name = name.replace('-', "_");
-        self.data
-            .variables
+        self.variables
             .get(&name)
             .cloned()
             .unwrap_or_else(|| self.parent.get(&name))
@@ -143,21 +149,21 @@ impl<'a> Scope for ScopeImpl<'a> {
                     args: &FormalArgs,
                     body: &[SassItem]) {
         let name = name.replace('-', "_");
-        self.data.mixins.insert(name, (args.clone(), body.into()));
+        self.mixins.insert(name, (args.clone(), body.into()));
     }
     fn define_function(&mut self, name: &str, func: SassFunction) {
-        self.data.functions.insert(name.replace('-', "_"), func);
+        self.functions.insert(name.replace('-', "_"), func);
     }
     fn get_function(&self, name: &str) -> Option<&SassFunction> {
         let name = name.replace('-', "_");
-        if let Some(f) = self.data.functions.get(&name) {
+        if let Some(f) = self.functions.get(&name) {
             return Some(f);
         }
         self.parent.get_function(&name)
     }
-    fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value> {
+    fn call_function(&self, name: &str, args: &CallArgs) -> Option<Value> {
         let name = name.replace('-', "_");
-        if let Some(f) = self.data.functions.get(&name).cloned() {
+        if let Some(f) = self.functions.get(&name).cloned() {
             return f.call(self, args).ok();
         }
         let a2 = args.xyzzy(self);
@@ -166,81 +172,83 @@ impl<'a> Scope for ScopeImpl<'a> {
 }
 
 impl<'a> ScopeImpl<'a> {
-    pub fn sub(parent: &'a mut Scope) -> Self {
-        ScopeImpl { parent: parent, data: ScopeData::new() }
+    pub fn sub(parent: &'a Scope) -> Self {
+        ScopeImpl {
+            parent: parent,
+            variables: BTreeMap::new(),
+            mixins: BTreeMap::new(),
+            functions: BTreeMap::new(),
+        }
     }
 }
 
 pub struct GlobalScope {
-    data: ScopeData,
+    variables: Mutex<BTreeMap<String, Value>>,
+    mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
+    functions: BTreeMap<String, SassFunction>,
 }
 
 impl GlobalScope {
     pub fn new() -> Self {
-        GlobalScope { data: ScopeData::new() }
+        GlobalScope {
+            variables: Mutex::new(BTreeMap::new()),
+            mixins: BTreeMap::new(),
+            functions: BTreeMap::new(),
+        }
     }
 }
 
 impl Scope for GlobalScope {
     fn define(&mut self, name: &str, val: &Value, _global: bool) {
-        let val = val.do_evaluate(self, true);
-        self.data.variables.insert(name.replace('-', "_"), val);
+        self.define_global(name, val)
     }
     fn define_default(&mut self, name: &str, val: &Value, global: bool) {
         if self.get(name) == Value::Null {
             self.define(name, val, global)
         }
     }
+    fn define_global(&self, name: &str, val: &Value) {
+        let val = val.do_evaluate(self, true);
+        self.variables.lock().unwrap().insert(name.replace('-', "_"), val);
+    }
     fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)> {
-        self.data.mixins.get(&name.replace('-', "_")).cloned()
+        self.mixins.get(&name.replace('-', "_")).cloned()
     }
     fn get(&self, name: &str) -> Value {
         self.get_global(name)
     }
     fn get_global(&self, name: &str) -> Value {
         let name = name.replace('-', "_");
-        self.data.variables.get(&name).cloned().unwrap_or(Value::Null)
+        self.variables
+            .lock()
+            .unwrap()
+            .get(&name)
+            .cloned()
+            .unwrap_or(Value::Null)
     }
     fn define_mixin(&mut self,
                     name: &str,
                     args: &FormalArgs,
                     body: &[SassItem]) {
         let name = name.replace('-', "_");
-        self.data.mixins.insert(name, (args.clone(), body.into()));
+        self.mixins.insert(name, (args.clone(), body.into()));
     }
     fn define_function(&mut self, name: &str, func: SassFunction) {
-        self.data.functions.insert(name.replace('-', "_"), func);
+        self.functions.insert(name.replace('-', "_"), func);
     }
     fn get_function(&self, name: &str) -> Option<&SassFunction> {
         let name = name.replace('-', "_");
-        if let Some(f) = self.data.functions.get(&name) {
+        if let Some(f) = self.functions.get(&name) {
             return Some(f);
         }
         get_builtin_function(&name)
     }
-    fn call_function(&mut self, name: &str, args: &CallArgs) -> Option<Value> {
+    fn call_function(&self, name: &str, args: &CallArgs) -> Option<Value> {
         let name = name.replace('-', "_");
-        if let Some(f) = self.data.functions.get(&name).cloned() {
+        if let Some(f) = self.functions.get(&name).cloned() {
             return f.call(self, args).ok();
         }
         None
-    }
-}
-
-
-struct ScopeData {
-    variables: BTreeMap<String, Value>,
-    mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
-    functions: BTreeMap<String, SassFunction>,
-}
-
-impl ScopeData {
-    fn new() -> Self {
-        ScopeData {
-            variables: BTreeMap::new(),
-            mixins: BTreeMap::new(),
-            functions: BTreeMap::new(),
-        }
     }
 }
 

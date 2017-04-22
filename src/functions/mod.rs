@@ -73,10 +73,7 @@ impl SassFunction {
         SassFunction { args: args, body: FuncImpl::UserDefined(body) }
     }
 
-    pub fn call(&self,
-                scope: &mut Scope,
-                args: &CallArgs)
-                -> Result<Value, Error> {
+    pub fn call(&self, scope: &Scope, args: &CallArgs) -> Result<Value, Error> {
         let mut s = self.args.eval(scope, args);
         match self.body {
             FuncImpl::Builtin(ref body) => body(&s),
