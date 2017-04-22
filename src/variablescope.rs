@@ -8,7 +8,7 @@ use std::sync::Mutex;
 use valueexpression::Value;
 
 pub trait Scope {
-    fn define(&mut self, name: &str, val: &Value, global: bool);
+    fn define(&mut self, name: &str, val: &Value);
     fn define_default(&mut self, name: &str, val: &Value, global: bool);
     fn define_global(&self, name: &str, val: &Value);
     fn get(&self, name: &str) -> Value;
@@ -42,7 +42,7 @@ pub trait Scope {
                         v => vec![v],
                     };
                     for value in values {
-                        self.define(name, &value, false);
+                        self.define(name, &value);
                         if let Some(r) = self.eval_body(body) {
                             return Some(r);
                         }
@@ -60,7 +60,7 @@ pub trait Scope {
                     let to = to.evaluate(self).integer_value().unwrap();
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
-                        self.define(name, &Value::scalar(value), false);
+                        self.define(name, &Value::scalar(value));
                         if let Some(r) = self.eval_body(body) {
                             return Some(r);
                         }
@@ -76,7 +76,11 @@ pub trait Scope {
                     if default {
                         self.define_default(name, val, global);
                     } else {
-                        self.define(name, val, global);
+                        if global {
+                            self.define_global(name, val);
+                        } else {
+                            self.define(name, val);
+                        }
                     }
                     None
                 }
@@ -111,17 +115,17 @@ pub struct ScopeImpl<'a> {
 }
 
 impl<'a> Scope for ScopeImpl<'a> {
-    fn define(&mut self, name: &str, val: &Value, global: bool) {
-        if global {
-            self.define_global(name, &val);
-        } else {
-            let val = val.do_evaluate(self, true);
-            self.variables.insert(name.replace('-', "_"), val);
-        }
+    fn define(&mut self, name: &str, val: &Value) {
+        let val = val.do_evaluate(self, true);
+        self.variables.insert(name.replace('-', "_"), val);
     }
     fn define_default(&mut self, name: &str, val: &Value, global: bool) {
         if self.get(name) == Value::Null {
-            self.define(name, val, global)
+            if global {
+                self.define_global(name, val)
+            } else {
+                self.define(name, val)
+            }
         }
     }
     fn define_global(&self, name: &str, val: &Value) {
@@ -199,12 +203,12 @@ impl GlobalScope {
 }
 
 impl Scope for GlobalScope {
-    fn define(&mut self, name: &str, val: &Value, _global: bool) {
+    fn define(&mut self, name: &str, val: &Value) {
         self.define_global(name, val)
     }
-    fn define_default(&mut self, name: &str, val: &Value, global: bool) {
+    fn define_default(&mut self, name: &str, val: &Value, _global: bool) {
         if self.get(name) == Value::Null {
-            self.define(name, val, global)
+            self.define(name, val)
         }
     }
     fn define_global(&self, name: &str, val: &Value) {
@@ -558,7 +562,7 @@ pub mod test {
             let val = format!("{};", val);
             let (end, value) = value_expression(val.as_bytes()).unwrap();
             assert_eq!(Ok(";"), from_utf8(end));
-            scope.define(name, &value, true)
+            scope.define(name, &value);
         }
         let (end, foo) = value_expression(expression).unwrap();
         assert_eq!(Ok(";"), from_utf8(end));

@@ -75,7 +75,11 @@ impl OutputStyle {
                 if *default {
                     globals.define_default(name, val, *global);
                 } else {
-                    globals.define(name, val, *global);
+                    if *global {
+                        globals.define_global(name, val);
+                    } else {
+                        globals.define(name, val);
+                    }
                 }
             }
             &SassItem::MixinDeclaration { ref name, ref args, ref body } => {
@@ -181,7 +185,7 @@ impl OutputStyle {
                     v => vec![v],
                 };
                 for value in values {
-                    globals.define(name, &value, false);
+                    globals.define(name, &value);
                     for item in body {
                         self.handle_root_item(item,
                                               globals,
@@ -203,7 +207,7 @@ impl OutputStyle {
                 let to = if inclusive { to + 1 } else { to };
                 for value in from..to {
                     let mut scope = ScopeImpl::sub(globals);
-                    scope.define(name, &Value::scalar(value), false);
+                    scope.define(name, &Value::scalar(value));
                     for item in body {
                         self.handle_root_item(item,
                                               &mut scope,
@@ -355,7 +359,11 @@ impl OutputStyle {
                     if default {
                         scope.define_default(name, val, global);
                     } else {
-                        scope.define(name, val, global);
+                        if global {
+                            scope.define_global(name, val);
+                        } else {
+                            scope.define(name, val);
+                        }
                     }
                 }
                 &SassItem::MixinDeclaration {
@@ -452,7 +460,7 @@ impl OutputStyle {
                     };
                     for value in values {
                         let mut scope = ScopeImpl::sub(scope);
-                        scope.define(name, &value, false);
+                        scope.define(name, &value);
                         self.handle_body(direct,
                                          sub,
                                          &mut scope,
@@ -474,7 +482,7 @@ impl OutputStyle {
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
                         let mut scope = ScopeImpl::sub(scope);
-                        scope.define(name, &Value::scalar(value), false);
+                        scope.define(name, &Value::scalar(value));
                         self.handle_body(direct,
                                          sub,
                                          &mut scope,

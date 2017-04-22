@@ -25,20 +25,18 @@ impl FormalArgs {
                    .iter()
                    .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
                    .map(|&(ref _k, ref v)| v) {
-                argscope.define(name, value, false);
+                argscope.define(name, value);
             } else if self.1 && i + 1 == n && args.0.len() > n {
                 let args =
                     args.0[i..].iter().map(|&(_, ref v)| v.clone()).collect();
                 argscope.define(name,
-                                &Value::List(args, ListSeparator::Comma),
-                                false);
+                                &Value::List(args, ListSeparator::Comma));
             } else {
                 argscope.define(name,
                                 match args.0.get(i) {
                                     Some(&(None, ref v)) => v,
                                     _ => default,
-                                },
-                                false);
+                                });
             }
         }
         argscope
