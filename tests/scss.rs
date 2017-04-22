@@ -227,6 +227,13 @@ fn keyword_args_in_functions() {
 }
 
 #[test]
+fn mixin_content_with_no_block() {
+    check(b"@mixin foo {\n  .foo {\n    color: red;\n    @content;\n  }\n}\n\n\
+            div.a {\n  @include foo() {\n    hey: now;\n  }\n}",
+          "div.a .foo {\n  color: red;\n  hey: now;\n}\n");
+}
+
+#[test]
 fn mixins_with_args() {
     check(b"@mixin foo($a, $b) {\n  a: $a;\n  b: $b; }\n\n\
             .foo {@include foo(bar, 12px)}\n",

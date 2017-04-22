@@ -1,5 +1,6 @@
 use super::{FileContext, SassItem, parse_scss_file};
 use error::Error;
+use formalargs::FormalArgs;
 use selectors::Selector;
 use std::ascii::AsciiExt;
 use std::fmt;
@@ -88,9 +89,12 @@ impl OutputStyle {
             &SassItem::FunctionDeclaration { ref name, ref func } => {
                 globals.define_function(name, func.clone());
             }
-            &SassItem::MixinCall { ref name, ref args } => {
+            &SassItem::MixinCall { ref name, ref args, ref body } => {
                 if let Some((m_args, m_body)) = globals.get_mixin(name) {
                     let mut scope = m_args.eval(globals, args);
+                    scope.define_mixin("%%BODY%%",
+                                       &FormalArgs::default(),
+                                       body);
                     for item in m_body {
                         self.handle_root_item(&item,
                                               &mut scope,
@@ -231,6 +235,9 @@ impl OutputStyle {
             }
             &SassItem::Return(_) => {
                 panic!("Return not allowed in global context");
+            }
+            &SassItem::Content => {
+                panic!("@content not allowed in global context");
             }
             &SassItem::None => (),
         }
@@ -376,9 +383,12 @@ impl OutputStyle {
                 &SassItem::FunctionDeclaration { ref name, ref func } => {
                     scope.define_function(name, func.clone());
                 }
-                &SassItem::MixinCall { ref name, ref args } => {
+                &SassItem::MixinCall { ref name, ref args, ref body } => {
                     if let Some((m_args, m_body)) = scope.get_mixin(name) {
                         let mut argscope = m_args.eval(scope, args);
+                        argscope.define_mixin("%%BODY%%",
+                                              &FormalArgs::default(),
+                                              body);
                         self.handle_body(direct,
                                          sub,
                                          &mut argscope,
@@ -389,6 +399,20 @@ impl OutputStyle {
                     } else {
                         direct.push(CssBodyItem::Comment(
                             format!("Unknown mixin {}({:?})", name, args)));
+                    }
+                }
+                &SassItem::Content => {
+                    if let Some((_args, m_body)) = scope.get_mixin("%%BODY%%") {
+                        self.handle_body(direct,
+                                         sub,
+                                         scope,
+                                         selectors,
+                                         &m_body,
+                                         file_context,
+                                         indent)?;
+                    } else {
+                        direct.push(CssBodyItem::Comment(
+                            format!("Mixin @content not found.")));
                     }
                 }
                 &SassItem::Import(ref name) => {
@@ -505,7 +529,7 @@ impl OutputStyle {
                     }
                 }
                 &SassItem::Return(_) => {
-                    panic!("Return not allowed in global context");
+                    panic!("Return not allowed in plain context");
                 }
                 &SassItem::None => (),
             }

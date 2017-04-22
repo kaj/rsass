@@ -222,7 +222,8 @@ pub enum SassItem {
         body: Vec<SassItem>,
     },
     FunctionDeclaration { name: String, func: SassFunction },
-    MixinCall { name: String, args: CallArgs },
+    MixinCall { name: String, args: CallArgs, body: Vec<SassItem> },
+    Content,
     IfStatement(Value, Vec<SassItem>, Vec<SassItem>),
     /// The value may be or evaluate to a list.
     Each(String, Value, Vec<SassItem>),
@@ -242,9 +243,7 @@ named!(rule<SassItem>,
                      do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ()),
                      selector) >>
                  opt!(is_a!(", \t\n")) >>
-                 tag!("{") >>
-                 body: many0!(body_item) >>
-                 tag!("}") >>
+                 body: body_block >>
                  (SassItem::Rule(selectors, body))));
 
 named!(body_item<SassItem>,
@@ -263,6 +262,7 @@ named!(body_item<SassItem>,
            import |
            if_statement |
            return_stmt |
+           content_stmt |
            at_rule |
            value!(SassItem::None,
                   delimited!(opt_spacelike, tag!(";"), opt_spacelike)) |
@@ -277,18 +277,18 @@ named!(mixin_call<SassItem>,
        do_parse!(tag!("@include") >> spacelike >>
                  name: name >> opt_spacelike >>
                  args: opt!(call_args) >> opt_spacelike >>
+                 body: opt!(body_block) >> opt_spacelike >>
                  opt!(tag!(";")) >>
                  (SassItem::MixinCall {
                      name: name,
                      args: args.unwrap_or_default(),
+                     body: body.unwrap_or_default(),
                  })));
 
 named!(at_rule<SassItem>,
        do_parse!(tag!("@") >> // opt_spacelike >>
                  query: is_not!("{}") >>
-                 tag!("{") >>
-                 body: many0!(body_item) >>
-                 tag!("}") >>
+                 body: body_block >>
                  (SassItem::AtRule(from_utf8(query).unwrap().into(),
                                    body))));
 
@@ -298,15 +298,11 @@ named!(if_statement<SassItem>,
 named!(if_statement_inner<SassItem>,
        do_parse!(tag!("if") >> spacelike >>
                  cond: value_expression >> opt_spacelike >>
-                 body: delimited!(preceded!(tag!("{"), opt_spacelike),
-                                  many0!(body_item),
-                                  tag!("}")) >>
+                 body: body_block >>
                  else_body: opt!(complete!(preceded!(
                      delimited!(opt_spacelike, tag!("@else"), opt_spacelike),
                      alt_complete!(
-                         delimited!(preceded!(tag!("{"), opt_spacelike),
-                                    many0!(body_item),
-                                    preceded!(tag!("}"), opt_spacelike)) |
+                         body_block |
                          map!(if_statement_inner, |s| vec![s]))))) >>
                  (SassItem::IfStatement(cond,
                                         body,
@@ -316,9 +312,7 @@ named!(each_loop<SassItem>,
        do_parse!(tag!("@each") >> spacelike >> tag!("$") >>
                  name: name >> spacelike >> tag!("in") >> spacelike >>
                  values: value_expression >> opt_spacelike >>
-                 body: delimited!(preceded!(tag!("{"), opt_spacelike),
-                                  many0!(body_item),
-                                  tag!("}")) >>
+                 body: body_block >>
                  (SassItem::Each(name, values, body))));
 
 named!(for_loop<SassItem>,
@@ -328,10 +322,8 @@ named!(for_loop<SassItem>,
                  from: single_value >> spacelike >>
                  inclusive: alt!(value!(true, tag!("through")) |
                                  value!(false, tag!("to"))) >> spacelike >>
-                 to: single_value >> spacelike >>
-                 body: delimited!(preceded!(tag!("{"), opt_spacelike),
-                                  many0!(body_item),
-                                  tag!("}")) >>
+                 to: single_value >> opt_spacelike >>
+                 body: body_block >>
                  (SassItem::For {
                      name: name,
                      from: from,
@@ -343,9 +335,7 @@ named!(for_loop<SassItem>,
 named!(while_loop<SassItem>,
        do_parse!(tag!("@while") >> spacelike >>
                  cond: value_expression >> spacelike >>
-                 body: delimited!(preceded!(tag!("{"), opt_spacelike),
-                                  many0!(body_item),
-                                  tag!("}")) >>
+                 body: body_block >>
                  (SassItem::While(cond, body))));
 
 #[test]
@@ -360,8 +350,7 @@ fn if_with_no_else() {
                                      Box::new(Value::scalar(1))),
                         vec![SassItem::Rule(
                             vec![selector(b"p").unwrap().1],
-                            vec![SassItem::None,
-                                 SassItem::Property("color".into(),
+                            vec![SassItem::Property("color".into(),
                                                     Value::black(),
                                                     false)]),
                              SassItem::None],
@@ -375,6 +364,7 @@ fn test_mixin_call_noargs() {
                     SassItem::MixinCall {
                         name: "foo".to_string(),
                         args: CallArgs::new(vec![]),
+                        body: vec![],
                     }))
 }
 
@@ -387,6 +377,7 @@ fn test_mixin_call_pos_args() {
                         args: CallArgs::new(
                             vec![(None, string("bar")),
                                  (None, string("baz"))]),
+                        body: vec![],
                     }))
 }
 
@@ -399,6 +390,7 @@ fn test_mixin_call_named_args() {
                         args: CallArgs::new(
                             vec![(Some("x".into()), string("bar")),
                                  (Some("y".into()), string("baz"))]),
+                        body: vec![],
                     }))
 }
 
@@ -406,9 +398,7 @@ named!(mixin_declaration<&[u8], SassItem>,
        do_parse!(tag!("@mixin") >> spacelike >>
                  name: name >> opt_spacelike >>
                  args: opt!(formal_args) >> opt_spacelike >>
-                 tag!("{") >> opt_spacelike >>
-                 body: many0!(body_item) >>
-                 tag!("}") >>
+                 body: body_block >>
                  (SassItem::MixinDeclaration{
                      name: name,
                      args: args.unwrap_or_default(),
@@ -465,8 +455,7 @@ fn test_mixin_declaration_default_and_subrules() {
                        SassItem::Rule(
                            vec![selector(b"foo").unwrap().1,
                                 selector(b"bar").unwrap().1],
-                           vec![SassItem::None,
-                                SassItem::Property(
+                           vec![SassItem::Property(
                                     "property".into(),
                                     Value::Variable("b".into()),
                                     false)]),
@@ -478,9 +467,7 @@ named!(function_declaration<SassItem>,
        do_parse!(tag!("@function") >> spacelike >>
                  name: name >> opt_spacelike >>
                  args: formal_args >> opt_spacelike >>
-                 tag!("{") >> opt_spacelike >>
-                 body: many0!(body_item) >>
-                 tag!("}") >>
+                 body: body_block >>
                  (SassItem::FunctionDeclaration {
                      name: name,
                      func: SassFunction::new(args, body),
@@ -491,6 +478,11 @@ named!(return_stmt<SassItem>,
                  v: value_expression >> opt_spacelike >>
                  opt!(tag!(";")) >>
                  (SassItem::Return(v))));
+
+named!(content_stmt<SassItem>,
+       do_parse!(tag!("@content") >> opt_spacelike >>
+                 opt!(tag!(";")) >>
+                 (SassItem::Content)));
 
 named!(property<&[u8], SassItem>,
        do_parse!(opt_spacelike >>
@@ -506,9 +498,7 @@ named!(namespace_rule<SassItem>,
                  n1: name >> opt_spacelike >>
                  tag!(":") >> opt_spacelike >>
                  value: opt!(value_expression) >> opt_spacelike >>
-                 tag!("{") >>
-                 body: many0!(body_item) >> opt_spacelike >>
-                 tag!("}") >>
+                 body: body_block >>
                  (SassItem::NamespaceRule(n1,
                                           value.unwrap_or(Value::Null),
                                           body))));
@@ -518,6 +508,12 @@ named!(opt_important<bool>,
                            opt_spacelike >> tag!("important") >>
                            ())),
             |o: Option<()>| o.is_some()));
+
+named!(body_block<Vec<SassItem>>,
+       delimited!(preceded!(tag!("{"), opt_spacelike),
+                  many0!(body_item),
+                  tag!("}")));
+
 #[test]
 fn test_simple_property() {
     use num_rational::Rational;
