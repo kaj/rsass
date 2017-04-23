@@ -141,9 +141,9 @@ impl fmt::Display for Selector {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         for p in &self.0 {
             if out.alternate() {
-                write!(out, "{}", p)?;
-            } else {
                 write!(out, "{:#}", p)?;
+            } else {
+                write!(out, "{}", p)?;
             }
         }
         Ok(())
@@ -157,9 +157,9 @@ impl fmt::Display for SelectorPart {
             SelectorPart::Descendant => write!(out, " "),
             SelectorPart::RelOp(ref c) => {
                 if out.alternate() {
-                    write!(out, " {} ", *c as char)
-                } else {
                     write!(out, "{}", *c as char)
+                } else {
+                    write!(out, " {} ", *c as char)
                 }
             }
             SelectorPart::Attribute { ref name, ref op, ref val } => {
