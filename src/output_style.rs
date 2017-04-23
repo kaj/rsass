@@ -43,7 +43,7 @@ impl OutputStyle {
             let mut r2 = vec![];
             if self.is_compressed() {
                 // Byte order mark U+FEFF as utf-8.
-                r2.extend_from_slice(b"\xEF\xBB\xBF");
+                r2.extend_from_slice("\u{feff}".as_bytes());
             } else {
                 r2.extend_from_slice(b"@charset \"UTF-8\";\n");
             }
