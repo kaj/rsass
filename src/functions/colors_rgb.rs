@@ -4,7 +4,6 @@ use num_traits::One;
 use std::collections::BTreeMap;
 use unit::Unit;
 use valueexpression::Value;
-use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, rgb(red, green, blue), |s| {
@@ -13,7 +12,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                        to_int(s.get("blue"))?,
                        Rational::one()))
     });
-    def!(f, rgba(red, green, blue, alpha, color), |s: &Scope| {
+    def!(f, rgba(red, green, blue, alpha, color), |s| {
         let a = s.get("alpha");
         let red = s.get("red");
         let red = if red.is_null() { s.get("color") } else { red };
@@ -30,15 +29,15 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     fn num(v: &Rational) -> Result<Value, Error> {
         Ok(Value::Numeric(*v, Unit::None, true))
     }
-    def!(f, red(color), |s: &Scope| match &s.get("color") {
+    def!(f, red(color), |s| match &s.get("color") {
         &Value::Color(ref red, _, _, _, _) => num(red),
         value => Err(badarg("color", value)),
     });
-    def!(f, green(color), |s: &Scope| match &s.get("color") {
+    def!(f, green(color), |s| match &s.get("color") {
         &Value::Color(_, ref green, _, _, _) => num(green),
         value => Err(badarg("color", value)),
     });
-    def!(f, blue(color), |s: &Scope| match &s.get("color") {
+    def!(f, blue(color), |s| match &s.get("color") {
         &Value::Color(_, _, ref blue, _, _) => num(blue),
         value => Err(badarg("color", value)),
     });
@@ -69,7 +68,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                         &[&color1, &color2, &weight]))
         }
     });
-    def!(f, invert(color), |s: &Scope| match &s.get("color") {
+    def!(f, invert(color), |s| match &s.get("color") {
         &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
             let ff = Rational::new(255, 1);
             Ok(Value::rgba(ff - red, ff - green, ff - blue, *alpha))

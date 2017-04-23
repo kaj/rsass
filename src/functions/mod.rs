@@ -136,7 +136,7 @@ fn test_rgb() {
                FUNCTIONS
                    .get("rgb")
                    .unwrap()
-                   .call(&mut GlobalScope::new(),
+                   .call(&GlobalScope::new(),
                          &call_args(b"(17, 0, 225)").unwrap().1))
 }
 
