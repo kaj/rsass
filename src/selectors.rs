@@ -2,6 +2,7 @@ use nom::is_alphanumeric;
 use parseutil::{opt_spacelike, spacelike};
 use std::fmt;
 use std::str::from_utf8;
+use std::io::Write;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Selector(Vec<SelectorPart>);
@@ -139,14 +140,24 @@ impl SelectorPart {
 
 impl fmt::Display for Selector {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        // Note: There should be smarter whitespace-handling here, avoiding
+        // the need to clean up afterwards.
+        let mut buf = vec![];
         for p in &self.0 {
             if out.alternate() {
-                write!(out, "{:#}", p)?;
+                write!(&mut buf, "{:#}", p).map_err(|_| fmt::Error)?;
             } else {
-                write!(out, "{}", p)?;
+                write!(&mut buf, "{}", p).map_err(|_| fmt::Error)?;
             }
         }
-        Ok(())
+        while buf.last() == Some(&b' ') {
+            buf.pop();
+        }
+        while buf.first() == Some(&b' ') {
+            buf.remove(0);
+        }
+        let buf = String::from_utf8(buf).map_err(|_| fmt::Error)?;
+        out.write_str(&buf.replace("  ", " "))
     }
 }
 

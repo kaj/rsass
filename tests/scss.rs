@@ -77,6 +77,12 @@ fn css_block_directive_with_semicolon() {
 }
 
 #[test]
+fn css_selector_hacks() {
+    check(b"> > E {\n  a: b; }\n",
+          "> > E {\n  a: b;\n}\n")
+}
+
+#[test]
 fn css_unary_ops() {
     check(b"foo {\n  a: -0.5em;\n  b: 0.5em;\n  \
             c: -foo(12px);\n  d: +foo(12px); }\n",
