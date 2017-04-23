@@ -1,6 +1,11 @@
+use super::get_builtin_function;
+use formalargs::CallArgs;
 use functions::{SassFunction, badarg, badargs};
 use std::collections::BTreeMap;
+use std::io::{Write, stderr};
+use std::sync::{ONCE_INIT, Once};
 use valueexpression::{Quotes, Value};
+use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, variable_exists(name), |s| match &s.get("name") {
@@ -43,6 +48,30 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
             (v1, v2) => Err(badargs(&["number", "number"], &[v1, v2])),
         }
+    });
+    def_va!(f, call(name, args), |s: &Scope| match &s.get("name") {
+        &Value::Literal(ref name, _) => {
+            // Ok, the spec says using a string for call is deprecated.
+            // Even though I have no other way implemented ...
+            static WARN: Once = ONCE_INIT;
+            WARN.call_once(|| {
+                writeln!(&mut stderr(),
+                         "DEPRECATION WARNING: Passing a string to call() \
+                          is deprecated and will be illegal").unwrap();
+            });
+            let args = CallArgs::from_value(s.get("args"));
+            match s.call_function(name, &args) {
+                Some(value) => Ok(value),
+                None => {
+                    if let Some(function) = get_builtin_function(name) {
+                        function.call(s, &args)
+                    } else {
+                        Ok(Value::Call(name.clone(), args.xyzzy(s)))
+                    }
+                }
+            }
+        }
+        v => Err(badarg("string", v)),
     });
 }
 

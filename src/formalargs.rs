@@ -61,6 +61,15 @@ impl CallArgs {
         CallArgs(v)
     }
 
+    pub fn from_value(v: Value) -> Self {
+        match v {
+            Value::List(v, _) => {
+                CallArgs(v.into_iter().map(|v| (None, v)).collect())
+            }
+            v => CallArgs(vec![(None, v)]),
+        }
+    }
+
     pub fn xyzzy(&self, scope: &Scope) -> Self {
         CallArgs(self.0
                      .iter()

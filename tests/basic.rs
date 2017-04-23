@@ -1101,6 +1101,17 @@ fn t59_if_expression() {
 
 }
 
+#[test]
+fn t60_call_3_5() {
+    check(b"@function foobar() {\n  @return foobar;\n}\n\n\
+            @function fudge($str) {\n  @return \"assets/fudge/\" + $str;\n}\n\n\
+            body {\n  display: call(foobar); \n  \
+            display: call(min, 1,3,5,7);\n  display: call(min, 5);\n  \
+            display: call(max, 10,3,5,7);\n  color: fudge(\"blah\");\n}",
+          "body {\n  display: foobar;\n  display: 1;\n  display: 5;\n  \
+           display: 10;\n  color: \"assets/fudge/blah\";\n}\n")
+}
+
 /// No proper spec-test for str-slice, this is from
 /// `spec/libsass-closed-issues/issue_760/input.scss`
 #[test]
