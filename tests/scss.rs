@@ -78,8 +78,7 @@ fn css_block_directive_with_semicolon() {
 
 #[test]
 fn css_selector_hacks() {
-    check(b"> > E {\n  a: b; }\n",
-          "> > E {\n  a: b;\n}\n")
+    check(b"> > E {\n  a: b; }\n", "> > E {\n  a: b;\n}\n")
 }
 
 #[test]

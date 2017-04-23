@@ -118,23 +118,23 @@ impl Value {
     }
     // TODO Maybe this should be private?
     pub fn do_evaluate(&self, scope: &Scope, arithmetic: bool) -> Value {
-        match self {
-            &Value::Literal(ref v, ref q) => {
+        match *self {
+            Value::Literal(ref v, ref q) => {
                 Value::Literal(v.clone(), q.clone())
             }
-            &Value::Paren(ref v) => v.do_evaluate(scope, true),
-            &Value::Color(_, _, _, _, _) => self.clone(),
-            &Value::Variable(ref name) => {
+            Value::Paren(ref v) => v.do_evaluate(scope, true),
+            Value::Color(_, _, _, _, _) => self.clone(),
+            Value::Variable(ref name) => {
                 let v = scope.get(name);
                 v.do_evaluate(scope, true)
             }
-            &Value::List(ref v, ref s) => {
+            Value::List(ref v, ref s) => {
                 Value::List(v.iter()
                                 .map(|v| v.do_evaluate(scope, false))
                                 .collect::<Vec<_>>(),
                             s.clone())
             }
-            &Value::Call(ref name, ref args) => {
+            Value::Call(ref name, ref args) => {
                 match scope.call_function(name, args) {
                     Some(value) => value,
                     None => {
@@ -152,7 +152,7 @@ impl Value {
                     }
                 }
             }
-            &Value::Div(ref a, ref b, ref space1, ref space2) => {
+            Value::Div(ref a, ref b, ref space1, ref space2) => {
                 let (a, b) = {
                     let aa = a.do_evaluate(scope, arithmetic);
                     let b =
@@ -167,7 +167,7 @@ impl Value {
                     match (&a, &b) {
                         (&Value::Color(ref r, ref g, ref b, ref a, _),
                          &Value::Numeric(ref n, Unit::None, _)) => {
-                            return Value::rgba(r / n, g / n, b / n, *a);
+                            Value::rgba(r / n, g / n, b / n, *a)
                         }
                         (&Value::Numeric(ref av, ref au, _),
                          &Value::Numeric(ref bv, ref bu, _)) => {
@@ -198,16 +198,16 @@ impl Value {
                     Value::Div(Box::new(a), Box::new(b), *space1, *space2)
                 }
             }
-            &Value::Numeric(ref v, ref u, ref is_calculated) => {
+            Value::Numeric(ref v, ref u, ref is_calculated) => {
                 Value::Numeric(*v, u.clone(), arithmetic || *is_calculated)
             }
-            &Value::Null => Value::Null,
-            &Value::True => Value::True,
-            &Value::False => Value::False,
-            &Value::BinOp(ref a, ref op, ref b) => {
+            Value::Null => Value::Null,
+            Value::True => Value::True,
+            Value::False => Value::False,
+            Value::BinOp(ref a, ref op, ref b) => {
                 op.eval(a.do_evaluate(scope, true), b.do_evaluate(scope, true))
             }
-            &Value::UnaryOp(ref op, ref v) => {
+            Value::UnaryOp(ref op, ref v) => {
                 Value::UnaryOp(op.clone(), Box::new(v.do_evaluate(scope, true)))
             }
         }
@@ -313,11 +313,11 @@ impl fmt::Display for Value {
                              format!("{}", v)
                          })
                     .collect::<Vec<_>>()
-                    .join(match sep {
-                              &ListSeparator::Comma => {
+                    .join(match *sep {
+                              ListSeparator::Comma => {
                                   if out.alternate() { "," } else { ", " }
                               }
-                              &ListSeparator::Space => " ",
+                              ListSeparator::Space => " ",
                           });
                 write!(out, "{}", t)
             }
@@ -510,7 +510,7 @@ named!(pub single_value<&[u8], Value>,
                              let d = Rational::from_str(
                                  from_utf8(r).unwrap()).unwrap() +
                                  d.map(decimals_to_rational)
-                                 .unwrap_or(Rational::zero());
+                                 .unwrap_or_else(Rational::zero);
                              if sign == Some(b"-") { -d } else { d }
                          }
                          , u.unwrap_or(Unit::None), false))) |

@@ -135,22 +135,21 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
 }
 
-pub fn hsla_to_rgba(h: Rational,
-                    s: Rational,
-                    l: Rational,
+pub fn hsla_to_rgba(hue: Rational,
+                    sat: Rational,
+                    lig: Rational,
                     a: Rational)
                     -> Value {
-    let (r, g, b) = hsl_to_rgb(h, s, l);
+    let (r, g, b) = hsl_to_rgb(hue, sat, lig);
     Value::rgba(frac_to_int(r), frac_to_int(g), frac_to_int(b), a)
 }
 
 /// Convert hue (degrees) / sat (0 .. 1) / lighness (0 .. 1) ro rgb (0 .. 1)
-fn hsl_to_rgb(h: Rational,
-              s: Rational,
+fn hsl_to_rgb(hue: Rational,
+              sat: Rational,
               l: Rational)
               -> (Rational, Rational, Rational) {
-    let one = Rational::from_integer(1);
-    if s.is_zero() {
+    if sat.is_zero() {
         (l, l, l)
     } else {
         fn hue2rgb(p: Rational, q: Rational, t: Rational) -> Rational {
@@ -167,26 +166,26 @@ fn hsl_to_rgb(h: Rational,
             }
         }
         let q = if l < Rational::new(1, 2) {
-            l * (one + s)
+            l * (Rational::one() + sat)
         } else {
-            l + s - l * s
+            l + sat - l * sat
         };
         let p = Rational::from_integer(2) * l - q;
 
-        (hue2rgb(p, q, h + Rational::new(1, 3)),
-         hue2rgb(p, q, h),
-         hue2rgb(p, q, h - Rational::new(1, 3)))
+        (hue2rgb(p, q, hue + Rational::new(1, 3)),
+         hue2rgb(p, q, hue),
+         hue2rgb(p, q, hue - Rational::new(1, 3)))
     }
 }
 
 /// Convert rgb (0 .. 255) to hue (degrees) / sat (0 .. 1) / lighness (0 .. 1)
-pub fn rgb_to_hsl(r: &Rational,
-                  g: &Rational,
-                  b: &Rational)
+pub fn rgb_to_hsl(red: &Rational,
+                  green: &Rational,
+                  blue: &Rational)
                   -> (Rational, Rational, Rational) {
     let ff = Rational::from_integer(255);
-    let (r, g, b) = (r / ff, g / ff, b / ff);
-    let (max, min, largest) = max_min_largest(r, g, b);
+    let (red, green, blue) = (red / ff, green / ff, blue / ff);
+    let (max, min, largest) = max_min_largest(red, green, blue);
     let half = Rational::new(1, 2);
     let mid = (max + min) * half;
 
@@ -201,15 +200,15 @@ pub fn rgb_to_hsl(r: &Rational,
         };
         let h = match largest {
             0 => {
-                (g - b) / d +
-                if g < b {
+                (green - blue) / d +
+                if green < blue {
                     Rational::from_integer(6)
                 } else {
                     Rational::zero()
                 }
             }
-            1 => (b - r) / d + Rational::from_integer(2),
-            _ => (r - g) / d + Rational::from_integer(4),
+            1 => (blue - red) / d + Rational::from_integer(2),
+            _ => (red - green) / d + Rational::from_integer(4),
         } * Rational::new(360, 6);
         (h, s, mid)
     }

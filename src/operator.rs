@@ -121,18 +121,18 @@ impl fmt::Display for Operator {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         write!(out,
                "{}",
-               match self {
-                   &Operator::And => "and",
-                   &Operator::Or => "or",
-                   &Operator::Equal => "==",
-                   &Operator::NotEqual => "!=",
-                   &Operator::Greater => ">",
-                   &Operator::GreaterE => ">=",
-                   &Operator::Lesser => "<",
-                   &Operator::LesserE => "<=",
-                   &Operator::Plus => "+",
-                   &Operator::Minus => "-",
-                   &Operator::Multiply => "*",
+               match *self {
+                   Operator::And => "and",
+                   Operator::Or => "or",
+                   Operator::Equal => "==",
+                   Operator::NotEqual => "!=",
+                   Operator::Greater => ">",
+                   Operator::GreaterE => ">=",
+                   Operator::Lesser => "<",
+                   Operator::LesserE => "<=",
+                   Operator::Plus => "+",
+                   Operator::Minus => "-",
+                   Operator::Multiply => "*",
                })
     }
 }

@@ -36,7 +36,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                             c_add(*alpha, a_adj)?))
         }
     }
-             v => Err(badarg("color", &v)),
+             v => Err(badarg("color", v)),
          });
     def!(f,
          scale_color(color,
@@ -66,7 +66,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                             comb(*alpha, a_adj)?))
         }
     }
-             v => Err(badarg("color", &v)),
+             v => Err(badarg("color", v)),
          });
 
     fn opacity(color: Value) -> Result<Value, Error> {
@@ -133,13 +133,15 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
              v => Err(badarg("color", &v)),
          });
     def!(f, ie_hex_str(color), |s| match s.get("color") {
-        Value::Color(r, g, b, a, _) => {
+        Value::Color(r, g, b, alpha, _) => {
             let r = r.round().to_integer() as u8;
             let g = g.round().to_integer() as u8;
             let b = b.round().to_integer() as u8;
-            let a = (a * Rational::new(255, 1)).round().to_integer() as u8;
-            Ok(Value::Literal(format!("#{:02X}{:02X}{:02X}{:02X}", a, r, g, b),
-                              Quotes::None))
+            let alpha =
+                (alpha * Rational::new(255, 1)).round().to_integer() as u8;
+            Ok(Value::Literal(
+                format!("#{:02X}{:02X}{:02X}{:02X}", alpha, r, g, b),
+                Quotes::None))
         }
         v => Err(badarg("color", &v)),
     });

@@ -21,11 +21,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
               Value::Literal(insert, _),
               Value::Numeric(index, Unit::None, _)) => {
         let i = index_to_rust(index, &s);
-        let mut c = s.chars();
+        let mut s = s.chars();
         Ok(Value::Literal(format!("{}{}{}",
-                                  c.by_ref().take(i).collect::<String>(),
+                                  s.by_ref().take(i).collect::<String>(),
                                   insert,
-                                  c.collect::<String>()),
+                                  s.collect::<String>()),
                           q))
     }
              (s, i, v) => {

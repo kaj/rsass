@@ -1,8 +1,8 @@
 use nom::is_alphanumeric;
 use parseutil::{opt_spacelike, spacelike};
 use std::fmt;
-use std::str::from_utf8;
 use std::io::Write;
+use std::str::from_utf8;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Selector(Vec<SelectorPart>);
@@ -128,11 +128,11 @@ fn is_selector_char(chr: u8) -> bool {
 impl SelectorPart {
     fn is_operator(&self) -> bool {
         match *self {
-            SelectorPart::Simple(_) => false,
-            SelectorPart::Descendant => true,
+            SelectorPart::Descendant |
             SelectorPart::RelOp(_) => true,
-            SelectorPart::Attribute { .. } => false,
-            SelectorPart::Pseudo { .. } => false,
+            SelectorPart::Simple(_) |
+            SelectorPart::Attribute { .. } |
+            SelectorPart::Pseudo { .. } |
             SelectorPart::BackRef => false,
         }
     }

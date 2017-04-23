@@ -75,19 +75,17 @@ pub trait Scope {
                 } => {
                     if default {
                         self.define_default(name, val, global);
+                    } else if global {
+                        self.define_global(name, val);
                     } else {
-                        if global {
-                            self.define_global(name, val);
-                        } else {
-                            self.define(name, val);
-                        }
+                        self.define(name, val);
                     }
                     None
                 }
                 SassItem::Return(ref v) => Some(v.evaluate(self)),
                 SassItem::While(ref cond, ref body) => {
                     let mut scope = ScopeImpl::sub(self);
-                    while cond.evaluate(&mut scope).is_true() {
+                    while cond.evaluate(&scope).is_true() {
                         if let Some(r) = scope.eval_body(body) {
                             return Some(r);
                         }

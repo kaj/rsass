@@ -53,7 +53,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             let w = if wu == &Unit::Percent {
                 w / Rational::from_integer(100)
             } else {
-                w.clone()
+                *w
             };
             let one = Rational::one();
             let w2 = one - (one - w * a1) * a2;
@@ -70,9 +70,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     });
     def!(f, invert(color), |s: &Scope| match &s.get("color") {
-        &Value::Color(ref r, ref g, ref b, ref a, _) => {
+        &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
             let ff = Rational::new(255, 1);
-            Ok(Value::rgba(ff - r, ff - g, ff - b, *a))
+            Ok(Value::rgba(ff - red, ff - green, ff - blue, *alpha))
         }
         value => Err(badarg("color", value)),
     });
