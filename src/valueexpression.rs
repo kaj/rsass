@@ -213,8 +213,10 @@ impl Value {
                 Value::UnaryOp(op.clone(), Box::new(v.do_evaluate(scope, true)))
             }
             Value::Interpolation(ref v) => {
-                Value::Literal(format!("{}", v.do_evaluate(scope, true)),
-                               Quotes::None)
+                match v.do_evaluate(scope, true) {
+                    Value::Literal(s, _) => Value::Literal(s, Quotes::None),
+                    v => Value::Literal(format!("{}", v), Quotes::None),
+                }
             }
         }
     }
@@ -563,11 +565,7 @@ named!(pub single_value<&[u8], Value>,
            unquoted_literal |
            map!(tag!("\"\""),
                 |_| Value::Literal("".into(), Quotes::Double)) |
-           map!(delimited!(tag!("\""),
-                           escaped!(is_not!("\\\""), '\\', one_of!("\"\\ ")),
-                           tag!("\"")),
-                |s| Value::Literal(unescape(from_utf8(s).unwrap()),
-                                   Quotes::Double)) |
+           quoted_string |
            map!(tag!("''"),
                 |_| Value::Literal("".into(), Quotes::Single)) |
            map!(delimited!(tag!("'"),
@@ -606,6 +604,28 @@ named!(unquoted_with_interpolation<Value>,
        do_parse!(a: unquoted_literal >>
                  b: interpolation >>
                  (Value::BinOp(Box::new(a), Operator::Plus, Box::new(b)))));
+
+// a quoted string may contain interpolations
+named!(quoted_string<Value>,
+       do_parse!(tag!("\"") >>
+                 first: simple_dqs_part >>
+                 all: fold_many0!(
+                     alt!(interpolation | nonempty_dqs_part),
+                     first,
+                     |a, b| {
+                         Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
+                     }) >>
+                 tag!("\"") >> (all)));
+
+named!(simple_dqs_part<Value>,
+       map!(escaped!(is_not!("\\\"#"), '\\', one_of!("\"\\ ")),
+            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
+                               Quotes::Double)));
+named!(nonempty_dqs_part<Value>,
+       map!(verify!(escaped!(is_not!("\\\"#"), '\\', one_of!("\"\\ ")),
+                    |s: &[u8]| s.len() > 0),
+            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
+                               Quotes::Double)));
 
 fn decimals_to_rational(d: &[u8]) -> Rational {
     Rational::new(from_utf8(d).unwrap().parse().unwrap(),
