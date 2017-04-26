@@ -566,7 +566,14 @@ fn t22_colors_with_alpha() {
             goo: rgba(64, 0, 191, 0.75);\n  boo: #edcba9;\n}\n")
 }
 
-// TODO Implement tests 23 ...
+#[test]
+fn t23_basic_value_interpolation_4_0() {
+    check(b"div {\n  a: hello#{world};\n  a: hello #{world};\n  \
+            b: 12#{3};\n  b: type-of(12#{3});\n  b: #{12 + 111};\n  \
+            b: type-of(#{12 + 111});\n}",
+          "div {\n  a: helloworld;\n  a: hello world;\n  \
+           b: 12 3;\n  b: list;\n  b: 123;\n  b: string;\n}\n")
+}
 
 #[test]
 fn t24_namespace_properties() {
