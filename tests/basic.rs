@@ -735,7 +735,18 @@ fn t36_extra_commas_in_selectors() {
           "div, span {\n  color: red;\n}\n")
 }
 
-// TODO Implement test 37
+#[test]
+fn t37_url_expressions() {
+    check(b"$x: true;\n$file-1x: \"budge.png\";\n\n\
+            @function fudge($str) {\n  @return \"assets/fudge/\" + $str;\n}\n\n\
+            div {\n  blah: url(foo + bar);\n  blah: url(fn(\"s\"));\n  \
+            blah: url(if(true, \"red.png\", \"blue.png\"));\n  \
+            blah: url(hello-#{world}.png);\n  \
+            blah: url(if($x, fudge(\"#{$file-1x}\"), \"#{$file-1x}\"));\n}",
+          "div {\n  blah: url(foobar);\n  blah: url(fn(\"s\"));\n  \
+           blah: url(\"red.png\");\n  blah: url(hello-world.png);\n  \
+           blah: url(\"assets/fudge/budge.png\");\n}\n")
+}
 
 #[test]
 fn t38_expressions_in_at_directives() {
