@@ -561,7 +561,6 @@ named!(pub single_value<&[u8], Value>,
                                                 from_utf8(b).unwrap()))))) |
            do_parse!(name: name >> args: call_args >>
                      (Value::Call(name, args))) |
-           unquoted_with_interpolation |
            unquoted_literal |
            map!(tag!("\"\""),
                 |_| Value::Literal("".into(), Quotes::Double)) |
@@ -586,6 +585,27 @@ named!(interpolation<Value>,
             |v| Value::Interpolation(Box::new(v))));
 
 named!(unquoted_literal<Value>,
+       do_parse!(first: unquoted_literal_part >>
+                 all: fold_many0!(
+                     alt!(interpolation | unquoted_literal_part |
+                          value!(Value::Literal("//".into(), Quotes::None),
+                                 tag!("//")) |
+                          value!(Value::Literal("=".into(), Quotes::None),
+                                 tag!("=")) |
+                          value!(Value::Literal(",".into(), Quotes::None),
+                                 terminated!(tag!(","),
+                                             peek!(unquoted_literal_part))) |
+                          value!(Value::Literal("+".into(), Quotes::None),
+                                 terminated!(tag!("+"),
+                                             peek!(unquoted_literal_part)))
+                          ),
+                     first,
+                     |a, b| {
+                         Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
+                     }) >>
+                 (all)));
+
+named!(unquoted_literal_part<Value>,
        map!(is_not!("+*/=;,$(){{}}! \n\t'\"#"), |val| {
            let val = from_utf8(val).unwrap().to_string();
            if let Some((r, g, b)) = name_to_rgb(&val) {
@@ -594,12 +614,6 @@ named!(unquoted_literal<Value>,
                Value::Literal(val, Quotes::None)
            }
        }));
-
-named!(unquoted_with_interpolation<Value>,
-       // TODO Should handle any combination?
-       do_parse!(a: unquoted_literal >>
-                 b: interpolation >>
-                 (Value::BinOp(Box::new(a), Operator::Plus, Box::new(b)))));
 
 // a quoted string may contain interpolations
 named!(quoted_string<Value>,
