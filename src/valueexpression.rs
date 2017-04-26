@@ -568,11 +568,7 @@ named!(pub single_value<&[u8], Value>,
            quoted_string |
            map!(tag!("''"),
                 |_| Value::Literal("".into(), Quotes::Single)) |
-           map!(delimited!(tag!("'"),
-                           escaped!(is_not!("\\'"), '\\', one_of!("'\\")),
-                           tag!("'")),
-                |s| Value::Literal(unescape(from_utf8(s).unwrap()),
-                                   Quotes::Single)) |
+           singlequoted_string |
            map!(preceded!(tag!("-"), single_value),
                 |s| Value::UnaryOp(Operator::Minus, Box::new(s))) |
            map!(preceded!(tag!("+"), single_value),
@@ -618,14 +614,36 @@ named!(quoted_string<Value>,
                  tag!("\"") >> (all)));
 
 named!(simple_dqs_part<Value>,
-       map!(escaped!(is_not!("\\\"#"), '\\', one_of!("\"\\ ")),
+       map!(escaped!(is_not!("\\\"#"), '\\', take!(1)),
             |s| Value::Literal(unescape(from_utf8(s).unwrap()),
                                Quotes::Double)));
 named!(nonempty_dqs_part<Value>,
-       map!(verify!(escaped!(is_not!("\\\"#"), '\\', one_of!("\"\\ ")),
+       map!(verify!(escaped!(is_not!("\\\"#"), '\\', take!(1)),
                     |s: &[u8]| s.len() > 0),
             |s| Value::Literal(unescape(from_utf8(s).unwrap()),
                                Quotes::Double)));
+
+// a quoted string may contain interpolations
+named!(singlequoted_string<Value>,
+       do_parse!(tag!("'") >>
+                 first: simple_sqs_part >>
+                 all: fold_many0!(
+                     alt!(interpolation | nonempty_sqs_part),
+                     first,
+                     |a, b| {
+                         Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
+                     }) >>
+                 tag!("'") >> (all)));
+
+named!(simple_sqs_part<Value>,
+       map!(escaped!(is_not!("\\'#"), '\\', take!(1)),
+            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
+                               Quotes::Single)));
+named!(nonempty_sqs_part<Value>,
+       map!(verify!(escaped!(is_not!("\\'#"), '\\', take!(1)),
+                    |s: &[u8]| s.len() > 0),
+            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
+                               Quotes::Single)));
 
 fn decimals_to_rational(d: &[u8]) -> Rational {
     Rational::new(from_utf8(d).unwrap().parse().unwrap(),
@@ -650,8 +668,6 @@ fn unescape(s: &str) -> String {
         result.push(match c {
                         '\\' => {
                             match i.next() {
-                                Some('n') => '\n',
-                                Some('t') => '\t',
                                 Some(c) => c,
                                 None => '\\',
                             }

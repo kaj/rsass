@@ -589,7 +589,14 @@ fn t24_namespace_properties() {
            bar-bong-x: x;\n  bar-bong-y: y;\n  bar-bong-z: z;\n}\n")
 }
 
-// TODO Implement tests 25 - 26 ...
+#[test]
+fn t25_basic_string_interpolation() {
+    check(b"div {\n  blah: \"hello #{2+2} world #{unit(23px)} #{'bloo\\n'} \
+            blah\";\n}",
+          "div {\n  blah: \"hello 4 world px bloon blah\";\n}\n")
+}
+
+// TODO Implement test 26 ...
 
 #[test]
 fn t27_media_queries() {
