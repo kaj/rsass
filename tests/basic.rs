@@ -566,7 +566,14 @@ fn t22_colors_with_alpha() {
             goo: rgba(64, 0, 191, 0.75);\n  boo: #edcba9;\n}\n")
 }
 
-// TODO Implement tests 23 ...
+#[test]
+fn t23_basic_value_interpolation_4_0() {
+    check(b"div {\n  a: hello#{world};\n  a: hello #{world};\n  \
+            b: 12#{3};\n  b: type-of(12#{3});\n  b: #{12 + 111};\n  \
+            b: type-of(#{12 + 111});\n}",
+          "div {\n  a: helloworld;\n  a: hello world;\n  \
+           b: 12 3;\n  b: list;\n  b: 123;\n  b: string;\n}\n")
+}
 
 #[test]
 fn t24_namespace_properties() {
@@ -582,7 +589,14 @@ fn t24_namespace_properties() {
            bar-bong-x: x;\n  bar-bong-y: y;\n  bar-bong-z: z;\n}\n")
 }
 
-// TODO Implement tests 25 - 26 ...
+#[test]
+fn t25_basic_string_interpolation() {
+    check(b"div {\n  blah: \"hello #{2+2} world #{unit(23px)} #{'bloo\\n'} \
+            blah\";\n}",
+          "div {\n  blah: \"hello 4 world px bloon blah\";\n}\n")
+}
+
+// TODO Implement test 26 ...
 
 #[test]
 fn t27_media_queries() {
@@ -598,7 +612,46 @@ fn t27_media_queries() {
            a b c g h k l m, a b c i j k l m {\n    hee: fee;\n  }\n}\n")
 }
 
-// TODO Implement test 28
+#[test]
+fn t28_url() {
+    check(b"$x: pop;\n$y: 123;\n\n\n\n\
+            div {\n  foo: url(bloo/blah.css);\n  \
+            bar: url(http://foo/bar/hux.css);\n  foo: url(fudge#{$x}.css);\n  \
+            bar: url(\"http://fudge#{$x}/styles.css\");\n  \
+            hux: url(http://box_#{$y}////fudge#{$x}.css);\n  \
+            @each $i in (1 2 3 4 5) {\n    \
+            hux: url(http://box_#{$y}////fudge#{$x}.css);\n    \
+            foo: url(http://blah.com/bar-#{$i}.css);\n    \
+            bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,\
+            400italic|Anonymous+Pro:400,700,400italic);\n  }\n  \
+            gloo: url(\"hey#{1+2}.css\");\n  \
+            floo: url(hadoop-#{$y+321}.css);\n}\n",
+          "div {\n  foo: url(bloo/blah.css);\n  \
+           bar: url(http://foo/bar/hux.css);\n  foo: url(fudgepop.css);\n  \
+           bar: url(\"http://fudgepop/styles.css\");\n  \
+           hux: url(http://box_123////fudgepop.css);\n  \
+           hux: url(http://box_123////fudgepop.css);\n  \
+           foo: url(http://blah.com/bar-1.css);\n  \
+           bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,\
+           400italic|Anonymous+Pro:400,700,400italic);\n  \
+           hux: url(http://box_123////fudgepop.css);\n  \
+           foo: url(http://blah.com/bar-2.css);\n  \
+           bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,\
+           400italic|Anonymous+Pro:400,700,400italic);\n  \
+           hux: url(http://box_123////fudgepop.css);\n  \
+           foo: url(http://blah.com/bar-3.css);\n  \
+           bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,\
+           400italic|Anonymous+Pro:400,700,400italic);\n  \
+           hux: url(http://box_123////fudgepop.css);\n  \
+           foo: url(http://blah.com/bar-4.css);\n  \
+           bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,\
+           400italic|Anonymous+Pro:400,700,400italic);\n  \
+           hux: url(http://box_123////fudgepop.css);\n  \
+           foo: url(http://blah.com/bar-5.css);\n  \
+           bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,\
+           400italic|Anonymous+Pro:400,700,400italic);\n  \
+           gloo: url(\"hey3.css\");\n  floo: url(hadoop-444.css);\n}\n")
+}
 
 #[test]
 fn t29_if() {
@@ -683,6 +736,19 @@ fn t36_extra_commas_in_selectors() {
 }
 
 #[test]
+fn t37_url_expressions() {
+    check(b"$x: true;\n$file-1x: \"budge.png\";\n\n\
+            @function fudge($str) {\n  @return \"assets/fudge/\" + $str;\n}\n\n\
+            div {\n  blah: url(foo + bar);\n  blah: url(fn(\"s\"));\n  \
+            blah: url(if(true, \"red.png\", \"blue.png\"));\n  \
+            blah: url(hello-#{world}.png);\n  \
+            blah: url(if($x, fudge(\"#{$file-1x}\"), \"#{$file-1x}\"));\n}",
+          "div {\n  blah: url(foobar);\n  blah: url(fn(\"s\"));\n  \
+           blah: url(\"red.png\");\n  blah: url(hello-world.png);\n  \
+           blah: url(\"assets/fudge/budge.png\");\n}\n")
+}
+
+#[test]
 fn t38_expressions_in_at_directives() {
     // Note: This actually checks that expressions are _not_
     // evalutated in at directives!
@@ -711,6 +777,8 @@ fn t41_slashy_urls() {
           "div {\n  blah: url(//some/absolute/path);\n  \
            blee: url(/*looks-like-a*/comment);\n}\n")
 }
+
+// TODO Implement test 42
 
 #[test]
 fn t43_str_length() {

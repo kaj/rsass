@@ -41,7 +41,9 @@ pub enum Value {
     /// A binary operation, two operands and an operator.
     BinOp(Box<Value>, Operator, Box<Value>),
     UnaryOp(Operator, Box<Value>),
+    Interpolation(Box<Value>),
 }
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ListSeparator {
     Comma,
@@ -209,6 +211,12 @@ impl Value {
             }
             Value::UnaryOp(ref op, ref v) => {
                 Value::UnaryOp(op.clone(), Box::new(v.do_evaluate(scope, true)))
+            }
+            Value::Interpolation(ref v) => {
+                match v.do_evaluate(scope, true) {
+                    Value::Literal(s, _) => Value::Literal(s, Quotes::None),
+                    v => Value::Literal(format!("{}", v), Quotes::None),
+                }
             }
         }
     }
@@ -414,12 +422,18 @@ named!(pub value_expression<&[u8], Value>,
            })));
 
 named!(pub space_list<&[u8], Value>,
-       map!(separated_nonempty_list!(multispace, single_expression),
-            |v: Vec<Value>| if v.len() == 1 {
-                v.into_iter().next().unwrap()
-            } else {
-                Value::List(v, ListSeparator::Space)
-            }));
+       do_parse!(first: single_expression >>
+                 list: fold_many0!(
+                     alt_complete!(
+                         preceded!(multispace, single_expression) |
+                         interpolation),
+                     vec![first],
+                     |mut list: Vec<Value>, item| { list.push(item); list }) >>
+                 (if list.len() == 1 {
+                     list.into_iter().next().unwrap()
+                 } else {
+                     Value::List(list, ListSeparator::Space)
+                 })));
 
 named!(pub single_expression<Value>,
        do_parse!(a: logic_expression >>
@@ -526,6 +540,7 @@ named!(pub single_value<&[u8], Value>,
                          u.unwrap_or(Unit::None),
                          false))) |
            do_parse!(tag!("$") >>  name: name >> (Value::Variable(name))) |
+           interpolation |
            do_parse!(tag!("#") >> r: hexchar2 >> g: hexchar2 >> b: hexchar2 >>
                      (Value::Color(from_hex(r),
                                    from_hex(g),
@@ -546,28 +561,13 @@ named!(pub single_value<&[u8], Value>,
                                                 from_utf8(b).unwrap()))))) |
            do_parse!(name: name >> args: call_args >>
                      (Value::Call(name, args))) |
-           map!(is_not!("+*/=;,$(){{}}! \n\t'\""), |val| {
-               let val = from_utf8(val).unwrap().to_string();
-               if let Some((r, g, b)) = name_to_rgb(&val) {
-                   Value::Color(r, g, b, Rational::from_integer(1), Some(val))
-               } else {
-                   Value::Literal(val, Quotes::None)
-               }
-           }) |
+           unquoted_literal |
            map!(tag!("\"\""),
                 |_| Value::Literal("".into(), Quotes::Double)) |
-           map!(delimited!(tag!("\""),
-                           escaped!(is_not!("\\\""), '\\', one_of!("\"\\ ")),
-                           tag!("\"")),
-                |s| Value::Literal(unescape(from_utf8(s).unwrap()),
-                                   Quotes::Double)) |
+           quoted_string |
            map!(tag!("''"),
                 |_| Value::Literal("".into(), Quotes::Single)) |
-           map!(delimited!(tag!("'"),
-                           escaped!(is_not!("\\'"), '\\', one_of!("'\\")),
-                           tag!("'")),
-                |s| Value::Literal(unescape(from_utf8(s).unwrap()),
-                                   Quotes::Single)) |
+           singlequoted_string |
            map!(preceded!(tag!("-"), single_value),
                 |s| Value::UnaryOp(Operator::Minus, Box::new(s))) |
            map!(preceded!(tag!("+"), single_value),
@@ -579,6 +579,85 @@ named!(pub single_value<&[u8], Value>,
                     Some(v) => Value::Paren(Box::new(v)),
                     None => Value::List(vec![], ListSeparator::Space),
                 })));
+
+named!(interpolation<Value>,
+       map!(delimited!(tag!("#{"), value_expression, tag!("}")),
+            |v| Value::Interpolation(Box::new(v))));
+
+named!(unquoted_literal<Value>,
+       do_parse!(first: unquoted_literal_part >>
+                 all: fold_many0!(
+                     alt!(interpolation | unquoted_literal_part |
+                          value!(Value::Literal("//".into(), Quotes::None),
+                                 tag!("//")) |
+                          value!(Value::Literal("=".into(), Quotes::None),
+                                 tag!("=")) |
+                          value!(Value::Literal(",".into(), Quotes::None),
+                                 terminated!(tag!(","),
+                                             peek!(unquoted_literal_part))) |
+                          value!(Value::Literal("+".into(), Quotes::None),
+                                 terminated!(tag!("+"),
+                                             peek!(unquoted_literal_part)))
+                          ),
+                     first,
+                     |a, b| {
+                         Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
+                     }) >>
+                 (all)));
+
+named!(unquoted_literal_part<Value>,
+       map!(is_not!("+*/=;,$(){{}}! \n\t'\"#"), |val| {
+           let val = from_utf8(val).unwrap().to_string();
+           if let Some((r, g, b)) = name_to_rgb(&val) {
+               Value::Color(r, g, b, Rational::from_integer(1), Some(val))
+           } else {
+               Value::Literal(val, Quotes::None)
+           }
+       }));
+
+// a quoted string may contain interpolations
+named!(quoted_string<Value>,
+       do_parse!(tag!("\"") >>
+                 first: simple_dqs_part >>
+                 all: fold_many0!(
+                     alt!(interpolation | nonempty_dqs_part),
+                     first,
+                     |a, b| {
+                         Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
+                     }) >>
+                 tag!("\"") >> (all)));
+
+named!(simple_dqs_part<Value>,
+       map!(escaped!(is_not!("\\\"#"), '\\', take!(1)),
+            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
+                               Quotes::Double)));
+named!(nonempty_dqs_part<Value>,
+       map!(verify!(escaped!(is_not!("\\\"#"), '\\', take!(1)),
+                    |s: &[u8]| s.len() > 0),
+            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
+                               Quotes::Double)));
+
+// a quoted string may contain interpolations
+named!(singlequoted_string<Value>,
+       do_parse!(tag!("'") >>
+                 first: simple_sqs_part >>
+                 all: fold_many0!(
+                     alt!(interpolation | nonempty_sqs_part),
+                     first,
+                     |a, b| {
+                         Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
+                     }) >>
+                 tag!("'") >> (all)));
+
+named!(simple_sqs_part<Value>,
+       map!(escaped!(is_not!("\\'#"), '\\', take!(1)),
+            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
+                               Quotes::Single)));
+named!(nonempty_sqs_part<Value>,
+       map!(verify!(escaped!(is_not!("\\'#"), '\\', take!(1)),
+                    |s: &[u8]| s.len() > 0),
+            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
+                               Quotes::Single)));
 
 fn decimals_to_rational(d: &[u8]) -> Rational {
     Rational::new(from_utf8(d).unwrap().parse().unwrap(),
@@ -603,8 +682,6 @@ fn unescape(s: &str) -> String {
         result.push(match c {
                         '\\' => {
                             match i.next() {
-                                Some('n') => '\n',
-                                Some('t') => '\t',
                                 Some(c) => c,
                                 None => '\\',
                             }
@@ -661,6 +738,15 @@ mod test {
     fn simple_number_onlydec_pos() {
         assert_eq!(value_expression(b"+.34;"),
                    Done(&b";"[..], number(34, 100)))
+    }
+    #[test]
+    fn number_and_interpolation_makes_space_list() {
+        assert_eq!(value_expression(b"12#{3};"),
+                   Done(&b";"[..],
+                        Value::List(vec![number(12, 1),
+                                         Value::Interpolation(
+                                             Box::new(number(3, 1)))],
+                                         ListSeparator::Space)))
     }
 
     fn number(nom: isize, denom: isize) -> Value {
