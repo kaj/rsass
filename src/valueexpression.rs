@@ -633,7 +633,7 @@ named!(simple_dqs_part<Value>,
                                Quotes::Double)));
 named!(nonempty_dqs_part<Value>,
        map!(verify!(escaped!(is_not!("\\\"#"), '\\', take!(1)),
-                    |s: &[u8]| s.len() > 0),
+                    |s: &[u8]| !s.is_empty()),
             |s| Value::Literal(unescape(from_utf8(s).unwrap()),
                                Quotes::Double)));
 
@@ -655,7 +655,7 @@ named!(simple_sqs_part<Value>,
                                Quotes::Single)));
 named!(nonempty_sqs_part<Value>,
        map!(verify!(escaped!(is_not!("\\'#"), '\\', take!(1)),
-                    |s: &[u8]| s.len() > 0),
+                    |s: &[u8]| !s.is_empty()),
             |s| Value::Literal(unescape(from_utf8(s).unwrap()),
                                Quotes::Single)));
 

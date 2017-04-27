@@ -229,8 +229,8 @@ pub enum SassItem {
     Each(String, Value, Vec<SassItem>),
     For {
         name: String,
-        from: Value,
-        to: Value,
+        from: Box<Value>,
+        to: Box<Value>,
         inclusive: bool,
         body: Vec<SassItem>,
     },
@@ -326,8 +326,8 @@ named!(for_loop<SassItem>,
                  body: body_block >>
                  (SassItem::For {
                      name: name,
-                     from: from,
-                     to: to,
+                     from: Box::new(from),
+                     to: Box::new(to),
                      inclusive: inclusive,
                      body: body
                  })));
