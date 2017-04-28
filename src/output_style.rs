@@ -53,20 +53,20 @@ impl OutputStyle {
     }
     fn handle_root_item(&self,
                         item: &SassItem,
-                        globals: &mut Scope,
+                        scope: &mut Scope,
                         separate: &mut bool,
                         file_context: &FileContext,
                         result: &mut Write)
                         -> Result<(), Error> {
         match *item {
             SassItem::Import(ref name) => {
-                let name = name.evaluate(globals);
+                let name = name.evaluate(scope);
                 if let Value::Literal(ref x, _) = name {
                     if let Some((sub_context, file)) =
                         file_context.find_file(x.as_ref()) {
                         for item in parse_scss_file(&file)? {
                             self.handle_root_item(&item,
-                                                  globals,
+                                                  scope,
                                                   separate,
                                                   &sub_context,
                                                   result)?;
@@ -85,11 +85,11 @@ impl OutputStyle {
                 ref global,
             } => {
                 if *default {
-                    globals.define_default(name, val, *global);
+                    scope.define_default(name, val, *global);
                 } else if *global {
-                    globals.define_global(name, val);
+                    scope.define_global(name, val);
                 } else {
-                    globals.define(name, val);
+                    scope.define(name, val);
                 }
             }
             SassItem::AtRule(ref query, ref body) => {
@@ -103,7 +103,7 @@ impl OutputStyle {
                 let mut sub = vec![];
                 self.handle_body(&mut direct,
                                  &mut sub,
-                                 &mut ScopeImpl::sub(globals),
+                                 &mut ScopeImpl::sub(scope),
                                  &[Selector::root()],
                                  body,
                                  file_context,
@@ -117,11 +117,11 @@ impl OutputStyle {
             }
 
             SassItem::MixinDeclaration { ref name, ref args, ref body } => {
-                globals.define_mixin(name, args, body)
+                scope.define_mixin(name, args, body)
             }
             SassItem::MixinCall { ref name, ref args, ref body } => {
-                if let Some((m_args, m_body)) = globals.get_mixin(name) {
-                    let mut scope = m_args.eval(globals, args);
+                if let Some((m_args, m_body)) = scope.get_mixin(name) {
+                    let mut scope = m_args.eval(scope, args);
                     scope.define_mixin("%%BODY%%",
                                        &FormalArgs::default(),
                                        body);
@@ -141,17 +141,17 @@ impl OutputStyle {
             }
 
             SassItem::FunctionDeclaration { ref name, ref func } => {
-                globals.define_function(name, func.clone());
+                scope.define_function(name, func.clone());
             }
             SassItem::Return(_) => {
                 panic!("Return not allowed in global context");
             }
 
             SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
-                if cond.evaluate(globals).is_true() {
+                if cond.evaluate(scope).is_true() {
                     for item in do_if {
                         self.handle_root_item(item,
-                                              globals,
+                                              scope,
                                               separate,
                                               file_context,
                                               result)?;
@@ -159,7 +159,7 @@ impl OutputStyle {
                 } else {
                     for item in do_else {
                         self.handle_root_item(item,
-                                              globals,
+                                              scope,
                                               separate,
                                               file_context,
                                               result)?;
@@ -167,15 +167,15 @@ impl OutputStyle {
                 }
             }
             SassItem::Each(ref name, ref values, ref body) => {
-                let values = match values.evaluate(globals) {
+                let values = match values.evaluate(scope) {
                     Value::List(v, _) => v,
                     v => vec![v],
                 };
                 for value in values {
-                    globals.define(name, &value);
+                    scope.define(name, &value);
                     for item in body {
                         self.handle_root_item(item,
-                                              globals,
+                                              scope,
                                               separate,
                                               file_context,
                                               result)?;
@@ -189,11 +189,11 @@ impl OutputStyle {
                 inclusive,
                 ref body,
             } => {
-                let from = from.evaluate(globals).integer_value()?;
-                let to = to.evaluate(globals).integer_value()?;
+                let from = from.evaluate(scope).integer_value()?;
+                let to = to.evaluate(scope).integer_value()?;
                 let to = if inclusive { to + 1 } else { to };
                 for value in from..to {
-                    let mut scope = ScopeImpl::sub(globals);
+                    let mut scope = ScopeImpl::sub(scope);
                     scope.define(name, &Value::scalar(value));
                     for item in body {
                         self.handle_root_item(item,
@@ -205,7 +205,7 @@ impl OutputStyle {
                 }
             }
             SassItem::While(ref cond, ref body) => {
-                let mut scope = ScopeImpl::sub(globals);
+                let mut scope = ScopeImpl::sub(scope);
                 while cond.evaluate(&scope).is_true() {
                     for item in body {
                         self.handle_root_item(item,
@@ -223,7 +223,7 @@ impl OutputStyle {
                 } else {
                     *separate = true;
                 }
-                self.write_rule(s, b, result, globals, None, file_context, 0)?;
+                self.write_rule(s, b, result, scope, None, file_context, 0)?;
             }
             SassItem::NamespaceRule(..) => {
                 panic!("Global namespaced property not allowed");
