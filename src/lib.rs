@@ -203,13 +203,7 @@ named!(sassfile<&[u8], Vec<SassItem> >,
 /// Scoping items contains further sequences of items.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SassItem {
-    None,
-    Comment(String),
     Import(Value),
-    Property(String, Value, bool),
-    Rule(Vec<Selector>, Vec<SassItem>),
-    NamespaceRule(String, Value, Vec<SassItem>),
-    Return(Value),
     VariableDeclaration {
         name: String,
         val: Value,
@@ -217,14 +211,18 @@ pub enum SassItem {
         global: bool,
     },
     AtRule(String, Vec<SassItem>),
+
     MixinDeclaration {
         name: String,
         args: FormalArgs,
         body: Vec<SassItem>,
     },
-    FunctionDeclaration { name: String, func: SassFunction },
     MixinCall { name: String, args: CallArgs, body: Vec<SassItem> },
     Content,
+
+    FunctionDeclaration { name: String, func: SassFunction },
+    Return(Value),
+
     IfStatement(Value, Vec<SassItem>, Vec<SassItem>),
     /// The value may be or evaluate to a list.
     Each(String, Value, Vec<SassItem>),
@@ -236,6 +234,12 @@ pub enum SassItem {
         body: Vec<SassItem>,
     },
     While(Value, Vec<SassItem>),
+
+    Rule(Vec<Selector>, Vec<SassItem>),
+    NamespaceRule(String, Value, Vec<SassItem>),
+    Property(String, Value, bool),
+    Comment(String),
+    None,
 }
 
 named!(rule<SassItem>,
