@@ -59,51 +59,6 @@ impl OutputStyle {
                         result: &mut Write)
                         -> Result<(), Error> {
         match *item {
-            SassItem::Rule(ref s, ref b) => {
-                if *separate {
-                    self.do_indent(result, 0)?;
-                } else {
-                    *separate = true;
-                }
-                self.write_rule(s, b, result, globals, None, file_context, 0)?;
-            }
-            SassItem::VariableDeclaration {
-                ref name,
-                ref val,
-                ref default,
-                ref global,
-            } => {
-                if *default {
-                    globals.define_default(name, val, *global);
-                } else if *global {
-                    globals.define_global(name, val);
-                } else {
-                    globals.define(name, val);
-                }
-            }
-            SassItem::MixinDeclaration { ref name, ref args, ref body } => {
-                globals.define_mixin(name, args, body)
-            }
-            SassItem::FunctionDeclaration { ref name, ref func } => {
-                globals.define_function(name, func.clone());
-            }
-            SassItem::MixinCall { ref name, ref args, ref body } => {
-                if let Some((m_args, m_body)) = globals.get_mixin(name) {
-                    let mut scope = m_args.eval(globals, args);
-                    scope.define_mixin("%%BODY%%",
-                                       &FormalArgs::default(),
-                                       body);
-                    for item in m_body {
-                        self.handle_root_item(&item,
-                                              &mut scope,
-                                              separate,
-                                              file_context,
-                                              result)?;
-                    }
-                } else {
-                    panic!(format!("Unknown mixin {}({:?})", name, args))
-                }
-            }
             SassItem::Import(ref name) => {
                 let name = name.evaluate(globals);
                 if let Value::Literal(ref x, _) = name {
@@ -123,21 +78,19 @@ impl OutputStyle {
                     writeln!(result, "@import {};", name)?;
                 }
             }
-            SassItem::Comment(ref c) => {
-                if !self.is_compressed() {
-                    if *separate {
-                        self.do_indent(result, 0)?;
-                    } else {
-                        *separate = true;
-                    }
-                    write!(result, "/*{}*/", c)?;
+            SassItem::VariableDeclaration {
+                ref name,
+                ref val,
+                ref default,
+                ref global,
+            } => {
+                if *default {
+                    globals.define_default(name, val, *global);
+                } else if *global {
+                    globals.define_global(name, val);
+                } else {
+                    globals.define(name, val);
                 }
-            }
-            SassItem::Property(..) => {
-                panic!("Global property not allowed");
-            }
-            SassItem::NamespaceRule(..) => {
-                panic!("Global namespaced property not allowed");
             }
             SassItem::AtRule(ref query, ref body) => {
                 if *separate {
@@ -162,6 +115,38 @@ impl OutputStyle {
                 self.write_items(result, &direct, 2)?;
                 write!(result, "}}")?;
             }
+
+            SassItem::MixinDeclaration { ref name, ref args, ref body } => {
+                globals.define_mixin(name, args, body)
+            }
+            SassItem::MixinCall { ref name, ref args, ref body } => {
+                if let Some((m_args, m_body)) = globals.get_mixin(name) {
+                    let mut scope = m_args.eval(globals, args);
+                    scope.define_mixin("%%BODY%%",
+                                       &FormalArgs::default(),
+                                       body);
+                    for item in m_body {
+                        self.handle_root_item(&item,
+                                              &mut scope,
+                                              separate,
+                                              file_context,
+                                              result)?;
+                    }
+                } else {
+                    panic!(format!("Unknown mixin {}({:?})", name, args))
+                }
+            }
+            SassItem::Content => {
+                panic!("@content not allowed in global context");
+            }
+
+            SassItem::FunctionDeclaration { ref name, ref func } => {
+                globals.define_function(name, func.clone());
+            }
+            SassItem::Return(_) => {
+                panic!("Return not allowed in global context");
+            }
+
             SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
                 if cond.evaluate(globals).is_true() {
                     for item in do_if {
@@ -231,11 +216,30 @@ impl OutputStyle {
                     }
                 }
             }
-            SassItem::Return(_) => {
-                panic!("Return not allowed in global context");
+
+            SassItem::Rule(ref s, ref b) => {
+                if *separate {
+                    self.do_indent(result, 0)?;
+                } else {
+                    *separate = true;
+                }
+                self.write_rule(s, b, result, globals, None, file_context, 0)?;
             }
-            SassItem::Content => {
-                panic!("@content not allowed in global context");
+            SassItem::NamespaceRule(..) => {
+                panic!("Global namespaced property not allowed");
+            }
+            SassItem::Property(..) => {
+                panic!("Global property not allowed");
+            }
+            SassItem::Comment(ref c) => {
+                if !self.is_compressed() {
+                    if *separate {
+                        self.do_indent(result, 0)?;
+                    } else {
+                        *separate = true;
+                    }
+                    write!(result, "/*{}*/", c)?;
+                }
             }
             SassItem::None => (),
         }
@@ -307,53 +311,21 @@ impl OutputStyle {
                    -> Result<(), Error> {
         for b in body {
             match *b {
-                SassItem::Comment(ref c) => {
-                    if !self.is_compressed() {
-                        direct.push(CssBodyItem::Comment(c.clone()));
+                SassItem::Import(ref name) => {
+                    let name = name.evaluate(scope);
+                    if let Value::Literal(ref x, _) = name {
+                        let (sub_context, file) = file_context.file(x.as_ref());
+                        let items = parse_scss_file(&file)?;
+                        self.handle_body(direct,
+                                         sub,
+                                         scope,
+                                         selectors,
+                                         &items,
+                                         &sub_context,
+                                         0)?;
+                    } else {
+                        // TODO writeln!(direct, "@import {};", name)?;
                     }
-                }
-                SassItem::Property(ref name, ref value, ref important) => {
-                    let v = value.evaluate(scope);
-                    if !v.is_null() {
-                        direct.push(CssBodyItem::Property(name.clone(),
-                                                          v,
-                                                          *important));
-                    }
-                }
-                SassItem::NamespaceRule(ref name, ref value, ref body) => {
-                    if !value.is_null() {
-                        direct.push(CssBodyItem::Property(name.clone(),
-                                                          value.evaluate(scope),
-                                                          false));
-                    }
-                    let mut t = Vec::new();
-                    self.handle_body(&mut t,
-                                     sub,
-                                     scope,
-                                     selectors,
-                                     body,
-                                     file_context,
-                                     indent)?;
-                    for item in t {
-                        direct.push(match item {
-                                        CssBodyItem::Property(n, v, i) => {
-                                            CssBodyItem::Property(
-                                                format!("{}-{}", name, n),
-                                                v,
-                                                i)
-                                        }
-                                        c => c,
-                                    })
-                    }
-                }
-                SassItem::Rule(ref s, ref b) => {
-                    self.write_rule(s,
-                                    b,
-                                    sub,
-                                    scope,
-                                    Some(selectors),
-                                    file_context,
-                                    indent)?;
                 }
                 SassItem::VariableDeclaration {
                     ref name,
@@ -369,11 +341,36 @@ impl OutputStyle {
                         scope.define(name, val);
                     }
                 }
+                SassItem::AtRule(ref query, ref body) => {
+                    let mut s1 = vec![];
+                    let mut s2 = vec![];
+                    self.handle_body(&mut s1,
+                                     &mut s2,
+                                     &mut ScopeImpl::sub(scope),
+                                     selectors,
+                                     body,
+                                     file_context,
+                                     2)?;
+
+                    write!(sub, "@{}{{", query)?;
+                    if !s1.is_empty() {
+                        self.do_indent(sub, 2)?;
+                        write!(sub,
+                               "{}{}{{",
+                               self.join_selectors(selectors),
+                               self.opt_space())?;
+                        self.write_items(sub, &s1, 4)?;
+                        write!(sub, "}}")?;
+                    }
+                    if !s2.is_empty() {
+                        self.do_indent(sub, 0)?;
+                        sub.write_all(&s2)?;
+                    }
+                    write!(sub, "}}")?;
+                }
+
                 SassItem::MixinDeclaration { ref name, ref args, ref body } => {
                     scope.define_mixin(name, args, body);
-                }
-                SassItem::FunctionDeclaration { ref name, ref func } => {
-                    scope.define_function(name, func.clone());
                 }
                 SassItem::MixinCall { ref name, ref args, ref body } => {
                     if let Some((m_args, m_body)) = scope.get_mixin(name) {
@@ -407,49 +404,14 @@ impl OutputStyle {
                             "Mixin @content not found.".to_string()));
                     }
                 }
-                SassItem::Import(ref name) => {
-                    let name = name.evaluate(scope);
-                    if let Value::Literal(ref x, _) = name {
-                        let (sub_context, file) = file_context.file(x.as_ref());
-                        let items = parse_scss_file(&file)?;
-                        self.handle_body(direct,
-                                         sub,
-                                         scope,
-                                         selectors,
-                                         &items,
-                                         &sub_context,
-                                         0)?;
-                    } else {
-                        // TODO writeln!(direct, "@import {};", name)?;
-                    }
-                }
-                SassItem::AtRule(ref query, ref body) => {
-                    let mut s1 = vec![];
-                    let mut s2 = vec![];
-                    self.handle_body(&mut s1,
-                                     &mut s2,
-                                     &mut ScopeImpl::sub(scope),
-                                     selectors,
-                                     body,
-                                     file_context,
-                                     2)?;
 
-                    write!(sub, "@{}{{", query)?;
-                    if !s1.is_empty() {
-                        self.do_indent(sub, 2)?;
-                        write!(sub,
-                               "{}{}{{",
-                               self.join_selectors(selectors),
-                               self.opt_space())?;
-                        self.write_items(sub, &s1, 4)?;
-                        write!(sub, "}}")?;
-                    }
-                    if !s2.is_empty() {
-                        self.do_indent(sub, 0)?;
-                        sub.write_all(&s2)?;
-                    }
-                    write!(sub, "}}")?;
+                SassItem::FunctionDeclaration { ref name, ref func } => {
+                    scope.define_function(name, func.clone());
                 }
+                SassItem::Return(_) => {
+                    panic!("Return not allowed in plain context");
+                }
+
                 SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
                     if cond.evaluate(scope).is_true() {
                         self.handle_body(direct,
@@ -520,8 +482,54 @@ impl OutputStyle {
                                          0)?;
                     }
                 }
-                SassItem::Return(_) => {
-                    panic!("Return not allowed in plain context");
+
+                SassItem::Rule(ref s, ref b) => {
+                    self.write_rule(s,
+                                    b,
+                                    sub,
+                                    scope,
+                                    Some(selectors),
+                                    file_context,
+                                    indent)?;
+                }
+                SassItem::NamespaceRule(ref name, ref value, ref body) => {
+                    if !value.is_null() {
+                        direct.push(CssBodyItem::Property(name.clone(),
+                                                          value.evaluate(scope),
+                                                          false));
+                    }
+                    let mut t = Vec::new();
+                    self.handle_body(&mut t,
+                                     sub,
+                                     scope,
+                                     selectors,
+                                     body,
+                                     file_context,
+                                     indent)?;
+                    for item in t {
+                        direct.push(match item {
+                                        CssBodyItem::Property(n, v, i) => {
+                                            CssBodyItem::Property(
+                                                format!("{}-{}", name, n),
+                                                v,
+                                                i)
+                                        }
+                                        c => c,
+                                    })
+                    }
+                }
+                SassItem::Property(ref name, ref value, ref important) => {
+                    let v = value.evaluate(scope);
+                    if !v.is_null() {
+                        direct.push(CssBodyItem::Property(name.clone(),
+                                                          v,
+                                                          *important));
+                    }
+                }
+                SassItem::Comment(ref c) => {
+                    if !self.is_compressed() {
+                        direct.push(CssBodyItem::Comment(c.clone()));
+                    }
                 }
                 SassItem::None => (),
             }
