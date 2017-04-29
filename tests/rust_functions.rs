@@ -20,12 +20,12 @@ fn simple_value() {
 #[test]
 fn simple_function() {
     let mut scope = GlobalScope::new();
-    scope.define_function("get_answer",
-                          SassFunction::builtin(vec![],
-                                               false,
-                                               Arc::new(|_| {
-                                                   Ok(Value::scalar(42))
-                                               })));
+    scope.define_function(
+        "get_answer",
+        SassFunction::builtin(
+            vec![],
+            false,
+            Arc::new(|_| Ok(Value::scalar(42)))));
     let parsed = parse_scss_data(b"p { x: get_answer(); }").unwrap();
     let style = OutputStyle::Compressed;
     let file_context = FileContext::new();
