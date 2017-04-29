@@ -10,6 +10,7 @@ pub enum Error {
     IoError(io::Error),
     Encoding(FromUtf8Error),
     BadValue(String),
+    BadArguments(String),
     S(String),
 }
 
@@ -19,6 +20,20 @@ impl Error {
                                 expected,
                                 actual.type_name(),
                                 actual))
+    }
+
+    pub fn badarg(expected: &str, actual: &Value) -> Error {
+        Error::BadArguments(format!("expected {}, got {} = {}",
+                                    expected,
+                                    actual.type_name(),
+                                    actual))
+    }
+
+    pub fn badargs(expected: &[&str], actual: &[&Value]) -> Error {
+        // TODO Better message!
+        Error::BadArguments(format!("expected {:?}, got {:?}",
+                                    expected,
+                                    actual))
     }
 }
 

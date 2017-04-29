@@ -1,4 +1,4 @@
-use super::{Error, SassFunction, badarg};
+use super::{Error, SassFunction};
 use super::colors_hsl::{hsla_to_rgba, rgb_to_hsl};
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
@@ -36,7 +36,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                             c_add(*alpha, a_adj)?))
         }
     }
-             v => Err(badarg("color", v)),
+             v => Err(Error::badarg("color", v)),
          });
     def!(f,
          scale_color(color,
@@ -66,7 +66,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                             comb(*alpha, a_adj)?))
         }
     }
-             v => Err(badarg("color", v)),
+             v => Err(Error::badarg("color", v)),
          });
 
     fn opacity(color: Value) -> Result<Value, Error> {
@@ -74,7 +74,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Color(_r, _g, _b, a, _) => {
                 Ok(Value::Numeric(a, Unit::None, true))
             }
-            v => Err(badarg("color", &v)),
+            v => Err(Error::badarg("color", &v)),
         }
     }
     f.insert("opacity", func2!(opacity(color)));
@@ -85,7 +85,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Color(red, green, blue, alpha, _) => {
                 Ok(Value::rgba(red, green, blue, alpha + to_rational(amount)?))
             }
-            v => Err(badarg("color", &v)),
+            v => Err(Error::badarg("color", &v)),
         }
     }
     f.insert("fade_in", func2!(fade_in(color, amount)));
@@ -96,7 +96,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Color(red, green, blue, alpha, _) => {
                 Ok(Value::rgba(red, green, blue, alpha - to_rational(amount)?))
             }
-            v => Err(badarg("color", &v)),
+            v => Err(Error::badarg("color", &v)),
         }
     }
     f.insert("fade_out", func2!(fade_out(color, amount)));
@@ -130,7 +130,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                             a_or(alpha, a_adj)?))
         }
     }
-             v => Err(badarg("color", &v)),
+             v => Err(Error::badarg("color", &v)),
          });
     def!(f, ie_hex_str(color), |s| match s.get("color") {
         Value::Color(r, g, b, alpha, _) => {
@@ -143,7 +143,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 format!("#{:02X}{:02X}{:02X}{:02X}", alpha, r, g, b),
                 Quotes::None))
         }
-        v => Err(badarg("color", &v)),
+        v => Err(Error::badarg("color", &v)),
     });
 }
 
@@ -211,7 +211,7 @@ fn cap_u8(n: Rational) -> Rational {
 fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(v, _, _) => Ok(v),
-        v => Err(badarg("number", &v)),
+        v => Err(Error::badarg("number", &v)),
     }
 }
 
@@ -221,7 +221,7 @@ fn to_rational_percent(v: Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(v, Unit::Percent, _) => Ok(v * Rational::new(1, 100)),
         Value::Numeric(v, _, _) => Ok(v),
-        v => Err(badarg("number", &v)),
+        v => Err(Error::badarg("number", &v)),
     }
 }
 

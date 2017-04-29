@@ -1,4 +1,4 @@
-use functions::{SassFunction, badarg};
+use super::{Error, SassFunction};
 use num_rational::Rational;
 use num_traits::Signed;
 use std::cmp::Ordering;
@@ -9,15 +9,15 @@ use valueexpression::Value;
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, abs(number), |s| match s.get("number") {
         Value::Numeric(v, u, _) => Ok(Value::Numeric(v.abs(), u, true)),
-        v => Err(badarg("number", &v)),
+        v => Err(Error::badarg("number", &v)),
     });
     def!(f, ceil(number), |s| match s.get("number") {
         Value::Numeric(v, u, _) => Ok(Value::Numeric(v.ceil(), u, true)),
-        v => Err(badarg("number", &v)),
+        v => Err(Error::badarg("number", &v)),
     });
     def!(f, floor(number), |s| match s.get("number") {
         Value::Numeric(v, u, _) => Ok(Value::Numeric(v.floor(), u, true)),
-        v => Err(badarg("number", &v)),
+        v => Err(Error::badarg("number", &v)),
     });
     def!(f, percentage(number), |s| match s.get("number") {
         Value::Numeric(val, Unit::None, _) => {
@@ -25,13 +25,13 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                               Unit::Percent,
                               true))
         }
-        v => Err(badarg("number", &v)),
+        v => Err(Error::badarg("number", &v)),
     });
     def!(f, round(number), |s| match s.get("number") {
         Value::Numeric(val, unit, _) => {
             Ok(Value::Numeric(val.round(), unit, true))
         }
-        v => Err(badarg("number", &v)),
+        v => Err(Error::badarg("number", &v)),
     });
     def_va!(f, max(numbers), |s| match s.get("numbers") {
         Value::List(v, _) => Ok(find_extreme(&v, Ordering::Greater).clone()),
@@ -52,7 +52,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             let res = 1 + intrand(val.to_integer());
             Ok(Value::Numeric(Rational::from_integer(res), unit, true))
         }
-        v => Err(badarg("number or null", &v)),
+        v => Err(Error::badarg("number or null", &v)),
     });
 }
 

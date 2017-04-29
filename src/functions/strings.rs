@@ -1,4 +1,4 @@
-use functions::{SassFunction, badarg, badargs};
+use super::{Error, SassFunction};
 use num_rational::Rational;
 use num_traits::Signed;
 use std::collections::BTreeMap;
@@ -29,7 +29,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                           q))
     }
              (s, i, v) => {
-                 Err(badargs(&["string", "string", "number"], &[&s, &i, &v]))
+                 Err(Error::badargs(&["string", "string", "number"],
+                                    &[&s, &i, &v]))
              }
          });
     def!(f,
@@ -47,7 +48,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                           q))
     }
              (v, s, e) => {
-                 Err(badargs(&["string", "number", "number"], &[&v, &s, &e]))
+                 Err(Error::badargs(&["string", "number", "number"],
+                                    &[&v, &s, &e]))
              }
          });
     def!(f, str_length(string), |s| match &s.get("string") {
@@ -55,7 +57,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             let n = v.chars().count() as isize;
             Ok(Value::Numeric(Rational::from_integer(n), Unit::None, true))
         }
-        v => Err(badarg("string", v)),
+        v => Err(Error::badarg("string", v)),
     });
     def!(f,
          str_index(string, substring),
@@ -69,7 +71,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                         None => Value::Null,
                     })
              }
-             (full, sub) => Err(badargs(&["string", "string"], &[&full, &sub])),
+             (full, sub) => Err(Error::badargs(&["string", "string"],
+                                               &[&full, &sub])),
          });
     def!(f, to_upper_case(string), |s| match s.get("string") {
         Value::Literal(v, q) => Ok(Value::Literal(v.to_uppercase(), q)),

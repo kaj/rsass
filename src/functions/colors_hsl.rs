@@ -1,4 +1,4 @@
-use super::{Error, SassFunction, badarg};
+use super::{Error, SassFunction};
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
@@ -33,7 +33,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let h = a_comb(h, h_adj)?;
                 Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
             }
-            v => Err(badarg("color", v)),
+            v => Err(Error::badarg("color", v)),
         }
     });
     def!(f, complement(color), |s: &Scope| match &s.get("color") {
@@ -42,7 +42,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             let h = (h + Rational::from_integer(180)) * Rational::new(1, 360);
             Ok(hsla_to_rgba(h, s, l, *alpha))
         }
-        v => Err(badarg("color", v)),
+        v => Err(Error::badarg("color", v)),
     });
     def!(f, saturate(color, amount), |args: &Scope| {
         fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
@@ -57,7 +57,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let s = comb(s, args.get("amount"))?;
                 Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
             }
-            v => Err(badarg("color", v)),
+            v => Err(Error::badarg("color", v)),
         }
     });
     def!(f, lighten(color, amount), |args: &Scope| {
@@ -73,7 +73,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let l = comb(l, args.get("amount"))?;
                 Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
             }
-            v => Err(badarg("color", v)),
+            v => Err(Error::badarg("color", v)),
         }
     });
     def!(f, darken(color, amount), |args: &Scope| {
@@ -89,7 +89,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let l = comb(l, args.get("amount"))?;
                 Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
             }
-            v => Err(badarg("color", v)),
+            v => Err(Error::badarg("color", v)),
         }
     });
     def!(f, hue(color), |args: &Scope| match &args.get("color") {
@@ -97,7 +97,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             let (h, _s, _l) = rgb_to_hsl(red, green, blue);
             Ok(Value::Numeric(h, Unit::Deg, true))
         }
-        v => Err(badarg("color", v)),
+        v => Err(Error::badarg("color", v)),
     });
     def!(f, saturation(color), |args| match &args.get("color") {
         &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
@@ -106,7 +106,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                               Unit::Percent,
                               true))
         }
-        v => Err(badarg("color", v)),
+        v => Err(Error::badarg("color", v)),
     });
     def!(f, lightness(color), |args| match &args.get("color") {
         &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
@@ -115,7 +115,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                               Unit::Percent,
                               true))
         }
-        v => Err(badarg("color", v)),
+        v => Err(Error::badarg("color", v)),
     });
     def!(f, desaturate(color, amount), |args: &Scope| {
         fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
@@ -130,7 +130,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let s = comb(s, args.get("amount"))?;
                 Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
             }
-            v => Err(badarg("color", v)),
+            v => Err(Error::badarg("color", v)),
         }
     });
 }
@@ -244,7 +244,7 @@ fn cap_u8(n: Rational) -> Rational {
 fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(v, _, _) => Ok(v),
-        v => Err(badarg("number", &v)),
+        v => Err(Error::badarg("number", &v)),
     }
 }
 
@@ -260,7 +260,7 @@ fn to_rational_percent(v: Value) -> Result<Rational, Error> {
                 Ok(v * Rational::new(1, 100))
             }
         }
-        v => Err(badarg("number", &v)),
+        v => Err(Error::badarg("number", &v)),
     }
 }
 
