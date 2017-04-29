@@ -1,6 +1,5 @@
-use super::get_builtin_function;
+use super::{Error, SassFunction, get_builtin_function};
 use formalargs::CallArgs;
-use functions::{SassFunction, badarg, badargs};
 use std::collections::BTreeMap;
 use std::io::{Write, stderr};
 use std::sync::{ONCE_INIT, Once};
@@ -10,25 +9,25 @@ use variablescope::Scope;
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, variable_exists(name), |s| match &s.get("name") {
         &Value::Literal(ref v, _) => Ok(Value::bool(s.get(v) != Value::Null)),
-        v => Err(badarg("string", v)),
+        v => Err(Error::badarg("string", v)),
     });
     def!(f, global_variable_exists(name), |s| match &s.get("name") {
         &Value::Literal(ref v, _) => {
             Ok(Value::bool(s.get_global(v) != Value::Null))
         }
-        v => Err(badarg("string", v)),
+        v => Err(Error::badarg("string", v)),
     });
     def!(f, function_exists(name), |s| match &s.get("name") {
         &Value::Literal(ref v, _) => {
             Ok(Value::bool(s.get_function(v).is_some()))
         }
-        v => Err(badarg("string", v)),
+        v => Err(Error::badarg("string", v)),
     });
     def!(f, mixin_exists(name), |s| match &s.get("name") {
         &Value::Literal(ref v, _) => {
             Ok(Value::bool(s.get_mixin(&v.replace('-', "_")).is_some()))
         }
-        v => Err(badarg("string", v)),
+        v => Err(Error::badarg("string", v)),
     });
     def!(f, type_of(value), |s| {
         Ok(Value::Literal(s.get("value").type_name().into(), Quotes::None))
@@ -46,7 +45,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 // TODO e.g. cm and mm are comparable too!
                 Ok(Value::bool(u1 == u2))
             }
-            (v1, v2) => Err(badargs(&["number", "number"], &[v1, v2])),
+            (v1, v2) => Err(Error::badargs(&["number", "number"], &[v1, v2])),
         }
     });
     def_va!(f, call(name, args), |s: &Scope| match &s.get("name") {
@@ -71,7 +70,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 }
             }
         }
-        v => Err(badarg("string", v)),
+        v => Err(Error::badarg("string", v)),
     });
 }
 

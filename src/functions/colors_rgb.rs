@@ -1,4 +1,4 @@
-use super::{Error, SassFunction, badarg, badargs};
+use super::{Error, SassFunction};
 use num_rational::Rational;
 use num_traits::One;
 use std::collections::BTreeMap;
@@ -31,15 +31,15 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     }
     def!(f, red(color), |s| match &s.get("color") {
         &Value::Color(ref red, _, _, _, _) => num(red),
-        value => Err(badarg("color", value)),
+        value => Err(Error::badarg("color", value)),
     });
     def!(f, green(color), |s| match &s.get("color") {
         &Value::Color(_, ref green, _, _, _) => num(green),
-        value => Err(badarg("color", value)),
+        value => Err(Error::badarg("color", value)),
     });
     def!(f, blue(color), |s| match &s.get("color") {
         &Value::Color(_, _, ref blue, _, _) => num(blue),
-        value => Err(badarg("color", value)),
+        value => Err(Error::badarg("color", value)),
     });
     def!(f, mix(color1, color2, weight = b"50%"), |s| {
         let color1 = s.get("color1");
@@ -64,7 +64,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                            m(b1, b2, w2),
                            m(a1, a2, w)))
         } else {
-            Err(badargs(&["color", "color", "number"],
+            Err(Error::badargs(&["color", "color", "number"],
                         &[&color1, &color2, &weight]))
         }
     });
@@ -73,7 +73,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             let ff = Rational::new(255, 1);
             Ok(Value::rgba(ff - red, ff - green, ff - blue, *alpha))
         }
-        value => Err(badarg("color", value)),
+        value => Err(Error::badarg("color", value)),
     });
 }
 
@@ -81,14 +81,14 @@ fn to_int(v: Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(v, Unit::Percent, _) => Ok(Rational::new(255, 100) * v),
         Value::Numeric(v, _, _) => Ok(v),
-        v => Err(badarg("number", &v)),
+        v => Err(Error::badarg("number", &v)),
     }
 }
 
 fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(v, _, _) => Ok(v),
-        v => Err(badarg("number", &v)),
+        v => Err(Error::badarg("number", &v)),
     }
 }
 

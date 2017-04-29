@@ -1,4 +1,4 @@
-use super::SassItem;
+use super::{Error, SassItem};
 use formalargs::{CallArgs, FormalArgs};
 use std::{cmp, fmt};
 use std::collections::BTreeMap;
@@ -84,23 +84,6 @@ impl SassFunction {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub enum Error {
-    BadArguments(String),
-}
-
-fn badarg(expected: &str, actual: &Value) -> Error {
-    Error::BadArguments(format!("expected {}, got {} = {}",
-                                expected,
-                                actual.type_name(),
-                                actual))
-}
-
-fn badargs(expected: &[&str], actual: &[&Value]) -> Error {
-    // TODO Better message!
-    Error::BadArguments(format!("expected {:?}, got {:?}", expected, actual))
-}
-
 lazy_static! {
     static ref FUNCTIONS: BTreeMap<&'static str, SassFunction> = {
         let mut f = BTreeMap::new();
@@ -128,16 +111,17 @@ fn test_rgb() {
     use num_rational::Rational;
     use num_traits::{One, Zero};
     use variablescope::GlobalScope;
-    assert_eq!(Ok(Value::Color(Rational::new(17, 1),
-                               Rational::zero(),
-                               Rational::new(225, 1),
-                               Rational::one(),
-                               None)),
-               FUNCTIONS
+    assert_eq!(FUNCTIONS
                    .get("rgb")
                    .unwrap()
                    .call(&GlobalScope::new(),
-                         &call_args(b"(17, 0, 225)").unwrap().1))
+                         &call_args(b"(17, 0, 225)").unwrap().1)
+                   .unwrap(),
+               Value::Color(Rational::new(17, 1),
+                            Rational::zero(),
+                            Rational::new(225, 1),
+                            Rational::one(),
+                            None))
 }
 
 #[test]

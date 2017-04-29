@@ -1,20 +1,20 @@
-use functions::{SassFunction, badarg};
+use super::{Error, SassFunction};
 use std::collections::BTreeMap;
 use valueexpression::{ListSeparator, Value};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, length(list), |s| match s.get("list") {
         Value::List(v, _) => Ok(Value::scalar(v.len() as isize)),
-        v => Err(badarg("list", &v)),
+        v => Err(Error::badarg("list", &v)),
     });
     def!(f, nth(list, n), |s| {
         let n = match s.get("n") {
             Value::Numeric(val, _, _) if val.denom() == &1 => val.to_integer(),
-            x => return Err(badarg("integer", &x)),
+            x => return Err(Error::badarg("integer", &x)),
         };
         match s.get("list") {
             Value::List(list, _) => Ok(list[n as usize - 1].clone()),
-            v => Err(badarg("list", &v)),
+            v => Err(Error::badarg("list", &v)),
         }
     });
     def!(f, append(list, val, separator), |s| {
@@ -42,7 +42,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, index(list, value), |s| {
         let v = match s.get("list") {
             Value::List(v, _) => v,
-            v => return Err(badarg("list", &v)),
+            v => return Err(Error::badarg("list", &v)),
         };
         let value = s.get("value");
         for (i, v) in v.iter().enumerate() {
