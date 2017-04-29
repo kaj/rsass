@@ -148,22 +148,14 @@ impl OutputStyle {
             }
 
             SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
-                if cond.evaluate(scope).is_true() {
-                    for item in do_if {
-                        self.handle_root_item(item,
-                                              scope,
-                                              separate,
-                                              file_context,
-                                              result)?;
-                    }
-                } else {
-                    for item in do_else {
-                        self.handle_root_item(item,
-                                              scope,
-                                              separate,
-                                              file_context,
-                                              result)?;
-                    }
+                let cond = cond.evaluate(scope).is_true();
+                let items = if cond { do_if } else { do_else };
+                for item in items {
+                    self.handle_root_item(item,
+                                          scope,
+                                          separate,
+                                          file_context,
+                                          result)?;
                 }
             }
             SassItem::Each(ref name, ref values, ref body) => {
@@ -413,23 +405,15 @@ impl OutputStyle {
                 }
 
                 SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
-                    if cond.evaluate(scope).is_true() {
-                        self.handle_body(direct,
-                                         sub,
-                                         &mut ScopeImpl::sub(scope),
-                                         selectors,
-                                         do_if,
-                                         file_context,
-                                         0)?;
-                    } else {
-                        self.handle_body(direct,
-                                         sub,
-                                         &mut ScopeImpl::sub(scope),
-                                         selectors,
-                                         do_else,
-                                         file_context,
-                                         0)?;
-                    }
+                    let cond = cond.evaluate(scope).is_true();
+                    let items = if cond { do_if } else { do_else };
+                    self.handle_body(direct,
+                                     sub,
+                                     &mut ScopeImpl::sub(scope),
+                                     selectors,
+                                     items,
+                                     file_context,
+                                     0)?;
                 }
                 SassItem::Each(ref name, ref values, ref body) => {
                     let values = match values.evaluate(scope) {
