@@ -3,7 +3,6 @@ cache: cargo
 before_script:
   - cargo update || true
 rust:
-  - 1.14.0
   - 1.15.1
   - 1.16.0
   - stable
