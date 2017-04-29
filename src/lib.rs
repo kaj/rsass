@@ -60,7 +60,7 @@ mod unit;
 
 pub use error::Error;
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
-use functions::SassFunction;
+pub use functions::SassFunction;
 pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
