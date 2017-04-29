@@ -61,9 +61,11 @@ mod unit;
 pub use error::Error;
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
 pub use functions::SassFunction;
+pub use num_rational::Rational;
 pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
+pub use unit::Unit;
 use valueexpression::{single_value, value_expression};
 #[cfg(test)]
 use valueexpression::ListSeparator;
@@ -523,7 +525,6 @@ named!(body_block<Vec<SassItem>>,
 
 #[test]
 fn test_simple_property() {
-    use num_rational::Rational;
     let one = Rational::from_integer(1);
     fn r(v: u8) -> Rational {
         Rational::from_integer(v as isize)
@@ -546,8 +547,6 @@ fn test_property_2() {
 
 #[cfg(test)]
 fn percentage(v: isize) -> Value {
-    use num_rational::Rational;
-    use unit::Unit;
     Value::Numeric(Rational::from_integer(v), Unit::Percent, false)
 }
 
