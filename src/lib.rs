@@ -298,7 +298,10 @@ named!(at_rule<SassItem>,
        do_parse!(tag!("@") >> // opt_spacelike >>
                  query: is_not!("{}") >>
                  body: body_block >>
-                 (SassItem::AtRule(from_utf8(query).unwrap().into(),
+                 (SassItem::AtRule(from_utf8(query)
+                                       .unwrap()
+                                       .trim_right()
+                                       .into(),
                                    body))));
 
 named!(if_statement<SassItem>,

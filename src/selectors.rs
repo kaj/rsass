@@ -167,7 +167,7 @@ impl fmt::Display for SelectorPart {
             SelectorPart::Simple(ref s) => write!(out, "{}", s),
             SelectorPart::Descendant => write!(out, " "),
             SelectorPart::RelOp(ref c) => {
-                if out.alternate() {
+                if out.alternate() && *c != b'~' {
                     write!(out, "{}", *c as char)
                 } else {
                     write!(out, " {} ", *c as char)

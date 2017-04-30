@@ -128,6 +128,16 @@ fn t08_selector_combinators() {
 }
 
 #[test]
+fn t10_classes_and_ids() {
+    check(b"a + b, .class {\n  blah: blah;\n  bleh: bleh;\n  \
+            d #id, f ~ g.other + h, > i#grar {\n    bloo: bloo;\n    \
+            blee: blee;\n  }\n}",
+          "a+b,.class{blah:blah;bleh:bleh}\
+           a+b d #id,a+b f ~ g.other+h,a+b>i#grar,.class d #id,\
+           .class f ~ g.other+h,.class>i#grar{bloo:bloo;blee:blee}\n")
+}
+
+#[test]
 fn t15_arithmetic_and_lists() {
     check(b"$stuff: 1 2 3;\n\n\
             $three: 3;\n\n\
@@ -216,6 +226,21 @@ fn t22_colors_with_alpha() {
            bloo:rgba(0,255,255,0.7);groo:cyan;hoo:123;moo:45;poo:6;\
            goo:rgba(64,0,191,0.75);boo:#edcba9}
 ")
+}
+
+#[test]
+fn t27_media_queries() {
+    check(b"a b c {\n  blee: blee;\n  \
+            d e f {\n    blah: blah;\n    bloo: bloo;\n  }\n  \
+            g h, i j {\n    \
+            @media print and (foo: 1 2 3), (bar: 3px hux(muz)), \
+            not screen {\n      hey: ho;\n      \
+            k l m {\n        hee: fee;\n      }\n    }\n  }\n\
+            blah: blah;\n}\n",
+          "a b c{blee:blee;blah:blah}a b c d e f{blah:blah;bloo:bloo}\
+           @media print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen{\
+           a b c g h,a b c i j{hey:ho}a b c g h k l m,a b c i j k l m{hee:fee}\
+           }\n")
 }
 
 fn check(input: &[u8], expected: &str) {
