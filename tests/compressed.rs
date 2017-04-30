@@ -128,6 +128,16 @@ fn t08_selector_combinators() {
 }
 
 #[test]
+fn t10_classes_and_ids() {
+    check(b"a + b, .class {\n  blah: blah;\n  bleh: bleh;\n  \
+            d #id, f ~ g.other + h, > i#grar {\n    bloo: bloo;\n    \
+            blee: blee;\n  }\n}",
+          "a+b,.class{blah:blah;bleh:bleh}\
+           a+b d #id,a+b f ~ g.other+h,a+b>i#grar,.class d #id,\
+           .class f ~ g.other+h,.class>i#grar{bloo:bloo;blee:blee}\n")
+}
+
+#[test]
 fn t15_arithmetic_and_lists() {
     check(b"$stuff: 1 2 3;\n\n\
             $three: 3;\n\n\
