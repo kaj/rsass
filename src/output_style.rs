@@ -25,38 +25,20 @@ impl OutputStyle {
                       file_context: FileContext)
                       -> Result<Vec<u8>, Error> {
         let mut globals = GlobalScope::new();
-        let mut result = Vec::new();
-        let mut separate = false;
+        let mut result = CssWriter::new(self.clone());
         for item in items {
             self.handle_root_item(item,
                                   &mut globals,
-                                  &mut separate,
                                   &file_context,
                                   &mut result)?;
         }
-        if result != b"" && result[result.len() - 1] != b'\n' {
-            write!(result, "\n")?;
-        }
-        if result.is_ascii() {
-            Ok(result)
-        } else {
-            let mut r2 = vec![];
-            if self.is_compressed() {
-                // Byte order mark U+FEFF as utf-8.
-                r2.extend_from_slice("\u{feff}".as_bytes());
-            } else {
-                r2.extend_from_slice(b"@charset \"UTF-8\";\n");
-            }
-            r2.extend(result);
-            Ok(r2)
-        }
+        result.get_result()
     }
     fn handle_root_item(&self,
                         item: &SassItem,
                         scope: &mut Scope,
-                        separate: &mut bool,
                         file_context: &FileContext,
-                        result: &mut Write)
+                        result: &mut CssWriter)
                         -> Result<(), Error> {
         match *item {
             SassItem::Import(ref name) => {
@@ -67,15 +49,20 @@ impl OutputStyle {
                         for item in parse_scss_file(&file)? {
                             self.handle_root_item(&item,
                                                   scope,
-                                                  separate,
                                                   &sub_context,
                                                   result)?;
                         }
                     } else {
-                        writeln!(result, "@import url({});", x)?;
+                        write!(result.to_imports(),
+                               "@import url({});{}",
+                               x,
+                               if self.is_compressed() { "" } else { "\n" })?;
                     }
                 } else {
-                    writeln!(result, "@import {};", name)?;
+                    write!(result.to_imports(),
+                           "@import {};{}",
+                           name,
+                           if self.is_compressed() { "" } else { "\n" })?;
                 }
             }
             SassItem::VariableDeclaration {
@@ -93,12 +80,8 @@ impl OutputStyle {
                 }
             }
             SassItem::AtRule(ref query, ref body) => {
-                if *separate {
-                    self.do_indent(result, 0)?;
-                } else {
-                    *separate = true;
-                }
-                write!(result, "@{}{}",
+                result.do_separate()?;
+                write!(result.to_content(), "@{}{}",
                        query,
                        if self.is_compressed() { "{" } else { " {" })?;
                 let mut direct = vec![];
@@ -111,11 +94,11 @@ impl OutputStyle {
                                  file_context,
                                  2)?;
                 if !sub.is_empty() {
-                    self.do_indent(result, 0)?;
-                    result.write_all(&sub)?;
+                    result.do_indent(0)?;
+                    result.to_content().write_all(&sub)?;
                 }
-                self.write_items(result, &direct, 2)?;
-                write!(result, "}}")?;
+                self.write_items(result.to_content(), &direct, 2)?;
+                write!(result.to_content(), "}}")?;
             }
 
             SassItem::MixinDeclaration { ref name, ref args, ref body } => {
@@ -130,7 +113,6 @@ impl OutputStyle {
                     for item in m_body {
                         self.handle_root_item(&item,
                                               &mut scope,
-                                              separate,
                                               file_context,
                                               result)?;
                     }
@@ -153,11 +135,7 @@ impl OutputStyle {
                 let cond = cond.evaluate(scope).is_true();
                 let items = if cond { do_if } else { do_else };
                 for item in items {
-                    self.handle_root_item(item,
-                                          scope,
-                                          separate,
-                                          file_context,
-                                          result)?;
+                    self.handle_root_item(item, scope, file_context, result)?;
                 }
             }
             SassItem::Each(ref name, ref values, ref body) => {
@@ -170,7 +148,6 @@ impl OutputStyle {
                     for item in body {
                         self.handle_root_item(item,
                                               scope,
-                                              separate,
                                               file_context,
                                               result)?;
                     }
@@ -192,7 +169,6 @@ impl OutputStyle {
                     for item in body {
                         self.handle_root_item(item,
                                               &mut scope,
-                                              separate,
                                               file_context,
                                               result)?;
                     }
@@ -204,7 +180,6 @@ impl OutputStyle {
                     for item in body {
                         self.handle_root_item(item,
                                               &mut scope,
-                                              separate,
                                               file_context,
                                               result)?;
                     }
@@ -212,12 +187,14 @@ impl OutputStyle {
             }
 
             SassItem::Rule(ref s, ref b) => {
-                if *separate {
-                    self.do_indent(result, 0)?;
-                } else {
-                    *separate = true;
-                }
-                self.write_rule(s, b, result, scope, None, file_context, 0)?;
+                result.do_separate()?;
+                self.write_rule(s,
+                                b,
+                                result.to_content(),
+                                scope,
+                                None,
+                                file_context,
+                                0)?;
             }
             SassItem::NamespaceRule(..) => {
                 panic!("Global namespaced property not allowed");
@@ -227,12 +204,8 @@ impl OutputStyle {
             }
             SassItem::Comment(ref c) => {
                 if !self.is_compressed() {
-                    if *separate {
-                        self.do_indent(result, 0)?;
-                    } else {
-                        *separate = true;
-                    }
-                    write!(result, "/*{}*/", c)?;
+                    result.do_separate()?;
+                    write!(result.to_content(), "/*{}*/", c)?;
                 }
             }
             SassItem::None => (),
@@ -576,6 +549,69 @@ impl OutputStyle {
 
     fn is_compressed(&self) -> bool {
         self == &OutputStyle::Compressed
+    }
+}
+
+struct CssWriter {
+    imports: Vec<u8>,
+    contents: Vec<u8>,
+    style: OutputStyle,
+    separate: bool,
+}
+
+impl CssWriter {
+    fn new(style: OutputStyle) -> Self {
+        CssWriter {
+            imports: Vec::new(),
+            contents: Vec::new(),
+            style: style,
+            separate: false,
+        }
+    }
+    fn get_result(mut self) -> Result<Vec<u8>, Error> {
+        if self.contents.last().unwrap_or(&b'\n') != &b'\n' {
+            write!(&mut self.contents, "\n")?;
+        }
+
+        let mut result = vec![];
+        if !self.imports.is_ascii() || !self.contents.is_ascii() {
+            if self.is_compressed() {
+                // U+FEFF is byte order mark, used to show encoding.
+                result.extend_from_slice("\u{feff}".as_bytes());
+            } else {
+                result.extend_from_slice(b"@charset \"UTF-8\";\n");
+            }
+        }
+        result.extend(self.imports);
+        result.extend(self.contents);
+        Ok(result)
+    }
+
+    fn to_imports(&mut self) -> &mut Write {
+        &mut self.imports
+    }
+    fn to_content(&mut self) -> &mut Write {
+        &mut self.contents
+    }
+    fn do_separate(&mut self) -> Result<(), Error> {
+        if self.separate {
+            self.do_indent(0)?;
+        } else {
+            self.separate = true;
+        }
+        Ok(())
+    }
+    fn do_indent(&mut self, steps: usize) -> Result<(), Error> {
+        if !self.is_compressed() {
+            write!(self.contents, "\n")?;
+            for _i in 0..steps {
+                write!(self.contents, " ")?;
+            }
+        }
+        Ok(())
+    }
+    fn is_compressed(&self) -> bool {
+        self.style == OutputStyle::Compressed
     }
 }
 

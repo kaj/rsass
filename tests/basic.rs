@@ -778,7 +778,19 @@ fn t41_slashy_urls() {
            blee: url(/*looks-like-a*/comment);\n}\n")
 }
 
-// TODO Implement test 42
+#[test]
+fn t42_css_imports() {
+    check(b"div {\n  color: red;\n}\n\n\
+            @import \"hux\\ bux.css\";\n\
+            @import \"foo.css\";\n\n\
+            span {\n  color: blue;\n}\n\n\
+            @import \"bar.css\";",
+          "@import url(hux bux.css);\n\
+           @import url(foo.css);\n\
+           @import url(bar.css);\n\
+           div {\n  color: red;\n}\n\n\
+           span {\n  color: blue;\n}\n")
+}
 
 #[test]
 fn t43_str_length() {
