@@ -7,10 +7,22 @@ use std::collections::BTreeMap;
 use std::sync::Mutex;
 use valueexpression::Value;
 
+/// Variables, functions and mixins are defined in a `Scope`.
+///
+/// A scope can be a local scope, e.g. in a function, or the global scope.
+/// All scopes except the global scope has a parent.
+/// The global scope is global to a sass document, multiple different
+/// global scopes may exists in the same rust-language process.
 pub trait Scope {
+    /// Define a variable with a value.
+    ///
+    /// The `$` sign is not included in `name`.
     fn define(&mut self, name: &str, val: &Value);
     fn define_default(&mut self, name: &str, val: &Value, global: bool);
+    /// Define a variable in the global scope that is an ultimate
+    /// parent of this scope.
     fn define_global(&self, name: &str, val: &Value);
+    /// Get the Value for a variable.
     fn get(&self, name: &str) -> Value;
     fn get_global(&self, name: &str) -> Value;
 
