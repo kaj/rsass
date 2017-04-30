@@ -228,6 +228,21 @@ fn t22_colors_with_alpha() {
 ")
 }
 
+#[test]
+fn t27_media_queries() {
+    check(b"a b c {\n  blee: blee;\n  \
+            d e f {\n    blah: blah;\n    bloo: bloo;\n  }\n  \
+            g h, i j {\n    \
+            @media print and (foo: 1 2 3), (bar: 3px hux(muz)), \
+            not screen {\n      hey: ho;\n      \
+            k l m {\n        hee: fee;\n      }\n    }\n  }\n\
+            blah: blah;\n}\n",
+          "a b c{blee:blee;blah:blah}a b c d e f{blah:blah;bloo:bloo}\
+           @media print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen{\
+           a b c g h,a b c i j{hey:ho}a b c g h k l m,a b c i j k l m{hee:fee}\
+           }\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Compressed)
                    .and_then(|s| Ok(String::from_utf8(s)?))

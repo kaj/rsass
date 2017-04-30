@@ -98,7 +98,9 @@ impl OutputStyle {
                 } else {
                     *separate = true;
                 }
-                write!(result, "@{}{{", query)?;
+                write!(result, "@{}{}",
+                       query,
+                       if self.is_compressed() { "{" } else { " {" })?;
                 let mut direct = vec![];
                 let mut sub = vec![];
                 self.handle_body(&mut direct,
@@ -344,7 +346,9 @@ impl OutputStyle {
                                      file_context,
                                      2)?;
 
-                    write!(sub, "@{}{{", query)?;
+                    write!(sub, "@{}{}",
+                           query,
+                           if self.is_compressed() { "{" } else { " {" })?;
                     if !s1.is_empty() {
                         self.do_indent(sub, 2)?;
                         write!(sub,
