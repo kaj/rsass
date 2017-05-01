@@ -67,9 +67,7 @@ use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
 pub use unit::Unit;
 use valueexpression::{single_value, value_expression};
-#[cfg(test)]
-use valueexpression::ListSeparator;
-pub use valueexpression::Value;
+pub use valueexpression::{ListSeparator, Quotes, Value};
 pub use variablescope::{GlobalScope, Scope};
 
 /// Parse scss data and write css in the given style.
@@ -610,6 +608,5 @@ fn test_variable_declaration_default() {
 
 #[cfg(test)]
 fn string(v: &str) -> Value {
-    use valueexpression::Quotes;
     Value::Literal(v.into(), Quotes::None)
 }
