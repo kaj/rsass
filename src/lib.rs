@@ -60,13 +60,15 @@ mod unit;
 
 pub use error::Error;
 use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
-use functions::SassFunction;
+pub use functions::SassFunction;
+pub use num_rational::Rational;
 pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
-use valueexpression::{Value, single_value, value_expression};
-#[cfg(test)]
-use valueexpression::ListSeparator;
+pub use unit::Unit;
+use valueexpression::{single_value, value_expression};
+pub use valueexpression::{ListSeparator, Quotes, Value};
+pub use variablescope::{GlobalScope, Scope};
 
 /// Parse scss data and write css in the given style.
 ///
@@ -87,7 +89,7 @@ pub fn compile_scss(input: &[u8],
                     -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
     let items = parse_scss_data(input)?;
-    style.write_root(&items, file_context)
+    style.write_root(&items, &mut GlobalScope::new(), file_context)
 }
 
 /// Parse a file of scss data and write css in the given style.
@@ -110,7 +112,7 @@ pub fn compile_scss_file(file: &Path,
     let file_context = FileContext::new();
     let (sub_context, file) = file_context.file(file);
     let items = parse_scss_file(&file)?;
-    style.write_root(&items, sub_context)
+    style.write_root(&items, &mut GlobalScope::new(), sub_context)
 }
 
 /// A file context specifies where to find files to load.
@@ -167,7 +169,7 @@ pub fn parse_scss_file(file: &Path) -> Result<Vec<SassItem>, Error> {
     parse_scss_data(&data)
 }
 
-fn parse_scss_data(data: &[u8]) -> Result<Vec<SassItem>, Error> {
+pub fn parse_scss_data(data: &[u8]) -> Result<Vec<SassItem>, Error> {
     match sassfile(data) {
         IResult::Done(b"", items) => Ok(items),
         IResult::Done(rest, _styles) => {
@@ -524,7 +526,6 @@ named!(body_block<Vec<SassItem>>,
 
 #[test]
 fn test_simple_property() {
-    use num_rational::Rational;
     let one = Rational::from_integer(1);
     fn r(v: u8) -> Rational {
         Rational::from_integer(v as isize)
@@ -547,8 +548,6 @@ fn test_property_2() {
 
 #[cfg(test)]
 fn percentage(v: isize) -> Value {
-    use num_rational::Rational;
-    use unit::Unit;
     Value::Numeric(Rational::from_integer(v), Unit::Percent, false)
 }
 
@@ -609,6 +608,5 @@ fn test_variable_declaration_default() {
 
 #[cfg(test)]
 fn string(v: &str) -> Value {
-    use valueexpression::Quotes;
     Value::Literal(v.into(), Quotes::None)
 }

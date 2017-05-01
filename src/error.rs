@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use std::string::FromUtf8Error;
 use valueexpression::Value;
 
+/// Most functions in rsass that returns a Result uses this Error type.
 #[derive(Debug)]
 pub enum Error {
     Input(PathBuf, io::Error),
@@ -22,6 +23,9 @@ impl Error {
                                 actual))
     }
 
+    /// Wrong kind of argument to a sass function.
+    /// `expected` is a string describing what the parameter should
+    /// have been, `actual` is the argument.
     pub fn badarg(expected: &str, actual: &Value) -> Error {
         Error::BadArguments(format!("expected {}, got {} = {}",
                                     expected,
@@ -29,6 +33,7 @@ impl Error {
                                     actual))
     }
 
+    /// Multiple-argument variant of `badarg`.
     pub fn badargs(expected: &[&str], actual: &[&Value]) -> Error {
         // TODO Better message!
         Error::BadArguments(format!("expected {:?}, got {:?}",
