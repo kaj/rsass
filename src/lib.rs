@@ -64,7 +64,7 @@ pub use functions::SassFunction;
 pub use num_rational::Rational;
 pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
-use selectors::{Selector, selector};
+use selectors::{Selectors, selectors};
 pub use unit::Unit;
 pub use valueexpression::{ListSeparator, Quotes, Value};
 use valueexpression::{single_value, value_expression};
@@ -237,7 +237,7 @@ pub enum SassItem {
     },
     While(Value, Vec<SassItem>),
 
-    Rule(Vec<Selector>, Vec<SassItem>),
+    Rule(Selectors, Vec<SassItem>),
     NamespaceRule(String, Value, Vec<SassItem>),
     Property(String, Value, bool),
     Comment(String),
@@ -246,9 +246,7 @@ pub enum SassItem {
 
 named!(rule<SassItem>,
        do_parse!(opt_spacelike >>
-                 selectors: separated_nonempty_list!(
-                     do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ()),
-                     selector) >>
+                 selectors: selectors >>
                  opt!(is_a!(", \t\n")) >>
                  body: body_block >>
                  (SassItem::Rule(selectors, body))));
@@ -359,7 +357,7 @@ fn if_with_no_else() {
                                      Operator::Equal,
                                      Box::new(Value::scalar(1))),
                         vec![SassItem::Rule(
-                            vec![selector(b"p").unwrap().1],
+                            selectors(b"p").unwrap().1,
                             vec![SassItem::Property("color".into(),
                                                     Value::black(),
                                                     false)]),
@@ -463,8 +461,7 @@ fn test_mixin_declaration_default_and_subrules() {
                                           string("baz"),
                                           false),
                        SassItem::Rule(
-                           vec![selector(b"foo").unwrap().1,
-                                selector(b"bar").unwrap().1],
+                           selectors(b"foo, bar").unwrap().1,
                            vec![SassItem::Property(
                                     "property".into(),
                                     Value::Variable("b".into()),

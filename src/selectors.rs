@@ -5,6 +5,28 @@ use std::io::Write;
 use std::str::from_utf8;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Selectors(pub Vec<Selector>);
+
+impl Selectors {
+    pub fn root() -> Self {
+        Selectors(vec![Selector::root()])
+    }
+    pub fn inside(&self, parent: Option<&Self>) -> Self {
+        if let Some(parent) = parent {
+            let mut result = Vec::new();
+            for ref p in &parent.0 {
+                for ref s in &self.0 {
+                    result.push(p.join(s));
+                }
+            }
+            Selectors(result)
+        } else {
+            self.clone()
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Selector(Vec<SelectorPart>);
 
 impl Selector {
@@ -38,9 +60,15 @@ pub enum SelectorPart {
     Descendant,
     RelOp(u8), // >, +, ~
     Attribute { name: String, op: String, val: String },
-    Pseudo { name: String, arg: Option<String> },
+    Pseudo { name: String, arg: Option<Selectors> },
     BackRef,
 }
+
+named!(pub selectors<Selectors>,
+       map!(separated_nonempty_list!(
+           do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ()),
+           selector),
+            |s| Selectors(s)));
 
 named!(pub selector<Selector>,
        map!(many1!(selector_part),
@@ -58,11 +86,11 @@ named!(selector_part<&[u8], SelectorPart>,
            value!(SelectorPart::Simple("*".to_string()), tag!("*")) |
            do_parse!(tag!(":") >>
                      name: selector_string >>
-                     arg: opt!(delimited!(tag!("("), is_not!(")"),
+                     arg: opt!(delimited!(tag!("("), selectors,
                                           tag!(")"))) >>
                      (SelectorPart::Pseudo {
                          name: name,
-                         arg: arg.map(|a| from_utf8(a).unwrap().into())
+                         arg: arg,
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>
                      name: selector_string >> opt_spacelike >>
@@ -138,6 +166,20 @@ impl SelectorPart {
     }
 }
 
+impl fmt::Display for Selectors {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        if let Some((first, rest)) = self.0.split_first() {
+            first.fmt(out)?;
+            let separator = if out.alternate() { "," } else { ", " };
+            for item in rest {
+                out.write_str(separator)?;
+                item.fmt(out)?;
+            }
+        }
+        Ok(())
+    }
+}
+
 impl fmt::Display for Selector {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         // Note: There should be smarter whitespace-handling here, avoiding
@@ -178,7 +220,11 @@ impl fmt::Display for SelectorPart {
             }
             SelectorPart::Pseudo { ref name, ref arg } => {
                 if let Some(ref arg) = *arg {
-                    write!(out, ":{}({})", name, arg)
+                    if out.alternate() {
+                        write!(out, ":{}({:#})", name, arg)
+                    } else {
+                        write!(out, ":{}({})", name, arg)
+                    }
                 } else {
                     write!(out, ":{}", name)
                 }

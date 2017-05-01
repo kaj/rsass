@@ -1,7 +1,7 @@
 use super::{FileContext, SassItem, parse_scss_file};
 use error::Error;
 use formalargs::FormalArgs;
-use selectors::Selector;
+use selectors::Selectors;
 use std::ascii::AsciiExt;
 use std::fmt;
 use std::io::Write;
@@ -86,7 +86,7 @@ impl OutputStyle {
                 self.handle_body(&mut direct,
                                  &mut sub,
                                  &mut ScopeImpl::sub(scope),
-                                 &[Selector::root()],
+                                 &Selectors::root(),
                                  body,
                                  file_context,
                                  2)?;
@@ -210,25 +210,15 @@ impl OutputStyle {
         Ok(())
     }
     fn write_rule(&self,
-                  selectors: &[Selector],
+                  selectors: &Selectors,
                   body: &[SassItem],
                   out: &mut Write,
                   scope: &mut Scope,
-                  parent: Option<&[Selector]>,
+                  parent: Option<&Selectors>,
                   file_context: &FileContext,
                   indent: usize)
                   -> Result<(), Error> {
-        let selectors = if let Some(parent) = parent {
-            let mut result = Vec::new();
-            for p in parent {
-                for s in selectors {
-                    result.push(p.join(s));
-                }
-            }
-            result
-        } else {
-            selectors.into()
-        };
+        let selectors = selectors.inside(parent);
         let mut direct = Vec::new();
         let mut sub = Vec::new();
         self.handle_body(&mut direct,
@@ -240,10 +230,11 @@ impl OutputStyle {
                          indent)?;
         if !direct.is_empty() {
             self.do_indent_no_lf(out, indent)?;
-            write!(out,
-                   "{}{}{{",
-                   self.join_selectors(&selectors),
-                   self.opt_space())?;
+            if self.is_compressed() {
+                write!(out, "{:#}{{", selectors)?;
+            } else {
+                write!(out, "{} {{", selectors)?;
+            }
             self.write_items(out, &direct, indent + 2)?;
             write!(out, "}}")?;
             self.do_indent(out, 0)?;
@@ -252,23 +243,11 @@ impl OutputStyle {
         Ok(())
     }
 
-    fn join_selectors(&self, selectors: &[Selector]) -> String {
-        selectors
-            .iter()
-            .map(|s| if self.is_compressed() {
-                     format!("{:#}", s)
-                 } else {
-                     format!("{}", s)
-                 })
-            .collect::<Vec<_>>()
-            .join(if self.is_compressed() { "," } else { ", " })
-    }
-
     fn handle_body(&self,
                    direct: &mut Vec<CssBodyItem>,
                    sub: &mut Write,
                    scope: &mut Scope,
-                   selectors: &[Selector],
+                   selectors: &Selectors,
                    body: &[SassItem],
                    file_context: &FileContext,
                    indent: usize)
@@ -321,10 +300,11 @@ impl OutputStyle {
                            if self.is_compressed() { "{" } else { " {" })?;
                     if !s1.is_empty() {
                         self.do_indent(sub, 2)?;
-                        write!(sub,
-                               "{}{}{{",
-                               self.join_selectors(selectors),
-                               self.opt_space())?;
+                        if self.is_compressed() {
+                            write!(sub, "{:#}{{", selectors)?;
+                        } else {
+                            write!(sub, "{} {{", selectors)?;
+                        }
                         self.write_items(sub, &s1, 4)?;
                         write!(sub, "}}")?;
                     }
@@ -538,10 +518,6 @@ impl OutputStyle {
             }
         }
         Ok(())
-    }
-
-    fn opt_space(&self) -> &'static str {
-        if self.is_compressed() { "" } else { " " }
     }
 
     fn is_compressed(&self) -> bool {

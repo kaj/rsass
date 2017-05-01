@@ -243,6 +243,22 @@ fn t27_media_queries() {
            }\n")
 }
 
+#[test]
+fn t50_wrapped_pseudo_selectors() {
+    check(b"div {\n  \
+            :-moz-any(ol p.blah, ul, menu, dir) \
+            :-moz-any(ol span + h1, ul, menu, dir) ul {\n    \
+            list-style-type: square;\n  }\n  \
+            :-moz-any(ol span + h1, ul, menu, dir) ul {\n    \
+            list-style-type: square;\n  }\n  \
+            :foo(p div) {\n    hi: hi;\n  }\n  \
+            :foo(ol) {\n    hi: hi;\n  }\n}\n",
+          "div :-moz-any(ol p.blah,ul,menu,dir) \
+           :-moz-any(ol span+h1,ul,menu,dir) ul{list-style-type:square}\
+           div :-moz-any(ol span+h1,ul,menu,dir) ul{list-style-type:square}\
+           div :foo(p div){hi:hi}div :foo(ol){hi:hi}\n")
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(compile_scss(input, OutputStyle::Compressed)
                    .and_then(|s| Ok(String::from_utf8(s)?))
