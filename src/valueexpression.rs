@@ -540,7 +540,6 @@ named!(pub single_value<&[u8], Value>,
                          u.unwrap_or(Unit::None),
                          false))) |
            do_parse!(tag!("$") >>  name: name >> (Value::Variable(name))) |
-           interpolation |
            do_parse!(tag!("#") >> r: hexchar2 >> g: hexchar2 >> b: hexchar2 >>
                      (Value::Color(from_hex(r),
                                    from_hex(g),
@@ -585,7 +584,7 @@ named!(interpolation<Value>,
             |v| Value::Interpolation(Box::new(v))));
 
 named!(unquoted_literal<Value>,
-       do_parse!(first: unquoted_literal_part >>
+       do_parse!(first: alt!(interpolation | unquoted_literal_part) >>
                  all: fold_many0!(
                      alt!(interpolation | unquoted_literal_part |
                           value!(Value::Literal("//".into(), Quotes::None),

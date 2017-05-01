@@ -203,7 +203,6 @@ fn unspaced_4_0_b4() {
 }
 
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_c1() {
     check("#{$input}literal", "literalliteral")
 }
@@ -213,23 +212,19 @@ fn unspaced_4_0_c2() {
     check("#{$input}$input", "literal literal")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_c3() {
     check("#{$input}#{$input}", "literalliteral")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_c4() {
     check("#{$input}#{literal}", "literalliteral")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_c5() {
     check("#{$input}#{\"literal\"}", "literalliteral")
 }
 
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_d1() {
     check("#{literal}literal", "literalliteral")
 }
@@ -239,23 +234,19 @@ fn unspaced_4_0_d2() {
     check("#{literal}$input", "literal literal")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_d3() {
     check("#{literal}#{$input}", "literalliteral")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_d4() {
     check("#{literal}#{literal}", "literalliteral")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_d5() {
     check("#{literal}#{\"literal\"}", "literalliteral")
 }
 
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_e1() {
     check("#{\"literal\"}literal", "literalliteral")
 }
@@ -265,17 +256,14 @@ fn unspaced_4_0_e2() {
     check("#{\"literal\"}$input", "literal literal")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_e3() {
     check("#{\"literal\"}#{$input}", "literalliteral")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_e4() {
     check("#{\"literal\"}#{literal}", "literalliteral")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_e5() {
     check("#{\"literal\"}#{\"literal\"}", "literalliteral")
 }
