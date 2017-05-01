@@ -426,7 +426,8 @@ named!(pub space_list<&[u8], Value>,
                  list: fold_many0!(
                      alt_complete!(
                          preceded!(multispace, single_expression) |
-                         interpolation),
+                         interpolation |
+                         variable),
                      vec![first],
                      |mut list: Vec<Value>, item| { list.push(item); list }) >>
                  (if list.len() == 1 {
@@ -539,7 +540,7 @@ named!(pub single_value<&[u8], Value>,
                          },
                          u.unwrap_or(Unit::None),
                          false))) |
-           do_parse!(tag!("$") >>  name: name >> (Value::Variable(name))) |
+           variable |
            do_parse!(tag!("#") >> r: hexchar2 >> g: hexchar2 >> b: hexchar2 >>
                      (Value::Color(from_hex(r),
                                    from_hex(g),
@@ -578,6 +579,9 @@ named!(pub single_value<&[u8], Value>,
                     Some(v) => Value::Paren(Box::new(v)),
                     None => Value::List(vec![], ListSeparator::Space),
                 })));
+
+named!(variable<Value>,
+       do_parse!(tag!("$") >>  name: name >> (Value::Variable(name))));
 
 named!(interpolation<Value>,
        map!(delimited!(tag!("#{"), value_expression, tag!("}")),

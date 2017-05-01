@@ -167,7 +167,6 @@ fn spaced_b16() {
 }
 
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_a1() {
     check("literal$input", "literal literal")
 }
@@ -185,7 +184,6 @@ fn unspaced_4_0_a4() {
 }
 
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_b1() {
     check("$input$input", "literal literal")
 }
@@ -207,7 +205,6 @@ fn unspaced_4_0_c1() {
     check("#{$input}literal", "literalliteral")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_c2() {
     check("#{$input}$input", "literal literal")
 }
@@ -229,7 +226,6 @@ fn unspaced_4_0_d1() {
     check("#{literal}literal", "literalliteral")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_d2() {
     check("#{literal}$input", "literal literal")
 }
@@ -251,7 +247,6 @@ fn unspaced_4_0_e1() {
     check("#{\"literal\"}literal", "literalliteral")
 }
 #[test]
-#[ignore] // TODO fix this
 fn unspaced_4_0_e2() {
     check("#{\"literal\"}$input", "literal literal")
 }
