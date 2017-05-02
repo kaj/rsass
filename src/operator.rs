@@ -50,8 +50,11 @@ impl Operator {
                             Value::Literal(format!("{}{}", a, b), Quotes::None)
                         }
                     }
-                    (Value::Literal(a, q), Value::Literal(b, _)) => {
-                        Value::Literal(format!("{}{}", a, b), q)
+                    (Value::Literal(a, Quotes::None), Value::Literal(b, _)) => {
+                        Value::Literal(format!("{}{}", a, b), Quotes::None)
+                    }
+                    (Value::Literal(a, _), Value::Literal(b, _)) => {
+                        Value::Literal(format!("{}{}", a, b), Quotes::Double)
                     }
                     (Value::Literal(a, q), b) => {
                         Value::Literal(format!("{}{}", a, b), q)
