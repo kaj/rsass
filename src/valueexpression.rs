@@ -6,7 +6,7 @@ use nom::multispace;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use operator::Operator;
-use parseutil::{name, opt_spacelike, spacelike};
+use parseutil::{is_name_char, name, opt_spacelike, spacelike};
 use std::fmt;
 use std::str::{FromStr, from_utf8};
 use unit::{Unit, unit};
@@ -591,22 +591,22 @@ named!(unquoted_literal<Value>,
        do_parse!(first: alt!(interpolation | unquoted_literal_part) >>
                  all: fold_many0!(
                      alt!(interpolation | unquoted_literal_part |
-                          value!(Value::Literal("//".into(), Quotes::None),
-                                 tag!("//")) |
-                          value!(Value::Literal("=".into(), Quotes::None),
-                                 tag!("=")) |
-                          value!(Value::Literal(",".into(), Quotes::None),
-                                 terminated!(tag!(","),
-                                             peek!(unquoted_literal_part))) |
-                          value!(Value::Literal("+".into(), Quotes::None),
-                                 terminated!(tag!("+"),
-                                             peek!(unquoted_literal_part)))
-                          ),
+                          map!(preceded!(tag!("//"),
+                                         take_while1!(is_ext_str_char)),
+                               |v| Value::Literal(
+                                   format!("//{}", from_utf8(v).unwrap()),
+                                   Quotes::None))),
                      first,
                      |a, b| {
                          Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
                      }) >>
                  (all)));
+
+fn is_ext_str_char(c: u8) -> bool {
+    is_name_char(c) || c == b'*' || c == b'+' || c == b',' ||
+    c == b'.' || c == b'/' || c == b':' || c == b'=' ||
+    c == b'?' || c == b'|'
+}
 
 named!(unquoted_literal_part<Value>,
        map!(is_not!("+*/=;,$(){{}}! \n\t'\"#"), |val| {

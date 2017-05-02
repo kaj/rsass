@@ -156,6 +156,16 @@ fn for_in_functions() {
 }
 
 #[test]
+fn functions() {
+    check(b"@function foo($x, $y, $z) {\n  @while $x < $y {\n    \
+            $z: transform($z);\n    @return $z;\n  }\n}\n\n\
+            @function bar($x) {\n  @if $x {\n    @return YES;\n  }\n}\n\n\
+            div {\n  answer: bar(true);\n  \
+            flanswer: fudge(mux+flux) + mudge(a/b);\n}",
+          "div {\n  answer: YES;\n  flanswer: fudge(muxflux)mudge(a/b);\n}\n")
+}
+
+#[test]
 fn functions_and_mixins() {
     check(b"@function foo() {\n  @return \"hello\";\n}\n\n\
             @mixin foo() {\n  content: \"hello\";\n}\n\n\
