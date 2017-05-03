@@ -431,9 +431,10 @@ impl OutputStyle {
                                     indent)?;
                 }
                 SassItem::NamespaceRule(ref name, ref value, ref body) => {
+                    let value = value.evaluate(scope);
                     if !value.is_null() {
                         direct.push(CssBodyItem::Property(name.clone(),
-                                                          value.evaluate(scope),
+                                                          value,
                                                           false));
                     }
                     let mut t = Vec::new();

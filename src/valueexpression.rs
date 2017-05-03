@@ -82,6 +82,7 @@ impl Value {
             Value::Literal(..) => "string",
             Value::Numeric(..) => "number",
             Value::List(..) => "list",
+            Value::Null => "null",
             _ => "unknown",
         }
     }
@@ -103,7 +104,11 @@ impl Value {
     }
 
     pub fn is_null(&self) -> bool {
-        *self == Value::Null
+        match *self {
+            Value::Null => true,
+            Value::List(ref list, _) => list.iter().all(|v| v.is_null()),
+            _ => false,
+        }
     }
 
     pub fn integer_value(&self) -> Result<isize, Error> {
@@ -214,6 +219,7 @@ impl Value {
             }
             Value::Interpolation(ref v) => {
                 match v.do_evaluate(scope, true) {
+                    Value::Null => Value::Null,
                     Value::Literal(s, _) => Value::Literal(s, Quotes::None),
                     v => Value::Literal(format!("{}", v), Quotes::None),
                 }
@@ -382,6 +388,7 @@ impl fmt::Display for Value {
                     write!(out, "{}{}", op, v)
                 }
             }
+            &Value::Null => Ok(()),
             x => write!(out, "TODO {:?}", x),
         }
     }
@@ -613,7 +620,9 @@ fn is_ext_str_char(c: u8) -> bool {
 named!(unquoted_literal_part<Value>,
        map!(is_not!("+*/=;,$(){{}}! \n\t'\"#"), |val| {
            let val = from_utf8(val).unwrap().to_string();
-           if let Some((r, g, b)) = name_to_rgb(&val) {
+           if val == "null" {
+               Value::Null
+           } else if let Some((r, g, b)) = name_to_rgb(&val) {
                Value::Color(r, g, b, Rational::from_integer(1), Some(val))
            } else {
                Value::Literal(val, Quotes::None)
