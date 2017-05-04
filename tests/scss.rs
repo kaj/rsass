@@ -72,8 +72,7 @@ fn basic_function() {
 
 #[test]
 fn block_comment_in_script() {
-    check(b"foo {a: 1 + /* flang */ bar}\n",
-          "foo {\n  a: 1bar;\n}\n")
+    check(b"foo {a: 1 + /* flang */ bar}\n", "foo {\n  a: 1bar;\n}\n")
 }
 
 #[test]
