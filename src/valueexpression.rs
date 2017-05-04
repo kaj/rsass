@@ -6,7 +6,7 @@ use nom::multispace;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use operator::Operator;
-use parseutil::{is_name_char, name, opt_spacelike, spacelike};
+use parseutil::{is_name_char, name, opt_spacelike, spacelike2};
 use std::fmt;
 use std::str::{FromStr, from_utf8};
 use unit::{Unit, unit};
@@ -456,10 +456,10 @@ named!(pub single_expression<Value>,
                                op: alt_complete!(
                                    value!(Operator::And,
                                           preceded!(tag!("and"),
-                                                    spacelike)) |
+                                                    spacelike2)) |
                                    value!(Operator::Or,
                                           preceded!(tag!("or"),
-                                                    spacelike))) >>
+                                                    spacelike2))) >>
                                opt!(multispace) >>
                                b: single_expression >>
                                (op, b)),
@@ -494,11 +494,11 @@ named!(pub sum_expression<Value>,
                                        value!(Operator::Minus, tag!("-"))) >>
                                    b: term_value >>
                                    (op, b)) |
-                         do_parse!(spacelike >>
+                         do_parse!(spacelike2 >>
                                    op: alt_complete!(
                                        value!(Operator::Plus, tag!("+")) |
                                        value!(Operator::Minus, tag!("-"))) >>
-                                   spacelike >>
+                                   spacelike2 >>
                                    b: term_value >>
                                    (op, b))),
                      a,

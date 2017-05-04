@@ -71,6 +71,12 @@ fn basic_function() {
 }
 
 #[test]
+fn block_comment_in_script() {
+    check(b"foo {a: 1 + /* flang */ bar}\n",
+          "foo {\n  a: 1bar;\n}\n")
+}
+
+#[test]
 fn css_block_directive_with_semicolon() {
     check(b"@foo {\n  a: b; }\n\n@bar {\n  a: b; }\n",
           "@foo {\n  a: b;\n}\n@bar {\n  a: b;\n}\n")

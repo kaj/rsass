@@ -5,6 +5,10 @@ named!(pub spacelike<()>,
        fold_many1!(alt_complete!(ignore_space |ignore_lcomment),
                    (),
                    |(), ()| ()));
+named!(pub spacelike2<()>,
+       terminated!(spacelike,
+                   ignore_comments));
+
 named!(pub opt_spacelike<()>,
        fold_many0!(alt_complete!(ignore_space | ignore_lcomment),
                    (),
