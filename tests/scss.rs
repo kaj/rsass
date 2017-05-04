@@ -145,6 +145,19 @@ fn each_in_functions() {
            c: a, b, color, d;\n}\n")
 }
 
+mod feature_queries {
+    use super::check;
+
+    #[test]
+    fn nested() {
+        check(b".foo {\n     display: block;\n     \
+                @supports (display: flex) {\n         display: flex;\n     \
+                }\n }\n",
+              ".foo {\n  display: block;\n}\n@supports (display: flex) {\n  \
+               .foo {\n    display: flex;\n  }\n}\n")
+    }
+}
+
 #[test]
 fn for_in_functions() {
     check(b"@function foo() {\n  $limit: 10;\n  $y: 0;\n  \

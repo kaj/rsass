@@ -308,8 +308,8 @@ impl OutputStyle {
                         self.write_items(sub, &s1, 4)?;
                         write!(sub, "}}")?;
                     }
+                    self.do_indent(sub, 0)?;
                     if !s2.is_empty() {
-                        self.do_indent(sub, 0)?;
                         sub.write_all(&s2)?;
                     }
                     write!(sub, "}}")?;
