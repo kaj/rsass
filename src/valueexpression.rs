@@ -568,6 +568,10 @@ named!(pub single_value<&[u8], Value>,
                                                 from_utf8(r).unwrap(),
                                                 from_utf8(g).unwrap(),
                                                 from_utf8(b).unwrap()))))) |
+           map!(preceded!(tag!("-"), single_value),
+                |s| Value::UnaryOp(Operator::Minus, Box::new(s))) |
+           map!(preceded!(tag!("+"), single_value),
+                |s| Value::UnaryOp(Operator::Plus, Box::new(s))) |
            do_parse!(name: name >> args: call_args >>
                      (Value::Call(name, args))) |
            unquoted_literal |
@@ -577,10 +581,6 @@ named!(pub single_value<&[u8], Value>,
            map!(tag!("''"),
                 |_| Value::Literal("".into(), Quotes::Single)) |
            singlequoted_string |
-           map!(preceded!(tag!("-"), single_value),
-                |s| Value::UnaryOp(Operator::Minus, Box::new(s))) |
-           map!(preceded!(tag!("+"), single_value),
-                |s| Value::UnaryOp(Operator::Plus, Box::new(s))) |
            map!(delimited!(preceded!(tag!("("), opt_spacelike),
                            opt!(value_expression),
                            terminated!(opt_spacelike, tag!(")"))),
