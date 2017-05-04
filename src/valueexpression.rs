@@ -572,13 +572,13 @@ named!(pub single_value<&[u8], Value>,
                                                 from_utf8(r).unwrap(),
                                                 from_utf8(g).unwrap(),
                                                 from_utf8(b).unwrap()))))) |
+           do_parse!(name: name >> args: call_args >>
+                     (Value::Call(name, args))) |
+           unquoted_literal |
            map!(preceded!(tag!("-"), single_value),
                 |s| Value::UnaryOp(Operator::Minus, Box::new(s))) |
            map!(preceded!(tag!("+"), single_value),
                 |s| Value::UnaryOp(Operator::Plus, Box::new(s))) |
-           do_parse!(name: name >> args: call_args >>
-                     (Value::Call(name, args))) |
-           unquoted_literal |
            map!(tag!("\"\""),
                 |_| Value::Literal("".into(), Quotes::Double)) |
            quoted_string |
@@ -613,7 +613,12 @@ named!(unquoted_literal<Value>,
                      |a, b| {
                          Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
                      }) >>
-                 (all)));
+                 (if all != Value::Literal("-".into(), Quotes::None) {
+                     all
+                 } else {
+                     use nom::{ErrorKind, IResult};
+                     return IResult::Error(ErrorKind::Alpha);
+                 })));
 
 fn is_ext_str_char(c: u8) -> bool {
     is_name_char(c) || c == b'*' || c == b'+' || c == b',' ||

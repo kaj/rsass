@@ -18,7 +18,9 @@ named!(pub ignore_comments<()>,
                    |(), ()| ()));
 
 named!(pub name<String>,
-       map!(take_while1!(is_name_char), |n| from_utf8(n).unwrap().into()));
+       map!(verify!(take_while1!(is_name_char),
+                    |n| n != b"-"),
+            |n| from_utf8(n).unwrap().into()));
 
 pub fn is_name_char(c: u8) -> bool {
     is_alphanumeric(c) || c == b'_' || c == b'-'
