@@ -66,8 +66,8 @@ pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selector, selector};
 pub use unit::Unit;
-use valueexpression::{single_value, value_expression};
 pub use valueexpression::{ListSeparator, Quotes, Value};
+use valueexpression::{single_value, value_expression};
 pub use variablescope::{GlobalScope, Scope};
 
 /// Parse scss data and write css in the given style.
