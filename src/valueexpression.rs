@@ -407,13 +407,17 @@ impl PartialOrd for Value {
 }
 
 fn rational2str(r: &Rational, skipzero: bool) -> String {
-    let n = r.numer();
-    let d = r.denom();
-    let mut result = format!("{}", *n as f64 / *d as f64);
-    if skipzero && result.starts_with("0.") {
-        result.remove(0);
+    if r.is_integer() {
+        format!("{}", r.numer())
+    } else {
+        let prec = Rational::from_integer(100000);
+        let v = (r * prec).round() / prec;
+        let mut result = format!("{}", *v.numer() as f64 / *v.denom() as f64);
+        if skipzero && result.starts_with("0.") {
+            result.remove(0);
+        }
+        result
     }
-    result
 }
 
 named!(pub value_expression<&[u8], Value>,
