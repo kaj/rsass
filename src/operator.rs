@@ -24,8 +24,8 @@ impl Operator {
         match *self {
             Operator::And => Value::bool(a.is_true() && b.is_true()),
             Operator::Or => Value::bool(a.is_true() || b.is_true()),
-            Operator::Equal => Value::bool(a == b),
-            Operator::NotEqual => Value::bool(a != b),
+            Operator::Equal => Value::bool(equal_values(&a, &b)),
+            Operator::NotEqual => Value::bool(!equal_values(&a, &b)),
             Operator::Greater => Value::bool(a > b),
             Operator::GreaterE => Value::bool(a >= b),
             Operator::Lesser => Value::bool(a < b),
@@ -137,5 +137,19 @@ impl fmt::Display for Operator {
                    Operator::Minus => "-",
                    Operator::Multiply => "*",
                })
+    }
+}
+
+/// A more relaxed equality checker for the sass == operator.
+///
+/// Strings with equal content are considered equal, even if they have
+/// different quoting.
+///
+/// Make this a separate function, so the rust == operator is still
+/// the strict derived version, for unit tests etc.
+fn equal_values(a: &Value, b: &Value) -> bool {
+    match (a, b) {
+        (&Value::Literal(ref a, _), &Value::Literal(ref b, _)) => a == b,
+        (ref a, ref b) => a == b,
     }
 }

@@ -130,6 +130,23 @@ fn cons_up() {
            content: hello;\n  content: 0;\n}\n")
 }
 
+#[test]
+fn directives_in_propsets() {
+    check(b"$color: red;\n$position: 50%;\n$x: 0;\n\n\
+            @mixin foo() {\n  image: url(foo.png);\n}\n\n\
+            div {\n  background: {\n    \
+            something: {\n      color: green;\n    }\n    \
+            @if (type-of($color) == \"color\") {\n      color: $color;\n    \
+            }\n    \
+            @if (type-of($position) == \"number\") {\n      \
+            position: $position;\n      @include foo();\n    }\n    \
+            groo: foo;\n  }\n  width: $x;\n}",
+          "div {\n  background-something-color: green;\n  \
+           background-color: red;\n  background-position: 50%;\n  \
+           background-image: url(foo.png);\n  background-groo: foo;\n  \
+           width: 0;\n}\n")
+}
+
 // TODO This test should include an each over a map.
 // Since I have not implemented map type yet, that is skipped.
 #[test]
