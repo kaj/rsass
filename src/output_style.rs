@@ -542,11 +542,7 @@ impl CssWriter {
             separate: false,
         }
     }
-    fn get_result(mut self) -> Result<Vec<u8>, Error> {
-        if self.contents.last().unwrap_or(&b'\n') != &b'\n' {
-            write!(&mut self.contents, "\n")?;
-        }
-
+    fn get_result(self) -> Result<Vec<u8>, Error> {
         let mut result = vec![];
         if !self.imports.is_ascii() || !self.contents.is_ascii() {
             if self.is_compressed() {
@@ -558,6 +554,12 @@ impl CssWriter {
         }
         result.extend(self.imports);
         result.extend(self.contents);
+        if result.last() == Some(&b';') {
+            result.pop();
+        }
+        if result.last().unwrap_or(&b'\n') != &b'\n' {
+            write!(&mut result, "\n")?;
+        }
         Ok(result)
     }
 
