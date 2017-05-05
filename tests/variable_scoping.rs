@@ -5,7 +5,6 @@ use rsass::{OutputStyle, compile_scss};
 /// spec/libsass/variable-scoping/blead-global/expanding/ruleset
 #[test]
 fn ruleset() {
-    // TODO The expected newline starting the output is a bug.
     check(b"$root_default: initial;\n\
             $root_implicit: initial;\n\
             $root_explicit: initial !global;\n\n\
@@ -28,7 +27,7 @@ fn ruleset() {
             local_implicit: $local_implicit;\n  }\n  \
             @if variable-exists(local_explicit) {\n    \
             local_explicit: $local_explicit;\n  }\n}\n",
-          "\nresult {\n  root_default: initial;\n  root_implicit: initial;\n  \
+          "result {\n  root_default: initial;\n  root_implicit: initial;\n  \
            root_explicit: inner;\n  local_explicit: inner;\n}\n")
 }
 

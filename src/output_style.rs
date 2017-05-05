@@ -577,7 +577,9 @@ impl CssWriter {
     }
     fn do_indent(&mut self, steps: usize) -> Result<(), Error> {
         if !self.is_compressed() {
-            write!(self.contents, "\n")?;
+            if !self.contents.is_empty() {
+                write!(self.contents, "\n")?;
+            }
             for _i in 0..steps {
                 write!(self.contents, " ")?;
             }
