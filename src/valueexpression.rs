@@ -603,7 +603,8 @@ named!(interpolation<Value>,
             |v| Value::Interpolation(Box::new(v))));
 
 named!(unquoted_literal<Value>,
-       do_parse!(first: alt!(interpolation | unquoted_literal_part) >>
+       do_parse!(t: alt!(interpolation | unquoted_literal_part) >>
+                 first: expr_res!(ok_as_literal(t)) >>
                  all: fold_many0!(
                      alt!(interpolation | function_call |
                           unquoted_literal_part |
@@ -616,12 +617,15 @@ named!(unquoted_literal<Value>,
                      |a, b| {
                          Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
                      }) >>
-                 (if all != Value::Literal("-".into(), Quotes::None) {
-                     all
-                 } else {
-                     use nom::{ErrorKind, IResult};
-                     return IResult::Error(ErrorKind::Alpha);
-                 })));
+                 (all)));
+
+fn ok_as_literal(s: Value) -> Result<Value, bool> {
+    if s != Value::Literal("-".into(), Quotes::None) {
+        Ok(s)
+    } else {
+        Err(false)
+    }
+}
 
 named!(function_call<Value>,
        do_parse!(name: name >> args: call_args >>
