@@ -439,7 +439,7 @@ named!(pub space_list<&[u8], Value>,
                  list: fold_many0!(
                      alt_complete!(
                          preceded!(multispace, single_expression) |
-                         interpolation |
+                         unquoted_literal |
                          variable),
                      vec![first],
                      |mut list: Vec<Value>, item| { list.push(item); list }) >>
@@ -572,8 +572,7 @@ named!(pub single_value<&[u8], Value>,
                                                 from_utf8(r).unwrap(),
                                                 from_utf8(g).unwrap(),
                                                 from_utf8(b).unwrap()))))) |
-           do_parse!(name: name >> args: call_args >>
-                     (Value::Call(name, args))) |
+           function_call |
            unquoted_literal |
            map!(preceded!(tag!("-"), single_value),
                 |s| Value::UnaryOp(Operator::Minus, Box::new(s))) |
@@ -603,7 +602,8 @@ named!(interpolation<Value>,
 named!(unquoted_literal<Value>,
        do_parse!(first: alt!(interpolation | unquoted_literal_part) >>
                  all: fold_many0!(
-                     alt!(interpolation | unquoted_literal_part |
+                     alt!(interpolation | function_call |
+                          unquoted_literal_part |
                           map!(preceded!(tag!("//"),
                                          take_while1!(is_ext_str_char)),
                                |v| Value::Literal(
@@ -619,6 +619,10 @@ named!(unquoted_literal<Value>,
                      use nom::{ErrorKind, IResult};
                      return IResult::Error(ErrorKind::Alpha);
                  })));
+
+named!(function_call<Value>,
+       do_parse!(name: name >> args: call_args >>
+                 (Value::Call(name, args))));
 
 fn is_ext_str_char(c: u8) -> bool {
     is_name_char(c) || c == b'*' || c == b'+' || c == b',' ||

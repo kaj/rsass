@@ -191,6 +191,15 @@ fn for_in_functions() {
 }
 
 #[test]
+fn function_names_4_0() {
+    check(b"div {\n  color: unquote(\"hello\");\n  \
+            color: un#{quo}te(\"hello\");\n  \
+            color: (\"hello\")un#{quo}te;\n}\n",
+          "div {\n  color: hello;\n  color: unquote(\"hello\");\n  \
+           color: \"hello\" unquote;\n}\n")
+}
+
+#[test]
 fn functions() {
     check(b"@function foo($x, $y, $z) {\n  @while $x < $y {\n    \
             $z: transform($z);\n    @return $z;\n  }\n}\n\n\
