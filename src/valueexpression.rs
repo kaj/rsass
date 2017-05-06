@@ -219,7 +219,7 @@ impl Value {
                 Value::UnaryOp(op.clone(), Box::new(v.do_evaluate(scope, true)))
             }
             Value::Interpolation(ref v) => {
-                match v.do_evaluate(scope, true) {
+                match without_quotes(v.do_evaluate(scope, true)) {
                     Value::Null => Value::Null,
                     Value::Literal(s, _) => Value::Literal(s, Quotes::None),
                     v => Value::Literal(format!("{}", v), Quotes::None),
@@ -228,6 +228,18 @@ impl Value {
         }
     }
 }
+
+fn without_quotes(v: Value) -> Value {
+    match v {
+        Value::Literal(s, _) => Value::Literal(s, Quotes::None),
+        Value::List(list, s) => {
+            Value::List(list.into_iter().map(without_quotes).collect(),
+                        s)
+        }
+        v => v,
+    }
+}
+
 
 /// A literal value can be double-quoted, single-quoted or not quoted.
 #[derive(Clone, Debug, PartialEq, Eq)]
