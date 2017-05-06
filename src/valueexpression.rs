@@ -340,56 +340,34 @@ impl fmt::Display for Value {
                           });
                 write!(out, "{}", t)
             }
-            &Value::Div(ref a, ref b, ref s1, ref s2) => {
-                let alt = out.alternate();
-                if alt {
-                    write!(out,
-                           "{:#}{}/{}{:#}",
-                           a,
-                           if *s1 { " " } else { "" },
-                           if *s2 { " " } else { "" },
-                           b)
-                } else {
-                    write!(out,
-                           "{}{}/{}{}",
-                           a,
-                           if *s1 { " " } else { "" },
-                           if *s2 { " " } else { "" },
-                           b)
-                }
+            &Value::Div(ref a, ref b, s1, s2) => {
+                a.fmt(out)?;
+                if s1 { out.write_str(" ")?; }
+                out.write_str("/")?;
+                if s2 { out.write_str(" ")?; }
+                b.fmt(out)
             }
             &Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
             &Value::BinOp(ref a, Operator::Plus, ref b) => {
                 // The plus operator is also a concat operator
-                if out.alternate() {
-                    write!(out, "{:#}{:#}", a, b)
-                } else {
-                    write!(out, "{}{}", a, b)
-
-                }
+                a.fmt(out)?;
+                b.fmt(out)
             }
             &Value::BinOp(ref a, ref op, ref b) => {
-                if out.alternate() {
-                    write!(out, "{:#}{}{:#}", a, op, b)
-                } else {
-                    write!(out, "{}{}{}", a, op, b)
-                }
+                a.fmt(out)?;
+                op.fmt(out)?;
+                b.fmt(out)
             }
             &Value::Paren(ref v) => {
-                if out.alternate() {
-                    write!(out, "({:#})", v)
-                } else {
-                    write!(out, "({})", v)
-                }
+                out.write_str("(")?;
+                v.fmt(out)?;
+                out.write_str(")")
             }
             &Value::True => write!(out, "true"),
             &Value::False => write!(out, "false"),
             &Value::UnaryOp(ref op, ref v) => {
-                if out.alternate() {
-                    write!(out, "{}{:#}", op, v)
-                } else {
-                    write!(out, "{}{}", op, v)
-                }
+                op.fmt(out)?;
+                v.fmt(out)
             }
             &Value::Null => Ok(()),
             x => write!(out, "TODO {:?}", x),
