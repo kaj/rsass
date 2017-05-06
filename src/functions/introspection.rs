@@ -43,6 +43,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         match (&s.get("number1"), &s.get("number2")) {
             (&Value::Numeric(_, ref u1, _), &Value::Numeric(_, ref u2, _)) => {
                 // TODO e.g. cm and mm are comparable too!
+                // Simply comparig the dimension is not enough, though,
+                // as e.g em and vh is not comparable.
                 Ok(Value::bool(u1 == u2))
             }
             (v1, v2) => Err(Error::badargs(&["number", "number"], &[v1, v2])),
