@@ -233,8 +233,7 @@ fn without_quotes(v: Value) -> Value {
     match v {
         Value::Literal(s, _) => Value::Literal(s, Quotes::None),
         Value::List(list, s) => {
-            Value::List(list.into_iter().map(without_quotes).collect(),
-                        s)
+            Value::List(list.into_iter().map(without_quotes).collect(), s)
         }
         v => v,
     }
