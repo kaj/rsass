@@ -341,9 +341,13 @@ impl fmt::Display for Value {
             }
             &Value::Div(ref a, ref b, s1, s2) => {
                 a.fmt(out)?;
-                if s1 { out.write_str(" ")?; }
+                if s1 {
+                    out.write_str(" ")?;
+                }
                 out.write_str("/")?;
-                if s2 { out.write_str(" ")?; }
+                if s2 {
+                    out.write_str(" ")?;
+                }
                 b.fmt(out)
             }
             &Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
@@ -368,8 +372,17 @@ impl fmt::Display for Value {
                 op.fmt(out)?;
                 v.fmt(out)
             }
+            &Value::Variable(ref name) => {
+                // Output as source in case it was not evaluated.
+                write!(out, "${}", name)
+            }
+            &Value::Interpolation(ref value) => {
+                // Output as source in case it was not evaluated.
+                out.write_str("#{")?;
+                value.fmt(out)?;
+                out.write_str("}")
+            }
             &Value::Null => Ok(()),
-            x => write!(out, "TODO {:?}", x),
         }
     }
 }
