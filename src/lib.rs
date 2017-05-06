@@ -20,9 +20,9 @@
 //! doc](http://sass-lang.com/documentation/file.SASS_REFERENCE.html).
 //! This implementation is incomplete but getting there, if slowly.
 //!
-//! Progress: ![841](http://progressed.io/bar/841?scale=3294&suffix=+)
-//! of 3294 tests passed
-//! (or 899 of 6049 when claiming to be libsass).
+//! Progress: ![1039](http://progressed.io/bar/103?scale=329&suffix=9)
+//! of 3299 tests passed
+//! (or 1097 of 6054 when claiming to be libsass).
 //!
 //! If you want a working rust library for sass right now, you will
 //! probably be better of with [sass-rs](https://crates.io/crates/sass-rs)
@@ -70,7 +70,7 @@ pub use valueexpression::{ListSeparator, Quotes, Value};
 use valueexpression::{single_value, value_expression};
 pub use variablescope::{GlobalScope, Scope};
 
-/// Parse scss data and write css in the given style.
+/// Parse scss data from a buffer and write css in the given style.
 ///
 /// # Example
 ///
@@ -169,6 +169,9 @@ pub fn parse_scss_file(file: &Path) -> Result<Vec<SassItem>, Error> {
     parse_scss_data(&data)
 }
 
+/// Parse scss data from a buffer.
+///
+/// Returns a vec of the top level items of the file (or an error message).
 pub fn parse_scss_data(data: &[u8]) -> Result<Vec<SassItem>, Error> {
     match sassfile(data) {
         IResult::Done(b"", items) => Ok(items),

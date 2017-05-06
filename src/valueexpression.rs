@@ -44,6 +44,8 @@ pub enum Value {
     Interpolation(Box<Value>),
 }
 
+/// The difference between a comma-separated and a
+/// whitespace-separated list.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ListSeparator {
     Comma,
@@ -228,6 +230,7 @@ impl Value {
     }
 }
 
+/// A literal value can be double-quoted, single-quoted or not quoted.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Quotes {
     Double,

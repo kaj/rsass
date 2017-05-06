@@ -25,6 +25,10 @@ pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
 
 type BuiltinFn = Fn(&Scope) -> Result<Value, Error> + Send + Sync;
 
+/// A function that can be called from a sass value.
+///
+/// The function can be either "builtin" (implemented in rust) or
+/// "user defined" (implemented in scss).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SassFunction {
     args: FormalArgs,
@@ -60,6 +64,7 @@ impl fmt::Debug for FuncImpl {
 }
 
 impl SassFunction {
+    /// Create a new `SassFunction` from a rust implementation.
     pub fn builtin(args: Vec<(String, Value)>,
                    is_varargs: bool,
                    body: Arc<BuiltinFn>)
@@ -69,10 +74,14 @@ impl SassFunction {
             body: FuncImpl::Builtin(body),
         }
     }
+
+    /// Create a new `SassFunction` from a scss implementation.
     pub fn new(args: FormalArgs, body: Vec<SassItem>) -> Self {
         SassFunction { args: args, body: FuncImpl::UserDefined(body) }
     }
 
+    /// Call the function from a given scope and with a given set of
+    /// arguments.
     pub fn call(&self, scope: &Scope, args: &CallArgs) -> Result<Value, Error> {
         let mut s = self.args.eval(scope, args);
         match self.body {

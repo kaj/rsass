@@ -196,6 +196,11 @@ impl<'a> ScopeImpl<'a> {
     }
 }
 
+/// A `Scope` that can be created without allready having a scope as a
+/// parameter is a `GlobalScope`.
+///
+/// There can be multiple "global" scopes in the same process, they
+/// are global to the handling of a scss document.
 pub struct GlobalScope {
     variables: Mutex<BTreeMap<String, Value>>,
     mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
@@ -203,6 +208,7 @@ pub struct GlobalScope {
 }
 
 impl GlobalScope {
+    /// Create a new global scope.
     pub fn new() -> Self {
         GlobalScope {
             variables: Mutex::new(BTreeMap::new()),
