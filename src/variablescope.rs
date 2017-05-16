@@ -5,7 +5,7 @@ use formalargs::{CallArgs, FormalArgs};
 use functions::{SassFunction, get_builtin_function};
 use std::collections::BTreeMap;
 use std::sync::Mutex;
-use valueexpression::Value;
+use value::Value;
 
 /// Variables, functions and mixins are defined in a `Scope`.
 ///
@@ -275,7 +275,7 @@ impl Scope for GlobalScope {
 #[cfg(test)]
 pub mod test {
     use std::str::from_utf8;
-    use valueexpression::*;
+    use value::*;
     use variablescope::*;
 
     #[test]

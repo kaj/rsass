@@ -729,12 +729,12 @@ fn unescape(s: &str) -> String {
 
 #[cfg(test)]
 mod test {
+    use super::*;
     use formalargs::CallArgs;
     use nom::IResult::*;
     use num_rational::Rational;
     use num_traits::{One, Zero};
     use unit::Unit;
-    use valueexpression::*;
 
     #[test]
     fn simple_number() {

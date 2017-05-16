@@ -1,7 +1,7 @@
 use num_rational::Rational;
 use std::fmt;
 use unit::Unit;
-use valueexpression::{Quotes, Value};
+use value::{Quotes, Value};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Operator {

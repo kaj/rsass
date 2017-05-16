@@ -2,7 +2,7 @@ use parseutil::{ignore_comments, is_name_char, name, opt_spacelike};
 use std::default::Default;
 use std::fmt;
 use std::str::from_utf8;
-use valueexpression::{ListSeparator, Quotes, Value, space_list};
+use value::{ListSeparator, Quotes, Value, space_list};
 use variablescope::{Scope, ScopeImpl};
 
 /// The declared arguments of a mixin or function declaration.

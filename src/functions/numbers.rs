@@ -4,7 +4,7 @@ use num_traits::Signed;
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use unit::Unit;
-use valueexpression::Value;
+use value::Value;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, abs(number), |s| match s.get("number") {

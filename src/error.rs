@@ -2,7 +2,7 @@ use std::{fmt, io};
 use std::convert::From;
 use std::path::PathBuf;
 use std::string::FromUtf8Error;
-use valueexpression::Value;
+use value::Value;
 
 /// Most functions in rsass that returns a Result uses this Error type.
 #[derive(Debug)]

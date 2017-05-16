@@ -3,7 +3,7 @@ use num_rational::Rational;
 use num_traits::One;
 use std::collections::BTreeMap;
 use unit::Unit;
-use valueexpression::Value;
+use value::Value;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, rgb(red, green, blue), |s| {

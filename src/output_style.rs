@@ -5,7 +5,7 @@ use selectors::Selectors;
 use std::ascii::AsciiExt;
 use std::fmt;
 use std::io::Write;
-use valueexpression::Value;
+use value::Value;
 use variablescope::{Scope, ScopeImpl};
 
 /// Selected target format.

@@ -53,7 +53,7 @@ mod operator;
 mod functions;
 mod selectors;
 mod parseutil;
-mod valueexpression;
+mod value;
 mod variablescope;
 mod output_style;
 mod unit;
@@ -66,8 +66,8 @@ pub use output_style::OutputStyle;
 use parseutil::{comment, name, opt_spacelike, spacelike};
 use selectors::{Selectors, selectors};
 pub use unit::Unit;
-pub use valueexpression::{ListSeparator, Quotes, Value};
-use valueexpression::{single_value, value_expression};
+pub use value::{ListSeparator, Quotes, Value};
+use value::{single_value, value_expression};
 pub use variablescope::{GlobalScope, Scope};
 
 /// Parse scss data from a buffer and write css in the given style.

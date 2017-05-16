@@ -3,7 +3,7 @@ use formalargs::CallArgs;
 use std::collections::BTreeMap;
 use std::io::{Write, stderr};
 use std::sync::{ONCE_INIT, Once};
-use valueexpression::{Quotes, Value};
+use value::{Quotes, Value};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {

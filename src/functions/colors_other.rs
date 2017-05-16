@@ -4,7 +4,7 @@ use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
 use unit::Unit;
-use valueexpression::{Quotes, Value};
+use value::{Quotes, Value};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
