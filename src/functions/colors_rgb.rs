@@ -27,7 +27,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     });
     fn num(v: &Rational) -> Result<Value, Error> {
-        Ok(Value::Numeric(*v, Unit::None, true))
+        Ok(Value::Numeric(*v, Unit::None, false, true))
     }
     def!(f, red(color), |s| match &s.get("color") {
         &Value::Color(ref red, _, _, _, _) => num(red),
@@ -47,7 +47,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         let weight = s.get("weight");
         if let (&Value::Color(ref r1, ref g1, ref b1, ref a1, _),
                 &Value::Color(ref r2, ref g2, ref b2, ref a2, _),
-                &Value::Numeric(ref w, ref wu, _)) =
+                &Value::Numeric(ref w, ref wu, ..)) =
             (&color1, &color2, &weight) {
             let w = if wu == &Unit::Percent {
                 w / Rational::from_integer(100)
@@ -79,15 +79,15 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 
 fn to_int(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, Unit::Percent, _) => Ok(Rational::new(255, 100) * v),
-        Value::Numeric(v, _, _) => Ok(v),
+        Value::Numeric(v, Unit::Percent, ..) => Ok(Rational::new(255, 100) * v),
+        Value::Numeric(v, ..) => Ok(v),
         v => Err(Error::badarg("number", &v)),
     }
 }
 
 fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, _, _) => Ok(v),
+        Value::Numeric(v, ..) => Ok(v),
         v => Err(Error::badarg("number", &v)),
     }
 }

@@ -19,7 +19,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
          |s| match (s.get("string"), s.get("insert"), s.get("index")) {
              (Value::Literal(s, q),
               Value::Literal(insert, _),
-              Value::Numeric(index, Unit::None, _)) => {
+              Value::Numeric(index, Unit::None, ..)) => {
         let i = index_to_rust(index, &s);
         let mut s = s.chars();
         Ok(Value::Literal(format!("{}{}{}",
@@ -37,8 +37,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
          str_slice(string, start_at, end_at = b"-1;"),
          |s| match (s.get("string"), s.get("start_at"), s.get("end_at")) {
              (Value::Literal(s, q),
-              Value::Numeric(start_at, Unit::None, _),
-              Value::Numeric(end_at, Unit::None, _)) => {
+              Value::Numeric(start_at, Unit::None, ..),
+              Value::Numeric(end_at, Unit::None, ..)) => {
         let start_at = index_to_rust(start_at, &s);
         let end_at = index_to_rust(end_at, &s);
         let c = s.chars();
@@ -53,10 +53,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
              }
          });
     def!(f, str_length(string), |s| match &s.get("string") {
-        &Value::Literal(ref v, _) => {
-            let n = v.chars().count() as isize;
-            Ok(Value::Numeric(Rational::from_integer(n), Unit::None, true))
-        }
+        &Value::Literal(ref v, _) => Ok(intvalue(v.chars().count())),
         v => Err(Error::badarg("string", v)),
     });
     def!(f,
@@ -64,10 +61,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
          |s| match (s.get("string"), s.get("substring")) {
              (Value::Literal(s, _), Value::Literal(sub, _)) => {
                  Ok(match s.find(&sub) {
-                        Some(o) => {
-        let n = s[0..o].chars().count() as isize;
-        Value::Numeric(Rational::from_integer(1 + n), Unit::None, true)
-    }
+                        Some(o) => intvalue(1 + s[0..o].chars().count()),
                         None => Value::Null,
                     })
              }
@@ -82,6 +76,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         Value::Literal(v, q) => Ok(Value::Literal(v.to_lowercase(), q)),
         v => Ok(v),
     });
+}
+
+fn intvalue(n: usize) -> Value {
+    Value::Numeric(Rational::from_integer(n as isize), Unit::None, false, true)
 }
 
 /// Convert index from sass (rational number, first is one) to rust

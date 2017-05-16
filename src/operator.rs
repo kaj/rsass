@@ -33,7 +33,7 @@ impl Operator {
             Operator::Plus => {
                 match (a, b) {
                     (Value::Color(r, g, b, a, _),
-                     Value::Numeric(n, Unit::None, _)) => {
+                     Value::Numeric(n, Unit::None, ..)) => {
                         Value::rgba(r + n, g + n, b + n, a)
                     }
                     (Value::Color(ar, ag, ab, aa, _),
@@ -41,11 +41,11 @@ impl Operator {
                         // TODO Sum or average the alpha?
                         Value::rgba(ar + br, ag + bg, ab + bb, aa + ba)
                     }
-                    (Value::Numeric(a, au, _), Value::Numeric(b, bu, _)) => {
+                    (Value::Numeric(a, au, ..), Value::Numeric(b, bu, ..)) => {
                         if au == bu || bu == Unit::None {
-                            Value::Numeric(a + b, au, true)
+                            Value::Numeric(a + b, au, false, true)
                         } else if au == Unit::None {
-                            Value::Numeric(a + b, bu, true)
+                            Value::Numeric(a + b, bu, false, true)
                         } else {
                             Value::Literal(format!("{}{}", a, b), Quotes::None)
                         }
@@ -70,19 +70,19 @@ impl Operator {
             Operator::Minus => {
                 match (&a, &b) {
                     (&Value::Color(ref r, ref g, ref b, ref a, _),
-                     &Value::Numeric(ref n, ref u, _)) if u == &Unit::None => {
+                     &Value::Numeric(ref n, Unit::None, ..)) => {
                         Value::rgba(r - n, g - n, b - n, *a)
                     }
                     (&Value::Color(ref ar, ref ag, ref ab, ref aa, _),
                      &Value::Color(ref br, ref bg, ref bb, ref ba, _)) => {
                         Value::rgba(ar - br, ag - bg, ab - bb, avg(aa, ba))
                     }
-                    (&Value::Numeric(ref av, ref au, _),
-                     &Value::Numeric(ref bv, ref bu, _)) => {
+                    (&Value::Numeric(ref av, ref au, ..),
+                     &Value::Numeric(ref bv, ref bu, ..)) => {
                         if au == bu || bu == &Unit::None {
-                            Value::Numeric(av - bv, au.clone(), true)
+                            Value::Numeric(av - bv, au.clone(), false, true)
                         } else if au == &Unit::None {
-                            Value::Numeric(av - bv, bu.clone(), true)
+                            Value::Numeric(av - bv, bu.clone(), false, true)
                         } else {
                             Value::BinOp(Box::new(a.clone()),
                                          Operator::Minus,
@@ -97,12 +97,12 @@ impl Operator {
                 }
             }
             Operator::Multiply => {
-                if let (&Value::Numeric(ref a, ref au, _),
-                        &Value::Numeric(ref b, ref bu, _)) = (&a, &b) {
+                if let (&Value::Numeric(ref a, ref au, ..),
+                        &Value::Numeric(ref b, ref bu, ..)) = (&a, &b) {
                     if bu == &Unit::None {
-                        Value::Numeric(a * b, au.clone(), true)
+                        Value::Numeric(a * b, au.clone(), false, true)
                     } else if au == &Unit::None {
-                        Value::Numeric(a * b, bu.clone(), true)
+                        Value::Numeric(a * b, bu.clone(), false, true)
                     } else {
                         Value::Literal(format!("{}*{}", a, b), Quotes::None)
                     }

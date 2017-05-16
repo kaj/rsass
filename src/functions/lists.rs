@@ -8,10 +8,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         v => Err(Error::badarg("list", &v)),
     });
     def!(f, nth(list, n), |s| {
-        let n = match s.get("n") {
-            Value::Numeric(val, _, _) if val.denom() == &1 => val.to_integer(),
-            x => return Err(Error::badarg("integer", &x)),
-        };
+        let n = s.get("n").integer_value()?;
         match s.get("list") {
             Value::List(list, _) => Ok(list[n as usize - 1].clone()),
             v => Err(Error::badarg("list", &v)),

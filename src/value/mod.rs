@@ -24,9 +24,13 @@ pub enum Value {
     Literal(String, Quotes),
     List(Vec<Value>, ListSeparator),
     /// A Numeric value is a rational value with a Unit (which may be
-    /// Unit::None) and a flag which is true for calculated values and
-    /// false for literal values.
-    Numeric(Rational, Unit, bool),
+    /// Unit::None) and flags.
+    ///
+    /// The first flag is true for values with an explicit + sign.
+    ///
+    /// The second flag is true for calculated values and false for
+    /// literal values.
+    Numeric(Rational, Unit, bool, bool),
     /// "(a/b) and a/b differs semantically.  Parens means the value
     /// should be evaluated numerically if possible, without parens /
     /// is not allways division.
@@ -54,7 +58,7 @@ pub enum ListSeparator {
 
 impl Value {
     pub fn scalar(v: isize) -> Self {
-        Value::Numeric(Rational::from_integer(v), Unit::None, false)
+        Value::Numeric(Rational::from_integer(v), Unit::None, false, false)
     }
     pub fn bool(v: bool) -> Self {
         if v { Value::True } else { Value::False }
@@ -91,7 +95,7 @@ impl Value {
 
     pub fn is_calculated(&self) -> bool {
         match *self {
-            Value::Numeric(_, _, calculated) => calculated,
+            Value::Numeric(_, _, _, calculated) => calculated,
             Value::Color(_, _, _, _, None) => true,
             _ => false,
         }
@@ -115,7 +119,7 @@ impl Value {
 
     pub fn integer_value(&self) -> Result<isize, Error> {
         match self {
-            &Value::Numeric(ref num, _, _) if num.is_integer() => {
+            &Value::Numeric(ref num, ..) if num.is_integer() => {
                 Ok(num.to_integer())
             }
             v => Err(Error::bad_value("integer", v)),
@@ -174,20 +178,20 @@ impl Value {
                 if arithmetic || a.is_calculated() || b.is_calculated() {
                     match (&a, &b) {
                         (&Value::Color(ref r, ref g, ref b, ref a, _),
-                         &Value::Numeric(ref n, Unit::None, _)) => {
+                         &Value::Numeric(ref n, Unit::None, ..)) => {
                             Value::rgba(r / n, g / n, b / n, *a)
                         }
-                        (&Value::Numeric(ref av, ref au, _),
-                         &Value::Numeric(ref bv, ref bu, _)) => {
+                        (&Value::Numeric(ref av, ref au, ..),
+                         &Value::Numeric(ref bv, ref bu, ..)) => {
                             if bv.is_zero() {
                                 Value::Div(Box::new(a.clone()),
                                            Box::new(b.clone()),
                                            *space1,
                                            *space2)
                             } else if bu == &Unit::None {
-                                Value::Numeric(av / bv, au.clone(), true)
+                                Value::Numeric(av / bv, au.clone(), false, true)
                             } else if au == bu {
-                                Value::Numeric(av / bv, Unit::None, true)
+                                Value::Numeric(av / bv, Unit::None, false, true)
                             } else {
                                 Value::Div(Box::new(a.clone()),
                                            Box::new(b.clone()),
@@ -206,8 +210,8 @@ impl Value {
                     Value::Div(Box::new(a), Box::new(b), *space1, *space2)
                 }
             }
-            Value::Numeric(ref v, ref u, ref is_calculated) => {
-                Value::Numeric(*v, u.clone(), arithmetic || *is_calculated)
+            Value::Numeric(ref v, ref u, ref sign, ref calc) => {
+                Value::Numeric(*v, u.clone(), *sign, arithmetic || *calc)
             }
             Value::Null => Value::Null,
             Value::True => Value::True,
@@ -280,9 +284,9 @@ impl fmt::Display for Value {
                     Quotes::None => write!(out, "{}", s),
                 }
             }
-            &Value::Numeric(ref v, ref u, ref _is_calculated) => {
+            &Value::Numeric(ref v, ref u, ref with_sign, _) => {
                 let short = out.alternate();
-                write!(out, "{}{}", rational2str(v, short), u)
+                write!(out, "{}{}", rational2str(v, *with_sign, short), u)
             }
             &Value::Color(ref r, ref g, ref b, ref a, ref s) => {
                 let r = r.round().to_integer() as u8;
@@ -323,14 +327,14 @@ impl fmt::Display for Value {
                            r,
                            g,
                            b,
-                           rational2str(a, false))
+                           rational2str(a, false, false))
                 } else {
                     write!(out,
                            "rgba({}, {}, {}, {})",
                            r,
                            g,
                            b,
-                           rational2str(a, false))
+                           rational2str(a, false, false))
                 }
             }
             &Value::List(ref v, ref sep) => {
@@ -402,7 +406,7 @@ use std::cmp::Ordering;
 impl PartialOrd for Value {
     fn partial_cmp(&self, b: &Value) -> Option<Ordering> {
         match (self, b) {
-            (&Value::Numeric(ref a, _, _), &Value::Numeric(ref b, _, _)) => {
+            (&Value::Numeric(ref a, ..), &Value::Numeric(ref b, ..)) => {
                 a.partial_cmp(b)
             }
             _ => None,
@@ -410,13 +414,22 @@ impl PartialOrd for Value {
     }
 }
 
-fn rational2str(r: &Rational, skipzero: bool) -> String {
+fn rational2str(r: &Rational, with_sign: bool, skipzero: bool) -> String {
     if r.is_integer() {
-        format!("{}", r.numer())
+        if with_sign {
+            format!("{:+}", r.numer())
+        } else {
+            format!("{}", r.numer())
+        }
     } else {
         let prec = Rational::from_integer(100000);
         let v = (r * prec).round() / prec;
-        let mut result = format!("{}", *v.numer() as f64 / *v.denom() as f64);
+        let v = *v.numer() as f64 / *v.denom() as f64;
+        let mut result = if with_sign {
+            format!("{:+}", v)
+        } else {
+            format!("{}", v)
+        };
         if skipzero && result.starts_with("0.") {
             result.remove(0);
         }
@@ -496,6 +509,7 @@ named!(pub sum_expression<Value>,
                          do_parse!(op: alt_complete!(
                                        value!(Operator::Plus, tag!("+")) |
                                        value!(Operator::Minus, tag!("-"))) >>
+                                   opt!(spacelike2) >>
                                    b: term_value >>
                                    (op, b)) |
                          do_parse!(spacelike2 >>
@@ -544,8 +558,10 @@ named!(pub single_value<&[u8], Value>,
                                  d.map(decimals_to_rational)
                                  .unwrap_or_else(Rational::zero);
                              if sign == Some(b"-") { -d } else { d }
-                         }
-                         , u.unwrap_or(Unit::None), false))) |
+                         },
+                         u.unwrap_or(Unit::None),
+                         sign == Some(b"+"),
+                         false))) |
            do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
                      tag!(".") >>
                      d: is_a!("0123456789") >>
@@ -556,6 +572,7 @@ named!(pub single_value<&[u8], Value>,
                              if sign == Some(b"-") { -d } else { d }
                          },
                          u.unwrap_or(Unit::None),
+                         sign == Some(b"+"),
                          false))) |
            variable |
            do_parse!(tag!("#") >> r: hexchar2 >> g: hexchar2 >> b: hexchar2 >>
@@ -729,3 +746,5 @@ fn unescape(s: &str) -> String {
 
 #[cfg(test)]
 mod test;
+#[cfg(test)]
+mod tests;

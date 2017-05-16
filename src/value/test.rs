@@ -17,7 +17,8 @@ fn simple_number_neg() {
 
 #[test]
 fn simple_number_pos() {
-    check_expr("+4;", number(4, 1))
+    check_expr("+4;",
+               Value::Numeric(Rational::new(4, 1), Unit::None, true, false))
 }
 
 #[test]
@@ -34,7 +35,8 @@ fn simple_number_onlydec_neg() {
 }
 #[test]
 fn simple_number_onlydec_pos() {
-    check_expr("+.34;", number(34, 100))
+    check_expr("+.34;",
+               Value::Numeric(Rational::new(34, 100), Unit::None, true, false))
 }
 #[test]
 fn number_and_interpolation_makes_space_list() {
@@ -46,7 +48,7 @@ fn number_and_interpolation_makes_space_list() {
 }
 
 fn number(nom: isize, denom: isize) -> Value {
-    Value::Numeric(Rational::new(nom, denom), Unit::None, false)
+    Value::Numeric(Rational::new(nom, denom), Unit::None, false, false)
 }
 
 #[test]

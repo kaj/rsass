@@ -8,29 +8,25 @@ use value::Value;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, abs(number), |s| match s.get("number") {
-        Value::Numeric(v, u, _) => Ok(Value::Numeric(v.abs(), u, true)),
+        Value::Numeric(v, u, ..) => Ok(number(v.abs(), u)),
         v => Err(Error::badarg("number", &v)),
     });
     def!(f, ceil(number), |s| match s.get("number") {
-        Value::Numeric(v, u, _) => Ok(Value::Numeric(v.ceil(), u, true)),
+        Value::Numeric(v, u, ..) => Ok(number(v.ceil(), u)),
         v => Err(Error::badarg("number", &v)),
     });
     def!(f, floor(number), |s| match s.get("number") {
-        Value::Numeric(v, u, _) => Ok(Value::Numeric(v.floor(), u, true)),
+        Value::Numeric(v, u, ..) => Ok(number(v.floor(), u)),
         v => Err(Error::badarg("number", &v)),
     });
     def!(f, percentage(number), |s| match s.get("number") {
-        Value::Numeric(val, Unit::None, _) => {
-            Ok(Value::Numeric(val * Rational::from_integer(100),
-                              Unit::Percent,
-                              true))
+        Value::Numeric(val, Unit::None, ..) => {
+            Ok(number(val * Rational::from_integer(100), Unit::Percent))
         }
         v => Err(Error::badarg("number", &v)),
     });
     def!(f, round(number), |s| match s.get("number") {
-        Value::Numeric(val, unit, _) => {
-            Ok(Value::Numeric(val.round(), unit, true))
-        }
+        Value::Numeric(val, unit, ..) => Ok(number(val.round(), unit)),
         v => Err(Error::badarg("number", &v)),
     });
     def_va!(f, max(numbers), |s| match s.get("numbers") {
@@ -44,16 +40,18 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, random(limit), |s| match s.get("limit") {
         Value::Null => {
             let rez = 1000000;
-            Ok(Value::Numeric(Rational::new(intrand(rez), rez),
-                              Unit::None,
-                              true))
+            Ok(number(Rational::new(intrand(rez), rez), Unit::None))
         }
-        Value::Numeric(val, unit, _) => {
+        Value::Numeric(val, unit, ..) => {
             let res = 1 + intrand(val.to_integer());
-            Ok(Value::Numeric(Rational::from_integer(res), unit, true))
+            Ok(number(Rational::from_integer(res), unit))
         }
         v => Err(Error::badarg("number or null", &v)),
     });
+}
+
+fn number(v: Rational, unit: Unit) -> Value {
+    Value::Numeric(v, unit, false, true)
 }
 
 fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
@@ -63,8 +61,8 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
             match (first, second) {
                 (&Value::Null, b) => b,
                 (a, &Value::Null) => a,
-                (&Value::Numeric(ref va, ref ua, _),
-                 &Value::Numeric(ref vb, ref ub, _)) => {
+                (&Value::Numeric(ref va, ref ua, ..),
+                 &Value::Numeric(ref vb, ref ub, ..)) => {
                     if ua == &Unit::None || ua == ub || ub == &Unit::None {
                         if va.cmp(vb) == pref { first } else { second }
                     } else if ua.dimension() == ub.dimension() {

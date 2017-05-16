@@ -351,14 +351,10 @@ named!(while_loop<SassItem>,
 
 #[test]
 fn if_with_no_else() {
-    use operator::Operator;
-
-    assert_eq!(if_statement(b"@if 1 == 1 { p { color: black; } }\n"),
+    assert_eq!(if_statement(b"@if true { p { color: black; } }\n"),
                IResult::Done(&b"\n"[..],
                     SassItem::IfStatement(
-                        Value::BinOp(Box::new(Value::scalar(1)),
-                                     Operator::Equal,
-                                     Box::new(Value::scalar(1))),
+                        Value::True,
                         vec![SassItem::Rule(
                             selectors(b"p").unwrap().1,
                             vec![SassItem::Property("color".into(),
@@ -548,7 +544,7 @@ fn test_property_2() {
 
 #[cfg(test)]
 fn percentage(v: isize) -> Value {
-    Value::Numeric(Rational::from_integer(v), Unit::Percent, false)
+    Value::Numeric(Rational::from_integer(v), Unit::Percent, false, false)
 }
 
 named!(variable_declaration<SassItem>,

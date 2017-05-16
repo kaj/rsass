@@ -72,7 +72,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     fn opacity(color: Value) -> Result<Value, Error> {
         match color {
             Value::Color(_r, _g, _b, a, _) => {
-                Ok(Value::Numeric(a, Unit::None, true))
+                Ok(Value::Numeric(a, Unit::None, false, true))
             }
             v => Err(Error::badarg("color", &v)),
         }
@@ -210,7 +210,7 @@ fn cap_u8(n: Rational) -> Rational {
 
 fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, _, _) => Ok(v),
+        Value::Numeric(v, ..) => Ok(v),
         v => Err(Error::badarg("number", &v)),
     }
 }
@@ -219,8 +219,8 @@ fn to_rational(v: Value) -> Result<Rational, Error> {
 /// If v is not a percentage, keep it as it is.
 fn to_rational_percent(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, Unit::Percent, _) => Ok(v * Rational::new(1, 100)),
-        Value::Numeric(v, _, _) => Ok(v),
+        Value::Numeric(v, Unit::Percent, ..) => Ok(v * Rational::new(1, 100)),
+        Value::Numeric(v, ..) => Ok(v),
         v => Err(Error::badarg("number", &v)),
     }
 }

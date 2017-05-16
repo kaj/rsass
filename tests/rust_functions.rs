@@ -47,11 +47,11 @@ fn function_with_args() {
                                                 Arc::new(|s| {
         let half = Rational::new(1, 2);
         match (s.get("a"), s.get("b")) {
-            (Value::Numeric(a, au, _), Value::Numeric(b, bu, _)) => {
+            (Value::Numeric(a, au, ..), Value::Numeric(b, bu, ..)) => {
                 if au == bu || bu == Unit::None {
-                    Ok(Value::Numeric((a + b) * half, au, true))
+                    Ok(Value::Numeric((a + b) * half, au, false, true))
                 } else if au == Unit::None {
-                    Ok(Value::Numeric((a + b) * half, bu, true))
+                    Ok(Value::Numeric((a + b) * half, bu, false, true))
                 } else {
                     Err(Error::BadArguments("Incopatible args".into()))
                 }
