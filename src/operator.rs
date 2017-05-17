@@ -17,6 +17,8 @@ pub enum Operator {
     Plus,
     Minus,
     Multiply,
+
+    Not,
 }
 
 impl Operator {
@@ -110,6 +112,7 @@ impl Operator {
                     Value::Literal(format!("{}*{}", a, b), Quotes::None)
                 }
             }
+            Operator::Not => panic!("not is a unary operator only"),
         }
         // Fallback, might be needed later:
         // Value::BinOp(Box::new(a), self.clone(), Box::new(b))
@@ -136,6 +139,7 @@ impl fmt::Display for Operator {
                    Operator::Plus => "+",
                    Operator::Minus => "-",
                    Operator::Multiply => "*",
+                   Operator::Not => "not",
                })
     }
 }

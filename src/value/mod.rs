@@ -220,7 +220,20 @@ impl Value {
                 op.eval(a.do_evaluate(scope, true), b.do_evaluate(scope, true))
             }
             Value::UnaryOp(ref op, ref v) => {
-                Value::UnaryOp(op.clone(), Box::new(v.do_evaluate(scope, true)))
+                match (op.clone(), v.do_evaluate(scope, true)) {
+                    (Operator::Not, Value::Numeric(v, ..)) => {
+                        Value::bool(v.is_zero())
+                    }
+                    (Operator::Not, Value::True) => Value::False,
+                    (Operator::Not, Value::False) => Value::True,
+                    (Operator::Minus, Value::Numeric(v, u, ..)) => {
+                        Value::Numeric(-v, u, false, true)
+                    }
+                    (Operator::Plus, Value::Numeric(v, u, ..)) => {
+                        Value::Numeric(v, u, true, true)
+                    }
+                    (op, v) => Value::UnaryOp(op, Box::new(v)),
+                }
             }
             Value::Interpolation(ref v) => {
                 match without_quotes(v.do_evaluate(scope, true)) {
@@ -593,12 +606,18 @@ named!(pub single_value<&[u8], Value>,
                                                 from_utf8(r).unwrap(),
                                                 from_utf8(g).unwrap(),
                                                 from_utf8(b).unwrap()))))) |
+           // Really ugly special case ... sorry.
+           value!(Value::Literal("-null".into(), Quotes::None), tag!("-null")) |
+           do_parse!(op: alt!(value!(Operator::Minus, tag!("-")) |
+                              value!(Operator::Plus, tag!("+")) |
+                              value!(Operator::Not,
+                                     terminated!(tag!("not"),
+                                                 spacelike2))) >>
+                     opt_spacelike >>
+                     v: single_value >>
+                     (Value::UnaryOp(op, Box::new(v)))) |
            function_call |
            unquoted_literal |
-           map!(preceded!(tag!("-"), single_value),
-                |s| Value::UnaryOp(Operator::Minus, Box::new(s))) |
-           map!(preceded!(tag!("+"), single_value),
-                |s| Value::UnaryOp(Operator::Plus, Box::new(s))) |
            map!(tag!("\"\""),
                 |_| Value::Literal("".into(), Quotes::Double)) |
            quoted_string |
