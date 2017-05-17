@@ -7,3 +7,4 @@ report_fixme = "Always"
 struct_lit_width = 50
 struct_variant_width = 50
 write_mode = "Diff"
+fn_call_width = 66

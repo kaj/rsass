@@ -23,8 +23,7 @@ fn t02_simple_nesting() {
 
 #[test]
 fn t03_simple_variable() {
-    check(b"$color: red;\n\na {\n  color: $color;\n}",
-          "a{color:red}\n")
+    check(b"$color: red;\n\na {\n  color: $color;\n}", "a{color:red}\n")
 }
 
 #[test]

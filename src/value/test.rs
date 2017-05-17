@@ -141,8 +141,7 @@ fn multi_comma_trailing() {
 
 #[test]
 fn call_no_args() {
-    check_expr("foo();",
-               Value::Call("foo".to_string(), CallArgs::default()))
+    check_expr("foo();", Value::Call("foo".to_string(), CallArgs::default()))
 }
 
 #[test]

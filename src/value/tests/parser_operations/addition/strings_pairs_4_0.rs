@@ -226,7 +226,8 @@ fn t51() {
 }
 #[test]
 fn t52() {
-    check("lschema_#{ritlp} + lschema_#{ritlp}", "lschema_ritlplschema_ritlp")
+    check("lschema_#{ritlp} + lschema_#{ritlp}",
+          "lschema_ritlplschema_ritlp")
 }
 #[test]
 fn t53() {
@@ -243,7 +244,8 @@ fn t55() {
 }
 #[test]
 fn t56() {
-    check("lschema_#{ritlp} + #{litlp}_rschema", "lschema_ritlplitlp_rschema")
+    check("lschema_#{ritlp} + #{litlp}_rschema",
+          "lschema_ritlplitlp_rschema")
 }
 #[test]
 fn t57() {
@@ -260,7 +262,8 @@ fn t59() {
 }
 #[test]
 fn t60() {
-    check("#{litlp}_rschema + #{litlp}_rschema", "litlp_rschemalitlp_rschema")
+    check("#{litlp}_rschema + #{litlp}_rschema",
+          "litlp_rschemalitlp_rschema")
 }
 
 fn check(expression: &str, expected: &str) {
