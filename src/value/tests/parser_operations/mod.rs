@@ -1,5 +1,6 @@
 mod addition;
 mod binary_and_unary;
+mod logic_eq;
 
 use super::super::value_expression;
 use std::str::from_utf8;
