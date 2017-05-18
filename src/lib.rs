@@ -49,7 +49,6 @@ use std::str::from_utf8;
 mod colors;
 mod error;
 mod formalargs;
-mod operator;
 mod functions;
 mod selectors;
 mod parseutil;

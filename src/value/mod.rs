@@ -1,3 +1,8 @@
+mod operator;
+#[cfg(test)]
+mod tests;
+
+use self::operator::Operator;
 use colors::{name_to_rgb, rgb_to_name};
 use error::Error;
 use formalargs::{CallArgs, call_args};
@@ -5,15 +10,11 @@ use functions::get_builtin_function;
 use nom::multispace;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
-use operator::Operator;
 use parseutil::{is_name_char, name, opt_spacelike, spacelike2};
 use std::fmt;
 use std::str::{FromStr, from_utf8};
 use unit::{Unit, unit};
 use variablescope::Scope;
-
-#[cfg(test)]
-mod tests;
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq)]
