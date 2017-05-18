@@ -12,6 +12,9 @@ use std::str::{FromStr, from_utf8};
 use unit::{Unit, unit};
 use variablescope::Scope;
 
+#[cfg(test)]
+mod tests;
+
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Value {
@@ -762,8 +765,3 @@ fn unescape(s: &str) -> String {
     }
     result
 }
-
-#[cfg(test)]
-mod test;
-#[cfg(test)]
-mod tests;
