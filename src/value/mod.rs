@@ -471,10 +471,7 @@ named!(pub value_expression<&[u8], Value>,
 named!(pub space_list<&[u8], Value>,
        do_parse!(first: single_expression >>
                  list: fold_many0!(
-                     alt_complete!(
-                         preceded!(multispace, single_expression) |
-                         unquoted_literal |
-                         variable),
+                     preceded!(opt!(multispace), single_expression),
                      vec![first],
                      |mut list: Vec<Value>, item| { list.push(item); list }) >>
                  (if list.len() == 1 {

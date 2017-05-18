@@ -1,7 +1,5 @@
 //! Tests from
 //! `spec/parser/operations/logic_eq/numbers/pairs-4.0`.
-//!
-//! All tests marked `ignore` here are TODO.
 
 use super::super::check_eval;
 
@@ -118,42 +116,34 @@ fn t28() {
     check_eval("#{10} == #{1}0", "true")
 }
 #[test]
-#[ignore]
 fn t29() {
     check_eval("1#{0}==1#{0}", "1 false 0")
 }
 #[test]
-#[ignore]
 fn t30() {
     check_eval("1#{0} ==1#{0}", "1 false 0")
 }
 #[test]
-#[ignore]
 fn t31() {
     check_eval("1#{0}== 1#{0}", "1 false 0")
 }
 #[test]
-#[ignore]
 fn t32() {
     check_eval("1#{0} == 1#{0}", "1 false 0")
 }
 #[test]
-#[ignore]
 fn t33() {
     check_eval("1#{0}==#{1}0", "1 false")
 }
 #[test]
-#[ignore]
 fn t34() {
     check_eval("1#{0} ==#{1}0", "1 false")
 }
 #[test]
-#[ignore]
 fn t35() {
     check_eval("1#{0}== #{1}0", "1 false")
 }
 #[test]
-#[ignore]
 fn t36() {
     check_eval("1#{0} == #{1}0", "1 false")
 }
