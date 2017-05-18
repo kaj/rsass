@@ -1,7 +1,5 @@
 //! Tests from
 //! `sass-spec/spec/parser/operations/binary_and_unary`.
-//!
-//! All tests marked `ignore` here are TODO.
 
 use super::super::super::value_expression;
 use std::str::from_utf8;
