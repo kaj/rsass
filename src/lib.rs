@@ -119,6 +119,19 @@ pub fn compile_scss_file(file: &Path,
 /// When opening an included file, an extended file context is
 /// created, to find further included files relative to the file they
 /// are inlcuded from.
+///
+/// # Example
+/// ```
+/// use rsass::FileContext;
+///
+/// let base = FileContext::new();
+/// let (base, file1) = base.file("some/dir/file.scss".as_ref());
+/// // base is now a relative to file1, usefull to open files
+/// // by paths mentioned in file1.
+/// let (base, file2) = base.file("some/other.scss".as_ref());
+/// assert_eq!(file1.to_string_lossy(), "some/dir/file.scss");
+/// assert_eq!(file2.to_string_lossy(), "some/dir/some/other.scss");
+/// ```
 #[derive(Clone, Debug)]
 pub struct FileContext {
     path: PathBuf,
@@ -131,7 +144,10 @@ impl FileContext {
     pub fn new() -> Self {
         FileContext { path: PathBuf::new() }
     }
-    fn file(&self, file: &Path) -> (Self, PathBuf) {
+    /// Get a file from this context.
+    ///
+    /// Get a path and a FileContext from this FileContext and a path.
+    pub fn file(&self, file: &Path) -> (Self, PathBuf) {
         let t = self.path.join(file);
         if let Some(dir) = t.parent() {
             (FileContext { path: PathBuf::from(dir) }, t.clone())
