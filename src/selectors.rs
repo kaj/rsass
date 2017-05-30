@@ -1,5 +1,5 @@
 use nom::is_alphanumeric;
-use parseutil::{opt_spacelike, spacelike};
+use parseutil::{opt_spacelike, spacelike2};
 use std::fmt;
 use std::io::Write;
 use std::str::from_utf8;
@@ -129,7 +129,7 @@ named!(selector_part<&[u8], SelectorPart>,
                            value!(SelectorPart::RelOp(b'~'), tag!("~")) |
                            value!(SelectorPart::RelOp(b'\\'), tag!("\\"))),
                       opt_spacelike) |
-           value!(SelectorPart::Descendant, spacelike)
+           value!(SelectorPart::Descendant, spacelike2)
            ));
 
 
