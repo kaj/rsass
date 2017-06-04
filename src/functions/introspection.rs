@@ -59,7 +59,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             WARN.call_once(|| {
                 writeln!(&mut stderr(),
                          "DEPRECATION WARNING: Passing a string to call() \
-                          is deprecated and will be illegal").unwrap();
+                          is deprecated and will be illegal")
+                        .unwrap();
             });
             let args = CallArgs::from_value(s.get("args"));
             match s.call_function(name, &args) {

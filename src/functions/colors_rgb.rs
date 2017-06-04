@@ -65,7 +65,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                            m(a1, a2, w)))
         } else {
             Err(Error::badargs(&["color", "color", "number"],
-                        &[&color1, &color2, &weight]))
+                               &[&color1, &color2, &weight]))
         }
     });
     def!(f, invert(color), |s| match &s.get("color") {
