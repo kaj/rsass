@@ -92,6 +92,7 @@ impl Value {
             Value::Literal(..) => "string",
             Value::Numeric(..) => "number",
             Value::List(..) => "list",
+            Value::True | Value::False => "bool",
             Value::Null => "null",
             _ => "unknown",
         }

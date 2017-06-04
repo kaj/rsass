@@ -111,4 +111,89 @@ mod test {
     fn type_of_color_by_name() {
         assert_eq!("color", do_evaluate(&[], b"type_of(red);"))
     }
+    /// From `sass-spec/spec/types-4.0`
+    mod types_4_0 {
+        use super::do_evaluate;
+        #[test]
+        fn t01() {
+            assert_eq!("color", do_evaluate(&[], b"type_of(red);"))
+        }
+        #[test]
+        fn t02() {
+            assert_eq!("string", do_evaluate(&[], b"type_of(\"red\");"))
+        }
+        #[test]
+        fn t03() {
+            assert_eq!("color", do_evaluate(&[], b"type_of(#abc);"))
+        }
+        #[test]
+        fn t04() {
+            assert_eq!("number", do_evaluate(&[], b"type-of(123);"))
+        }
+        #[test]
+        fn t05() {
+            assert_eq!("number", do_evaluate(&[], b"type-of(45px);"))
+        }
+        #[test]
+        fn t06() {
+            assert_eq!("number", do_evaluate(&[], b"type-of(98%);"))
+        }
+        #[test]
+        fn t07() {
+            assert_eq!("list", do_evaluate(&[], b"type-of(1 2 3);"))
+        }
+        #[test]
+        fn t08() {
+            assert_eq!("string", do_evaluate(&[], b"type-of(hey);"))
+        }
+        #[test]
+        fn t09() {
+            assert_eq!("string", do_evaluate(&[], b"type-of(\"ho\");"))
+        }
+        #[test]
+        fn t10() {
+            assert_eq!("string", do_evaluate(&[], b"type-of(#{1+2}px);"))
+        }
+        #[test]
+        fn t11() {
+            assert_eq!("bool", do_evaluate(&[], b"type-of(true);"))
+        }
+        #[test]
+        fn t12() {
+            assert_eq!("bool", do_evaluate(&[], b"type-of(false);"))
+        }
+        #[test]
+        fn t13() {
+            assert_eq!("number", do_evaluate(&[], b"type-of(45 or false);"))
+        }
+        #[test]
+        fn t14() {
+            assert_eq!("string", do_evaluate(&[], b"type-of(#{#abc});"))
+        }
+        #[test]
+        fn t15() {
+            assert_eq!("type-of(red)", do_evaluate(&[], b"ty#{pe}-of(red);"))
+        }
+        #[test]
+        fn t16() {
+            assert_eq!("\"length(a b c d)\"",
+                       do_evaluate(&[], b"quote(le#{ng}th(a b c d));"))
+        }
+        #[test]
+        fn t17() {
+            assert_eq!("aqua", do_evaluate(&[], b"aqua;"))
+        }
+        #[test]
+        fn t18() {
+            assert_eq!("aqua", do_evaluate(&[("x", "aqua")], b"$x;"))
+        }
+        #[test]
+        fn t19() {
+            assert_eq!("33", do_evaluate(&[], b"#{1+2}+3;"))
+        }
+        #[test]
+        fn t20() {
+            assert_eq!("url(number)", do_evaluate(&[], b"url(type-of(3+3));"))
+        }
+    }
 }

@@ -25,7 +25,7 @@ impl Operator {
     pub fn eval(&self, a: Value, b: Value) -> Value {
         match *self {
             Operator::And => Value::bool(a.is_true() && b.is_true()),
-            Operator::Or => Value::bool(a.is_true() || b.is_true()),
+            Operator::Or => if a.is_true() { a } else { b },
             Operator::Equal => Value::bool(equal_values(&a, &b)),
             Operator::NotEqual => Value::bool(!equal_values(&a, &b)),
             Operator::Greater => Value::bool(a > b),
