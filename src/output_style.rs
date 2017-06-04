@@ -76,26 +76,34 @@ impl OutputStyle {
                     scope.define(name, val);
                 }
             }
-            SassItem::AtRule(ref query, ref body) => {
+            SassItem::AtRule { ref name, ref args, ref body } => {
                 result.do_separate()?;
-                write!(result.to_content(), "@{}{}",
-                       query,
-                       if self.is_compressed() { "{" } else { " {" })?;
-                let mut direct = vec![];
-                let mut sub = vec![];
-                self.handle_body(&mut direct,
-                                 &mut sub,
-                                 &mut ScopeImpl::sub(scope),
-                                 &Selectors::root(),
-                                 body,
-                                 file_context,
-                                 2)?;
-                if !sub.is_empty() {
-                    result.do_indent(0)?;
-                    result.to_content().write_all(&sub)?;
+                let args = args.evaluate(scope);
+                write!(result.to_content(), "@{} {}", name, args)?;
+                if let &Some(ref body) = body {
+                    if self.is_compressed() || args.is_null() {
+                        write!(result.to_content(), "{{")?;
+                    } else {
+                        write!(result.to_content(), " {{")?;
+                    }
+                    let mut direct = vec![];
+                    let mut sub = vec![];
+                    self.handle_body(&mut direct,
+                                     &mut sub,
+                                     &mut ScopeImpl::sub(scope),
+                                     &Selectors::root(),
+                                     body,
+                                     file_context,
+                                     2)?;
+                    if !sub.is_empty() {
+                        result.do_indent(0)?;
+                        result.to_content().write_all(&sub)?;
+                    }
+                    self.write_items(result.to_content(), &direct, 2)?;
+                    write!(result.to_content(), "}}")?;
+                } else {
+                    write!(result.to_content(), ";")?;
                 }
-                self.write_items(result.to_content(), &direct, 2)?;
-                write!(result.to_content(), "}}")?;
             }
 
             SassItem::MixinDeclaration { ref name, ref args, ref body } => {
@@ -284,35 +292,43 @@ impl OutputStyle {
                         scope.define(name, val);
                     }
                 }
-                SassItem::AtRule(ref query, ref body) => {
-                    let mut s1 = vec![];
-                    let mut s2 = vec![];
-                    self.handle_body(&mut s1,
-                                     &mut s2,
-                                     &mut ScopeImpl::sub(scope),
-                                     selectors,
-                                     body,
-                                     file_context,
-                                     2)?;
-
-                    write!(sub, "@{}{}",
-                           query,
-                           if self.is_compressed() { "{" } else { " {" })?;
-                    if !s1.is_empty() {
-                        self.do_indent(sub, 2)?;
+                SassItem::AtRule { ref name, ref args, ref body } => {
+                    write!(sub, "@{} {}", name, args)?;
+                    if let &Some(ref body) = body {
                         if self.is_compressed() {
-                            write!(sub, "{:#}{{", selectors)?;
+                            write!(sub, "{{")?;
                         } else {
-                            write!(sub, "{} {{", selectors)?;
+                            write!(sub, " {{")?;
                         }
-                        self.write_items(sub, &s1, 4)?;
+
+                        let mut s1 = vec![];
+                        let mut s2 = vec![];
+                        self.handle_body(&mut s1,
+                                         &mut s2,
+                                         &mut ScopeImpl::sub(scope),
+                                         selectors,
+                                         body,
+                                         file_context,
+                                         2)?;
+
+                        if !s1.is_empty() {
+                            self.do_indent(sub, 2)?;
+                            if self.is_compressed() {
+                                write!(sub, "{:#}{{", selectors)?;
+                            } else {
+                                write!(sub, "{} {{", selectors)?;
+                            }
+                            self.write_items(sub, &s1, 4)?;
+                            write!(sub, "}}")?;
+                        }
+                        self.do_indent(sub, 0)?;
+                        if !s2.is_empty() {
+                            sub.write_all(&s2)?;
+                        }
                         write!(sub, "}}")?;
+                    } else {
+                        write!(sub, ";")?;
                     }
-                    self.do_indent(sub, 0)?;
-                    if !s2.is_empty() {
-                        sub.write_all(&s2)?;
-                    }
-                    write!(sub, "}}")?;
                 }
 
                 SassItem::MixinDeclaration { ref name, ref args, ref body } => {
@@ -544,8 +560,9 @@ impl CssWriter {
     }
     fn get_result(self) -> Result<Vec<u8>, Error> {
         let mut result = vec![];
+        let compressed = self.is_compressed();
         if !self.imports.is_ascii() || !self.contents.is_ascii() {
-            if self.is_compressed() {
+            if compressed {
                 // U+FEFF is byte order mark, used to show encoding.
                 result.extend_from_slice("\u{feff}".as_bytes());
             } else {
@@ -554,7 +571,7 @@ impl CssWriter {
         }
         result.extend(self.imports);
         result.extend(self.contents);
-        if result.last() == Some(&b';') {
+        if compressed && result.last() == Some(&b';') {
             result.pop();
         }
         if result.last().unwrap_or(&b'\n') != &b'\n' {

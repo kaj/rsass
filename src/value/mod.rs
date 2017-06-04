@@ -543,10 +543,12 @@ named!(term_value<Value>,
                      do_parse!(s1: opt!(multispace) >>
                                op: alt_complete!(tag!("*") | tag!("/")) >>
                                s2: opt!(multispace) >>
-                               b: single_value >>
+                               b: opt!(single_value) >>
                                (s1.is_some(), op, s2.is_some(), b)),
                      a,
                      |a, (s1, op, s2, b)| {
+                         let b: Option<Value> = b;
+                         let b = b.unwrap_or(Value::Null);
                          if op == b"*" {
                              Value::BinOp(Box::new(a),
                                           Operator::Multiply,
@@ -636,7 +638,7 @@ named!(pub single_value<&[u8], Value>,
 named!(variable<Value>,
        do_parse!(tag!("$") >>  name: name >> (Value::Variable(name))));
 
-named!(interpolation<Value>,
+named!(pub interpolation<Value>,
        map!(delimited!(tag!("#{"), value_expression, tag!("}")),
             |v| Value::Interpolation(Box::new(v))));
 
@@ -647,7 +649,7 @@ named!(unquoted_literal<Value>,
                      alt!(interpolation | function_call |
                           unquoted_literal_part |
                           map!(preceded!(tag!("//"),
-                                         take_while1!(is_ext_str_char)),
+                                         take_while!(is_ext_str_char)),
                                |v| Value::Literal(
                                    format!("//{}", from_utf8(v).unwrap()),
                                    Quotes::None))),
@@ -669,7 +671,7 @@ named!(pub extended_literal<Value>,
        map!(take_while1!(is_ext_str_char),
             |v| Value::Literal(from_utf8(v).unwrap().into(), Quotes::None)));
 
-named!(function_call<Value>,
+named!(pub function_call<Value>,
        do_parse!(name: name >> args: call_args >>
                  (Value::Call(name, args))));
 
@@ -692,7 +694,7 @@ named!(unquoted_literal_part<Value>,
        }));
 
 // a quoted string may contain interpolations
-named!(quoted_string<Value>,
+named!(pub quoted_string<Value>,
        do_parse!(tag!("\"") >>
                  first: simple_dqs_part >>
                  all: fold_many0!(
@@ -714,7 +716,7 @@ named!(nonempty_dqs_part<Value>,
                                Quotes::Double)));
 
 // a quoted string may contain interpolations
-named!(singlequoted_string<Value>,
+named!(pub singlequoted_string<Value>,
        do_parse!(tag!("'") >>
                  first: simple_sqs_part >>
                  all: fold_many0!(

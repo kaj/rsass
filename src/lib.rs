@@ -62,10 +62,11 @@ use formalargs::{CallArgs, FormalArgs, call_args, formal_args};
 pub use functions::SassFunction;
 pub use num_rational::Rational;
 pub use output_style::OutputStyle;
-use parseutil::{comment, name, opt_spacelike, spacelike};
+use parseutil::{comment, ignore_space, name, opt_spacelike, spacelike};
 use selectors::{Selectors, selectors};
 pub use unit::Unit;
-pub use value::{ListSeparator, Quotes, Value};
+pub use value::{ListSeparator, Quotes, Value, function_call, interpolation,
+                quoted_string, singlequoted_string};
 use value::{single_value, value_expression};
 pub use variablescope::{GlobalScope, Scope};
 
@@ -230,7 +231,11 @@ pub enum SassItem {
         default: bool,
         global: bool,
     },
-    AtRule(String, Vec<SassItem>),
+    AtRule {
+        name: String,
+        args: Value,
+        body: Option<Vec<SassItem>>,
+    },
 
     MixinDeclaration {
         name: String,
@@ -309,14 +314,81 @@ named!(mixin_call<SassItem>,
                  })));
 
 named!(at_rule<SassItem>,
-       do_parse!(tag!("@") >> // opt_spacelike >>
-                 query: is_not!("{}") >>
-                 body: body_block >>
-                 (SassItem::AtRule(from_utf8(query)
-                                       .unwrap()
-                                       .trim_right()
-                                       .into(),
-                                   body))));
+       do_parse!(tag!("@") >>
+                 name: name >> ignore_space >>
+                 args: many0!(preceded!(opt!(ignore_space), alt!(
+                     function_call |
+                     quoted_string |
+                     singlequoted_string |
+                     interpolation |
+                     map!(is_not!("\"'{};"),
+                          |s| Value::Literal(from_utf8(s)
+                                             .unwrap()
+                                             .trim_right()
+                                             .into(),
+                                             Quotes::None))
+                         ))) >>
+                 body: opt!(body_block) >>
+                 opt!(tag!(";")) >>
+                 (SassItem::AtRule {
+                     name: name,
+                     args: if args.len() == 1 {
+                         args.into_iter().next().unwrap()
+                     } else {
+                         Value::List(args, ListSeparator::Space)
+                     },
+                     body: body,
+                 })));
+
+/// Tests from `sass_spec/spec/css/unknown_directive`
+#[cfg(test)]
+mod css_unknown_directive {
+    use super::check;
+    // Unknown directives should support almost any sequence of valid tokens,
+    // including interpolation.
+
+    #[test]
+    fn t01_characters_are_passed_through_unaltered() {
+        check("@asdf .~@#$%^&*()_-+=[]|:<>,.?/;\n",
+              "@asdf .~@#$%^&*()_-+=[]|:<>,.?/;\n")
+    }
+    #[test]
+    fn t02_strings_are_tokenized_as_strings() {
+        check("@asdf \"f'o\" 'b\"r' url(baz) url(\"qux\");\n",
+              "@asdf \"f'o\" 'b\"r' url(baz) url(\"qux\");\n")
+    }
+    #[test]
+    fn t03_comments_are_preserved() {
+        check("@asdf foo //\n      bar;\n", "@asdf foo //\n      bar;\n")
+    }
+    #[test]
+    fn t04_comments_are_preserved() {
+        check("@asdf foo /* bar */ baz;", "@asdf foo /* bar */ baz;\n")
+    }
+    #[test]
+    fn t05_interpolation_plain() {
+        check("@asdf #{1 + 2};\n", "@asdf 3;\n")
+    }
+    #[test]
+    fn t06_interpolation_in_string() {
+        check("@asdf \"foo #{\"bar\"} baz\";\n", "@asdf \"foo bar baz\";\n")
+    }
+    #[test]
+    #[ignore] // TODO The single quotes should not be converted to double.
+    fn t07_interpolation_in_string() {
+        check("@asdf 'foo #{'bar'} baz';\n", "@asdf 'foo bar baz';\n")
+    }
+    #[test]
+    fn t08_interpolation_in_url() {
+        check("@asdf url(http://#{\")\"}.com/);\n",
+              "@asdf url(http://).com/);\n")
+    }
+    #[test]
+    fn t09_interpolation_in_url() {
+        check("@asdf url(\"http://#{\")\"}.com/\");\n",
+              "@asdf url(\"http://).com/\");\n")
+    }
+}
 
 named!(if_statement<SassItem>,
        preceded!(tag!("@"), if_statement_inner));
@@ -620,4 +692,12 @@ fn test_variable_declaration_default() {
 #[cfg(test)]
 fn string(v: &str) -> Value {
     Value::Literal(v.into(), Quotes::None)
+}
+
+#[cfg(test)]
+fn check(input: &str, expected: &str) {
+    assert_eq!(compile_scss(input.as_bytes(), OutputStyle::Normal)
+                   .and_then(|s| Ok(String::from_utf8(s)?))
+                   .map_err(|e| format!("{:?}", e)),
+               Ok(expected.to_string()));
 }

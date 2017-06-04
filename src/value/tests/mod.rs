@@ -200,3 +200,17 @@ fn color_long() {
 fn check_expr(expr: &str, value: Value) {
     assert_eq!(value_expression(expr.as_bytes()), Done(&b";"[..], value))
 }
+
+#[test]
+fn parse_extended_literal() {
+    use variablescope::GlobalScope;
+    let t = value_expression(b"http://#{\")\"}.com/;");
+    if let &Done(ref rest, ref result) = &t {
+        assert_eq!(rest, b";");
+        println!("Got {:?}", result);
+        assert_eq!("http://).com/",
+                   format!("{}", result.evaluate(&GlobalScope::new())));
+    } else {
+        assert_eq!(format!("{:?}", t), "Done")
+    }
+}
