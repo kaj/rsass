@@ -665,6 +665,10 @@ fn ok_as_literal(s: Value) -> Result<Value, bool> {
     }
 }
 
+named!(pub extended_literal<Value>,
+       map!(take_while1!(is_ext_str_char),
+            |v| Value::Literal(from_utf8(v).unwrap().into(), Quotes::None)));
+
 named!(function_call<Value>,
        do_parse!(name: name >> args: call_args >>
                  (Value::Call(name, args))));
