@@ -14,9 +14,9 @@ The sass language [is defined in its reference
 doc](http://sass-lang.com/documentation/file.SASS_REFERENCE.html).
 This implementation is incomplete but getting there, if slowly.
 
-Progress: ![1053](http://progressed.io/bar/105?scale=329&suffix=3)
-of 3299 tests passed
-(or 1111 of 6054 when claiming to be libsass).
+Progress: ![1146](http://progressed.io/bar/114?scale=331&suffix=6)
+of 3310 tests passed
+(or 1215 of 6065 when claiming to be libsass).
 
 If you want a working rust library for sass right now, you will
 probably be better of with [sass-rs](https://crates.io/crates/sass-rs)
