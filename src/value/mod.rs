@@ -683,16 +683,26 @@ fn is_ext_str_char(c: u8) -> bool {
 }
 
 named!(unquoted_literal_part<Value>,
-       map!(is_not!("+*/=;,$(){{}}! \n\t'\"#"), |val| {
-           let val = from_utf8(val).unwrap().to_string();
-           if val == "null" {
-               Value::Null
-           } else if let Some((r, g, b)) = name_to_rgb(&val) {
-               Value::Color(r, g, b, Rational::from_integer(1), Some(val))
-           } else {
-               Value::Literal(val, Quotes::None)
-           }
-       }));
+       map!(unquoted_literal_part_part,
+            |val: String| {
+                if val == "null" {
+                    Value::Null
+                } else if let Some((r, g, b)) = name_to_rgb(&val) {
+                    Value::Color(r, g, b, Rational::from_integer(1), Some(val))
+                } else {
+                    Value::Literal(val, Quotes::None)
+                }
+            }));
+
+named!(unquoted_literal_part_part<String>,
+       switch!(take_backslash,
+               true => map!(take!(1),
+                            |v| format!("\\{}", from_utf8(v).unwrap())) |
+               false => map!(is_not!("\\+*/=;,$(){{}}! \n\t'\"#"),
+                             |v| from_utf8(v).unwrap().to_string())));
+
+named!(take_backslash<bool>,
+       map!(opt!(tag!("\\")), |v: Option<&[u8]>| v.is_some()));
 
 // a quoted string may contain interpolations
 named!(pub quoted_string<Value>,

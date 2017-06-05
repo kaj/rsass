@@ -3,9 +3,12 @@ use formalargs::CallArgs;
 use nom::IResult::*;
 use num_rational::Rational;
 use num_traits::{One, Zero};
+use std::str::from_utf8;
 use unit::Unit;
+use variablescope::GlobalScope;
 
 mod parser_operations;
+mod unquote;
 
 #[test]
 fn simple_number() {
@@ -213,4 +216,16 @@ fn parse_extended_literal() {
     } else {
         assert_eq!(format!("{:?}", t), "Done")
     }
+}
+
+fn check_eval(expression: &str, expected: &str) {
+    let mut scope = GlobalScope::new();
+    let expression = format!("{};", expression);
+    let (end, foo) = value_expression(expression.as_bytes()).unwrap();
+    println!("Expression is: {:?}", foo);
+    assert_eq!(Ok(";"), from_utf8(end));
+    let result = foo.evaluate(&mut scope);
+    println!(" ... evals to: {:?}", result);
+    assert_eq!(format!("{}", result),
+               expected)
 }

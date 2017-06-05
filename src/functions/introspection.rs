@@ -1,8 +1,6 @@
 use super::{Error, SassFunction, get_builtin_function};
 use formalargs::CallArgs;
 use std::collections::BTreeMap;
-use std::io::{Write, stderr};
-use std::sync::{ONCE_INIT, Once};
 use value::{Quotes, Value};
 use variablescope::Scope;
 
@@ -55,13 +53,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         &Value::Literal(ref name, _) => {
             // Ok, the spec says using a string for call is deprecated.
             // Even though I have no other way implemented ...
-            static WARN: Once = ONCE_INIT;
-            WARN.call_once(|| {
-                writeln!(&mut stderr(),
-                         "DEPRECATION WARNING: Passing a string to call() \
-                          is deprecated and will be illegal")
-                        .unwrap();
-            });
+            dep_warn!("Passing a string to call() is deprecated and \
+                       will be illegal");
             let args = CallArgs::from_value(s.get("args"));
             match s.call_function(name, &args) {
                 Some(value) => Ok(value),

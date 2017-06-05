@@ -44,3 +44,27 @@ macro_rules! func2 {
               |s: &Scope| $name($(s.get(stringify!($arg))),*))
     };
 }
+
+macro_rules! dep_warn {
+    ($first: expr, $($arg:expr),*) => {{
+        use std::io::{Write, stderr};
+        use std::sync::{ONCE_INIT, Once};
+        static WARN: Once = ONCE_INIT;
+        WARN.call_once(|| {
+            writeln!(&mut stderr(),
+                     concat!("DEPRECATION WARNING: ", $first),
+                     $($arg),*)
+                .unwrap();
+        });
+    }};
+    ($first: expr) => {{
+        use std::io::{Write, stderr};
+        use std::sync::{ONCE_INIT, Once};
+        static WARN: Once = ONCE_INIT;
+        WARN.call_once(|| {
+            writeln!(&mut stderr(),
+                     concat!("DEPRECATION WARNING: ", $first))
+                .unwrap();
+        });
+    }}
+}

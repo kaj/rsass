@@ -12,7 +12,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def!(f, unquote(contents), |s| match s.get("contents") {
         Value::Literal(v, _) => Ok(Value::Literal(v, Quotes::None)),
-        v => Ok(v),
+        v => {
+            dep_warn!("Passing {}, a non-string value, to unquote()", v);
+            Ok(v)
+        }
     });
     def!(f,
          str_insert(string, insert, index),
