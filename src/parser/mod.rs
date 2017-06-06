@@ -1,5 +1,7 @@
 pub mod util;
+mod selectors;
 
+use self::selectors::selectors;
 
 use SassItem;
 use error::Error;
@@ -13,7 +15,6 @@ use nom::IResult;
 #[cfg(test)]
 use num_rational::Rational;
 use parser::util::{comment, ignore_space, name, opt_spacelike, spacelike};
-use selectors::selectors;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
