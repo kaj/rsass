@@ -10,7 +10,7 @@ use functions::get_builtin_function;
 use nom::multispace;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
-use parseutil::{is_name_char, name, opt_spacelike, spacelike2};
+use parser::util::{is_name_char, name, opt_spacelike, spacelike2};
 use std::fmt;
 use std::str::{FromStr, from_utf8};
 use unit::{Unit, unit};

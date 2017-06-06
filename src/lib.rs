@@ -47,7 +47,6 @@ mod error;
 mod formalargs;
 mod functions;
 mod selectors;
-mod parseutil;
 mod value;
 mod variablescope;
 mod output_style;

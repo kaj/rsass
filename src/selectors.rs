@@ -1,5 +1,5 @@
 use nom::is_alphanumeric;
-use parseutil::{opt_spacelike, spacelike2};
+use parser::util::{opt_spacelike, spacelike2};
 use std::fmt;
 use std::io::Write;
 use std::str::from_utf8;

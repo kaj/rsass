@@ -1,4 +1,4 @@
-use parseutil::{ignore_comments, name, opt_spacelike};
+use parser::util::{ignore_comments, name, opt_spacelike};
 use std::default::Default;
 use std::fmt;
 use value::{ListSeparator, Value, extended_literal, space_list};
