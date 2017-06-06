@@ -14,7 +14,8 @@ cargo build --release
 
 if [ -d sass-spec ]; then
    cd sass-spec
-   git up
+   git fetch
+   git rebase origin/master --autostash
 else
    git clone https://github.com/sass/sass-spec.git
    cd sass-spec
