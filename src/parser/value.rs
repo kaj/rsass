@@ -1,4 +1,3 @@
-
 use colors::name_to_rgb;
 use nom::multispace;
 use num_rational::Rational;
