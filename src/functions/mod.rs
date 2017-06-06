@@ -116,7 +116,7 @@ lazy_static! {
 
 #[test]
 fn test_rgb() {
-    use formalargs::call_args;
+    use parser::call_args;
     use num_rational::Rational;
     use num_traits::{One, Zero};
     use variablescope::GlobalScope;

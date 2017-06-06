@@ -1,6 +1,8 @@
 pub mod util;
 mod selectors;
+mod formalargs;
 
+pub use self::formalargs::*;
 use self::selectors::selectors;
 
 use SassItem;
@@ -9,8 +11,8 @@ use error::Error;
 #[cfg(test)]
 use formalargs::{CallArgs, FormalArgs};
 
-use formalargs::{call_args, formal_args};
 use functions::SassFunction;
+
 use nom::IResult;
 #[cfg(test)]
 use num_rational::Rational;

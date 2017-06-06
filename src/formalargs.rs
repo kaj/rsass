@@ -1,7 +1,6 @@
-use parser::util::{ignore_comments, name, opt_spacelike};
 use std::default::Default;
 use std::fmt;
-use value::{ListSeparator, Value, extended_literal, space_list};
+use value::{ListSeparator, Value};
 use variablescope::{Scope, ScopeImpl};
 
 /// The declared arguments of a mixin or function declaration.
@@ -54,7 +53,6 @@ impl Default for FormalArgs {
 pub struct CallArgs(Vec<(Option<String>, Value)>);
 
 impl CallArgs {
-    #[cfg(test)]
     pub fn new(v: Vec<(Option<String>, Value)>) -> Self {
         CallArgs(v)
     }
@@ -95,37 +93,3 @@ impl fmt::Display for CallArgs {
         write!(out, "{}", t)
     }
 }
-
-named!(pub formal_args<FormalArgs>,
-       do_parse!(tag!("(") >> opt_spacelike >>
-                 v: separated_list!(
-                     preceded!(tag!(","), opt_spacelike),
-                     do_parse!(tag!("$") >> name: name >>
-                               d: opt!(do_parse!(
-                                   opt_spacelike >>
-                                   tag!(":") >> opt_spacelike >>
-                                   d: space_list >> opt_spacelike >>
-                                   (d))) >>
-                               (name.replace('-', "_"),
-                                d.unwrap_or(Value::Null)))) >>
-                 va: opt!(tag!("...")) >> opt_spacelike >>
-                 tag!(")") >>
-                 (FormalArgs(v, va.is_some()))));
-
-named!(pub call_args<CallArgs>,
-       delimited!(
-           tag!("("),
-           map!(separated_list!(
-               preceded!(tag!(","), opt_spacelike),
-               pair!(opt!(delimited!(
-                        tag!("$"),
-                        map!(name, |n: String| n.replace("-", "_")),
-                        preceded!(ignore_comments,
-                                  tag!(":")))),
-                     alt!(space_list |
-                          extended_literal |
-                          delimited!(ignore_comments,
-                                     space_list,
-                                     ignore_comments)))),
-                |args| CallArgs(args)),
-           tag!(")")));
