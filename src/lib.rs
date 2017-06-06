@@ -63,8 +63,7 @@ pub use parser::{parse_scss_data, parse_scss_file};
 
 use selectors::Selectors;
 pub use unit::Unit;
-pub use value::{ListSeparator, Quotes, Value, function_call, interpolation,
-                quoted_string, singlequoted_string};
+pub use value::{ListSeparator, Quotes, Value};
 pub use variablescope::{GlobalScope, Scope};
 
 /// Parse scss data from a buffer and write css in the given style.

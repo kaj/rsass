@@ -274,8 +274,8 @@ impl Scope for GlobalScope {
 
 #[cfg(test)]
 pub mod test {
+    use parser::value::value_expression;
     use std::str::from_utf8;
-    use value::*;
     use variablescope::*;
 
     #[test]

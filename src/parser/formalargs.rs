@@ -1,6 +1,8 @@
+
 use formalargs::{CallArgs, FormalArgs};
 use parser::util::{ignore_comments, name, opt_spacelike};
-use value::{Value, extended_literal, space_list};
+use parser::value::{extended_literal, space_list};
+use value::Value;
 
 named!(pub formal_args<FormalArgs>,
        do_parse!(tag!("(") >> opt_spacelike >>

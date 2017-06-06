@@ -2,9 +2,12 @@ pub mod util;
 pub mod selectors;
 pub mod formalargs;
 pub mod unit;
+pub mod value;
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
+use self::value::{function_call, interpolation, quoted_string, single_value,
+                  singlequoted_string, value_expression};
 
 use SassItem;
 use error::Error;
@@ -24,9 +27,7 @@ use std::str::from_utf8;
 #[cfg(test)]
 use unit::Unit;
 
-use value::{ListSeparator, Quotes, Value, function_call, interpolation,
-            quoted_string, singlequoted_string};
-use value::{single_value, value_expression};
+use value::{ListSeparator, Quotes, Value};
 
 /// Parse a scss file.
 ///
