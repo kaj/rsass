@@ -1,6 +1,8 @@
-use super::{FileContext, SassItem, parse_scss_file};
 use error::Error;
+use file_context::FileContext;
 use formalargs::FormalArgs;
+use parser::parse_scss_file;
+use sass_item::SassItem;
 use selectors::Selectors;
 use std::ascii::AsciiExt;
 use std::fmt;

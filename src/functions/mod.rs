@@ -1,5 +1,6 @@
-use super::{Error, SassItem};
+use error::Error;
 use formalargs::{CallArgs, FormalArgs};
+use sass_item::SassItem;
 use std::{cmp, fmt};
 use std::collections::BTreeMap;
 use std::sync::Arc;

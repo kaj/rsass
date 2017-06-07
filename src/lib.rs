@@ -53,18 +53,16 @@ mod output_style;
 mod unit;
 mod parser;
 mod file_context;
+mod sass_item;
 
 pub use error::Error;
 
 pub use file_context::FileContext;
-use formalargs::{CallArgs, FormalArgs};
 pub use functions::SassFunction;
 pub use num_rational::Rational;
 pub use output_style::OutputStyle;
-
 pub use parser::{parse_scss_data, parse_scss_file, parse_value_data};
 
-use selectors::Selectors;
 pub use unit::Unit;
 pub use value::{ListSeparator, Quotes, Value};
 pub use variablescope::{GlobalScope, Scope};
@@ -128,53 +126,6 @@ pub fn compile_scss_file(file: &Path,
     let (sub_context, file) = file_context.file(file);
     let items = parse_scss_file(&file)?;
     style.write_root(&items, &mut GlobalScope::new(), sub_context)
-}
-
-/// Every sass file is a sequence of sass items.
-/// Scoping items contains further sequences of items.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum SassItem {
-    Import(Value),
-    VariableDeclaration {
-        name: String,
-        val: Value,
-        default: bool,
-        global: bool,
-    },
-    AtRule {
-        name: String,
-        args: Value,
-        body: Option<Vec<SassItem>>,
-    },
-
-    MixinDeclaration {
-        name: String,
-        args: FormalArgs,
-        body: Vec<SassItem>,
-    },
-    MixinCall { name: String, args: CallArgs, body: Vec<SassItem> },
-    Content,
-
-    FunctionDeclaration { name: String, func: SassFunction },
-    Return(Value),
-
-    IfStatement(Value, Vec<SassItem>, Vec<SassItem>),
-    /// The value may be or evaluate to a list.
-    Each(String, Value, Vec<SassItem>),
-    For {
-        name: String,
-        from: Box<Value>,
-        to: Box<Value>,
-        inclusive: bool,
-        body: Vec<SassItem>,
-    },
-    While(Value, Vec<SassItem>),
-
-    Rule(Selectors, Vec<SassItem>),
-    NamespaceRule(String, Value, Vec<SassItem>),
-    Property(String, Value, bool),
-    Comment(String),
-    None,
 }
 
 /// Tests from `sass_spec/spec/css/unknown_directive`

@@ -8,8 +8,6 @@ use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
 use self::value::{function_call, interpolation, quoted_string, single_value,
                   singlequoted_string, value_expression};
-
-use SassItem;
 use error::Error;
 
 #[cfg(test)]
@@ -20,6 +18,8 @@ use nom::IResult;
 #[cfg(test)]
 use num_rational::Rational;
 use parser::util::{comment, ignore_space, name, opt_spacelike, spacelike};
+
+use sass_item::SassItem;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
