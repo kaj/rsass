@@ -61,7 +61,8 @@ pub use output_style::OutputStyle;
 
 pub use parser::{parse_scss_data, parse_scss_file};
 
-// FIXME: this should not be exposed, add a more sensible interface for this on parser
+// FIXME: this should not be exposed, add a more sensible interface
+// for this on parser
 pub use parser::value::value_expression;
 
 use selectors::Selectors;
