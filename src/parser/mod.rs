@@ -29,6 +29,15 @@ use unit::Unit;
 
 use value::{ListSeparator, Quotes, Value};
 
+/// Parse a scss value.
+///
+/// Returns a single value (or an error).
+pub fn parse_value_data(data: &[u8]) -> Result<Value, Error> {
+    let expression = format!("{};", String::from_utf8(Vec::from(data))?);
+    let value = value_expression(expression.as_bytes()).to_result()?;
+    Ok(value)
+}
+
 /// Parse a scss file.
 ///
 /// Returns a vec of the top level items of the file (or an error message).

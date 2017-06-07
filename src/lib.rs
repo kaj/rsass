@@ -59,16 +59,28 @@ pub use functions::SassFunction;
 pub use num_rational::Rational;
 pub use output_style::OutputStyle;
 
-pub use parser::{parse_scss_data, parse_scss_file};
-
-// FIXME: this should not be exposed, add a more sensible interface
-// for this on parser
-pub use parser::value::value_expression;
+pub use parser::{parse_scss_data, parse_scss_file, parse_value_data};
 
 use selectors::Selectors;
 pub use unit::Unit;
 pub use value::{ListSeparator, Quotes, Value};
 pub use variablescope::{GlobalScope, Scope};
+
+/// Parse scss data from a buffer and write css in the given style.
+///
+/// # Example
+///
+/// ```
+/// use rsass::compile_value;
+///
+/// assert_eq!(compile_value(b"10px + 4px").unwrap(), b"14px");
+/// ```
+pub fn compile_value(input: &[u8]) -> Result<Vec<u8>, Error> {
+    let scope = GlobalScope::new();
+    let value = parse_value_data(input)?;
+    let buffer = format!("{}", value.evaluate(&scope)).into_bytes();
+    Ok(buffer)
+}
 
 /// Parse scss data from a buffer and write css in the given style.
 ///

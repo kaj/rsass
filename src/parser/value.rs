@@ -1,4 +1,3 @@
-
 use {ListSeparator, Quotes, Value};
 use colors::name_to_rgb;
 use nom::multispace;
