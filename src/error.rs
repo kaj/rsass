@@ -1,3 +1,4 @@
+use nom;
 use std::{fmt, io};
 use std::convert::From;
 use std::path::PathBuf;
@@ -12,6 +13,7 @@ pub enum Error {
     Encoding(FromUtf8Error),
     BadValue(String),
     BadArguments(String),
+    ParseError(nom::ErrorKind),
     S(String),
 }
 
@@ -64,5 +66,11 @@ impl From<io::Error> for Error {
 impl From<FromUtf8Error> for Error {
     fn from(e: FromUtf8Error) -> Self {
         Error::Encoding(e)
+    }
+}
+
+impl From<nom::ErrorKind> for Error {
+    fn from(e: nom::ErrorKind) -> Self {
+        Error::ParseError(e)
     }
 }
