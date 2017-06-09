@@ -1,7 +1,7 @@
 /// Tests from `spec/parser/interpolate/00_concatenation` split up
 /// into the individual properties to be tested.
 extern crate rsass;
-use rsass::{OutputStyle, compile_scss};
+use rsass::{GlobalScope, Scope, parse_value_data};
 
 #[test]
 fn spaced_a01() {
@@ -328,12 +328,8 @@ fn unspaced_4_0_i4() {
 }
 
 fn check(value: &str, expected: &str) {
-    assert_eq!(compile_scss(format!("$input: literal;\n\
-                                     a {{ x: {}; }}",
-                                    value)
-                                    .as_bytes(),
-                            OutputStyle::Normal)
-                       .and_then(|s| Ok(String::from_utf8(s)?))
-                       .unwrap(),
-               format!("a {{\n  x: {};\n}}\n", expected));
+    let mut scope = GlobalScope::new();
+    scope.define("input", &parse_value_data(b"literal").unwrap());
+    let value = parse_value_data(value.as_bytes()).unwrap();
+    assert_eq!(format!("{}", value.evaluate(&scope)), expected)
 }
