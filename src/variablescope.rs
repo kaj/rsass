@@ -2,7 +2,7 @@
 
 use formalargs::{CallArgs, FormalArgs};
 use functions::{SassFunction, get_builtin_function};
-use sass_item::SassItem;
+use sass::Item;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 use value::Value;
@@ -26,29 +26,26 @@ pub trait Scope {
     fn get(&self, name: &str) -> Value;
     fn get_global(&self, name: &str) -> Value;
 
-    fn define_mixin(&mut self,
-                    name: &str,
-                    args: &FormalArgs,
-                    body: &[SassItem]);
-    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)>;
+    fn define_mixin(&mut self, name: &str, args: &FormalArgs, body: &[Item]);
+    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<Item>)>;
 
     fn define_function(&mut self, name: &str, func: SassFunction);
     fn get_function(&self, name: &str) -> Option<&SassFunction>;
     fn call_function(&self, name: &str, args: &CallArgs) -> Option<Value>;
 
-    fn eval_body(&mut self, body: &[SassItem]) -> Option<Value>
+    fn eval_body(&mut self, body: &[Item]) -> Option<Value>
         where Self: Sized
     {
         for b in body {
             let result = match *b {
-                SassItem::IfStatement(ref cond, ref do_if, ref do_else) => {
+                Item::IfStatement(ref cond, ref do_if, ref do_else) => {
                     if cond.evaluate(self).is_true() {
                         self.eval_body(do_if)
                     } else {
                         self.eval_body(do_else)
                     }
                 }
-                SassItem::Each(ref name, ref values, ref body) => {
+                Item::Each(ref name, ref values, ref body) => {
                     let values = match values.evaluate(self) {
                         Value::List(v, _) => v,
                         v => vec![v],
@@ -61,7 +58,7 @@ pub trait Scope {
                     }
                     None
                 }
-                SassItem::For {
+                Item::For {
                     ref name,
                     ref from,
                     ref to,
@@ -79,7 +76,7 @@ pub trait Scope {
                     }
                     None
                 }
-                SassItem::VariableDeclaration {
+                Item::VariableDeclaration {
                     ref name,
                     ref val,
                     default,
@@ -94,8 +91,8 @@ pub trait Scope {
                     }
                     None
                 }
-                SassItem::Return(ref v) => Some(v.evaluate(self)),
-                SassItem::While(ref cond, ref body) => {
+                Item::Return(ref v) => Some(v.evaluate(self)),
+                Item::While(ref cond, ref body) => {
                     let mut scope = ScopeImpl::sub(self);
                     while cond.evaluate(&scope).is_true() {
                         if let Some(r) = scope.eval_body(body) {
@@ -104,7 +101,7 @@ pub trait Scope {
                     }
                     None
                 }
-                SassItem::None => None,
+                Item::None => None,
                 ref x => {
                     panic!("Not implemented in fuction: {:?}", x);
                 }
@@ -120,7 +117,7 @@ pub trait Scope {
 pub struct ScopeImpl<'a> {
     parent: &'a Scope,
     variables: BTreeMap<String, Value>,
-    mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
+    mixins: BTreeMap<String, (FormalArgs, Vec<Item>)>,
     functions: BTreeMap<String, SassFunction>,
 }
 
@@ -142,7 +139,7 @@ impl<'a> Scope for ScopeImpl<'a> {
         let val = val.do_evaluate(self, true);
         self.parent.define_global(name, &val);
     }
-    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)> {
+    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<Item>)> {
         self.mixins
             .get(&name.replace('-', "_"))
             .cloned()
@@ -158,10 +155,7 @@ impl<'a> Scope for ScopeImpl<'a> {
     fn get_global(&self, name: &str) -> Value {
         self.parent.get_global(name)
     }
-    fn define_mixin(&mut self,
-                    name: &str,
-                    args: &FormalArgs,
-                    body: &[SassItem]) {
+    fn define_mixin(&mut self, name: &str, args: &FormalArgs, body: &[Item]) {
         let name = name.replace('-', "_");
         self.mixins.insert(name, (args.clone(), body.into()));
     }
@@ -203,7 +197,7 @@ impl<'a> ScopeImpl<'a> {
 /// are global to the handling of a scss document.
 pub struct GlobalScope {
     variables: Mutex<BTreeMap<String, Value>>,
-    mixins: BTreeMap<String, (FormalArgs, Vec<SassItem>)>,
+    mixins: BTreeMap<String, (FormalArgs, Vec<Item>)>,
     functions: BTreeMap<String, SassFunction>,
 }
 
@@ -231,7 +225,7 @@ impl Scope for GlobalScope {
         let val = val.do_evaluate(self, true);
         self.variables.lock().unwrap().insert(name.replace('-', "_"), val);
     }
-    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<SassItem>)> {
+    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<Item>)> {
         self.mixins.get(&name.replace('-', "_")).cloned()
     }
     fn get(&self, name: &str) -> Value {
@@ -246,10 +240,7 @@ impl Scope for GlobalScope {
             .cloned()
             .unwrap_or(Value::Null)
     }
-    fn define_mixin(&mut self,
-                    name: &str,
-                    args: &FormalArgs,
-                    body: &[SassItem]) {
+    fn define_mixin(&mut self, name: &str, args: &FormalArgs, body: &[Item]) {
         let name = name.replace('-', "_");
         self.mixins.insert(name, (args.clone(), body.into()));
     }

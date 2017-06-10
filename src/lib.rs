@@ -53,7 +53,7 @@ mod output_style;
 mod unit;
 mod parser;
 mod file_context;
-mod sass_item;
+mod sass;
 
 pub use error::Error;
 
