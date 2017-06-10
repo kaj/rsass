@@ -2,8 +2,7 @@ use super::{Error, SassFunction};
 use num_rational::Rational;
 use num_traits::Signed;
 use std::collections::BTreeMap;
-use unit::Unit;
-use value::{Quotes, Value};
+use value::{Quotes, Unit, Value};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, quote(contents), |s| match s.get("contents") {

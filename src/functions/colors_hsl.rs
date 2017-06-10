@@ -2,8 +2,7 @@ use super::{Error, SassFunction};
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
-use unit::Unit;
-use value::Value;
+use value::{Unit, Value};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {

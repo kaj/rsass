@@ -1,14 +1,21 @@
-pub mod operator;
+mod operator;
+mod unit;
+mod quotes;
+mod list_separator;
+mod colors;
 
-use self::operator::Operator;
-use colors::rgb_to_name;
+pub use self::colors::{name_to_rgb, rgb_to_name};
+pub use self::list_separator::ListSeparator;
+pub use self::operator::Operator;
+pub use self::quotes::Quotes;
+pub use self::unit::Unit;
+
 use error::Error;
 use formalargs::CallArgs;
 use functions::get_builtin_function;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::fmt;
-use unit::Unit;
 use variablescope::Scope;
 
 /// A sass value.
@@ -45,14 +52,6 @@ pub enum Value {
     BinOp(Box<Value>, Operator, Box<Value>),
     UnaryOp(Operator, Box<Value>),
     Interpolation(Box<Value>),
-}
-
-/// The difference between a comma-separated and a
-/// whitespace-separated list.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum ListSeparator {
-    Comma,
-    Space,
 }
 
 impl Value {
@@ -254,15 +253,6 @@ impl Value {
             v => v,
         }
     }
-}
-
-
-/// A literal value can be double-quoted, single-quoted or not quoted.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Quotes {
-    Double,
-    Single,
-    None,
 }
 
 impl fmt::Display for Value {

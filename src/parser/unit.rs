@@ -1,4 +1,4 @@
-use unit::Unit;
+use value::Unit;
 
 named!(pub unit<&[u8], Unit>,
        alt_complete!(

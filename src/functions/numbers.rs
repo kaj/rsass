@@ -3,8 +3,7 @@ use num_rational::Rational;
 use num_traits::Signed;
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
-use unit::Unit;
-use value::Value;
+use value::{Unit, Value};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, abs(number), |s| match s.get("number") {

@@ -1,5 +1,3 @@
-use {ListSeparator, Quotes, Value};
-use colors::name_to_rgb;
 use nom::multispace;
 use num_rational::Rational;
 use num_traits::Zero;
@@ -7,8 +5,7 @@ use parser::formalargs::call_args;
 use parser::unit::unit;
 use parser::util::{is_name_char, name, opt_spacelike, spacelike2};
 use std::str::{FromStr, from_utf8};
-use unit::Unit;
-use value::operator::Operator;
+use value::{ListSeparator, Operator, Quotes, Unit, Value, name_to_rgb};
 
 named!(pub value_expression<&[u8], Value>,
        do_parse!(

@@ -24,10 +24,10 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::str::from_utf8;
-#[cfg(test)]
-use unit::Unit;
 
 use value::{ListSeparator, Quotes, Value};
+#[cfg(test)]
+use value::Unit;
 
 /// Parse a scss value.
 ///
