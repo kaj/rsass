@@ -236,7 +236,7 @@ impl Value {
                 }
             }
             Value::Interpolation(ref v) => {
-                match without_quotes(v.do_evaluate(scope, true)) {
+                match v.do_evaluate(scope, true).unquote() {
                     Value::Null => Value::Null,
                     Value::Literal(s, _) => Value::Literal(s, Quotes::None),
                     v => Value::Literal(format!("{}", v), Quotes::None),
@@ -244,15 +244,15 @@ impl Value {
             }
         }
     }
-}
 
-fn without_quotes(v: Value) -> Value {
-    match v {
-        Value::Literal(s, _) => Value::Literal(s, Quotes::None),
-        Value::List(list, s) => {
-            Value::List(list.into_iter().map(without_quotes).collect(), s)
+    pub fn unquote(self) -> Value {
+        match self {
+            Value::Literal(s, _) => Value::Literal(s, Quotes::None),
+            Value::List(list, s) => {
+                Value::List(list.into_iter().map(|v| v.unquote()).collect(), s)
+            }
+            v => v,
         }
-        v => v,
     }
 }
 
