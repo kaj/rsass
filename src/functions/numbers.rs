@@ -1,9 +1,10 @@
 use super::{Error, SassFunction};
 use num_rational::Rational;
 use num_traits::Signed;
+use sass::Value;
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
-use value::{Unit, Value};
+use value::Unit;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, abs(number), |s| match s.get("number") {

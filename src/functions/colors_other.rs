@@ -2,8 +2,9 @@ use super::{Error, SassFunction};
 use super::colors_hsl::{hsla_to_rgba, rgb_to_hsl};
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
+use sass::Value;
 use std::collections::BTreeMap;
-use value::{Quotes, Unit, Value};
+use value::{Quotes, Unit};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {

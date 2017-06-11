@@ -1,6 +1,7 @@
+use sass::Value;
 use std::default::Default;
 use std::fmt;
-use value::{ListSeparator, Value};
+use value::ListSeparator;
 use variablescope::{Scope, ScopeImpl};
 
 /// The declared arguments of a mixin or function declaration.

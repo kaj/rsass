@@ -3,9 +3,9 @@
 use formalargs::{CallArgs, FormalArgs};
 use functions::{SassFunction, get_builtin_function};
 use sass::Item;
+use sass::Value;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
-use value::Value;
 
 /// Variables, functions and mixins are defined in a `Scope`.
 ///

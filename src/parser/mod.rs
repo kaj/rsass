@@ -19,13 +19,13 @@ use nom::IResult;
 use num_rational::Rational;
 use parser::util::{comment, ignore_space, name, opt_spacelike, spacelike};
 
-use sass::Item;
+use sass::{Item, Value};
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::str::from_utf8;
 
-use value::{ListSeparator, Quotes, Value};
+use value::{ListSeparator, Quotes};
 #[cfg(test)]
 use value::Unit;
 

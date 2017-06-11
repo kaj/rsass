@@ -1,10 +1,9 @@
 use error::Error;
 use formalargs::{CallArgs, FormalArgs};
-use sass;
+use sass::{Item, Value};
 use std::{cmp, fmt};
 use std::collections::BTreeMap;
 use std::sync::Arc;
-use value::Value;
 use variablescope::Scope;
 
 #[macro_use]
@@ -39,7 +38,7 @@ pub struct SassFunction {
 #[derive(Clone)]
 pub enum FuncImpl {
     Builtin(Arc<BuiltinFn>),
-    UserDefined(Vec<sass::Item>),
+    UserDefined(Vec<Item>),
 }
 
 impl cmp::PartialEq for FuncImpl {
@@ -77,7 +76,7 @@ impl SassFunction {
     }
 
     /// Create a new `SassFunction` from a scss implementation.
-    pub fn new(args: FormalArgs, body: Vec<sass::Item>) -> Self {
+    pub fn new(args: FormalArgs, body: Vec<Item>) -> Self {
         SassFunction { args: args, body: FuncImpl::UserDefined(body) }
     }
 

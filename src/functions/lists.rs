@@ -1,6 +1,7 @@
 use super::{Error, SassFunction};
+use sass::Value;
 use std::collections::BTreeMap;
-use value::{ListSeparator, Value};
+use value::ListSeparator;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, length(list), |s| match s.get("list") {

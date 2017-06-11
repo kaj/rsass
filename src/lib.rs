@@ -60,8 +60,9 @@ pub use functions::SassFunction;
 pub use num_rational::Rational;
 pub use output_style::OutputStyle;
 pub use parser::{parse_scss_data, parse_scss_file, parse_value_data};
+pub use sass::{Item, Value};
 
-pub use value::{ListSeparator, Quotes, Unit, Value};
+pub use value::{ListSeparator, Quotes, Unit};
 pub use variablescope::{GlobalScope, Scope};
 
 /// Parse scss data from a buffer and write css in the given style.

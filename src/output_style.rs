@@ -3,11 +3,11 @@ use file_context::FileContext;
 use formalargs::FormalArgs;
 use parser::parse_scss_file;
 use sass::Item;
+use sass::Value;
 use selectors::Selectors;
 use std::ascii::AsciiExt;
 use std::fmt;
 use std::io::Write;
-use value::Value;
 use variablescope::{Scope, ScopeImpl};
 
 /// Selected target format.
