@@ -1,7 +1,6 @@
 use css;
 use sass::Value;
 use std::default::Default;
-use std::fmt;
 use variablescope::Scope;
 
 /// the actual arguments of a function or mixin call.
@@ -50,19 +49,5 @@ impl CallArgs {
 impl Default for CallArgs {
     fn default() -> Self {
         CallArgs(vec![])
-    }
-}
-
-impl fmt::Display for CallArgs {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        let t = self.0
-            .iter()
-            .map(|kv| match *kv {
-                     (Some(ref k), ref v) => format!("${}: {}", k, v),
-                     (None, ref v) => format!("{}", v),
-                 })
-            .collect::<Vec<_>>()
-            .join(", ");
-        write!(out, "{}", t)
     }
 }

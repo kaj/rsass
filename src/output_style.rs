@@ -291,7 +291,7 @@ impl OutputStyle {
                     }
                 }
                 Item::AtRule { ref name, ref args, ref body } => {
-                    write!(sub, "@{} {}", name, args)?;
+                    write!(sub, "@{} {}", name, args.evaluate(scope))?;
                     if let &Some(ref body) = body {
                         if self.is_compressed() {
                             write!(sub, "{{")?;
