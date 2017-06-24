@@ -10,14 +10,14 @@ use self::value::{function_call, interpolation, quoted_string, single_value,
                   singlequoted_string, value_expression};
 use error::Error;
 
-#[cfg(test)]
-use formalargs::{CallArgs, FormalArgs};
-
 use functions::SassFunction;
 use nom::IResult;
 #[cfg(test)]
 use num_rational::Rational;
 use parser::util::{comment, ignore_space, name, opt_spacelike, spacelike};
+
+#[cfg(test)]
+use sass::{CallArgs, FormalArgs};
 
 use sass::{Item, Value};
 use std::fs::File;

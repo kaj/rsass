@@ -337,10 +337,10 @@ fn unescape(s: &str) -> String {
 #[cfg(test)]
 mod test {
     use super::*;
-    use formalargs::CallArgs;
     use nom::IResult::*;
     use num_rational::Rational;
     use num_traits::{One, Zero};
+    use sass::CallArgs;
     use sass::Value::*;
     use variablescope::GlobalScope;
 

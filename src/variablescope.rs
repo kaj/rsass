@@ -1,7 +1,7 @@
 //! A scope is something that contains variable values.
 
-use formalargs::{CallArgs, FormalArgs};
 use functions::{SassFunction, get_builtin_function};
+use sass::{CallArgs, FormalArgs};
 use sass::Item;
 use sass::Value;
 use std::collections::BTreeMap;

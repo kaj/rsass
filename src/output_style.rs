@@ -1,7 +1,7 @@
 use error::Error;
 use file_context::FileContext;
-use formalargs::FormalArgs;
 use parser::parse_scss_file;
+use sass::FormalArgs;
 use sass::Item;
 use sass::Value;
 use selectors::Selectors;

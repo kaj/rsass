@@ -1,5 +1,5 @@
 use error::Error;
-use formalargs::{CallArgs, FormalArgs};
+use sass::{CallArgs, FormalArgs};
 use sass::{Item, Value};
 use std::{cmp, fmt};
 use std::collections::BTreeMap;

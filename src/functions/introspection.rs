@@ -1,5 +1,5 @@
 use super::{Error, SassFunction, get_builtin_function};
-use formalargs::CallArgs;
+use sass::CallArgs;
 use sass::Value;
 use std::collections::BTreeMap;
 use value::Quotes;

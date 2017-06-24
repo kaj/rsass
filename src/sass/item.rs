@@ -1,5 +1,5 @@
-use formalargs::{CallArgs, FormalArgs};
 use functions::SassFunction;
+use sass::{CallArgs, FormalArgs};
 use sass::Value;
 use selectors::Selectors;
 

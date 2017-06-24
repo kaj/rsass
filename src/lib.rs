@@ -43,7 +43,6 @@ extern crate rand;
 use std::path::Path;
 
 mod error;
-mod formalargs;
 mod functions;
 mod selectors;
 mod value;
