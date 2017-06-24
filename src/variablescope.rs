@@ -1,9 +1,10 @@
 //! A scope is something that contains variable values.
 
+use css;
+use css::Value;
 use functions::{SassFunction, get_builtin_function};
-use sass::{CallArgs, FormalArgs};
+use sass;
 use sass::Item;
-use sass::Value;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
@@ -26,12 +27,15 @@ pub trait Scope {
     fn get(&self, name: &str) -> Value;
     fn get_global(&self, name: &str) -> Value;
 
-    fn define_mixin(&mut self, name: &str, args: &FormalArgs, body: &[Item]);
-    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<Item>)>;
+    fn define_mixin(&mut self,
+                    name: &str,
+                    args: &sass::FormalArgs,
+                    body: &[Item]);
+    fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)>;
 
     fn define_function(&mut self, name: &str, func: SassFunction);
     fn get_function(&self, name: &str) -> Option<&SassFunction>;
-    fn call_function(&self, name: &str, args: &CallArgs) -> Option<Value>;
+    fn call_function(&self, name: &str, args: &css::CallArgs) -> Option<Value>;
 
     fn eval_body(&mut self, body: &[Item]) -> Option<Value>
         where Self: Sized
@@ -82,12 +86,13 @@ pub trait Scope {
                     default,
                     global,
                 } => {
+                    let val = val.evaluate(self);
                     if default {
-                        self.define_default(name, val, global);
+                        self.define_default(name, &val, global);
                     } else if global {
-                        self.define_global(name, val);
+                        self.define_global(name, &val);
                     } else {
-                        self.define(name, val);
+                        self.define(name, &val);
                     }
                     None
                 }
@@ -117,14 +122,13 @@ pub trait Scope {
 pub struct ScopeImpl<'a> {
     parent: &'a Scope,
     variables: BTreeMap<String, Value>,
-    mixins: BTreeMap<String, (FormalArgs, Vec<Item>)>,
+    mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
     functions: BTreeMap<String, SassFunction>,
 }
 
 impl<'a> Scope for ScopeImpl<'a> {
     fn define(&mut self, name: &str, val: &Value) {
-        let val = val.do_evaluate(self, true);
-        self.variables.insert(name.replace('-', "_"), val);
+        self.variables.insert(name.replace('-', "_"), val.clone());
     }
     fn define_default(&mut self, name: &str, val: &Value, global: bool) {
         if self.get(name) == Value::Null {
@@ -136,10 +140,9 @@ impl<'a> Scope for ScopeImpl<'a> {
         }
     }
     fn define_global(&self, name: &str, val: &Value) {
-        let val = val.do_evaluate(self, true);
         self.parent.define_global(name, &val);
     }
-    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<Item>)> {
+    fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
         self.mixins
             .get(&name.replace('-', "_"))
             .cloned()
@@ -155,7 +158,10 @@ impl<'a> Scope for ScopeImpl<'a> {
     fn get_global(&self, name: &str) -> Value {
         self.parent.get_global(name)
     }
-    fn define_mixin(&mut self, name: &str, args: &FormalArgs, body: &[Item]) {
+    fn define_mixin(&mut self,
+                    name: &str,
+                    args: &sass::FormalArgs,
+                    body: &[Item]) {
         let name = name.replace('-', "_");
         self.mixins.insert(name, (args.clone(), body.into()));
     }
@@ -169,13 +175,12 @@ impl<'a> Scope for ScopeImpl<'a> {
         }
         self.parent.get_function(&name)
     }
-    fn call_function(&self, name: &str, args: &CallArgs) -> Option<Value> {
+    fn call_function(&self, name: &str, args: &css::CallArgs) -> Option<Value> {
         let name = name.replace('-', "_");
         if let Some(f) = self.functions.get(&name).cloned() {
             return f.call(self, args).ok();
         }
-        let a2 = args.xyzzy(self);
-        self.parent.call_function(&name, &a2)
+        self.parent.call_function(&name, &args)
     }
 }
 
@@ -197,7 +202,7 @@ impl<'a> ScopeImpl<'a> {
 /// are global to the handling of a scss document.
 pub struct GlobalScope {
     variables: Mutex<BTreeMap<String, Value>>,
-    mixins: BTreeMap<String, (FormalArgs, Vec<Item>)>,
+    mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
     functions: BTreeMap<String, SassFunction>,
 }
 
@@ -222,10 +227,10 @@ impl Scope for GlobalScope {
         }
     }
     fn define_global(&self, name: &str, val: &Value) {
-        let val = val.do_evaluate(self, true);
-        self.variables.lock().unwrap().insert(name.replace('-', "_"), val);
+        self.variables.lock().unwrap().insert(name.replace('-', "_"),
+                                              val.clone());
     }
-    fn get_mixin(&self, name: &str) -> Option<(FormalArgs, Vec<Item>)> {
+    fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
         self.mixins.get(&name.replace('-', "_")).cloned()
     }
     fn get(&self, name: &str) -> Value {
@@ -240,7 +245,10 @@ impl Scope for GlobalScope {
             .cloned()
             .unwrap_or(Value::Null)
     }
-    fn define_mixin(&mut self, name: &str, args: &FormalArgs, body: &[Item]) {
+    fn define_mixin(&mut self,
+                    name: &str,
+                    args: &sass::FormalArgs,
+                    body: &[Item]) {
         let name = name.replace('-', "_");
         self.mixins.insert(name, (args.clone(), body.into()));
     }
@@ -254,7 +262,7 @@ impl Scope for GlobalScope {
         }
         get_builtin_function(&name)
     }
-    fn call_function(&self, name: &str, args: &CallArgs) -> Option<Value> {
+    fn call_function(&self, name: &str, args: &css::CallArgs) -> Option<Value> {
         let name = name.replace('-', "_");
         if let Some(f) = self.functions.get(&name).cloned() {
             return f.call(self, args).ok();
@@ -568,6 +576,7 @@ pub mod test {
         for &(name, ref val) in s {
             let val = format!("{};", val);
             let (end, value) = value_expression(val.as_bytes()).unwrap();
+            let value = value.evaluate(&scope);
             assert_eq!(Ok(";"), from_utf8(end));
             scope.define(name, &value);
         }

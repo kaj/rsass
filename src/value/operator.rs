@@ -1,5 +1,5 @@
+use css::Value;
 use num_rational::Rational;
-use sass::Value;
 use std::fmt;
 use value::{Quotes, Unit};
 

@@ -329,7 +329,8 @@ fn unspaced_4_0_i4() {
 
 fn check(value: &str, expected: &str) {
     let mut scope = GlobalScope::new();
-    scope.define("input", &parse_value_data(b"literal").unwrap());
+    let input_value = parse_value_data(b"literal").unwrap().evaluate(&scope);
+    scope.define("input", &input_value);
     let value = parse_value_data(value.as_bytes()).unwrap();
     assert_eq!(format!("{}", value.evaluate(&scope)), expected)
 }

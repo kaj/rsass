@@ -1,15 +1,13 @@
-use css;
-use sass::Value;
+use css::Value;
 use std::default::Default;
 use std::fmt;
-use variablescope::Scope;
 
 /// the actual arguments of a function or mixin call.
 ///
 /// Each argument has a Value.  Arguments may be named.
 /// If the optional name is None, the argument is positional.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct CallArgs(Vec<(Option<String>, Value)>);
+pub struct CallArgs(pub Vec<(Option<String>, Value)>);
 
 impl CallArgs {
     pub fn new(v: Vec<(Option<String>, Value)>) -> Self {
@@ -35,15 +33,6 @@ impl CallArgs {
 
     pub fn get(&self, index: usize) -> Option<&(Option<String>, Value)> {
         self.0.get(index)
-    }
-
-    pub fn evaluate(&self, scope: &Scope) -> css::CallArgs {
-        css::CallArgs(self.0
-                          .iter()
-                          .map(|&(ref n, ref v)| {
-                                   (n.clone(), v.do_evaluate(scope, true))
-                               })
-                          .collect())
     }
 }
 

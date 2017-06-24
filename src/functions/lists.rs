@@ -1,5 +1,5 @@
 use super::{Error, SassFunction};
-use sass::Value;
+use css::Value;
 use std::collections::BTreeMap;
 use value::ListSeparator;
 

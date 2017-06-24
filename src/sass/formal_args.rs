@@ -1,4 +1,5 @@
-use sass::{CallArgs, Value};
+use css;
+use sass::Value;
 use std::default::Default;
 use value::ListSeparator;
 use variablescope::{Scope, ScopeImpl};
@@ -15,7 +16,10 @@ impl FormalArgs {
         FormalArgs(a, is_varargs)
     }
 
-    pub fn eval<'a>(&self, scope: &'a Scope, args: &CallArgs) -> ScopeImpl<'a> {
+    pub fn eval<'a>(&self,
+                    scope: &'a Scope,
+                    args: &css::CallArgs)
+                    -> ScopeImpl<'a> {
         let mut argscope = ScopeImpl::sub(scope);
         let n = self.0.len();
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
@@ -26,12 +30,16 @@ impl FormalArgs {
             } else if self.1 && i + 1 == n && args.len() > n {
                 let args =
                     args.iter().skip(i).map(|&(_, ref v)| v.clone()).collect();
-                argscope.define(name, &Value::List(args, ListSeparator::Comma));
+                argscope.define(name,
+                                &css::Value::List(args, ListSeparator::Comma));
             } else {
-                argscope.define(name, match args.get(i) {
-                    Some(&(None, ref v)) => v,
-                    _ => default,
-                });
+                match args.get(i) {
+                    Some(&(None, ref v)) => argscope.define(name, v),
+                    _ => {
+                        let v = default.evaluate(&argscope);
+                        argscope.define(name, &v)
+                    }
+                };
             }
         }
         argscope

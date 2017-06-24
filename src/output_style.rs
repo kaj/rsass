@@ -1,9 +1,9 @@
+use css::Value;
 use error::Error;
 use file_context::FileContext;
 use parser::parse_scss_file;
 use sass::FormalArgs;
 use sass::Item;
-use sass::Value;
 use selectors::Selectors;
 use std::ascii::AsciiExt;
 use std::fmt;
@@ -70,12 +70,13 @@ impl OutputStyle {
                 ref default,
                 ref global,
             } => {
+                let val = val.evaluate(scope);
                 if *default {
-                    scope.define_default(name, val, *global);
+                    scope.define_default(name, &val, *global);
                 } else if *global {
-                    scope.define_global(name, val);
+                    scope.define_global(name, &val);
                 } else {
-                    scope.define(name, val);
+                    scope.define(name, &val);
                 }
             }
             Item::AtRule { ref name, ref args, ref body } => {
@@ -113,7 +114,7 @@ impl OutputStyle {
             }
             Item::MixinCall { ref name, ref args, ref body } => {
                 if let Some((m_args, m_body)) = scope.get_mixin(name) {
-                    let mut scope = m_args.eval(scope, args);
+                    let mut scope = m_args.eval(scope, &args.evaluate(scope));
                     scope.define_mixin("%%BODY%%",
                                        &FormalArgs::default(),
                                        body);
@@ -280,12 +281,13 @@ impl OutputStyle {
                     default,
                     global,
                 } => {
+                    let val = val.evaluate(scope);
                     if default {
-                        scope.define_default(name, val, global);
+                        scope.define_default(name, &val, global);
                     } else if global {
-                        scope.define_global(name, val);
+                        scope.define_global(name, &val);
                     } else {
-                        scope.define(name, val);
+                        scope.define(name, &val);
                     }
                 }
                 Item::AtRule { ref name, ref args, ref body } => {
@@ -332,7 +334,8 @@ impl OutputStyle {
                 }
                 Item::MixinCall { ref name, ref args, ref body } => {
                     if let Some((m_args, m_body)) = scope.get_mixin(name) {
-                        let mut argscope = m_args.eval(scope, args);
+                        let mut argscope =
+                            m_args.eval(scope, &args.evaluate(scope));
                         argscope.define_mixin("%%BODY%%",
                                               &FormalArgs::default(),
                                               body);

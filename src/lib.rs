@@ -50,7 +50,8 @@ mod variablescope;
 mod output_style;
 mod parser;
 mod file_context;
-mod sass;
+pub mod sass;
+pub mod css;
 
 pub use error::Error;
 
@@ -59,7 +60,7 @@ pub use functions::SassFunction;
 pub use num_rational::Rational;
 pub use output_style::OutputStyle;
 pub use parser::{parse_scss_data, parse_scss_file, parse_value_data};
-pub use sass::{Item, Value};
+pub use sass::Item;
 
 pub use value::{ListSeparator, Quotes, Unit};
 pub use variablescope::{GlobalScope, Scope};
