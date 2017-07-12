@@ -38,7 +38,7 @@ named!(pub comment,
                   tag!("*/")));
 
 named!(pub ignore_space<()>, map!(multispace, |_|()));
-named!(ignore_lcomment<()>, do_parse!(tag!("//") >> c: is_not!("\n") >> ()));
+named!(ignore_lcomment<()>, do_parse!(tag!("//") >> opt!(is_not!("\n")) >> ()));
 
 #[cfg(test)]
 mod test {
