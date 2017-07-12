@@ -1,9 +1,9 @@
 use super::{Error, SassFunction};
 use num_rational::Rational;
 use num_traits::One;
+use sass::Value;
 use std::collections::BTreeMap;
-use unit::Unit;
-use value::Value;
+use value::Unit;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, rgb(red, green, blue), |s| {

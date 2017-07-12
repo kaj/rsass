@@ -1,14 +1,12 @@
-use {ListSeparator, Quotes, Value};
-use colors::name_to_rgb;
 use nom::multispace;
 use num_rational::Rational;
 use num_traits::Zero;
 use parser::formalargs::call_args;
 use parser::unit::unit;
 use parser::util::{is_name_char, name, opt_spacelike, spacelike2};
+use sass::Value;
 use std::str::{FromStr, from_utf8};
-use unit::Unit;
-use value::operator::Operator;
+use value::{ListSeparator, Operator, Quotes, Unit, name_to_rgb};
 
 named!(pub value_expression<&[u8], Value>,
        do_parse!(
@@ -339,11 +337,11 @@ fn unescape(s: &str) -> String {
 #[cfg(test)]
 mod test {
     use super::*;
-    use Value::*;
     use formalargs::CallArgs;
     use nom::IResult::*;
     use num_rational::Rational;
     use num_traits::{One, Zero};
+    use sass::Value::*;
     use variablescope::GlobalScope;
 
     #[test]

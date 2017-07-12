@@ -1,7 +1,8 @@
 use super::{Error, SassFunction, get_builtin_function};
 use formalargs::CallArgs;
+use sass::Value;
 use std::collections::BTreeMap;
-use value::{Quotes, Value};
+use value::Quotes;
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
