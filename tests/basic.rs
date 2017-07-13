@@ -933,6 +933,25 @@ fn t48_case_conversion() {
 }
 
 #[test]
+fn t50_wrapped_pseudo_selectors() {
+    check(b"div {\n  \
+            :-moz-any(ol p.blah, ul, menu, dir) \
+            :-moz-any(ol span + h1, ul, menu, dir) ul {\n    \
+            list-style-type: square;\n  }\n  \
+            :-moz-any(ol span + h1, ul, menu, dir) ul {\n    \
+            list-style-type: square;\n  }\n  \
+            :foo(p div) {\n    hi: hi;\n  }\n  \
+            :foo(ol) {\n    hi: hi;\n  }\n}\n",
+          "div :-moz-any(ol p.blah, ul, menu, dir) \
+           :-moz-any(ol span + h1, ul, menu, dir) ul {\n  \
+           list-style-type: square;\n}\n\
+           div :-moz-any(ol span + h1, ul, menu, dir) ul {\n  \
+           list-style-type: square;\n}\n\
+           div :foo(p div) {\n  hi: hi;\n}\n\
+           div :foo(ol) {\n  hi: hi;\n}\n")
+}
+
+#[test]
 fn t51_trailing_commas_in_list() {
     check(b"$mylist: (alpha, beta, gamma, );\n\
             $my-single-item-list: (alpha,);\n\

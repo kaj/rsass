@@ -134,7 +134,16 @@ impl fmt::Display for SelectorPart {
             SelectorPart::PseudoElement(ref name) => write!(out, "::{}", name),
             SelectorPart::Pseudo { ref name, ref arg } => {
                 if let Some(ref arg) = *arg {
-                    write!(out, ":{}({:#})", name, arg)
+                    // It seems some pseudo-classes should always have
+                    // their arg in compact form.  Maybe we need more
+                    // hard-coded names here, or maybe the condition
+                    // should be on the argument rather than the name?
+                    if out.alternate() || name == "nth-child" ||
+                       name == "nth-of-type" {
+                        write!(out, ":{}({:#})", name, arg)
+                    } else {
+                        write!(out, ":{}({})", name, arg)
+                    }
                 } else {
                     write!(out, ":{}", name)
                 }
