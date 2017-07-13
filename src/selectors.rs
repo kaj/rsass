@@ -51,12 +51,16 @@ impl Selector {
     }
 }
 
+/// A selector consist of a sequence of these parts.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SelectorPart {
     Simple(String),
     Descendant,
     RelOp(u8), // >, +, ~
     Attribute { name: String, op: String, val: String },
+    /// A css3 pseudo-element
+    PseudoElement(String),
+    /// A pseudo-class or a css2 pseudo-element
     Pseudo { name: String, arg: Option<Selectors> },
     BackRef,
 }
@@ -68,6 +72,7 @@ impl SelectorPart {
             SelectorPart::RelOp(_) => true,
             SelectorPart::Simple(_) |
             SelectorPart::Attribute { .. } |
+            SelectorPart::PseudoElement(_) |
             SelectorPart::Pseudo { .. } |
             SelectorPart::BackRef => false,
         }
@@ -126,13 +131,10 @@ impl fmt::Display for SelectorPart {
             SelectorPart::Attribute { ref name, ref op, ref val } => {
                 write!(out, "[{}{}{}]", name, op, val)
             }
+            SelectorPart::PseudoElement(ref name) => write!(out, "::{}", name),
             SelectorPart::Pseudo { ref name, ref arg } => {
                 if let Some(ref arg) = *arg {
-                    if out.alternate() {
-                        write!(out, ":{}({:#})", name, arg)
-                    } else {
-                        write!(out, ":{}({})", name, arg)
-                    }
+                    write!(out, ":{}({:#})", name, arg)
                 } else {
                     write!(out, ":{}", name)
                 }

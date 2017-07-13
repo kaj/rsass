@@ -280,7 +280,25 @@ fn t11_attribute_selectors() {
             a > b [hoo*=\"ha\"] {\n  bloo: bloo;\n}\n")
 }
 
-// Note: There does not seem to exist a test 12 in the spec.
+#[test]
+fn t12_pseudo_classes_and_elements() {
+    check(b"a b {\n  color: red;\n  \
+            :first-child, :nth-of-type(  -2n+1 ) {\n    \
+            .foo#bar:nth-child(even) {\n      hoo: goo;\n    }\n    \
+            blah: bloo;\n    \
+            ::after {\n      content: \"glux\";\n      \
+            color: green;\n    }\n    \
+            :not(.foo) {\n      hoo: boo;\n    }\n    a { b: c; }\n  }\n}",
+          "a b {\n  color: red;\n}\n\
+           a b :first-child, a b :nth-of-type(-2n+1) {\n  blah: bloo;\n}\n\
+           a b :first-child .foo#bar:nth-child(even), \
+           a b :nth-of-type(-2n+1) .foo#bar:nth-child(even) {\n  hoo: goo;\n}\n\
+           a b :first-child ::after, a b :nth-of-type(-2n+1) ::after {\n  \
+           content: \"glux\";\n  color: green;\n}\n\
+           a b :first-child :not(.foo), a b :nth-of-type(-2n+1) :not(.foo) \
+           {\n  hoo: boo;\n}\n\
+           a b :first-child a, a b :nth-of-type(-2n+1) a {\n  b: c;\n}\n")
+}
 
 #[test]
 fn t13_back_references() {
