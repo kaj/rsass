@@ -14,7 +14,6 @@ pub enum Value {
     Div(Box<Value>, Box<Value>, bool, bool),
     Literal(String, Quotes),
     List(Vec<Value>, ListSeparator),
-    Paren(Box<Value>),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
     ///
@@ -238,11 +237,6 @@ impl fmt::Display for Value {
                 // The plus operator is also a concat operator
                 a.fmt(out)?;
                 b.fmt(out)
-            }
-            &Value::Paren(ref v) => {
-                out.write_str("(")?;
-                v.fmt(out)?;
-                out.write_str(")")
             }
             &Value::BinOp(ref a, ref op, ref b) => {
                 a.fmt(out)?;

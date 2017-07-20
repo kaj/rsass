@@ -29,12 +29,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
             (_, s) => s.unwrap_or(ListSeparator::Space),
         };
-        list.push(match s.get("val") {
-                      Value::List(v, s) => {
-                          Value::Paren(Box::new(Value::List(v, s)))
-                      }
-                      v => v,
-                  });
+        list.push(s.get("val"));
         Ok(Value::List(list, sep))
     });
     def!(f, index(list, value), |s| {
@@ -70,8 +65,10 @@ mod test {
     }
     #[test]
     fn append_c() {
+        // the documentation is incorrect on this one, libsass does not
+        // add parentheses in this case.
         assert_eq!(do_evaluate(&[], b"append(10px 20px, 30px 40px);"),
-                   "10px 20px (30px 40px)")
+                   "10px 20px 30px 40px")
     }
     #[test]
     fn append_d() {
