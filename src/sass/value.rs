@@ -124,12 +124,12 @@ impl Value {
                                  s.clone())
             }
             Value::Call(ref name, ref args) => {
-                let args = args.evaluate(scope);
-                match scope.call_function(name, &args) {
+                match scope.call_function(name, &args.evaluate(scope, true)) {
                     Some(value) => value,
                     None => {
                         if let Some(function) = get_builtin_function(name) {
-                            match function.call(scope, &args) {
+                            match function.call(scope,
+                                                &args.evaluate(scope, true)) {
                                 Ok(v) => v,
                                 Err(e) => {
                                     panic!("Error in function {}: {:?}",
@@ -137,7 +137,8 @@ impl Value {
                                 }
                             }
                         } else {
-                            css::Value::Call(name.clone(), args)
+                            css::Value::Call(name.clone(),
+                                             args.evaluate(scope, false))
                         }
                     }
                 }

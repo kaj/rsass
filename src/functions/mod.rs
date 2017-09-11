@@ -131,7 +131,7 @@ fn test_rgb() {
                          &call_args(b"(17, 0, 225)")
                               .unwrap()
                               .1
-                              .evaluate(&scope))
+                              .evaluate(&scope, true))
                    .unwrap(),
                css::Value::Color(Rational::new(17, 1),
                                  Rational::zero(),

@@ -36,7 +36,7 @@ impl FormalArgs {
                 match args.get(i) {
                     Some(&(None, ref v)) => argscope.define(name, v),
                     _ => {
-                        let v = default.evaluate(&argscope);
+                        let v = default.do_evaluate(&argscope, true);
                         argscope.define(name, &v)
                     }
                 };

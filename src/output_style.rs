@@ -114,7 +114,8 @@ impl OutputStyle {
             }
             Item::MixinCall { ref name, ref args, ref body } => {
                 if let Some((m_args, m_body)) = scope.get_mixin(name) {
-                    let mut scope = m_args.eval(scope, &args.evaluate(scope));
+                    let mut scope =
+                        m_args.eval(scope, &args.evaluate(scope, true));
                     scope.define_mixin("%%BODY%%",
                                        &FormalArgs::default(),
                                        body);
@@ -335,7 +336,7 @@ impl OutputStyle {
                 Item::MixinCall { ref name, ref args, ref body } => {
                     if let Some((m_args, m_body)) = scope.get_mixin(name) {
                         let mut argscope =
-                            m_args.eval(scope, &args.evaluate(scope));
+                            m_args.eval(scope, &args.evaluate(scope, true));
                         argscope.define_mixin("%%BODY%%",
                                               &FormalArgs::default(),
                                               body);
