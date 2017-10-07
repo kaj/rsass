@@ -6,7 +6,7 @@ use std::str::from_utf8;
 
 named!(pub selectors<Selectors>,
        map!(separated_nonempty_list!(
-           do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ()),
+           complete!(do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ())),
            selector),
             |s| Selectors(s)));
 
@@ -162,4 +162,13 @@ mod test {
                                           arg: None,
                                       }])))
     }
+
+    #[test]
+    fn selectors_simple() {
+        let foo = Selector(vec![SelectorPart::Simple("foo".into())]);
+        let bar = Selector(vec![SelectorPart::Simple("bar".into())]);
+        assert_eq!(selectors(b"foo, bar "),
+                   Done(&b""[..], Selectors(vec![foo, bar])))
+    }
+
 }

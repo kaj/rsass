@@ -17,7 +17,7 @@ doc = false
 [dependencies]
 clap = "^2.19"
 lazy_static = "^0.2"
-nom = "^2.0"
+nom = "^3.2.0"
 num-rational = "^0.1"
 num-traits = "^0.1"
 rand = "^0.3"

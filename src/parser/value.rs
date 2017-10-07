@@ -11,7 +11,7 @@ use value::{ListSeparator, Operator, Quotes, Unit, name_to_rgb};
 named!(pub value_expression<&[u8], Value>,
        do_parse!(
            result: separated_nonempty_list!(
-               do_parse!(tag!(",") >> opt_spacelike >> ()),
+               complete!(do_parse!(tag!(",") >> opt_spacelike >> ())),
                space_list) >>
            trail: many0!(do_parse!(opt_spacelike >> tag!(",") >>
                                    opt_spacelike >>
