@@ -1,7 +1,7 @@
 use super::{Error, SassFunction};
+use css::Value;
 use num_rational::Rational;
 use num_traits::Signed;
-use sass::Value;
 use std::collections::BTreeMap;
 use value::{Quotes, Unit};
 

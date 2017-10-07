@@ -5,7 +5,7 @@ use std::sync::Arc;
 #[test]
 fn simple_value() {
     let mut scope = GlobalScope::new();
-    scope.define("color", &Value::black());
+    scope.define("color", &css::Value::black());
     let parsed = parse_scss_data(b"p { color: $color }").unwrap();
     let style = OutputStyle::Compressed;
     let file_context = FileContext::new();
@@ -23,7 +23,7 @@ fn simple_function() {
                           SassFunction::builtin(vec![],
                                                 false,
                                                 Arc::new(|_| {
-        Ok(Value::scalar(42))
+        Ok(css::Value::scalar(42))
     })));
     let parsed = parse_scss_data(b"p { x: get_answer(); }").unwrap();
     let style = OutputStyle::Compressed;
@@ -40,18 +40,19 @@ fn function_with_args() {
     let mut scope = GlobalScope::new();
     scope.define_function("halfway",
                           SassFunction::builtin(vec![("a".into(),
-                                                      Value::Null),
-                                                     ("b".into(),
-                                                      Value::scalar(0))],
+                                                     sass::Value::Null),
+                                                    ("b".into(),
+                                                     sass::Value::scalar(0))],
                                                 false,
                                                 Arc::new(|s| {
         let half = Rational::new(1, 2);
         match (s.get("a"), s.get("b")) {
-            (Value::Numeric(a, au, ..), Value::Numeric(b, bu, ..)) => {
+            (css::Value::Numeric(a, au, ..),
+             css::Value::Numeric(b, bu, ..)) => {
                 if au == bu || bu == Unit::None {
-                    Ok(Value::Numeric((a + b) * half, au, false, true))
+                    Ok(css::Value::Numeric((a + b) * half, au, false, true))
                 } else if au == Unit::None {
-                    Ok(Value::Numeric((a + b) * half, bu, false, true))
+                    Ok(css::Value::Numeric((a + b) * half, bu, false, true))
                 } else {
                     Err(Error::BadArguments("Incopatible args".into()))
                 }

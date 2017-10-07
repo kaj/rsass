@@ -1,6 +1,5 @@
 use super::{Error, SassFunction, get_builtin_function};
-use formalargs::CallArgs;
-use sass::Value;
+use css::{CallArgs, Value};
 use std::collections::BTreeMap;
 use value::Quotes;
 use variablescope::Scope;
@@ -63,7 +62,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     if let Some(function) = get_builtin_function(name) {
                         function.call(s, &args)
                     } else {
-                        Ok(Value::Call(name.clone(), args.xyzzy(s)))
+                        Ok(Value::Call(name.clone(), args))
                     }
                 }
             }

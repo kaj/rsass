@@ -1,6 +1,6 @@
+use css;
 use error::Error;
-use formalargs::{CallArgs, FormalArgs};
-use sass::{Item, Value};
+use sass;
 use std::{cmp, fmt};
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -23,7 +23,7 @@ pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
     FUNCTIONS.get(name)
 }
 
-type BuiltinFn = Fn(&Scope) -> Result<Value, Error> + Send + Sync;
+type BuiltinFn = Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
 
 /// A function that can be called from a sass value.
 ///
@@ -31,14 +31,14 @@ type BuiltinFn = Fn(&Scope) -> Result<Value, Error> + Send + Sync;
 /// "user defined" (implemented in scss).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SassFunction {
-    args: FormalArgs,
+    args: sass::FormalArgs,
     body: FuncImpl,
 }
 
 #[derive(Clone)]
 pub enum FuncImpl {
     Builtin(Arc<BuiltinFn>),
-    UserDefined(Vec<Item>),
+    UserDefined(Vec<sass::Item>),
 }
 
 impl cmp::PartialEq for FuncImpl {
@@ -65,29 +65,32 @@ impl fmt::Debug for FuncImpl {
 
 impl SassFunction {
     /// Create a new `SassFunction` from a rust implementation.
-    pub fn builtin(args: Vec<(String, Value)>,
+    pub fn builtin(args: Vec<(String, sass::Value)>,
                    is_varargs: bool,
                    body: Arc<BuiltinFn>)
                    -> Self {
         SassFunction {
-            args: FormalArgs::new(args, is_varargs),
+            args: sass::FormalArgs::new(args, is_varargs),
             body: FuncImpl::Builtin(body),
         }
     }
 
     /// Create a new `SassFunction` from a scss implementation.
-    pub fn new(args: FormalArgs, body: Vec<Item>) -> Self {
+    pub fn new(args: sass::FormalArgs, body: Vec<sass::Item>) -> Self {
         SassFunction { args: args, body: FuncImpl::UserDefined(body) }
     }
 
     /// Call the function from a given scope and with a given set of
     /// arguments.
-    pub fn call(&self, scope: &Scope, args: &CallArgs) -> Result<Value, Error> {
+    pub fn call(&self,
+                scope: &Scope,
+                args: &css::CallArgs)
+                -> Result<css::Value, Error> {
         let mut s = self.args.eval(scope, args);
         match self.body {
             FuncImpl::Builtin(ref body) => body(&s),
             FuncImpl::UserDefined(ref body) => {
-                Ok(s.eval_body(body).unwrap_or(Value::Null))
+                Ok(s.eval_body(body).unwrap_or(css::Value::Null))
             }
         }
     }
@@ -120,17 +123,21 @@ fn test_rgb() {
     use num_rational::Rational;
     use num_traits::{One, Zero};
     use variablescope::GlobalScope;
+    let scope = GlobalScope::new();
     assert_eq!(FUNCTIONS
                    .get("rgb")
                    .unwrap()
-                   .call(&GlobalScope::new(),
-                         &call_args(b"(17, 0, 225)").unwrap().1)
+                   .call(&scope,
+                         &call_args(b"(17, 0, 225)")
+                              .unwrap()
+                              .1
+                              .evaluate(&scope, true))
                    .unwrap(),
-               Value::Color(Rational::new(17, 1),
-                            Rational::zero(),
-                            Rational::new(225, 1),
-                            Rational::one(),
-                            None))
+               css::Value::Color(Rational::new(17, 1),
+                                 Rational::zero(),
+                                 Rational::new(225, 1),
+                                 Rational::one(),
+                                 None))
 }
 
 #[test]

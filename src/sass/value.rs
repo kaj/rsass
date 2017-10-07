@@ -1,10 +1,9 @@
-use error::Error;
-use formalargs::CallArgs;
+use css;
 use functions::get_builtin_function;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
-use std::fmt;
-use value::{ListSeparator, Operator, Quotes, Unit, rgb_to_name};
+use sass::CallArgs;
+use value::{ListSeparator, Operator, Quotes, Unit};
 use variablescope::Scope;
 
 /// A sass value.
@@ -105,41 +104,32 @@ impl Value {
         }
     }
 
-    pub fn integer_value(&self) -> Result<isize, Error> {
-        match self {
-            &Value::Numeric(ref num, ..) if num.is_integer() => {
-                Ok(num.to_integer())
-            }
-            v => Err(Error::bad_value("integer", v)),
-        }
-    }
-
-    pub fn evaluate(&self, scope: &Scope) -> Value {
+    pub fn evaluate(&self, scope: &Scope) -> css::Value {
         self.do_evaluate(scope, false)
     }
-    pub fn do_evaluate(&self, scope: &Scope, arithmetic: bool) -> Value {
+    pub fn do_evaluate(&self, scope: &Scope, arithmetic: bool) -> css::Value {
         match *self {
             Value::Literal(ref v, ref q) => {
-                Value::Literal(v.clone(), q.clone())
+                css::Value::Literal(v.clone(), q.clone())
             }
             Value::Paren(ref v) => v.do_evaluate(scope, true),
-            Value::Color(_, _, _, _, _) => self.clone(),
-            Value::Variable(ref name) => {
-                let v = scope.get(name);
-                v.do_evaluate(scope, true)
+            Value::Color(r, g, b, a, ref s) => {
+                css::Value::Color(r, g, b, a, s.clone())
             }
+            Value::Variable(ref name) => scope.get(name).into_calculated(),
             Value::List(ref v, ref s) => {
-                Value::List(v.iter()
-                                .map(|v| v.do_evaluate(scope, false))
-                                .collect::<Vec<_>>(),
-                            s.clone())
+                css::Value::List(v.iter()
+                                     .map(|v| v.do_evaluate(scope, false))
+                                     .collect::<Vec<_>>(),
+                                 s.clone())
             }
             Value::Call(ref name, ref args) => {
-                match scope.call_function(name, args) {
+                match scope.call_function(name, &args.evaluate(scope, true)) {
                     Some(value) => value,
                     None => {
                         if let Some(function) = get_builtin_function(name) {
-                            match function.call(scope, args) {
+                            match function.call(scope,
+                                                &args.evaluate(scope, true)) {
                                 Ok(v) => v,
                                 Err(e) => {
                                     panic!("Error in function {}: {:?}",
@@ -147,7 +137,8 @@ impl Value {
                                 }
                             }
                         } else {
-                            Value::Call(name.clone(), args.xyzzy(scope))
+                            css::Value::Call(name.clone(),
+                                             args.evaluate(scope, false))
                         }
                     }
                 }
@@ -165,69 +156,78 @@ impl Value {
                 };
                 if arithmetic || a.is_calculated() || b.is_calculated() {
                     match (&a, &b) {
-                        (&Value::Color(ref r, ref g, ref b, ref a, _),
-                         &Value::Numeric(ref n, Unit::None, ..)) => {
-                            Value::rgba(r / n, g / n, b / n, *a)
+                        (&css::Value::Color(ref r, ref g, ref b, ref a, _),
+                         &css::Value::Numeric(ref n, Unit::None, ..)) => {
+                            css::Value::rgba(r / n, g / n, b / n, *a)
                         }
-                        (&Value::Numeric(ref av, ref au, ..),
-                         &Value::Numeric(ref bv, ref bu, ..)) => {
+                        (&css::Value::Numeric(ref av, ref au, ..),
+                         &css::Value::Numeric(ref bv, ref bu, ..)) => {
                             if bv.is_zero() {
-                                Value::Div(Box::new(a.clone()),
-                                           Box::new(b.clone()),
-                                           *space1,
-                                           *space2)
+                                css::Value::Div(Box::new(a.clone()),
+                                                Box::new(b.clone()),
+                                                *space1,
+                                                *space2)
                             } else if bu == &Unit::None {
-                                Value::Numeric(av / bv, au.clone(), false, true)
+                                css::Value::Numeric(av / bv,
+                                                    au.clone(),
+                                                    false,
+                                                    true)
                             } else if au == bu {
-                                Value::Numeric(av / bv, Unit::None, false, true)
+                                css::Value::Numeric(av / bv,
+                                                    Unit::None,
+                                                    false,
+                                                    true)
                             } else {
-                                Value::Div(Box::new(a.clone()),
-                                           Box::new(b.clone()),
-                                           false,
-                                           false)
+                                css::Value::Div(Box::new(a.clone()),
+                                                Box::new(b.clone()),
+                                                false,
+                                                false)
                             }
                         }
                         (a, b) => {
-                            Value::Div(Box::new(a.clone()),
-                                       Box::new(b.clone()),
-                                       false,
-                                       false)
+                            css::Value::Div(Box::new(a.clone()),
+                                            Box::new(b.clone()),
+                                            false,
+                                            false)
                         }
                     }
                 } else {
-                    Value::Div(Box::new(a), Box::new(b), *space1, *space2)
+                    css::Value::Div(Box::new(a), Box::new(b), *space1, *space2)
                 }
             }
             Value::Numeric(ref v, ref u, ref sign, ref calc) => {
-                Value::Numeric(*v, u.clone(), *sign, arithmetic || *calc)
+                css::Value::Numeric(*v, u.clone(), *sign, arithmetic || *calc)
             }
-            Value::Null => Value::Null,
-            Value::True => Value::True,
-            Value::False => Value::False,
+            Value::Null => css::Value::Null,
+            Value::True => css::Value::True,
+            Value::False => css::Value::False,
             Value::BinOp(ref a, ref op, ref b) => {
                 op.eval(a.do_evaluate(scope, true), b.do_evaluate(scope, true))
             }
             Value::UnaryOp(ref op, ref v) => {
-                match (op.clone(), v.do_evaluate(scope, true)) {
-                    (Operator::Not, Value::Numeric(v, ..)) => {
-                        Value::bool(v.is_zero())
+                let value = v.do_evaluate(scope, true);
+                match (op.clone(), value) {
+                    (Operator::Not, css::Value::Numeric(v, ..)) => {
+                        css::Value::bool(v.is_zero())
                     }
-                    (Operator::Not, Value::True) => Value::False,
-                    (Operator::Not, Value::False) => Value::True,
-                    (Operator::Minus, Value::Numeric(v, u, ..)) => {
-                        Value::Numeric(-v, u, false, true)
+                    (Operator::Not, css::Value::True) => css::Value::False,
+                    (Operator::Not, css::Value::False) => css::Value::True,
+                    (Operator::Minus, css::Value::Numeric(v, u, ..)) => {
+                        css::Value::Numeric(-v, u, false, true)
                     }
-                    (Operator::Plus, Value::Numeric(v, u, ..)) => {
-                        Value::Numeric(v, u, true, true)
+                    (Operator::Plus, css::Value::Numeric(v, u, ..)) => {
+                        css::Value::Numeric(v, u, true, true)
                     }
-                    (op, v) => Value::UnaryOp(op, Box::new(v)),
+                    (op, v) => css::Value::UnaryOp(op, Box::new(v)),
                 }
             }
             Value::Interpolation(ref v) => {
                 match v.do_evaluate(scope, true).unquote() {
-                    Value::Null => Value::Null,
-                    Value::Literal(s, _) => Value::Literal(s, Quotes::None),
-                    v => Value::Literal(format!("{}", v), Quotes::None),
+                    css::Value::Null => css::Value::Null,
+                    css::Value::Literal(s, _) => {
+                        css::Value::Literal(s, Quotes::None)
+                    }
+                    v => css::Value::Literal(format!("{}", v), Quotes::None),
                 }
             }
         }
@@ -244,156 +244,6 @@ impl Value {
     }
 }
 
-impl fmt::Display for Value {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &Value::Literal(ref s, ref q) => {
-                match *q {
-                    Quotes::Double => {
-                        write!(out,
-                               "\"{}\"",
-                               s.chars()
-                                   .flat_map(|c| match c {
-                                                 '#' => vec!['\\', '#'],
-                                                 '\\' => vec!['\\', '\\'],
-                                                 '"' => vec!['\\', '"'],
-                                                 c => vec![c],
-                                             })
-                                   .collect::<String>())
-                    }
-                    Quotes::Single => {
-                        write!(out,
-                               "'{}'",
-                               s.chars()
-                                   .flat_map(|c| match c {
-                                                 '#' => vec!['\\', '#'],
-                                                 '\\' => vec!['\\', '\\'],
-                                                 '\'' => vec!['\\', '\''],
-                                                 c => vec![c],
-                                             })
-                                   .collect::<String>())
-                    }
-                    Quotes::None => write!(out, "{}", s),
-                }
-            }
-            &Value::Numeric(ref v, ref u, ref with_sign, _) => {
-                let short = out.alternate();
-                write!(out, "{}{}", rational2str(v, *with_sign, short), u)
-            }
-            &Value::Color(ref r, ref g, ref b, ref a, ref s) => {
-                let r = r.round().to_integer() as u8;
-                let g = g.round().to_integer() as u8;
-                let b = b.round().to_integer() as u8;
-                if let Some(ref s) = *s {
-                    write!(out, "{}", s)
-                } else if a >= &Rational::from_integer(1) {
-                    if out.alternate() {
-                        // E.g. #ff00cc can be written #f0c in css.
-                        // 0xff / 17 = 0xf (since 17 = 0x11).
-                        let hex = if r % 17 == 0 && g % 17 == 0 &&
-                                     b % 17 == 0 {
-                            format!("#{:x}{:x}{:x}",
-                                    r / 17,
-                                    g / 17,
-                                    b / 17)
-                        } else {
-                            format!("#{:02x}{:02x}{:02x}", r, g, b)
-                        };
-                        match rgb_to_name(r, g, b) {
-                            Some(name) if name.len() <= hex.len() => {
-                                write!(out, "{}", name)
-                            }
-                            _ => write!(out, "{}", hex),
-                        }
-                    } else if let Some(name) = rgb_to_name(r, g, b) {
-                        write!(out, "{}", name)
-                    } else {
-                        write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
-                    }
-                } else if a.is_zero() && r.is_zero() && g.is_zero() &&
-                          b.is_zero() {
-                    write!(out, "transparent")
-                } else if out.alternate() {
-                    write!(out,
-                           "rgba({},{},{},{})",
-                           r,
-                           g,
-                           b,
-                           rational2str(a, false, false))
-                } else {
-                    write!(out,
-                           "rgba({}, {}, {}, {})",
-                           r,
-                           g,
-                           b,
-                           rational2str(a, false, false))
-                }
-            }
-            &Value::List(ref v, ref sep) => {
-                let t = v.iter()
-                    .filter(|v| !v.is_null())
-                    .map(|v| if out.alternate() {
-                             format!("{:#}", v)
-                         } else {
-                             format!("{}", v)
-                         })
-                    .collect::<Vec<_>>()
-                    .join(match *sep {
-                              ListSeparator::Comma => {
-                                  if out.alternate() { "," } else { ", " }
-                              }
-                              ListSeparator::Space => " ",
-                          });
-                write!(out, "{}", t)
-            }
-            &Value::Div(ref a, ref b, s1, s2) => {
-                a.fmt(out)?;
-                if s1 {
-                    out.write_str(" ")?;
-                }
-                out.write_str("/")?;
-                if s2 {
-                    out.write_str(" ")?;
-                }
-                b.fmt(out)
-            }
-            &Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
-            &Value::BinOp(ref a, Operator::Plus, ref b) => {
-                // The plus operator is also a concat operator
-                a.fmt(out)?;
-                b.fmt(out)
-            }
-            &Value::BinOp(ref a, ref op, ref b) => {
-                a.fmt(out)?;
-                op.fmt(out)?;
-                b.fmt(out)
-            }
-            &Value::Paren(ref v) => {
-                out.write_str("(")?;
-                v.fmt(out)?;
-                out.write_str(")")
-            }
-            &Value::True => write!(out, "true"),
-            &Value::False => write!(out, "false"),
-            &Value::UnaryOp(ref op, ref v) => {
-                op.fmt(out)?;
-                v.fmt(out)
-            }
-            &Value::Variable(ref name) => {
-                // Output as source in case it was not evaluated.
-                write!(out, "${}", name)
-            }
-            &Value::Interpolation(ref value) => {
-                // Output as source in case it was not evaluated.
-                out.write_str("#{")?;
-                value.fmt(out)?;
-                out.write_str("}")
-            }
-            &Value::Null => Ok(()),
-        }
-    }
-}
-
 use std::cmp::Ordering;
 impl PartialOrd for Value {
     fn partial_cmp(&self, b: &Value) -> Option<Ordering> {
@@ -403,28 +253,5 @@ impl PartialOrd for Value {
             }
             _ => None,
         }
-    }
-}
-
-fn rational2str(r: &Rational, with_sign: bool, skipzero: bool) -> String {
-    if r.is_integer() {
-        if with_sign {
-            format!("{:+}", r.numer())
-        } else {
-            format!("{}", r.numer())
-        }
-    } else {
-        let prec = Rational::from_integer(100000);
-        let v = (r * prec).round() / prec;
-        let v = *v.numer() as f64 / *v.denom() as f64;
-        let mut result = if with_sign {
-            format!("{:+}", v)
-        } else {
-            format!("{}", v)
-        };
-        if skipzero && result.starts_with("0.") {
-            result.remove(0);
-        }
-        result
     }
 }
