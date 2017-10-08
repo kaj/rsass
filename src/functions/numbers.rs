@@ -30,11 +30,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         v => Err(Error::badarg("number", &v)),
     });
     def_va!(f, max(numbers), |s| match s.get("numbers") {
-        Value::List(v, _) => Ok(find_extreme(&v, Ordering::Greater).clone()),
+        Value::List(v, _, _) => Ok(find_extreme(&v, Ordering::Greater).clone()),
         single_value => Ok(single_value),
     });
     def_va!(f, min(numbers), |s| match s.get("numbers") {
-        Value::List(v, _) => Ok(find_extreme(&v, Ordering::Less).clone()),
+        Value::List(v, _, _) => Ok(find_extreme(&v, Ordering::Less).clone()),
         single_value => Ok(single_value),
     });
     def!(f, random(limit), |s| match s.get("limit") {

@@ -31,7 +31,9 @@ impl FormalArgs {
                 let args =
                     args.iter().skip(i).map(|&(_, ref v)| v.clone()).collect();
                 argscope.define(name,
-                                &css::Value::List(args, ListSeparator::Comma));
+                                &css::Value::List(args,
+                                                  ListSeparator::Comma,
+                                                  false));
             } else {
                 match args.get(i) {
                     Some(&(None, ref v)) => argscope.define(name, v),

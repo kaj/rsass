@@ -151,7 +151,7 @@ named!(at_rule<Item>,
                      args: if args.len() == 1 {
                          args.into_iter().next().unwrap()
                      } else {
-                         Value::List(args, ListSeparator::Space)
+                         Value::List(args, ListSeparator::Space, false)
                      },
                      body: body,
                  })));
@@ -365,7 +365,8 @@ fn test_mixin_declaration() {
                        Value::List(
                            vec![string("baz"),
                                 Value::Variable("x".into())],
-                           ListSeparator::Space),
+                           ListSeparator::Space,
+                           false),
                        false)],
                }))
 }
@@ -416,7 +417,8 @@ fn test_property_2() {
                IResult::Done(&b""[..], Item::Property(
                    "background-position".to_string(),
                    Value::List(vec![percentage(90), percentage(50)],
-                               ListSeparator::Space),
+                               ListSeparator::Space,
+                               false),
                    false)))
 }
 
@@ -440,7 +442,8 @@ fn test_variable_declaration_global() {
                         name: "y".into(),
                         val: Value::List(
                             vec![string("some"), string("value")],
-                            ListSeparator::Space),
+                            ListSeparator::Space,
+                            false),
                         default: false,
                         global: true,
                     }))
@@ -454,7 +457,8 @@ fn test_variable_declaration_default() {
                         name: "y".into(),
                         val: Value::List(
                             vec![string("some"), string("value")],
-                            ListSeparator::Space),
+                            ListSeparator::Space,
+                            false),
                         default: true,
                         global: false,
                     }))

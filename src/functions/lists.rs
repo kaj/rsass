@@ -1,24 +1,34 @@
 use super::{Error, SassFunction};
 use css::Value;
 use std::collections::BTreeMap;
-use value::ListSeparator;
+use value::{ListSeparator, Quotes};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, length(list), |s| match s.get("list") {
-        Value::List(v, _) => Ok(Value::scalar(v.len() as isize)),
+        Value::List(v, _, _) => Ok(Value::scalar(v.len() as isize)),
         v => Err(Error::badarg("list", &v)),
     });
     def!(f, nth(list, n), |s| {
         let n = s.get("n").integer_value()?;
         match s.get("list") {
-            Value::List(list, _) => Ok(list[n as usize - 1].clone()),
+            Value::List(list, _, _) => Ok(list[rust_index(n, &list)?].clone()),
             v => Err(Error::badarg("list", &v)),
         }
     });
+    def!(f, set_nth(list, n, value), |s| {
+        let n = s.get("n").integer_value()?;
+        let (mut list, sep, bra) = match s.get("list") {
+            Value::List(v, s, bra) => (v, s, bra),
+            v => (vec![v], ListSeparator::Space, false),
+        };
+        let i = rust_index(n, &list)?;
+        list[i] = s.get("value");
+        Ok(Value::List(list, sep, bra))
+    });
     def!(f, append(list, val, separator), |s| {
-        let (mut list, sep) = match s.get("list") {
-            Value::List(v, s) => (v, Some(s)),
-            v => (vec![v], None),
+        let (mut list, sep, bra) = match s.get("list") {
+            Value::List(v, s, bra) => (v, Some(s), bra),
+            v => (vec![v], None, false),
         };
         let sep = match (s.get("separator"), sep) {
             (Value::Literal(ref s, _), _) if s == "comma" => {
@@ -30,11 +40,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             (_, s) => s.unwrap_or(ListSeparator::Space),
         };
         list.push(s.get("val"));
-        Ok(Value::List(list, sep))
+        Ok(Value::List(list, sep, bra))
     });
     def!(f, index(list, value), |s| {
         let v = match s.get("list") {
-            Value::List(v, _) => v,
+            Value::List(v, _, _) => v,
             v => return Err(Error::badarg("list", &v)),
         };
         let value = s.get("value");
@@ -45,6 +55,29 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         Ok(Value::Null)
     });
+    def!(f, list_separator(list), |s| {
+        Ok(Value::Literal(match s.get("list") {
+                                  Value::List(_, ListSeparator::Comma, _) => {
+                                      "comma"
+                                  }
+                                  _ => "space",
+                              }
+                              .into(),
+                          Quotes::None))
+    });
+}
+
+fn rust_index(n: isize, list: &[Value]) -> Result<usize, Error> {
+    let len = list.len();
+    if n > 0 && n as usize <= len {
+        Ok((n - 1) as usize)
+    } else if n < 0 && n >= -(len as isize) {
+        Ok((len as isize + n) as usize)
+    } else {
+        let msg =
+            format!("Expected index for list of length {}, got {}", len, n);
+        Err(Error::BadArguments(msg))
+    }
 }
 
 #[cfg(test)]

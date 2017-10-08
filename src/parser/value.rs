@@ -19,7 +19,7 @@ named!(pub value_expression<&[u8], Value>,
            (if result.len() == 1 && trail.is_empty() {
                result.into_iter().next().unwrap()
            } else {
-               Value::List(result, ListSeparator::Comma)
+               Value::List(result, ListSeparator::Comma, false)
            })));
 
 named!(pub space_list<&[u8], Value>,
@@ -31,7 +31,7 @@ named!(pub space_list<&[u8], Value>,
                  (if list.len() == 1 {
                      list.into_iter().next().unwrap()
                  } else {
-                     Value::List(list, ListSeparator::Space)
+                     Value::List(list, ListSeparator::Space, false)
                  })));
 
 named!(pub single_expression<Value>,
@@ -117,6 +117,22 @@ named!(pub single_value<&[u8], Value>,
        alt_complete!(
            value!(Value::True, tag!("true")) |
            value!(Value::False, tag!("false")) |
+           do_parse!(tag!("[") >>
+                     content: opt!(value_expression) >>
+                     tag!("]") >>
+                     (match content {
+                         Some(Value::List(list, sep, false)) => {
+                             Value::List(list, sep, true)
+                         }
+                         Some(single) => {
+                             Value::List(vec![single],
+                                         ListSeparator::Space,
+                                         true)
+                         }
+                         None => {
+                             Value::List(vec![], ListSeparator::Space, true)
+                         }
+                     })) |
            do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
                      r: is_a!("0123456789") >>
                      d: opt!(preceded!(tag!("."), is_a!("0123456789"))) >>
@@ -186,7 +202,7 @@ named!(pub single_value<&[u8], Value>,
                            terminated!(opt_spacelike, tag!(")"))),
                 |val: Option<Value>| match val {
                     Some(v) => Value::Paren(Box::new(v)),
-                    None => Value::List(vec![], ListSeparator::Space),
+                    None => Value::List(vec![], ListSeparator::Space, false),
                 })));
 
 named!(variable<Value>,
@@ -251,7 +267,7 @@ named!(unquoted_literal_part_part<String>,
        switch!(take_backslash,
                true => map!(take!(1),
                             |v| format!("\\{}", from_utf8(v).unwrap())) |
-               false => map!(is_not!("\\+*/=;,$(){{}}! \n\t'\"#"),
+               false => map!(is_not!("\\+*/=;,$(){{}}[]! \n\t'\"#"),
                              |v| from_utf8(v).unwrap().to_string())));
 
 named!(take_backslash<bool>,
@@ -382,7 +398,8 @@ mod test {
                    List(vec![number(12, 1),
                                     Interpolation(
                                         Box::new(number(3, 1)))],
-                        ListSeparator::Space))
+                        ListSeparator::Space,
+                        false))
     }
 
     fn number(nom: isize, denom: isize) -> Value {
@@ -400,7 +417,8 @@ mod test {
                    List(vec![Literal("foo".into(), Quotes::None),
                                     Literal("bar".into(), Quotes::Double),
                                     Literal("baz".into(), Quotes::Single)],
-                        ListSeparator::Space))
+                        ListSeparator::Space,
+                        false))
     }
 
     #[test]
@@ -409,7 +427,8 @@ mod test {
                    List(vec![Literal("b'a\"r".into(), Quotes::Double),
                                     Literal("b'a\"z".into(), Quotes::Single)
                                     ],
-                        ListSeparator::Space))
+                        ListSeparator::Space,
+                        false))
     }
 
     #[test]
@@ -438,7 +457,8 @@ mod test {
         check_expr("(rod bloe);",
                    Paren(Box::new(List(vec![Literal("rod".into(), Quotes::None),
                             Literal("bloe".into(), Quotes::None)],
-                                       ListSeparator::Space))))
+                                       ListSeparator::Space,
+                                       false))))
     }
 
     #[test]
@@ -446,15 +466,17 @@ mod test {
         check_expr("(rod, bloe);",
                    Paren(Box::new(List(vec![Literal("rod".into(), Quotes::None),
                             Literal("bloe".into(), Quotes::None)],
-                                       ListSeparator::Comma))))
+                                       ListSeparator::Comma,
+                                       false))))
     }
 
     #[test]
     fn multi_comma() {
         check_expr("rod, bloe;",
                    List(vec![Literal("rod".into(), Quotes::None),
-                                    Literal("bloe".into(), Quotes::None)],
-                        ListSeparator::Comma))
+                             Literal("bloe".into(), Quotes::None)],
+                        ListSeparator::Comma,
+                        false))
     }
 
     #[test]
@@ -462,15 +484,17 @@ mod test {
         check_expr("(rod, bloe, );",
                    Paren(Box::new(List(vec![Literal("rod".into(), Quotes::None),
                             Literal("bloe".into(), Quotes::None)],
-                                       ListSeparator::Comma))))
+                                       ListSeparator::Comma,
+                                       false))))
     }
 
     #[test]
     fn multi_comma_trailing() {
         check_expr("rod, bloe, ;",
                    List(vec![Literal("rod".into(), Quotes::None),
-                                    Literal("bloe".into(), Quotes::None)],
-                        ListSeparator::Comma))
+                             Literal("bloe".into(), Quotes::None)],
+                        ListSeparator::Comma,
+                        false))
     }
 
     #[test]
@@ -489,12 +513,13 @@ mod test {
     fn multi_expression() {
         check_expr("15/10 2 3;",
                    List(vec![Div(Box::new(Value::scalar(15)),
-                                            Box::new(Value::scalar(10)),
-                                            false,
-                                            false),
-                                    Value::scalar(2),
-                                    Value::scalar(3)],
-                        ListSeparator::Space))
+                                 Box::new(Value::scalar(10)),
+                                 false,
+                                 false),
+                             Value::scalar(2),
+                             Value::scalar(3)],
+                        ListSeparator::Space,
+                        false))
     }
 
     #[test]
@@ -527,6 +552,29 @@ mod test {
                          Rational::new(204, 1),
                          Rational::one(),
                          Some("#AaBbCc".into())))
+    }
+
+    #[test]
+    fn parse_bracket_array() {
+        check_expr("[foo bar];",
+                   List(vec![Literal("foo".into(), Quotes::None),
+                             Literal("bar".into(), Quotes::None)],
+                        ListSeparator::Space,
+                        true))
+    }
+
+    #[test]
+    fn parse_bracket_comma_array() {
+        check_expr("[foo, bar];",
+                   List(vec![Literal("foo".into(), Quotes::None),
+                             Literal("bar".into(), Quotes::None)],
+                        ListSeparator::Comma,
+                        true))
+    }
+
+    #[test]
+    fn parse_bracket_empty_array() {
+        check_expr("[];", List(vec![], ListSeparator::Space, true))
     }
 
     fn check_expr(expr: &str, value: Value) {

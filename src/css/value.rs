@@ -13,7 +13,8 @@ pub enum Value {
     /// before / after the slash.
     Div(Box<Value>, Box<Value>, bool, bool),
     Literal(String, Quotes),
-    List(Vec<Value>, ListSeparator),
+    /// A comma- or space separated list of values, with or without brackets.
+    List(Vec<Value>, ListSeparator, bool),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
     ///
@@ -97,7 +98,7 @@ impl Value {
     pub fn is_null(&self) -> bool {
         match *self {
             Value::Null => true,
-            Value::List(ref list, _) => list.iter().all(|v| v.is_null()),
+            Value::List(ref list, _, false) => list.iter().all(|v| v.is_null()),
             _ => false,
         }
     }
@@ -114,8 +115,10 @@ impl Value {
     pub fn unquote(self) -> Value {
         match self {
             Value::Literal(s, _) => Value::Literal(s, Quotes::None),
-            Value::List(list, s) => {
-                Value::List(list.into_iter().map(|v| v.unquote()).collect(), s)
+            Value::List(list, s, b) => {
+                Value::List(list.into_iter().map(|v| v.unquote()).collect(),
+                            s,
+                            b)
             }
             v => v,
         }
@@ -204,22 +207,49 @@ impl fmt::Display for Value {
                            rational2str(a, false, false))
                 }
             }
-            &Value::List(ref v, ref sep) => {
+            &Value::List(ref v, ref sep, brackets) => {
                 let t = v.iter()
                     .filter(|v| !v.is_null())
-                    .map(|v| if out.alternate() {
-                             format!("{:#}", v)
-                         } else {
-                             format!("{}", v)
-                         })
-                    .collect::<Vec<_>>()
-                    .join(match *sep {
-                              ListSeparator::Comma => {
-                                  if out.alternate() { "," } else { ", " }
-                              }
-                              ListSeparator::Space => " ",
-                          });
-                write!(out, "{}", t)
+                    .map(|v| {
+                        let needs_paren = match *v {
+                            Value::List(_, _, false) => {
+                                brackets && *sep == ListSeparator::Space
+                            }
+                            _ => false,
+                        };
+                        if out.alternate() {
+                            if needs_paren {
+                                format!("({:#})", v)
+                            } else {
+                                format!("{:#}", v)
+                            }
+                        } else {
+                            if needs_paren {
+                                format!("({})", v)
+                            } else {
+                                format!("{}", v)
+                            }
+                        }
+                    })
+                    .collect::<Vec<_>>();
+                let t = if *sep == ListSeparator::Comma && t.len() == 1 {
+                    format!("{},", t[0])
+                } else {
+                    t.join(match *sep {
+                               ListSeparator::Comma => {
+                                   if out.alternate() { "," } else { ", " }
+                               }
+                               ListSeparator::Space => " ",
+                           })
+                };
+                if brackets {
+                    out.write_str("[")?;
+                }
+                write!(out, "{}", t)?;
+                if brackets {
+                    out.write_str("]")?;
+                }
+                Ok(())
             }
             &Value::Div(ref a, ref b, s1, s2) => {
                 a.fmt(out)?;

@@ -27,6 +27,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("string", v)),
     });
+    def!(f,
+         inspect(value),
+         |s| Ok(Value::Literal(format!("{}", s.get("value")), Quotes::None)));
     def!(f, type_of(value), |s| {
         Ok(Value::Literal(s.get("value").type_name().into(), Quotes::None))
     });

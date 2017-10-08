@@ -16,7 +16,8 @@ pub enum Value {
     /// before / after the slash.
     Div(Box<Value>, Box<Value>, bool, bool),
     Literal(String, Quotes),
-    List(Vec<Value>, ListSeparator),
+    /// A comma- or space separated list of values, with or without brackets.
+    List(Vec<Value>, ListSeparator, bool),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
     ///
@@ -99,7 +100,7 @@ impl Value {
     pub fn is_null(&self) -> bool {
         match *self {
             Value::Null => true,
-            Value::List(ref list, _) => list.iter().all(|v| v.is_null()),
+            Value::List(ref list, _, false) => list.iter().all(|v| v.is_null()),
             _ => false,
         }
     }
@@ -117,11 +118,12 @@ impl Value {
                 css::Value::Color(r, g, b, a, s.clone())
             }
             Value::Variable(ref name) => scope.get(name).into_calculated(),
-            Value::List(ref v, ref s) => {
+            Value::List(ref v, ref s, b) => {
                 css::Value::List(v.iter()
                                      .map(|v| v.do_evaluate(scope, false))
                                      .collect::<Vec<_>>(),
-                                 s.clone())
+                                 s.clone(),
+                                 b)
             }
             Value::Call(ref name, ref args) => {
                 match scope.call_function(name, &args.evaluate(scope, true)) {
@@ -236,8 +238,10 @@ impl Value {
     pub fn unquote(self) -> Value {
         match self {
             Value::Literal(s, _) => Value::Literal(s, Quotes::None),
-            Value::List(list, s) => {
-                Value::List(list.into_iter().map(|v| v.unquote()).collect(), s)
+            Value::List(list, s, b) => {
+                Value::List(list.into_iter().map(|v| v.unquote()).collect(),
+                            s,
+                            b)
             }
             v => v,
         }
