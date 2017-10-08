@@ -1,6 +1,6 @@
-/// Tests from `spec/parser/interpolate/00_concatenation` split up
-/// into the individual properties to be tested.
-extern crate rsass;
+//! Tests from `spec/parser/interpolate/00_concatenation` split up
+//! into the individual properties to be tested.
+
 use rsass::{GlobalScope, Scope, parse_value_data};
 
 #[test]

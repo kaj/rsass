@@ -1,5 +1,5 @@
 //! Tests from `spec/parser/interpolate`
-extern crate rsass;
+
 use rsass::{OutputStyle, compile_scss};
 
 mod t01_literal {
