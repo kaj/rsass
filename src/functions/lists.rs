@@ -25,7 +25,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         list[i] = s.get("value");
         Ok(Value::List(list, sep, bra))
     });
-    def!(f, join(list1, list2, separator = b"auto", bracketed = b"auto"), |s| {
+    def!(f,
+         join(list1, list2, separator = b"auto", bracketed = b"auto"),
+         |s| {
         let (mut list1, sep1, bra1) = match s.get("list1") {
             Value::List(list, sep, bra) => (list, Some(sep), bra),
             v => (vec![v], None, false),
@@ -35,20 +37,17 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             v => (vec![v], None, false),
         };
         let separator = match s.get("separator") {
-            Value::Literal(sep, _) => {
-                let sep = sep.to_lowercase();
-                if sep == "comma" {
-                    ListSeparator::Comma
-                } else if sep == "space" {
-                    ListSeparator::Space
-                } else if sep == "auto" {
-                    sep1.or(sep2).unwrap_or(ListSeparator::Space)
-                } else {
-                    return Err(Error::badarg("'comma', 'space', or 'auto'",
-                                             &Value::Literal(sep, Quotes::Double)));
-                }
+            Value::Literal(ref sep, _) if sep.to_lowercase() == "comma" => {
+                ListSeparator::Comma
             }
-            other => return Err(Error::badarg("'comma', 'space', or 'auto'", &other)),
+            Value::Literal(ref sep, _) if sep.to_lowercase() == "space" => {
+                ListSeparator::Space
+            }
+            Value::Literal(ref sep, _) if sep.to_lowercase() == "auto" => {
+                sep1.or(sep2).unwrap_or(ListSeparator::Space)
+            }
+            other => return Err(Error::badarg("'comma', 'space', or 'auto'",
+                                              &other)),
         };
         list1.append(&mut list2);
         let bra = match s.get("bracketed") {
@@ -151,28 +150,23 @@ mod test {
 
         #[test]
         fn both_bracketed() {
-            check_val("join([foo bar], [baz bang]);",
-                      "[foo bar baz bang]")
+            check_val("join([foo bar], [baz bang]);", "[foo bar baz bang]")
         }
         #[test]
         fn first_bracketed() {
-            check_val("join([foo bar], baz bang);",
-                      "[foo bar baz bang]")
+            check_val("join([foo bar], baz bang);", "[foo bar baz bang]")
         }
         #[test]
         fn second_bracketed() {
-            check_val("join(foo bar, [baz bang]);",
-                      "foo bar baz bang")
+            check_val("join(foo bar, [baz bang]);", "foo bar baz bang")
         }
         #[test]
         fn bracketed_true() {
-            check_val("join(foo, bar, $bracketed: true);",
-                      "[foo bar]")
+            check_val("join(foo, bar, $bracketed: true);", "[foo bar]")
         }
         #[test]
         fn bracketed_false() {
-            check_val("join([foo], [bar], $bracketed: false);",
-                      "foo bar")
+            check_val("join([foo], [bar], $bracketed: false);", "foo bar")
         }
         #[test]
         fn separator_and_bracketed() {
@@ -186,18 +180,15 @@ mod test {
         }
         #[test]
         fn separator_and_bracketed_positional() {
-            check_val("join(foo, bar, comma, true);",
-                      "[foo, bar]")
+            check_val("join(foo, bar, comma, true);", "[foo, bar]")
         }
         #[test]
         fn unusual_bracketed_type() {
-            check_val("join(foo, bar, $bracketed: foo);",
-                      "[foo bar]")
+            check_val("join(foo, bar, $bracketed: foo);", "[foo bar]")
         }
         #[test]
         fn bracketed_null() {
-            check_val("join([foo], [bar], $bracketed: null);",
-                      "foo bar")
+            check_val("join([foo], [bar], $bracketed: null);", "foo bar")
         }
         fn check_val(src: &str, correct: &str) {
             use variablescope::test::do_evaluate;
