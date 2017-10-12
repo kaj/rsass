@@ -99,9 +99,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def!(f, is_bracketed(list), |s| {
         Ok(match s.get("list") {
-            Value::List(_, _, true) => Value::True,
-            _ => Value::False,
-        })
+               Value::List(_, _, true) => Value::True,
+               _ => Value::False,
+           })
     });
 }
 
@@ -120,40 +120,34 @@ fn rust_index(n: isize, list: &[Value]) -> Result<usize, Error> {
 
 #[cfg(test)]
 mod test {
-    use variablescope::test::do_evaluate;
-
     // Append fuction tests from
     // http://sass-lang.com/documentation/Sass/Script/Functions.html
     #[test]
     fn append_a() {
-        assert_eq!(do_evaluate(&[], b"append(10px 20px, 30px);"),
-                   "10px 20px 30px")
+        check_val("append(10px 20px, 30px);", "10px 20px 30px")
     }
     #[test]
     fn append_b() {
-        assert_eq!(do_evaluate(&[], b"append((blue, red), green);"),
-                   "blue, red, green")
+        check_val("append((blue, red), green);", "blue, red, green")
     }
     #[test]
     fn append_c() {
         // the documentation is incorrect on this one, libsass does not
         // add parentheses in this case.
-        assert_eq!(do_evaluate(&[], b"append(10px 20px, 30px 40px);"),
-                   "10px 20px 30px 40px")
+        check_val("append(10px 20px, 30px 40px);", "10px 20px 30px 40px")
     }
     #[test]
     fn append_d() {
-        assert_eq!(do_evaluate(&[], b"append(10px, 20px, comma);"),
-                   "10px, 20px")
+        check_val("append(10px, 20px, comma);", "10px, 20px")
     }
     #[test]
     fn append_e() {
-        assert_eq!(do_evaluate(&[], b"append((blue, red), green, space);"),
-                   "blue red green")
+        check_val("append((blue, red), green, space);", "blue red green")
     }
 
     mod join {
         //! From `sass-spec/spec/core_functions/join/valid`
+
         use super::check_val;
 
         #[test]
