@@ -97,6 +97,12 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                               .into(),
                           Quotes::None))
     });
+    def!(f, is_bracketed(list), |s| {
+        Ok(match s.get("list") {
+            Value::List(_, _, true) => Value::True,
+            _ => Value::False,
+        })
+    });
 }
 
 fn rust_index(n: isize, list: &[Value]) -> Result<usize, Error> {
@@ -148,6 +154,7 @@ mod test {
 
     mod join {
         //! From `sass-spec/spec/core_functions/join/valid`
+        use super::check_val;
 
         #[test]
         fn both_bracketed() {
@@ -191,9 +198,15 @@ mod test {
         fn bracketed_null() {
             check_val("join([foo], [bar], $bracketed: null);", "foo bar")
         }
-        fn check_val(src: &str, correct: &str) {
-            use variablescope::test::do_evaluate;
-            assert_eq!(do_evaluate(&[], src.as_bytes()), correct)
-        }
+    }
+
+    #[test]
+    fn is_bracketed() {
+        check_val("is_bracketed([foo]);", "true");
+    }
+
+    fn check_val(src: &str, correct: &str) {
+        use variablescope::test::do_evaluate;
+        assert_eq!(do_evaluate(&[], src.as_bytes()), correct)
     }
 }
