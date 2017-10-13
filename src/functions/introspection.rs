@@ -27,6 +27,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("string", v)),
     });
+    def!(f, content_exists(), |s| {
+        let content = s.get_mixin("%%BODY%%");
+        Ok(Value::bool(content.map(|(_, b)| !b.is_empty()).unwrap_or(false)))
+    });
     def!(f,
          inspect(value),
          |s| Ok(Value::Literal(format!("{}", s.get("value")), Quotes::None)));

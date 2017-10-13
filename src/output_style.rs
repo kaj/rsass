@@ -361,9 +361,6 @@ impl OutputStyle {
                                          &m_body,
                                          file_context,
                                          indent)?;
-                    } else {
-                        direct.push(CssBodyItem::Comment(
-                            "Mixin @content not found.".to_string()));
                     }
                 }
 
