@@ -76,15 +76,20 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def_va!(f, zip(lists), |s| match s.get("lists") {
         Value::List(v, _, _) => {
-            let lists = v.into_iter().map(|v| match v {
-                Value::List(v, _, _) => v,
-                x => vec![x],
-            }).collect::<Vec<_>>();
+            let lists = v.into_iter()
+                .map(|v| match v {
+                         Value::List(v, _, _) => v,
+                         x => vec![x],
+                     })
+                .collect::<Vec<_>>();
             let len = lists.iter().map(|v| v.len()).min().unwrap_or(0);
-            let result = (0..len).map(|i| {
-                let items = lists.iter().map(|v| v[i].clone()).collect();
-                Value::List(items, ListSeparator::Space, false)
-            }).collect();
+            let result = (0..len)
+                .map(|i| {
+                         let items =
+                             lists.iter().map(|v| v[i].clone()).collect();
+                         Value::List(items, ListSeparator::Space, false)
+                     })
+                .collect();
             Ok(Value::List(result, ListSeparator::Comma, false))
         }
         v => Err(Error::badarg("list", &v)),
