@@ -74,6 +74,21 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         list.push(s.get("val"));
         Ok(Value::List(list, sep, bra))
     });
+    def_va!(f, zip(lists), |s| match s.get("lists") {
+        Value::List(v, _, _) => {
+            let lists = v.into_iter().map(|v| match v {
+                Value::List(v, _, _) => v,
+                x => vec![x],
+            }).collect::<Vec<_>>();
+            let len = lists.iter().map(|v| v.len()).min().unwrap_or(0);
+            let result = (0..len).map(|i| {
+                let items = lists.iter().map(|v| v[i].clone()).collect();
+                Value::List(items, ListSeparator::Space, false)
+            }).collect();
+            Ok(Value::List(result, ListSeparator::Comma, false))
+        }
+        v => Err(Error::badarg("list", &v)),
+    });
     def!(f, index(list, value), |s| {
         let v = match s.get("list") {
             Value::List(v, _, _) => v,
@@ -197,6 +212,12 @@ mod test {
     #[test]
     fn is_bracketed() {
         check_val("is_bracketed([foo]);", "true");
+    }
+
+    #[test]
+    fn zip() {
+        check_val("zip(1px 1px 3px, solid dashed solid, red green blue);",
+                  "1px solid red, 1px dashed green, 3px solid blue")
     }
 
     fn check_val(src: &str, correct: &str) {
