@@ -1,7 +1,7 @@
 use super::{Error, SassFunction, get_builtin_function};
 use css::{CallArgs, Value};
 use std::collections::BTreeMap;
-use value::Quotes;
+use value::{Quotes, Unit};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
@@ -43,6 +43,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             _ => "".into(),
         };
         Ok(Value::Literal(v, Quotes::Double))
+    });
+    def!(f, unitless(value), |s| match s.get("value") {
+        Value::Numeric(_, unit, ..) => Ok(Value::bool(unit == Unit::None)),
+        v => Err(Error::badarg("number", &v)),
     });
     def!(f, comparable(number1, number2), |s| {
         match (&s.get("number1"), &s.get("number2")) {
@@ -111,6 +115,15 @@ mod test {
     fn type_of_color_by_name() {
         assert_eq!("color", do_evaluate(&[], b"type_of(red);"))
     }
+    #[test]
+    fn unitless_a() {
+        assert_eq!("true", do_evaluate(&[], b"unitless(100);"))
+    }
+    #[test]
+    fn unitless_b() {
+        assert_eq!("false", do_evaluate(&[], b"unitless(100px);"))
+    }
+
     /// From `sass-spec/spec/types-4.0`
     mod types_4_0 {
         use super::do_evaluate;
