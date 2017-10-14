@@ -108,7 +108,7 @@ pub trait Scope {
                 }
                 Item::None => None,
                 ref x => {
-                    panic!("Not implemented in fuction: {:?}", x);
+                    panic!("Not implemented in fuction: {:?}", x)
                 }
             };
             if let Some(result) = result {
@@ -140,7 +140,7 @@ impl<'a> Scope for ScopeImpl<'a> {
         }
     }
     fn define_global(&self, name: &str, val: &Value) {
-        self.parent.define_global(name, &val);
+        self.parent.define_global(name, val);
     }
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
         self.mixins
@@ -180,7 +180,7 @@ impl<'a> Scope for ScopeImpl<'a> {
         if let Some(f) = self.functions.get(&name).cloned() {
             return f.call(self, args).ok();
         }
-        self.parent.call_function(&name, &args)
+        self.parent.call_function(&name, args)
     }
 }
 

@@ -154,6 +154,6 @@ impl fmt::Display for Operator {
 fn equal_values(a: &Value, b: &Value) -> bool {
     match (a, b) {
         (&Value::Literal(ref a, _), &Value::Literal(ref b, _)) => a == b,
-        (ref a, ref b) => a == b,
+        (a, b) => a == b,
     }
 }

@@ -44,7 +44,7 @@ fn run(args: &ArgMatches) -> Result<(), Error> {
     };
     if let Some(inputs) = args.values_of("INPUT") {
         for name in inputs {
-            let result = compile_scss_file(name.as_ref(), style.clone())?;
+            let result = compile_scss_file(name.as_ref(), style)?;
             let out = stdout();
             out.lock().write_all(&result)?;
         }

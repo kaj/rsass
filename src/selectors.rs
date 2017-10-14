@@ -11,8 +11,8 @@ impl Selectors {
     pub fn inside(&self, parent: Option<&Self>) -> Self {
         if let Some(parent) = parent {
             let mut result = Vec::new();
-            for ref p in &parent.0 {
-                for ref s in &self.0 {
+            for p in &parent.0 {
+                for s in &self.0 {
                     result.push(p.join(s));
                 }
             }

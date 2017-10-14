@@ -304,7 +304,7 @@ fn rational2str(r: &Rational, with_sign: bool, skipzero: bool) -> String {
             format!("{}", r.numer())
         }
     } else {
-        let prec = Rational::from_integer(100000);
+        let prec = Rational::from_integer(100_000);
         let v = (r * prec).round() / prec;
         let v = *v.numer() as f64 / *v.denom() as f64;
         let mut result = if with_sign {

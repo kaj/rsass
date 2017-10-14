@@ -4,7 +4,7 @@ use num_rational::Rational;
 use std::collections::BTreeMap;
 
 pub fn rgb_to_name(r: u8, g: u8, b: u8) -> Option<&'static str> {
-    let c = ((r as u32) << 16) + ((g as u32) << 8) + (b as u32);
+    let c = (u32::from(r) << 16) + (u32::from(g) << 8) + u32::from(b);
     LOOKUP.v2n.get(&c).map(|n| *n)
 }
 

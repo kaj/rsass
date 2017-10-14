@@ -84,7 +84,7 @@ impl Unit {
 
             Unit::Deg => Rational::new(360, 1),
             Unit::Grad => Rational::new(400, 1),
-            Unit::Rad => Rational::new(62832, 10000), // approximate
+            Unit::Rad => Rational::new(62_832, 10_000), // approximate
             Unit::Turn => Rational::one(),
 
             Unit::S => Rational::one(),

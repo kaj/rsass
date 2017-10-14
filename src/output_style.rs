@@ -12,7 +12,7 @@ use variablescope::{Scope, ScopeImpl};
 
 /// Selected target format.
 /// Only formats that are variants of this type are supported by rsass.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OutputStyle {
     Normal, // TODO What should be the name of this format?
     Compressed,
@@ -27,7 +27,7 @@ impl OutputStyle {
                       globals: &mut Scope,
                       file_context: FileContext)
                       -> Result<Vec<u8>, Error> {
-        let mut result = CssWriter::new(self.clone());
+        let mut result = CssWriter::new(*self);
         for item in items {
             self.handle_root_item(item, globals, &file_context, &mut result)?;
         }

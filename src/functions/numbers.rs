@@ -39,7 +39,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def!(f, random(limit), |s| match s.get("limit") {
         Value::Null => {
-            let rez = 1000000;
+            let rez = 1_000_000;
             Ok(number(Rational::new(intrand(rez), rez), Unit::None))
         }
         Value::Numeric(val, unit, ..) => {
