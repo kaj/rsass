@@ -217,18 +217,11 @@ impl fmt::Display for Value {
                             }
                             _ => false,
                         };
-                        if out.alternate() {
-                            if needs_paren {
-                                format!("({:#})", v)
-                            } else {
-                                format!("{:#}", v)
-                            }
-                        } else {
-                            if needs_paren {
-                                format!("({})", v)
-                            } else {
-                                format!("{}", v)
-                            }
+                        match (out.alternate(), needs_paren) {
+                            (true, true) => format!("({:#})", v),
+                            (true, false) => format!("{:#}", v),
+                            (false, true) => format!("({})", v),
+                            (false, false) => format!("{}", v),
                         }
                     })
                     .collect::<Vec<_>>();
