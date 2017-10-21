@@ -5,8 +5,8 @@ use parser::formalargs::call_args;
 use parser::unit::unit;
 use parser::util::{is_name_char, name, opt_spacelike, spacelike2};
 use sass::Value;
-use std::str::{FromStr, from_utf8};
 use std::collections::BTreeMap;
+use std::str::{FromStr, from_utf8};
 use value::{ListSeparator, Operator, Quotes, Unit, name_to_rgb};
 
 named!(pub value_expression<&[u8], Value>,
@@ -43,20 +43,21 @@ fn maybe_map_item(item: &Value) -> Option<(Value, Value)> {
             match items.split_first() {
                 Some((&Value::Literal(ref s, Quotes::None), rest))
                     if s.ends_with(':') => {
-                        let mut s = s.clone();
-                        s.pop();
-                        return Some((Value::Literal(s, Quotes::None),
-                                     single_or_list(rest)));
+                    let mut s = s.clone();
+                    s.pop();
+                    return Some((Value::Literal(s, Quotes::None),
+                                 single_or_list(rest)));
+                }
+                Some((key, rest)) => {
+                    match rest.split_first() {
+                        Some((&Value::Literal(ref c, Quotes::None),
+                              values)) if c == ":" => {
+                            return Some((key.clone(), single_or_list(values)));
+                        }
+                        _ => return None,
                     }
-                Some((key, rest)) => match rest.split_first() {
-                    Some((&Value::Literal(ref c, Quotes::None), values))
-                        if c == ":" =>
-                    {
-                        return Some((key.clone(), single_or_list(values)));
-                    }
-                    _ => return None
-                },
-                None => return None
+                }
+                None => return None,
             }
         }
         _ => return None,

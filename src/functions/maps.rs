@@ -4,7 +4,10 @@ use std::collections::BTreeMap;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, map_get(map, key), |s| {
-        Ok(get_map(s.get("map"))?.get(&s.get("key")).cloned().unwrap_or(Value::Null))
+        Ok(get_map(s.get("map"))?
+               .get(&s.get("key"))
+               .cloned()
+               .unwrap_or(Value::Null))
     });
     def!(f, map_merge(map1, map2), |s| {
         let mut map1 = get_map(s.get("map1"))?;

@@ -2,9 +2,9 @@ use css::CallArgs;
 use error::Error;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
+use std::collections::BTreeMap;
 use std::fmt;
 use value::{ListSeparator, Operator, Quotes, Unit, rgb_to_name};
-use std::collections::BTreeMap;
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

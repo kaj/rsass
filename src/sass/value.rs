@@ -3,9 +3,9 @@ use functions::get_builtin_function;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use sass::CallArgs;
+use std::collections::BTreeMap;
 use value::{ListSeparator, Operator, Quotes, Unit};
 use variablescope::Scope;
-use std::collections::BTreeMap;
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -204,11 +204,11 @@ impl Value {
             }
             Value::Map(ref m) => {
                 css::Value::Map(m.iter()
-                                .map(|(k, v)| {
-                                    (k.do_evaluate(scope, true),
-                                     v.do_evaluate(scope, true))
-                                })
-                                .collect())
+                                    .map(|(k, v)| {
+                                             (k.do_evaluate(scope, true),
+                                              v.do_evaluate(scope, true))
+                                         })
+                                    .collect())
             }
             Value::Null => css::Value::Null,
             Value::True => css::Value::True,
