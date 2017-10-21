@@ -3,7 +3,7 @@ use num_rational::Rational;
 use std::fmt;
 use value::{Quotes, Unit};
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Operator {
     And,
     Or,

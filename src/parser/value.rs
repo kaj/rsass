@@ -6,6 +6,7 @@ use parser::unit::unit;
 use parser::util::{is_name_char, name, opt_spacelike, spacelike2};
 use sass::Value;
 use std::str::{FromStr, from_utf8};
+use std::collections::BTreeMap;
 use value::{ListSeparator, Operator, Quotes, Unit, name_to_rgb};
 
 named!(pub value_expression<&[u8], Value>,
@@ -19,8 +20,48 @@ named!(pub value_expression<&[u8], Value>,
            (if result.len() == 1 && trail.is_empty() {
                result.into_iter().next().unwrap()
            } else {
-               Value::List(result, ListSeparator::Comma, false)
+               maybe_map(&result).unwrap_or_else(
+                   || Value::List(result, ListSeparator::Comma, false)
+               )
            })));
+
+fn maybe_map(items: &[Value]) -> Option<Value> {
+    let mut result = BTreeMap::new();
+    for item in items {
+        match *item {
+            Value::List(ref items, ListSeparator::Space, false) => {
+                match items.split_first() {
+                    Some((&Value::Literal(ref s, Quotes::None), rest))
+                        if s.ends_with(':') => {
+                            let mut s = s.clone();
+                            s.pop();
+                            result.insert(Value::Literal(s, Quotes::None),
+                                          single_or_list(rest));
+                        }
+                    Some((key, rest)) => match rest.split_first() {
+                        Some((&Value::Literal(ref c, Quotes::None), values))
+                            if c == ":" =>
+                        {
+                            result.insert(key.clone(), single_or_list(values));
+                        }
+                        _ => return None
+                    },
+                    None => return None
+                }
+            }
+            _ => return None,
+        }
+    }
+    Some(Value::Map(result))
+}
+
+fn single_or_list(items: &[Value]) -> Value {
+    if items.len() == 1 {
+        items[0].clone()
+    } else {
+        Value::List(items.to_vec(), ListSeparator::Space, false)
+    }
+}
 
 named!(pub space_list<&[u8], Value>,
        do_parse!(first: single_expression >>
@@ -586,7 +627,6 @@ mod test {
         let t = value_expression(b"http://#{\")\"}.com/;");
         if let &Done(ref rest, ref result) = &t {
             assert_eq!(rest, b";");
-            println!("Got {:?}", result);
             assert_eq!("http://).com/",
                     format!("{}", result.evaluate(&GlobalScope::new())));
         } else {

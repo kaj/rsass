@@ -14,6 +14,7 @@ mod colors_hsl;
 mod colors_other;
 mod introspection;
 mod numbers;
+mod maps;
 mod strings;
 mod lists;
 
@@ -113,6 +114,7 @@ lazy_static! {
         strings::register(&mut f);
         numbers::register(&mut f);
         lists::register(&mut f);
+        maps::register(&mut f);
         f
     };
 }

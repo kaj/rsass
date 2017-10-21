@@ -4,9 +4,10 @@ use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::fmt;
 use value::{ListSeparator, Operator, Quotes, Unit, rgb_to_name};
+use std::collections::BTreeMap;
 
 /// A sass value.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
     Call(String, CallArgs),
     /// The booleans tell if there should be whitespace
@@ -30,6 +31,7 @@ pub enum Value {
     /// A binary operation, two operands and an operator.
     BinOp(Box<Value>, Operator, Box<Value>),
     UnaryOp(Operator, Box<Value>),
+    Map(BTreeMap<Value, Value>),
 }
 
 impl Value {
@@ -273,18 +275,7 @@ impl fmt::Display for Value {
             &Value::True => write!(out, "true"),
             &Value::False => write!(out, "false"),
             &Value::Null => Ok(()),
-        }
-    }
-}
-
-use std::cmp::Ordering;
-impl PartialOrd for Value {
-    fn partial_cmp(&self, b: &Value) -> Option<Ordering> {
-        match (self, b) {
-            (&Value::Numeric(ref a, ..), &Value::Numeric(ref b, ..)) => {
-                a.partial_cmp(b)
-            }
-            _ => None,
+            &Value::Map(_) => panic!("Formatting a map not supported"),
         }
     }
 }
