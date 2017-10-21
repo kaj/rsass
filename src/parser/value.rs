@@ -28,31 +28,39 @@ named!(pub value_expression<&[u8], Value>,
 fn maybe_map(items: &[Value]) -> Option<Value> {
     let mut result = BTreeMap::new();
     for item in items {
-        match *item {
-            Value::List(ref items, ListSeparator::Space, false) => {
-                match items.split_first() {
-                    Some((&Value::Literal(ref s, Quotes::None), rest))
-                        if s.ends_with(':') => {
-                            let mut s = s.clone();
-                            s.pop();
-                            result.insert(Value::Literal(s, Quotes::None),
-                                          single_or_list(rest));
-                        }
-                    Some((key, rest)) => match rest.split_first() {
-                        Some((&Value::Literal(ref c, Quotes::None), values))
-                            if c == ":" =>
-                        {
-                            result.insert(key.clone(), single_or_list(values));
-                        }
-                        _ => return None
-                    },
-                    None => return None
-                }
-            }
-            _ => return None,
+        if let Some((key, value)) = maybe_map_item(item) {
+            result.insert(key, value);
+        } else {
+            return None;
         }
     }
     Some(Value::Map(result))
+}
+
+fn maybe_map_item(item: &Value) -> Option<(Value, Value)> {
+    match *item {
+        Value::List(ref items, ListSeparator::Space, false) => {
+            match items.split_first() {
+                Some((&Value::Literal(ref s, Quotes::None), rest))
+                    if s.ends_with(':') => {
+                        let mut s = s.clone();
+                        s.pop();
+                        return Some((Value::Literal(s, Quotes::None),
+                                     single_or_list(rest)));
+                    }
+                Some((key, rest)) => match rest.split_first() {
+                    Some((&Value::Literal(ref c, Quotes::None), values))
+                        if c == ":" =>
+                    {
+                        return Some((key.clone(), single_or_list(values)));
+                    }
+                    _ => return None
+                },
+                None => return None
+            }
+        }
+        _ => return None,
+    }
 }
 
 fn single_or_list(items: &[Value]) -> Value {
@@ -242,7 +250,15 @@ named!(pub single_value<&[u8], Value>,
                            opt!(value_expression),
                            terminated!(opt_spacelike, tag!(")"))),
                 |val: Option<Value>| match val {
-                    Some(v) => Value::Paren(Box::new(v)),
+                    Some(v) => {
+                        if let Some((k, v)) = maybe_map_item(&v) {
+                            let mut map = BTreeMap::new();
+                            map.insert(k, v);
+                            Value::Map(map)
+                        } else {
+                            Value::Paren(Box::new(v))
+                        }
+                    }
                     None => Value::List(vec![], ListSeparator::Space, false),
                 })));
 
