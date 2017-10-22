@@ -12,7 +12,17 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, nth(list, n), |s| {
         let n = s.get("n").integer_value()?;
         match s.get("list") {
-            Value::List(list, _, _) => Ok(list[rust_index(n, &list)?].clone()),
+            Value::List(list, _, _) => Ok(list[list_index(n, &list)?].clone()),
+            Value::Map(map) => {
+                let n = rust_index(n, map.len())?;
+                if let Some(&(ref k, ref v)) = map.get_item(n) {
+                    Ok(Value::List(vec![k.clone(), v.clone()],
+                                   ListSeparator::Space,
+                                   false))
+                } else {
+                    Ok(Value::Null)
+                }
+            }
             v => Err(Error::badarg("list", &v)),
         }
     });
@@ -22,7 +32,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::List(v, s, bra) => (v, s, bra),
             v => (vec![v], ListSeparator::Space, false),
         };
-        let i = rust_index(n, &list)?;
+        let i = list_index(n, &list)?;
         list[i] = s.get("value");
         Ok(Value::List(list, sep, bra))
     });
@@ -138,8 +148,12 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
 }
 
-fn rust_index(n: isize, list: &[Value]) -> Result<usize, Error> {
+fn list_index(n: isize, list: &[Value]) -> Result<usize, Error> {
     let len = list.len();
+    rust_index(n, len)
+}
+
+fn rust_index(n: isize, len: usize) -> Result<usize, Error> {
     if n > 0 && n as usize <= len {
         Ok((n - 1) as usize)
     } else if n < 0 && n >= -(len as isize) {

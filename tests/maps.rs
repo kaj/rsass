@@ -69,6 +69,23 @@ fn length() {
           "a {\n  b: 3;\n}\n")
 }
 
+#[test]
+fn nth() {
+    check("$map: (aaa: 100, bbb: 200, ccc: 300);\n\n\
+           a {\n  b: nth($map, 1);\n  b: length(nth($map, 1));\n  \
+           b: type-of(nth($map, 1));\n  b: nth(nth($map, 1), 1);\n  \
+           b: nth(nth($map, 1), 2);\n\n  \
+           c: nth($map, 2);\n  c: length(nth($map, 2));\n  \
+           c: type-of(nth($map, 2));\n  c: nth(nth($map, 2), 1);\n  \
+           c: nth(nth($map, 2), 2);\n\n  \
+           d: nth($map, 3);  d: length(nth($map, 3));\n  \
+           d: type-of(nth($map, 3));\n  d: nth(nth($map, 3), 1);\n  \
+           d: nth(nth($map, 3), 2);\n}\n",
+          "a {\n  b: aaa 100;\n  b: 2;\n  b: list;\n  b: aaa;\n  b: 100;\n  \
+           c: bbb 200;\n  c: 2;\n  c: list;\n  c: bbb;\n  c: 200;\n  \
+           d: ccc 300;\n  d: 2;\n  d: list;\n  d: ccc;\n  d: 300;\n}\n")
+}
+
 fn check(input: &str, expected: &str) {
     assert_eq!(compile_scss(input.as_bytes(), OutputStyle::Normal)
                    .and_then(|s| Ok(String::from_utf8(s)?))
