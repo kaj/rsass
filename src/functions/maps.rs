@@ -17,6 +17,20 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         Ok(Value::Map(map1))
     });
+    def_va!(f, map_remove(map, keys), |s| {
+        let mut map = get_map(s.get("map"))?;
+        match s.get("keys") {
+            Value::List(keys, ..) => {
+                for key in keys {
+                    map.remove(&key);
+                }
+            }
+            key => {
+                map.remove(&key);
+            }
+        }
+        Ok(Value::Map(map))
+    });
     def!(f, map_has_key(map, key), |s| {
         let map = get_map(s.get("map"))?;
         Ok(Value::bool(map.contains_key(&s.get("key"))))

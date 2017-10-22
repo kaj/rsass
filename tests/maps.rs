@@ -29,6 +29,14 @@ fn map_merge() {
            foo-3: true;\n  foo-4: true;\n}\n")
 }
 
+#[test]
+fn map_remove() {
+    check("$before: map-remove((foo: 1, bar: 2, baz: 3), bar);\n\
+           $after: (foo: 1, baz: 3);\n\n\
+           div {\n  foo: $before == $after;\n}\n",
+          "div {\n  foo: true;\n}\n")
+}
+
 fn check(input: &str, expected: &str) {
     assert_eq!(compile_scss(input.as_bytes(), OutputStyle::Normal)
                    .and_then(|s| Ok(String::from_utf8(s)?))
