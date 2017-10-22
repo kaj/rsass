@@ -17,6 +17,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         Ok(Value::Map(map1))
     });
+    def!(f, map_has_key(map, key), |s| {
+        let map = get_map(s.get("map"))?;
+        Ok(Value::bool(map.contains_key(&s.get("key"))))
+    });
 }
 
 fn get_map(v: Value) -> Result<BTreeMap<Value, Value>, Error> {
@@ -49,6 +53,19 @@ mod test {
         }
     }
 
+    mod map_has_key {
+        use super::check_val;
+
+        #[test]
+        fn a() {
+            check_val("map-has-key((\"foo\": 1, \"bar\": 2), \"foo\");", "true")
+        }
+        #[test]
+        fn b() {
+            check_val("map-has-key((\"foo\": 1, \"bar\": 2), \"baz\");",
+                      "false")
+        }
+    }
 
     fn check_val(src: &str, correct: &str) {
         use variablescope::test::do_evaluate;
