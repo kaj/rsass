@@ -6,6 +6,7 @@ use value::{ListSeparator, Quotes};
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, length(list), |s| match s.get("list") {
         Value::List(v, _, _) => Ok(Value::scalar(v.len() as isize)),
+        Value::Map(m) => Ok(Value::scalar(m.len() as isize)),
         v => Err(Error::badarg("list", &v)),
     });
     def!(f, nth(list, n), |s| {

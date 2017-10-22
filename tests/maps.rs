@@ -37,6 +37,13 @@ fn map_remove() {
           "div {\n  foo: true;\n}\n")
 }
 
+#[test]
+fn length() {
+    check("$map: (aaa: 100, bbb: 200, ccc: 300);\n\n\
+           a {\n  b: length($map);\n}\n",
+          "a {\n  b: 3;\n}\n")
+}
+
 fn check(input: &str, expected: &str) {
     assert_eq!(compile_scss(input.as_bytes(), OutputStyle::Normal)
                    .and_then(|s| Ok(String::from_utf8(s)?))
