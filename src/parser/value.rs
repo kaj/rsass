@@ -1,11 +1,11 @@
 use nom::multispace;
 use num_rational::Rational;
 use num_traits::Zero;
+use ordermap::OrderMap;
 use parser::formalargs::call_args;
 use parser::unit::unit;
 use parser::util::{is_name_char, name, opt_spacelike, spacelike2};
 use sass::Value;
-use std::collections::BTreeMap;
 use std::str::{FromStr, from_utf8};
 use value::{ListSeparator, Operator, Quotes, Unit, name_to_rgb};
 
@@ -26,7 +26,7 @@ named!(pub value_expression<&[u8], Value>,
            })));
 
 fn maybe_map(items: &[Value]) -> Option<Value> {
-    let mut result = BTreeMap::new();
+    let mut result = OrderMap::new();
     for item in items {
         if let Some((key, value)) = maybe_map_item(item) {
             result.insert(key, value);
@@ -253,7 +253,7 @@ named!(pub single_value<&[u8], Value>,
                 |val: Option<Value>| match val {
                     Some(v) => {
                         if let Some((k, v)) = maybe_map_item(&v) {
-                            let mut map = BTreeMap::new();
+                            let mut map = OrderMap::new();
                             map.insert(k, v);
                             Value::Map(map)
                         } else {

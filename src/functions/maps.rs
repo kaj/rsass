@@ -1,6 +1,8 @@
 use super::{Error, SassFunction};
 use css::Value;
+use ordermap::OrderMap;
 use std::collections::BTreeMap;
+use value::ListSeparator;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, map_get(map, key), |s| {
@@ -31,17 +33,21 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         Ok(Value::Map(map))
     });
+    def!(f, map_keys(map), |s| {
+        let map = get_map(s.get("map"))?;
+        Ok(Value::List(map.keys(), ListSeparator::Comma, false))
+    });
     def!(f, map_has_key(map, key), |s| {
         let map = get_map(s.get("map"))?;
         Ok(Value::bool(map.contains_key(&s.get("key"))))
     });
 }
 
-fn get_map(v: Value) -> Result<BTreeMap<Value, Value>, Error> {
+fn get_map(v: Value) -> Result<OrderMap<Value, Value>, Error> {
     match v {
         Value::Map(m) => Ok(m),
         // An empty map and an empty list looks the same
-        Value::List(ref l, ..) if l.is_empty() => Ok(BTreeMap::new()),
+        Value::List(ref l, ..) if l.is_empty() => Ok(OrderMap::new()),
         v => Err(Error::badarg("map", &v)),
     }
 }

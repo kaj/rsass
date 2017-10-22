@@ -47,6 +47,7 @@ mod functions;
 mod selectors;
 mod value;
 mod variablescope;
+mod ordermap;
 mod output_style;
 mod parser;
 mod file_context;

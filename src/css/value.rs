@@ -2,7 +2,7 @@ use css::CallArgs;
 use error::Error;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
-use std::collections::BTreeMap;
+use ordermap::OrderMap;
 use std::fmt;
 use value::{ListSeparator, Operator, Quotes, Unit, rgb_to_name};
 
@@ -31,7 +31,7 @@ pub enum Value {
     /// A binary operation, two operands and an operator.
     BinOp(Box<Value>, Operator, Box<Value>),
     UnaryOp(Operator, Box<Value>),
-    Map(BTreeMap<Value, Value>),
+    Map(OrderMap<Value, Value>),
 }
 
 impl Value {

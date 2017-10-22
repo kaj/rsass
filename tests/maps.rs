@@ -38,6 +38,12 @@ fn map_remove() {
 }
 
 #[test]
+fn map_keys() {
+    check("div {\n  foo: map-keys((foo: 1, bar: 2));\n}\n",
+          "div {\n  foo: foo, bar;\n}\n")
+}
+
+#[test]
 fn length() {
     check("$map: (aaa: 100, bbb: 200, ccc: 300);\n\n\
            a {\n  b: length($map);\n}\n",

@@ -2,8 +2,8 @@ use css;
 use functions::get_builtin_function;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
+use ordermap::OrderMap;
 use sass::CallArgs;
-use std::collections::BTreeMap;
 use value::{ListSeparator, Operator, Quotes, Unit};
 use variablescope::Scope;
 
@@ -41,7 +41,7 @@ pub enum Value {
     /// A binary operation, two operands and an operator.
     BinOp(Box<Value>, Operator, Box<Value>),
     UnaryOp(Operator, Box<Value>),
-    Map(BTreeMap<Value, Value>),
+    Map(OrderMap<Value, Value>),
     Interpolation(Box<Value>),
 }
 
@@ -204,7 +204,7 @@ impl Value {
             }
             Value::Map(ref m) => {
                 css::Value::Map(m.iter()
-                                    .map(|(k, v)| {
+                                    .map(|&(ref k, ref v)| {
                                              (k.do_evaluate(scope, true),
                                               v.do_evaluate(scope, true))
                                          })
