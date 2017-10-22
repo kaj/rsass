@@ -205,8 +205,8 @@ impl Value {
             Value::Map(ref m) => {
                 css::Value::Map(m.iter()
                                     .map(|&(ref k, ref v)| {
-                                             (k.do_evaluate(scope, true),
-                                              v.do_evaluate(scope, true))
+                                             (k.do_evaluate(scope, false),
+                                              v.do_evaluate(scope, false))
                                          })
                                     .collect())
             }

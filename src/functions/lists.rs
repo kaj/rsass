@@ -95,18 +95,30 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("list", &v)),
     });
-    def!(f, index(list, value), |s| {
-        let v = match s.get("list") {
-            Value::List(v, _, _) => v,
-            v => return Err(Error::badarg("list", &v)),
-        };
-        let value = s.get("value");
-        for (i, v) in v.iter().enumerate() {
-            if v == &value {
-                return Ok(Value::scalar(i as isize + 1));
+    def!(f, index(list, value), |s| match s.get("list") {
+        Value::List(v, _, _) => {
+            let value = s.get("value");
+            for (i, v) in v.iter().enumerate() {
+                if v == &value {
+                    return Ok(Value::scalar(i as isize + 1));
+                }
+            }
+            Ok(Value::Null)
+        }
+        Value::Map(map) => {
+            match s.get("value") {
+                Value::List(ref l, ListSeparator::Space, _) if l.len() == 2 => {
+                    for (i, &(ref k, ref v)) in map.iter().enumerate() {
+                        if *k == l[0] && *v == l[1] {
+                            return Ok(Value::scalar(i as isize + 1));
+                        }
+                    }
+                    Ok(Value::Null)
+                }
+                _ => Ok(Value::Null),
             }
         }
-        Ok(Value::Null)
+        v => return Err(Error::badarg("list", &v)),
     });
     def!(f, list_separator(list), |s| {
         Ok(Value::Literal(match s.get("list") {

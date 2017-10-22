@@ -51,6 +51,18 @@ fn map_values() {
 }
 
 #[test]
+fn index() {
+    check("$map: (aaa: 100, bbb: 200, ccc: 300);\n\n\
+           a {\n  b: index($map, aaa 100);\n  b: index($map, bbb 200);\n  \
+           b: index($map, ccc 300);\n\n  \
+           c: index($map, (aaa 100));\n  c: index($map, (bbb 200));\n  \
+           c: index($map, (ccc 300));\n\n  \
+           d: index($map, (aaa, 100));\n  d: index($map, (bbb, 200));\n  \
+           d: index($map, (ccc, 300));\n}\n",
+          "a {\n  b: 1;\n  b: 2;\n  b: 3;\n  c: 1;\n  c: 2;\n  c: 3;\n}\n")
+}
+
+#[test]
 fn length() {
     check("$map: (aaa: 100, bbb: 200, ccc: 300);\n\n\
            a {\n  b: length($map);\n}\n",
