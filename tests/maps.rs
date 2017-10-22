@@ -44,6 +44,13 @@ fn map_keys() {
 }
 
 #[test]
+fn map_values() {
+    check("div {\n  foo: map-values((foo: 1, bar: 2));\n  \
+           foo: map-values((foo: 1, bar: 2, baz: 2));\n}\n",
+          "div {\n  foo: 1, 2;\n  foo: 1, 2, 2;\n}\n")
+}
+
+#[test]
 fn length() {
     check("$map: (aaa: 100, bbb: 200, ccc: 300);\n\n\
            a {\n  b: length($map);\n}\n",

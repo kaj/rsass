@@ -1,11 +1,11 @@
+use std::iter::FromIterator;
 use std::slice::Iter;
 use std::vec::IntoIter;
-use std::iter::FromIterator;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct OrderMap<K, V>(Vec<(K, V)>);
 
-impl<K: Clone + PartialEq, V> OrderMap<K, V> {
+impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
     pub fn new() -> Self {
         OrderMap(Vec::new())
     }
@@ -25,10 +25,14 @@ impl<K: Clone + PartialEq, V> OrderMap<K, V> {
     pub fn keys(&self) -> Vec<K> {
         self.0.iter().map(|&(ref k, ref _v)| k).cloned().collect()
     }
+    // TODO Should return a specialized iterator!
+    pub fn values(&self) -> Vec<V> {
+        self.0.iter().map(|&(ref _k, ref v)| v).cloned().collect()
+    }
     pub fn get(&self, key: &K) -> Option<&V> {
         for &(ref k, ref v) in self.0.iter() {
             if k == key {
-                return Some(v)
+                return Some(v);
             }
         }
         None
@@ -39,7 +43,7 @@ impl<K: Clone + PartialEq, V> OrderMap<K, V> {
     pub fn contains_key(&self, key: &K) -> bool {
         for &(ref k, ref _v) in self.0.iter() {
             if k == key {
-                return true
+                return true;
             }
         }
         false
