@@ -45,22 +45,22 @@ fn maybe_map_item(item: &Value) -> Option<(Value, Value)> {
                     if s.ends_with(':') => {
                     let mut s = s.clone();
                     s.pop();
-                    return Some((Value::Literal(s, Quotes::None),
-                                 single_or_list(rest)));
+                    Some((Value::Literal(s, Quotes::None),
+                          single_or_list(rest)))
                 }
                 Some((key, rest)) => {
                     match rest.split_first() {
                         Some((&Value::Literal(ref c, Quotes::None),
                               values)) if c == ":" => {
-                            return Some((key.clone(), single_or_list(values)));
+                            Some((key.clone(), single_or_list(values)))
                         }
-                        _ => return None,
+                        _ => None,
                     }
                 }
-                None => return None,
+                None => None,
             }
         }
-        _ => return None,
+        _ => None,
     }
 }
 
