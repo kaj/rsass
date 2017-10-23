@@ -51,6 +51,26 @@ fn map_values() {
 }
 
 #[test]
+fn append() {
+    check("$map1: (aaa: 100, bbb: 200, ccc: 300);\n\
+           $map2: (ddd: 400, eee: 500, fff: 600);\n\n\
+           a {\n  $new-list: append($map1, $map2);\n  b: length($new-list);\n  \
+           b: type-of($new-list);\n  b: nth($new-list, 1);\n  \
+           b: nth($new-list, 2);\n  b: nth($new-list, 3);\n  \
+           b: nth(nth($new-list, 4), 1);\n  b: nth(nth($new-list, 4), 2);\n  \
+           b: nth(nth($new-list, 4), 3);\n\n  \
+           $new-list: append($map2, $map1);\n  c: length($new-list);\n  \
+           c: type-of($new-list);\n  c: nth($new-list, 1);\n  \
+           c: nth($new-list, 2);\n  c: nth($new-list, 3);\n  \
+           c: nth(nth($new-list, 4), 1);\n  c: nth(nth($new-list, 4), 2);\n  \
+           c: nth(nth($new-list, 4), 3);\n}\n",
+          "a {\n  b: 4;\n  b: list;\n  b: aaa 100;\n  b: bbb 200;\n  \
+           b: ccc 300;\n  b: ddd 400;\n  b: eee 500;\n  b: fff 600;\n  \
+           c: 4;\n  c: list;\n  c: ddd 400;\n  c: eee 500;\n  c: fff 600;\n  \
+           c: aaa 100;\n  c: bbb 200;\n  c: ccc 300;\n}\n")
+}
+
+#[test]
 fn index() {
     check("$map: (aaa: 100, bbb: 200, ccc: 300);\n\n\
            a {\n  b: index($map, aaa 100);\n  b: index($map, bbb 200);\n  \
@@ -60,6 +80,29 @@ fn index() {
            d: index($map, (aaa, 100));\n  d: index($map, (bbb, 200));\n  \
            d: index($map, (ccc, 300));\n}\n",
           "a {\n  b: 1;\n  b: 2;\n  b: 3;\n  c: 1;\n  c: 2;\n  c: 3;\n}\n")
+}
+
+#[test]
+fn join() {
+    check("$map1: (aaa: 100, bbb: 200, ccc: 300);\n\
+           $map2: (ddd: 400, eee: 500, fff: 600);\n\n\
+           a {\n  $new-list: join($map1, $map2);\n  b: $new-list;\n  \
+           b: length($new-list);\n  b: type-of($new-list);\n  \
+           b: nth($new-list, 1);\n  b: nth($new-list, 2);\n  \
+           b: nth($new-list, 3);\n  b: nth($new-list, 4);\n  \
+           b: nth($new-list, 5);\n  b: nth($new-list, 6);\n\n\n  \
+           $new-list: join($map2, $map1);\n  \
+           c: $new-list;\n  c: length($new-list);\n  \
+           c: type-of($new-list);\n  c: nth($new-list, 1);\n  \
+           c: nth($new-list, 2);\n  c: nth($new-list, 3);\n  \
+           c: nth($new-list, 4);\n  c: nth($new-list, 5);\n  \
+           c: nth($new-list, 6);\n}\n",
+          "a {\n  b: aaa 100, bbb 200, ccc 300, ddd 400, eee 500, fff 600;\n  \
+           b: 6;\n  b: list;\n  b: aaa 100;\n  b: bbb 200;\n  b: ccc 300;\n  \
+           b: ddd 400;\n  b: eee 500;\n  b: fff 600;\n  \
+           c: ddd 400, eee 500, fff 600, aaa 100, bbb 200, ccc 300;\n  \
+           c: 6;\n  c: list;\n  c: ddd 400;\n  c: eee 500;\n  c: fff 600;\n  \
+           c: aaa 100;\n  c: bbb 200;\n  c: ccc 300;\n}\n")
 }
 
 #[test]

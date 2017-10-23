@@ -28,36 +28,16 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def!(f, set_nth(list, n, value), |s| {
         let n = s.get("n").integer_value()?;
-        let (mut list, sep, bra) = match s.get("list") {
-            Value::List(v, s, bra) => (v, s, bra),
-            Value::Map(map) => {
-                (map.iter()
-                     .map(|&(ref k, ref v)| {
-                              Value::List(vec![k.clone(), v.clone()],
-                                          ListSeparator::Space,
-                                          false)
-                          })
-                     .collect(),
-                 ListSeparator::Comma,
-                 false)
-            }
-            v => (vec![v], ListSeparator::Space, false),
-        };
+        let (mut list, sep, bra) = get_list(s.get("list"));
         let i = list_index(n, &list)?;
         list[i] = s.get("value");
-        Ok(Value::List(list, sep, bra))
+        Ok(Value::List(list, sep.unwrap_or(ListSeparator::Space), bra))
     });
     def!(f,
          join(list1, list2, separator = b"auto", bracketed = b"auto"),
          |s| {
-        let (mut list1, sep1, bra1) = match s.get("list1") {
-            Value::List(list, sep, bra) => (list, Some(sep), bra),
-            v => (vec![v], None, false),
-        };
-        let (mut list2, sep2, _bra2) = match s.get("list2") {
-            Value::List(list, sep, bra) => (list, Some(sep), bra),
-            v => (vec![v], None, false),
-        };
+        let (mut list1, sep1, bra1) = get_list(s.get("list1"));
+        let (mut list2, sep2, _bra2) = get_list(s.get("list2"));
         let separator = match s.get("separator") {
             Value::Literal(ref sep, _) if sep.to_lowercase() == "comma" => {
                 ListSeparator::Comma
@@ -80,10 +60,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         Ok(Value::List(list1, separator, bra))
     });
     def!(f, append(list, val, separator), |s| {
-        let (mut list, sep, bra) = match s.get("list") {
-            Value::List(v, s, bra) => (v, Some(s), bra),
-            v => (vec![v], None, false),
-        };
+        let (mut list, sep, bra) = get_list(s.get("list"));
         let sep = match (s.get("separator"), sep) {
             (Value::Literal(ref s, _), _) if s == "comma" => {
                 ListSeparator::Comma
@@ -157,6 +134,24 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                _ => Value::False,
            })
     });
+}
+
+fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
+    match value {
+        Value::List(v, s, bra) => (v, Some(s), bra),
+        Value::Map(map) => {
+            (map.iter()
+                 .map(|&(ref k, ref v)| {
+                          Value::List(vec![k.clone(), v.clone()],
+                                      ListSeparator::Space,
+                                      false)
+                      })
+                 .collect(),
+             Some(ListSeparator::Comma),
+             false)
+        }
+        v => (vec![v], None, false),
+    }
 }
 
 fn list_index(n: isize, list: &[Value]) -> Result<usize, Error> {
