@@ -30,6 +30,17 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         let n = s.get("n").integer_value()?;
         let (mut list, sep, bra) = match s.get("list") {
             Value::List(v, s, bra) => (v, s, bra),
+            Value::Map(map) => {
+                (map.iter()
+                     .map(|&(ref k, ref v)| {
+                              Value::List(vec![k.clone(), v.clone()],
+                                          ListSeparator::Space,
+                                          false)
+                          })
+                     .collect(),
+                 ListSeparator::Comma,
+                 false)
+            }
             v => (vec![v], ListSeparator::Space, false),
         };
         let i = list_index(n, &list)?;

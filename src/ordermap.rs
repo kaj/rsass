@@ -54,6 +54,9 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
     pub fn get_item(&self, i: usize) -> Option<&(K, V)> {
         self.0.get(i)
     }
+    pub fn set_item(&mut self, i: usize, key: K, value: V) {
+        self.0[i] = (key, value);
+    }
 }
 
 impl<K, V> IntoIterator for OrderMap<K, V> {
