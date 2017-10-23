@@ -147,8 +147,6 @@ fn directives_in_propsets() {
            width: 0;\n}\n")
 }
 
-// TODO This test should include an each over a map.
-// Since I have not implemented map type yet, that is skipped.
 #[test]
 fn each_in_functions() {
     check(b"$GLOBAL: global;\n\n\
