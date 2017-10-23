@@ -149,6 +149,39 @@ fn set_nth() {
            d: list;\n  d: bbb;\n  d: 200;\n}\n")
 }
 
+#[test]
+fn zip() {
+    check("$map1: (aaa: 100, bbb: 200, ccc: 300);\n\
+           $map2: (ddd: 400, eee: 500, fff: 600);\n\n\
+           a {\n  $new-list: zip($map1, $map2);\n  b: $new-list;\n  \
+           b: length($new-list);\n  b: type-of($new-list);\n  \
+           b: nth($new-list, 1);\n  b: length(nth($new-list, 1));\n  \
+           b: nth(nth($new-list, 1), 1);\n  b: nth(nth($new-list, 1), 2);\n  \
+           b: nth($new-list, 2);\n  b: length(nth($new-list, 2));\n  \
+           b: nth(nth($new-list, 2), 1);\n  b: nth(nth($new-list, 2), 2);\n  \
+           b: nth($new-list, 3);\n  b: length(nth($new-list, 3));\n  \
+           b: nth(nth($new-list, 3), 1);\n  b: nth(nth($new-list, 3), 2);\n\
+           \n  \
+           $new-list: zip($map2, $map1);\n  c: $new-list;\n  \
+           c: length($new-list);\n  c: type-of($new-list);\n  \
+           c: nth($new-list, 1);\n  c: length(nth($new-list, 1));\n  \
+           c: nth(nth($new-list, 1), 1);\n  c: nth(nth($new-list, 1), 2);\n  \
+           c: nth($new-list, 2);\n  c: length(nth($new-list, 2));\n  \
+           c: nth(nth($new-list, 2), 1);\n  c: nth(nth($new-list, 2), 2);\n  \
+           c: nth($new-list, 3);\n  c: length(nth($new-list, 3));\n  \
+           c: nth(nth($new-list, 3), 1);\n  c: nth(nth($new-list, 3), 2);\n}\n",
+          "a {\n  b: aaa 100 ddd 400, bbb 200 eee 500, ccc 300 fff 600;\n  \
+           b: 3;\n  b: list;\n  b: aaa 100 ddd 400;\n  b: 2;\n  \
+           b: aaa 100;\n  b: ddd 400;\n  b: bbb 200 eee 500;\n  b: 2;\n  \
+           b: bbb 200;\n  b: eee 500;\n  b: ccc 300 fff 600;\n  b: 2;\n  \
+           b: ccc 300;\n  b: fff 600;\n  \
+           c: ddd 400 aaa 100, eee 500 bbb 200, fff 600 ccc 300;\n  \
+           c: 3;\n  c: list;\n  c: ddd 400 aaa 100;\n  c: 2;\n  \
+           c: ddd 400;\n  c: aaa 100;\n  c: eee 500 bbb 200;\n  c: 2;\n  \
+           c: eee 500;\n  c: bbb 200;\n  c: fff 600 ccc 300;\n  c: 2;\n  \
+           c: fff 600;\n  c: ccc 300;\n}\n")
+}
+
 fn check(input: &str, expected: &str) {
     assert_eq!(compile_scss(input.as_bytes(), OutputStyle::Normal)
                    .and_then(|s| Ok(String::from_utf8(s)?))
