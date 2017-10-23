@@ -125,6 +125,22 @@ impl Value {
             v => v,
         }
     }
+
+    pub fn iter_items(self) -> Vec<Value> {
+        match self {
+            Value::List(v, _, _) => v,
+            Value::Map(map) => {
+                map.iter()
+                    .map(|&(ref k, ref v)| {
+                             Value::List(vec![k.clone(), v.clone()],
+                                         ListSeparator::Space,
+                                         false)
+                         })
+                    .collect()
+            }
+            v => vec![v],
+        }
+    }
 }
 
 impl fmt::Display for Value {

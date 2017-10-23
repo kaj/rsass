@@ -50,11 +50,7 @@ pub trait Scope {
                     }
                 }
                 Item::Each(ref name, ref values, ref body) => {
-                    let values = match values.evaluate(self) {
-                        Value::List(v, _, _) => v,
-                        v => vec![v],
-                    };
-                    for value in values {
+                    for value in values.evaluate(self).iter_items() {
                         self.define(name, &value);
                         if let Some(r) = self.eval_body(body) {
                             return Some(r);
