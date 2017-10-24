@@ -10,7 +10,7 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
         OrderMap(Vec::new())
     }
     pub fn insert(&mut self, key: K, value: V) {
-        for &mut (ref k, ref mut v) in self.0.iter_mut() {
+        for &mut (ref k, ref mut v) in &mut self.0 {
             if k == &key {
                 *v = value;
                 return;
@@ -30,7 +30,7 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
         self.0.iter().map(|&(ref _k, ref v)| v).cloned().collect()
     }
     pub fn get(&self, key: &K) -> Option<&V> {
-        for &(ref k, ref v) in self.0.iter() {
+        for &(ref k, ref v) in &self.0 {
             if k == key {
                 return Some(v);
             }
@@ -41,7 +41,7 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
         self.0.retain(|&(ref k, ref _v)| k != key);
     }
     pub fn contains_key(&self, key: &K) -> bool {
-        for &(ref k, ref _v) in self.0.iter() {
+        for &(ref k, ref _v) in &self.0 {
             if k == key {
                 return true;
             }
