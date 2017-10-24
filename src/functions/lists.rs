@@ -112,7 +112,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 _ => Ok(Value::Null),
             }
         }
-        v => return Err(Error::badarg("list", &v)),
+        v => Err(Error::badarg("list", &v)),
     });
     def!(f, list_separator(list), |s| {
         Ok(Value::Literal(match s.get("list") {

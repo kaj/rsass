@@ -145,8 +145,8 @@ impl Value {
 
 impl fmt::Display for Value {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &Value::Literal(ref s, ref q) => {
+        match *self {
+            Value::Literal(ref s, ref q) => {
                 match *q {
                     Quotes::Double => {
                         write!(out,
@@ -175,11 +175,11 @@ impl fmt::Display for Value {
                     Quotes::None => write!(out, "{}", s),
                 }
             }
-            &Value::Numeric(ref v, ref u, ref with_sign, _) => {
+            Value::Numeric(ref v, ref u, ref with_sign, _) => {
                 let short = out.alternate();
                 write!(out, "{}{}", rational2str(v, *with_sign, short), u)
             }
-            &Value::Color(ref r, ref g, ref b, ref a, ref s) => {
+            Value::Color(ref r, ref g, ref b, ref a, ref s) => {
                 let r = r.round().to_integer() as u8;
                 let g = g.round().to_integer() as u8;
                 let b = b.round().to_integer() as u8;
@@ -225,7 +225,7 @@ impl fmt::Display for Value {
                            rational2str(a, false, false))
                 }
             }
-            &Value::List(ref v, ref sep, brackets) => {
+            Value::List(ref v, ref sep, brackets) => {
                 let t = v.iter()
                     .filter(|v| !v.is_null())
                     .map(|v| {
@@ -262,7 +262,7 @@ impl fmt::Display for Value {
                 }
                 Ok(())
             }
-            &Value::Div(ref a, ref b, s1, s2) => {
+            Value::Div(ref a, ref b, s1, s2) => {
                 a.fmt(out)?;
                 if s1 {
                     out.write_str(" ")?;
@@ -273,25 +273,25 @@ impl fmt::Display for Value {
                 }
                 b.fmt(out)
             }
-            &Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
-            &Value::BinOp(ref a, Operator::Plus, ref b) => {
+            Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
+            Value::BinOp(ref a, Operator::Plus, ref b) => {
                 // The plus operator is also a concat operator
                 a.fmt(out)?;
                 b.fmt(out)
             }
-            &Value::BinOp(ref a, ref op, ref b) => {
+            Value::BinOp(ref a, ref op, ref b) => {
                 a.fmt(out)?;
                 op.fmt(out)?;
                 b.fmt(out)
             }
-            &Value::UnaryOp(ref op, ref v) => {
+            Value::UnaryOp(ref op, ref v) => {
                 op.fmt(out)?;
                 v.fmt(out)
             }
-            &Value::True => write!(out, "true"),
-            &Value::False => write!(out, "false"),
-            &Value::Null => Ok(()),
-            &Value::Map(_) => panic!("Formatting a map not supported"),
+            Value::True => write!(out, "true"),
+            Value::False => write!(out, "false"),
+            Value::Null => Ok(()),
+            Value::Map(_) => panic!("Formatting a map not supported"),
         }
     }
 }

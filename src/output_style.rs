@@ -83,7 +83,7 @@ impl OutputStyle {
                 result.do_separate()?;
                 let args = args.evaluate(scope);
                 write!(result.to_content(), "@{} {}", name, args)?;
-                if let &Some(ref body) = body {
+                if let Some(ref body) = *body {
                     if self.is_compressed() || args.is_null() {
                         write!(result.to_content(), "{{")?;
                     } else {
@@ -289,7 +289,7 @@ impl OutputStyle {
                 }
                 Item::AtRule { ref name, ref args, ref body } => {
                     write!(sub, "@{} {}", name, args.evaluate(scope))?;
-                    if let &Some(ref body) = body {
+                    if let Some(ref body) = *body {
                         if self.is_compressed() {
                             write!(sub, "{{")?;
                         } else {
