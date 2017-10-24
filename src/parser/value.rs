@@ -1,6 +1,7 @@
 use nom::multispace;
 use num_rational::Rational;
 use num_traits::Zero;
+use ordermap::OrderMap;
 use parser::formalargs::call_args;
 use parser::unit::unit;
 use parser::util::{is_name_char, name, opt_spacelike, spacelike2};
@@ -19,8 +20,57 @@ named!(pub value_expression<&[u8], Value>,
            (if result.len() == 1 && trail.is_empty() {
                result.into_iter().next().unwrap()
            } else {
-               Value::List(result, ListSeparator::Comma, false)
+               maybe_map(&result).unwrap_or_else(
+                   || Value::List(result, ListSeparator::Comma, false)
+               )
            })));
+
+fn maybe_map(items: &[Value]) -> Option<Value> {
+    let mut result = OrderMap::new();
+    for item in items {
+        if let Some((key, value)) = maybe_map_item(item) {
+            result.insert(key, value);
+        } else {
+            return None;
+        }
+    }
+    Some(Value::Map(result))
+}
+
+fn maybe_map_item(item: &Value) -> Option<(Value, Value)> {
+    match *item {
+        Value::List(ref items, ListSeparator::Space, false) => {
+            match items.split_first() {
+                Some((&Value::Literal(ref s, Quotes::None), rest))
+                    if s.ends_with(':') => {
+                    let mut s = s.clone();
+                    s.pop();
+                    Some((Value::Literal(s, Quotes::None),
+                          single_or_list(rest)))
+                }
+                Some((key, rest)) => {
+                    match rest.split_first() {
+                        Some((&Value::Literal(ref c, Quotes::None),
+                              values)) if c == ":" => {
+                            Some((key.clone(), single_or_list(values)))
+                        }
+                        _ => None,
+                    }
+                }
+                None => None,
+            }
+        }
+        _ => None,
+    }
+}
+
+fn single_or_list(items: &[Value]) -> Value {
+    if items.len() == 1 {
+        items[0].clone()
+    } else {
+        Value::List(items.to_vec(), ListSeparator::Space, false)
+    }
+}
 
 named!(pub space_list<&[u8], Value>,
        do_parse!(first: single_expression >>
@@ -201,7 +251,15 @@ named!(pub single_value<&[u8], Value>,
                            opt!(value_expression),
                            terminated!(opt_spacelike, tag!(")"))),
                 |val: Option<Value>| match val {
-                    Some(v) => Value::Paren(Box::new(v)),
+                    Some(v) => {
+                        if let Some((k, v)) = maybe_map_item(&v) {
+                            let mut map = OrderMap::new();
+                            map.insert(k, v);
+                            Value::Map(map)
+                        } else {
+                            Value::Paren(Box::new(v))
+                        }
+                    }
                     None => Value::List(vec![], ListSeparator::Space, false),
                 })));
 
@@ -586,7 +644,6 @@ mod test {
         let t = value_expression(b"http://#{\")\"}.com/;");
         if let &Done(ref rest, ref result) = &t {
             assert_eq!(rest, b";");
-            println!("Got {:?}", result);
             assert_eq!("http://).com/",
                     format!("{}", result.evaluate(&GlobalScope::new())));
         } else {

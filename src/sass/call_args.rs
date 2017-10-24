@@ -7,7 +7,7 @@ use variablescope::Scope;
 ///
 /// Each argument has a Value.  Arguments may be named.
 /// If the optional name is None, the argument is positional.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct CallArgs(Vec<(Option<String>, Value)>);
 
 impl CallArgs {

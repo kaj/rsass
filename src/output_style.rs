@@ -148,11 +148,7 @@ impl OutputStyle {
                 }
             }
             Item::Each(ref name, ref values, ref body) => {
-                let values = match values.evaluate(scope) {
-                    Value::List(v, _, _) => v,
-                    v => vec![v],
-                };
-                for value in values {
+                for value in values.evaluate(scope).iter_items() {
                     scope.define(name, &value);
                     for item in body {
                         self.handle_root_item(item,
@@ -383,11 +379,7 @@ impl OutputStyle {
                                      0)?;
                 }
                 Item::Each(ref name, ref values, ref body) => {
-                    let values = match values.evaluate(scope) {
-                        Value::List(v, _, _) => v,
-                        v => vec![v],
-                    };
-                    for value in values {
+                    for value in values.evaluate(scope).iter_items() {
                         let mut scope = ScopeImpl::sub(scope);
                         scope.define(name, &value);
                         self.handle_body(direct,

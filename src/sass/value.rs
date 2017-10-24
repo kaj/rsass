@@ -2,12 +2,13 @@ use css;
 use functions::get_builtin_function;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
+use ordermap::OrderMap;
 use sass::CallArgs;
 use value::{ListSeparator, Operator, Quotes, Unit};
 use variablescope::Scope;
 
 /// A sass value.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
     /// A call has a name and an argument (which may be multi).
     Call(String, CallArgs),
@@ -40,6 +41,7 @@ pub enum Value {
     /// A binary operation, two operands and an operator.
     BinOp(Box<Value>, Operator, Box<Value>),
     UnaryOp(Operator, Box<Value>),
+    Map(OrderMap<Value, Value>),
     Interpolation(Box<Value>),
 }
 
@@ -200,6 +202,14 @@ impl Value {
             Value::Numeric(ref v, ref u, ref sign, ref calc) => {
                 css::Value::Numeric(*v, u.clone(), *sign, arithmetic || *calc)
             }
+            Value::Map(ref m) => {
+                css::Value::Map(m.iter()
+                                    .map(|&(ref k, ref v)| {
+                                             (k.do_evaluate(scope, false),
+                                              v.do_evaluate(scope, false))
+                                         })
+                                    .collect())
+            }
             Value::Null => css::Value::Null,
             Value::True => css::Value::True,
             Value::False => css::Value::False,
@@ -244,18 +254,6 @@ impl Value {
                             b)
             }
             v => v,
-        }
-    }
-}
-
-use std::cmp::Ordering;
-impl PartialOrd for Value {
-    fn partial_cmp(&self, b: &Value) -> Option<Ordering> {
-        match (self, b) {
-            (&Value::Numeric(ref a, ..), &Value::Numeric(ref b, ..)) => {
-                a.partial_cmp(b)
-            }
-            _ => None,
         }
     }
 }

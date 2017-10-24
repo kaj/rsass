@@ -2,11 +2,12 @@ use css::CallArgs;
 use error::Error;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
+use ordermap::OrderMap;
 use std::fmt;
 use value::{ListSeparator, Operator, Quotes, Unit, rgb_to_name};
 
 /// A sass value.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
     Call(String, CallArgs),
     /// The booleans tell if there should be whitespace
@@ -30,6 +31,7 @@ pub enum Value {
     /// A binary operation, two operands and an operator.
     BinOp(Box<Value>, Operator, Box<Value>),
     UnaryOp(Operator, Box<Value>),
+    Map(OrderMap<Value, Value>),
 }
 
 impl Value {
@@ -121,6 +123,22 @@ impl Value {
                             b)
             }
             v => v,
+        }
+    }
+
+    pub fn iter_items(self) -> Vec<Value> {
+        match self {
+            Value::List(v, _, _) => v,
+            Value::Map(map) => {
+                map.iter()
+                    .map(|&(ref k, ref v)| {
+                             Value::List(vec![k.clone(), v.clone()],
+                                         ListSeparator::Space,
+                                         false)
+                         })
+                    .collect()
+            }
+            v => vec![v],
         }
     }
 }
@@ -273,18 +291,7 @@ impl fmt::Display for Value {
             &Value::True => write!(out, "true"),
             &Value::False => write!(out, "false"),
             &Value::Null => Ok(()),
-        }
-    }
-}
-
-use std::cmp::Ordering;
-impl PartialOrd for Value {
-    fn partial_cmp(&self, b: &Value) -> Option<Ordering> {
-        match (self, b) {
-            (&Value::Numeric(ref a, ..), &Value::Numeric(ref b, ..)) => {
-                a.partial_cmp(b)
-            }
-            _ => None,
+            &Value::Map(_) => panic!("Formatting a map not supported"),
         }
     }
 }
