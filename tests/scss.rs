@@ -237,6 +237,21 @@ fn important_compact_input() {
 }
 
 #[test]
+fn interpolation() {
+    check(b"$bar : \"#foo\";\n\n\n\
+            ul li#{$bar} a span.label { foo: bar; }\n",
+          "ul li#foo a span.label {\n  foo: bar;\n}\n")
+}
+
+/// My own addition
+#[test]
+fn interpolation_sq() {
+    check(b"$bar : '#foo';\n\n\
+            ul li#{$bar} a span.label { foo: bar; }\n",
+          "ul li#foo a span.label {\n  foo: bar;\n}\n")
+}
+
+#[test]
 fn comparable() {
     // TODO On line, involving a fictional unit, removed here
     check(b".color-functions {

@@ -336,7 +336,7 @@ named!(pub quoted_string<Value>,
        do_parse!(tag!("\"") >>
                  first: simple_dqs_part >>
                  all: fold_many0!(
-                     alt!(interpolation | nonempty_dqs_part),
+                     alt!(interpolation | nonempty_dqs_part | simple_dq_hash),
                      first,
                      |a, b| {
                          Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
@@ -352,13 +352,16 @@ named!(nonempty_dqs_part<Value>,
                     |s: &[u8]| !s.is_empty()),
             |s| Value::Literal(unescape(from_utf8(s).unwrap()),
                                Quotes::Double)));
+named!(simple_dq_hash<Value>,
+       value!(Value::Literal("#".to_string(), Quotes::Double),
+              preceded!(tag!("#"), peek!(not!(tag!("{"))))));
 
 // a quoted string may contain interpolations
 named!(pub singlequoted_string<Value>,
        do_parse!(tag!("'") >>
                  first: simple_sqs_part >>
                  all: fold_many0!(
-                     alt!(interpolation | nonempty_sqs_part),
+                     alt!(interpolation | nonempty_sqs_part | simple_sq_hash),
                      first,
                      |a, b| {
                          Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
@@ -374,6 +377,9 @@ named!(nonempty_sqs_part<Value>,
                     |s: &[u8]| !s.is_empty()),
             |s| Value::Literal(unescape(from_utf8(s).unwrap()),
                                Quotes::Single)));
+named!(simple_sq_hash<Value>,
+       value!(Value::Literal("#".to_string(), Quotes::Single),
+              preceded!(tag!("#"), peek!(not!(tag!("{"))))));
 
 fn decimals_to_rational(d: &[u8]) -> Rational {
     Rational::new(from_utf8(d).unwrap().parse().unwrap(),
