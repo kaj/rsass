@@ -1,5 +1,4 @@
-//! These are from the "values/lists" directory in the sass specification.
-//! See https://github.com/sass/sass-spec for source material.
+//! These are from the `values/lists` directory in the sass specification.
 extern crate rsass;
 use rsass::{OutputStyle, compile_scss};
 

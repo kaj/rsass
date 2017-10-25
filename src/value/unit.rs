@@ -6,7 +6,7 @@ use std::fmt;
 
 /// Units in css.
 ///
-/// As defined in https://www.w3.org/TR/css3-values/
+/// As defined in <https://www.w3.org/TR/css3-values/>
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Unit {
     // Distance units, <length> type

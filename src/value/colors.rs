@@ -1,4 +1,4 @@
-//! Color names from https://www.w3.org/TR/css3-color/
+//! Color names from <https://www.w3.org/TR/css3-color/>
 #![cfg_attr(feature = "cargo-clippy", allow(unreadable_literal))]
 
 use num_rational::Rational;
