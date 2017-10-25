@@ -115,7 +115,7 @@ named!(body_item<Item>,
 
 named!(import<Item>,
        map!(delimited!(tag!("@import "), value_expression, tag!(";")),
-            |v| Item::Import(v)));
+            Item::Import));
 
 named!(mixin_call<Item>,
        do_parse!(tag!("@include") >> spacelike >>

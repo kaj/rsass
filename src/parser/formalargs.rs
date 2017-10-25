@@ -34,5 +34,5 @@ named!(pub call_args<CallArgs>,
                           delimited!(ignore_comments,
                                      space_list,
                                      ignore_comments)))),
-                |args| CallArgs::new(args)),
+                CallArgs::new),
            tag!(")")));

@@ -8,7 +8,7 @@ named!(pub selectors<Selectors>,
        map!(separated_nonempty_list!(
            complete!(do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ())),
            selector),
-            |s| Selectors(s)));
+            Selectors));
 
 named!(pub selector<Selector>,
        map!(many1!(selector_part),
@@ -22,11 +22,10 @@ named!(pub selector<Selector>,
 
 named!(selector_part<&[u8], SelectorPart>,
        alt_complete!(
-           map!(selector_string, |s| SelectorPart::Simple(s)) |
+           map!(selector_string, SelectorPart::Simple) |
            value!(SelectorPart::Simple("*".to_string()), tag!("*")) |
-           do_parse!(tag!("::") >>
-                     name: selector_string >>
-                     (SelectorPart::PseudoElement(name))) |
+           map!(preceded!(tag!("::"), selector_string),
+                SelectorPart::PseudoElement) |
            do_parse!(tag!(":") >>
                      name: selector_string >>
                      arg: opt!(delimited!(tag!("("), selectors,
