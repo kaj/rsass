@@ -1,6 +1,6 @@
 use nom::is_alphanumeric;
 use parser::util::{opt_spacelike, spacelike2};
-
+use parser::value::value_expression;
 use selectors::{Selector, SelectorPart, Selectors};
 use std::str::from_utf8;
 
@@ -71,12 +71,16 @@ named!(selector_part<&[u8], SelectorPart>,
                            value!(SelectorPart::RelOp(b'~'), tag!("~")) |
                            value!(SelectorPart::RelOp(b'\\'), tag!("\\"))),
                       opt_spacelike) |
+           map!(delimited!(tag!("#{"), value_expression, tag!("}")),
+                SelectorPart::Interpolation) |
            value!(SelectorPart::Descendant, spacelike2)
            ));
 
 
 named!(selector_string<String>,
-       fold_many1!(alt_complete!(selector_plain_part | selector_escaped_part),
+       fold_many1!(alt_complete!(selector_plain_part |
+                                 selector_escaped_part |
+                                 selector_id_part),
                    String::new(),
                    |mut acc: String, item: &[u8]| {
                        acc.push_str(from_utf8(item).unwrap());
@@ -89,10 +93,11 @@ named!(selector_escaped_part<&[u8]>,
 named!(hexpair,
        recognize!(do_parse!(one_of!("0123456789ABCDEFabcdef") >>
                             one_of!("0123456789ABCDEFabcdef") >> ())));
+named!(selector_id_part<&[u8]>,
+       recognize!(preceded!(tag!("#"), selector_plain_part)));
 
 fn is_selector_char(chr: u8) -> bool {
-    is_alphanumeric(chr) || chr == b'_' || chr == b'-' || chr == b'.' ||
-    chr == b'#'
+    is_alphanumeric(chr) || chr == b'_' || chr == b'-' || chr == b'.'
 }
 
 #[cfg(test)]

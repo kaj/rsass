@@ -4,7 +4,7 @@ use file_context::FileContext;
 use parser::parse_scss_file;
 use sass::FormalArgs;
 use sass::Item;
-use selectors::Selectors;
+use selectors::{Selector, SelectorPart, Selectors};
 use std::ascii::AsciiExt;
 use std::fmt;
 use std::io::Write;
@@ -220,7 +220,7 @@ impl OutputStyle {
                   file_context: &FileContext,
                   indent: usize)
                   -> Result<(), Error> {
-        let selectors = selectors.inside(parent);
+        let selectors = eval_selectors(selectors, scope).inside(parent);
         let mut direct = Vec::new();
         let mut sub = Vec::new();
         self.handle_body(&mut direct,
@@ -529,6 +529,29 @@ impl OutputStyle {
     fn is_compressed(&self) -> bool {
         self == &OutputStyle::Compressed
     }
+}
+
+fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
+    let s = Selectors(s.0
+                          .iter()
+                          .map(|s| {
+        Selector(s.0
+                     .iter()
+                     .map(|sp| match sp {
+                              &SelectorPart::Interpolation(ref v) => {
+                                  let v = v.evaluate(scope).unquote();
+                                  SelectorPart::Simple(format!("{}", v))
+                              }
+                              sp => sp.clone(),
+                          })
+                     .collect())
+    })
+                          .collect());
+    // The "simple" parts we get from evaluating interpolations may
+    // contain high-level selector separators (i.e. ","), so we need to
+    // parse the selectors again, from a string representation.
+    use parser::selectors::selectors;
+    selectors(format!("{} ", s).as_bytes()).unwrap().1
 }
 
 struct CssWriter {

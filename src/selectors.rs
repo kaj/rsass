@@ -1,3 +1,4 @@
+use sass::Value;
 use std::fmt;
 use std::io::Write;
 
@@ -63,6 +64,7 @@ pub enum SelectorPart {
     /// A pseudo-class or a css2 pseudo-element
     Pseudo { name: String, arg: Option<Selectors> },
     BackRef,
+    Interpolation(Value),
 }
 
 impl SelectorPart {
@@ -74,7 +76,8 @@ impl SelectorPart {
             SelectorPart::Attribute { .. } |
             SelectorPart::PseudoElement(_) |
             SelectorPart::Pseudo { .. } |
-            SelectorPart::BackRef => false,
+            SelectorPart::BackRef |
+            SelectorPart::Interpolation(_) => false,
         }
     }
 }
@@ -149,6 +152,9 @@ impl fmt::Display for SelectorPart {
                 }
             }
             SelectorPart::BackRef => write!(out, "&"),
+            SelectorPart::Interpolation(ref i) => {
+                panic!("Need to evaluate {:?}", i)
+            }
         }
     }
 }
