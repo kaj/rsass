@@ -1,7 +1,7 @@
 use nom::is_alphanumeric;
 use parser::util::{opt_spacelike, spacelike2};
 use parser::value::value_expression;
-use selectors::{Selector, SelectorPart, Selectors};
+use selectors::{Selector, SelectorPart, Selectors, SelString};
 use std::str::from_utf8;
 
 named!(pub selectors<Selectors>,
@@ -22,8 +22,8 @@ named!(pub selector<Selector>,
 
 named!(selector_part<&[u8], SelectorPart>,
        alt_complete!(
-           map!(selector_string, SelectorPart::Simple) |
-           value!(SelectorPart::Simple("*".to_string()), tag!("*")) |
+           map!(selector_string, |s| SelectorPart::Simple(SelString::Raw(s))) |
+           value!(SelectorPart::Simple("*".into()), tag!("*")) |
            map!(preceded!(tag!("::"), selector_string),
                 SelectorPart::PseudoElement) |
            do_parse!(tag!(":") >>
@@ -72,7 +72,7 @@ named!(selector_part<&[u8], SelectorPart>,
                            value!(SelectorPart::RelOp(b'\\'), tag!("\\"))),
                       opt_spacelike) |
            map!(delimited!(tag!("#{"), value_expression, tag!("}")),
-                SelectorPart::Interpolation) |
+                |v| SelectorPart::Simple(SelString::Interpolation(v))) |
            value!(SelectorPart::Descendant, spacelike2)
            ));
 

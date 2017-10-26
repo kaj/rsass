@@ -538,9 +538,8 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
         Selector(s.0
                      .iter()
                      .map(|sp| match sp {
-                              &SelectorPart::Interpolation(ref v) => {
-                                  let v = v.evaluate(scope).unquote();
-                                  SelectorPart::Simple(format!("{}", v))
+                              &SelectorPart::Simple(ref v) => {
+                                  SelectorPart::Simple(v.evaluate(scope))
                               }
                               sp => sp.clone(),
                           })

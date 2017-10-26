@@ -1,6 +1,8 @@
 use sass::Value;
+use std::convert::From;
 use std::fmt;
 use std::io::Write;
+use variablescope::Scope;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Selectors(pub Vec<Selector>);
@@ -55,7 +57,7 @@ impl Selector {
 /// A selector consist of a sequence of these parts.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SelectorPart {
-    Simple(String),
+    Simple(SelString),
     Descendant,
     RelOp(u8), // >, +, ~
     Attribute { name: String, op: String, val: String },
@@ -64,7 +66,6 @@ pub enum SelectorPart {
     /// A pseudo-class or a css2 pseudo-element
     Pseudo { name: String, arg: Option<Selectors> },
     BackRef,
-    Interpolation(Value),
 }
 
 impl SelectorPart {
@@ -76,10 +77,16 @@ impl SelectorPart {
             SelectorPart::Attribute { .. } |
             SelectorPart::PseudoElement(_) |
             SelectorPart::Pseudo { .. } |
-            SelectorPart::BackRef |
-            SelectorPart::Interpolation(_) => false,
+            SelectorPart::BackRef => false,
         }
     }
+}
+
+/// A string that is the core data in most SelectorPart variants.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum SelString {
+    Raw(String),
+    Interpolation(Value),
 }
 
 impl fmt::Display for Selectors {
@@ -152,10 +159,35 @@ impl fmt::Display for SelectorPart {
                 }
             }
             SelectorPart::BackRef => write!(out, "&"),
-            SelectorPart::Interpolation(ref i) => {
-                panic!("Need to evaluate {:?}", i)
+        }
+    }
+}
+
+impl SelString {
+    pub fn evaluate(&self, scope: &Scope) -> SelString {
+        match *self {
+            SelString::Interpolation(ref v) => {
+                SelString::Raw(format!("{}", v.evaluate(scope).unquote()))
+            }
+            ref s => s.clone(),
+        }
+    }
+}
+
+impl fmt::Display for SelString {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            SelString::Raw(ref s) => s.fmt(out),
+            SelString::Interpolation(ref v) => {
+                panic!("Interpolation should be evaluated: {:?}", v)
             }
         }
+    }
+}
+
+impl<'a> From<&'a str> for SelString {
+    fn from(s: &'a str) -> Self {
+        SelString::Raw(s.to_string())
     }
 }
 
