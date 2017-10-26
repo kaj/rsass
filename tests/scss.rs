@@ -358,6 +358,12 @@ fn selector_interpolation_at_pseudo_begininng() {
 }
 
 #[test]
+fn selector_interpolation_in_pseudoclass() {
+    check(b"foo:nth-child(#{5 + \"n\"}) {a: b}\n",
+          "foo:nth-child(5n) {\n  a: b;\n}\n")
+}
+
+#[test]
 fn while_directive() {
     check(b"$i: 1;\n\n\
             .foo {\n  @while $i != 5 {\n    a: $i;\n    $i: $i + 1;\n  }\n}\n",

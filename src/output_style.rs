@@ -544,7 +544,10 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                               &SelectorPart::Pseudo { ref name, ref arg } => {
                                   SelectorPart::Pseudo {
                                       name: name.evaluate(scope),
-                                      arg: arg.clone(),
+                                      arg: arg.as_ref()
+                                          .map(|ref a| {
+                                                   eval_selectors(&a, scope)
+                                               }),
                                   }
                               }
                               &SelectorPart::PseudoElement(ref e) => {
