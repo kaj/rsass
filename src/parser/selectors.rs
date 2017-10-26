@@ -1,7 +1,7 @@
 use nom::is_alphanumeric;
 use parser::util::{opt_spacelike, spacelike2};
 use parser::value::value_expression;
-use selectors::{Selector, SelectorPart, Selectors, SelString};
+use selectors::{SelString, Selector, SelectorPart, Selectors};
 use std::str::from_utf8;
 
 named!(pub selectors<Selectors>,
@@ -22,12 +22,12 @@ named!(pub selector<Selector>,
 
 named!(selector_part<&[u8], SelectorPart>,
        alt_complete!(
-           map!(selector_string, |s| SelectorPart::Simple(SelString::Raw(s))) |
+           map!(sel_string, SelectorPart::Simple) |
            value!(SelectorPart::Simple("*".into()), tag!("*")) |
-           map!(preceded!(tag!("::"), selector_string),
+           map!(preceded!(tag!("::"), sel_string),
                 SelectorPart::PseudoElement) |
            do_parse!(tag!(":") >>
-                     name: selector_string >>
+                     name: sel_string >>
                      arg: opt!(delimited!(tag!("("), selectors,
                                           tag!(")"))) >>
                      (SelectorPart::Pseudo {
@@ -71,11 +71,14 @@ named!(selector_part<&[u8], SelectorPart>,
                            value!(SelectorPart::RelOp(b'~'), tag!("~")) |
                            value!(SelectorPart::RelOp(b'\\'), tag!("\\"))),
                       opt_spacelike) |
-           map!(delimited!(tag!("#{"), value_expression, tag!("}")),
-                |v| SelectorPart::Simple(SelString::Interpolation(v))) |
            value!(SelectorPart::Descendant, spacelike2)
            ));
 
+named!(sel_string<SelString>,
+       alt_complete!(
+           map!(selector_string, SelString::Raw) |
+           map!(delimited!(tag!("#{"), value_expression, tag!("}")),
+                SelString::Interpolation)));
 
 named!(selector_string<String>,
        fold_many1!(alt_complete!(selector_plain_part |

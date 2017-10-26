@@ -62,9 +62,9 @@ pub enum SelectorPart {
     RelOp(u8), // >, +, ~
     Attribute { name: String, op: String, val: String },
     /// A css3 pseudo-element
-    PseudoElement(String),
+    PseudoElement(SelString),
     /// A pseudo-class or a css2 pseudo-element
-    Pseudo { name: String, arg: Option<Selectors> },
+    Pseudo { name: SelString, arg: Option<Selectors> },
     BackRef,
 }
 
@@ -143,6 +143,11 @@ impl fmt::Display for SelectorPart {
             }
             SelectorPart::PseudoElement(ref name) => write!(out, "::{}", name),
             SelectorPart::Pseudo { ref name, ref arg } => {
+                let name = if let &SelString::Raw(ref name) = name {
+                    name
+                } else {
+                    panic!("Should be evaluated: {:?}", name);
+                };
                 if let Some(ref arg) = *arg {
                     // It seems some pseudo-classes should always have
                     // their arg in compact form.  Maybe we need more

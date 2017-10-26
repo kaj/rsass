@@ -541,6 +541,15 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                               &SelectorPart::Simple(ref v) => {
                                   SelectorPart::Simple(v.evaluate(scope))
                               }
+                              &SelectorPart::Pseudo { ref name, ref arg } => {
+                                  SelectorPart::Pseudo {
+                                      name: name.evaluate(scope),
+                                      arg: arg.clone(),
+                                  }
+                              }
+                              &SelectorPart::PseudoElement(ref e) => {
+                                  SelectorPart::PseudoElement(e.evaluate(scope))
+                              }
                               sp => sp.clone(),
                           })
                      .collect())

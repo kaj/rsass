@@ -253,7 +253,7 @@ fn interpolation_sq() {
 
 #[test]
 fn comparable() {
-    // TODO On line, involving a fictional unit, removed here
+    // TODO One line, involving a fictional unit, removed here
     check(b".color-functions {
   $color: red;
   hue: hue($color);
@@ -349,6 +349,12 @@ fn precision() {
 #[test]
 fn star_plus_and_parent() {
     check(b"foo {*+html & {a: b}}\n", "* + html foo {\n  a: b;\n}\n")
+}
+
+#[test]
+fn selector_interpolation_at_pseudo_begininng() {
+    check(b"$zzz: zzz;\n:#{$zzz}::#{$zzz} { a: b; }\n",
+          ":zzz::zzz {\n  a: b;\n}\n")
 }
 
 #[test]
