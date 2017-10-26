@@ -60,7 +60,7 @@ pub enum SelectorPart {
     Simple(SelString),
     Descendant,
     RelOp(u8), // >, +, ~
-    Attribute { name: String, op: String, val: String },
+    Attribute { name: SelString, op: String, val: SelString },
     /// A css3 pseudo-element
     PseudoElement(SelString),
     /// A pseudo-class or a css2 pseudo-element

@@ -35,7 +35,7 @@ named!(selector_part<&[u8], SelectorPart>,
                          arg: arg,
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>
-                     name: selector_string >> opt_spacelike >>
+                     name: sel_string >> opt_spacelike >>
                      op: alt_complete!(tag!("*=") | tag!("|=") | tag!("=")) >>
                      opt_spacelike >>
                      val: alt_complete!(
@@ -43,12 +43,17 @@ named!(selector_part<&[u8], SelectorPart>,
                                          escaped!(is_not!("\\\""), '\\',
                                                   one_of!("\"\\")),
                                          tag!("\"")),
-                              |s| format!("\"{}\"", from_utf8(s).unwrap())) |
+                              |s| SelString::Raw(format!("\"{}\"",
+                                                         from_utf8(s)
+                                                             .unwrap()))) |
                          map!(delimited!(tag!("'"),
                                          escaped!(is_not!("\\'"), '\\',
                                                   one_of!("'\\")),
                                          tag!("'")),
-                              |s| format!("'{}'", from_utf8(s).unwrap()))) >>
+                              |s| SelString::Raw(format!("'{}'",
+                                                         from_utf8(s)
+                                                             .unwrap()))) |
+                         sel_string) >>
                      opt_spacelike >>
                      tag!("]") >>
                      (SelectorPart::Attribute {
@@ -57,12 +62,12 @@ named!(selector_part<&[u8], SelectorPart>,
                          val: val,
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>
-                     name: selector_string >> opt_spacelike >>
+                     name: sel_string >> opt_spacelike >>
                      tag!("]") >>
                      (SelectorPart::Attribute {
                          name: name,
                          op: "".to_string(),
-                         val: "".to_string(),
+                         val: "".into(),
                      })) |
            value!(SelectorPart::BackRef, tag!("&")) |
            delimited!(opt_spacelike,

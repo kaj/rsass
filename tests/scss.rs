@@ -352,6 +352,12 @@ fn star_plus_and_parent() {
 }
 
 #[test]
+fn selector_interpolation_at_attr_beginning() {
+    check(b"$zzz: zzz;\n[#{$zzz}=foo] { a: b; }\n",
+          "[zzz=foo] {\n  a: b;\n}\n")
+}
+
+#[test]
 fn selector_interpolation_at_pseudo_begininng() {
     check(b"$zzz: zzz;\n:#{$zzz}::#{$zzz} { a: b; }\n",
           ":zzz::zzz {\n  a: b;\n}\n")

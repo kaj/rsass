@@ -538,6 +538,17 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
         Selector(s.0
                      .iter()
                      .map(|sp| match sp {
+                              &SelectorPart::Attribute {
+                                  ref name,
+                                  ref op,
+                                  ref val,
+                              } => {
+                                  SelectorPart::Attribute {
+                                      name: name.evaluate(scope),
+                                      op: op.clone(),
+                                      val: val.evaluate(scope),
+                                  }
+                              }
                               &SelectorPart::Simple(ref v) => {
                                   SelectorPart::Simple(v.evaluate(scope))
                               }
