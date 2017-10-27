@@ -20,18 +20,17 @@ impl SassString {
         SassString { parts, quotes }
     }
     pub fn evaluate(&self, scope: &Scope) -> SassString {
+        let mut result = String::new();
+        for part in &self.parts {
+            match *part {
+                StringPart::Interpolation(ref v) => {
+                    result.push_str(&format!("{}", v.evaluate(scope).unquote()))
+                }
+                StringPart::Raw(ref s) => result.push_str(s),
+            }
+        }
         SassString {
-            parts: self.parts
-                .iter()
-                .map(|p| match *p {
-                         StringPart::Interpolation(ref v) => {
-                             StringPart::Raw(format!("{}",
-                                                     v.evaluate(scope)
-                                                         .unquote()))
-                         }
-                         ref s => s.clone(),
-                     })
-                .collect(),
+            parts: vec![StringPart::Raw(result)],
             quotes: self.quotes,
         }
     }
