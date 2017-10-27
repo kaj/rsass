@@ -1,7 +1,5 @@
-use nom::is_alphanumeric;
+use parser::strings::{sass_string, sass_string_dq, sass_string_sq};
 use parser::util::{opt_spacelike, spacelike2};
-use parser::value::value_expression;
-use sass::{SassString, StringPart};
 use selectors::{Selector, SelectorPart, Selectors};
 use std::str::from_utf8;
 
@@ -23,12 +21,12 @@ named!(pub selector<Selector>,
 
 named!(selector_part<&[u8], SelectorPart>,
        alt_complete!(
-           map!(sel_string, SelectorPart::Simple) |
+           map!(sass_string, SelectorPart::Simple) |
            value!(SelectorPart::Simple("*".into()), tag!("*")) |
-           map!(preceded!(tag!("::"), sel_string),
+           map!(preceded!(tag!("::"), sass_string),
                 SelectorPart::PseudoElement) |
            do_parse!(tag!(":") >>
-                     name: sel_string >>
+                     name: sass_string >>
                      arg: opt!(delimited!(tag!("("), selectors,
                                           tag!(")"))) >>
                      (SelectorPart::Pseudo {
@@ -36,27 +34,11 @@ named!(selector_part<&[u8], SelectorPart>,
                          arg: arg,
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>
-                     name: sel_string >> opt_spacelike >>
+                     name: sass_string >> opt_spacelike >>
                      op: alt_complete!(tag!("*=") | tag!("|=") | tag!("=")) >>
                      opt_spacelike >>
-                     val: alt_complete!(
-                         map!(delimited!(tag!("\""),
-                                         escaped!(is_not!("\\\""), '\\',
-                                                  one_of!("\"\\")),
-                                         tag!("\"")),
-                              |s| SassString::new(
-                                  vec![StringPart::Raw(format!("\"{}\"",
-                                                          from_utf8(s)
-                                                              .unwrap()))])) |
-                         map!(delimited!(tag!("'"),
-                                         escaped!(is_not!("\\'"), '\\',
-                                                  one_of!("'\\")),
-                                         tag!("'")),
-                              |s| SassString::new(
-                                  vec![StringPart::Raw(format!("'{}'",
-                                                          from_utf8(s)
-                                                              .unwrap()))])) |
-                         sel_string) >>
+                     val: alt_complete!(sass_string_dq | sass_string_sq |
+                                        sass_string) >>
                      opt_spacelike >>
                      tag!("]") >>
                      (SelectorPart::Attribute {
@@ -65,7 +47,7 @@ named!(selector_part<&[u8], SelectorPart>,
                          val: val,
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>
-                     name: sel_string >> opt_spacelike >>
+                     name: sass_string >> opt_spacelike >>
                      tag!("]") >>
                      (SelectorPart::Attribute {
                          name: name,
@@ -82,41 +64,12 @@ named!(selector_part<&[u8], SelectorPart>,
            value!(SelectorPart::Descendant, spacelike2)
            ));
 
-named!(sel_string<SassString>,
-       map!(
-           many1!(alt_complete!(
-               map!(delimited!(tag!("#{"), value_expression, tag!("}")),
-                    StringPart::Interpolation) |
-               map!(selector_string, StringPart::Raw))),
-           SassString::new));
-
-named!(selector_string<String>,
-       fold_many1!(alt_complete!(selector_plain_part |
-                                 selector_escaped_part |
-                                 selector_id_part),
-                   String::new(),
-                   |mut acc: String, item: &[u8]| {
-                       acc.push_str(from_utf8(item).unwrap());
-                       acc
-                   }));
-named!(selector_plain_part<&[u8]>,
-       take_while1!(is_selector_char));
-named!(selector_escaped_part<&[u8]>,
-       recognize!(preceded!(tag!("\\"), many_m_n!(1, 3, hexpair))));
-named!(hexpair,
-       recognize!(do_parse!(one_of!("0123456789ABCDEFabcdef") >>
-                            one_of!("0123456789ABCDEFabcdef") >> ())));
-named!(selector_id_part<&[u8]>,
-       terminated!(tag!("#"), peek!(not!(tag!("{")))));
-
-fn is_selector_char(chr: u8) -> bool {
-    is_alphanumeric(chr) || chr == b'_' || chr == b'-' || chr == b'.'
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
     use nom::IResult::*;
+    use sass::{SassString, StringPart};
+    use value::Quotes;
 
     #[test]
     fn simple_selector() {
@@ -156,7 +109,9 @@ mod test {
                         Selector(vec![SelectorPart::Attribute {
                             name: "data-icon".into(),
                             op: "=".into(),
-                            val: "'test-1'".into(),
+                            val: SassString::new(
+                                vec![StringPart::Raw("test-1".into())],
+                                Quotes::Single),
                         }])))
     }
 
