@@ -107,7 +107,7 @@ named!(hexpair,
        recognize!(do_parse!(one_of!("0123456789ABCDEFabcdef") >>
                             one_of!("0123456789ABCDEFabcdef") >> ())));
 named!(selector_id_part<&[u8]>,
-       recognize!(preceded!(tag!("#"), selector_plain_part)));
+       terminated!(tag!("#"), peek!(not!(tag!("{")))));
 
 fn is_selector_char(chr: u8) -> bool {
     is_alphanumeric(chr) || chr == b'_' || chr == b'-' || chr == b'.'
