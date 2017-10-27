@@ -1,8 +1,6 @@
-use sass::Value;
-use std::convert::From;
+use sass::SassString;
 use std::fmt;
 use std::io::Write;
-use variablescope::Scope;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Selectors(pub Vec<Selector>);
@@ -57,14 +55,14 @@ impl Selector {
 /// A selector consist of a sequence of these parts.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SelectorPart {
-    Simple(SelString),
+    Simple(SassString),
     Descendant,
     RelOp(u8), // >, +, ~
-    Attribute { name: SelString, op: String, val: SelString },
+    Attribute { name: SassString, op: String, val: SassString },
     /// A css3 pseudo-element
-    PseudoElement(SelString),
+    PseudoElement(SassString),
     /// A pseudo-class or a css2 pseudo-element
-    Pseudo { name: SelString, arg: Option<Selectors> },
+    Pseudo { name: SassString, arg: Option<Selectors> },
     BackRef,
 }
 
@@ -80,13 +78,6 @@ impl SelectorPart {
             SelectorPart::BackRef => false,
         }
     }
-}
-
-/// A string that is the core data in most SelectorPart variants.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum SelString {
-    Raw(String),
-    Interpolation(Value),
 }
 
 impl fmt::Display for Selectors {
@@ -143,11 +134,7 @@ impl fmt::Display for SelectorPart {
             }
             SelectorPart::PseudoElement(ref name) => write!(out, "::{}", name),
             SelectorPart::Pseudo { ref name, ref arg } => {
-                let name = if let &SelString::Raw(ref name) = name {
-                    name
-                } else {
-                    panic!("Should be evaluated: {:?}", name);
-                };
+                let name = format!("{}", name);
                 if let Some(ref arg) = *arg {
                     // It seems some pseudo-classes should always have
                     // their arg in compact form.  Maybe we need more
@@ -165,34 +152,6 @@ impl fmt::Display for SelectorPart {
             }
             SelectorPart::BackRef => write!(out, "&"),
         }
-    }
-}
-
-impl SelString {
-    pub fn evaluate(&self, scope: &Scope) -> SelString {
-        match *self {
-            SelString::Interpolation(ref v) => {
-                SelString::Raw(format!("{}", v.evaluate(scope).unquote()))
-            }
-            ref s => s.clone(),
-        }
-    }
-}
-
-impl fmt::Display for SelString {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            SelString::Raw(ref s) => s.fmt(out),
-            SelString::Interpolation(ref v) => {
-                panic!("Interpolation should be evaluated: {:?}", v)
-            }
-        }
-    }
-}
-
-impl<'a> From<&'a str> for SelString {
-    fn from(s: &'a str) -> Self {
-        SelString::Raw(s.to_string())
     }
 }
 

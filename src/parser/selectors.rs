@@ -1,7 +1,8 @@
 use nom::is_alphanumeric;
 use parser::util::{opt_spacelike, spacelike2};
 use parser::value::value_expression;
-use selectors::{SelString, Selector, SelectorPart, Selectors};
+use sass::{SassString, StringPart};
+use selectors::{Selector, SelectorPart, Selectors};
 use std::str::from_utf8;
 
 named!(pub selectors<Selectors>,
@@ -43,16 +44,18 @@ named!(selector_part<&[u8], SelectorPart>,
                                          escaped!(is_not!("\\\""), '\\',
                                                   one_of!("\"\\")),
                                          tag!("\"")),
-                              |s| SelString::Raw(format!("\"{}\"",
-                                                         from_utf8(s)
-                                                             .unwrap()))) |
+                              |s| SassString::new(
+                                  vec![StringPart::Raw(format!("\"{}\"",
+                                                          from_utf8(s)
+                                                              .unwrap()))])) |
                          map!(delimited!(tag!("'"),
                                          escaped!(is_not!("\\'"), '\\',
                                                   one_of!("'\\")),
                                          tag!("'")),
-                              |s| SelString::Raw(format!("'{}'",
-                                                         from_utf8(s)
-                                                             .unwrap()))) |
+                              |s| SassString::new(
+                                  vec![StringPart::Raw(format!("'{}'",
+                                                          from_utf8(s)
+                                                              .unwrap()))])) |
                          sel_string) >>
                      opt_spacelike >>
                      tag!("]") >>
@@ -79,11 +82,13 @@ named!(selector_part<&[u8], SelectorPart>,
            value!(SelectorPart::Descendant, spacelike2)
            ));
 
-named!(sel_string<SelString>,
-       alt_complete!(
-           map!(selector_string, SelString::Raw) |
-           map!(delimited!(tag!("#{"), value_expression, tag!("}")),
-                SelString::Interpolation)));
+named!(sel_string<SassString>,
+       map!(
+           many1!(alt_complete!(
+               map!(delimited!(tag!("#{"), value_expression, tag!("}")),
+                    StringPart::Interpolation) |
+               map!(selector_string, StringPart::Raw))),
+           SassString::new));
 
 named!(selector_string<String>,
        fold_many1!(alt_complete!(selector_plain_part |
