@@ -359,8 +359,7 @@ fn selector_interpolation_at_attr_beginning() {
 
 #[test]
 fn selector_interpolation_at_id_begininng() {
-    check(b"$zzz: zzz;\n##{$zzz} { a: b; }\n",
-          "#zzz {\n  a: b;\n}\n")
+    check(b"$zzz: zzz;\n##{$zzz} { a: b; }\n", "#zzz {\n  a: b;\n}\n")
 }
 
 #[test]
