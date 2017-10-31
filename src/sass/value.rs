@@ -3,7 +3,7 @@ use functions::get_builtin_function;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use ordermap::OrderMap;
-use sass::CallArgs;
+use sass::{CallArgs, SassString};
 use value::{ListSeparator, Operator, Quotes, Unit};
 use variablescope::Scope;
 
@@ -11,12 +11,12 @@ use variablescope::Scope;
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
     /// A call has a name and an argument (which may be multi).
-    Call(String, CallArgs),
+    Call(SassString, CallArgs),
     /// Sometimes an actual division, sometimes "a/b".
     /// In the later case, the booleans tell if there should be whitespace
     /// before / after the slash.
     Div(Box<Value>, Box<Value>, bool, bool),
-    Literal(String, Quotes),
+    Literal(SassString),
     /// A comma- or space separated list of values, with or without brackets.
     List(Vec<Value>, ListSeparator, bool),
     /// A Numeric value is a rational value with a Unit (which may be
@@ -42,7 +42,6 @@ pub enum Value {
     BinOp(Box<Value>, Operator, Box<Value>),
     UnaryOp(Operator, Box<Value>),
     Map(OrderMap<Value, Value>),
-    Interpolation(Box<Value>),
 }
 
 impl Value {
@@ -112,8 +111,13 @@ impl Value {
     }
     pub fn do_evaluate(&self, scope: &Scope, arithmetic: bool) -> css::Value {
         match *self {
-            Value::Literal(ref v, ref q) => {
-                css::Value::Literal(v.clone(), q.clone())
+            Value::Literal(ref s) => {
+                let (s, q) = s.evaluate(scope);
+                if s == "" && q == Quotes::None {
+                    css::Value::Null
+                } else {
+                    css::Value::Literal(s, q)
+                }
             }
             Value::Paren(ref v) => v.do_evaluate(scope, true),
             Value::Color(r, g, b, a, ref s) => {
@@ -128,23 +132,28 @@ impl Value {
                                  b)
             }
             Value::Call(ref name, ref args) => {
-                match scope.call_function(name, &args.evaluate(scope, true)) {
-                    Some(value) => value,
-                    None => {
-                        if let Some(function) = get_builtin_function(name) {
-                            match function.call(scope,
-                                                &args.evaluate(scope, true)) {
-                                Ok(v) => v,
-                                Err(e) => {
-                                    panic!("Error in function {}: {:?}",
-                                           name, e)
+                let args = args.evaluate(scope, true);
+                if let Some(name) = name.single_raw() {
+                    match scope.call_function(name, &args) {
+                        Some(value) => value,
+                        None => {
+                            if let Some(function) = get_builtin_function(name) {
+                                match function.call(scope, &args) {
+                                    Ok(v) => v,
+                                    Err(e) => {
+                                        panic!("Error in function {}: {:?}",
+                                               name,
+                                               e)
+                                    }
                                 }
+                            } else {
+                                css::Value::Call(name.to_string(), args)
                             }
-                        } else {
-                            css::Value::Call(name.clone(),
-                                             args.evaluate(scope, false))
                         }
                     }
+                } else {
+                    let (name, _) = name.evaluate(scope);
+                    css::Value::Call(name, args)
                 }
             }
             Value::Div(ref a, ref b, ref space1, ref space2) => {
@@ -233,21 +242,12 @@ impl Value {
                     (op, v) => css::Value::UnaryOp(op, Box::new(v)),
                 }
             }
-            Value::Interpolation(ref v) => {
-                match v.do_evaluate(scope, true).unquote() {
-                    css::Value::Null => css::Value::Null,
-                    css::Value::Literal(s, _) => {
-                        css::Value::Literal(s, Quotes::None)
-                    }
-                    v => css::Value::Literal(format!("{}", v), Quotes::None),
-                }
-            }
         }
     }
 
     pub fn unquote(self) -> Value {
         match self {
-            Value::Literal(s, _) => Value::Literal(s, Quotes::None),
+            Value::Literal(s) => Value::Literal(s.unquote()),
             Value::List(list, s, b) => {
                 Value::List(list.into_iter().map(|v| v.unquote()).collect(),
                             s,

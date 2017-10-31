@@ -153,8 +153,6 @@ impl fmt::Display for Value {
                                "\"{}\"",
                                s.chars()
                                    .flat_map(|c| match c {
-                                                 '#' => vec!['\\', '#'],
-                                                 '\\' => vec!['\\', '\\'],
                                                  '"' => vec!['\\', '"'],
                                                  c => vec![c],
                                              })
@@ -165,8 +163,6 @@ impl fmt::Display for Value {
                                "'{}'",
                                s.chars()
                                    .flat_map(|c| match c {
-                                                 '#' => vec!['\\', '#'],
-                                                 '\\' => vec!['\\', '\\'],
                                                  '\'' => vec!['\\', '\''],
                                                  c => vec![c],
                                              })

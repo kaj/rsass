@@ -7,8 +7,8 @@ pub mod value;
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
-use self::value::{function_call, interpolation, quoted_string, single_value,
-                  singlequoted_string, value_expression};
+use self::strings::{sass_string, sass_string_dq, sass_string_sq};
+use self::value::{function_call, single_value, value_expression};
 use error::Error;
 
 use functions::SassFunction;
@@ -26,7 +26,7 @@ use std::io::Read;
 use std::path::Path;
 use std::str::from_utf8;
 
-use value::{ListSeparator, Quotes};
+use value::ListSeparator;
 #[cfg(test)]
 use value::Unit;
 
@@ -132,19 +132,20 @@ named!(mixin_call<Item>,
 
 named!(at_rule<Item>,
        do_parse!(tag!("@") >>
-                 name: name >> ignore_space >>
-                 args: many0!(preceded!(opt!(ignore_space), alt!(
-                     function_call |
-                     quoted_string |
-                     singlequoted_string |
-                     interpolation |
+                 name: name >>
+                 args: many0!(preceded!(ignore_space, alt!(
+                     terminated!(alt!(function_call |
+                                     map!(sass_string, Value::Literal) |
+                                     map!(sass_string_dq, Value::Literal) |
+                                     map!(sass_string_sq, Value::Literal)),
+                                 peek!(one_of!(" \n\t{;"))) |
                      map!(is_not!("\"'{};"),
                           |s| Value::Literal(from_utf8(s)
-                                             .unwrap()
-                                             .trim_right()
-                                             .into(),
-                                             Quotes::None))
+                                              .unwrap()
+                                              .trim_right()
+                                              .into()))
                          ))) >>
+                 opt!(ignore_space) >>
                  body: opt!(body_block) >>
                  opt!(tag!(";")) >>
                  (Item::AtRule {
@@ -287,7 +288,7 @@ fn percentage(v: isize) -> Value {
 
 #[cfg(test)]
 fn string(v: &str) -> Value {
-    Value::Literal(v.into(), Quotes::None)
+    Value::Literal(v.into())
 }
 
 #[test]

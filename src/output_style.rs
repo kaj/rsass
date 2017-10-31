@@ -2,8 +2,7 @@ use css::Value;
 use error::Error;
 use file_context::FileContext;
 use parser::parse_scss_file;
-use sass::FormalArgs;
-use sass::Item;
+use sass::{FormalArgs, Item};
 use selectors::{Selector, SelectorPart, Selectors};
 use std::ascii::AsciiExt;
 use std::fmt;
@@ -544,17 +543,17 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                                   ref val,
                               } => {
                                   SelectorPart::Attribute {
-                                      name: name.evaluate(scope),
+                                      name: name.evaluate2(scope),
                                       op: op.clone(),
-                                      val: val.evaluate(scope),
+                                      val: val.evaluate2(scope),
                                   }
                               }
                               &SelectorPart::Simple(ref v) => {
-                                  SelectorPart::Simple(v.evaluate(scope))
+                                  SelectorPart::Simple(v.evaluate2(scope))
                               }
                               &SelectorPart::Pseudo { ref name, ref arg } => {
                                   SelectorPart::Pseudo {
-                                      name: name.evaluate(scope),
+                                      name: name.evaluate2(scope),
                                       arg: arg.as_ref()
                                           .map(|ref a| {
                                                    eval_selectors(&a, scope)
@@ -562,7 +561,8 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                                   }
                               }
                               &SelectorPart::PseudoElement(ref e) => {
-                                  SelectorPart::PseudoElement(e.evaluate(scope))
+                                  let e = e.evaluate2(scope);
+                                  SelectorPart::PseudoElement(e)
                               }
                               sp => sp.clone(),
                           })

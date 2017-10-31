@@ -1,5 +1,5 @@
 use parser::util::{ignore_comments, name, opt_spacelike};
-use parser::value::{extended_literal, space_list};
+use parser::value::space_list;
 use sass::{CallArgs, FormalArgs};
 use sass::Value;
 
@@ -30,7 +30,6 @@ named!(pub call_args<CallArgs>,
                         preceded!(ignore_comments,
                                   tag!(":")))),
                      alt!(space_list |
-                          extended_literal |
                           delimited!(ignore_comments,
                                      space_list,
                                      ignore_comments)))),

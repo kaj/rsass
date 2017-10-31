@@ -1,13 +1,15 @@
 use nom::multispace;
 use num_rational::Rational;
-use num_traits::Zero;
+use num_traits::{One, Zero};
 use ordermap::OrderMap;
 use parser::formalargs::call_args;
+use parser::strings::{sass_string, sass_string_dq, sass_string_ext,
+                      sass_string_sq};
 use parser::unit::unit;
-use parser::util::{is_name_char, name, opt_spacelike, spacelike2};
-use sass::Value;
+use parser::util::{name, opt_spacelike, spacelike2};
+use sass::{SassString, Value};
 use std::str::{FromStr, from_utf8};
-use value::{ListSeparator, Operator, Quotes, Unit, name_to_rgb};
+use value::{ListSeparator, Operator, Unit, name_to_rgb};
 
 named!(pub value_expression<&[u8], Value>,
        do_parse!(
@@ -20,69 +22,40 @@ named!(pub value_expression<&[u8], Value>,
            (if result.len() == 1 && trail.is_empty() {
                result.into_iter().next().unwrap()
            } else {
-               maybe_map(&result).unwrap_or_else(
-                   || Value::List(result, ListSeparator::Comma, false)
-               )
+               Value::List(result, ListSeparator::Comma, false)
            })));
 
-fn maybe_map(items: &[Value]) -> Option<Value> {
-    let mut result = OrderMap::new();
-    for item in items {
-        if let Some((key, value)) = maybe_map_item(item) {
-            result.insert(key, value);
-        } else {
-            return None;
-        }
-    }
-    Some(Value::Map(result))
-}
-
-fn maybe_map_item(item: &Value) -> Option<(Value, Value)> {
-    match *item {
-        Value::List(ref items, ListSeparator::Space, false) => {
-            match items.split_first() {
-                Some((&Value::Literal(ref s, Quotes::None), rest))
-                    if s.ends_with(':') => {
-                    let mut s = s.clone();
-                    s.pop();
-                    Some((Value::Literal(s, Quotes::None),
-                          single_or_list(rest)))
-                }
-                Some((key, rest)) => {
-                    match rest.split_first() {
-                        Some((&Value::Literal(ref c, Quotes::None),
-                              values)) if c == ":" => {
-                            Some((key.clone(), single_or_list(values)))
-                        }
-                        _ => None,
-                    }
-                }
-                None => None,
-            }
-        }
-        _ => None,
-    }
-}
-
-fn single_or_list(items: &[Value]) -> Value {
-    if items.len() == 1 {
-        items[0].clone()
-    } else {
-        Value::List(items.to_vec(), ListSeparator::Space, false)
-    }
-}
-
 named!(pub space_list<&[u8], Value>,
-       do_parse!(first: single_expression >>
+       do_parse!(first: se_or_ext_string >>
                  list: fold_many0!(
-                     preceded!(opt!(multispace), single_expression),
+                     pair!(opt!(multispace), se_or_ext_string),
                      vec![first],
-                     |mut list: Vec<Value>, item| { list.push(item); list }) >>
+                     |mut list: Vec<Value>, (s, item)| {
+                         let mut appended = false;
+                         if let (None, &Value::Literal(ref s2)) = (s, &item) {
+                             if let Some(&mut Value::Literal(ref mut s1)) =
+                                 list.last_mut()
+                             {
+                                 if s1.is_unquoted() && s2.is_unquoted() {
+                                     s1.append(s2);
+                                     appended = true;
+                                 }
+                             }
+                         }
+                         if !appended {
+                             list.push(item);
+                         }
+                         list
+                     }) >>
                  (if list.len() == 1 {
                      list.into_iter().next().unwrap()
                  } else {
                      Value::List(list, ListSeparator::Space, false)
                  })));
+
+named!(se_or_ext_string<Value>,
+       alt_complete!(single_expression |
+                     map!(sass_string_ext, Value::Literal)));
 
 named!(pub single_expression<Value>,
        do_parse!(a: logic_expression >>
@@ -229,8 +202,9 @@ named!(pub single_value<&[u8], Value>,
                                                 from_utf8(r).unwrap(),
                                                 from_utf8(g).unwrap(),
                                                 from_utf8(b).unwrap()))))) |
+           value!(Value::Null, tag!("null")) |
            // Really ugly special case ... sorry.
-           value!(Value::Literal("-null".into(), Quotes::None), tag!("-null")) |
+           value!(Value::Literal("-null".into()), tag!("-null")) |
            do_parse!(op: alt!(value!(Operator::Minus, tag!("-")) |
                               value!(Operator::Plus, tag!("+")) |
                               value!(Operator::Not,
@@ -240,146 +214,37 @@ named!(pub single_value<&[u8], Value>,
                      v: single_value >>
                      (Value::UnaryOp(op, Box::new(v)))) |
            function_call |
-           unquoted_literal |
-           map!(tag!("\"\""),
-                |_| Value::Literal("".into(), Quotes::Double)) |
-           quoted_string |
-           map!(tag!("''"),
-                |_| Value::Literal("".into(), Quotes::Single)) |
-           singlequoted_string |
+           map!(sass_string, literal_or_color) |
+           map!(sass_string_dq, Value::Literal) |
+           map!(sass_string_sq, Value::Literal) |
+           dictionary |
            map!(delimited!(preceded!(tag!("("), opt_spacelike),
                            opt!(value_expression),
                            terminated!(opt_spacelike, tag!(")"))),
                 |val: Option<Value>| match val {
-                    Some(v) => {
-                        if let Some((k, v)) = maybe_map_item(&v) {
-                            let mut map = OrderMap::new();
-                            map.insert(k, v);
-                            Value::Map(map)
-                        } else {
-                            Value::Paren(Box::new(v))
-                        }
-                    }
+                    Some(v) => Value::Paren(Box::new(v)),
                     None => Value::List(vec![], ListSeparator::Space, false),
                 })));
 
 named!(variable<Value>,
        do_parse!(tag!("$") >>  name: name >> (Value::Variable(name))));
 
-named!(pub interpolation<Value>,
-       map!(delimited!(tag!("#{"), value_expression, tag!("}")),
-            |v| Value::Interpolation(Box::new(v))));
-
-named!(unquoted_literal<Value>,
-       do_parse!(t: alt!(interpolation | unquoted_literal_part) >>
-                 first: expr_res!(ok_as_literal(t)) >>
-                 all: fold_many0!(
-                     alt!(interpolation | function_call |
-                          unquoted_literal_part |
-                          map!(preceded!(tag!("//"),
-                                         take_while!(is_ext_str_char)),
-                               |v| Value::Literal(
-                                   format!("//{}", from_utf8(v).unwrap()),
-                                   Quotes::None))),
-                     first,
-                     |a, b| {
-                         Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
-                     }) >>
-                 (all)));
-
-fn ok_as_literal(s: Value) -> Result<Value, bool> {
-    if s != Value::Literal("-".into(), Quotes::None) {
-        Ok(s)
-    } else {
-        Err(false)
-    }
-}
-
-named!(pub extended_literal<Value>,
-       map!(take_while1!(is_ext_str_char),
-            |v| Value::Literal(from_utf8(v).unwrap().into(), Quotes::None)));
-
 named!(pub function_call<Value>,
-       do_parse!(name: name >> args: call_args >>
+       do_parse!(name: sass_string >> args: call_args >>
                  (Value::Call(name, args))));
 
-fn is_ext_str_char(c: u8) -> bool {
-    is_name_char(c) || c == b'*' || c == b'+' || c == b',' ||
-    c == b'.' || c == b'/' || c == b':' || c == b'=' ||
-    c == b'?' || c == b'|'
+fn literal_or_color(s: SassString) -> Value {
+    if let Some(val) = s.single_raw() {
+        if let Some((r, g, b)) = name_to_rgb(val) {
+            return Value::Color(r,
+                                g,
+                                b,
+                                Rational::one(),
+                                Some(val.to_string()));
+        }
+    }
+    Value::Literal(s)
 }
-
-named!(unquoted_literal_part<Value>,
-       map!(unquoted_literal_part_part,
-            |val: String| {
-                if val == "null" {
-                    Value::Null
-                } else if let Some((r, g, b)) = name_to_rgb(&val) {
-                    Value::Color(r, g, b, Rational::from_integer(1), Some(val))
-                } else {
-                    Value::Literal(val, Quotes::None)
-                }
-            }));
-
-named!(unquoted_literal_part_part<String>,
-       switch!(take_backslash,
-               true => map!(take!(1),
-                            |v| format!("\\{}", from_utf8(v).unwrap())) |
-               false => map!(is_not!("\\+*/=;,$(){{}}[]! \n\t'\"#"),
-                             |v| from_utf8(v).unwrap().to_string())));
-
-named!(take_backslash<bool>,
-       map!(opt!(tag!("\\")), |v: Option<&[u8]>| v.is_some()));
-
-// a quoted string may contain interpolations
-named!(pub quoted_string<Value>,
-       do_parse!(tag!("\"") >>
-                 first: simple_dqs_part >>
-                 all: fold_many0!(
-                     alt!(interpolation | nonempty_dqs_part | simple_dq_hash),
-                     first,
-                     |a, b| {
-                         Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
-                     }) >>
-                 tag!("\"") >> (all)));
-
-named!(simple_dqs_part<Value>,
-       map!(escaped!(is_not!("\\\"#"), '\\', take!(1)),
-            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
-                               Quotes::Double)));
-named!(nonempty_dqs_part<Value>,
-       map!(verify!(escaped!(is_not!("\\\"#"), '\\', take!(1)),
-                    |s: &[u8]| !s.is_empty()),
-            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
-                               Quotes::Double)));
-named!(simple_dq_hash<Value>,
-       value!(Value::Literal("#".to_string(), Quotes::Double),
-              preceded!(tag!("#"), peek!(not!(tag!("{"))))));
-
-// a quoted string may contain interpolations
-named!(pub singlequoted_string<Value>,
-       do_parse!(tag!("'") >>
-                 first: simple_sqs_part >>
-                 all: fold_many0!(
-                     alt!(interpolation | nonempty_sqs_part | simple_sq_hash),
-                     first,
-                     |a, b| {
-                         Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
-                     }) >>
-                 tag!("'") >> (all)));
-
-named!(simple_sqs_part<Value>,
-       map!(escaped!(is_not!("\\'#"), '\\', take!(1)),
-            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
-                               Quotes::Single)));
-named!(nonempty_sqs_part<Value>,
-       map!(verify!(escaped!(is_not!("\\'#"), '\\', take!(1)),
-                    |s: &[u8]| !s.is_empty()),
-            |s| Value::Literal(unescape(from_utf8(s).unwrap()),
-                               Quotes::Single)));
-named!(simple_sq_hash<Value>,
-       value!(Value::Literal("#".to_string(), Quotes::Single),
-              preceded!(tag!("#"), peek!(not!(tag!("{"))))));
 
 fn decimals_to_rational(d: &[u8]) -> Rational {
     Rational::new(from_utf8(d).unwrap().parse().unwrap(),
@@ -397,22 +262,26 @@ fn from_hex(v: &[u8]) -> Rational {
                                .unwrap() as isize)
 }
 
-fn unescape(s: &str) -> String {
-    let mut i = s.chars();
-    let mut result = String::new();
-    while let Some(c) = i.next() {
-        result.push(match c {
-                        '\\' => {
-                            match i.next() {
-                                Some(c) => c,
-                                None => '\\',
-                            }
-                        }
-                        c => c,
-                    });
-    }
-    result
-}
+named!(dictionary<Value>,
+       map!(delimited!(preceded!(tag!("("), opt_spacelike),
+                       separated_nonempty_list!(
+                           delimited!(opt_spacelike, tag!(","),
+                                      opt_spacelike),
+                           do_parse!(k: single_value >>
+                                     opt_spacelike >>
+                                     tag!(":") >>
+                                     opt_spacelike >>
+                                     v: space_list >>
+                                     (k, v))),
+                       terminated!(opt_spacelike, tag!(")"))),
+            |items| {
+                let mut map = OrderMap::new();
+                for (k, v) in items {
+                    map.insert(k, v);
+                }
+                Value::Map(map)
+            }));
+
 
 #[cfg(test)]
 mod test {
@@ -456,15 +325,6 @@ mod test {
         check_expr("+.34;",
                    Numeric(Rational::new(34, 100), Unit::None, true, false))
     }
-    #[test]
-    fn number_and_interpolation_makes_space_list() {
-        check_expr("12#{3};",
-                   List(vec![number(12, 1),
-                                    Interpolation(
-                                        Box::new(number(3, 1)))],
-                        ListSeparator::Space,
-                        false))
-    }
 
     fn number(nom: isize, denom: isize) -> Value {
         Numeric(Rational::new(nom, denom), Unit::None, false, false)
@@ -472,27 +332,7 @@ mod test {
 
     #[test]
     fn simple_value_literal() {
-        check_expr("rad;", Literal("rad".into(), Quotes::None))
-    }
-
-    #[test]
-    fn strings_misc_quotes() {
-        check_expr("foo \"bar\" 'baz';",
-                   List(vec![Literal("foo".into(), Quotes::None),
-                                    Literal("bar".into(), Quotes::Double),
-                                    Literal("baz".into(), Quotes::Single)],
-                        ListSeparator::Space,
-                        false))
-    }
-
-    #[test]
-    fn strings_escaped_quotes() {
-        check_expr("\"b'a\\\"r\" 'b\\'a\"z';",
-                   List(vec![Literal("b'a\"r".into(), Quotes::Double),
-                                    Literal("b'a\"z".into(), Quotes::Single)
-                                    ],
-                        ListSeparator::Space,
-                        false))
+        check_expr("rad;", Literal("rad".into()))
     }
 
     #[test]
@@ -512,15 +352,14 @@ mod test {
 
     #[test]
     fn paren_literal() {
-        check_expr("(rad);",
-                   Paren(Box::new(Literal("rad".into(), Quotes::None))))
+        check_expr("(rad);", Paren(Box::new(Literal("rad".into()))))
     }
 
     #[test]
     fn paren_multi() {
         check_expr("(rod bloe);",
-                   Paren(Box::new(List(vec![Literal("rod".into(), Quotes::None),
-                            Literal("bloe".into(), Quotes::None)],
+                   Paren(Box::new(List(vec![Literal("rod".into()),
+                                            Literal("bloe".into())],
                                        ListSeparator::Space,
                                        false))))
     }
@@ -528,8 +367,8 @@ mod test {
     #[test]
     fn paren_multi_comma() {
         check_expr("(rod, bloe);",
-                   Paren(Box::new(List(vec![Literal("rod".into(), Quotes::None),
-                            Literal("bloe".into(), Quotes::None)],
+                   Paren(Box::new(List(vec![Literal("rod".into()),
+                                            Literal("bloe".into())],
                                        ListSeparator::Comma,
                                        false))))
     }
@@ -537,8 +376,7 @@ mod test {
     #[test]
     fn multi_comma() {
         check_expr("rod, bloe;",
-                   List(vec![Literal("rod".into(), Quotes::None),
-                             Literal("bloe".into(), Quotes::None)],
+                   List(vec![Literal("rod".into()), Literal("bloe".into())],
                         ListSeparator::Comma,
                         false))
     }
@@ -546,8 +384,8 @@ mod test {
     #[test]
     fn paren_multi_comma_trailing() {
         check_expr("(rod, bloe, );",
-                   Paren(Box::new(List(vec![Literal("rod".into(), Quotes::None),
-                            Literal("bloe".into(), Quotes::None)],
+                   Paren(Box::new(List(vec![Literal("rod".into()),
+                                            Literal("bloe".into())],
                                        ListSeparator::Comma,
                                        false))))
     }
@@ -555,21 +393,20 @@ mod test {
     #[test]
     fn multi_comma_trailing() {
         check_expr("rod, bloe, ;",
-                   List(vec![Literal("rod".into(), Quotes::None),
-                             Literal("bloe".into(), Quotes::None)],
+                   List(vec![Literal("rod".into()), Literal("bloe".into())],
                         ListSeparator::Comma,
                         false))
     }
 
     #[test]
     fn call_no_args() {
-        check_expr("foo();", Call("foo".to_string(), CallArgs::default()))
+        check_expr("foo();", Call("foo".into(), CallArgs::default()))
     }
 
     #[test]
     fn call_one_arg() {
         check_expr("foo(17);",
-                   Call("foo".to_string(),
+                   Call("foo".into(),
                         CallArgs::new(vec![(None, Value::scalar(17))])))
     }
 
@@ -621,8 +458,7 @@ mod test {
     #[test]
     fn parse_bracket_array() {
         check_expr("[foo bar];",
-                   List(vec![Literal("foo".into(), Quotes::None),
-                             Literal("bar".into(), Quotes::None)],
+                   List(vec![Literal("foo".into()), Literal("bar".into())],
                         ListSeparator::Space,
                         true))
     }
@@ -630,8 +466,7 @@ mod test {
     #[test]
     fn parse_bracket_comma_array() {
         check_expr("[foo, bar];",
-                   List(vec![Literal("foo".into(), Quotes::None),
-                             Literal("bar".into(), Quotes::None)],
+                   List(vec![Literal("foo".into()), Literal("bar".into())],
                         ListSeparator::Comma,
                         true))
     }
@@ -641,19 +476,57 @@ mod test {
         check_expr("[];", List(vec![], ListSeparator::Space, true))
     }
 
+    #[test]
+    fn map_nq() {
+        check_expr("(foo: bar, baz: 17);",
+                   Map(vec![(Literal("foo".into()), Literal("bar".into())),
+                            (Literal("baz".into()), Value::scalar(17))]
+                               .into_iter()
+                               .collect()))
+    }
+
     fn check_expr(expr: &str, value: Value) {
         assert_eq!(value_expression(expr.as_bytes()), Done(&b";"[..], value))
     }
 
     #[test]
     fn parse_extended_literal() {
-        let t = value_expression(b"http://#{\")\"}.com/;");
-        if let &Done(ref rest, ref result) = &t {
-            assert_eq!(rest, b";");
-            assert_eq!("http://).com/",
-                    format!("{}", result.evaluate(&GlobalScope::new())));
+        let t = value_expression_eof(b"http://#{\")\"}.com/");
+        if let &Done(rest, ref result) = &t {
+            assert_eq!(
+                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
+                ("http://).com/".to_string(), &b""[..])
+                );
         } else {
             assert_eq!(format!("{:?}", t), "Done")
         }
     }
+    #[test]
+    fn parse_extended_literal_in_arg() {
+        let t = value_expression_eof(b"url(http://#{\")\"}.com/)");
+        if let &Done(rest, ref result) = &t {
+            assert_eq!(
+                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
+                ("url(http://).com/)".to_string(), &b""[..])
+                );
+        } else {
+            assert_eq!(format!("{:?}", t), "Done")
+        }
+    }
+    #[test]
+    fn parse_extended_literal_in_arg_2() {
+        let t = value_expression_eof(b"url(//#{\")\"}.com/)");
+        if let &Done(rest, ref result) = &t {
+            assert_eq!(
+                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
+                ("url(//).com/)".to_string(), &b""[..])
+                );
+        } else {
+            assert_eq!(format!("{:?}", t), "Done")
+        }
+    }
+
+    named!(value_expression_eof<Value>,
+           terminated!(value_expression, eof!()));
+
 }

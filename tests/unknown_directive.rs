@@ -41,7 +41,6 @@ fn t06_interpolation_in_string() {
     check("@asdf \"foo #{\"bar\"} baz\";\n", "@asdf \"foo bar baz\";\n")
 }
 #[test]
-#[ignore] // TODO The single quotes should not be converted to double.
 fn t07_interpolation_in_string() {
     check("@asdf 'foo #{'bar'} baz';\n", "@asdf 'foo bar baz';\n")
 }
