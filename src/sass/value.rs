@@ -244,16 +244,4 @@ impl Value {
             }
         }
     }
-
-    pub fn unquote(self) -> Value {
-        match self {
-            Value::Literal(s) => Value::Literal(s.unquote()),
-            Value::List(list, s, b) => {
-                Value::List(list.into_iter().map(|v| v.unquote()).collect(),
-                            s,
-                            b)
-            }
-            v => v,
-        }
-    }
 }

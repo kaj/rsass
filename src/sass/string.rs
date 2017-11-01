@@ -58,9 +58,6 @@ impl SassString {
         }
         None
     }
-    pub fn unquote(self) -> Self {
-        SassString { parts: self.parts, quotes: Quotes::None }
-    }
     pub fn append(&mut self, other: &Self) {
         self.parts.extend_from_slice(&other.parts);
     }
