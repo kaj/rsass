@@ -535,8 +535,8 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                           .map(|s| {
         Selector(s.0
                      .iter()
-                     .map(|sp| match sp {
-                              &SelectorPart::Attribute {
+                     .map(|sp| match *sp {
+                              SelectorPart::Attribute {
                                   ref name,
                                   ref op,
                                   ref val,
@@ -547,23 +547,23 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                                       val: val.evaluate2(scope),
                                   }
                               }
-                              &SelectorPart::Simple(ref v) => {
+                              SelectorPart::Simple(ref v) => {
                                   SelectorPart::Simple(v.evaluate2(scope))
                               }
-                              &SelectorPart::Pseudo { ref name, ref arg } => {
+                              SelectorPart::Pseudo { ref name, ref arg } => {
                                   SelectorPart::Pseudo {
                                       name: name.evaluate2(scope),
                                       arg: arg.as_ref()
-                                          .map(|ref a| {
-                                                   eval_selectors(&a, scope)
+                                          .map(|a| {
+                                                   eval_selectors(a, scope)
                                                }),
                                   }
                               }
-                              &SelectorPart::PseudoElement(ref e) => {
+                              SelectorPart::PseudoElement(ref e) => {
                                   let e = e.evaluate2(scope);
                                   SelectorPart::PseudoElement(e)
                               }
-                              sp => sp.clone(),
+                              ref sp => sp.clone(),
                           })
                      .collect())
     })

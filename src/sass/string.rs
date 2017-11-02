@@ -17,28 +17,31 @@ pub enum StringPart {
 
 impl SassString {
     pub fn new(parts: Vec<StringPart>, quotes: Quotes) -> Self {
+        // Any sequence of Raw parts in `parts` shall be merged to a
+        // single Raw part.  Interpolation parts are left as is.
         let mut p2 = vec![];
         let mut buf = String::new();
         for part in parts {
             match part {
                 StringPart::Raw(s) => buf.push_str(&s),
-                StringPart::Interpolation(v) => {
+                interpolation => {
                     if !buf.is_empty() {
-                        if buf.contains("\\#{") && !buf.contains("}") {
-                            buf = buf.replace("\\#{", "#{");
-                        }
-                        p2.push(StringPart::Raw(buf.clone()));
+                        p2.push(StringPart::Raw(special_unescape(&buf)));
                         buf.clear();
                     }
-                    p2.push(StringPart::Interpolation(v));
+                    p2.push(interpolation);
                 }
             }
         }
         if !buf.is_empty() {
-            if buf.contains("\\#{") && !buf.contains("}") {
-                buf = buf.replace("\\#{", "#{");
+            p2.push(StringPart::Raw(special_unescape(&buf)));
+        }
+        fn special_unescape(s: &str) -> String {
+            if s.contains("\\#{") && !s.contains('}') {
+                s.replace("\\#{", "#{")
+            } else {
+                s.to_string()
             }
-            p2.push(StringPart::Raw(buf));
         }
         SassString { parts: p2, quotes }
     }
@@ -47,7 +50,7 @@ impl SassString {
         // A single-quoted string consisting only of an interpolation
         // becomes double-quoted.
         if self.quotes == Quotes::Single && self.parts.len() == 1 {
-            if let &StringPart::Interpolation(ref v) = &self.parts[0] {
+            if let StringPart::Interpolation(ref v) = self.parts[0] {
                 return (format!("{}", v.evaluate(scope).unquote()),
                         Quotes::Double);
             }
@@ -73,10 +76,10 @@ impl SassString {
     pub fn is_unquoted(&self) -> bool {
         self.quotes == Quotes::None
     }
-    pub fn single_raw<'a>(&'a self) -> Option<&'a str> {
+    pub fn single_raw(&self) -> Option<&str> {
         if self.parts.len() == 1 {
             if let StringPart::Raw(ref s) = self.parts[0] {
-                return Some(&s);
+                return Some(s);
             }
         }
         None
