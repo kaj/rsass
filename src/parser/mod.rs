@@ -238,7 +238,7 @@ named!(content_stmt<Item>,
 
 named!(property<&[u8], Item>,
        do_parse!(opt_spacelike >>
-                 name: name >> opt_spacelike >>
+                 name: sass_string >> opt_spacelike >>
                  tag!(":") >> opt_spacelike >>
                  val: value_expression >>
                  imp: opt_important >> opt_spacelike >>
@@ -409,7 +409,7 @@ fn test_simple_property() {
     }
     assert_eq!(property(b"color: red;\n"),
                IResult::Done(&b""[..], Item::Property(
-                   "color".to_string(),
+                   "color".into(),
                    Value::Color(r(255), r(0), r(0), one, Some("red".into())),
                    false)))
 }
@@ -417,7 +417,7 @@ fn test_simple_property() {
 fn test_property_2() {
     assert_eq!(property(b"background-position: 90% 50%;\n"),
                IResult::Done(&b""[..], Item::Property(
-                   "background-position".to_string(),
+                   "background-position".into(),
                    Value::List(vec![percentage(90), percentage(50)],
                                ListSeparator::Space,
                                false),

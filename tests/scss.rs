@@ -347,6 +347,17 @@ fn precision() {
 }
 
 #[test]
+fn prop_name_only_interpolation() {
+    check(b"foo {#{\"baz\" + \"bang\"}: blip}\n",
+          "foo {\n  bazbang: blip;\n}\n")
+}
+
+#[test]
+fn prop_name_interpolation_after_hyphen() {
+    check(b"a { -#{\"foo\"}-bar: b; }\n", "a {\n  -foo-bar: b;\n}\n")
+}
+
+#[test]
 fn star_plus_and_parent() {
     check(b"foo {*+html & {a: b}}\n", "* + html foo {\n  a: b;\n}\n")
 }

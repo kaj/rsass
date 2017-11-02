@@ -1,5 +1,5 @@
 use functions::SassFunction;
-use sass::{CallArgs, FormalArgs};
+use sass::{CallArgs, FormalArgs, SassString};
 use sass::Value;
 use selectors::Selectors;
 
@@ -37,7 +37,7 @@ pub enum Item {
 
     Rule(Selectors, Vec<Item>),
     NamespaceRule(String, Value, Vec<Item>),
-    Property(String, Value, bool),
+    Property(SassString, Value, bool),
     Comment(String),
     None,
 }

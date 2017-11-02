@@ -464,9 +464,8 @@ impl OutputStyle {
                 Item::Property(ref name, ref value, ref important) => {
                     let v = value.evaluate(scope);
                     if !v.is_null() {
-                        direct.push(CssBodyItem::Property(name.clone(),
-                                                          v,
-                                                          *important));
+                        let (name, _q) = name.evaluate(scope);
+                        direct.push(CssBodyItem::Property(name, v, *important));
                     }
                 }
                 Item::Comment(ref c) => {
