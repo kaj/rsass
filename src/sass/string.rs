@@ -17,7 +17,30 @@ pub enum StringPart {
 
 impl SassString {
     pub fn new(parts: Vec<StringPart>, quotes: Quotes) -> Self {
-        SassString { parts, quotes }
+        let mut p2 = vec![];
+        let mut buf = String::new();
+        for part in parts {
+            match part {
+                StringPart::Raw(s) => buf.push_str(&s),
+                StringPart::Interpolation(v) => {
+                    if !buf.is_empty() {
+                        if buf.contains("\\#{") && !buf.contains("}") {
+                            buf = buf.replace("\\#{", "#{");
+                        }
+                        p2.push(StringPart::Raw(buf.clone()));
+                        buf.clear();
+                    }
+                    p2.push(StringPart::Interpolation(v));
+                }
+            }
+        }
+        if !buf.is_empty() {
+            if buf.contains("\\#{") && !buf.contains("}") {
+                buf = buf.replace("\\#{", "#{");
+            }
+            p2.push(StringPart::Raw(buf));
+        }
+        SassString { parts: p2, quotes }
     }
     pub fn evaluate(&self, scope: &Scope) -> (String, Quotes) {
         // Note This is an extremely peculiar special case;

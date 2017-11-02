@@ -65,6 +65,10 @@ case "$1" in
         LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/values \
             |  grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
         ;;
+    "interpolate")
+        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/parser/interpolate  \
+            |  grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
+        ;;
     "stats")
         LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec \
             | rg --no-line-number '^([0-9]+) runs, ([0-9]+) assertions.*' \

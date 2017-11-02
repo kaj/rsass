@@ -7,6 +7,8 @@ mod interpolate {
 
     mod t00_concatenation;
     mod t01_literal;
+    mod t02_double_quoted;
+    mod t03_single_quoted;
     mod t04_space_list_quoted;
     mod t06_space_list_complex;
 

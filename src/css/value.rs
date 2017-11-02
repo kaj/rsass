@@ -85,6 +85,9 @@ impl Value {
             Value::Numeric(v, unit, with_sign, _) => {
                 Value::Numeric(v, unit, with_sign, true)
             }
+            Value::Literal(s, Quotes::Single) => {
+                Value::Literal(s, Quotes::Double)
+            }
             other => other,
         }
     }
