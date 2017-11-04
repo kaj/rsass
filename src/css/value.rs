@@ -88,6 +88,13 @@ impl Value {
             Value::Literal(s, Quotes::Single) => {
                 Value::Literal(s, Quotes::Double)
             }
+            Value::List(v, sep, bracketed) => {
+                Value::List(v.into_iter()
+                                .map(|i| i.into_calculated())
+                                .collect(),
+                            sep,
+                            bracketed)
+            }
             other => other,
         }
     }
@@ -119,7 +126,10 @@ impl Value {
 
     pub fn unquote(self) -> Value {
         match self {
-            Value::Literal(s, _) => Value::Literal(s, Quotes::None),
+            Value::Literal(s, Quotes::None) => Value::Literal(s, Quotes::None),
+            Value::Literal(s, _) => {
+                Value::Literal(s.replace("\\\\", "\\"), Quotes::None)
+            }
             Value::List(list, s, b) => {
                 Value::List(list.into_iter().map(|v| v.unquote()).collect(),
                             s,
