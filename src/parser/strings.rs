@@ -84,9 +84,7 @@ named!(selector_plain_part<&[u8]>,
 named!(selector_escaped_part<&[u8]>,
        recognize!(preceded!(tag!("\\"),
                             alt!(value!((), many_m_n!(1, 3, hexpair)) |
-                                 value!((), tag!("\\")) |
-                                 value!((), tag!("\"")) |
-                                 value!((), tag!("'"))))));
+                                 value!((), take!(1))))));
 named!(hexpair,
        recognize!(do_parse!(one_of!("0123456789ABCDEFabcdef") >>
                             one_of!("0123456789ABCDEFabcdef") >> ())));
