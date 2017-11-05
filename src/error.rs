@@ -74,3 +74,8 @@ impl From<nom::ErrorKind> for Error {
         Error::ParseError(e)
     }
 }
+impl<'a> From<nom::Err<&'a [u8]>> for Error {
+    fn from(e: nom::Err<&'a [u8]>) -> Self {
+        Error::S(format!("Parse error: {}", e))
+    }
+}
