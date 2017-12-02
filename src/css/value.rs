@@ -135,6 +135,9 @@ impl Value {
                         match iter.next() {
                             //Some('n') => result.push_str("\\n"),
                             //Some('t') => result.push_str("\\t"),
+                            Some(c) if (c >= '0' && c <= '9') => {
+                                result.push((c as u8 - b'0') as char)
+                            }
                             Some(c) => result.push(c),
                             None => result.push('\\'), // ??
                         }
@@ -164,6 +167,9 @@ impl Value {
                     if c == '\\' {
                         match iter.next() {
                             Some('\\') => result.push_str("\\\\"),
+                            Some(c) if (c >= '0' && c <= '9') => {
+                                result.push((c as u8 - b'0') as char)
+                            }
                             Some(c) => result.push(c),
                             None => result.push('\\'), // ??
                         }

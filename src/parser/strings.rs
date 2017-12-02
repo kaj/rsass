@@ -1,4 +1,4 @@
-use nom::alpha;
+use nom::alphanumeric;
 use parser::util::is_name_char;
 use parser::value::value_expression;
 use sass::{SassString, StringPart};
@@ -91,7 +91,7 @@ named!(hexpair,
 named!(hash_no_interpolation<&[u8]>,
        terminated!(tag!("#"), peek!(not!(tag!("{")))));
 named!(extra_escape<String>,
-       map!(preceded!(tag!("\\"), alt!(alpha | tag!(" "))),
+       map!(preceded!(tag!("\\"), alt!(alphanumeric | tag!(" "))),
             |s| format!("\\{}", from_utf8(s).unwrap())));
 
 named!(pub extended_part<StringPart>,
