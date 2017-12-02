@@ -40,7 +40,7 @@ impl OutputStyle {
                         -> Result<(), Error> {
         match *item {
             Item::Import(ref name) => {
-                let name = name.evaluate(scope);
+                let name = name.evaluate(scope).unquote();
                 if let Value::Literal(ref x, _) = name {
                     if let Some((sub_context, file)) =
                         file_context.find_file(x.as_ref()) {

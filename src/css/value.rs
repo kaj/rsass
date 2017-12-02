@@ -128,7 +128,21 @@ impl Value {
         match self {
             Value::Literal(s, Quotes::None) => Value::Literal(s, Quotes::None),
             Value::Literal(s, _) => {
-                Value::Literal(s.replace("\\\\", "\\"), Quotes::None)
+                let mut result = String::new();
+                let mut iter = s.chars();
+                while let Some(c) = iter.next() {
+                    if c == '\\' {
+                        match iter.next() {
+                            //Some('n') => result.push_str("\\n"),
+                            //Some('t') => result.push_str("\\t"),
+                            Some(c) => result.push(c),
+                            None => result.push('\\'), // ??
+                        }
+                    } else {
+                        result.push(c)
+                    }
+                }
+                Value::Literal(result, Quotes::None)
             }
             Value::List(list, s, b) => {
                 Value::List(list.into_iter().map(|v| v.unquote()).collect(),
@@ -136,6 +150,35 @@ impl Value {
                             b)
             }
             v => v,
+        }
+    }
+    pub fn unrequote(&self) -> Value {
+        match *self {
+            Value::Literal(ref s, Quotes::None) => {
+                Value::Literal(s.clone(), Quotes::None)
+            }
+            Value::Literal(ref s, _) => {
+                let mut result = String::new();
+                let mut iter = s.chars();
+                while let Some(c) = iter.next() {
+                    if c == '\\' {
+                        match iter.next() {
+                            Some('\\') => result.push_str("\\\\"),
+                            Some(c) => result.push(c),
+                            None => result.push('\\'), // ??
+                        }
+                    } else {
+                        result.push(c)
+                    }
+                }
+                Value::Literal(result, Quotes::Double)
+            }
+            Value::List(ref list, ref s, ref b) => {
+                Value::List(list.into_iter().map(|v| v.unrequote()).collect(),
+                            s.clone(),
+                            *b)
+            }
+            ref v => v.clone(),
         }
     }
 

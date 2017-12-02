@@ -122,7 +122,7 @@ pub struct ScopeImpl<'a> {
 
 impl<'a> Scope for ScopeImpl<'a> {
     fn define(&mut self, name: &str, val: &Value) {
-        self.variables.insert(name.replace('-', "_"), val.clone());
+        self.variables.insert(name.replace('-', "_"), val.unrequote());
     }
     fn define_default(&mut self, name: &str, val: &Value, global: bool) {
         if self.get(name) == Value::Null {
@@ -221,8 +221,10 @@ impl Scope for GlobalScope {
         }
     }
     fn define_global(&self, name: &str, val: &Value) {
-        self.variables.lock().unwrap().insert(name.replace('-', "_"),
-                                              val.clone());
+        self.variables
+            .lock()
+            .unwrap()
+            .insert(name.replace('-', "_"), val.unrequote());
     }
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
         self.mixins.get(&name.replace('-', "_")).cloned()

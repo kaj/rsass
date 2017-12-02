@@ -34,7 +34,7 @@ named!(pub sass_string_dq<SassString>,
                                   tag!("'")) |
                            value!(StringPart::Raw("\\#".to_string()),
                                   tag!("\\#")) |
-                           value!(StringPart::Raw("\\".to_string()),
+                           value!(StringPart::Raw("\\\\".to_string()),
                                   tag!("\\\\")) |
                            map!(extra_escape, StringPart::Raw))),
                        tag!("\"")),
@@ -92,7 +92,7 @@ named!(hash_no_interpolation<&[u8]>,
        terminated!(tag!("#"), peek!(not!(tag!("{")))));
 named!(extra_escape<String>,
        map!(preceded!(tag!("\\"), alt!(alpha | tag!(" "))),
-            |s| from_utf8(s).unwrap().to_string()));
+            |s| format!("\\{}", from_utf8(s).unwrap())));
 
 named!(pub extended_part<StringPart>,
        map!(recognize!(pair!(take_while1!(is_ext_str_start_char),
@@ -107,12 +107,4 @@ fn is_ext_str_char(c: u8) -> bool {
     is_name_char(c) || c == b'*' || c == b'+' || c == b',' ||
     c == b'.' || c == b'/' || c == b':' || c == b'=' ||
     c == b'?' || c == b'|'
-}
-
-#[test]
-fn t_extra_escape() {
-    use nom::IResult::*;
-
-    assert_eq!(extra_escape(b"\\n"),
-               Done(&b""[..], "n".to_string()))
 }
