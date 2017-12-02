@@ -52,7 +52,8 @@ impl SassString {
         if self.quotes == Quotes::Single && self.parts.len() == 1 {
             if let StringPart::Interpolation(ref v) = self.parts[0] {
                 return (format!("{}", v.evaluate(scope).unquote())
-                            .replace("\\", "\\\\"),
+                            .replace('\\', "\\\\")
+                            .replace('\n', "\\a"),
                         Quotes::Double);
             }
         }
@@ -61,8 +62,10 @@ impl SassString {
             match *part {
                 StringPart::Interpolation(ref v) => {
                     let mut v = format!("{}", v.evaluate(scope).unquote());
-                    if self.quotes != Quotes::None {
-                        v = v.replace("\\", "\\\\");
+                    if self.quotes == Quotes::None {
+                        v = v.replace('\n', " ");
+                    } else {
+                        v = v.replace('\\', "\\\\").replace('\n', "\\a");
                     }
                     result.push_str(&v)
                 }

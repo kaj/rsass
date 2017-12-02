@@ -133,9 +133,8 @@ impl Value {
                 while let Some(c) = iter.next() {
                     if c == '\\' {
                         match iter.next() {
-                            //Some('n') => result.push_str("\\n"),
-                            //Some('t') => result.push_str("\\t"),
-                            Some(c) if (c >= '0' && c <= '9') => {
+                            Some('0') => result.push('\u{fffd}'),
+                            Some(c) if (c >= '1' && c <= '9') => {
                                 result.push((c as u8 - b'0') as char)
                             }
                             Some(c) if (c >= 'a' && c <= 'f') => {
@@ -173,13 +172,15 @@ impl Value {
                     if c == '\\' {
                         match iter.next() {
                             Some('\\') => result.push_str("\\\\"),
-                            Some(c) if (c >= '0' && c <= '9') => {
+                            Some('0') => result.push('\u{fffd}'),
+                            Some(c) if (c >= '1' && c <= '9') => {
                                 result.push((c as u8 - b'0') as char)
                             }
-                            Some(c) if (c >= 'a' && c <= 'f') => {
+                            Some('a') | Some('A') => result.push_str("\\a"),
+                            Some(c) if (c >= 'b' && c <= 'f') => {
                                 result.push((c as u8 - b'a' + 10) as char)
                             }
-                            Some(c) if (c >= 'A' && c <= 'F') => {
+                            Some(c) if (c >= 'B' && c <= 'F') => {
                                 result.push((c as u8 - b'A' + 10) as char)
                             }
                             Some(c) => result.push(c),
