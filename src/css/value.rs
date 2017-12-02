@@ -138,6 +138,12 @@ impl Value {
                             Some(c) if (c >= '0' && c <= '9') => {
                                 result.push((c as u8 - b'0') as char)
                             }
+                            Some(c) if (c >= 'a' && c <= 'f') => {
+                                result.push((c as u8 - b'a' + 10) as char)
+                            }
+                            Some(c) if (c >= 'A' && c <= 'F') => {
+                                result.push((c as u8 - b'A' + 10) as char)
+                            }
                             Some(c) => result.push(c),
                             None => result.push('\\'), // ??
                         }
@@ -169,6 +175,12 @@ impl Value {
                             Some('\\') => result.push_str("\\\\"),
                             Some(c) if (c >= '0' && c <= '9') => {
                                 result.push((c as u8 - b'0') as char)
+                            }
+                            Some(c) if (c >= 'a' && c <= 'f') => {
+                                result.push((c as u8 - b'a' + 10) as char)
+                            }
+                            Some(c) if (c >= 'A' && c <= 'F') => {
+                                result.push((c as u8 - b'A' + 10) as char)
                             }
                             Some(c) => result.push(c),
                             None => result.push('\\'), // ??
