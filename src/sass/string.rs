@@ -49,18 +49,24 @@ impl SassString {
         // Note This is an extremely peculiar special case;
         // A single-quoted string consisting only of an interpolation
         // becomes double-quoted.
-        if self.quotes == Quotes::Single && self.parts.len() == 1 {
+        if self.quotes != Quotes::None && self.parts.len() == 1 {
             if let StringPart::Interpolation(ref v) = self.parts[0] {
-                return (format!("{}", v.evaluate(scope).unquote())
-                            .replace('\\', "\\\\")
-                            .replace('\n', "\\a"),
-                        Quotes::Double);
+                let s = format!("{}", v.evaluate(scope).unquote())
+                    .replace('\\', "\\\\")
+                    .replace('\n', "\\a");
+                if s.contains('"') && !s.contains('\'') {
+                    return (s, Quotes::Single);
+                } else {
+                    return (s, Quotes::Double);
+                }
             }
         }
         let mut result = String::new();
+        let mut interpolated = false;
         for part in &self.parts {
             match *part {
                 StringPart::Interpolation(ref v) => {
+                    interpolated = true;
                     let mut v = format!("{}", v.evaluate(scope).unquote());
                     if self.quotes == Quotes::None {
                         v = v.replace('\n', " ");
@@ -72,7 +78,12 @@ impl SassString {
                 StringPart::Raw(ref s) => result.push_str(s),
             }
         }
-        (result, self.quotes)
+        if interpolated && self.quotes == Quotes::Double &&
+           result.contains('"') && !result.contains('\'') {
+            (result, Quotes::Single)
+        } else {
+            (result, self.quotes)
+        }
     }
     pub fn evaluate2(&self, scope: &Scope) -> SassString {
         let (result, quotes) = self.evaluate(scope);

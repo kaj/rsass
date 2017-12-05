@@ -17,6 +17,8 @@ mod interpolate {
     mod t15_escapes_double_quoted_numbers;
     mod t18_escapes_double_quoted_lowercase;
     mod t24_escapes_double_quoted_specials;
+    mod t26_escaped_literal_quotes;
+    mod t27_escaped_double_quotes;
 
     fn check(input: &str, expected: &str) {
         assert_eq!(compile_scss(input.as_bytes(), OutputStyle::Normal)

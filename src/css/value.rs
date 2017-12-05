@@ -85,9 +85,6 @@ impl Value {
             Value::Numeric(v, unit, with_sign, _) => {
                 Value::Numeric(v, unit, with_sign, true)
             }
-            Value::Literal(s, Quotes::Single) => {
-                Value::Literal(s, Quotes::Double)
-            }
             Value::List(v, sep, bracketed) => {
                 Value::List(v.into_iter()
                                 .map(|i| i.into_calculated())
@@ -190,7 +187,11 @@ impl Value {
                         result.push(c)
                     }
                 }
-                Value::Literal(result, Quotes::Double)
+                if result.contains('"') && !result.contains('\'') {
+                    Value::Literal(result, Quotes::Single)
+                } else {
+                    Value::Literal(result, Quotes::Double)
+                }
             }
             Value::List(ref list, ref s, ref b) => {
                 Value::List(list.into_iter().map(|v| v.unrequote()).collect(),
