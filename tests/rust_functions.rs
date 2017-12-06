@@ -10,7 +10,7 @@ fn simple_value() {
     let style = OutputStyle::Compressed;
     let file_context = FileContext::new();
     assert_eq!(style
-                   .write_root(&parsed, &mut scope, file_context)
+                   .write_root(&parsed, &mut scope, &file_context)
                    .and_then(|s| Ok(String::from_utf8(s)?))
                    .unwrap(),
                "p{color:black}\n");
@@ -29,7 +29,7 @@ fn simple_function() {
     let style = OutputStyle::Compressed;
     let file_context = FileContext::new();
     assert_eq!(style
-                   .write_root(&parsed, &mut scope, file_context)
+                   .write_root(&parsed, &mut scope, &file_context)
                    .and_then(|s| Ok(String::from_utf8(s)?))
                    .unwrap(),
                "p{x:42}\n");
@@ -64,7 +64,7 @@ fn function_with_args() {
     let style = OutputStyle::Compressed;
     let file_context = FileContext::new();
     assert_eq!(style
-                   .write_root(&parsed, &mut scope, file_context)
+                   .write_root(&parsed, &mut scope, &file_context)
                    .and_then(|s| Ok(String::from_utf8(s)?))
                    .unwrap(),
                "p{x:14}\n");

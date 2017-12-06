@@ -101,7 +101,7 @@ pub fn compile_scss(input: &[u8],
                     -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
     let items = parse_scss_data(input)?;
-    style.write_root(&items, &mut GlobalScope::new(), file_context)
+    style.write_root(&items, &mut GlobalScope::new(), &file_context)
 }
 
 /// Parse a file of scss data and write css in the given style.
@@ -124,5 +124,5 @@ pub fn compile_scss_file(file: &Path,
     let file_context = FileContext::new();
     let (sub_context, file) = file_context.file(file);
     let items = parse_scss_file(&file)?;
-    style.write_root(&items, &mut GlobalScope::new(), sub_context)
+    style.write_root(&items, &mut GlobalScope::new(), &sub_context)
 }

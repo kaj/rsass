@@ -24,11 +24,11 @@ impl OutputStyle {
     pub fn write_root(&self,
                       items: &[Item],
                       globals: &mut Scope,
-                      file_context: FileContext)
+                      file_context: &FileContext)
                       -> Result<Vec<u8>, Error> {
         let mut result = CssWriter::new(*self);
         for item in items {
-            self.handle_root_item(item, globals, &file_context, &mut result)?;
+            self.handle_root_item(item, globals, file_context, &mut result)?;
         }
         result.get_result()
     }
