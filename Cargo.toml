@@ -18,7 +18,7 @@ doc = false
 commandline = ["clap"]
 
 [dependencies]
-clap = { version = "^2.19, <2.28", optional = true }
+clap = { version = "^2.19", optional = true }
 lazy_static = "1.0"
 nom = "^3.2.0"
 num-rational = "^0.1"
