@@ -22,15 +22,15 @@ named!(pub value_expression<&[u8], Value>,
            (if result.len() == 1 && trail.is_empty() {
                result.into_iter().next().unwrap()
            } else {
-               Value::List(result, ListSeparator::Comma, false)
+               Value::List(result, ListSeparator::Comma, false, false)
            })));
 
 named!(pub space_list<&[u8], Value>,
        do_parse!(first: se_or_ext_string >>
                  list: fold_many0!(
                      pair!(opt!(multispace), se_or_ext_string),
-                     vec![first],
-                     |mut list: Vec<Value>, (s, item)| {
+                     (vec![first], false),
+                     |(mut list, mut unreq): (Vec<Value>, bool), (s, item)| {
                          let mut appended = false;
                          if let (None, &Value::Literal(ref s2)) = (s, &item) {
                              if let Some(&mut Value::Literal(ref mut s1)) =
@@ -39,18 +39,22 @@ named!(pub space_list<&[u8], Value>,
                                  if s1.is_unquoted() && s2.is_unquoted() {
                                      s1.append(s2);
                                      appended = true;
+                                 } else {
+                                     unreq = true;
                                  }
+                             } else {
+                                 unreq = true;
                              }
                          }
                          if !appended {
                              list.push(item);
                          }
-                         list
+                         (list, unreq)
                      }) >>
-                 (if list.len() == 1 {
-                     list.into_iter().next().unwrap()
+                 (if list.0.len() == 1 {
+                     list.0.into_iter().next().unwrap()
                  } else {
-                     Value::List(list, ListSeparator::Space, false)
+                     Value::List(list.0, ListSeparator::Space, false, list.1)
                  })));
 
 named!(se_or_ext_string<Value>,
@@ -144,16 +148,20 @@ named!(pub single_value<&[u8], Value>,
                      content: opt!(value_expression) >>
                      tag!("]") >>
                      (match content {
-                         Some(Value::List(list, sep, false)) => {
-                             Value::List(list, sep, true)
+                         Some(Value::List(list, sep, false, _)) => {
+                             Value::List(list, sep, true, false)
                          }
                          Some(single) => {
                              Value::List(vec![single],
                                          ListSeparator::Space,
-                                         true)
+                                         true,
+                                         false)
                          }
                          None => {
-                             Value::List(vec![], ListSeparator::Space, true)
+                             Value::List(vec![],
+                                         ListSeparator::Space,
+                                         true,
+                                         false)
                          }
                      })) |
            do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
@@ -223,7 +231,9 @@ named!(pub single_value<&[u8], Value>,
                            terminated!(opt_spacelike, tag!(")"))),
                 |val: Option<Value>| match val {
                     Some(v) => Value::Paren(Box::new(v)),
-                    None => Value::List(vec![], ListSeparator::Space, false),
+                    None => {
+                        Value::List(vec![], ListSeparator::Space, false, false)
+                    }
                 })));
 
 named!(variable<Value>,
@@ -361,6 +371,7 @@ mod test {
                    Paren(Box::new(List(vec![Literal("rod".into()),
                                             Literal("bloe".into())],
                                        ListSeparator::Space,
+                                       false,
                                        false))))
     }
 
@@ -370,6 +381,7 @@ mod test {
                    Paren(Box::new(List(vec![Literal("rod".into()),
                                             Literal("bloe".into())],
                                        ListSeparator::Comma,
+                                       false,
                                        false))))
     }
 
@@ -378,6 +390,7 @@ mod test {
         check_expr("rod, bloe;",
                    List(vec![Literal("rod".into()), Literal("bloe".into())],
                         ListSeparator::Comma,
+                        false,
                         false))
     }
 
@@ -387,6 +400,7 @@ mod test {
                    Paren(Box::new(List(vec![Literal("rod".into()),
                                             Literal("bloe".into())],
                                        ListSeparator::Comma,
+                                       false,
                                        false))))
     }
 
@@ -395,6 +409,7 @@ mod test {
         check_expr("rod, bloe, ;",
                    List(vec![Literal("rod".into()), Literal("bloe".into())],
                         ListSeparator::Comma,
+                        false,
                         false))
     }
 
@@ -420,6 +435,7 @@ mod test {
                              Value::scalar(2),
                              Value::scalar(3)],
                         ListSeparator::Space,
+                        false,
                         false))
     }
 
@@ -460,7 +476,8 @@ mod test {
         check_expr("[foo bar];",
                    List(vec![Literal("foo".into()), Literal("bar".into())],
                         ListSeparator::Space,
-                        true))
+                        true,
+                        false))
     }
 
     #[test]
@@ -468,12 +485,13 @@ mod test {
         check_expr("[foo, bar];",
                    List(vec![Literal("foo".into()), Literal("bar".into())],
                         ListSeparator::Comma,
-                        true))
+                        true,
+                        false))
     }
 
     #[test]
     fn parse_bracket_empty_array() {
-        check_expr("[];", List(vec![], ListSeparator::Space, true))
+        check_expr("[];", List(vec![], ListSeparator::Space, true, false))
     }
 
     #[test]

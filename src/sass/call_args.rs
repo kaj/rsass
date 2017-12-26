@@ -17,7 +17,7 @@ impl CallArgs {
 
     pub fn from_value(v: Value) -> Self {
         match v {
-            Value::List(v, _, false) => {
+            Value::List(v, _, false, _) => {
                 CallArgs(v.into_iter().map(|v| (None, v)).collect())
             }
             v => CallArgs(vec![(None, v)]),

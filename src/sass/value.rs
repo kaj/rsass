@@ -18,7 +18,7 @@ pub enum Value {
     Div(Box<Value>, Box<Value>, bool, bool),
     Literal(SassString),
     /// A comma- or space separated list of values, with or without brackets.
-    List(Vec<Value>, ListSeparator, bool),
+    List(Vec<Value>, ListSeparator, bool, bool),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
     ///
@@ -101,7 +101,9 @@ impl Value {
     pub fn is_null(&self) -> bool {
         match *self {
             Value::Null => true,
-            Value::List(ref list, _, false) => list.iter().all(|v| v.is_null()),
+            Value::List(ref list, _, false, _) => {
+                list.iter().all(|v| v.is_null())
+            }
             _ => false,
         }
     }
@@ -124,9 +126,12 @@ impl Value {
                 css::Value::Color(r, g, b, a, s.clone())
             }
             Value::Variable(ref name) => scope.get(name).into_calculated(),
-            Value::List(ref v, ref s, b) => {
+            Value::List(ref v, ref s, b, needs_requote) => {
                 css::Value::List(v.iter()
-                                     .map(|v| v.do_evaluate(scope, false))
+                                     .map(|v| {
+                    let v = v.do_evaluate(scope, false);
+                    if needs_requote { v.unrequote() } else { v }
+                })
                                      .collect::<Vec<_>>(),
                                  s.clone(),
                                  b)

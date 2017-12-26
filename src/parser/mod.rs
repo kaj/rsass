@@ -153,7 +153,7 @@ named!(at_rule<Item>,
                      args: if args.len() == 1 {
                          args.into_iter().next().unwrap()
                      } else {
-                         Value::List(args, ListSeparator::Space, false)
+                         Value::List(args, ListSeparator::Space, false, false)
                      },
                      body: body,
                  })));
@@ -368,6 +368,7 @@ fn test_mixin_declaration() {
                            vec![string("baz"),
                                 Value::Variable("x".into())],
                            ListSeparator::Space,
+                           false,
                            false),
                        false)],
                }))
@@ -420,6 +421,7 @@ fn test_property_2() {
                    "background-position".into(),
                    Value::List(vec![percentage(90), percentage(50)],
                                ListSeparator::Space,
+                               false,
                                false),
                    false)))
 }
@@ -445,6 +447,7 @@ fn test_variable_declaration_global() {
                         val: Value::List(
                             vec![string("some"), string("value")],
                             ListSeparator::Space,
+                            false,
                             false),
                         default: false,
                         global: true,
@@ -460,6 +463,7 @@ fn test_variable_declaration_default() {
                         val: Value::List(
                             vec![string("some"), string("value")],
                             ListSeparator::Space,
+                            false,
                             false),
                         default: true,
                         global: false,
