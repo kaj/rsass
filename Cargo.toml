@@ -14,8 +14,11 @@ license = "MIT/Apache-2.0"
 name = "rsass"
 doc = false
 
+[features]
+commandline = ["clap"]
+
 [dependencies]
-clap = "^2.19, <2.28"
+clap = { version = "^2.19, <2.28", optional = true }
 lazy_static = "1.0"
 nom = "^3.2.0"
 num-rational = "^0.1"

@@ -1,11 +1,22 @@
+#[cfg(feature = "commandline")]
 extern crate clap;
 extern crate rsass;
 
+#[cfg(feature = "commandline")]
 use clap::{App, Arg, ArgMatches};
+#[cfg(feature = "commandline")]
 use rsass::{Error, OutputStyle, compile_scss_file};
+#[cfg(feature = "commandline")]
 use std::io::{Write, stderr, stdout};
 use std::process::exit;
 
+#[cfg(not(feature = "commandline"))]
+fn main() {
+    eprintln!("Error: rsass is built without the commandline feautre");
+    exit(1);
+}
+
+#[cfg(feature = "commandline")]
 fn main() {
     let args = App::new("rsass")
         .version(env!("CARGO_PKG_VERSION"))
@@ -36,6 +47,7 @@ fn main() {
     }
 }
 
+#[cfg(feature = "commandline")]
 fn run(args: &ArgMatches) -> Result<(), Error> {
     let style = if args.value_of("STYLE") == Some("compressed") {
         OutputStyle::Compressed
