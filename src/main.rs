@@ -12,6 +12,10 @@ use std::process::exit;
 
 #[cfg(not(feature = "commandline"))]
 fn main() {
+    // I would like to not build a command-line at all when the
+    // commandline feature is not given, but I haven't figured out a
+    // way to do that in cargo, so instead I make a simple commandline
+    // which only gives this error message.
     eprintln!("Error: rsass is built without the commandline feautre");
     exit(1);
 }
