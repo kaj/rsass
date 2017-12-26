@@ -10,7 +10,7 @@
 #     ./check-spec stats
 #
 cd `dirname $0`
-cargo build --release
+cargo build --release --features=commandline
 
 if [ -d sass-spec ]; then
    cd sass-spec

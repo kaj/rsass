@@ -8,6 +8,16 @@ Rasmus.
 [![Crate](https://meritbadge.herokuapp.com/rsass)](https://crates.io/crates/rsass)
 [![docs](https://docs.rs/rsass/badge.svg)](https://docs.rs/rsass)
 
+## Commandline
+
+To make compiling faster when rsass is used as a library crate (which
+is probably the dominant use-case), I have made building a usefull
+command-line utility optional.
+To build the commandline, define the `commandline` feature when
+building.
+
+    cargo build --release --features=commandline
+
 ## Sass language and implemetation status
 
 The sass language [is defined in its reference
