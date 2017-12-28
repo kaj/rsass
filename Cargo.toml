@@ -21,9 +21,9 @@ commandline = ["clap"]
 clap = { version = "^2.19", optional = true }
 lazy_static = "1.0"
 nom = "^3.2.0"
-num-rational = "^0.1"
+num-rational = { version = "^0.1", default-features = false }
 num-traits = "^0.1"
-rand = "^0.3"
+rand = "^0.4"
 
 [badges]
 travis-ci = { repository = "kaj/rsass" }
