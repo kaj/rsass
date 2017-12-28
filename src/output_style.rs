@@ -97,11 +97,13 @@ impl OutputStyle {
                                      body,
                                      file_context,
                                      2)?;
+                    self.write_items(result.to_content(), &direct, 2)?;
                     if !sub.is_empty() {
-                        result.do_indent(0)?;
+                        if direct.is_empty() {
+                            result.do_indent(0)?;
+                        }
                         result.to_content().write_all(&sub)?;
                     }
-                    self.write_items(result.to_content(), &direct, 2)?;
                     write!(result.to_content(), "}}")?;
                 } else {
                     write!(result.to_content(), ";")?;

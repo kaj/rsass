@@ -301,6 +301,18 @@ fn keyword_args_in_functions() {
 }
 
 #[test]
+fn media2() {
+    check(b"$foo: 3;\n$bar: 4;\n\n\
+            @media only screen and (max-width: $foo) and (min-width: $bar) \
+            {\n  \
+            /* hey */\n  \
+            a {color: red}\n}",
+          "@media only screen and (max-width: 3) and (min-width: 4) {\n  \
+           /* hey */\n  \
+           a {\n    color: red;\n  }\n}\n")
+}
+
+#[test]
 fn mixin_content_with_no_block() {
     check(b"@mixin foo {\n  .foo {\n    color: red;\n    @content;\n  }\n}\n\n\
             div.a {\n  @include foo() {\n    hey: now;\n  }\n}",

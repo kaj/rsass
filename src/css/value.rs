@@ -363,7 +363,14 @@ impl fmt::Display for Value {
             Value::True => write!(out, "true"),
             Value::False => write!(out, "false"),
             Value::Null => Ok(()),
-            Value::Map(_) => panic!("Formatting a map not supported"),
+            Value::Map(ref map) => {
+                write!(out,
+                       "({})",
+                       map.iter()
+                           .map(|&(ref k, ref v)| format!("{}: {}", k, v))
+                           .collect::<Vec<_>>()
+                           .join(", "))
+            }
         }
     }
 }

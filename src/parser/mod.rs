@@ -8,7 +8,7 @@ pub mod value;
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
 use self::strings::{sass_string, sass_string_dq, sass_string_sq};
-use self::value::{function_call, single_value, value_expression};
+use self::value::{dictionary, function_call, single_value, value_expression};
 use error::Error;
 
 use functions::SassFunction;
@@ -135,6 +135,7 @@ named!(at_rule<Item>,
                  name: name >>
                  args: many0!(preceded!(ignore_space, alt!(
                      terminated!(alt!(function_call |
+                                     dictionary |
                                      map!(sass_string, Value::Literal) |
                                      map!(sass_string_dq, Value::Literal) |
                                      map!(sass_string_sq, Value::Literal)),
@@ -147,7 +148,7 @@ named!(at_rule<Item>,
                          ))) >>
                  opt!(ignore_space) >>
                  body: opt!(body_block) >>
-                 opt!(tag!(";")) >>
+                 opt!(alt!(eof!() | tag!(";"))) >>
                  (Item::AtRule {
                      name: name,
                      args: if args.len() == 1 {

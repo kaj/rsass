@@ -272,7 +272,7 @@ fn from_hex(v: &[u8]) -> Rational {
                                .unwrap() as isize)
 }
 
-named!(dictionary<Value>,
+named!(pub dictionary<Value>,
        map!(delimited!(preceded!(tag!("("), opt_spacelike),
                        separated_nonempty_list!(
                            delimited!(opt_spacelike, tag!(","),
