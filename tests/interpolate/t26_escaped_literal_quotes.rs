@@ -11,3 +11,13 @@ fn t01_inline() {
            output: \"[\\\\\\\"\\\\']\";\n  output: \"\\\\\\\"\\\\'\";\n  \
            output: \"\\\\\\\"\\\\'\";\n  output: \"['\\\\\\\"\\\\'']\";\n}\n")
 }
+
+#[test]
+fn t06_escape_interpolation() {
+    check("$input: \\\"\\';\n.result {\n  \
+           output: \"[\\#{\\\"\\'}]\";\n  output: \"\\#{\\\"\\'}\";\n  \
+           output: '\\#{\\\"\\'}';\n  output: \"['\\#{\\\"\\'}']\";\n}\n",
+          ".result {\n  \
+           output: \"[\\#{\\\"\\'}]\";\n  output: \"\\#{\\\"\\'}\";\n  \
+           output: '\\#{\\\"\\'}';\n  output: \"['\\#{\\\"\\'}']\";\n}\n")
+}

@@ -32,11 +32,7 @@ named!(pub sass_string_dq<SassString>,
                                   tag!("\\\"")) |
                            value!(StringPart::Raw("'".to_string()),
                                   tag!("'")) |
-                           value!(StringPart::Raw("\\#".to_string()),
-                                  tag!("\\#")) |
-                           value!(StringPart::Raw("\\\\".to_string()),
-                                  tag!("\\\\")) |
-                           map!(extra_escape, StringPart::Raw))),
+                           extra_escape)),
                        tag!("\"")),
             |p| SassString::new(p, Quotes::Double)));
 
@@ -53,11 +49,7 @@ named!(pub sass_string_sq<SassString>,
                                   tag!("\\'")) |
                            value!(StringPart::Raw("\"".to_string()),
                                   tag!("\"")) |
-                           value!(StringPart::Raw("\\#".to_string()),
-                                  tag!("\\#")) |
-                           value!(StringPart::Raw("\\\\".to_string()),
-                                  tag!("\\\\")) |
-                           map!(extra_escape, StringPart::Raw)
+                           extra_escape
                                )),
                        tag!("'")),
             |p| SassString::new(p, Quotes::Single)));
@@ -90,9 +82,12 @@ named!(hexpair,
                             one_of!("0123456789ABCDEFabcdef") >> ())));
 named!(hash_no_interpolation<&[u8]>,
        terminated!(tag!("#"), peek!(not!(tag!("{")))));
-named!(extra_escape<String>,
-       map!(preceded!(tag!("\\"), alt!(alphanumeric | tag!(" "))),
-            |s| format!("\\{}", from_utf8(s).unwrap())));
+named!(extra_escape<StringPart>,
+       map!(preceded!(tag!("\\"),
+                      alt!(alphanumeric | tag!(" ") | tag!("'") |
+                           tag!("\"") | tag!("\\") | tag!("#")
+                           )),
+            |s| StringPart::Raw(format!("\\{}", from_utf8(s).unwrap()))));
 
 named!(pub extended_part<StringPart>,
        map!(recognize!(pair!(take_while1!(is_ext_str_start_char),
