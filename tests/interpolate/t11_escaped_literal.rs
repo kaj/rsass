@@ -1,4 +1,4 @@
-//! Tests from `spec/parser/interpolate/10_escaped_backslash`
+//! Tests from `spec/parser/interpolate/11_escaped_literal`
 
 use super::check;
 
