@@ -288,8 +288,8 @@ named!(
 );
 
 fn from_hex(v: &[u8]) -> Rational {
-    Rational::from_integer(u8::from_str_radix(from_utf8(v).unwrap(), 16)
-        .unwrap() as isize)
+    let i = u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap() as isize;
+    Rational::from_integer(i)
 }
 
 named!(pub dictionary<Value>,
