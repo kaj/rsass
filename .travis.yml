@@ -18,7 +18,7 @@ matrix:
       - cargo install -f rustfmt-nightly
      script:
       - cargo fmt -- --write-mode=diff
-   - rust: nightly
+   - rust: stable
      env: TASK=commandline
      script:
       - cargo test --features=commandline
