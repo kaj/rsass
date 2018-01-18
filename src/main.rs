@@ -1,26 +1,11 @@
-#[cfg(feature = "commandline")]
 extern crate clap;
 extern crate rsass;
 
-#[cfg(feature = "commandline")]
 use clap::{App, Arg, ArgMatches};
-#[cfg(feature = "commandline")]
 use rsass::{compile_scss_file, Error, OutputStyle};
-#[cfg(feature = "commandline")]
 use std::io::{stderr, stdout, Write};
 use std::process::exit;
 
-#[cfg(not(feature = "commandline"))]
-fn main() {
-    // I would like to not build a command-line at all when the
-    // commandline feature is not given, but I haven't figured out a
-    // way to do that in cargo, so instead I make a simple commandline
-    // which only gives this error message.
-    eprintln!("Error: rsass is built without the commandline feautre");
-    exit(1);
-}
-
-#[cfg(feature = "commandline")]
 fn main() {
     let args = App::new("rsass")
         .version(env!("CARGO_PKG_VERSION"))
@@ -57,7 +42,6 @@ fn main() {
     }
 }
 
-#[cfg(feature = "commandline")]
 fn run(args: &ArgMatches) -> Result<(), Error> {
     let style = if args.value_of("STYLE") == Some("compressed") {
         OutputStyle::Compressed
