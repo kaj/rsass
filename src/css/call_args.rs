@@ -51,9 +51,9 @@ impl fmt::Display for CallArgs {
         let t = self.0
             .iter()
             .map(|kv| match *kv {
-                     (Some(ref k), ref v) => format!("${}: {}", k, v),
-                     (None, ref v) => format!("{}", v),
-                 })
+                (Some(ref k), ref v) => format!("${}: {}", k, v),
+                (None, ref v) => format!("{}", v),
+            })
             .collect::<Vec<_>>()
             .join(", ");
         write!(out, "{}", t)

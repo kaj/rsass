@@ -42,8 +42,9 @@ impl Selector {
             Selector(result)
         } else {
             let mut result = self.0.clone();
-            if !result.is_empty() &&
-               !other.0.first().map(|p| p.is_operator()).unwrap_or(false) {
+            if !result.is_empty()
+                && !other.0.first().map(|p| p.is_operator()).unwrap_or(false)
+            {
                 result.push(SelectorPart::Descendant);
             }
             result.extend(other.0.iter().cloned());
@@ -58,24 +59,30 @@ pub enum SelectorPart {
     Simple(SassString),
     Descendant,
     RelOp(u8), // >, +, ~
-    Attribute { name: SassString, op: String, val: SassString },
+    Attribute {
+        name: SassString,
+        op: String,
+        val: SassString,
+    },
     /// A css3 pseudo-element
     PseudoElement(SassString),
     /// A pseudo-class or a css2 pseudo-element
-    Pseudo { name: SassString, arg: Option<Selectors> },
+    Pseudo {
+        name: SassString,
+        arg: Option<Selectors>,
+    },
     BackRef,
 }
 
 impl SelectorPart {
     fn is_operator(&self) -> bool {
         match *self {
-            SelectorPart::Descendant |
-            SelectorPart::RelOp(_) => true,
-            SelectorPart::Simple(_) |
-            SelectorPart::Attribute { .. } |
-            SelectorPart::PseudoElement(_) |
-            SelectorPart::Pseudo { .. } |
-            SelectorPart::BackRef => false,
+            SelectorPart::Descendant | SelectorPart::RelOp(_) => true,
+            SelectorPart::Simple(_)
+            | SelectorPart::Attribute { .. }
+            | SelectorPart::PseudoElement(_)
+            | SelectorPart::Pseudo { .. }
+            | SelectorPart::BackRef => false,
         }
     }
 }
@@ -129,9 +136,11 @@ impl fmt::Display for SelectorPart {
                     write!(out, " {} ", *c as char)
                 }
             }
-            SelectorPart::Attribute { ref name, ref op, ref val } => {
-                write!(out, "[{}{}{}]", name, op, val)
-            }
+            SelectorPart::Attribute {
+                ref name,
+                ref op,
+                ref val,
+            } => write!(out, "[{}{}{}]", name, op, val),
             SelectorPart::PseudoElement(ref name) => write!(out, "::{}", name),
             SelectorPart::Pseudo { ref name, ref arg } => {
                 let name = format!("{}", name);
@@ -140,8 +149,9 @@ impl fmt::Display for SelectorPart {
                     // their arg in compact form.  Maybe we need more
                     // hard-coded names here, or maybe the condition
                     // should be on the argument rather than the name?
-                    if out.alternate() || name == "nth-child" ||
-                       name == "nth-of-type" {
+                    if out.alternate() || name == "nth-child"
+                        || name == "nth-of-type"
+                    {
                         write!(out, ":{}({:#})", name, arg)
                     } else {
                         write!(out, ":{}({})", name, arg)

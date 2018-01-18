@@ -61,14 +61,24 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
             match (first, second) {
                 (&Value::Null, b) => b,
                 (a, &Value::Null) => a,
-                (&Value::Numeric(ref va, ref ua, ..),
-                 &Value::Numeric(ref vb, ref ub, ..)) => {
+                (
+                    &Value::Numeric(ref va, ref ua, ..),
+                    &Value::Numeric(ref vb, ref ub, ..),
+                ) => {
                     if ua == &Unit::None || ua == ub || ub == &Unit::None {
-                        if va.cmp(vb) == pref { first } else { second }
+                        if va.cmp(vb) == pref {
+                            first
+                        } else {
+                            second
+                        }
                     } else if ua.dimension() == ub.dimension() {
                         let sa = va * ua.scale_factor();
                         let sb = vb * ub.scale_factor();
-                        if sa.cmp(&sb) == pref { first } else { second }
+                        if sa.cmp(&sb) == pref {
+                            first
+                        } else {
+                            second
+                        }
                     } else {
                         &NULL_VALUE
                     }
@@ -83,8 +93,8 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
 static NULL_VALUE: Value = Value::Null;
 
 fn intrand(lim: isize) -> isize {
-    use rand::thread_rng;
     use rand::distributions::{IndependentSample, Range};
+    use rand::thread_rng;
     let between = Range::new(0, lim);
     let mut rng = thread_rng();
     between.ind_sample(&mut rng)

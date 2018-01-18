@@ -1,5 +1,4 @@
 /// From `sass-spec/spec/libsass/unquote`
-
 use super::check_eval;
 
 #[test]
@@ -8,8 +7,10 @@ fn a() {
 }
 #[test]
 fn b() {
-    check_eval("unquote(\"I'm a \\\"fashion\\\" \\\"expert\\\".\")",
-               "I'm a \"fashion\" \"expert\".")
+    check_eval(
+        "unquote(\"I'm a \\\"fashion\\\" \\\"expert\\\".\")",
+        "I'm a \"fashion\" \"expert\".",
+    )
 }
 #[test]
 fn c() {

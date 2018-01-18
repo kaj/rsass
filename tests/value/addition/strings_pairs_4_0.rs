@@ -177,98 +177,146 @@ fn t40() {
 }
 #[test]
 fn t41() {
-    check_eval("#{interpolant}+lschema_#{ritlp}", "interpolantlschema_ritlp")
+    check_eval(
+        "#{interpolant}+lschema_#{ritlp}",
+        "interpolantlschema_ritlp",
+    )
 }
 #[test]
 #[ignore]
 fn t42() {
-    check_eval("#{interpolant} +lschema_#{ritlp}", "interpolantlschema_ritlp")
+    check_eval(
+        "#{interpolant} +lschema_#{ritlp}",
+        "interpolantlschema_ritlp",
+    )
 }
 #[test]
 fn t43() {
-    check_eval("#{interpolant}+ lschema_#{ritlp}", "interpolantlschema_ritlp")
+    check_eval(
+        "#{interpolant}+ lschema_#{ritlp}",
+        "interpolantlschema_ritlp",
+    )
 }
 #[test]
 fn t44() {
-    check_eval("#{interpolant} + lschema_#{ritlp}", "interpolantlschema_ritlp")
+    check_eval(
+        "#{interpolant} + lschema_#{ritlp}",
+        "interpolantlschema_ritlp",
+    )
 }
 #[test]
 fn t45() {
-    check_eval("#{interpolant}+#{litlp}_rschema", "interpolantlitlp_rschema")
+    check_eval(
+        "#{interpolant}+#{litlp}_rschema",
+        "interpolantlitlp_rschema",
+    )
 }
 #[test]
 #[ignore]
 fn t46() {
-    check_eval("#{interpolant} +#{litlp}_rschema", "interpolantlitlp_rschema")
+    check_eval(
+        "#{interpolant} +#{litlp}_rschema",
+        "interpolantlitlp_rschema",
+    )
 }
 #[test]
 fn t47() {
-    check_eval("#{interpolant}+ #{litlp}_rschema", "interpolantlitlp_rschema")
+    check_eval(
+        "#{interpolant}+ #{litlp}_rschema",
+        "interpolantlitlp_rschema",
+    )
 }
 #[test]
 fn t48() {
-    check_eval("#{interpolant} + #{litlp}_rschema", "interpolantlitlp_rschema")
+    check_eval(
+        "#{interpolant} + #{litlp}_rschema",
+        "interpolantlitlp_rschema",
+    )
 }
 #[test]
 fn t49() {
-    check_eval("lschema_#{ritlp}+lschema_#{ritlp}",
-               "lschema_ritlplschema_ritlp")
+    check_eval(
+        "lschema_#{ritlp}+lschema_#{ritlp}",
+        "lschema_ritlplschema_ritlp",
+    )
 }
 #[test]
 #[ignore]
 fn t50() {
-    check_eval("lschema_#{ritlp} +lschema_#{ritlp}",
-               "lschema_ritlplschema_ritlp")
+    check_eval(
+        "lschema_#{ritlp} +lschema_#{ritlp}",
+        "lschema_ritlplschema_ritlp",
+    )
 }
 #[test]
 fn t51() {
-    check_eval("lschema_#{ritlp}+ lschema_#{ritlp}",
-               "lschema_ritlplschema_ritlp")
+    check_eval(
+        "lschema_#{ritlp}+ lschema_#{ritlp}",
+        "lschema_ritlplschema_ritlp",
+    )
 }
 #[test]
 fn t52() {
-    check_eval("lschema_#{ritlp} + lschema_#{ritlp}",
-               "lschema_ritlplschema_ritlp")
+    check_eval(
+        "lschema_#{ritlp} + lschema_#{ritlp}",
+        "lschema_ritlplschema_ritlp",
+    )
 }
 #[test]
 fn t53() {
-    check_eval("lschema_#{ritlp}+#{litlp}_rschema",
-               "lschema_ritlplitlp_rschema")
+    check_eval(
+        "lschema_#{ritlp}+#{litlp}_rschema",
+        "lschema_ritlplitlp_rschema",
+    )
 }
 #[test]
 #[ignore]
 fn t54() {
-    check_eval("lschema_#{ritlp} +#{litlp}_rschema",
-               "lschema_ritlplitlp_rschema")
+    check_eval(
+        "lschema_#{ritlp} +#{litlp}_rschema",
+        "lschema_ritlplitlp_rschema",
+    )
 }
 #[test]
 fn t55() {
-    check_eval("lschema_#{ritlp}+ #{litlp}_rschema",
-               "lschema_ritlplitlp_rschema")
+    check_eval(
+        "lschema_#{ritlp}+ #{litlp}_rschema",
+        "lschema_ritlplitlp_rschema",
+    )
 }
 #[test]
 fn t56() {
-    check_eval("lschema_#{ritlp} + #{litlp}_rschema",
-               "lschema_ritlplitlp_rschema")
+    check_eval(
+        "lschema_#{ritlp} + #{litlp}_rschema",
+        "lschema_ritlplitlp_rschema",
+    )
 }
 #[test]
 fn t57() {
-    check_eval("#{litlp}_rschema+#{litlp}_rschema",
-               "litlp_rschemalitlp_rschema")
+    check_eval(
+        "#{litlp}_rschema+#{litlp}_rschema",
+        "litlp_rschemalitlp_rschema",
+    )
 }
 #[test]
 #[ignore]
 fn t58() {
-    check_eval("#{litlp}_rschema +#{litlp}_rschema",
-               "litlp_rschemalitlp_rschema")
+    check_eval(
+        "#{litlp}_rschema +#{litlp}_rschema",
+        "litlp_rschemalitlp_rschema",
+    )
 }
 #[test]
 fn t59() {
-    check_eval("#{litlp}_rschema+ #{litlp}_rschema",
-               "litlp_rschemalitlp_rschema")
+    check_eval(
+        "#{litlp}_rschema+ #{litlp}_rschema",
+        "litlp_rschemalitlp_rschema",
+    )
 }
 #[test]
 fn t60() {
-    check_eval("#{litlp}_rschema + #{litlp}_rschema",
-               "litlp_rschemalitlp_rschema")
+    check_eval(
+        "#{litlp}_rschema + #{litlp}_rschema",
+        "litlp_rschemalitlp_rschema",
+    )
 }

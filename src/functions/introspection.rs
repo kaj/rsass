@@ -1,4 +1,4 @@
-use super::{Error, SassFunction, get_builtin_function};
+use super::{get_builtin_function, Error, SassFunction};
 use css::{CallArgs, Value};
 use std::collections::BTreeMap;
 use value::{Quotes, Unit};
@@ -29,14 +29,18 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def!(f, content_exists(), |s| {
         let content = s.get_mixin("%%BODY%%");
-        Ok(Value::bool(content.map(|(_, b)| !b.is_empty()).unwrap_or(false)))
+        Ok(Value::bool(
+            content.map(|(_, b)| !b.is_empty()).unwrap_or(false),
+        ))
     });
-    def!(f,
-         inspect(value),
-         |s| Ok(Value::Literal(format!("{}", s.get("value")), Quotes::None)));
-    def!(f, type_of(value), |s| {
-        Ok(Value::Literal(s.get("value").type_name().into(), Quotes::None))
-    });
+    def!(f, inspect(value), |s| Ok(Value::Literal(
+        format!("{}", s.get("value")),
+        Quotes::None
+    )));
+    def!(f, type_of(value), |s| Ok(Value::Literal(
+        s.get("value").type_name().into(),
+        Quotes::None
+    )));
     def!(f, unit(value), |s| {
         let v = match s.get("value") {
             Value::Numeric(_, ref unit, ..) => format!("{}", unit),
@@ -50,8 +54,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def!(f, comparable(number1, number2), |s| {
         match (&s.get("number1"), &s.get("number2")) {
-            (&Value::Numeric(_, ref u1, ..),
-             &Value::Numeric(_, ref u2, ..)) => {
+            (
+                &Value::Numeric(_, ref u1, ..),
+                &Value::Numeric(_, ref u2, ..),
+            ) => {
                 // TODO e.g. cm and mm are comparable too!
                 // Simply comparig the dimension is not enough, though,
                 // as e.g em and vh is not comparable.
@@ -64,8 +70,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         &Value::Literal(ref name, _) => {
             // Ok, the spec says using a string for call is deprecated.
             // Even though I have no other way implemented ...
-            dep_warn!("Passing a string to call() is deprecated and \
-                       will be illegal");
+            dep_warn!(
+                "Passing a string to call() is deprecated and \
+                 will be illegal"
+            );
             let args = CallArgs::from_value(s.get("args"));
             match s.call_function(name, &args) {
                 Some(value) => Ok(value),
@@ -189,8 +197,10 @@ mod test {
         }
         #[test]
         fn t16() {
-            assert_eq!("\"length(a b c d)\"",
-                       do_evaluate(&[], b"quote(le#{ng}th(a b c d));"))
+            assert_eq!(
+                "\"length(a b c d)\"",
+                do_evaluate(&[], b"quote(le#{ng}th(a b c d));")
+            )
         }
         #[test]
         fn t17() {

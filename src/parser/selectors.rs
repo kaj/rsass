@@ -73,74 +73,112 @@ mod test {
 
     #[test]
     fn simple_selector() {
-        assert_eq!(selector(b"foo "),
-                   Done(&b""[..],
-                        Selector(vec![SelectorPart::Simple("foo".into())])))
+        assert_eq!(
+            selector(b"foo "),
+            Done(&b""[..], Selector(vec![SelectorPart::Simple("foo".into())]))
+        )
     }
     #[test]
     fn escaped_simple_selector() {
-        assert_eq!(selector(b"\\E9m "),
-                   Done(&b""[..],
-                        Selector(vec![SelectorPart::Simple("\\E9m".into())])))
+        assert_eq!(
+            selector(b"\\E9m "),
+            Done(
+                &b""[..],
+                Selector(vec![SelectorPart::Simple("\\E9m".into())])
+            )
+        )
     }
 
     #[test]
     fn selector2() {
-        assert_eq!(selector(b"foo bar "),
-                   Done(&b""[..],
-                        Selector(vec![SelectorPart::Simple("foo".into()),
-                                      SelectorPart::Descendant,
-                                      SelectorPart::Simple("bar".into())])))
+        assert_eq!(
+            selector(b"foo bar "),
+            Done(
+                &b""[..],
+                Selector(vec![
+                    SelectorPart::Simple("foo".into()),
+                    SelectorPart::Descendant,
+                    SelectorPart::Simple("bar".into()),
+                ])
+            )
+        )
     }
 
     #[test]
     fn child_selector() {
-        assert_eq!(selector(b"foo > bar "),
-                   Done(&b""[..],
-                        Selector(vec![SelectorPart::Simple("foo".into()),
-                                      SelectorPart::RelOp(b'>'),
-                                      SelectorPart::Simple("bar".into())])))
+        assert_eq!(
+            selector(b"foo > bar "),
+            Done(
+                &b""[..],
+                Selector(vec![
+                    SelectorPart::Simple("foo".into()),
+                    SelectorPart::RelOp(b'>'),
+                    SelectorPart::Simple("bar".into()),
+                ])
+            )
+        )
     }
 
     #[test]
     fn foo1_selector() {
-        assert_eq!(selector(b"[data-icon='test-1'] "),
-                   Done(&b""[..],
-                        Selector(vec![SelectorPart::Attribute {
-                            name: "data-icon".into(),
-                            op: "=".into(),
-                            val: SassString::new(
-                                vec![StringPart::Raw("test-1".into())],
-                                Quotes::Single),
-                        }])))
+        assert_eq!(
+            selector(b"[data-icon='test-1'] "),
+            Done(
+                &b""[..],
+                Selector(vec![
+                    SelectorPart::Attribute {
+                        name: "data-icon".into(),
+                        op: "=".into(),
+                        val: SassString::new(
+                            vec![StringPart::Raw("test-1".into())],
+                            Quotes::Single,
+                        ),
+                    },
+                ])
+            )
+        )
     }
 
     #[test]
     fn pseudo_selector() {
-        assert_eq!(selector(b":before "),
-                   Done(&b""[..],
-                        Selector(vec![SelectorPart::Pseudo {
-                                          name: "before".into(),
-                                          arg: None,
-                                      }])))
+        assert_eq!(
+            selector(b":before "),
+            Done(
+                &b""[..],
+                Selector(vec![
+                    SelectorPart::Pseudo {
+                        name: "before".into(),
+                        arg: None,
+                    },
+                ])
+            )
+        )
     }
     #[test]
     fn pseudo_on_simple_selector() {
-        assert_eq!(selector(b"figure:before "),
-                   Done(&b""[..],
-                        Selector(vec![SelectorPart::Simple("figure".into()),
-                                      SelectorPart::Pseudo {
-                                          name: "before".into(),
-                                          arg: None,
-                                      }])))
+        assert_eq!(
+            selector(b"figure:before "),
+            Done(
+                &b""[..],
+                Selector(vec![
+                    SelectorPart::Simple("figure".into()),
+                    SelectorPart::Pseudo {
+                        name: "before".into(),
+                        arg: None,
+                    },
+                ])
+            )
+        )
     }
 
     #[test]
     fn selectors_simple() {
         let foo = Selector(vec![SelectorPart::Simple("foo".into())]);
         let bar = Selector(vec![SelectorPart::Simple("bar".into())]);
-        assert_eq!(selectors(b"foo, bar "),
-                   Done(&b""[..], Selectors(vec![foo, bar])))
+        assert_eq!(
+            selectors(b"foo, bar "),
+            Done(&b""[..], Selectors(vec![foo, bar]))
+        )
     }
 
 }

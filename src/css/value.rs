@@ -4,7 +4,7 @@ use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use ordermap::OrderMap;
 use std::fmt;
-use value::{ListSeparator, Operator, Quotes, Unit, rgb_to_name};
+use value::{rgb_to_name, ListSeparator, Operator, Quotes, Unit};
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -39,7 +39,11 @@ impl Value {
         Value::Numeric(Rational::from_integer(v), Unit::None, false, false)
     }
     pub fn bool(v: bool) -> Self {
-        if v { Value::True } else { Value::False }
+        if v {
+            Value::True
+        } else {
+            Value::False
+        }
     }
     pub fn black() -> Self {
         let z = Rational::zero();
@@ -85,13 +89,11 @@ impl Value {
             Value::Numeric(v, unit, with_sign, _) => {
                 Value::Numeric(v, unit, with_sign, true)
             }
-            Value::List(v, sep, bracketed) => {
-                Value::List(v.into_iter()
-                                .map(|i| i.into_calculated())
-                                .collect(),
-                            sep,
-                            bracketed)
-            }
+            Value::List(v, sep, bracketed) => Value::List(
+                v.into_iter().map(|i| i.into_calculated()).collect(),
+                sep,
+                bracketed,
+            ),
             other => other,
         }
     }
@@ -149,11 +151,11 @@ impl Value {
                 }
                 Value::Literal(result, Quotes::None)
             }
-            Value::List(list, s, b) => {
-                Value::List(list.into_iter().map(|v| v.unquote()).collect(),
-                            s,
-                            b)
-            }
+            Value::List(list, s, b) => Value::List(
+                list.into_iter().map(|v| v.unquote()).collect(),
+                s,
+                b,
+            ),
             v => v,
         }
     }
@@ -193,11 +195,11 @@ impl Value {
                     Value::Literal(result, Quotes::Double)
                 }
             }
-            Value::List(ref list, ref s, ref b) => {
-                Value::List(list.into_iter().map(|v| v.unrequote()).collect(),
-                            s.clone(),
-                            *b)
-            }
+            Value::List(ref list, ref s, ref b) => Value::List(
+                list.into_iter().map(|v| v.unrequote()).collect(),
+                s.clone(),
+                *b,
+            ),
             ref v => v.clone(),
         }
     }
@@ -205,15 +207,15 @@ impl Value {
     pub fn iter_items(self) -> Vec<Value> {
         match self {
             Value::List(v, _, _) => v,
-            Value::Map(map) => {
-                map.iter()
-                    .map(|&(ref k, ref v)| {
-                             Value::List(vec![k.clone(), v.clone()],
-                                         ListSeparator::Space,
-                                         false)
-                         })
-                    .collect()
-            }
+            Value::Map(map) => map.iter()
+                .map(|&(ref k, ref v)| {
+                    Value::List(
+                        vec![k.clone(), v.clone()],
+                        ListSeparator::Space,
+                        false,
+                    )
+                })
+                .collect(),
             v => vec![v],
         }
     }
@@ -222,31 +224,29 @@ impl Value {
 impl fmt::Display for Value {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Value::Literal(ref s, ref q) => {
-                match *q {
-                    Quotes::Double => {
-                        write!(out,
-                               "\"{}\"",
-                               s.chars()
-                                   .flat_map(|c| match c {
-                                                 '"' => vec!['\\', '"'],
-                                                 c => vec![c],
-                                             })
-                                   .collect::<String>())
-                    }
-                    Quotes::Single => {
-                        write!(out,
-                               "'{}'",
-                               s.chars()
-                                   .flat_map(|c| match c {
-                                                 '\'' => vec!['\\', '\''],
-                                                 c => vec![c],
-                                             })
-                                   .collect::<String>())
-                    }
-                    Quotes::None => write!(out, "{}", s),
-                }
-            }
+            Value::Literal(ref s, ref q) => match *q {
+                Quotes::Double => write!(
+                    out,
+                    "\"{}\"",
+                    s.chars()
+                        .flat_map(|c| match c {
+                            '"' => vec!['\\', '"'],
+                            c => vec![c],
+                        })
+                        .collect::<String>()
+                ),
+                Quotes::Single => write!(
+                    out,
+                    "'{}'",
+                    s.chars()
+                        .flat_map(|c| match c {
+                            '\'' => vec!['\\', '\''],
+                            c => vec![c],
+                        })
+                        .collect::<String>()
+                ),
+                Quotes::None => write!(out, "{}", s),
+            },
             Value::Numeric(ref v, ref u, ref with_sign, _) => {
                 let short = out.alternate();
                 write!(out, "{}{}", rational2str(v, *with_sign, short), u)
@@ -261,8 +261,7 @@ impl fmt::Display for Value {
                     if out.alternate() {
                         // E.g. #ff00cc can be written #f0c in css.
                         // 0xff / 17 = 0xf (since 17 = 0x11).
-                        let hex = if r % 17 == 0 && g % 17 == 0 &&
-                                     b % 17 == 0 {
+                        let hex = if r % 17 == 0 && g % 17 == 0 && b % 17 == 0 {
                             format!("#{:x}{:x}{:x}", r / 17, g / 17, b / 17)
                         } else {
                             format!("#{:02x}{:02x}{:02x}", r, g, b)
@@ -278,23 +277,28 @@ impl fmt::Display for Value {
                     } else {
                         write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
                     }
-                } else if a.is_zero() && r.is_zero() && g.is_zero() &&
-                          b.is_zero() {
+                } else if a.is_zero() && r.is_zero() && g.is_zero()
+                    && b.is_zero()
+                {
                     write!(out, "transparent")
                 } else if out.alternate() {
-                    write!(out,
-                           "rgba({},{},{},{})",
-                           r,
-                           g,
-                           b,
-                           rational2str(a, false, false))
+                    write!(
+                        out,
+                        "rgba({},{},{},{})",
+                        r,
+                        g,
+                        b,
+                        rational2str(a, false, false)
+                    )
                 } else {
-                    write!(out,
-                           "rgba({}, {}, {}, {})",
-                           r,
-                           g,
-                           b,
-                           rational2str(a, false, false))
+                    write!(
+                        out,
+                        "rgba({}, {}, {}, {})",
+                        r,
+                        g,
+                        b,
+                        rational2str(a, false, false)
+                    )
                 }
             }
             Value::List(ref v, ref sep, brackets) => {
@@ -319,11 +323,15 @@ impl fmt::Display for Value {
                     format!("{},", t[0])
                 } else {
                     t.join(match *sep {
-                               ListSeparator::Comma => {
-                                   if out.alternate() { "," } else { ", " }
-                               }
-                               ListSeparator::Space => " ",
-                           })
+                        ListSeparator::Comma => {
+                            if out.alternate() {
+                                ","
+                            } else {
+                                ", "
+                            }
+                        }
+                        ListSeparator::Space => " ",
+                    })
                 };
                 if brackets {
                     out.write_str("[")?;
@@ -363,14 +371,14 @@ impl fmt::Display for Value {
             Value::True => write!(out, "true"),
             Value::False => write!(out, "false"),
             Value::Null => Ok(()),
-            Value::Map(ref map) => {
-                write!(out,
-                       "({})",
-                       map.iter()
-                           .map(|&(ref k, ref v)| format!("{}: {}", k, v))
-                           .collect::<Vec<_>>()
-                           .join(", "))
-            }
+            Value::Map(ref map) => write!(
+                out,
+                "({})",
+                map.iter()
+                    .map(|&(ref k, ref v)| format!("{}: {}", k, v))
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
         }
     }
 }

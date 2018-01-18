@@ -54,40 +54,69 @@ named!(pub sass_string_sq<SassString>,
                        tag!("'")),
             |p| SassString::new(p, Quotes::Single)));
 
-named!(string_part_interpolation<StringPart>,
-       map!(delimited!(tag!("#{"), value_expression, tag!("}")),
-            StringPart::Interpolation));
+named!(
+    string_part_interpolation<StringPart>,
+    map!(
+        delimited!(tag!("#{"), value_expression, tag!("}")),
+        StringPart::Interpolation
+    )
+);
 
-named!(simple_qstring_part<StringPart>,
-       map!(is_not!("\\#'\""),
-            |s| StringPart::Raw(from_utf8(s).unwrap().to_string())));
+named!(
+    simple_qstring_part<StringPart>,
+    map!(is_not!("\\#'\""), |s| StringPart::Raw(
+        from_utf8(s).unwrap().to_string()
+    ))
+);
 
-named!(selector_string<String>,
-       fold_many1!(alt_complete!(selector_plain_part |
-                                 selector_escaped_part |
-                                 hash_no_interpolation),
-                   String::new(),
-                   |mut acc: String, item: &[u8]| {
-                       acc.push_str(from_utf8(item).unwrap());
-                       acc
-                   }));
-named!(selector_plain_part<&[u8]>,
-       is_not!("\n\t >$\"'\\#+*/()[]{}:;,=!&@"));
-named!(selector_escaped_part<&[u8]>,
-       recognize!(preceded!(tag!("\\"),
-                            alt!(value!((), many_m_n!(1, 3, hexpair)) |
-                                 value!((), take!(1))))));
-named!(hexpair,
-       recognize!(do_parse!(one_of!("0123456789ABCDEFabcdef") >>
-                            one_of!("0123456789ABCDEFabcdef") >> ())));
-named!(hash_no_interpolation<&[u8]>,
-       terminated!(tag!("#"), peek!(not!(tag!("{")))));
-named!(extra_escape<StringPart>,
-       map!(preceded!(tag!("\\"),
-                      alt!(alphanumeric | tag!(" ") | tag!("'") |
-                           tag!("\"") | tag!("\\") | tag!("#")
-                           )),
-            |s| StringPart::Raw(format!("\\{}", from_utf8(s).unwrap()))));
+named!(
+    selector_string<String>,
+    fold_many1!(
+        alt_complete!(
+            selector_plain_part | selector_escaped_part | hash_no_interpolation
+        ),
+        String::new(),
+        |mut acc: String, item: &[u8]| {
+            acc.push_str(from_utf8(item).unwrap());
+            acc
+        }
+    )
+);
+named!(
+    selector_plain_part<&[u8]>,
+    is_not!("\n\t >$\"'\\#+*/()[]{}:;,=!&@")
+);
+named!(
+    selector_escaped_part<&[u8]>,
+    recognize!(preceded!(
+        tag!("\\"),
+        alt!(value!((), many_m_n!(1, 3, hexpair)) | value!((), take!(1)))
+    ))
+);
+named!(
+    hexpair,
+    recognize!(do_parse!(
+        one_of!("0123456789ABCDEFabcdef") >> one_of!("0123456789ABCDEFabcdef")
+            >> ()
+    ))
+);
+named!(
+    hash_no_interpolation<&[u8]>,
+    terminated!(tag!("#"), peek!(not!(tag!("{"))))
+);
+named!(
+    extra_escape<StringPart>,
+    map!(
+        preceded!(
+            tag!("\\"),
+            alt!(
+                alphanumeric | tag!(" ") | tag!("'") | tag!("\"") | tag!("\\")
+                    | tag!("#")
+            )
+        ),
+        |s| StringPart::Raw(format!("\\{}", from_utf8(s).unwrap()))
+    )
+);
 
 named!(pub extended_part<StringPart>,
        map!(recognize!(pair!(take_while1!(is_ext_str_start_char),
@@ -95,11 +124,10 @@ named!(pub extended_part<StringPart>,
             |v| StringPart::Raw(from_utf8(v).unwrap().into())));
 
 fn is_ext_str_start_char(c: u8) -> bool {
-    is_name_char(c) || c == b'*' || c == b'+' || c == b'.' ||
-    c == b'/' || c == b':' || c == b'=' || c == b'?' || c == b'|'
+    is_name_char(c) || c == b'*' || c == b'+' || c == b'.' || c == b'/'
+        || c == b':' || c == b'=' || c == b'?' || c == b'|'
 }
 fn is_ext_str_char(c: u8) -> bool {
-    is_name_char(c) || c == b'*' || c == b'+' || c == b',' ||
-    c == b'.' || c == b'/' || c == b':' || c == b'=' ||
-    c == b'?' || c == b'|'
+    is_name_char(c) || c == b'*' || c == b'+' || c == b',' || c == b'.'
+        || c == b'/' || c == b':' || c == b'=' || c == b'?' || c == b'|'
 }

@@ -1,10 +1,11 @@
 //! These are from the `values/lists` directory in the sass specification.
 extern crate rsass;
-use rsass::{OutputStyle, compile_scss};
+use rsass::{compile_scss, OutputStyle};
 
 #[test]
 fn brackets() {
-    check(".bracketed-lists {
+    check(
+        ".bracketed-lists {
   empty: [];
   single: [foo];
   multiple: [foo, bar];
@@ -33,7 +34,7 @@ fn brackets() {
   inspect-nested-unbracketed-singleton: inspect([(foo,)]);
 }
 ",
-          ".bracketed-lists {
+        ".bracketed-lists {
   empty: [];
   single: [foo];
   multiple: [foo, bar];
@@ -54,26 +55,31 @@ fn brackets() {
   inspect-nested-unbracketed-comma: [foo bar,];
   inspect-nested-unbracketed-singleton: [(foo,)];
 }
-")
+",
+    )
 }
 
 #[test]
 fn equality() {
-    check("a {\n  \
-           @if [foo bar]==[foo bar] {\n    t1: t;\n  } \
-           @else {\n    f1: f;\n  }\n\n\
-           @if [foo bar]==[foo, bar] {\n    t2: t;\n  } \
-           @else {\n    f2: f;\n  }\n\n\
-           @if [foo bar]==(foo bar) {\n    t3: t;\n  } \
-           @else {\n    f3: f;\n  }\n\n\
-           @if [] == [] {\n    t4: t;\n  } @else {\n    f4: f;\n  }\n\n\
-           @if [] == () {\n    t5: t;\n  } @else {\n    f5: f;\n  }\n}\n",
-          "a {\n  t1: t;\n  f2: f;\n  f3: f;\n  t4: t;\n  f5: f;\n}\n")
+    check(
+        "a {\n  \
+         @if [foo bar]==[foo bar] {\n    t1: t;\n  } \
+         @else {\n    f1: f;\n  }\n\n\
+         @if [foo bar]==[foo, bar] {\n    t2: t;\n  } \
+         @else {\n    f2: f;\n  }\n\n\
+         @if [foo bar]==(foo bar) {\n    t3: t;\n  } \
+         @else {\n    f3: f;\n  }\n\n\
+         @if [] == [] {\n    t4: t;\n  } @else {\n    f4: f;\n  }\n\n\
+         @if [] == () {\n    t5: t;\n  } @else {\n    f5: f;\n  }\n}\n",
+        "a {\n  t1: t;\n  f2: f;\n  f3: f;\n  t4: t;\n  f5: f;\n}\n",
+    )
 }
 
 fn check(input: &str, expected: &str) {
-    assert_eq!(compile_scss(input.as_bytes(), OutputStyle::Normal)
-                   .and_then(|s| Ok(String::from_utf8(s)?))
-                   .unwrap(),
-               expected);
+    assert_eq!(
+        compile_scss(input.as_bytes(), OutputStyle::Normal)
+            .and_then(|s| Ok(String::from_utf8(s)?))
+            .unwrap(),
+        expected
+    );
 }

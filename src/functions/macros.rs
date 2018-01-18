@@ -1,6 +1,3 @@
-
-
-
 macro_rules! one_arg {
     ($name:ident) => {
         (stringify!($name).into(), $crate::sass::Value::Null)

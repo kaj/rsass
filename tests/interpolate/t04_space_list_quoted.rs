@@ -4,26 +4,30 @@ use super::check;
 
 #[test]
 fn t01_inline() {
-    check(".result {\n  output: \"alpha\" 'beta';\n  \
-           output: #{\"alpha\" 'beta'};\n  \
-           output: \"[#{\"alpha\" 'beta'}]\";\n  \
-           output: \"#{\"alpha\" 'beta'}\";\n  \
-           output: '#{\"alpha\" 'beta'}';\n  \
-           output: \"['#{\"alpha\" 'beta'}']\";\n}\n",
-          ".result {\n  output: \"alpha\" 'beta';\n  \
-           output: alpha beta;\n  output: \"[alpha beta]\";\n  \
-           output: \"alpha beta\";\n  output: \"alpha beta\";\n  \
-           output: \"['alpha beta']\";\n}\n")
+    check(
+        ".result {\n  output: \"alpha\" 'beta';\n  \
+         output: #{\"alpha\" 'beta'};\n  \
+         output: \"[#{\"alpha\" 'beta'}]\";\n  \
+         output: \"#{\"alpha\" 'beta'}\";\n  \
+         output: '#{\"alpha\" 'beta'}';\n  \
+         output: \"['#{\"alpha\" 'beta'}']\";\n}\n",
+        ".result {\n  output: \"alpha\" 'beta';\n  \
+         output: alpha beta;\n  output: \"[alpha beta]\";\n  \
+         output: \"alpha beta\";\n  output: \"alpha beta\";\n  \
+         output: \"['alpha beta']\";\n}\n",
+    )
 }
 
 #[test]
 fn t02_variable() {
-    check("$input: \"alpha\" 'beta';\n.result {\n  output: $input;\n  \
-           output: #{$input};\n  output: \"[#{$input}]\";\n  \
-           output: \"#{$input}\";\n  output: '#{$input}';\n  \
-           output: \"['#{$input}']\";\n}\n",
-          ".result {\n  output: \"alpha\" \"beta\";\n  \
-           output: alpha beta;\n  output: \"[alpha beta]\";\n  \
-           output: \"alpha beta\";\n  output: \"alpha beta\";\n  \
-           output: \"['alpha beta']\";\n}\n")
+    check(
+        "$input: \"alpha\" 'beta';\n.result {\n  output: $input;\n  \
+         output: #{$input};\n  output: \"[#{$input}]\";\n  \
+         output: \"#{$input}\";\n  output: '#{$input}';\n  \
+         output: \"['#{$input}']\";\n}\n",
+        ".result {\n  output: \"alpha\" \"beta\";\n  \
+         output: alpha beta;\n  output: \"[alpha beta]\";\n  \
+         output: \"alpha beta\";\n  output: \"alpha beta\";\n  \
+         output: \"['alpha beta']\";\n}\n",
+    )
 }

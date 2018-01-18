@@ -11,8 +11,12 @@ rust:
   - nightly
 matrix:
   include:
-   - rust: stable
+   - rust: nightly
      env: TASK=rustfmt
-     script: cargo install -f rustfmt --vers 0.8.4 && PATH=${HOME}/.cargo/bin:$PATH cargo fmt
+     before_script:
+      - export PATH="$PATH:$HOME/.cargo/bin"
+      - cargo install -f rustfmt-nightly
+     script:
+      - cargo fmt -- --write-mode=diff
   allow_failures:
     - rust: nightly

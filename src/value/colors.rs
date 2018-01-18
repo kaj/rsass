@@ -30,10 +30,10 @@ fn get_none() {
 #[test]
 fn get_red_by_name() {
     use num_traits::Zero;
-    assert_eq!(Some((Rational::new(255, 1),
-                     Rational::zero(),
-                     Rational::zero())),
-               name_to_rgb("red"));
+    assert_eq!(
+        Some((Rational::new(255, 1), Rational::zero(), Rational::zero())),
+        name_to_rgb("red")
+    );
 }
 
 #[test]

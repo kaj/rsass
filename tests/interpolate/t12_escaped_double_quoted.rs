@@ -4,7 +4,8 @@ use super::check;
 
 #[test]
 fn t01_inline() {
-    check(".result {
+    check(
+        ".result {
   output: \"l\\\\ite\\ral\";
   output: #{\"l\\\\ite\\ral\"};
   output: \"[#{\"l\\\\ite\\ral\"}]\";
@@ -13,7 +14,7 @@ fn t01_inline() {
   output: \"['#{\"l\\\\ite\\ral\"}']\";
 }
 ",
-          ".result {
+        ".result {
   output: \"l\\\\ite\\ral\";
   output: l\\iteral;
   output: \"[l\\\\iteral]\";
@@ -21,12 +22,14 @@ fn t01_inline() {
   output: \"l\\\\iteral\";
   output: \"['l\\\\iteral']\";
 }
-")
+",
+    )
 }
 
 #[test]
 fn t02_variable() {
-    check("$input: \"l\\\\ite\\ral\";
+    check(
+        "$input: \"l\\\\ite\\ral\";
 .result {
   output: $input;
   output: #{$input};
@@ -36,7 +39,7 @@ fn t02_variable() {
   output: \"['#{$input}']\";
 }
 ",
-          ".result {
+        ".result {
   output: \"l\\\\iteral\";
   output: l\\iteral;
   output: \"[l\\\\iteral]\";
@@ -44,12 +47,14 @@ fn t02_variable() {
   output: \"l\\\\iteral\";
   output: \"['l\\\\iteral']\";
 }
-")
+",
+    )
 }
 
 #[test]
 fn t03_inline_double() {
-    check(".result {
+    check(
+        ".result {
   output: #{#{\"l\\\\ite\\ral\"}};
   output: #{\"[#{\"l\\\\ite\\ral\"}]\"};
   output: #{\"#{\"l\\\\ite\\ral\"}\"};
@@ -57,12 +62,13 @@ fn t03_inline_double() {
   output: #{\"['#{\"l\\\\ite\\ral\"}']\"};
 }
 ",
-          ".result {
+        ".result {
   output: l\\iteral;
   output: [l\\iteral];
   output: l\\iteral;
   output: l\\iteral;
   output: ['l\\iteral'];
 }
-")
+",
+    )
 }

@@ -55,14 +55,12 @@ pub mod sass;
 pub mod css;
 
 pub use error::Error;
-
 pub use file_context::FileContext;
 pub use functions::SassFunction;
 pub use num_rational::Rational;
 pub use output_style::OutputStyle;
 pub use parser::{parse_scss_data, parse_scss_file, parse_value_data};
 pub use sass::Item;
-
 pub use value::{ListSeparator, Quotes, Unit};
 pub use variablescope::{GlobalScope, Scope};
 
@@ -96,9 +94,10 @@ pub fn compile_value(input: &[u8]) -> Result<Vec<u8>, Error> {
 ///                           }", OutputStyle::Compressed).unwrap(),
 ///            b"foo bar{baz:value}\n")
 /// ```
-pub fn compile_scss(input: &[u8],
-                    style: OutputStyle)
-                    -> Result<Vec<u8>, Error> {
+pub fn compile_scss(
+    input: &[u8],
+    style: OutputStyle,
+) -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
     let items = parse_scss_data(input)?;
     style.write_root(&items, &mut GlobalScope::new(), &file_context)
@@ -118,9 +117,10 @@ pub fn compile_scss(input: &[u8],
 ///                              OutputStyle::Compressed).unwrap(),
 ///            b"div span{moo:goo}\n")
 /// ```
-pub fn compile_scss_file(file: &Path,
-                         style: OutputStyle)
-                         -> Result<Vec<u8>, Error> {
+pub fn compile_scss_file(
+    file: &Path,
+    style: OutputStyle,
+) -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
     let (sub_context, file) = file_context.file(file);
     let items = parse_scss_file(&file)?;

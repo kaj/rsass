@@ -1,6 +1,6 @@
 extern crate rsass;
 
-use rsass::{OutputStyle, compile_scss};
+use rsass::{compile_scss, OutputStyle};
 
 /// Tests from `sass_spec/spec/css/unknown_directive`
 
@@ -8,21 +8,27 @@ use rsass::{OutputStyle, compile_scss};
 // including interpolation.
 
 fn check(input: &str, expected: &str) {
-    assert_eq!(compile_scss(input.as_bytes(), OutputStyle::Normal)
-                   .and_then(|s| Ok(String::from_utf8(s)?))
-                   .map_err(|e| format!("{:?}", e)),
-               Ok(expected.to_string()));
+    assert_eq!(
+        compile_scss(input.as_bytes(), OutputStyle::Normal)
+            .and_then(|s| Ok(String::from_utf8(s)?))
+            .map_err(|e| format!("{:?}", e)),
+        Ok(expected.to_string())
+    );
 }
 
 #[test]
 fn t01_characters_are_passed_through_unaltered() {
-    check("@asdf .~@#$%^&*()_-+=[]|:<>,.?/;\n",
-          "@asdf .~@#$%^&*()_-+=[]|:<>,.?/;\n")
+    check(
+        "@asdf .~@#$%^&*()_-+=[]|:<>,.?/;\n",
+        "@asdf .~@#$%^&*()_-+=[]|:<>,.?/;\n",
+    )
 }
 #[test]
 fn t02_strings_are_tokenized_as_strings() {
-    check("@asdf \"f'o\" 'b\"r' url(baz) url(\"qux\");\n",
-          "@asdf \"f'o\" 'b\"r' url(baz) url(\"qux\");\n")
+    check(
+        "@asdf \"f'o\" 'b\"r' url(baz) url(\"qux\");\n",
+        "@asdf \"f'o\" 'b\"r' url(baz) url(\"qux\");\n",
+    )
 }
 #[test]
 fn t03_comments_are_preserved() {
@@ -38,7 +44,10 @@ fn t05_interpolation_plain() {
 }
 #[test]
 fn t06_interpolation_in_string() {
-    check("@asdf \"foo #{\"bar\"} baz\";\n", "@asdf \"foo bar baz\";\n")
+    check(
+        "@asdf \"foo #{\"bar\"} baz\";\n",
+        "@asdf \"foo bar baz\";\n",
+    )
 }
 #[test]
 fn t07_interpolation_in_string() {
@@ -46,11 +55,15 @@ fn t07_interpolation_in_string() {
 }
 #[test]
 fn t08_interpolation_in_url() {
-    check("@asdf url(http://#{\")\"}.com/);\n",
-          "@asdf url(http://).com/);\n")
+    check(
+        "@asdf url(http://#{\")\"}.com/);\n",
+        "@asdf url(http://).com/);\n",
+    )
 }
 #[test]
 fn t09_interpolation_in_url() {
-    check("@asdf url(\"http://#{\")\"}.com/\");\n",
-          "@asdf url(\"http://).com/\");\n")
+    check(
+        "@asdf url(\"http://#{\")\"}.com/\");\n",
+        "@asdf url(\"http://).com/\");\n",
+    )
 }

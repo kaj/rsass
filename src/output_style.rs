@@ -21,46 +21,55 @@ impl OutputStyle {
     /// Write a slice of sass items in this format.
     /// The `file_context` is needed if there are `@import` statements
     /// in the sass file.
-    pub fn write_root(&self,
-                      items: &[Item],
-                      globals: &mut Scope,
-                      file_context: &FileContext)
-                      -> Result<Vec<u8>, Error> {
+    pub fn write_root(
+        &self,
+        items: &[Item],
+        globals: &mut Scope,
+        file_context: &FileContext,
+    ) -> Result<Vec<u8>, Error> {
         let mut result = CssWriter::new(*self);
         for item in items {
             self.handle_root_item(item, globals, file_context, &mut result)?;
         }
         result.get_result()
     }
-    fn handle_root_item(&self,
-                        item: &Item,
-                        scope: &mut Scope,
-                        file_context: &FileContext,
-                        result: &mut CssWriter)
-                        -> Result<(), Error> {
+    fn handle_root_item(
+        &self,
+        item: &Item,
+        scope: &mut Scope,
+        file_context: &FileContext,
+        result: &mut CssWriter,
+    ) -> Result<(), Error> {
         match *item {
             Item::Import(ref name) => {
                 let name = name.evaluate(scope).unquote();
                 if let Value::Literal(ref x, _) = name {
                     if let Some((sub_context, file)) =
-                        file_context.find_file(x.as_ref()) {
+                        file_context.find_file(x.as_ref())
+                    {
                         for item in parse_scss_file(&file)? {
-                            self.handle_root_item(&item,
-                                                  scope,
-                                                  &sub_context,
-                                                  result)?;
+                            self.handle_root_item(
+                                &item,
+                                scope,
+                                &sub_context,
+                                result,
+                            )?;
                         }
                     } else {
-                        write!(result.to_imports(),
-                               "@import url({});{}",
-                               x,
-                               if self.is_compressed() { "" } else { "\n" })?;
+                        write!(
+                            result.to_imports(),
+                            "@import url({});{}",
+                            x,
+                            if self.is_compressed() { "" } else { "\n" }
+                        )?;
                     }
                 } else {
-                    write!(result.to_imports(),
-                           "@import {};{}",
-                           name,
-                           if self.is_compressed() { "" } else { "\n" })?;
+                    write!(
+                        result.to_imports(),
+                        "@import {};{}",
+                        name,
+                        if self.is_compressed() { "" } else { "\n" }
+                    )?;
                 }
             }
             Item::VariableDeclaration {
@@ -78,7 +87,11 @@ impl OutputStyle {
                     scope.define(name, &val);
                 }
             }
-            Item::AtRule { ref name, ref args, ref body } => {
+            Item::AtRule {
+                ref name,
+                ref args,
+                ref body,
+            } => {
                 result.do_separate()?;
                 let args = args.evaluate(scope);
                 write!(result.to_content(), "@{} {}", name, args)?;
@@ -90,13 +103,15 @@ impl OutputStyle {
                     }
                     let mut direct = vec![];
                     let mut sub = vec![];
-                    self.handle_body(&mut direct,
-                                     &mut sub,
-                                     &mut ScopeImpl::sub(scope),
-                                     &Selectors::root(),
-                                     body,
-                                     file_context,
-                                     2)?;
+                    self.handle_body(
+                        &mut direct,
+                        &mut sub,
+                        &mut ScopeImpl::sub(scope),
+                        &Selectors::root(),
+                        body,
+                        file_context,
+                        2,
+                    )?;
                     self.write_items(result.to_content(), &direct, 2)?;
                     if !sub.is_empty() {
                         if direct.is_empty() {
@@ -110,21 +125,31 @@ impl OutputStyle {
                 }
             }
 
-            Item::MixinDeclaration { ref name, ref args, ref body } => {
-                scope.define_mixin(name, args, body)
-            }
-            Item::MixinCall { ref name, ref args, ref body } => {
+            Item::MixinDeclaration {
+                ref name,
+                ref args,
+                ref body,
+            } => scope.define_mixin(name, args, body),
+            Item::MixinCall {
+                ref name,
+                ref args,
+                ref body,
+            } => {
                 if let Some((m_args, m_body)) = scope.get_mixin(name) {
                     let mut scope =
                         m_args.eval(scope, &args.evaluate(scope, true));
-                    scope.define_mixin("%%BODY%%",
-                                       &FormalArgs::default(),
-                                       body);
+                    scope.define_mixin(
+                        "%%BODY%%",
+                        &FormalArgs::default(),
+                        body,
+                    );
                     for item in m_body {
-                        self.handle_root_item(&item,
-                                              &mut scope,
-                                              file_context,
-                                              result)?;
+                        self.handle_root_item(
+                            &item,
+                            &mut scope,
+                            file_context,
+                            result,
+                        )?;
                     }
                 } else {
                     panic!(format!("Unknown mixin {}({:?})", name, args))
@@ -148,18 +173,21 @@ impl OutputStyle {
                     self.handle_root_item(item, scope, file_context, result)?;
                 }
             }
-            Item::Each(ref name, ref values, ref body) => {
-                for value in values.evaluate(scope).iter_items() {
-                    scope.define(name, &value);
-                    for item in body {
-                        self.handle_root_item(item,
-                                              scope,
-                                              file_context,
-                                              result)?;
-                    }
+            Item::Each(ref name, ref values, ref body) => for value in
+                values.evaluate(scope).iter_items()
+            {
+                scope.define(name, &value);
+                for item in body {
+                    self.handle_root_item(item, scope, file_context, result)?;
                 }
-            }
-            Item::For { ref name, ref from, ref to, inclusive, ref body } => {
+            },
+            Item::For {
+                ref name,
+                ref from,
+                ref to,
+                inclusive,
+                ref body,
+            } => {
                 let from = from.evaluate(scope).integer_value()?;
                 let to = to.evaluate(scope).integer_value()?;
                 let to = if inclusive { to + 1 } else { to };
@@ -167,10 +195,12 @@ impl OutputStyle {
                     let mut scope = ScopeImpl::sub(scope);
                     scope.define(name, &Value::scalar(value));
                     for item in body {
-                        self.handle_root_item(item,
-                                              &mut scope,
-                                              file_context,
-                                              result)?;
+                        self.handle_root_item(
+                            item,
+                            &mut scope,
+                            file_context,
+                            result,
+                        )?;
                     }
                 }
             }
@@ -178,23 +208,27 @@ impl OutputStyle {
                 let mut scope = ScopeImpl::sub(scope);
                 while cond.evaluate(&scope).is_true() {
                     for item in body {
-                        self.handle_root_item(item,
-                                              &mut scope,
-                                              file_context,
-                                              result)?;
+                        self.handle_root_item(
+                            item,
+                            &mut scope,
+                            file_context,
+                            result,
+                        )?;
                     }
                 }
             }
 
             Item::Rule(ref s, ref b) => {
                 result.do_separate()?;
-                self.write_rule(s,
-                                b,
-                                result.to_content(),
-                                scope,
-                                None,
-                                file_context,
-                                0)?;
+                self.write_rule(
+                    s,
+                    b,
+                    result.to_content(),
+                    scope,
+                    None,
+                    file_context,
+                    0,
+                )?;
             }
             Item::NamespaceRule(..) => {
                 panic!("Global namespaced property not allowed");
@@ -212,25 +246,28 @@ impl OutputStyle {
         }
         Ok(())
     }
-    fn write_rule(&self,
-                  selectors: &Selectors,
-                  body: &[Item],
-                  out: &mut Write,
-                  scope: &mut Scope,
-                  parent: Option<&Selectors>,
-                  file_context: &FileContext,
-                  indent: usize)
-                  -> Result<(), Error> {
+    fn write_rule(
+        &self,
+        selectors: &Selectors,
+        body: &[Item],
+        out: &mut Write,
+        scope: &mut Scope,
+        parent: Option<&Selectors>,
+        file_context: &FileContext,
+        indent: usize,
+    ) -> Result<(), Error> {
         let selectors = eval_selectors(selectors, scope).inside(parent);
         let mut direct = Vec::new();
         let mut sub = Vec::new();
-        self.handle_body(&mut direct,
-                         &mut sub,
-                         &mut ScopeImpl::sub(scope),
-                         &selectors,
-                         body,
-                         file_context,
-                         indent)?;
+        self.handle_body(
+            &mut direct,
+            &mut sub,
+            &mut ScopeImpl::sub(scope),
+            &selectors,
+            body,
+            file_context,
+            indent,
+        )?;
         if !direct.is_empty() {
             self.do_indent_no_lf(out, indent)?;
             if self.is_compressed() {
@@ -246,15 +283,16 @@ impl OutputStyle {
         Ok(())
     }
 
-    fn handle_body(&self,
-                   direct: &mut Vec<CssBodyItem>,
-                   sub: &mut Write,
-                   scope: &mut Scope,
-                   selectors: &Selectors,
-                   body: &[Item],
-                   file_context: &FileContext,
-                   indent: usize)
-                   -> Result<(), Error> {
+    fn handle_body(
+        &self,
+        direct: &mut Vec<CssBodyItem>,
+        sub: &mut Write,
+        scope: &mut Scope,
+        selectors: &Selectors,
+        body: &[Item],
+        file_context: &FileContext,
+        indent: usize,
+    ) -> Result<(), Error> {
         for b in body {
             match *b {
                 Item::Import(ref name) => {
@@ -262,13 +300,15 @@ impl OutputStyle {
                     if let Value::Literal(ref x, _) = name {
                         let (sub_context, file) = file_context.file(x.as_ref());
                         let items = parse_scss_file(&file)?;
-                        self.handle_body(direct,
-                                         sub,
-                                         scope,
-                                         selectors,
-                                         &items,
-                                         &sub_context,
-                                         0)?;
+                        self.handle_body(
+                            direct,
+                            sub,
+                            scope,
+                            selectors,
+                            &items,
+                            &sub_context,
+                            0,
+                        )?;
                     } else {
                         // TODO writeln!(direct, "@import {};", name)?;
                     }
@@ -288,7 +328,11 @@ impl OutputStyle {
                         scope.define(name, &val);
                     }
                 }
-                Item::AtRule { ref name, ref args, ref body } => {
+                Item::AtRule {
+                    ref name,
+                    ref args,
+                    ref body,
+                } => {
                     write!(sub, "@{} {}", name, args.evaluate(scope))?;
                     if let Some(ref body) = *body {
                         if self.is_compressed() {
@@ -299,13 +343,15 @@ impl OutputStyle {
 
                         let mut s1 = vec![];
                         let mut s2 = vec![];
-                        self.handle_body(&mut s1,
-                                         &mut s2,
-                                         &mut ScopeImpl::sub(scope),
-                                         selectors,
-                                         body,
-                                         file_context,
-                                         2)?;
+                        self.handle_body(
+                            &mut s1,
+                            &mut s2,
+                            &mut ScopeImpl::sub(scope),
+                            selectors,
+                            body,
+                            file_context,
+                            2,
+                        )?;
 
                         if !s1.is_empty() {
                             self.do_indent(sub, 2)?;
@@ -327,37 +373,53 @@ impl OutputStyle {
                     }
                 }
 
-                Item::MixinDeclaration { ref name, ref args, ref body } => {
+                Item::MixinDeclaration {
+                    ref name,
+                    ref args,
+                    ref body,
+                } => {
                     scope.define_mixin(name, args, body);
                 }
-                Item::MixinCall { ref name, ref args, ref body } => {
+                Item::MixinCall {
+                    ref name,
+                    ref args,
+                    ref body,
+                } => {
                     if let Some((m_args, m_body)) = scope.get_mixin(name) {
                         let mut argscope =
                             m_args.eval(scope, &args.evaluate(scope, true));
-                        argscope.define_mixin("%%BODY%%",
-                                              &FormalArgs::default(),
-                                              body);
-                        self.handle_body(direct,
-                                         sub,
-                                         &mut argscope,
-                                         selectors,
-                                         &m_body,
-                                         file_context,
-                                         indent)?;
+                        argscope.define_mixin(
+                            "%%BODY%%",
+                            &FormalArgs::default(),
+                            body,
+                        );
+                        self.handle_body(
+                            direct,
+                            sub,
+                            &mut argscope,
+                            selectors,
+                            &m_body,
+                            file_context,
+                            indent,
+                        )?;
                     } else {
-                        direct.push(CssBodyItem::Comment(
-                            format!("Unknown mixin {}({:?})", name, args)));
+                        direct.push(CssBodyItem::Comment(format!(
+                            "Unknown mixin {}({:?})",
+                            name, args
+                        )));
                     }
                 }
                 Item::Content => {
                     if let Some((_args, m_body)) = scope.get_mixin("%%BODY%%") {
-                        self.handle_body(direct,
-                                         sub,
-                                         scope,
-                                         selectors,
-                                         &m_body,
-                                         file_context,
-                                         indent)?;
+                        self.handle_body(
+                            direct,
+                            sub,
+                            scope,
+                            selectors,
+                            &m_body,
+                            file_context,
+                            indent,
+                        )?;
                     }
                 }
 
@@ -371,25 +433,29 @@ impl OutputStyle {
                 Item::IfStatement(ref cond, ref do_if, ref do_else) => {
                     let cond = cond.evaluate(scope).is_true();
                     let items = if cond { do_if } else { do_else };
-                    self.handle_body(direct,
-                                     sub,
-                                     &mut ScopeImpl::sub(scope),
-                                     selectors,
-                                     items,
-                                     file_context,
-                                     0)?;
+                    self.handle_body(
+                        direct,
+                        sub,
+                        &mut ScopeImpl::sub(scope),
+                        selectors,
+                        items,
+                        file_context,
+                        0,
+                    )?;
                 }
                 Item::Each(ref name, ref values, ref body) => {
                     for value in values.evaluate(scope).iter_items() {
                         let mut scope = ScopeImpl::sub(scope);
                         scope.define(name, &value);
-                        self.handle_body(direct,
-                                         sub,
-                                         &mut scope,
-                                         selectors,
-                                         body,
-                                         file_context,
-                                         0)?;
+                        self.handle_body(
+                            direct,
+                            sub,
+                            &mut scope,
+                            selectors,
+                            body,
+                            file_context,
+                            0,
+                        )?;
                     }
                 }
                 Item::For {
@@ -405,62 +471,73 @@ impl OutputStyle {
                     for value in from..to {
                         let mut scope = ScopeImpl::sub(scope);
                         scope.define(name, &Value::scalar(value));
-                        self.handle_body(direct,
-                                         sub,
-                                         &mut scope,
-                                         selectors,
-                                         body,
-                                         file_context,
-                                         0)?;
+                        self.handle_body(
+                            direct,
+                            sub,
+                            &mut scope,
+                            selectors,
+                            body,
+                            file_context,
+                            0,
+                        )?;
                     }
                 }
                 Item::While(ref cond, ref body) => {
                     let mut scope = ScopeImpl::sub(scope);
                     while cond.evaluate(&scope).is_true() {
-                        self.handle_body(direct,
-                                         sub,
-                                         &mut scope,
-                                         selectors,
-                                         body,
-                                         file_context,
-                                         0)?;
+                        self.handle_body(
+                            direct,
+                            sub,
+                            &mut scope,
+                            selectors,
+                            body,
+                            file_context,
+                            0,
+                        )?;
                     }
                 }
 
                 Item::Rule(ref s, ref b) => {
-                    self.write_rule(s,
-                                    b,
-                                    sub,
-                                    scope,
-                                    Some(selectors),
-                                    file_context,
-                                    indent)?;
+                    self.write_rule(
+                        s,
+                        b,
+                        sub,
+                        scope,
+                        Some(selectors),
+                        file_context,
+                        indent,
+                    )?;
                 }
                 Item::NamespaceRule(ref name, ref value, ref body) => {
                     let value = value.evaluate(scope);
                     if !value.is_null() {
-                        direct.push(CssBodyItem::Property(name.clone(),
-                                                          value,
-                                                          false));
+                        direct.push(CssBodyItem::Property(
+                            name.clone(),
+                            value,
+                            false,
+                        ));
                     }
                     let mut t = Vec::new();
-                    self.handle_body(&mut t,
-                                     sub,
-                                     scope,
-                                     selectors,
-                                     body,
-                                     file_context,
-                                     indent)?;
+                    self.handle_body(
+                        &mut t,
+                        sub,
+                        scope,
+                        selectors,
+                        body,
+                        file_context,
+                        indent,
+                    )?;
                     for item in t {
                         direct.push(match item {
-                                        CssBodyItem::Property(n, v, i) => {
-                                            CssBodyItem::Property(
-                                                format!("{}-{}", name, n),
-                                                v,
-                                                i)
-                                        }
-                                        c => c,
-                                    })
+                            CssBodyItem::Property(n, v, i) => {
+                                CssBodyItem::Property(
+                                    format!("{}-{}", name, n),
+                                    v,
+                                    i,
+                                )
+                            }
+                            c => c,
+                        })
                     }
                 }
                 Item::Property(ref name, ref value, ref important) => {
@@ -481,11 +558,12 @@ impl OutputStyle {
         Ok(())
     }
 
-    fn write_items(&self,
-                   out: &mut Write,
-                   items: &[CssBodyItem],
-                   indent: usize)
-                   -> Result<(), Error> {
+    fn write_items(
+        &self,
+        out: &mut Write,
+        items: &[CssBodyItem],
+        indent: usize,
+    ) -> Result<(), Error> {
         if !items.is_empty() {
             let mut buf = Vec::new();
             for item in items {
@@ -514,10 +592,11 @@ impl OutputStyle {
         }
         Ok(())
     }
-    fn do_indent_no_lf(&self,
-                       out: &mut Write,
-                       steps: usize)
-                       -> Result<(), Error> {
+    fn do_indent_no_lf(
+        &self,
+        out: &mut Write,
+        steps: usize,
+    ) -> Result<(), Error> {
         if !self.is_compressed() {
             for _i in 0..steps {
                 write!(out, " ")?;
@@ -532,44 +611,44 @@ impl OutputStyle {
 }
 
 fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
-    let s = Selectors(s.0
-                          .iter()
-                          .map(|s| {
-        Selector(s.0
-                     .iter()
-                     .map(|sp| match *sp {
-                              SelectorPart::Attribute {
-                                  ref name,
-                                  ref op,
-                                  ref val,
-                              } => {
-                                  SelectorPart::Attribute {
-                                      name: name.evaluate2(scope),
-                                      op: op.clone(),
-                                      val: val.evaluate2(scope),
-                                  }
-                              }
-                              SelectorPart::Simple(ref v) => {
-                                  SelectorPart::Simple(v.evaluate2(scope))
-                              }
-                              SelectorPart::Pseudo { ref name, ref arg } => {
-                                  SelectorPart::Pseudo {
-                                      name: name.evaluate2(scope),
-                                      arg: arg.as_ref()
-                                          .map(|a| {
-                                                   eval_selectors(a, scope)
-                                               }),
-                                  }
-                              }
-                              SelectorPart::PseudoElement(ref e) => {
-                                  let e = e.evaluate2(scope);
-                                  SelectorPart::PseudoElement(e)
-                              }
-                              ref sp => sp.clone(),
-                          })
-                     .collect())
-    })
-                          .collect());
+    let s = Selectors(
+        s.0
+            .iter()
+            .map(|s| {
+                Selector(
+                    s.0
+                        .iter()
+                        .map(|sp| match *sp {
+                            SelectorPart::Attribute {
+                                ref name,
+                                ref op,
+                                ref val,
+                            } => SelectorPart::Attribute {
+                                name: name.evaluate2(scope),
+                                op: op.clone(),
+                                val: val.evaluate2(scope),
+                            },
+                            SelectorPart::Simple(ref v) => {
+                                SelectorPart::Simple(v.evaluate2(scope))
+                            }
+                            SelectorPart::Pseudo { ref name, ref arg } => {
+                                SelectorPart::Pseudo {
+                                    name: name.evaluate2(scope),
+                                    arg: arg.as_ref()
+                                        .map(|a| eval_selectors(a, scope)),
+                                }
+                            }
+                            SelectorPart::PseudoElement(ref e) => {
+                                let e = e.evaluate2(scope);
+                                SelectorPart::PseudoElement(e)
+                            }
+                            ref sp => sp.clone(),
+                        })
+                        .collect(),
+                )
+            })
+            .collect(),
+    );
     // The "simple" parts we get from evaluating interpolations may
     // contain high-level selector separators (i.e. ","), so we need to
     // parse the selectors again, from a string representation.

@@ -25,7 +25,11 @@ impl Operator {
     pub fn eval(&self, a: Value, b: Value) -> Value {
         match *self {
             Operator::And => Value::bool(a.is_true() && b.is_true()),
-            Operator::Or => if a.is_true() { a } else { b },
+            Operator::Or => if a.is_true() {
+                a
+            } else {
+                b
+            },
             Operator::Equal => Value::bool(equal_values(&a, &b)),
             Operator::NotEqual => Value::bool(!equal_values(&a, &b)),
             Operator::Greater => Value::bool(a > b),
@@ -34,12 +38,14 @@ impl Operator {
             Operator::LesserE => Value::bool(a <= b),
             Operator::Plus => {
                 match (a, b) {
-                    (Value::Color(r, g, b, a, _),
-                     Value::Numeric(n, Unit::None, ..)) => {
-                        Value::rgba(r + n, g + n, b + n, a)
-                    }
-                    (Value::Color(ar, ag, ab, aa, _),
-                     Value::Color(br, bg, bb, ba, _)) => {
+                    (
+                        Value::Color(r, g, b, a, _),
+                        Value::Numeric(n, Unit::None, ..),
+                    ) => Value::rgba(r + n, g + n, b + n, a),
+                    (
+                        Value::Color(ar, ag, ab, aa, _),
+                        Value::Color(br, bg, bb, ba, _),
+                    ) => {
                         // TODO Sum or average the alpha?
                         Value::rgba(ar + br, ag + bg, ab + bb, aa + ba)
                     }
@@ -69,38 +75,43 @@ impl Operator {
                     }
                 }
             }
-            Operator::Minus => {
-                match (&a, &b) {
-                    (&Value::Color(ref r, ref g, ref b, ref a, _),
-                     &Value::Numeric(ref n, Unit::None, ..)) => {
-                        Value::rgba(r - n, g - n, b - n, *a)
-                    }
-                    (&Value::Color(ref ar, ref ag, ref ab, ref aa, _),
-                     &Value::Color(ref br, ref bg, ref bb, ref ba, _)) => {
-                        Value::rgba(ar - br, ag - bg, ab - bb, avg(aa, ba))
-                    }
-                    (&Value::Numeric(ref av, ref au, ..),
-                     &Value::Numeric(ref bv, ref bu, ..)) => {
-                        if au == bu || bu == &Unit::None {
-                            Value::Numeric(av - bv, au.clone(), false, true)
-                        } else if au == &Unit::None {
-                            Value::Numeric(av - bv, bu.clone(), false, true)
-                        } else {
-                            Value::BinOp(Box::new(a.clone()),
-                                         Operator::Minus,
-                                         Box::new(b.clone()))
-                        }
-                    }
-                    _ => {
-                        Value::BinOp(Box::new(a.clone()),
-                                     Operator::Minus,
-                                     Box::new(b.clone()))
+            Operator::Minus => match (&a, &b) {
+                (
+                    &Value::Color(ref r, ref g, ref b, ref a, _),
+                    &Value::Numeric(ref n, Unit::None, ..),
+                ) => Value::rgba(r - n, g - n, b - n, *a),
+                (
+                    &Value::Color(ref ar, ref ag, ref ab, ref aa, _),
+                    &Value::Color(ref br, ref bg, ref bb, ref ba, _),
+                ) => Value::rgba(ar - br, ag - bg, ab - bb, avg(aa, ba)),
+                (
+                    &Value::Numeric(ref av, ref au, ..),
+                    &Value::Numeric(ref bv, ref bu, ..),
+                ) => {
+                    if au == bu || bu == &Unit::None {
+                        Value::Numeric(av - bv, au.clone(), false, true)
+                    } else if au == &Unit::None {
+                        Value::Numeric(av - bv, bu.clone(), false, true)
+                    } else {
+                        Value::BinOp(
+                            Box::new(a.clone()),
+                            Operator::Minus,
+                            Box::new(b.clone()),
+                        )
                     }
                 }
-            }
+                _ => Value::BinOp(
+                    Box::new(a.clone()),
+                    Operator::Minus,
+                    Box::new(b.clone()),
+                ),
+            },
             Operator::Multiply => {
-                if let (&Value::Numeric(ref a, ref au, ..),
-                        &Value::Numeric(ref b, ref bu, ..)) = (&a, &b) {
+                if let (
+                    &Value::Numeric(ref a, ref au, ..),
+                    &Value::Numeric(ref b, ref bu, ..),
+                ) = (&a, &b)
+                {
                     if bu == &Unit::None {
                         Value::Numeric(a * b, au.clone(), false, true)
                     } else if au == &Unit::None {
@@ -125,22 +136,24 @@ fn avg(a: &Rational, b: &Rational) -> Rational {
 
 impl fmt::Display for Operator {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        write!(out,
-               "{}",
-               match *self {
-                   Operator::And => "and",
-                   Operator::Or => "or",
-                   Operator::Equal => "==",
-                   Operator::NotEqual => "!=",
-                   Operator::Greater => ">",
-                   Operator::GreaterE => ">=",
-                   Operator::Lesser => "<",
-                   Operator::LesserE => "<=",
-                   Operator::Plus => "+",
-                   Operator::Minus => "-",
-                   Operator::Multiply => "*",
-                   Operator::Not => "not",
-               })
+        write!(
+            out,
+            "{}",
+            match *self {
+                Operator::And => "and",
+                Operator::Or => "or",
+                Operator::Equal => "==",
+                Operator::NotEqual => "!=",
+                Operator::Greater => ">",
+                Operator::GreaterE => ">=",
+                Operator::Lesser => "<",
+                Operator::LesserE => "<=",
+                Operator::Plus => "+",
+                Operator::Minus => "-",
+                Operator::Multiply => "*",
+                Operator::Not => "not",
+            }
+        )
     }
 }
 

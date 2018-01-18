@@ -41,12 +41,14 @@ impl CallArgs {
     }
 
     pub fn evaluate(&self, scope: &Scope, arithmetic: bool) -> css::CallArgs {
-        css::CallArgs(self.0
-                          .iter()
-                          .map(|&(ref n, ref v)| {
-                                   (n.clone(), v.do_evaluate(scope, arithmetic))
-                               })
-                          .collect())
+        css::CallArgs(
+            self.0
+                .iter()
+                .map(|&(ref n, ref v)| {
+                    (n.clone(), v.do_evaluate(scope, arithmetic))
+                })
+                .collect(),
+        )
     }
 }
 

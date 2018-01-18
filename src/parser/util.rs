@@ -38,7 +38,10 @@ named!(pub comment,
                   tag!("*/")));
 
 named!(pub ignore_space<()>, map!(multispace, |_|()));
-named!(ignore_lcomment<()>, do_parse!(tag!("//") >> opt!(is_not!("\n")) >> ()));
+named!(
+    ignore_lcomment<()>,
+    do_parse!(tag!("//") >> opt!(is_not!("\n")) >> ())
+);
 
 #[cfg(test)]
 mod test {
@@ -47,19 +50,22 @@ mod test {
 
     #[test]
     fn comment_simple() {
-        assert_eq!(comment(b"/* hello */\n"),
-                   Done(&b"\n"[..], &b" hello "[..]))
+        assert_eq!(comment(b"/* hello */\n"), Done(&b"\n"[..], &b" hello "[..]))
     }
 
     #[test]
     fn comment_with_stars() {
-        assert_eq!(comment(b"/**** hello ****/\n"),
-                   Done(&b"\n"[..], &b"*** hello ***"[..]))
+        assert_eq!(
+            comment(b"/**** hello ****/\n"),
+            Done(&b"\n"[..], &b"*** hello ***"[..])
+        )
     }
 
     #[test]
     fn comment_with_stars2() {
-        assert_eq!(comment(b"/* / * / * / * hello * \\ * \\ * \\ */\n"),
-                   Done(&b"\n"[..], &b" / * / * / * hello * \\ * \\ * \\ "[..]))
+        assert_eq!(
+            comment(b"/* / * / * / * hello * \\ * \\ * \\ */\n"),
+            Done(&b"\n"[..], &b" / * / * / * hello * \\ * \\ * \\ "[..])
+        )
     }
 }

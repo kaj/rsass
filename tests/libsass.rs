@@ -1,9 +1,10 @@
 extern crate rsass;
-use rsass::{OutputStyle, compile_scss};
+use rsass::{compile_scss, OutputStyle};
 
 #[test]
 fn t01_arg_eval() {
-    check(b"
+    check(
+        b"
         @function foo() {
           @return 1+2 3/4 5+6;
         }
@@ -22,16 +23,19 @@ fn t01_arg_eval() {
           @include bar();
         }
     ",
-          "div {\n  \
-      content: foobar(3 3/4 11, orange);\n  \
-      content: 3 2/3 11 orange;\n  content: 3 2/3 11;\n  \
-      content: number;\n  content: color;\n  content: 3 3/4 11;\n  \
-      bar-content: 0.75;\n}\n")
+        "div {\n  \
+         content: foobar(3 3/4 11, orange);\n  \
+         content: 3 2/3 11 orange;\n  content: 3 2/3 11;\n  \
+         content: number;\n  content: color;\n  content: 3 3/4 11;\n  \
+         bar-content: 0.75;\n}\n",
+    )
 }
 
 fn check(input: &[u8], expected: &str) {
-    assert_eq!(compile_scss(input, OutputStyle::Normal)
-                   .and_then(|s| Ok(String::from_utf8(s)?))
-                   .unwrap(),
-               expected);
+    assert_eq!(
+        compile_scss(input, OutputStyle::Normal)
+            .and_then(|s| Ok(String::from_utf8(s)?))
+            .unwrap(),
+        expected
+    );
 }

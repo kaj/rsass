@@ -49,7 +49,11 @@ impl Value {
         Value::Numeric(Rational::from_integer(v), Unit::None, false, false)
     }
     pub fn bool(v: bool) -> Self {
-        if v { Value::True } else { Value::False }
+        if v {
+            Value::True
+        } else {
+            Value::False
+        }
     }
     pub fn black() -> Self {
         let z = Rational::zero();
@@ -126,16 +130,20 @@ impl Value {
                 css::Value::Color(r, g, b, a, s.clone())
             }
             Value::Variable(ref name) => scope.get(name).into_calculated(),
-            Value::List(ref v, ref s, b, needs_requote) => {
-                css::Value::List(v.iter()
-                                     .map(|v| {
-                    let v = v.do_evaluate(scope, false);
-                    if needs_requote { v.unrequote() } else { v }
-                })
-                                     .collect::<Vec<_>>(),
-                                 s.clone(),
-                                 b)
-            }
+            Value::List(ref v, ref s, b, needs_requote) => css::Value::List(
+                v.iter()
+                    .map(|v| {
+                        let v = v.do_evaluate(scope, false);
+                        if needs_requote {
+                            v.unrequote()
+                        } else {
+                            v
+                        }
+                    })
+                    .collect::<Vec<_>>(),
+                s.clone(),
+                b,
+            ),
             Value::Call(ref name, ref args) => {
                 let args = args.evaluate(scope, true);
                 if let Some(name) = name.single_raw() {
@@ -145,11 +153,10 @@ impl Value {
                             if let Some(function) = get_builtin_function(name) {
                                 match function.call(scope, &args) {
                                     Ok(v) => v,
-                                    Err(e) => {
-                                        panic!("Error in function {}: {:?}",
-                                               name,
-                                               e)
-                                    }
+                                    Err(e) => panic!(
+                                        "Error in function {}: {:?}",
+                                        name, e
+                                    ),
                                 }
                             } else {
                                 css::Value::Call(name.to_string(), args)
@@ -174,40 +181,50 @@ impl Value {
                 };
                 if arithmetic || a.is_calculated() || b.is_calculated() {
                     match (&a, &b) {
-                        (&css::Value::Color(ref r, ref g, ref b, ref a, _),
-                         &css::Value::Numeric(ref n, Unit::None, ..)) => {
-                            css::Value::rgba(r / n, g / n, b / n, *a)
-                        }
-                        (&css::Value::Numeric(ref av, ref au, ..),
-                         &css::Value::Numeric(ref bv, ref bu, ..)) => {
+                        (
+                            &css::Value::Color(ref r, ref g, ref b, ref a, _),
+                            &css::Value::Numeric(ref n, Unit::None, ..),
+                        ) => css::Value::rgba(r / n, g / n, b / n, *a),
+                        (
+                            &css::Value::Numeric(ref av, ref au, ..),
+                            &css::Value::Numeric(ref bv, ref bu, ..),
+                        ) => {
                             if bv.is_zero() {
-                                css::Value::Div(Box::new(a.clone()),
-                                                Box::new(b.clone()),
-                                                *space1,
-                                                *space2)
+                                css::Value::Div(
+                                    Box::new(a.clone()),
+                                    Box::new(b.clone()),
+                                    *space1,
+                                    *space2,
+                                )
                             } else if bu == &Unit::None {
-                                css::Value::Numeric(av / bv,
-                                                    au.clone(),
-                                                    false,
-                                                    true)
+                                css::Value::Numeric(
+                                    av / bv,
+                                    au.clone(),
+                                    false,
+                                    true,
+                                )
                             } else if au == bu {
-                                css::Value::Numeric(av / bv,
-                                                    Unit::None,
-                                                    false,
-                                                    true)
+                                css::Value::Numeric(
+                                    av / bv,
+                                    Unit::None,
+                                    false,
+                                    true,
+                                )
                             } else {
-                                css::Value::Div(Box::new(a.clone()),
-                                                Box::new(b.clone()),
-                                                false,
-                                                false)
+                                css::Value::Div(
+                                    Box::new(a.clone()),
+                                    Box::new(b.clone()),
+                                    false,
+                                    false,
+                                )
                             }
                         }
-                        (a, b) => {
-                            css::Value::Div(Box::new(a.clone()),
-                                            Box::new(b.clone()),
-                                            false,
-                                            false)
-                        }
+                        (a, b) => css::Value::Div(
+                            Box::new(a.clone()),
+                            Box::new(b.clone()),
+                            false,
+                            false,
+                        ),
                     }
                 } else {
                     css::Value::Div(Box::new(a), Box::new(b), *space1, *space2)
@@ -216,14 +233,16 @@ impl Value {
             Value::Numeric(ref v, ref u, ref sign, ref calc) => {
                 css::Value::Numeric(*v, u.clone(), *sign, arithmetic || *calc)
             }
-            Value::Map(ref m) => {
-                css::Value::Map(m.iter()
-                                    .map(|&(ref k, ref v)| {
-                                             (k.do_evaluate(scope, false),
-                                              v.do_evaluate(scope, false))
-                                         })
-                                    .collect())
-            }
+            Value::Map(ref m) => css::Value::Map(
+                m.iter()
+                    .map(|&(ref k, ref v)| {
+                        (
+                            k.do_evaluate(scope, false),
+                            v.do_evaluate(scope, false),
+                        )
+                    })
+                    .collect(),
+            ),
             Value::Null => css::Value::Null,
             Value::True => css::Value::True,
             Value::False => css::Value::False,

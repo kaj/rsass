@@ -8,66 +8,73 @@ use value::{Quotes, Unit};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f,
-         adjust_color(color,
-                      red,
-                      green,
-                      blue,
-                      hue,
-                      saturation,
-                      lightness,
-                      alpha),
-         |s: &Scope| match &s.get("color") {
-             &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
-                 let h_adj = s.get("hue");
-                 let s_adj = s.get("saturation");
-                 let l_adj = s.get("lightness");
-                 let a_adj = s.get("alpha");
-                 if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
-                     Ok(Value::rgba(c_add(*red, s.get("red"))?,
-                                    c_add(*green, s.get("green"))?,
-                                    c_add(*blue, s.get("blue"))?,
-                                    c_add(*alpha, a_adj)?))
-                 } else {
-                     let (h, s, l) = rgb_to_hsl(red, green, blue);
-                     Ok(hsla_to_rgba(c_add(h, h_adj)? * Rational::new(1, 360),
-                                     sl_add(s, s_adj)?,
-                                     sl_add(l, l_adj)?,
-                                     c_add(*alpha, a_adj)?))
-                 }
-             }
-             v => Err(Error::badarg("color", v)),
-         });
-    def!(f,
-         scale_color(color,
-                     red,
-                     green,
-                     blue,
-                     hue,
-                     saturation,
-                     lightness,
-                     alpha),
-         |s: &Scope| match &s.get("color") {
-             &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
-                 let h_adj = s.get("hue");
-                 let s_adj = s.get("saturation");
-                 let l_adj = s.get("lightness");
-                 let a_adj = s.get("alpha");
-                 if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
-                     Ok(Value::rgba(c_comb(*red, s.get("red"))?,
-                                    c_comb(*green, s.get("green"))?,
-                                    c_comb(*blue, s.get("blue"))?,
-                                    comb(*alpha, a_adj)?))
-                 } else {
-                     let (h, s, l) = rgb_to_hsl(red, green, blue);
-                     Ok(hsla_to_rgba(comb(h, h_adj)? * Rational::new(1, 360),
-                                     comb(s, s_adj)?,
-                                     comb(l, l_adj)?,
-                                     comb(*alpha, a_adj)?))
-                 }
-             }
-             v => Err(Error::badarg("color", v)),
-         });
+    def!(
+        f,
+        adjust_color(
+            color,
+            red,
+            green,
+            blue,
+            hue,
+            saturation,
+            lightness,
+            alpha
+        ),
+        |s: &Scope| match &s.get("color") {
+            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
+                let h_adj = s.get("hue");
+                let s_adj = s.get("saturation");
+                let l_adj = s.get("lightness");
+                let a_adj = s.get("alpha");
+                if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
+                    Ok(Value::rgba(
+                        c_add(*red, s.get("red"))?,
+                        c_add(*green, s.get("green"))?,
+                        c_add(*blue, s.get("blue"))?,
+                        c_add(*alpha, a_adj)?,
+                    ))
+                } else {
+                    let (h, s, l) = rgb_to_hsl(red, green, blue);
+                    Ok(hsla_to_rgba(
+                        c_add(h, h_adj)? * Rational::new(1, 360),
+                        sl_add(s, s_adj)?,
+                        sl_add(l, l_adj)?,
+                        c_add(*alpha, a_adj)?,
+                    ))
+                }
+            }
+            v => Err(Error::badarg("color", v)),
+        }
+    );
+    def!(
+        f,
+        scale_color(color, red, green, blue, hue, saturation, lightness, alpha),
+        |s: &Scope| match &s.get("color") {
+            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
+                let h_adj = s.get("hue");
+                let s_adj = s.get("saturation");
+                let l_adj = s.get("lightness");
+                let a_adj = s.get("alpha");
+                if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
+                    Ok(Value::rgba(
+                        c_comb(*red, s.get("red"))?,
+                        c_comb(*green, s.get("green"))?,
+                        c_comb(*blue, s.get("blue"))?,
+                        comb(*alpha, a_adj)?,
+                    ))
+                } else {
+                    let (h, s, l) = rgb_to_hsl(red, green, blue);
+                    Ok(hsla_to_rgba(
+                        comb(h, h_adj)? * Rational::new(1, 360),
+                        comb(s, s_adj)?,
+                        comb(l, l_adj)?,
+                        comb(*alpha, a_adj)?,
+                    ))
+                }
+            }
+            v => Err(Error::badarg("color", v)),
+        }
+    );
 
     fn opacity(color: Value) -> Result<Value, Error> {
         match color {
@@ -102,47 +109,59 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     f.insert("fade_out", func2!(fade_out(color, amount)));
     f.insert("transparentize", func2!(fade_out(color, amount)));
 
-    def!(f,
-         change_color(color,
-                      red,
-                      green,
-                      blue,
-                      hue,
-                      saturation,
-                      lightness,
-                      alpha),
-         |s: &Scope| match s.get("color") {
-             Value::Color(red, green, blue, alpha, _) => {
-                 let h_adj = s.get("hue");
-                 let s_adj = s.get("saturation");
-                 let l_adj = s.get("lightness");
-                 let a_adj = s.get("alpha");
-                 if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
-                     Ok(Value::rgba(c_or(red, s.get("red"))?,
-                                    c_or(green, s.get("green"))?,
-                                    c_or(blue, s.get("blue"))?,
-                                    a_or(alpha, s.get("alpha"))?))
-                 } else {
-                     let (h, s, l) = rgb_to_hsl(&red, &green, &blue);
-                     Ok(hsla_to_rgba(a_or(h, h_adj)? * Rational::new(1, 360),
-                                     sl_or(s, s_adj)?,
-                                     sl_or(l, l_adj)?,
-                                     a_or(alpha, a_adj)?))
-                 }
-             }
-             v => Err(Error::badarg("color", &v)),
-         });
+    def!(
+        f,
+        change_color(
+            color,
+            red,
+            green,
+            blue,
+            hue,
+            saturation,
+            lightness,
+            alpha
+        ),
+        |s: &Scope| match s.get("color") {
+            Value::Color(red, green, blue, alpha, _) => {
+                let h_adj = s.get("hue");
+                let s_adj = s.get("saturation");
+                let l_adj = s.get("lightness");
+                let a_adj = s.get("alpha");
+                if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
+                    Ok(Value::rgba(
+                        c_or(red, s.get("red"))?,
+                        c_or(green, s.get("green"))?,
+                        c_or(blue, s.get("blue"))?,
+                        a_or(alpha, s.get("alpha"))?,
+                    ))
+                } else {
+                    let (h, s, l) = rgb_to_hsl(&red, &green, &blue);
+                    Ok(hsla_to_rgba(
+                        a_or(h, h_adj)? * Rational::new(1, 360),
+                        sl_or(s, s_adj)?,
+                        sl_or(l, l_adj)?,
+                        a_or(alpha, a_adj)?,
+                    ))
+                }
+            }
+            v => Err(Error::badarg("color", &v)),
+        }
+    );
     def!(f, ie_hex_str(color), |s| match s.get("color") {
         Value::Color(r, g, b, alpha, _) => {
             fn to_byte(v: Rational) -> u8 {
                 v.round().to_integer() as u8
             }
-            Ok(Value::Literal(format!("#{:02X}{:02X}{:02X}{:02X}",
-                                      to_byte(alpha * Rational::new(255, 1)),
-                                      to_byte(r),
-                                      to_byte(g),
-                                      to_byte(b)),
-                              Quotes::None))
+            Ok(Value::Literal(
+                format!(
+                    "#{:02X}{:02X}{:02X}{:02X}",
+                    to_byte(alpha * Rational::new(255, 1)),
+                    to_byte(r),
+                    to_byte(g),
+                    to_byte(b)
+                ),
+                Quotes::None,
+            ))
         }
         v => Err(Error::badarg("color", &v)),
     });
@@ -186,10 +205,10 @@ fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
         x => {
             let x = to_rational_percent(x)?;
             Ok(if x.is_positive() {
-                   orig + (Rational::one() - orig) * x
-               } else {
-                   orig - orig * x.abs()
-               })
+                orig + (Rational::one() - orig) * x
+            } else {
+                orig - orig * x.abs()
+            })
         }
     }
 }
@@ -240,7 +259,9 @@ mod test {
     }
     #[test]
     fn ie_hex_str_c() {
-        assert_eq!(do_evaluate(&[], b"ie-hex-str(rgba(0, 255, 0, 0.5));"),
-                   "#8000FF00")
+        assert_eq!(
+            do_evaluate(&[], b"ie-hex-str(rgba(0, 255, 0, 0.5));"),
+            "#8000FF00"
+        )
     }
 }

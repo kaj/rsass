@@ -6,24 +6,34 @@ use std::collections::BTreeMap;
 use value::Unit;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, rgb(red, green, blue), |s| {
-        Ok(Value::rgba(to_int(s.get("red"))?,
-                       to_int(s.get("green"))?,
-                       to_int(s.get("blue"))?,
-                       Rational::one()))
-    });
+    def!(f, rgb(red, green, blue), |s| Ok(Value::rgba(
+        to_int(s.get("red"))?,
+        to_int(s.get("green"))?,
+        to_int(s.get("blue"))?,
+        Rational::one()
+    )));
     def!(f, rgba(red, green, blue, alpha, color), |s| {
         let a = s.get("alpha");
         let red = s.get("red");
-        let red = if red.is_null() { s.get("color") } else { red };
+        let red = if red.is_null() {
+            s.get("color")
+        } else {
+            red
+        };
         if let Value::Color(r, g, b, _, _) = red {
-            let a = if a.is_null() { s.get("green") } else { a };
+            let a = if a.is_null() {
+                s.get("green")
+            } else {
+                a
+            };
             Ok(Value::rgba(r, g, b, to_rational(a)?))
         } else {
-            Ok(Value::rgba(to_int(red)?,
-                           to_int(s.get("green"))?,
-                           to_int(s.get("blue"))?,
-                           to_rational(a)?))
+            Ok(Value::rgba(
+                to_int(red)?,
+                to_int(s.get("green"))?,
+                to_int(s.get("blue"))?,
+                to_rational(a)?,
+            ))
         }
     });
     fn num(v: &Rational) -> Result<Value, Error> {
@@ -45,10 +55,12 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         let color1 = s.get("color1");
         let color2 = s.get("color2");
         let weight = s.get("weight");
-        if let (&Value::Color(ref r1, ref g1, ref b1, ref a1, _),
-                &Value::Color(ref r2, ref g2, ref b2, ref a2, _),
-                &Value::Numeric(ref w, ref wu, ..)) =
-            (&color1, &color2, &weight) {
+        if let (
+            &Value::Color(ref r1, ref g1, ref b1, ref a1, _),
+            &Value::Color(ref r2, ref g2, ref b2, ref a2, _),
+            &Value::Numeric(ref w, ref wu, ..),
+        ) = (&color1, &color2, &weight)
+        {
             let w = if wu == &Unit::Percent {
                 w / Rational::from_integer(100)
             } else {
@@ -59,13 +71,17 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             fn m(v1: &Rational, v2: &Rational, w: Rational) -> Rational {
                 *v1 * w + *v2 * (Rational::one() - w)
             }
-            Ok(Value::rgba(m(r1, r2, w2),
-                           m(g1, g2, w2),
-                           m(b1, b2, w2),
-                           m(a1, a2, w)))
+            Ok(Value::rgba(
+                m(r1, r2, w2),
+                m(g1, g2, w2),
+                m(b1, b2, w2),
+                m(a1, a2, w),
+            ))
         } else {
-            Err(Error::badargs(&["color", "color", "number"],
-                               &[&color1, &color2, &weight]))
+            Err(Error::badargs(
+                &["color", "color", "number"],
+                &[&color1, &color2, &weight],
+            ))
         }
     });
     def!(f, invert(color), |s| match &s.get("color") {

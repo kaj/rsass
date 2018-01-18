@@ -1,7 +1,7 @@
 //! Tests from `spec/parser/interpolate/00_concatenation` split up
 //! into the individual properties to be tested.
 
-use rsass::{GlobalScope, Scope, parse_value_data};
+use rsass::{parse_value_data, GlobalScope, Scope};
 
 #[test]
 fn spaced_a01() {

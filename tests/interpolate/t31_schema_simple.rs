@@ -4,7 +4,8 @@ use super::check;
 
 #[test]
 fn t01_inline() {
-    check(".result {
+    check(
+        ".result {
   output: \"[\"'foo'\"]\";
   output: #{\"[\"'foo'\"]\"};
   output: \"[#{\"[\"'foo'\"]\"}]\";
@@ -13,7 +14,7 @@ fn t01_inline() {
   output: \"['#{\"[\"'foo'\"]\"}']\";
 }
 ",
-          ".result {
+        ".result {
   output: \"[\" \"foo\" \"]\";
   output: [ foo ];
   output: \"[[ foo ]]\";
@@ -21,5 +22,6 @@ fn t01_inline() {
   output: \"[ foo ]\";
   output: \"['[ foo ]']\";
 }
-")
+",
+    )
 }

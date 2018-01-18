@@ -49,9 +49,21 @@ pub enum Unit {
 impl Unit {
     pub fn dimension(&self) -> &'static str {
         match *self {
-            Unit::Em | Unit::Ex | Unit::Ch | Unit::Rem | Unit::Vw |
-            Unit::Vh | Unit::Vmin | Unit::Vmax | Unit::Cm | Unit::Mm |
-            Unit::Q | Unit::In | Unit::Pt | Unit::Pc | Unit::Px => "length",
+            Unit::Em
+            | Unit::Ex
+            | Unit::Ch
+            | Unit::Rem
+            | Unit::Vw
+            | Unit::Vh
+            | Unit::Vmin
+            | Unit::Vmax
+            | Unit::Cm
+            | Unit::Mm
+            | Unit::Q
+            | Unit::In
+            | Unit::Pt
+            | Unit::Pc
+            | Unit::Px => "length",
 
             Unit::Deg | Unit::Grad | Unit::Rad | Unit::Turn => "angle",
 

@@ -19,28 +19,33 @@ pub enum Error {
 
 impl Error {
     pub fn bad_value(expected: &str, actual: &Value) -> Self {
-        Error::BadValue(format!("expected {}, got {} = {}",
-                                expected,
-                                actual.type_name(),
-                                actual))
+        Error::BadValue(format!(
+            "expected {}, got {} = {}",
+            expected,
+            actual.type_name(),
+            actual
+        ))
     }
 
     /// Wrong kind of argument to a sass function.
     /// `expected` is a string describing what the parameter should
     /// have been, `actual` is the argument.
     pub fn badarg(expected: &str, actual: &Value) -> Error {
-        Error::BadArguments(format!("expected {}, got {} = {}",
-                                    expected,
-                                    actual.type_name(),
-                                    actual))
+        Error::BadArguments(format!(
+            "expected {}, got {} = {}",
+            expected,
+            actual.type_name(),
+            actual
+        ))
     }
 
     /// Multiple-argument variant of `badarg`.
     pub fn badargs(expected: &[&str], actual: &[&Value]) -> Error {
         // TODO Better message!
-        Error::BadArguments(format!("expected {:?}, got {:?}",
-                                    expected,
-                                    actual))
+        Error::BadArguments(format!(
+            "expected {:?}, got {:?}",
+            expected, actual
+        ))
     }
 }
 

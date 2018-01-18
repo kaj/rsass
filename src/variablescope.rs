@@ -2,7 +2,7 @@
 
 use css;
 use css::Value;
-use functions::{SassFunction, get_builtin_function};
+use functions::{get_builtin_function, SassFunction};
 use sass;
 use sass::Item;
 use std::collections::BTreeMap;
@@ -27,10 +27,12 @@ pub trait Scope {
     fn get(&self, name: &str) -> Value;
     fn get_global(&self, name: &str) -> Value;
 
-    fn define_mixin(&mut self,
-                    name: &str,
-                    args: &sass::FormalArgs,
-                    body: &[Item]);
+    fn define_mixin(
+        &mut self,
+        name: &str,
+        args: &sass::FormalArgs,
+        body: &[Item],
+    );
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)>;
 
     fn define_function(&mut self, name: &str, func: SassFunction);
@@ -38,7 +40,8 @@ pub trait Scope {
     fn call_function(&self, name: &str, args: &css::CallArgs) -> Option<Value>;
 
     fn eval_body(&mut self, body: &[Item]) -> Option<Value>
-        where Self: Sized
+    where
+        Self: Sized,
     {
         for b in body {
             let result = match *b {
@@ -122,7 +125,8 @@ pub struct ScopeImpl<'a> {
 
 impl<'a> Scope for ScopeImpl<'a> {
     fn define(&mut self, name: &str, val: &Value) {
-        self.variables.insert(name.replace('-', "_"), val.unrequote());
+        self.variables
+            .insert(name.replace('-', "_"), val.unrequote());
     }
     fn define_default(&mut self, name: &str, val: &Value, global: bool) {
         if self.get(name) == Value::Null {
@@ -152,10 +156,12 @@ impl<'a> Scope for ScopeImpl<'a> {
     fn get_global(&self, name: &str) -> Value {
         self.parent.get_global(name)
     }
-    fn define_mixin(&mut self,
-                    name: &str,
-                    args: &sass::FormalArgs,
-                    body: &[Item]) {
+    fn define_mixin(
+        &mut self,
+        name: &str,
+        args: &sass::FormalArgs,
+        body: &[Item],
+    ) {
         let name = name.replace('-', "_");
         self.mixins.insert(name, (args.clone(), body.into()));
     }
@@ -241,10 +247,12 @@ impl Scope for GlobalScope {
             .cloned()
             .unwrap_or(Value::Null)
     }
-    fn define_mixin(&mut self,
-                    name: &str,
-                    args: &sass::FormalArgs,
-                    body: &[Item]) {
+    fn define_mixin(
+        &mut self,
+        name: &str,
+        args: &sass::FormalArgs,
+        body: &[Item],
+    ) {
         let name = name.replace('-', "_");
         self.mixins.insert(name, (args.clone(), body.into()));
     }
@@ -324,8 +332,10 @@ pub mod test {
 
     #[test]
     fn div_slash_6() {
-        assert_eq!("italic bold 10px/8px",
-                   do_evaluate(&[], b"(italic bold 10px/8px);"))
+        assert_eq!(
+            "italic bold 10px/8px",
+            do_evaluate(&[], b"(italic bold 10px/8px);")
+        )
     }
     #[test]
     fn negative_in_arithmetic() {
@@ -375,14 +385,18 @@ pub mod test {
     #[test]
     fn multi_multi() {
         let scope = [("stuff", "1 2 3")];
-        assert_eq!("1 2 3, 1 2 3 4 5 6, 7 8 9",
-                   do_evaluate(&scope, b"1 2 3, $stuff 4 5 (6, 7 8 9);"))
+        assert_eq!(
+            "1 2 3, 1 2 3 4 5 6, 7 8 9",
+            do_evaluate(&scope, b"1 2 3, $stuff 4 5 (6, 7 8 9);")
+        )
     }
 
     #[test]
     fn url_keeps_parens() {
-        assert_eq!("black url(starfield.png) repeat",
-                   do_evaluate(&[], b"black url(starfield.png) repeat;"))
+        assert_eq!(
+            "black url(starfield.png) repeat",
+            do_evaluate(&[], b"black url(starfield.png) repeat;")
+        )
     }
 
     #[test]
@@ -445,8 +459,10 @@ pub mod test {
 
     #[test]
     fn color_subtract_components() {
-        assert_eq!("#000077", // Or should it be #007?
-                   do_evaluate(&[], b"#fff - #ff8;"))
+        assert_eq!(
+            "#000077", // Or should it be #007?
+            do_evaluate(&[], b"#fff - #ff8;")
+        )
     }
 
     #[test]
@@ -470,8 +486,10 @@ pub mod test {
 
     #[test]
     fn color_named_args() {
-        assert_eq!("#010203",
-                   do_evaluate(&[], b"rgb($blue: 3, $red: 1, $green: 2);"))
+        assert_eq!(
+            "#010203",
+            do_evaluate(&[], b"rgb($blue: 3, $red: 1, $green: 2);")
+        )
     }
 
     #[test]
@@ -481,14 +499,18 @@ pub mod test {
 
     #[test]
     fn color_mixed_with_alpha_1() {
-        assert_eq!("rgba(64, 0, 191, 0.75)",
-                   do_evaluate(&[], b"mix(rgba(255, 0, 0, 0.5), #00f);"))
+        assert_eq!(
+            "rgba(64, 0, 191, 0.75)",
+            do_evaluate(&[], b"mix(rgba(255, 0, 0, 0.5), #00f);")
+        )
     }
 
     #[test]
     fn color_mixed_with_alpha_2() {
-        assert_eq!("rgba(64, 0, 191, 0.75)",
-                   do_evaluate(&[], b"mix(#00f, rgba(255, 0, 0, 0.5));"))
+        assert_eq!(
+            "rgba(64, 0, 191, 0.75)",
+            do_evaluate(&[], b"mix(#00f, rgba(255, 0, 0, 0.5));")
+        )
     }
 
     #[test]
@@ -511,15 +533,23 @@ pub mod test {
     }
     #[test]
     fn function_if_named() {
-        assert_eq!("hey", do_evaluate(
-            &[],
-            b"if($if_true: hey, $if_false: ho, $condition: true);"))
+        assert_eq!(
+            "hey",
+            do_evaluate(
+                &[],
+                b"if($if_true: hey, $if_false: ho, $condition: true);"
+            )
+        )
     }
     #[test]
     fn function_if_named_dash() {
-        assert_eq!("hey", do_evaluate(
-            &[],
-            b"if($if-true: hey, $if-false: ho, $condition: true);"))
+        assert_eq!(
+            "hey",
+            do_evaluate(
+                &[],
+                b"if($if-true: hey, $if-false: ho, $condition: true);"
+            )
+        )
     }
 
     #[test]
@@ -528,9 +558,10 @@ pub mod test {
     }
     #[test]
     fn quote_expr() {
-        assert_eq!("\"foo 17\"",
-                   do_evaluate(&[("s", "foo"), ("n", "5")],
-                               b"quote($s $n * 3 + 2);"))
+        assert_eq!(
+            "\"foo 17\"",
+            do_evaluate(&[("s", "foo"), ("n", "5")], b"quote($s $n * 3 + 2);")
+        )
     }
     #[test]
     fn quoted_string() {

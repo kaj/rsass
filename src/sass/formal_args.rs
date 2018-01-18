@@ -16,24 +16,26 @@ impl FormalArgs {
         FormalArgs(a, is_varargs)
     }
 
-    pub fn eval<'a>(&self,
-                    scope: &'a Scope,
-                    args: &css::CallArgs)
-                    -> ScopeImpl<'a> {
+    pub fn eval<'a>(
+        &self,
+        scope: &'a Scope,
+        args: &css::CallArgs,
+    ) -> ScopeImpl<'a> {
         let mut argscope = ScopeImpl::sub(scope);
         let n = self.0.len();
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
             if let Some(value) = args.iter()
-                   .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
-                   .map(|&(ref _k, ref v)| v) {
+                .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
+                .map(|&(ref _k, ref v)| v)
+            {
                 argscope.define(name, value);
             } else if self.1 && i + 1 == n && args.len() > n {
                 let args =
                     args.iter().skip(i).map(|&(_, ref v)| v.clone()).collect();
-                argscope.define(name,
-                                &css::Value::List(args,
-                                                  ListSeparator::Comma,
-                                                  false));
+                argscope.define(
+                    name,
+                    &css::Value::List(args, ListSeparator::Comma, false),
+                );
             } else {
                 match args.get(i) {
                     Some(&(None, ref v)) => argscope.define(name, v),

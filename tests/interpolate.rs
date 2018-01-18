@@ -3,7 +3,7 @@
 extern crate rsass;
 
 mod interpolate {
-    use rsass::{OutputStyle, compile_scss};
+    use rsass::{compile_scss, OutputStyle};
 
     mod t00_concatenation;
     mod t01_literal;
@@ -22,9 +22,11 @@ mod interpolate {
     mod t31_schema_simple;
 
     fn check(input: &str, expected: &str) {
-        assert_eq!(compile_scss(input.as_bytes(), OutputStyle::Normal)
-                       .and_then(|s| Ok(String::from_utf8(s)?))
-                       .unwrap(),
-                   expected);
+        assert_eq!(
+            compile_scss(input.as_bytes(), OutputStyle::Normal)
+                .and_then(|s| Ok(String::from_utf8(s)?))
+                .unwrap(),
+            expected
+        );
     }
 }

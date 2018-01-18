@@ -14,13 +14,28 @@ pub enum Item {
         default: bool,
         global: bool,
     },
-    AtRule { name: String, args: Value, body: Option<Vec<Item>> },
+    AtRule {
+        name: String,
+        args: Value,
+        body: Option<Vec<Item>>,
+    },
 
-    MixinDeclaration { name: String, args: FormalArgs, body: Vec<Item> },
-    MixinCall { name: String, args: CallArgs, body: Vec<Item> },
+    MixinDeclaration {
+        name: String,
+        args: FormalArgs,
+        body: Vec<Item>,
+    },
+    MixinCall {
+        name: String,
+        args: CallArgs,
+        body: Vec<Item>,
+    },
     Content,
 
-    FunctionDeclaration { name: String, func: SassFunction },
+    FunctionDeclaration {
+        name: String,
+        func: SassFunction,
+    },
     Return(Value),
 
     IfStatement(Value, Vec<Item>, Vec<Item>),

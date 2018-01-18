@@ -66,10 +66,11 @@ impl fmt::Debug for FuncImpl {
 
 impl SassFunction {
     /// Create a new `SassFunction` from a rust implementation.
-    pub fn builtin(args: Vec<(String, sass::Value)>,
-                   is_varargs: bool,
-                   body: Arc<BuiltinFn>)
-                   -> Self {
+    pub fn builtin(
+        args: Vec<(String, sass::Value)>,
+        is_varargs: bool,
+        body: Arc<BuiltinFn>,
+    ) -> Self {
         SassFunction {
             args: sass::FormalArgs::new(args, is_varargs),
             body: FuncImpl::Builtin(body),
@@ -78,15 +79,19 @@ impl SassFunction {
 
     /// Create a new `SassFunction` from a scss implementation.
     pub fn new(args: sass::FormalArgs, body: Vec<sass::Item>) -> Self {
-        SassFunction { args: args, body: FuncImpl::UserDefined(body) }
+        SassFunction {
+            args: args,
+            body: FuncImpl::UserDefined(body),
+        }
     }
 
     /// Call the function from a given scope and with a given set of
     /// arguments.
-    pub fn call(&self,
-                scope: &Scope,
-                args: &css::CallArgs)
-                -> Result<css::Value, Error> {
+    pub fn call(
+        &self,
+        scope: &Scope,
+        args: &css::CallArgs,
+    ) -> Result<css::Value, Error> {
         let mut s = self.args.eval(scope, args);
         match self.body {
             FuncImpl::Builtin(ref body) => body(&s),
@@ -121,25 +126,28 @@ lazy_static! {
 
 #[test]
 fn test_rgb() {
-    use parser::formalargs::call_args;
     use num_rational::Rational;
     use num_traits::{One, Zero};
+    use parser::formalargs::call_args;
     use variablescope::GlobalScope;
     let scope = GlobalScope::new();
-    assert_eq!(FUNCTIONS
-                   .get("rgb")
-                   .unwrap()
-                   .call(&scope,
-                         &call_args(b"(17, 0, 225)")
-                              .unwrap()
-                              .1
-                              .evaluate(&scope, true))
-                   .unwrap(),
-               css::Value::Color(Rational::new(17, 1),
-                                 Rational::zero(),
-                                 Rational::new(225, 1),
-                                 Rational::one(),
-                                 None))
+    assert_eq!(
+        FUNCTIONS
+            .get("rgb")
+            .unwrap()
+            .call(
+                &scope,
+                &call_args(b"(17, 0, 225)").unwrap().1.evaluate(&scope, true)
+            )
+            .unwrap(),
+        css::Value::Color(
+            Rational::new(17, 1),
+            Rational::zero(),
+            Rational::new(225, 1),
+            Rational::one(),
+            None
+        )
+    )
 }
 
 #[test]

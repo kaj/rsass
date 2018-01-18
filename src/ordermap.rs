@@ -69,7 +69,8 @@ impl<K, V> IntoIterator for OrderMap<K, V> {
 
 impl<K, V> FromIterator<(K, V)> for OrderMap<K, V> {
     fn from_iter<T>(i: T) -> Self
-        where T: IntoIterator<Item = (K, V)>
+    where
+        T: IntoIterator<Item = (K, V)>,
     {
         OrderMap(Vec::from_iter(i))
     }

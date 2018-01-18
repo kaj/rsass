@@ -78,8 +78,9 @@ impl SassString {
                 StringPart::Raw(ref s) => result.push_str(s),
             }
         }
-        if interpolated && self.quotes == Quotes::Double &&
-           result.contains('"') && !result.contains('\'') {
+        if interpolated && self.quotes == Quotes::Double && result.contains('"')
+            && !result.contains('\'')
+        {
             (result, Quotes::Single)
         } else {
             (result, self.quotes)

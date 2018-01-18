@@ -9,7 +9,7 @@ use parser::unit::unit;
 use parser::util::{name, opt_spacelike, spacelike2};
 use sass::{SassString, Value};
 use std::str::{FromStr, from_utf8};
-use value::{ListSeparator, Operator, Unit, name_to_rgb};
+use value::{name_to_rgb, ListSeparator, Operator, Unit};
 
 named!(pub value_expression<&[u8], Value>,
        do_parse!(
@@ -57,9 +57,10 @@ named!(pub space_list<&[u8], Value>,
                      Value::List(list.0, ListSeparator::Space, false, list.1)
                  })));
 
-named!(se_or_ext_string<Value>,
-       alt_complete!(single_expression |
-                     map!(sass_string_ext, Value::Literal)));
+named!(
+    se_or_ext_string<Value>,
+    alt_complete!(single_expression | map!(sass_string_ext, Value::Literal))
+);
 
 named!(pub single_expression<Value>,
        do_parse!(a: logic_expression >>
@@ -118,27 +119,36 @@ named!(pub sum_expression<Value>,
                      |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))) >>
                  (r)));
 
-named!(term_value<Value>,
-       do_parse!(a: single_value >>
-                 r: fold_many0!(
-                     do_parse!(s1: opt!(multispace) >>
-                               op: alt_complete!(tag!("*") | tag!("/")) >>
-                               s2: opt!(multispace) >>
-                               b: opt!(single_value) >>
-                               (s1.is_some(), op, s2.is_some(), b)),
-                     a,
-                     |a, (s1, op, s2, b)| {
-                         let b: Option<Value> = b;
-                         let b = b.unwrap_or(Value::Null);
-                         if op == b"*" {
-                             Value::BinOp(Box::new(a),
-                                          Operator::Multiply,
-                                          Box::new(b))
-                         } else {
-                             Value::Div(Box::new(a), Box::new(b), s1, s2)
-                         }
-                     }) >>
-                 (r)));
+named!(
+    term_value<Value>,
+    do_parse!(
+        a: single_value
+            >> r:
+                fold_many0!(
+                    do_parse!(
+                        s1: opt!(multispace)
+                            >> op: alt_complete!(tag!("*") | tag!("/"))
+                            >> s2: opt!(multispace)
+                            >> b: opt!(single_value)
+                            >> (s1.is_some(), op, s2.is_some(), b)
+                    ),
+                    a,
+                    |a, (s1, op, s2, b)| {
+                        let b: Option<Value> = b;
+                        let b = b.unwrap_or(Value::Null);
+                        if op == b"*" {
+                            Value::BinOp(
+                                Box::new(a),
+                                Operator::Multiply,
+                                Box::new(b),
+                            )
+                        } else {
+                            Value::Div(Box::new(a), Box::new(b), s1, s2)
+                        }
+                    }
+                ) >> (r)
+    )
+);
 
 named!(pub single_value<&[u8], Value>,
        alt_complete!(
@@ -236,8 +246,10 @@ named!(pub single_value<&[u8], Value>,
                     }
                 })));
 
-named!(variable<Value>,
-       do_parse!(tag!("$") >>  name: name >> (Value::Variable(name))));
+named!(
+    variable<Value>,
+    do_parse!(tag!("$") >> name: name >> (Value::Variable(name)))
+);
 
 named!(pub function_call<Value>,
        do_parse!(name: sass_string >> args: call_args >>
@@ -246,30 +258,38 @@ named!(pub function_call<Value>,
 fn literal_or_color(s: SassString) -> Value {
     if let Some(val) = s.single_raw() {
         if let Some((r, g, b)) = name_to_rgb(val) {
-            return Value::Color(r,
-                                g,
-                                b,
-                                Rational::one(),
-                                Some(val.to_string()));
+            return Value::Color(
+                r,
+                g,
+                b,
+                Rational::one(),
+                Some(val.to_string()),
+            );
         }
     }
     Value::Literal(s)
 }
 
 fn decimals_to_rational(d: &[u8]) -> Rational {
-    Rational::new(from_utf8(d).unwrap().parse().unwrap(),
-                  10_isize.pow(d.len() as u32))
+    Rational::new(
+        from_utf8(d).unwrap().parse().unwrap(),
+        10_isize.pow(d.len() as u32),
+    )
 }
 
 named!(hexchar, recognize!(one_of!("0123456789ABCDEFabcdef")));
 
-named!(hexchar2,
-       recognize!(do_parse!(one_of!("0123456789ABCDEFabcdef") >>
-                            one_of!("0123456789ABCDEFabcdef") >> ())));
+named!(
+    hexchar2,
+    recognize!(do_parse!(
+        one_of!("0123456789ABCDEFabcdef") >> one_of!("0123456789ABCDEFabcdef")
+            >> ()
+    ))
+);
 
 fn from_hex(v: &[u8]) -> Rational {
     Rational::from_integer(u8::from_str_radix(from_utf8(v).unwrap(), 16)
-                               .unwrap() as isize)
+        .unwrap() as isize)
 }
 
 named!(pub dictionary<Value>,
@@ -291,7 +311,6 @@ named!(pub dictionary<Value>,
                 }
                 Value::Map(map)
             }));
-
 
 #[cfg(test)]
 mod test {
@@ -332,8 +351,10 @@ mod test {
     }
     #[test]
     fn simple_number_onlydec_pos() {
-        check_expr("+.34;",
-                   Numeric(Rational::new(34, 100), Unit::None, true, false))
+        check_expr(
+            "+.34;",
+            Numeric(Rational::new(34, 100), Unit::None, true, false),
+        )
     }
 
     fn number(nom: isize, denom: isize) -> Value {
@@ -347,12 +368,16 @@ mod test {
 
     #[test]
     fn simple_value_literal_color() {
-        check_expr("red;",
-                   Color(Rational::new(255, 1),
-                         Rational::zero(),
-                         Rational::zero(),
-                         Rational::one(),
-                         Some("red".into())))
+        check_expr(
+            "red;",
+            Color(
+                Rational::new(255, 1),
+                Rational::zero(),
+                Rational::zero(),
+                Rational::one(),
+                Some("red".into()),
+            ),
+        )
     }
 
     #[test]
@@ -367,50 +392,67 @@ mod test {
 
     #[test]
     fn paren_multi() {
-        check_expr("(rod bloe);",
-                   Paren(Box::new(List(vec![Literal("rod".into()),
-                                            Literal("bloe".into())],
-                                       ListSeparator::Space,
-                                       false,
-                                       false))))
+        check_expr(
+            "(rod bloe);",
+            Paren(Box::new(List(
+                vec![Literal("rod".into()), Literal("bloe".into())],
+                ListSeparator::Space,
+                false,
+                false,
+            ))),
+        )
     }
 
     #[test]
     fn paren_multi_comma() {
-        check_expr("(rod, bloe);",
-                   Paren(Box::new(List(vec![Literal("rod".into()),
-                                            Literal("bloe".into())],
-                                       ListSeparator::Comma,
-                                       false,
-                                       false))))
+        check_expr(
+            "(rod, bloe);",
+            Paren(Box::new(List(
+                vec![Literal("rod".into()), Literal("bloe".into())],
+                ListSeparator::Comma,
+                false,
+                false,
+            ))),
+        )
     }
 
     #[test]
     fn multi_comma() {
-        check_expr("rod, bloe;",
-                   List(vec![Literal("rod".into()), Literal("bloe".into())],
-                        ListSeparator::Comma,
-                        false,
-                        false))
+        check_expr(
+            "rod, bloe;",
+            List(
+                vec![Literal("rod".into()), Literal("bloe".into())],
+                ListSeparator::Comma,
+                false,
+                false,
+            ),
+        )
     }
 
     #[test]
     fn paren_multi_comma_trailing() {
-        check_expr("(rod, bloe, );",
-                   Paren(Box::new(List(vec![Literal("rod".into()),
-                                            Literal("bloe".into())],
-                                       ListSeparator::Comma,
-                                       false,
-                                       false))))
+        check_expr(
+            "(rod, bloe, );",
+            Paren(Box::new(List(
+                vec![Literal("rod".into()), Literal("bloe".into())],
+                ListSeparator::Comma,
+                false,
+                false,
+            ))),
+        )
     }
 
     #[test]
     fn multi_comma_trailing() {
-        check_expr("rod, bloe, ;",
-                   List(vec![Literal("rod".into()), Literal("bloe".into())],
-                        ListSeparator::Comma,
-                        false,
-                        false))
+        check_expr(
+            "rod, bloe, ;",
+            List(
+                vec![Literal("rod".into()), Literal("bloe".into())],
+                ListSeparator::Comma,
+                false,
+                false,
+            ),
+        )
     }
 
     #[test]
@@ -420,73 +462,104 @@ mod test {
 
     #[test]
     fn call_one_arg() {
-        check_expr("foo(17);",
-                   Call("foo".into(),
-                        CallArgs::new(vec![(None, Value::scalar(17))])))
+        check_expr(
+            "foo(17);",
+            Call("foo".into(), CallArgs::new(vec![(None, Value::scalar(17))])),
+        )
     }
 
     #[test]
     fn multi_expression() {
-        check_expr("15/10 2 3;",
-                   List(vec![Div(Box::new(Value::scalar(15)),
-                                 Box::new(Value::scalar(10)),
-                                 false,
-                                 false),
-                             Value::scalar(2),
-                             Value::scalar(3)],
-                        ListSeparator::Space,
+        check_expr(
+            "15/10 2 3;",
+            List(
+                vec![
+                    Div(
+                        Box::new(Value::scalar(15)),
+                        Box::new(Value::scalar(10)),
                         false,
-                        false))
+                        false,
+                    ),
+                    Value::scalar(2),
+                    Value::scalar(3),
+                ],
+                ListSeparator::Space,
+                false,
+                false,
+            ),
+        )
     }
 
     #[test]
     fn double_div() {
-        check_expr("15/5/3;",
-                   Div(Box::new(Div(Box::new(Value::scalar(15)),
-                                    Box::new(Value::scalar(5)),
-                                    false,
-                                    false)),
-                       Box::new(Value::scalar(3)),
-                       false,
-                       false))
+        check_expr(
+            "15/5/3;",
+            Div(
+                Box::new(Div(
+                    Box::new(Value::scalar(15)),
+                    Box::new(Value::scalar(5)),
+                    false,
+                    false,
+                )),
+                Box::new(Value::scalar(3)),
+                false,
+                false,
+            ),
+        )
     }
 
     #[test]
     fn color_short() {
-        check_expr("#AbC;",
-                   Color(Rational::new(170, 1),
-                         Rational::new(187, 1),
-                         Rational::new(204, 1),
-                         Rational::one(),
-                         Some("#AbC".into())))
+        check_expr(
+            "#AbC;",
+            Color(
+                Rational::new(170, 1),
+                Rational::new(187, 1),
+                Rational::new(204, 1),
+                Rational::one(),
+                Some("#AbC".into()),
+            ),
+        )
     }
 
     #[test]
     fn color_long() {
-        check_expr("#AaBbCc;",
-                   Color(Rational::new(170, 1),
-                         Rational::new(187, 1),
-                         Rational::new(204, 1),
-                         Rational::one(),
-                         Some("#AaBbCc".into())))
+        check_expr(
+            "#AaBbCc;",
+            Color(
+                Rational::new(170, 1),
+                Rational::new(187, 1),
+                Rational::new(204, 1),
+                Rational::one(),
+                Some("#AaBbCc".into()),
+            ),
+        )
     }
 
     #[test]
     fn parse_bracket_array() {
-        check_expr("[foo bar];",
-                   List(vec![Literal("foo".into()), Literal("bar".into())],
-                        ListSeparator::Space,
-                        true,
-                        false))
+        check_expr(
+            "[foo bar];",
+            List(
+                vec![Literal("foo".into()), Literal("bar".into())],
+                ListSeparator::Space,
+                true,
+                false,
+            ),
+        )
     }
 
     #[test]
     fn parse_bracket_comma_array() {
-        check_expr("[foo, bar];",
-                   List(vec![Literal("foo".into()), Literal("bar".into())],
-                        ListSeparator::Comma,
-                        true,
-                        false))
+        check_expr(
+            "[foo, bar];",
+            List(
+                vec![Literal("foo".into()), Literal("bar".into())],
+                ListSeparator::Comma,
+                true,
+                false,
+            ),
+        )
     }
 
     #[test]
@@ -496,11 +569,14 @@ mod test {
 
     #[test]
     fn map_nq() {
-        check_expr("(foo: bar, baz: 17);",
-                   Map(vec![(Literal("foo".into()), Literal("bar".into())),
-                            (Literal("baz".into()), Value::scalar(17))]
-                               .into_iter()
-                               .collect()))
+        check_expr(
+            "(foo: bar, baz: 17);",
+            Map(vec![
+                (Literal("foo".into()), Literal("bar".into())),
+                (Literal("baz".into()), Value::scalar(17)),
+            ].into_iter()
+                .collect()),
+        )
     }
 
     fn check_expr(expr: &str, value: Value) {
@@ -514,7 +590,7 @@ mod test {
             assert_eq!(
                 (format!("{}", result.evaluate(&GlobalScope::new())), rest),
                 ("http://).com/".to_string(), &b""[..])
-                );
+            );
         } else {
             assert_eq!(format!("{:?}", t), "Done")
         }
@@ -526,7 +602,7 @@ mod test {
             assert_eq!(
                 (format!("{}", result.evaluate(&GlobalScope::new())), rest),
                 ("url(http://).com/)".to_string(), &b""[..])
-                );
+            );
         } else {
             assert_eq!(format!("{:?}", t), "Done")
         }
@@ -538,13 +614,15 @@ mod test {
             assert_eq!(
                 (format!("{}", result.evaluate(&GlobalScope::new())), rest),
                 ("url(//).com/)".to_string(), &b""[..])
-                );
+            );
         } else {
             assert_eq!(format!("{:?}", t), "Done")
         }
     }
 
-    named!(value_expression_eof<Value>,
-           terminated!(value_expression, eof!()));
+    named!(
+        value_expression_eof<Value>,
+        terminated!(value_expression, eof!())
+    );
 
 }
