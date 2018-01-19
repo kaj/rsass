@@ -4,6 +4,7 @@ use file_context::FileContext;
 use parser::parse_scss_file;
 use sass::{FormalArgs, Item};
 use selectors::{Selector, SelectorPart, Selectors};
+#[allow(unused_imports)] // AsciiExt trait required before rust 1.23
 use std::ascii::AsciiExt;
 use std::fmt;
 use std::io::Write;
