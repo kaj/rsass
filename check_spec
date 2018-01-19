@@ -58,8 +58,14 @@ case "$1" in
         LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/core_functions \
             |  grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
         ;;
+    "selector_functions")
+        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/selector-functions
+        ;;
     "scss")
         LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/scss
+	;;
+    "parser")
+        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/parser
 	;;
     "values")
         LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/values \

@@ -15,6 +15,7 @@ mod colors_other;
 mod introspection;
 mod numbers;
 mod maps;
+mod selector;
 mod strings;
 mod lists;
 
@@ -116,6 +117,7 @@ lazy_static! {
         colors_rgb::register(&mut f);
         colors_other::register(&mut f);
         introspection::register(&mut f);
+        selector::register(&mut f);
         strings::register(&mut f);
         numbers::register(&mut f);
         lists::register(&mut f);
