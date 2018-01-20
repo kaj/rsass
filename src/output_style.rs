@@ -263,7 +263,7 @@ impl OutputStyle {
         self.handle_body(
             &mut direct,
             &mut sub,
-            &mut ScopeImpl::sub(scope),
+            &mut ScopeImpl::sub_selectors(scope, selectors.clone()),
             &selectors,
             body,
             file_context,

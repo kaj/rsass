@@ -154,6 +154,7 @@ named!(pub single_value<&[u8], Value>,
        alt_complete!(
            value!(Value::True, tag!("true")) |
            value!(Value::False, tag!("false")) |
+           value!(Value::HereSelector, tag!("&")) |
            do_parse!(tag!("[") >>
                      content: opt!(value_expression) >>
                      tag!("]") >>

@@ -5,6 +5,7 @@ use css::Value;
 use functions::{get_builtin_function, SassFunction};
 use sass;
 use sass::Item;
+use selectors::Selectors;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
@@ -114,6 +115,7 @@ pub trait Scope {
         }
         None
     }
+    fn get_selectors(&self) -> &Selectors;
 }
 
 pub struct ScopeImpl<'a> {
@@ -121,6 +123,7 @@ pub struct ScopeImpl<'a> {
     variables: BTreeMap<String, Value>,
     mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
     functions: BTreeMap<String, SassFunction>,
+    selectors: Option<Selectors>,
 }
 
 impl<'a> Scope for ScopeImpl<'a> {
@@ -182,6 +185,11 @@ impl<'a> Scope for ScopeImpl<'a> {
         }
         self.parent.call_function(&name, args)
     }
+    fn get_selectors(&self) -> &Selectors {
+        self.selectors
+            .as_ref()
+            .unwrap_or(self.parent.get_selectors())
+    }
 }
 
 impl<'a> ScopeImpl<'a> {
@@ -191,6 +199,16 @@ impl<'a> ScopeImpl<'a> {
             variables: BTreeMap::new(),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
+            selectors: None,
+        }
+    }
+    pub fn sub_selectors(parent: &'a Scope, selectors: Selectors) -> Self {
+        ScopeImpl {
+            parent: parent,
+            variables: BTreeMap::new(),
+            mixins: BTreeMap::new(),
+            functions: BTreeMap::new(),
+            selectors: Some(selectors),
         }
     }
 }
@@ -204,6 +222,7 @@ pub struct GlobalScope {
     variables: Mutex<BTreeMap<String, Value>>,
     mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
     functions: BTreeMap<String, SassFunction>,
+    selectors: Selectors,
 }
 
 impl GlobalScope {
@@ -213,6 +232,7 @@ impl GlobalScope {
             variables: Mutex::new(BTreeMap::new()),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
+            selectors: Selectors::root(),
         }
     }
 }
@@ -272,6 +292,9 @@ impl Scope for GlobalScope {
             return f.call(self, args).ok();
         }
         None
+    }
+    fn get_selectors(&self) -> &Selectors {
+        &self.selectors
     }
 }
 

@@ -59,7 +59,8 @@ case "$1" in
             |  grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
         ;;
     "selector_functions")
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/selector-functions
+        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/selector-functions \
+            |  grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
         ;;
     "scss")
         LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/scss

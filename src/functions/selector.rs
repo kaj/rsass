@@ -46,14 +46,21 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             )),
         }
     });
+    def!(f, selector_parse(selector), |s| Ok(parse_selectors(
+        s.get("selector")
+    ).to_value()));
 }
 
 // Note, this helper should probably handle errors and return a Result.
 fn parse_selectors(v: Value) -> Selectors {
     let s = format!("{}", v.unquote());
-    let (rest, result) = selectors(s.as_bytes()).unwrap();
-    assert!(rest == b"");
-    result
+    if s.is_empty() {
+        Selectors::root()
+    } else {
+        let (rest, result) = selectors(s.as_bytes()).unwrap();
+        assert!(rest == b"" || rest == b",");
+        result
+    }
 }
 
 // Note, this helper should probably handle errors and return a Result.

@@ -42,6 +42,8 @@ pub enum Value {
     BinOp(Box<Value>, Operator, Box<Value>),
     UnaryOp(Operator, Box<Value>),
     Map(OrderMap<Value, Value>),
+    /// The magic value "&", exanding to the current selectors.
+    HereSelector,
 }
 
 impl Value {
@@ -266,6 +268,7 @@ impl Value {
                     (op, v) => css::Value::UnaryOp(op, Box::new(v)),
                 }
             }
+            Value::HereSelector => scope.get_selectors().to_value(),
         }
     }
 }

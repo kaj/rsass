@@ -1,6 +1,8 @@
+use css::Value;
 use sass::SassString;
 use std::fmt;
 use std::io::Write;
+use value::{ListSeparator, Quotes};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Selectors(pub Vec<Selector>);
@@ -21,6 +23,27 @@ impl Selectors {
         } else {
             self.clone()
         }
+    }
+    pub fn to_value(&self) -> Value {
+        let content = self.0
+            .iter()
+            .map(|s: &Selector| {
+                Value::List(
+                    format!("{}", s)
+                        .split_whitespace()
+                        .map(|p| Value::Literal(p.to_string(), Quotes::None))
+                        .collect(),
+                    ListSeparator::Space,
+                    false,
+                )
+            })
+            .collect::<Vec<_>>();
+        let sep = if content.len() == 1 {
+            ListSeparator::Space
+        } else {
+            ListSeparator::Comma
+        };
+        Value::List(content, sep, false)
     }
 }
 
