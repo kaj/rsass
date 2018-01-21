@@ -106,24 +106,14 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, saturation(color), |args| match &args.get("color") {
         &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
             let (_h, s, _l) = rgb_to_hsl(red, green, blue);
-            Ok(Value::Numeric(
-                s * Rational::from_integer(100),
-                Unit::Percent,
-                false,
-                true,
-            ))
+            Ok(percentage(s))
         }
         v => Err(Error::badarg("color", v)),
     });
     def!(f, lightness(color), |args| match &args.get("color") {
         &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
             let (_h, _s, l) = rgb_to_hsl(red, green, blue);
-            Ok(Value::Numeric(
-                l * Rational::from_integer(100),
-                Unit::Percent,
-                false,
-                true,
-            ))
+            Ok(percentage(l))
         }
         v => Err(Error::badarg("color", v)),
     });
@@ -153,6 +143,10 @@ pub fn hsla_to_rgba(
 ) -> Value {
     let (r, g, b) = hsl_to_rgb(hue, sat, lig);
     Value::rgba(frac_to_int(r), frac_to_int(g), frac_to_int(b), a)
+}
+
+fn percentage(v: Rational) -> Value {
+    Value::Numeric(v * Rational::from_integer(100), Unit::Percent, false, true)
 }
 
 /// Convert hue (degrees) / sat (0 .. 1) / lighness (0 .. 1) ro rgb (0 .. 1)
