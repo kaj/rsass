@@ -108,7 +108,6 @@ impl OutputStyle {
                         &mut direct,
                         &mut sub,
                         &mut ScopeImpl::sub(scope),
-                        &Selectors::root(),
                         body,
                         file_context,
                         2,
@@ -226,7 +225,6 @@ impl OutputStyle {
                     b,
                     result.to_content(),
                     scope,
-                    None,
                     file_context,
                     0,
                 )?;
@@ -253,18 +251,17 @@ impl OutputStyle {
         body: &[Item],
         out: &mut Write,
         scope: &mut Scope,
-        parent: Option<&Selectors>,
         file_context: &FileContext,
         indent: usize,
     ) -> Result<(), Error> {
-        let selectors = eval_selectors(selectors, scope).inside(parent);
+        let selectors = eval_selectors(selectors, scope)
+            .inside(Some(scope.get_selectors()));
         let mut direct = Vec::new();
         let mut sub = Vec::new();
         self.handle_body(
             &mut direct,
             &mut sub,
             &mut ScopeImpl::sub_selectors(scope, selectors.clone()),
-            &selectors,
             body,
             file_context,
             indent,
@@ -289,7 +286,6 @@ impl OutputStyle {
         direct: &mut Vec<CssBodyItem>,
         sub: &mut Write,
         scope: &mut Scope,
-        selectors: &Selectors,
         body: &[Item],
         file_context: &FileContext,
         indent: usize,
@@ -305,7 +301,6 @@ impl OutputStyle {
                             direct,
                             sub,
                             scope,
-                            selectors,
                             &items,
                             &sub_context,
                             0,
@@ -348,7 +343,6 @@ impl OutputStyle {
                             &mut s1,
                             &mut s2,
                             &mut ScopeImpl::sub(scope),
-                            selectors,
                             body,
                             file_context,
                             2,
@@ -357,9 +351,9 @@ impl OutputStyle {
                         if !s1.is_empty() {
                             self.do_indent(sub, 2)?;
                             if self.is_compressed() {
-                                write!(sub, "{:#}{{", selectors)?;
+                                write!(sub, "{:#}{{", scope.get_selectors())?;
                             } else {
-                                write!(sub, "{} {{", selectors)?;
+                                write!(sub, "{} {{", scope.get_selectors())?;
                             }
                             self.write_items(sub, &s1, 4)?;
                             write!(sub, "}}")?;
@@ -398,7 +392,6 @@ impl OutputStyle {
                             direct,
                             sub,
                             &mut argscope,
-                            selectors,
                             &m_body,
                             file_context,
                             indent,
@@ -416,7 +409,6 @@ impl OutputStyle {
                             direct,
                             sub,
                             scope,
-                            selectors,
                             &m_body,
                             file_context,
                             indent,
@@ -438,7 +430,6 @@ impl OutputStyle {
                         direct,
                         sub,
                         &mut ScopeImpl::sub(scope),
-                        selectors,
                         items,
                         file_context,
                         0,
@@ -452,7 +443,6 @@ impl OutputStyle {
                             direct,
                             sub,
                             &mut scope,
-                            selectors,
                             body,
                             file_context,
                             0,
@@ -476,7 +466,6 @@ impl OutputStyle {
                             direct,
                             sub,
                             &mut scope,
-                            selectors,
                             body,
                             file_context,
                             0,
@@ -490,7 +479,6 @@ impl OutputStyle {
                             direct,
                             sub,
                             &mut scope,
-                            selectors,
                             body,
                             file_context,
                             0,
@@ -499,15 +487,7 @@ impl OutputStyle {
                 }
 
                 Item::Rule(ref s, ref b) => {
-                    self.write_rule(
-                        s,
-                        b,
-                        sub,
-                        scope,
-                        Some(selectors),
-                        file_context,
-                        indent,
-                    )?;
+                    self.write_rule(s, b, sub, scope, file_context, indent)?;
                 }
                 Item::NamespaceRule(ref name, ref value, ref body) => {
                     let value = value.evaluate(scope);
@@ -523,7 +503,6 @@ impl OutputStyle {
                         &mut t,
                         sub,
                         scope,
-                        selectors,
                         body,
                         file_context,
                         indent,
