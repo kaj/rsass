@@ -107,7 +107,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
             let (_h, s, _l) = rgb_to_hsl(red, green, blue);
             Ok(Value::Numeric(
-                (s * Rational::from_integer(100)),
+                s * Rational::from_integer(100),
                 Unit::Percent,
                 false,
                 true,
@@ -119,7 +119,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
             let (_h, _s, l) = rgb_to_hsl(red, green, blue);
             Ok(Value::Numeric(
-                (l * Rational::from_integer(100)),
+                l * Rational::from_integer(100),
                 Unit::Percent,
                 false,
                 true,

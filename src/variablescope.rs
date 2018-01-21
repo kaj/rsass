@@ -188,7 +188,7 @@ impl<'a> Scope for ScopeImpl<'a> {
     fn get_selectors(&self) -> &Selectors {
         self.selectors
             .as_ref()
-            .unwrap_or(self.parent.get_selectors())
+            .unwrap_or_else(|| self.parent.get_selectors())
     }
 }
 
