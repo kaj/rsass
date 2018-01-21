@@ -30,9 +30,11 @@ impl FromStr for OutputStyle {
     }
 }
 
+static FORMAT_NAMES: [&'static str; 2] = ["Compressed", "Expanded"];
+
 impl OutputStyle {
     pub fn variants() -> &'static [&'static str] {
-        &["Compressed", "Expanded"]
+        &FORMAT_NAMES
     }
     /// Write a slice of sass items in this format.
     /// The `file_context` is needed if there are `@import` statements
