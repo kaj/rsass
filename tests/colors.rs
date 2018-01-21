@@ -180,7 +180,7 @@ fn scale_color() {
 
 fn check(input: &[u8], expected: &str) {
     assert_eq!(
-        compile_scss(input, OutputStyle::Normal)
+        compile_scss(input, OutputStyle::Expanded)
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
         expected

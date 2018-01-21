@@ -32,6 +32,8 @@
 //! That said, this implementation has reached a version where I find it
 //! usable for my personal projects, and the number of working tests are
 //! improving.
+#[cfg(feature = "clap")]
+extern crate clap;
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]

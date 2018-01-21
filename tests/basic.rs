@@ -346,7 +346,7 @@ fn t13_back_references() {
 fn t14_imports() {
     let path = "tests/basic/14_imports/input.scss";
     assert_eq!(
-        compile_scss_file(path.as_ref(), OutputStyle::Normal)
+        compile_scss_file(path.as_ref(), OutputStyle::Expanded)
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
         "div span {\n  moo: goo;\n}\n\n\
@@ -820,7 +820,7 @@ fn t32_percentages() {
 fn t33_ambigous_imports() {
     let path = "tests/basic/33_ambiguous_imports/input.scss";
     assert_eq!(
-        compile_scss_file(path.as_ref(), OutputStyle::Normal)
+        compile_scss_file(path.as_ref(), OutputStyle::Expanded)
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
         "main {\n  color: red;\n}\n\n\
@@ -1385,7 +1385,7 @@ fn ti815_str_slice() {
 
 fn check(input: &[u8], expected: &str) {
     assert_eq!(
-        compile_scss(input, OutputStyle::Normal)
+        compile_scss(input, OutputStyle::Expanded)
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
         expected

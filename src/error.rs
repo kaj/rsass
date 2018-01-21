@@ -1,3 +1,5 @@
+#[cfg(feature = "clap")]
+use clap;
 use css::Value;
 use nom;
 use std::{fmt, io};
@@ -82,5 +84,12 @@ impl From<nom::ErrorKind> for Error {
 impl<'a> From<nom::Err<&'a [u8]>> for Error {
     fn from(e: nom::Err<&'a [u8]>) -> Self {
         Error::S(format!("Parse error: {}", e))
+    }
+}
+
+#[cfg(feature = "clap")]
+impl<'a> From<clap::Error> for Error {
+    fn from(e: clap::Error) -> Self {
+        Error::S(format!("{}", e))
     }
 }

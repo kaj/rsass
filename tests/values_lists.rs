@@ -77,7 +77,7 @@ fn equality() {
 
 fn check(input: &str, expected: &str) {
     assert_eq!(
-        compile_scss(input.as_bytes(), OutputStyle::Normal)
+        compile_scss(input.as_bytes(), OutputStyle::Expanded)
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
         expected

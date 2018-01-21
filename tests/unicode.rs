@@ -4,7 +4,7 @@ extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 #[test]
-fn unicode_in_normal() {
+fn unicode_in_expanded() {
     // Blåbärsöl is a proper swedish word.  Translates to blueberry beer.
     check(
         "a {\n  \
@@ -12,7 +12,7 @@ fn unicode_in_normal() {
          }",
         "@charset \"UTF-8\";\n\
          a {\n  content: \"Blåbärsöl\";\n}\n",
-        OutputStyle::Normal,
+        OutputStyle::Expanded,
     )
 }
 

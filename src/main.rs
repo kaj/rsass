@@ -1,3 +1,4 @@
+#[macro_use]
 extern crate clap;
 extern crate rsass;
 
@@ -22,7 +23,10 @@ fn main() {
                 .short("t")
                 .long("style")
                 .takes_value(true)
-                .help("Output style. Can be compact (default) or compressed."),
+                .possible_values(&OutputStyle::variants())
+                .default_value(&OutputStyle::variants()[1])
+                .case_insensitive(true)
+                .help("Output style"),
         )
         .arg(
             Arg::with_name("INPUT")
@@ -43,11 +47,7 @@ fn main() {
 }
 
 fn run(args: &ArgMatches) -> Result<(), Error> {
-    let style = if args.value_of("STYLE") == Some("compressed") {
-        OutputStyle::Compressed
-    } else {
-        OutputStyle::Normal
-    };
+    let style = value_t!(args, "STYLE", OutputStyle)?;
     if let Some(inputs) = args.values_of("INPUT") {
         for name in inputs {
             let result = compile_scss_file(name.as_ref(), style)?;

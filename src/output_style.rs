@@ -8,17 +8,32 @@ use selectors::{Selector, SelectorPart, Selectors};
 use std::ascii::AsciiExt;
 use std::fmt;
 use std::io::Write;
+use std::str::FromStr;
 use variablescope::{Scope, ScopeImpl};
 
 /// Selected target format.
 /// Only formats that are variants of this type are supported by rsass.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OutputStyle {
-    Normal, // TODO What should be the name of this format?
+    Expanded,
     Compressed,
 }
 
+impl FromStr for OutputStyle {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_ascii_lowercase().as_ref() {
+            "compressed" => Ok(OutputStyle::Compressed),
+            "expanded" => Ok(OutputStyle::Expanded),
+            s => Err(format!("Output style {:?} not supported", s)),
+        }
+    }
+}
+
 impl OutputStyle {
+    pub fn variants() -> &'static [&'static str] {
+        &["Compressed", "Expanded"]
+    }
     /// Write a slice of sass items in this format.
     /// The `file_context` is needed if there are `@import` statements
     /// in the sass file.
