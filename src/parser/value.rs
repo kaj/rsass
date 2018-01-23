@@ -67,13 +67,9 @@ named!(single_expression<Value>,
                  r: fold_many0!(
                      do_parse!(opt!(multispace) >>
                                op: alt_complete!(
-                                   value!(Operator::And,
-                                          preceded!(tag!("and"),
-                                                    spacelike2)) |
-                                   value!(Operator::Or,
-                                          preceded!(tag!("or"),
-                                                    spacelike2))) >>
-                               opt!(multispace) >>
+                                   value!(Operator::And, tag!("and")) |
+                                   value!(Operator::Or, tag!("or"))) >>
+                               multispace >>
                                b: single_expression >>
                                (op, b)),
                      a,
