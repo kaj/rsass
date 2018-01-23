@@ -1,15 +1,16 @@
+use nom::types::CompleteByteSlice as Input;
 use parser::strings::{sass_string, sass_string_dq, sass_string_sq};
 use parser::util::{opt_spacelike, spacelike2};
 use selectors::{Selector, SelectorPart, Selectors};
 use std::str::from_utf8;
 
-named!(pub selectors<Selectors>,
+named!(pub selectors<Input, Selectors>,
        map!(separated_nonempty_list!(
            complete!(do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ())),
            selector),
             Selectors));
 
-named!(pub selector<Selector>,
+named!(pub selector<Input, Selector>,
        map!(many1!(selector_part),
             |s: Vec<SelectorPart>| {
                 let mut s = s;
@@ -19,7 +20,7 @@ named!(pub selector<Selector>,
                 Selector(s)
             }));
 
-named!(selector_part<&[u8], SelectorPart>,
+named!(selector_part<Input, SelectorPart>,
        alt_complete!(
            map!(sass_string, SelectorPart::Simple) |
            value!(SelectorPart::Simple("*".into()), tag!("*")) |
@@ -49,7 +50,7 @@ named!(selector_part<&[u8], SelectorPart>,
                      tag!("]") >>
                      (SelectorPart::Attribute {
                          name,
-                         op: from_utf8(op).unwrap().into(),
+                         op: from_utf8(&op).unwrap().into(),
                          val,
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>
@@ -73,67 +74,66 @@ named!(selector_part<&[u8], SelectorPart>,
 #[cfg(test)]
 mod test {
     use super::*;
-    use nom::IResult::*;
     use sass::{SassString, StringPart};
     use value::Quotes;
 
     #[test]
     fn simple_selector() {
         assert_eq!(
-            selector(b"foo "),
-            Done(
-                &b""[..],
+            selector(Input(b"foo ")),
+            Ok((
+                Input(b""),
                 Selector(vec![SelectorPart::Simple("foo".into())])
-            )
+            ))
         )
     }
     #[test]
     fn escaped_simple_selector() {
         assert_eq!(
-            selector(b"\\E9m "),
-            Done(
-                &b""[..],
+            selector(Input(b"\\E9m ")),
+            Ok((
+                Input(b""),
                 Selector(vec![SelectorPart::Simple("\\E9m".into())])
-            )
+            ))
         )
     }
 
     #[test]
     fn selector2() {
         assert_eq!(
-            selector(b"foo bar "),
-            Done(
-                &b""[..],
+            selector(Input(b"foo bar ")),
+            Ok((
+                Input(b""),
                 Selector(vec![
                     SelectorPart::Simple("foo".into()),
                     SelectorPart::Descendant,
                     SelectorPart::Simple("bar".into()),
                 ])
-            )
+            ))
         )
     }
 
     #[test]
     fn child_selector() {
         assert_eq!(
-            selector(b"foo > bar "),
-            Done(
-                &b""[..],
+            selector(Input(b"foo > bar ")),
+            Ok((
+                Input(b""),
                 Selector(vec![
                     SelectorPart::Simple("foo".into()),
                     SelectorPart::RelOp(b'>'),
                     SelectorPart::Simple("bar".into()),
                 ])
-            )
+            ))
         )
     }
 
     #[test]
     fn foo1_selector() {
         assert_eq!(
-            selector(b"[data-icon='test-1'] "),
-            Done(
-                &b""[..],
+            selector(Input(b"[data-icon='test-1'] ")),
+            Ok((
+                Input(b""),
                 Selector(vec![SelectorPart::Attribute {
                     name: "data-icon".into(),
                     op: "=".into(),
@@ -142,29 +142,29 @@ mod test {
                         Quotes::Single,
                     ),
                 }])
-            )
+            ))
         )
     }
 
     #[test]
     fn pseudo_selector() {
         assert_eq!(
-            selector(b":before "),
-            Done(
-                &b""[..],
+            selector(Input(b":before ")),
+            Ok((
+                Input(b""),
                 Selector(vec![SelectorPart::Pseudo {
                     name: "before".into(),
                     arg: None,
                 }])
-            )
+            ))
         )
     }
     #[test]
     fn pseudo_on_simple_selector() {
         assert_eq!(
-            selector(b"figure:before "),
-            Done(
-                &b""[..],
+            selector(Input(b"figure:before ")),
+            Ok((
+                Input(b""),
                 Selector(vec![
                     SelectorPart::Simple("figure".into()),
                     SelectorPart::Pseudo {
@@ -172,7 +172,7 @@ mod test {
                         arg: None,
                     },
                 ])
-            )
+            ))
         )
     }
 
@@ -181,8 +181,8 @@ mod test {
         let foo = Selector(vec![SelectorPart::Simple("foo".into())]);
         let bar = Selector(vec![SelectorPart::Simple("bar".into())]);
         assert_eq!(
-            selectors(b"foo, bar "),
-            Done(&b""[..], Selectors(vec![foo, bar]))
+            selectors(Input(b"foo, bar ")),
+            Ok((Input(b""), Selectors(vec![foo, bar])))
         )
     }
 

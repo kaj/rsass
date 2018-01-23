@@ -1,6 +1,7 @@
 use css::Value;
 use error::Error;
 use file_context::FileContext;
+use nom::types::CompleteByteSlice as Input;
 use parser::parse_scss_file;
 use sass::{FormalArgs, Item};
 use selectors::{Selector, SelectorPart, Selectors};
@@ -651,7 +652,7 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
     // contain high-level selector separators (i.e. ","), so we need to
     // parse the selectors again, from a string representation.
     use parser::selectors::selectors;
-    selectors(format!("{} ", s).as_bytes()).unwrap().1
+    selectors(Input(format!("{}", s).as_bytes())).unwrap().1
 }
 
 struct CssWriter {

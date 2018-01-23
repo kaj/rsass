@@ -2,6 +2,7 @@
 use clap;
 use css::Value;
 use nom;
+use nom::types::CompleteByteSlice as Input;
 use std::convert::From;
 use std::path::PathBuf;
 use std::string::FromUtf8Error;
@@ -81,9 +82,9 @@ impl From<nom::ErrorKind> for Error {
         Error::ParseError(e)
     }
 }
-impl<'a> From<nom::Err<&'a [u8]>> for Error {
-    fn from(e: nom::Err<&'a [u8]>) -> Self {
-        Error::S(format!("Parse error: {}", e))
+impl<'a> From<nom::Err<Input<'a>>> for Error {
+    fn from(e: nom::Err<Input<'a>>) -> Self {
+        Error::S(format!("Parse error: {:?}", e))
     }
 }
 

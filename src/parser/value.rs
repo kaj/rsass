@@ -1,4 +1,5 @@
 use nom::multispace;
+use nom::types::CompleteByteSlice as Input;
 use num_rational::Rational;
 use num_traits::One;
 use parser::formalargs::call_args;
@@ -11,7 +12,7 @@ use sass::{SassString, Value};
 use std::str::from_utf8;
 use value::{name_to_rgb, ListSeparator, Number, Operator};
 
-named!(pub value_expression<&[u8], Value>,
+named!(pub value_expression<Input, Value>,
        do_parse!(
            result: separated_nonempty_list!(
                complete!(preceded!(tag!(","), opt_spacelike)),
@@ -24,7 +25,7 @@ named!(pub value_expression<&[u8], Value>,
                Value::List(result, ListSeparator::Comma, false, false)
            })));
 
-named!(pub space_list<&[u8], Value>,
+named!(pub space_list<Input, Value>,
        do_parse!(first: se_or_ext_string >>
                  list: fold_many0!(
                      pair!(opt!(multispace), se_or_ext_string),
@@ -57,12 +58,12 @@ named!(pub space_list<&[u8], Value>,
                  })));
 
 named!(
-    se_or_ext_string<Value>,
+    se_or_ext_string<Input, Value>,
     alt_complete!(single_expression | map!(sass_string_ext, Value::Literal))
 );
 
 named!(
-    single_expression<Value>,
+    single_expression<Input, Value>,
     do_parse!(
         a: logic_expression
             >> r: fold_many0!(
@@ -91,7 +92,7 @@ named!(
 );
 
 named!(
-    logic_expression<Value>,
+    logic_expression<Input, Value>,
     do_parse!(
         a: sum_expression
             >> r: fold_many0!(
@@ -124,7 +125,7 @@ named!(
 );
 
 named!(
-    sum_expression<Value>,
+    sum_expression<Input, Value>,
     do_parse!(
         a: term_value
             >> r: fold_many0!(
@@ -161,7 +162,7 @@ named!(
 );
 
 named!(
-    term_value<Value>,
+    term_value<Input, Value>,
     do_parse!(
         one: single_value
             >> all: fold_many0!(
@@ -187,7 +188,7 @@ named!(
     )
 );
 
-named!(pub single_value<&[u8], Value>,
+named!(pub single_value<Input, Value>,
        alt_complete!(
            simple_value |
            delimited!(preceded!(tag!("("), opt_spacelike),
@@ -203,7 +204,7 @@ named!(pub single_value<&[u8], Value>,
                ));
 
 named!(
-    simple_value<Value>,
+    simple_value<Input, Value>,
     alt_complete!(
         bang
             | value!(Value::True, tag!("true"))
@@ -227,18 +228,18 @@ named!(
 );
 
 named!(
-    bang<Value>,
+    bang<Input, Value>,
     map!(
         preceded!(
             pair!(tag!("!"), opt_spacelike),
             tag!("important") // TODO Pretty much anythig goes, here?
         ),
-        |s| Value::Bang(from_utf8(s).unwrap().into())
+        |s| Value::Bang(from_utf8(&s).unwrap().into())
     )
 );
 
 named!(
-    unicode_range<Value>,
+    unicode_range<Input, Value>,
     map!(
         recognize!(do_parse!(
             tag_no_case!("U+")
@@ -252,12 +253,12 @@ named!(
                 )
                 >> ()
         )),
-        |range| Value::UnicodeRange(from_utf8(range).unwrap().into())
+        |range| Value::UnicodeRange(from_utf8(&range).unwrap().into())
     )
 );
 
 named!(
-    bracket_list<Value>,
+    bracket_list<Input, Value>,
     map!(
         delimited!(tag!("["), opt!(value_expression), tag!("]")),
         |item| match item {
@@ -273,7 +274,7 @@ named!(
 );
 
 named!(
-    number<Value>,
+    number<Input, Value>,
     map!(
         tuple!(
             opt!(alt!(tag!("-") | tag!("+"))),
@@ -287,8 +288,8 @@ named!(
         ),
         |(sign, (lead_zero, num), unit)| Value::Numeric(
             Number {
-                value: if sign == Some(b"-") { -num } else { num },
-                plus_sign: sign == Some(b"+"),
+                value: if sign == Some(Input(b"-")) { -num } else { num },
+                plus_sign: sign == Some(Input(b"+")),
                 lead_zero,
             },
             unit,
@@ -297,7 +298,7 @@ named!(
 );
 
 named!(
-    decimal_integer<Rational>,
+    decimal_integer<Input, Rational>,
     map!(
         fold_many1!(
             // Note: We should use bytes directly, one_of returns a char.
@@ -312,7 +313,7 @@ named!(
 );
 
 named!(
-    decimal_decimals<Rational>,
+    decimal_decimals<Input, Rational>,
     map!(
         preceded!(
             complete!(tag!(".")),
@@ -326,12 +327,12 @@ named!(
 );
 
 named!(
-    variable<Value>,
+    variable<Input, Value>,
     map!(preceded!(tag!("$"), name), Value::Variable)
 );
 
 named!(
-    hex_color<Value>,
+    hex_color<Input, Value>,
     preceded!(
         tag!("#"),
         map!(
@@ -339,16 +340,16 @@ named!(
                 tuple!(hexchar2, hexchar2, hexchar2)
                     | tuple!(hexchar, hexchar, hexchar)
             ),
-            |(r, g, b)| Value::Color(
-                from_hex(r),
-                from_hex(g),
-                from_hex(b),
+            |(r, g, b): (Input, Input, Input)| Value::Color(
+                from_hex(&r),
+                from_hex(&g),
+                from_hex(&b),
                 Rational::from_integer(1),
                 Some(format!(
                     "#{}{}{}",
-                    from_utf8(r).unwrap(),
-                    from_utf8(g).unwrap(),
-                    from_utf8(b).unwrap()
+                    from_utf8(&r).unwrap(),
+                    from_utf8(&g).unwrap(),
+                    from_utf8(&b).unwrap()
                 )),
             )
         )
@@ -356,7 +357,7 @@ named!(
 );
 
 named!(
-    unary_op<Value>,
+    unary_op<Input, Value>,
     map!(
         pair!(
             terminated!(
@@ -377,7 +378,7 @@ named!(
 );
 
 named!(
-    pub function_call<Value>,
+    pub function_call<Input, Value>,
     map!(
         pair!(sass_string, call_args),
         |(name, args)| Value::Call(name, args)
@@ -399,22 +400,22 @@ fn literal_or_color(s: SassString) -> Value {
     Value::Literal(s)
 }
 
-named!(hexchar, recognize!(one_of!("0123456789ABCDEFabcdef")));
+named!(hexchar<Input, Input>, recognize!(one_of!("0123456789ABCDEFabcdef")));
 
-named!(hexchar2, recognize!(pair!(hexchar, hexchar)));
+named!(hexchar2<Input, Input>, recognize!(pair!(hexchar, hexchar)));
 
 fn from_hex(v: &[u8]) -> Rational {
     let i = u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap() as isize;
     Rational::from_integer(if v.len() == 1 { i * 17 } else { i })
 }
 
-named!(pub dictionary<Value>,
+named!(pub dictionary<Input, Value>,
        delimited!(preceded!(tag!("("), opt_spacelike),
                   dictionary_inner,
                   terminated!(opt_spacelike, tag!(")"))));
 
 named!(
-    dictionary_inner<Value>,
+    dictionary_inner<Input, Value>,
     map!(
         terminated!(
             separated_nonempty_list!(
@@ -436,7 +437,6 @@ named!(
 #[cfg(test)]
 mod test {
     use super::*;
-    use nom::IResult::*;
     use num_rational::Rational;
     use num_traits::{One, Zero};
     use sass::CallArgs;
@@ -745,16 +745,19 @@ mod test {
     }
 
     fn check_expr(expr: &str, value: Value) {
-        assert_eq!(value_expression(expr.as_bytes()), Done(&b";"[..], value))
+        assert_eq!(
+            value_expression(Input(expr.as_bytes())),
+            Ok((Input(b";"), value))
+        )
     }
 
     #[test]
     fn parse_extended_literal() {
-        let t = value_expression_eof(b"http://#{\")\"}.com/");
-        if let &Done(rest, ref result) = &t {
+        let t = value_expression_eof(Input(b"http://#{\")\"}.com/"));
+        if let &Ok((rest, ref result)) = &t {
             assert_eq!(
                 (format!("{}", result.evaluate(&GlobalScope::new())), rest),
-                ("http://).com/".to_string(), &b""[..])
+                ("http://).com/".to_string(), Input(b""))
             );
         } else {
             assert_eq!(format!("{:?}", t), "Done")
@@ -762,11 +765,11 @@ mod test {
     }
     #[test]
     fn parse_extended_literal_in_arg() {
-        let t = value_expression_eof(b"url(http://#{\")\"}.com/)");
-        if let &Done(rest, ref result) = &t {
+        let t = value_expression_eof(Input(b"url(http://#{\")\"}.com/)"));
+        if let &Ok((rest, ref result)) = &t {
             assert_eq!(
                 (format!("{}", result.evaluate(&GlobalScope::new())), rest),
-                ("url(http://).com/)".to_string(), &b""[..])
+                ("url(http://).com/)".to_string(), Input(b""))
             );
         } else {
             assert_eq!(format!("{:?}", t), "Done")
@@ -774,11 +777,11 @@ mod test {
     }
     #[test]
     fn parse_extended_literal_in_arg_2() {
-        let t = value_expression_eof(b"url(//#{\")\"}.com/)");
-        if let &Done(rest, ref result) = &t {
+        let t = value_expression_eof(Input(b"url(//#{\")\"}.com/)"));
+        if let &Ok((rest, ref result)) = &t {
             assert_eq!(
                 (format!("{}", result.evaluate(&GlobalScope::new())), rest),
-                ("url(//).com/)".to_string(), &b""[..])
+                ("url(//).com/)".to_string(), Input(b""))
             );
         } else {
             assert_eq!(format!("{:?}", t), "Done")
@@ -786,7 +789,7 @@ mod test {
     }
 
     named!(
-        value_expression_eof<Value>,
+        value_expression_eof<Input, Value>,
         terminated!(value_expression, eof!())
     );
 

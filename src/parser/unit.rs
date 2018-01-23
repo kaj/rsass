@@ -1,6 +1,7 @@
+use nom::types::CompleteByteSlice as Input;
 use value::Unit;
 
-named!(pub unit<&[u8], Unit>,
+named!(pub unit<Input, Unit>,
        alt_complete!(
            // Distance units, <length> type
            value!(Unit::Em, tag!("em")) |
