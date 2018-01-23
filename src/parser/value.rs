@@ -62,7 +62,7 @@ named!(
     alt_complete!(single_expression | map!(sass_string_ext, Value::Literal))
 );
 
-named!(pub single_expression<Value>,
+named!(single_expression<Value>,
        do_parse!(a: logic_expression >>
                  r: fold_many0!(
                      do_parse!(opt!(multispace) >>
@@ -80,7 +80,7 @@ named!(pub single_expression<Value>,
                      |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))) >>
                  (r)));
 
-named!(pub logic_expression<Value>,
+named!(logic_expression<Value>,
        do_parse!(a: sum_expression >>
                  r: fold_many0!(
                      do_parse!(opt!(multispace) >>
@@ -98,7 +98,7 @@ named!(pub logic_expression<Value>,
                      |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))) >>
                  (r)));
 
-named!(pub sum_expression<Value>,
+named!(sum_expression<Value>,
        do_parse!(a: term_value >>
                  r: fold_many0!(
                      alt_complete!(
