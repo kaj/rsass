@@ -8,7 +8,7 @@ use parser::strings::{sass_string, sass_string_dq, sass_string_ext,
 use parser::unit::unit;
 use parser::util::{name, opt_spacelike, spacelike2};
 use sass::{SassString, Value};
-use std::str::{FromStr, from_utf8};
+use std::str::from_utf8;
 use value::{name_to_rgb, ListSeparator, Operator, Unit};
 
 named!(pub value_expression<&[u8], Value>,
@@ -172,29 +172,22 @@ named!(pub single_value<&[u8], Value>,
                          }
                      })) |
            do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
-                     r: is_a!("0123456789") >>
-                     d: opt!(preceded!(tag!("."), is_a!("0123456789"))) >>
+                     r: decimal_integer >>
+                     d: opt!(decimal_decimals) >>
                      u: opt!(unit) >>
                      (Value::Numeric(
                          {
-                             let d = Rational::from_str(
-                                 from_utf8(r).unwrap()).unwrap() +
-                                 d.map(decimals_to_rational)
-                                 .unwrap_or_else(Rational::zero);
+                             let d = r + d.unwrap_or_else(Rational::zero);
                              if sign == Some(b"-") { -d } else { d }
                          },
                          u.unwrap_or(Unit::None),
                          sign == Some(b"+"),
                          false))) |
            do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
-                     tag!(".") >>
-                     d: is_a!("0123456789") >>
+                     d: decimal_decimals >>
                      u: opt!(unit) >>
                      (Value::Numeric(
-                         {
-                             let d = decimals_to_rational(d);
-                             if sign == Some(b"-") { -d } else { d }
-                         },
+                         if sign == Some(b"-") { -d } else { d },
                          u.unwrap_or(Unit::None),
                          sign == Some(b"+"),
                          false))) |
@@ -244,6 +237,38 @@ named!(pub single_value<&[u8], Value>,
                 })));
 
 named!(
+    decimal_integer<Rational>,
+    map!(
+        fold_many1!(
+            // Note: We should use bytes directly, one_of returns a char.
+            one_of!("0123456789"),
+            0,
+            |r, d| {
+                r * 10 + isize::from(d as i8 - b'0' as i8)
+            }
+        ),
+        Rational::from_integer
+    )
+);
+
+named!(
+    decimal_decimals<Rational>,
+    map!(
+        preceded!(
+            complete!(tag!(".")),
+            fold_many1!(
+                one_of!("0123456789"),
+                (0, 1),
+                |(r, n), d| {
+                    (r * 10 + isize::from(d as i8 - b'0' as i8), n * 10)
+                }
+            )
+        ),
+        |(r, d)| Rational::new(r, d)
+    )
+);
+
+named!(
     variable<Value>,
     do_parse!(tag!("$") >> name: name >> (Value::Variable(name)))
 );
@@ -265,13 +290,6 @@ fn literal_or_color(s: SassString) -> Value {
         }
     }
     Value::Literal(s)
-}
-
-fn decimals_to_rational(d: &[u8]) -> Rational {
-    Rational::new(
-        from_utf8(d).unwrap().parse().unwrap(),
-        10_isize.pow(d.len() as u32),
-    )
 }
 
 named!(hexchar, recognize!(one_of!("0123456789ABCDEFabcdef")));

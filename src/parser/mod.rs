@@ -30,9 +30,7 @@ use value::Unit;
 ///
 /// Returns a single value (or an error).
 pub fn parse_value_data(data: &[u8]) -> Result<Value, Error> {
-    let expression = format!("{};", String::from_utf8(Vec::from(data))?);
-    let value = value_expression(expression.as_bytes()).to_result()?;
-    Ok(value)
+    Ok(value_expression(data).to_result()?)
 }
 
 /// Parse a scss file.
