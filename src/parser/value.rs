@@ -62,58 +62,91 @@ named!(
     alt_complete!(single_expression | map!(sass_string_ext, Value::Literal))
 );
 
-named!(single_expression<Value>,
-       do_parse!(a: logic_expression >>
-                 r: fold_many0!(
-                     do_parse!(opt!(multispace) >>
-                               op: alt_complete!(
-                                   value!(Operator::And, tag!("and")) |
-                                   value!(Operator::Or, tag!("or"))) >>
-                               multispace >>
-                               b: single_expression >>
-                               (op, b)),
-                     a,
-                     |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))) >>
-                 (r)));
+named!(
+    single_expression<Value>,
+    do_parse!(
+        a: logic_expression
+            >> r:
+                fold_many0!(
+                    do_parse!(
+                        opt!(multispace)
+                            >> op:
+                                alt_complete!(
+                                    value!(Operator::And, tag!("and"))
+                                        | value!(Operator::Or, tag!("or"))
+                                ) >> multispace
+                            >> b: single_expression
+                            >> (op, b)
+                    ),
+                    a,
+                    |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
+                ) >> (r)
+    )
+);
 
-named!(logic_expression<Value>,
-       do_parse!(a: sum_expression >>
-                 r: fold_many0!(
-                     do_parse!(opt!(multispace) >>
-                               op: alt_complete!(
-                                   value!(Operator::Equal, tag!("==")) |
-                                   value!(Operator::NotEqual, tag!("!=")) |
-                                   value!(Operator::GreaterE, tag!(">=")) |
-                                   value!(Operator::Greater, tag!(">")) |
-                                   value!(Operator::LesserE, tag!("<=")) |
-                                   value!(Operator::Lesser, tag!("<"))) >>
-                               opt!(multispace) >>
-                               b: sum_expression >>
-                               (op, b)),
-                     a,
-                     |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))) >>
-                 (r)));
+named!(
+    logic_expression<Value>,
+    do_parse!(
+        a: sum_expression
+            >> r:
+                fold_many0!(
+                    do_parse!(
+                        opt!(multispace)
+                            >> op:
+                                alt_complete!(
+                                    value!(Operator::Equal, tag!("=="))
+                                        | value!(Operator::NotEqual, tag!("!="))
+                                        | value!(Operator::GreaterE, tag!(">="))
+                                        | value!(Operator::Greater, tag!(">"))
+                                        | value!(Operator::LesserE, tag!("<="))
+                                        | value!(Operator::Lesser, tag!("<"))
+                                ) >> opt!(multispace)
+                            >> b: sum_expression
+                            >> (op, b)
+                    ),
+                    a,
+                    |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
+                ) >> (r)
+    )
+);
 
-named!(sum_expression<Value>,
-       do_parse!(a: term_value >>
-                 r: fold_many0!(
-                     alt_complete!(
-                         do_parse!(op: alt_complete!(
-                                       value!(Operator::Plus, tag!("+")) |
-                                       value!(Operator::Minus, tag!("-"))) >>
-                                   opt!(spacelike2) >>
-                                   b: term_value >>
-                                   (op, b)) |
-                         do_parse!(spacelike2 >>
-                                   op: alt_complete!(
-                                       value!(Operator::Plus, tag!("+")) |
-                                       value!(Operator::Minus, tag!("-"))) >>
-                                   spacelike2 >>
-                                   b: term_value >>
-                                   (op, b))),
-                     a,
-                     |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))) >>
-                 (r)));
+named!(
+    sum_expression<Value>,
+    do_parse!(
+        a: term_value
+            >> r:
+                fold_many0!(
+                    alt_complete!(
+                        do_parse!(
+                            op:
+                                alt_complete!(
+                                    value!(Operator::Plus, tag!("+"))
+                                        | value!(Operator::Minus, tag!("-"))
+                                )
+                                >> opt!(spacelike2)
+                                >> b: term_value
+                                >> (op, b)
+                        )
+                            | do_parse!(
+                                spacelike2
+                                    >> op:
+                                        alt_complete!(
+                                            value!(Operator::Plus, tag!("+"))
+                                                | value!(
+                                                    Operator::Minus,
+                                                    tag!("-")
+                                                )
+                                        )
+                                    >> spacelike2
+                                    >> b: term_value
+                                    >> (op, b)
+                            )
+                    ),
+                    a,
+                    |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
+                ) >> (r)
+    )
+);
 
 named!(
     term_value<Value>,
@@ -243,9 +276,7 @@ named!(
             // Note: We should use bytes directly, one_of returns a char.
             one_of!("0123456789"),
             0,
-            |r, d| {
-                r * 10 + isize::from(d as i8 - b'0' as i8)
-            }
+            |r, d| r * 10 + isize::from(d as i8 - b'0' as i8)
         ),
         Rational::from_integer
     )
@@ -256,13 +287,10 @@ named!(
     map!(
         preceded!(
             complete!(tag!(".")),
-            fold_many1!(
-                one_of!("0123456789"),
-                (0, 1),
-                |(r, n), d| {
-                    (r * 10 + isize::from(d as i8 - b'0' as i8), n * 10)
-                }
-            )
+            fold_many1!(one_of!("0123456789"), (0, 1), |(r, n), d| (
+                r * 10 + isize::from(d as i8 - b'0' as i8),
+                n * 10
+            ))
         ),
         |(r, d)| Rational::new(r, d)
     )
