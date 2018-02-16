@@ -151,19 +151,11 @@ impl Value {
                 if let Some(name) = name.single_raw() {
                     match scope.call_function(name, &args) {
                         Some(value) => value,
-                        None => {
-                            if let Some(function) = get_builtin_function(name) {
-                                match function.call(scope, &args) {
-                                    Ok(v) => v,
-                                    Err(e) => panic!(
-                                        "Error in function {}: {:?}",
-                                        name, e
-                                    ),
-                                }
-                            } else {
+                        None => get_builtin_function(name)
+                            .and_then(|f| f.call(scope, &args).ok())
+                            .unwrap_or_else(|| {
                                 css::Value::Call(name.to_string(), args)
-                            }
-                        }
+                            }),
                     }
                 } else {
                     let (name, _) = name.evaluate(scope);
