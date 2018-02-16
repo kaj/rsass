@@ -46,24 +46,15 @@ macro_rules! func2 {
 
 macro_rules! dep_warn {
     ($first: expr, $($arg:expr),*) => {{
-        use std::io::{Write, stderr};
         use std::sync::{ONCE_INIT, Once};
         static WARN: Once = ONCE_INIT;
         WARN.call_once(|| {
-            writeln!(&mut stderr(),
-                     concat!("DEPRECATION WARNING: ", $first),
-                     $($arg),*)
-                .unwrap();
+            eprintln!(concat!("DEPRECATION WARNING: ", $first), $($arg),*);
         });
     }};
     ($first: expr) => {{
-        use std::io::{Write, stderr};
         use std::sync::{ONCE_INIT, Once};
         static WARN: Once = ONCE_INIT;
-        WARN.call_once(|| {
-            writeln!(&mut stderr(),
-                     concat!("DEPRECATION WARNING: ", $first))
-                .unwrap();
-        });
+        WARN.call_once(|| eprintln!(concat!("DEPRECATION WARNING: ", $first)));
     }}
 }

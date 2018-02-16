@@ -4,7 +4,7 @@ extern crate rsass;
 
 use clap::{App, Arg, ArgMatches};
 use rsass::{compile_scss_file, Error, OutputStyle};
-use std::io::{stderr, stdout, Write};
+use std::io::{stdout, Write};
 use std::process::exit;
 
 fn main() {
@@ -40,7 +40,7 @@ fn main() {
     match run(&args) {
         Ok(()) => (),
         Err(err) => {
-            writeln!(&mut stderr(), "Error: {}!", err).unwrap();
+            eprintln!("Error: {}!", err);
             exit(1);
         }
     }
