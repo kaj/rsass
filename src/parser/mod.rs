@@ -118,7 +118,7 @@ named!(
         tag!("@include") >> spacelike >> name: name >> opt_spacelike
             >> args: opt!(call_args) >> opt_spacelike
             >> body: opt!(body_block) >> opt_spacelike
-            >> opt!(tag!(";")) >> (Item::MixinCall {
+            >> opt!(complete!(tag!(";"))) >> (Item::MixinCall {
             name: name,
             args: args.unwrap_or_default(),
             body: body.unwrap_or_default(),
