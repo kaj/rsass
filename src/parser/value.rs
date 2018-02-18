@@ -1,7 +1,6 @@
 use nom::multispace;
 use num_rational::Rational;
 use num_traits::{One, Zero};
-use ordermap::OrderMap;
 use parser::formalargs::call_args;
 use parser::strings::{sass_string, sass_string_dq, sass_string_ext,
                       sass_string_sq};
@@ -181,6 +180,18 @@ named!(
 
 named!(pub single_value<&[u8], Value>,
        alt_complete!(
+           simple_value |
+           delimited!(preceded!(tag!("("), opt_spacelike),
+                      alt_complete!(
+                          dictionary_inner |
+                          map!(value_expression, |v| Value::Paren(Box::new(v))) |
+                          map!(tag!(""), |_| Value::List(vec![], ListSeparator::Space, false, false))
+                              ),
+                      terminated!(opt_spacelike, tag!(")")))
+               ));
+
+named!(simple_value<Value>,
+       alt_complete!(
            value!(Value::True, tag!("true")) |
            value!(Value::False, tag!("false")) |
            value!(Value::HereSelector, tag!("&")) |
@@ -257,17 +268,8 @@ named!(pub single_value<&[u8], Value>,
            function_call |
            map!(sass_string, literal_or_color) |
            map!(sass_string_dq, Value::Literal) |
-           map!(sass_string_sq, Value::Literal) |
-           dictionary |
-           map!(delimited!(preceded!(tag!("("), opt_spacelike),
-                           opt!(value_expression),
-                           terminated!(opt_spacelike, tag!(")"))),
-                |val: Option<Value>| match val {
-                    Some(v) => Value::Paren(Box::new(v)),
-                    None => {
-                        Value::List(vec![], ListSeparator::Space, false, false)
-                    }
-                })));
+           map!(sass_string_sq, Value::Literal)
+    ));
 
 named!(
     decimal_integer<Rational>,
@@ -336,24 +338,22 @@ fn from_hex(v: &[u8]) -> Rational {
 }
 
 named!(pub dictionary<Value>,
-       map!(delimited!(preceded!(tag!("("), opt_spacelike),
-                       separated_nonempty_list!(
-                           delimited!(opt_spacelike, tag!(","),
-                                      opt_spacelike),
-                           do_parse!(k: single_value >>
-                                     opt_spacelike >>
-                                     tag!(":") >>
-                                     opt_spacelike >>
-                                     v: space_list >>
-                                     (k, v))),
-                       terminated!(opt_spacelike, tag!(")"))),
-            |items| {
-                let mut map = OrderMap::new();
-                for (k, v) in items {
-                    map.insert(k, v);
-                }
-                Value::Map(map)
-            }));
+       delimited!(preceded!(tag!("("), opt_spacelike),
+                  dictionary_inner,
+                  terminated!(opt_spacelike, tag!(")"))));
+
+named!(dictionary_inner<Value>,
+       map!(
+           separated_nonempty_list!(
+               delimited!(opt_spacelike, tag!(","), opt_spacelike),
+               do_parse!(k: simple_value >>
+                         opt_spacelike >>
+                         tag!(":") >>
+                         opt_spacelike >>
+                         v: space_list >>
+                         (k, v))),
+           |items| Value::Map(items.into_iter().collect()))
+       );
 
 #[cfg(test)]
 mod test {
