@@ -84,12 +84,28 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             ))
         }
     });
-    def!(f, invert(color), |s| match &s.get("color") {
-        &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
-            let ff = Rational::new(255, 1);
-            Ok(Value::rgba(ff - red, ff - green, ff - blue, *alpha))
+    def!(f, invert(color, weight = b"100%"), |s| {
+        match (&s.get("color"), &s.get("weight")) {
+            (
+                &Value::Color(ref red, ref green, ref blue, ref alpha, _),
+                &Value::Numeric(ref w, ref wu, ..),
+            ) => {
+                let ff = Rational::new(255, 1);
+                let w = if wu == &Unit::Percent {
+                    w / Rational::from_integer(100)
+                } else {
+                    *w
+                };
+                fn m(v1: &Rational, v2: &Rational, w: Rational) -> Rational {
+                    *v1 * w + *v2 * (Rational::one() - w)
+                }
+                let inv = |v: &Rational| m(&(ff - v), v, w);
+                Ok(Value::rgba(inv(red), inv(green), inv(blue), *alpha))
+            }
+            (value, weight) => {
+                Err(Error::badargs(&["color", "percentage"], &[value, weight]))
+            }
         }
-        value => Err(Error::badarg("color", value)),
     });
 }
 
