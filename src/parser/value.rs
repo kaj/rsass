@@ -184,9 +184,12 @@ named!(pub single_value<&[u8], Value>,
            delimited!(preceded!(tag!("("), opt_spacelike),
                       alt_complete!(
                           dictionary_inner |
-                          map!(value_expression, |v| Value::Paren(Box::new(v))) |
-                          map!(tag!(""), |_| Value::List(vec![], ListSeparator::Space, false, false))
-                              ),
+                          map!(value_expression,
+                               |v| Value::Paren(Box::new(v))) |
+                          value!(Value::List(
+                              vec![], ListSeparator::Space, false, false
+                          ))
+                      ),
                       terminated!(opt_spacelike, tag!(")")))
                ));
 
