@@ -8,7 +8,7 @@ use parser::unit::unit;
 use parser::util::{name, opt_spacelike, spacelike2};
 use sass::{SassString, Value};
 use std::str::from_utf8;
-use value::{name_to_rgb, ListSeparator, Operator, Unit};
+use value::{name_to_rgb, ListSeparator, Operator};
 
 named!(pub value_expression<&[u8], Value>,
        do_parse!(
@@ -222,21 +222,21 @@ named!(
            do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
                      r: decimal_integer >>
                      d: opt!(decimal_decimals) >>
-                     u: opt!(unit) >>
+                     u: unit >>
                      (Value::Numeric(
                          {
                              let d = r + d.unwrap_or_else(Rational::zero);
                              if sign == Some(b"-") { -d } else { d }
                          },
-                         u.unwrap_or(Unit::None),
+                         u,
                          sign == Some(b"+"),
                          false))) |
            do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
                      d: decimal_decimals >>
-                     u: opt!(unit) >>
+                     u: unit >>
                      (Value::Numeric(
                          if sign == Some(b"-") { -d } else { d },
-                         u.unwrap_or(Unit::None),
+                         u,
                          sign == Some(b"+"),
                          false))) |
            variable |
@@ -370,6 +370,7 @@ mod test {
     use num_traits::{One, Zero};
     use sass::CallArgs;
     use sass::Value::*;
+    use value::Unit;
     use variablescope::GlobalScope;
 
     #[test]
