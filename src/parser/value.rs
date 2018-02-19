@@ -193,9 +193,10 @@ named!(pub single_value<&[u8], Value>,
                       terminated!(opt_spacelike, tag!(")")))
                ));
 
-named!(simple_value<Value>,
-       alt_complete!(
-           value!(Value::True, tag!("true")) |
+named!(
+    simple_value<Value>,
+    alt_complete!(
+        value!(Value::True, tag!("true")) |
            value!(Value::False, tag!("false")) |
            value!(Value::HereSelector, tag!("&")) |
            do_parse!(tag!("[") >>
@@ -269,10 +270,12 @@ named!(simple_value<Value>,
                      v: single_value >>
                      (Value::UnaryOp(op, Box::new(v)))) |
            function_call |
-           map!(sass_string, literal_or_color) |
-           map!(sass_string_dq, Value::Literal) |
-           map!(sass_string_sq, Value::Literal)
-    ));
+        // And a bunch of string variants
+        map!(sass_string, literal_or_color)
+            | map!(sass_string_dq, Value::Literal)
+            | map!(sass_string_sq, Value::Literal)
+    )
+);
 
 named!(
     decimal_integer<Rational>,
@@ -345,18 +348,19 @@ named!(pub dictionary<Value>,
                   dictionary_inner,
                   terminated!(opt_spacelike, tag!(")"))));
 
-named!(dictionary_inner<Value>,
-       map!(
-           separated_nonempty_list!(
-               delimited!(opt_spacelike, tag!(","), opt_spacelike),
-               do_parse!(k: simple_value >>
-                         opt_spacelike >>
-                         tag!(":") >>
-                         opt_spacelike >>
-                         v: space_list >>
-                         (k, v))),
-           |items| Value::Map(items.into_iter().collect()))
-       );
+named!(
+    dictionary_inner<Value>,
+    map!(
+        separated_nonempty_list!(
+            delimited!(opt_spacelike, tag!(","), opt_spacelike),
+            do_parse!(
+                k: simple_value >> opt_spacelike >> tag!(":") >> opt_spacelike
+                    >> v: space_list >> (k, v)
+            )
+        ),
+        |items| Value::Map(items.into_iter().collect())
+    )
+);
 
 #[cfg(test)]
 mod test {
