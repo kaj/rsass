@@ -8,7 +8,7 @@ use variablescope::{Scope, ScopeImpl};
 ///
 /// The arguments are ordered (so they have a position).
 /// Each argument also has a name and may have a default value.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct FormalArgs(Vec<(String, Value)>, bool);
 
 impl FormalArgs {

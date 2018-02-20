@@ -31,7 +31,7 @@ type BuiltinFn = Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
 ///
 /// The function can be either "builtin" (implemented in rust) or
 /// "user defined" (implemented in scss).
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct SassFunction {
     args: sass::FormalArgs,
     body: FuncImpl,
@@ -41,6 +41,30 @@ pub struct SassFunction {
 pub enum FuncImpl {
     Builtin(Arc<BuiltinFn>),
     UserDefined(Vec<sass::Item>),
+}
+
+impl PartialOrd for FuncImpl {
+    fn partial_cmp(&self, rhs: &Self) -> Option<cmp::Ordering> {
+        Some(self.cmp(rhs))
+    }
+}
+impl Ord for FuncImpl {
+    fn cmp(&self, rhs: &Self) -> cmp::Ordering {
+        match (self, rhs) {
+            (&FuncImpl::Builtin(..), &FuncImpl::Builtin(..)) => {
+                cmp::Ordering::Equal
+            }
+            (&FuncImpl::Builtin(..), &FuncImpl::UserDefined(..)) => {
+                cmp::Ordering::Less
+            }
+            (&FuncImpl::UserDefined(..), &FuncImpl::Builtin(..)) => {
+                cmp::Ordering::Greater
+            }
+            (&FuncImpl::UserDefined(ref a), &FuncImpl::UserDefined(ref b)) => {
+                a.cmp(b)
+            }
+        }
+    }
 }
 
 impl cmp::PartialEq for FuncImpl {

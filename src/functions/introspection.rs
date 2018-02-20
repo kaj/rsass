@@ -1,4 +1,4 @@
-use super::{get_builtin_function, Error, SassFunction};
+use super::{Error, SassFunction};
 use css::{CallArgs, Value};
 use std::collections::BTreeMap;
 use value::{Quotes, Unit};
@@ -21,6 +21,22 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("string", v)),
     });
+    def!(
+        f,
+        get_function(name, css = b"false"),
+        |s| match s.get("name") {
+            Value::Literal(ref v, _) => {
+                if s.get("css").is_true() {
+                    Ok(Value::Function(v.to_string(), None))
+                } else if let Some(f) = s.get_function(v) {
+                    Ok(Value::Function(v.to_string(), Some(f.clone())))
+                } else {
+                    Err(Error::S(format!("Function {} does not exist", v)))
+                }
+            }
+            ref v => Err(Error::badarg("string", v)),
+        }
+    );
     def!(f, mixin_exists(name), |s| match &s.get("name") {
         &Value::Literal(ref v, _) => {
             Ok(Value::bool(s.get_mixin(&v.replace('-', "_")).is_some()))
@@ -66,27 +82,24 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             (v1, v2) => Err(Error::badargs(&["number", "number"], &[v1, v2])),
         }
     });
-    def_va!(f, call(name, args), |s: &Scope| match &s.get("name") {
-        &Value::Literal(ref name, _) => {
-            // Ok, the spec says using a string for call is deprecated.
-            // Even though I have no other way implemented ...
-            dep_warn!(
-                "Passing a string to call() is deprecated and \
-                 will be illegal"
-            );
-            let args = CallArgs::from_value(s.get("args"));
-            match s.call_function(name, &args) {
-                Some(value) => Ok(value),
-                None => {
-                    if let Some(function) = get_builtin_function(name) {
-                        function.call(s, &args)
-                    } else {
-                        Ok(Value::Call(name.clone(), args))
-                    }
-                }
+    def_va!(f, call(name, args), |s: &Scope| {
+        let (function, name) = match s.get("name") {
+            Value::Function(ref name, ref func) => (func.clone(), name.clone()),
+            Value::Literal(ref name, _) => {
+                dep_warn!(
+                    "Passing a string to call() is deprecated and \
+                     will be illegal"
+                );
+                (s.get_function(name).cloned(), name.clone())
             }
+            ref v => return Err(Error::badarg("string", v)),
+        };
+        let args = CallArgs::from_value(s.get("args"));
+        if let Some(function) = function {
+            function.call(s, &args)
+        } else {
+            Ok(Value::Call(name.clone(), args))
         }
-        v => Err(Error::badarg("string", v)),
     });
 }
 

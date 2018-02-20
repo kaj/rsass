@@ -1,5 +1,6 @@
 use css::CallArgs;
 use error::Error;
+use functions::SassFunction;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use ordermap::OrderMap;
@@ -9,7 +10,10 @@ use value::{rgb_to_name, ListSeparator, Operator, Quotes, Unit};
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
+    /// An function call that was not evaluated.
     Call(String, CallArgs),
+    /// A (callable?) function.
+    Function(String, Option<SassFunction>),
     /// The booleans tell if there should be whitespace
     /// before / after the slash.
     Div(Box<Value>, Box<Value>, bool, bool),
@@ -70,6 +74,7 @@ impl Value {
             Value::Literal(..) => "string",
             Value::Numeric(..) => "number",
             Value::List(..) => "list",
+            Value::Function(..) => "function",
             Value::True | Value::False => "bool",
             Value::Null => "null",
             _ => "unknown",
@@ -247,6 +252,15 @@ impl fmt::Display for Value {
                 ),
                 Quotes::None => write!(out, "{}", s),
             },
+            Value::Function(ref n, ref _f) => {
+                let name = n.chars()
+                    .flat_map(|c| match c {
+                        '"' => vec!['\\', '"'],
+                        c => vec![c],
+                    })
+                    .collect::<String>();
+                write!(out, "get-function(\"{}\")", name)
+            }
             Value::Numeric(ref v, ref u, ref with_sign, _) => {
                 let short = out.alternate();
                 write!(out, "{}{}", rational2str(v, *with_sign, short), u)

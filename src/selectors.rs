@@ -4,7 +4,7 @@ use std::fmt;
 use std::io::Write;
 use value::{ListSeparator, Quotes};
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Selectors(pub Vec<Selector>);
 
 impl Selectors {
@@ -47,7 +47,7 @@ impl Selectors {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Selector(pub Vec<SelectorPart>);
 
 impl Selector {
@@ -77,7 +77,7 @@ impl Selector {
 }
 
 /// A selector consist of a sequence of these parts.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum SelectorPart {
     Simple(SassString),
     Descendant,

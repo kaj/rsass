@@ -5,7 +5,7 @@ use selectors::Selectors;
 
 /// Every sass file is a sequence of sass items.
 /// Scoping items contains further sequences of items.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Item {
     Import(Value),
     VariableDeclaration {
