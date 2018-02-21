@@ -351,12 +351,16 @@ named!(pub dictionary<Value>,
 named!(
     dictionary_inner<Value>,
     map!(
-        separated_nonempty_list!(
-            delimited!(opt_spacelike, tag!(","), opt_spacelike),
-            do_parse!(
-                k: simple_value >> opt_spacelike >> tag!(":") >> opt_spacelike
-                    >> v: space_list >> (k, v)
-            )
+        terminated!(
+            separated_nonempty_list!(
+                delimited!(opt_spacelike, tag!(","), opt_spacelike),
+                do_parse!(
+                    k: simple_value >> opt_spacelike >> tag!(":")
+                        >> opt_spacelike >> v: space_list
+                        >> (k, v)
+                )
+            ),
+            opt!(delimited!(opt_spacelike, tag!(","), opt_spacelike))
         ),
         |items| Value::Map(items.into_iter().collect())
     )

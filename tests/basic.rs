@@ -1383,6 +1383,17 @@ fn ti815_str_slice() {
     )
 }
 
+/// From `spec/libsass-closed-issues/issue_574`
+#[test]
+fn ti574_map_trailing_comma() {
+    check(
+        b"$flow: left;\n\n\
+          $map: (\n  margin-#{$flow}: 3em,\n  foo: bar,\n);\n\n\
+          .test {\n  margin-left: map-get($map, margin-left);\n}\n",
+        ".test {\n  margin-left: 3em;\n}\n",
+    )
+}
+
 /// From `spec/core_functions/invert/weight-parameter`
 #[test]
 fn weight_parameter() {
