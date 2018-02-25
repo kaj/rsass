@@ -4,7 +4,7 @@ use functions::SassFunction;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use ordermap::OrderMap;
-use std::fmt;
+use std::fmt::{self, Write};
 use value::{rgb_to_name, ListSeparator, Operator, Quotes, Unit};
 
 /// A sass value.
@@ -262,8 +262,8 @@ impl fmt::Display for Value {
                 write!(out, "get-function(\"{}\")", name)
             }
             Value::Numeric(ref v, ref u, ref with_sign, _) => {
-                let short = out.alternate();
-                write!(out, "{}{}", rational2str(v, *with_sign, short), u)
+                let skip_zero = out.alternate();
+                write!(out, "{}{}", Decimals::new(v, *with_sign, skip_zero), u)
             }
             Value::Color(ref r, ref g, ref b, ref a, ref s) => {
                 let r = r.round().to_integer() as u8;
@@ -302,7 +302,9 @@ impl fmt::Display for Value {
                         r,
                         g,
                         b,
-                        rational2str(a, false, false)
+                        // I think skip_zero should be true here,
+                        // but the test suite says otherwise.
+                        Decimals::new(a, false, false),
                     )
                 } else {
                     write!(
@@ -311,7 +313,7 @@ impl fmt::Display for Value {
                         r,
                         g,
                         b,
-                        rational2str(a, false, false)
+                        Decimals::new(a, false, false),
                     )
                 }
             }
@@ -397,25 +399,54 @@ impl fmt::Display for Value {
     }
 }
 
-fn rational2str(r: &Rational, with_sign: bool, skipzero: bool) -> String {
-    if r.is_integer() {
-        if with_sign {
-            format!("{:+}", r.numer())
-        } else {
-            format!("{}", r.numer())
+struct Decimals<'a> {
+    r: &'a Rational,
+    with_sign: bool,
+    skip_zero: bool,
+}
+
+impl<'a> Decimals<'a> {
+    fn new(r: &'a Rational, with_sign: bool, skip_zero: bool) -> Self {
+        Decimals {
+            r,
+            with_sign,
+            skip_zero,
         }
-    } else {
-        let prec = Rational::from_integer(100_000);
-        let v = (r * prec).round() / prec;
-        let v = *v.numer() as f64 / *v.denom() as f64;
-        let mut result = if with_sign {
-            format!("{:+}", v)
+    }
+}
+
+impl<'a> fmt::Display for Decimals<'a> {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        let t = self.r.to_integer();
+        if t == 0 {
+            if self.r.is_negative() {
+                out.write_str("-0")?;
+            } else if self.with_sign {
+                out.write_str("+0")?;
+            } else if self.r.is_zero() || !self.skip_zero {
+                out.write_char('0')?;
+            }
         } else {
-            format!("{}", v)
-        };
-        if skipzero && result.starts_with("0.") {
-            result.remove(0);
+            if self.with_sign && !t.is_negative() {
+                out.write_char('+')?;
+            }
+            write!(out, "{}", t)?;
         }
-        result
+        let mut f = self.r.fract().abs();
+        if !f.is_zero() {
+            out.write_char('.')?;
+            for _ in 0..4 {
+                f *= 10;
+                write!(out, "{}", f.to_integer())?;
+                f = f.fract();
+                if f.is_zero() {
+                    break;
+                }
+            }
+            if !f.is_zero() {
+                write!(out, "{}", (f * 10).round().to_integer())?;
+            }
+        }
+        Ok(())
     }
 }
