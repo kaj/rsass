@@ -266,30 +266,26 @@ impl fmt::Display for Value {
                 write!(out, "{}{}", Decimals::new(v, *with_sign, skip_zero), u)
             }
             Value::Color(ref r, ref g, ref b, ref a, ref s) => {
-                let r = r.round().to_integer() as u8;
-                let g = g.round().to_integer() as u8;
-                let b = b.round().to_integer() as u8;
                 if let Some(ref s) = *s {
                     write!(out, "{}", s)
                 } else if a >= &Rational::from_integer(1) {
-                    if out.alternate() {
-                        // E.g. #ff00cc can be written #f0c in css.
-                        // 0xff / 17 = 0xf (since 17 = 0x11).
-                        let hex = if r % 17 == 0 && g % 17 == 0 && b % 17 == 0 {
-                            format!("#{:x}{:x}{:x}", r / 17, g / 17, b / 17)
-                        } else {
-                            format!("#{:02x}{:02x}{:02x}", r, g, b)
-                        };
-                        match rgb_to_name(r, g, b) {
-                            Some(name) if name.len() <= hex.len() => {
-                                write!(out, "{}", name)
-                            }
-                            _ => write!(out, "{}", hex),
+                    let r = r.round().to_integer() as u8;
+                    let g = g.round().to_integer() as u8;
+                    let b = b.round().to_integer() as u8;
+                    // E.g. #ff00cc can be written #f0c in css.
+                    // 0xff / 17 = 0xf (since 17 = 0x11).
+                    let short = r % 17 == 0 && g % 17 == 0 && b % 17 == 0;
+                    let hex_len = if short { 4 } else { 7 };
+                    match rgb_to_name(r, g, b) {
+                        Some(name)
+                            if !(out.alternate() && name.len() > hex_len) =>
+                        {
+                            write!(out, "{}", name)
                         }
-                    } else if let Some(name) = rgb_to_name(r, g, b) {
-                        write!(out, "{}", name)
-                    } else {
-                        write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
+                        _ if out.alternate() && short => {
+                            write!(out, "#{:x}{:x}{:x}", r / 17, g / 17, b / 17)
+                        }
+                        _ => write!(out, "#{:02x}{:02x}{:02x}", r, g, b),
                     }
                 } else if a.is_zero() && r.is_zero() && g.is_zero()
                     && b.is_zero()
@@ -299,9 +295,9 @@ impl fmt::Display for Value {
                     write!(
                         out,
                         "rgba({},{},{},{})",
-                        r,
-                        g,
-                        b,
+                        r.round().to_integer() as u8,
+                        g.round().to_integer() as u8,
+                        b.round().to_integer() as u8,
                         // I think skip_zero should be true here,
                         // but the test suite says otherwise.
                         Decimals::new(a, false, false),
@@ -310,9 +306,9 @@ impl fmt::Display for Value {
                     write!(
                         out,
                         "rgba({}, {}, {}, {})",
-                        r,
-                        g,
-                        b,
+                        r.round().to_integer() as u8,
+                        g.round().to_integer() as u8,
+                        b.round().to_integer() as u8,
                         Decimals::new(a, false, false),
                     )
                 }
