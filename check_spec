@@ -13,15 +13,12 @@ cd `dirname $0`
 cargo build --release --features=commandline
 
 if [ -d sass-spec ]; then
-   cd sass-spec
-   git fetch
-   git rebase origin/master --autostash
+   (cd sass-spec && git fetch && git rebase origin/master --autostash)
 else
    git clone https://github.com/sass/sass-spec.git
-   cd sass-spec
 fi
 
-cat > spec/output_styles/options.yml <<EOF
+cat > sass-spec/spec/output_styles/options.yml <<EOF
 ---
 :start_version: '3.4'
 :only_on:
@@ -29,59 +26,51 @@ cat > spec/output_styles/options.yml <<EOF
 - rsass
 EOF
 
-cat > spec/output_styles/compact/options.yml <<EOF
+cat > sass-spec/spec/output_styles/compact/options.yml <<EOF
 ---
 :output_style: :compact
 :ignore_for:
 - rsass
 EOF
 
-cat > spec/output_styles/nested/options.yml <<EOF
+cat > sass-spec/spec/output_styles/nested/options.yml <<EOF
 ---
 :output_style: :nested
 :ignore_for:
 - rsass
 EOF
 
+IMPL=rsass
+function check() {
+    LC_ALL=C sass-spec/sass-spec.rb -c target/release/rsass \
+	  --impl $IMPL -V 4.0 sass-spec/spec/$1
+}
+
+function list_fails() {
+    grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
+}
+
 case "$1" in
     "")
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec
+        check | list_fails
         ;;
+    "-h"|"--help"|"help")
+	echo "$0 stats ;: Give stats for passes / fails sutiable for docs."
+	echo "$0 ;: just run all the tests"
+	echo "$0 --help ;: print this help"
+	echo "Other args will be used as test subset specifications."
+	echo "Examples: basic core_functions selector-functions"
+	echo "          scss parser values"
+	;;
     "impersonate")
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl libsass -V 4.0 spec
-        ;;
-    "basic")
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/basic \
-            |  grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
-        ;;
-    "core_functions")
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/core_functions \
-            |  grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
-        ;;
-    "selector_functions")
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/selector-functions \
-            |  grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
-        ;;
-    "scss")
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/scss
-	;;
-    "parser")
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/parser
-	;;
-    "values")
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/values \
-            |  grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
-        ;;
-    "interpolate")
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec/parser/interpolate  \
-            |  grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
+        IMPL=libsass check | list_fails
         ;;
     "stats")
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl rsass -V 4.0 spec \
+	check \
             | rg --no-line-number '^([0-9]+) runs, ([0-9]+) assertions.*' \
                  --replace 'Progress: ![$2](http://progressed.io/bar/$2?scale=$1&suffix=+) of $1 tests passed'
-        LC_ALL=C ./sass-spec.rb -c ../target/release/rsass --impl libsass -V 4.0 spec \
-            | rg --no-line-number '^([0-9]+) runs, ([0-9]+) assertions.*' \
-                 --replace '(or $2 of $1 when claiming to be libsass).'
         ;;
+    *)
+        check $1 | list_fails
+	;;
 esac
