@@ -10,12 +10,12 @@
 #     ./check-spec stats
 #
 cd `dirname $0`
-cargo build --release --features=commandline
+cargo build --release --features=commandline >&2
 
 if [ -d sass-spec ]; then
-   (cd sass-spec && git fetch && git rebase origin/master --autostash)
+   (cd sass-spec && git fetch >&2 && git rebase origin/master --autostash >&2)
 else
-   git clone https://github.com/sass/sass-spec.git
+   git clone https://github.com/sass/sass-spec.git >&2
 fi
 
 cat > sass-spec/spec/output_styles/options.yml <<EOF
