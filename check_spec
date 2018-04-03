@@ -55,7 +55,7 @@ case "$1" in
         check | list_fails
         ;;
     "-h"|"--help"|"help")
-	echo "$0 stats ;: Give stats for passes / fails sutiable for docs."
+	echo "$0 stats ;: Give stats for passes / fails suitable for docs."
 	echo "$0 ;: just run all the tests"
 	echo "$0 --help ;: print this help"
 	echo "Other args will be used as test subset specifications."
