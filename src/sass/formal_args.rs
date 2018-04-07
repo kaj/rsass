@@ -30,8 +30,10 @@ impl FormalArgs {
             {
                 argscope.define(name, value);
             } else if self.1 && i + 1 == n && args.len() > n {
-                let args =
-                    args.iter().skip(i).map(|&(_, ref v)| v.clone()).collect();
+                let args = args.iter()
+                    .skip(i)
+                    .map(|&(_, ref v)| v.clone())
+                    .collect();
                 argscope.define(
                     name,
                     &css::Value::List(args, ListSeparator::Comma, false),

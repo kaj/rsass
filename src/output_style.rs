@@ -78,7 +78,11 @@ impl OutputStyle {
                             result.to_imports(),
                             "@import url({});{}",
                             x,
-                            if self.is_compressed() { "" } else { "\n" }
+                            if self.is_compressed() {
+                                ""
+                            } else {
+                                "\n"
+                            }
                         )?;
                     }
                 } else {
@@ -86,7 +90,11 @@ impl OutputStyle {
                         result.to_imports(),
                         "@import {};{}",
                         name,
-                        if self.is_compressed() { "" } else { "\n" }
+                        if self.is_compressed() {
+                            ""
+                        } else {
+                            "\n"
+                        }
                     )?;
                 }
             }
@@ -176,7 +184,10 @@ impl OutputStyle {
                 panic!("@content not allowed in global context");
             }
 
-            Item::FunctionDeclaration { ref name, ref func } => {
+            Item::FunctionDeclaration {
+                ref name,
+                ref func,
+            } => {
                 scope.define_function(name, func.clone());
             }
             Item::Return(_) => {
@@ -312,7 +323,8 @@ impl OutputStyle {
                 Item::Import(ref name) => {
                     let name = name.evaluate(scope);
                     if let Value::Literal(ref x, _) = name {
-                        let (sub_context, file) = file_context.file(x.as_ref());
+                        let (sub_context, file) =
+                            file_context.file(x.as_ref());
                         let items = parse_scss_file(&file)?;
                         self.handle_body(
                             direct,
@@ -421,7 +433,8 @@ impl OutputStyle {
                     }
                 }
                 Item::Content => {
-                    if let Some((_args, m_body)) = scope.get_mixin("%%BODY%%") {
+                    if let Some((_args, m_body)) = scope.get_mixin("%%BODY%%")
+                    {
                         self.handle_body(
                             direct,
                             sub,
@@ -433,7 +446,10 @@ impl OutputStyle {
                     }
                 }
 
-                Item::FunctionDeclaration { ref name, ref func } => {
+                Item::FunctionDeclaration {
+                    ref name,
+                    ref func,
+                } => {
                     scope.define_function(name, func.clone());
                 }
                 Item::Return(_) => {
@@ -541,7 +557,11 @@ impl OutputStyle {
                     let v = value.evaluate(scope);
                     if !v.is_null() {
                         let (name, _q) = name.evaluate(scope);
-                        direct.push(CssBodyItem::Property(name, v, *important));
+                        direct.push(CssBodyItem::Property(
+                            name,
+                            v,
+                            *important,
+                        ));
                     }
                 }
                 Item::Comment(ref c) => {
@@ -628,13 +648,14 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                             SelectorPart::Simple(ref v) => {
                                 SelectorPart::Simple(v.evaluate2(scope))
                             }
-                            SelectorPart::Pseudo { ref name, ref arg } => {
-                                SelectorPart::Pseudo {
-                                    name: name.evaluate2(scope),
-                                    arg: arg.as_ref()
-                                        .map(|a| eval_selectors(a, scope)),
-                                }
-                            }
+                            SelectorPart::Pseudo {
+                                ref name,
+                                ref arg,
+                            } => SelectorPart::Pseudo {
+                                name: name.evaluate2(scope),
+                                arg: arg.as_ref()
+                                    .map(|a| eval_selectors(a, scope)),
+                            },
                             SelectorPart::PseudoElement(ref e) => {
                                 let e = e.evaluate2(scope);
                                 SelectorPart::PseudoElement(e)
@@ -650,7 +671,9 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
     // contain high-level selector separators (i.e. ","), so we need to
     // parse the selectors again, from a string representation.
     use parser::selectors::selectors;
-    selectors(format!("{} ", s).as_bytes()).unwrap().1
+    selectors(format!("{} ", s).as_bytes())
+        .unwrap()
+        .1
 }
 
 struct CssWriter {

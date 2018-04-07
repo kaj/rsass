@@ -1,6 +1,5 @@
 use functions::SassFunction;
-use sass::{CallArgs, FormalArgs, SassString};
-use sass::Value;
+use sass::{CallArgs, FormalArgs, SassString, Value};
 use selectors::Selectors;
 
 /// Every sass file is a sequence of sass items.

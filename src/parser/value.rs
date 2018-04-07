@@ -65,21 +65,19 @@ named!(
     single_expression<Value>,
     do_parse!(
         a: logic_expression
-            >> r:
-                fold_many0!(
-                    do_parse!(
-                        opt!(multispace)
-                            >> op:
-                                alt_complete!(
-                                    value!(Operator::And, tag!("and"))
-                                        | value!(Operator::Or, tag!("or"))
-                                ) >> multispace
-                            >> b: single_expression
-                            >> (op, b)
-                    ),
-                    a,
-                    |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
-                ) >> (r)
+            >> r: fold_many0!(
+                do_parse!(
+                    opt!(multispace)
+                        >> op: alt_complete!(
+                            value!(Operator::And, tag!("and"))
+                                | value!(Operator::Or, tag!("or"))
+                        ) >> multispace
+                        >> b: single_expression
+                        >> (op, b)
+                ),
+                a,
+                |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
+            ) >> (r)
     )
 );
 
@@ -87,25 +85,22 @@ named!(
     logic_expression<Value>,
     do_parse!(
         a: sum_expression
-            >> r:
-                fold_many0!(
-                    do_parse!(
-                        opt!(multispace)
-                            >> op:
-                                alt_complete!(
-                                    value!(Operator::Equal, tag!("=="))
-                                        | value!(Operator::NotEqual, tag!("!="))
-                                        | value!(Operator::GreaterE, tag!(">="))
-                                        | value!(Operator::Greater, tag!(">"))
-                                        | value!(Operator::LesserE, tag!("<="))
-                                        | value!(Operator::Lesser, tag!("<"))
-                                ) >> opt!(multispace)
-                            >> b: sum_expression
-                            >> (op, b)
-                    ),
-                    a,
-                    |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
-                ) >> (r)
+            >> r: fold_many0!(
+                do_parse!(
+                    opt!(multispace)
+                        >> op: alt_complete!(
+                            value!(Operator::Equal, tag!("=="))
+                                | value!(Operator::NotEqual, tag!("!="))
+                                | value!(Operator::GreaterE, tag!(">="))
+                                | value!(Operator::Greater, tag!(">"))
+                                | value!(Operator::LesserE, tag!("<="))
+                                | value!(Operator::Lesser, tag!("<"))
+                        ) >> opt!(multispace)
+                        >> b: sum_expression >> (op, b)
+                ),
+                a,
+                |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
+            ) >> (r)
     )
 );
 
@@ -113,37 +108,29 @@ named!(
     sum_expression<Value>,
     do_parse!(
         a: term_value
-            >> r:
-                fold_many0!(
-                    alt_complete!(
-                        do_parse!(
-                            op:
-                                alt_complete!(
+            >> r: fold_many0!(
+                alt_complete!(
+                    do_parse!(
+                        op: alt_complete!(
+                            value!(Operator::Plus, tag!("+"))
+                                | value!(Operator::Minus, tag!("-"))
+                        ) >> opt!(spacelike2)
+                            >> b: term_value
+                            >> (op, b)
+                    )
+                        | do_parse!(
+                            spacelike2
+                                >> op: alt_complete!(
                                     value!(Operator::Plus, tag!("+"))
                                         | value!(Operator::Minus, tag!("-"))
-                                )
-                                >> opt!(spacelike2)
+                                ) >> spacelike2
                                 >> b: term_value
                                 >> (op, b)
                         )
-                            | do_parse!(
-                                spacelike2
-                                    >> op:
-                                        alt_complete!(
-                                            value!(Operator::Plus, tag!("+"))
-                                                | value!(
-                                                    Operator::Minus,
-                                                    tag!("-")
-                                                )
-                                        )
-                                    >> spacelike2
-                                    >> b: term_value
-                                    >> (op, b)
-                            )
-                    ),
-                    a,
-                    |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
-                ) >> (r)
+                ),
+                a,
+                |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
+            ) >> (r)
     )
 );
 
@@ -151,30 +138,29 @@ named!(
     term_value<Value>,
     do_parse!(
         a: single_value
-            >> r:
-                fold_many0!(
-                    do_parse!(
-                        s1: opt!(multispace)
-                            >> op: alt_complete!(tag!("*") | tag!("/"))
-                            >> s2: opt!(multispace)
-                            >> b: opt!(single_value)
-                            >> (s1.is_some(), op, s2.is_some(), b)
-                    ),
-                    a,
-                    |a, (s1, op, s2, b)| {
-                        let b: Option<Value> = b;
-                        let b = b.unwrap_or(Value::Null);
-                        if op == b"*" {
-                            Value::BinOp(
-                                Box::new(a),
-                                Operator::Multiply,
-                                Box::new(b),
-                            )
-                        } else {
-                            Value::Div(Box::new(a), Box::new(b), s1, s2)
-                        }
+            >> r: fold_many0!(
+                do_parse!(
+                    s1: opt!(multispace)
+                        >> op: alt_complete!(tag!("*") | tag!("/"))
+                        >> s2: opt!(multispace)
+                        >> b: opt!(single_value)
+                        >> (s1.is_some(), op, s2.is_some(), b)
+                ),
+                a,
+                |a, (s1, op, s2, b)| {
+                    let b: Option<Value> = b;
+                    let b = b.unwrap_or(Value::Null);
+                    if op == b"*" {
+                        Value::BinOp(
+                            Box::new(a),
+                            Operator::Multiply,
+                            Box::new(b),
+                        )
+                    } else {
+                        Value::Div(Box::new(a), Box::new(b), s1, s2)
                     }
-                ) >> (r)
+                }
+            ) >> (r)
     )
 );
 
@@ -295,10 +281,12 @@ named!(
     map!(
         preceded!(
             complete!(tag!(".")),
-            fold_many1!(one_of!("0123456789"), (0, 1), |(r, n), d| (
-                r * 10 + isize::from(d as i8 - b'0' as i8),
-                n * 10
-            ))
+            fold_many1!(one_of!("0123456789"), (0, 1), |(r, n), d| {
+                (
+                    r * 10 + isize::from(d as i8 - b'0' as i8),
+                    n * 10,
+                )
+            })
         ),
         |(r, d)| Rational::new(r, d)
     )
@@ -328,7 +316,10 @@ fn literal_or_color(s: SassString) -> Value {
     Value::Literal(s)
 }
 
-named!(hexchar, recognize!(one_of!("0123456789ABCDEFabcdef")));
+named!(
+    hexchar,
+    recognize!(one_of!("0123456789ABCDEFabcdef"))
+);
 
 named!(
     hexchar2,
@@ -360,7 +351,11 @@ named!(
                         >> (k, v)
                 )
             ),
-            opt!(delimited!(opt_spacelike, tag!(","), opt_spacelike))
+            opt!(delimited!(
+                opt_spacelike,
+                tag!(","),
+                opt_spacelike
+            ))
         ),
         |items| Value::Map(items.into_iter().collect())
     )
@@ -389,7 +384,10 @@ mod test {
 
     #[test]
     fn simple_number_pos() {
-        check_expr("+4;", Numeric(Rational::new(4, 1), Unit::None, true, false))
+        check_expr(
+            "+4;",
+            Numeric(Rational::new(4, 1), Unit::None, true, false),
+        )
     }
 
     #[test]
@@ -413,7 +411,12 @@ mod test {
     }
 
     fn number(nom: isize, denom: isize) -> Value {
-        Numeric(Rational::new(nom, denom), Unit::None, false, false)
+        Numeric(
+            Rational::new(nom, denom),
+            Unit::None,
+            false,
+            false,
+        )
     }
 
     #[test]
@@ -512,14 +515,20 @@ mod test {
 
     #[test]
     fn call_no_args() {
-        check_expr("foo();", Call("foo".into(), CallArgs::default()))
+        check_expr(
+            "foo();",
+            Call("foo".into(), CallArgs::default()),
+        )
     }
 
     #[test]
     fn call_one_arg() {
         check_expr(
             "foo(17);",
-            Call("foo".into(), CallArgs::new(vec![(None, Value::scalar(17))])),
+            Call(
+                "foo".into(),
+                CallArgs::new(vec![(None, Value::scalar(17))]),
+            ),
         )
     }
 
@@ -619,7 +628,10 @@ mod test {
 
     #[test]
     fn parse_bracket_empty_array() {
-        check_expr("[];", List(vec![], ListSeparator::Space, true, false))
+        check_expr(
+            "[];",
+            List(vec![], ListSeparator::Space, true, false),
+        )
     }
 
     #[test]
@@ -635,7 +647,10 @@ mod test {
     }
 
     fn check_expr(expr: &str, value: Value) {
-        assert_eq!(value_expression(expr.as_bytes()), Done(&b";"[..], value))
+        assert_eq!(
+            value_expression(expr.as_bytes()),
+            Done(&b";"[..], value)
+        )
     }
 
     #[test]
@@ -643,7 +658,10 @@ mod test {
         let t = value_expression_eof(b"http://#{\")\"}.com/");
         if let &Done(rest, ref result) = &t {
             assert_eq!(
-                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
+                (
+                    format!("{}", result.evaluate(&GlobalScope::new())),
+                    rest
+                ),
                 ("http://).com/".to_string(), &b""[..])
             );
         } else {
@@ -655,7 +673,10 @@ mod test {
         let t = value_expression_eof(b"url(http://#{\")\"}.com/)");
         if let &Done(rest, ref result) = &t {
             assert_eq!(
-                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
+                (
+                    format!("{}", result.evaluate(&GlobalScope::new())),
+                    rest
+                ),
                 ("url(http://).com/)".to_string(), &b""[..])
             );
         } else {
@@ -667,7 +688,10 @@ mod test {
         let t = value_expression_eof(b"url(//#{\")\"}.com/)");
         if let &Done(rest, ref result) = &t {
             assert_eq!(
-                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
+                (
+                    format!("{}", result.evaluate(&GlobalScope::new())),
+                    rest
+                ),
                 ("url(//).com/)".to_string(), &b""[..])
             );
         } else {

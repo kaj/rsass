@@ -64,16 +64,17 @@ named!(
 
 named!(
     simple_qstring_part<StringPart>,
-    map!(is_not!("\\#'\""), |s| StringPart::Raw(
-        from_utf8(s).unwrap().to_string()
-    ))
+    map!(is_not!("\\#'\""), |s| {
+        StringPart::Raw(from_utf8(s).unwrap().to_string())
+    })
 );
 
 named!(
     selector_string<String>,
     fold_many1!(
         alt_complete!(
-            selector_plain_part | selector_escaped_part | hash_no_interpolation
+            selector_plain_part | selector_escaped_part
+                | hash_no_interpolation
         ),
         String::new(),
         |mut acc: String, item: &[u8]| {

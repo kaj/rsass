@@ -1,8 +1,8 @@
-mod util;
-pub mod selectors;
 pub mod formalargs;
+pub mod selectors;
 mod strings;
 mod unit;
+mod util;
 pub mod value;
 
 use self::formalargs::{call_args, formal_args};
@@ -59,7 +59,9 @@ pub fn parse_scss_data(data: &[u8]) -> Result<Vec<Item>, Error> {
                 t
             )))
         }
-        IResult::Incomplete(x) => Err(Error::S(format!("Incomplete: {:?}", x))),
+        IResult::Incomplete(x) => {
+            Err(Error::S(format!("Incomplete: {:?}", x)))
+        }
         IResult::Error(x) => Err(Error::S(format!("Error: {}", x))),
     }
 }
@@ -92,15 +94,18 @@ named!(
 named!(
     body_item<Item>,
     alt_complete!(
-        value!(Item::None, spacelike) | mixin_declaration | variable_declaration
-            | rule | namespace_rule | property | each_loop | for_loop
-            | while_loop | function_declaration | mixin_call | import
-            | if_statement | return_stmt | content_stmt | at_rule
+        value!(Item::None, spacelike) | mixin_declaration
+            | variable_declaration | rule | namespace_rule | property
+            | each_loop | for_loop | while_loop | function_declaration
+            | mixin_call | import | if_statement | return_stmt
+            | content_stmt | at_rule
             | value!(
                 Item::None,
                 delimited!(opt_spacelike, tag!(";"), opt_spacelike)
             )
-            | map!(comment, |c| Item::Comment(from_utf8(c).unwrap().into()))
+            | map!(comment, |c| Item::Comment(
+                from_utf8(c).unwrap().into()
+            ))
     )
 );
 
@@ -130,24 +135,24 @@ named!(
     at_rule<Item>,
     do_parse!(
         tag!("@") >> name: name
-            >> args:
-                many0!(preceded!(
-                    ignore_space,
-                    alt!(
-                        terminated!(
-                            alt!(
-                                function_call | dictionary
-                                    | map!(sass_string, Value::Literal)
-                                    | map!(sass_string_dq, Value::Literal)
-                                    | map!(sass_string_sq, Value::Literal)
-                            ),
-                            peek!(one_of!(" \n\t{;"))
+            >> args: many0!(preceded!(
+                ignore_space,
+                alt!(
+                    terminated!(
+                        alt!(
+                            function_call | dictionary
+                                | map!(sass_string, Value::Literal)
+                                | map!(sass_string_dq, Value::Literal)
+                                | map!(sass_string_sq, Value::Literal)
+                        ),
+                        peek!(one_of!(" \n\t{;"))
+                    ) | map!(is_not!("\"'{};"), |s| {
+                        Value::Literal(
+                            from_utf8(s).unwrap().trim_right().into(),
                         )
-                            | map!(is_not!("\"'{};"), |s| Value::Literal(
-                                from_utf8(s).unwrap().trim_right().into()
-                            ))
-                    )
-                )) >> opt!(ignore_space) >> body: opt!(body_block)
+                    })
+                )
+            )) >> opt!(ignore_space) >> body: opt!(body_block)
             >> opt!(alt!(eof!() | tag!(";"))) >> (Item::AtRule {
             name: name,
             args: if args.len() == 1 {
@@ -160,7 +165,10 @@ named!(
     )
 );
 
-named!(if_statement<Item>, preceded!(tag!("@"), if_statement_inner));
+named!(
+    if_statement<Item>,
+    preceded!(tag!("@"), if_statement_inner)
+);
 
 named!(
     if_statement_inner<Item>,
@@ -195,8 +203,9 @@ named!(
             >> tag!("from") >> spacelike >> from: single_value
             >> spacelike
             >> inclusive:
-                alt!(value!(true, tag!("through")) | value!(false, tag!("to")))
-            >> spacelike >> to: single_value >> opt_spacelike
+                alt!(
+                    value!(true, tag!("through")) | value!(false, tag!("to"))
+                ) >> spacelike >> to: single_value >> opt_spacelike
             >> body: body_block >> (Item::For {
             name: name,
             from: Box::new(from),
@@ -249,7 +258,8 @@ named!(
 named!(
     content_stmt<Item>,
     do_parse!(
-        tag!("@content") >> opt_spacelike >> opt!(tag!(";")) >> (Item::Content)
+        tag!("@content") >> opt_spacelike >> opt!(tag!(";"))
+            >> (Item::Content)
     )
 );
 
@@ -265,9 +275,9 @@ named!(property<&[u8], Item>,
 named!(
     namespace_rule<Item>,
     do_parse!(
-        opt_spacelike >> n1: name >> opt_spacelike >> tag!(":") >> opt_spacelike
-            >> value: opt!(value_expression) >> opt_spacelike
-            >> body: body_block
+        opt_spacelike >> n1: name >> opt_spacelike >> tag!(":")
+            >> opt_spacelike >> value: opt!(value_expression)
+            >> opt_spacelike >> body: body_block
             >> (Item::NamespaceRule(n1, value.unwrap_or(Value::Null), body))
     )
 );
@@ -311,7 +321,12 @@ named!(
 
 #[cfg(test)]
 fn percentage(v: isize) -> Value {
-    Value::Numeric(Rational::from_integer(v), Unit::Percent, false, false)
+    Value::Numeric(
+        Rational::from_integer(v),
+        Unit::Percent,
+        false,
+        false,
+    )
 }
 
 #[cfg(test)]

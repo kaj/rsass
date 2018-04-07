@@ -75,7 +75,10 @@ mod test {
     fn simple_selector() {
         assert_eq!(
             selector(b"foo "),
-            Done(&b""[..], Selector(vec![SelectorPart::Simple("foo".into())]))
+            Done(
+                &b""[..],
+                Selector(vec![SelectorPart::Simple("foo".into())])
+            )
         )
     }
     #[test]

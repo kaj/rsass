@@ -1,23 +1,23 @@
 use css;
 use error::Error;
 use sass;
-use std::{cmp, fmt};
 use std::collections::BTreeMap;
 use std::sync::Arc;
+use std::{cmp, fmt};
 use variablescope::Scope;
 
 #[macro_use]
 mod macros;
 
-mod colors_rgb;
 mod colors_hsl;
 mod colors_other;
+mod colors_rgb;
 mod introspection;
-mod numbers;
+mod lists;
 mod maps;
+mod numbers;
 mod selector;
 mod strings;
-mod lists;
 
 pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
     let name = name.replace("-", "_");
@@ -60,9 +60,10 @@ impl Ord for FuncImpl {
             (&FuncImpl::UserDefined(..), &FuncImpl::Builtin(..)) => {
                 cmp::Ordering::Greater
             }
-            (&FuncImpl::UserDefined(ref a), &FuncImpl::UserDefined(ref b)) => {
-                a.cmp(b)
-            }
+            (
+                &FuncImpl::UserDefined(ref a),
+                &FuncImpl::UserDefined(ref b),
+            ) => a.cmp(b),
         }
     }
 }
@@ -70,9 +71,10 @@ impl Ord for FuncImpl {
 impl cmp::PartialEq for FuncImpl {
     fn eq(&self, rhs: &FuncImpl) -> bool {
         match (self, rhs) {
-            (&FuncImpl::UserDefined(ref a), &FuncImpl::UserDefined(ref b)) => {
-                a == b
-            }
+            (
+                &FuncImpl::UserDefined(ref a),
+                &FuncImpl::UserDefined(ref b),
+            ) => a == b,
             // Note: Maybe consider builtins equal if same Arc?
             _ => false,
         }
@@ -84,7 +86,9 @@ impl fmt::Debug for FuncImpl {
     fn fmt(&self, out: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
             FuncImpl::Builtin(_) => write!(out, "(builtin function)"),
-            FuncImpl::UserDefined(_) => write!(out, "(user-defined function)"),
+            FuncImpl::UserDefined(_) => {
+                write!(out, "(user-defined function)")
+            }
         }
     }
 }
@@ -163,7 +167,10 @@ fn test_rgb() {
             .unwrap()
             .call(
                 &scope,
-                &call_args(b"(17, 0, 225)").unwrap().1.evaluate(&scope, true)
+                &call_args(b"(17, 0, 225)")
+                    .unwrap()
+                    .1
+                    .evaluate(&scope, true)
             )
             .unwrap(),
         css::Value::Color(
@@ -178,7 +185,10 @@ fn test_rgb() {
 
 #[test]
 fn test_nth() {
-    assert_eq!("foo", do_evaluate(&[("x", "foo, bar")], b"nth($x, 1);"))
+    assert_eq!(
+        "foo",
+        do_evaluate(&[("x", "foo, bar")], b"nth($x, 1);")
+    )
 }
 
 #[cfg(test)]

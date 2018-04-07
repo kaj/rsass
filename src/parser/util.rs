@@ -50,7 +50,10 @@ mod test {
 
     #[test]
     fn comment_simple() {
-        assert_eq!(comment(b"/* hello */\n"), Done(&b"\n"[..], &b" hello "[..]))
+        assert_eq!(
+            comment(b"/* hello */\n"),
+            Done(&b"\n"[..], &b" hello "[..])
+        )
     }
 
     #[test]
@@ -65,7 +68,10 @@ mod test {
     fn comment_with_stars2() {
         assert_eq!(
             comment(b"/* / * / * / * hello * \\ * \\ * \\ */\n"),
-            Done(&b"\n"[..], &b" / * / * / * hello * \\ * \\ * \\ "[..])
+            Done(
+                &b"\n"[..],
+                &b" / * / * / * hello * \\ * \\ * \\ "[..]
+            )
         )
     }
 }

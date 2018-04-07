@@ -28,7 +28,13 @@ pub enum Value {
     /// The second flag is true for calculated values and false for
     /// literal values.
     Numeric(Rational, Unit, bool, bool),
-    Color(Rational, Rational, Rational, Rational, Option<String>),
+    Color(
+        Rational,
+        Rational,
+        Rational,
+        Rational,
+        Option<String>,
+    ),
     Null,
     True,
     False,
@@ -40,7 +46,12 @@ pub enum Value {
 
 impl Value {
     pub fn scalar(v: isize) -> Self {
-        Value::Numeric(Rational::from_integer(v), Unit::None, false, false)
+        Value::Numeric(
+            Rational::from_integer(v),
+            Unit::None,
+            false,
+            false,
+        )
     }
     pub fn bool(v: bool) -> Self {
         if v {
@@ -65,7 +76,13 @@ impl Value {
         }
         let ff = Rational::new(255, 1);
         let one = Rational::one();
-        Value::Color(cap(r, &ff), cap(g, &ff), cap(b, &ff), cap(a, &one), None)
+        Value::Color(
+            cap(r, &ff),
+            cap(g, &ff),
+            cap(b, &ff),
+            cap(a, &one),
+            None,
+        )
     }
 
     pub fn type_name(&self) -> &'static str {
@@ -95,7 +112,9 @@ impl Value {
                 Value::Numeric(v, unit, with_sign, true)
             }
             Value::List(v, sep, bracketed) => Value::List(
-                v.into_iter().map(|i| i.into_calculated()).collect(),
+                v.into_iter()
+                    .map(|i| i.into_calculated())
+                    .collect(),
                 sep,
                 bracketed,
             ),
@@ -114,7 +133,9 @@ impl Value {
     pub fn is_null(&self) -> bool {
         match *self {
             Value::Null => true,
-            Value::List(ref list, _, false) => list.iter().all(|v| v.is_null()),
+            Value::List(ref list, _, false) => {
+                list.iter().all(|v| v.is_null())
+            }
             _ => false,
         }
     }
@@ -130,7 +151,9 @@ impl Value {
 
     pub fn unquote(self) -> Value {
         match self {
-            Value::Literal(s, Quotes::None) => Value::Literal(s, Quotes::None),
+            Value::Literal(s, Quotes::None) => {
+                Value::Literal(s, Quotes::None)
+            }
             Value::Literal(s, _) => {
                 let mut result = String::new();
                 let mut iter = s.chars();
@@ -201,7 +224,9 @@ impl Value {
                 }
             }
             Value::List(ref list, ref s, ref b) => Value::List(
-                list.into_iter().map(|v| v.unrequote()).collect(),
+                list.into_iter()
+                    .map(|v| v.unrequote())
+                    .collect(),
                 s.clone(),
                 *b,
             ),
@@ -262,8 +287,13 @@ impl fmt::Display for Value {
                 write!(out, "get-function(\"{}\")", name)
             }
             Value::Numeric(ref v, ref u, ref with_sign, _) => {
-                let skip_zero = out.alternate();
-                write!(out, "{}{}", Decimals::new(v, *with_sign, skip_zero), u)
+                let skipzero = out.alternate();
+                write!(
+                    out,
+                    "{}{}",
+                    Decimals::new(v, *with_sign, skipzero),
+                    u
+                )
             }
             Value::Color(ref r, ref g, ref b, ref a, ref s) => {
                 if let Some(ref s) = *s {
@@ -282,9 +312,13 @@ impl fmt::Display for Value {
                         {
                             write!(out, "{}", name)
                         }
-                        _ if out.alternate() && short => {
-                            write!(out, "#{:x}{:x}{:x}", r / 17, g / 17, b / 17)
-                        }
+                        _ if out.alternate() && short => write!(
+                            out,
+                            "#{:x}{:x}{:x}",
+                            r / 17,
+                            g / 17,
+                            b / 17
+                        ),
                         _ => write!(out, "#{:02x}{:02x}{:02x}", r, g, b),
                     }
                 } else if a.is_zero() && r.is_zero() && g.is_zero()
@@ -365,7 +399,9 @@ impl fmt::Display for Value {
                 }
                 b.fmt(out)
             }
-            Value::Call(ref name, ref arg) => write!(out, "{}({})", name, arg),
+            Value::Call(ref name, ref arg) => {
+                write!(out, "{}({})", name, arg)
+            }
             Value::BinOp(ref a, Operator::Plus, ref b) => {
                 // The plus operator is also a concat operator
                 a.fmt(out)?;

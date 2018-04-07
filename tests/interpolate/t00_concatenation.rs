@@ -94,7 +94,10 @@ fn spaced_a22() {
 }
 #[test]
 fn spaced_a23() {
-    check_value("#{\"literal\"}  #{\"literal\"}", "literal literal")
+    check_value(
+        "#{\"literal\"}  #{\"literal\"}",
+        "literal literal",
+    )
 }
 
 #[test]
@@ -103,11 +106,17 @@ fn spaced_b01() {
 }
 #[test]
 fn spaced_b02() {
-    check_value("\"literal  #{literal}\"", "\"literal  literal\"")
+    check_value(
+        "\"literal  #{literal}\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b03() {
-    check_value("\"literal  #{\"literal\"}\"", "\"literal  literal\"")
+    check_value(
+        "\"literal  #{\"literal\"}\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b04_alt() {
@@ -119,51 +128,87 @@ fn spaced_b04() {
 }
 #[test]
 fn spaced_b05() {
-    check_value("\"#{$input}  #{$input}\"", "\"literal  literal\"")
+    check_value(
+        "\"#{$input}  #{$input}\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b06() {
-    check_value("\"#{$input}  #{literal}\"", "\"literal  literal\"")
+    check_value(
+        "\"#{$input}  #{literal}\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b07() {
-    check_value("\"#{$input}  #{\"literal\"}\"", "\"literal  literal\"")
+    check_value(
+        "\"#{$input}  #{\"literal\"}\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b08() {
-    check_value("\"#{literal}  literal\"", "\"literal  literal\"")
+    check_value(
+        "\"#{literal}  literal\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b09() {
-    check_value("\"#{literal}  #{$input}\"", "\"literal  literal\"")
+    check_value(
+        "\"#{literal}  #{$input}\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b10() {
-    check_value("\"#{literal}  #{$input}\"", "\"literal  literal\"")
+    check_value(
+        "\"#{literal}  #{$input}\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b11() {
-    check_value("\"#{literal}  #{literal}\"", "\"literal  literal\"")
+    check_value(
+        "\"#{literal}  #{literal}\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b12() {
-    check_value("\"#{literal}  #{\"literal\"}\"", "\"literal  literal\"")
+    check_value(
+        "\"#{literal}  #{\"literal\"}\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b13() {
-    check_value("\"#{\"literal\"}  literal\"", "\"literal  literal\"")
+    check_value(
+        "\"#{\"literal\"}  literal\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b14() {
-    check_value("\"#{\"literal\"}  #{$input}\"", "\"literal  literal\"")
+    check_value(
+        "\"#{\"literal\"}  #{$input}\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b15() {
-    check_value("\"#{\"literal\"}  #{literal}\"", "\"literal  literal\"")
+    check_value(
+        "\"#{\"literal\"}  #{literal}\"",
+        "\"literal  literal\"",
+    )
 }
 #[test]
 fn spaced_b16() {
-    check_value("\"#{\"literal\"}  #{\"literal\"}\"", "\"literal  literal\"")
+    check_value(
+        "\"#{\"literal\"}  #{\"literal\"}\"",
+        "\"literal  literal\"",
+    )
 }
 
 #[test]
@@ -290,7 +335,10 @@ fn unspaced_4_0_g3() {
 }
 #[test]
 fn unspaced_4_0_g4() {
-    check_value("\"#{$input}#{\"literal\"}\"", "\"literalliteral\"")
+    check_value(
+        "\"#{$input}#{\"literal\"}\"",
+        "\"literalliteral\"",
+    )
 }
 
 #[test]
@@ -307,29 +355,46 @@ fn unspaced_4_0_h3() {
 }
 #[test]
 fn unspaced_4_0_h4() {
-    check_value("\"#{literal}#{\"literal\"}\"", "\"literalliteral\"")
+    check_value(
+        "\"#{literal}#{\"literal\"}\"",
+        "\"literalliteral\"",
+    )
 }
 
 #[test]
 fn unspaced_4_0_i1() {
-    check_value("\"#{\"literal\"}literal\"", "\"literalliteral\"")
+    check_value(
+        "\"#{\"literal\"}literal\"",
+        "\"literalliteral\"",
+    )
 }
 #[test]
 fn unspaced_4_0_i2() {
-    check_value("\"#{\"literal\"}#{$input}\"", "\"literalliteral\"")
+    check_value(
+        "\"#{\"literal\"}#{$input}\"",
+        "\"literalliteral\"",
+    )
 }
 #[test]
 fn unspaced_4_0_i3() {
-    check_value("\"#{\"literal\"}#{literal}\"", "\"literalliteral\"")
+    check_value(
+        "\"#{\"literal\"}#{literal}\"",
+        "\"literalliteral\"",
+    )
 }
 #[test]
 fn unspaced_4_0_i4() {
-    check_value("\"#{\"literal\"}#{\"literal\"}\"", "\"literalliteral\"")
+    check_value(
+        "\"#{\"literal\"}#{\"literal\"}\"",
+        "\"literalliteral\"",
+    )
 }
 
 fn check_value(value: &str, expected: &str) {
     let mut scope = GlobalScope::new();
-    let input_value = parse_value_data(b"literal").unwrap().evaluate(&scope);
+    let input_value = parse_value_data(b"literal")
+        .unwrap()
+        .evaluate(&scope);
     scope.define("input", &input_value);
     let value = parse_value_data(value.as_bytes()).unwrap();
     assert_eq!(format!("{}", value.evaluate(&scope)), expected)

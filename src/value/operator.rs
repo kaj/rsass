@@ -49,18 +49,25 @@ impl Operator {
                         // TODO Sum or average the alpha?
                         Value::rgba(ar + br, ag + bg, ab + bb, aa + ba)
                     }
-                    (Value::Numeric(a, au, ..), Value::Numeric(b, bu, ..)) => {
+                    (
+                        Value::Numeric(a, au, ..),
+                        Value::Numeric(b, bu, ..),
+                    ) => {
                         if au == bu || bu == Unit::None {
                             Value::Numeric(a + b, au, false, true)
                         } else if au == Unit::None {
                             Value::Numeric(a + b, bu, false, true)
                         } else {
-                            Value::Literal(format!("{}{}", a, b), Quotes::None)
+                            Value::Literal(
+                                format!("{}{}", a, b),
+                                Quotes::None,
+                            )
                         }
                     }
-                    (Value::Literal(a, Quotes::None), Value::Literal(b, _)) => {
-                        Value::Literal(format!("{}{}", a, b), Quotes::None)
-                    }
+                    (
+                        Value::Literal(a, Quotes::None),
+                        Value::Literal(b, _),
+                    ) => Value::Literal(format!("{}{}", a, b), Quotes::None),
                     (Value::Literal(a, _), Value::Literal(b, _)) => {
                         Value::Literal(format!("{}{}", a, b), Quotes::Double)
                     }

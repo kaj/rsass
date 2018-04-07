@@ -100,18 +100,26 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     *v1 * w + *v2 * (Rational::one() - w)
                 }
                 let inv = |v: &Rational| m(&(ff - v), v, w);
-                Ok(Value::rgba(inv(red), inv(green), inv(blue), *alpha))
+                Ok(Value::rgba(
+                    inv(red),
+                    inv(green),
+                    inv(blue),
+                    *alpha,
+                ))
             }
-            (value, weight) => {
-                Err(Error::badargs(&["color", "percentage"], &[value, weight]))
-            }
+            (value, weight) => Err(Error::badargs(
+                &["color", "percentage"],
+                &[value, weight],
+            )),
         }
     });
 }
 
 fn to_int(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, Unit::Percent, ..) => Ok(Rational::new(255, 100) * v),
+        Value::Numeric(v, Unit::Percent, ..) => {
+            Ok(Rational::new(255, 100) * v)
+        }
         Value::Numeric(v, ..) => Ok(v),
         v => Err(Error::badarg("number", &v)),
     }
@@ -130,7 +138,10 @@ mod test {
 
     #[test]
     fn test_high() {
-        assert_eq!("white", do_evaluate(&[], b"rgb(150%, 300, 256);"));
+        assert_eq!(
+            "white",
+            do_evaluate(&[], b"rgb(150%, 300, 256);")
+        );
     }
 
     #[test]
@@ -139,10 +150,16 @@ mod test {
     }
     #[test]
     fn test_mid() {
-        assert_eq!("gray", do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"));
+        assert_eq!(
+            "gray",
+            do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);")
+        );
     }
     #[test]
     fn test_named() {
-        assert_eq!("gray", do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"));
+        assert_eq!(
+            "gray",
+            do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);")
+        );
     }
 }

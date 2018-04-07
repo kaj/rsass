@@ -1,7 +1,6 @@
 use parser::util::{ignore_comments, name, opt_spacelike};
 use parser::value::space_list;
-use sass::{CallArgs, FormalArgs};
-use sass::Value;
+use sass::{CallArgs, FormalArgs, Value};
 
 named!(pub formal_args<FormalArgs>,
        do_parse!(tag!("(") >> opt_spacelike >>

@@ -1,4 +1,4 @@
-max_width = 80
+max_width = 78
 
 reorder_imported_names = true
 reorder_imports = true

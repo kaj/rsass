@@ -1,8 +1,8 @@
-mod operator;
-mod unit;
-mod quotes;
-mod list_separator;
 mod colors;
+mod list_separator;
+mod operator;
+mod quotes;
+mod unit;
 
 pub use self::colors::{name_to_rgb, rgb_to_name};
 pub use self::list_separator::ListSeparator;

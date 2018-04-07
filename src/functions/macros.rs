@@ -1,10 +1,16 @@
 macro_rules! one_arg {
     ($name:ident) => {
-        (stringify!($name).into(), $crate::sass::Value::Null)
+        (
+            stringify!($name).into(),
+            $crate::sass::Value::Null,
+        )
     };
     ($name:ident = $value:expr) => {{
         use $crate::parser::value::value_expression;
-        (stringify!($name).into(), value_expression($value).unwrap().1)
+        (
+            stringify!($name).into(),
+            value_expression($value).unwrap().1,
+        )
     }};
 }
 
@@ -25,9 +31,11 @@ macro_rules! func_va {
     }};
 }
 macro_rules! def {
-    ($f:expr, $name:ident( $($arg:ident$(=$value:expr)* ),* ), $body:expr) => {
-        $f.insert(stringify!($name),
-                  func!(($($arg $( = $value )* ),*), $body))
+    ($f:expr, $name:ident( $($arg:ident$(=$val:expr)* ),* ), $body:expr) => {
+        $f.insert(
+            stringify!($name),
+            func!(($($arg $( = $val )* ),*), $body),
+        )
     }
 }
 macro_rules! def_va {

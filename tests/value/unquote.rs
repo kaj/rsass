@@ -18,7 +18,10 @@ fn c() {
 }
 #[test]
 fn d() {
-    check_eval("unquote(\"column1\\tcolumn2\")", "column1tcolumn2")
+    check_eval(
+        "unquote(\"column1\\tcolumn2\")",
+        "column1tcolumn2",
+    )
 }
 #[test]
 fn e() {

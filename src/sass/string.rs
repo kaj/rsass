@@ -43,7 +43,10 @@ impl SassString {
                 s.to_string()
             }
         }
-        SassString { parts: p2, quotes }
+        SassString {
+            parts: p2,
+            quotes,
+        }
     }
     pub fn evaluate(&self, scope: &Scope) -> (String, Quotes) {
         // Note This is an extremely peculiar special case;
@@ -78,8 +81,8 @@ impl SassString {
                 StringPart::Raw(ref s) => result.push_str(s),
             }
         }
-        if interpolated && self.quotes == Quotes::Double && result.contains('"')
-            && !result.contains('\'')
+        if interpolated && self.quotes == Quotes::Double
+            && result.contains('"') && !result.contains('\'')
         {
             (result, Quotes::Single)
         } else {

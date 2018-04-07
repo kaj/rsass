@@ -34,7 +34,13 @@ pub enum Value {
     Variable(String),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
-    Color(Rational, Rational, Rational, Rational, Option<String>),
+    Color(
+        Rational,
+        Rational,
+        Rational,
+        Rational,
+        Option<String>,
+    ),
     Null,
     True,
     False,
@@ -48,7 +54,12 @@ pub enum Value {
 
 impl Value {
     pub fn scalar(v: isize) -> Self {
-        Value::Numeric(Rational::from_integer(v), Unit::None, false, false)
+        Value::Numeric(
+            Rational::from_integer(v),
+            Unit::None,
+            false,
+            false,
+        )
     }
     pub fn bool(v: bool) -> Self {
         if v {
@@ -73,7 +84,13 @@ impl Value {
         }
         let ff = Rational::new(255, 1);
         let one = Rational::one();
-        Value::Color(cap(r, &ff), cap(g, &ff), cap(b, &ff), cap(a, &one), None)
+        Value::Color(
+            cap(r, &ff),
+            cap(g, &ff),
+            cap(b, &ff),
+            cap(a, &one),
+            None,
+        )
     }
 
     pub fn type_name(&self) -> &'static str {
@@ -167,7 +184,8 @@ impl Value {
                     let aa = a.do_evaluate(scope, arithmetic);
                     let b =
                         b.do_evaluate(scope, arithmetic || a.is_calculated());
-                    if !arithmetic && b.is_calculated() && !a.is_calculated() {
+                    if !arithmetic && b.is_calculated() && !a.is_calculated()
+                    {
                         (a.do_evaluate(scope, true), b)
                     } else {
                         (aa, b)
@@ -221,7 +239,12 @@ impl Value {
                         ),
                     }
                 } else {
-                    css::Value::Div(Box::new(a), Box::new(b), *space1, *space2)
+                    css::Value::Div(
+                        Box::new(a),
+                        Box::new(b),
+                        *space1,
+                        *space2,
+                    )
                 }
             }
             Value::Numeric(ref v, ref u, ref sign, ref calc) => {
@@ -240,9 +263,10 @@ impl Value {
             Value::Null => css::Value::Null,
             Value::True => css::Value::True,
             Value::False => css::Value::False,
-            Value::BinOp(ref a, ref op, ref b) => {
-                op.eval(a.do_evaluate(scope, true), b.do_evaluate(scope, true))
-            }
+            Value::BinOp(ref a, ref op, ref b) => op.eval(
+                a.do_evaluate(scope, true),
+                b.do_evaluate(scope, true),
+            ),
             Value::UnaryOp(ref op, ref v) => {
                 let value = v.do_evaluate(scope, true);
                 match (op.clone(), value) {

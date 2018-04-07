@@ -74,7 +74,9 @@ fn function_with_args() {
                                 true,
                             ))
                         } else {
-                            Err(Error::BadArguments("Incopatible args".into()))
+                            Err(Error::BadArguments(
+                                "Incopatible args".into(),
+                            ))
                         }
                     }
                     (a, b) => {

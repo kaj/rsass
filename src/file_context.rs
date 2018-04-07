@@ -53,11 +53,14 @@ impl FileContext {
         // TODO Check docs what expansions should be tried!
         let parent = name.parent();
         if let Some(name) = name.file_name().and_then(|n| n.to_str()) {
-            for name in
-                &[name, &format!("{}.scss", name), &format!("_{}.scss", name)]
-            {
-                let full =
-                    parent.map(|p| p.join(name)).unwrap_or_else(|| name.into());
+            for name in &[
+                name,
+                &format!("{}.scss", name),
+                &format!("_{}.scss", name),
+            ] {
+                let full = parent
+                    .map(|p| p.join(name))
+                    .unwrap_or_else(|| name.into());
                 let (c, p) = self.file(&full);
                 if p.is_file() {
                     return Some((c, p));

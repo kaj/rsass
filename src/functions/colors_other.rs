@@ -1,5 +1,5 @@
-use super::{Error, SassFunction};
 use super::colors_hsl::{hsla_to_rgba, rgb_to_hsl};
+use super::{Error, SassFunction};
 use css::Value;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
@@ -48,7 +48,16 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     );
     def!(
         f,
-        scale_color(color, red, green, blue, hue, saturation, lightness, alpha),
+        scale_color(
+            color,
+            red,
+            green,
+            blue,
+            hue,
+            saturation,
+            lightness,
+            alpha
+        ),
         |s: &Scope| match &s.get("color") {
             &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
                 let h_adj = s.get("hue");
@@ -89,9 +98,12 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 
     fn fade_in(color: Value, amount: Value) -> Result<Value, Error> {
         match color {
-            Value::Color(red, green, blue, alpha, _) => {
-                Ok(Value::rgba(red, green, blue, alpha + to_rational(amount)?))
-            }
+            Value::Color(red, green, blue, alpha, _) => Ok(Value::rgba(
+                red,
+                green,
+                blue,
+                alpha + to_rational(amount)?,
+            )),
             v => Err(Error::badarg("color", &v)),
         }
     }
@@ -100,14 +112,20 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 
     fn fade_out(color: Value, amount: Value) -> Result<Value, Error> {
         match color {
-            Value::Color(red, green, blue, alpha, _) => {
-                Ok(Value::rgba(red, green, blue, alpha - to_rational(amount)?))
-            }
+            Value::Color(red, green, blue, alpha, _) => Ok(Value::rgba(
+                red,
+                green,
+                blue,
+                alpha - to_rational(amount)?,
+            )),
             v => Err(Error::badarg("color", &v)),
         }
     }
     f.insert("fade_out", func2!(fade_out(color, amount)));
-    f.insert("transparentize", func2!(fade_out(color, amount)));
+    f.insert(
+        "transparentize",
+        func2!(fade_out(color, amount)),
+    );
 
     def!(
         f,
@@ -251,11 +269,17 @@ mod test {
 
     #[test]
     fn ie_hex_str_a() {
-        assert_eq!(do_evaluate(&[], b"ie-hex-str(#abc);"), "#FFAABBCC")
+        assert_eq!(
+            do_evaluate(&[], b"ie-hex-str(#abc);"),
+            "#FFAABBCC"
+        )
     }
     #[test]
     fn ie_hex_str_b() {
-        assert_eq!(do_evaluate(&[], b"ie-hex-str(#3322BB);"), "#FF3322BB")
+        assert_eq!(
+            do_evaluate(&[], b"ie-hex-str(#3322BB);"),
+            "#FF3322BB"
+        )
     }
     #[test]
     fn ie_hex_str_c() {

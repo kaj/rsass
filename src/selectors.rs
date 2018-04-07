@@ -56,7 +56,9 @@ impl Selector {
     }
 
     pub fn join(&self, other: &Selector) -> Selector {
-        let mut split = other.0.splitn(2, |p| p == &SelectorPart::BackRef);
+        let mut split = other
+            .0
+            .splitn(2, |p| p == &SelectorPart::BackRef);
         let o1 = split.next().unwrap();
         if let Some(o2) = split.next() {
             let mut result = o1.to_vec();
@@ -66,7 +68,11 @@ impl Selector {
         } else {
             let mut result = self.0.clone();
             if !result.is_empty()
-                && !other.0.first().map(|p| p.is_operator()).unwrap_or(false)
+                && !other
+                    .0
+                    .first()
+                    .map(|p| p.is_operator())
+                    .unwrap_or(false)
             {
                 result.push(SelectorPart::Descendant);
             }
@@ -164,8 +170,13 @@ impl fmt::Display for SelectorPart {
                 ref op,
                 ref val,
             } => write!(out, "[{}{}{}]", name, op, val),
-            SelectorPart::PseudoElement(ref name) => write!(out, "::{}", name),
-            SelectorPart::Pseudo { ref name, ref arg } => {
+            SelectorPart::PseudoElement(ref name) => {
+                write!(out, "::{}", name)
+            }
+            SelectorPart::Pseudo {
+                ref name,
+                ref arg,
+            } => {
                 let name = format!("{}", name);
                 if let Some(ref arg) = *arg {
                     // It seems some pseudo-classes should always have

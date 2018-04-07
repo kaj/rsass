@@ -32,11 +32,17 @@ fn t02_strings_are_tokenized_as_strings() {
 }
 #[test]
 fn t03_comments_are_preserved() {
-    check("@asdf foo //\n      bar;\n", "@asdf foo //\n      bar;\n")
+    check(
+        "@asdf foo //\n      bar;\n",
+        "@asdf foo //\n      bar;\n",
+    )
 }
 #[test]
 fn t04_comments_are_preserved() {
-    check("@asdf foo /* bar */ baz;", "@asdf foo /* bar */ baz;\n")
+    check(
+        "@asdf foo /* bar */ baz;",
+        "@asdf foo /* bar */ baz;\n",
+    )
 }
 #[test]
 fn t05_interpolation_plain() {
@@ -51,7 +57,10 @@ fn t06_interpolation_in_string() {
 }
 #[test]
 fn t07_interpolation_in_string() {
-    check("@asdf 'foo #{'bar'} baz';\n", "@asdf 'foo bar baz';\n")
+    check(
+        "@asdf 'foo #{'bar'} baz';\n",
+        "@asdf 'foo bar baz';\n",
+    )
 }
 #[test]
 fn t08_interpolation_in_url() {

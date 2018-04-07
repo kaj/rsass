@@ -44,17 +44,17 @@ extern crate rand;
 
 use std::path::Path;
 
+pub mod css;
 mod error;
+mod file_context;
 mod functions;
-mod selectors;
-mod value;
-mod variablescope;
 mod ordermap;
 mod output_style;
 mod parser;
-mod file_context;
 pub mod sass;
-pub mod css;
+mod selectors;
+mod value;
+mod variablescope;
 
 pub use error::Error;
 pub use file_context::FileContext;
