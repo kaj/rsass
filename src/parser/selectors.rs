@@ -128,16 +128,14 @@ mod test {
             selector(b"[data-icon='test-1'] "),
             Done(
                 &b""[..],
-                Selector(vec![
-                    SelectorPart::Attribute {
-                        name: "data-icon".into(),
-                        op: "=".into(),
-                        val: SassString::new(
-                            vec![StringPart::Raw("test-1".into())],
-                            Quotes::Single,
-                        ),
-                    },
-                ])
+                Selector(vec![SelectorPart::Attribute {
+                    name: "data-icon".into(),
+                    op: "=".into(),
+                    val: SassString::new(
+                        vec![StringPart::Raw("test-1".into())],
+                        Quotes::Single,
+                    ),
+                }])
             )
         )
     }
@@ -148,12 +146,10 @@ mod test {
             selector(b":before "),
             Done(
                 &b""[..],
-                Selector(vec![
-                    SelectorPart::Pseudo {
-                        name: "before".into(),
-                        arg: None,
-                    },
-                ])
+                Selector(vec![SelectorPart::Pseudo {
+                    name: "before".into(),
+                    arg: None,
+                }])
             )
         )
     }

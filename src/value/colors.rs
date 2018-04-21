@@ -213,6 +213,6 @@ lazy_static! {
         ("white", 0xffffff),
         ("whitesmoke", 0xf5f5f5),
         ("yellow", 0xffff00),
-        ("yellowgreen", 0x9acd32)
+        ("yellowgreen", 0x9acd32),
     ]);
 }

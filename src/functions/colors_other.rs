@@ -11,14 +11,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(
         f,
         adjust_color(
-            color,
-            red,
-            green,
-            blue,
-            hue,
-            saturation,
-            lightness,
-            alpha
+            color, red, green, blue, hue, saturation, lightness, alpha
         ),
         |s: &Scope| match &s.get("color") {
             &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
@@ -49,14 +42,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(
         f,
         scale_color(
-            color,
-            red,
-            green,
-            blue,
-            hue,
-            saturation,
-            lightness,
-            alpha
+            color, red, green, blue, hue, saturation, lightness, alpha
         ),
         |s: &Scope| match &s.get("color") {
             &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
@@ -130,14 +116,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(
         f,
         change_color(
-            color,
-            red,
-            green,
-            blue,
-            hue,
-            saturation,
-            lightness,
-            alpha
+            color, red, green, blue, hue, saturation, lightness, alpha
         ),
         |s: &Scope| match s.get("color") {
             Value::Color(red, green, blue, alpha, _) => {

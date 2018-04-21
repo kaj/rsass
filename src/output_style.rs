@@ -4,8 +4,8 @@ use file_context::FileContext;
 use parser::parse_scss_file;
 use sass::{FormalArgs, Item};
 use selectors::{Selector, SelectorPart, Selectors};
-#[allow(unused_imports)] // AsciiExt trait required before rust 1.23
-use std::ascii::AsciiExt;
+#[allow(unused_imports)]
+use std::ascii::AsciiExt; // AsciiExt trait required before rust 1.23
 use std::fmt;
 use std::io::Write;
 use std::str::FromStr;
@@ -557,11 +557,8 @@ impl OutputStyle {
                     let v = value.evaluate(scope);
                     if !v.is_null() {
                         let (name, _q) = name.evaluate(scope);
-                        direct.push(CssBodyItem::Property(
-                            name,
-                            v,
-                            *important,
-                        ));
+                        direct
+                            .push(CssBodyItem::Property(name, v, *important));
                     }
                 }
                 Item::Comment(ref c) => {

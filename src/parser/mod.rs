@@ -345,13 +345,11 @@ fn if_with_no_else() {
                 vec![
                     Item::Rule(
                         selectors(b"p").unwrap().1,
-                        vec![
-                            Item::Property(
-                                "color".into(),
-                                Value::black(),
-                                false,
-                            ),
-                        ],
+                        vec![Item::Property(
+                            "color".into(),
+                            Value::black(),
+                            false,
+                        )],
                     ),
                     Item::None,
                 ],
@@ -440,18 +438,16 @@ fn test_mixin_declaration() {
             Item::MixinDeclaration {
                 name: "foo".into(),
                 args: FormalArgs::new(vec![("x".into(), Value::Null)], false),
-                body: vec![
-                    Item::Property(
-                        "foo-bar".into(),
-                        Value::List(
-                            vec![string("baz"), Value::Variable("x".into())],
-                            ListSeparator::Space,
-                            false,
-                            false,
-                        ),
+                body: vec![Item::Property(
+                    "foo-bar".into(),
+                    Value::List(
+                        vec![string("baz"), Value::Variable("x".into())],
+                        ListSeparator::Space,
+                        false,
                         false,
                     ),
-                ],
+                    false,
+                )],
             }
         )
     )
@@ -483,13 +479,11 @@ fn test_mixin_declaration_default_and_subrules() {
                     Item::Property("foo-bar".into(), string("baz"), false),
                     Item::Rule(
                         selectors(b"foo, bar").unwrap().1,
-                        vec![
-                            Item::Property(
-                                "property".into(),
-                                Value::Variable("b".into()),
-                                false,
-                            ),
-                        ],
+                        vec![Item::Property(
+                            "property".into(),
+                            Value::Variable("b".into()),
+                            false,
+                        )],
                     ),
                     Item::None,
                 ],
