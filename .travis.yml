@@ -17,8 +17,8 @@ matrix:
      script:
       - cargo fmt -- --write-mode=diff
    - rust: stable
-     env: TASK=commandline
+     env: FEATURES=commandline
      script:
-      - cargo test --features=commandline
+      - cargo test --features=$FEATURES
   allow_failures:
     - rust: nightly
