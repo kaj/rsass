@@ -8,17 +8,25 @@ rust:
   - stable
   - beta
   - nightly
+env:
+  -
+  - F=--features=commandline
+script:
+  - cargo build --verbose $F
+  - cargo test --verbose $F
 matrix:
   include:
-   - rust: nightly
-     env: TASK=rustfmt
-     before_script:
-      - rustup component add rustfmt-preview
-     script:
-      - cargo fmt -- --write-mode=diff
-   - rust: stable
-     env: FEATURES=commandline
-     script:
-      - cargo test --features=$FEATURES
+    - rust: nightly
+      env: TASK=rustfmt
+      before_script: rustup component add rustfmt-preview
+      script: cargo fmt -- --write-mode=diff
+  exclude:
+    - rust: 1.23.0
+      env: F=--features=commandline
+    - rust: 1.24.1
+      env: F=--features=commandline
   allow_failures:
     - rust: nightly
+      env: F=--features=commandline
+    - rust: nightly
+      env:
