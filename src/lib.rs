@@ -20,9 +20,8 @@
 //! doc](http://sass-lang.com/documentation/file.SASS_REFERENCE.html).
 //! This implementation is incomplete but getting there, if slowly.
 //!
-//! Progress: ![1517](http://progressed.io/bar/151?scale=334&suffix=7)
-//! of 3340 tests passed
-//! (or 1571 of 6095 when claiming to be libsass).
+//! Progress: ![1583](http://progressed.io/bar/158?suffix=3&scale=336)
+//! of 3364 tests passed
 //!
 //! If you want a working rust library for sass right now, you will
 //! probably be better of with [sass-rs](https://crates.io/crates/sass-rs)
