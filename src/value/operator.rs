@@ -17,6 +17,7 @@ pub enum Operator {
     Plus,
     Minus,
     Multiply,
+    Div,
 
     Not,
 }
@@ -78,7 +79,7 @@ impl Operator {
                         Value::Literal(format!("{}{}", a, b), q)
                     }
                     (a, b) => {
-                        Value::BinOp(Box::new(a), Operator::Plus, Box::new(b))
+                        Value::BinOp(Box::new(a), false, Operator::Plus, false, Box::new(b))
                     }
                 }
             }
@@ -102,14 +103,18 @@ impl Operator {
                     } else {
                         Value::BinOp(
                             Box::new(a.clone()),
+                            false,
                             Operator::Minus,
+                            false,
                             Box::new(b.clone()),
                         )
                     }
                 }
                 _ => Value::BinOp(
                     Box::new(a.clone()),
+                    false,
                     Operator::Minus,
+                    false,
                     Box::new(b.clone()),
                 ),
             },
@@ -129,6 +134,9 @@ impl Operator {
                 } else {
                     Value::Literal(format!("{}*{}", a, b), Quotes::None)
                 }
+            }
+            Operator::Div => {
+                panic!("Is this ever used?");
             }
             Operator::Not => panic!("not is a unary operator only"),
         }
@@ -158,6 +166,7 @@ impl fmt::Display for Operator {
                 Operator::Plus => "+",
                 Operator::Minus => "-",
                 Operator::Multiply => "*",
+                Operator::Div => "/",
                 Operator::Not => "not",
             }
         )

@@ -14,9 +14,6 @@ pub enum Value {
     Call(String, CallArgs),
     /// A (callable?) function.
     Function(String, Option<SassFunction>),
-    /// The booleans tell if there should be whitespace
-    /// before / after the slash.
-    Div(Box<Value>, Box<Value>, bool, bool),
     Literal(String, Quotes),
     /// A comma- or space separated list of values, with or without brackets.
     List(Vec<Value>, ListSeparator, bool),
@@ -39,7 +36,8 @@ pub enum Value {
     True,
     False,
     /// A binary operation, two operands and an operator.
-    BinOp(Box<Value>, Operator, Box<Value>),
+    /// The booleans represents possible whitespace.
+    BinOp(Box<Value>, bool, Operator, bool, Box<Value>),
     UnaryOp(Operator, Box<Value>),
     Map(OrderMap<Value, Value>),
 }
@@ -388,28 +386,19 @@ impl fmt::Display for Value {
                 }
                 Ok(())
             }
-            Value::Div(ref a, ref b, s1, s2) => {
-                a.fmt(out)?;
-                if s1 {
-                    out.write_str(" ")?;
-                }
-                out.write_str("/")?;
-                if s2 {
-                    out.write_str(" ")?;
-                }
-                b.fmt(out)
-            }
             Value::Call(ref name, ref arg) => {
                 write!(out, "{}({})", name, arg)
             }
-            Value::BinOp(ref a, Operator::Plus, ref b) => {
+            Value::BinOp(ref a, _, Operator::Plus, _, ref b) => {
                 // The plus operator is also a concat operator
                 a.fmt(out)?;
                 b.fmt(out)
             }
-            Value::BinOp(ref a, ref op, ref b) => {
+            Value::BinOp(ref a, ref s1, ref op, ref s2, ref b) => {
                 a.fmt(out)?;
+                if *s1 { out.write_char(' ')?; }
                 op.fmt(out)?;
+                if *s2 { out.write_char(' ')?; }
                 b.fmt(out)
             }
             Value::UnaryOp(ref op, ref v) => {

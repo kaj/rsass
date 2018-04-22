@@ -202,11 +202,12 @@ impl Value {
                             &css::Value::Numeric(ref bv, ref bu, ..),
                         ) => {
                             if bv.is_zero() {
-                                css::Value::Div(
+                                css::Value::BinOp(
                                     Box::new(a.clone()),
-                                    Box::new(b.clone()),
                                     *space1,
+                                    Operator::Div,
                                     *space2,
+                                    Box::new(b.clone()),
                                 )
                             } else if bu == &Unit::None {
                                 css::Value::Numeric(
@@ -223,27 +224,30 @@ impl Value {
                                     true,
                                 )
                             } else {
-                                css::Value::Div(
+                                css::Value::BinOp(
                                     Box::new(a.clone()),
+                                    *space1,
+                                    Operator::Div,
+                                    *space2,
                                     Box::new(b.clone()),
-                                    false,
-                                    false,
                                 )
                             }
                         }
-                        (a, b) => css::Value::Div(
+                        (a, b) => css::Value::BinOp(
                             Box::new(a.clone()),
+                            false, // *space1,
+                            Operator::Div,
+                            false, // *space2,
                             Box::new(b.clone()),
-                            false,
-                            false,
                         ),
                     }
                 } else {
-                    css::Value::Div(
+                    css::Value::BinOp(
                         Box::new(a),
-                        Box::new(b),
                         *space1,
+                        Operator::Div,
                         *space2,
+                        Box::new(b),
                     )
                 }
             }
