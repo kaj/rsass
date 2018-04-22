@@ -76,7 +76,9 @@ named!(
                         >> (op, b)
                 ),
                 a,
-                |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
+                |a, (op, b)| {
+                    Value::BinOp(Box::new(a), false, op, false, Box::new(b))
+                }
             ) >> (r)
     )
 );
@@ -99,7 +101,9 @@ named!(
                         >> b: sum_expression >> (op, b)
                 ),
                 a,
-                |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
+                |a, (op, b)| {
+                    Value::BinOp(Box::new(a), false, op, false, Box::new(b))
+                }
             ) >> (r)
     )
 );
@@ -129,7 +133,9 @@ named!(
                         )
                 ),
                 a,
-                |a, (op, b)| Value::BinOp(Box::new(a), op, Box::new(b))
+                |a, (op, b)| {
+                    Value::BinOp(Box::new(a), false, op, false, Box::new(b))
+                }
             ) >> (r)
     )
 );
@@ -150,15 +156,17 @@ named!(
                 |a, (s1, op, s2, b)| {
                     let b: Option<Value> = b;
                     let b = b.unwrap_or(Value::Null);
-                    if op == b"*" {
-                        Value::BinOp(
-                            Box::new(a),
-                            Operator::Multiply,
-                            Box::new(b),
-                        )
-                    } else {
-                        Value::Div(Box::new(a), Box::new(b), s1, s2)
-                    }
+                    Value::BinOp(
+                        Box::new(a),
+                        s1,
+                        if op == b"*" {
+                            Operator::Multiply
+                        } else {
+                            Operator::Div
+                        },
+                        s2,
+                        Box::new(b),
+                    )
                 }
             ) >> (r)
     )
@@ -538,11 +546,12 @@ mod test {
             "15/10 2 3;",
             List(
                 vec![
-                    Div(
+                    BinOp(
                         Box::new(Value::scalar(15)),
+                        false,
+                        Operator::Div,
+                        false,
                         Box::new(Value::scalar(10)),
-                        false,
-                        false,
                     ),
                     Value::scalar(2),
                     Value::scalar(3),
@@ -558,16 +567,18 @@ mod test {
     fn double_div() {
         check_expr(
             "15/5/3;",
-            Div(
-                Box::new(Div(
+            BinOp(
+                Box::new(BinOp(
                     Box::new(Value::scalar(15)),
+                    false,
+                    Operator::Div,
+                    false,
                     Box::new(Value::scalar(5)),
-                    false,
-                    false,
                 )),
+                false,
+                Operator::Div,
+                false,
                 Box::new(Value::scalar(3)),
-                false,
-                false,
             ),
         )
     }

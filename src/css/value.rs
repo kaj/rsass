@@ -396,9 +396,13 @@ impl fmt::Display for Value {
             }
             Value::BinOp(ref a, ref s1, ref op, ref s2, ref b) => {
                 a.fmt(out)?;
-                if *s1 { out.write_char(' ')?; }
+                if *s1 {
+                    out.write_char(' ')?;
+                }
                 op.fmt(out)?;
-                if *s2 { out.write_char(' ')?; }
+                if *s2 {
+                    out.write_char(' ')?;
+                }
                 b.fmt(out)
             }
             Value::UnaryOp(ref op, ref v) => {
