@@ -205,7 +205,7 @@ impl<'a> Scope for ScopeImpl<'a> {
 impl<'a> ScopeImpl<'a> {
     pub fn sub(parent: &'a Scope) -> Self {
         ScopeImpl {
-            parent: parent,
+            parent,
             variables: BTreeMap::new(),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
@@ -214,7 +214,7 @@ impl<'a> ScopeImpl<'a> {
     }
     pub fn sub_selectors(parent: &'a Scope, selectors: Selectors) -> Self {
         ScopeImpl {
-            parent: parent,
+            parent,
             variables: BTreeMap::new(),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),

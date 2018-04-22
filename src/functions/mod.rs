@@ -109,7 +109,7 @@ impl SassFunction {
     /// Create a new `SassFunction` from a scss implementation.
     pub fn new(args: sass::FormalArgs, body: Vec<sass::Item>) -> Self {
         SassFunction {
-            args: args,
+            args,
             body: FuncImpl::UserDefined(body),
         }
     }

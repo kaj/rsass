@@ -19,6 +19,7 @@ pub enum OutputStyle {
     Compressed,
 }
 
+/// Get an output style from its name.
 impl FromStr for OutputStyle {
     type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -33,6 +34,7 @@ impl FromStr for OutputStyle {
 static FORMAT_NAMES: [&'static str; 2] = ["Compressed", "Expanded"];
 
 impl OutputStyle {
+    /// Get the names of the supported output styles.
     pub fn variants() -> &'static [&'static str] {
         &FORMAT_NAMES
     }
@@ -599,7 +601,7 @@ impl OutputStyle {
 
     fn do_indent(&self, out: &mut Write, steps: usize) -> Result<(), Error> {
         if !self.is_compressed() {
-            write!(out, "\n")?;
+            writeln!(out)?;
             for _i in 0..steps {
                 write!(out, " ")?;
             }
@@ -685,7 +687,7 @@ impl CssWriter {
         CssWriter {
             imports: Vec::new(),
             contents: Vec::new(),
-            style: style,
+            style,
             separate: false,
         }
     }
@@ -706,7 +708,7 @@ impl CssWriter {
             result.pop();
         }
         if result.last().unwrap_or(&b'\n') != &b'\n' {
-            write!(&mut result, "\n")?;
+            writeln!(&mut result)?;
         }
         Ok(result)
     }
@@ -728,7 +730,7 @@ impl CssWriter {
     fn do_indent(&mut self, steps: usize) -> Result<(), Error> {
         if !self.is_compressed() {
             if !self.contents.is_empty() {
-                write!(self.contents, "\n")?;
+                writeln!(self.contents)?;
             }
             for _i in 0..steps {
                 write!(self.contents, " ")?;

@@ -145,8 +145,8 @@ impl Value {
                 }
             }
             Value::Paren(ref v) => v.do_evaluate(scope, true),
-            Value::Color(r, g, b, a, ref s) => {
-                css::Value::Color(r, g, b, a, s.clone())
+            Value::Color(r, g, b, a, ref name) => {
+                css::Value::Color(r, g, b, a, name.clone())
             }
             Value::Variable(ref name) => scope.get(name).into_calculated(),
             Value::List(ref v, ref s, b, needs_requote) => css::Value::List(

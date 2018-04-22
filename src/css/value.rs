@@ -295,10 +295,10 @@ impl fmt::Display for Value {
                     u
                 )
             }
-            Value::Color(ref r, ref g, ref b, ref a, ref s) => {
-                if let Some(ref s) = *s {
-                    write!(out, "{}", s)
-                } else if a >= &Rational::from_integer(1) {
+            Value::Color(ref r, ref g, ref b, ref a, ref name) => {
+                if let Some(ref name) = *name {
+                    write!(out, "{}", name)
+                } else if *a >= Rational::from_integer(1) {
                     let r = r.round().to_integer() as u8;
                     let g = g.round().to_integer() as u8;
                     let b = b.round().to_integer() as u8;

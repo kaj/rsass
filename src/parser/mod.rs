@@ -124,7 +124,7 @@ named!(
             >> args: opt!(call_args) >> opt_spacelike
             >> body: opt!(body_block) >> opt_spacelike
             >> opt!(complete!(tag!(";"))) >> (Item::MixinCall {
-            name: name,
+            name,
             args: args.unwrap_or_default(),
             body: body.unwrap_or_default(),
         })
@@ -154,13 +154,13 @@ named!(
                 )
             )) >> opt!(ignore_space) >> body: opt!(body_block)
             >> opt!(alt!(eof!() | tag!(";"))) >> (Item::AtRule {
-            name: name,
+            name,
             args: if args.len() == 1 {
                 args.into_iter().next().unwrap()
             } else {
                 Value::List(args, ListSeparator::Space, false, false)
             },
-            body: body,
+            body,
         })
     )
 );
@@ -207,11 +207,11 @@ named!(
                     value!(true, tag!("through")) | value!(false, tag!("to"))
                 ) >> spacelike >> to: single_value >> opt_spacelike
             >> body: body_block >> (Item::For {
-            name: name,
+            name,
             from: Box::new(from),
             to: Box::new(to),
-            inclusive: inclusive,
-            body: body,
+            inclusive,
+            body,
         })
     )
 );
@@ -230,9 +230,9 @@ named!(mixin_declaration<&[u8], Item>,
                  args: opt!(formal_args) >> opt_spacelike >>
                  body: body_block >>
                  (Item::MixinDeclaration{
-                     name: name,
+                     name,
                      args: args.unwrap_or_default(),
-                     body: body,
+                     body,
                  })));
 
 named!(
@@ -241,7 +241,7 @@ named!(
         tag!("@function") >> spacelike >> name: name >> opt_spacelike
             >> args: formal_args >> opt_spacelike >> body: body_block
             >> (Item::FunctionDeclaration {
-                name: name,
+                name,
                 func: SassFunction::new(args, body),
             })
     )
@@ -307,14 +307,15 @@ named!(
     do_parse!(
         tag!("$") >> name: name >> opt_spacelike >> tag!(":") >> opt_spacelike
             >> val: value_expression >> opt_spacelike
-            >> default: opt!(tag!("!default")) >> opt_spacelike
-            >> global: opt!(tag!("!global")) >> opt_spacelike
-            >> tag!(";") >> opt_spacelike
+            >> default: map!(opt!(tag!("!default")), |d| d.is_some())
+            >> opt_spacelike
+            >> global: map!(opt!(tag!("!global")), |g| g.is_some())
+            >> opt_spacelike >> tag!(";") >> opt_spacelike
             >> (Item::VariableDeclaration {
-                name: name,
-                val: val,
-                default: default.is_some(),
-                global: global.is_some(),
+                name,
+                val,
+                default,
+                global,
             })
     )
 );

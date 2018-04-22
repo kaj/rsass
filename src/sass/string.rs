@@ -93,7 +93,7 @@ impl SassString {
         let (result, quotes) = self.evaluate(scope);
         SassString {
             parts: vec![StringPart::Raw(result)],
-            quotes: quotes,
+            quotes,
         }
     }
     pub fn is_unquoted(&self) -> bool {

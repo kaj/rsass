@@ -30,8 +30,8 @@ named!(selector_part<&[u8], SelectorPart>,
                      arg: opt!(delimited!(tag!("("), selectors,
                                           tag!(")"))) >>
                      (SelectorPart::Pseudo {
-                         name: name,
-                         arg: arg,
+                         name,
+                         arg,
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>
                      name: sass_string >> opt_spacelike >>
@@ -42,15 +42,15 @@ named!(selector_part<&[u8], SelectorPart>,
                      opt_spacelike >>
                      tag!("]") >>
                      (SelectorPart::Attribute {
-                         name: name,
+                         name,
                          op: from_utf8(op).unwrap().into(),
-                         val: val,
+                         val,
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>
                      name: sass_string >> opt_spacelike >>
                      tag!("]") >>
                      (SelectorPart::Attribute {
-                         name: name,
+                         name,
                          op: "".to_string(),
                          val: "".into(),
                      })) |
