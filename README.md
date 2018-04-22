@@ -1,8 +1,8 @@
 # rsass
 
-Sass reimplemented in rust with nom (very early stage).  The "r" in
-the name might stand for the Rust programming language, or for my name
-Rasmus.
+Sass reimplemented in rust with nom (early stage).
+The "r" in the name might stand for the Rust programming language, for
+"re-implemented", or possibly for my name Rasmus.
 
 [![Build Status](https://travis-ci.org/kaj/rsass.svg?branch=master)](https://travis-ci.org/kaj/rsass)
 [![Crate](https://meritbadge.herokuapp.com/rsass)](https://crates.io/crates/rsass)
@@ -11,7 +11,7 @@ Rasmus.
 ## Commandline
 
 To make compiling faster when rsass is used as a library crate (which
-is probably the dominant use-case), I have made building a usefull
+is probably the dominant use-case), I have made building the
 command-line utility optional.
 To build the commandline, define the `commandline` feature when
 building.

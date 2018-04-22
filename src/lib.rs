@@ -1,7 +1,8 @@
 //! Sass reimplemented in rust with nom.
 //!
+//! Sass reimplemented in rust with nom (early stage).
 //! The "r" in the name might stand for the Rust programming language,
-//! or for my name Rasmus.
+//! for "re-implemented", or possibly for my name Rasmus.
 //!
 //! # Example
 //!
