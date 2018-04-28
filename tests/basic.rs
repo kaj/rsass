@@ -1408,6 +1408,20 @@ fn weight_parameter() {
     )
 }
 
+/// From `spec/libsass-closed-issues/issue_1133/normal`
+#[test]
+fn each_binds_multiple() {
+    check(
+        b"@function foo($map) {\n    @return $map;\n}\n\n\
+          a {\n    $map: foo((this: is, my: map));\n    \
+          @each $k, $v in $map {\n        #{$k}: $v;\n    }\n}\n\n\
+          b {\n    $map: call(\"foo\", (this: is, my: map));\n    \
+          @each $k, $v in $map {\n        #{$k}: $v;\n    }\n}\n",
+        "a {\n  this: is;\n  my: map;\n}\n\n\
+         b {\n  this: is;\n  my: map;\n}\n",
+    )
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(
         compile_scss(input, OutputStyle::Expanded)

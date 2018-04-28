@@ -203,10 +203,11 @@ impl OutputStyle {
                     self.handle_root_item(item, scope, file_context, result)?;
                 }
             }
-            Item::Each(ref name, ref values, ref body) => for value in
+            Item::Each(ref names, ref values, ref body) => for value in
                 values.evaluate(scope).iter_items()
             {
-                scope.define(name, &value);
+                // TODO: No local sub-scope here?!?
+                scope.define_multi(names, &value);
                 for item in body {
                     self.handle_root_item(item, scope, file_context, result)?;
                 }
@@ -470,10 +471,10 @@ impl OutputStyle {
                         0,
                     )?;
                 }
-                Item::Each(ref name, ref values, ref body) => {
+                Item::Each(ref names, ref values, ref body) => {
                     for value in values.evaluate(scope).iter_items() {
                         let mut scope = ScopeImpl::sub(scope);
-                        scope.define(name, &value);
+                        scope.define_multi(&names, &value);
                         self.handle_body(
                             direct,
                             sub,

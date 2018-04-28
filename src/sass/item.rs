@@ -39,7 +39,7 @@ pub enum Item {
 
     IfStatement(Value, Vec<Item>, Vec<Item>),
     /// The value may be or evaluate to a list.
-    Each(String, Value, Vec<Item>),
+    Each(Vec<String>, Value, Vec<Item>),
     For {
         name: String,
         from: Box<Value>,

@@ -188,11 +188,27 @@ named!(
 
 named!(
     each_loop<Item>,
-    do_parse!(
-        tag!("@each") >> spacelike >> tag!("$") >> name: name >> spacelike
-            >> tag!("in") >> spacelike >> values: value_expression
-            >> opt_spacelike >> body: body_block
-            >> (Item::Each(name, values, body))
+    map!(
+        tuple!(
+            preceded!(
+                terminated!(tag!("@each"), spacelike),
+                separated_nonempty_list!(
+                    complete!(delimited!(
+                        opt_spacelike,
+                        tag!(","),
+                        opt_spacelike
+                    )),
+                    preceded!(tag!("$"), name)
+                )
+            ),
+            delimited!(
+                delimited!(spacelike, tag!("in"), spacelike),
+                value_expression,
+                spacelike
+            ),
+            body_block
+        ),
+        |(names, values, body)| Item::Each(names, values, body)
     )
 );
 
