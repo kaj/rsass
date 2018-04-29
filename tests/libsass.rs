@@ -31,6 +31,14 @@ fn t01_arg_eval() {
     )
 }
 
+#[test]
+fn features_units_level_3() {
+    check(
+        b"foo {\n  foo: feature-exists('units-level-3');\n}\n",
+        "foo {\n  foo: true;\n}\n",
+    )
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(
         compile_scss(input, OutputStyle::Expanded)
