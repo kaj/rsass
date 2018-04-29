@@ -1,9 +1,9 @@
 use super::{Error, SassFunction};
-use css::Value;
+use css::{CallArgs, Value};
 use num_rational::Rational;
 use num_traits::One;
 use std::collections::BTreeMap;
-use value::Unit;
+use value::{ListSeparator, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, rgb(red, green, blue), |s| Ok(Value::rgba(
@@ -26,7 +26,17 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             } else {
                 a
             };
-            Ok(Value::rgba(r, g, b, to_rational(a)?))
+            match a {
+                Value::Numeric(a, ..) => Ok(Value::rgba(r, g, b, a)),
+                _ => Ok(Value::Call(
+                    "rgba".into(),
+                    CallArgs::from_value(Value::List(
+                        vec![int_value(r), int_value(g), int_value(b), a],
+                        ListSeparator::Space,
+                        false,
+                    )),
+                )),
+            }
         } else {
             Ok(Value::rgba(
                 to_int(red)?,
@@ -113,6 +123,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             )),
         }
     });
+}
+
+fn int_value(v: Rational) -> Value {
+    Value::scalar(v.to_integer())
 }
 
 fn to_int(v: Value) -> Result<Rational, Error> {
