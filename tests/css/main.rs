@@ -3,6 +3,7 @@
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
+mod unicode_range;
 mod unknown_directive;
 
 #[test]

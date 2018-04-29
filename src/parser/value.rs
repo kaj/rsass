@@ -185,6 +185,7 @@ named!(
         value!(Value::True, tag!("true")) |
            value!(Value::False, tag!("false")) |
            value!(Value::HereSelector, tag!("&")) |
+           unicode_range |
            do_parse!(tag!("[") >>
                      content: opt!(value_expression) >>
                      tag!("]") >>
@@ -260,6 +261,24 @@ named!(
         map!(sass_string, literal_or_color)
             | map!(sass_string_dq, Value::Literal)
             | map!(sass_string_sq, Value::Literal)
+    )
+);
+
+named!(
+    unicode_range<Value>,
+    map!(
+        recognize!(do_parse!(
+            tag_no_case!("U+")
+                >> a: many_m_n!(0, 6, one_of!("0123456789ABCDEFabcdef"))
+                >> alt_complete!(
+                    preceded!(
+                        tag!("-"),
+                        many_m_n!(1, 6, one_of!("0123456789ABCDEFabcdef"))
+                    )
+                        | many_m_n!(0, 6 - a.len(), one_of!("?"))
+                ) >> ()
+        )),
+        |range| Value::UnicodeRange(from_utf8(range).unwrap().into())
     )
 );
 

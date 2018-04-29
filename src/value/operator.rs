@@ -1,7 +1,7 @@
 use css::Value;
 use num_rational::Rational;
 use std::fmt;
-use value::{Quotes, Unit};
+use value::{ListSeparator, Quotes, Unit};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Operator {
@@ -106,6 +106,21 @@ impl Operator {
                             Box::new(b.clone()),
                         )
                     }
+                }
+                // Note: This very special case should probably be much
+                // more general.
+                (&Value::UnicodeRange(..), &Value::Literal(..)) => {
+                    Value::List(
+                        vec![
+                            a.clone(),
+                            Value::UnaryOp(
+                                Operator::Minus,
+                                Box::new(b.clone()),
+                            ),
+                        ],
+                        ListSeparator::Space,
+                        false,
+                    )
                 }
                 _ => Value::BinOp(
                     Box::new(a.clone()),

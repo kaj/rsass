@@ -50,6 +50,9 @@ pub enum Value {
     Map(OrderMap<Value, Value>),
     /// The magic value "&", exanding to the current selectors.
     HereSelector,
+    /// A unicode range for font selections. U+NN, U+N?, U+NN-MM.
+    /// The string is the entire value, including the "U+" tag.
+    UnicodeRange(String),
 }
 
 impl Value {
@@ -285,6 +288,7 @@ impl Value {
                 }
             }
             Value::HereSelector => scope.get_selectors().to_value(),
+            Value::UnicodeRange(ref s) => css::Value::UnicodeRange(s.clone()),
         }
     }
 }

@@ -42,6 +42,9 @@ pub enum Value {
     BinOp(Box<Value>, Operator, Box<Value>),
     UnaryOp(Operator, Box<Value>),
     Map(OrderMap<Value, Value>),
+    /// A unicode range for font selections. U+NN, U+N?, U+NN-MM.
+    /// The string is the entire value, including the "U+" tag.
+    UnicodeRange(String),
 }
 
 impl Value {
@@ -427,6 +430,7 @@ impl fmt::Display for Value {
                     .collect::<Vec<_>>()
                     .join(", ")
             ),
+            Value::UnicodeRange(ref s) => write!(out, "{}", s),
         }
     }
 }
