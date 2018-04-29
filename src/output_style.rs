@@ -656,10 +656,14 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                                 arg: arg.as_ref()
                                     .map(|a| eval_selectors(a, scope)),
                             },
-                            SelectorPart::PseudoElement(ref e) => {
-                                let e = e.evaluate2(scope);
-                                SelectorPart::PseudoElement(e)
-                            }
+                            SelectorPart::PseudoElement {
+                                ref name,
+                                ref arg,
+                            } => SelectorPart::PseudoElement {
+                                name: name.evaluate2(scope),
+                                arg: arg.as_ref()
+                                    .map(|a| eval_selectors(a, scope)),
+                            },
                             ref sp => sp.clone(),
                         })
                         .collect(),

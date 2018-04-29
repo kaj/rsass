@@ -23,8 +23,14 @@ named!(selector_part<&[u8], SelectorPart>,
        alt_complete!(
            map!(sass_string, SelectorPart::Simple) |
            value!(SelectorPart::Simple("*".into()), tag!("*")) |
-           map!(preceded!(tag!("::"), sass_string),
-                SelectorPart::PseudoElement) |
+           do_parse!(tag!("::") >>
+                     name: sass_string >>
+                     arg: opt!(delimited!(tag!("("), selectors,
+                                          tag!(")"))) >>
+                     (SelectorPart::PseudoElement {
+                         name,
+                         arg,
+                     })) |
            do_parse!(tag!(":") >>
                      name: sass_string >>
                      arg: opt!(delimited!(tag!("("), selectors,
