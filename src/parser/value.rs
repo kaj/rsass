@@ -182,6 +182,13 @@ named!(pub single_value<&[u8], Value>,
 named!(
     simple_value<Value>,
     alt_complete!(
+        map!(
+            preceded!(
+                pair!(tag!("!"), opt_spacelike),
+                tag!("important") // TODO Pretty much anythig goes, here?
+                    ),
+            |s| Value::Bang(from_utf8(s).unwrap().into())
+                ) |
         value!(Value::True, tag!("true")) |
            value!(Value::False, tag!("false")) |
            value!(Value::HereSelector, tag!("&")) |

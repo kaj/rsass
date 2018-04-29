@@ -283,10 +283,9 @@ named!(property<&[u8], Item>,
        do_parse!(opt_spacelike >>
                  name: sass_string >> opt_spacelike >>
                  tag!(":") >> opt_spacelike >>
-                 val: value_expression >>
-                 imp: opt_important >> opt_spacelike >>
+                 val: value_expression >> opt_spacelike >>
                  opt!(tag!(";")) >> opt_spacelike >>
-                 (Item::Property(name, val, imp))));
+                 (Item::Property(name, val))));
 
 named!(
     namespace_rule<Item>,
@@ -295,17 +294,6 @@ named!(
             >> opt_spacelike >> value: opt!(value_expression)
             >> opt_spacelike >> body: body_block
             >> (Item::NamespaceRule(n1, value.unwrap_or(Value::Null), body))
-    )
-);
-
-named!(
-    opt_important<bool>,
-    map!(
-        opt!(do_parse!(
-            opt_spacelike >> tag!("!") >> opt_spacelike >> tag!("important")
-                >> ()
-        )),
-        |o: Option<()>| o.is_some()
     )
 );
 
@@ -362,11 +350,7 @@ fn if_with_no_else() {
                 vec![
                     Item::Rule(
                         selectors(b"p").unwrap().1,
-                        vec![Item::Property(
-                            "color".into(),
-                            Value::black(),
-                            false,
-                        )],
+                        vec![Item::Property("color".into(), Value::black())],
                     ),
                     Item::None,
                 ],
@@ -463,7 +447,6 @@ fn test_mixin_declaration() {
                         false,
                         false,
                     ),
-                    false,
                 )],
             }
         )
@@ -493,13 +476,12 @@ fn test_mixin_declaration_default_and_subrules() {
                     false
                 ),
                 body: vec![
-                    Item::Property("foo-bar".into(), string("baz"), false),
+                    Item::Property("foo-bar".into(), string("baz")),
                     Item::Rule(
                         selectors(b"foo, bar").unwrap().1,
                         vec![Item::Property(
                             "property".into(),
                             Value::Variable("b".into()),
-                            false,
                         )],
                     ),
                     Item::None,
@@ -522,7 +504,6 @@ fn test_simple_property() {
             Item::Property(
                 "color".into(),
                 Value::Color(r(255), r(0), r(0), one, Some("red".into())),
-                false
             )
         )
     )
@@ -541,7 +522,6 @@ fn test_property_2() {
                     false,
                     false
                 ),
-                false
             )
         )
     )

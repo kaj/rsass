@@ -10,6 +10,8 @@ use value::{rgb_to_name, ListSeparator, Operator, Quotes, Unit};
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
+    /// A special kind of escape.  Only really used for !important.
+    Bang(String),
     /// An function call that was not evaluated.
     Call(String, CallArgs),
     /// A (callable?) function.
@@ -257,6 +259,7 @@ impl Value {
 impl fmt::Display for Value {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self {
+            Value::Bang(ref s) => write!(out, "!{}", s),
             Value::Literal(ref s, ref q) => match *q {
                 Quotes::Double => write!(
                     out,

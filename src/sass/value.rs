@@ -10,6 +10,8 @@ use variablescope::Scope;
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
+    /// A special kind of escape.  Only really used for !important.
+    Bang(String),
     /// A call has a name and an argument (which may be multi).
     Call(SassString, CallArgs),
     /// Sometimes an actual division, sometimes "a/b".
@@ -139,6 +141,7 @@ impl Value {
     }
     pub fn do_evaluate(&self, scope: &Scope, arithmetic: bool) -> css::Value {
         match *self {
+            Value::Bang(ref s) => css::Value::Bang(s.clone()),
             Value::Literal(ref s) => {
                 let (s, q) = s.evaluate(scope);
                 if s == "" && q == Quotes::None {

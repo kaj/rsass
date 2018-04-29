@@ -14,7 +14,6 @@ fn bizarrely_formatted_comments() {
     )
 }
 
-
 #[test]
 fn multi_star_comments() {
     // Note, actual expected has single newlines, but the sass-spec
@@ -57,7 +56,6 @@ fn selector_slotted() {
          ::slotted(.f, ::slotted(.g)) {\n  x: y;\n}\n",
     )
 }
-
 
 fn check(input: &str, expected: &str) {
     assert_eq!(

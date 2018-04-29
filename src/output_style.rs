@@ -528,11 +528,8 @@ impl OutputStyle {
                 Item::NamespaceRule(ref name, ref value, ref body) => {
                     let value = value.evaluate(scope);
                     if !value.is_null() {
-                        direct.push(CssBodyItem::Property(
-                            name.clone(),
-                            value,
-                            false,
-                        ));
+                        direct
+                            .push(CssBodyItem::Property(name.clone(), value));
                     }
                     let mut t = Vec::new();
                     self.handle_body(
@@ -545,23 +542,21 @@ impl OutputStyle {
                     )?;
                     for item in t {
                         direct.push(match item {
-                            CssBodyItem::Property(n, v, i) => {
+                            CssBodyItem::Property(n, v) => {
                                 CssBodyItem::Property(
                                     format!("{}-{}", name, n),
                                     v,
-                                    i,
                                 )
                             }
                             c => c,
                         })
                     }
                 }
-                Item::Property(ref name, ref value, ref important) => {
+                Item::Property(ref name, ref value) => {
                     let v = value.evaluate(scope);
                     if !v.is_null() {
                         let (name, _q) = name.evaluate(scope);
-                        direct
-                            .push(CssBodyItem::Property(name, v, *important));
+                        direct.push(CssBodyItem::Property(name, v));
                     }
                 }
                 Item::Comment(ref c) => {
@@ -749,20 +744,18 @@ impl CssWriter {
 }
 
 enum CssBodyItem {
-    Property(String, Value, bool),
+    Property(String, Value),
     Comment(String),
 }
 
 impl fmt::Display for CssBodyItem {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            CssBodyItem::Property(ref name, ref val, ref imp) => {
+            CssBodyItem::Property(ref name, ref val) => {
                 if out.alternate() {
-                    let important = if *imp { "!important" } else { "" };
-                    write!(out, "{}:{:#}{};", name, val, important)
+                    write!(out, "{}:{:#};", name, val)
                 } else {
-                    let important = if *imp { " !important" } else { "" };
-                    write!(out, "{}: {}{};", name, val, important)
+                    write!(out, "{}: {};", name, val)
                 }
             }
             CssBodyItem::Comment(ref c) => write!(out, "/*{}*/", c),
