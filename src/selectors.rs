@@ -222,4 +222,23 @@ mod test {
         let s = Selector(vec![SelectorPart::Simple("foo".into())]);
         assert_eq!(Selector::root().join(&s), s)
     }
+
+    #[test]
+    fn simple_join() {
+        let s = Selector(vec![SelectorPart::Simple("foo".into())]).join(
+            &Selector(vec![SelectorPart::Simple(".bar".into())]),
+        );
+        assert_eq!(format!("{}", s), "foo .bar")
+    }
+
+    #[test]
+    fn backref_join() {
+        let s = Selector(vec![SelectorPart::Simple("foo".into())]).join(
+            &Selector(vec![
+                SelectorPart::BackRef,
+                SelectorPart::Simple(".bar".into()),
+            ]),
+        );
+        assert_eq!(format!("{}", s), "foo.bar")
+    }
 }
