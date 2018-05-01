@@ -4,8 +4,8 @@ use functions::SassFunction;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use ordermap::OrderMap;
-use std::fmt::{self, Write};
-use value::{rgb_to_name, ListSeparator, Operator, Quotes, Unit};
+use std::fmt;
+use value::{rgb_to_name, ListSeparator, Number, Operator, Quotes, Unit};
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -25,11 +25,9 @@ pub enum Value {
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
     ///
-    /// The first flag is true for values with an explicit + sign.
-    ///
-    /// The second flag is true for calculated values and false for
+    /// The boolean flag is true for calculated values and false for
     /// literal values.
-    Numeric(Rational, Unit, bool, bool),
+    Numeric(Number, Unit, bool),
     Color(
         Rational,
         Rational,
@@ -51,12 +49,7 @@ pub enum Value {
 
 impl Value {
     pub fn scalar(v: isize) -> Self {
-        Value::Numeric(
-            Rational::from_integer(v),
-            Unit::None,
-            false,
-            false,
-        )
+        Value::Numeric(Number::from_integer(v), Unit::None, false)
     }
     pub fn bool(v: bool) -> Self {
         if v {
@@ -105,7 +98,7 @@ impl Value {
 
     pub fn is_calculated(&self) -> bool {
         match *self {
-            Value::Numeric(_, _, _, calculated) => calculated,
+            Value::Numeric(.., calculated) => calculated,
             Value::Color(_, _, _, _, None) => true,
             _ => false,
         }
@@ -113,9 +106,7 @@ impl Value {
 
     pub fn into_calculated(self) -> Self {
         match self {
-            Value::Numeric(v, unit, with_sign, _) => {
-                Value::Numeric(v, unit, with_sign, true)
-            }
+            Value::Numeric(num, unit, _) => Value::Numeric(num, unit, true),
             Value::List(v, sep, bracketed) => Value::List(
                 v.into_iter()
                     .map(|i| i.into_calculated())
@@ -292,14 +283,9 @@ impl fmt::Display for Value {
                     .collect::<String>();
                 write!(out, "get-function(\"{}\")", name)
             }
-            Value::Numeric(ref v, ref u, ref with_sign, _) => {
-                let skipzero = out.alternate();
-                write!(
-                    out,
-                    "{}{}",
-                    Decimals::new(v, *with_sign, skipzero),
-                    u
-                )
+            Value::Numeric(ref num, ref unit, _) => {
+                num.fmt(out)?;
+                unit.fmt(out)
             }
             Value::Color(ref r, ref g, ref b, ref a, ref name) => {
                 if let Some(ref name) = *name {
@@ -334,13 +320,13 @@ impl fmt::Display for Value {
                 } else if out.alternate() {
                     write!(
                         out,
+                        // I think the last {} should be {:#} here,
+                        // but the test suite says otherwise.
                         "rgba({},{},{},{})",
                         r.round().to_integer() as u8,
                         g.round().to_integer() as u8,
                         b.round().to_integer() as u8,
-                        // I think skip_zero should be true here,
-                        // but the test suite says otherwise.
-                        Decimals::new(a, false, false),
+                        Number::new(a.clone(), false),
                     )
                 } else {
                     write!(
@@ -349,7 +335,7 @@ impl fmt::Display for Value {
                         r.round().to_integer() as u8,
                         g.round().to_integer() as u8,
                         b.round().to_integer() as u8,
-                        Decimals::new(a, false, false),
+                        Number::new(a.clone(), false),
                     )
                 }
             }
@@ -435,57 +421,5 @@ impl fmt::Display for Value {
             ),
             Value::UnicodeRange(ref s) => write!(out, "{}", s),
         }
-    }
-}
-
-struct Decimals<'a> {
-    r: &'a Rational,
-    with_sign: bool,
-    skip_zero: bool,
-}
-
-impl<'a> Decimals<'a> {
-    fn new(r: &'a Rational, with_sign: bool, skip_zero: bool) -> Self {
-        Decimals {
-            r,
-            with_sign,
-            skip_zero,
-        }
-    }
-}
-
-impl<'a> fmt::Display for Decimals<'a> {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        let t = self.r.to_integer();
-        if t == 0 {
-            if self.r.is_negative() {
-                out.write_str("-0")?;
-            } else if self.with_sign {
-                out.write_str("+0")?;
-            } else if self.r.is_zero() || !self.skip_zero {
-                out.write_char('0')?;
-            }
-        } else {
-            if self.with_sign && !t.is_negative() {
-                out.write_char('+')?;
-            }
-            write!(out, "{}", t)?;
-        }
-        let mut f = self.r.fract().abs();
-        if !f.is_zero() {
-            out.write_char('.')?;
-            for _ in 0..4 {
-                f *= 10;
-                write!(out, "{}", f.to_integer())?;
-                f = f.fract();
-                if f.is_zero() {
-                    break;
-                }
-            }
-            if !f.is_zero() {
-                write!(out, "{}", (f * 10).round().to_integer())?;
-            }
-        }
-        Ok(())
     }
 }

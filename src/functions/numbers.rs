@@ -4,34 +4,34 @@ use num_rational::Rational;
 use num_traits::Signed;
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
-use value::Unit;
+use value::{Number, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, abs(number), |s| match s.get("number") {
-        Value::Numeric(v, u, ..) => Ok(number(v.abs(), u)),
+        Value::Numeric(v, u, ..) => Ok(number(v.value.abs(), u)),
         v => Err(Error::badarg("number", &v)),
     });
     def!(f, ceil(number), |s| match s.get("number") {
-        Value::Numeric(v, u, ..) => Ok(number(v.ceil(), u)),
+        Value::Numeric(v, u, ..) => Ok(number(v.value.ceil(), u)),
         v => Err(Error::badarg("number", &v)),
     });
     def!(f, floor(number), |s| match s.get("number") {
-        Value::Numeric(v, u, ..) => Ok(number(v.floor(), u)),
+        Value::Numeric(v, u, ..) => Ok(number(v.value.floor(), u)),
         v => Err(Error::badarg("number", &v)),
     });
     def!(
         f,
         percentage(number),
         |s| match s.get("number") {
-            Value::Numeric(val, Unit::None, ..) => Ok(number(
-                val * Rational::from_integer(100),
+            Value::Numeric(val, Unit::None, _) => Ok(number(
+                val.value * Rational::from_integer(100),
                 Unit::Percent
             )),
             v => Err(Error::badarg("number", &v)),
         }
     );
     def!(f, round(number), |s| match s.get("number") {
-        Value::Numeric(val, unit, ..) => Ok(number(val.round(), unit)),
+        Value::Numeric(val, unit, _) => Ok(number(val.value.round(), unit)),
         v => Err(Error::badarg("number", &v)),
     });
     def_va!(f, max(numbers), |s| match s.get("numbers") {
@@ -61,7 +61,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 }
 
 fn number(v: Rational, unit: Unit) -> Value {
-    Value::Numeric(v, unit, false, true)
+    Value::Numeric(Number::new(v, false), unit, true)
 }
 
 fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
@@ -72,8 +72,8 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
                 (&Value::Null, b) => b,
                 (a, &Value::Null) => a,
                 (
-                    &Value::Numeric(ref va, ref ua, ..),
-                    &Value::Numeric(ref vb, ref ub, ..),
+                    &Value::Numeric(ref va, ref ua, _),
+                    &Value::Numeric(ref vb, ref ub, _),
                 ) => {
                     if ua == &Unit::None || ua == ub || ub == &Unit::None {
                         if va.cmp(vb) == pref {
@@ -82,8 +82,8 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
                             second
                         }
                     } else if ua.dimension() == ub.dimension() {
-                        let sa = va * ua.scale_factor();
-                        let sb = vb * ub.scale_factor();
+                        let sa = va.value * ua.scale_factor();
+                        let sb = vb.value * ub.scale_factor();
                         if sa.cmp(&sb) == pref {
                             first
                         } else {

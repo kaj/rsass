@@ -3,7 +3,7 @@ use css::Value;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
-use value::Unit;
+use value::{Number, Unit};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
@@ -131,7 +131,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         |args: &Scope| match &args.get("color") {
             &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
                 let (h, _s, _l) = rgb_to_hsl(red, green, blue);
-                Ok(Value::Numeric(h, Unit::Deg, false, true))
+                Ok(Value::Numeric(
+                    Number::new(h, false),
+                    Unit::Deg,
+                    true,
+                ))
             }
             v => Err(Error::badarg("color", v)),
         }
@@ -198,9 +202,8 @@ pub fn hsla_to_rgba(
 
 fn percentage(v: Rational) -> Value {
     Value::Numeric(
-        v * Rational::from_integer(100),
+        Number::new(v * Rational::from_integer(100), false),
         Unit::Percent,
-        false,
         true,
     )
 }
@@ -308,7 +311,7 @@ fn cap_u8(n: Rational) -> Rational {
 
 fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, ..) => Ok(v),
+        Value::Numeric(v, ..) => Ok(v.value),
         v => Err(Error::badarg("number", &v)),
     }
 }
@@ -317,8 +320,11 @@ fn to_rational(v: Value) -> Result<Rational, Error> {
 /// If v is not a percentage, keep it as it is.
 fn to_rational_percent(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, Unit::Percent, ..) => Ok(v * Rational::new(1, 100)),
+        Value::Numeric(v, Unit::Percent, _) => {
+            Ok(v.value * Rational::new(1, 100))
+        }
         Value::Numeric(v, ..) => {
+            let v = v.value;
             if v <= Rational::new(1, 1) {
                 Ok(v)
             } else {

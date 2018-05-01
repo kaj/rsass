@@ -8,7 +8,7 @@ use parser::unit::unit;
 use parser::util::{name, opt_spacelike, spacelike2};
 use sass::{SassString, Value};
 use std::str::from_utf8;
-use value::{name_to_rgb, ListSeparator, Operator};
+use value::{name_to_rgb, ListSeparator, Number, Operator};
 
 named!(pub value_expression<&[u8], Value>,
        do_parse!(
@@ -218,21 +218,25 @@ named!(
                      d: opt!(decimal_decimals) >>
                      u: unit >>
                      (Value::Numeric(
-                         {
+                         Number::new(
+                             {
                              let d = r + d.unwrap_or_else(Rational::zero);
                              if sign == Some(b"-") { -d } else { d }
-                         },
+                             },
+                             sign == Some(b"+"),
+                         ),
                          u,
-                         sign == Some(b"+"),
-                         false))) |
+                     ))) |
            do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
                      d: decimal_decimals >>
                      u: unit >>
                      (Value::Numeric(
-                         if sign == Some(b"-") { -d } else { d },
+                         Number::new(
+                             if sign == Some(b"-") { -d } else { d },
+                             sign == Some(b"+"),
+                         ),
                          u,
-                         sign == Some(b"+"),
-                         false))) |
+                     ))) |
            variable |
            do_parse!(tag!("#") >> r: hexchar2 >> g: hexchar2 >> b: hexchar2 >>
                      (Value::Color(from_hex(r),
@@ -412,7 +416,10 @@ mod test {
     fn simple_number_pos() {
         check_expr(
             "+4;",
-            Numeric(Rational::new(4, 1), Unit::None, true, false),
+            Numeric(
+                Number::new(Rational::new(4, 1), true),
+                Unit::None,
+            ),
         )
     }
 
@@ -432,16 +439,17 @@ mod test {
     fn simple_number_onlydec_pos() {
         check_expr(
             "+.34;",
-            Numeric(Rational::new(34, 100), Unit::None, true, false),
+            Numeric(
+                Number::new(Rational::new(34, 100), true),
+                Unit::None,
+            ),
         )
     }
 
     fn number(nom: isize, denom: isize) -> Value {
         Numeric(
-            Rational::new(nom, denom),
+            Number::new(Rational::new(nom, denom), false),
             Unit::None,
-            false,
-            false,
         )
     }
 

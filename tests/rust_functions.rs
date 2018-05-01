@@ -41,6 +41,12 @@ fn simple_function() {
     );
 }
 
+#[cfg(test)]
+fn avg(a: Number, b: Number) -> Number {
+    let half = Rational::new(1, 2);
+    Number::new((a.value + b.value) * half, false)
+}
+
 #[test]
 fn function_with_args() {
     let mut scope = GlobalScope::new();
@@ -52,36 +58,21 @@ fn function_with_args() {
                 ("b".into(), sass::Value::scalar(0)),
             ],
             false,
-            Arc::new(|s| {
-                let half = Rational::new(1, 2);
-                match (s.get("a"), s.get("b")) {
-                    (
-                        css::Value::Numeric(a, au, ..),
-                        css::Value::Numeric(b, bu, ..),
-                    ) => {
-                        if au == bu || bu == Unit::None {
-                            Ok(css::Value::Numeric(
-                                (a + b) * half,
-                                au,
-                                false,
-                                true,
-                            ))
-                        } else if au == Unit::None {
-                            Ok(css::Value::Numeric(
-                                (a + b) * half,
-                                bu,
-                                false,
-                                true,
-                            ))
-                        } else {
-                            Err(Error::BadArguments(
-                                "Incopatible args".into(),
-                            ))
-                        }
+            Arc::new(|s| match (s.get("a"), s.get("b")) {
+                (
+                    css::Value::Numeric(a, au, ..),
+                    css::Value::Numeric(b, bu, ..),
+                ) => {
+                    if au == bu || bu == Unit::None {
+                        Ok(css::Value::Numeric(avg(a, b), au, true))
+                    } else if au == Unit::None {
+                        Ok(css::Value::Numeric(avg(a, b), bu, true))
+                    } else {
+                        Err(Error::BadArguments("Incopatible args".into()))
                     }
-                    (a, b) => {
-                        Err(Error::badargs(&["number", "number"], &[&a, &b]))
-                    }
+                }
+                (a, b) => {
+                    Err(Error::badargs(&["number", "number"], &[&a, &b]))
                 }
             }),
         ),
