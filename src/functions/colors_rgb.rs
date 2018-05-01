@@ -48,7 +48,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     fn num(v: &Rational) -> Result<Value, Error> {
         Ok(Value::Numeric(
-            Number::new(*v, false),
+            Number::new(*v),
             Unit::None,
             true,
         ))

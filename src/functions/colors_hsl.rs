@@ -131,11 +131,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         |args: &Scope| match &args.get("color") {
             &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
                 let (h, _s, _l) = rgb_to_hsl(red, green, blue);
-                Ok(Value::Numeric(
-                    Number::new(h, false),
-                    Unit::Deg,
-                    true,
-                ))
+                Ok(Value::Numeric(Number::new(h), Unit::Deg, true))
             }
             v => Err(Error::badarg("color", v)),
         }
@@ -202,7 +198,7 @@ pub fn hsla_to_rgba(
 
 fn percentage(v: Rational) -> Value {
     Value::Numeric(
-        Number::new(v * Rational::from_integer(100), false),
+        Number::new(v * Rational::from_integer(100)),
         Unit::Percent,
         true,
     )

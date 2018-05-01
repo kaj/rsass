@@ -7,25 +7,25 @@ use std::ops::{Add, Div, Mul, Neg, Sub};
 pub struct Number {
     pub value: Rational,
     pub plus_sign: bool,
+    pub lead_zero: bool,
 }
 
 impl Number {
-    pub fn new(value: Rational, plus_sign: bool) -> Self {
+    pub fn new(value: Rational) -> Self {
         Number {
             value,
-            plus_sign,
+            plus_sign: false,
+            lead_zero: true,
         }
     }
     pub fn from_integer(n: isize) -> Self {
-        Number {
-            value: Rational::from_integer(n),
-            plus_sign: false,
-        }
+        Number::new(Rational::from_integer(n))
     }
     pub fn abs(self) -> Self {
         Number {
             value: self.value.abs(),
             plus_sign: self.plus_sign,
+            lead_zero: self.lead_zero,
         }
     }
     pub fn is_integer(&self) -> bool {
@@ -39,37 +39,37 @@ impl Number {
 impl Add for Number {
     type Output = Number;
     fn add(self, rhs: Self) -> Self::Output {
-        Number::new(self.value + rhs.value, false)
+        Number::new(self.value + rhs.value)
     }
 }
 impl<'a> Div for &'a Number {
     type Output = Number;
     fn div(self, rhs: Self) -> Self::Output {
-        Number::new(self.value / rhs.value, false)
+        Number::new(self.value / rhs.value)
     }
 }
 impl<'a> Mul for &'a Number {
     type Output = Number;
     fn mul(self, rhs: Self) -> Self::Output {
-        Number::new(self.value * rhs.value, false)
+        Number::new(self.value * rhs.value)
     }
 }
 impl<'a> Neg for &'a Number {
     type Output = Number;
     fn neg(self) -> Number {
-        Number::new(-self.value, self.plus_sign)
+        Number::new(-self.value)
     }
 }
 
 impl<'a> Sub for &'a Number {
     type Output = Number;
     fn sub(self, rhs: Self) -> Self::Output {
-        Number::new(self.value - rhs.value, false)
+        Number::new(self.value - rhs.value)
     }
 }
 impl Zero for Number {
     fn zero() -> Self {
-        Number::new(Rational::zero(), false)
+        Number::new(Rational::zero())
     }
     fn is_zero(&self) -> bool {
         self.value.is_zero()
@@ -79,7 +79,7 @@ impl Zero for Number {
 impl fmt::Display for Number {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         let t = self.value.to_integer();
-        let skip_zero = out.alternate();
+        let skip_zero = out.alternate() || !self.lead_zero;
         if t == 0 {
             if self.value.is_negative() {
                 out.write_str("-0")?;

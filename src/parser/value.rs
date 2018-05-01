@@ -218,23 +218,25 @@ named!(
                      d: opt!(decimal_decimals) >>
                      u: unit >>
                      (Value::Numeric(
-                         Number::new(
-                             {
-                             let d = r + d.unwrap_or_else(Rational::zero);
-                             if sign == Some(b"-") { -d } else { d }
+                         Number {
+                             value: {
+                                 let d = r + d.unwrap_or_else(Rational::zero);
+                                 if sign == Some(b"-") { -d } else { d }
                              },
-                             sign == Some(b"+"),
-                         ),
+                             plus_sign: sign == Some(b"+"),
+                             lead_zero: true, // At least lead something?
+                         },
                          u,
                      ))) |
            do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
                      d: decimal_decimals >>
                      u: unit >>
                      (Value::Numeric(
-                         Number::new(
-                             if sign == Some(b"-") { -d } else { d },
-                             sign == Some(b"+"),
-                         ),
+                         Number {
+                             value: if sign == Some(b"-") { -d } else { d },
+                             plus_sign: sign == Some(b"+"),
+                             lead_zero: false,
+                         },
                          u,
                      ))) |
            variable |
@@ -417,7 +419,11 @@ mod test {
         check_expr(
             "+4;",
             Numeric(
-                Number::new(Rational::new(4, 1), true),
+                Number {
+                    value: Rational::new(4, 1),
+                    plus_sign: true,
+                    lead_zero: true,
+                },
                 Unit::None,
             ),
         )
@@ -429,18 +435,42 @@ mod test {
     }
     #[test]
     fn simple_number_onlydec() {
-        check_expr(".34;", number(34, 100))
+        check_expr(
+            ".34;",
+            Numeric(
+                Number {
+                    value: Rational::new(34, 100),
+                    plus_sign: false,
+                    lead_zero: false,
+                },
+                Unit::None,
+            ),
+        )
     }
     #[test]
     fn simple_number_onlydec_neg() {
-        check_expr("-.34;", number(-34, 100))
+        check_expr(
+            "-.34;",
+            Numeric(
+                Number {
+                    value: Rational::new(-34, 100),
+                    plus_sign: false,
+                    lead_zero: false,
+                },
+                Unit::None,
+            ),
+        )
     }
     #[test]
     fn simple_number_onlydec_pos() {
         check_expr(
             "+.34;",
             Numeric(
-                Number::new(Rational::new(34, 100), true),
+                Number {
+                    value: Rational::new(34, 100), // actually 17/50
+                    plus_sign: true,
+                    lead_zero: false,
+                },
                 Unit::None,
             ),
         )
@@ -448,7 +478,7 @@ mod test {
 
     fn number(nom: isize, denom: isize) -> Value {
         Numeric(
-            Number::new(Rational::new(nom, denom), false),
+            Number::new(Rational::new(nom, denom)),
             Unit::None,
         )
     }

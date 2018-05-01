@@ -73,11 +73,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 
     fn opacity(color: Value) -> Result<Value, Error> {
         match color {
-            Value::Color(_r, _g, _b, a, _) => Ok(Value::Numeric(
-                Number::new(a, false),
-                Unit::None,
-                true,
-            )),
+            Value::Color(_r, _g, _b, a, _) => {
+                Ok(Value::Numeric(Number::new(a), Unit::None, true))
+            }
             v => Err(Error::badarg("color", &v)),
         }
     }

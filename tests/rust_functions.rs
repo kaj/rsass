@@ -44,7 +44,7 @@ fn simple_function() {
 #[cfg(test)]
 fn avg(a: Number, b: Number) -> Number {
     let half = Rational::new(1, 2);
-    Number::new((a.value + b.value) * half, false)
+    Number::new((a.value + b.value) * half)
 }
 
 #[test]

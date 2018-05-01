@@ -263,7 +263,11 @@ impl Value {
                     }
                     (Operator::Plus, css::Value::Numeric(v, u, _)) => {
                         css::Value::Numeric(
-                            Number::new(v.value, true),
+                            Number {
+                                value: v.value,
+                                plus_sign: true,
+                                lead_zero: v.lead_zero,
+                            },
                             u,
                             true,
                         )
