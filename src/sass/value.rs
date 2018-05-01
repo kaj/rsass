@@ -4,7 +4,7 @@ use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use ordermap::OrderMap;
 use sass::{CallArgs, SassString};
-use value::{ListSeparator, Operator, Quotes, Unit};
+use value::{ListSeparator, Number, Operator, Quotes, Unit};
 use variablescope::Scope;
 
 /// A sass value.
@@ -23,12 +23,7 @@ pub enum Value {
     List(Vec<Value>, ListSeparator, bool, bool),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
-    ///
-    /// The first flag is true for values with an explicit + sign.
-    ///
-    /// The second flag is true for calculated values and false for
-    /// literal values.
-    Numeric(Rational, Unit, bool, bool),
+    Numeric(Number, Unit),
     /// "(a/b) and a/b differs semantically.  Parens means the value
     /// should be evaluated numerically if possible, without parens /
     /// is not allways division.
@@ -59,12 +54,7 @@ pub enum Value {
 
 impl Value {
     pub fn scalar(v: isize) -> Self {
-        Value::Numeric(
-            Rational::from_integer(v),
-            Unit::None,
-            false,
-            false,
-        )
+        Value::Numeric(Number::from_integer(v), Unit::None)
     }
     pub fn bool(v: bool) -> Self {
         if v {
@@ -107,14 +97,6 @@ impl Value {
             Value::True | Value::False => "bool",
             Value::Null => "null",
             _ => "unknown",
-        }
-    }
-
-    pub fn is_calculated(&self) -> bool {
-        match *self {
-            Value::Numeric(_, _, _, calculated) => calculated,
-            Value::Color(_, _, _, _, None) => true,
-            _ => false,
         }
     }
 
@@ -188,9 +170,11 @@ impl Value {
             Value::Div(ref a, ref b, ref space1, ref space2) => {
                 let (a, b) = {
                     let aa = a.do_evaluate(scope, arithmetic);
-                    let b =
-                        b.do_evaluate(scope, arithmetic || a.is_calculated());
-                    if !arithmetic && b.is_calculated() && !a.is_calculated()
+                    let b = b.do_evaluate(
+                        scope,
+                        arithmetic || aa.is_calculated(),
+                    );
+                    if !arithmetic && b.is_calculated() && !aa.is_calculated()
                     {
                         (a.do_evaluate(scope, true), b)
                     } else {
@@ -201,8 +185,11 @@ impl Value {
                     match (&a, &b) {
                         (
                             &css::Value::Color(ref r, ref g, ref b, ref a, _),
-                            &css::Value::Numeric(ref n, Unit::None, ..),
-                        ) => css::Value::rgba(r / n, g / n, b / n, *a),
+                            &css::Value::Numeric(ref n, Unit::None, _),
+                        ) => {
+                            let n = n.value;
+                            css::Value::rgba(r / n, g / n, b / n, *a)
+                        }
                         (
                             &css::Value::Numeric(ref av, ref au, ..),
                             &css::Value::Numeric(ref bv, ref bu, ..),
@@ -215,19 +202,9 @@ impl Value {
                                     *space2,
                                 )
                             } else if bu == &Unit::None {
-                                css::Value::Numeric(
-                                    av / bv,
-                                    au.clone(),
-                                    false,
-                                    true,
-                                )
+                                css::Value::Numeric(av / bv, au.clone(), true)
                             } else if au == bu {
-                                css::Value::Numeric(
-                                    av / bv,
-                                    Unit::None,
-                                    false,
-                                    true,
-                                )
+                                css::Value::Numeric(av / bv, Unit::None, true)
                             } else {
                                 css::Value::Div(
                                     Box::new(a.clone()),
@@ -253,8 +230,12 @@ impl Value {
                     )
                 }
             }
-            Value::Numeric(ref v, ref u, ref sign, ref calc) => {
-                css::Value::Numeric(*v, u.clone(), *sign, arithmetic || *calc)
+            Value::Numeric(ref num, ref unit) => {
+                let mut num = num.clone();
+                if arithmetic {
+                    num.lead_zero = true;
+                }
+                css::Value::Numeric(num, unit.clone(), arithmetic)
             }
             Value::Map(ref m) => css::Value::Map(
                 m.iter()
@@ -281,11 +262,19 @@ impl Value {
                     }
                     (Operator::Not, css::Value::True) => css::Value::False,
                     (Operator::Not, css::Value::False) => css::Value::True,
-                    (Operator::Minus, css::Value::Numeric(v, u, ..)) => {
-                        css::Value::Numeric(-v, u, false, true)
+                    (Operator::Minus, css::Value::Numeric(v, u, _)) => {
+                        css::Value::Numeric(-&v, u, true)
                     }
-                    (Operator::Plus, css::Value::Numeric(v, u, ..)) => {
-                        css::Value::Numeric(v, u, true, true)
+                    (Operator::Plus, css::Value::Numeric(v, u, _)) => {
+                        css::Value::Numeric(
+                            Number {
+                                value: v.value,
+                                plus_sign: true,
+                                lead_zero: v.lead_zero,
+                            },
+                            u,
+                            true,
+                        )
                     }
                     (op, v) => css::Value::UnaryOp(op, Box::new(v)),
                 }

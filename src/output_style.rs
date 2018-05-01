@@ -106,7 +106,7 @@ impl OutputStyle {
                 ref default,
                 ref global,
             } => {
-                let val = val.evaluate(scope);
+                let val = val.do_evaluate(scope, true);
                 if *default {
                     scope.define_default(name, &val, *global);
                 } else if *global {
@@ -347,7 +347,7 @@ impl OutputStyle {
                     default,
                     global,
                 } => {
-                    let val = val.evaluate(scope);
+                    let val = val.do_evaluate(scope, true);
                     if default {
                         scope.define_default(name, &val, global);
                     } else if global {

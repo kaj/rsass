@@ -1,9 +1,8 @@
 use super::{Error, SassFunction};
 use css::Value;
-use num_rational::Rational;
 use num_traits::Signed;
 use std::collections::BTreeMap;
-use value::{Quotes, Unit};
+use value::{Number, Quotes, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(
@@ -126,9 +125,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 
 fn intvalue(n: usize) -> Value {
     Value::Numeric(
-        Rational::from_integer(n as isize),
+        Number::from_integer(n as isize),
         Unit::None,
-        false,
         true,
     )
 }
@@ -136,8 +134,8 @@ fn intvalue(n: usize) -> Value {
 /// Convert index from sass (rational number, first is one) to rust
 /// (usize, first is zero).  Sass values might be negative, then -1 is
 /// the last char in the string.
-fn index_to_rust(index: Rational, s: &str) -> usize {
-    if index.is_negative() {
+fn index_to_rust(index: Number, s: &str) -> usize {
+    if index.value.is_negative() {
         let l = s.chars().count();
         let i = index.to_integer().abs() as usize;
         if l > i {
@@ -145,7 +143,7 @@ fn index_to_rust(index: Rational, s: &str) -> usize {
         } else {
             0
         }
-    } else if index.is_positive() {
+    } else if index.value.is_positive() {
         index.to_integer() as usize - 1
     } else {
         0

@@ -24,7 +24,7 @@ use std::path::Path;
 use std::str::from_utf8;
 use value::ListSeparator;
 #[cfg(test)]
-use value::Unit;
+use value::{Number, Unit};
 
 /// Parse a scss value.
 ///
@@ -326,12 +326,7 @@ named!(
 
 #[cfg(test)]
 fn percentage(v: isize) -> Value {
-    Value::Numeric(
-        Rational::from_integer(v),
-        Unit::Percent,
-        false,
-        false,
-    )
+    Value::Numeric(Number::from_integer(v), Unit::Percent)
 }
 
 #[cfg(test)]
