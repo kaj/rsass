@@ -231,7 +231,11 @@ impl Value {
                 }
             }
             Value::Numeric(ref num, ref unit) => {
-                css::Value::Numeric(num.clone(), unit.clone(), arithmetic)
+                let mut num = num.clone();
+                if arithmetic {
+                    num.lead_zero = true;
+                }
+                css::Value::Numeric(num, unit.clone(), arithmetic)
             }
             Value::Map(ref m) => css::Value::Map(
                 m.iter()

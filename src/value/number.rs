@@ -82,7 +82,10 @@ impl fmt::Display for Number {
         let skip_zero = out.alternate() || !self.lead_zero;
         if t == 0 {
             if self.value.is_negative() {
-                out.write_str("-0")?;
+                out.write_str("-")?;
+                if !skip_zero {
+                    out.write_str("0")?;
+                }
             } else if self.plus_sign {
                 out.write_str("+0")?;
             } else if self.value.is_zero() || !skip_zero {
