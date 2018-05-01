@@ -4,12 +4,14 @@ use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use ordermap::OrderMap;
 use sass::{CallArgs, SassString};
-use value::{ListSeparator, Operator, Quotes, Unit};
+use value::{ListSeparator, Number, Operator, Quotes, Unit};
 use variablescope::Scope;
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
+    /// A special kind of escape.  Only really used for !important.
+    Bang(String),
     /// A call has a name and an argument (which may be multi).
     Call(SassString, CallArgs),
     Literal(SassString),
@@ -17,12 +19,7 @@ pub enum Value {
     List(Vec<Value>, ListSeparator, bool, bool),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
-    ///
-    /// The first flag is true for values with an explicit + sign.
-    ///
-    /// The second flag is true for calculated values and false for
-    /// literal values.
-    Numeric(Rational, Unit, bool, bool),
+    Numeric(Number, Unit),
     /// "(a/b) and a/b differs semantically.  Parens means the value
     /// should be evaluated numerically if possible, without parens /
     /// is not allways division.
@@ -47,16 +44,14 @@ pub enum Value {
     Map(OrderMap<Value, Value>),
     /// The magic value "&", exanding to the current selectors.
     HereSelector,
+    /// A unicode range for font selections. U+NN, U+N?, U+NN-MM.
+    /// The string is the entire value, including the "U+" tag.
+    UnicodeRange(String),
 }
 
 impl Value {
     pub fn scalar(v: isize) -> Self {
-        Value::Numeric(
-            Rational::from_integer(v),
-            Unit::None,
-            false,
-            false,
-        )
+        Value::Numeric(Number::from_integer(v), Unit::None)
     }
     pub fn bool(v: bool) -> Self {
         if v {
@@ -102,14 +97,6 @@ impl Value {
         }
     }
 
-    pub fn is_calculated(&self) -> bool {
-        match *self {
-            Value::Numeric(_, _, _, calculated) => calculated,
-            Value::Color(_, _, _, _, None) => true,
-            _ => false,
-        }
-    }
-
     /// All values other than `False` and `Null` should be considered true.
     pub fn is_true(&self) -> bool {
         match *self {
@@ -133,6 +120,7 @@ impl Value {
     }
     pub fn do_evaluate(&self, scope: &Scope, arithmetic: bool) -> css::Value {
         match *self {
+            Value::Bang(ref s) => css::Value::Bang(s.clone()),
             Value::Literal(ref s) => {
                 let (s, q) = s.evaluate(scope);
                 if s == "" && q == Quotes::None {
@@ -176,8 +164,12 @@ impl Value {
                     css::Value::Call(name, args)
                 }
             }
-            Value::Numeric(ref v, ref u, ref sign, ref calc) => {
-                css::Value::Numeric(*v, u.clone(), *sign, arithmetic || *calc)
+            Value::Numeric(ref num, ref unit) => {
+                let mut num = num.clone();
+                if arithmetic {
+                    num.lead_zero = true;
+                }
+                css::Value::Numeric(num, unit.clone(), arithmetic)
             }
             Value::Map(ref m) => css::Value::Map(
                 m.iter()
@@ -196,9 +188,11 @@ impl Value {
                 let (a, b) = {
                     let arithmetic = arithmetic | (*op != Operator::Div);
                     let aa = a.do_evaluate(scope, arithmetic);
-                    let b =
-                        b.do_evaluate(scope, arithmetic || a.is_calculated());
-                    if !arithmetic && b.is_calculated() && !a.is_calculated()
+                    let b = b.do_evaluate(
+                        scope,
+                        arithmetic || aa.is_calculated(),
+                    );
+                    if !arithmetic && b.is_calculated() && !aa.is_calculated()
                     {
                         (a.do_evaluate(scope, true), b)
                     } else {
@@ -224,16 +218,25 @@ impl Value {
                     }
                     (Operator::Not, css::Value::True) => css::Value::False,
                     (Operator::Not, css::Value::False) => css::Value::True,
-                    (Operator::Minus, css::Value::Numeric(v, u, ..)) => {
-                        css::Value::Numeric(-v, u, false, true)
+                    (Operator::Minus, css::Value::Numeric(v, u, _)) => {
+                        css::Value::Numeric(-&v, u, true)
                     }
-                    (Operator::Plus, css::Value::Numeric(v, u, ..)) => {
-                        css::Value::Numeric(v, u, true, true)
+                    (Operator::Plus, css::Value::Numeric(v, u, _)) => {
+                        css::Value::Numeric(
+                            Number {
+                                value: v.value,
+                                plus_sign: true,
+                                lead_zero: v.lead_zero,
+                            },
+                            u,
+                            true,
+                        )
                     }
                     (op, v) => css::Value::UnaryOp(op, Box::new(v)),
                 }
             }
             Value::HereSelector => scope.get_selectors().to_value(),
+            Value::UnicodeRange(ref s) => css::Value::UnicodeRange(s.clone()),
         }
     }
 }

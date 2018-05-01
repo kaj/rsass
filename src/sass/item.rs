@@ -39,7 +39,7 @@ pub enum Item {
 
     IfStatement(Value, Vec<Item>, Vec<Item>),
     /// The value may be or evaluate to a list.
-    Each(String, Value, Vec<Item>),
+    Each(Vec<String>, Value, Vec<Item>),
     For {
         name: String,
         from: Box<Value>,
@@ -51,7 +51,7 @@ pub enum Item {
 
     Rule(Selectors, Vec<Item>),
     NamespaceRule(String, Value, Vec<Item>),
-    Property(SassString, Value, bool),
+    Property(SassString, Value),
     Comment(String),
     None,
 }

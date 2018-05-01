@@ -280,6 +280,18 @@ fn important_compact_input() {
 }
 
 #[test]
+fn important_in_arglist() {
+    check(
+        "@mixin foo($x) {\n  style: $x;\n}\n\n\
+         div {\n  \
+         @include foo(0px 0px 0px 0px #ef8086 inset !important);\n  \
+         fludge: foo bar ! important hux;\n}",
+        "div {\n  style: 0px 0px 0px 0px #ef8086 inset !important;\n  \
+         fludge: foo bar !important hux;\n}\n",
+    )
+}
+
+#[test]
 fn interpolation() {
     check(
         "$bar : \"#foo\";\n\n\n\

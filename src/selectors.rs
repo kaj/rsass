@@ -93,9 +93,12 @@ pub enum SelectorPart {
         op: String,
         val: SassString,
     },
-    /// A css3 pseudo-element
-    PseudoElement(SassString),
-    /// A pseudo-class or a css2 pseudo-element
+    /// A css3 pseudo-element (::foo)
+    PseudoElement {
+        name: SassString,
+        arg: Option<Selectors>,
+    },
+    /// A pseudo-class or a css2 pseudo-element (:foo)
     Pseudo {
         name: SassString,
         arg: Option<Selectors>,
@@ -109,7 +112,7 @@ impl SelectorPart {
             SelectorPart::Descendant | SelectorPart::RelOp(_) => true,
             SelectorPart::Simple(_)
             | SelectorPart::Attribute { .. }
-            | SelectorPart::PseudoElement(_)
+            | SelectorPart::PseudoElement { .. }
             | SelectorPart::Pseudo { .. }
             | SelectorPart::BackRef => false,
         }
@@ -170,8 +173,19 @@ impl fmt::Display for SelectorPart {
                 ref op,
                 ref val,
             } => write!(out, "[{}{}{}]", name, op, val),
-            SelectorPart::PseudoElement(ref name) => {
-                write!(out, "::{}", name)
+            SelectorPart::PseudoElement {
+                ref name,
+                ref arg,
+            } => {
+                write!(out, "::{}", name)?;
+                if let Some(ref arg) = *arg {
+                    if out.alternate() {
+                        write!(out, "({:#})", arg)?
+                    } else {
+                        write!(out, "({})", arg)?
+                    }
+                }
+                Ok(())
             }
             SelectorPart::Pseudo {
                 ref name,
@@ -207,5 +221,24 @@ mod test {
     fn root_join() {
         let s = Selector(vec![SelectorPart::Simple("foo".into())]);
         assert_eq!(Selector::root().join(&s), s)
+    }
+
+    #[test]
+    fn simple_join() {
+        let s = Selector(vec![SelectorPart::Simple("foo".into())]).join(
+            &Selector(vec![SelectorPart::Simple(".bar".into())]),
+        );
+        assert_eq!(format!("{}", s), "foo .bar")
+    }
+
+    #[test]
+    fn backref_join() {
+        let s = Selector(vec![SelectorPart::Simple("foo".into())]).join(
+            &Selector(vec![
+                SelectorPart::BackRef,
+                SelectorPart::Simple(".bar".into()),
+            ]),
+        );
+        assert_eq!(format!("{}", s), "foo.bar")
     }
 }

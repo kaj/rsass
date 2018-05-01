@@ -1408,6 +1408,51 @@ fn weight_parameter() {
     )
 }
 
+/// From `spec/core_functions/rgba/success`
+#[test]
+fn rgba_success() {
+    check(
+        b"a {\n  calc-1: rgba(calc(1), 2, 3, 0.4);\n  \
+          calc-2: rgba(1, calc(2), 3, 0.4);\n  \
+          calc-3: rgba(1, 2, calc(3), 0.4);\n  \
+          calc-4: rgba(1, 2, 3, calc(0.4));\n\n  \
+          var-1: rgba(var(--foo), 2, 3, 0.4);\n  \
+          var-2: rgba(1, var(--foo), 3, 0.4);\n  \
+          var-3: rgba(1, 2, var(--foo), 0.4);\n  \
+          var-4: rgba(1, 2, 3, var(0.4));\n\n  \
+          calc-2-args: rgba(blue, calc(0.4));\n  \
+          var-2-args-alpha: rgba(blue, var(0.4));\n  \
+          var-2-args-color: rgba(var(--foo), 0.4);\n  \
+          var-2-args-both: rgba(var(--foo), var(0.4));\n}\n",
+        "a {\n  calc-1: rgba(calc(1), 2, 3, 0.4);\n  \
+         calc-2: rgba(1, calc(2), 3, 0.4);\n  \
+         calc-3: rgba(1, 2, calc(3), 0.4);\n  \
+         calc-4: rgba(1, 2, 3, calc(0.4));\n  \
+         var-1: rgba(var(--foo), 2, 3, 0.4);\n  \
+         var-2: rgba(1, var(--foo), 3, 0.4);\n  \
+         var-3: rgba(1, 2, var(--foo), 0.4);\n  \
+         var-4: rgba(1, 2, 3, var(0.4));\n  \
+         calc-2-args: rgba(0, 0, 255, calc(0.4));\n  \
+         var-2-args-alpha: rgba(0, 0, 255, var(0.4));\n  \
+         var-2-args-color: rgba(var(--foo), 0.4);\n  \
+         var-2-args-both: rgba(var(--foo), var(0.4));\n}\n",
+    )
+}
+
+/// From `spec/libsass-closed-issues/issue_1133/normal`
+#[test]
+fn each_binds_multiple() {
+    check(
+        b"@function foo($map) {\n    @return $map;\n}\n\n\
+          a {\n    $map: foo((this: is, my: map));\n    \
+          @each $k, $v in $map {\n        #{$k}: $v;\n    }\n}\n\n\
+          b {\n    $map: call(\"foo\", (this: is, my: map));\n    \
+          @each $k, $v in $map {\n        #{$k}: $v;\n    }\n}\n",
+        "a {\n  this: is;\n  my: map;\n}\n\n\
+         b {\n  this: is;\n  my: map;\n}\n",
+    )
+}
+
 fn check(input: &[u8], expected: &str) {
     assert_eq!(
         compile_scss(input, OutputStyle::Expanded)

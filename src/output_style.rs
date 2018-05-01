@@ -106,7 +106,7 @@ impl OutputStyle {
                 ref default,
                 ref global,
             } => {
-                let val = val.evaluate(scope);
+                let val = val.do_evaluate(scope, true);
                 if *default {
                     scope.define_default(name, &val, *global);
                 } else if *global {
@@ -203,10 +203,11 @@ impl OutputStyle {
                     self.handle_root_item(item, scope, file_context, result)?;
                 }
             }
-            Item::Each(ref name, ref values, ref body) => for value in
+            Item::Each(ref names, ref values, ref body) => for value in
                 values.evaluate(scope).iter_items()
             {
-                scope.define(name, &value);
+                // TODO: No local sub-scope here?!?
+                scope.define_multi(names, &value);
                 for item in body {
                     self.handle_root_item(item, scope, file_context, result)?;
                 }
@@ -346,7 +347,7 @@ impl OutputStyle {
                     default,
                     global,
                 } => {
-                    let val = val.evaluate(scope);
+                    let val = val.do_evaluate(scope, true);
                     if default {
                         scope.define_default(name, &val, global);
                     } else if global {
@@ -470,10 +471,10 @@ impl OutputStyle {
                         0,
                     )?;
                 }
-                Item::Each(ref name, ref values, ref body) => {
+                Item::Each(ref names, ref values, ref body) => {
                     for value in values.evaluate(scope).iter_items() {
                         let mut scope = ScopeImpl::sub(scope);
-                        scope.define(name, &value);
+                        scope.define_multi(&names, &value);
                         self.handle_body(
                             direct,
                             sub,
@@ -527,11 +528,8 @@ impl OutputStyle {
                 Item::NamespaceRule(ref name, ref value, ref body) => {
                     let value = value.evaluate(scope);
                     if !value.is_null() {
-                        direct.push(CssBodyItem::Property(
-                            name.clone(),
-                            value,
-                            false,
-                        ));
+                        direct
+                            .push(CssBodyItem::Property(name.clone(), value));
                     }
                     let mut t = Vec::new();
                     self.handle_body(
@@ -544,23 +542,21 @@ impl OutputStyle {
                     )?;
                     for item in t {
                         direct.push(match item {
-                            CssBodyItem::Property(n, v, i) => {
+                            CssBodyItem::Property(n, v) => {
                                 CssBodyItem::Property(
                                     format!("{}-{}", name, n),
                                     v,
-                                    i,
                                 )
                             }
                             c => c,
                         })
                     }
                 }
-                Item::Property(ref name, ref value, ref important) => {
+                Item::Property(ref name, ref value) => {
                     let v = value.evaluate(scope);
                     if !v.is_null() {
                         let (name, _q) = name.evaluate(scope);
-                        direct
-                            .push(CssBodyItem::Property(name, v, *important));
+                        direct.push(CssBodyItem::Property(name, v));
                     }
                 }
                 Item::Comment(ref c) => {
@@ -655,10 +651,14 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                                 arg: arg.as_ref()
                                     .map(|a| eval_selectors(a, scope)),
                             },
-                            SelectorPart::PseudoElement(ref e) => {
-                                let e = e.evaluate2(scope);
-                                SelectorPart::PseudoElement(e)
-                            }
+                            SelectorPart::PseudoElement {
+                                ref name,
+                                ref arg,
+                            } => SelectorPart::PseudoElement {
+                                name: name.evaluate2(scope),
+                                arg: arg.as_ref()
+                                    .map(|a| eval_selectors(a, scope)),
+                            },
                             ref sp => sp.clone(),
                         })
                         .collect(),
@@ -744,20 +744,18 @@ impl CssWriter {
 }
 
 enum CssBodyItem {
-    Property(String, Value, bool),
+    Property(String, Value),
     Comment(String),
 }
 
 impl fmt::Display for CssBodyItem {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            CssBodyItem::Property(ref name, ref val, ref imp) => {
+            CssBodyItem::Property(ref name, ref val) => {
                 if out.alternate() {
-                    let important = if *imp { "!important" } else { "" };
-                    write!(out, "{}:{:#}{};", name, val, important)
+                    write!(out, "{}:{:#};", name, val)
                 } else {
-                    let important = if *imp { " !important" } else { "" };
-                    write!(out, "{}: {}{};", name, val, important)
+                    write!(out, "{}: {};", name, val)
                 }
             }
             CssBodyItem::Comment(ref c) => write!(out, "/*{}*/", c),

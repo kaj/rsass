@@ -8,7 +8,7 @@ use parser::unit::unit;
 use parser::util::{name, opt_spacelike, spacelike2};
 use sass::{SassString, Value};
 use std::str::from_utf8;
-use value::{name_to_rgb, ListSeparator, Operator};
+use value::{name_to_rgb, ListSeparator, Number, Operator};
 
 named!(pub value_expression<&[u8], Value>,
        do_parse!(
@@ -190,9 +190,17 @@ named!(pub single_value<&[u8], Value>,
 named!(
     simple_value<Value>,
     alt_complete!(
+        map!(
+            preceded!(
+                pair!(tag!("!"), opt_spacelike),
+                tag!("important") // TODO Pretty much anythig goes, here?
+                    ),
+            |s| Value::Bang(from_utf8(s).unwrap().into())
+                ) |
         value!(Value::True, tag!("true")) |
            value!(Value::False, tag!("false")) |
            value!(Value::HereSelector, tag!("&")) |
+           unicode_range |
            do_parse!(tag!("[") >>
                      content: opt!(value_expression) >>
                      tag!("]") >>
@@ -218,21 +226,27 @@ named!(
                      d: opt!(decimal_decimals) >>
                      u: unit >>
                      (Value::Numeric(
-                         {
-                             let d = r + d.unwrap_or_else(Rational::zero);
-                             if sign == Some(b"-") { -d } else { d }
+                         Number {
+                             value: {
+                                 let d = r + d.unwrap_or_else(Rational::zero);
+                                 if sign == Some(b"-") { -d } else { d }
+                             },
+                             plus_sign: sign == Some(b"+"),
+                             lead_zero: true, // At least lead something?
                          },
                          u,
-                         sign == Some(b"+"),
-                         false))) |
+                     ))) |
            do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
                      d: decimal_decimals >>
                      u: unit >>
                      (Value::Numeric(
-                         if sign == Some(b"-") { -d } else { d },
+                         Number {
+                             value: if sign == Some(b"-") { -d } else { d },
+                             plus_sign: sign == Some(b"+"),
+                             lead_zero: false,
+                         },
                          u,
-                         sign == Some(b"+"),
-                         false))) |
+                     ))) |
            variable |
            do_parse!(tag!("#") >> r: hexchar2 >> g: hexchar2 >> b: hexchar2 >>
                      (Value::Color(from_hex(r),
@@ -268,6 +282,24 @@ named!(
         map!(sass_string, literal_or_color)
             | map!(sass_string_dq, Value::Literal)
             | map!(sass_string_sq, Value::Literal)
+    )
+);
+
+named!(
+    unicode_range<Value>,
+    map!(
+        recognize!(do_parse!(
+            tag_no_case!("U+")
+                >> a: many_m_n!(0, 6, one_of!("0123456789ABCDEFabcdef"))
+                >> alt_complete!(
+                    preceded!(
+                        tag!("-"),
+                        many_m_n!(1, 6, one_of!("0123456789ABCDEFabcdef"))
+                    )
+                        | many_m_n!(0, 6 - a.len(), one_of!("?"))
+                ) >> ()
+        )),
+        |range| Value::UnicodeRange(from_utf8(range).unwrap().into())
     )
 );
 
@@ -394,7 +426,14 @@ mod test {
     fn simple_number_pos() {
         check_expr(
             "+4;",
-            Numeric(Rational::new(4, 1), Unit::None, true, false),
+            Numeric(
+                Number {
+                    value: Rational::new(4, 1),
+                    plus_sign: true,
+                    lead_zero: true,
+                },
+                Unit::None,
+            ),
         )
     }
 
@@ -404,26 +443,51 @@ mod test {
     }
     #[test]
     fn simple_number_onlydec() {
-        check_expr(".34;", number(34, 100))
+        check_expr(
+            ".34;",
+            Numeric(
+                Number {
+                    value: Rational::new(34, 100),
+                    plus_sign: false,
+                    lead_zero: false,
+                },
+                Unit::None,
+            ),
+        )
     }
     #[test]
     fn simple_number_onlydec_neg() {
-        check_expr("-.34;", number(-34, 100))
+        check_expr(
+            "-.34;",
+            Numeric(
+                Number {
+                    value: Rational::new(-34, 100),
+                    plus_sign: false,
+                    lead_zero: false,
+                },
+                Unit::None,
+            ),
+        )
     }
     #[test]
     fn simple_number_onlydec_pos() {
         check_expr(
             "+.34;",
-            Numeric(Rational::new(34, 100), Unit::None, true, false),
+            Numeric(
+                Number {
+                    value: Rational::new(34, 100), // actually 17/50
+                    plus_sign: true,
+                    lead_zero: false,
+                },
+                Unit::None,
+            ),
         )
     }
 
     fn number(nom: isize, denom: isize) -> Value {
         Numeric(
-            Rational::new(nom, denom),
+            Number::new(Rational::new(nom, denom)),
             Unit::None,
-            false,
-            false,
         )
     }
 

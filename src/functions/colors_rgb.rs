@@ -1,9 +1,9 @@
 use super::{Error, SassFunction};
-use css::Value;
+use css::{CallArgs, Value};
 use num_rational::Rational;
 use num_traits::One;
 use std::collections::BTreeMap;
-use value::Unit;
+use value::{ListSeparator, Number, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, rgb(red, green, blue), |s| Ok(Value::rgba(
@@ -26,7 +26,17 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             } else {
                 a
             };
-            Ok(Value::rgba(r, g, b, to_rational(a)?))
+            match a {
+                Value::Numeric(a, ..) => Ok(Value::rgba(r, g, b, a.value)),
+                _ => Ok(Value::Call(
+                    "rgba".into(),
+                    CallArgs::from_value(Value::List(
+                        vec![int_value(r), int_value(g), int_value(b), a],
+                        ListSeparator::Space,
+                        false,
+                    )),
+                )),
+            }
         } else {
             Ok(Value::rgba(
                 to_int(red)?,
@@ -37,7 +47,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     });
     fn num(v: &Rational) -> Result<Value, Error> {
-        Ok(Value::Numeric(*v, Unit::None, false, true))
+        Ok(Value::Numeric(
+            Number::new(*v),
+            Unit::None,
+            true,
+        ))
     }
     def!(f, red(color), |s| match &s.get("color") {
         &Value::Color(ref red, _, _, _, _) => num(red),
@@ -62,9 +76,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         ) = (&color1, &color2, &weight)
         {
             let w = if wu == &Unit::Percent {
-                w / Rational::from_integer(100)
+                w.value / Rational::from_integer(100)
             } else {
-                *w
+                w.value
             };
             let one = Rational::one();
             let w2 = one - (one - w * a1) * a2;
@@ -92,9 +106,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             ) => {
                 let ff = Rational::new(255, 1);
                 let w = if wu == &Unit::Percent {
-                    w / Rational::from_integer(100)
+                    w.value / Rational::from_integer(100)
                 } else {
-                    *w
+                    w.value
                 };
                 fn m(v1: &Rational, v2: &Rational, w: Rational) -> Rational {
                     *v1 * w + *v2 * (Rational::one() - w)
@@ -115,19 +129,23 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
 }
 
+fn int_value(v: Rational) -> Value {
+    Value::scalar(v.to_integer())
+}
+
 fn to_int(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, Unit::Percent, ..) => {
-            Ok(Rational::new(255, 100) * v)
+        Value::Numeric(v, Unit::Percent, _) => {
+            Ok(Rational::new(255, 100) * v.value)
         }
-        Value::Numeric(v, ..) => Ok(v),
+        Value::Numeric(v, ..) => Ok(v.value),
         v => Err(Error::badarg("number", &v)),
     }
 }
 
 fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, ..) => Ok(v),
+        Value::Numeric(num, ..) => Ok(num.value),
         v => Err(Error::badarg("number", &v)),
     }
 }

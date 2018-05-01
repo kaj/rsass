@@ -2,7 +2,7 @@ use css::Value;
 use num_rational::Rational;
 use num_traits::Zero;
 use std::fmt;
-use value::{Quotes, Unit};
+use value::{ListSeparator, Quotes, Unit};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Operator {
@@ -42,8 +42,11 @@ impl Operator {
                 match (a, b) {
                     (
                         Value::Color(r, g, b, a, _),
-                        Value::Numeric(n, Unit::None, ..),
-                    ) => Some(Value::rgba(r + n, g + n, b + n, a)),
+                        Value::Numeric(n, Unit::None, _),
+                    ) => {
+                        let n = n.value;
+                        Some(Value::rgba(r + n, g + n, b + n, a))
+                    }
                     (
                         Value::Color(ar, ag, ab, aa, _),
                         Value::Color(br, bg, bb, ba, _),
@@ -56,9 +59,9 @@ impl Operator {
                         Value::Numeric(b, bu, ..),
                     ) => {
                         if au == bu || bu == Unit::None {
-                            Some(Value::Numeric(a + b, au, false, true))
+                            Some(Value::Numeric(a + b, au, true))
                         } else if au == Unit::None {
-                            Some(Value::Numeric(a + b, bu, false, true))
+                            Some(Value::Numeric(a + b, bu, true))
                         } else {
                             Some(Value::Literal(
                                 format!("{}{}", a, b),
@@ -88,8 +91,11 @@ impl Operator {
             Operator::Minus => match (&a, &b) {
                 (
                     &Value::Color(ref r, ref g, ref b, ref a, _),
-                    &Value::Numeric(ref n, Unit::None, ..),
-                ) => Some(Value::rgba(r - n, g - n, b - n, *a)),
+                    &Value::Numeric(ref n, Unit::None, _),
+                ) => {
+                    let n = n.value;
+                    Some(Value::rgba(r - n, g - n, b - n, *a))
+                }
                 (
                     &Value::Color(ref ar, ref ag, ref ab, ref aa, _),
                     &Value::Color(ref br, ref bg, ref bb, ref ba, _),
@@ -104,12 +110,27 @@ impl Operator {
                     &Value::Numeric(ref bv, ref bu, ..),
                 ) => {
                     if au == bu || bu == &Unit::None {
-                        Some(Value::Numeric(av - bv, au.clone(), false, true))
+                        Some(Value::Numeric(av - bv, au.clone(), true))
                     } else if au == &Unit::None {
-                        Some(Value::Numeric(av - bv, bu.clone(), false, true))
+                        Some(Value::Numeric(av - bv, bu.clone(), true))
                     } else {
                         None
                     }
+                }
+                // Note: This very special case should probably be much
+                // more general.
+                (&Value::UnicodeRange(..), &Value::Literal(..)) => {
+                    Some(Value::List(
+                        vec![
+                            a.clone(),
+                            Value::UnaryOp(
+                                Operator::Minus,
+                                Box::new(b.clone()),
+                            ),
+                        ],
+                        ListSeparator::Space,
+                        false,
+                    ))
                 }
                 _ => None,
             },
@@ -120,9 +141,9 @@ impl Operator {
                 ) = (&a, &b)
                 {
                     if bu == &Unit::None {
-                        Some(Value::Numeric(a * b, au.clone(), false, true))
+                        Some(Value::Numeric(a * b, au.clone(), true))
                     } else if au == &Unit::None {
-                        Some(Value::Numeric(a * b, bu.clone(), false, true))
+                        Some(Value::Numeric(a * b, bu.clone(), true))
                     } else {
                         // TODO None?
                         Some(Value::Literal(
@@ -144,7 +165,10 @@ impl Operator {
                         (
                             &Value::Color(ref r, ref g, ref b, ref a, _),
                             &Value::Numeric(ref n, Unit::None, ..),
-                        ) => Some(Value::rgba(r / n, g / n, b / n, *a)),
+                        ) => {
+                            let n = n.value;
+                            Some(Value::rgba(r / n, g / n, b / n, *a))
+                        }
                         (
                             &Value::Numeric(ref av, ref au, ..),
                             &Value::Numeric(ref bv, ref bu, ..),
@@ -155,14 +179,12 @@ impl Operator {
                                 Some(Value::Numeric(
                                     av / bv,
                                     au.clone(),
-                                    false,
                                     true,
                                 ))
                             } else if au == bu {
                                 Some(Value::Numeric(
                                     av / bv,
                                     Unit::None,
-                                    false,
                                     true,
                                 ))
                             } else {

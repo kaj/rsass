@@ -24,7 +24,7 @@ use std::path::Path;
 use std::str::from_utf8;
 use value::ListSeparator;
 #[cfg(test)]
-use value::Unit;
+use value::{Number, Unit};
 
 /// Parse a scss value.
 ///
@@ -188,11 +188,27 @@ named!(
 
 named!(
     each_loop<Item>,
-    do_parse!(
-        tag!("@each") >> spacelike >> tag!("$") >> name: name >> spacelike
-            >> tag!("in") >> spacelike >> values: value_expression
-            >> opt_spacelike >> body: body_block
-            >> (Item::Each(name, values, body))
+    map!(
+        tuple!(
+            preceded!(
+                terminated!(tag!("@each"), spacelike),
+                separated_nonempty_list!(
+                    complete!(delimited!(
+                        opt_spacelike,
+                        tag!(","),
+                        opt_spacelike
+                    )),
+                    preceded!(tag!("$"), name)
+                )
+            ),
+            delimited!(
+                delimited!(spacelike, tag!("in"), spacelike),
+                value_expression,
+                spacelike
+            ),
+            body_block
+        ),
+        |(names, values, body)| Item::Each(names, values, body)
     )
 );
 
@@ -267,10 +283,9 @@ named!(property<&[u8], Item>,
        do_parse!(opt_spacelike >>
                  name: sass_string >> opt_spacelike >>
                  tag!(":") >> opt_spacelike >>
-                 val: value_expression >>
-                 imp: opt_important >> opt_spacelike >>
+                 val: value_expression >> opt_spacelike >>
                  opt!(tag!(";")) >> opt_spacelike >>
-                 (Item::Property(name, val, imp))));
+                 (Item::Property(name, val))));
 
 named!(
     namespace_rule<Item>,
@@ -279,17 +294,6 @@ named!(
             >> opt_spacelike >> value: opt!(value_expression)
             >> opt_spacelike >> body: body_block
             >> (Item::NamespaceRule(n1, value.unwrap_or(Value::Null), body))
-    )
-);
-
-named!(
-    opt_important<bool>,
-    map!(
-        opt!(do_parse!(
-            opt_spacelike >> tag!("!") >> opt_spacelike >> tag!("important")
-                >> ()
-        )),
-        |o: Option<()>| o.is_some()
     )
 );
 
@@ -322,12 +326,7 @@ named!(
 
 #[cfg(test)]
 fn percentage(v: isize) -> Value {
-    Value::Numeric(
-        Rational::from_integer(v),
-        Unit::Percent,
-        false,
-        false,
-    )
+    Value::Numeric(Number::from_integer(v), Unit::Percent)
 }
 
 #[cfg(test)]
@@ -346,11 +345,7 @@ fn if_with_no_else() {
                 vec![
                     Item::Rule(
                         selectors(b"p").unwrap().1,
-                        vec![Item::Property(
-                            "color".into(),
-                            Value::black(),
-                            false,
-                        )],
+                        vec![Item::Property("color".into(), Value::black())],
                     ),
                     Item::None,
                 ],
@@ -447,7 +442,6 @@ fn test_mixin_declaration() {
                         false,
                         false,
                     ),
-                    false,
                 )],
             }
         )
@@ -477,13 +471,12 @@ fn test_mixin_declaration_default_and_subrules() {
                     false
                 ),
                 body: vec![
-                    Item::Property("foo-bar".into(), string("baz"), false),
+                    Item::Property("foo-bar".into(), string("baz")),
                     Item::Rule(
                         selectors(b"foo, bar").unwrap().1,
                         vec![Item::Property(
                             "property".into(),
                             Value::Variable("b".into()),
-                            false,
                         )],
                     ),
                     Item::None,
@@ -506,7 +499,6 @@ fn test_simple_property() {
             Item::Property(
                 "color".into(),
                 Value::Color(r(255), r(0), r(0), one, Some("red".into())),
-                false
             )
         )
     )
@@ -525,7 +517,6 @@ fn test_property_2() {
                     false,
                     false
                 ),
-                false
             )
         )
     )

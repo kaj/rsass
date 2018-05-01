@@ -4,7 +4,33 @@ use std::collections::BTreeMap;
 use value::{Quotes, Unit};
 use variablescope::Scope;
 
+static IMPLEMENTED_FEATURES: &[&'static str] = &[
+    // A local variable will shadow a global variable unless
+    // `!global` is used.
+    "global-variable-shadowing",
+    // "extend-selector-pseudoclass" - nothing with `@extend` is implemented
+    // Full support for unit arithmetic using units defined in the
+    // [Values and Units Level 3][] spec.
+    "units-level-3",
+    // The Sass `@error` directive is supported.
+    // "at-error",
+    // The "Custom Properties Level 1" spec is supported. This means
+    // that custom properties are parsed statically, with only
+    // interpolation treated as SassScript.
+    // "custom-property",
+];
+
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
+    def!(
+        f,
+        feature_exists(name),
+        |s| match &s.get("name") {
+            &Value::Literal(ref v, _) => Ok(Value::bool(
+                IMPLEMENTED_FEATURES.iter().any(|s| s == v)
+            )),
+            v => Err(Error::badarg("string", v)),
+        }
+    );
     def!(
         f,
         variable_exists(name),

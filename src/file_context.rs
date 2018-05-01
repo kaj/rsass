@@ -57,6 +57,7 @@ impl FileContext {
                 name,
                 &format!("{}.scss", name),
                 &format!("_{}.scss", name),
+                &format!("{}/index.scss", name),
             ] {
                 let full = parent
                     .map(|p| p.join(name))

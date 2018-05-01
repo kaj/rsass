@@ -1,20 +1,8 @@
-extern crate rsass;
-
-use rsass::{compile_scss, OutputStyle};
-
-/// Tests from `sass_spec/spec/css/unknown_directive`
-
-// Unknown directives should support almost any sequence of valid tokens,
-// including interpolation.
-
-fn check(input: &str, expected: &str) {
-    assert_eq!(
-        compile_scss(input.as_bytes(), OutputStyle::Expanded)
-            .and_then(|s| Ok(String::from_utf8(s)?))
-            .map_err(|e| format!("{:?}", e)),
-        Ok(expected.to_string())
-    );
-}
+//! Parts of `sass_spec/spec/css/unknown_directive` as separate tests.
+//!
+//! Unknown directives should support almost any sequence of valid tokens,
+//! including interpolation.
+use super::check;
 
 #[test]
 fn t01_characters_are_passed_through_unaltered() {

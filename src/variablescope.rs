@@ -24,6 +24,32 @@ pub trait Scope {
     /// Define a variable in the global scope that is an ultimate
     /// parent of this scope.
     fn define_global(&self, name: &str, val: &Value);
+
+    /// Define multiple names from a value that is a list.
+    /// Special case: in names is a single name, value is used directly.
+    fn define_multi(&mut self, names: &[String], value: &Value) {
+        if names.len() == 1 {
+            self.define(&names[0], &value);
+        } else if let &Value::List(ref values, ..) = value {
+            if values.len() != names.len() {
+                panic!(
+                    "Expected {} values, but got {}",
+                    names.len(),
+                    values.len(),
+                )
+            } else {
+                for (name, value) in names.iter().zip(values) {
+                    self.define(name, &value);
+                }
+            }
+        } else {
+            panic!(
+                "Got multiple bindings {:?}, but non-list value {}",
+                names, value
+            )
+        }
+    }
+
     /// Get the Value for a variable.
     fn get(&self, name: &str) -> Value;
     fn get_global(&self, name: &str) -> Value;
@@ -57,9 +83,9 @@ pub trait Scope {
                         self.eval_body(do_else)
                     }
                 }
-                Item::Each(ref name, ref values, ref body) => {
+                Item::Each(ref names, ref values, ref body) => {
                     for value in values.evaluate(self).iter_items() {
-                        self.define(name, &value);
+                        self.define_multi(names, &value);
                         if let Some(r) = self.eval_body(body) {
                             return Some(r);
                         }
