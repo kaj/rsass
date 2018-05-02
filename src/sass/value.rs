@@ -14,10 +14,6 @@ pub enum Value {
     Bang(String),
     /// A call has a name and an argument (which may be multi).
     Call(SassString, CallArgs),
-    /// Sometimes an actual division, sometimes "a/b".
-    /// In the later case, the booleans tell if there should be whitespace
-    /// before / after the slash.
-    Div(Box<Value>, Box<Value>, bool, bool),
     Literal(SassString),
     /// A comma- or space separated list of values, with or without brackets.
     List(Vec<Value>, ListSeparator, bool, bool),
@@ -42,7 +38,8 @@ pub enum Value {
     True,
     False,
     /// A binary operation, two operands and an operator.
-    BinOp(Box<Value>, Operator, Box<Value>),
+    /// The boolean represents possible whitespace.
+    BinOp(Box<Value>, bool, Operator, bool, Box<Value>),
     UnaryOp(Operator, Box<Value>),
     Map(OrderMap<Value, Value>),
     /// The magic value "&", exanding to the current selectors.
@@ -167,69 +164,6 @@ impl Value {
                     css::Value::Call(name, args)
                 }
             }
-            Value::Div(ref a, ref b, ref space1, ref space2) => {
-                let (a, b) = {
-                    let aa = a.do_evaluate(scope, arithmetic);
-                    let b = b.do_evaluate(
-                        scope,
-                        arithmetic || aa.is_calculated(),
-                    );
-                    if !arithmetic && b.is_calculated() && !aa.is_calculated()
-                    {
-                        (a.do_evaluate(scope, true), b)
-                    } else {
-                        (aa, b)
-                    }
-                };
-                if arithmetic || a.is_calculated() || b.is_calculated() {
-                    match (&a, &b) {
-                        (
-                            &css::Value::Color(ref r, ref g, ref b, ref a, _),
-                            &css::Value::Numeric(ref n, Unit::None, _),
-                        ) => {
-                            let n = n.value;
-                            css::Value::rgba(r / n, g / n, b / n, *a)
-                        }
-                        (
-                            &css::Value::Numeric(ref av, ref au, ..),
-                            &css::Value::Numeric(ref bv, ref bu, ..),
-                        ) => {
-                            if bv.is_zero() {
-                                css::Value::Div(
-                                    Box::new(a.clone()),
-                                    Box::new(b.clone()),
-                                    *space1,
-                                    *space2,
-                                )
-                            } else if bu == &Unit::None {
-                                css::Value::Numeric(av / bv, au.clone(), true)
-                            } else if au == bu {
-                                css::Value::Numeric(av / bv, Unit::None, true)
-                            } else {
-                                css::Value::Div(
-                                    Box::new(a.clone()),
-                                    Box::new(b.clone()),
-                                    false,
-                                    false,
-                                )
-                            }
-                        }
-                        (a, b) => css::Value::Div(
-                            Box::new(a.clone()),
-                            Box::new(b.clone()),
-                            false,
-                            false,
-                        ),
-                    }
-                } else {
-                    css::Value::Div(
-                        Box::new(a),
-                        Box::new(b),
-                        *space1,
-                        *space2,
-                    )
-                }
-            }
             Value::Numeric(ref num, ref unit) => {
                 let mut num = num.clone();
                 if arithmetic {
@@ -250,10 +184,32 @@ impl Value {
             Value::Null => css::Value::Null,
             Value::True => css::Value::True,
             Value::False => css::Value::False,
-            Value::BinOp(ref a, ref op, ref b) => op.eval(
-                a.do_evaluate(scope, true),
-                b.do_evaluate(scope, true),
-            ),
+            Value::BinOp(ref a, s1, ref op, s2, ref b) => {
+                let (a, b) = {
+                    let arithmetic = arithmetic | (*op != Operator::Div);
+                    let aa = a.do_evaluate(scope, arithmetic);
+                    let b = b.do_evaluate(
+                        scope,
+                        arithmetic || aa.is_calculated(),
+                    );
+                    if !arithmetic && b.is_calculated() && !aa.is_calculated()
+                    {
+                        (a.do_evaluate(scope, true), b)
+                    } else {
+                        (aa, b)
+                    }
+                };
+                op.eval(a.clone(), b.clone())
+                    .unwrap_or_else(|| {
+                        css::Value::BinOp(
+                            Box::new(a),
+                            s1,
+                            op.clone(),
+                            s2,
+                            Box::new(b),
+                        )
+                    })
+            }
             Value::UnaryOp(ref op, ref v) => {
                 let value = v.do_evaluate(scope, true);
                 match (op.clone(), value) {
