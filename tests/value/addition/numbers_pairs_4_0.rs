@@ -124,7 +124,6 @@ fn t28() {
     check_eval("#{10} + #{1}0", "1010")
 }
 #[test]
-#[ignore]
 fn t29() {
     check_eval("1#{0}+1#{0}", "1 01 0")
 }
@@ -134,17 +133,14 @@ fn t30() {
     check_eval("1#{0} +1#{0}", "1 01 0")
 }
 #[test]
-#[ignore]
 fn t31() {
     check_eval("1#{0}+ 1#{0}", "1 01 0")
 }
 #[test]
-#[ignore]
 fn t32() {
     check_eval("1#{0} + 1#{0}", "1 01 0")
 }
 #[test]
-#[ignore]
 fn t33() {
     check_eval("1#{0}+#{1}0", "1 010")
 }
@@ -154,12 +150,10 @@ fn t34() {
     check_eval("1#{0} +#{1}0", "1 010")
 }
 #[test]
-#[ignore]
 fn t35() {
     check_eval("1#{0}+ #{1}0", "1 010")
 }
 #[test]
-#[ignore]
 fn t36() {
     check_eval("1#{0} + #{1}0", "1 010")
 }
