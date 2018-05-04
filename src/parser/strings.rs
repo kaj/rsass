@@ -25,9 +25,7 @@ named!(pub sass_string_dq<SassString>,
                            simple_qstring_part |
                            string_part_interpolation |
                            map!(hash_no_interpolation,
-                                |s| StringPart::Raw(from_utf8(s)
-                                                        .unwrap()
-                                                        .to_string())) |
+                                |s| StringPart::Raw(s.to_string())) |
                            value!(StringPart::Raw("\"".to_string()),
                                   tag!("\\\"")) |
                            value!(StringPart::Raw("'".to_string()),
@@ -42,9 +40,7 @@ named!(pub sass_string_sq<SassString>,
                            simple_qstring_part |
                            string_part_interpolation |
                            map!(hash_no_interpolation,
-                                |s| StringPart::Raw(from_utf8(s)
-                                                        .unwrap()
-                                                        .to_string())) |
+                                |s| StringPart::Raw(s.to_string())) |
                            value!(StringPart::Raw("'".to_string()),
                                   tag!("\\'")) |
                            value!(StringPart::Raw("\"".to_string()),
@@ -77,22 +73,27 @@ named!(
                 | hash_no_interpolation
         ),
         String::new(),
-        |mut acc: String, item: &[u8]| {
-            acc.push_str(from_utf8(item).unwrap());
+        |mut acc: String, item: &str| {
+            acc.push_str(item);
             acc
         }
     )
 );
 named!(
-    selector_plain_part<&[u8]>,
-    is_not!("\n\t >$\"'\\#+*/()[]{}:;,=!&@")
+    selector_plain_part<&str>,
+    map_res!(is_not!("\n\t >$\"'\\#+*/()[]{}:;,=!&@"), |s| {
+        from_utf8(s)
+    })
 );
 named!(
-    selector_escaped_part<&[u8]>,
-    recognize!(preceded!(
-        tag!("\\"),
-        alt!(value!((), many_m_n!(1, 3, hexpair)) | value!((), take!(1)))
-    ))
+    selector_escaped_part<&str>,
+    map_res!(
+        recognize!(preceded!(
+            tag!("\\"),
+            alt!(value!((), many_m_n!(1, 3, hexpair)) | value!((), take!(1)))
+        )),
+        |s| from_utf8(s)
+    )
 );
 named!(
     hexpair,
@@ -102,8 +103,11 @@ named!(
     ))
 );
 named!(
-    hash_no_interpolation<&[u8]>,
-    terminated!(tag!("#"), peek!(not!(tag!("{"))))
+    hash_no_interpolation<&str>,
+    map_res!(
+        terminated!(tag!("#"), peek!(not!(tag!("{")))),
+        |s| from_utf8(s)
+    )
 );
 named!(
     extra_escape<StringPart>,
