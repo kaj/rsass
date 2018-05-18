@@ -1,9 +1,6 @@
 macro_rules! one_arg {
     ($name:ident) => {
-        (
-            stringify!($name).into(),
-            $crate::sass::Value::Null,
-        )
+        (stringify!($name).into(), $crate::sass::Value::Null)
     };
     ($name:ident = $value:expr) => {{
         use $crate::parser::value::value_expression;

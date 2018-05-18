@@ -196,12 +196,10 @@ impl<'a> Scope for ScopeImpl<'a> {
         body: &[Item],
     ) {
         let name = name.replace('-', "_");
-        self.mixins
-            .insert(name, (args.clone(), body.into()));
+        self.mixins.insert(name, (args.clone(), body.into()));
     }
     fn define_function(&mut self, name: &str, func: SassFunction) {
-        self.functions
-            .insert(name.replace('-', "_"), func);
+        self.functions.insert(name.replace('-', "_"), func);
     }
     fn get_function(&self, name: &str) -> Option<&SassFunction> {
         let name = name.replace('-', "_");
@@ -289,9 +287,7 @@ impl Scope for GlobalScope {
             .insert(name.replace('-', "_"), val.unrequote());
     }
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
-        self.mixins
-            .get(&name.replace('-', "_"))
-            .cloned()
+        self.mixins.get(&name.replace('-', "_")).cloned()
     }
     fn get(&self, name: &str) -> Value {
         self.get_global(name)
@@ -312,12 +308,10 @@ impl Scope for GlobalScope {
         body: &[Item],
     ) {
         let name = name.replace('-', "_");
-        self.mixins
-            .insert(name, (args.clone(), body.into()));
+        self.mixins.insert(name, (args.clone(), body.into()));
     }
     fn define_function(&mut self, name: &str, func: SassFunction) {
-        self.functions
-            .insert(name.replace('-', "_"), func);
+        self.functions.insert(name.replace('-', "_"), func);
     }
     fn get_function(&self, name: &str) -> Option<&SassFunction> {
         let name = name.replace('-', "_");
@@ -350,10 +344,7 @@ pub mod test {
 
     #[test]
     fn variable_value() {
-        assert_eq!(
-            "#f02a42",
-            do_evaluate(&[("red", "#f02a42")], b"$red;")
-        )
+        assert_eq!("#f02a42", do_evaluate(&[("red", "#f02a42")], b"$red;"))
     }
 
     #[test]
@@ -377,10 +368,7 @@ pub mod test {
 
     #[test]
     fn simple_arithmetic_3() {
-        assert_eq!(
-            "14",
-            do_evaluate(&[("four", "4")], b"2 + 3 * $four;")
-        )
+        assert_eq!("14", do_evaluate(&[("four", "4")], b"2 + 3 * $four;"))
     }
 
     // The following tests are from aboud division are from
@@ -393,10 +381,7 @@ pub mod test {
 
     #[test]
     fn div_slash_2() {
-        assert_eq!(
-            "500px",
-            do_evaluate(&[("width", "1000px")], b"$width/2;")
-        )
+        assert_eq!("500px", do_evaluate(&[("width", "1000px")], b"$width/2;"))
     }
 
     #[test]
@@ -418,10 +403,7 @@ pub mod test {
     }
     #[test]
     fn negative_in_arithmetic() {
-        assert_eq!(
-            "960px",
-            do_evaluate(&[("m", "20")], b"1000px + $m * -2;")
-        )
+        assert_eq!("960px", do_evaluate(&[("m", "20")], b"1000px + $m * -2;"))
     }
 
     // ...
@@ -447,10 +429,7 @@ pub mod test {
 
     #[test]
     fn long_div_and_mul_sequence() {
-        assert_eq!(
-            "3",
-            do_evaluate(&[], b"(3 / 2 / 2 / 2 * 32 / 2 / 2);")
-        )
+        assert_eq!("3", do_evaluate(&[], b"(3 / 2 / 2 / 2 * 32 / 2 / 2);"))
     }
 
     #[test]
@@ -460,10 +439,7 @@ pub mod test {
 
     #[test]
     fn double_div_5() {
-        assert_eq!(
-            "1",
-            do_evaluate(&[("five", "5")], b"15 / 3 / $five;")
-        )
+        assert_eq!("1", do_evaluate(&[("five", "5")], b"15 / 3 / $five;"))
     }
 
     #[test]
@@ -522,26 +498,17 @@ pub mod test {
     }
     #[test]
     fn color_add_components_to_named() {
-        assert_eq!(
-            "white",
-            do_evaluate(&[], b"#00f + #0f0 + #f00;")
-        )
+        assert_eq!("white", do_evaluate(&[], b"#00f + #0f0 + #f00;"))
     }
 
     #[test]
     fn color_simple_rgba() {
-        assert_eq!(
-            "rgba(1, 2, 3, 0.6)",
-            do_evaluate(&[], b"rgba(1,2,3,.6);")
-        )
+        assert_eq!("rgba(1, 2, 3, 0.6)", do_evaluate(&[], b"rgba(1,2,3,.6);"))
     }
 
     #[test]
     fn color_add_to_rgba() {
-        assert_eq!(
-            "#111111",
-            do_evaluate(&[], b"rgba(0, 0, 0, 1) + #111;")
-        )
+        assert_eq!("#111111", do_evaluate(&[], b"rgba(0, 0, 0, 1) + #111;"))
     }
 
     #[test]
@@ -574,10 +541,7 @@ pub mod test {
 
     #[test]
     fn color_add_rgb_1() {
-        assert_eq!(
-            "#0b0a0b",
-            do_evaluate(&[], b"rgb(10,10,10) + #010001;")
-        )
+        assert_eq!("#0b0a0b", do_evaluate(&[], b"rgb(10,10,10) + #010001;"))
     }
     #[test]
     fn color_add_rgb_2() {
@@ -621,10 +585,7 @@ pub mod test {
 
     #[test]
     fn value_multiple_dashes() {
-        assert_eq!(
-            "foo-bar-baz 17%",
-            do_evaluate(&[], b"foo-bar-baz 17%;")
-        )
+        assert_eq!("foo-bar-baz 17%", do_evaluate(&[], b"foo-bar-baz 17%;"))
     }
 
     #[test]
@@ -663,18 +624,12 @@ pub mod test {
 
     #[test]
     fn quote_keywords() {
-        assert_eq!(
-            "\"foo bar\"",
-            do_evaluate(&[], b"quote(foo bar);")
-        )
+        assert_eq!("\"foo bar\"", do_evaluate(&[], b"quote(foo bar);"))
     }
     #[test]
     fn quote_expr() {
         let vars = [("s", "foo"), ("n", "5")];
-        assert_eq!(
-            "\"foo 17\"",
-            do_evaluate(&vars, b"quote($s $n * 3 + 2);")
-        )
+        assert_eq!("\"foo 17\"", do_evaluate(&vars, b"quote($s $n * 3 + 2);"))
     }
     #[test]
     fn quoted_string() {
@@ -682,17 +637,11 @@ pub mod test {
     }
     #[test]
     fn unquote_string() {
-        assert_eq!(
-            "foo bar",
-            do_evaluate(&[], b"unquote(\"foo bar\");")
-        )
+        assert_eq!("foo bar", do_evaluate(&[], b"unquote(\"foo bar\");"))
     }
     #[test]
     fn unquote_quote() {
-        assert_eq!(
-            "foo bar",
-            do_evaluate(&[], b"unquote(quote(foo bar));")
-        )
+        assert_eq!("foo bar", do_evaluate(&[], b"unquote(quote(foo bar));"))
     }
 
     #[test]

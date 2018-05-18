@@ -25,13 +25,7 @@ pub enum Value {
     /// The boolean flag is true for calculated values and false for
     /// literal values.
     Numeric(Number, Unit, bool),
-    Color(
-        Rational,
-        Rational,
-        Rational,
-        Rational,
-        Option<String>,
-    ),
+    Color(Rational, Rational, Rational, Rational, Option<String>),
     Null,
     True,
     False,
@@ -106,9 +100,7 @@ impl Value {
         match self {
             Value::Numeric(num, unit, _) => Value::Numeric(num, unit, true),
             Value::List(v, sep, bracketed) => Value::List(
-                v.into_iter()
-                    .map(|i| i.into_calculated())
-                    .collect(),
+                v.into_iter().map(|i| i.into_calculated()).collect(),
                 sep,
                 bracketed,
             ),
@@ -218,9 +210,7 @@ impl Value {
                 }
             }
             Value::List(ref list, ref s, ref b) => Value::List(
-                list.into_iter()
-                    .map(|v| v.unrequote())
-                    .collect(),
+                list.into_iter().map(|v| v.unrequote()).collect(),
                 s.clone(),
                 *b,
             ),
@@ -231,7 +221,8 @@ impl Value {
     pub fn iter_items(self) -> Vec<Value> {
         match self {
             Value::List(v, _, _) => v,
-            Value::Map(map) => map.iter()
+            Value::Map(map) => map
+                .iter()
                 .map(|&(ref k, ref v)| {
                     Value::List(
                         vec![k.clone(), v.clone()],
@@ -273,7 +264,8 @@ impl fmt::Display for Value {
                 Quotes::None => write!(out, "{}", s),
             },
             Value::Function(ref n, ref _f) => {
-                let name = n.chars()
+                let name = n
+                    .chars()
                     .flat_map(|c| match c {
                         '"' => vec!['\\', '"'],
                         c => vec![c],
@@ -311,7 +303,9 @@ impl fmt::Display for Value {
                         ),
                         _ => write!(out, "#{:02x}{:02x}{:02x}", r, g, b),
                     }
-                } else if a.is_zero() && r.is_zero() && g.is_zero()
+                } else if a.is_zero()
+                    && r.is_zero()
+                    && g.is_zero()
                     && b.is_zero()
                 {
                     write!(out, "transparent")
@@ -338,7 +332,8 @@ impl fmt::Display for Value {
                 }
             }
             Value::List(ref v, ref sep, brackets) => {
-                let t = v.iter()
+                let t = v
+                    .iter()
                     .filter(|v| !v.is_null())
                     .map(|v| {
                         let needs_paren = match *v {

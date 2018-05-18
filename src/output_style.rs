@@ -78,11 +78,7 @@ impl OutputStyle {
                             result.to_imports(),
                             "@import url({});{}",
                             x,
-                            if self.is_compressed() {
-                                ""
-                            } else {
-                                "\n"
-                            }
+                            if self.is_compressed() { "" } else { "\n" }
                         )?;
                     }
                 } else {
@@ -90,11 +86,7 @@ impl OutputStyle {
                         result.to_imports(),
                         "@import {};{}",
                         name,
-                        if self.is_compressed() {
-                            ""
-                        } else {
-                            "\n"
-                        }
+                        if self.is_compressed() { "" } else { "\n" }
                     )?;
                 }
             }
@@ -184,10 +176,7 @@ impl OutputStyle {
                 panic!("@content not allowed in global context");
             }
 
-            Item::FunctionDeclaration {
-                ref name,
-                ref func,
-            } => {
+            Item::FunctionDeclaration { ref name, ref func } => {
                 scope.define_function(name, func.clone());
             }
             Item::Return(_) => {
@@ -447,10 +436,7 @@ impl OutputStyle {
                     }
                 }
 
-                Item::FunctionDeclaration {
-                    ref name,
-                    ref func,
-                } => {
+                Item::FunctionDeclaration { ref name, ref func } => {
                     scope.define_function(name, func.clone());
                 }
                 Item::Return(_) => {
@@ -641,20 +627,21 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                             SelectorPart::Simple(ref v) => {
                                 SelectorPart::Simple(v.evaluate2(scope))
                             }
-                            SelectorPart::Pseudo {
-                                ref name,
-                                ref arg,
-                            } => SelectorPart::Pseudo {
-                                name: name.evaluate2(scope),
-                                arg: arg.as_ref()
-                                    .map(|a| eval_selectors(a, scope)),
-                            },
+                            SelectorPart::Pseudo { ref name, ref arg } => {
+                                SelectorPart::Pseudo {
+                                    name: name.evaluate2(scope),
+                                    arg: arg
+                                        .as_ref()
+                                        .map(|a| eval_selectors(a, scope)),
+                                }
+                            }
                             SelectorPart::PseudoElement {
                                 ref name,
                                 ref arg,
                             } => SelectorPart::PseudoElement {
                                 name: name.evaluate2(scope),
-                                arg: arg.as_ref()
+                                arg: arg
+                                    .as_ref()
                                     .map(|a| eval_selectors(a, scope)),
                             },
                             ref sp => sp.clone(),
@@ -668,9 +655,7 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
     // contain high-level selector separators (i.e. ","), so we need to
     // parse the selectors again, from a string representation.
     use parser::selectors::selectors;
-    selectors(format!("{} ", s).as_bytes())
-        .unwrap()
-        .1
+    selectors(format!("{} ", s).as_bytes()).unwrap().1
 }
 
 struct CssWriter {

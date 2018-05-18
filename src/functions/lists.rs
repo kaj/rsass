@@ -35,20 +35,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         let (mut list, sep, bra) = get_list(s.get("list"));
         let i = list_index(n, &list)?;
         list[i] = s.get("value");
-        Ok(Value::List(
-            list,
-            sep.unwrap_or(ListSeparator::Space),
-            bra,
-        ))
+        Ok(Value::List(list, sep.unwrap_or(ListSeparator::Space), bra))
     });
     def!(
         f,
-        join(
-            list1,
-            list2,
-            separator = b"auto",
-            bracketed = b"auto"
-        ),
+        join(list1, list2, separator = b"auto", bracketed = b"auto"),
         |s| {
             let (mut list1, sep1, bra1) = get_list(s.get("list1"));
             let (mut list2, sep2, _bra2) = get_list(s.get("list2"));
@@ -99,9 +90,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def_va!(f, zip(lists), |s| match s.get("lists") {
         Value::List(v, _, _) => {
-            let lists = v.into_iter()
-                .map(|v| v.iter_items())
-                .collect::<Vec<_>>();
+            let lists =
+                v.into_iter().map(|v| v.iter_items()).collect::<Vec<_>>();
             let len = lists.iter().map(|v| v.len()).min().unwrap_or(0);
             let result = (0..len)
                 .map(|i| {
@@ -143,12 +133,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }.into(),
         Quotes::None
     )));
-    def!(f, is_bracketed(list), |s| Ok(
-        match s.get("list") {
-            Value::List(_, _, true) => Value::True,
-            _ => Value::False,
-        }
-    ));
+    def!(f, is_bracketed(list), |s| Ok(match s.get("list") {
+        Value::List(_, _, true) => Value::True,
+        _ => Value::False,
+    }));
 }
 
 fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
@@ -182,10 +170,8 @@ fn rust_index(n: isize, len: usize) -> Result<usize, Error> {
     } else if n < 0 && n >= -(len as isize) {
         Ok((len as isize + n) as usize)
     } else {
-        let msg = format!(
-            "Expected index for list of length {}, got {}",
-            len, n
-        );
+        let msg =
+            format!("Expected index for list of length {}, got {}", len, n);
         Err(Error::BadArguments(msg))
     }
 }
@@ -200,19 +186,13 @@ mod test {
     }
     #[test]
     fn append_b() {
-        check_val(
-            "append((blue, red), green);",
-            "blue, red, green",
-        )
+        check_val("append((blue, red), green);", "blue, red, green")
     }
     #[test]
     fn append_c() {
         // the documentation is incorrect on this one, libsass does not
         // add parentheses in this case.
-        check_val(
-            "append(10px 20px, 30px 40px);",
-            "10px 20px 30px 40px",
-        )
+        check_val("append(10px 20px, 30px 40px);", "10px 20px 30px 40px")
     }
     #[test]
     fn append_d() {
@@ -220,10 +200,7 @@ mod test {
     }
     #[test]
     fn append_e() {
-        check_val(
-            "append((blue, red), green, space);",
-            "blue red green",
-        )
+        check_val("append((blue, red), green, space);", "blue red green")
     }
 
     mod join {
@@ -233,17 +210,11 @@ mod test {
 
         #[test]
         fn both_bracketed() {
-            check_val(
-                "join([foo bar], [baz bang]);",
-                "[foo bar baz bang]",
-            )
+            check_val("join([foo bar], [baz bang]);", "[foo bar baz bang]")
         }
         #[test]
         fn first_bracketed() {
-            check_val(
-                "join([foo bar], baz bang);",
-                "[foo bar baz bang]",
-            )
+            check_val("join([foo bar], baz bang);", "[foo bar baz bang]")
         }
         #[test]
         fn second_bracketed() {
@@ -255,10 +226,7 @@ mod test {
         }
         #[test]
         fn bracketed_false() {
-            check_val(
-                "join([foo], [bar], $bracketed: false);",
-                "foo bar",
-            )
+            check_val("join([foo], [bar], $bracketed: false);", "foo bar")
         }
         #[test]
         fn separator_and_bracketed() {
@@ -284,10 +252,7 @@ mod test {
         }
         #[test]
         fn bracketed_null() {
-            check_val(
-                "join([foo], [bar], $bracketed: null);",
-                "foo bar",
-            )
+            check_val("join([foo], [bar], $bracketed: null);", "foo bar")
         }
     }
 

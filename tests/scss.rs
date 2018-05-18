@@ -86,10 +86,7 @@ fn basic_function() {
 
 #[test]
 fn block_comment_in_script() {
-    check(
-        "foo {a: 1 + /* flang */ bar}\n",
-        "foo {\n  a: 1bar;\n}\n",
-    )
+    check("foo {a: 1 + /* flang */ bar}\n", "foo {\n  a: 1bar;\n}\n")
 }
 
 #[test]
@@ -444,18 +441,12 @@ fn prop_name_only_interpolation() {
 
 #[test]
 fn prop_name_interpolation_after_hyphen() {
-    check(
-        "a { -#{\"foo\"}-bar: b; }\n",
-        "a {\n  -foo-bar: b;\n}\n",
-    )
+    check("a { -#{\"foo\"}-bar: b; }\n", "a {\n  -foo-bar: b;\n}\n")
 }
 
 #[test]
 fn star_plus_and_parent() {
-    check(
-        "foo {*+html & {a: b}}\n",
-        "* + html foo {\n  a: b;\n}\n",
-    )
+    check("foo {*+html & {a: b}}\n", "* + html foo {\n  a: b;\n}\n")
 }
 
 #[test]
@@ -468,10 +459,7 @@ fn selector_interpolation_at_attr_beginning() {
 
 #[test]
 fn selector_interpolation_at_id_begininng() {
-    check(
-        "$zzz: zzz;\n##{$zzz} { a: b; }\n",
-        "#zzz {\n  a: b;\n}\n",
-    )
+    check("$zzz: zzz;\n##{$zzz} { a: b; }\n", "#zzz {\n  a: b;\n}\n")
 }
 
 #[test]

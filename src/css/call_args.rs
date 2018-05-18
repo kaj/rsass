@@ -48,7 +48,8 @@ impl Default for CallArgs {
 
 impl fmt::Display for CallArgs {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        let t = self.0
+        let t = self
+            .0
             .iter()
             .map(|kv| match *kv {
                 (Some(ref k), ref v) => format!("${}: {}", k, v),

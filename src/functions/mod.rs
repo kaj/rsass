@@ -167,10 +167,7 @@ fn test_rgb() {
             .unwrap()
             .call(
                 &scope,
-                &call_args(b"(17, 0, 225)")
-                    .unwrap()
-                    .1
-                    .evaluate(&scope, true)
+                &call_args(b"(17, 0, 225)").unwrap().1.evaluate(&scope, true)
             )
             .unwrap(),
         css::Value::Color(
@@ -185,10 +182,7 @@ fn test_rgb() {
 
 #[test]
 fn test_nth() {
-    assert_eq!(
-        "foo",
-        do_evaluate(&[("x", "foo, bar")], b"nth($x, 1);")
-    )
+    assert_eq!("foo", do_evaluate(&[("x", "foo, bar")], b"nth($x, 1);"))
 }
 
 #[cfg(test)]

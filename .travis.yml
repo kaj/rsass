@@ -19,7 +19,7 @@ matrix:
     - rust: nightly
       env: TASK=rustfmt
       before_script: rustup component add rustfmt-preview
-      script: cargo fmt -- --write-mode=diff
+      script: cargo fmt -- --check
   exclude:
     - rust: 1.23.0
       env: F=--features=commandline

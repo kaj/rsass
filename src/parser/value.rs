@@ -2,8 +2,9 @@ use nom::multispace;
 use num_rational::Rational;
 use num_traits::{One, Zero};
 use parser::formalargs::call_args;
-use parser::strings::{sass_string, sass_string_dq, sass_string_ext,
-                      sass_string_sq};
+use parser::strings::{
+    sass_string, sass_string_dq, sass_string_ext, sass_string_sq,
+};
 use parser::unit::unit;
 use parser::util::{name, opt_spacelike, spacelike2};
 use sass::{SassString, Value};
@@ -323,10 +324,7 @@ named!(
         preceded!(
             complete!(tag!(".")),
             fold_many1!(one_of!("0123456789"), (0, 1), |(r, n), d| {
-                (
-                    r * 10 + isize::from(d as i8 - b'0' as i8),
-                    n * 10,
-                )
+                (r * 10 + isize::from(d as i8 - b'0' as i8), n * 10)
             })
         ),
         |(r, d)| Rational::new(r, d)
@@ -357,15 +355,13 @@ fn literal_or_color(s: SassString) -> Value {
     Value::Literal(s)
 }
 
-named!(
-    hexchar,
-    recognize!(one_of!("0123456789ABCDEFabcdef"))
-);
+named!(hexchar, recognize!(one_of!("0123456789ABCDEFabcdef")));
 
 named!(
     hexchar2,
     recognize!(do_parse!(
-        one_of!("0123456789ABCDEFabcdef") >> one_of!("0123456789ABCDEFabcdef")
+        one_of!("0123456789ABCDEFabcdef")
+            >> one_of!("0123456789ABCDEFabcdef")
             >> ()
     ))
 );
@@ -387,16 +383,15 @@ named!(
             separated_nonempty_list!(
                 delimited!(opt_spacelike, tag!(","), opt_spacelike),
                 do_parse!(
-                    k: simple_value >> opt_spacelike >> tag!(":")
-                        >> opt_spacelike >> v: space_list
+                    k: simple_value
+                        >> opt_spacelike
+                        >> tag!(":")
+                        >> opt_spacelike
+                        >> v: space_list
                         >> (k, v)
                 )
             ),
-            opt!(delimited!(
-                opt_spacelike,
-                tag!(","),
-                opt_spacelike
-            ))
+            opt!(delimited!(opt_spacelike, tag!(","), opt_spacelike))
         ),
         |items| Value::Map(items.into_iter().collect())
     )
@@ -486,10 +481,7 @@ mod test {
     }
 
     fn number(nom: isize, denom: isize) -> Value {
-        Numeric(
-            Number::new(Rational::new(nom, denom)),
-            Unit::None,
-        )
+        Numeric(Number::new(Rational::new(nom, denom)), Unit::None)
     }
 
     #[test]
@@ -588,10 +580,7 @@ mod test {
 
     #[test]
     fn call_no_args() {
-        check_expr(
-            "foo();",
-            Call("foo".into(), CallArgs::default()),
-        )
+        check_expr("foo();", Call("foo".into(), CallArgs::default()))
     }
 
     #[test]
@@ -704,10 +693,7 @@ mod test {
 
     #[test]
     fn parse_bracket_empty_array() {
-        check_expr(
-            "[];",
-            List(vec![], ListSeparator::Space, true, false),
-        )
+        check_expr("[];", List(vec![], ListSeparator::Space, true, false))
     }
 
     #[test]
@@ -723,10 +709,7 @@ mod test {
     }
 
     fn check_expr(expr: &str, value: Value) {
-        assert_eq!(
-            value_expression(expr.as_bytes()),
-            Done(&b";"[..], value)
-        )
+        assert_eq!(value_expression(expr.as_bytes()), Done(&b";"[..], value))
     }
 
     #[test]
@@ -734,10 +717,7 @@ mod test {
         let t = value_expression_eof(b"http://#{\")\"}.com/");
         if let &Done(rest, ref result) = &t {
             assert_eq!(
-                (
-                    format!("{}", result.evaluate(&GlobalScope::new())),
-                    rest
-                ),
+                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
                 ("http://).com/".to_string(), &b""[..])
             );
         } else {
@@ -749,10 +729,7 @@ mod test {
         let t = value_expression_eof(b"url(http://#{\")\"}.com/)");
         if let &Done(rest, ref result) = &t {
             assert_eq!(
-                (
-                    format!("{}", result.evaluate(&GlobalScope::new())),
-                    rest
-                ),
+                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
                 ("url(http://).com/)".to_string(), &b""[..])
             );
         } else {
@@ -764,10 +741,7 @@ mod test {
         let t = value_expression_eof(b"url(//#{\")\"}.com/)");
         if let &Done(rest, ref result) = &t {
             assert_eq!(
-                (
-                    format!("{}", result.evaluate(&GlobalScope::new())),
-                    rest
-                ),
+                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
                 ("url(//).com/)".to_string(), &b""[..])
             );
         } else {

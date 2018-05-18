@@ -14,10 +14,7 @@ pub fn name_to_rgb(name: &str) -> Option<(Rational, Rational, Rational)> {
         let n = n % 256;
         Rational::from_integer(n as isize)
     }
-    LOOKUP
-        .n2v
-        .get(name)
-        .map(|n| (r(n >> 16), r(n >> 8), r(*n)))
+    LOOKUP.n2v.get(name).map(|n| (r(n >> 16), r(n >> 8), r(*n)))
 }
 
 #[test]
@@ -34,11 +31,7 @@ fn get_none() {
 fn get_red_by_name() {
     use num_traits::Zero;
     assert_eq!(
-        Some((
-            Rational::new(255, 1),
-            Rational::zero(),
-            Rational::zero()
-        )),
+        Some((Rational::new(255, 1), Rational::zero(), Rational::zero())),
         name_to_rgb("red")
     );
 }

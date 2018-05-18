@@ -19,17 +19,13 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         Value::Numeric(v, u, ..) => Ok(number(v.value.floor(), u)),
         v => Err(Error::badarg("number", &v)),
     });
-    def!(
-        f,
-        percentage(number),
-        |s| match s.get("number") {
-            Value::Numeric(val, Unit::None, _) => Ok(number(
-                val.value * Rational::from_integer(100),
-                Unit::Percent
-            )),
-            v => Err(Error::badarg("number", &v)),
-        }
-    );
+    def!(f, percentage(number), |s| match s.get("number") {
+        Value::Numeric(val, Unit::None, _) => Ok(number(
+            val.value * Rational::from_integer(100),
+            Unit::Percent
+        )),
+        v => Err(Error::badarg("number", &v)),
+    });
     def!(f, round(number), |s| match s.get("number") {
         Value::Numeric(val, unit, _) => Ok(number(val.value.round(), unit)),
         v => Err(Error::badarg("number", &v)),
@@ -47,10 +43,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, random(limit), |s| match s.get("limit") {
         Value::Null => {
             let rez = 1_000_000;
-            Ok(number(
-                Rational::new(intrand(rez), rez),
-                Unit::None,
-            ))
+            Ok(number(Rational::new(intrand(rez), rez), Unit::None))
         }
         Value::Numeric(val, unit, ..) => {
             let res = 1 + intrand(val.to_integer());

@@ -8,7 +8,9 @@ pub mod value;
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
 use self::strings::{sass_string, sass_string_dq, sass_string_sq};
-use self::value::{dictionary, function_call, single_value, value_expression};
+use self::value::{
+    dictionary, function_call, single_value, value_expression,
+};
 use error::Error;
 use functions::SassFunction;
 use nom::IResult;
@@ -86,26 +88,38 @@ named!(sassfile<&[u8], Vec<Item> >,
 named!(
     rule<Item>,
     do_parse!(
-        opt_spacelike >> selectors: selectors >> opt!(is_a!(", \t\n"))
-            >> body: body_block >> (Item::Rule(selectors, body))
+        opt_spacelike
+            >> selectors: selectors
+            >> opt!(is_a!(", \t\n"))
+            >> body: body_block
+            >> (Item::Rule(selectors, body))
     )
 );
 
 named!(
     body_item<Item>,
     alt_complete!(
-        value!(Item::None, spacelike) | mixin_declaration
-            | variable_declaration | rule | namespace_rule | property
-            | each_loop | for_loop | while_loop | function_declaration
-            | mixin_call | import | if_statement | return_stmt
-            | content_stmt | at_rule
+        value!(Item::None, spacelike)
+            | mixin_declaration
+            | variable_declaration
+            | rule
+            | namespace_rule
+            | property
+            | each_loop
+            | for_loop
+            | while_loop
+            | function_declaration
+            | mixin_call
+            | import
+            | if_statement
+            | return_stmt
+            | content_stmt
+            | at_rule
             | value!(
                 Item::None,
                 delimited!(opt_spacelike, tag!(";"), opt_spacelike)
             )
-            | map!(comment, |c| Item::Comment(
-                from_utf8(c).unwrap().into()
-            ))
+            | map!(comment, |c| Item::Comment(from_utf8(c).unwrap().into()))
     )
 );
 
@@ -120,9 +134,14 @@ named!(
 named!(
     mixin_call<Item>,
     do_parse!(
-        tag!("@include") >> spacelike >> name: name >> opt_spacelike
-            >> args: opt!(call_args) >> opt_spacelike
-            >> body: opt!(body_block) >> opt_spacelike
+        tag!("@include")
+            >> spacelike
+            >> name: name
+            >> opt_spacelike
+            >> args: opt!(call_args)
+            >> opt_spacelike
+            >> body: opt!(body_block)
+            >> opt_spacelike
             >> opt!(complete!(tag!(";"))) >> (Item::MixinCall {
             name,
             args: args.unwrap_or_default(),
@@ -140,7 +159,8 @@ named!(
                 alt!(
                     terminated!(
                         alt!(
-                            function_call | dictionary
+                            function_call
+                                | dictionary
                                 | map!(sass_string, Value::Literal)
                                 | map!(sass_string_dq, Value::Literal)
                                 | map!(sass_string_sq, Value::Literal)
@@ -165,15 +185,15 @@ named!(
     )
 );
 
-named!(
-    if_statement<Item>,
-    preceded!(tag!("@"), if_statement_inner)
-);
+named!(if_statement<Item>, preceded!(tag!("@"), if_statement_inner));
 
 named!(
     if_statement_inner<Item>,
     do_parse!(
-        tag!("if") >> spacelike >> cond: value_expression >> opt_spacelike
+        tag!("if")
+            >> spacelike
+            >> cond: value_expression
+            >> opt_spacelike
             >> body: body_block
             >> else_body:
                 opt!(complete!(preceded!(
@@ -215,8 +235,14 @@ named!(
 named!(
     for_loop<Item>,
     do_parse!(
-        tag!("@for") >> spacelike >> tag!("$") >> name: name >> spacelike
-            >> tag!("from") >> spacelike >> from: single_value
+        tag!("@for")
+            >> spacelike
+            >> tag!("$")
+            >> name: name
+            >> spacelike
+            >> tag!("from")
+            >> spacelike
+            >> from: single_value
             >> spacelike
             >> inclusive:
                 alt!(
@@ -235,8 +261,12 @@ named!(
 named!(
     while_loop<Item>,
     do_parse!(
-        tag!("@while") >> spacelike >> cond: value_expression >> spacelike
-            >> body: body_block >> (Item::While(cond, body))
+        tag!("@while")
+            >> spacelike
+            >> cond: value_expression
+            >> spacelike
+            >> body: body_block
+            >> (Item::While(cond, body))
     )
 );
 
@@ -254,27 +284,37 @@ named!(mixin_declaration<&[u8], Item>,
 named!(
     function_declaration<Item>,
     do_parse!(
-        tag!("@function") >> spacelike >> name: name >> opt_spacelike
-            >> args: formal_args >> opt_spacelike >> body: body_block
-            >> (Item::FunctionDeclaration {
-                name,
-                func: SassFunction::new(args, body),
-            })
+        tag!("@function")
+            >> spacelike
+            >> name: name
+            >> opt_spacelike
+            >> args: formal_args
+            >> opt_spacelike
+            >> body: body_block >> (Item::FunctionDeclaration {
+            name,
+            func: SassFunction::new(args, body),
+        })
     )
 );
 
 named!(
     return_stmt<Item>,
     do_parse!(
-        tag!("@return") >> spacelike >> v: value_expression >> opt_spacelike
-            >> opt!(tag!(";")) >> (Item::Return(v))
+        tag!("@return")
+            >> spacelike
+            >> v: value_expression
+            >> opt_spacelike
+            >> opt!(tag!(";"))
+            >> (Item::Return(v))
     )
 );
 
 named!(
     content_stmt<Item>,
     do_parse!(
-        tag!("@content") >> opt_spacelike >> opt!(tag!(";"))
+        tag!("@content")
+            >> opt_spacelike
+            >> opt!(tag!(";"))
             >> (Item::Content)
     )
 );
@@ -290,9 +330,14 @@ named!(property<&[u8], Item>,
 named!(
     namespace_rule<Item>,
     do_parse!(
-        opt_spacelike >> n1: name >> opt_spacelike >> tag!(":")
-            >> opt_spacelike >> value: opt!(value_expression)
-            >> opt_spacelike >> body: body_block
+        opt_spacelike
+            >> n1: name
+            >> opt_spacelike
+            >> tag!(":")
+            >> opt_spacelike
+            >> value: opt!(value_expression)
+            >> opt_spacelike
+            >> body: body_block
             >> (Item::NamespaceRule(n1, value.unwrap_or(Value::Null), body))
     )
 );
@@ -309,18 +354,24 @@ named!(
 named!(
     variable_declaration<Item>,
     do_parse!(
-        tag!("$") >> name: name >> opt_spacelike >> tag!(":") >> opt_spacelike
-            >> val: value_expression >> opt_spacelike
+        tag!("$")
+            >> name: name
+            >> opt_spacelike
+            >> tag!(":")
+            >> opt_spacelike
+            >> val: value_expression
+            >> opt_spacelike
             >> default: map!(opt!(tag!("!default")), |d| d.is_some())
             >> opt_spacelike
             >> global: map!(opt!(tag!("!global")), |g| g.is_some())
-            >> opt_spacelike >> tag!(";") >> opt_spacelike
-            >> (Item::VariableDeclaration {
-                name,
-                val,
-                default,
-                global,
-            })
+            >> opt_spacelike
+            >> tag!(";")
+            >> opt_spacelike >> (Item::VariableDeclaration {
+            name,
+            val,
+            default,
+            global,
+        })
     )
 );
 

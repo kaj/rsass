@@ -24,13 +24,15 @@ impl FormalArgs {
         let mut argscope = ScopeImpl::sub(scope);
         let n = self.0.len();
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
-            if let Some(value) = args.iter()
+            if let Some(value) = args
+                .iter()
                 .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
                 .map(|&(ref _k, ref v)| v)
             {
                 argscope.define(name, value);
             } else if self.1 && i + 1 == n && args.len() > n {
-                let args = args.iter()
+                let args = args
+                    .iter()
                     .skip(i)
                     .map(|&(_, ref v)| v.clone())
                     .collect();

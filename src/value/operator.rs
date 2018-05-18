@@ -99,12 +99,9 @@ impl Operator {
                 (
                     &Value::Color(ref ar, ref ag, ref ab, ref aa, _),
                     &Value::Color(ref br, ref bg, ref bb, ref ba, _),
-                ) => Some(Value::rgba(
-                    ar - br,
-                    ag - bg,
-                    ab - bb,
-                    avg(aa, ba),
-                )),
+                ) => {
+                    Some(Value::rgba(ar - br, ag - bg, ab - bb, avg(aa, ba)))
+                }
                 (
                     &Value::Numeric(ref av, ref au, ..),
                     &Value::Numeric(ref bv, ref bu, ..),
@@ -153,10 +150,7 @@ impl Operator {
                     }
                 } else {
                     // TODO None?
-                    Some(Value::Literal(
-                        format!("{}*{}", a, b),
-                        Quotes::None,
-                    ))
+                    Some(Value::Literal(format!("{}*{}", a, b), Quotes::None))
                 }
             }
             Operator::Div => {

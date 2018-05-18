@@ -27,13 +27,7 @@ pub enum Value {
     Variable(String),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
-    Color(
-        Rational,
-        Rational,
-        Rational,
-        Rational,
-        Option<String>,
-    ),
+    Color(Rational, Rational, Rational, Rational, Option<String>),
     Null,
     True,
     False,
@@ -188,10 +182,8 @@ impl Value {
                 let (a, b) = {
                     let arithmetic = arithmetic | (*op != Operator::Div);
                     let aa = a.do_evaluate(scope, arithmetic);
-                    let b = b.do_evaluate(
-                        scope,
-                        arithmetic || aa.is_calculated(),
-                    );
+                    let b = b
+                        .do_evaluate(scope, arithmetic || aa.is_calculated());
                     if !arithmetic && b.is_calculated() && !aa.is_calculated()
                     {
                         (a.do_evaluate(scope, true), b)
@@ -199,16 +191,15 @@ impl Value {
                         (aa, b)
                     }
                 };
-                op.eval(a.clone(), b.clone())
-                    .unwrap_or_else(|| {
-                        css::Value::BinOp(
-                            Box::new(a),
-                            s1,
-                            op.clone(),
-                            s2,
-                            Box::new(b),
-                        )
-                    })
+                op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
+                    css::Value::BinOp(
+                        Box::new(a),
+                        s1,
+                        op.clone(),
+                        s2,
+                        Box::new(b),
+                    )
+                })
             }
             Value::UnaryOp(ref op, ref v) => {
                 let value = v.do_evaluate(scope, true);

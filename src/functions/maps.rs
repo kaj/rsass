@@ -5,11 +5,8 @@ use std::collections::BTreeMap;
 use value::ListSeparator;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, map_get(map, key), |s| Ok(get_map(
-        s.get("map")
-    )?.get(
-        &s.get("key")
-    )
+    def!(f, map_get(map, key), |s| Ok(get_map(s.get("map"))?
+        .get(&s.get("key"))
         .cloned()
         .unwrap_or(Value::Null)));
     def!(f, map_merge(map1, map2), |s| {
@@ -34,19 +31,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def!(f, map_keys(map), |s| {
         let map = get_map(s.get("map"))?;
-        Ok(Value::List(
-            map.keys(),
-            ListSeparator::Comma,
-            false,
-        ))
+        Ok(Value::List(map.keys(), ListSeparator::Comma, false))
     });
     def!(f, map_values(map), |s| {
         let map = get_map(s.get("map"))?;
-        Ok(Value::List(
-            map.values(),
-            ListSeparator::Comma,
-            false,
-        ))
+        Ok(Value::List(map.values(), ListSeparator::Comma, false))
     });
     def!(f, map_has_key(map, key), |s| {
         let map = get_map(s.get("map"))?;
@@ -72,24 +61,15 @@ mod test {
 
         #[test]
         fn a() {
-            check_val(
-                "map-get((\"foo\": 1, \"bar\": 2), \"foo\");",
-                "1",
-            )
+            check_val("map-get((\"foo\": 1, \"bar\": 2), \"foo\");", "1")
         }
         #[test]
         fn b() {
-            check_val(
-                "map-get((\"foo\": 1, \"bar\": 2), \"bar\");",
-                "2",
-            )
+            check_val("map-get((\"foo\": 1, \"bar\": 2), \"bar\");", "2")
         }
         #[test]
         fn c() {
-            check_val(
-                "map-get((\"foo\": 1, \"bar\": 2), \"baz\");",
-                "",
-            )
+            check_val("map-get((\"foo\": 1, \"bar\": 2), \"baz\");", "")
         }
     }
 

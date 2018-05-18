@@ -58,61 +58,37 @@ fn t12() {
 }
 #[test]
 fn t13() {
-    check_eval(
-        "literal+lschema_#{ritlp}",
-        "literallschema_ritlp",
-    )
+    check_eval("literal+lschema_#{ritlp}", "literallschema_ritlp")
 }
 #[test]
 #[ignore]
 fn t14() {
-    check_eval(
-        "literal +lschema_#{ritlp}",
-        "literallschema_ritlp",
-    )
+    check_eval("literal +lschema_#{ritlp}", "literallschema_ritlp")
 }
 #[test]
 fn t15() {
-    check_eval(
-        "literal+ lschema_#{ritlp}",
-        "literallschema_ritlp",
-    )
+    check_eval("literal+ lschema_#{ritlp}", "literallschema_ritlp")
 }
 #[test]
 fn t16() {
-    check_eval(
-        "literal + lschema_#{ritlp}",
-        "literallschema_ritlp",
-    )
+    check_eval("literal + lschema_#{ritlp}", "literallschema_ritlp")
 }
 #[test]
 fn t17() {
-    check_eval(
-        "literal+#{litlp}_rschema",
-        "literallitlp_rschema",
-    )
+    check_eval("literal+#{litlp}_rschema", "literallitlp_rschema")
 }
 #[test]
 #[ignore]
 fn t18() {
-    check_eval(
-        "literal +#{litlp}_rschema",
-        "literallitlp_rschema",
-    )
+    check_eval("literal +#{litlp}_rschema", "literallitlp_rschema")
 }
 #[test]
 fn t19() {
-    check_eval(
-        "literal+ #{litlp}_rschema",
-        "literallitlp_rschema",
-    )
+    check_eval("literal+ #{litlp}_rschema", "literallitlp_rschema")
 }
 #[test]
 fn t20() {
-    check_eval(
-        "literal + #{litlp}_rschema",
-        "literallitlp_rschema",
-    )
+    check_eval("literal + #{litlp}_rschema", "literallitlp_rschema")
 }
 #[test]
 fn t21() {
@@ -133,119 +109,71 @@ fn t24() {
 }
 #[test]
 fn t25() {
-    check_eval(
-        "\"quoted\"+#{interpolant}",
-        "\"quotedinterpolant\"",
-    )
+    check_eval("\"quoted\"+#{interpolant}", "\"quotedinterpolant\"")
 }
 #[test]
 #[ignore]
 fn t26() {
-    check_eval(
-        "\"quoted\" +#{interpolant}",
-        "\"quotedinterpolant\"",
-    )
+    check_eval("\"quoted\" +#{interpolant}", "\"quotedinterpolant\"")
 }
 #[test]
 fn t27() {
-    check_eval(
-        "\"quoted\"+ #{interpolant}",
-        "\"quotedinterpolant\"",
-    )
+    check_eval("\"quoted\"+ #{interpolant}", "\"quotedinterpolant\"")
 }
 #[test]
 fn t28() {
-    check_eval(
-        "\"quoted\" + #{interpolant}",
-        "\"quotedinterpolant\"",
-    )
+    check_eval("\"quoted\" + #{interpolant}", "\"quotedinterpolant\"")
 }
 #[test]
 fn t29() {
-    check_eval(
-        "\"quoted\"+lschema_#{ritlp}",
-        "\"quotedlschema_ritlp\"",
-    )
+    check_eval("\"quoted\"+lschema_#{ritlp}", "\"quotedlschema_ritlp\"")
 }
 #[test]
 #[ignore]
 fn t30() {
-    check_eval(
-        "\"quoted\" +lschema_#{ritlp}",
-        "\"quotedlschema_ritlp\"",
-    )
+    check_eval("\"quoted\" +lschema_#{ritlp}", "\"quotedlschema_ritlp\"")
 }
 #[test]
 fn t31() {
-    check_eval(
-        "\"quoted\"+ lschema_#{ritlp}",
-        "\"quotedlschema_ritlp\"",
-    )
+    check_eval("\"quoted\"+ lschema_#{ritlp}", "\"quotedlschema_ritlp\"")
 }
 #[test]
 fn t32() {
-    check_eval(
-        "\"quoted\" + lschema_#{ritlp}",
-        "\"quotedlschema_ritlp\"",
-    )
+    check_eval("\"quoted\" + lschema_#{ritlp}", "\"quotedlschema_ritlp\"")
 }
 #[test]
 fn t33() {
-    check_eval(
-        "\"quoted\"+#{litlp}_rschema",
-        "\"quotedlitlp_rschema\"",
-    )
+    check_eval("\"quoted\"+#{litlp}_rschema", "\"quotedlitlp_rschema\"")
 }
 #[test]
 #[ignore]
 fn t34() {
-    check_eval(
-        "\"quoted\" +#{litlp}_rschema",
-        "\"quotedlitlp_rschema\"",
-    )
+    check_eval("\"quoted\" +#{litlp}_rschema", "\"quotedlitlp_rschema\"")
 }
 #[test]
 fn t35() {
-    check_eval(
-        "\"quoted\"+ #{litlp}_rschema",
-        "\"quotedlitlp_rschema\"",
-    )
+    check_eval("\"quoted\"+ #{litlp}_rschema", "\"quotedlitlp_rschema\"")
 }
 #[test]
 fn t36() {
-    check_eval(
-        "\"quoted\" + #{litlp}_rschema",
-        "\"quotedlitlp_rschema\"",
-    )
+    check_eval("\"quoted\" + #{litlp}_rschema", "\"quotedlitlp_rschema\"")
 }
 #[test]
 fn t37() {
-    check_eval(
-        "#{interpolant}+#{interpolant}",
-        "interpolantinterpolant",
-    )
+    check_eval("#{interpolant}+#{interpolant}", "interpolantinterpolant")
 }
 #[test]
 #[ignore]
 fn t38() {
-    check_eval(
-        "#{interpolant} +#{interpolant}",
-        "interpolantinterpolant",
-    )
+    check_eval("#{interpolant} +#{interpolant}", "interpolantinterpolant")
 }
 #[test]
 fn t39() {
-    check_eval(
-        "#{interpolant}+ #{interpolant}",
-        "interpolantinterpolant",
-    )
+    check_eval("#{interpolant}+ #{interpolant}", "interpolantinterpolant")
 }
 #[test]
 fn t40() {
-    check_eval(
-        "#{interpolant} + #{interpolant}",
-        "interpolantinterpolant",
-    )
+    check_eval("#{interpolant} + #{interpolant}", "interpolantinterpolant")
 }
 #[test]
 fn t41() {

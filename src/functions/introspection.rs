@@ -21,81 +21,52 @@ static IMPLEMENTED_FEATURES: &[&'static str] = &[
 ];
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(
-        f,
-        feature_exists(name),
-        |s| match &s.get("name") {
-            &Value::Literal(ref v, _) => Ok(Value::bool(
-                IMPLEMENTED_FEATURES.iter().any(|s| s == v)
-            )),
-            v => Err(Error::badarg("string", v)),
+    def!(f, feature_exists(name), |s| match &s.get("name") {
+        &Value::Literal(ref v, _) => {
+            Ok(Value::bool(IMPLEMENTED_FEATURES.iter().any(|s| s == v)))
         }
-    );
-    def!(
-        f,
-        variable_exists(name),
-        |s| match &s.get("name") {
-            &Value::Literal(ref v, _) => {
-                Ok(Value::bool(s.get(v) != Value::Null))
-            }
-            v => Err(Error::badarg("string", v)),
+        v => Err(Error::badarg("string", v)),
+    });
+    def!(f, variable_exists(name), |s| match &s.get("name") {
+        &Value::Literal(ref v, _) => Ok(Value::bool(s.get(v) != Value::Null)),
+        v => Err(Error::badarg("string", v)),
+    });
+    def!(f, global_variable_exists(name), |s| match &s.get("name") {
+        &Value::Literal(ref v, _) => {
+            Ok(Value::bool(s.get_global(v) != Value::Null))
         }
-    );
-    def!(
-        f,
-        global_variable_exists(name),
-        |s| match &s.get("name") {
-            &Value::Literal(ref v, _) => {
-                Ok(Value::bool(s.get_global(v) != Value::Null))
-            }
-            v => Err(Error::badarg("string", v)),
+        v => Err(Error::badarg("string", v)),
+    });
+    def!(f, function_exists(name), |s| match &s.get("name") {
+        &Value::Literal(ref v, _) => {
+            Ok(Value::bool(s.get_function(v).is_some()))
         }
-    );
-    def!(
-        f,
-        function_exists(name),
-        |s| match &s.get("name") {
-            &Value::Literal(ref v, _) => {
-                Ok(Value::bool(s.get_function(v).is_some()))
-            }
-            v => Err(Error::badarg("string", v)),
-        }
-    );
-    def!(
-        f,
-        get_function(name, css = b"false"),
-        |s| match s.get("name") {
+        v => Err(Error::badarg("string", v)),
+    });
+    def!(f, get_function(name, css = b"false"), |s| {
+        match s.get("name") {
             Value::Literal(ref v, _) => {
                 if s.get("css").is_true() {
                     Ok(Value::Function(v.to_string(), None))
                 } else if let Some(f) = s.get_function(v) {
                     Ok(Value::Function(v.to_string(), Some(f.clone())))
                 } else {
-                    Err(Error::S(format!(
-                        "Function {} does not exist",
-                        v
-                    )))
+                    Err(Error::S(format!("Function {} does not exist", v)))
                 }
             }
             ref v => Err(Error::badarg("string", v)),
         }
-    );
-    def!(
-        f,
-        mixin_exists(name),
-        |s| match &s.get("name") {
-            &Value::Literal(ref v, _) => Ok(Value::bool(s.get_mixin(
-                &v.replace('-', "_")
-            ).is_some())),
-            v => Err(Error::badarg("string", v)),
+    });
+    def!(f, mixin_exists(name), |s| match &s.get("name") {
+        &Value::Literal(ref v, _) => {
+            Ok(Value::bool(s.get_mixin(&v.replace('-', "_")).is_some()))
         }
-    );
+        v => Err(Error::badarg("string", v)),
+    });
     def!(f, content_exists(), |s| {
         let content = s.get_mixin("%%BODY%%");
         Ok(Value::bool(
-            content
-                .map(|(_, b)| !b.is_empty())
-                .unwrap_or(false),
+            content.map(|(_, b)| !b.is_empty()).unwrap_or(false),
         ))
     });
     def!(f, inspect(value), |s| Ok(Value::Literal(
@@ -168,10 +139,7 @@ mod test {
 
     #[test]
     fn variable_exists_not() {
-        assert_eq!(
-            "false",
-            do_evaluate(&[], b"variable-exists(x);")
-        )
+        assert_eq!("false", do_evaluate(&[], b"variable-exists(x);"))
     }
 
     #[test]
@@ -243,10 +211,7 @@ mod test {
         }
         #[test]
         fn t10() {
-            assert_eq!(
-                "string",
-                do_evaluate(&[], b"type-of(#{1+2}px);")
-            )
+            assert_eq!("string", do_evaluate(&[], b"type-of(#{1+2}px);"))
         }
         #[test]
         fn t11() {
@@ -258,10 +223,7 @@ mod test {
         }
         #[test]
         fn t13() {
-            assert_eq!(
-                "number",
-                do_evaluate(&[], b"type-of(45 or false);")
-            )
+            assert_eq!("number", do_evaluate(&[], b"type-of(45 or false);"))
         }
         #[test]
         fn t14() {
@@ -269,10 +231,7 @@ mod test {
         }
         #[test]
         fn t15() {
-            assert_eq!(
-                "type-of(red)",
-                do_evaluate(&[], b"ty#{pe}-of(red);")
-            )
+            assert_eq!("type-of(red)", do_evaluate(&[], b"ty#{pe}-of(red);"))
         }
         #[test]
         fn t16() {
@@ -295,10 +254,7 @@ mod test {
         }
         #[test]
         fn t20() {
-            assert_eq!(
-                "url(number)",
-                do_evaluate(&[], b"url(type-of(3+3));")
-            )
+            assert_eq!("url(number)", do_evaluate(&[], b"url(type-of(3+3));"))
         }
     }
 }

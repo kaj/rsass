@@ -69,7 +69,8 @@ named!(
     selector_string<String>,
     fold_many1!(
         alt_complete!(
-            selector_plain_part | selector_escaped_part
+            selector_plain_part
+                | selector_escaped_part
                 | hash_no_interpolation
         ),
         String::new(),
@@ -81,9 +82,7 @@ named!(
 );
 named!(
     selector_plain_part<&str>,
-    map_res!(is_not!("\n\t >$\"'\\#+*/()[]{}:;,=!&@"), |s| {
-        from_utf8(s)
-    })
+    map_res!(is_not!("\n\t >$\"'\\#+*/()[]{}:;,=!&@"), |s| from_utf8(s))
 );
 named!(
     selector_escaped_part<&str>,
@@ -98,16 +97,16 @@ named!(
 named!(
     hexpair,
     recognize!(do_parse!(
-        one_of!("0123456789ABCDEFabcdef") >> one_of!("0123456789ABCDEFabcdef")
+        one_of!("0123456789ABCDEFabcdef")
+            >> one_of!("0123456789ABCDEFabcdef")
             >> ()
     ))
 );
 named!(
     hash_no_interpolation<&str>,
-    map_res!(
-        terminated!(tag!("#"), peek!(not!(tag!("{")))),
-        |s| from_utf8(s)
-    )
+    map_res!(terminated!(tag!("#"), peek!(not!(tag!("{")))), |s| {
+        from_utf8(s)
+    })
 );
 named!(
     extra_escape<StringPart>,
@@ -115,7 +114,11 @@ named!(
         preceded!(
             tag!("\\"),
             alt!(
-                alphanumeric | tag!(" ") | tag!("'") | tag!("\"") | tag!("\\")
+                alphanumeric
+                    | tag!(" ")
+                    | tag!("'")
+                    | tag!("\"")
+                    | tag!("\\")
                     | tag!("#")
             )
         ),
@@ -129,10 +132,25 @@ named!(pub extended_part<StringPart>,
             |v| StringPart::Raw(from_utf8(v).unwrap().into())));
 
 fn is_ext_str_start_char(c: u8) -> bool {
-    is_name_char(c) || c == b'*' || c == b'+' || c == b'.' || c == b'/'
-        || c == b':' || c == b'=' || c == b'?' || c == b'|'
+    is_name_char(c)
+        || c == b'*'
+        || c == b'+'
+        || c == b'.'
+        || c == b'/'
+        || c == b':'
+        || c == b'='
+        || c == b'?'
+        || c == b'|'
 }
 fn is_ext_str_char(c: u8) -> bool {
-    is_name_char(c) || c == b'*' || c == b'+' || c == b',' || c == b'.'
-        || c == b'/' || c == b':' || c == b'=' || c == b'?' || c == b'|'
+    is_name_char(c)
+        || c == b'*'
+        || c == b'+'
+        || c == b','
+        || c == b'.'
+        || c == b'/'
+        || c == b':'
+        || c == b'='
+        || c == b'?'
+        || c == b'|'
 }

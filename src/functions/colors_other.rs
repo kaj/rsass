@@ -108,10 +108,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     }
     f.insert("fade_out", func2!(fade_out(color, amount)));
-    f.insert(
-        "transparentize",
-        func2!(fade_out(color, amount)),
-    );
+    f.insert("transparentize", func2!(fade_out(color, amount)));
 
     def!(
         f,
@@ -250,17 +247,11 @@ mod test {
 
     #[test]
     fn ie_hex_str_a() {
-        assert_eq!(
-            do_evaluate(&[], b"ie-hex-str(#abc);"),
-            "#FFAABBCC"
-        )
+        assert_eq!(do_evaluate(&[], b"ie-hex-str(#abc);"), "#FFAABBCC")
     }
     #[test]
     fn ie_hex_str_b() {
-        assert_eq!(
-            do_evaluate(&[], b"ie-hex-str(#3322BB);"),
-            "#FF3322BB"
-        )
+        assert_eq!(do_evaluate(&[], b"ie-hex-str(#3322BB);"), "#FF3322BB")
     }
     #[test]
     fn ie_hex_str_c() {

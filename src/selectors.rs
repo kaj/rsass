@@ -25,7 +25,8 @@ impl Selectors {
         }
     }
     pub fn to_value(&self) -> Value {
-        let content = self.0
+        let content = self
+            .0
             .iter()
             .map(|s: &Selector| {
                 Value::List(
@@ -56,9 +57,7 @@ impl Selector {
     }
 
     pub fn join(&self, other: &Selector) -> Selector {
-        let mut split = other
-            .0
-            .splitn(2, |p| p == &SelectorPart::BackRef);
+        let mut split = other.0.splitn(2, |p| p == &SelectorPart::BackRef);
         let o1 = split.next().unwrap();
         if let Some(o2) = split.next() {
             let mut result = o1.to_vec();
@@ -68,11 +67,7 @@ impl Selector {
         } else {
             let mut result = self.0.clone();
             if !result.is_empty()
-                && !other
-                    .0
-                    .first()
-                    .map(|p| p.is_operator())
-                    .unwrap_or(false)
+                && !other.0.first().map(|p| p.is_operator()).unwrap_or(false)
             {
                 result.push(SelectorPart::Descendant);
             }
@@ -173,10 +168,7 @@ impl fmt::Display for SelectorPart {
                 ref op,
                 ref val,
             } => write!(out, "[{}{}{}]", name, op, val),
-            SelectorPart::PseudoElement {
-                ref name,
-                ref arg,
-            } => {
+            SelectorPart::PseudoElement { ref name, ref arg } => {
                 write!(out, "::{}", name)?;
                 if let Some(ref arg) = *arg {
                     if out.alternate() {
@@ -187,17 +179,15 @@ impl fmt::Display for SelectorPart {
                 }
                 Ok(())
             }
-            SelectorPart::Pseudo {
-                ref name,
-                ref arg,
-            } => {
+            SelectorPart::Pseudo { ref name, ref arg } => {
                 let name = format!("{}", name);
                 if let Some(ref arg) = *arg {
                     // It seems some pseudo-classes should always have
                     // their arg in compact form.  Maybe we need more
                     // hard-coded names here, or maybe the condition
                     // should be on the argument rather than the name?
-                    if out.alternate() || name == "nth-child"
+                    if out.alternate()
+                        || name == "nth-child"
                         || name == "nth-of-type"
                     {
                         write!(out, ":{}({:#})", name, arg)
@@ -225,9 +215,8 @@ mod test {
 
     #[test]
     fn simple_join() {
-        let s = Selector(vec![SelectorPart::Simple("foo".into())]).join(
-            &Selector(vec![SelectorPart::Simple(".bar".into())]),
-        );
+        let s = Selector(vec![SelectorPart::Simple("foo".into())])
+            .join(&Selector(vec![SelectorPart::Simple(".bar".into())]));
         assert_eq!(format!("{}", s), "foo .bar")
     }
 
