@@ -296,7 +296,8 @@ named!(
                         tag!("-"),
                         many_m_n!(1, 6, one_of!("0123456789ABCDEFabcdef"))
                     )
-                        | many_m_n!(0, 6 - a.len(), one_of!("?"))
+                        | many_m_n!(1, 6 - a.len(), one_of!("?"))
+                        | value!(vec![])
                 ) >> ()
         )),
         |range| Value::UnicodeRange(from_utf8(range).unwrap().into())
