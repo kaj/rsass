@@ -318,7 +318,7 @@ impl fmt::Display for Value {
                         r.round().to_integer() as u8,
                         g.round().to_integer() as u8,
                         b.round().to_integer() as u8,
-                        Number::new(a.clone()),
+                        Number::new(*a),
                     )
                 } else {
                     write!(
@@ -327,7 +327,7 @@ impl fmt::Display for Value {
                         r.round().to_integer() as u8,
                         g.round().to_integer() as u8,
                         b.round().to_integer() as u8,
-                        Number::new(a.clone()),
+                        Number::new(*a),
                     )
                 }
             }

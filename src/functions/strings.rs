@@ -23,7 +23,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 Value::Literal(insert, _),
                 Value::Numeric(index, Unit::None, ..),
             ) => {
-                let i = index_to_rust(index, &s);
+                let i = index_to_rust(&index, &s);
                 let mut s = s.chars();
                 Ok(Value::Literal(
                     format!(
@@ -51,8 +51,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Numeric(start_at, Unit::None, ..),
             Value::Numeric(end_at, Unit::None, ..),
         ) => {
-            let start_at = index_to_rust(start_at, &s);
-            let end_at = index_to_rust(end_at, &s);
+            let start_at = index_to_rust(&start_at, &s);
+            let end_at = index_to_rust(&end_at, &s);
             let c = s.chars();
             Ok(Value::Literal(
                 c.skip(start_at)
@@ -100,7 +100,7 @@ fn intvalue(n: usize) -> Value {
 /// Convert index from sass (rational number, first is one) to rust
 /// (usize, first is zero).  Sass values might be negative, then -1 is
 /// the last char in the string.
-fn index_to_rust(index: Number, s: &str) -> usize {
+fn index_to_rust(index: &Number, s: &str) -> usize {
     if index.value.is_negative() {
         let l = s.chars().count();
         let i = index.to_integer().abs() as usize;

@@ -41,11 +41,11 @@ impl Operator {
             Operator::Plus => {
                 match (a, b) {
                     (
-                        Value::Color(r, g, b, a, _),
-                        Value::Numeric(n, Unit::None, _),
+                        Value::Color(ar, ag, ab, aa, _),
+                        Value::Numeric(bn, Unit::None, _),
                     ) => {
-                        let n = n.value;
-                        Some(Value::rgba(r + n, g + n, b + n, a))
+                        let bn = bn.value;
+                        Some(Value::rgba(ar + bn, ag + bn, ab + bn, aa))
                     }
                     (
                         Value::Color(ar, ag, ab, aa, _),
@@ -90,11 +90,11 @@ impl Operator {
             }
             Operator::Minus => match (&a, &b) {
                 (
-                    &Value::Color(ref r, ref g, ref b, ref a, _),
-                    &Value::Numeric(ref n, Unit::None, _),
+                    &Value::Color(ref ar, ref ag, ref ab, ref aa, _),
+                    &Value::Numeric(ref bn, Unit::None, _),
                 ) => {
-                    let n = n.value;
-                    Some(Value::rgba(r - n, g - n, b - n, *a))
+                    let bn = bn.value;
+                    Some(Value::rgba(ar - bn, ag - bn, ab - bn, *aa))
                 }
                 (
                     &Value::Color(ref ar, ref ag, ref ab, ref aa, _),
@@ -157,11 +157,11 @@ impl Operator {
                 if a.is_calculated() || b.is_calculated() {
                     match (&a, &b) {
                         (
-                            &Value::Color(ref r, ref g, ref b, ref a, _),
-                            &Value::Numeric(ref n, Unit::None, ..),
+                            &Value::Color(ref ar, ref ag, ref ab, ref aa, _),
+                            &Value::Numeric(ref bn, Unit::None, ..),
                         ) => {
-                            let n = n.value;
-                            Some(Value::rgba(r / n, g / n, b / n, *a))
+                            let bn = bn.value;
+                            Some(Value::rgba(ar / bn, ag / bn, ab / bn, *aa))
                         }
                         (
                             &Value::Numeric(ref av, ref au, ..),
