@@ -9,14 +9,16 @@ use std::path::{Path, PathBuf};
 /// # Example
 /// ```
 /// use rsass::FileContext;
+/// use std::path::PathBuf;
 ///
 /// let base = FileContext::new();
-/// let (base, file1) = base.file("some/dir/file.scss".as_ref());
+/// let (base, file1) =
+///     base.file(&PathBuf::from("some").join("dir").join("file.scss"));
 /// // base is now a relative to file1, usefull to open files
 /// // by paths mentioned in file1.
 /// let (base, file2) = base.file("some/other.scss".as_ref());
-/// assert_eq!(file1.to_string_lossy(), "some/dir/file.scss");
-/// assert_eq!(file2.to_string_lossy(), "some/dir/some/other.scss");
+/// assert_eq!(file1, PathBuf::from("some").join("dir").join("file.scss"));
+/// assert_eq!(file2, PathBuf::from("some").join("dir").join("some/other.scss"));
 /// ```
 #[derive(Clone, Debug)]
 pub struct FileContext {
