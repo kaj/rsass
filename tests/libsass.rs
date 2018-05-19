@@ -75,6 +75,24 @@ fn keyframes() {
     )
 }
 
+mod at_root {
+    use super::check;
+
+    #[test]
+    fn basic() {
+        check(
+            "foo {\n  color: blue;\n\n  \
+             @at-root {\n    bar {\n      color: red;\n    }\n  }\n}\n\n\
+             foo {\n  color: blue;\n\n  \
+             @at-root bar {\n    color: red;\n  }\n}\n",
+            "foo {\n  color: blue;\n}\n\
+             bar {\n  color: red;\n}\n\n\
+             foo {\n  color: blue;\n}\n\
+             bar {\n  color: red;\n}\n",
+        )
+    }
+}
+
 fn check(input: &str, expected: &str) {
     assert_eq!(
         compile_scss(input.as_ref(), OutputStyle::Expanded)

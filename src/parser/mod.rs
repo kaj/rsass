@@ -21,6 +21,7 @@ use parser::util::{comment, ignore_space, name, opt_spacelike, spacelike};
 #[cfg(test)]
 use sass::{CallArgs, FormalArgs};
 use sass::{Item, Value};
+use selectors::Selectors;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -114,6 +115,7 @@ named!(
             | function_declaration
             | mixin_call
             | import
+            | at_root
             | if_statement
             | return_stmt
             | content_stmt
@@ -131,6 +133,22 @@ named!(
     map!(
         delimited!(tag!("@import "), value_expression, tag!(";")),
         Item::Import
+    )
+);
+
+named!(
+    at_root<Input, Item>,
+    preceded!(
+        terminated!(tag!("@at-root"), opt_spacelike),
+        map!(
+            pair!(
+                map!(opt!(selectors), |s| {
+                    s.unwrap_or_else(|| Selectors::root())
+                }),
+                body_block
+            ),
+            |(selectors, body)| Item::AtRoot { selectors, body }
+        )
     )
 );
 

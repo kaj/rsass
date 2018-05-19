@@ -13,6 +13,10 @@ pub enum Item {
         default: bool,
         global: bool,
     },
+    AtRoot {
+        selectors: Selectors,
+        body: Vec<Item>,
+    },
     AtRule {
         name: String,
         args: Value,
