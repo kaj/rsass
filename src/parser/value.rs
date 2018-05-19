@@ -1,6 +1,6 @@
 use nom::multispace;
 use num_rational::Rational;
-use num_traits::{One, Zero};
+use num_traits::One;
 use parser::formalargs::call_args;
 use parser::strings::{
     sass_string, sass_string_dq, sass_string_ext, sass_string_sq,
@@ -14,11 +14,10 @@ use value::{name_to_rgb, ListSeparator, Number, Operator};
 named!(pub value_expression<&[u8], Value>,
        do_parse!(
            result: separated_nonempty_list!(
-               complete!(do_parse!(tag!(",") >> opt_spacelike >> ())),
+               complete!(preceded!(tag!(","), opt_spacelike)),
                space_list) >>
-           trail: many0!(do_parse!(opt_spacelike >> tag!(",") >>
-                                   opt_spacelike >>
-                                   ())) >>
+           trail: many0!(delimited!(opt_spacelike, tag!(","),
+                                    opt_spacelike)) >>
            (if result.len() == 1 && trail.is_empty() {
                result.into_iter().next().unwrap()
            } else {
@@ -67,14 +66,16 @@ named!(
     do_parse!(
         a: logic_expression
             >> r: fold_many0!(
-                do_parse!(
-                    opt!(multispace)
-                        >> op: alt_complete!(
+                pair!(
+                    delimited!(
+                        opt!(multispace),
+                        alt_complete!(
                             value!(Operator::And, tag!("and"))
                                 | value!(Operator::Or, tag!("or"))
-                        ) >> multispace
-                        >> b: single_expression
-                        >> (op, b)
+                        ),
+                        multispace
+                    ),
+                    single_expression
                 ),
                 a,
                 |a, (op, b)| {
@@ -89,17 +90,20 @@ named!(
     do_parse!(
         a: sum_expression
             >> r: fold_many0!(
-                do_parse!(
-                    opt!(multispace)
-                        >> op: alt_complete!(
+                pair!(
+                    delimited!(
+                        opt!(multispace),
+                        alt_complete!(
                             value!(Operator::Equal, tag!("=="))
                                 | value!(Operator::NotEqual, tag!("!="))
                                 | value!(Operator::GreaterE, tag!(">="))
                                 | value!(Operator::Greater, tag!(">"))
                                 | value!(Operator::LesserE, tag!("<="))
                                 | value!(Operator::Lesser, tag!("<"))
-                        ) >> opt!(multispace)
-                        >> b: sum_expression >> (op, b)
+                        ),
+                        opt!(multispace)
+                    ),
+                    sum_expression
                 ),
                 a,
                 |a, (op, b)| {
@@ -144,32 +148,22 @@ named!(
 named!(
     term_value<Value>,
     do_parse!(
-        a: single_value
-            >> r: fold_many0!(
-                do_parse!(
-                    s1: opt!(multispace)
-                        >> op: alt_complete!(tag!("*") | tag!("/"))
-                        >> s2: opt!(multispace)
-                        >> b: opt!(single_value)
-                        >> (s1.is_some(), op, s2.is_some(), b)
+        one: single_value
+            >> all: fold_many0!(
+                tuple!(
+                    map!(opt!(multispace), |s| s.is_some()),
+                    alt_complete!(
+                        value!(Operator::Multiply, tag!("*"))
+                            | value!(Operator::Div, tag!("/"))
+                    ),
+                    map!(opt!(multispace), |s| s.is_some()),
+                    map!(opt!(single_value), |v| v.unwrap_or(Value::Null))
                 ),
-                a,
+                one,
                 |a, (s1, op, s2, b)| {
-                    let b: Option<Value> = b;
-                    let b = b.unwrap_or(Value::Null);
-                    Value::BinOp(
-                        Box::new(a),
-                        s1,
-                        if op == b"*" {
-                            Operator::Multiply
-                        } else {
-                            Operator::Div
-                        },
-                        s2,
-                        Box::new(b),
-                    )
+                    Value::BinOp(Box::new(a), s1, op, s2, Box::new(b))
                 }
-            ) >> (r)
+            ) >> (all)
     )
 );
 
@@ -191,98 +185,35 @@ named!(pub single_value<&[u8], Value>,
 named!(
     simple_value<Value>,
     alt_complete!(
-        map!(
-            preceded!(
-                pair!(tag!("!"), opt_spacelike),
-                tag!("important") // TODO Pretty much anythig goes, here?
-                    ),
-            |s| Value::Bang(from_utf8(s).unwrap().into())
-                ) |
-        value!(Value::True, tag!("true")) |
-           value!(Value::False, tag!("false")) |
-           value!(Value::HereSelector, tag!("&")) |
-           unicode_range |
-           do_parse!(tag!("[") >>
-                     content: opt!(value_expression) >>
-                     tag!("]") >>
-                     (match content {
-                         Some(Value::List(list, sep, false, _)) => {
-                             Value::List(list, sep, true, false)
-                         }
-                         Some(single) => {
-                             Value::List(vec![single],
-                                         ListSeparator::Space,
-                                         true,
-                                         false)
-                         }
-                         None => {
-                             Value::List(vec![],
-                                         ListSeparator::Space,
-                                         true,
-                                         false)
-                         }
-                     })) |
-           do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
-                     r: decimal_integer >>
-                     d: opt!(decimal_decimals) >>
-                     u: unit >>
-                     (Value::Numeric(
-                         Number {
-                             value: {
-                                 let d = r + d.unwrap_or_else(Rational::zero);
-                                 if sign == Some(b"-") { -d } else { d }
-                             },
-                             plus_sign: sign == Some(b"+"),
-                             lead_zero: true, // At least lead something?
-                         },
-                         u,
-                     ))) |
-           do_parse!(sign: opt!(alt!(tag!("-") | tag!("+"))) >>
-                     d: decimal_decimals >>
-                     u: unit >>
-                     (Value::Numeric(
-                         Number {
-                             value: if sign == Some(b"-") { -d } else { d },
-                             plus_sign: sign == Some(b"+"),
-                             lead_zero: false,
-                         },
-                         u,
-                     ))) |
-           variable |
-           do_parse!(tag!("#") >> r: hexchar2 >> g: hexchar2 >> b: hexchar2 >>
-                     (Value::Color(from_hex(r),
-                                   from_hex(g),
-                                   from_hex(b),
-                                   Rational::from_integer(1),
-                                   Some(format!("#{}{}{}",
-                                                from_utf8(r).unwrap(),
-                                                from_utf8(g).unwrap(),
-                                                from_utf8(b).unwrap()))))) |
-           do_parse!(tag!("#") >> r: hexchar >> g: hexchar >> b: hexchar >>
-                     (Value::Color(from_hex(r) * Rational::new(17, 1),
-                                   from_hex(g) * Rational::new(17, 1),
-                                   from_hex(b) * Rational::new(17, 1),
-                                   Rational::from_integer(1),
-                                   Some(format!("#{}{}{}",
-                                                from_utf8(r).unwrap(),
-                                                from_utf8(g).unwrap(),
-                                                from_utf8(b).unwrap()))))) |
-           value!(Value::Null, tag!("null")) |
-           // Really ugly special case ... sorry.
-           value!(Value::Literal("-null".into()), tag!("-null")) |
-           do_parse!(op: alt!(value!(Operator::Minus, tag!("-")) |
-                              value!(Operator::Plus, tag!("+")) |
-                              value!(Operator::Not,
-                                     terminated!(tag!("not"),
-                                                 spacelike2))) >>
-                     opt_spacelike >>
-                     v: single_value >>
-                     (Value::UnaryOp(op, Box::new(v)))) |
-           function_call |
-        // And a bunch of string variants
-        map!(sass_string, literal_or_color)
+        bang
+            | value!(Value::True, tag!("true"))
+            | value!(Value::False, tag!("false"))
+            | value!(Value::HereSelector, tag!("&"))
+            | unicode_range
+            | bracket_list
+            | number
+            | variable
+            | hex_color
+            | value!(Value::Null, tag!("null"))
+            // Really ugly special case ... sorry.
+            | value!(Value::Literal("-null".into()), tag!("-null"))
+            | unary_op
+            | function_call
+            // And a bunch of string variants
+            | map!(sass_string, literal_or_color)
             | map!(sass_string_dq, Value::Literal)
             | map!(sass_string_sq, Value::Literal)
+    )
+);
+
+named!(
+    bang<Value>,
+    map!(
+        preceded!(
+            pair!(tag!("!"), opt_spacelike),
+            tag!("important") // TODO Pretty much anythig goes, here?
+        ),
+        |s| Value::Bang(from_utf8(s).unwrap().into())
     )
 );
 
@@ -302,6 +233,49 @@ named!(
                 ) >> ()
         )),
         |range| Value::UnicodeRange(from_utf8(range).unwrap().into())
+    )
+);
+
+named!(
+    bracket_list<Value>,
+    map!(
+        delimited!(tag!("["), opt!(value_expression), tag!("]")),
+        |item| match item {
+            Some(Value::List(list, sep, false, _)) => {
+                Value::List(list, sep, true, false)
+            }
+            Some(single) => {
+                Value::List(vec![single], ListSeparator::Space, true, false)
+            }
+            None => Value::List(vec![], ListSeparator::Space, true, false),
+        }
+    )
+);
+
+named!(
+    number<Value>,
+    map!(
+        tuple!(
+            opt!(alt!(tag!("-") | tag!("+"))),
+            alt!(
+                map!(
+                    pair!(decimal_integer, opt!(decimal_decimals)),
+                    |(n, d)| (true, if let Some(d) = d { n + d } else { n })
+                )
+                    | map!(decimal_decimals, |dec| (false, dec))
+            ),
+            unit
+        ),
+        |(sign, (lead_zero, num), unit)| {
+            Value::Numeric(
+                Number {
+                    value: if sign == Some(b"-") { -num } else { num },
+                    plus_sign: sign == Some(b"+"),
+                    lead_zero,
+                },
+                unit,
+            )
+        }
     )
 );
 
@@ -333,12 +307,64 @@ named!(
 
 named!(
     variable<Value>,
-    do_parse!(tag!("$") >> name: name >> (Value::Variable(name)))
+    map!(preceded!(tag!("$"), name), Value::Variable)
 );
 
-named!(pub function_call<Value>,
-       do_parse!(name: sass_string >> args: call_args >>
-                 (Value::Call(name, args))));
+named!(
+    hex_color<Value>,
+    preceded!(
+        tag!("#"),
+        map!(
+            alt!(
+                tuple!(hexchar2, hexchar2, hexchar2)
+                    | tuple!(hexchar, hexchar, hexchar)
+            ),
+            |(r, g, b)| {
+                Value::Color(
+                    from_hex(r),
+                    from_hex(g),
+                    from_hex(b),
+                    Rational::from_integer(1),
+                    Some(format!(
+                        "#{}{}{}",
+                        from_utf8(r).unwrap(),
+                        from_utf8(g).unwrap(),
+                        from_utf8(b).unwrap()
+                    )),
+                )
+            }
+        )
+    )
+);
+
+named!(
+    unary_op<Value>,
+    map!(
+        pair!(
+            terminated!(
+                alt!(
+                    value!(Operator::Plus, tag!("+"))
+                        | value!(Operator::Minus, tag!("-"))
+                        | value!(
+                            Operator::Not,
+                            terminated!(tag!("not"), spacelike2)
+                        )
+                ),
+                opt_spacelike
+            ),
+            single_value
+        ),
+        |(op, v)| Value::UnaryOp(op, Box::new(v))
+    )
+);
+
+named!(
+    pub function_call<Value>,
+    map!(
+        pair!(sass_string, call_args),
+        |(name, args)| Value::Call(name, args)
+    )
+);
 
 fn literal_or_color(s: SassString) -> Value {
     if let Some(val) = s.single_raw() {
@@ -357,18 +383,11 @@ fn literal_or_color(s: SassString) -> Value {
 
 named!(hexchar, recognize!(one_of!("0123456789ABCDEFabcdef")));
 
-named!(
-    hexchar2,
-    recognize!(do_parse!(
-        one_of!("0123456789ABCDEFabcdef")
-            >> one_of!("0123456789ABCDEFabcdef")
-            >> ()
-    ))
-);
+named!(hexchar2, recognize!(pair!(hexchar, hexchar)));
 
 fn from_hex(v: &[u8]) -> Rational {
     let i = u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap() as isize;
-    Rational::from_integer(i)
+    Rational::from_integer(if v.len() == 1 { i * 17 } else { i })
 }
 
 named!(pub dictionary<Value>,
@@ -382,13 +401,12 @@ named!(
         terminated!(
             separated_nonempty_list!(
                 delimited!(opt_spacelike, tag!(","), opt_spacelike),
-                do_parse!(
-                    k: simple_value
-                        >> opt_spacelike
-                        >> tag!(":")
-                        >> opt_spacelike
-                        >> v: space_list
-                        >> (k, v)
+                pair!(
+                    simple_value,
+                    preceded!(
+                        delimited!(opt_spacelike, tag!(":"), opt_spacelike),
+                        space_list
+                    )
                 )
             ),
             opt!(delimited!(opt_spacelike, tag!(","), opt_spacelike))
