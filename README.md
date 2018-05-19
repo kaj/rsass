@@ -4,9 +4,10 @@ Sass reimplemented in rust with nom (early stage).
 The "r" in the name might stand for the Rust programming language, for
 "re-implemented", or possibly for my name Rasmus.
 
-[![Build Status](https://travis-ci.org/kaj/rsass.svg?branch=master)](https://travis-ci.org/kaj/rsass)
 [![Crate](https://meritbadge.herokuapp.com/rsass)](https://crates.io/crates/rsass)
 [![docs](https://docs.rs/rsass/badge.svg)](https://docs.rs/rsass)
+[![Build Status](https://travis-ci.org/kaj/rsass.svg?branch=master)](https://travis-ci.org/kaj/rsass)
+[![Build status](https://ci.appveyor.com/api/projects/status/w0hfnjwx31f7eoxj/branch/master?svg=true)](https://ci.appveyor.com/project/kaj/rsass/branch/master)
 
 ## Commandline
 

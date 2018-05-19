@@ -28,4 +28,5 @@ rand = "^0.4"
 
 [badges]
 travis-ci = { repository = "kaj/rsass" }
+appveyor = { repository = "kaj/rsass" }
 maintenance = { status = "actively-developed" }
