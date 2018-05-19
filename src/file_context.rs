@@ -53,6 +53,7 @@ impl FileContext {
 
     pub fn find_file(&self, name: &Path) -> Option<(Self, PathBuf)> {
         // TODO Check docs what expansions should be tried!
+        // Files with .sass extension needs another parser.
         let parent = name.parent();
         if let Some(name) = name.file_name().and_then(|n| n.to_str()) {
             for name in &[
@@ -60,6 +61,7 @@ impl FileContext {
                 &format!("{}.scss", name),
                 &format!("_{}.scss", name),
                 &format!("{}/index.scss", name),
+                &format!("{}/_index.scss", name),
             ] {
                 let full = parent
                     .map(|p| p.join(name))
