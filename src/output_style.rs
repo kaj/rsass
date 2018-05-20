@@ -116,10 +116,7 @@ impl OutputStyle {
                 self.handle_body(
                     &mut s1,
                     &mut s2,
-                    &mut ScopeImpl::sub_selectors(
-                        scope,
-                        selectors.clone(),
-                    ),
+                    &mut ScopeImpl::sub_selectors(scope, selectors.clone()),
                     body,
                     file_context,
                     0,
@@ -309,8 +306,8 @@ impl OutputStyle {
         file_context: &FileContext,
         indent: usize,
     ) -> Result<(), Error> {
-        let selectors = eval_selectors(selectors, scope)
-            .inside(Some(scope.get_selectors()));
+        let selectors =
+            eval_selectors(selectors, scope).inside(scope.get_selectors());
         let mut direct = Vec::new();
         let mut sub = Vec::new();
         self.handle_body(

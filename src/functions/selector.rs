@@ -13,7 +13,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 "{}",
                 v.into_iter()
                     .map(parse_selectors)
-                    .fold(Selectors::root(), |b, e| e.inside(Some(&b))),
+                    .fold(Selectors::root(), |b, e| e.inside(&b)),
             ),
             Quotes::None,
         )),

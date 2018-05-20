@@ -11,18 +11,14 @@ impl Selectors {
     pub fn root() -> Self {
         Selectors(vec![Selector::root()])
     }
-    pub fn inside(&self, parent: Option<&Self>) -> Self {
-        if let Some(parent) = parent {
-            let mut result = Vec::new();
-            for p in &parent.0 {
-                for s in &self.0 {
-                    result.push(p.join(s));
-                }
+    pub fn inside(&self, parent: &Self) -> Self {
+        let mut result = Vec::new();
+        for p in &parent.0 {
+            for s in &self.0 {
+                result.push(p.join(s));
             }
-            Selectors(result)
-        } else {
-            self.clone()
         }
+        Selectors(result)
     }
     pub fn to_value(&self) -> Value {
         let content = self
