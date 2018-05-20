@@ -60,8 +60,8 @@ named!(
 
 named!(
     simple_qstring_part<StringPart>,
-    map!(is_not!("\\#'\""), |s| {
-        StringPart::Raw(from_utf8(s).unwrap().to_string())
+    map!(map_res!(is_not!("\\#'\""), from_utf8), |s| {
+        StringPart::Raw(s.to_string())
     })
 );
 
