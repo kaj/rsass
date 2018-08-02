@@ -15,17 +15,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, rgba(red, green, blue, alpha, color), |s| {
         let a = s.get("alpha");
         let red = s.get("red");
-        let red = if red.is_null() {
-            s.get("color")
-        } else {
-            red
-        };
+        let red = if red.is_null() { s.get("color") } else { red };
         if let Value::Color(r, g, b, _, _) = red {
-            let a = if a.is_null() {
-                s.get("green")
-            } else {
-                a
-            };
+            let a = if a.is_null() { s.get("green") } else { a };
             match a {
                 Value::Numeric(a, ..) => Ok(Value::rgba(r, g, b, a.value)),
                 _ => Ok(Value::Call(

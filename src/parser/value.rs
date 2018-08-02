@@ -78,10 +78,15 @@ named!(
                     single_expression
                 ),
                 a,
-                |a, (op, b)| {
-                    Value::BinOp(Box::new(a), false, op, false, Box::new(b))
-                }
-            ) >> (r)
+                |a, (op, b)| Value::BinOp(
+                    Box::new(a),
+                    false,
+                    op,
+                    false,
+                    Box::new(b)
+                )
+            )
+            >> (r)
     )
 );
 
@@ -106,10 +111,15 @@ named!(
                     sum_expression
                 ),
                 a,
-                |a, (op, b)| {
-                    Value::BinOp(Box::new(a), false, op, false, Box::new(b))
-                }
-            ) >> (r)
+                |a, (op, b)| Value::BinOp(
+                    Box::new(a),
+                    false,
+                    op,
+                    false,
+                    Box::new(b)
+                )
+            )
+            >> (r)
     )
 );
 
@@ -126,22 +136,27 @@ named!(
                         ) >> opt!(spacelike2)
                             >> b: term_value
                             >> (op, b)
+                    ) | do_parse!(
+                        spacelike2
+                            >> op: alt_complete!(
+                                value!(Operator::Plus, tag!("+"))
+                                    | value!(Operator::Minus, tag!("-"))
+                            )
+                            >> spacelike2
+                            >> b: term_value
+                            >> (op, b)
                     )
-                        | do_parse!(
-                            spacelike2
-                                >> op: alt_complete!(
-                                    value!(Operator::Plus, tag!("+"))
-                                        | value!(Operator::Minus, tag!("-"))
-                                ) >> spacelike2
-                                >> b: term_value
-                                >> (op, b)
-                        )
                 ),
                 a,
-                |a, (op, b)| {
-                    Value::BinOp(Box::new(a), false, op, false, Box::new(b))
-                }
-            ) >> (r)
+                |a, (op, b)| Value::BinOp(
+                    Box::new(a),
+                    false,
+                    op,
+                    false,
+                    Box::new(b)
+                )
+            )
+            >> (r)
     )
 );
 
@@ -160,10 +175,15 @@ named!(
                     map!(opt!(single_value), |v| v.unwrap_or(Value::Null))
                 ),
                 one,
-                |a, (s1, op, s2, b)| {
-                    Value::BinOp(Box::new(a), s1, op, s2, Box::new(b))
-                }
-            ) >> (all)
+                |a, (s1, op, s2, b)| Value::BinOp(
+                    Box::new(a),
+                    s1,
+                    op,
+                    s2,
+                    Box::new(b)
+                )
+            )
+            >> (all)
     )
 );
 
@@ -227,10 +247,10 @@ named!(
                     preceded!(
                         tag!("-"),
                         many_m_n!(1, 6, one_of!("0123456789ABCDEFabcdef"))
-                    )
-                        | many_m_n!(1, 6 - a.len(), one_of!("?"))
+                    ) | many_m_n!(1, 6 - a.len(), one_of!("?"))
                         | value!(vec![])
-                ) >> ()
+                )
+                >> ()
         )),
         |range| Value::UnicodeRange(from_utf8(range).unwrap().into())
     )
@@ -261,21 +281,18 @@ named!(
                 map!(
                     pair!(decimal_integer, opt!(decimal_decimals)),
                     |(n, d)| (true, if let Some(d) = d { n + d } else { n })
-                )
-                    | map!(decimal_decimals, |dec| (false, dec))
+                ) | map!(decimal_decimals, |dec| (false, dec))
             ),
             unit
         ),
-        |(sign, (lead_zero, num), unit)| {
-            Value::Numeric(
-                Number {
-                    value: if sign == Some(b"-") { -num } else { num },
-                    plus_sign: sign == Some(b"+"),
-                    lead_zero,
-                },
-                unit,
-            )
-        }
+        |(sign, (lead_zero, num), unit)| Value::Numeric(
+            Number {
+                value: if sign == Some(b"-") { -num } else { num },
+                plus_sign: sign == Some(b"+"),
+                lead_zero,
+            },
+            unit,
+        )
     )
 );
 
@@ -297,9 +314,10 @@ named!(
     map!(
         preceded!(
             complete!(tag!(".")),
-            fold_many1!(one_of!("0123456789"), (0, 1), |(r, n), d| {
-                (r * 10 + isize::from(d as i8 - b'0' as i8), n * 10)
-            })
+            fold_many1!(one_of!("0123456789"), (0, 1), |(r, n), d| (
+                r * 10 + isize::from(d as i8 - b'0' as i8),
+                n * 10
+            ))
         ),
         |(r, d)| Rational::new(r, d)
     )
@@ -319,20 +337,18 @@ named!(
                 tuple!(hexchar2, hexchar2, hexchar2)
                     | tuple!(hexchar, hexchar, hexchar)
             ),
-            |(r, g, b)| {
-                Value::Color(
-                    from_hex(r),
-                    from_hex(g),
-                    from_hex(b),
-                    Rational::from_integer(1),
-                    Some(format!(
-                        "#{}{}{}",
-                        from_utf8(r).unwrap(),
-                        from_utf8(g).unwrap(),
-                        from_utf8(b).unwrap()
-                    )),
-                )
-            }
+            |(r, g, b)| Value::Color(
+                from_hex(r),
+                from_hex(g),
+                from_hex(b),
+                Rational::from_integer(1),
+                Some(format!(
+                    "#{}{}{}",
+                    from_utf8(r).unwrap(),
+                    from_utf8(g).unwrap(),
+                    from_utf8(b).unwrap()
+                )),
+            )
         )
     )
 );
@@ -722,7 +738,7 @@ mod test {
                 (Literal("foo".into()), Literal("bar".into())),
                 (Literal("baz".into()), Value::scalar(17)),
             ].into_iter()
-                .collect()),
+            .collect()),
         )
     }
 

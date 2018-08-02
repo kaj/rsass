@@ -97,8 +97,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 .map(|i| {
                     let items = lists.iter().map(|v| v[i].clone()).collect();
                     Value::List(items, ListSeparator::Space, false)
-                })
-                .collect();
+                }).collect();
             Ok(Value::List(result, ListSeparator::Comma, false))
         }
         v => Err(Error::badarg("list", &v)),
@@ -150,8 +149,7 @@ fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
                         ListSeparator::Space,
                         false,
                     )
-                })
-                .collect(),
+                }).collect(),
             Some(ListSeparator::Comma),
             false,
         ),

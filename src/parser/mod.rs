@@ -142,18 +142,20 @@ named!(
             >> opt_spacelike
             >> body: opt!(body_block)
             >> opt_spacelike
-            >> opt!(complete!(tag!(";"))) >> (Item::MixinCall {
-            name,
-            args: args.unwrap_or_default(),
-            body: body.unwrap_or_default(),
-        })
+            >> opt!(complete!(tag!(";")))
+            >> (Item::MixinCall {
+                name,
+                args: args.unwrap_or_default(),
+                body: body.unwrap_or_default(),
+            })
     )
 );
 
 named!(
     at_rule<Item>,
     do_parse!(
-        tag!("@") >> name: name
+        tag!("@")
+            >> name: name
             >> args: many0!(preceded!(
                 ignore_space,
                 alt!(
@@ -166,22 +168,23 @@ named!(
                                 | map!(sass_string_sq, Value::Literal)
                         ),
                         peek!(one_of!(" \n\t{;"))
-                    ) | map!(is_not!("\"'{};"), |s| {
-                        Value::Literal(
-                            from_utf8(s).unwrap().trim_right().into(),
-                        )
-                    })
+                    ) | map!(is_not!("\"'{};"), |s| Value::Literal(
+                        from_utf8(s).unwrap().trim_right().into(),
+                    ))
                 )
-            )) >> opt!(ignore_space) >> body: opt!(body_block)
-            >> opt!(alt!(eof!() | tag!(";"))) >> (Item::AtRule {
-            name,
-            args: if args.len() == 1 {
-                args.into_iter().next().unwrap()
-            } else {
-                Value::List(args, ListSeparator::Space, false, false)
-            },
-            body,
-        })
+            ))
+            >> opt!(ignore_space)
+            >> body: opt!(body_block)
+            >> opt!(alt!(eof!() | tag!(";")))
+            >> (Item::AtRule {
+                name,
+                args: if args.len() == 1 {
+                    args.into_iter().next().unwrap()
+                } else {
+                    Value::List(args, ListSeparator::Space, false, false)
+                },
+                body,
+            })
     )
 );
 
@@ -247,14 +250,18 @@ named!(
             >> inclusive:
                 alt!(
                     value!(true, tag!("through")) | value!(false, tag!("to"))
-                ) >> spacelike >> to: single_value >> opt_spacelike
-            >> body: body_block >> (Item::For {
-            name,
-            from: Box::new(from),
-            to: Box::new(to),
-            inclusive,
-            body,
-        })
+                )
+            >> spacelike
+            >> to: single_value
+            >> opt_spacelike
+            >> body: body_block
+            >> (Item::For {
+                name,
+                from: Box::new(from),
+                to: Box::new(to),
+                inclusive,
+                body,
+            })
     )
 );
 
@@ -290,10 +297,11 @@ named!(
             >> opt_spacelike
             >> args: formal_args
             >> opt_spacelike
-            >> body: body_block >> (Item::FunctionDeclaration {
-            name,
-            func: SassFunction::new(args, body),
-        })
+            >> body: body_block
+            >> (Item::FunctionDeclaration {
+                name,
+                func: SassFunction::new(args, body),
+            })
     )
 );
 
@@ -366,12 +374,13 @@ named!(
             >> global: map!(opt!(tag!("!global")), |g| g.is_some())
             >> opt_spacelike
             >> tag!(";")
-            >> opt_spacelike >> (Item::VariableDeclaration {
-            name,
-            val,
-            default,
-            global,
-        })
+            >> opt_spacelike
+            >> (Item::VariableDeclaration {
+                name,
+                val,
+                default,
+                global,
+            })
     )
 );
 

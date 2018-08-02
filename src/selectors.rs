@@ -37,8 +37,7 @@ impl Selectors {
                     ListSeparator::Space,
                     false,
                 )
-            })
-            .collect::<Vec<_>>();
+            }).collect::<Vec<_>>();
         let sep = if content.len() == 1 {
             ListSeparator::Space
         } else {

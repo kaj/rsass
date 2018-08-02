@@ -608,12 +608,10 @@ impl OutputStyle {
 
 fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
     let s = Selectors(
-        s.0
-            .iter()
+        s.0.iter()
             .map(|s| {
                 Selector(
-                    s.0
-                        .iter()
+                    s.0.iter()
                         .map(|sp| match *sp {
                             SelectorPart::Attribute {
                                 ref name,
@@ -645,11 +643,9 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                                     .map(|a| eval_selectors(a, scope)),
                             },
                             ref sp => sp.clone(),
-                        })
-                        .collect(),
+                        }).collect(),
                 )
-            })
-            .collect(),
+            }).collect(),
     );
     // The "simple" parts we get from evaluating interpolations may
     // contain high-level selector separators (i.e. ","), so we need to

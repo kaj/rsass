@@ -229,8 +229,7 @@ impl Value {
                         ListSeparator::Space,
                         false,
                     )
-                })
-                .collect(),
+                }).collect(),
             v => vec![v],
         }
     }
@@ -248,8 +247,7 @@ impl fmt::Display for Value {
                         .flat_map(|c| match c {
                             '"' => vec!['\\', '"'],
                             c => vec![c],
-                        })
-                        .collect::<String>()
+                        }).collect::<String>()
                 ),
                 Quotes::Single => write!(
                     out,
@@ -258,8 +256,7 @@ impl fmt::Display for Value {
                         .flat_map(|c| match c {
                             '\'' => vec!['\\', '\''],
                             c => vec![c],
-                        })
-                        .collect::<String>()
+                        }).collect::<String>()
                 ),
                 Quotes::None => write!(out, "{}", s),
             },
@@ -269,8 +266,7 @@ impl fmt::Display for Value {
                     .flat_map(|c| match c {
                         '"' => vec!['\\', '"'],
                         c => vec![c],
-                    })
-                    .collect::<String>();
+                    }).collect::<String>();
                 write!(out, "get-function(\"{}\")", name)
             }
             Value::Numeric(ref num, ref unit, _) => {
@@ -348,8 +344,7 @@ impl fmt::Display for Value {
                             (false, true) => format!("({})", v),
                             (false, false) => format!("{}", v),
                         }
-                    })
-                    .collect::<Vec<_>>();
+                    }).collect::<Vec<_>>();
                 let t = if *sep == ListSeparator::Comma && t.len() == 1 {
                     format!("{},", t[0])
                 } else {

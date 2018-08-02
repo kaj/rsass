@@ -17,8 +17,7 @@ fn main() {
                 .long("precision")
                 .takes_value(true)
                 .help("Ignored"),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("STYLE")
                 .short("t")
                 .long("style")
@@ -27,14 +26,12 @@ fn main() {
                 .default_value(&OutputStyle::variants()[1])
                 .case_insensitive(true)
                 .help("Output style"),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("INPUT")
                 .required(true)
                 .multiple(true)
                 .help("Sass file(s) to translate"),
-        )
-        .after_help("At least one INPUT file is required.")
+        ).after_help("At least one INPUT file is required.")
         .get_matches();
 
     match run(&args) {

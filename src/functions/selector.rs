@@ -31,12 +31,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                         |base, ext| Selectors(
                             base.0
                                 .into_iter()
-                                .flat_map(|b| {
-                                    ext.0.iter().map(move |e| {
-                                        parse_selector(&format!("{}{}", b, e))
-                                    })
-                                })
-                                .collect()
+                                .flat_map(|b| ext.0.iter().map(move |e| {
+                                    parse_selector(&format!("{}{}", b, e))
+                                })).collect()
                         ),
                     ),
                 ),
