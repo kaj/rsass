@@ -2,6 +2,7 @@ use super::{Error, SassFunction};
 use css::Value;
 use num_rational::Rational;
 use num_traits::Signed;
+use rand::{thread_rng, Rng};
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use value::{Number, Unit};
@@ -96,9 +97,5 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
 static NULL_VALUE: Value = Value::Null;
 
 fn intrand(lim: isize) -> isize {
-    use rand::distributions::{IndependentSample, Range};
-    use rand::thread_rng;
-    let between = Range::new(0, lim);
-    let mut rng = thread_rng();
-    between.ind_sample(&mut rng)
+    thread_rng().gen_range(0, lim)
 }

@@ -24,7 +24,7 @@ lazy_static = "1.0"
 nom = "^3.2.0"
 num-rational = { version = "^0.1", default-features = false }
 num-traits = "^0.2.0"
-rand = "^0.4"
+rand = "^0.5"
 
 [badges]
 travis-ci = { repository = "kaj/rsass" }
