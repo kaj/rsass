@@ -91,13 +91,80 @@ mod at_root {
              bar {\n  color: red;\n}\n",
         )
     }
+
+    #[test]
+    fn ampersand() {
+        check(
+            "foo {\
+             \n  @at-root {\
+             \n    & {\n      color: blue;\n    }\n\
+             \n    &--modifier {\n      color: red;\n    }\
+             \n  }\
+             \n}\n",
+            "foo {\n  color: blue;\n}\n\
+             foo--modifier {\n  color: red;\n}\n",
+        )
+    }
+
+    #[test]
+    fn nested() {
+        check(
+            "foo {\
+             \n  color: blue;\n\
+             \n  baz {\
+             \n    color: purple;\n\
+             \n    @at-root {\
+             \n      bar {\n        color: red;\n      }\
+             \n    }\n  }\n}\n\
+             \nfoo {\
+             \n  color: blue;\n\
+             \n  baz {\
+             \n    color: purple;\n\
+             \n    @at-root bar {\n      color: red;\n    }\
+             \n  }\n}\n",
+            "foo {\n  color: blue;\n}\
+             \nfoo baz {\n  color: purple;\n}\
+             \nbar {\n  color: red;\n}\n\
+             \nfoo {\n  color: blue;\n}\
+             \nfoo baz {\n  color: purple;\n}\
+             \nbar {\n  color: red;\n}\n",
+        )
+    }
+
+    #[test]
+    fn media() {
+        check(
+            "foo {\n  @at-root {\
+             \n    @media print {\
+             \n      bar {\n        color: red;\n      }\
+             \n    }\n\
+             \n    baz {\
+             \n      @media speech {\n        color: blue;\n      }\
+             \n    }\
+             \n  }\n}\n",
+            "@media print {\
+             \n  bar {\n    color: red;\n  }\
+             \n}\
+             \n@media speech {\
+             \n  baz {\n    color: blue;\n  }\
+             \n}\n",
+        )
+    }
+
+    #[test]
+    fn t141_test_at_root_with_parent_ref() {
+        check(
+            ".foo {\n  @at-root & {\n    a: b;\n  }\n}\n",
+            ".foo {\n  a: b;\n}\n",
+        )
+    }
 }
 
 fn check(input: &str, expected: &str) {
     assert_eq!(
         compile_scss(input.as_ref(), OutputStyle::Expanded)
             .and_then(|s| Ok(String::from_utf8(s)?))
-            .unwrap(),
+            .expect("Compile scss"),
         expected
     );
 }

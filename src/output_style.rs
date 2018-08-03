@@ -110,7 +110,8 @@ impl OutputStyle {
                 ref selectors,
                 ref body,
             } => {
-                let selectors = eval_selectors(selectors, scope);
+                let selectors = eval_selectors(selectors, scope)
+                    .with_backref(scope.get_selectors().one());
                 let mut s1 = vec![];
                 let mut s2 = vec![];
                 self.handle_body(
@@ -381,7 +382,8 @@ impl OutputStyle {
                     ref selectors,
                     ref body,
                 } => {
-                    let selectors = eval_selectors(selectors, scope);
+                    let selectors = eval_selectors(selectors, scope)
+                        .with_backref(scope.get_selectors().one());
                     let mut s1 = vec![];
                     let mut s2 = vec![];
                     self.handle_body(
@@ -456,6 +458,7 @@ impl OutputStyle {
                             sub.write_all(&s2)?;
                         }
                         write!(sub, "}}")?;
+                        self.do_indent(sub, 0)?;
                     } else {
                         write!(sub, ";")?;
                     }
@@ -681,8 +684,8 @@ impl OutputStyle {
 }
 
 fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
-    let s = Selectors(
-        s.0.iter()
+    let s = Selectors::new(
+        s.s.iter()
             .map(|s| {
                 Selector(
                     s.0.iter()
@@ -725,7 +728,7 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
     // contain high-level selector separators (i.e. ","), so we need to
     // parse the selectors again, from a string representation.
     use parser::selectors::selectors;
-    selectors(Input(format!("{}", s).as_bytes())).unwrap().1
+    selectors(Input(format!("{} ", s).as_bytes())).unwrap().1
 }
 
 struct CssWriter {

@@ -27,12 +27,12 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::List(v, _, _) => Ok(Value::Literal(
                 format!(
                     "{}",
-                    v.into_iter().map(parse_selectors,).fold(
+                    v.into_iter().map(parse_selectors).fold(
                         Selectors::root(),
-                        |base, ext| Selectors(
-                            base.0
+                        |base, ext| Selectors::new(
+                            base.s
                                 .into_iter()
-                                .flat_map(|b| ext.0.iter().map(move |e| {
+                                .flat_map(|b| ext.s.iter().map(move |e| {
                                     parse_selector(&format!("{}{}", b, e))
                                 })).collect()
                         ),
