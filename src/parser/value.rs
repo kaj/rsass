@@ -303,7 +303,7 @@ named!(
             // Note: We should use bytes directly, one_of returns a char.
             one_of!("0123456789"),
             0,
-            |r, d| r * 10 + isize::from(d as i8 - b'0' as i8)
+            |r, d| r * 10 + isize::from(d as u8 - b'0')
         ),
         Rational::from_integer
     )
@@ -315,7 +315,7 @@ named!(
         preceded!(
             complete!(tag!(".")),
             fold_many1!(one_of!("0123456789"), (0, 1), |(r, n), d| (
-                r * 10 + isize::from(d as i8 - b'0' as i8),
+                r * 10 + isize::from(d as u8 - b'0'),
                 n * 10
             ))
         ),
