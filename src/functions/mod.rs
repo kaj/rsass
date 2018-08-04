@@ -156,6 +156,7 @@ lazy_static! {
 
 #[test]
 fn test_rgb() {
+    use nom::types::CompleteByteSlice as Input;
     use num_rational::Rational;
     use num_traits::{One, Zero};
     use parser::formalargs::call_args;
@@ -167,7 +168,10 @@ fn test_rgb() {
             .unwrap()
             .call(
                 &scope,
-                &call_args(b"(17, 0, 225)").unwrap().1.evaluate(&scope, true)
+                &call_args(Input(b"(17, 0, 225)"))
+                    .unwrap()
+                    .1
+                    .evaluate(&scope, true)
             ).unwrap(),
         css::Value::Color(
             Rational::new(17, 1),

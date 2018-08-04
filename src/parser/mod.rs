@@ -13,7 +13,8 @@ use self::value::{
 };
 use error::Error;
 use functions::SassFunction;
-use nom::IResult;
+use nom::types::CompleteByteSlice as Input;
+use nom::Err;
 #[cfg(test)]
 use num_rational::Rational;
 use parser::util::{comment, ignore_space, name, opt_spacelike, spacelike};
@@ -32,7 +33,9 @@ use value::{Number, Unit};
 ///
 /// Returns a single value (or an error).
 pub fn parse_value_data(data: &[u8]) -> Result<Value, Error> {
-    Ok(value_expression(data).to_result()?)
+    let (rest, result) = value_expression(Input(data))?;
+    assert!(rest.is_empty());
+    Ok(result)
 }
 
 /// Parse a scss file.
@@ -50,10 +53,10 @@ pub fn parse_scss_file(file: &Path) -> Result<Vec<Item>, Error> {
 ///
 /// Returns a vec of the top level items of the file (or an error message).
 pub fn parse_scss_data(data: &[u8]) -> Result<Vec<Item>, Error> {
-    match sassfile(data) {
-        IResult::Done(b"", items) => Ok(items),
-        IResult::Done(rest, _styles) => {
-            let t = from_utf8(rest)
+    match sassfile(Input(data)) {
+        Ok((Input(b""), items)) => Ok(items),
+        Ok((rest, _styles)) => {
+            let t = from_utf8(&rest)
                 .map(|s| s.to_string())
                 .unwrap_or_else(|_| format!("{:?}", rest));
             Err(Error::S(format!(
@@ -61,14 +64,14 @@ pub fn parse_scss_data(data: &[u8]) -> Result<Vec<Item>, Error> {
                 t
             )))
         }
-        IResult::Incomplete(x) => {
+        Err(Err::Incomplete(x)) => {
             Err(Error::S(format!("Incomplete: {:?}", x)))
         }
-        IResult::Error(x) => Err(Error::S(format!("Error: {}", x))),
+        Err(x) => Err(Error::S(format!("Error: {:?}", x))),
     }
 }
 
-named!(sassfile<&[u8], Vec<Item> >,
+named!(sassfile<Input, Vec<Item>>,
        many0!(alt!(value!(Item::None, spacelike) |
                    import |
                    variable_declaration |
@@ -82,11 +85,11 @@ named!(sassfile<&[u8], Vec<Item> >,
                    at_rule |
                    rule |
                    map!(comment,
-                        |c| Item::Comment(from_utf8(c).unwrap().into()))
+                        |c: Input| Item::Comment(from_utf8(&c).unwrap().into()))
                    )));
 
 named!(
-    rule<Item>,
+    rule<Input, Item>,
     do_parse!(
         opt_spacelike
             >> selectors: selectors
@@ -97,7 +100,7 @@ named!(
 );
 
 named!(
-    body_item<Item>,
+    body_item<Input, Item>,
     alt_complete!(
         value!(Item::None, spacelike)
             | mixin_declaration
@@ -119,12 +122,12 @@ named!(
                 Item::None,
                 delimited!(opt_spacelike, tag!(";"), opt_spacelike)
             )
-            | map!(comment, |c| Item::Comment(from_utf8(c).unwrap().into()))
+            | map!(comment, |c: Input| Item::Comment(from_utf8(&c).unwrap().into()))
     )
 );
 
 named!(
-    import<Item>,
+    import<Input, Item>,
     map!(
         delimited!(tag!("@import "), value_expression, tag!(";")),
         Item::Import
@@ -132,7 +135,7 @@ named!(
 );
 
 named!(
-    mixin_call<Item>,
+    mixin_call<Input, Item>,
     do_parse!(
         tag!("@include")
             >> spacelike
@@ -152,7 +155,7 @@ named!(
 );
 
 named!(
-    at_rule<Item>,
+    at_rule<Input, Item>,
     do_parse!(
         tag!("@")
             >> name: name
@@ -169,7 +172,7 @@ named!(
                         ),
                         peek!(one_of!(" \n\t{;"))
                     ) | map!(is_not!("\"'{};"), |s| Value::Literal(
-                        from_utf8(s).unwrap().trim_right().into(),
+                        from_utf8(&s).unwrap().trim_right().into(),
                     ))
                 )
             ))
@@ -188,10 +191,10 @@ named!(
     )
 );
 
-named!(if_statement<Item>, preceded!(tag!("@"), if_statement_inner));
+named!(if_statement<Input, Item>, preceded!(tag!("@"), if_statement_inner));
 
 named!(
-    if_statement_inner<Item>,
+    if_statement_inner<Input, Item>,
     do_parse!(
         tag!("if")
             >> spacelike
@@ -210,7 +213,7 @@ named!(
 );
 
 named!(
-    each_loop<Item>,
+    each_loop<Input, Item>,
     map!(
         tuple!(
             preceded!(
@@ -236,7 +239,7 @@ named!(
 );
 
 named!(
-    for_loop<Item>,
+    for_loop<Input, Item>,
     do_parse!(
         tag!("@for")
             >> spacelike
@@ -266,7 +269,7 @@ named!(
 );
 
 named!(
-    while_loop<Item>,
+    while_loop<Input, Item>,
     do_parse!(
         tag!("@while")
             >> spacelike
@@ -277,7 +280,7 @@ named!(
     )
 );
 
-named!(mixin_declaration<&[u8], Item>,
+named!(mixin_declaration<Input, Item>,
        do_parse!(tag!("@mixin") >> spacelike >>
                  name: name >> opt_spacelike >>
                  args: opt!(formal_args) >> opt_spacelike >>
@@ -289,7 +292,7 @@ named!(mixin_declaration<&[u8], Item>,
                  })));
 
 named!(
-    function_declaration<Item>,
+    function_declaration<Input, Item>,
     do_parse!(
         tag!("@function")
             >> spacelike
@@ -306,7 +309,7 @@ named!(
 );
 
 named!(
-    return_stmt<Item>,
+    return_stmt<Input, Item>,
     do_parse!(
         tag!("@return")
             >> spacelike
@@ -318,7 +321,7 @@ named!(
 );
 
 named!(
-    content_stmt<Item>,
+    content_stmt<Input, Item>,
     do_parse!(
         tag!("@content")
             >> opt_spacelike
@@ -327,7 +330,7 @@ named!(
     )
 );
 
-named!(property<&[u8], Item>,
+named!(property<Input, Item>,
        do_parse!(opt_spacelike >>
                  name: sass_string >> opt_spacelike >>
                  tag!(":") >> opt_spacelike >>
@@ -336,7 +339,7 @@ named!(property<&[u8], Item>,
                  (Item::Property(name, val))));
 
 named!(
-    namespace_rule<Item>,
+    namespace_rule<Input, Item>,
     do_parse!(
         opt_spacelike
             >> n1: name
@@ -351,7 +354,7 @@ named!(
 );
 
 named!(
-    body_block<Vec<Item>>,
+    body_block<Input, Vec<Item>>,
     delimited!(
         preceded!(tag!("{"), opt_spacelike),
         many0!(body_item),
@@ -360,7 +363,7 @@ named!(
 );
 
 named!(
-    variable_declaration<Item>,
+    variable_declaration<Input, Item>,
     do_parse!(
         tag!("$")
             >> name: name
@@ -397,45 +400,45 @@ fn string(v: &str) -> Value {
 #[test]
 fn if_with_no_else() {
     assert_eq!(
-        if_statement(b"@if true { p { color: black; } }\n"),
-        IResult::Done(
-            &b"\n"[..],
+        if_statement(Input(b"@if true { p { color: black; } }\n")),
+        Ok((
+            Input(b"\n"),
             Item::IfStatement(
                 Value::True,
                 vec![
                     Item::Rule(
-                        selectors(b"p").unwrap().1,
+                        selectors(Input(b"p")).unwrap().1,
                         vec![Item::Property("color".into(), Value::black())],
                     ),
                     Item::None,
                 ],
                 vec![]
             )
-        )
+        ))
     )
 }
 
 #[test]
 fn test_mixin_call_noargs() {
     assert_eq!(
-        mixin_call(b"@include foo;\n"),
-        IResult::Done(
-            &b"\n"[..],
+        mixin_call(Input(b"@include foo;\n")),
+        Ok((
+            Input(b"\n"),
             Item::MixinCall {
                 name: "foo".to_string(),
                 args: CallArgs::new(vec![]),
                 body: vec![],
             }
-        )
+        ))
     )
 }
 
 #[test]
 fn test_mixin_call_pos_args() {
     assert_eq!(
-        mixin_call(b"@include foo(bar, baz);\n"),
-        IResult::Done(
-            &b"\n"[..],
+        mixin_call(Input(b"@include foo(bar, baz);\n")),
+        Ok((
+            Input(b"\n"),
             Item::MixinCall {
                 name: "foo".to_string(),
                 args: CallArgs::new(vec![
@@ -444,16 +447,16 @@ fn test_mixin_call_pos_args() {
                 ]),
                 body: vec![],
             }
-        )
+        ))
     )
 }
 
 #[test]
 fn test_mixin_call_named_args() {
     assert_eq!(
-        mixin_call(b"@include foo($x: bar, $y: baz);\n"),
-        IResult::Done(
-            &b"\n"[..],
+        mixin_call(Input(b"@include foo($x: bar, $y: baz);\n")),
+        Ok((
+            Input(b"\n"),
             Item::MixinCall {
                 name: "foo".to_string(),
                 args: CallArgs::new(vec![
@@ -462,35 +465,33 @@ fn test_mixin_call_named_args() {
                 ]),
                 body: vec![],
             }
-        )
+        ))
     )
 }
 
 #[test]
 fn test_mixin_declaration_empty() {
     assert_eq!(
-        mixin_declaration(b"@mixin foo() {}\n"),
-        IResult::Done(
-            &b"\n"[..],
+        mixin_declaration(Input(b"@mixin foo() {}\n")),
+        Ok((
+            Input(b"\n"),
             Item::MixinDeclaration {
                 name: "foo".into(),
                 args: FormalArgs::default(),
                 body: vec![],
             }
-        )
+        ))
     )
 }
 
 #[test]
 fn test_mixin_declaration() {
     assert_eq!(
-        mixin_declaration(
-            b"@mixin foo($x) {\n  \
-                                   foo-bar: baz $x;\n\
-                                   }\n"
-        ),
-        IResult::Done(
-            &b"\n"[..],
+        mixin_declaration(Input(
+            b"@mixin foo($x) {\n  foo-bar: baz $x;\n}\n"
+        )),
+        Ok((
+            Input(b"\n"),
             Item::MixinDeclaration {
                 name: "foo".into(),
                 args: FormalArgs::new(vec![("x".into(), Value::Null)], false),
@@ -504,23 +505,23 @@ fn test_mixin_declaration() {
                     ),
                 )],
             }
-        )
+        ))
     )
 }
 
 #[test]
 fn test_mixin_declaration_default_and_subrules() {
     assert_eq!(
-        mixin_declaration(
+        mixin_declaration(Input(
             b"@mixin bar($a, $b: flug) {\n  \
                                    foo-bar: baz;\n  \
                                    foo, bar {\n    \
                                    property: $b;\n  \
                                    }\n\
                                    }\n"
-        ),
-        IResult::Done(
-            &b"\n"[..],
+        )),
+        Ok((
+            Input(b"\n"),
             Item::MixinDeclaration {
                 name: "bar".into(),
                 args: FormalArgs::new(
@@ -533,7 +534,7 @@ fn test_mixin_declaration_default_and_subrules() {
                 body: vec![
                     Item::Property("foo-bar".into(), string("baz")),
                     Item::Rule(
-                        selectors(b"foo, bar").unwrap().1,
+                        selectors(Input(b"foo, bar")).unwrap().1,
                         vec![Item::Property(
                             "property".into(),
                             Value::Variable("b".into()),
@@ -542,7 +543,7 @@ fn test_mixin_declaration_default_and_subrules() {
                     Item::None,
                 ],
             }
-        )
+        ))
     )
 }
 
@@ -553,22 +554,22 @@ fn test_simple_property() {
         Rational::from_integer(v as isize)
     }
     assert_eq!(
-        property(b"color: red;\n"),
-        IResult::Done(
-            &b""[..],
+        property(Input(b"color: red;\n")),
+        Ok((
+            Input(b""),
             Item::Property(
                 "color".into(),
                 Value::Color(r(255), r(0), r(0), one, Some("red".into())),
             )
-        )
+        ))
     )
 }
 #[test]
 fn test_property_2() {
     assert_eq!(
-        property(b"background-position: 90% 50%;\n"),
-        IResult::Done(
-            &b""[..],
+        property(Input(b"background-position: 90% 50%;\n")),
+        Ok((
+            Input(b""),
             Item::Property(
                 "background-position".into(),
                 Value::List(
@@ -578,32 +579,32 @@ fn test_property_2() {
                     false
                 ),
             )
-        )
+        ))
     )
 }
 
 #[test]
 fn test_variable_declaration_simple() {
     assert_eq!(
-        variable_declaration(b"$foo: bar;\n"),
-        IResult::Done(
-            &b""[..],
+        variable_declaration(Input(b"$foo: bar;\n")),
+        Ok((
+            Input(b""),
             Item::VariableDeclaration {
                 name: "foo".into(),
                 val: string("bar"),
                 default: false,
                 global: false,
             }
-        )
+        ))
     )
 }
 
 #[test]
 fn test_variable_declaration_global() {
     assert_eq!(
-        variable_declaration(b"$y: some value !global;\n"),
-        IResult::Done(
-            &b""[..],
+        variable_declaration(Input(b"$y: some value !global;\n")),
+        Ok((
+            Input(b""),
             Item::VariableDeclaration {
                 name: "y".into(),
                 val: Value::List(
@@ -615,16 +616,16 @@ fn test_variable_declaration_global() {
                 default: false,
                 global: true,
             }
-        )
+        ))
     )
 }
 
 #[test]
 fn test_variable_declaration_default() {
     assert_eq!(
-        variable_declaration(b"$y: some value !default;\n"),
-        IResult::Done(
-            &b""[..],
+        variable_declaration(Input(b"$y: some value !default;\n")),
+        Ok((
+            Input(b""),
             Item::VariableDeclaration {
                 name: "y".into(),
                 val: Value::List(
@@ -636,6 +637,6 @@ fn test_variable_declaration_default() {
                 default: true,
                 global: false,
             }
-        )
+        ))
     )
 }

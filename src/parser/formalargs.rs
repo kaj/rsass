@@ -1,8 +1,9 @@
+use nom::types::CompleteByteSlice as Input;
 use parser::util::{ignore_comments, name, opt_spacelike};
 use parser::value::space_list;
 use sass::{CallArgs, FormalArgs, Value};
 
-named!(pub formal_args<FormalArgs>,
+named!(pub formal_args<Input, FormalArgs>,
        do_parse!(tag!("(") >> opt_spacelike >>
                  v: separated_list!(
                      preceded!(tag!(","), opt_spacelike),
@@ -18,7 +19,7 @@ named!(pub formal_args<FormalArgs>,
                  tag!(")") >>
                  (FormalArgs::new(v, va.is_some()))));
 
-named!(pub call_args<CallArgs>,
+named!(pub call_args<Input, CallArgs>,
        delimited!(
            tag!("("),
            map!(separated_list!(

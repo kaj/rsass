@@ -1,5 +1,6 @@
 use super::SassFunction;
 use css::Value;
+use nom::types::CompleteByteSlice as Input;
 use parser::selectors::{selector, selectors};
 use selectors::{Selector, Selectors};
 use std::collections::BTreeMap;
@@ -56,15 +57,15 @@ fn parse_selectors(v: Value) -> Selectors {
     if s.is_empty() {
         Selectors::root()
     } else {
-        let (rest, result) = selectors(s.as_bytes()).unwrap();
-        assert!(rest == b"" || rest == b",");
+        let (rest, result) = selectors(Input(s.as_bytes())).unwrap();
+        assert!(rest.is_empty() || rest == Input(b","));
         result
     }
 }
 
 // Note, this helper should probably handle errors and return a Result.
 fn parse_selector(s: &str) -> Selector {
-    let (rest, result) = selector(s.as_bytes()).unwrap();
-    assert!(rest == b"");
+    let (rest, result) = selector(Input(s.as_bytes())).unwrap();
+    assert!(rest.is_empty());
     result
 }

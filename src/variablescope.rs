@@ -338,6 +338,7 @@ impl Scope for GlobalScope {
 
 #[cfg(test)]
 pub mod test {
+    use nom::types::CompleteByteSlice as Input;
     use parser::value::value_expression;
     use std::str::from_utf8;
     use variablescope::*;
@@ -669,14 +670,14 @@ pub mod test {
     pub fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
         let mut scope = GlobalScope::new();
         for &(name, ref val) in s {
-            let val = format!("{};", val);
-            let (end, value) = value_expression(val.as_bytes()).unwrap();
+            let (end, value) =
+                value_expression(Input(val.as_bytes())).unwrap();
             let value = value.evaluate(&scope);
-            assert_eq!(Ok(";"), from_utf8(end));
+            assert_eq!(Ok(""), from_utf8(&end));
             scope.define(name, &value);
         }
-        let (end, foo) = value_expression(expression).unwrap();
-        assert_eq!(Ok(";"), from_utf8(end));
+        let (end, foo) = value_expression(Input(expression)).unwrap();
+        assert_eq!(Ok(";"), from_utf8(&end));
         format!("{}", foo.evaluate(&mut scope))
     }
 }
