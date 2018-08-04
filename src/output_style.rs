@@ -113,9 +113,12 @@ impl OutputStyle {
             } => {
                 result.do_separate()?;
                 let args = args.evaluate(scope);
-                write!(result.to_content(), "@{} {}", name, args)?;
+                write!(result.to_content(), "@{}", name)?;
+                if !args.is_null() {
+                    write!(result.to_content(), " {}", args)?;
+                }
                 if let Some(ref body) = *body {
-                    if self.is_compressed() || args.is_null() {
+                    if self.is_compressed() {
                         write!(result.to_content(), "{{")?;
                     } else {
                         write!(result.to_content(), " {{")?;
@@ -349,7 +352,11 @@ impl OutputStyle {
                     ref args,
                     ref body,
                 } => {
-                    write!(sub, "@{} {}", name, args.evaluate(scope))?;
+                    write!(sub, "@{}", name)?;
+                    let args = args.evaluate(scope);
+                    if !args.is_null() {
+                        write!(sub, " {}", args)?;
+                    }
                     if let Some(ref body) = *body {
                         if self.is_compressed() {
                             write!(sub, "{{")?;

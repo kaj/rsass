@@ -160,7 +160,7 @@ named!(
         tag!("@")
             >> name: name
             >> args: many0!(preceded!(
-                ignore_space,
+                opt!(ignore_space),
                 alt!(
                     terminated!(
                         alt!(
@@ -177,8 +177,11 @@ named!(
                 )
             ))
             >> opt!(ignore_space)
-            >> body: opt!(body_block)
-            >> opt!(alt!(eof!() | tag!(";")))
+            >> body: alt!(
+                map!(body_block, Some) |
+                value!(None, eof!()) |
+                value!(None, tag!(";"))
+            )
             >> (Item::AtRule {
                 name,
                 args: if args.len() == 1 {
