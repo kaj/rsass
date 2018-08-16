@@ -22,7 +22,7 @@ commandline = ["clap"]
 clap = { version = "^2.19", optional = true }
 lazy_static = "1.0"
 nom = "^4.0.0"
-num-rational = { version = "^0.1", default-features = false }
+num-rational = { version = "0.2.1", default-features = false }
 num-traits = "^0.2.0"
 rand = "^0.5"
 
