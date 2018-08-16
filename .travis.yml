@@ -3,15 +3,13 @@ cache: cargo
 before_script:
   - cargo update || true
 rust:
-  - 1.23.0
-  - 1.24.1
-  - 1.25.0
   - stable
+  - 1.27.2
+  - 1.26.2
+  - 1.25.0
+  - 1.24.1
   - beta
   - nightly
-env:
-  -
-  - F=--features=commandline
 script:
   - cargo build --verbose $F
   - cargo test --verbose $F
@@ -21,10 +19,11 @@ matrix:
       env: TASK=rustfmt
       before_script: rustup component add rustfmt-preview
       script: cargo fmt -- --check
-  exclude:
-    - rust: 1.23.0
+    - rust: stable
       env: F=--features=commandline
-    - rust: 1.24.1
+    - rust: beta
+      env: F=--features=commandline
+    - rust: nightly
       env: F=--features=commandline
   allow_failures:
     - rust: nightly
