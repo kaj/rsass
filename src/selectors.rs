@@ -5,28 +5,45 @@ use std::io::Write;
 use value::{ListSeparator, Quotes};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Selectors(pub Vec<Selector>);
+pub struct Selectors {
+    pub s: Vec<Selector>,
+    backref: Selector,
+}
 
 impl Selectors {
     pub fn root() -> Self {
-        Selectors(vec![Selector::root()])
+        Selectors::new(vec![Selector::root()])
     }
-    pub fn inside(&self, parent: Option<&Self>) -> Self {
-        if let Some(parent) = parent {
-            let mut result = Vec::new();
-            for p in &parent.0 {
-                for s in &self.0 {
-                    result.push(p.join(s));
-                }
-            }
-            Selectors(result)
-        } else {
-            self.clone()
+    pub fn new(s: Vec<Selector>) -> Self {
+        Selectors {
+            s,
+            backref: Selector::root(),
         }
+    }
+    pub fn one(&self) -> Selector {
+        self.s.first().cloned().unwrap_or_else(|| Selector::root())
+    }
+    pub fn inside(&self, parent: &Self) -> Self {
+        let mut result = Vec::new();
+        for p in &parent.s {
+            for s in &self.s {
+                result.push(p.join(s, &parent.backref));
+            }
+        }
+        Selectors {
+            s: result,
+            backref: parent.backref.clone(),
+        }
+    }
+    pub fn with_backref(self, context: Selector) -> Self {
+        self.inside(&Selectors {
+            s: vec![Selector::root()],
+            backref: context,
+        })
     }
     pub fn to_value(&self) -> Value {
         let content = self
-            .0
+            .s
             .iter()
             .map(|s: &Selector| {
                 Value::List(
@@ -55,12 +72,16 @@ impl Selector {
         Selector(vec![])
     }
 
-    pub fn join(&self, other: &Selector) -> Selector {
+    fn join(&self, other: &Selector, alt_context: &Selector) -> Selector {
         let mut split = other.0.splitn(2, |p| p == &SelectorPart::BackRef);
         let o1 = split.next().unwrap();
         if let Some(o2) = split.next() {
             let mut result = o1.to_vec();
-            result.extend(self.0.iter().cloned());
+            if self.0.is_empty() {
+                result.extend(alt_context.0.iter().cloned());
+            } else {
+                result.extend(self.0.iter().cloned());
+            }
             result.extend(o2.iter().cloned());
             Selector(result)
         } else {
@@ -115,7 +136,7 @@ impl SelectorPart {
 
 impl fmt::Display for Selectors {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        if let Some((first, rest)) = self.0.split_first() {
+        if let Some((first, rest)) = self.s.split_first() {
             first.fmt(out)?;
             let separator = if out.alternate() { "," } else { ", " };
             for item in rest {
@@ -209,13 +230,15 @@ mod test {
     #[test]
     fn root_join() {
         let s = Selector(vec![SelectorPart::Simple("foo".into())]);
-        assert_eq!(Selector::root().join(&s), s)
+        assert_eq!(Selector::root().join(&s, &Selector::root()), s)
     }
 
     #[test]
     fn simple_join() {
-        let s = Selector(vec![SelectorPart::Simple("foo".into())])
-            .join(&Selector(vec![SelectorPart::Simple(".bar".into())]));
+        let s = Selector(vec![SelectorPart::Simple("foo".into())]).join(
+            &Selector(vec![SelectorPart::Simple(".bar".into())]),
+            &Selector::root(),
+        );
         assert_eq!(format!("{}", s), "foo .bar")
     }
 
@@ -226,6 +249,7 @@ mod test {
                 SelectorPart::BackRef,
                 SelectorPart::Simple(".bar".into()),
             ]),
+            &Selector::root(),
         );
         assert_eq!(format!("{}", s), "foo.bar")
     }

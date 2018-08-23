@@ -106,6 +106,37 @@ impl OutputStyle {
                     scope.define(name, &val);
                 }
             }
+            Item::AtRoot {
+                ref selectors,
+                ref body,
+            } => {
+                let selectors = eval_selectors(selectors, scope)
+                    .with_backref(scope.get_selectors().one());
+                let mut s1 = vec![];
+                let mut s2 = vec![];
+                self.handle_body(
+                    &mut s1,
+                    &mut s2,
+                    &mut ScopeImpl::sub_selectors(scope, selectors.clone()),
+                    body,
+                    file_context,
+                    0,
+                )?;
+
+                if !s1.is_empty() {
+                    if self.is_compressed() {
+                        write!(result.to_content(), "{:#}{{", selectors)?;
+                    } else {
+                        write!(result.to_content(), "{} {{", selectors)?;
+                    }
+                    self.write_items(result.to_content(), &s1, 2)?;
+                    write!(result.to_content(), "}}")?;
+                    self.do_indent(result.to_content(), 0)?;
+                }
+                if !s2.is_empty() {
+                    result.to_content().write_all(&s2)?;
+                }
+            }
             Item::AtRule {
                 ref name,
                 ref args,
@@ -276,8 +307,8 @@ impl OutputStyle {
         file_context: &FileContext,
         indent: usize,
     ) -> Result<(), Error> {
-        let selectors = eval_selectors(selectors, scope)
-            .inside(Some(scope.get_selectors()));
+        let selectors =
+            eval_selectors(selectors, scope).inside(scope.get_selectors());
         let mut direct = Vec::new();
         let mut sub = Vec::new();
         self.handle_body(
@@ -347,6 +378,43 @@ impl OutputStyle {
                         scope.define(name, &val);
                     }
                 }
+                Item::AtRoot {
+                    ref selectors,
+                    ref body,
+                } => {
+                    let selectors = eval_selectors(selectors, scope)
+                        .with_backref(scope.get_selectors().one());
+                    let mut s1 = vec![];
+                    let mut s2 = vec![];
+                    self.handle_body(
+                        &mut s1,
+                        &mut s2,
+                        &mut ScopeImpl::sub_selectors(
+                            scope,
+                            selectors.clone(),
+                        ),
+                        body,
+                        file_context,
+                        indent,
+                    )?;
+
+                    if !s1.is_empty() {
+                        if indent > 0 {
+                            self.do_indent(sub, indent)?;
+                        }
+                        if self.is_compressed() {
+                            write!(sub, "{:#}{{", selectors)?;
+                        } else {
+                            write!(sub, "{} {{", selectors)?;
+                        }
+                        self.write_items(sub, &s1, indent + 2)?;
+                        write!(sub, "}}")?;
+                        self.do_indent(sub, 0)?;
+                    }
+                    if !s2.is_empty() {
+                        sub.write_all(&s2)?;
+                    }
+                }
                 Item::AtRule {
                     ref name,
                     ref args,
@@ -390,6 +458,7 @@ impl OutputStyle {
                             sub.write_all(&s2)?;
                         }
                         write!(sub, "}}")?;
+                        self.do_indent(sub, 0)?;
                     } else {
                         write!(sub, ";")?;
                     }
@@ -615,8 +684,8 @@ impl OutputStyle {
 }
 
 fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
-    let s = Selectors(
-        s.0.iter()
+    let s = Selectors::new(
+        s.s.iter()
             .map(|s| {
                 Selector(
                     s.0.iter()
@@ -659,7 +728,7 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
     // contain high-level selector separators (i.e. ","), so we need to
     // parse the selectors again, from a string representation.
     use parser::selectors::selectors;
-    selectors(Input(format!("{}", s).as_bytes())).unwrap().1
+    selectors(Input(format!("{} ", s).as_bytes())).unwrap().1
 }
 
 struct CssWriter {

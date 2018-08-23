@@ -8,7 +8,7 @@ named!(pub selectors<Input, Selectors>,
        map!(separated_nonempty_list!(
            complete!(do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ())),
            selector),
-            Selectors));
+            Selectors::new));
 
 named!(pub selector<Input, Selector>,
        map!(many1!(selector_part),
@@ -178,11 +178,15 @@ mod test {
 
     #[test]
     fn selectors_simple() {
-        let foo = Selector(vec![SelectorPart::Simple("foo".into())]);
-        let bar = Selector(vec![SelectorPart::Simple("bar".into())]);
         assert_eq!(
             selectors(Input(b"foo, bar ")),
-            Ok((Input(b""), Selectors(vec![foo, bar])))
+            Ok((
+                Input(b""),
+                Selectors::new(vec![
+                    Selector(vec![SelectorPart::Simple("foo".into())]),
+                    Selector(vec![SelectorPart::Simple("bar".into())]),
+                ])
+            ))
         )
     }
 
