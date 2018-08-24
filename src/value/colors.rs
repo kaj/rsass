@@ -1,9 +1,12 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
 #![cfg_attr(feature = "cargo-clippy", allow(unreadable_literal))]
-use num_traits::{One, Signed, Zero};
 
 use num_rational::Rational;
+use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
+use std::fmt::{self, Display};
+use std::ops::{Add, Div, Sub};
+use value::Number;
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Rgba {
@@ -96,20 +99,19 @@ impl Rgba {
     }
     pub fn name(&self) -> Option<&'static str> {
         if self.alpha >= Rational::from_integer(1) {
-            let r = self.red.round().to_integer() as u8;
-            let g = self.green.round().to_integer() as u8;
-            let b = self.blue.round().to_integer() as u8;
+            let (r, g, b, _a) = self.to_bytes();
+            // Note: nicer but not yet supported code:
+            // let c = u32::from_be(u32::from_bytes(0, r, g, b))
             let c = (u32::from(r) << 16) + (u32::from(g) << 8) + u32::from(b);
             LOOKUP.v2n.get(&c).map(|n| *n)
-        } else if self.all_zero() {
-            Some("transparent")
         } else {
             None
         }
     }
     pub fn from_name(name: &str) -> Option<Self> {
-        // Note: there is a u32.to_bytes(), but still not stable
         LOOKUP.n2v.get(name).map(|n| {
+            // Note: nicer but not yet supported code:
+            // let [_, r, g, b] = n.to_be().to_bytes()
             Self::from_rgb((*n >> 16) as u8, (*n >> 8) as u8, *n as u8)
         })
     }
@@ -161,7 +163,6 @@ impl Rgba {
     }
 }
 
-use std::ops::{Add, Div, Sub};
 impl Add<Rational> for Rgba {
     type Output = Rgba;
 
@@ -225,6 +226,38 @@ impl<'a> Sub<&'a Rgba> for &'a Rgba {
             self.blue - rhs.blue,
             avg(&self.alpha, &rhs.alpha),
         )
+    }
+}
+
+impl Display for Rgba {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        // The byte-version of alpha is not used here.
+        let (r, g, b, _a) = self.to_bytes();
+        let a = self.alpha;
+        if a >= Rational::from_integer(1) {
+            // E.g. #ff00cc can be written #f0c in css.
+            // 0xff / 0x11 = 0xf.
+            let short = r % 0x11 == 0 && g % 0x11 == 0 && b % 0x11 == 0;
+            let hex_len = if short { 4 } else { 7 };
+            if let Some(name) = self.name() {
+                if !(out.alternate() && name.len() > hex_len) {
+                    return name.fmt(out);
+                }
+            }
+            if out.alternate() && short {
+                write!(out, "#{:x}{:x}{:x}", r / 0x11, g / 0x11, b / 0x11)
+            } else {
+                write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
+            }
+        } else if self.all_zero() {
+            write!(out, "transparent")
+        } else if out.alternate() {
+            // I think the last {} should be {:#} here,
+            // but the test suite says otherwise.
+            write!(out, "rgba({},{},{},{})", r, g, b, Number::new(a))
+        } else {
+            write!(out, "rgba({}, {}, {}, {})", r, g, b, Number::new(a))
+        }
     }
 }
 

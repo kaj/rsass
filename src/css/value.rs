@@ -256,55 +256,9 @@ impl fmt::Display for Value {
             }
             Value::Color(ref rgba, ref name) => {
                 if let Some(ref name) = *name {
-                    write!(out, "{}", name)
+                    name.fmt(out)
                 } else {
-                    // The byte-version of alpha is not used here.
-                    let (r, g, b, _a) = rgba.to_bytes();
-                    let a = rgba.alpha;
-                    if a >= Rational::from_integer(1) {
-                        // E.g. #ff00cc can be written #f0c in css.
-                        // 0xff / 17 = 0xf (since 17 = 0x11).
-                        let short = r % 17 == 0 && g % 17 == 0 && b % 17 == 0;
-                        let hex_len = if short { 4 } else { 7 };
-                        match rgba.name() {
-                            Some(name)
-                                if !(out.alternate()
-                                    && name.len() > hex_len) =>
-                            {
-                                write!(out, "{}", name)
-                            }
-                            _ if out.alternate() && short => write!(
-                                out,
-                                "#{:x}{:x}{:x}",
-                                r / 17,
-                                g / 17,
-                                b / 17
-                            ),
-                            _ => write!(out, "#{:02x}{:02x}{:02x}", r, g, b),
-                        }
-                    } else if rgba.all_zero() {
-                        write!(out, "transparent")
-                    } else if out.alternate() {
-                        write!(
-                            out,
-                            // I think the last {} should be {:#} here,
-                            // but the test suite says otherwise.
-                            "rgba({},{},{},{})",
-                            r,
-                            g,
-                            b,
-                            Number::new(a),
-                        )
-                    } else {
-                        write!(
-                            out,
-                            "rgba({}, {}, {}, {})",
-                            r,
-                            g,
-                            b,
-                            Number::new(a),
-                        )
-                    }
+                    rgba.fmt(out)
                 }
             }
             Value::List(ref v, ref sep, brackets) => {
