@@ -157,9 +157,8 @@ lazy_static! {
 #[test]
 fn test_rgb() {
     use nom::types::CompleteByteSlice as Input;
-    use num_rational::Rational;
-    use num_traits::{One, Zero};
     use parser::formalargs::call_args;
+    use value::Rgba;
     use variablescope::GlobalScope;
     let scope = GlobalScope::new();
     assert_eq!(
@@ -173,13 +172,7 @@ fn test_rgb() {
                     .1
                     .evaluate(&scope, true)
             ).unwrap(),
-        css::Value::Color(
-            Rational::new(17, 1),
-            Rational::zero(),
-            Rational::new(225, 1),
-            Rational::one(),
-            None
-        )
+        css::Value::Color(Rgba::from_rgb(17, 0, 225), None)
     )
 }
 

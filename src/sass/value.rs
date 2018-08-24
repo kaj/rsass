@@ -4,7 +4,7 @@ use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use ordermap::OrderMap;
 use sass::{CallArgs, SassString};
-use value::{ListSeparator, Number, Operator, Quotes, Unit};
+use value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
 use variablescope::Scope;
 
 /// A sass value.
@@ -125,7 +125,7 @@ impl Value {
             }
             Value::Paren(ref v) => v.do_evaluate(scope, true),
             Value::Color(r, g, b, a, ref name) => {
-                css::Value::Color(r, g, b, a, name.clone())
+                css::Value::Color(Rgba::new(r, g, b, a), name.clone())
             }
             Value::Variable(ref name) => scope.get(name).into_calculated(),
             Value::List(ref v, ref s, b, needs_requote) => css::Value::List(

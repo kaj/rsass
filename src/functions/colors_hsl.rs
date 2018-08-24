@@ -1,9 +1,9 @@
 use super::{Error, SassFunction};
 use css::Value;
 use num_rational::Rational;
-use num_traits::{One, Signed, Zero};
+use num_traits::{One, Zero};
 use std::collections::BTreeMap;
-use value::{Number, Unit};
+use value::{Number, Rgba, Unit};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
@@ -31,20 +31,20 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
         }
         match &s.get("color") {
-            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
+            &Value::Color(ref rgba, _) => {
                 let h_adj = s.get("degrees");
-                let (h, s, l) = rgb_to_hsl(red, green, blue);
+                let (h, s, l, alpha) = rgba.to_hsla();
                 let h = a_comb(h, h_adj)?;
-                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
+                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, alpha))
             }
             v => Err(Error::badarg("color", v)),
         }
     });
     def!(f, complement(color), |s: &Scope| match &s.get("color") {
-        &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
-            let (h, s, l) = rgb_to_hsl(red, green, blue);
+        &Value::Color(ref rgba, _) => {
+            let (h, s, l, alpha) = rgba.to_hsla();
             let h = (h + Rational::from_integer(180)) * Rational::new(1, 360);
-            Ok(hsla_to_rgba(h, s, l, *alpha))
+            Ok(hsla_to_rgba(h, s, l, alpha))
         }
         v => Err(Error::badarg("color", v)),
     });
@@ -56,10 +56,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
         }
         match &args.get("color") {
-            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
-                let (h, s, l) = rgb_to_hsl(red, green, blue);
+            &Value::Color(ref rgba, _) => {
+                let (h, s, l, alpha) = rgba.to_hsla();
                 let s = comb(s, args.get("amount"))?;
-                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
+                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, alpha))
             }
             v => Err(Error::badarg("color", v)),
         }
@@ -72,10 +72,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
         }
         match &args.get("color") {
-            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
-                let (h, s, l) = rgb_to_hsl(red, green, blue);
+            &Value::Color(ref rgba, _) => {
+                let (h, s, l, alpha) = rgba.to_hsla();
                 let l = comb(l, args.get("amount"))?;
-                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
+                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, alpha))
             }
             v => Err(Error::badarg("color", v)),
         }
@@ -88,31 +88,31 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
         }
         match &args.get("color") {
-            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
-                let (h, s, l) = rgb_to_hsl(red, green, blue);
+            &Value::Color(ref rgba, _) => {
+                let (h, s, l, alpha) = rgba.to_hsla();
                 let l = comb(l, args.get("amount"))?;
-                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
+                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, alpha))
             }
             v => Err(Error::badarg("color", v)),
         }
     });
     def!(f, hue(color), |args: &Scope| match &args.get("color") {
-        &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
-            let (h, _s, _l) = rgb_to_hsl(red, green, blue);
+        &Value::Color(ref rgba, _) => {
+            let (h, _s, _l, _a) = rgba.to_hsla();
             Ok(Value::Numeric(Number::new(h), Unit::Deg, true))
         }
         v => Err(Error::badarg("color", v)),
     });
     def!(f, saturation(color), |args| match &args.get("color") {
-        &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
-            let (_h, s, _l) = rgb_to_hsl(red, green, blue);
+        &Value::Color(ref rgba, _) => {
+            let (_h, s, _l, _a) = rgba.to_hsla();
             Ok(percentage(s))
         }
         v => Err(Error::badarg("color", v)),
     });
     def!(f, lightness(color), |args| match &args.get("color") {
-        &Value::Color(ref red, ref green, ref blue, ref _alpha, _) => {
-            let (_h, _s, l) = rgb_to_hsl(red, green, blue);
+        &Value::Color(ref rgba, _) => {
+            let (_h, _s, l, _a) = rgba.to_hsla();
             Ok(percentage(l))
         }
         v => Err(Error::badarg("color", v)),
@@ -125,10 +125,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
         }
         match &args.get("color") {
-            &Value::Color(ref red, ref green, ref blue, ref alpha, _) => {
-                let (h, s, l) = rgb_to_hsl(red, green, blue);
+            &Value::Color(ref rgba, _) => {
+                let (h, s, l, alpha) = rgba.to_hsla();
                 let s = comb(s, args.get("amount"))?;
-                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, *alpha))
+                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, alpha))
             }
             v => Err(Error::badarg("color", v)),
         }
@@ -141,8 +141,7 @@ pub fn hsla_to_rgba(
     lig: Rational,
     a: Rational,
 ) -> Value {
-    let (r, g, b) = hsl_to_rgb(hue, sat, lig);
-    Value::rgba(frac_to_int(r), frac_to_int(g), frac_to_int(b), a)
+    Value::Color(Rgba::from_hsla(hue, sat, lig, a), None)
 }
 
 fn percentage(v: Rational) -> Value {
@@ -151,108 +150,6 @@ fn percentage(v: Rational) -> Value {
         Unit::Percent,
         true,
     )
-}
-
-/// Convert hue (degrees) / sat (0 .. 1) / lighness (0 .. 1) ro rgb (0 .. 1)
-fn hsl_to_rgb(
-    hue: Rational,
-    sat: Rational,
-    l: Rational,
-) -> (Rational, Rational, Rational) {
-    if sat.is_zero() {
-        (l, l, l)
-    } else {
-        fn hue2rgb(p: Rational, q: Rational, t: Rational) -> Rational {
-            let t = t - t.floor();
-            if t < Rational::new(1, 6) {
-                p + (q - p) * Rational::from_integer(6) * t
-            } else if t < Rational::new(1, 2) {
-                q
-            } else if t < Rational::new(2, 3) {
-                p + (q - p)
-                    * (Rational::new(2, 3) - t)
-                    * Rational::from_integer(6)
-            } else {
-                p
-            }
-        }
-        let q = if l < Rational::new(1, 2) {
-            l * (Rational::one() + sat)
-        } else {
-            l + sat - l * sat
-        };
-        let p = Rational::from_integer(2) * l - q;
-
-        (
-            hue2rgb(p, q, hue + Rational::new(1, 3)),
-            hue2rgb(p, q, hue),
-            hue2rgb(p, q, hue - Rational::new(1, 3)),
-        )
-    }
-}
-
-/// Convert rgb (0 .. 255) to hue (degrees) / sat (0 .. 1) / lighness (0 .. 1)
-pub fn rgb_to_hsl(
-    red: &Rational,
-    green: &Rational,
-    blue: &Rational,
-) -> (Rational, Rational, Rational) {
-    let ff = Rational::from_integer(255);
-    let (red, green, blue) = (red / ff, green / ff, blue / ff);
-    let (max, min, largest) = max_min_largest(red, green, blue);
-    let half = Rational::new(1, 2);
-    let mid = (max + min) * half;
-
-    if max == min {
-        (Rational::zero(), Rational::zero(), mid)
-    } else {
-        let d = max - min;
-        let s = if mid > half {
-            d / (Rational::from_integer(2) - max - min)
-        } else {
-            d / (max + min)
-        };
-        let h = match largest {
-            0 => {
-                (green - blue) / d + if green < blue {
-                    Rational::from_integer(6)
-                } else {
-                    Rational::zero()
-                }
-            }
-            1 => (blue - red) / d + Rational::from_integer(2),
-            _ => (red - green) / d + Rational::from_integer(4),
-        } * Rational::new(360, 6);
-        (h, s, mid)
-    }
-}
-
-// Find which of three numbers are largest and smallest
-fn max_min_largest(
-    a: Rational,
-    b: Rational,
-    c: Rational,
-) -> (Rational, Rational, u32) {
-    let v = [(a, 0), (b, 1), (c, 2)];
-    let max = v.iter().max().unwrap();
-    let min = v.iter().min().unwrap();
-    (max.0, min.0, max.1)
-}
-
-/// Convert a value in the 0 .. 1 range to u8
-fn frac_to_int(v: Rational) -> Rational {
-    cap_u8(Rational::from_integer(255) * v)
-}
-
-fn cap_u8(n: Rational) -> Rational {
-    let ff = Rational::new(255, 1);
-    if n > ff {
-        ff
-    } else if n.is_negative() {
-        Rational::zero()
-    } else {
-        n
-    }
 }
 
 fn to_rational(v: Value) -> Result<Rational, Error> {

@@ -1,12 +1,240 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
 #![cfg_attr(feature = "cargo-clippy", allow(unreadable_literal))]
+use num_traits::{One, Signed, Zero};
 
 use num_rational::Rational;
 use std::collections::BTreeMap;
 
-pub fn rgb_to_name(r: u8, g: u8, b: u8) -> Option<&'static str> {
-    let c = (u32::from(r) << 16) + (u32::from(g) << 8) + u32::from(b);
-    LOOKUP.v2n.get(&c).map(|n| *n)
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct Rgba {
+    pub red: Rational,
+    pub green: Rational,
+    pub blue: Rational,
+    pub alpha: Rational,
+}
+
+impl Rgba {
+    pub fn new(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
+        fn cap(n: Rational, ff: &Rational) -> Rational {
+            if n > *ff {
+                *ff
+            } else if n.is_negative() {
+                Rational::zero()
+            } else {
+                n
+            }
+        }
+        let ff = Rational::new(255, 1);
+        let one = Rational::one();
+        Rgba {
+            red: cap(r, &ff),
+            green: cap(g, &ff),
+            blue: cap(b, &ff),
+            alpha: cap(a, &one),
+        }
+    }
+    pub fn from_rgb(r: u8, g: u8, b: u8) -> Self {
+        Rgba {
+            red: Rational::from_integer(r.into()),
+            green: Rational::from_integer(g.into()),
+            blue: Rational::from_integer(b.into()),
+            alpha: Rational::one(),
+        }
+    }
+    pub fn from_hsla(
+        hue: Rational,
+        sat: Rational,
+        lig: Rational,
+        a: Rational,
+    ) -> Self {
+        let ff = Rational::from_integer(255);
+        if sat.is_zero() {
+            let gray = lig * ff;
+            Rgba::new(gray, gray, gray, a)
+        } else {
+            fn hue2rgb(p: Rational, q: Rational, t: Rational) -> Rational {
+                let t = t - t.floor();
+                if t < Rational::new(1, 6) {
+                    p + (q - p) * Rational::from_integer(6) * t
+                } else if t < Rational::new(1, 2) {
+                    q
+                } else if t < Rational::new(2, 3) {
+                    p + (q - p)
+                        * (Rational::new(2, 3) - t)
+                        * Rational::from_integer(6)
+                } else {
+                    p
+                }
+            }
+            let q = if lig < Rational::new(1, 2) {
+                lig * (Rational::one() + sat)
+            } else {
+                lig + sat - lig * sat
+            };
+            let p = Rational::from_integer(2) * lig - q;
+
+            Rgba::new(
+                ff * hue2rgb(p, q, hue + Rational::new(1, 3)),
+                ff * hue2rgb(p, q, hue),
+                ff * hue2rgb(p, q, hue - Rational::new(1, 3)),
+                a,
+            )
+        }
+    }
+    pub fn mix(a: &Self, b: &Self, weight: &Rational) -> Self {
+        let one = Rational::one();
+        let w2 = one - (one - weight * a.alpha) * b.alpha;
+        fn m(v1: &Rational, v2: &Rational, w: Rational) -> Rational {
+            *v1 * w + *v2 * (Rational::one() - w)
+        }
+        Rgba {
+            red: m(&a.red, &b.red, w2),
+            green: m(&a.green, &b.green, w2),
+            blue: m(&a.blue, &b.blue, w2),
+            alpha: m(&a.alpha, &b.alpha, *weight),
+        }
+    }
+    pub fn name(&self) -> Option<&'static str> {
+        if self.alpha >= Rational::from_integer(1) {
+            let r = self.red.round().to_integer() as u8;
+            let g = self.green.round().to_integer() as u8;
+            let b = self.blue.round().to_integer() as u8;
+            let c = (u32::from(r) << 16) + (u32::from(g) << 8) + u32::from(b);
+            LOOKUP.v2n.get(&c).map(|n| *n)
+        } else if self.all_zero() {
+            Some("transparent")
+        } else {
+            None
+        }
+    }
+    pub fn all_zero(&self) -> bool {
+        self.alpha.is_zero()
+            && self.red.is_zero()
+            && self.green.is_zero()
+            && self.blue.is_zero()
+    }
+    pub fn to_bytes(&self) -> (u8, u8, u8, u8) {
+        fn byte(v: Rational) -> u8 {
+            v.round().to_integer() as u8
+        }
+        let a = self.alpha * Rational::new(255, 1);
+        (byte(self.red), byte(self.green), byte(self.blue), byte(a))
+    }
+    /// Convert rgb (0 .. 255) to hue (degrees) / sat (0 .. 1) / lighness (0 .. 1)
+    pub fn to_hsla(&self) -> (Rational, Rational, Rational, Rational) {
+        let ff = Rational::from_integer(255);
+        let (red, green, blue) =
+            (self.red / ff, self.green / ff, self.blue / ff);
+        let (max, min, largest) = max_min_largest(red, green, blue);
+        let half = Rational::new(1, 2);
+        let mid = (max + min) * half;
+
+        if max == min {
+            (Rational::zero(), Rational::zero(), mid, self.alpha)
+        } else {
+            let d = max - min;
+            let s = if mid > half {
+                d / (Rational::from_integer(2) - max - min)
+            } else {
+                d / (max + min)
+            };
+            let h = match largest {
+                0 => {
+                    (green - blue) / d + if green < blue {
+                        Rational::from_integer(6)
+                    } else {
+                        Rational::zero()
+                    }
+                }
+                1 => (blue - red) / d + Rational::from_integer(2),
+                _ => (red - green) / d + Rational::from_integer(4),
+            } * Rational::new(360, 6);
+            (h, s, mid, self.alpha)
+        }
+    }
+}
+
+use std::ops::{Add, Div, Sub};
+impl Add<Rational> for Rgba {
+    type Output = Rgba;
+
+    fn add(self, rhs: Rational) -> Rgba {
+        Rgba::new(
+            self.red + rhs,
+            self.green + rhs,
+            self.blue + rhs,
+            self.alpha,
+        )
+    }
+}
+
+impl Add<Rgba> for Rgba {
+    type Output = Rgba;
+
+    fn add(self, rhs: Rgba) -> Rgba {
+        Rgba::new(
+            self.red + rhs.red,
+            self.green + rhs.green,
+            self.blue + rhs.blue,
+            // TODO Sum or average the alpha?
+            self.alpha + rhs.alpha,
+        )
+    }
+}
+
+impl<'a> Div<Rational> for &'a Rgba {
+    type Output = Rgba;
+
+    fn div(self, rhs: Rational) -> Rgba {
+        Rgba::new(
+            self.red / rhs,
+            self.green / rhs,
+            self.blue / rhs,
+            self.alpha,
+        )
+    }
+}
+
+impl<'a> Sub<Rational> for &'a Rgba {
+    type Output = Rgba;
+
+    fn sub(self, rhs: Rational) -> Rgba {
+        Rgba::new(
+            self.red - rhs,
+            self.green - rhs,
+            self.blue - rhs,
+            self.alpha,
+        )
+    }
+}
+
+impl<'a> Sub<&'a Rgba> for &'a Rgba {
+    type Output = Rgba;
+
+    fn sub(self, rhs: &'a Rgba) -> Rgba {
+        Rgba::new(
+            self.red - rhs.red,
+            self.green - rhs.green,
+            self.blue - rhs.blue,
+            avg(&self.alpha, &rhs.alpha),
+        )
+    }
+}
+
+fn avg(a: &Rational, b: &Rational) -> Rational {
+    (a + b) * Rational::new(1, 2)
+}
+
+// Find which of three numbers are largest and smallest
+fn max_min_largest(
+    a: Rational,
+    b: Rational,
+    c: Rational,
+) -> (Rational, Rational, u32) {
+    let v = [(a, 0), (b, 1), (c, 2)];
+    let max = v.iter().max().unwrap();
+    let min = v.iter().min().unwrap();
+    (max.0, min.0, max.1)
 }
 
 pub fn name_to_rgb(name: &str) -> Option<(Rational, Rational, Rational)> {
@@ -19,12 +247,12 @@ pub fn name_to_rgb(name: &str) -> Option<(Rational, Rational, Rational)> {
 
 #[test]
 fn get_black() {
-    assert_eq!(rgb_to_name(0, 0, 0), Some("black"))
+    assert_eq!(Rgba::from_rgb(0, 0, 0).name(), Some("black"))
 }
 
 #[test]
 fn get_none() {
-    assert_eq!(rgb_to_name(0, 1, 2), None)
+    assert_eq!(Rgba::from_rgb(0, 1, 2).name(), None)
 }
 
 #[test]
