@@ -35,9 +35,9 @@ impl Rgba {
     }
     pub fn from_rgb(r: u8, g: u8, b: u8) -> Self {
         Rgba {
-            red: Rational::from_integer(r.into()),
-            green: Rational::from_integer(g.into()),
-            blue: Rational::from_integer(b.into()),
+            red: Rational::from_integer(r as isize),
+            green: Rational::from_integer(g as isize),
+            blue: Rational::from_integer(b as isize),
             alpha: Rational::one(),
         }
     }
