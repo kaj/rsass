@@ -107,6 +107,13 @@ impl Rgba {
             None
         }
     }
+    pub fn from_name(name: &str) -> Option<Self> {
+        // Note: there is a u32.to_bytes(), but still not stable
+        LOOKUP.n2v.get(name).map(|n| {
+            Self::from_rgb((*n >> 16) as u8, (*n >> 8) as u8, *n as u8)
+        })
+    }
+
     pub fn all_zero(&self) -> bool {
         self.alpha.is_zero()
             && self.red.is_zero()
@@ -237,14 +244,6 @@ fn max_min_largest(
     (max.0, min.0, max.1)
 }
 
-pub fn name_to_rgb(name: &str) -> Option<(Rational, Rational, Rational)> {
-    fn r(n: u32) -> Rational {
-        let n = n % 256;
-        Rational::from_integer(n as isize)
-    }
-    LOOKUP.n2v.get(name).map(|n| (r(n >> 16), r(n >> 8), r(*n)))
-}
-
 #[test]
 fn get_black() {
     assert_eq!(Rgba::from_rgb(0, 0, 0).name(), Some("black"))
@@ -257,16 +256,12 @@ fn get_none() {
 
 #[test]
 fn get_red_by_name() {
-    use num_traits::Zero;
-    assert_eq!(
-        Some((Rational::new(255, 1), Rational::zero(), Rational::zero())),
-        name_to_rgb("red")
-    );
+    assert_eq!(Some(Rgba::from_rgb(255, 0, 0)), Rgba::from_name("red"));
 }
 
 #[test]
 fn get_none_by_name() {
-    assert_eq!(None, name_to_rgb("xyzzy"));
+    assert_eq!(None, Rgba::from_name("xyzzy"));
 }
 
 struct Lookup {
