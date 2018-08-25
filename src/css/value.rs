@@ -2,10 +2,9 @@ use css::CallArgs;
 use error::Error;
 use functions::SassFunction;
 use num_rational::Rational;
-use num_traits::{One, Signed, Zero};
 use ordermap::OrderMap;
 use std::fmt::{self, Write};
-use value::{rgb_to_name, ListSeparator, Number, Operator, Quotes, Unit};
+use value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -25,7 +24,7 @@ pub enum Value {
     /// The boolean flag is true for calculated values and false for
     /// literal values.
     Numeric(Number, Unit, bool),
-    Color(Rational, Rational, Rational, Rational, Option<String>),
+    Color(Rgba, Option<String>),
     Null,
     True,
     False,
@@ -51,28 +50,13 @@ impl Value {
         }
     }
     pub fn black() -> Self {
-        let z = Rational::zero();
-        Value::Color(z, z, z, Rational::one(), Some("black".into()))
+        Value::Color(Rgba::from_rgb(0, 0, 0), Some("black".into()))
     }
     pub fn rgba(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
-        fn cap(n: Rational, ff: &Rational) -> Rational {
-            if n > *ff {
-                *ff
-            } else if n.is_negative() {
-                Rational::zero()
-            } else {
-                n
-            }
-        }
-        let ff = Rational::new(255, 1);
-        let one = Rational::one();
-        Value::Color(
-            cap(r, &ff),
-            cap(g, &ff),
-            cap(b, &ff),
-            cap(a, &one),
-            None,
-        )
+        Value::Color(Rgba::new(r, g, b, a), None)
+    }
+    pub fn hsla(h: Rational, s: Rational, l: Rational, a: Rational) -> Self {
+        Value::Color(Rgba::from_hsla(h / 360, s, l, a), None)
     }
 
     pub fn type_name(&self) -> &'static str {
@@ -91,7 +75,7 @@ impl Value {
     pub fn is_calculated(&self) -> bool {
         match *self {
             Value::Numeric(.., calculated) => calculated,
-            Value::Color(_, _, _, _, None) => true,
+            Value::Color(_, None) => true,
             _ => false,
         }
     }
@@ -273,58 +257,11 @@ impl fmt::Display for Value {
                 num.fmt(out)?;
                 unit.fmt(out)
             }
-            Value::Color(ref r, ref g, ref b, ref a, ref name) => {
+            Value::Color(ref rgba, ref name) => {
                 if let Some(ref name) = *name {
-                    write!(out, "{}", name)
-                } else if *a >= Rational::from_integer(1) {
-                    let r = r.round().to_integer() as u8;
-                    let g = g.round().to_integer() as u8;
-                    let b = b.round().to_integer() as u8;
-                    // E.g. #ff00cc can be written #f0c in css.
-                    // 0xff / 17 = 0xf (since 17 = 0x11).
-                    let short = r % 17 == 0 && g % 17 == 0 && b % 17 == 0;
-                    let hex_len = if short { 4 } else { 7 };
-                    match rgb_to_name(r, g, b) {
-                        Some(name)
-                            if !(out.alternate() && name.len() > hex_len) =>
-                        {
-                            write!(out, "{}", name)
-                        }
-                        _ if out.alternate() && short => write!(
-                            out,
-                            "#{:x}{:x}{:x}",
-                            r / 17,
-                            g / 17,
-                            b / 17
-                        ),
-                        _ => write!(out, "#{:02x}{:02x}{:02x}", r, g, b),
-                    }
-                } else if a.is_zero()
-                    && r.is_zero()
-                    && g.is_zero()
-                    && b.is_zero()
-                {
-                    write!(out, "transparent")
-                } else if out.alternate() {
-                    write!(
-                        out,
-                        // I think the last {} should be {:#} here,
-                        // but the test suite says otherwise.
-                        "rgba({},{},{},{})",
-                        r.round().to_integer() as u8,
-                        g.round().to_integer() as u8,
-                        b.round().to_integer() as u8,
-                        Number::new(*a),
-                    )
+                    name.fmt(out)
                 } else {
-                    write!(
-                        out,
-                        "rgba({}, {}, {}, {})",
-                        r.round().to_integer() as u8,
-                        g.round().to_integer() as u8,
-                        b.round().to_integer() as u8,
-                        Number::new(*a),
-                    )
+                    rgba.fmt(out)
                 }
             }
             Value::List(ref v, ref sep, brackets) => {

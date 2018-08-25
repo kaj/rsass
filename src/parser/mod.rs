@@ -15,8 +15,6 @@ use error::Error;
 use functions::SassFunction;
 use nom::types::CompleteByteSlice as Input;
 use nom::Err;
-#[cfg(test)]
-use num_rational::Rational;
 use parser::util::{comment, ignore_space, name, opt_spacelike, spacelike};
 #[cfg(test)]
 use sass::{CallArgs, FormalArgs};
@@ -28,7 +26,7 @@ use std::path::Path;
 use std::str::from_utf8;
 use value::ListSeparator;
 #[cfg(test)]
-use value::{Number, Unit};
+use value::{Number, Rgba, Unit};
 
 /// Parse a scss value.
 ///
@@ -569,17 +567,13 @@ fn test_mixin_declaration_default_and_subrules() {
 
 #[test]
 fn test_simple_property() {
-    let one = Rational::from_integer(1);
-    fn r(v: u8) -> Rational {
-        Rational::from_integer(v as isize)
-    }
     assert_eq!(
         property(Input(b"color: red;\n")),
         Ok((
             Input(b""),
             Item::Property(
                 "color".into(),
-                Value::Color(r(255), r(0), r(0), one, Some("red".into())),
+                Value::Color(Rgba::from_rgb(255, 0, 0), Some("red".into())),
             )
         ))
     )

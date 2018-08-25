@@ -1,10 +1,10 @@
 use css;
 use functions::get_builtin_function;
 use num_rational::Rational;
-use num_traits::{One, Signed, Zero};
+use num_traits::Zero;
 use ordermap::OrderMap;
 use sass::{CallArgs, SassString};
-use value::{ListSeparator, Number, Operator, Quotes, Unit};
+use value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
 use variablescope::Scope;
 
 /// A sass value.
@@ -27,7 +27,7 @@ pub enum Value {
     Variable(String),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
-    Color(Rational, Rational, Rational, Rational, Option<String>),
+    Color(Rgba, Option<String>),
     Null,
     True,
     False,
@@ -55,28 +55,10 @@ impl Value {
         }
     }
     pub fn black() -> Self {
-        let z = Rational::zero();
-        Value::Color(z, z, z, Rational::one(), Some("black".into()))
+        Value::Color(Rgba::from_rgb(0, 0, 0), Some("black".into()))
     }
     pub fn rgba(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
-        fn cap(n: Rational, ff: &Rational) -> Rational {
-            if n > *ff {
-                *ff
-            } else if n.is_negative() {
-                Rational::zero()
-            } else {
-                n
-            }
-        }
-        let ff = Rational::new(255, 1);
-        let one = Rational::one();
-        Value::Color(
-            cap(r, &ff),
-            cap(g, &ff),
-            cap(b, &ff),
-            cap(a, &one),
-            None,
-        )
+        Value::Color(Rgba::new(r, g, b, a), None)
     }
 
     pub fn type_name(&self) -> &'static str {
@@ -124,8 +106,8 @@ impl Value {
                 }
             }
             Value::Paren(ref v) => v.do_evaluate(scope, true),
-            Value::Color(r, g, b, a, ref name) => {
-                css::Value::Color(r, g, b, a, name.clone())
+            Value::Color(ref rgba, ref name) => {
+                css::Value::Color(rgba.clone(), name.clone())
             }
             Value::Variable(ref name) => scope.get(name).into_calculated(),
             Value::List(ref v, ref s, b, needs_requote) => css::Value::List(

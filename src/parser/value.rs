@@ -1,7 +1,6 @@
 use nom::multispace;
 use nom::types::CompleteByteSlice as Input;
 use num_rational::Rational;
-use num_traits::One;
 use parser::formalargs::call_args;
 use parser::strings::{
     sass_string, sass_string_dq, sass_string_ext, sass_string_sq,
@@ -10,7 +9,7 @@ use parser::unit::unit;
 use parser::util::{name, opt_spacelike, spacelike2};
 use sass::{SassString, Value};
 use std::str::from_utf8;
-use value::{name_to_rgb, ListSeparator, Number, Operator};
+use value::{ListSeparator, Number, Operator, Rgba};
 
 named!(pub value_expression<Input, Value>,
        do_parse!(
@@ -341,10 +340,11 @@ named!(
                     | tuple!(hexchar, hexchar, hexchar)
             ),
             |(r, g, b): (Input, Input, Input)| Value::Color(
-                from_hex(&r),
-                from_hex(&g),
-                from_hex(&b),
-                Rational::from_integer(1),
+                Rgba::from_rgb(
+                    from_hex(&r),
+                    from_hex(&g),
+                    from_hex(&b),
+                ),
                 Some(format!(
                     "#{}{}{}",
                     from_utf8(&r).unwrap(),
@@ -387,14 +387,8 @@ named!(
 
 fn literal_or_color(s: SassString) -> Value {
     if let Some(val) = s.single_raw() {
-        if let Some((r, g, b)) = name_to_rgb(val) {
-            return Value::Color(
-                r,
-                g,
-                b,
-                Rational::one(),
-                Some(val.to_string()),
-            );
+        if let Some(rgba) = Rgba::from_name(val) {
+            return Value::Color(rgba, Some(val.to_string()));
         }
     }
     Value::Literal(s)
@@ -404,9 +398,9 @@ named!(hexchar<Input, Input>, recognize!(one_of!("0123456789ABCDEFabcdef")));
 
 named!(hexchar2<Input, Input>, recognize!(pair!(hexchar, hexchar)));
 
-fn from_hex(v: &[u8]) -> Rational {
-    let i = u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap() as isize;
-    Rational::from_integer(if v.len() == 1 { i * 17 } else { i })
+fn from_hex(v: &[u8]) -> u8 {
+    let i = u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap();
+    return if v.len() > 1 { i } else { i * 0x11 };
 }
 
 named!(pub dictionary<Input, Value>,
@@ -438,7 +432,6 @@ named!(
 mod test {
     use super::*;
     use num_rational::Rational;
-    use num_traits::{One, Zero};
     use sass::CallArgs;
     use sass::Value::*;
     use value::Unit;
@@ -529,13 +522,7 @@ mod test {
     fn simple_value_literal_color() {
         check_expr(
             "red;",
-            Color(
-                Rational::new(255, 1),
-                Rational::zero(),
-                Rational::zero(),
-                Rational::one(),
-                Some("red".into()),
-            ),
+            Color(Rgba::from_rgb(255, 0, 0), Some("red".into())),
         )
     }
 
@@ -677,13 +664,7 @@ mod test {
     fn color_short() {
         check_expr(
             "#AbC;",
-            Color(
-                Rational::new(170, 1),
-                Rational::new(187, 1),
-                Rational::new(204, 1),
-                Rational::one(),
-                Some("#AbC".into()),
-            ),
+            Color(Rgba::from_rgb(0xaa, 0xbb, 0xcc), Some("#AbC".into())),
         )
     }
 
@@ -691,13 +672,7 @@ mod test {
     fn color_long() {
         check_expr(
             "#AaBbCc;",
-            Color(
-                Rational::new(170, 1),
-                Rational::new(187, 1),
-                Rational::new(204, 1),
-                Rational::one(),
-                Some("#AaBbCc".into()),
-            ),
+            Color(Rgba::from_rgb(0xaa, 0xbb, 0xcc), Some("#AaBbCc".into())),
         )
     }
 

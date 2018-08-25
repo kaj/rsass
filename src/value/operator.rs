@@ -1,5 +1,4 @@
 use css::Value;
-use num_rational::Rational;
 use num_traits::Zero;
 use std::fmt;
 use value::{ListSeparator, Quotes, Unit};
@@ -38,69 +37,50 @@ impl Operator {
             Operator::GreaterE => Some(Value::bool(a >= b)),
             Operator::Lesser => Some(Value::bool(a < b)),
             Operator::LesserE => Some(Value::bool(a <= b)),
-            Operator::Plus => {
-                match (a, b) {
-                    (
-                        Value::Color(ar, ag, ab, aa, _),
-                        Value::Numeric(bn, Unit::None, _),
-                    ) => {
-                        let bn = bn.value;
-                        Some(Value::rgba(ar + bn, ag + bn, ab + bn, aa))
-                    }
-                    (
-                        Value::Color(ar, ag, ab, aa, _),
-                        Value::Color(br, bg, bb, ba, _),
-                    ) => {
-                        // TODO Sum or average the alpha?
-                        Some(Value::rgba(ar + br, ag + bg, ab + bb, aa + ba))
-                    }
-                    (
-                        Value::Numeric(a, au, ..),
-                        Value::Numeric(b, bu, ..),
-                    ) => {
-                        if au == bu || bu == Unit::None {
-                            Some(Value::Numeric(a + b, au, true))
-                        } else if au == Unit::None {
-                            Some(Value::Numeric(a + b, bu, true))
-                        } else {
-                            Some(Value::Literal(
-                                format!("{}{}", a, b),
-                                Quotes::None,
-                            ))
-                        }
-                    }
-                    (
-                        Value::Literal(a, Quotes::None),
-                        Value::Literal(b, _),
-                    ) => Some(Value::Literal(
-                        format!("{}{}", a, b),
-                        Quotes::None,
-                    )),
-                    (Value::Literal(a, _), Value::Literal(b, _)) => Some(
-                        Value::Literal(format!("{}{}", a, b), Quotes::Double),
-                    ),
-                    (Value::Literal(a, q), b) => {
-                        Some(Value::Literal(format!("{}{}", a, b), q))
-                    }
-                    (a, Value::Literal(b, q)) => {
-                        Some(Value::Literal(format!("{}{}", a, b), q))
-                    }
-                    _ => None,
+            Operator::Plus => match (a, b) {
+                (Value::Color(a, _), Value::Numeric(bn, Unit::None, _)) => {
+                    let bn = bn.value;
+                    Some(Value::Color(a + bn, None))
                 }
-            }
+                (Value::Color(a, _), Value::Color(b, _)) => {
+                    Some(Value::Color(a + b, None))
+                }
+                (Value::Numeric(a, au, ..), Value::Numeric(b, bu, ..)) => {
+                    if au == bu || bu == Unit::None {
+                        Some(Value::Numeric(a + b, au, true))
+                    } else if au == Unit::None {
+                        Some(Value::Numeric(a + b, bu, true))
+                    } else {
+                        Some(Value::Literal(
+                            format!("{}{}", a, b),
+                            Quotes::None,
+                        ))
+                    }
+                }
+                (Value::Literal(a, Quotes::None), Value::Literal(b, _)) => {
+                    Some(Value::Literal(format!("{}{}", a, b), Quotes::None))
+                }
+                (Value::Literal(a, _), Value::Literal(b, _)) => Some(
+                    Value::Literal(format!("{}{}", a, b), Quotes::Double),
+                ),
+                (Value::Literal(a, q), b) => {
+                    Some(Value::Literal(format!("{}{}", a, b), q))
+                }
+                (a, Value::Literal(b, q)) => {
+                    Some(Value::Literal(format!("{}{}", a, b), q))
+                }
+                _ => None,
+            },
             Operator::Minus => match (&a, &b) {
                 (
-                    &Value::Color(ref ar, ref ag, ref ab, ref aa, _),
+                    &Value::Color(ref a, _),
                     &Value::Numeric(ref bn, Unit::None, _),
                 ) => {
                     let bn = bn.value;
-                    Some(Value::rgba(ar - bn, ag - bn, ab - bn, *aa))
+                    Some(Value::Color(a - bn, None))
                 }
-                (
-                    &Value::Color(ref ar, ref ag, ref ab, ref aa, _),
-                    &Value::Color(ref br, ref bg, ref bb, ref ba, _),
-                ) => {
-                    Some(Value::rgba(ar - br, ag - bg, ab - bb, avg(aa, ba)))
+                (&Value::Color(ref a, _), &Value::Color(ref b, _)) => {
+                    Some(Value::Color(a - b, None))
                 }
                 (
                     &Value::Numeric(ref av, ref au, ..),
@@ -157,11 +137,11 @@ impl Operator {
                 if a.is_calculated() || b.is_calculated() {
                     match (&a, &b) {
                         (
-                            &Value::Color(ref ar, ref ag, ref ab, ref aa, _),
+                            &Value::Color(ref a, _),
                             &Value::Numeric(ref bn, Unit::None, ..),
                         ) => {
                             let bn = bn.value;
-                            Some(Value::rgba(ar / bn, ag / bn, ab / bn, *aa))
+                            Some(Value::Color(a / bn, None))
                         }
                         (
                             &Value::Numeric(ref av, ref au, ..),
@@ -201,10 +181,6 @@ impl Operator {
             Operator::Not => panic!("not is a unary operator only"),
         }
     }
-}
-
-fn avg(a: &Rational, b: &Rational) -> Rational {
-    (a + b) * Rational::new(1, 2)
 }
 
 impl fmt::Display for Operator {

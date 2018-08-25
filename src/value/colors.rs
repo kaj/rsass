@@ -2,43 +2,268 @@
 #![cfg_attr(feature = "cargo-clippy", allow(unreadable_literal))]
 
 use num_rational::Rational;
+use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
+use std::fmt::{self, Display};
+use std::ops::{Add, Div, Sub};
+use value::Number;
 
-pub fn rgb_to_name(r: u8, g: u8, b: u8) -> Option<&'static str> {
-    let c = (u32::from(r) << 16) + (u32::from(g) << 8) + u32::from(b);
-    LOOKUP.v2n.get(&c).map(|n| *n)
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct Rgba {
+    pub red: Rational,
+    pub green: Rational,
+    pub blue: Rational,
+    pub alpha: Rational,
 }
 
-pub fn name_to_rgb(name: &str) -> Option<(Rational, Rational, Rational)> {
-    fn r(n: u32) -> Rational {
-        let n = n % 256;
-        Rational::from_integer(n as isize)
+impl Rgba {
+    pub fn new(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
+        let ff = Rational::new(255, 1);
+        let one = Rational::one();
+        Rgba {
+            red: cap(r, &ff),
+            green: cap(g, &ff),
+            blue: cap(b, &ff),
+            alpha: cap(a, &one),
+        }
     }
-    LOOKUP.n2v.get(name).map(|n| (r(n >> 16), r(n >> 8), r(*n)))
+    pub fn from_rgb(r: u8, g: u8, b: u8) -> Self {
+        Rgba {
+            red: Rational::from_integer(r as isize),
+            green: Rational::from_integer(g as isize),
+            blue: Rational::from_integer(b as isize),
+            alpha: Rational::one(),
+        }
+    }
+    pub fn from_hsla(
+        hue: Rational,
+        sat: Rational,
+        lig: Rational,
+        a: Rational,
+    ) -> Self {
+        let sat = cap(sat, &Rational::one());
+        let lig = cap(lig, &Rational::one());
+        if sat.is_zero() {
+            let gray = lig * 255;
+            Rgba::new(gray, gray, gray, a)
+        } else {
+            fn hue2rgb(p: Rational, q: Rational, t: Rational) -> Rational {
+                let t = (t - t.floor()) * 6;
+                match t.to_integer() {
+                    0 => p + (q - p) * t,
+                    1 | 2 => q,
+                    3 => p + (p - q) * (t - 4),
+                    _ => p,
+                }
+            }
+            let q = if lig < Rational::new(1, 2) {
+                lig * (sat + 1)
+            } else {
+                lig + sat - lig * sat
+            };
+            let p = lig * 2 - q;
+
+            Rgba::new(
+                hue2rgb(p, q, hue + Rational::new(1, 3)) * 255,
+                hue2rgb(p, q, hue) * 255,
+                hue2rgb(p, q, hue - Rational::new(1, 3)) * 255,
+                a,
+            )
+        }
+    }
+    pub fn name(&self) -> Option<&'static str> {
+        if self.alpha >= Rational::one() {
+            let (r, g, b, _a) = self.to_bytes();
+            // Note: nicer but not yet supported code:
+            // let c = u32::from_be(u32::from_bytes(0, r, g, b))
+            let c = (u32::from(r) << 16) + (u32::from(g) << 8) + u32::from(b);
+            LOOKUP.v2n.get(&c).map(|n| *n)
+        } else {
+            None
+        }
+    }
+    pub fn from_name(name: &str) -> Option<Self> {
+        LOOKUP.n2v.get(name).map(|n| {
+            // Note: nicer but not yet supported code:
+            // let [_, r, g, b] = n.to_be().to_bytes()
+            Self::from_rgb((*n >> 16) as u8, (*n >> 8) as u8, *n as u8)
+        })
+    }
+
+    pub fn all_zero(&self) -> bool {
+        self.alpha.is_zero()
+            && self.red.is_zero()
+            && self.green.is_zero()
+            && self.blue.is_zero()
+    }
+    pub fn to_bytes(&self) -> (u8, u8, u8, u8) {
+        fn byte(v: Rational) -> u8 {
+            v.round().to_integer() as u8
+        }
+        let a = self.alpha * 255;
+        (byte(self.red), byte(self.green), byte(self.blue), byte(a))
+    }
+    /// Convert rgb (0 .. 255) to hue (degrees) / sat (0 .. 1) / lighness (0 .. 1)
+    pub fn to_hsla(&self) -> (Rational, Rational, Rational, Rational) {
+        let (red, green, blue) =
+            (self.red / 255, self.green / 255, self.blue / 255);
+        let (max, min, largest) = max_min_largest(red, green, blue);
+
+        if max == min {
+            (Rational::zero(), Rational::zero(), max, self.alpha)
+        } else {
+            let d = max - min;
+            let h = match largest {
+                0 => (green - blue) / d + if green < blue { 6 } else { 0 },
+                1 => (blue - red) / d + 2,
+                _ => (red - green) / d + 4,
+            } * 360
+                / 6;
+            let mm = max + min;
+            let s = d / if mm > Rational::one() { -mm + 2 } else { mm };
+            (h, s, mm / 2, self.alpha)
+        }
+    }
+}
+
+fn cap(n: Rational, ff: &Rational) -> Rational {
+    if n > *ff {
+        *ff
+    } else if n.is_negative() {
+        Rational::zero()
+    } else {
+        n
+    }
+}
+
+impl Add<Rational> for Rgba {
+    type Output = Rgba;
+
+    fn add(self, rhs: Rational) -> Rgba {
+        Rgba::new(
+            self.red + rhs,
+            self.green + rhs,
+            self.blue + rhs,
+            self.alpha,
+        )
+    }
+}
+
+impl Add<Rgba> for Rgba {
+    type Output = Rgba;
+
+    fn add(self, rhs: Rgba) -> Rgba {
+        Rgba::new(
+            self.red + rhs.red,
+            self.green + rhs.green,
+            self.blue + rhs.blue,
+            // TODO Sum or average the alpha?
+            self.alpha + rhs.alpha,
+        )
+    }
+}
+
+impl<'a> Div<Rational> for &'a Rgba {
+    type Output = Rgba;
+
+    fn div(self, rhs: Rational) -> Rgba {
+        Rgba::new(
+            self.red / rhs,
+            self.green / rhs,
+            self.blue / rhs,
+            self.alpha,
+        )
+    }
+}
+
+impl<'a> Sub<Rational> for &'a Rgba {
+    type Output = Rgba;
+
+    fn sub(self, rhs: Rational) -> Rgba {
+        Rgba::new(
+            self.red - rhs,
+            self.green - rhs,
+            self.blue - rhs,
+            self.alpha,
+        )
+    }
+}
+
+impl<'a> Sub<&'a Rgba> for &'a Rgba {
+    type Output = Rgba;
+
+    fn sub(self, rhs: &'a Rgba) -> Rgba {
+        Rgba::new(
+            self.red - rhs.red,
+            self.green - rhs.green,
+            self.blue - rhs.blue,
+            (self.alpha + rhs.alpha) / 2,
+        )
+    }
+}
+
+impl Display for Rgba {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        // The byte-version of alpha is not used here.
+        let (r, g, b, _a) = self.to_bytes();
+        let a = self.alpha;
+        if a >= Rational::one() {
+            // E.g. #ff00cc can be written #f0c in css.
+            // 0xff / 0x11 = 0xf.
+            let short = r % 0x11 == 0 && g % 0x11 == 0 && b % 0x11 == 0;
+            let hex_len = if short { 4 } else { 7 };
+            if let Some(name) = self.name() {
+                if !(out.alternate() && name.len() > hex_len) {
+                    return name.fmt(out);
+                }
+            }
+            if out.alternate() && short {
+                write!(out, "#{:x}{:x}{:x}", r / 0x11, g / 0x11, b / 0x11)
+            } else {
+                write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
+            }
+        } else if self.all_zero() {
+            write!(out, "transparent")
+        } else if out.alternate() {
+            // I think the last {} should be {:#} here,
+            // but the test suite says otherwise.
+            write!(out, "rgba({},{},{},{})", r, g, b, Number::new(a))
+        } else {
+            write!(out, "rgba({}, {}, {}, {})", r, g, b, Number::new(a))
+        }
+    }
+}
+
+// Find which of three numbers are largest and smallest
+fn max_min_largest(
+    a: Rational,
+    b: Rational,
+    c: Rational,
+) -> (Rational, Rational, u32) {
+    let v = [(a, 0), (b, 1), (c, 2)];
+    let max = v.iter().max().unwrap();
+    let min = v.iter().min().unwrap();
+    (max.0, min.0, max.1)
 }
 
 #[test]
 fn get_black() {
-    assert_eq!(rgb_to_name(0, 0, 0), Some("black"))
+    assert_eq!(Rgba::from_rgb(0, 0, 0).name(), Some("black"))
 }
 
 #[test]
 fn get_none() {
-    assert_eq!(rgb_to_name(0, 1, 2), None)
+    assert_eq!(Rgba::from_rgb(0, 1, 2).name(), None)
 }
 
 #[test]
 fn get_red_by_name() {
-    use num_traits::Zero;
-    assert_eq!(
-        Some((Rational::new(255, 1), Rational::zero(), Rational::zero())),
-        name_to_rgb("red")
-    );
+    assert_eq!(Some(Rgba::from_rgb(255, 0, 0)), Rgba::from_name("red"));
 }
 
 #[test]
 fn get_none_by_name() {
-    assert_eq!(None, name_to_rgb("xyzzy"));
+    assert_eq!(None, Rgba::from_name("xyzzy"));
 }
 
 struct Lookup {
