@@ -3,7 +3,7 @@ use css::{CallArgs, Value};
 use num_rational::Rational;
 use num_traits::One;
 use std::collections::BTreeMap;
-use value::{ListSeparator, Number, Rgba, Unit};
+use value::{ListSeparator, Number, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, rgb(red, green, blue), |s| Ok(Value::rgba(
@@ -61,54 +61,53 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         value => Err(Error::badarg("color", value)),
     });
     def!(f, mix(color1, color2, weight = b"50%"), |s| {
-        let color1 = s.get("color1");
-        let color2 = s.get("color2");
-        let weight = s.get("weight");
-        if let (
-            &Value::Color(ref rgba1, _),
-            &Value::Color(ref rgba2, _),
-            &Value::Numeric(ref w, ref wu, ..),
-        ) = (&color1, &color2, &weight)
-        {
-            let w = if wu == &Unit::Percent {
-                w.value / Rational::from_integer(100)
-            } else {
-                w.value
-            };
-            Ok(Value::Color(Rgba::mix(rgba1, rgba2, &w), None))
-        } else {
-            Err(Error::badargs(
-                &["color", "color", "number"],
-                &[&color1, &color2, &weight],
-            ))
-        }
-    });
-    def!(f, invert(color, weight = b"100%"), |s| {
-        match (&s.get("color"), &s.get("weight")) {
+        match (s.get("color1"), s.get("color2"), s.get("weight")) {
             (
-                &Value::Color(ref rgba, _),
-                &Value::Numeric(ref w, ref wu, ..),
+                Value::Color(a, _),
+                Value::Color(b, _),
+                Value::Numeric(w, wu, ..),
             ) => {
-                let ff = Rational::new(255, 1);
-                let w = if wu == &Unit::Percent {
-                    w.value / Rational::from_integer(100)
+                let w = if wu == Unit::Percent {
+                    w.value / 100
                 } else {
                     w.value
                 };
-                fn m(v1: &Rational, v2: &Rational, w: Rational) -> Rational {
-                    *v1 * w + *v2 * (Rational::one() - w)
-                }
-                let inv = |v: &Rational| m(&(ff - v), v, w);
+                let one = Rational::one();
+                let w2 = one - (one - w * a.alpha) * b.alpha;
+                let m_c = |a, b| a * w2 + b * (one - w2);;
+                let m_a = |a, b| a * w + b * (one - w);
                 Ok(Value::rgba(
-                    inv(&rgba.red),
-                    inv(&rgba.green),
-                    inv(&rgba.blue),
+                    m_c(a.red, b.red),
+                    m_c(a.green, b.green),
+                    m_c(a.blue, b.blue),
+                    m_a(a.alpha, b.alpha),
+                ))
+            }
+            (color1, color2, weight) => Err(Error::badargs(
+                &["color", "color", "number"],
+                &[&color1, &color2, &weight],
+            )),
+        }
+    });
+    def!(f, invert(color, weight = b"100%"), |s| {
+        match (s.get("color"), s.get("weight")) {
+            (Value::Color(rgba, _), Value::Numeric(w, wu, ..)) => {
+                let w = if wu == Unit::Percent {
+                    w.value / 100
+                } else {
+                    w.value
+                };
+                let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
+                Ok(Value::rgba(
+                    inv(rgba.red),
+                    inv(rgba.green),
+                    inv(rgba.blue),
                     rgba.alpha,
                 ))
             }
             (value, weight) => Err(Error::badargs(
                 &["color", "percentage"],
-                &[value, weight],
+                &[&value, &weight],
             )),
         }
     });
@@ -120,9 +119,7 @@ fn int_value(v: Rational) -> Value {
 
 fn to_int(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, Unit::Percent, _) => {
-            Ok(Rational::new(255, 100) * v.value)
-        }
+        Value::Numeric(v, Unit::Percent, _) => Ok(v.value * 255 / 100),
         Value::Numeric(v, ..) => Ok(v.value),
         v => Err(Error::badarg("number", &v)),
     }

@@ -18,15 +18,6 @@ pub struct Rgba {
 
 impl Rgba {
     pub fn new(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
-        fn cap(n: Rational, ff: &Rational) -> Rational {
-            if n > *ff {
-                *ff
-            } else if n.is_negative() {
-                Rational::zero()
-            } else {
-                n
-            }
-        }
         let ff = Rational::new(255, 1);
         let one = Rational::one();
         Rgba {
@@ -50,55 +41,38 @@ impl Rgba {
         lig: Rational,
         a: Rational,
     ) -> Self {
-        let ff = Rational::from_integer(255);
+        let sat = cap(sat, &Rational::one());
+        let lig = cap(lig, &Rational::one());
         if sat.is_zero() {
-            let gray = lig * ff;
+            let gray = lig * 255;
             Rgba::new(gray, gray, gray, a)
         } else {
             fn hue2rgb(p: Rational, q: Rational, t: Rational) -> Rational {
-                let t = t - t.floor();
-                if t < Rational::new(1, 6) {
-                    p + (q - p) * Rational::from_integer(6) * t
-                } else if t < Rational::new(1, 2) {
-                    q
-                } else if t < Rational::new(2, 3) {
-                    p + (q - p)
-                        * (Rational::new(2, 3) - t)
-                        * Rational::from_integer(6)
-                } else {
-                    p
+                let t = (t - t.floor()) * 6;
+                match t.to_integer() {
+                    0 => p + (q - p) * t,
+                    1 | 2 => q,
+                    3 => p + (p - q) * (t - 4),
+                    _ => p,
                 }
             }
             let q = if lig < Rational::new(1, 2) {
-                lig * (Rational::one() + sat)
+                lig * (sat + 1)
             } else {
                 lig + sat - lig * sat
             };
-            let p = Rational::from_integer(2) * lig - q;
+            let p = lig * 2 - q;
 
             Rgba::new(
-                ff * hue2rgb(p, q, hue + Rational::new(1, 3)),
-                ff * hue2rgb(p, q, hue),
-                ff * hue2rgb(p, q, hue - Rational::new(1, 3)),
+                hue2rgb(p, q, hue + Rational::new(1, 3)) * 255,
+                hue2rgb(p, q, hue) * 255,
+                hue2rgb(p, q, hue - Rational::new(1, 3)) * 255,
                 a,
             )
         }
     }
-    pub fn mix(a: &Self, b: &Self, weight: &Rational) -> Self {
-        let one = Rational::one();
-        let w2 = one - (one - weight * a.alpha) * b.alpha;
-        fn m(v1: &Rational, v2: &Rational, w: Rational) -> Rational {
-            *v1 * w + *v2 * (Rational::one() - w)
-        }
-        Rgba {
-            red: m(&a.red, &b.red, w2),
-            green: m(&a.green, &b.green, w2),
-            blue: m(&a.blue, &b.blue, w2),
-            alpha: m(&a.alpha, &b.alpha, *weight),
-        }
-    }
     pub fn name(&self) -> Option<&'static str> {
-        if self.alpha >= Rational::from_integer(1) {
+        if self.alpha >= Rational::one() {
             let (r, g, b, _a) = self.to_bytes();
             // Note: nicer but not yet supported code:
             // let c = u32::from_be(u32::from_bytes(0, r, g, b))
@@ -126,40 +100,39 @@ impl Rgba {
         fn byte(v: Rational) -> u8 {
             v.round().to_integer() as u8
         }
-        let a = self.alpha * Rational::new(255, 1);
+        let a = self.alpha * 255;
         (byte(self.red), byte(self.green), byte(self.blue), byte(a))
     }
     /// Convert rgb (0 .. 255) to hue (degrees) / sat (0 .. 1) / lighness (0 .. 1)
     pub fn to_hsla(&self) -> (Rational, Rational, Rational, Rational) {
-        let ff = Rational::from_integer(255);
         let (red, green, blue) =
-            (self.red / ff, self.green / ff, self.blue / ff);
+            (self.red / 255, self.green / 255, self.blue / 255);
         let (max, min, largest) = max_min_largest(red, green, blue);
-        let half = Rational::new(1, 2);
-        let mid = (max + min) * half;
 
         if max == min {
-            (Rational::zero(), Rational::zero(), mid, self.alpha)
+            (Rational::zero(), Rational::zero(), max, self.alpha)
         } else {
             let d = max - min;
-            let s = if mid > half {
-                d / (Rational::from_integer(2) - max - min)
-            } else {
-                d / (max + min)
-            };
             let h = match largest {
-                0 => {
-                    (green - blue) / d + if green < blue {
-                        Rational::from_integer(6)
-                    } else {
-                        Rational::zero()
-                    }
-                }
-                1 => (blue - red) / d + Rational::from_integer(2),
-                _ => (red - green) / d + Rational::from_integer(4),
-            } * Rational::new(360, 6);
-            (h, s, mid, self.alpha)
+                0 => (green - blue) / d + if green < blue { 6 } else { 0 },
+                1 => (blue - red) / d + 2,
+                _ => (red - green) / d + 4,
+            } * 360
+                / 6;
+            let mm = max + min;
+            let s = d / if mm > Rational::one() { -mm + 2 } else { mm };
+            (h, s, mm / 2, self.alpha)
         }
+    }
+}
+
+fn cap(n: Rational, ff: &Rational) -> Rational {
+    if n > *ff {
+        *ff
+    } else if n.is_negative() {
+        Rational::zero()
+    } else {
+        n
     }
 }
 
@@ -224,7 +197,7 @@ impl<'a> Sub<&'a Rgba> for &'a Rgba {
             self.red - rhs.red,
             self.green - rhs.green,
             self.blue - rhs.blue,
-            avg(&self.alpha, &rhs.alpha),
+            (self.alpha + rhs.alpha) / 2,
         )
     }
 }
@@ -234,7 +207,7 @@ impl Display for Rgba {
         // The byte-version of alpha is not used here.
         let (r, g, b, _a) = self.to_bytes();
         let a = self.alpha;
-        if a >= Rational::from_integer(1) {
+        if a >= Rational::one() {
             // E.g. #ff00cc can be written #f0c in css.
             // 0xff / 0x11 = 0xf.
             let short = r % 0x11 == 0 && g % 0x11 == 0 && b % 0x11 == 0;
@@ -259,10 +232,6 @@ impl Display for Rgba {
             write!(out, "rgba({}, {}, {}, {})", r, g, b, Number::new(a))
         }
     }
-}
-
-fn avg(a: &Rational, b: &Rational) -> Rational {
-    (a + b) * Rational::new(1, 2)
 }
 
 // Find which of three numbers are largest and smallest

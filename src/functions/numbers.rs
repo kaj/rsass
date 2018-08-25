@@ -21,10 +21,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         v => Err(Error::badarg("number", &v)),
     });
     def!(f, percentage(number), |s| match s.get("number") {
-        Value::Numeric(val, Unit::None, _) => Ok(number(
-            val.value * Rational::from_integer(100),
-            Unit::Percent
-        )),
+        Value::Numeric(val, Unit::None, _) => {
+            Ok(number(val.value * 100, Unit::Percent))
+        }
         v => Err(Error::badarg("number", &v)),
     });
     def!(f, round(number), |s| match s.get("number") {

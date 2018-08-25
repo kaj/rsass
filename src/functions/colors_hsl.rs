@@ -3,95 +3,71 @@ use css::Value;
 use num_rational::Rational;
 use num_traits::{One, Zero};
 use std::collections::BTreeMap;
-use value::{Number, Rgba, Unit};
+use value::{Number, Unit};
 use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, hsl(hue, saturation, lightness), |s: &Scope| Ok(
-        hsla_to_rgba(
-            to_rational(s.get("hue"))? * Rational::new(1, 360),
+        Value::hsla(
+            to_rational(s.get("hue"))?,
             to_rational_percent(s.get("saturation"))?,
             to_rational_percent(s.get("lightness"))?,
             Rational::one()
         )
     ));
     def!(f, hsla(hue, saturation, lightness, alpha), |s: &Scope| Ok(
-        hsla_to_rgba(
-            to_rational(s.get("hue"))? * Rational::new(1, 360),
+        Value::hsla(
+            to_rational(s.get("hue"))?,
             to_rational_percent(s.get("saturation"))?,
             to_rational_percent(s.get("lightness"))?,
             to_rational(s.get("alpha"))?
         )
     ));
     def!(f, adjust_hue(color, degrees), |s: &Scope| {
-        fn a_comb(orig: Rational, x: Value) -> Result<Rational, Error> {
-            match x {
-                Value::Null => Ok(orig),
-                x => Ok(orig + to_rational(x)?),
-            }
-        }
-        match &s.get("color") {
-            &Value::Color(ref rgba, _) => {
-                let h_adj = s.get("degrees");
+        match (s.get("color"), s.get("degrees")) {
+            (c @ Value::Color(..), Value::Null) => Ok(c),
+            (Value::Color(rgba, _), Value::Numeric(v, ..)) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
-                let h = a_comb(h, h_adj)?;
-                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, alpha))
+                Ok(Value::hsla(h + v.value, s, l, alpha))
             }
-            v => Err(Error::badarg("color", v)),
+            (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
     });
     def!(f, complement(color), |s: &Scope| match &s.get("color") {
         &Value::Color(ref rgba, _) => {
             let (h, s, l, alpha) = rgba.to_hsla();
-            let h = (h + Rational::from_integer(180)) * Rational::new(1, 360);
-            Ok(hsla_to_rgba(h, s, l, alpha))
+            Ok(Value::hsla(h + 180, s, l, alpha))
         }
         v => Err(Error::badarg("color", v)),
     });
-    def!(f, saturate(color, amount), |args: &Scope| {
-        fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
-            match x {
-                Value::Null => Ok(orig),
-                x => Ok(cap_percentage(orig + to_rational_percent(x)?)),
-            }
-        }
-        match &args.get("color") {
-            &Value::Color(ref rgba, _) => {
+    def!(f, saturate(color, amount), |s: &Scope| {
+        match (s.get("color"), s.get("amount")) {
+            (Value::Color(c, _), Value::Null) => Ok(Value::Color(c, None)),
+            (Value::Color(rgba, _), Value::Numeric(v, u, _)) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
-                let s = comb(s, args.get("amount"))?;
-                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, alpha))
+                let v = v.value;
+                let v = if u == Unit::Percent { v / 100 } else { v };
+                Ok(Value::hsla(h, s + v, l, alpha))
             }
-            v => Err(Error::badarg("color", v)),
+            (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
     });
     def!(f, lighten(color, amount), |args: &Scope| {
-        fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
-            match x {
-                Value::Null => Ok(orig),
-                x => Ok(cap_percentage(orig + to_rational_percent(x)?)),
-            }
-        }
         match &args.get("color") {
             &Value::Color(ref rgba, _) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
-                let l = comb(l, args.get("amount"))?;
-                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, alpha))
+                let amount = to_rational_percent(args.get("amount"))?;
+                Ok(Value::hsla(h, s, l + amount, alpha))
             }
             v => Err(Error::badarg("color", v)),
         }
     });
     def!(f, darken(color, amount), |args: &Scope| {
-        fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
-            match x {
-                Value::Null => Ok(orig),
-                x => Ok(cap_percentage(orig - to_rational_percent(x)?)),
-            }
-        }
         match &args.get("color") {
             &Value::Color(ref rgba, _) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
-                let l = comb(l, args.get("amount"))?;
-                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, alpha))
+                let amount = to_rational_percent(args.get("amount"))?;
+                Ok(Value::hsla(h, s, l - amount, alpha))
             }
             v => Err(Error::badarg("color", v)),
         }
@@ -118,38 +94,19 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         v => Err(Error::badarg("color", v)),
     });
     def!(f, desaturate(color, amount), |args: &Scope| {
-        fn comb(orig: Rational, x: Value) -> Result<Rational, Error> {
-            match x {
-                Value::Null => Ok(orig),
-                x => Ok(cap_percentage(orig - to_rational_percent(x)?)),
-            }
-        }
         match &args.get("color") {
             &Value::Color(ref rgba, _) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
-                let s = comb(s, args.get("amount"))?;
-                Ok(hsla_to_rgba(h * Rational::new(1, 360), s, l, alpha))
+                let amount = to_rational_percent(args.get("amount"))?;
+                Ok(Value::hsla(h, s - amount, l, alpha))
             }
             v => Err(Error::badarg("color", v)),
         }
     });
 }
 
-pub fn hsla_to_rgba(
-    hue: Rational,
-    sat: Rational,
-    lig: Rational,
-    a: Rational,
-) -> Value {
-    Value::Color(Rgba::from_hsla(hue, sat, lig, a), None)
-}
-
 fn percentage(v: Rational) -> Value {
-    Value::Numeric(
-        Number::new(v * Rational::from_integer(100)),
-        Unit::Percent,
-        true,
-    )
+    Value::Numeric(Number::new(v * 100), Unit::Percent, true)
 }
 
 fn to_rational(v: Value) -> Result<Rational, Error> {
@@ -163,29 +120,13 @@ fn to_rational(v: Value) -> Result<Rational, Error> {
 /// If v is not a percentage, keep it as it is.
 fn to_rational_percent(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, Unit::Percent, _) => {
-            Ok(v.value * Rational::new(1, 100))
-        }
+        Value::Null => Ok(Rational::zero()),
+        Value::Numeric(v, Unit::Percent, _) => Ok(v.value / 100),
         Value::Numeric(v, ..) => {
             let v = v.value;
-            if v <= Rational::new(1, 1) {
-                Ok(v)
-            } else {
-                Ok(v * Rational::new(1, 100))
-            }
+            Ok(if v <= Rational::one() { v } else { v / 100 })
         }
         v => Err(Error::badarg("number", &v)),
-    }
-}
-
-fn cap_percentage(r: Rational) -> Rational {
-    let zero = Rational::zero();
-    if r < zero {
-        zero
-    } else if r > Rational::one() {
-        Rational::one()
-    } else {
-        r
     }
 }
 

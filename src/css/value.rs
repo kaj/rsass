@@ -55,6 +55,9 @@ impl Value {
     pub fn rgba(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
         Value::Color(Rgba::new(r, g, b, a), None)
     }
+    pub fn hsla(h: Rational, s: Rational, l: Rational, a: Rational) -> Self {
+        Value::Color(Rgba::from_hsla(h / 360, s, l, a), None)
+    }
 
     pub fn type_name(&self) -> &'static str {
         match *self {
