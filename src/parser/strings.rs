@@ -1,6 +1,6 @@
-use super::input_to_string;
 use super::util::is_name_char;
 use super::value::value_expression;
+use super::{input_to_str, input_to_string};
 use nom::alphanumeric;
 use nom::types::CompleteByteSlice as Input;
 use sass::{SassString, StringPart};
@@ -73,25 +73,25 @@ named!(
                 | hash_no_interpolation
         ),
         String::new(),
-        |mut acc: String, item: String| {
-            acc.push_str(&item);
+        |mut acc: String, item: &str| {
+            acc.push_str(item);
             acc
         }
     )
 );
 named!(
-    selector_plain_part<Input, String>,
-    map_res!(is_not!("\n\t >$\"'\\#+*/()[]{}:;,=!&@"), input_to_string)
+    selector_plain_part<Input, &str>,
+    map_res!(is_not!("\n\t >$\"'\\#+*/()[]{}:;,=!&@"), input_to_str)
 );
 
 named!(
-    selector_escaped_part<Input, String>,
+    selector_escaped_part<Input, &str>,
     map_res!(
         recognize!(preceded!(
             tag!("\\"),
             alt!(value!((), many_m_n!(1, 3, hexpair)) | value!((), take!(1)))
         )),
-        input_to_string
+        input_to_str
     )
 );
 named!(
@@ -103,8 +103,8 @@ named!(
     ))
 );
 named!(
-    hash_no_interpolation<Input, String>,
-    map_res!(terminated!(tag!("#"), peek!(not!(tag!("{")))), input_to_string)
+    hash_no_interpolation<Input, &str>,
+    map_res!(terminated!(tag!("#"), peek!(not!(tag!("{")))), input_to_str)
 );
 named!(
     extra_escape<Input, StringPart>,
