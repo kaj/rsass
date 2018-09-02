@@ -1,13 +1,11 @@
+use super::formalargs::call_args;
+use super::strings::{sass_string_dq, sass_string_ext, sass_string_sq};
+use super::unit::unit;
+use super::util::{name, opt_spacelike, spacelike2};
+use super::{input_to_string, sass_string};
 use nom::multispace;
 use nom::types::CompleteByteSlice as Input;
 use num_rational::Rational;
-use parser::formalargs::call_args;
-use parser::strings::{
-    input_to_string, sass_string, sass_string_dq, sass_string_ext,
-    sass_string_sq,
-};
-use parser::unit::unit;
-use parser::util::{name, opt_spacelike, spacelike2};
 use sass::{SassString, Value};
 use std::str::from_utf8;
 use value::{ListSeparator, Number, Operator, Rgba};

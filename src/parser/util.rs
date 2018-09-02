@@ -1,4 +1,4 @@
-use super::strings::input_to_string;
+use super::input_to_string;
 use nom::types::CompleteByteSlice as Input;
 use nom::{is_alphanumeric, multispace};
 

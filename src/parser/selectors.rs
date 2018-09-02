@@ -1,7 +1,7 @@
-use super::strings::input_to_string;
+use super::input_to_string;
+use super::strings::{sass_string, sass_string_dq, sass_string_sq};
+use super::util::{opt_spacelike, spacelike2};
 use nom::types::CompleteByteSlice as Input;
-use parser::strings::{sass_string, sass_string_dq, sass_string_sq};
-use parser::util::{opt_spacelike, spacelike2};
 use selectors::{Selector, SelectorPart, Selectors};
 
 named!(pub selectors<Input, Selectors>,

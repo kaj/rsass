@@ -1,9 +1,9 @@
+use super::input_to_string;
+use super::util::is_name_char;
+use super::value::value_expression;
 use nom::alphanumeric;
 use nom::types::CompleteByteSlice as Input;
-use parser::util::is_name_char;
-use parser::value::value_expression;
 use sass::{SassString, StringPart};
-use std::str::from_utf8;
 use value::Quotes;
 
 named!(pub sass_string<Input, SassString>,
@@ -63,15 +63,6 @@ named!(
     simple_qstring_part<Input, StringPart>,
     map!(map_res!(is_not!("\\#'\""), input_to_string), StringPart::Raw)
 );
-
-pub fn input_to_str<'a>(s: Input<'a>) -> Result<&str, Utf8Error> {
-    from_utf8(&s)
-}
-
-use std::str::Utf8Error;
-pub fn input_to_string(s: Input) -> Result<String, Utf8Error> {
-    from_utf8(&s).map(|s| s.to_string())
-}
 
 named!(
     selector_string<Input, String>,

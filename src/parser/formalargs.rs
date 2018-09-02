@@ -1,6 +1,6 @@
+use super::util::{ignore_comments, name, opt_spacelike};
+use super::value::space_list;
 use nom::types::CompleteByteSlice as Input;
-use parser::util::{ignore_comments, name, opt_spacelike};
-use parser::value::space_list;
 use sass::{CallArgs, FormalArgs, Value};
 
 named!(pub formal_args<Input, FormalArgs>,

@@ -7,10 +7,8 @@ pub mod value;
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
-use self::strings::{
-    input_to_str, input_to_string, sass_string, sass_string_dq,
-    sass_string_sq,
-};
+use self::strings::{sass_string, sass_string_dq, sass_string_sq};
+use self::util::{comment, ignore_space, name, opt_spacelike, spacelike};
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
@@ -18,7 +16,6 @@ use error::Error;
 use functions::SassFunction;
 use nom::types::CompleteByteSlice as Input;
 use nom::Err;
-use parser::util::{comment, ignore_space, name, opt_spacelike, spacelike};
 #[cfg(test)]
 use sass::{CallArgs, FormalArgs};
 use sass::{Item, Value};
@@ -26,7 +23,7 @@ use selectors::Selectors;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
-use std::str::from_utf8;
+use std::str::{from_utf8, Utf8Error};
 use value::ListSeparator;
 #[cfg(test)]
 use value::{Number, Rgba, Unit};
@@ -407,6 +404,14 @@ named!(
             })
     )
 );
+
+fn input_to_str<'a>(s: Input<'a>) -> Result<&str, Utf8Error> {
+    from_utf8(&s)
+}
+
+fn input_to_string(s: Input) -> Result<String, Utf8Error> {
+    from_utf8(&s).map(String::from)
+}
 
 #[cfg(test)]
 fn percentage(v: isize) -> Value {
