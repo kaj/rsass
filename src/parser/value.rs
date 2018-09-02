@@ -3,7 +3,8 @@ use nom::types::CompleteByteSlice as Input;
 use num_rational::Rational;
 use parser::formalargs::call_args;
 use parser::strings::{
-    sass_string, sass_string_dq, sass_string_ext, sass_string_sq,
+    input_to_string, sass_string, sass_string_dq, sass_string_ext,
+    sass_string_sq,
 };
 use parser::unit::unit;
 use parser::util::{name, opt_spacelike, spacelike2};
@@ -229,17 +230,20 @@ named!(
 named!(
     bang<Input, Value>,
     map!(
-        preceded!(
-            pair!(tag!("!"), opt_spacelike),
-            tag!("important") // TODO Pretty much anythig goes, here?
+        map_res!(
+            preceded!(
+                pair!(tag!("!"), opt_spacelike),
+                tag!("important") // TODO Pretty much anythig goes, here?
+            ),
+            input_to_string
         ),
-        |s| Value::Bang(from_utf8(&s).unwrap().into())
+        Value::Bang
     )
 );
 
 named!(
     unicode_range<Input, Value>,
-    map!(
+    map!(map_res!(
         recognize!(do_parse!(
             tag_no_case!("U+")
                 >> a: many_m_n!(0, 6, one_of!("0123456789ABCDEFabcdef"))
@@ -252,7 +256,7 @@ named!(
                 )
                 >> ()
         )),
-        |range| Value::UnicodeRange(from_utf8(&range).unwrap().into())
+        input_to_string), Value::UnicodeRange
     )
 );
 

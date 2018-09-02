@@ -69,7 +69,7 @@ pub fn input_to_str<'a>(s: Input<'a>) -> Result<&str, Utf8Error> {
 }
 
 use std::str::Utf8Error;
-fn input_to_string(s: Input) -> Result<String, Utf8Error> {
+pub fn input_to_string(s: Input) -> Result<String, Utf8Error> {
     from_utf8(&s).map(|s| s.to_string())
 }
 
@@ -118,25 +118,35 @@ named!(
 named!(
     extra_escape<Input, StringPart>,
     map!(
-        preceded!(
-            tag!("\\"),
-            alt!(
-                alphanumeric
-                    | tag!(" ")
-                    | tag!("'")
-                    | tag!("\"")
-                    | tag!("\\")
-                    | tag!("#")
-            )
+        map_res!(
+            preceded!(
+                tag!("\\"),
+                alt!(
+                    alphanumeric
+                        | tag!(" ")
+                        | tag!("'")
+                        | tag!("\"")
+                        | tag!("\\")
+                        | tag!("#")
+                )
+            ),
+            input_to_string
         ),
-        |s| StringPart::Raw(format!("\\{}", input_to_string(s).unwrap()))
+        |s| StringPart::Raw(format!("\\{}", s))
     )
 );
 
-named!(pub extended_part<Input, StringPart>,
-       map!(recognize!(pair!(take_while1!(is_ext_str_start_char),
+named!(
+    pub extended_part<Input, StringPart>,
+    map!(
+        map_res!(
+            recognize!(pair!(take_while1!(is_ext_str_start_char),
                              take_while!(is_ext_str_char))),
-            |v| StringPart::Raw(from_utf8(&v).unwrap().into())));
+            input_to_string
+        ),
+        StringPart::Raw
+    )
+);
 
 fn is_ext_str_start_char(c: u8) -> bool {
     is_name_char(c)

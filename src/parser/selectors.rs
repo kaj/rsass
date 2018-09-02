@@ -1,8 +1,8 @@
+use super::strings::input_to_string;
 use nom::types::CompleteByteSlice as Input;
 use parser::strings::{sass_string, sass_string_dq, sass_string_sq};
 use parser::util::{opt_spacelike, spacelike2};
 use selectors::{Selector, SelectorPart, Selectors};
-use std::str::from_utf8;
 
 named!(pub selectors<Input, Selectors>,
        map!(separated_nonempty_list!(
@@ -42,7 +42,10 @@ named!(selector_part<Input, SelectorPart>,
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>
                      name: sass_string >> opt_spacelike >>
-                     op: alt_complete!(tag!("*=") | tag!("|=") | tag!("=")) >>
+                     op: map_res!(
+                         alt_complete!(tag!("*=") | tag!("|=") | tag!("=")),
+                         input_to_string
+                     ) >>
                      opt_spacelike >>
                      val: alt_complete!(sass_string_dq | sass_string_sq |
                                         sass_string) >>
@@ -50,7 +53,7 @@ named!(selector_part<Input, SelectorPart>,
                      tag!("]") >>
                      (SelectorPart::Attribute {
                          name,
-                         op: from_utf8(&op).unwrap().into(),
+                         op,
                          val,
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>

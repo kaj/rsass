@@ -1,6 +1,6 @@
+use super::strings::input_to_string;
 use nom::types::CompleteByteSlice as Input;
 use nom::{is_alphanumeric, multispace};
-use std::str::from_utf8;
 
 named!(pub spacelike<Input, ()>,
        fold_many1!(alt_complete!(ignore_space |ignore_lcomment),
@@ -23,9 +23,11 @@ named!(pub ignore_comments<Input, ()>,
                    |(), ()| ()));
 
 named!(pub name<Input, String>,
-       map!(verify!(take_while1!(is_name_char),
-                    |n| n != Input(b"-")),
-            |n| from_utf8(&n).unwrap().into()));
+       map_res!(
+           verify!(take_while1!(is_name_char), |n| n != Input(b"-")),
+           input_to_string
+       )
+);
 
 pub fn is_name_char(c: u8) -> bool {
     is_alphanumeric(c) || c == b'_' || c == b'-'

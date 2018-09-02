@@ -8,7 +8,8 @@ pub mod value;
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
 use self::strings::{
-    input_to_str, sass_string, sass_string_dq, sass_string_sq,
+    input_to_str, input_to_string, sass_string, sass_string_dq,
+    sass_string_sq,
 };
 use self::value::{
     dictionary, function_call, single_value, value_expression,
@@ -85,8 +86,7 @@ named!(sassfile<Input, Vec<Item>>,
                    if_statement |
                    at_rule |
                    rule |
-                   map!(comment,
-                        |c: Input| Item::Comment(from_utf8(&c).unwrap().into()))
+                   map!(map_res!(comment, input_to_string), Item::Comment)
                    )));
 
 named!(
@@ -124,7 +124,7 @@ named!(
                 Item::None,
                 delimited!(opt_spacelike, tag!(";"), opt_spacelike)
             )
-            | map!(comment, |c: Input| Item::Comment(from_utf8(&c).unwrap().into()))
+            | map!(map_res!(comment, input_to_string), Item::Comment)
     )
 );
 
