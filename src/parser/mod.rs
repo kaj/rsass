@@ -7,7 +7,9 @@ pub mod value;
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
-use self::strings::{sass_string, sass_string_dq, sass_string_sq};
+use self::strings::{
+    input_to_str, sass_string, sass_string_dq, sass_string_sq,
+};
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
@@ -186,8 +188,9 @@ named!(
                                 | map!(sass_string_sq, Value::Literal)
                         ),
                         peek!(one_of!(" \n\t{;"))
-                    ) | map!(is_not!("\"'{};"), |s| Value::Literal(
-                        from_utf8(&s).unwrap().trim_right().into(),
+                    ) | map!(
+                        map_res!(is_not!("\"'{};"), input_to_str),
+                        |s| Value::Literal(s.trim_right().into(),
                     ))
                 )
             ))

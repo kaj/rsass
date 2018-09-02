@@ -64,6 +64,10 @@ named!(
     map!(map_res!(is_not!("\\#'\""), input_to_string), StringPart::Raw)
 );
 
+pub fn input_to_str<'a>(s: Input<'a>) -> Result<&str, Utf8Error> {
+    from_utf8(&s)
+}
+
 use std::str::Utf8Error;
 fn input_to_string(s: Input) -> Result<String, Utf8Error> {
     from_utf8(&s).map(|s| s.to_string())
