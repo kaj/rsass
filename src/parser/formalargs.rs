@@ -23,7 +23,7 @@ named!(pub call_args<Input, CallArgs>,
        delimited!(
            tag!("("),
            map!(separated_list!(
-               preceded!(tag!(","), opt_spacelike),
+               delimited!(opt_spacelike, tag!(","), opt_spacelike),
                pair!(opt!(delimited!(
                         tag!("$"),
                         map!(name, |n: String| n.replace("-", "_")),
