@@ -2,7 +2,7 @@
 //! version 3a838875, 2018-09-19 16:03:37 -0400.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["max", "min", "round"]
+//! ["round"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
@@ -42,9 +42,29 @@ fn floor() -> Result<(), String> {
     Ok(())
 }
 
-// Ignoring "max", not expected to work yet
+/// From "sass-spec/spec/number-functions/max"
+#[test]
+fn max() -> Result<(), String> {
+    assert_eq!(
+        rsass(
+            "foo {\n  // A trailing comma forces the function to be parsed as a Sass function,\n  // rather than a CSS math function.\n  foo: max(1, 2, 3,);\n  foo: max(3, 2px, 1px,);\n  foo: max(4em,);\n  foo: max(10cm, 6in,);\n}\n"
+        )?,
+        "foo {\n  foo: 3;\n  foo: 3;\n  foo: 4em;\n  foo: 6in;\n}\n"
+    );
+    Ok(())
+}
 
-// Ignoring "min", not expected to work yet
+/// From "sass-spec/spec/number-functions/min"
+#[test]
+fn min() -> Result<(), String> {
+    assert_eq!(
+        rsass(
+            "foo {\n  // A trailing comma forces the function to be parsed as a Sass function,\n  // rather than a CSS math function.\n  foo: min(1, 2, 3,);\n  foo: min(3px, 2px, 1,);\n  foo: min(4em,);\n  foo: min(10cm, 6in,);\n}\n"
+        )?,
+        "foo {\n  foo: 1;\n  foo: 1;\n  foo: 4em;\n  foo: 10cm;\n}\n"
+    );
+    Ok(())
+}
 
 /// From "sass-spec/spec/number-functions/percentage"
 #[test]

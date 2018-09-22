@@ -27,8 +27,8 @@ fn main() -> Result<(), Error> {
             "trailing_comma_in_selector",
         ],
     )?;
-    // TODO: Allow trailing commas in function args
-    handle_suite(&base, "number-functions", &["max", "min", "round"])?;
+    // Note: The round test is broken; it requires 1.49999999999 to be rounded to 1.
+    handle_suite(&base, "number-functions", &["round"])?;
     Ok(())
 }
 

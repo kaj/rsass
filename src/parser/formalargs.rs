@@ -34,4 +34,6 @@ named!(pub call_args<Input, CallArgs>,
                                      space_list,
                                      ignore_comments)))),
                 CallArgs::new),
-           tag!(")")));
+           preceded!(
+               opt!(delimited!(opt_spacelike, tag!(","), opt_spacelike)),
+               tag!(")"))));
