@@ -4,10 +4,10 @@ before_script:
   - cargo update || true
 rust:
   - stable
+  - 1.28.0
   - 1.27.2
   - 1.26.2
   - 1.25.0
-  - 1.24.1
   - beta
   - nightly
 script:

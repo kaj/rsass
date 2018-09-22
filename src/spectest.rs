@@ -4,7 +4,11 @@ use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-fn main() -> Result<(), Error> {
+fn main() {
+    handle_suites().expect("handle suites");
+}
+
+fn handle_suites() -> Result<(), Error> {
     let base = PathBuf::from("sass-spec/spec");
     handle_suite(
         &base,
@@ -20,10 +24,10 @@ fn main() -> Result<(), Error> {
         &base,
         "misc",
         &[
-            "mixin_content",
+            "mixin_content", // ?
             "negative_numbers",
             "unicode_variables",
-            "JMA-pseudo-test",
+            "JMA-pseudo-test", // Requires @extend
             "trailing_comma_in_selector",
         ],
     )?;
@@ -55,20 +59,20 @@ fn handle_suite(
                 .output()?
                 .stdout
         )?.trim(),
-    );
+    )?;
     if !ignored.is_empty() {
         writeln!(
             rs,
             "//! The following tests are excluded from conversion:\
              \n//! {:?}",
             ignored,
-        );
+        )?;
     }
     writeln!(
         rs,
         "extern crate rsass;\
          \nuse rsass::{{compile_scss, OutputStyle}};\n",
-    );
+    )?;
 
     let mut entries: Vec<DirEntry> =
         suitedir.read_dir()?.collect::<Result<_, _>>()?;
@@ -86,8 +90,8 @@ fn handle_suite(
                     "// Ignoring {:?}, \
                      tests with expected error not implemented yet.\n",
                     entry.file_name()
-                );
-            } else if ignored.iter().any(|&i| entry.file_name() == i) {
+                )?;
+            } else if ignored.iter().any(|&i| &entry.file_name() == i) {
                 eprintln!(
                     "Ignoring {:?}, not expected to work yet",
                     entry.file_name()
@@ -96,7 +100,7 @@ fn handle_suite(
                     rs,
                     "// Ignoring {:?}, not expected to work yet\n",
                     entry.file_name()
-                );
+                )?;
             } else {
                 eprintln!("Should handle {:?}", entry.file_name());
                 spec_to_test(&mut rs, &suitedir, &entry.file_name())?;
@@ -110,7 +114,7 @@ fn handle_suite(
          \n    compile_scss(input.as_bytes(), OutputStyle::Expanded)\
          \n        .map_err(|e| format!(\"rsass failed: {{}}\", e))\
          \n        .and_then(|s| String::from_utf8(s).map_err(|e| format!(\"{{:?}}\", e)))\
-         \n}}");
+         \n}}")?;
     Ok(())
 }
 
@@ -126,36 +130,50 @@ fn spec_to_test(
         rs,
         "/// From {:?}\
          \n#[test]\
-         \nfn {}() -> Result<(), String> {{",
+         \nfn {}() {{",
         specdir,
         fn_name_os(test),
-    );
+    )?;
     let input = format!("{:?}", content(&input)?);
     let expected = format!("{:?}", content(&expected)?);
-    if input.len() + expected.len() < 52 {
-        writeln!(rs, "    assert_eq!(rsass({})?, {});", input, expected);
-    } else if input.len() < 60 {
+    if input.len() + expected.len() < 48 {
+        writeln!(
+            rs,
+            "    assert_eq!(rsass({}).unwrap(), {});",
+            input, expected
+        )?;
+    } else if input.len() < 56 {
         writeln!(
             rs,
             "    assert_eq!(\
-             \n        rsass({})?,\
+             \n        rsass({}).unwrap(),\
              \n        {}\
              \n    );",
             input, expected
-        );
+        )?;
+    } else if input.len() < 62 {
+        writeln!(
+            rs,
+            "    assert_eq!(\
+             \n        rsass({})\
+             \n            .unwrap(),\
+             \n        {}\
+             \n    );",
+            input, expected
+        )?;
     } else {
         writeln!(
             rs,
             "    assert_eq!(\
              \n        rsass(\
              \n            {}\
-             \n        )?,\
+             \n        ).unwrap(),\
              \n        {}\
              \n    );",
             input, expected
-        );
+        )?;
     }
-    writeln!(rs, "    Ok(())\n}}\n");
+    writeln!(rs, "}}\n")?;
     Ok(())
 }
 

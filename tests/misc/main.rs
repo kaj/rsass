@@ -10,104 +10,96 @@ use rsass::{compile_scss, OutputStyle};
 
 /// From "sass-spec/spec/misc/directive_interpolation"
 #[test]
-fn directive_interpolation() -> Result<(), String> {
+fn directive_interpolation() {
     assert_eq!(
-        rsass("$baz: 12;\n@foo bar#{$baz} qux {a: b}\n")?,
+        rsass("$baz: 12;\n@foo bar#{$baz} qux {a: b}\n").unwrap(),
         "@foo bar12 qux {\n  a: b;\n}\n"
     );
-    Ok(())
 }
 
 /// From "sass-spec/spec/misc/empty_content"
 #[test]
-fn empty_content() -> Result<(), String> {
+fn empty_content() {
     assert_eq!(
-        rsass("@mixin foo { @content }\na { b: c; @include foo {} }\n")?,
+        rsass("@mixin foo { @content }\na { b: c; @include foo {} }\n")
+            .unwrap(),
         "a {\n  b: c;\n}\n"
     );
-    Ok(())
 }
 
 // Ignoring "error-directive", tests with expected error not implemented yet.
 
 /// From "sass-spec/spec/misc/import_in_mixin"
 #[test]
-fn import_in_mixin() -> Result<(), String> {
+fn import_in_mixin() {
     assert_eq!(
         rsass(
             "@mixin import-google-fonts() {\n  @import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\n}\n$family: unquote(\"Droid+Sans\");\n@include import-google-fonts();\n"
-        )?,
+        ).unwrap(),
         "@import url(\"http://fonts.googleapis.com/css?family=Droid+Sans\");\n"
     );
-    Ok(())
 }
 
 /// From "sass-spec/spec/misc/import_with_interpolation"
 #[test]
-fn import_with_interpolation() -> Result<(), String> {
+fn import_with_interpolation() {
     assert_eq!(
         rsass(
             "$family: unquote(\"Droid+Sans\");\n@import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\n"
-        )?,
+        ).unwrap(),
         "@import url(\"http://fonts.googleapis.com/css?family=Droid+Sans\");\n"
     );
-    Ok(())
 }
 
 /// From "sass-spec/spec/misc/lang-bug"
 #[test]
-fn lang_bug() -> Result<(), String> {
+fn lang_bug() {
     assert_eq!(
-        rsass("div:lang(nb) {\n  color: red;\n}")?,
+        rsass("div:lang(nb) {\n  color: red;\n}").unwrap(),
         "div:lang(nb) {\n  color: red;\n}\n"
     );
-    Ok(())
 }
 
 /// From "sass-spec/spec/misc/media_interpolation"
 #[test]
-fn media_interpolation() -> Result<(), String> {
+fn media_interpolation() {
     assert_eq!(
-        rsass("$baz: 12;\n@media bar#{$baz} {a {b: c}}\n")?,
+        rsass("$baz: 12;\n@media bar#{$baz} {a {b: c}}\n").unwrap(),
         "@media bar12 {\n  a {\n    b: c;\n  }\n}\n"
     );
-    Ok(())
 }
 
 // Ignoring "mixin_content", not expected to work yet
 
 /// From "sass-spec/spec/misc/namespace_properties_with_script_value"
 #[test]
-fn namespace_properties_with_script_value() -> Result<(), String> {
+fn namespace_properties_with_script_value() {
     assert_eq!(
         rsass(
             "foo {\n  bar: baz + bang {\n    bip: bop;\n    bing: bop; }}\n"
-        )?,
+        ).unwrap(),
         "foo {\n  bar: bazbang;\n  bar-bip: bop;\n  bar-bing: bop;\n}\n"
     );
-    Ok(())
 }
 
 // Ignoring "negative_numbers", not expected to work yet
 
 /// From "sass-spec/spec/misc/selector_interpolation_before_element_name"
 #[test]
-fn selector_interpolation_before_element_name() -> Result<(), String> {
+fn selector_interpolation_before_element_name() {
     assert_eq!(
-        rsass("#{\"foo\" + \" bar\"}baz {a: b}\n")?,
+        rsass("#{\"foo\" + \" bar\"}baz {a: b}\n").unwrap(),
         "foo barbaz {\n  a: b;\n}\n"
     );
-    Ok(())
 }
 
 /// From "sass-spec/spec/misc/selector_only_interpolation"
 #[test]
-fn selector_only_interpolation() -> Result<(), String> {
+fn selector_only_interpolation() {
     assert_eq!(
-        rsass("#{\"foo\" + \" bar\"} {a: b}\n")?,
+        rsass("#{\"foo\" + \" bar\"} {a: b}\n").unwrap(),
         "foo bar {\n  a: b;\n}\n"
     );
-    Ok(())
 }
 
 // Ignoring "trailing_comma_in_selector", not expected to work yet
