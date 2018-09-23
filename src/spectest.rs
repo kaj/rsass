@@ -22,6 +22,22 @@ fn handle_suites() -> Result<(), Error> {
     handle_suite(&base, "colors", &[])?;
     handle_suite(
         &base,
+        "css",
+        &[
+            "bizarrely_formatted_comments", // Strange indent?
+            "custom_properties",            // Most fails  :-(
+            "moz_document",                 // Deprecated functionality
+            "ms_long_filter_syntax",        // ?
+            "multi_star_comments",          // Some problem with whitespace?
+            "plain",                        // Not working yet
+            "media",             // only subdir range not working yet
+            "min_max", // Expected handling of raw css functions changed.
+            "selector", // Only test requres @extend
+            "unknown_directive", // Some problem with whitespace?
+        ],
+    )?;
+    handle_suite(
+        &base,
         "misc",
         &[
             "mixin_content", // ?
@@ -71,51 +87,78 @@ fn handle_suite(
     writeln!(
         rs,
         "extern crate rsass;\
-         \nuse rsass::{{compile_scss, OutputStyle}};\n",
+         \nuse rsass::{{compile_scss, OutputStyle}};",
     )?;
 
-    let mut entries: Vec<DirEntry> =
-        suitedir.read_dir()?.collect::<Result<_, _>>()?;
-    entries.sort_by_key(|e| e.file_name());
-    for entry in entries {
-        if entry.file_type()?.is_dir() {
-            if entry.path().join("error").exists() {
-                eprintln!(
-                    "Ignoring {:?}, \
-                     tests with expected error not implemented yet.",
-                    entry.file_name()
-                );
-                writeln!(
-                    rs,
-                    "// Ignoring {:?}, \
-                     tests with expected error not implemented yet.\n",
-                    entry.file_name()
-                )?;
-            } else if ignored.iter().any(|&i| &entry.file_name() == i) {
-                eprintln!(
-                    "Ignoring {:?}, not expected to work yet",
-                    entry.file_name()
-                );
-                writeln!(
-                    rs,
-                    "// Ignoring {:?}, not expected to work yet\n",
-                    entry.file_name()
-                )?;
-            } else {
-                eprintln!("Should handle {:?}", entry.file_name());
-                spec_to_test(&mut rs, &suitedir, &entry.file_name())?;
-            }
-        }
-    }
+    handle_entries(&mut rs, &suitedir, &rssuitedir, ignored)?;
 
     writeln!(
         rs,
-        "fn rsass(input: &str) -> Result<String, String> {{\
+        "\nfn rsass(input: &str) -> Result<String, String> {{\
          \n    compile_scss(input.as_bytes(), OutputStyle::Expanded)\
          \n        .map_err(|e| format!(\"rsass failed: {{}}\", e))\
          \n        .and_then(|s| String::from_utf8(s).map_err(|e| format!(\"{{:?}}\", e)))\
          \n}}")?;
     Ok(())
+}
+
+fn handle_entries(
+    rs: &mut Write,
+    suitedir: &Path,
+    rssuitedir: &Path,
+    ignored: &[&str],
+) -> Result<(), Error> {
+    let mut entries: Vec<DirEntry> =
+        suitedir.read_dir()?.collect::<Result<_, _>>()?;
+    entries.sort_by_key(|e| e.file_name());
+    for entry in entries {
+        if entry.file_type()?.is_dir() {
+            if entry.path().join("error").is_file() {
+                ignore(
+                    rs,
+                    &entry.file_name(),
+                    "tests with expected error not implemented yet",
+                )?;
+            } else if ignored.iter().any(|&i| &entry.file_name() == i) {
+                ignore(rs, &entry.file_name(), "not expected to work yet")?;
+            } else {
+                let input = entry.path().join("input.scss");
+                if input.exists() {
+                    eprintln!("Should handle {:?}", entry.file_name());
+                    spec_to_test(rs, &suitedir, &entry.file_name())?;
+                } else {
+                    let name = fn_name_os(&entry.file_name());
+                    writeln!(rs, "\nmod {};", name);
+                    let rssuitedir = rssuitedir.join(name);
+                    let _may_exist = create_dir(&rssuitedir);
+                    let mut rs = File::create(rssuitedir.join("mod.rs"))?;
+                    writeln!(
+                        rs,
+                        "//! Tests auto-converted from {:?}\
+                         \n#[allow(unused)]\
+                         \nuse super::rsass;",
+                        suitedir.join(entry.file_name()),
+                    )?;
+                    handle_entries(
+                        &mut rs,
+                        &entry.path(),
+                        &rssuitedir,
+                        ignored,
+                    )?;
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn ignore(
+    rs: &mut Write,
+    name: &OsStr,
+    reason: &str,
+) -> Result<(), io::Error> {
+    eprintln!("Ignoring {:?}, {}.", name, reason);
+    writeln!(rs, "\n// Ignoring {:?}, {}.", name, reason)
 }
 
 fn spec_to_test(
@@ -128,7 +171,7 @@ fn spec_to_test(
     let expected = specdir.join("expected_output.css");
     writeln!(
         rs,
-        "/// From {:?}\
+        "\n/// From {:?}\
          \n#[test]\
          \nfn {}() {{",
         specdir,
@@ -173,7 +216,7 @@ fn spec_to_test(
             input, expected
         )?;
     }
-    writeln!(rs, "}}\n")?;
+    writeln!(rs, "}}")?;
     Ok(())
 }
 
@@ -184,6 +227,8 @@ fn fn_name(name: &str) -> String {
     let t = name.to_lowercase().replace('-', "_").replace('.', "_");
     if t.chars().next().unwrap_or('0').is_numeric() {
         format!("t{}", t)
+    } else if t == "static" {
+        format!("test_{}", t)
     } else {
         t
     }

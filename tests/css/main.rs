@@ -1,67 +1,82 @@
-//! Tests from `sass_spec/spec/css/`
-
+//! Tests auto-converted from "sass-spec/spec/css"
+//! version 3a838875, 2018-09-19 16:03:37 -0400.
+//! See <https://github.com/sass/sass-spec> for source material.\n
+//! The following tests are excluded from conversion:
+//! ["bizarrely_formatted_comments", "custom_properties", "moz_document", "ms_long_filter_syntax", "multi_star_comments", "plain", "media", "min_max", "selector", "unknown_directive"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
-mod unicode_range;
-mod unknown_directive;
+// Ignoring "bizarrely_formatted_comments", not expected to work yet.
 
+/// From "sass-spec/spec/css/blockless_directive_without_semicolon"
 #[test]
-fn bizarrely_formatted_comments() {
-    check(
-        ".foo {\n    /* Foo\n Bar\nBaz */\n  a: b; }\n",
-        ".foo {\n  /* Foo\n Bar\nBaz */\n  a: b;\n}\n",
-    )
+fn blockless_directive_without_semicolon() {
+    assert_eq!(rsass("@foo \"bar\";\n").unwrap(), "@foo \"bar\";\n");
 }
 
+/// From "sass-spec/spec/css/closing_line_comment_end_with_compact_output"
 #[test]
-fn multi_star_comments() {
-    // Note, actual expected has single newlines, but the sass-spec
-    // test runner succeeds my implementation.
-    check(
-        "a /***/ b {x: y}\n\
-         a /****/ b {x: y}\n\
-         a /* **/ b {x: y}\n\
-         a /** */ b {x: y}\n",
-        "a b {\n  x: y;\n}\n\n\
-         a b {\n  x: y;\n}\n\n\
-         a b {\n  x: y;\n}\n\n\
-         a b {\n  x: y;\n}\n",
-    )
-}
-
-#[test]
-fn selector_slotted_part() {
-    check(
-        "::slotted(.a) {x: y}\n\n\
-         ::slotted(.c.d) {x: y}\n\
-         ::slotted(.f) {x: y}\n",
-        "::slotted(.a) {\n  x: y;\n}\n\n\
-         ::slotted(.c.d) {\n  x: y;\n}\n\n\
-         ::slotted(.f) {\n  x: y;\n}\n",
-    )
-}
-
-#[test]
-#[ignore] // @extend is not yet supported
-fn selector_slotted() {
-    check(
-        "::slotted(.a) {x: y}\n\n\
-         ::slotted(.c.d) {x: y}\n\
-         .e {@extend .c}\n\n\
-         ::slotted(.f) {x: y}\n\
-         ::slotted(.g) {@extend .f}\n",
-        "::slotted(.a) {\n  x: y;\n}\n\n\
-         ::slotted(.c.d, .d.e) {\n  x: y;\n}\n\
-         ::slotted(.f, ::slotted(.g)) {\n  x: y;\n}\n",
-    )
-}
-
-fn check(input: &str, expected: &str) {
+fn closing_line_comment_end_with_compact_output() {
     assert_eq!(
-        compile_scss(input.as_bytes(), OutputStyle::Expanded)
-            .and_then(|s| Ok(String::from_utf8(s)?))
-            .unwrap(),
-        expected
+        rsass("/* foo */\nbar { baz: bang; }\n").unwrap(),
+        "/* foo */\nbar {\n  baz: bang;\n}\n"
     );
+}
+
+// Ignoring "custom_properties", not expected to work yet.
+
+/// From "sass-spec/spec/css/directive_with_lots_of_whitespace"
+#[test]
+fn directive_with_lots_of_whitespace() {
+    assert_eq!(rsass("@foo \"bar\";\n").unwrap(), "@foo \"bar\";\n");
+}
+
+/// From "sass-spec/spec/css/empty_block_directive"
+#[test]
+fn empty_block_directive() {
+    assert_eq!(rsass("@foo {}\n").unwrap(), "@foo {}\n");
+}
+
+/// From "sass-spec/spec/css/function_name_identifiers"
+#[test]
+fn function_name_identifiers() {
+    assert_eq!(
+        rsass(
+            "a {\n  b: url;\n  c: calc;\n  d: element;\n  e: expression;\n  f: progid;\n}\n"
+        ).unwrap(),
+        "a {\n  b: url;\n  c: calc;\n  d: element;\n  e: expression;\n  f: progid;\n}\n"
+    );
+}
+
+// Ignoring "media", not expected to work yet.
+
+// Ignoring "min_max", not expected to work yet.
+
+// Ignoring "moz_document", not expected to work yet.
+
+// Ignoring "ms_long_filter_syntax", not expected to work yet.
+
+// Ignoring "multi_star_comments", not expected to work yet.
+
+/// From "sass-spec/spec/css/multiple_comments"
+#[test]
+fn multiple_comments() {
+    assert_eq!(
+        rsass(".foo {\n  /* Foo Bar */\n  /* Baz Bang */ }\n").unwrap(),
+        ".foo {\n  /* Foo Bar */\n  /* Baz Bang */\n}\n"
+    );
+}
+
+// Ignoring "plain", not expected to work yet.
+
+// Ignoring "selector", not expected to work yet.
+
+mod unicode_range;
+
+// Ignoring "unknown_directive", not expected to work yet.
+
+fn rsass(input: &str) -> Result<String, String> {
+    compile_scss(input.as_bytes(), OutputStyle::Expanded)
+        .map_err(|e| format!("rsass failed: {}", e))
+        .and_then(|s| String::from_utf8(s).map_err(|e| format!("{:?}", e)))
 }

@@ -149,9 +149,9 @@ fn t13_back_references() {
     );
 }
 
-// Ignoring "14_imports", not expected to work yet
+// Ignoring "14_imports", not expected to work yet.
 
-// Ignoring "15_arithmetic_and_lists", not expected to work yet
+// Ignoring "15_arithmetic_and_lists", not expected to work yet.
 
 // Ignoring "16_hex_arithmetic", tests with expected error not implemented yet.
 
@@ -333,7 +333,7 @@ fn t32_percentages() {
     );
 }
 
-// Ignoring "33_ambiguous_imports", not expected to work yet
+// Ignoring "33_ambiguous_imports", not expected to work yet.
 
 /// From "sass-spec/spec/basic/35_varargs_false"
 #[test]

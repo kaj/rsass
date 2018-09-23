@@ -6,7 +6,7 @@
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
-// Ignoring "JMA-pseudo-test", not expected to work yet
+// Ignoring "JMA-pseudo-test", not expected to work yet.
 
 /// From "sass-spec/spec/misc/directive_interpolation"
 #[test]
@@ -69,7 +69,7 @@ fn media_interpolation() {
     );
 }
 
-// Ignoring "mixin_content", not expected to work yet
+// Ignoring "mixin_content", not expected to work yet.
 
 /// From "sass-spec/spec/misc/namespace_properties_with_script_value"
 #[test]
@@ -82,7 +82,7 @@ fn namespace_properties_with_script_value() {
     );
 }
 
-// Ignoring "negative_numbers", not expected to work yet
+// Ignoring "negative_numbers", not expected to work yet.
 
 /// From "sass-spec/spec/misc/selector_interpolation_before_element_name"
 #[test]
@@ -102,9 +102,9 @@ fn selector_only_interpolation() {
     );
 }
 
-// Ignoring "trailing_comma_in_selector", not expected to work yet
+// Ignoring "trailing_comma_in_selector", not expected to work yet.
 
-// Ignoring "unicode_variables", not expected to work yet
+// Ignoring "unicode_variables", not expected to work yet.
 
 // Ignoring "warn-directive", tests with expected error not implemented yet.
 

@@ -83,7 +83,7 @@ fn random() {
     );
 }
 
-// Ignoring "round", not expected to work yet
+// Ignoring "round", not expected to work yet.
 
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)
