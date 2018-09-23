@@ -2,7 +2,7 @@
 //! version 3a838875, 2018-09-19 16:03:37 -0400.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["mixin_content", "negative_numbers", "unicode_variables", "JMA-pseudo-test", "trailing_comma_in_selector"]
+//! ["mixin_content", "negative_numbers", "JMA-pseudo-test", "trailing_comma_in_selector"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
@@ -104,7 +104,14 @@ fn selector_only_interpolation() {
 
 // Ignoring "trailing_comma_in_selector", not expected to work yet.
 
-// Ignoring "unicode_variables", not expected to work yet.
+/// From "sass-spec/spec/misc/unicode_variables"
+#[test]
+fn unicode_variables() {
+    assert_eq!(
+        rsass("$vär: foo;\n\nblat {a: $vär}\n").unwrap(),
+        "blat {\n  a: foo;\n}\n"
+    );
+}
 
 // Ignoring "warn-directive", tests with expected error not implemented yet.
 

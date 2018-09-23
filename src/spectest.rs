@@ -42,7 +42,6 @@ fn handle_suites() -> Result<(), Error> {
         &[
             "mixin_content", // ?
             "negative_numbers",
-            "unicode_variables",
             "JMA-pseudo-test", // Requires @extend
             "trailing_comma_in_selector",
         ],
