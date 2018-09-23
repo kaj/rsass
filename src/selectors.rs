@@ -21,7 +21,7 @@ impl Selectors {
         }
     }
     pub fn one(&self) -> Selector {
-        self.s.first().cloned().unwrap_or_else(|| Selector::root())
+        self.s.first().cloned().unwrap_or_else(Selector::root)
     }
     pub fn inside(&self, parent: &Self) -> Self {
         let mut result = Vec::new();

@@ -140,7 +140,7 @@ named!(
         map!(
             pair!(
                 map!(opt!(selectors), |s| s
-                    .unwrap_or_else(|| Selectors::root())),
+                    .unwrap_or_else(Selectors::root)),
                 body_block
             ),
             |(selectors, body)| Item::AtRoot { selectors, body }

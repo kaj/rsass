@@ -30,7 +30,7 @@ pub trait Scope {
     fn define_multi(&mut self, names: &[String], value: &Value) {
         if names.len() == 1 {
             self.define(&names[0], &value);
-        } else if let &Value::List(ref values, ..) = value {
+        } else if let Value::List(ref values, ..) = *value {
             if values.len() != names.len() {
                 panic!(
                     "Expected {} values, but got {}",
