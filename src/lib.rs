@@ -89,12 +89,17 @@ pub fn compile_value(input: &[u8]) -> Result<Vec<u8>, Error> {
 /// ```
 /// use rsass::{OutputStyle, compile_scss};
 ///
-/// assert_eq!(compile_scss(b"foo {\n\
-///                             bar {\n\
-///                               baz:value;\n\
-///                             }\n\
-///                           }", OutputStyle::Compressed).unwrap(),
-///            b"foo bar{baz:value}\n")
+/// assert_eq!(
+///     compile_scss(
+///         b"foo {\
+///         \n    bar {\
+///         \n        baz:value;\
+///         \n    }\
+///         \n}",
+///         OutputStyle::Compressed
+///     ).unwrap(),
+///     b"foo bar{baz:value}\n"
+/// )
 /// ```
 pub fn compile_scss(
     input: &[u8],
@@ -115,9 +120,13 @@ pub fn compile_scss(
 /// ```
 /// use rsass::{OutputStyle, compile_scss_file};
 ///
-/// assert_eq!(compile_scss_file("tests/basic/14_imports/a.scss".as_ref(),
-///                              OutputStyle::Compressed).unwrap(),
-///            b"div span{moo:goo}\n")
+/// assert_eq!(
+///     compile_scss_file(
+///         "tests/basic/14_imports/a.scss".as_ref(),
+///         OutputStyle::Compressed
+///     ).unwrap(),
+///     b"div span{moo:goo}\n"
+/// )
 /// ```
 pub fn compile_scss_file(
     file: &Path,
