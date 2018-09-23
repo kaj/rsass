@@ -1,4 +1,4 @@
-use super::util::is_name_char;
+use super::util::{is_name_char, take_char};
 use super::value::value_expression;
 use super::{input_to_str, input_to_string};
 use nom::alphanumeric;
@@ -131,34 +131,36 @@ named!(
     pub extended_part<Input, StringPart>,
     map!(
         map_res!(
-            recognize!(pair!(take_while1!(is_ext_str_start_char),
-                             take_while!(is_ext_str_char))),
+            recognize!(pair!(
+                verify!(take_char, is_ext_str_start_char),
+                many0!(verify!(take_char, is_ext_str_char))
+            )),
             input_to_string
         ),
         StringPart::Raw
     )
 );
 
-fn is_ext_str_start_char(c: u8) -> bool {
+fn is_ext_str_start_char(c: char) -> bool {
     is_name_char(c)
-        || c == b'*'
-        || c == b'+'
-        || c == b'.'
-        || c == b'/'
-        || c == b':'
-        || c == b'='
-        || c == b'?'
-        || c == b'|'
+        || c == '*'
+        || c == '+'
+        || c == '.'
+        || c == '/'
+        || c == ':'
+        || c == '='
+        || c == '?'
+        || c == '|'
 }
-fn is_ext_str_char(c: u8) -> bool {
+fn is_ext_str_char(c: char) -> bool {
     is_name_char(c)
-        || c == b'*'
-        || c == b'+'
-        || c == b','
-        || c == b'.'
-        || c == b'/'
-        || c == b':'
-        || c == b'='
-        || c == b'?'
-        || c == b'|'
+        || c == '*'
+        || c == '+'
+        || c == ','
+        || c == '.'
+        || c == '/'
+        || c == ':'
+        || c == '='
+        || c == '?'
+        || c == '|'
 }

@@ -1,6 +1,6 @@
 use super::input_to_string;
+use nom::multispace;
 use nom::types::CompleteByteSlice as Input;
-use nom::{is_alphanumeric, multispace};
 
 named!(pub spacelike<Input, ()>,
        fold_many1!(alt_complete!(ignore_space |ignore_lcomment),
@@ -27,7 +27,7 @@ named!(pub name<Input, String>,
            verify!(
                recognize!(
                    fold_many0!(
-                       verify!(take_char, is_name_utfchar),
+                       verify!(take_char, is_name_char),
                        (),
                        |_, _| ()
                    )
@@ -38,7 +38,7 @@ named!(pub name<Input, String>,
 );
 
 named!(
-    take_char<Input, char>,
+    pub take_char<Input, char>,
     alt!(
         map_opt!(take!(1), single_char) |
         map_opt!(take!(2), single_char) |
@@ -53,11 +53,7 @@ fn single_char(data: Input) -> Option<char> {
     from_utf8(&data).ok().and_then(|s| s.chars().next())
 }
 
-pub fn is_name_char(c: u8) -> bool {
-    is_alphanumeric(c) || c == b'_' || c == b'-'
-}
-
-pub fn is_name_utfchar(c: char) -> bool {
+pub fn is_name_char(c: char) -> bool {
     c.is_alphanumeric() || c == '_' || c == '-'
 }
 
