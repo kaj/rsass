@@ -338,20 +338,22 @@ named!(
         tag!("#"),
         map!(
             alt!(
-                tuple!(hexchar2, hexchar2, hexchar2)
-                    | tuple!(hexchar, hexchar, hexchar)
+                tuple!(hexchar2, hexchar2, hexchar2, opt!(hexchar2))
+                    | tuple!(hexchar, hexchar, hexchar, opt!(hexchar))
             ),
-            |(r, g, b): (Input, Input, Input)| Value::Color(
-                Rgba::from_rgb(
+            |(r, g, b, a): (Input, Input, Input, Option<Input>)| Value::Color(
+                Rgba::from_rgba(
                     from_hex(&r),
                     from_hex(&g),
                     from_hex(&b),
+                    a.map(|a| from_hex(&a)).unwrap_or(255),
                 ),
                 Some(format!(
-                    "#{}{}{}",
+                    "#{}{}{}{}",
                     from_utf8(&r).unwrap(),
                     from_utf8(&g).unwrap(),
-                    from_utf8(&b).unwrap()
+                    from_utf8(&b).unwrap(),
+                    a.and_then(|a| from_utf8(&a).ok()).unwrap_or(""),
                 )),
             )
         )

@@ -35,6 +35,14 @@ impl Rgba {
             alpha: Rational::one(),
         }
     }
+    pub fn from_rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
+        Rgba {
+            red: Rational::from_integer(r as isize),
+            green: Rational::from_integer(g as isize),
+            blue: Rational::from_integer(b as isize),
+            alpha: Rational::from_integer(a as isize) / 255,
+        }
+    }
     pub fn from_hsla(
         hue: Rational,
         sat: Rational,

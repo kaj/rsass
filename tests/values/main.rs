@@ -2,7 +2,7 @@
 //! version 3a838875, 2018-09-19 16:03:37 -0400.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["colors/alpha_hex/initial_digit", "colors/alpha_hex/initial_letter", "identifiers/escape/normalize", "identifiers/escape/script", "ids", "numbers/units/multiple"]
+//! ["identifiers/escape/normalize", "identifiers/escape/script", "ids", "numbers/units/multiple"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 

@@ -53,8 +53,6 @@ fn handle_suites() -> Result<(), Error> {
         &base,
         "values",
         &[
-            "colors/alpha_hex/initial_digit",
-            "colors/alpha_hex/initial_letter",
             "identifiers/escape/normalize",
             "identifiers/escape/script",
             "ids",
