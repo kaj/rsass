@@ -49,6 +49,18 @@ fn handle_suites() -> Result<(), Error> {
     )?;
     // Note: The round test is broken; it requires 1.49999999999 to be rounded to 1.
     handle_suite(&base, "number-functions", &["round"])?;
+    handle_suite(
+        &base,
+        "values",
+        &[
+            "colors/alpha_hex/initial_digit",
+            "colors/alpha_hex/initial_letter",
+            "identifiers/escape/normalize",
+            "identifiers/escape/script",
+            "ids",
+            "numbers/units/multiple",
+        ],
+    )?;
     Ok(())
 }
 
@@ -139,11 +151,22 @@ fn handle_entries(
                          \nuse super::rsass;",
                         suitedir.join(entry.file_name()),
                     )?;
+                    let tt =
+                        format!("{}/", entry.file_name().to_string_lossy());
+                    let ignored: Vec<&str> = ignored
+                        .iter()
+                        .filter_map(|p| {
+                            if p.starts_with(&tt) {
+                                Some(p.split_at(tt.len()).1)
+                            } else {
+                                None
+                            }
+                        }).collect();
                     handle_entries(
                         &mut rs,
                         &entry.path(),
                         &rssuitedir,
-                        ignored,
+                        &ignored,
                     )?;
                 }
             }
