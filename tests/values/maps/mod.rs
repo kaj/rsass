@@ -1,6 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/values/maps"
 #[allow(unused)]
 use super::rsass;
+#[allow(unused)]
+use rsass::set_precision;
 
 /// From "sass-spec/spec/values/maps/append"
 #[test]

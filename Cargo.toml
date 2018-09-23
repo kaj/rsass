@@ -19,9 +19,11 @@ required-features = ["commandline"]
 name = "spectest"
 path = "src/spectest.rs"
 doc = false
+required-features = ["spectest"]
 
 [features]
 commandline = ["clap"]
+spectest = ["yaml-rust"]
 
 [dependencies]
 lazy_static = "1.0"
@@ -30,6 +32,7 @@ num-rational = { version = "0.2.1", default-features = false }
 num-traits = "^0.2.0"
 rand = "^0.5"
 clap = { version = "^2.19", features = ["color", "wrap_help"], optional = true }
+yaml-rust = { version = "0.4", optional = true }
 
 [badges]
 travis-ci = { repository = "kaj/rsass" }

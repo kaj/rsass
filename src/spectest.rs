@@ -118,6 +118,7 @@ fn handle_entries(
     rssuitedir: &Path,
     ignored: &[&str],
 ) -> Result<(), Error> {
+    let precision = load_options(suitedir); // TODO .or(precision);
     let mut entries: Vec<DirEntry> =
         suitedir.read_dir()?.collect::<Result<_, _>>()?;
     entries.sort_by_key(|e| e.file_name());
@@ -135,7 +136,12 @@ fn handle_entries(
                 let input = entry.path().join("input.scss");
                 if input.exists() {
                     eprintln!("Should handle {:?}", entry.file_name());
-                    spec_to_test(rs, &suitedir, &entry.file_name())?;
+                    spec_to_test(
+                        rs,
+                        &suitedir,
+                        &entry.file_name(),
+                        precision,
+                    )?;
                 } else {
                     let name = fn_name_os(&entry.file_name());
                     writeln!(rs, "\nmod {};", name);
@@ -146,7 +152,9 @@ fn handle_entries(
                         rs,
                         "//! Tests auto-converted from {:?}\
                          \n#[allow(unused)]\
-                         \nuse super::rsass;",
+                         \nuse super::rsass;\
+                         \n#[allow(unused)]\
+                         \nuse rsass::set_precision;",
                         suitedir.join(entry.file_name()),
                     )?;
                     let tt =
@@ -186,8 +194,10 @@ fn spec_to_test(
     rs: &mut Write,
     suite: &Path,
     test: &OsStr,
+    precision: Option<i64>,
 ) -> Result<(), Error> {
     let specdir = suite.join(test);
+    let precision = load_options(&specdir).or(precision);
     let input = specdir.join("input.scss");
     let expected = specdir.join("expected_output.css");
     writeln!(
@@ -198,6 +208,9 @@ fn spec_to_test(
         specdir,
         fn_name_os(test),
     )?;
+    if let Some(precision) = precision {
+        writeln!(rs, "    set_precision({});", precision)?;
+    }
     let input = format!("{:?}", content(&input)?);
     let expected = format!("{:?}", content(&expected)?);
     if input.len() + expected.len() < 48 {
@@ -274,4 +287,19 @@ impl From<std::string::FromUtf8Error> for Error {
     fn from(e: std::string::FromUtf8Error) -> Self {
         Error(format!("utf8 error: {}", e))
     }
+}
+
+extern crate yaml_rust;
+use yaml_rust::YamlLoader;
+
+/// Load options from options.yml.
+///
+/// Currently only `:precision` is suppoted, so the options struct is simply
+/// an i64.
+fn load_options(path: &Path) -> Option<i64> {
+    let options = content(&path.join("options.yml")).ok()?;
+    let options = YamlLoader::load_from_str(&options).ok()?;
+    let data = &options[0];
+    eprintln!("Found options: {:?}", data);
+    data[":precision"].as_i64()
 }
