@@ -24,12 +24,12 @@ doc = false
 commandline = ["clap"]
 
 [dependencies]
-clap = { version = "^2.19", optional = true }
 lazy_static = "1.0"
 nom = "^4.0.0"
 num-rational = { version = "0.2.1", default-features = false }
 num-traits = "^0.2.0"
 rand = "^0.5"
+clap = { version = "^2.19", features = ["color", "wrap_help"], optional = true }
 
 [badges]
 travis-ci = { repository = "kaj/rsass" }

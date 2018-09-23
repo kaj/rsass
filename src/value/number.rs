@@ -2,6 +2,17 @@ use num_rational::Rational;
 use num_traits::{Signed, Zero};
 use std::fmt::{self, Write};
 use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+static PRECISION: AtomicUsize = AtomicUsize::new(5);
+
+/// Set how many digits of precision to use when outputting decimal numbers.
+///
+/// This modifies a global singleton and should probably be called only once,
+/// at program start.
+pub fn set_precision(precision: usize) {
+    PRECISION.store(precision, Ordering::Relaxed);
+}
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Number {
@@ -100,7 +111,7 @@ impl fmt::Display for Number {
         let mut f = self.value.fract().abs();
         if !f.is_zero() {
             out.write_char('.')?;
-            for _ in 0..4 {
+            for _ in 0..(PRECISION.load(Ordering::Relaxed) - 1) {
                 f *= 10;
                 write!(out, "{}", f.to_integer())?;
                 f = f.fract();
