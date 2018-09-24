@@ -1,0 +1,9 @@
+//! Tests auto-converted from "sass-spec/spec/libsass/selectors/variables/nested"
+#[allow(unused)]
+use super::rsass;
+#[allow(unused)]
+use rsass::set_precision;
+
+// Ignoring "bare", not expected to work yet.
+
+// Ignoring "interpolated", not expected to work yet.

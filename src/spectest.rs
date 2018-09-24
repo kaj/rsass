@@ -1,3 +1,5 @@
+extern crate deunicode;
+use deunicode::deunicode;
 use std::ffi::OsStr;
 use std::fs::{create_dir, DirEntry, File};
 use std::io::{self, Read, Write};
@@ -34,6 +36,92 @@ fn handle_suites() -> Result<(), Error> {
             "min_max", // Expected handling of raw css functions changed.
             "selector", // Only test requres @extend
             "unknown_directive", // Some problem with whitespace?
+        ],
+    )?;
+    handle_suite(
+        &base,
+        "libsass",
+        &[
+            "Sa\u{301}ss-UT\u{327}F8", // resolves to duplicate name
+            "at-error/feature-test",
+            "at-root/ampersand",
+            "at-root/extend",
+            "at-root/138_test_at_root_in_media",
+            "at-root/139_test_at_root_in_bubbled_media",
+            "at-root/140_test_at_root_in_unknown_directive",
+            "at-root/with_without",
+            "at-stuff",
+            "base-level-parent/imported",
+            "base-level-parent/nested/at-root-alone-itpl",
+            "base-level-parent/nested/at-root-postfix-itpl",
+            "base-level-parent/nested/at-root-prefix-itpl",
+            "base-level-parent/root/at-root-postfix-itpl",
+            "base-level-parent/root/at-root-prefix-itpl",
+            "bool",
+            "bourbon",
+            "calc",
+            "charset",
+            "color-functions/opacity/fade-out",
+            "color-functions/opacity/transparentize",
+            "color-functions/other/adjust-color/l",
+            "color-functions/other/adjust-color/s",
+            "color-functions/other/change-color/a",
+            "color-functions/other/change-color/l",
+            "color-functions/other/change-color/s",
+            "color-functions/rgb/rgba/a",
+            "color-functions/saturate",
+            "conversions",
+            "css-import",
+            "css_nth_selectors",
+            "css_unicode",
+            "div",
+            "env",
+            "features/at-error",
+            "features/extend-selector-pseudoclass",
+            "http_import",
+            "import",
+            "inh",
+            "length",
+            "list-evaluation",
+            "lists",
+            "media",
+            "mixin",
+            "mixins-and-media-queries",
+            "multi-blocks",
+            "placeholder-mediaquery",
+            "placeholder-nested",
+            "precision/default",
+            "precision/lower",
+            "properties-in-media",
+            "rel",
+            "selector-functions/is_superselector",
+            "selector-functions/selector-length",
+            "selector-functions/simple-selector",
+            "selectors/access",
+            "selectors/interpolation",
+            "selectors/mixin-argument",
+            "selectors/simple",
+            "selectors/variables/multiple/bare",
+            "selectors/variables/multiple/interpolated",
+            "selectors/variables/nested/bare",
+            "selectors/variables/nested/interpolated",
+            "test",
+            "unary-ops",
+            "unicode-bom/utf-16-big", // spectest only handles utf8
+            "unicode-bom/utf-16-little", // spectest only handles utf8
+            "unicode-bom/utf-8",
+            "units/conversion/angle",
+            "units/conversion/frequency",
+            "units/conversion/resolution",
+            "units/conversion/size",
+            "units/conversion/time",
+            "units/simple",
+            "url",
+            "variable-scoping/blead-global",
+            "variable-scoping/defaults",
+            "variable-scoping/lexical-scope",
+            "variable-scoping/root-scope",
+            "variables_in_media",
         ],
     )?;
     handle_suite(
@@ -218,7 +306,7 @@ fn spec_to_test(
             "    assert_eq!(rsass({}).unwrap(), {});",
             input, expected
         )?;
-    } else if input.len() < 56 {
+    } else if input.len() < 55 {
         writeln!(
             rs,
             "    assert_eq!(\
@@ -257,10 +345,18 @@ fn fn_name_os(name: &OsStr) -> String {
     fn_name(&name.to_string_lossy())
 }
 fn fn_name(name: &str) -> String {
-    let t = name.to_lowercase().replace('-', "_").replace('.', "_");
+    let t = deunicode(name)
+        .to_lowercase()
+        .replace('-', "_")
+        .replace('.', "_");
     if t.chars().next().unwrap_or('0').is_numeric() {
         format!("t{}", t)
-    } else if t == "static" {
+    } else if t == "else"
+        || t == "for"
+        || t == "if"
+        || t == "static"
+        || t == "while"
+    {
         format!("test_{}", t)
     } else {
         t
