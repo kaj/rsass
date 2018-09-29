@@ -135,8 +135,6 @@ fn handle_suites() -> Result<(), Error> {
         &base,
         "parser",
         &[
-            "arglists/can-end-with-comma/functions",
-            "arglists/can-end-with-comma/mixins",
             "interpolate/11_escaped_literal",
             "interpolate/14_escapes_literal_numbers",
             "interpolate/17_escapes_literal_lowercase",

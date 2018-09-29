@@ -16,7 +16,9 @@ named!(pub formal_args<Input, FormalArgs>,
                                (name.replace('-', "_"),
                                 d.unwrap_or(Value::Null)))) >>
                  va: opt!(tag!("...")) >> opt_spacelike >>
-                 tag!(")") >>
+                 preceded!(
+                     opt!(delimited!(opt_spacelike, tag!(","), opt_spacelike)),
+                     tag!(")")) >>
                  (FormalArgs::new(v, va.is_some()))));
 
 named!(pub call_args<Input, CallArgs>,
