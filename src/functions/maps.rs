@@ -20,9 +20,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def_va!(f, map_remove(map, keys), |s| {
         let mut map = get_map(s.get("map"))?;
         match s.get("keys") {
-            Value::List(keys, ..) => for key in keys {
-                map.remove(&key);
-            },
+            Value::List(keys, ..) => {
+                for key in keys {
+                    map.remove(&key);
+                }
+            }
             key => {
                 map.remove(&key);
             }

@@ -249,7 +249,8 @@ fn handle_entries(
                             } else {
                                 None
                             }
-                        }).collect();
+                        })
+                        .collect();
                     handle_entries(
                         &mut rs,
                         &entry.path(),
@@ -326,7 +327,8 @@ fn spec_to_test(
             "    assert_eq!(\
              \n        rsass(\
              \n            {}\
-             \n        ).unwrap(),\
+             \n        )\
+             \n        .unwrap(),\
              \n        {}\
              \n    );",
             input, expected

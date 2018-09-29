@@ -43,7 +43,8 @@ fn function_name_identifiers() {
     assert_eq!(
         rsass(
             "a {\n  b: url;\n  c: calc;\n  d: element;\n  e: expression;\n  f: progid;\n}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "a {\n  b: url;\n  c: calc;\n  d: element;\n  e: expression;\n  f: progid;\n}\n"
     );
 }

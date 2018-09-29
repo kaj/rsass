@@ -23,7 +23,8 @@ fn arg_eval() {
     assert_eq!(
         rsass(
             "@function foo() {\n  @return 1+2 3/4 5+6;\n}\n\n@mixin bar($x: 3/4) {\n  bar-content: $x;\n}\n\ndiv {\n  content: foobar(1+2 3/4 5+6, orange);\n  content: append(1+2 2/3 5+6, orange);\n  content: 1+2 2/3 5+6;\n  content: type-of(2/3);\n  content: type-of(orange);\n  content: foo();\n  @include bar();\n}"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div {\n  content: foobar(3 3/4 11, orange);\n  content: 3 2/3 11 orange;\n  content: 3 2/3 11;\n  content: number;\n  content: color;\n  content: 3 3/4 11;\n  bar-content: 0.75;\n}\n"
     );
 }
@@ -74,7 +75,8 @@ fn eq() {
     assert_eq!(
         rsass(
             "div {\n  foo: center == \"center\";\n  foo: (a b c) == (a b c);\n  foo: a b c == a b c;\n}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div {\n  foo: true;\n  foo: true;\n  foo: a b false b c;\n}\n"
     );
 }
@@ -89,7 +91,8 @@ fn filter_functions() {
     assert_eq!(
         rsass(
             "div {\n  hoo: grayscale(0.3) grayscale(200%);\n  moo: opacity(0.3) opacity(200%);\n  poo: invert(0.3) invert(200%);\n  goo: saturate(0.3) saturate(200%);\n}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div {\n  hoo: grayscale(0.3) grayscale(200%);\n  moo: opacity(0.3) opacity(200%);\n  poo: invert(0.3) invert(200%);\n  goo: saturate(0.3) saturate(200%);\n}\n"
     );
 }
@@ -102,7 +105,8 @@ fn image_url() {
     assert_eq!(
         rsass(
             "div {\n  blah: image-url(\"hello.png\", false);\n  blah: image-url(\"hello.png\", true);\n}"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div {\n  blah: image-url(\"hello.png\", false);\n  blah: image-url(\"hello.png\", true);\n}\n"
     );
 }
@@ -132,7 +136,8 @@ fn interpolated_urls_4_0() {
     assert_eq!(
         rsass(
             "$base_url: \"/static_loc/\";\ndiv {\n  background-image: \"url(\"#{$base_url}\"img/beta.png)\";\n}\n\nspan {\n  background-image: url(#{$base_url}img/beta.png);\n}\n\nfudge {\n  walnuts: blix\"fludge\"#{hey now}123;\n}"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div {\n  background-image: \"url(\" /static_loc/ \"img/beta.png)\";\n}\n\nspan {\n  background-image: url(/static_loc/img/beta.png);\n}\n\nfudge {\n  walnuts: blix \"fludge\" hey now123;\n}\n"
     );
 }
@@ -143,7 +148,8 @@ fn keyframes() {
     assert_eq!(
         rsass(
             "div {\n  color: #181818;\n}\n\n@-webkit-keyframes uiDelayedFadeIn {\n\t0% { opacity: 0; }\n\t50% { opacity: .5; }\n\t100% { opacity: 1; }\n}\n\n@-webkit-keyframes bounce {\n\tfrom {\n\t\tleft: 0px;\n\t}\n\tto {\n\t\tleft: 200px;\n\t}\n}\n\n$name: bounce;\n\n@-webkit-keyframes #{$name} {\n  blah: blee;\n}\n\n@mixin fudge() {\n  @content;\n}\n\nfoo {\n  @include fudge() {\n    div {\n      color: red;\n    }\n  }\n}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div {\n  color: #181818;\n}\n\n@-webkit-keyframes uiDelayedFadeIn {\n  0% {\n    opacity: 0;\n  }\n  50% {\n    opacity: .5;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes bounce {\n  from {\n    left: 0px;\n  }\n  to {\n    left: 200px;\n  }\n}\n@-webkit-keyframes bounce {\n  blah: blee;\n}\nfoo div {\n  color: red;\n}\n"
     );
 }
@@ -154,7 +160,8 @@ fn length() {
     assert_eq!(
         rsass(
             "div {\n\n  foo: length(null);\n  foo: length(true);\n  foo: length(false);\n\n  foo: length(\"protégé\");\n  foo: length(protégé);\n  foo: length(\"\");\n  foo: length(\"hello there\");\n  foo: length(\"Façade\");\n  foo: length(\"Tromsø\");\n  foo: length(\"Ãlso\");\n\n  foo: length((foo: foo, bar: bar));\n  foo: length((foo, bar, baz, bang));\n\n}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div {\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 2;\n  foo: 4;\n}\n"
     );
 }
@@ -171,7 +178,8 @@ fn media_hoisting() {
     assert_eq!(
         rsass(
             "@media screen {\n  a {\n    color: black;\n    height: 8px;\n  }\n}\n\na {\n  color: red;\n  @media screen {\n    color: blue;\n    height: 10px;\n  }\n}\n\na {\n  color: beige;\n  b {\n    color: teal;\n    @media screen {\n      color: orange;\n      c {\n        height: 12px;\n      }\n    }\n  }\n}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "@media screen {\n  a {\n    color: black;\n    height: 8px;\n  }\n}\na {\n  color: red;\n}\n@media screen {\n  a {\n    color: blue;\n    height: 10px;\n  }\n}\n\na {\n  color: beige;\n}\na b {\n  color: teal;\n}\n@media screen {\n  a b {\n    color: orange;\n  }\n  a b c {\n    height: 12px;\n  }\n}\n"
     );
 }
@@ -202,7 +210,8 @@ fn scale() {
     assert_eq!(
         rsass(
             "div {\n  color: scale-color(red, $red: -23%);\n  color: scale-color(hsl(120, 70, 80), $lightness: 50%);\n  color: scale-color(rgb(200, 150, 170), $green: -40%, $blue: 70%);\n  color: scale-color(hsl(200, 70, 80), $saturation: -90%, $alpha: 10%);\n  blah: #d4f7d4;\n}"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div {\n  color: #c40000;\n  color: #d4f7d4;\n  color: #c85ae6;\n  color: #c8cdd0;\n  blah: #d4f7d4;\n}\n"
     );
 }
@@ -232,7 +241,8 @@ fn unitless() {
     assert_eq!(
         rsass(
             "div {\n  hoo: unitless(42);\n  hee: unitless(42px);\n  foo: unitless(3.14in);\n}"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div {\n  hoo: true;\n  hee: false;\n  foo: false;\n}\n"
     );
 }

@@ -171,7 +171,8 @@ fn test_rgb() {
                     .unwrap()
                     .1
                     .evaluate(&scope, true)
-            ).unwrap(),
+            )
+            .unwrap(),
         css::Value::Color(Rgba::from_rgb(17, 0, 225), None)
     )
 }

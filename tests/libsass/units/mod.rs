@@ -12,7 +12,8 @@ fn feature_test() {
     assert_eq!(
         rsass(
             "@if feature-exists(units-level-3) {\n  div {\n    feature: true;\n  }\n}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div {\n  feature: true;\n}\n"
     );
 }

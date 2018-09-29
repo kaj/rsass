@@ -21,11 +21,13 @@ fn main() {
                     p.parse::<usize>()
                         .map(|_| ())
                         .map_err(|e| format!("Expected integer: {}", e))
-                }).help(
+                })
+                .help(
                     "How many digits of precision to use when \
                      outputting decimal numbers.",
                 ),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("STYLE")
                 .short("t")
                 .long("style")
@@ -34,12 +36,14 @@ fn main() {
                 .default_value(&OutputStyle::variants()[1])
                 .case_insensitive(true)
                 .help("Output style"),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("INPUT")
                 .required(true)
                 .multiple(true)
                 .help("Sass file(s) to translate"),
-        ).after_help("At least one INPUT file is required.")
+        )
+        .after_help("At least one INPUT file is required.")
         .get_matches();
 
     match run(&args) {

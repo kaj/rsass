@@ -46,7 +46,8 @@ impl CallArgs {
                 .iter()
                 .map(|&(ref n, ref v)| {
                     (n.clone(), v.do_evaluate(scope, arithmetic))
-                }).collect(),
+                })
+                .collect(),
         )
     }
 }

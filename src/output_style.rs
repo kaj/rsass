@@ -225,15 +225,20 @@ impl OutputStyle {
                     self.handle_root_item(item, scope, file_context, result)?;
                 }
             }
-            Item::Each(ref names, ref values, ref body) => for value in
-                values.evaluate(scope).iter_items()
-            {
-                // TODO: No local sub-scope here?!?
-                scope.define_multi(names, &value);
-                for item in body {
-                    self.handle_root_item(item, scope, file_context, result)?;
+            Item::Each(ref names, ref values, ref body) => {
+                for value in values.evaluate(scope).iter_items() {
+                    // TODO: No local sub-scope here?!?
+                    scope.define_multi(names, &value);
+                    for item in body {
+                        self.handle_root_item(
+                            item,
+                            scope,
+                            file_context,
+                            result,
+                        )?;
+                    }
                 }
-            },
+            }
             Item::For {
                 ref name,
                 ref from,
@@ -720,9 +725,11 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
                                     .map(|a| eval_selectors(a, scope)),
                             },
                             ref sp => sp.clone(),
-                        }).collect(),
+                        })
+                        .collect(),
                 )
-            }).collect(),
+            })
+            .collect(),
     );
     // The "simple" parts we get from evaluating interpolations may
     // contain high-level selector separators (i.e. ","), so we need to

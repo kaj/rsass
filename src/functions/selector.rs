@@ -34,7 +34,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                                 .into_iter()
                                 .flat_map(|b| ext.s.iter().map(move |e| {
                                     parse_selector(&format!("{}{}", b, e))
-                                })).collect()
+                                }))
+                                .collect()
                         ),
                     ),
                 ),
@@ -48,7 +49,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def!(f, selector_parse(selector), |s| Ok(parse_selectors(
         s.get("selector")
-    ).to_value()));
+    )
+    .to_value()));
 }
 
 // Note, this helper should probably handle errors and return a Result.

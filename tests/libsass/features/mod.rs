@@ -14,7 +14,8 @@ fn global_variable_shadowing() {
     assert_eq!(
         rsass(
             "foo {\n  foo: feature-exists(\'global-variable-shadowing\');\n}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "foo {\n  foo: true;\n}\n"
     );
 }

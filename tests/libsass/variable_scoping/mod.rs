@@ -14,7 +14,8 @@ fn defaults_global() {
     assert_eq!(
         rsass(
             "div {\n  $foo: inner !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n$foo: outer !default !global;\nouter { foo: $foo; }\n\ndiv {\n  $foo: footer !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div inner {\n  foo: lexical;\n}\n\nouter {\n  foo: inner;\n}\n\ndiv inner {\n  foo: lexical;\n}\n"
     );
 }
@@ -25,7 +26,8 @@ fn defaults_global_null() {
     assert_eq!(
         rsass(
             "div {\n  $foo: null !default !global;\n  $foo: inner !default !global;\n  $foo: null !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n$foo: null !default !global;\n$foo: outer !default !global;\n$foo: null !default !global;\nouter { foo: $foo; }\n\ndiv {\n  $foo: null !default !global;\n  $foo: footer !default !global;\n  $foo: null !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div inner {\n  foo: lexical;\n}\n\nouter {\n  foo: inner;\n}\n\ndiv inner {\n  foo: lexical;\n}\n"
     );
 }
@@ -36,7 +38,8 @@ fn defaults_null() {
     assert_eq!(
         rsass(
             "div {\n  $foo: null !default;\n  $foo: inner !default;\n  $foo: null !default;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n// this should error\n// empty { foo: $foo; }\n\n$foo: null !default;\n$foo: outer !default;\n$foo: null !default;\nouter { foo: $foo; }\n\ndiv {\n  $foo: null !default;\n  $foo: footer !default;\n  $foo: null !default;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div inner {\n  foo: lexical;\n}\n\nouter {\n  foo: outer;\n}\n\ndiv inner {\n  foo: lexical;\n}\n"
     );
 }
@@ -47,7 +50,8 @@ fn feature_test() {
     assert_eq!(
         rsass(
             "@if feature-exists(global-variable-shadowing) {\n  div {\n    feature: true;\n  }\n}"
-        ).unwrap(),
+        )
+        .unwrap(),
         "div {\n  feature: true;\n}\n"
     );
 }

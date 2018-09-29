@@ -119,7 +119,8 @@ impl Value {
                         } else {
                             v
                         }
-                    }).collect::<Vec<_>>(),
+                    })
+                    .collect::<Vec<_>>(),
                 s.clone(),
                 b,
             ),
@@ -153,7 +154,8 @@ impl Value {
                             k.do_evaluate(scope, false),
                             v.do_evaluate(scope, false),
                         )
-                    }).collect(),
+                    })
+                    .collect(),
             ),
             Value::Null => css::Value::Null,
             Value::True => css::Value::True,

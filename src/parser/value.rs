@@ -718,7 +718,8 @@ mod test {
             Map(vec![
                 (Literal("foo".into()), Literal("bar".into())),
                 (Literal("baz".into()), Value::scalar(17)),
-            ].into_iter()
+            ]
+            .into_iter()
             .collect()),
         )
     }

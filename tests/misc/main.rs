@@ -35,7 +35,8 @@ fn import_in_mixin() {
     assert_eq!(
         rsass(
             "@mixin import-google-fonts() {\n  @import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\n}\n$family: unquote(\"Droid+Sans\");\n@include import-google-fonts();\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "@import url(\"http://fonts.googleapis.com/css?family=Droid+Sans\");\n"
     );
 }
@@ -46,7 +47,8 @@ fn import_with_interpolation() {
     assert_eq!(
         rsass(
             "$family: unquote(\"Droid+Sans\");\n@import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "@import url(\"http://fonts.googleapis.com/css?family=Droid+Sans\");\n"
     );
 }
@@ -77,7 +79,8 @@ fn namespace_properties_with_script_value() {
     assert_eq!(
         rsass(
             "foo {\n  bar: baz + bang {\n    bip: bop;\n    bing: bop; }}\n"
-        ).unwrap(),
+        )
+        .unwrap(),
         "foo {\n  bar: bazbang;\n  bar-bip: bop;\n  bar-bing: bop;\n}\n"
     );
 }

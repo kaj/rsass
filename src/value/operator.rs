@@ -26,11 +26,13 @@ impl Operator {
     pub fn eval(&self, a: Value, b: Value) -> Option<Value> {
         match *self {
             Operator::And => Some(Value::bool(a.is_true() && b.is_true())),
-            Operator::Or => if a.is_true() {
-                Some(a)
-            } else {
-                Some(b)
-            },
+            Operator::Or => {
+                if a.is_true() {
+                    Some(a)
+                } else {
+                    Some(b)
+                }
+            }
             Operator::Equal => Some(Value::bool(equal_values(&a, &b))),
             Operator::NotEqual => Some(Value::bool(!equal_values(&a, &b))),
             Operator::Greater => Some(Value::bool(a > b)),
