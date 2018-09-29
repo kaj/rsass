@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css"
-//! version 3a838875, 2018-09-19 16:03:37 -0400.
+//! version df44d3aa, 2018-09-26 21:05:32 -0400.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["bizarrely_formatted_comments", "custom_properties", "moz_document", "ms_long_filter_syntax", "multi_star_comments", "plain", "media", "min_max", "selector", "unknown_directive"]
