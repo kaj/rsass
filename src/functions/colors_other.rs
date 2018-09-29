@@ -187,13 +187,20 @@ fn to_rational(v: Value) -> Result<Rational, Error> {
     }
 }
 
-/// Gets a percentage as a fraction 0 .. 1.
-/// If v is not a percentage, keep it as it is.
+/// Try to get percentage part (i.e. a number -1 .. 1) from a value.
+///
+/// If the value is a percentage, get it as part (e.g. 50% => 0.5).
+/// If the value is in the correct range, return it as is.
+/// Otherwise, guesstimate that it is a percenatage anyway and divide by 100.
 fn to_rational_percent(v: Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, Unit::Percent, _) => Ok(v.value / 100),
-        Value::Numeric(v, ..) => Ok(v.value),
+        Value::Numeric(v, ..) => Ok(if v.value.abs() < Rational::one() {
+            v.value
+        } else {
+            v.value / 100
+        }),
         v => Err(Error::badarg("number", &v)),
     }
 }
