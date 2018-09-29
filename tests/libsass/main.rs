@@ -2,7 +2,7 @@
 //! version 3a838875, 2018-09-19 16:03:37 -0400.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["Sa\u{301}ss-UT\u{327}F8", "at-error/feature-test", "at-root/ampersand", "at-root/extend", "at-root/138_test_at_root_in_media", "at-root/139_test_at_root_in_bubbled_media", "at-root/140_test_at_root_in_unknown_directive", "at-root/with_without", "at-stuff", "base-level-parent/imported", "base-level-parent/nested/at-root-alone-itpl", "base-level-parent/nested/at-root-postfix-itpl", "base-level-parent/nested/at-root-prefix-itpl", "base-level-parent/root/at-root-postfix-itpl", "base-level-parent/root/at-root-prefix-itpl", "bool", "bourbon", "calc", "charset", "color-functions/opacity/fade-out", "color-functions/opacity/transparentize", "color-functions/other/change-color/a", "color-functions/rgb/rgba/a", "color-functions/saturate", "conversions", "css-import", "css_nth_selectors", "css_unicode", "div", "env", "features/at-error", "features/extend-selector-pseudoclass", "http_import", "import", "inh", "length", "list-evaluation", "lists", "media", "mixin", "mixins-and-media-queries", "multi-blocks", "placeholder-mediaquery", "placeholder-nested", "precision/default", "precision/lower", "properties-in-media", "rel", "selector-functions/is_superselector", "selector-functions/selector-length", "selector-functions/simple-selector", "selectors/access", "selectors/interpolation", "selectors/mixin-argument", "selectors/simple", "selectors/variables/multiple/bare", "selectors/variables/multiple/interpolated", "selectors/variables/nested/bare", "selectors/variables/nested/interpolated", "test", "unary-ops", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "unicode-bom/utf-8", "units/conversion/angle", "units/conversion/frequency", "units/conversion/resolution", "units/conversion/size", "units/conversion/time", "units/simple", "url", "variable-scoping/blead-global", "variable-scoping/defaults", "variable-scoping/lexical-scope", "variable-scoping/root-scope", "variables_in_media"]
+//! ["Sa\u{301}ss-UT\u{327}F8", "at-error/feature-test", "at-root/ampersand", "at-root/extend", "at-root/138_test_at_root_in_media", "at-root/139_test_at_root_in_bubbled_media", "at-root/140_test_at_root_in_unknown_directive", "at-root/with_without", "at-stuff", "base-level-parent/imported", "base-level-parent/nested/at-root-alone-itpl", "base-level-parent/nested/at-root-postfix-itpl", "base-level-parent/nested/at-root-prefix-itpl", "base-level-parent/root/at-root-postfix-itpl", "base-level-parent/root/at-root-prefix-itpl", "bool", "bourbon", "calc", "charset", "color-functions/opacity/fade-out", "color-functions/opacity/transparentize", "color-functions/other/change-color/a", "color-functions/rgb/rgba/a", "color-functions/saturate", "conversions", "css-import", "css_nth_selectors", "css_unicode", "div", "env", "features/at-error", "features/extend-selector-pseudoclass", "http_import", "import", "inh", "list-evaluation", "lists", "media", "mixin", "mixins-and-media-queries", "multi-blocks", "placeholder-mediaquery", "placeholder-nested", "precision/default", "precision/lower", "properties-in-media", "rel", "selector-functions/is_superselector", "selector-functions/selector-length", "selector-functions/simple-selector", "selectors/access", "selectors/interpolation", "selectors/mixin-argument", "selectors/simple", "selectors/variables/multiple/bare", "selectors/variables/multiple/interpolated", "selectors/variables/nested/bare", "selectors/variables/nested/interpolated", "test", "unary-ops", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "unicode-bom/utf-8", "units/conversion/angle", "units/conversion/frequency", "units/conversion/resolution", "units/conversion/size", "units/conversion/time", "units/simple", "url", "variable-scoping/blead-global", "variable-scoping/defaults", "variable-scoping/lexical-scope", "variable-scoping/root-scope", "variables_in_media"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
@@ -148,7 +148,16 @@ fn keyframes() {
     );
 }
 
-// Ignoring "length", not expected to work yet.
+/// From "sass-spec/spec/libsass/length"
+#[test]
+fn length() {
+    assert_eq!(
+        rsass(
+            "div {\n\n  foo: length(null);\n  foo: length(true);\n  foo: length(false);\n\n  foo: length(\"protégé\");\n  foo: length(protégé);\n  foo: length(\"\");\n  foo: length(\"hello there\");\n  foo: length(\"Façade\");\n  foo: length(\"Tromsø\");\n  foo: length(\"Ãlso\");\n\n  foo: length((foo: foo, bar: bar));\n  foo: length((foo, bar, baz, bang));\n\n}\n"
+        ).unwrap(),
+        "div {\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 2;\n  foo: 4;\n}\n"
+    );
+}
 
 // Ignoring "list-evaluation", not expected to work yet.
 

@@ -60,7 +60,7 @@ fn handle_suites() -> Result<(), Error> {
             "bool",
             "bourbon",
             "calc",
-            "charset",
+            "charset", // actually expects to-upper-case('ø...') to NOT work?
             "color-functions/opacity/fade-out",
             "color-functions/opacity/transparentize",
             "color-functions/other/change-color/a",
@@ -76,8 +76,7 @@ fn handle_suites() -> Result<(), Error> {
             "features/extend-selector-pseudoclass",
             "http_import",
             "import",
-            "inh",
-            "length",
+            "inh", // @extend
             "list-evaluation",
             "lists",
             "media",
