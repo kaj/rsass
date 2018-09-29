@@ -1,8 +1,5 @@
 extern crate rsass;
 
-mod addition;
-mod binary_and_unary;
-mod logic_eq;
 mod unquote;
 
 use rsass::compile_value;

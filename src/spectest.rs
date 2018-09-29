@@ -80,7 +80,7 @@ fn handle_suites() -> Result<(), Error> {
             "list-evaluation",
             "lists",
             "media",
-            "mixin",
+            "mixin", // requires arbitrary (unknown) units
             "mixins-and-media-queries",
             "multi-blocks",
             "placeholder-mediaquery",
@@ -131,6 +131,32 @@ fn handle_suites() -> Result<(), Error> {
     )?;
     // Note: The round test is broken; it requires 1.49999999999 to be rounded to 1.
     handle_suite(&base, "number-functions", &["round"])?;
+    handle_suite(
+        &base,
+        "parser",
+        &[
+            "arglists/can-end-with-comma/functions",
+            "arglists/can-end-with-comma/mixins",
+            "interpolate/11_escaped_literal",
+            "interpolate/14_escapes_literal_numbers",
+            "interpolate/17_escapes_literal_lowercase",
+            "interpolate/20_escapes_literal_uppercase",
+            "interpolate/23_escapes_literal_specials",
+            "interpolate/24_escapes_double_quoted_specials/todo_05_variable_quoted_double-4.0",
+            "interpolate/25_escapes_single_quoted_specials/todo_05_variable_quoted_double-4.0",
+            "operations/addition/dimensions/pairs-4.0",
+            "operations/addition/numbers/pairs-4.0",
+            "operations/addition/strings/pairs-4.0",
+            "operations/binary-and-unary",
+            "operations/division/dimensions/pairs-4.0",
+            "operations/division/mixed/pairs-4.0",
+            "operations/division/numbers/pairs-4.0",
+            "operations/division/strings/pairs-4.0",
+            "operations/subtract/dimensions/pairs-4.0",
+            "operations/subtract/numbers/pairs-4.0",
+            "operations/subtract/strings/pairs-4.0",
+        ],
+    )?;
     handle_suite(
         &base,
         "values",
