@@ -23,15 +23,16 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             to_rational(s.get("alpha"))?
         )
     ));
-    def!(f, adjust_hue(color, degrees), |s: &Scope| {
-        match (s.get("color"), s.get("degrees")) {
-            (c @ Value::Color(..), Value::Null) => Ok(c),
-            (Value::Color(rgba, _), Value::Numeric(v, ..)) => {
-                let (h, s, l, alpha) = rgba.to_hsla();
-                Ok(Value::hsla(h + v.value, s, l, alpha))
-            }
-            (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
+    def!(f, adjust_hue(color, degrees), |s: &Scope| match (
+        s.get("color"),
+        s.get("degrees"),
+    ) {
+        (c @ Value::Color(..), Value::Null) => Ok(c),
+        (Value::Color(rgba, _), Value::Numeric(v, ..)) => {
+            let (h, s, l, alpha) = rgba.to_hsla();
+            Ok(Value::hsla(h + v.value, s, l, alpha))
         }
+        (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
     });
     def!(f, complement(color), |s: &Scope| match &s.get("color") {
         &Value::Color(ref rgba, _) => {
@@ -40,20 +41,23 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("color", v)),
     });
-    def!(f, saturate(color, amount), |s: &Scope| {
-        match (s.get("color"), s.get("amount")) {
-            (Value::Color(c, _), Value::Null) => Ok(Value::Color(c, None)),
-            (Value::Color(rgba, _), Value::Numeric(v, u, _)) => {
-                let (h, s, l, alpha) = rgba.to_hsla();
-                let v = v.value;
-                let v = if u == Unit::Percent { v / 100 } else { v };
-                Ok(Value::hsla(h, s + v, l, alpha))
-            }
-            (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
+    def!(f, saturate(color, amount), |s: &Scope| match (
+        s.get("color"),
+        s.get("amount")
+    ) {
+        (Value::Color(c, _), Value::Null) => Ok(Value::Color(c, None)),
+        (Value::Color(rgba, _), Value::Numeric(v, u, _)) => {
+            let (h, s, l, alpha) = rgba.to_hsla();
+            let v = v.value;
+            let v = if u == Unit::Percent { v / 100 } else { v };
+            Ok(Value::hsla(h, s + v, l, alpha))
         }
+        (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
     });
-    def!(f, lighten(color, amount), |args: &Scope| {
-        match &args.get("color") {
+    def!(
+        f,
+        lighten(color, amount),
+        |args: &Scope| match &args.get("color") {
             &Value::Color(ref rgba, _) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
                 let amount = to_rational_percent(args.get("amount"))?;
@@ -61,9 +65,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
             v => Err(Error::badarg("color", v)),
         }
-    });
-    def!(f, darken(color, amount), |args: &Scope| {
-        match &args.get("color") {
+    );
+    def!(
+        f,
+        darken(color, amount),
+        |args: &Scope| match &args.get("color") {
             &Value::Color(ref rgba, _) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
                 let amount = to_rational_percent(args.get("amount"))?;
@@ -71,7 +77,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
             v => Err(Error::badarg("color", v)),
         }
-    });
+    );
     def!(f, hue(color), |args: &Scope| match &args.get("color") {
         &Value::Color(ref rgba, _) => {
             let (h, _s, _l, _a) = rgba.to_hsla();
@@ -93,8 +99,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("color", v)),
     });
-    def!(f, desaturate(color, amount), |args: &Scope| {
-        match &args.get("color") {
+    def!(
+        f,
+        desaturate(color, amount),
+        |args: &Scope| match &args.get("color") {
             &Value::Color(ref rgba, _) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
                 let amount = to_rational_percent(args.get("amount"))?;
@@ -102,7 +110,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
             v => Err(Error::badarg("color", v)),
         }
-    });
+    );
 }
 
 fn percentage(v: Rational) -> Value {

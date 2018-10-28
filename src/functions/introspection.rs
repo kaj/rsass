@@ -43,8 +43,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("string", v)),
     });
-    def!(f, get_function(name, css = b"false"), |s| {
-        match s.get("name") {
+    def!(
+        f,
+        get_function(name, css = b"false"),
+        |s| match s.get("name") {
             Value::Literal(ref v, _) => {
                 if s.get("css").is_true() {
                     Ok(Value::Function(v.to_string(), None))
@@ -56,7 +58,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
             ref v => Err(Error::badarg("string", v)),
         }
-    });
+    );
     def!(f, mixin_exists(name), |s| match &s.get("name") {
         &Value::Literal(ref v, _) => {
             Ok(Value::bool(s.get_mixin(&v.replace('-', "_")).is_some()))

@@ -16,30 +16,32 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Ok(v)
         }
     });
-    def!(f, str_insert(string, insert, index), |s| {
-        match (s.get("string"), s.get("insert"), s.get("index")) {
-            (
-                Value::Literal(s, q),
-                Value::Literal(insert, _),
-                Value::Numeric(index, Unit::None, ..),
-            ) => {
-                let i = index_to_rust(&index, &s);
-                let mut s = s.chars();
-                Ok(Value::Literal(
-                    format!(
-                        "{}{}{}",
-                        s.by_ref().take(i).collect::<String>(),
-                        insert,
-                        s.collect::<String>()
-                    ),
-                    q,
-                ))
-            }
-            (s, i, v) => Err(Error::badargs(
-                &["string", "string", "number"],
-                &[&s, &i, &v],
-            )),
+    def!(f, str_insert(string, insert, index), |s| match (
+        s.get("string"),
+        s.get("insert"),
+        s.get("index"),
+    ) {
+        (
+            Value::Literal(s, q),
+            Value::Literal(insert, _),
+            Value::Numeric(index, Unit::None, ..),
+        ) => {
+            let i = index_to_rust(&index, &s);
+            let mut s = s.chars();
+            Ok(Value::Literal(
+                format!(
+                    "{}{}{}",
+                    s.by_ref().take(i).collect::<String>(),
+                    insert,
+                    s.collect::<String>()
+                ),
+                q,
+            ))
         }
+        (s, i, v) => Err(Error::badargs(
+            &["string", "string", "number"],
+            &[&s, &i, &v],
+        )),
     });
     def!(f, str_slice(string, start_at, end_at = b"-1;"), |s| match (
         s.get("string"),
@@ -70,17 +72,18 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         &Value::Literal(ref v, _) => Ok(intvalue(v.chars().count())),
         v => Err(Error::badarg("string", v)),
     });
-    def!(f, str_index(string, substring), |s| {
-        match (s.get("string"), s.get("substring")) {
-            (Value::Literal(s, _), Value::Literal(sub, _)) => {
-                Ok(match s.find(&sub) {
-                    Some(o) => intvalue(1 + s[0..o].chars().count()),
-                    None => Value::Null,
-                })
-            }
-            (full, sub) => {
-                Err(Error::badargs(&["string", "string"], &[&full, &sub]))
-            }
+    def!(f, str_index(string, substring), |s| match (
+        s.get("string"),
+        s.get("substring"),
+    ) {
+        (Value::Literal(s, _), Value::Literal(sub, _)) => {
+            Ok(match s.find(&sub) {
+                Some(o) => intvalue(1 + s[0..o].chars().count()),
+                None => Value::Null,
+            })
+        }
+        (full, sub) => {
+            Err(Error::badargs(&["string", "string"], &[&full, &sub]))
         }
     });
     def!(f, to_upper_case(string), |s| match s.get("string") {

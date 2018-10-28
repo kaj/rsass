@@ -22,8 +22,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Quotes::None,
         )),
     });
-    def_va!(f, selector_append(selectors), |s| {
-        match s.get("selectors") {
+    def_va!(
+        f,
+        selector_append(selectors),
+        |s| match s.get("selectors") {
             Value::List(v, _, _) => Ok(Value::Literal(
                 format!(
                     "{}",
@@ -46,7 +48,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 Quotes::None,
             )),
         }
-    });
+    );
     def!(f, selector_parse(selector), |s| Ok(parse_selectors(
         s.get("selector")
     )

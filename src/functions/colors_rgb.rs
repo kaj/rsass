@@ -60,55 +60,57 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         &Value::Color(ref rgba, _) => num(&rgba.blue),
         value => Err(Error::badarg("color", value)),
     });
-    def!(f, mix(color1, color2, weight = b"50%"), |s| {
-        match (s.get("color1"), s.get("color2"), s.get("weight")) {
-            (
-                Value::Color(a, _),
-                Value::Color(b, _),
-                Value::Numeric(w, wu, ..),
-            ) => {
-                let w = if wu == Unit::Percent {
-                    w.value / 100
-                } else {
-                    w.value
-                };
-                let one = Rational::one();
-                let w2 = one - (one - w * a.alpha) * b.alpha;
-                let m_c = |a, b| a * w2 + b * (one - w2);;
-                let m_a = |a, b| a * w + b * (one - w);
-                Ok(Value::rgba(
-                    m_c(a.red, b.red),
-                    m_c(a.green, b.green),
-                    m_c(a.blue, b.blue),
-                    m_a(a.alpha, b.alpha),
-                ))
-            }
-            (color1, color2, weight) => Err(Error::badargs(
-                &["color", "color", "number"],
-                &[&color1, &color2, &weight],
-            )),
+    def!(f, mix(color1, color2, weight = b"50%"), |s| match (
+        s.get("color1"),
+        s.get("color2"),
+        s.get("weight"),
+    ) {
+        (
+            Value::Color(a, _),
+            Value::Color(b, _),
+            Value::Numeric(w, wu, ..),
+        ) => {
+            let w = if wu == Unit::Percent {
+                w.value / 100
+            } else {
+                w.value
+            };
+            let one = Rational::one();
+            let w2 = one - (one - w * a.alpha) * b.alpha;
+            let m_c = |a, b| a * w2 + b * (one - w2);;
+            let m_a = |a, b| a * w + b * (one - w);
+            Ok(Value::rgba(
+                m_c(a.red, b.red),
+                m_c(a.green, b.green),
+                m_c(a.blue, b.blue),
+                m_a(a.alpha, b.alpha),
+            ))
         }
+        (color1, color2, weight) => Err(Error::badargs(
+            &["color", "color", "number"],
+            &[&color1, &color2, &weight],
+        )),
     });
-    def!(f, invert(color, weight = b"100%"), |s| {
-        match (s.get("color"), s.get("weight")) {
-            (Value::Color(rgba, _), Value::Numeric(w, wu, ..)) => {
-                let w = if wu == Unit::Percent {
-                    w.value / 100
-                } else {
-                    w.value
-                };
-                let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
-                Ok(Value::rgba(
-                    inv(rgba.red),
-                    inv(rgba.green),
-                    inv(rgba.blue),
-                    rgba.alpha,
-                ))
-            }
-            (value, weight) => Err(Error::badargs(
-                &["color", "percentage"],
-                &[&value, &weight],
-            )),
+    def!(f, invert(color, weight = b"100%"), |s| match (
+        s.get("color"),
+        s.get("weight"),
+    ) {
+        (Value::Color(rgba, _), Value::Numeric(w, wu, ..)) => {
+            let w = if wu == Unit::Percent {
+                w.value / 100
+            } else {
+                w.value
+            };
+            let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
+            Ok(Value::rgba(
+                inv(rgba.red),
+                inv(rgba.green),
+                inv(rgba.blue),
+                rgba.alpha,
+            ))
+        }
+        (value, weight) => {
+            Err(Error::badargs(&["color", "percentage"], &[&value, &weight]))
         }
     });
 }
