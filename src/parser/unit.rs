@@ -36,4 +36,5 @@ named!(pub unit<Input, Unit>,
            value!(Unit::Dppx, tag!("dppx")) |
            // Special units
            value!(Unit::Percent, tag!("%")) |
+           value!(Unit::Fr, tag!("fr")) |
            value!(Unit::None)));
