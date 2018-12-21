@@ -61,10 +61,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     sep1.or(sep2).unwrap_or(ListSeparator::Space)
                 }
                 ref other => {
-                    return Err(Error::badarg(
-                        "'comma', 'space', or 'auto'",
-                        other,
-                    ))
+                    Err(Error::badarg("'comma', 'space', or 'auto'", other))
                 }
             };
             list1.append(&mut list2);
