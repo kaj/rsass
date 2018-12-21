@@ -111,6 +111,7 @@ impl Unit {
             Unit::Dppx => Rational::one(),
 
             Unit::Percent => Rational::new(1, 100),
+            Unit::Fr => Rational::one(),
             Unit::None => Rational::one(),
         }
     }
