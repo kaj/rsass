@@ -11,9 +11,9 @@ script:
   - cargo test --verbose $F
 matrix:
   include:
-    - rust: nightly
+    - rust: stable
       env: TASK=rustfmt
-      before_script: rustup component add rustfmt-preview
+      before_script: rustup component add rustfmt
       script: cargo fmt -- --check
     - rust: stable
       env: F=--features=commandline
