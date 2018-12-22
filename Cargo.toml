@@ -30,7 +30,7 @@ lazy_static = "1.0"
 nom = "^4.0.0"
 num-rational = { version = "0.2.1", default-features = false }
 num-traits = "^0.2.0"
-rand = "^0.5"
+rand = "0.6.1"
 clap = { version = "^2.19", features = ["color", "wrap_help"], optional = true }
 deunicode = { version = "0.4", optional = true }
 yaml-rust = { version = "0.4", optional = true }
