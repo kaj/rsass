@@ -43,6 +43,7 @@ pub enum Unit {
     Dppx,
     // Special units
     Percent,
+    Fr,
     None,
 }
 
@@ -73,7 +74,7 @@ impl Unit {
 
             Unit::Dpi | Unit::Dpcm | Unit::Dppx => "resolution",
 
-            Unit::Percent | Unit::None => "none",
+            Unit::Percent | Unit::Fr | Unit::None => "none",
         }
     }
 
@@ -110,6 +111,7 @@ impl Unit {
             Unit::Dppx => Rational::one(),
 
             Unit::Percent => Rational::new(1, 100),
+            Unit::Fr => Rational::one(),
             Unit::None => Rational::one(),
         }
     }
@@ -151,6 +153,7 @@ impl fmt::Display for Unit {
             Unit::Dppx => write!(out, "dppx"),
             // Special units
             Unit::Percent => write!(out, "%"),
+            Unit::Fr => write!(out, "fr"),
             Unit::None => Ok(()),
         }
     }
