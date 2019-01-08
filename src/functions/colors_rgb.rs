@@ -46,7 +46,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     });
     fn num(v: &Rational) -> Result<Value, Error> {
-        Ok(Value::Numeric(Number::new(*v), Unit::None, true))
+        Ok(Value::Numeric(Number::from(*v), Unit::None, true))
     }
     def!(f, red(color), |s| match &s.get("color") {
         &Value::Color(ref rgba, _) => num(&rgba.red),

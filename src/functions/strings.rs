@@ -97,7 +97,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 }
 
 fn intvalue(n: usize) -> Value {
-    Value::Numeric(Number::from_integer(n as isize), Unit::None, true)
+    Value::Numeric(Number::from(n as isize), Unit::None, true)
 }
 
 /// Convert index from sass (rational number, first is one) to rust

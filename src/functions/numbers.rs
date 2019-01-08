@@ -54,7 +54,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 }
 
 fn number(v: Rational, unit: Unit) -> Value {
-    Value::Numeric(Number::new(v), unit, true)
+    Value::Numeric(Number::from(v), unit, true)
 }
 
 fn find_extreme(v: &[Value], pref: Ordering) -> &Value {

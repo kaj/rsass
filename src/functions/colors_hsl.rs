@@ -81,7 +81,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, hue(color), |args: &Scope| match &args.get("color") {
         &Value::Color(ref rgba, _) => {
             let (h, _s, _l, _a) = rgba.to_hsla();
-            Ok(Value::Numeric(Number::new(h), Unit::Deg, true))
+            Ok(Value::Numeric(Number::from(h), Unit::Deg, true))
         }
         v => Err(Error::badarg("color", v)),
     });
@@ -114,7 +114,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 }
 
 fn percentage(v: Rational) -> Value {
-    Value::Numeric(Number::new(v * 100), Unit::Percent, true)
+    Value::Numeric(Number::from(v * 100), Unit::Percent, true)
 }
 
 fn to_rational(v: Value) -> Result<Rational, Error> {

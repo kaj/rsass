@@ -415,7 +415,7 @@ fn input_to_string(s: Input) -> Result<String, Utf8Error> {
 
 #[cfg(test)]
 fn percentage(v: isize) -> Value {
-    Value::Numeric(Number::from_integer(v), Unit::Percent)
+    Value::Numeric(Number::from(v), Unit::Percent)
 }
 
 #[cfg(test)]

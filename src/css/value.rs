@@ -40,7 +40,7 @@ pub enum Value {
 
 impl Value {
     pub fn scalar(v: isize) -> Self {
-        Value::Numeric(Number::from_integer(v), Unit::None, false)
+        Value::Numeric(Number::from(v), Unit::None, false)
     }
     pub fn bool(v: bool) -> Self {
         if v {

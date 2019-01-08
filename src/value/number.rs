@@ -14,6 +14,11 @@ pub fn set_precision(precision: usize) {
     PRECISION.store(precision, Ordering::Relaxed);
 }
 
+/// The actual number part of a numeric sass or css value.
+///
+/// Only the actual numeric value is included, not any unit, but flags
+/// to show a leading plus sign and/or leading zero (for values
+/// between -1 and 1) is included.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Number {
     pub value: Rational,
@@ -22,16 +27,7 @@ pub struct Number {
 }
 
 impl Number {
-    pub fn new(value: Rational) -> Self {
-        Number {
-            value,
-            plus_sign: false,
-            lead_zero: true,
-        }
-    }
-    pub fn from_integer(n: isize) -> Self {
-        Number::new(Rational::from_integer(n))
-    }
+    /// Computes the absolute value of the number, retaining the flags.
     pub fn abs(self) -> Self {
         Number {
             value: self.value.abs(),
@@ -39,48 +35,63 @@ impl Number {
             lead_zero: self.lead_zero,
         }
     }
+    /// Returns true if the number is an integer.
     pub fn is_integer(&self) -> bool {
         self.value.is_integer()
     }
+    /// Converts to an integer, rounding towards zero.
     pub fn to_integer(&self) -> isize {
         self.value.to_integer()
+    }
+}
+
+impl<T> From<T> for Number
+where
+    T: Into<Rational>,
+{
+    fn from(value: T) -> Number {
+        Number {
+            value: value.into(),
+            plus_sign: false,
+            lead_zero: true,
+        }
     }
 }
 
 impl Add for Number {
     type Output = Number;
     fn add(self, rhs: Self) -> Self::Output {
-        Number::new(self.value + rhs.value)
+        Number::from(self.value + rhs.value)
     }
 }
 impl<'a> Div for &'a Number {
     type Output = Number;
     fn div(self, rhs: Self) -> Self::Output {
-        Number::new(self.value / rhs.value)
+        Number::from(self.value / rhs.value)
     }
 }
 impl<'a> Mul for &'a Number {
     type Output = Number;
     fn mul(self, rhs: Self) -> Self::Output {
-        Number::new(self.value * rhs.value)
+        Number::from(self.value * rhs.value)
     }
 }
 impl<'a> Neg for &'a Number {
     type Output = Number;
     fn neg(self) -> Number {
-        Number::new(-self.value)
+        Number::from(-self.value)
     }
 }
 
 impl<'a> Sub for &'a Number {
     type Output = Number;
     fn sub(self, rhs: Self) -> Self::Output {
-        Number::new(self.value - rhs.value)
+        Number::from(self.value - rhs.value)
     }
 }
 impl Zero for Number {
     fn zero() -> Self {
-        Number::new(Rational::zero())
+        Number::from(0)
     }
     fn is_zero(&self) -> bool {
         self.value.is_zero()

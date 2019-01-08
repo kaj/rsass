@@ -514,7 +514,7 @@ mod test {
     }
 
     fn number(nom: isize, denom: isize) -> Value {
-        Numeric(Number::new(Rational::new(nom, denom)), Unit::None)
+        Numeric(Number::from(Rational::new(nom, denom)), Unit::None)
     }
 
     #[test]

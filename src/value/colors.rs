@@ -235,9 +235,9 @@ impl Display for Rgba {
         } else if out.alternate() {
             // I think the last {} should be {:#} here,
             // but the test suite says otherwise.
-            write!(out, "rgba({},{},{},{})", r, g, b, Number::new(a))
+            write!(out, "rgba({},{},{},{})", r, g, b, Number::from(a))
         } else {
-            write!(out, "rgba({}, {}, {}, {})", r, g, b, Number::new(a))
+            write!(out, "rgba({}, {}, {}, {})", r, g, b, Number::from(a))
         }
     }
 }

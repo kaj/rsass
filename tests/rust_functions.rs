@@ -43,7 +43,7 @@ fn simple_function() {
 
 #[cfg(test)]
 fn avg(a: Number, b: Number) -> Number {
-    Number::new((a.value + b.value) / 2)
+    Number::from((a.value + b.value) / 2)
 }
 
 #[test]
