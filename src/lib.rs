@@ -21,12 +21,13 @@
 //! doc](http://sass-lang.com/documentation/file.SASS_REFERENCE.html).
 //! This implementation is incomplete but getting there, if slowly.
 //!
-//! Progress: ![1672](http://progressed.io/bar/167?suffix=2&scale=348)
-//! of 3483 tests passed
+//! Progress: ![1680](http://progressed.io/bar/168?suffix=0&scale=363)
+//! of 3635 tests passed
 //!
-//! If you want a working rust library for sass right now, you will
-//! probably be better of with [sass-rs](https://crates.io/crates/sass-rs)
-//! which is a rust wrapper around libsass.
+//! If you want a working rust library for sass right now, you may
+//! be better of with [sass-rs](https://crates.io/crates/sass-rs)
+//! or [sass-alt](https://crates.io/crates/sass-alt),
+//! which are rust wrappers around libsass.
 //! Another alternative is [sassers](https://crates.io/crates/sassers)
 //! which is another early stage pure rust implementation.
 //! That said, this implementation has reached a version where I find it
