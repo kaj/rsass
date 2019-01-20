@@ -1,8 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/basic"
-//! version df44d3aa, 2018-09-26 21:05:32 -0400.
+//! version ac22fe99, 2019-01-09 15:50:06 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["14_imports", "15_arithmetic_and_lists", "33_ambiguous_imports"]
+//! ["14_imports", "15_arithmetic_and_lists", "23_basic_value_interpolation", "53_escaped_quotes", "33_ambiguous_imports"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
@@ -163,7 +163,17 @@ fn t13_back_references() {
 
 // Ignoring "15_arithmetic_and_lists", not expected to work yet.
 
-// Ignoring "16_hex_arithmetic", tests with expected error not implemented yet.
+/// From "sass-spec/spec/basic/16_hex_arithmetic"
+#[test]
+fn t16_hex_arithmetic() {
+    assert_eq!(
+        rsass(
+            "div {\n  p01: #AbC;\n  p02: #AAbbCC;\n  p03: #AbC + hello;\n  p04: #AbC + 1; // add 1 to each triplet\n  p05: #AbC + #001; // triplet-wise addition\n  p06: #0000ff + 1; // add 1 to each triplet; ignore overflow because it doesn\'t correspond to a color name\n  p07: #0000ff + #000001; // convert overflow to name of color (blue)\n  p08: #00ffff + #000101; // aqua\n  p09: #000000;\n  p10: #000000 - 1; // black\n  p11: #000000 - #000001; // black\n  p12: #ffff00 + #010100; // yellow\n  p13: (#101010 / 7);\n  p14: #000 + 0;\n  p15a: 10 - #a2B;\n  p15b: 10 - #aa22BB;\n  p16: #000 - #001;\n  p17: #f0F + #101;\n  p18: 10 #a2B + 1;\n  p19a: (10 / #a2B);\n  p19b: (10 / #aa22BB);\n  p20: rgb(10,10,10) + #010001;\n  p21: #010000 + rgb(255, 255, 255);\n}"
+        )
+        .unwrap(),
+        "div {\n  p01: #AbC;\n  p02: #AAbbCC;\n  p03: #AbChello;\n  p04: #abbccd;\n  p05: #aabbdd;\n  p06: #0101ff;\n  p07: blue;\n  p08: cyan;\n  p09: #000000;\n  p10: black;\n  p11: black;\n  p12: yellow;\n  p13: #020202;\n  p14: black;\n  p15a: 10-#a2B;\n  p15b: 10-#aa22BB;\n  p16: black;\n  p17: magenta;\n  p18: 10 #ab23bc;\n  p19a: 10/#a2B;\n  p19b: 10/#aa22BB;\n  p20: #0b0a0b;\n  p21: white;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/basic/17_basic_mixins"
 #[test]
@@ -237,7 +247,7 @@ fn t22_colors_with_alpha() {
     );
 }
 
-// Ignoring "23_basic_value_interpolation", tests with expected error not implemented yet.
+// Ignoring "23_basic_value_interpolation", not expected to work yet.
 
 /// From "sass-spec/spec/basic/23_basic_value_interpolation-4.0"
 #[test]
@@ -556,17 +566,7 @@ fn t52_interchangeable_hyphens_underscores() {
     );
 }
 
-/// From "sass-spec/spec/basic/53_escaped_quotes"
-#[test]
-fn t53_escaped_quotes() {
-    assert_eq!(
-        rsass(
-            "[data-icon=\'test-1\']:before {\n    content:\'\\\\\';\n}\n\n[data-icon=\'test-2\']:before {\n    content:\'\\\'\';\n}\n\n[data-icon=\'test-3\']:before {\n    content:\"\\\"\";\n}\n\n[data-icon=\'test-4\']:before {\n    content:\'\\\\\';\n}\n\n[data-icon=\'test-5\']:before {\n    content:\'\\\'\';\n}\n\n[data-icon=\'test-6\']:before {\n    content:\"\\\"\";\n}\n\n$open-quote:    «;\n$close-quote:   »;\n\n$open-quote: \\201C;\n$close-quote: \\201D;\n\n.\\E9motion { \nblah: hi; }\n.\\E9 dition { \nblah: hi; }\n.\\0000E9dition { \nblah: hi; }"
-        )
-        .unwrap(),
-        "[data-icon=\'test-1\']:before {\n  content: \'\\\\\';\n}\n\n[data-icon=\'test-2\']:before {\n  content: \'\\\'\';\n}\n\n[data-icon=\'test-3\']:before {\n  content: \"\\\"\";\n}\n\n[data-icon=\'test-4\']:before {\n  content: \'\\\\\';\n}\n\n[data-icon=\'test-5\']:before {\n  content: \'\\\'\';\n}\n\n[data-icon=\'test-6\']:before {\n  content: \"\\\"\";\n}\n\n.\\E9motion {\n  blah: hi;\n}\n\n.\\E9 dition {\n  blah: hi;\n}\n\n.\\0000E9dition {\n  blah: hi;\n}\n"
-    );
-}
+// Ignoring "53_escaped_quotes", not expected to work yet.
 
 /// From "sass-spec/spec/basic/54_adjacent_identifiers_with_hyphens"
 #[test]
@@ -640,7 +640,17 @@ fn t59_if_expression() {
     );
 }
 
-// Ignoring "60_call", tests with expected error not implemented yet.
+/// From "sass-spec/spec/basic/60_call"
+#[test]
+fn t60_call() {
+    assert_eq!(
+        rsass(
+            "@function foobar() {\n  @return foobar;\n}\n\n@function fudge($str) {\n  @return \"assets/fudge/\" + $str;\n}\n\n\nbody {\n  display: call(foobar); \n  display: call(min, 1,3,5,7);\n  display: call(min, 5);\n  display: call(max, 10,3,5,7);\n  color: fudge(\"blah\");\n}"
+        )
+        .unwrap(),
+        "body {\n  display: foobar;\n  display: 1;\n  display: 5;\n  display: 10;\n  color: \"assets/fudge/blah\";\n}\n"
+    );
+}
 
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)

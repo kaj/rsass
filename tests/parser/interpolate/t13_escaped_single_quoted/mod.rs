@@ -64,14 +64,4 @@ fn t05_variable_quoted_double() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/13_escaped_single_quoted/06_escape_interpolation"
-#[test]
-fn t06_escape_interpolation() {
-    assert_eq!(
-        rsass(
-            "$input: \'l\\\\ite\\ral\';\n.result {\n  output: \"[\\#{\'l\\\\ite\\ral\'}]\";\n  output: \"\\#{\'l\\\\ite\\ral\'}\";\n  output: \'\\#{\'l\\\\ite\\ral\'}\';\n  output: \"[\'\\#{\'l\\\\ite\\ral\'}\']\";\n}\n"
-        )
-        .unwrap(),
-        ".result {\n  output: \"[\\#{\'l\\\\ite\\ral\'}]\";\n  output: \"\\#{\'l\\\\ite\\ral\'}\";\n  output: \"#{\" l\\\\ite\\ral \"}\";\n  output: \"[\'\\#{\'l\\\\ite\\ral\'}\']\";\n}\n"
-    );
-}
+// Ignoring "06_escape_interpolation", not expected to work yet.

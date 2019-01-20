@@ -10,8 +10,6 @@ use rsass::set_precision;
 
 // Ignoring "minus_number_minus_ident", tests with expected error not implemented yet.
 
-mod no_digits;
-
 // Ignoring "no_digits", tests with expected error not implemented yet.
 
 // Ignoring "nothing_after_minus", tests with expected error not implemented yet.

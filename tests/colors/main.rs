@@ -1,6 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/colors"
-//! version df44d3aa, 2018-09-26 21:05:32 -0400.
+//! version ac22fe99, 2019-01-09 15:50:06 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
+//! The following tests are excluded from conversion:
+//! ["basic"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
@@ -28,7 +30,7 @@ fn adjust_hue() {
     );
 }
 
-// Ignoring "basic", tests with expected error not implemented yet.
+// Ignoring "basic", not expected to work yet.
 
 /// From "sass-spec/spec/colors/basic-4.0"
 #[test]

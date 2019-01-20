@@ -4,11 +4,11 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-mod addition;
+// Ignoring "addition", not expected to work yet.
 
 // Ignoring "binary-and-unary", not expected to work yet.
 
-mod division;
+// Ignoring "division", not expected to work yet.
 
 mod logic_eq;
 
@@ -26,4 +26,4 @@ mod modulo;
 
 mod multiply;
 
-mod subtract;
+// Ignoring "subtract", not expected to work yet.

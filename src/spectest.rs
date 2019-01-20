@@ -6,11 +6,7 @@ use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-fn main() {
-    handle_suites().expect("handle suites");
-}
-
-fn handle_suites() -> Result<(), Error> {
+fn main() -> Result<(), Error> {
     let base = PathBuf::from("sass-spec/spec");
     handle_suite(
         &base,
@@ -18,10 +14,18 @@ fn handle_suites() -> Result<(), Error> {
         &[
             "14_imports", // Need to handle separate files in tests
             "15_arithmetic_and_lists", // requirements changed
+            "23_basic_value_interpolation", // requirements changed
+            "53_escaped_quotes", // requirements changed
             "33_ambiguous_imports", // Need to handle separate files in tests
         ],
     )?;
-    handle_suite(&base, "colors", &[])?;
+    handle_suite(
+        &base,
+        "colors",
+        &[
+            "basic", // requirements changed
+        ],
+    )?;
     handle_suite(
         &base,
         "css",
@@ -43,6 +47,7 @@ fn handle_suites() -> Result<(), Error> {
         "libsass",
         &[
             "Sa\u{301}ss-UT\u{327}F8", // resolves to duplicate name
+            "arithmetic",              // requirements changed
             "at-error/feature-test",
             "at-root/ampersand",
             "at-root/extend",
@@ -66,10 +71,14 @@ fn handle_suites() -> Result<(), Error> {
             "color-functions/other/change-color/a",
             "color-functions/rgb/rgba/a",
             "color-functions/saturate",
+            "color-names",
             "conversions",
             "css-import",
             "css_nth_selectors",
             "css_unicode",
+            "debug-directive-nested/function",
+            "debug-directive-nested/mixin",
+            "delayed",
             "div",
             "env",
             "features/at-error",
@@ -77,6 +86,9 @@ fn handle_suites() -> Result<(), Error> {
             "http_import",
             "import",
             "inh", // @extend
+            "inheritance",
+            "interpolated-function-call",
+            "interpolated-urls",
             "list-evaluation",
             "lists",
             "media",
@@ -88,6 +100,7 @@ fn handle_suites() -> Result<(), Error> {
             "precision/default",
             "precision/lower",
             "properties-in-media",
+            "propsets",
             "rel",
             "selector-functions/is_superselector",
             "selector-functions/selector-length",
@@ -117,6 +130,8 @@ fn handle_suites() -> Result<(), Error> {
             "variable-scoping/lexical-scope",
             "variable-scoping/root-scope",
             "variables_in_media",
+            "warn-directive-nested/function",
+            "warn-directive-nested/mixin",
         ],
     )?;
     handle_suite(
@@ -127,6 +142,7 @@ fn handle_suites() -> Result<(), Error> {
             "negative_numbers",
             "JMA-pseudo-test", // Requires @extend
             "trailing_comma_in_selector",
+            "warn-directive",
         ],
     )?;
     // Note: The round test is broken; it requires 1.49999999999 to be rounded to 1.
@@ -135,24 +151,47 @@ fn handle_suites() -> Result<(), Error> {
         &base,
         "parser",
         &[
+            "interpolate/00_concatenation/unspaced",
             "interpolate/11_escaped_literal",
+            "interpolate/12_escaped_double_quoted/06_escape_interpolation",
+            "interpolate/13_escaped_single_quoted/06_escape_interpolation",
             "interpolate/14_escapes_literal_numbers",
+            "interpolate/15_escapes_double_quoted_numbers/06_escape_interpolation",
+            "interpolate/16_escapes_single_quoted_numbers/06_escape_interpolation",
             "interpolate/17_escapes_literal_lowercase",
+            "interpolate/18_escapes_double_quoted_lowercase/06_escape_interpolation",
+            "interpolate/19_escapes_single_quoted_lowercase/06_escape_interpolation",
             "interpolate/20_escapes_literal_uppercase",
+            "interpolate/21_escapes_double_quoted_uppercase/06_escape_interpolation",
+            "interpolate/22_escapes_single_quoted_uppercase/06_escape_interpolation",
             "interpolate/23_escapes_literal_specials",
             "interpolate/24_escapes_double_quoted_specials/todo_05_variable_quoted_double-4.0",
+            "interpolate/24_escapes_double_quoted_specials/06_escape_interpolation",
             "interpolate/25_escapes_single_quoted_specials/todo_05_variable_quoted_double-4.0",
-            "operations/addition/dimensions/pairs-4.0",
-            "operations/addition/numbers/pairs-4.0",
-            "operations/addition/strings/pairs-4.0",
+            "interpolate/25_escapes_single_quoted_specials/06_escape_interpolation",
+            "operations/addition",
             "operations/binary-and-unary",
-            "operations/division/dimensions/pairs-4.0",
-            "operations/division/mixed/pairs-4.0",
-            "operations/division/numbers/pairs-4.0",
-            "operations/division/strings/pairs-4.0",
-            "operations/subtract/dimensions/pairs-4.0",
-            "operations/subtract/numbers/pairs-4.0",
-            "operations/subtract/strings/pairs-4.0",
+            "operations/division",
+            "operations/logic_eq/dimensions/pairs",
+            "operations/logic_eq/mixed/pairs",
+            "operations/logic_eq/numbers/pairs",
+            "operations/logic_eq/strings/pairs",
+            "operations/logic_ge/numbers/pairs",
+            "operations/logic_ge/strings/pairs",
+            "operations/logic_gt/numbers/pairs",
+            "operations/logic_gt/strings/pairs",
+            "operations/logic_le/numbers/pairs",
+            "operations/logic_le/strings/pairs",
+            "operations/logic_lt/numbers/pairs",
+            "operations/logic_lt/strings/pairs",
+            "operations/logic_ne/dimensions/pairs",
+            "operations/logic_ne/mixed/pairs",
+            "operations/logic_ne/numbers/pairs",
+            "operations/logic_ne/strings/pairs",
+            "operations/modulo/numbers/pairs",
+            "operations/multiply/numbers/pairs",
+            "operations/multiply/strings/pairs",
+            "operations/subtract",
         ],
     )?;
     handle_suite(
@@ -239,18 +278,25 @@ fn handle_entries(
             } else if ignored.iter().any(|&i| &entry.file_name() == i) {
                 ignore(rs, &entry.file_name(), "not expected to work yet")?;
             } else {
+                eprintln!("Should handle {:?}", entry.file_name());
                 let input = entry.path().join("input.scss");
                 if input.exists() {
-                    eprintln!("Should handle {:?}", entry.file_name());
                     spec_to_test(
                         rs,
                         &suitedir,
                         &entry.file_name(),
                         precision,
-                    )?;
+                    )
+                    .map_err(|e| {
+                        Error(format!(
+                            "Failed to handle {:?}: {}",
+                            entry.file_name(),
+                            e,
+                        ))
+                    })?;
                 } else {
                     let name = fn_name_os(&entry.file_name());
-                    writeln!(rs, "\nmod {};", name);
+                    writeln!(rs, "\nmod {};", name)?;
                     let rssuitedir = rssuitedir.join(name);
                     let _may_exist = create_dir(&rssuitedir);
                     let mut rs = File::create(rssuitedir.join("mod.rs"))?;
@@ -306,7 +352,7 @@ fn spec_to_test(
     let specdir = suite.join(test);
     let precision = load_options(&specdir).or(precision);
     let input = specdir.join("input.scss");
-    let expected = specdir.join("expected_output.css");
+    let expected = specdir.join("output.css");
     writeln!(
         rs,
         "\n/// From {:?}\
@@ -402,6 +448,12 @@ impl From<io::Error> for Error {
 impl From<std::string::FromUtf8Error> for Error {
     fn from(e: std::string::FromUtf8Error) -> Self {
         Error(format!("utf8 error: {}", e))
+    }
+}
+use std::fmt;
+impl fmt::Display for Error {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        self.0.fmt(out)
     }
 }
 

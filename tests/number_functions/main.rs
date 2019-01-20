@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/number-functions"
-//! version df44d3aa, 2018-09-26 21:05:32 -0400.
+//! version ac22fe99, 2019-01-09 15:50:06 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["round"]

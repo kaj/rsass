@@ -1,8 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/misc"
-//! version df44d3aa, 2018-09-26 21:05:32 -0400.
+//! version ac22fe99, 2019-01-09 15:50:06 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["mixin_content", "negative_numbers", "JMA-pseudo-test", "trailing_comma_in_selector"]
+//! ["mixin_content", "negative_numbers", "JMA-pseudo-test", "trailing_comma_in_selector", "warn-directive"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
@@ -116,7 +116,7 @@ fn unicode_variables() {
     );
 }
 
-// Ignoring "warn-directive", tests with expected error not implemented yet.
+// Ignoring "warn-directive", not expected to work yet.
 
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)

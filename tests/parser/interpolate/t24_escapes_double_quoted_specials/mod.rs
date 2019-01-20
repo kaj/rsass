@@ -52,17 +52,7 @@ fn t04_variable_double() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/06_escape_interpolation"
-#[test]
-fn t06_escape_interpolation() {
-    assert_eq!(
-        rsass(
-            "$input: \"\\0_\\a_\\A\";\n.result {\n  output: \"[\\#{\"\\0_\\a_\\A\"}]\";\n  output: \"\\#{\"\\0_\\a_\\A\"}\";\n  output: \'\\#{\"\\0_\\a_\\A\"}\';\n  output: \"[\'\\#{\"\\0_\\a_\\A\"}\']\";\n}\n"
-        )
-        .unwrap(),
-        ".result {\n  output: \"[#{\" \\0_\\a_\\A \"}]\";\n  output: \"#{\" \\0_\\a_\\A \"}\";\n  output: \'\\#{\"\\0_\\a_\\A\"}\';\n  output: \"[\'#{\" \\0_\\a_\\A \"}\']\";\n}\n"
-    );
-}
+// Ignoring "06_escape_interpolation", not expected to work yet.
 
 /// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/todo_05_variable_quoted_double"
 #[test]

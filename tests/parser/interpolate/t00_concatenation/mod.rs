@@ -16,7 +16,7 @@ fn spaced() {
     );
 }
 
-// Ignoring "unspaced", tests with expected error not implemented yet.
+// Ignoring "unspaced", not expected to work yet.
 
 /// From "sass-spec/spec/parser/interpolate/00_concatenation/unspaced-4.0"
 #[test]

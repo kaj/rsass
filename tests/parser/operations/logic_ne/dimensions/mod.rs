@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "pairs", tests with expected error not implemented yet.
+// Ignoring "pairs", not expected to work yet.
 
 /// From "sass-spec/spec/parser/operations/logic_ne/dimensions/pairs-4.0"
 #[test]

@@ -1,8 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass"
-//! version df44d3aa, 2018-09-26 21:05:32 -0400.
+//! version ac22fe99, 2019-01-09 15:50:06 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["Sa\u{301}ss-UT\u{327}F8", "at-error/feature-test", "at-root/ampersand", "at-root/extend", "at-root/138_test_at_root_in_media", "at-root/139_test_at_root_in_bubbled_media", "at-root/140_test_at_root_in_unknown_directive", "at-root/with_without", "at-stuff", "base-level-parent/imported", "base-level-parent/nested/at-root-alone-itpl", "base-level-parent/nested/at-root-postfix-itpl", "base-level-parent/nested/at-root-prefix-itpl", "base-level-parent/root/at-root-postfix-itpl", "base-level-parent/root/at-root-prefix-itpl", "bool", "bourbon", "calc", "charset", "color-functions/opacity/fade-out", "color-functions/opacity/transparentize", "color-functions/other/change-color/a", "color-functions/rgb/rgba/a", "color-functions/saturate", "conversions", "css-import", "css_nth_selectors", "css_unicode", "div", "env", "features/at-error", "features/extend-selector-pseudoclass", "http_import", "import", "inh", "list-evaluation", "lists", "media", "mixin", "mixins-and-media-queries", "multi-blocks", "placeholder-mediaquery", "placeholder-nested", "precision/default", "precision/lower", "properties-in-media", "rel", "selector-functions/is_superselector", "selector-functions/selector-length", "selector-functions/simple-selector", "selectors/access", "selectors/interpolation", "selectors/mixin-argument", "selectors/simple", "selectors/variables/multiple/bare", "selectors/variables/multiple/interpolated", "selectors/variables/nested/bare", "selectors/variables/nested/interpolated", "test", "unary-ops", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "unicode-bom/utf-8", "units/conversion/angle", "units/conversion/frequency", "units/conversion/resolution", "units/conversion/size", "units/conversion/time", "units/simple", "url", "variable-scoping/blead-global", "variable-scoping/defaults", "variable-scoping/lexical-scope", "variable-scoping/root-scope", "variables_in_media"]
+//! ["Sa\u{301}ss-UT\u{327}F8", "arithmetic", "at-error/feature-test", "at-root/ampersand", "at-root/extend", "at-root/138_test_at_root_in_media", "at-root/139_test_at_root_in_bubbled_media", "at-root/140_test_at_root_in_unknown_directive", "at-root/with_without", "at-stuff", "base-level-parent/imported", "base-level-parent/nested/at-root-alone-itpl", "base-level-parent/nested/at-root-postfix-itpl", "base-level-parent/nested/at-root-prefix-itpl", "base-level-parent/root/at-root-postfix-itpl", "base-level-parent/root/at-root-prefix-itpl", "bool", "bourbon", "calc", "charset", "color-functions/opacity/fade-out", "color-functions/opacity/transparentize", "color-functions/other/change-color/a", "color-functions/rgb/rgba/a", "color-functions/saturate", "color-names", "conversions", "css-import", "css_nth_selectors", "css_unicode", "debug-directive-nested/function", "debug-directive-nested/mixin", "delayed", "div", "env", "features/at-error", "features/extend-selector-pseudoclass", "http_import", "import", "inh", "inheritance", "interpolated-function-call", "interpolated-urls", "list-evaluation", "lists", "media", "mixin", "mixins-and-media-queries", "multi-blocks", "placeholder-mediaquery", "placeholder-nested", "precision/default", "precision/lower", "properties-in-media", "propsets", "rel", "selector-functions/is_superselector", "selector-functions/selector-length", "selector-functions/simple-selector", "selectors/access", "selectors/interpolation", "selectors/mixin-argument", "selectors/simple", "selectors/variables/multiple/bare", "selectors/variables/multiple/interpolated", "selectors/variables/nested/bare", "selectors/variables/nested/interpolated", "test", "unary-ops", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "unicode-bom/utf-8", "units/conversion/angle", "units/conversion/frequency", "units/conversion/resolution", "units/conversion/size", "units/conversion/time", "units/simple", "url", "variable-scoping/blead-global", "variable-scoping/defaults", "variable-scoping/lexical-scope", "variable-scoping/root-scope", "variables_in_media", "warn-directive-nested/function", "warn-directive-nested/mixin"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
@@ -29,7 +29,7 @@ fn arg_eval() {
     );
 }
 
-// Ignoring "arithmetic", tests with expected error not implemented yet.
+// Ignoring "arithmetic", not expected to work yet.
 
 mod at_error;
 
@@ -51,7 +51,7 @@ mod basic;
 
 mod color_functions;
 
-// Ignoring "color-names", tests with expected error not implemented yet.
+// Ignoring "color-names", not expected to work yet.
 
 // Ignoring "conversions", not expected to work yet.
 
@@ -63,7 +63,7 @@ mod color_functions;
 
 mod debug_directive_nested;
 
-// Ignoring "delayed", tests with expected error not implemented yet.
+// Ignoring "delayed", not expected to work yet.
 
 // Ignoring "div", not expected to work yet.
 
@@ -115,9 +115,9 @@ fn image_url() {
 
 // Ignoring "inh", not expected to work yet.
 
-// Ignoring "inheritance", tests with expected error not implemented yet.
+// Ignoring "inheritance", not expected to work yet.
 
-// Ignoring "interpolated-function-call", tests with expected error not implemented yet.
+// Ignoring "interpolated-function-call", not expected to work yet.
 
 /// From "sass-spec/spec/libsass/interpolated-function-call-4.0"
 #[test]
@@ -128,7 +128,7 @@ fn interpolated_function_call_4_0() {
     );
 }
 
-// Ignoring "interpolated-urls", tests with expected error not implemented yet.
+// Ignoring "interpolated-urls", not expected to work yet.
 
 /// From "sass-spec/spec/libsass/interpolated-urls-4.0"
 #[test]
@@ -200,7 +200,7 @@ mod precision;
 
 // Ignoring "properties-in-media", not expected to work yet.
 
-// Ignoring "propsets", tests with expected error not implemented yet.
+// Ignoring "propsets", not expected to work yet.
 
 // Ignoring "rel", not expected to work yet.
 
@@ -249,7 +249,17 @@ fn unitless() {
 
 mod units;
 
-// Ignoring "unquote", tests with expected error not implemented yet.
+/// From "sass-spec/spec/libsass/unquote"
+#[test]
+fn unquote() {
+    assert_eq!(
+        rsass(
+            "div {\n  a: unquote(\"foo\");\n  b: unquote(\"I\'m a \\\"fashion\\\" \\\"expert\\\".\");\n  c: unquote(\\\"wha);\n  d: unquote(\"column1\\tcolumn2\");\n  e: unquote(23+1);\n}\n"
+        )
+        .unwrap(),
+        "div {\n  a: foo;\n  b: I\'m a \"fashion\" \"expert\".;\n  c: \\\"wha;\n  d: column1tcolumn2;\n  e: 24;\n}\n"
+    );
+}
 
 // Ignoring "url", not expected to work yet.
 
