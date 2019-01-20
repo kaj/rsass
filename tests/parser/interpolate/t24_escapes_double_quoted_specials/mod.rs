@@ -54,16 +54,6 @@ fn t04_variable_double() {
 
 // Ignoring "06_escape_interpolation", not expected to work yet.
 
-/// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/todo_05_variable_quoted_double"
-#[test]
-fn todo_05_variable_quoted_double() {
-    assert_eq!(
-        rsass(
-            "$input: \"\\0_\\a_\\A\";\n.result {\n  dquoted: \"#{#{$input}}\";\n  dquoted: \"#{\"[#{$input}]\"}\";\n  dquoted: \"#{\"#{$input}\"}\";\n  dquoted: \"#{\'#{$input}\'}\";\n  dquoted: \"#{\"[\'#{$input}\']\"}\";\n  squoted: \'#{#{$input}}\';\n  squoted: \'#{\"[#{$input}]\"}\';\n  squoted: \'#{\"#{$input}\"}\';\n  squoted: \'#{\'#{$input}\'}\';\n  squoted: \'#{\"[\'#{$input}\']\"}\';\n}\n"
-        )
-        .unwrap(),
-        "@charset \"UTF-8\";\n.result {\n  dquoted: \"�_ _ \";\n  dquoted: \"[�_\\a_\\a]\";\n  dquoted: \"�_\\a_\\a\";\n  dquoted: \"�_\\a_\\a\";\n  dquoted: \"[\'�_\\a_\\a\']\";\n  squoted: \"�_ _ \";\n  squoted: \"[�_\\a_\\a]\";\n  squoted: \"�_\\a_\\a\";\n  squoted: \"�_\\a_\\a\";\n  squoted: \"[\'�_\\a_\\a\']\";\n}\n"
-    );
-}
+// Ignoring "todo_05_variable_quoted_double", end_version is 3.5.
 
 // Ignoring "todo_05_variable_quoted_double-4.0", not expected to work yet.

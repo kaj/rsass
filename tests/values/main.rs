@@ -2,7 +2,7 @@
 //! version ac22fe99, 2019-01-09 15:50:06 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["identifiers/escape/normalize", "identifiers/escape/script", "ids", "numbers/units/multiple"]
+//! ["ids", "numbers/units/multiple"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 

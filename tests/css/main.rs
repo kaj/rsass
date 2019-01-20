@@ -2,7 +2,7 @@
 //! version ac22fe99, 2019-01-09 15:50:06 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["bizarrely_formatted_comments", "custom_properties", "moz_document", "ms_long_filter_syntax", "multi_star_comments", "plain", "media", "min_max", "selector", "unknown_directive"]
+//! ["bizarrely_formatted_comments", "custom_properties", "moz_document", "ms_long_filter_syntax", "multi_star_comments", "plain", "selector/slotted", "unknown_directive"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
@@ -49,9 +49,9 @@ fn function_name_identifiers() {
     );
 }
 
-// Ignoring "media", not expected to work yet.
+mod media;
 
-// Ignoring "min_max", not expected to work yet.
+// Ignoring "min_max", start_version is 3.7.
 
 // Ignoring "moz_document", not expected to work yet.
 
@@ -70,7 +70,7 @@ fn multiple_comments() {
 
 // Ignoring "plain", not expected to work yet.
 
-// Ignoring "selector", not expected to work yet.
+mod selector;
 
 mod unicode_range;
 

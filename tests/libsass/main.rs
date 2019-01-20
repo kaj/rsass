@@ -2,7 +2,7 @@
 //! version ac22fe99, 2019-01-09 15:50:06 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["Sa\u{301}ss-UT\u{327}F8", "arithmetic", "at-error/feature-test", "at-root/ampersand", "at-root/extend", "at-root/138_test_at_root_in_media", "at-root/139_test_at_root_in_bubbled_media", "at-root/140_test_at_root_in_unknown_directive", "at-root/with_without", "at-stuff", "base-level-parent/imported", "base-level-parent/nested/at-root-alone-itpl", "base-level-parent/nested/at-root-postfix-itpl", "base-level-parent/nested/at-root-prefix-itpl", "base-level-parent/root/at-root-postfix-itpl", "base-level-parent/root/at-root-prefix-itpl", "bool", "bourbon", "calc", "charset", "color-functions/opacity/fade-out", "color-functions/opacity/transparentize", "color-functions/other/change-color/a", "color-functions/rgb/rgba/a", "color-functions/saturate", "color-names", "conversions", "css-import", "css_nth_selectors", "css_unicode", "debug-directive-nested/function", "debug-directive-nested/mixin", "delayed", "div", "env", "features/at-error", "features/extend-selector-pseudoclass", "http_import", "import", "inh", "inheritance", "interpolated-function-call", "interpolated-urls", "list-evaluation", "lists", "media", "mixin", "mixins-and-media-queries", "multi-blocks", "placeholder-mediaquery", "placeholder-nested", "precision/default", "precision/lower", "properties-in-media", "propsets", "rel", "selector-functions/is_superselector", "selector-functions/selector-length", "selector-functions/simple-selector", "selectors/access", "selectors/interpolation", "selectors/mixin-argument", "selectors/simple", "selectors/variables/multiple/bare", "selectors/variables/multiple/interpolated", "selectors/variables/nested/bare", "selectors/variables/nested/interpolated", "test", "unary-ops", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "unicode-bom/utf-8", "units/conversion/angle", "units/conversion/frequency", "units/conversion/resolution", "units/conversion/size", "units/conversion/time", "units/simple", "url", "variable-scoping/blead-global", "variable-scoping/defaults", "variable-scoping/lexical-scope", "variable-scoping/root-scope", "variables_in_media", "warn-directive-nested/function", "warn-directive-nested/mixin"]
+//! ["Sa\u{301}ss-UT\u{327}F8", "at-error/feature-test", "at-root/ampersand", "at-root/extend", "at-root/138_test_at_root_in_media", "at-root/139_test_at_root_in_bubbled_media", "at-root/140_test_at_root_in_unknown_directive", "at-root/with_without", "at-stuff", "base-level-parent/imported", "base-level-parent/nested/at-root-alone-itpl", "base-level-parent/nested/at-root-postfix-itpl", "base-level-parent/nested/at-root-prefix-itpl", "base-level-parent/root/at-root-postfix-itpl", "base-level-parent/root/at-root-prefix-itpl", "bool", "bourbon", "calc", "charset", "color-functions/opacity/fade-out", "color-functions/opacity/transparentize", "color-functions/other/change-color/a", "color-functions/rgb/rgba/a", "color-functions/saturate", "conversions", "css-import", "css_nth_selectors", "css_unicode", "debug-directive-nested/function", "debug-directive-nested/mixin", "delayed", "div", "env", "features/at-error", "features/extend-selector-pseudoclass", "http_import", "import", "inh", "inheritance", "interpolated-function-call", "interpolated-urls", "list-evaluation", "lists", "media", "mixin", "mixins-and-media-queries", "multi-blocks", "placeholder-mediaquery", "placeholder-nested", "precision/default", "precision/lower", "properties-in-media", "propsets", "rel", "selector-functions/is_superselector", "selector-functions/selector-length", "selector-functions/simple-selector", "selectors/access", "selectors/interpolation", "selectors/mixin-argument", "selectors/simple", "selectors/variables/multiple/bare", "selectors/variables/multiple/interpolated", "selectors/variables/nested/bare", "selectors/variables/nested/interpolated", "test", "unary-ops", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "unicode-bom/utf-8", "units/conversion/angle", "units/conversion/frequency", "units/conversion/resolution", "units/conversion/size", "units/conversion/time", "units/simple", "url", "variable-scoping/blead-global", "variable-scoping/defaults", "variable-scoping/lexical-scope", "variable-scoping/root-scope", "variables_in_media", "warn-directive-nested/function", "warn-directive-nested/mixin"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
@@ -29,7 +29,7 @@ fn arg_eval() {
     );
 }
 
-// Ignoring "arithmetic", not expected to work yet.
+// Ignoring "arithmetic", end_version is 3.5.
 
 mod at_error;
 
@@ -51,7 +51,7 @@ mod basic;
 
 mod color_functions;
 
-// Ignoring "color-names", not expected to work yet.
+// Ignoring "color-names", end_version is 3.5.
 
 // Ignoring "conversions", not expected to work yet.
 
@@ -119,28 +119,11 @@ fn image_url() {
 
 // Ignoring "interpolated-function-call", not expected to work yet.
 
-/// From "sass-spec/spec/libsass/interpolated-function-call-4.0"
-#[test]
-fn interpolated_function_call_4_0() {
-    assert_eq!(
-        rsass("$f: foo;\n\ndiv {\n  color: #{$f}(a, 1+2, c);\n}").unwrap(),
-        "div {\n  color: foo(a, 3, c);\n}\n"
-    );
-}
+// Ignoring "interpolated-function-call-4.0", start_version is 4.0.
 
 // Ignoring "interpolated-urls", not expected to work yet.
 
-/// From "sass-spec/spec/libsass/interpolated-urls-4.0"
-#[test]
-fn interpolated_urls_4_0() {
-    assert_eq!(
-        rsass(
-            "$base_url: \"/static_loc/\";\ndiv {\n  background-image: \"url(\"#{$base_url}\"img/beta.png)\";\n}\n\nspan {\n  background-image: url(#{$base_url}img/beta.png);\n}\n\nfudge {\n  walnuts: blix\"fludge\"#{hey now}123;\n}"
-        )
-        .unwrap(),
-        "div {\n  background-image: \"url(\" /static_loc/ \"img/beta.png)\";\n}\n\nspan {\n  background-image: url(/static_loc/img/beta.png);\n}\n\nfudge {\n  walnuts: blix \"fludge\" hey now123;\n}\n"
-    );
-}
+// Ignoring "interpolated-urls-4.0", start_version is 4.0.
 
 /// From "sass-spec/spec/libsass/keyframes"
 #[test]

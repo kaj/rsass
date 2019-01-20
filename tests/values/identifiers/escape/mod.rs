@@ -4,6 +4,6 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "normalize", not expected to work yet.
+// Ignoring "normalize", start_version is 3.7.
 
-// Ignoring "script", not expected to work yet.
+// Ignoring "script", start_version is 3.7.

@@ -6,6 +6,9 @@ use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+/// Sass spec version targeted.
+const VERSION: f32 = 3.6;
+
 fn main() -> Result<(), Error> {
     let base = PathBuf::from("sass-spec/spec");
     handle_suite(
@@ -14,18 +17,10 @@ fn main() -> Result<(), Error> {
         &[
             "14_imports", // Need to handle separate files in tests
             "15_arithmetic_and_lists", // requirements changed
-            "23_basic_value_interpolation", // requirements changed
-            "53_escaped_quotes", // requirements changed
             "33_ambiguous_imports", // Need to handle separate files in tests
         ],
     )?;
-    handle_suite(
-        &base,
-        "colors",
-        &[
-            "basic", // requirements changed
-        ],
-    )?;
+    handle_suite(&base, "colors", &[])?;
     handle_suite(
         &base,
         "css",
@@ -35,11 +30,9 @@ fn main() -> Result<(), Error> {
             "moz_document",                 // Deprecated functionality
             "ms_long_filter_syntax",        // ?
             "multi_star_comments",          // Some problem with whitespace?
-            "plain",                        // Not working yet
-            "media",             // only subdir range not working yet
-            "min_max", // Expected handling of raw css functions changed.
-            "selector", // Only test requres @extend
-            "unknown_directive", // Some problem with whitespace?
+            "plain", // Need to access separate files in tests
+            "selector/slotted", // Requires @extend
+            "unknown_directive", // ?
         ],
     )?;
     handle_suite(
@@ -47,7 +40,6 @@ fn main() -> Result<(), Error> {
         "libsass",
         &[
             "Sa\u{301}ss-UT\u{327}F8", // resolves to duplicate name
-            "arithmetic",              // requirements changed
             "at-error/feature-test",
             "at-root/ampersand",
             "at-root/extend",
@@ -63,7 +55,7 @@ fn main() -> Result<(), Error> {
             "base-level-parent/root/at-root-postfix-itpl",
             "base-level-parent/root/at-root-prefix-itpl",
             "bool",
-            "bourbon",
+            "bourbon", // Need to handle separate files in tests
             "calc",
             "charset", // actually expects to-upper-case('ø...') to NOT work?
             "color-functions/opacity/fade-out",
@@ -71,7 +63,6 @@ fn main() -> Result<(), Error> {
             "color-functions/other/change-color/a",
             "color-functions/rgb/rgba/a",
             "color-functions/saturate",
-            "color-names",
             "conversions",
             "css-import",
             "css_nth_selectors",
@@ -85,7 +76,7 @@ fn main() -> Result<(), Error> {
             "features/extend-selector-pseudoclass",
             "http_import",
             "import",
-            "inh", // @extend
+            "inh", // Requires @extend
             "inheritance",
             "interpolated-function-call",
             "interpolated-urls",
@@ -151,7 +142,6 @@ fn main() -> Result<(), Error> {
         &base,
         "parser",
         &[
-            "interpolate/00_concatenation/unspaced",
             "interpolate/11_escaped_literal",
             "interpolate/12_escaped_double_quoted/06_escape_interpolation",
             "interpolate/13_escaped_single_quoted/06_escape_interpolation",
@@ -169,41 +159,10 @@ fn main() -> Result<(), Error> {
             "interpolate/24_escapes_double_quoted_specials/06_escape_interpolation",
             "interpolate/25_escapes_single_quoted_specials/todo_05_variable_quoted_double-4.0",
             "interpolate/25_escapes_single_quoted_specials/06_escape_interpolation",
-            "operations/addition",
             "operations/binary-and-unary",
-            "operations/division",
-            "operations/logic_eq/dimensions/pairs",
-            "operations/logic_eq/mixed/pairs",
-            "operations/logic_eq/numbers/pairs",
-            "operations/logic_eq/strings/pairs",
-            "operations/logic_ge/numbers/pairs",
-            "operations/logic_ge/strings/pairs",
-            "operations/logic_gt/numbers/pairs",
-            "operations/logic_gt/strings/pairs",
-            "operations/logic_le/numbers/pairs",
-            "operations/logic_le/strings/pairs",
-            "operations/logic_lt/numbers/pairs",
-            "operations/logic_lt/strings/pairs",
-            "operations/logic_ne/dimensions/pairs",
-            "operations/logic_ne/mixed/pairs",
-            "operations/logic_ne/numbers/pairs",
-            "operations/logic_ne/strings/pairs",
-            "operations/modulo/numbers/pairs",
-            "operations/multiply/numbers/pairs",
-            "operations/multiply/strings/pairs",
-            "operations/subtract",
         ],
     )?;
-    handle_suite(
-        &base,
-        "values",
-        &[
-            "identifiers/escape/normalize",
-            "identifiers/escape/script",
-            "ids",
-            "numbers/units/multiple",
-        ],
-    )?;
+    handle_suite(&base, "values", &["ids", "numbers/units/multiple"])?;
     Ok(())
 }
 
@@ -245,7 +204,7 @@ fn handle_suite(
          \nuse rsass::{{compile_scss, OutputStyle}};",
     )?;
 
-    handle_entries(&mut rs, &suitedir, &rssuitedir, ignored)?;
+    handle_entries(&mut rs, &suitedir, &rssuitedir, None, ignored)?;
 
     writeln!(
         rs,
@@ -261,9 +220,9 @@ fn handle_entries(
     rs: &mut Write,
     suitedir: &Path,
     rssuitedir: &Path,
+    precision: Option<i64>,
     ignored: &[&str],
 ) -> Result<(), Error> {
-    let precision = load_options(suitedir); // TODO .or(precision);
     let mut entries: Vec<DirEntry> =
         suitedir.read_dir()?.collect::<Result<_, _>>()?;
     entries.sort_by_key(|e| e.file_name());
@@ -295,38 +254,47 @@ fn handle_entries(
                         ))
                     })?;
                 } else {
-                    let name = fn_name_os(&entry.file_name());
-                    writeln!(rs, "\nmod {};", name)?;
-                    let rssuitedir = rssuitedir.join(name);
-                    let _may_exist = create_dir(&rssuitedir);
-                    let mut rs = File::create(rssuitedir.join("mod.rs"))?;
-                    writeln!(
-                        rs,
-                        "//! Tests auto-converted from {:?}\
-                         \n#[allow(unused)]\
-                         \nuse super::rsass;\
-                         \n#[allow(unused)]\
-                         \nuse rsass::set_precision;",
-                        suitedir.join(entry.file_name()),
-                    )?;
-                    let tt =
-                        format!("{}/", entry.file_name().to_string_lossy());
-                    let ignored: Vec<&str> = ignored
-                        .iter()
-                        .filter_map(|p| {
-                            if p.starts_with(&tt) {
-                                Some(p.split_at(tt.len()).1)
-                            } else {
-                                None
-                            }
-                        })
-                        .collect();
-                    handle_entries(
-                        &mut rs,
-                        &entry.path(),
-                        &rssuitedir,
-                        &ignored,
-                    )?;
+                    let options = load_options(&entry.path())?;
+                    if let Some(ref reason) = options.should_skip {
+                        ignore(rs, &entry.file_name(), reason)?;
+                    } else {
+                        let precision = options.precision.or(precision);
+                        let name = fn_name_os(&entry.file_name());
+                        writeln!(rs, "\nmod {};", name)?;
+                        let rssuitedir = rssuitedir.join(name);
+                        let _may_exist = create_dir(&rssuitedir);
+                        let mut rs = File::create(rssuitedir.join("mod.rs"))?;
+                        writeln!(
+                            rs,
+                            "//! Tests auto-converted from {:?}\
+                             \n#[allow(unused)]\
+                             \nuse super::rsass;\
+                             \n#[allow(unused)]\
+                             \nuse rsass::set_precision;",
+                            suitedir.join(entry.file_name()),
+                        )?;
+                        let tt = format!(
+                            "{}/",
+                            entry.file_name().to_string_lossy(),
+                        );
+                        let ignored: Vec<&str> = ignored
+                            .iter()
+                            .filter_map(|p| {
+                                if p.starts_with(&tt) {
+                                    Some(p.split_at(tt.len()).1)
+                                } else {
+                                    None
+                                }
+                            })
+                            .collect();
+                        handle_entries(
+                            &mut rs,
+                            &entry.path(),
+                            &rssuitedir,
+                            precision,
+                            &ignored,
+                        )?;
+                    }
                 }
             }
         }
@@ -350,7 +318,12 @@ fn spec_to_test(
     precision: Option<i64>,
 ) -> Result<(), Error> {
     let specdir = suite.join(test);
-    let precision = load_options(&specdir).or(precision);
+    let options = load_options(&specdir)?;
+    if let Some(ref reason) = options.should_skip {
+        ignore(rs, &specdir.file_name().unwrap_or_default(), reason)?;
+        return Ok(());
+    }
+    let precision = options.precision.or(precision);
     let input = specdir.join("input.scss");
     let expected = specdir.join("output.css");
     writeln!(
@@ -450,6 +423,17 @@ impl From<std::string::FromUtf8Error> for Error {
         Error(format!("utf8 error: {}", e))
     }
 }
+impl From<yaml_rust::ScanError> for Error {
+    fn from(e: yaml_rust::ScanError) -> Self {
+        Error(format!("utf8 error: {}", e))
+    }
+}
+impl From<std::num::ParseFloatError> for Error {
+    fn from(e: std::num::ParseFloatError) -> Self {
+        Error(format!("utf8 error: {}", e))
+    }
+}
+
 use std::fmt;
 impl fmt::Display for Error {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
@@ -458,16 +442,66 @@ impl fmt::Display for Error {
 }
 
 extern crate yaml_rust;
-use yaml_rust::YamlLoader;
+use yaml_rust::{Yaml, YamlLoader};
+
+struct Options {
+    pub precision: Option<i64>,
+    /// None for tests that should work, or Some(reason to skip).
+    pub should_skip: Option<String>,
+}
 
 /// Load options from options.yml.
-///
-/// Currently only `:precision` is suppoted, so the options struct is simply
-/// an i64.
-fn load_options(path: &Path) -> Option<i64> {
-    let options = content(&path.join("options.yml")).ok()?;
-    let options = YamlLoader::load_from_str(&options).ok()?;
-    let data = &options[0];
-    eprintln!("Found options: {:?}", data);
-    data[":precision"].as_i64()
+fn load_options(path: &Path) -> Result<Options, Error> {
+    let yml = path.join("options.yml");
+    if yml.exists() {
+        let options = content(&yml)?;
+        let options = YamlLoader::load_from_str(&options)?;
+        if options.len() > 1 {
+            Err(Error(format!("Found multiple-doc options {:?}", options)))?;
+        }
+        if options.len() == 0 {
+            Err(Error(format!("Found zero-doc options {:?}", options)))?;
+        }
+        let options = &options[0];
+        eprintln!("Found options: {:?}", options);
+        Ok(Options {
+            precision: options[":precision"].as_i64(),
+            should_skip: {
+                if let Some(skip) = skip_ended(options)? {
+                    Some(skip)
+                } else {
+                    skip_unstarted(options)?
+                }
+            },
+        })
+    } else {
+        Ok(Options {
+            precision: None,
+            should_skip: None,
+        })
+    }
+}
+
+fn skip_ended(options: &Yaml) -> Result<Option<String>, Error> {
+    if let Some(end) = options[":end_version"].as_str() {
+        if end.parse::<f32>()? <= VERSION {
+            Ok(Some(format!("end_version is {}", end)))
+        } else {
+            Ok(None)
+        }
+    } else {
+        Ok(None)
+    }
+}
+
+fn skip_unstarted(options: &Yaml) -> Result<Option<String>, Error> {
+    if let Some(start) = options[":start_version"].as_str() {
+        if start.parse::<f32>()? <= VERSION {
+            Ok(None)
+        } else {
+            Ok(Some(format!("start_version is {}", start)))
+        }
+    } else {
+        Ok(None)
+    }
 }

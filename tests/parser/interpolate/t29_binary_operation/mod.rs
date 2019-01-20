@@ -64,26 +64,6 @@ fn t05_variable_quoted_double() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/29_binary_operation/06_escape_interpolation"
-#[test]
-fn t06_escape_interpolation() {
-    assert_eq!(
-        rsass(
-            "$input: \"foo#{\'ba\' + \'r\'}baz\";\n.result {\n  output: \"[\\#{\"foo#{\'ba\' + \'r\'}baz\"}]\";\n  output: \"\\#{\"foo#{\'ba\' + \'r\'}baz\"}\";\n  output: \'\\#{\"foo#{\'ba\' + \'r\'}baz\"}\';\n  output: \"[\'\\#{\"foo#{\'ba\' + \'r\'}baz\"}\']\";\n}\n"
-        )
-        .unwrap(),
-        ".result {\n  output: \"[#{\" foobarbaz \"}]\";\n  output: \"#{\" foobarbaz \"}\";\n  output: \'#{\"foobarbaz\"}\';\n  output: \"[\'#{\" foobarbaz \"}\']\";\n}\n"
-    );
-}
+// Ignoring "06_escape_interpolation", end_version is 3.5.
 
-/// From "sass-spec/spec/parser/interpolate/29_binary_operation/06_escape_interpolation-4.0"
-#[test]
-fn t06_escape_interpolation_4_0() {
-    assert_eq!(
-        rsass(
-            "$input: \"foo#{\'ba\' + \'r\'}baz\";\n.result {\n  output: \"[\\#{\"foo#{\'ba\' + \'r\'}baz\"}]\";\n  output: \"\\#{\"foo#{\'ba\' + \'r\'}baz\"}\";\n  output: \'\\#{\"foo#{\'ba\' + \'r\'}baz\"}\';\n  output: \"[\'\\#{\"foo#{\'ba\' + \'r\'}baz\"}\']\";\n}\n"
-        )
-        .unwrap(),
-        ".result {\n  output: \"[#{\" foobarbaz \"}]\";\n  output: \"#{\" foobarbaz \"}\";\n  output: \'#{\"foobarbaz\"}\';\n  output: \"[\'#{\" foobarbaz \"}\']\";\n}\n"
-    );
-}
+// Ignoring "06_escape_interpolation-4.0", start_version is 4.0.
