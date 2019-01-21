@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/number-functions"
 //! version ac22fe99, 2019-01-09 15:50:06 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
-//! The following tests are excluded from conversion:
-//! ["round"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
@@ -90,7 +88,17 @@ fn random() {
     );
 }
 
-// Ignoring "round", not expected to work yet.
+/// From "sass-spec/spec/number-functions/round"
+#[test]
+fn round() {
+    assert_eq!(
+        rsass(
+            "round {\n  positive-middle: round(1.5);\n  positive-high: round(1.51);\n  positive-low: round(1.49);\n\n  negative-middle: round(-1.5);\n  negative-high: round(-1.51);\n  negative-low: round(-1.49);\n\n  almost-middle: round(1.49999999999);\n  with-units: round(1.1px);\n  with-named: round($number: 1.1px);\n}\n"
+        )
+        .unwrap(),
+        "round {\n  positive-middle: 2;\n  positive-high: 2;\n  positive-low: 1;\n  negative-middle: -2;\n  negative-high: -2;\n  negative-low: -1;\n  almost-middle: 1;\n  with-units: 1px;\n  with-named: 1px;\n}\n"
+    );
+}
 
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)

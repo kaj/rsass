@@ -136,8 +136,7 @@ fn main() -> Result<(), Error> {
             "warn-directive",
         ],
     )?;
-    // Note: The round test is broken; it requires 1.49999999999 to be rounded to 1.
-    handle_suite(&base, "number-functions", &["round"])?;
+    handle_suite(&base, "number-functions", &[])?;
     handle_suite(
         &base,
         "parser",
