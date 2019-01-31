@@ -116,7 +116,18 @@ fn main() -> Result<(), Error> {
             "units/conversion/time",
             "units/simple",
             "url",
-            "variable-scoping/blead-global",
+            "variable-scoping/blead-global/expanding/at-root",
+            "variable-scoping/blead-global/expanding/each",
+            "variable-scoping/blead-global/expanding/else",
+            "variable-scoping/blead-global/expanding/elseif",
+            "variable-scoping/blead-global/expanding/for",
+            "variable-scoping/blead-global/expanding/if",
+            "variable-scoping/blead-global/expanding/while",
+            "variable-scoping/blead-global/functional/each",
+            "variable-scoping/blead-global/functional/else",
+            "variable-scoping/blead-global/functional/elseif",
+            "variable-scoping/blead-global/functional/for",
+            "variable-scoping/blead-global/functional/if",
             "variable-scoping/defaults",
             "variable-scoping/lexical-scope",
             "variable-scoping/root-scope",
@@ -161,6 +172,28 @@ fn main() -> Result<(), Error> {
             "operations/binary-and-unary",
         ],
     )?;
+    handle_suite(&base, "scss", &[
+        "multiline-var", // name conflict with other test.
+        "mixin-content", // stack overflow?!?
+        "huge", // stack overflow
+        "comparable",
+        "composed-args",
+        "ie-functions",
+        "media/interpolated",
+        "media/nesting/merged",
+        "media/nesting/merged_and_retained",
+        "media/nesting/removed",
+        "media/nesting/retained",
+        "media/script_features",
+        "mixin-content-selectors",
+        "negation",
+        "nested-extend",
+        "newlines_in_selectors",
+        "placeholder",
+        "placeholder-with-media",
+        "precision",
+        "simple-inheritance",
+    ])?;
     handle_suite(&base, "values", &["ids", "numbers/units/multiple"])?;
     Ok(())
 }

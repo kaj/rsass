@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "blead-global", not expected to work yet.
+mod blead_global;
 
 // Ignoring "defaults", not expected to work yet.
 
