@@ -172,28 +172,45 @@ fn main() -> Result<(), Error> {
             "operations/binary-and-unary",
         ],
     )?;
-    handle_suite(&base, "scss", &[
-        "multiline-var", // name conflict with other test.
-        "mixin-content", // stack overflow?!?
-        "huge", // stack overflow
-        "comparable",
-        "composed-args",
-        "ie-functions",
-        "media/interpolated",
-        "media/nesting/merged",
-        "media/nesting/merged_and_retained",
-        "media/nesting/removed",
-        "media/nesting/retained",
-        "media/script_features",
-        "mixin-content-selectors",
-        "negation",
-        "nested-extend",
-        "newlines_in_selectors",
-        "placeholder",
-        "placeholder-with-media",
-        "precision",
-        "simple-inheritance",
-    ])?;
+    handle_suite(
+        &base,
+        "selector-functions",
+        &[
+            "extend/nested",
+            "extend/simple",
+            "is_superselector",
+            "parse",
+            "replace",
+            "unify/base",
+            "unify/universal_simple",
+        ],
+    )?;
+    handle_suite(
+        &base,
+        "scss",
+        &[
+            "multiline-var", // name conflict with other test.
+            "mixin-content", // stack overflow?!?
+            "huge",          // stack overflow
+            "comparable",
+            "composed-args",
+            "ie-functions",
+            "media/interpolated",
+            "media/nesting/merged",
+            "media/nesting/merged_and_retained",
+            "media/nesting/removed",
+            "media/nesting/retained",
+            "media/script_features",
+            "mixin-content-selectors",
+            "negation",
+            "nested-extend",
+            "newlines_in_selectors",
+            "placeholder",
+            "placeholder-with-media",
+            "precision",
+            "simple-inheritance",
+        ],
+    )?;
     handle_suite(&base, "values", &["ids", "numbers/units/multiple"])?;
     Ok(())
 }
@@ -371,13 +388,13 @@ fn spec_to_test(
     }
     let input = format!("{:?}", content(&input)?);
     let expected = format!("{:?}", content(&expected)?);
-    if input.len() + expected.len() < 48 {
+    if input.len() + expected.len() < 45 {
         writeln!(
             rs,
             "    assert_eq!(rsass({}).unwrap(), {});",
             input, expected
         )?;
-    } else if input.len() < 55 {
+    } else if input.len() < 54 {
         writeln!(
             rs,
             "    assert_eq!(\

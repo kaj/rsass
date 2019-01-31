@@ -308,13 +308,19 @@ fn css_selector_comments() {
 /// From "sass-spec/spec/scss/css_selector_hacks"
 #[test]
 fn css_selector_hacks() {
-    assert_eq!(rsass("> > E {\n  a: b; }\n").unwrap(), "> > E {\n  a: b;\n}\n");
+    assert_eq!(
+        rsass("> > E {\n  a: b; }\n").unwrap(),
+        "> > E {\n  a: b;\n}\n"
+    );
 }
 
 /// From "sass-spec/spec/scss/css_spaceless_combo_selectors"
 #[test]
 fn css_spaceless_combo_selectors() {
-    assert_eq!(rsass("E + F {\n  a: b; }\n").unwrap(), "E + F {\n  a: b;\n}\n");
+    assert_eq!(
+        rsass("E + F {\n  a: b; }\n").unwrap(),
+        "E + F {\n  a: b;\n}\n"
+    );
 }
 
 /// From "sass-spec/spec/scss/css_unary_ops"
@@ -431,7 +437,8 @@ fn test_for() {
 #[test]
 fn for_directive() {
     assert_eq!(
-        rsass(".foo {\n  @for $var from 1 through 5 {a: $var;}\n}\n").unwrap(),
+        rsass(".foo {\n  @for $var from 1 through 5 {a: $var;}\n}\n")
+            .unwrap(),
         ".foo {\n  a: 1;\n  a: 2;\n  a: 3;\n  a: 4;\n  a: 5;\n}\n"
     );
 }
