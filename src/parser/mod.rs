@@ -70,21 +70,26 @@ pub fn parse_scss_data(data: &[u8]) -> Result<Vec<Item>, Error> {
     }
 }
 
-named!(sassfile<Input, Vec<Item>>,
-       many0!(alt!(value!(Item::None, spacelike) |
-                   import |
-                   variable_declaration |
-                   mixin_declaration |
-                   each_loop |
-                   for_loop |
-                   while_loop |
-                   function_declaration |
-                   mixin_call |
-                   if_statement |
-                   at_rule |
-                   rule |
-                   map!(map_res!(comment, input_to_string), Item::Comment)
-                   )));
+named!(
+    sassfile<Input, Vec<Item>>,
+    preceded!(
+        opt!(tag!("\u{feff}".as_bytes())),
+        many0!(alt!(value!(Item::None, spacelike) |
+                    import |
+                    variable_declaration |
+                    mixin_declaration |
+                    each_loop |
+                    for_loop |
+                    while_loop |
+                    function_declaration |
+                    mixin_call |
+                    if_statement |
+                    at_rule |
+                    rule |
+                    map!(map_res!(comment, input_to_string), Item::Comment)
+        ))
+    )
+);
 
 named!(
     rule<Input, Item>,

@@ -106,9 +106,8 @@ fn main() -> Result<(), Error> {
             "selectors/variables/nested/interpolated",
             "test",
             "unary-ops",
-            "unicode-bom/utf-16-big", // spectest only handles utf8
-            "unicode-bom/utf-16-little", // spectest only handles utf8
-            "unicode-bom/utf-8",
+            "unicode-bom/utf-16-big", // rsass only handles utf8
+            "unicode-bom/utf-16-little", // rsass only handles utf8
             "units/conversion/angle",
             "units/conversion/frequency",
             "units/conversion/resolution",
@@ -387,7 +386,7 @@ fn spec_to_test(
         writeln!(rs, "    set_precision({});", precision)?;
     }
     let input = format!("{:?}", content(&input)?);
-    let expected = format!("{:?}", content(&expected)?);
+    let expected = format!("{:?}", content(&expected)?.replace("\r\n", "\n"));
     if input.len() + expected.len() < 45 {
         writeln!(
             rs,
