@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/scss"
-//! version ac22fe99, 2019-01-09 15:50:06 -0500.
+//! version 5717844f, 2019-01-28 20:42:33 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["multiline-var", "mixin-content", "huge", "comparable", "composed-args", "ie-functions", "media/interpolated", "media/nesting/merged", "media/nesting/merged_and_retained", "media/nesting/removed", "media/nesting/retained", "media/script_features", "mixin-content-selectors", "negation", "nested-extend", "newlines_in_selectors", "placeholder", "placeholder-with-media", "precision", "simple-inheritance"]

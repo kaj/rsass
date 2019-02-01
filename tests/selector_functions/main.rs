@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/selector-functions"
-//! version ac22fe99, 2019-01-09 15:50:06 -0500.
+//! version 5717844f, 2019-01-28 20:42:33 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["extend/nested", "extend/simple", "is_superselector", "parse", "replace", "unify/base", "unify/universal_simple"]
