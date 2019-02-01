@@ -2,7 +2,7 @@
 #[allow(unused)]
 use super::rsass;
 #[allow(unused)]
-use rsass::set_precision;
+use rsass::precision;
 
 // Ignoring "11_escaped_interpolated_value", tests with expected error not implemented yet.
 

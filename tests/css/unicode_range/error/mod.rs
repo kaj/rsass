@@ -2,7 +2,7 @@
 #[allow(unused)]
 use super::rsass;
 #[allow(unused)]
-use rsass::set_precision;
+use rsass::precision;
 
 // Ignoring "ident_minus_space_ident", tests with expected error not implemented yet.
 

@@ -2,7 +2,7 @@
 #[allow(unused)]
 use super::rsass;
 #[allow(unused)]
-use rsass::set_precision;
+use rsass::precision;
 
 /// From "sass-spec/spec/libsass/at-root/135_test_simple_at_root"
 #[test]

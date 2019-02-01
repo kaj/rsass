@@ -2,16 +2,23 @@ use num_rational::Rational;
 use num_traits::{Signed, Zero};
 use std::fmt::{self, Write};
 use std::ops::{Add, Div, Mul, Neg, Sub};
-use std::sync::atomic::{AtomicUsize, Ordering};
 
-static PRECISION: AtomicUsize = AtomicUsize::new(5);
+/// How many digits of precision to use when outputting decimal numbers.
+pub mod precision {
+    use std::sync::atomic::{AtomicUsize, Ordering};
 
-/// Set how many digits of precision to use when outputting decimal numbers.
-///
-/// This modifies a global singleton and should probably be called only once,
-/// at program start.
-pub fn set_precision(precision: usize) {
-    PRECISION.store(precision, Ordering::Relaxed);
+    static PRECISION: AtomicUsize = AtomicUsize::new(5);
+
+    /// Set how many digits of precision to use when outputting decimal numbers.
+    ///
+    /// This modifies a global singleton and should probably be called only once,
+    /// at program start.
+    pub fn set(precision: usize) {
+        PRECISION.store(precision, Ordering::Relaxed);
+    }
+    pub fn get() -> usize {
+        PRECISION.load(Ordering::Relaxed)
+    }
 }
 
 /// The actual number part of a numeric sass or css value.
@@ -119,10 +126,12 @@ impl fmt::Display for Number {
             }
             write!(out, "{}", t)?;
         }
-        let mut f = self.value.fract().abs();
+        let f = self.value.fract().abs();
         if !f.is_zero() {
             out.write_char('.')?;
-            for _ in 0..(PRECISION.load(Ordering::Relaxed) - 1) {
+            let t = Rational::from_integer(10).pow(precision::get() as i32);
+            let mut f = (t * f).round() / t;
+            for _ in 1..precision::get() {
                 f *= 10;
                 write!(out, "{}", f.to_integer())?;
                 f = f.fract();

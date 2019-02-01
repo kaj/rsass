@@ -2,6 +2,6 @@
 #[allow(unused)]
 use super::rsass;
 #[allow(unused)]
-use rsass::set_precision;
+use rsass::precision;
 
 // Ignoring "multiple", not expected to work yet.

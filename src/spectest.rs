@@ -88,8 +88,7 @@ fn main() -> Result<(), Error> {
             "multi-blocks",
             "placeholder-mediaquery",
             "placeholder-nested",
-            "precision/default",
-            "precision/lower",
+            "precision/lower", // Expects round() results I think looks broken.
             "properties-in-media",
             "propsets",
             "rel",
@@ -206,7 +205,7 @@ fn main() -> Result<(), Error> {
             "newlines_in_selectors",
             "placeholder",
             "placeholder-with-media",
-            "precision",
+            "precision", // Default prec is 5 in libsass but 10 in scss?!?
             "simple-inheritance",
         ],
     )?;
@@ -318,7 +317,7 @@ fn handle_entries(
                              \n#[allow(unused)]\
                              \nuse super::rsass;\
                              \n#[allow(unused)]\
-                             \nuse rsass::set_precision;",
+                             \nuse rsass::precision;",
                             suitedir.join(entry.file_name()),
                         )?;
                         let tt = format!(
@@ -383,7 +382,7 @@ fn spec_to_test(
         fn_name_os(test),
     )?;
     if let Some(precision) = precision {
-        writeln!(rs, "    set_precision({});", precision)?;
+        writeln!(rs, "    precision::set({});", precision)?;
     }
     let input = format!("{:?}", content(&input)?);
     let expected = format!("{:?}", content(&expected)?.replace("\r\n", "\n"));

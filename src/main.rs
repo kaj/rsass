@@ -3,11 +3,12 @@ extern crate clap;
 extern crate rsass;
 
 use clap::{App, Arg, ArgMatches};
-use rsass::{compile_scss_file, set_precision, Error, OutputStyle};
+use rsass::{compile_scss_file, precision, Error, OutputStyle};
 use std::io::{stdout, Write};
 use std::process::exit;
 
 fn main() {
+    let default_precision = format!("{}", precision::get());
     let args = App::new("rsass")
         .version(env!("CARGO_PKG_VERSION"))
         .author("Rasmus Kaj <rasmus@krats.se>")
@@ -16,7 +17,7 @@ fn main() {
             Arg::with_name("PRECISION")
                 .long("precision")
                 .takes_value(true)
-                .default_value("5")
+                .default_value(&default_precision)
                 .validator(|p| {
                     p.parse::<usize>()
                         .map(|_| ())
@@ -57,7 +58,7 @@ fn main() {
 
 fn run(args: &ArgMatches) -> Result<(), Error> {
     let style = value_t!(args, "STYLE", OutputStyle)?;
-    set_precision(value_t!(args, "PRECISION", usize)?);
+    precision::set(value_t!(args, "PRECISION", usize)?);
     if let Some(inputs) = args.values_of("INPUT") {
         for name in inputs {
             let result = compile_scss_file(name.as_ref(), style)?;
