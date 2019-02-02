@@ -107,11 +107,15 @@ impl Zero for Number {
 
 impl fmt::Display for Number {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        let p_fac = 10_isize.pow(precision::get() as u32);
-        let value = (self.value * p_fac).round() / p_fac;
-        let t = value.to_integer();
+        let prec = precision::get() as u32;
+        let p_fac = 10_isize.pow(prec);
+        let value = (self.value * p_fac).round().to_integer();
+        eprintln!("Format {:?}; round to {}; {} / {}", self.value, prec, value, p_fac);
+        let whole = value / p_fac;
+        let decimals = value.abs() - whole.abs() * p_fac;
+        eprintln!(" ... whole: {}, decimals: {}", whole, decimals);
         let skip_zero = out.alternate() || !self.lead_zero;
-        if t == 0 {
+        if whole.is_zero() {
             if value.is_negative() {
                 out.write_str("-")?;
                 if !skip_zero {
@@ -119,25 +123,24 @@ impl fmt::Display for Number {
                 }
             } else if self.plus_sign {
                 out.write_str("+0")?;
-            } else if value.is_zero() || !skip_zero {
+            } else if decimals.is_zero() || !skip_zero {
                 out.write_char('0')?;
             }
         } else {
-            if self.plus_sign && !t.is_negative() {
+            if self.plus_sign && !whole.is_negative() {
                 out.write_char('+')?;
             }
-            write!(out, "{}", t)?;
+            write!(out, "{}", whole)?;
         }
-        let mut f = value.fract().abs();
-        if !f.is_zero() {
+        if !decimals.is_zero() {
             out.write_char('.')?;
-            for _ in 0..precision::get() {
-                f *= 10;
-                write!(out, "{}", f.to_integer())?;
-                f = f.fract();
-                if f.is_zero() {
-                    break;
-                }
+            let mut rem = decimals;
+            let mut scale = p_fac;
+            while rem > 0 {
+                scale /= 10;
+                let t = rem / scale;
+                rem = rem - t * scale;
+                write!(out, "{}", t)?;
             }
         }
         Ok(())
