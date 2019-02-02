@@ -107,17 +107,19 @@ impl Zero for Number {
 
 impl fmt::Display for Number {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        let t = self.value.to_integer();
+        let p_fac = 10_isize.pow(precision::get() as u32);
+        let value = (self.value * p_fac).round() / p_fac;
+        let t = value.to_integer();
         let skip_zero = out.alternate() || !self.lead_zero;
         if t == 0 {
-            if self.value.is_negative() {
+            if value.is_negative() {
                 out.write_str("-")?;
                 if !skip_zero {
                     out.write_str("0")?;
                 }
             } else if self.plus_sign {
                 out.write_str("+0")?;
-            } else if self.value.is_zero() || !skip_zero {
+            } else if value.is_zero() || !skip_zero {
                 out.write_char('0')?;
             }
         } else {
@@ -126,21 +128,16 @@ impl fmt::Display for Number {
             }
             write!(out, "{}", t)?;
         }
-        let f = self.value.fract().abs();
+        let mut f = value.fract().abs();
         if !f.is_zero() {
             out.write_char('.')?;
-            let t = Rational::from_integer(10).pow(precision::get() as i32);
-            let mut f = (t * f).round() / t;
-            for _ in 1..precision::get() {
+            for _ in 0..precision::get() {
                 f *= 10;
                 write!(out, "{}", f.to_integer())?;
                 f = f.fract();
                 if f.is_zero() {
                     break;
                 }
-            }
-            if !f.is_zero() {
-                write!(out, "{}", (f * 10).round().to_integer())?;
             }
         }
         Ok(())

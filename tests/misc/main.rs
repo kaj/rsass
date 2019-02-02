@@ -2,7 +2,7 @@
 //! version 5717844f, 2019-01-28 20:42:33 -0500.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["mixin_content", "negative_numbers", "JMA-pseudo-test", "trailing_comma_in_selector", "warn-directive"]
+//! ["mixin_content", "JMA-pseudo-test", "trailing_comma_in_selector", "warn-directive"]
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
@@ -85,7 +85,17 @@ fn namespace_properties_with_script_value() {
     );
 }
 
-// Ignoring "negative_numbers", not expected to work yet.
+/// From "sass-spec/spec/misc/negative_numbers"
+#[test]
+fn negative_numbers() {
+    assert_eq!(
+        rsass(
+            "$zero: 0;\na {\n  zero: -$zero;\n  zero: $zero * -1;\n}\n$near: 0.000000000001;\na {\n  near: -$near;\n  near: $near * -1;\n}\n"
+        )
+        .unwrap(),
+        "a {\n  zero: 0;\n  zero: 0;\n}\n\na {\n  near: 0;\n  near: 0;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/misc/selector_interpolation_before_element_name"
 #[test]

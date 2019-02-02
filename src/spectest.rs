@@ -138,8 +138,7 @@ fn main() -> Result<(), Error> {
         &base,
         "misc",
         &[
-            "mixin_content", // ?
-            "negative_numbers",
+            "mixin_content",   // ?
             "JMA-pseudo-test", // Requires @extend
             "trailing_comma_in_selector",
             "warn-directive",
