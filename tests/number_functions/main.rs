@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/number-functions"
-//! version 5717844f, 2019-01-28 20:42:33 -0500.
+//! version 0f59164a, 2019-02-01 17:21:13 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
