@@ -18,7 +18,7 @@ use nom::types::CompleteByteSlice as Input;
 use nom::Err;
 #[cfg(test)]
 use sass::{CallArgs, FormalArgs};
-use sass::{Item, Value};
+use sass::{Item, MediaQuery, Value};
 use selectors::Selectors;
 use std::fs::File;
 use std::io::Read;
@@ -121,6 +121,7 @@ named!(
             | if_statement
             | return_stmt
             | content_stmt
+            | media_rule
             | at_rule
             | value!(
                 Item::None,
@@ -170,6 +171,60 @@ named!(
                 args: args.unwrap_or_default(),
                 body: body.unwrap_or_default(),
             })
+    )
+);
+
+named!(
+    media_query_feature<Input, &str>,
+    map_res!(
+        recognize!(
+            do_parse!(
+                tag!("(")
+                    >> opt_spacelike
+                    // TODO: Be more strict about what contents we accept here.
+                    >> take_until!(")")
+                    >> tag!(")") >> ({})
+            )
+        ),
+        input_to_str
+    )
+);
+
+named!(
+    media_query<Input, MediaQuery>,
+    do_parse!(
+        modifier: opt!(name)
+            >> opt_spacelike
+            >> media_type: opt!(name)
+            >> features: many0!(
+                preceded!(
+                    delimited!(opt_spacelike, tag!("and"), opt_spacelike),
+                    media_query_feature
+                )
+            )
+            >> (MediaQuery {
+                modifier: modifier,
+                media_type: media_type,
+                features: features.iter().map(|s| s.to_string()).collect(),
+            })
+    )
+);
+
+named!(
+    media_rule<Input, Item>,
+    do_parse!(
+        tag!("@media")
+        >> spacelike
+        >> queries: separated_nonempty_list!(
+            delimited!(opt_spacelike, tag!(","), opt_spacelike),
+            media_query
+        )
+        >> opt_spacelike
+        >> body: body_block
+        >> (Item::MediaRule {
+            queries: queries,
+            body: body,
+        })
     )
 );
 
@@ -538,6 +593,36 @@ fn test_mixin_declaration() {
             }
         ))
     )
+}
+
+#[test]
+fn test_media() {
+    assert_eq!(
+        media_rule(Input(
+            b"\
+@media only screen and (min-resolution: 192dpi), // IE9-11 don't support dppx
+only screen and (min-resolution: 2dppx) { // Standardized
+}"
+        )),
+        Ok((
+            Input(b""),
+            Item::MediaRule {
+                queries: vec![
+                    MediaQuery {
+                        modifier: Some("only".to_string()),
+                        media_type: Some("screen".to_string()),
+                        features: vec!["(min-resolution: 192dpi)".to_string()]
+                    },
+                    MediaQuery {
+                        modifier: Some("only".to_string()),
+                        media_type: Some("screen".to_string()),
+                        features: vec!["(min-resolution: 2dppx)".to_string()]
+                    }
+                ],
+                body: vec![],
+            }
+        ))
+    );
 }
 
 #[test]

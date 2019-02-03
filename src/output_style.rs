@@ -3,7 +3,7 @@ use error::Error;
 use file_context::FileContext;
 use nom::types::CompleteByteSlice as Input;
 use parser::parse_scss_file;
-use sass::{FormalArgs, Item};
+use sass::{FormalArgs, Item, MediaQuery};
 use selectors::{Selector, SelectorPart, Selectors};
 use std::fmt;
 use std::io::Write;
@@ -137,6 +137,19 @@ impl OutputStyle {
                     result.to_content().write_all(&s2)?;
                 }
             }
+            Item::MediaRule {
+                ref queries,
+                ref body,
+            } => {
+                result.do_separate()?;
+                self.write_media_rule_queries(result.to_content(), queries)?;
+                self.write_root_at_rule_body(
+                    result.to_content(),
+                    body,
+                    scope,
+                    file_context,
+                )?;
+            }
             Item::AtRule {
                 ref name,
                 ref args,
@@ -149,34 +162,16 @@ impl OutputStyle {
                     write!(result.to_content(), " {}", args)?;
                 }
                 if let Some(ref body) = *body {
-                    if self.is_compressed() {
-                        write!(result.to_content(), "{{")?;
-                    } else {
-                        write!(result.to_content(), " {{")?;
-                    }
-                    let mut direct = vec![];
-                    let mut sub = vec![];
-                    self.handle_body(
-                        &mut direct,
-                        &mut sub,
-                        &mut ScopeImpl::sub(scope),
+                    self.write_root_at_rule_body(
+                        result.to_content(),
                         body,
+                        scope,
                         file_context,
-                        2,
                     )?;
-                    self.write_items(result.to_content(), &direct, 2)?;
-                    if !sub.is_empty() {
-                        if direct.is_empty() {
-                            result.do_indent(0)?;
-                        }
-                        result.to_content().write_all(&sub)?;
-                    }
-                    write!(result.to_content(), "}}")?;
                 } else {
-                    write!(result.to_content(), ";")?;
+                    result.to_content().write_all(b";")?;
                 }
             }
-
             Item::MixinDeclaration {
                 ref name,
                 ref args,
@@ -339,6 +334,113 @@ impl OutputStyle {
         Ok(())
     }
 
+    fn write_media_rule_queries(
+        &self,
+        out: &mut Write,
+        queries: &[MediaQuery],
+    ) -> Result<(), Error> {
+        out.write_all(b"@media")?;
+        for (i, q) in queries.iter().enumerate() {
+            if let Some(ref modifier) = q.modifier {
+                if i == 0 {
+                    out.write_all(b" ")?
+                };
+                out.write_all(modifier.as_bytes())?;
+            }
+            if let Some(ref media_type) = q.media_type {
+                if i == 0 || q.modifier.is_some() {
+                    out.write_all(b" ")?
+                };
+                out.write_all(media_type.as_bytes())?;
+            }
+            if !q.features.is_empty()
+                && (q.modifier.is_some() || q.media_type.is_some())
+            {
+                out.write_all(b" and ")?;
+            }
+            for (j, f) in q.features.iter().enumerate() {
+                if j != 0 {
+                    out.write_all(b" and ")?;
+                }
+                out.write_all(f.as_bytes())?;
+            }
+            if i != queries.len() - 1 {
+                out.write_all(if self.is_compressed() {
+                    b","
+                } else {
+                    b", "
+                })?;
+            }
+        }
+        Ok(())
+    }
+
+    fn write_root_at_rule_body(
+        &self,
+        out: &mut Write,
+        body: &[Item],
+        scope: &mut Scope,
+        file_context: &FileContext,
+    ) -> Result<(), Error> {
+        out.write_all(if self.is_compressed() { b"{" } else { b" {" })?;
+        let mut direct = vec![];
+        let mut sub = vec![];
+        self.handle_body(
+            &mut direct,
+            &mut sub,
+            &mut ScopeImpl::sub(scope),
+            body,
+            file_context,
+            2,
+        )?;
+        self.write_items(out, &direct, 2)?;
+        if !sub.is_empty() {
+            if direct.is_empty() {
+                self.do_indent(out, 0)?;
+            }
+            out.write_all(&sub)?;
+        }
+        out.write_all(b"}")?;
+        Ok(())
+    }
+
+    fn write_body_at_rule_body(
+        &self,
+        out: &mut Write,
+        body: &[Item],
+        scope: &mut Scope,
+        file_context: &FileContext,
+    ) -> Result<(), Error> {
+        out.write_all(if self.is_compressed() { b"{" } else { b" {" })?;
+        let mut direct = vec![];
+        let mut sub = vec![];
+        self.handle_body(
+            &mut direct,
+            &mut sub,
+            &mut ScopeImpl::sub(scope),
+            body,
+            file_context,
+            2,
+        )?;
+        if !direct.is_empty() {
+            self.do_indent(out, 2)?;
+            if self.is_compressed() {
+                write!(out, "{:#}{{", scope.get_selectors())?;
+            } else {
+                write!(out, "{} {{", scope.get_selectors())?;
+            }
+            self.write_items(out, &direct, 4)?;
+            out.write_all(b"}")?;
+        }
+        self.do_indent(out, 0)?;
+        if !sub.is_empty() {
+            out.write_all(&sub)?;
+        }
+        out.write_all(b"}")?;
+        self.do_indent(out, 0)?;
+        Ok(())
+    }
+
     fn handle_body(
         &self,
         direct: &mut Vec<CssBodyItem>,
@@ -420,6 +522,18 @@ impl OutputStyle {
                         sub.write_all(&s2)?;
                     }
                 }
+                Item::MediaRule {
+                    ref queries,
+                    ref body,
+                } => {
+                    self.write_media_rule_queries(sub, queries)?;
+                    self.write_body_at_rule_body(
+                        sub,
+                        body,
+                        scope,
+                        file_context,
+                    )?;
+                }
                 Item::AtRule {
                     ref name,
                     ref args,
@@ -431,41 +545,14 @@ impl OutputStyle {
                         write!(sub, " {}", args)?;
                     }
                     if let Some(ref body) = *body {
-                        if self.is_compressed() {
-                            write!(sub, "{{")?;
-                        } else {
-                            write!(sub, " {{")?;
-                        }
-
-                        let mut s1 = vec![];
-                        let mut s2 = vec![];
-                        self.handle_body(
-                            &mut s1,
-                            &mut s2,
-                            &mut ScopeImpl::sub(scope),
+                        self.write_body_at_rule_body(
+                            sub,
                             body,
+                            scope,
                             file_context,
-                            2,
                         )?;
-
-                        if !s1.is_empty() {
-                            self.do_indent(sub, 2)?;
-                            if self.is_compressed() {
-                                write!(sub, "{:#}{{", scope.get_selectors())?;
-                            } else {
-                                write!(sub, "{} {{", scope.get_selectors())?;
-                            }
-                            self.write_items(sub, &s1, 4)?;
-                            write!(sub, "}}")?;
-                        }
-                        self.do_indent(sub, 0)?;
-                        if !s2.is_empty() {
-                            sub.write_all(&s2)?;
-                        }
-                        write!(sub, "}}")?;
-                        self.do_indent(sub, 0)?;
                     } else {
-                        write!(sub, ";")?;
+                        sub.write_all(b";")?;
                     }
                 }
 

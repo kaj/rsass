@@ -22,7 +22,10 @@ pub enum Item {
         args: Value,
         body: Option<Vec<Item>>,
     },
-
+    MediaRule {
+        queries: Vec<MediaQuery>, // Never empty.
+        body: Vec<Item>,
+    },
     MixinDeclaration {
         name: String,
         args: FormalArgs,
@@ -58,4 +61,16 @@ pub enum Item {
     Property(SassString, Value),
     Comment(String),
     None,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct MediaQuery {
+    // The modifier, such as "not" or "only".
+    pub modifier: Option<String>,
+
+    // The media type, such as "screen" or "print".
+    pub media_type: Option<String>,
+
+    // Feature queries, including parenthesis.
+    pub features: Vec<String>,
 }
