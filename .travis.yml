@@ -8,6 +8,7 @@ rust:
   - 1.26.2
   - beta
   - nightly
+cache: cargo
 script:
   - cargo build --verbose $F
   - cargo test --verbose $F
