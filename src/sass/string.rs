@@ -1,3 +1,4 @@
+use error::Error;
 use sass::Value;
 use std::fmt;
 use value::Quotes;
@@ -45,19 +46,19 @@ impl SassString {
         }
         SassString { parts: p2, quotes }
     }
-    pub fn evaluate(&self, scope: &Scope) -> (String, Quotes) {
+    pub fn evaluate(&self, scope: &Scope) -> Result<(String, Quotes), Error> {
         // Note This is an extremely peculiar special case;
         // A single-quoted string consisting only of an interpolation
         // becomes double-quoted.
         if self.quotes != Quotes::None && self.parts.len() == 1 {
             if let StringPart::Interpolation(ref v) = self.parts[0] {
-                let s = format!("{}", v.evaluate(scope).unquote())
+                let s = format!("{}", v.evaluate(scope)?.unquote())
                     .replace('\\', "\\\\")
                     .replace('\n', "\\a");
                 if s.contains('"') && !s.contains('\'') {
-                    return (s, Quotes::Single);
+                    return Ok((s, Quotes::Single));
                 } else {
-                    return (s, Quotes::Double);
+                    return Ok((s, Quotes::Double));
                 }
             }
         }
@@ -67,7 +68,7 @@ impl SassString {
             match *part {
                 StringPart::Interpolation(ref v) => {
                     interpolated = true;
-                    let mut v = format!("{}", v.evaluate(scope).unquote());
+                    let mut v = format!("{}", v.evaluate(scope)?.unquote());
                     if self.quotes == Quotes::None {
                         v = v.replace('\n', " ");
                     } else {
@@ -83,17 +84,17 @@ impl SassString {
             && result.contains('"')
             && !result.contains('\'')
         {
-            (result, Quotes::Single)
+            Ok((result, Quotes::Single))
         } else {
-            (result, self.quotes)
+            Ok((result, self.quotes))
         }
     }
-    pub fn evaluate2(&self, scope: &Scope) -> SassString {
-        let (result, quotes) = self.evaluate(scope);
-        SassString {
+    pub fn evaluate2(&self, scope: &Scope) -> Result<SassString, Error> {
+        let (result, quotes) = self.evaluate(scope)?;
+        Ok(SassString {
             parts: vec![StringPart::Raw(result)],
             quotes,
-        }
+        })
     }
     pub fn is_unquoted(&self) -> bool {
         self.quotes == Quotes::None

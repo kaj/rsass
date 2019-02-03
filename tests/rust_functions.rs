@@ -57,7 +57,7 @@ fn function_with_args() {
                 ("b".into(), sass::Value::scalar(0)),
             ],
             false,
-            Arc::new(|s| match (s.get("a"), s.get("b")) {
+            Arc::new(|s| match (s.get("a")?, s.get("b")?) {
                 (
                     css::Value::Numeric(a, au, ..),
                     css::Value::Numeric(b, bu, ..),

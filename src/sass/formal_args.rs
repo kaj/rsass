@@ -1,4 +1,5 @@
 use css;
+use error::Error;
 use sass::Value;
 use std::default::Default;
 use value::ListSeparator;
@@ -20,7 +21,7 @@ impl FormalArgs {
         &self,
         scope: &'a Scope,
         args: &css::CallArgs,
-    ) -> ScopeImpl<'a> {
+    ) -> Result<ScopeImpl<'a>, Error> {
         let mut argscope = ScopeImpl::sub(scope);
         let n = self.0.len();
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
@@ -44,13 +45,13 @@ impl FormalArgs {
                 match args.get(i) {
                     Some(&(None, ref v)) => argscope.define(name, v),
                     _ => {
-                        let v = default.do_evaluate(&argscope, true);
+                        let v = default.do_evaluate(&argscope, true)?;
                         argscope.define(name, &v)
                     }
                 };
             }
         }
-        argscope
+        Ok(argscope)
     }
 }
 

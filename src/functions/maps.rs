@@ -5,21 +5,21 @@ use std::collections::BTreeMap;
 use value::ListSeparator;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, map_get(map, key), |s| Ok(get_map(s.get("map"))?
-        .get(&s.get("key"))
+    def!(f, map_get(map, key), |s| Ok(get_map(s.get("map")?)?
+        .get(&s.get("key")?)
         .cloned()
         .unwrap_or(Value::Null)));
     def!(f, map_merge(map1, map2), |s| {
-        let mut map1 = get_map(s.get("map1"))?;
-        let map2 = get_map(s.get("map2"))?;
+        let mut map1 = get_map(s.get("map1")?)?;
+        let map2 = get_map(s.get("map2")?)?;
         for (key, value) in map2 {
             map1.insert(key, value);
         }
         Ok(Value::Map(map1))
     });
     def_va!(f, map_remove(map, keys), |s| {
-        let mut map = get_map(s.get("map"))?;
-        match s.get("keys") {
+        let mut map = get_map(s.get("map")?)?;
+        match s.get("keys")? {
             Value::List(keys, ..) => {
                 for key in keys {
                     map.remove(&key);
@@ -32,16 +32,16 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         Ok(Value::Map(map))
     });
     def!(f, map_keys(map), |s| {
-        let map = get_map(s.get("map"))?;
+        let map = get_map(s.get("map")?)?;
         Ok(Value::List(map.keys(), ListSeparator::Comma, false))
     });
     def!(f, map_values(map), |s| {
-        let map = get_map(s.get("map"))?;
+        let map = get_map(s.get("map")?)?;
         Ok(Value::List(map.values(), ListSeparator::Comma, false))
     });
     def!(f, map_has_key(map, key), |s| {
-        let map = get_map(s.get("map"))?;
-        Ok(Value::bool(map.contains_key(&s.get("key"))))
+        let map = get_map(s.get("map")?)?;
+        Ok(Value::bool(map.contains_key(&s.get("key")?)))
     });
 }
 

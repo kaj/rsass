@@ -121,11 +121,11 @@ impl SassFunction {
         scope: &Scope,
         args: &css::CallArgs,
     ) -> Result<css::Value, Error> {
-        let mut s = self.args.eval(scope, args);
+        let mut s = self.args.eval(scope, args)?;
         match self.body {
             FuncImpl::Builtin(ref body) => body(&s),
             FuncImpl::UserDefined(ref body) => {
-                Ok(s.eval_body(body).unwrap_or(css::Value::Null))
+                Ok(s.eval_body(body)?.unwrap_or(css::Value::Null))
             }
         }
     }
@@ -135,10 +135,10 @@ lazy_static! {
     static ref FUNCTIONS: BTreeMap<&'static str, SassFunction> = {
         let mut f = BTreeMap::new();
         def!(f, if(condition, if_true, if_false), |s| {
-            if s.get("condition").is_true() {
-                Ok(s.get("if_true"))
+            if s.get("condition")?.is_true() {
+                Ok(s.get("if_true")?)
             } else {
-                Ok(s.get("if_false"))
+                Ok(s.get("if_false")?)
             }
         });
         colors_hsl::register(&mut f);
@@ -171,6 +171,7 @@ fn test_rgb() {
                     .unwrap()
                     .1
                     .evaluate(&scope, true)
+                    .unwrap()
             )
             .unwrap(),
         css::Value::Color(Rgba::from_rgb(17, 0, 225), None)

@@ -61,7 +61,7 @@ impl OutputStyle {
     ) -> Result<(), Error> {
         match *item {
             Item::Import(ref name) => {
-                let name = name.evaluate(scope).unquote();
+                let name = name.evaluate(scope)?.unquote();
                 if let Value::Literal(ref x, _) = name {
                     if let Some((sub_context, file)) =
                         file_context.find_file(x.as_ref())
@@ -97,7 +97,7 @@ impl OutputStyle {
                 ref default,
                 ref global,
             } => {
-                let val = val.do_evaluate(scope, true);
+                let val = val.do_evaluate(scope, true)?;
                 if *default {
                     scope.define_default(name, &val, *global);
                 } else if *global {
@@ -110,7 +110,7 @@ impl OutputStyle {
                 ref selectors,
                 ref body,
             } => {
-                let selectors = eval_selectors(selectors, scope)
+                let selectors = eval_selectors(selectors, scope)?
                     .with_backref(scope.get_selectors().one());
                 let mut s1 = vec![];
                 let mut s2 = vec![];
@@ -143,7 +143,7 @@ impl OutputStyle {
                 ref body,
             } => {
                 result.do_separate()?;
-                let args = args.evaluate(scope);
+                let args = args.evaluate(scope)?;
                 write!(result.to_content(), "@{}", name)?;
                 if !args.is_null() {
                     write!(result.to_content(), " {}", args)?;
@@ -189,7 +189,7 @@ impl OutputStyle {
             } => {
                 if let Some((m_args, m_body)) = scope.get_mixin(name) {
                     let mut scope =
-                        m_args.eval(scope, &args.evaluate(scope, true));
+                        m_args.eval(scope, &args.evaluate(scope, true)?)?;
                     scope.define_mixin(
                         "%%BODY%%",
                         &FormalArgs::default(),
@@ -219,14 +219,14 @@ impl OutputStyle {
             }
 
             Item::IfStatement(ref cond, ref do_if, ref do_else) => {
-                let cond = cond.evaluate(scope).is_true();
+                let cond = cond.evaluate(scope)?.is_true();
                 let items = if cond { do_if } else { do_else };
                 for item in items {
                     self.handle_root_item(item, scope, file_context, result)?;
                 }
             }
             Item::Each(ref names, ref values, ref body) => {
-                for value in values.evaluate(scope).iter_items() {
+                for value in values.evaluate(scope)?.iter_items() {
                     // TODO: No local sub-scope here?!?
                     scope.define_multi(names, &value);
                     for item in body {
@@ -246,8 +246,8 @@ impl OutputStyle {
                 inclusive,
                 ref body,
             } => {
-                let from = from.evaluate(scope).integer_value()?;
-                let to = to.evaluate(scope).integer_value()?;
+                let from = from.evaluate(scope)?.integer_value()?;
+                let to = to.evaluate(scope)?.integer_value()?;
                 let to = if inclusive { to + 1 } else { to };
                 for value in from..to {
                     let mut scope = ScopeImpl::sub(scope);
@@ -264,7 +264,7 @@ impl OutputStyle {
             }
             Item::While(ref cond, ref body) => {
                 let mut scope = ScopeImpl::sub(scope);
-                while cond.evaluate(&scope).is_true() {
+                while cond.evaluate(&scope)?.is_true() {
                     for item in body {
                         self.handle_root_item(
                             item,
@@ -313,7 +313,7 @@ impl OutputStyle {
         indent: usize,
     ) -> Result<(), Error> {
         let selectors =
-            eval_selectors(selectors, scope).inside(scope.get_selectors());
+            eval_selectors(selectors, scope)?.inside(scope.get_selectors());
         let mut direct = Vec::new();
         let mut sub = Vec::new();
         self.handle_body(
@@ -351,7 +351,7 @@ impl OutputStyle {
         for b in body {
             match *b {
                 Item::Import(ref name) => {
-                    let name = name.evaluate(scope);
+                    let name = name.evaluate(scope)?;
                     if let Value::Literal(ref x, _) = name {
                         let (sub_context, file) =
                             file_context.file(x.as_ref());
@@ -374,7 +374,7 @@ impl OutputStyle {
                     default,
                     global,
                 } => {
-                    let val = val.do_evaluate(scope, true);
+                    let val = val.do_evaluate(scope, true)?;
                     if default {
                         scope.define_default(name, &val, global);
                     } else if global {
@@ -387,7 +387,7 @@ impl OutputStyle {
                     ref selectors,
                     ref body,
                 } => {
-                    let selectors = eval_selectors(selectors, scope)
+                    let selectors = eval_selectors(selectors, scope)?
                         .with_backref(scope.get_selectors().one());
                     let mut s1 = vec![];
                     let mut s2 = vec![];
@@ -426,7 +426,7 @@ impl OutputStyle {
                     ref body,
                 } => {
                     write!(sub, "@{}", name)?;
-                    let args = args.evaluate(scope);
+                    let args = args.evaluate(scope)?;
                     if !args.is_null() {
                         write!(sub, " {}", args)?;
                     }
@@ -482,8 +482,8 @@ impl OutputStyle {
                     ref body,
                 } => {
                     if let Some((m_args, m_body)) = scope.get_mixin(name) {
-                        let mut argscope =
-                            m_args.eval(scope, &args.evaluate(scope, true));
+                        let mut argscope = m_args
+                            .eval(scope, &args.evaluate(scope, true)?)?;
                         argscope.define_mixin(
                             "%%BODY%%",
                             &FormalArgs::default(),
@@ -526,7 +526,7 @@ impl OutputStyle {
                 }
 
                 Item::IfStatement(ref cond, ref do_if, ref do_else) => {
-                    let cond = cond.evaluate(scope).is_true();
+                    let cond = cond.evaluate(scope)?.is_true();
                     let items = if cond { do_if } else { do_else };
                     self.handle_body(
                         direct,
@@ -538,7 +538,7 @@ impl OutputStyle {
                     )?;
                 }
                 Item::Each(ref names, ref values, ref body) => {
-                    for value in values.evaluate(scope).iter_items() {
+                    for value in values.evaluate(scope)?.iter_items() {
                         let mut scope = ScopeImpl::sub(scope);
                         scope.define_multi(&names, &value);
                         self.handle_body(
@@ -558,8 +558,8 @@ impl OutputStyle {
                     inclusive,
                     ref body,
                 } => {
-                    let from = from.evaluate(scope).integer_value()?;
-                    let to = to.evaluate(scope).integer_value()?;
+                    let from = from.evaluate(scope)?.integer_value()?;
+                    let to = to.evaluate(scope)?.integer_value()?;
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
                         let mut scope = ScopeImpl::sub(scope);
@@ -576,7 +576,7 @@ impl OutputStyle {
                 }
                 Item::While(ref cond, ref body) => {
                     let mut scope = ScopeImpl::sub(scope);
-                    while cond.evaluate(&scope).is_true() {
+                    while cond.evaluate(&scope)?.is_true() {
                         self.handle_body(
                             direct,
                             sub,
@@ -592,7 +592,7 @@ impl OutputStyle {
                     self.write_rule(s, b, sub, scope, file_context, indent)?;
                 }
                 Item::NamespaceRule(ref name, ref value, ref body) => {
-                    let value = value.evaluate(scope);
+                    let value = value.evaluate(scope)?;
                     if !value.is_null() {
                         direct
                             .push(CssBodyItem::Property(name.clone(), value));
@@ -619,9 +619,9 @@ impl OutputStyle {
                     }
                 }
                 Item::Property(ref name, ref value) => {
-                    let v = value.evaluate(scope);
+                    let v = value.evaluate(scope)?;
                     if !v.is_null() {
-                        let (name, _q) = name.evaluate(scope);
+                        let (name, _q) = name.evaluate(scope)?;
                         direct.push(CssBodyItem::Property(name, v));
                     }
                 }
@@ -688,54 +688,69 @@ impl OutputStyle {
     }
 }
 
-fn eval_selectors(s: &Selectors, scope: &Scope) -> Selectors {
+fn eval_selectors(s: &Selectors, scope: &Scope) -> Result<Selectors, Error> {
     let s = Selectors::new(
         s.s.iter()
-            .map(|s| {
-                Selector(
+            .map(|s| -> Result<Selector, Error> {
+                Ok(Selector(
                     s.0.iter()
-                        .map(|sp| match *sp {
-                            SelectorPart::Attribute {
-                                ref name,
-                                ref op,
-                                ref val,
-                            } => SelectorPart::Attribute {
-                                name: name.evaluate2(scope),
-                                op: op.clone(),
-                                val: val.evaluate2(scope),
-                            },
-                            SelectorPart::Simple(ref v) => {
-                                SelectorPart::Simple(v.evaluate2(scope))
-                            }
-                            SelectorPart::Pseudo { ref name, ref arg } => {
+                        .map(|sp| -> Result<SelectorPart, Error> {
+                            match *sp {
+                                SelectorPart::Attribute {
+                                    ref name,
+                                    ref op,
+                                    ref val,
+                                } => Ok(SelectorPart::Attribute {
+                                    name: name.evaluate2(scope)?,
+                                    op: op.clone(),
+                                    val: val.evaluate2(scope)?,
+                                }),
+                                SelectorPart::Simple(ref v) => Ok(
+                                    SelectorPart::Simple(v.evaluate2(scope)?),
+                                ),
                                 SelectorPart::Pseudo {
-                                    name: name.evaluate2(scope),
-                                    arg: arg
-                                        .as_ref()
-                                        .map(|a| eval_selectors(a, scope)),
+                                    ref name,
+                                    ref arg,
+                                } => {
+                                    let evaluated_arg = match &arg {
+                                        Some(ref a) => {
+                                            Some(eval_selectors(a, scope)?)
+                                        }
+                                        None => None,
+                                    };
+                                    Ok(SelectorPart::Pseudo {
+                                        name: name.evaluate2(scope)?,
+                                        arg: evaluated_arg,
+                                    })
                                 }
+                                SelectorPart::PseudoElement {
+                                    ref name,
+                                    ref arg,
+                                } => {
+                                    let evaluated_arg = match &arg {
+                                        Some(ref a) => {
+                                            Some(eval_selectors(a, scope)?)
+                                        }
+                                        None => None,
+                                    };
+                                    Ok(SelectorPart::PseudoElement {
+                                        name: name.evaluate2(scope)?,
+                                        arg: evaluated_arg,
+                                    })
+                                }
+                                ref sp => Ok(sp.clone()),
                             }
-                            SelectorPart::PseudoElement {
-                                ref name,
-                                ref arg,
-                            } => SelectorPart::PseudoElement {
-                                name: name.evaluate2(scope),
-                                arg: arg
-                                    .as_ref()
-                                    .map(|a| eval_selectors(a, scope)),
-                            },
-                            ref sp => sp.clone(),
                         })
-                        .collect(),
-                )
+                        .collect::<Result<Vec<_>, Error>>()?,
+                ))
             })
-            .collect(),
+            .collect::<Result<Vec<_>, Error>>()?,
     );
     // The "simple" parts we get from evaluating interpolations may
     // contain high-level selector separators (i.e. ","), so we need to
     // parse the selectors again, from a string representation.
     use parser::selectors::selectors;
-    selectors(Input(format!("{} ", s).as_bytes())).unwrap().1
+    Ok(selectors(Input(format!("{} ", s).as_bytes()))?.1)
 }
 
 struct CssWriter {

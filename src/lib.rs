@@ -79,7 +79,7 @@ pub use variablescope::{GlobalScope, Scope};
 pub fn compile_value(input: &[u8]) -> Result<Vec<u8>, Error> {
     let scope = GlobalScope::new();
     let value = parse_value_data(input)?;
-    let buffer = format!("{}", value.evaluate(&scope)).into_bytes();
+    let buffer = format!("{}", value.evaluate(&scope)?).into_bytes();
     Ok(buffer)
 }
 

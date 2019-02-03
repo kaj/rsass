@@ -8,39 +8,39 @@ use std::collections::BTreeMap;
 use value::{Number, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, abs(number), |s| match s.get("number") {
+    def!(f, abs(number), |s| match s.get("number")? {
         Value::Numeric(v, u, ..) => Ok(number(v.value.abs(), u)),
         v => Err(Error::badarg("number", &v)),
     });
-    def!(f, ceil(number), |s| match s.get("number") {
+    def!(f, ceil(number), |s| match s.get("number")? {
         Value::Numeric(v, u, ..) => Ok(number(v.value.ceil(), u)),
         v => Err(Error::badarg("number", &v)),
     });
-    def!(f, floor(number), |s| match s.get("number") {
+    def!(f, floor(number), |s| match s.get("number")? {
         Value::Numeric(v, u, ..) => Ok(number(v.value.floor(), u)),
         v => Err(Error::badarg("number", &v)),
     });
-    def!(f, percentage(number), |s| match s.get("number") {
+    def!(f, percentage(number), |s| match s.get("number")? {
         Value::Numeric(val, Unit::None, _) => {
             Ok(number(val.value * 100, Unit::Percent))
         }
         v => Err(Error::badarg("number", &v)),
     });
-    def!(f, round(number), |s| match s.get("number") {
+    def!(f, round(number), |s| match s.get("number")? {
         Value::Numeric(val, unit, _) => Ok(number(val.value.round(), unit)),
         v => Err(Error::badarg("number", &v)),
     });
-    def_va!(f, max(numbers), |s| match s.get("numbers") {
+    def_va!(f, max(numbers), |s| match s.get("numbers")? {
         Value::List(v, _, _) => {
             Ok(find_extreme(&v, Ordering::Greater).clone())
         }
         single_value => Ok(single_value),
     });
-    def_va!(f, min(numbers), |s| match s.get("numbers") {
+    def_va!(f, min(numbers), |s| match s.get("numbers")? {
         Value::List(v, _, _) => Ok(find_extreme(&v, Ordering::Less).clone()),
         single_value => Ok(single_value),
     });
-    def!(f, random(limit), |s| match s.get("limit") {
+    def!(f, random(limit), |s| match s.get("limit")? {
         Value::Null => {
             let rez = 1_000_000;
             Ok(number(Rational::new(intrand(rez), rez), Unit::None))

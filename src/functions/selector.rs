@@ -7,7 +7,7 @@ use std::collections::BTreeMap;
 use value::Quotes;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def_va!(f, selector_nest(selectors), |s| match s.get("selectors") {
+    def_va!(f, selector_nest(selectors), |s| match s.get("selectors")? {
         Value::List(v, _, _) => Ok(Value::Literal(
             format!(
                 "{}",
@@ -25,7 +25,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def_va!(
         f,
         selector_append(selectors),
-        |s| match s.get("selectors") {
+        |s| match s.get("selectors")? {
             Value::List(v, _, _) => Ok(Value::Literal(
                 format!(
                     "{}",
@@ -50,7 +50,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     );
     def!(f, selector_parse(selector), |s| Ok(parse_selectors(
-        s.get("selector")
+        s.get("selector")?
     )
     .to_value()));
 }

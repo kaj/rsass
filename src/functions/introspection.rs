@@ -21,23 +21,25 @@ static IMPLEMENTED_FEATURES: &[&'static str] = &[
 ];
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, feature_exists(name), |s| match &s.get("name") {
+    def!(f, feature_exists(name), |s| match &s.get("name")? {
         &Value::Literal(ref v, _) => {
             Ok(Value::bool(IMPLEMENTED_FEATURES.iter().any(|s| s == v)))
         }
         v => Err(Error::badarg("string", v)),
     });
-    def!(f, variable_exists(name), |s| match &s.get("name") {
-        &Value::Literal(ref v, _) => Ok(Value::bool(s.get(v) != Value::Null)),
-        v => Err(Error::badarg("string", v)),
-    });
-    def!(f, global_variable_exists(name), |s| match &s.get("name") {
+    def!(f, variable_exists(name), |s| match &s.get("name")? {
         &Value::Literal(ref v, _) => {
-            Ok(Value::bool(s.get_global(v) != Value::Null))
+            Ok(Value::bool(s.get_or_none(v).is_some()))
         }
         v => Err(Error::badarg("string", v)),
     });
-    def!(f, function_exists(name), |s| match &s.get("name") {
+    def!(f, global_variable_exists(name), |s| match &s.get("name")? {
+        &Value::Literal(ref v, _) => {
+            Ok(Value::bool(s.get_global_or_none(v).is_some()))
+        }
+        v => Err(Error::badarg("string", v)),
+    });
+    def!(f, function_exists(name), |s| match &s.get("name")? {
         &Value::Literal(ref v, _) => {
             Ok(Value::bool(s.get_function(v).is_some()))
         }
@@ -46,9 +48,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(
         f,
         get_function(name, css = b"false"),
-        |s| match s.get("name") {
+        |s| match s.get("name")? {
             Value::Literal(ref v, _) => {
-                if s.get("css").is_true() {
+                if s.get("css")?.is_true() {
                     Ok(Value::Function(v.to_string(), None))
                 } else if let Some(f) = s.get_function(v) {
                     Ok(Value::Function(v.to_string(), Some(f.clone())))
@@ -59,7 +61,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             ref v => Err(Error::badarg("string", v)),
         }
     );
-    def!(f, mixin_exists(name), |s| match &s.get("name") {
+    def!(f, mixin_exists(name), |s| match &s.get("name")? {
         &Value::Literal(ref v, _) => {
             Ok(Value::bool(s.get_mixin(&v.replace('-', "_")).is_some()))
         }
@@ -72,26 +74,26 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         ))
     });
     def!(f, inspect(value), |s| Ok(Value::Literal(
-        format!("{}", s.get("value")),
+        format!("{}", s.get("value")?),
         Quotes::None
     )));
     def!(f, type_of(value), |s| Ok(Value::Literal(
-        s.get("value").type_name().into(),
+        s.get("value")?.type_name().into(),
         Quotes::None
     )));
     def!(f, unit(value), |s| {
-        let v = match s.get("value") {
+        let v = match s.get("value")? {
             Value::Numeric(_, ref unit, ..) => format!("{}", unit),
             _ => "".into(),
         };
         Ok(Value::Literal(v, Quotes::Double))
     });
-    def!(f, unitless(value), |s| match s.get("value") {
+    def!(f, unitless(value), |s| match s.get("value")? {
         Value::Numeric(_, unit, ..) => Ok(Value::bool(unit == Unit::None)),
         v => Err(Error::badarg("number", &v)),
     });
     def!(f, comparable(number1, number2), |s| {
-        match (&s.get("number1"), &s.get("number2")) {
+        match (&s.get("number1")?, &s.get("number2")?) {
             (
                 &Value::Numeric(_, ref u1, ..),
                 &Value::Numeric(_, ref u2, ..),
@@ -105,7 +107,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     });
     def_va!(f, call(name, args), |s: &Scope| {
-        let (function, name) = match s.get("name") {
+        let (function, name) = match s.get("name")? {
             Value::Function(ref name, ref func) => {
                 (func.clone(), name.clone())
             }
@@ -118,7 +120,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
             ref v => return Err(Error::badarg("string", v)),
         };
-        let args = CallArgs::from_value(s.get("args"));
+        let args = CallArgs::from_value(s.get("args")?);
         if let Some(function) = function {
             function.call(s, &args)
         } else {
@@ -132,10 +134,18 @@ mod test {
     use super::super::super::variablescope::test::do_evaluate;
 
     #[test]
-    fn variable_exists() {
+    fn variable_exists_not_null() {
         assert_eq!(
             "true",
             do_evaluate(&[("x", "17")], b"variable-exists(x);")
+        )
+    }
+
+    #[test]
+    fn variable_exists_null() {
+        assert_eq!(
+            "true",
+            do_evaluate(&[("x", "null")], b"variable-exists(x);")
         )
     }
 

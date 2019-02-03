@@ -736,7 +736,13 @@ mod test {
         let t = value_expression_eof(Input(b"http://#{\")\"}.com/"));
         if let &Ok((rest, ref result)) = &t {
             assert_eq!(
-                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
+                (
+                    format!(
+                        "{}",
+                        result.evaluate(&GlobalScope::new()).unwrap()
+                    ),
+                    rest
+                ),
                 ("http://).com/".to_string(), Input(b""))
             );
         } else {
@@ -748,7 +754,13 @@ mod test {
         let t = value_expression_eof(Input(b"url(http://#{\")\"}.com/)"));
         if let &Ok((rest, ref result)) = &t {
             assert_eq!(
-                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
+                (
+                    format!(
+                        "{}",
+                        result.evaluate(&GlobalScope::new()).unwrap()
+                    ),
+                    rest
+                ),
                 ("url(http://).com/)".to_string(), Input(b""))
             );
         } else {
@@ -760,7 +772,13 @@ mod test {
         let t = value_expression_eof(Input(b"url(//#{\")\"}.com/)"));
         if let &Ok((rest, ref result)) = &t {
             assert_eq!(
-                (format!("{}", result.evaluate(&GlobalScope::new())), rest),
+                (
+                    format!(
+                        "{}",
+                        result.evaluate(&GlobalScope::new()).unwrap()
+                    ),
+                    rest
+                ),
                 ("url(//).com/)".to_string(), Input(b""))
             );
         } else {

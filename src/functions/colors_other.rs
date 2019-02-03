@@ -12,15 +12,15 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         adjust_color(
             color, red, green, blue, hue, saturation, lightness, alpha
         ),
-        |s: &Scope| match &s.get("color") {
+        |s: &Scope| match &s.get("color")? {
             &Value::Color(ref rgba, _) => {
-                let c_add = |orig: Rational, name: &str| match s.get(name) {
+                let c_add = |orig: Rational, name: &str| match s.get(name)? {
                     Value::Null => Ok(orig),
                     x => to_rational(x).map(|x| orig + x),
                 };
-                let h_adj = s.get("hue");
-                let s_adj = s.get("saturation");
-                let l_adj = s.get("lightness");
+                let h_adj = s.get("hue")?;
+                let s_adj = s.get("saturation")?;
+                let l_adj = s.get("lightness")?;
                 if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
                     Ok(Value::rgba(
                         c_add(rgba.red, "red")?,
@@ -50,12 +50,12 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         scale_color(
             color, red, green, blue, hue, saturation, lightness, alpha
         ),
-        |s: &Scope| match &s.get("color") {
+        |s: &Scope| match &s.get("color")? {
             &Value::Color(ref rgba, _) => {
-                let h_adj = s.get("hue");
-                let s_adj = s.get("saturation");
-                let l_adj = s.get("lightness");
-                let a_adj = s.get("alpha");
+                let h_adj = s.get("hue")?;
+                let s_adj = s.get("saturation")?;
+                let l_adj = s.get("lightness")?;
+                let a_adj = s.get("alpha")?;
 
                 let comb = |orig: Rational, x: Value, max: Rational| match x {
                     Value::Null => Ok(orig),
@@ -71,9 +71,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let ff = Rational::from_integer(255);
                 if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
                     Ok(Value::rgba(
-                        comb(rgba.red, s.get("red"), ff)?,
-                        comb(rgba.green, s.get("green"), ff)?,
-                        comb(rgba.blue, s.get("blue"), ff)?,
+                        comb(rgba.red, s.get("red")?, ff)?,
+                        comb(rgba.green, s.get("green")?, ff)?,
+                        comb(rgba.blue, s.get("blue")?, ff)?,
                         comb(rgba.alpha, a_adj, one)?,
                     ))
                 } else {
@@ -130,17 +130,17 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         change_color(
             color, red, green, blue, hue, saturation, lightness, alpha
         ),
-        |s: &Scope| match s.get("color") {
+        |s: &Scope| match s.get("color")? {
             Value::Color(rgba, _) => {
-                let h_adj = s.get("hue");
-                let s_adj = s.get("saturation");
-                let l_adj = s.get("lightness");
+                let h_adj = s.get("hue")?;
+                let s_adj = s.get("saturation")?;
+                let l_adj = s.get("lightness")?;
 
-                let c_or = |name: &str, orig: Rational| match s.get(name) {
+                let c_or = |name: &str, orig: Rational| match s.get(name)? {
                     Value::Null => Ok(orig),
                     x => to_rational(x),
                 };
-                let a_or = |name: &str, orig: Rational| match s.get(name) {
+                let a_or = |name: &str, orig: Rational| match s.get(name)? {
                     Value::Null => Ok(orig),
                     x => to_rational(x),
                 };
@@ -168,7 +168,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             v => Err(Error::badarg("color", &v)),
         }
     );
-    def!(f, ie_hex_str(color), |s| match s.get("color") {
+    def!(f, ie_hex_str(color), |s| match s.get("color")? {
         Value::Color(rgba, _) => {
             let (r, g, b, a) = rgba.to_bytes();
             Ok(Value::Literal(

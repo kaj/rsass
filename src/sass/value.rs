@@ -1,4 +1,5 @@
 use css;
+use error::Error;
 use functions::get_builtin_function;
 use num_rational::Rational;
 use num_traits::Zero;
@@ -91,53 +92,59 @@ impl Value {
         }
     }
 
-    pub fn evaluate(&self, scope: &Scope) -> css::Value {
+    pub fn evaluate(&self, scope: &Scope) -> Result<css::Value, Error> {
         self.do_evaluate(scope, false)
     }
-    pub fn do_evaluate(&self, scope: &Scope, arithmetic: bool) -> css::Value {
+    pub fn do_evaluate(
+        &self,
+        scope: &Scope,
+        arithmetic: bool,
+    ) -> Result<css::Value, Error> {
         match *self {
-            Value::Bang(ref s) => css::Value::Bang(s.clone()),
+            Value::Bang(ref s) => Ok(css::Value::Bang(s.clone())),
             Value::Literal(ref s) => {
-                let (s, q) = s.evaluate(scope);
+                let (s, q) = s.evaluate(scope)?;
                 if s == "" && q == Quotes::None {
-                    css::Value::Null
+                    Ok(css::Value::Null)
                 } else {
-                    css::Value::Literal(s, q)
+                    Ok(css::Value::Literal(s, q))
                 }
             }
             Value::Paren(ref v) => v.do_evaluate(scope, true),
             Value::Color(ref rgba, ref name) => {
-                css::Value::Color(rgba.clone(), name.clone())
+                Ok(css::Value::Color(rgba.clone(), name.clone()))
             }
-            Value::Variable(ref name) => scope.get(name).into_calculated(),
-            Value::List(ref v, ref s, b, needs_requote) => css::Value::List(
-                v.iter()
-                    .map(|v| {
-                        let v = v.do_evaluate(scope, false);
+            Value::Variable(ref name) => {
+                Ok(scope.get(name)?.into_calculated())
+            }
+            Value::List(ref v, ref s, b, needs_requote) => {
+                let items = v
+                    .iter()
+                    .map(|v| -> Result<css::Value, Error> {
+                        let v = v.do_evaluate(scope, false)?;
                         if needs_requote {
-                            v.unrequote()
+                            Ok(v.unrequote())
                         } else {
-                            v
+                            Ok(v)
                         }
                     })
-                    .collect::<Vec<_>>(),
-                s.clone(),
-                b,
-            ),
+                    .collect::<Result<Vec<_>, Error>>()?;
+                Ok(css::Value::List(items, s.clone(), b))
+            }
             Value::Call(ref name, ref args) => {
-                let args = args.evaluate(scope, true);
+                let args = args.evaluate(scope, true)?;
                 if let Some(name) = name.single_raw() {
                     match scope.call_function(name, &args) {
-                        Some(value) => value,
-                        None => get_builtin_function(name)
+                        Some(value) => Ok(value),
+                        None => Ok(get_builtin_function(name)
                             .and_then(|f| f.call(scope, &args).ok())
                             .unwrap_or_else(|| {
                                 css::Value::Call(name.to_string(), args)
-                            }),
+                            })),
                     }
                 } else {
-                    let (name, _) = name.evaluate(scope);
-                    css::Value::Call(name, args)
+                    let (name, _) = name.evaluate(scope)?;
+                    Ok(css::Value::Call(name, args))
                 }
             }
             Value::Numeric(ref num, ref unit) => {
@@ -145,35 +152,38 @@ impl Value {
                 if arithmetic {
                     num.lead_zero = true;
                 }
-                css::Value::Numeric(num, unit.clone(), arithmetic)
+                Ok(css::Value::Numeric(num, unit.clone(), arithmetic))
             }
-            Value::Map(ref m) => css::Value::Map(
-                m.iter()
-                    .map(|&(ref k, ref v)| {
-                        (
-                            k.do_evaluate(scope, false),
-                            v.do_evaluate(scope, false),
-                        )
+            Value::Map(ref m) => {
+                let items = m.iter()
+                    .map(|&(ref k, ref v)| -> Result<(css::Value, css::Value), Error> {
+                        Ok((
+                            k.do_evaluate(scope, false)?,
+                            v.do_evaluate(scope, false)?,
+                        ))
                     })
-                    .collect(),
-            ),
-            Value::Null => css::Value::Null,
-            Value::True => css::Value::True,
-            Value::False => css::Value::False,
+                    .collect::<Result<OrderMap<_, _>, Error>>()?;
+                Ok(css::Value::Map(items))
+            }
+            Value::Null => Ok(css::Value::Null),
+            Value::True => Ok(css::Value::True),
+            Value::False => Ok(css::Value::False),
             Value::BinOp(ref a, s1, ref op, s2, ref b) => {
                 let (a, b) = {
                     let arithmetic = arithmetic | (*op != Operator::Div);
-                    let aa = a.do_evaluate(scope, arithmetic);
-                    let b = b
-                        .do_evaluate(scope, arithmetic || aa.is_calculated());
+                    let aa = a.do_evaluate(scope, arithmetic)?;
+                    let b = b.do_evaluate(
+                        scope,
+                        arithmetic || aa.is_calculated(),
+                    )?;
                     if !arithmetic && b.is_calculated() && !aa.is_calculated()
                     {
-                        (a.do_evaluate(scope, true), b)
+                        (a.do_evaluate(scope, true)?, b)
                     } else {
                         (aa, b)
                     }
                 };
-                op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
+                Ok(op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
                     css::Value::BinOp(
                         Box::new(a),
                         s1,
@@ -181,21 +191,25 @@ impl Value {
                         s2,
                         Box::new(b),
                     )
-                })
+                }))
             }
             Value::UnaryOp(ref op, ref v) => {
-                let value = v.do_evaluate(scope, true);
+                let value = v.do_evaluate(scope, true)?;
                 match (op.clone(), value) {
                     (Operator::Not, css::Value::Numeric(v, ..)) => {
-                        css::Value::bool(v.is_zero())
+                        Ok(css::Value::bool(v.is_zero()))
                     }
-                    (Operator::Not, css::Value::True) => css::Value::False,
-                    (Operator::Not, css::Value::False) => css::Value::True,
+                    (Operator::Not, css::Value::True) => {
+                        Ok(css::Value::False)
+                    }
+                    (Operator::Not, css::Value::False) => {
+                        Ok(css::Value::True)
+                    }
                     (Operator::Minus, css::Value::Numeric(v, u, _)) => {
-                        css::Value::Numeric(-&v, u, true)
+                        Ok(css::Value::Numeric(-&v, u, true))
                     }
                     (Operator::Plus, css::Value::Numeric(v, u, _)) => {
-                        css::Value::Numeric(
+                        Ok(css::Value::Numeric(
                             Number {
                                 value: v.value,
                                 plus_sign: true,
@@ -203,13 +217,15 @@ impl Value {
                             },
                             u,
                             true,
-                        )
+                        ))
                     }
-                    (op, v) => css::Value::UnaryOp(op, Box::new(v)),
+                    (op, v) => Ok(css::Value::UnaryOp(op, Box::new(v))),
                 }
             }
-            Value::HereSelector => scope.get_selectors().to_value(),
-            Value::UnicodeRange(ref s) => css::Value::UnicodeRange(s.clone()),
+            Value::HereSelector => Ok(scope.get_selectors().to_value()),
+            Value::UnicodeRange(ref s) => {
+                Ok(css::Value::UnicodeRange(s.clone()))
+            }
         }
     }
 }

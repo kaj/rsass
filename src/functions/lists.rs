@@ -4,15 +4,15 @@ use std::collections::BTreeMap;
 use value::{ListSeparator, Quotes};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, length(list), |s| match s.get("list") {
+    def!(f, length(list), |s| match s.get("list")? {
         Value::List(v, _, _) => Ok(Value::scalar(v.len() as isize)),
         Value::Map(m) => Ok(Value::scalar(m.len() as isize)),
         // Any other value is a singleton list of that value
         _ => Ok(Value::scalar(1)),
     });
     def!(f, nth(list, n), |s| {
-        let n = s.get("n").integer_value()?;
-        match s.get("list") {
+        let n = s.get("n")?.integer_value()?;
+        match s.get("list")? {
             Value::List(list, _, _) => {
                 Ok(list[list_index(n, &list)?].clone())
             }
@@ -32,19 +32,19 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     });
     def!(f, set_nth(list, n, value), |s| {
-        let n = s.get("n").integer_value()?;
-        let (mut list, sep, bra) = get_list(s.get("list"));
+        let n = s.get("n")?.integer_value()?;
+        let (mut list, sep, bra) = get_list(s.get("list")?);
         let i = list_index(n, &list)?;
-        list[i] = s.get("value");
+        list[i] = s.get("value")?;
         Ok(Value::List(list, sep.unwrap_or(ListSeparator::Space), bra))
     });
     def!(
         f,
         join(list1, list2, separator = b"auto", bracketed = b"auto"),
         |s| {
-            let (mut list1, sep1, bra1) = get_list(s.get("list1"));
-            let (mut list2, sep2, _bra2) = get_list(s.get("list2"));
-            let separator = match s.get("separator") {
+            let (mut list1, sep1, bra1) = get_list(s.get("list1")?);
+            let (mut list2, sep2, _bra2) = get_list(s.get("list2")?);
+            let separator = match s.get("separator")? {
                 Value::Literal(ref sep, _)
                     if sep.to_lowercase() == "comma" =>
                 {
@@ -68,7 +68,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 }
             };
             list1.append(&mut list2);
-            let bra = match s.get("bracketed") {
+            let bra = match s.get("bracketed")? {
                 Value::Literal(ref s, _) if s == "auto" => bra1,
                 b => b.is_true(),
             };
@@ -76,8 +76,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     );
     def!(f, append(list, val, separator), |s| {
-        let (mut list, sep, bra) = get_list(s.get("list"));
-        let sep = match (s.get("separator"), sep) {
+        let (mut list, sep, bra) = get_list(s.get("list")?);
+        let sep = match (s.get("separator")?, sep) {
             (Value::Literal(ref s, _), _) if s == "comma" => {
                 ListSeparator::Comma
             }
@@ -86,10 +86,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
             (_, s) => s.unwrap_or(ListSeparator::Space),
         };
-        list.push(s.get("val"));
+        list.push(s.get("val")?);
         Ok(Value::List(list, sep, bra))
     });
-    def_va!(f, zip(lists), |s| match s.get("lists") {
+    def_va!(f, zip(lists), |s| match s.get("lists")? {
         Value::List(v, _, _) => {
             let lists =
                 v.into_iter().map(|v| v.iter_items()).collect::<Vec<_>>();
@@ -104,9 +104,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("list", &v)),
     });
-    def!(f, index(list, value), |s| match s.get("list") {
+    def!(f, index(list, value), |s| match s.get("list")? {
         Value::List(v, _, _) => {
-            let value = s.get("value");
+            let value = s.get("value")?;
             for (i, v) in v.iter().enumerate() {
                 if v == &value {
                     return Ok(Value::scalar(i as isize + 1));
@@ -114,7 +114,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
             Ok(Value::Null)
         }
-        Value::Map(map) => match s.get("value") {
+        Value::Map(map) => match s.get("value")? {
             Value::List(ref l, ListSeparator::Space, _) if l.len() == 2 => {
                 for (i, &(ref k, ref v)) in map.iter().enumerate() {
                     if *k == l[0] && *v == l[1] {
@@ -128,14 +128,14 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         v => Err(Error::badarg("list", &v)),
     });
     def!(f, list_separator(list), |s| Ok(Value::Literal(
-        match s.get("list") {
+        match s.get("list")? {
             Value::List(_, ListSeparator::Comma, _) => "comma",
             _ => "space",
         }
         .into(),
         Quotes::None
     )));
-    def!(f, is_bracketed(list), |s| Ok(match s.get("list") {
+    def!(f, is_bracketed(list), |s| Ok(match s.get("list")? {
         Value::List(_, _, true) => Value::True,
         _ => Value::False,
     }));

@@ -40,13 +40,13 @@ cat > sass-spec/spec/output_styles/nested/options.yml <<EOF
 EOF
 
 IMPL=rsass
-function check() {
+check() {
     cargo build --release --features=commandline >&2
     LC_ALL=C sass-spec/sass-spec.rb -c target/release/rsass \
 	  --impl $IMPL -V 4.0 sass-spec/spec/$1
 }
 
-function list_fails() {
+list_fails() {
     grep ^SassSpec:: | sed -e 's#.*test__##' -e 's# .*##' | sort
 }
 
