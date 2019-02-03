@@ -1,9 +1,18 @@
+//! This module contains types for the selectors of a rule.
+//!
+//! Basically, in a rule like `p.foo, .foo p { some: thing; }` there
+//! is a `Selectors` object which contains two `Selector` objects, one
+//! for `p.foo` and one for `.foo p`.
+//!
+//! This _may_ change to a something like a tree of operators with
+//! leafs of simple selectors in some future release.
 use css::Value;
 use sass::SassString;
 use std::fmt;
 use std::io::Write;
 use value::{ListSeparator, Quotes};
 
+/// A full set of selectors
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Selectors {
     pub s: Vec<Selector>,
@@ -11,6 +20,7 @@ pub struct Selectors {
 }
 
 impl Selectors {
+    /// Create a root (empty) selector.
     pub fn root() -> Self {
         Selectors::new(vec![Selector::root()])
     }
@@ -23,6 +33,7 @@ impl Selectors {
     pub fn one(&self) -> Selector {
         self.s.first().cloned().unwrap_or_else(Selector::root)
     }
+    /// Create the full selector for when self is used inside a parent selector.
     pub fn inside(&self, parent: &Self) -> Self {
         let mut result = Vec::new();
         for p in &parent.s {
@@ -41,6 +52,7 @@ impl Selectors {
             backref: context,
         })
     }
+    /// Create a sass `Value` representing this set of selectors.
     pub fn to_value(&self) -> Value {
         let content = self
             .s
@@ -65,6 +77,10 @@ impl Selectors {
     }
 }
 
+/// A css (or sass) selector.
+///
+/// A selector does not contain `,`.  If it does, it is a `Selectors`,
+/// where each of the parts separated by the comma is a `Selector`.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Selector(pub Vec<SelectorPart>);
 
@@ -101,9 +117,18 @@ impl Selector {
 /// A selector consist of a sequence of these parts.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum SelectorPart {
+    /// A simple selector, eg a class, id or element name.
+    ///
+    /// Note that a Simple selector can hide a more complex selector
+    /// through string interpolation.
     Simple(SassString),
+    /// The empty relational operator.
+    ///
+    /// The thing after this is a descendant of the thing before this.
     Descendant,
-    RelOp(u8), // >, +, ~
+    /// A relational operator; `>`, `+`, `~`.
+    RelOp(u8),
+    /// An attribute selector
     Attribute {
         name: SassString,
         op: String,
@@ -119,6 +144,7 @@ pub enum SelectorPart {
         name: SassString,
         arg: Option<Selectors>,
     },
+    /// A sass backref (`&`), to be replaced with outer selector.
     BackRef,
 }
 

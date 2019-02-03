@@ -53,7 +53,7 @@ mod ordermap;
 mod output_style;
 mod parser;
 pub mod sass;
-mod selectors;
+pub mod selectors;
 mod value;
 mod variablescope;
 
