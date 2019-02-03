@@ -2,12 +2,12 @@
 #[allow(unused)]
 use super::rsass;
 #[allow(unused)]
-use rsass::precision;
+use rsass::set_precision;
 
 /// From "sass-spec/spec/values/colors/alpha_hex/initial_digit"
 #[test]
 fn initial_digit() {
-    precision::set(10);
+    set_precision(10);
     assert_eq!(
         rsass(
             "a {\n  four-digit: #0123;\n  eight-digit: #98765432;\n\n  // Verify that the color channels are set correctly.\n  four-digit-red: red(#0123);\n  four-digit-green: green(#0123);\n  four-digit-blue: blue(#0123);\n  four-digit-alpha: alpha(#0123);\n\n  eight-digit-red: red(#98765432);\n  eight-digit-green: green(#98765432);\n  eight-digit-blue: blue(#98765432);\n  eight-digit-alpha: alpha(#98765432);\n}\n"
@@ -20,7 +20,7 @@ fn initial_digit() {
 /// From "sass-spec/spec/values/colors/alpha_hex/initial_letter"
 #[test]
 fn initial_letter() {
-    precision::set(10);
+    set_precision(10);
     assert_eq!(
         rsass(
             "a {\n  four-digit: #AbCd;\n  eight-digit: #aBcDeF12;\n\n  // Verify that the color channels are set correctly.\n  four-digit-red: red(#abcd);\n  four-digit-green: green(#abcd);\n  four-digit-blue: blue(#abcd);\n  four-digit-alpha: alpha(#abcd);\n\n  eight-digit-red: red(#ABCDEF12);\n  eight-digit-green: green(#ABCDEF12);\n  eight-digit-blue: blue(#ABCDEF12);\n  eight-digit-alpha: alpha(#ABCDEF12);\n}\n"

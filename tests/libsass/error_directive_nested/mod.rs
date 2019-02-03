@@ -2,7 +2,7 @@
 #[allow(unused)]
 use super::rsass;
 #[allow(unused)]
-use rsass::precision;
+use rsass::set_precision;
 
 // Ignoring "function", tests with expected error not implemented yet.
 

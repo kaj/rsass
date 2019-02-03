@@ -88,7 +88,8 @@ fn main() -> Result<(), Error> {
             "multi-blocks",
             "placeholder-mediaquery",
             "placeholder-nested",
-            "precision/lower", // Expects round() results I think looks broken.
+            "precision/default",
+            "precision/lower",
             "properties-in-media",
             "propsets",
             "rel",
@@ -138,7 +139,8 @@ fn main() -> Result<(), Error> {
         &base,
         "misc",
         &[
-            "mixin_content",   // ?
+            "mixin_content", // ?
+            "negative_numbers",
             "JMA-pseudo-test", // Requires @extend
             "trailing_comma_in_selector",
             "warn-directive",
@@ -204,7 +206,7 @@ fn main() -> Result<(), Error> {
             "newlines_in_selectors",
             "placeholder",
             "placeholder-with-media",
-            "precision", // Default prec is 5 in libsass but 10 in scss?!?
+            "precision",
             "simple-inheritance",
         ],
     )?;
@@ -316,7 +318,7 @@ fn handle_entries(
                              \n#[allow(unused)]\
                              \nuse super::rsass;\
                              \n#[allow(unused)]\
-                             \nuse rsass::precision;",
+                             \nuse rsass::set_precision;",
                             suitedir.join(entry.file_name()),
                         )?;
                         let tt = format!(
@@ -381,7 +383,7 @@ fn spec_to_test(
         fn_name_os(test),
     )?;
     if let Some(precision) = precision {
-        writeln!(rs, "    precision::set({});", precision)?;
+        writeln!(rs, "    set_precision({});", precision)?;
     }
     let input = format!("{:?}", content(&input)?);
     let expected = format!("{:?}", content(&expected)?.replace("\r\n", "\n"));

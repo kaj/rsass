@@ -2,7 +2,7 @@
 #[allow(unused)]
 use super::rsass;
 #[allow(unused)]
-use rsass::precision;
+use rsass::set_precision;
 
 // Ignoring "colon_twice_todo", tests with expected error not implemented yet.
 

@@ -2,7 +2,7 @@
 #[allow(unused)]
 use super::rsass;
 #[allow(unused)]
-use rsass::precision;
+use rsass::set_precision;
 
 /// From "sass-spec/spec/parser/interpolate/13_escaped_single_quoted/01_inline"
 #[test]
