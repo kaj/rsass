@@ -1,4 +1,5 @@
 use css;
+use error::Error;
 use sass::Value;
 use std::default::Default;
 use variablescope::Scope;
@@ -40,15 +41,18 @@ impl CallArgs {
         self.0.get(index)
     }
 
-    pub fn evaluate(&self, scope: &Scope, arithmetic: bool) -> css::CallArgs {
-        css::CallArgs(
-            self.0
+    pub fn evaluate(
+        &self,
+        scope: &Scope,
+        arithmetic: bool,
+    ) -> Result<css::CallArgs, Error> {
+        let args = self.0
                 .iter()
-                .map(|&(ref n, ref v)| {
-                    (n.clone(), v.do_evaluate(scope, arithmetic))
+                .map(|&(ref n, ref v)| -> Result<(Option<String>, css::Value), Error> {
+                    Ok((n.clone(), v.do_evaluate(scope, arithmetic)?))
                 })
-                .collect(),
-        )
+                .collect::<Result<Vec<_>, Error>>()?;
+        Ok(css::CallArgs(args))
     }
 }
 

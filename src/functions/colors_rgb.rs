@@ -7,17 +7,17 @@ use value::{ListSeparator, Number, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, rgb(red, green, blue), |s| Ok(Value::rgba(
-        to_int(s.get("red"))?,
-        to_int(s.get("green"))?,
-        to_int(s.get("blue"))?,
+        to_int(s.get("red")?)?,
+        to_int(s.get("green")?)?,
+        to_int(s.get("blue")?)?,
         Rational::one()
     )));
     def!(f, rgba(red, green, blue, alpha, color), |s| {
-        let a = s.get("alpha");
-        let red = s.get("red");
-        let red = if red.is_null() { s.get("color") } else { red };
+        let a = s.get("alpha")?;
+        let red = s.get("red")?;
+        let red = if red.is_null() { s.get("color")? } else { red };
         if let Value::Color(rgba, _) = red {
-            let a = if a.is_null() { s.get("green") } else { a };
+            let a = if a.is_null() { s.get("green")? } else { a };
             match a {
                 Value::Numeric(a, ..) => {
                     Ok(Value::rgba(rgba.red, rgba.green, rgba.blue, a.value))
@@ -39,8 +39,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         } else {
             Ok(Value::rgba(
                 to_int(red)?,
-                to_int(s.get("green"))?,
-                to_int(s.get("blue"))?,
+                to_int(s.get("green")?)?,
+                to_int(s.get("blue")?)?,
                 to_rational(a)?,
             ))
         }
@@ -48,22 +48,22 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     fn num(v: &Rational) -> Result<Value, Error> {
         Ok(Value::Numeric(Number::from(*v), Unit::None, true))
     }
-    def!(f, red(color), |s| match &s.get("color") {
+    def!(f, red(color), |s| match &s.get("color")? {
         &Value::Color(ref rgba, _) => num(&rgba.red),
         value => Err(Error::badarg("color", value)),
     });
-    def!(f, green(color), |s| match &s.get("color") {
+    def!(f, green(color), |s| match &s.get("color")? {
         &Value::Color(ref rgba, _) => num(&rgba.green),
         value => Err(Error::badarg("color", value)),
     });
-    def!(f, blue(color), |s| match &s.get("color") {
+    def!(f, blue(color), |s| match &s.get("color")? {
         &Value::Color(ref rgba, _) => num(&rgba.blue),
         value => Err(Error::badarg("color", value)),
     });
     def!(f, mix(color1, color2, weight = b"50%"), |s| match (
-        s.get("color1"),
-        s.get("color2"),
-        s.get("weight"),
+        s.get("color1")?,
+        s.get("color2")?,
+        s.get("weight")?,
     ) {
         (
             Value::Color(a, _),
@@ -92,8 +92,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         )),
     });
     def!(f, invert(color, weight = b"100%"), |s| match (
-        s.get("color"),
-        s.get("weight"),
+        s.get("color")?,
+        s.get("weight")?,
     ) {
         (Value::Color(rgba, _), Value::Numeric(w, wu, ..)) => {
             let w = if wu == Unit::Percent {

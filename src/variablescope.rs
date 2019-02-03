@@ -2,6 +2,7 @@
 
 use css;
 use css::Value;
+use error::Error;
 use functions::{get_builtin_function, SassFunction};
 use sass;
 use sass::Item;
@@ -51,8 +52,21 @@ pub trait Scope {
     }
 
     /// Get the Value for a variable.
-    fn get(&self, name: &str) -> Value;
-    fn get_global(&self, name: &str) -> Value;
+    fn get_or_none(&self, name: &str) -> Option<Value>;
+    fn get(&self, name: &str) -> Result<Value, Error> {
+        match self.get_or_none(name) {
+            Some(value) => Ok(value),
+            None => Err(Error::undefined_variable(name)),
+        }
+    }
+
+    fn get_global_or_none(&self, name: &str) -> Option<Value>;
+    fn get_global(&self, name: &str) -> Result<Value, Error> {
+        match self.get_global_or_none(name) {
+            Some(value) => Ok(value),
+            None => Err(Error::undefined_variable(name)),
+        }
+    }
 
     fn define_mixin(
         &mut self,
@@ -70,24 +84,24 @@ pub trait Scope {
         args: &css::CallArgs,
     ) -> Option<Value>;
 
-    fn eval_body(&mut self, body: &[Item]) -> Option<Value>
+    fn eval_body(&mut self, body: &[Item]) -> Result<Option<Value>, Error>
     where
         Self: Sized,
     {
         for b in body {
             let result = match *b {
                 Item::IfStatement(ref cond, ref do_if, ref do_else) => {
-                    if cond.evaluate(self).is_true() {
-                        self.eval_body(do_if)
+                    if cond.evaluate(self)?.is_true() {
+                        self.eval_body(do_if)?
                     } else {
-                        self.eval_body(do_else)
+                        self.eval_body(do_else)?
                     }
                 }
                 Item::Each(ref names, ref values, ref body) => {
-                    for value in values.evaluate(self).iter_items() {
+                    for value in values.evaluate(self)?.iter_items() {
                         self.define_multi(names, &value);
-                        if let Some(r) = self.eval_body(body) {
-                            return Some(r);
+                        if let Some(r) = self.eval_body(body)? {
+                            return Ok(Some(r));
                         }
                     }
                     None
@@ -99,13 +113,13 @@ pub trait Scope {
                     inclusive,
                     ref body,
                 } => {
-                    let from = from.evaluate(self).integer_value().unwrap();
-                    let to = to.evaluate(self).integer_value().unwrap();
+                    let from = from.evaluate(self)?.integer_value().unwrap();
+                    let to = to.evaluate(self)?.integer_value().unwrap();
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
                         self.define(name, &Value::scalar(value));
-                        if let Some(r) = self.eval_body(body) {
-                            return Some(r);
+                        if let Some(r) = self.eval_body(body)? {
+                            return Ok(Some(r));
                         }
                     }
                     None
@@ -116,7 +130,7 @@ pub trait Scope {
                     default,
                     global,
                 } => {
-                    let val = val.evaluate(self);
+                    let val = val.evaluate(self)?;
                     if default {
                         self.define_default(name, &val, global);
                     } else if global {
@@ -126,12 +140,12 @@ pub trait Scope {
                     }
                     None
                 }
-                Item::Return(ref v) => Some(v.evaluate(self)),
+                Item::Return(ref v) => Some(v.evaluate(self)?),
                 Item::While(ref cond, ref body) => {
                     let mut scope = ScopeImpl::sub(self);
-                    while cond.evaluate(&scope).is_true() {
-                        if let Some(r) = scope.eval_body(body) {
-                            return Some(r);
+                    while cond.evaluate(&scope)?.is_true() {
+                        if let Some(r) = scope.eval_body(body)? {
+                            return Ok(Some(r));
                         }
                     }
                     None
@@ -140,10 +154,10 @@ pub trait Scope {
                 ref x => panic!("Not implemented in fuction: {:?}", x),
             };
             if let Some(result) = result {
-                return Some(result);
+                return Ok(Some(result));
             }
         }
-        None
+        Ok(None)
     }
     fn get_selectors(&self) -> &Selectors;
 }
@@ -162,12 +176,15 @@ impl<'a> Scope for ScopeImpl<'a> {
             .insert(name.replace('-', "_"), val.unrequote());
     }
     fn define_default(&mut self, name: &str, val: &Value, global: bool) {
-        if self.get(name) == Value::Null {
-            if global {
-                self.define_global(name, val)
-            } else {
-                self.define(name, val)
+        match self.get_or_none(name) {
+            Some(Value::Null) | None => {
+                if global {
+                    self.define_global(name, val)
+                } else {
+                    self.define(name, val)
+                }
             }
+            _ => {}
         }
     }
     fn define_global(&self, name: &str, val: &Value) {
@@ -179,15 +196,15 @@ impl<'a> Scope for ScopeImpl<'a> {
             .cloned()
             .or_else(|| self.parent.get_mixin(name))
     }
-    fn get(&self, name: &str) -> Value {
+    fn get_or_none(&self, name: &str) -> Option<Value> {
         let name = name.replace('-', "_");
         self.variables
             .get(&name)
             .cloned()
-            .unwrap_or_else(|| self.parent.get(&name))
+            .or_else(|| self.parent.get_or_none(&name))
     }
-    fn get_global(&self, name: &str) -> Value {
-        self.parent.get_global(name)
+    fn get_global_or_none(&self, name: &str) -> Option<Value> {
+        self.parent.get_global_or_none(name)
     }
     fn define_mixin(
         &mut self,
@@ -276,8 +293,9 @@ impl Scope for GlobalScope {
         self.define_global(name, val)
     }
     fn define_default(&mut self, name: &str, val: &Value, _global: bool) {
-        if self.get(name) == Value::Null {
-            self.define(name, val)
+        match self.get_or_none(name) {
+            Some(Value::Null) | None => self.define(name, val),
+            _ => {}
         }
     }
     fn define_global(&self, name: &str, val: &Value) {
@@ -289,17 +307,12 @@ impl Scope for GlobalScope {
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
         self.mixins.get(&name.replace('-', "_")).cloned()
     }
-    fn get(&self, name: &str) -> Value {
-        self.get_global(name)
+    fn get_or_none(&self, name: &str) -> Option<Value> {
+        self.get_global_or_none(name)
     }
-    fn get_global(&self, name: &str) -> Value {
+    fn get_global_or_none(&self, name: &str) -> Option<Value> {
         let name = name.replace('-', "_");
-        self.variables
-            .lock()
-            .unwrap()
-            .get(&name)
-            .cloned()
-            .unwrap_or(Value::Null)
+        self.variables.lock().unwrap().get(&name).cloned()
     }
     fn define_mixin(
         &mut self,
@@ -346,6 +359,14 @@ pub mod test {
     #[test]
     fn variable_value() {
         assert_eq!("#f02a42", do_evaluate(&[("red", "#f02a42")], b"$red;"))
+    }
+
+    #[test]
+    fn undefined_variable() {
+        assert_eq!(
+            "Undefined variable: \"$x\"",
+            format!("{}", do_evaluate_or_error(&[], b"$x;").err().unwrap())
+        )
     }
 
     #[test]
@@ -668,16 +689,22 @@ pub mod test {
     }
 
     pub fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
+        do_evaluate_or_error(s, expression).unwrap()
+    }
+
+    pub fn do_evaluate_or_error(
+        s: &[(&str, &str)],
+        expression: &[u8],
+    ) -> Result<String, Error> {
         let mut scope = GlobalScope::new();
         for &(name, ref val) in s {
-            let (end, value) =
-                value_expression(Input(val.as_bytes())).unwrap();
-            let value = value.evaluate(&scope);
+            let (end, value) = value_expression(Input(val.as_bytes()))?;
+            let value = value.evaluate(&scope)?;
             assert_eq!(Ok(""), from_utf8(&end));
             scope.define(name, &value);
         }
-        let (end, foo) = value_expression(Input(expression)).unwrap();
+        let (end, foo) = value_expression(Input(expression))?;
         assert_eq!(Ok(";"), from_utf8(&end));
-        format!("{}", foo.evaluate(&mut scope))
+        Ok(format!("{}", foo.evaluate(&mut scope)?))
     }
 }

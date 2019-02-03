@@ -18,6 +18,7 @@ pub enum Error {
     BadArguments(String),
     ParseError(nom::ErrorKind),
     S(String),
+    UndefinedVariable(String),
 }
 
 impl Error {
@@ -50,6 +51,10 @@ impl Error {
             expected, actual
         ))
     }
+
+    pub fn undefined_variable(name: &str) -> Self {
+        Error::UndefinedVariable(name.to_string())
+    }
 }
 
 impl fmt::Display for Error {
@@ -58,6 +63,9 @@ impl fmt::Display for Error {
             Error::S(ref s) => write!(out, "{}", s),
             Error::Input(ref p, ref e) => {
                 write!(out, "Failed to read {:?}: {}", p, e)
+            }
+            Error::UndefinedVariable(ref name) => {
+                write!(out, "Undefined variable: \"${}\"", name)
             }
             // fallback
             ref x => write!(out, "{:?}", x),
