@@ -3,7 +3,6 @@
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["mixin_content", "negative_numbers", "JMA-pseudo-test", "trailing_comma_in_selector", "warn-directive"]
-extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 // Ignoring "JMA-pseudo-test", not expected to work yet.

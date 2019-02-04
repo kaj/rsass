@@ -14,19 +14,19 @@ use self::value::{
 };
 use crate::error::Error;
 use crate::functions::SassFunction;
-use nom::types::CompleteByteSlice as Input;
-use nom::Err;
 #[cfg(test)]
 use crate::sass::{CallArgs, FormalArgs};
 use crate::sass::{Item, Value};
 use crate::selectors::Selectors;
+use crate::value::ListSeparator;
+#[cfg(test)]
+use crate::value::{Number, Rgba, Unit};
+use nom::types::CompleteByteSlice as Input;
+use nom::*;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::str::{from_utf8, Utf8Error};
-use crate::value::ListSeparator;
-#[cfg(test)]
-use crate::value::{Number, Rgba, Unit};
 
 /// Parse a scss value.
 ///

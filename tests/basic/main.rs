@@ -3,7 +3,6 @@
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["14_imports", "15_arithmetic_and_lists", "33_ambiguous_imports"]
-extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 /// From "sass-spec/spec/basic/00_empty"

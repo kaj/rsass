@@ -1,10 +1,10 @@
 use crate::css::CallArgs;
 use crate::error::Error;
 use crate::functions::SassFunction;
-use num_rational::Rational;
 use crate::ordermap::OrderMap;
-use std::fmt::{self, Write};
 use crate::value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
+use num_rational::Rational;
+use std::fmt::{self, Write};
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

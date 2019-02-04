@@ -1,6 +1,5 @@
 //! These are from the `output_styles/compressed/basic` directory in the
 //! sass specification.
-extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 #[test]

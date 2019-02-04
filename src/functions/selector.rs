@@ -1,10 +1,10 @@
 use super::SassFunction;
 use crate::css::Value;
-use nom::types::CompleteByteSlice as Input;
 use crate::parser::selectors::{selector, selectors};
 use crate::selectors::{Selector, Selectors};
-use std::collections::BTreeMap;
 use crate::value::Quotes;
+use nom::types::CompleteByteSlice as Input;
+use std::collections::BTreeMap;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def_va!(f, selector_nest(selectors), |s| match s.get("selectors")? {

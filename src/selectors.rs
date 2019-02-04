@@ -8,9 +8,9 @@
 //! leafs of simple selectors in some future release.
 use crate::css::Value;
 use crate::sass::SassString;
+use crate::value::{ListSeparator, Quotes};
 use std::fmt;
 use std::io::Write;
-use crate::value::{ListSeparator, Quotes};
 
 /// A full set of selectors
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

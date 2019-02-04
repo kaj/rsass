@@ -1,9 +1,9 @@
 use super::{Error, SassFunction};
 use crate::css::{CallArgs, Value};
+use crate::value::{ListSeparator, Number, Unit};
 use num_rational::Rational;
 use num_traits::One;
 use std::collections::BTreeMap;
-use crate::value::{ListSeparator, Number, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, rgb(red, green, blue), |s| Ok(Value::rgba(

@@ -1,5 +1,4 @@
 //! These are from the `scope` directory in the sass specification.
-extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 #[test]

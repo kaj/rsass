@@ -1,5 +1,4 @@
 //! These are from the `selector-functions` directory in the sass specification.
-extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 // Manual variant, slight todo from real test.

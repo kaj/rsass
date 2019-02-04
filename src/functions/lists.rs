@@ -1,7 +1,7 @@
 use super::{Error, SassFunction};
 use crate::css::Value;
-use std::collections::BTreeMap;
 use crate::value::{ListSeparator, Quotes};
+use std::collections::BTreeMap;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, length(list), |s| match s.get("list")? {

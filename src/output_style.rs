@@ -1,14 +1,14 @@
 use crate::css::Value;
 use crate::error::Error;
 use crate::file_context::FileContext;
-use nom::types::CompleteByteSlice as Input;
 use crate::parser::parse_scss_file;
 use crate::sass::{FormalArgs, Item};
 use crate::selectors::{Selector, SelectorPart, Selectors};
+use crate::variablescope::{Scope, ScopeImpl};
+use nom::types::CompleteByteSlice as Input;
 use std::fmt;
 use std::io::Write;
 use std::str::FromStr;
-use crate::variablescope::{Scope, ScopeImpl};
 
 /// Selected target format.
 /// Only formats that are variants of this type are supported by rsass.

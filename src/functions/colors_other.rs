@@ -1,10 +1,10 @@
 use super::{Error, SassFunction};
 use crate::css::Value;
+use crate::value::{Number, Quotes, Unit};
+use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
-use crate::value::{Number, Quotes, Unit};
-use crate::variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(

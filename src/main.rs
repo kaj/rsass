@@ -1,8 +1,4 @@
-#[macro_use]
-extern crate clap;
-extern crate rsass;
-
-use clap::{App, Arg, ArgMatches};
+use clap::{value_t, App, Arg, ArgMatches};
 use rsass::{compile_scss_file, set_precision, Error, OutputStyle};
 use std::io::{stdout, Write};
 use std::process::exit;

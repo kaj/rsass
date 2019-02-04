@@ -1,9 +1,9 @@
 use crate::css;
 use crate::error::Error;
 use crate::sass::Value;
-use std::default::Default;
 use crate::value::ListSeparator;
 use crate::variablescope::{Scope, ScopeImpl};
+use std::default::Default;
 
 /// The declared arguments of a mixin or function declaration.
 ///

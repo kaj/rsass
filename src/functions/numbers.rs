@@ -1,11 +1,11 @@
 use super::{Error, SassFunction};
 use crate::css::Value;
+use crate::value::{Number, Unit};
 use num_rational::Rational;
 use num_traits::Signed;
 use rand::{thread_rng, Rng};
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
-use crate::value::{Number, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, abs(number), |s| match s.get("number")? {

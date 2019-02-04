@@ -1,6 +1,7 @@
 use super::input_to_string;
 use nom::multispace;
 use nom::types::CompleteByteSlice as Input;
+use nom::*;
 
 named!(pub spacelike<Input, ()>,
        fold_many1!(alt_complete!(ignore_space |ignore_lcomment),

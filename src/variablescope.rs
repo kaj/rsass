@@ -351,10 +351,10 @@ impl Scope for GlobalScope {
 
 #[cfg(test)]
 pub mod test {
-    use nom::types::CompleteByteSlice as Input;
     use crate::parser::value::value_expression;
-    use std::str::from_utf8;
     use crate::variablescope::*;
+    use nom::types::CompleteByteSlice as Input;
+    use std::str::from_utf8;
 
     #[test]
     fn variable_value() {

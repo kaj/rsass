@@ -3,7 +3,6 @@
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["ids", "numbers/units/multiple"]
-extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 mod colors;

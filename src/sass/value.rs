@@ -1,12 +1,12 @@
 use crate::css;
 use crate::error::Error;
 use crate::functions::get_builtin_function;
-use num_rational::Rational;
-use num_traits::Zero;
 use crate::ordermap::OrderMap;
 use crate::sass::{CallArgs, SassString};
 use crate::value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
+use num_rational::Rational;
+use num_traits::Zero;
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

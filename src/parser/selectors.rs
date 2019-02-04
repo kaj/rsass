@@ -1,8 +1,9 @@
 use super::input_to_string;
 use super::strings::{sass_string, sass_string_dq, sass_string_sq};
 use super::util::{opt_spacelike, spacelike2};
-use nom::types::CompleteByteSlice as Input;
 use crate::selectors::{Selector, SelectorPart, Selectors};
+use nom::types::CompleteByteSlice as Input;
+use nom::*;
 
 named!(pub selectors<Input, Selectors>,
        map!(separated_nonempty_list!(
