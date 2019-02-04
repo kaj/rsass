@@ -3,8 +3,8 @@ use super::value::value_expression;
 use super::{input_to_str, input_to_string};
 use nom::alphanumeric;
 use nom::types::CompleteByteSlice as Input;
-use sass::{SassString, StringPart};
-use value::Quotes;
+use crate::sass::{SassString, StringPart};
+use crate::value::Quotes;
 
 named!(pub sass_string<Input, SassString>,
        map!(

@@ -1,10 +1,10 @@
 use super::{Error, SassFunction};
-use css::Value;
+use crate::css::Value;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
-use value::{Number, Quotes, Unit};
-use variablescope::Scope;
+use crate::value::{Number, Quotes, Unit};
+use crate::variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(
@@ -207,7 +207,7 @@ fn to_rational_percent(v: Value) -> Result<Rational, Error> {
 
 #[cfg(test)]
 mod test {
-    use variablescope::test::do_evaluate;
+    use crate::variablescope::test::do_evaluate;
 
     #[test]
     fn ie_hex_str_a() {

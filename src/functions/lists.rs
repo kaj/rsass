@@ -1,7 +1,7 @@
 use super::{Error, SassFunction};
-use css::Value;
+use crate::css::Value;
 use std::collections::BTreeMap;
-use value::{ListSeparator, Quotes};
+use crate::value::{ListSeparator, Quotes};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, length(list), |s| match s.get("list")? {
@@ -272,7 +272,7 @@ mod test {
     }
 
     fn check_val(src: &str, correct: &str) {
-        use variablescope::test::do_evaluate;
+        use crate::variablescope::test::do_evaluate;
         assert_eq!(do_evaluate(&[], src.as_bytes()), correct)
     }
 }

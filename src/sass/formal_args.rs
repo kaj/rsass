@@ -1,9 +1,9 @@
-use css;
-use error::Error;
-use sass::Value;
+use crate::css;
+use crate::error::Error;
+use crate::sass::Value;
 use std::default::Default;
-use value::ListSeparator;
-use variablescope::{Scope, ScopeImpl};
+use crate::value::ListSeparator;
+use crate::variablescope::{Scope, ScopeImpl};
 
 /// The declared arguments of a mixin or function declaration.
 ///

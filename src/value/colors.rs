@@ -6,7 +6,7 @@ use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
 use std::fmt::{self, Display};
 use std::ops::{Add, Div, Sub};
-use value::Number;
+use crate::value::Number;
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Rgba {

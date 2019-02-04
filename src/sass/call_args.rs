@@ -1,8 +1,8 @@
-use css;
-use error::Error;
-use sass::Value;
+use crate::css;
+use crate::error::Error;
+use crate::sass::Value;
 use std::default::Default;
-use variablescope::Scope;
+use crate::variablescope::Scope;
 
 /// the actual arguments of a function or mixin call.
 ///

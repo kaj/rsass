@@ -1,12 +1,12 @@
 //! A scope is something that contains variable values.
 
-use css;
-use css::Value;
-use error::Error;
-use functions::{get_builtin_function, SassFunction};
-use sass;
-use sass::Item;
-use selectors::Selectors;
+use crate::css;
+use crate::css::Value;
+use crate::error::Error;
+use crate::functions::{get_builtin_function, SassFunction};
+use crate::sass;
+use crate::sass::Item;
+use crate::selectors::Selectors;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
@@ -352,9 +352,9 @@ impl Scope for GlobalScope {
 #[cfg(test)]
 pub mod test {
     use nom::types::CompleteByteSlice as Input;
-    use parser::value::value_expression;
+    use crate::parser::value::value_expression;
     use std::str::from_utf8;
-    use variablescope::*;
+    use crate::variablescope::*;
 
     #[test]
     fn variable_value() {

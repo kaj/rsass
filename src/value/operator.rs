@@ -1,7 +1,7 @@
-use css::Value;
+use crate::css::Value;
 use num_traits::Zero;
 use std::fmt;
-use value::{ListSeparator, Quotes, Unit};
+use crate::value::{ListSeparator, Quotes, Unit};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Operator {

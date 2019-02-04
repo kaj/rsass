@@ -6,9 +6,9 @@ use super::{input_to_string, sass_string};
 use nom::multispace;
 use nom::types::CompleteByteSlice as Input;
 use num_rational::Rational;
-use sass::{SassString, Value};
+use crate::sass::{SassString, Value};
 use std::str::from_utf8;
-use value::{ListSeparator, Number, Operator, Rgba};
+use crate::value::{ListSeparator, Number, Operator, Rgba};
 
 named!(pub value_expression<Input, Value>,
        do_parse!(
@@ -436,10 +436,10 @@ named!(
 mod test {
     use super::*;
     use num_rational::Rational;
-    use sass::CallArgs;
-    use sass::Value::*;
-    use value::Unit;
-    use variablescope::GlobalScope;
+    use crate::sass::CallArgs;
+    use crate::sass::Value::*;
+    use crate::value::Unit;
+    use crate::variablescope::GlobalScope;
 
     #[test]
     fn simple_number() {

@@ -1,6 +1,6 @@
-use functions::SassFunction;
-use sass::{CallArgs, FormalArgs, SassString, Value};
-use selectors::Selectors;
+use crate::functions::SassFunction;
+use crate::sass::{CallArgs, FormalArgs, SassString, Value};
+use crate::selectors::Selectors;
 
 /// Every sass file is a sequence of sass items.
 /// Scoping items contains further sequences of items.

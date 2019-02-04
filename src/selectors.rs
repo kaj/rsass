@@ -6,11 +6,11 @@
 //!
 //! This _may_ change to a something like a tree of operators with
 //! leafs of simple selectors in some future release.
-use css::Value;
-use sass::SassString;
+use crate::css::Value;
+use crate::sass::SassString;
 use std::fmt;
 use std::io::Write;
-use value::{ListSeparator, Quotes};
+use crate::value::{ListSeparator, Quotes};
 
 /// A full set of selectors
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

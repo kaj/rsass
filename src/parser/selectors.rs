@@ -2,7 +2,7 @@ use super::input_to_string;
 use super::strings::{sass_string, sass_string_dq, sass_string_sq};
 use super::util::{opt_spacelike, spacelike2};
 use nom::types::CompleteByteSlice as Input;
-use selectors::{Selector, SelectorPart, Selectors};
+use crate::selectors::{Selector, SelectorPart, Selectors};
 
 named!(pub selectors<Input, Selectors>,
        map!(separated_nonempty_list!(
@@ -77,8 +77,8 @@ named!(selector_part<Input, SelectorPart>,
 #[cfg(test)]
 mod test {
     use super::*;
-    use sass::{SassString, StringPart};
-    use value::Quotes;
+    use crate::sass::{SassString, StringPart};
+    use crate::value::Quotes;
 
     #[test]
     fn simple_selector() {

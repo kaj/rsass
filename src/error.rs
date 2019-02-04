@@ -1,6 +1,6 @@
 #[cfg(feature = "clap")]
 use clap;
-use css::Value;
+use crate::css::Value;
 use nom;
 use nom::types::CompleteByteSlice as Input;
 use std::convert::From;
