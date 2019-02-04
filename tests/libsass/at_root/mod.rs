@@ -27,7 +27,7 @@ fn t136_test_at_root_with_selector() {
 fn t137_test_at_root_in_mixin() {
     assert_eq!(
         rsass(
-            "@mixin bar {\n  @at-root .bar {a: b}\n}\n\n.foo {\n  @include bar;\n}\n"
+            "@mixin bar {\n  @at-root .bar {a: b}\n}\n.foo {\n  @include bar;\n}\n"
         )
         .unwrap(),
         ".bar {\n  a: b;\n}\n"
@@ -80,10 +80,10 @@ fn t143_test_multi_level_at_root_with_inner_parent_ref() {
 fn basic() {
     assert_eq!(
         rsass(
-            "foo {\n  color: blue;\n\n  @at-root {\n    bar {\n      color: red;\n    }\n  }\n}\n\nfoo {\n  color: blue;\n\n  @at-root bar {\n    color: red;\n  }\n}\n"
+            "foo {\n  color: blue;\n  @at-root {\n    bar {\n      color: red;\n    }\n  }\n}\nfoo {\n  color: blue;\n  @at-root bar {\n    color: red;\n  }\n}\n"
         )
         .unwrap(),
-        "foo {\n  color: blue;\n}\nbar {\n  color: red;\n}\n\nfoo {\n  color: blue;\n}\nbar {\n  color: red;\n}\n"
+        "foo {\n  color: blue;\n}\nbar {\n  color: red;\n}\nfoo {\n  color: blue;\n}\nbar {\n  color: red;\n}\n"
     );
 }
 
@@ -94,7 +94,7 @@ fn basic() {
 fn keyframes() {
     assert_eq!(
         rsass(
-            "foo {\n  color: red;\n\n  @at-root {\n    @keyframes animation {\n      to { color: red; }\n    }\n  }\n\n  bar {\n    color: blue;\n\n    @at-root {\n      @keyframes other-animation {\n        to { color: blue; }\n      }\n    }\n  }\n}\n"
+            "foo {\n  color: red;\n  @at-root {\n    @keyframes animation {\n      to { color: red; }\n    }\n  }\n  bar {\n    color: blue;\n    @at-root {\n      @keyframes other-animation {\n        to { color: blue; }\n      }\n    }\n  }\n}\n"
         )
         .unwrap(),
         "foo {\n  color: red;\n}\n@keyframes animation {\n  to {\n    color: red;\n  }\n}\nfoo bar {\n  color: blue;\n}\n@keyframes other-animation {\n  to {\n    color: blue;\n  }\n}\n"
@@ -106,7 +106,7 @@ fn keyframes() {
 fn media() {
     assert_eq!(
         rsass(
-            "foo {\n  @at-root {\n    @media print {\n      bar {\n        color: red;\n      }\n    }\n\n    baz {\n      @media speech {\n        color: blue;\n      }\n    }\n  }\n}\n"
+            "foo {\n  @at-root {\n    @media print {\n      bar {\n        color: red;\n      }\n    }\n    baz {\n      @media speech {\n        color: blue;\n      }\n    }\n  }\n}\n"
         )
         .unwrap(),
         "@media print {\n  bar {\n    color: red;\n  }\n}\n@media speech {\n  baz {\n    color: blue;\n  }\n}\n"
@@ -118,10 +118,10 @@ fn media() {
 fn nested() {
     assert_eq!(
         rsass(
-            "foo {\n  color: blue;\n\n  baz {\n    color: purple;\n\n    @at-root {\n      bar {\n        color: red;\n      }\n    }\n  }\n}\n\nfoo {\n  color: blue;\n\n  baz {\n    color: purple;\n\n    @at-root bar {\n      color: red;\n    }\n  }\n}\n"
+            "foo {\n  color: blue;\n  baz {\n    color: purple;\n    @at-root {\n      bar {\n        color: red;\n      }\n    }\n  }\n}\nfoo {\n  color: blue;\n  baz {\n    color: purple;\n    @at-root bar {\n      color: red;\n    }\n  }\n}\n"
         )
         .unwrap(),
-        "foo {\n  color: blue;\n}\nfoo baz {\n  color: purple;\n}\nbar {\n  color: red;\n}\n\nfoo {\n  color: blue;\n}\nfoo baz {\n  color: purple;\n}\nbar {\n  color: red;\n}\n"
+        "foo {\n  color: blue;\n}\nfoo baz {\n  color: purple;\n}\nbar {\n  color: red;\n}\nfoo {\n  color: blue;\n}\nfoo baz {\n  color: purple;\n}\nbar {\n  color: red;\n}\n"
     );
 }
 

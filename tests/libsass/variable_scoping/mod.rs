@@ -13,10 +13,10 @@ mod blead_global;
 fn defaults_global() {
     assert_eq!(
         rsass(
-            "div {\n  $foo: inner !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n$foo: outer !default !global;\nouter { foo: $foo; }\n\ndiv {\n  $foo: footer !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
+            "div {\n  $foo: inner !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n$foo: outer !default !global;\nouter { foo: $foo; }\ndiv {\n  $foo: footer !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
         )
         .unwrap(),
-        "div inner {\n  foo: lexical;\n}\n\nouter {\n  foo: inner;\n}\n\ndiv inner {\n  foo: lexical;\n}\n"
+        "div inner {\n  foo: lexical;\n}\nouter {\n  foo: inner;\n}\ndiv inner {\n  foo: lexical;\n}\n"
     );
 }
 
@@ -25,10 +25,10 @@ fn defaults_global() {
 fn defaults_global_null() {
     assert_eq!(
         rsass(
-            "div {\n  $foo: null !default !global;\n  $foo: inner !default !global;\n  $foo: null !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n$foo: null !default !global;\n$foo: outer !default !global;\n$foo: null !default !global;\nouter { foo: $foo; }\n\ndiv {\n  $foo: null !default !global;\n  $foo: footer !default !global;\n  $foo: null !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
+            "div {\n  $foo: null !default !global;\n  $foo: inner !default !global;\n  $foo: null !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n$foo: null !default !global;\n$foo: outer !default !global;\n$foo: null !default !global;\nouter { foo: $foo; }\ndiv {\n  $foo: null !default !global;\n  $foo: footer !default !global;\n  $foo: null !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
         )
         .unwrap(),
-        "div inner {\n  foo: lexical;\n}\n\nouter {\n  foo: inner;\n}\n\ndiv inner {\n  foo: lexical;\n}\n"
+        "div inner {\n  foo: lexical;\n}\nouter {\n  foo: inner;\n}\ndiv inner {\n  foo: lexical;\n}\n"
     );
 }
 
@@ -37,10 +37,10 @@ fn defaults_global_null() {
 fn defaults_null() {
     assert_eq!(
         rsass(
-            "div {\n  $foo: null !default;\n  $foo: inner !default;\n  $foo: null !default;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n// this should error\n// empty { foo: $foo; }\n\n$foo: null !default;\n$foo: outer !default;\n$foo: null !default;\nouter { foo: $foo; }\n\ndiv {\n  $foo: null !default;\n  $foo: footer !default;\n  $foo: null !default;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
+            "div {\n  $foo: null !default;\n  $foo: inner !default;\n  $foo: null !default;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n// this should error\n// empty { foo: $foo; }\n$foo: null !default;\n$foo: outer !default;\n$foo: null !default;\nouter { foo: $foo; }\ndiv {\n  $foo: null !default;\n  $foo: footer !default;\n  $foo: null !default;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
         )
         .unwrap(),
-        "div inner {\n  foo: lexical;\n}\n\nouter {\n  foo: outer;\n}\n\ndiv inner {\n  foo: lexical;\n}\n"
+        "div inner {\n  foo: lexical;\n}\nouter {\n  foo: outer;\n}\ndiv inner {\n  foo: lexical;\n}\n"
     );
 }
 

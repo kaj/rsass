@@ -2,7 +2,7 @@
 //! version 0f59164a, 2019-02-01 17:21:13 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["bizarrely_formatted_comments", "custom_properties", "moz_document", "ms_long_filter_syntax", "multi_star_comments", "plain", "selector/slotted", "unknown_directive"]
+//! ["bizarrely_formatted_comments", "custom_properties", "moz_document", "ms_long_filter_syntax", "plain", "selector/slotted", "unknown_directive"]
 use rsass::{compile_scss, OutputStyle};
 
 // Ignoring "bizarrely_formatted_comments", not expected to work yet.
@@ -56,7 +56,17 @@ mod media;
 
 // Ignoring "ms_long_filter_syntax", not expected to work yet.
 
-// Ignoring "multi_star_comments", not expected to work yet.
+/// From "sass-spec/spec/css/multi_star_comments"
+#[test]
+fn multi_star_comments() {
+    assert_eq!(
+        rsass(
+            "a /***/ b {x: y}\na /****/ b {x: y}\na /* **/ b {x: y}\na /** */ b {x: y}\n"
+        )
+        .unwrap(),
+        "a b {\n  x: y;\n}\na b {\n  x: y;\n}\na b {\n  x: y;\n}\na b {\n  x: y;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/css/multiple_comments"
 #[test]
@@ -78,5 +88,9 @@ mod unicode_range;
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)
         .map_err(|e| format!("rsass failed: {}", e))
-        .and_then(|s| String::from_utf8(s).map_err(|e| format!("{:?}", e)))
+        .and_then(|s| {
+            String::from_utf8(s)
+                .map(|s| s.replace("\n\n", "\n"))
+                .map_err(|e| format!("{:?}", e))
+        })
 }

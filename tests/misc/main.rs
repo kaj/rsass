@@ -110,7 +110,7 @@ fn selector_only_interpolation() {
 #[test]
 fn unicode_variables() {
     assert_eq!(
-        rsass("$vär: foo;\n\nblat {a: $vär}\n").unwrap(),
+        rsass("$vär: foo;\nblat {a: $vär}\n").unwrap(),
         "blat {\n  a: foo;\n}\n"
     );
 }
@@ -120,5 +120,9 @@ fn unicode_variables() {
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)
         .map_err(|e| format!("rsass failed: {}", e))
-        .and_then(|s| String::from_utf8(s).map_err(|e| format!("{:?}", e)))
+        .and_then(|s| {
+            String::from_utf8(s)
+                .map(|s| s.replace("\n\n", "\n"))
+                .map_err(|e| format!("{:?}", e))
+        })
 }

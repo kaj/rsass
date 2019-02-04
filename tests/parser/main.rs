@@ -25,5 +25,9 @@ mod operations;
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)
         .map_err(|e| format!("rsass failed: {}", e))
-        .and_then(|s| String::from_utf8(s).map_err(|e| format!("{:?}", e)))
+        .and_then(|s| {
+            String::from_utf8(s)
+                .map(|s| s.replace("\n\n", "\n"))
+                .map_err(|e| format!("{:?}", e))
+        })
 }

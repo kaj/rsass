@@ -21,7 +21,7 @@ fn sass_utf8() {
 fn arg_eval() {
     assert_eq!(
         rsass(
-            "@function foo() {\n  @return 1+2 3/4 5+6;\n}\n\n@mixin bar($x: 3/4) {\n  bar-content: $x;\n}\n\ndiv {\n  content: foobar(1+2 3/4 5+6, orange);\n  content: append(1+2 2/3 5+6, orange);\n  content: 1+2 2/3 5+6;\n  content: type-of(2/3);\n  content: type-of(orange);\n  content: foo();\n  @include bar();\n}"
+            "@function foo() {\n  @return 1+2 3/4 5+6;\n}\n@mixin bar($x: 3/4) {\n  bar-content: $x;\n}\ndiv {\n  content: foobar(1+2 3/4 5+6, orange);\n  content: append(1+2 2/3 5+6, orange);\n  content: 1+2 2/3 5+6;\n  content: type-of(2/3);\n  content: type-of(orange);\n  content: foo();\n  @include bar();\n}"
         )
         .unwrap(),
         "div {\n  content: foobar(3 3/4 11, orange);\n  content: 3 2/3 11 orange;\n  content: 3 2/3 11;\n  content: number;\n  content: color;\n  content: 3 3/4 11;\n  bar-content: 0.75;\n}\n"
@@ -129,10 +129,10 @@ fn image_url() {
 fn keyframes() {
     assert_eq!(
         rsass(
-            "div {\n  color: #181818;\n}\n\n@-webkit-keyframes uiDelayedFadeIn {\n\t0% { opacity: 0; }\n\t50% { opacity: .5; }\n\t100% { opacity: 1; }\n}\n\n@-webkit-keyframes bounce {\n\tfrom {\n\t\tleft: 0px;\n\t}\n\tto {\n\t\tleft: 200px;\n\t}\n}\n\n$name: bounce;\n\n@-webkit-keyframes #{$name} {\n  blah: blee;\n}\n\n@mixin fudge() {\n  @content;\n}\n\nfoo {\n  @include fudge() {\n    div {\n      color: red;\n    }\n  }\n}\n"
+            "div {\n  color: #181818;\n}\n@-webkit-keyframes uiDelayedFadeIn {\n\t0% { opacity: 0; }\n\t50% { opacity: .5; }\n\t100% { opacity: 1; }\n}\n@-webkit-keyframes bounce {\n\tfrom {\n\t\tleft: 0px;\n\t}\n\tto {\n\t\tleft: 200px;\n\t}\n}\n$name: bounce;\n@-webkit-keyframes #{$name} {\n  blah: blee;\n}\n@mixin fudge() {\n  @content;\n}\nfoo {\n  @include fudge() {\n    div {\n      color: red;\n    }\n  }\n}\n"
         )
         .unwrap(),
-        "div {\n  color: #181818;\n}\n\n@-webkit-keyframes uiDelayedFadeIn {\n  0% {\n    opacity: 0;\n  }\n  50% {\n    opacity: .5;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes bounce {\n  from {\n    left: 0px;\n  }\n  to {\n    left: 200px;\n  }\n}\n@-webkit-keyframes bounce {\n  blah: blee;\n}\nfoo div {\n  color: red;\n}\n"
+        "div {\n  color: #181818;\n}\n@-webkit-keyframes uiDelayedFadeIn {\n  0% {\n    opacity: 0;\n  }\n  50% {\n    opacity: .5;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@-webkit-keyframes bounce {\n  from {\n    left: 0px;\n  }\n  to {\n    left: 200px;\n  }\n}\n@-webkit-keyframes bounce {\n  blah: blee;\n}\nfoo div {\n  color: red;\n}\n"
     );
 }
 
@@ -141,7 +141,7 @@ fn keyframes() {
 fn length() {
     assert_eq!(
         rsass(
-            "div {\n\n  foo: length(null);\n  foo: length(true);\n  foo: length(false);\n\n  foo: length(\"protégé\");\n  foo: length(protégé);\n  foo: length(\"\");\n  foo: length(\"hello there\");\n  foo: length(\"Façade\");\n  foo: length(\"Tromsø\");\n  foo: length(\"Ãlso\");\n\n  foo: length((foo: foo, bar: bar));\n  foo: length((foo, bar, baz, bang));\n\n}\n"
+            "div {\n  foo: length(null);\n  foo: length(true);\n  foo: length(false);\n  foo: length(\"protégé\");\n  foo: length(protégé);\n  foo: length(\"\");\n  foo: length(\"hello there\");\n  foo: length(\"Façade\");\n  foo: length(\"Tromsø\");\n  foo: length(\"Ãlso\");\n  foo: length((foo: foo, bar: bar));\n  foo: length((foo, bar, baz, bang));\n}\n"
         )
         .unwrap(),
         "div {\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 2;\n  foo: 4;\n}\n"
@@ -159,10 +159,10 @@ fn length() {
 fn media_hoisting() {
     assert_eq!(
         rsass(
-            "@media screen {\n  a {\n    color: black;\n    height: 8px;\n  }\n}\n\na {\n  color: red;\n  @media screen {\n    color: blue;\n    height: 10px;\n  }\n}\n\na {\n  color: beige;\n  b {\n    color: teal;\n    @media screen {\n      color: orange;\n      c {\n        height: 12px;\n      }\n    }\n  }\n}\n"
+            "@media screen {\n  a {\n    color: black;\n    height: 8px;\n  }\n}\na {\n  color: red;\n  @media screen {\n    color: blue;\n    height: 10px;\n  }\n}\na {\n  color: beige;\n  b {\n    color: teal;\n    @media screen {\n      color: orange;\n      c {\n        height: 12px;\n      }\n    }\n  }\n}\n"
         )
         .unwrap(),
-        "@media screen {\n  a {\n    color: black;\n    height: 8px;\n  }\n}\na {\n  color: red;\n}\n@media screen {\n  a {\n    color: blue;\n    height: 10px;\n  }\n}\n\na {\n  color: beige;\n}\na b {\n  color: teal;\n}\n@media screen {\n  a b {\n    color: orange;\n  }\n  a b c {\n    height: 12px;\n  }\n}\n"
+        "@media screen {\n  a {\n    color: black;\n    height: 8px;\n  }\n}\na {\n  color: red;\n}\n@media screen {\n  a {\n    color: blue;\n    height: 10px;\n  }\n}\na {\n  color: beige;\n}\na b {\n  color: teal;\n}\n@media screen {\n  a b {\n    color: orange;\n  }\n  a b c {\n    height: 12px;\n  }\n}\n"
     );
 }
 
@@ -254,5 +254,9 @@ mod warn_directive_nested;
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)
         .map_err(|e| format!("rsass failed: {}", e))
-        .and_then(|s| String::from_utf8(s).map_err(|e| format!("{:?}", e)))
+        .and_then(|s| {
+            String::from_utf8(s)
+                .map(|s| s.replace("\n\n", "\n"))
+                .map_err(|e| format!("{:?}", e))
+        })
 }

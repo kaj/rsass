@@ -92,7 +92,7 @@ fn random() {
 fn round() {
     assert_eq!(
         rsass(
-            "round {\n  positive-middle: round(1.5);\n  positive-high: round(1.51);\n  positive-low: round(1.49);\n\n  negative-middle: round(-1.5);\n  negative-high: round(-1.51);\n  negative-low: round(-1.49);\n\n  almost-middle: round(1.49999999999);\n  with-units: round(1.1px);\n  with-named: round($number: 1.1px);\n}\n"
+            "round {\n  positive-middle: round(1.5);\n  positive-high: round(1.51);\n  positive-low: round(1.49);\n  negative-middle: round(-1.5);\n  negative-high: round(-1.51);\n  negative-low: round(-1.49);\n  almost-middle: round(1.49999999999);\n  with-units: round(1.1px);\n  with-named: round($number: 1.1px);\n}\n"
         )
         .unwrap(),
         "round {\n  positive-middle: 2;\n  positive-high: 2;\n  positive-low: 1;\n  negative-middle: -2;\n  negative-high: -2;\n  negative-low: -1;\n  almost-middle: 1;\n  with-units: 1px;\n  with-named: 1px;\n}\n"
@@ -102,5 +102,9 @@ fn round() {
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)
         .map_err(|e| format!("rsass failed: {}", e))
-        .and_then(|s| String::from_utf8(s).map_err(|e| format!("{:?}", e)))
+        .and_then(|s| {
+            String::from_utf8(s)
+                .map(|s| s.replace("\n\n", "\n"))
+                .map_err(|e| format!("{:?}", e))
+        })
 }

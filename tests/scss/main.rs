@@ -22,7 +22,7 @@ fn almost_ambiguous_nested_rules_and_declarations() {
 fn alpha() {
     assert_eq!(
         rsass(
-            "$x: rgb(0, 255, 255);\n\ndiv {\n  color: rgb(255, $blue: 0, $green: 255);\n  background: rgb(123, 45, 6);\n//  flah: rgba(0, 0, 0, 1) + #111;\n  grah: rgba(#f0e, $alpha: .5);\n//  blah: rgba(1,2,3,.6);\n  \n  floo: $x;\n//  bloo: rgba($x, 0.7);\n  groo: $x;\n  \n  $x: rgb(123, 45, 6);\n  \n  hoo: red($x);\n  moo: green($x);\n  poo: blue($x);\n  \n//  goo: mix(rgba(255, 0, 0, 0.5), #00f);\n  \n  boo: invert(#123456);\n}\n"
+            "$x: rgb(0, 255, 255);\ndiv {\n  color: rgb(255, $blue: 0, $green: 255);\n  background: rgb(123, 45, 6);\n//  flah: rgba(0, 0, 0, 1) + #111;\n  grah: rgba(#f0e, $alpha: .5);\n//  blah: rgba(1,2,3,.6);\n  \n  floo: $x;\n//  bloo: rgba($x, 0.7);\n  groo: $x;\n  \n  $x: rgb(123, 45, 6);\n  \n  hoo: red($x);\n  moo: green($x);\n  poo: blue($x);\n  \n//  goo: mix(rgba(255, 0, 0, 0.5), #00f);\n  \n  boo: invert(#123456);\n}\n"
         )
         .unwrap(),
         "div {\n  color: yellow;\n  background: #7b2d06;\n  grah: rgba(255, 0, 238, 0.5);\n  floo: cyan;\n  groo: cyan;\n  hoo: 123;\n  moo: 45;\n  poo: 6;\n  boo: #edcba9;\n}\n"
@@ -46,7 +46,7 @@ fn append() {
 fn arglist() {
     assert_eq!(
         rsass(
-            "@mixin foo($x, $y, $zs...) {\n  foo-x: $x;\n  foo-y: $y;\n  foo-zs: $zs;\n}\n\ndiv {\n  @include foo(a, b, c, d, e);\n}"
+            "@mixin foo($x, $y, $zs...) {\n  foo-x: $x;\n  foo-y: $y;\n  foo-zs: $zs;\n}\ndiv {\n  @include foo(a, b, c, d, e);\n}"
         )
         .unwrap(),
         "div {\n  foo-x: a;\n  foo-y: b;\n  foo-zs: c, d, e;\n}\n"
@@ -58,10 +58,10 @@ fn arglist() {
 fn backrefs_in_selector_groups() {
     assert_eq!(
         rsass(
-            "a {\n  &:c, & d {\n    hey: ho;\n  }\n}\n\na b {\n  &:c, & d {\n    hey: ho;\n  }\n}\n"
+            "a {\n  &:c, & d {\n    hey: ho;\n  }\n}\na b {\n  &:c, & d {\n    hey: ho;\n  }\n}\n"
         )
         .unwrap(),
-        "a:c, a d {\n  hey: ho;\n}\n\na b:c, a b d {\n  hey: ho;\n}\n"
+        "a:c, a d {\n  hey: ho;\n}\na b:c, a b d {\n  hey: ho;\n}\n"
     );
 }
 
@@ -82,7 +82,7 @@ fn backslash() {
 fn basic_function() {
     assert_eq!(
         rsass(
-            "@function foo() {\n  @return 1 + 2;\n}\n\nbar {\n  a: foo();\n}\n"
+            "@function foo() {\n  @return 1 + 2;\n}\nbar {\n  a: foo();\n}\n"
         )
         .unwrap(),
         "bar {\n  a: 3;\n}\n"
@@ -93,7 +93,7 @@ fn basic_function() {
 #[test]
 fn basic_mixins() {
     assert_eq!(
-        rsass("@mixin foo {a: b}\n\nbar {\n  @include foo;\n  c: d; }\n")
+        rsass("@mixin foo {a: b}\nbar {\n  @include foo;\n  c: d; }\n")
             .unwrap(),
         "bar {\n  a: b;\n  c: d;\n}\n"
     );
@@ -161,10 +161,10 @@ fn classes_and_ids() {
 fn color_output() {
     assert_eq!(
         rsass(
-            "$green: green;\n$green-hex: #00FF00;\n$green-hex-min: #0f0;\n$green-rgb: rgb(0, 255, 0);\n$green-rgba-t: rgba(0, 255, 0, 0.5);\n$green-rgba-s: rgba(0, 255, 0, 1);\n$offgreen: #00ff01;\n$silver: silver;\n$silver-hex: #ddd;\n\na {\n\tq: silver;\n\tr: #ddd;\n\ts: green;\n\tt: #00FF00;\n\tv: #0f0;\n\tw: rgb(0, 255, 0);\n\tx: rgba(0, 255, 0, 0.5);\n\ty: rgba(0, 255, 0, 1);\n\tz: #00ff01; }\n\nb {\n\tq: 1px solid silver;\n\tr: 1px solid #ddd;\n\ts: 1px solid green;\n\tt: 1px solid #00FF00;\n\tv: 1px solid #0f0;\n\tw: 1px solid rgb(0, 255, 0);\n\tx: 1px solid rgba(0, 255, 0, 0.5);\n\ty: 1px solid rgba(0, 255, 0, 1);\n\tz: 1px solid #00ff01; }\n\nc {\n\tq: $silver;\n\tr: $silver-hex;\n\ts: $green;\n\tt: $green-hex;\n\tv: $green-hex-min;\n\tw: $green-rgb;\n\tx: $green-rgba-t;\n\ty: $green-rgba-s;\n\tz: $offgreen; }\n\nd {\n\tq: 1px solid $silver;\n\tr: 1px solid $silver-hex;\n\ts: 1px solid $green;\n\tt: 1px solid $green-hex;\n\tv: 1px solid $green-hex-min;\n\tw: 1px solid $green-rgb;\n\tx: 1px solid $green-rgba-t;\n\ty: 1px solid $green-rgba-s;\n\tz: 1px solid $offgreen; }\n\n"
+            "$green: green;\n$green-hex: #00FF00;\n$green-hex-min: #0f0;\n$green-rgb: rgb(0, 255, 0);\n$green-rgba-t: rgba(0, 255, 0, 0.5);\n$green-rgba-s: rgba(0, 255, 0, 1);\n$offgreen: #00ff01;\n$silver: silver;\n$silver-hex: #ddd;\na {\n\tq: silver;\n\tr: #ddd;\n\ts: green;\n\tt: #00FF00;\n\tv: #0f0;\n\tw: rgb(0, 255, 0);\n\tx: rgba(0, 255, 0, 0.5);\n\ty: rgba(0, 255, 0, 1);\n\tz: #00ff01; }\nb {\n\tq: 1px solid silver;\n\tr: 1px solid #ddd;\n\ts: 1px solid green;\n\tt: 1px solid #00FF00;\n\tv: 1px solid #0f0;\n\tw: 1px solid rgb(0, 255, 0);\n\tx: 1px solid rgba(0, 255, 0, 0.5);\n\ty: 1px solid rgba(0, 255, 0, 1);\n\tz: 1px solid #00ff01; }\nc {\n\tq: $silver;\n\tr: $silver-hex;\n\ts: $green;\n\tt: $green-hex;\n\tv: $green-hex-min;\n\tw: $green-rgb;\n\tx: $green-rgba-t;\n\ty: $green-rgba-s;\n\tz: $offgreen; }\nd {\n\tq: 1px solid $silver;\n\tr: 1px solid $silver-hex;\n\ts: 1px solid $green;\n\tt: 1px solid $green-hex;\n\tv: 1px solid $green-hex-min;\n\tw: 1px solid $green-rgb;\n\tx: 1px solid $green-rgba-t;\n\ty: 1px solid $green-rgba-s;\n\tz: 1px solid $offgreen; }\n"
         )
         .unwrap(),
-        "a {\n  q: silver;\n  r: #ddd;\n  s: green;\n  t: #00FF00;\n  v: #0f0;\n  w: lime;\n  x: rgba(0, 255, 0, 0.5);\n  y: lime;\n  z: #00ff01;\n}\n\nb {\n  q: 1px solid silver;\n  r: 1px solid #ddd;\n  s: 1px solid green;\n  t: 1px solid #00FF00;\n  v: 1px solid #0f0;\n  w: 1px solid lime;\n  x: 1px solid rgba(0, 255, 0, 0.5);\n  y: 1px solid lime;\n  z: 1px solid #00ff01;\n}\n\nc {\n  q: silver;\n  r: #ddd;\n  s: green;\n  t: #00FF00;\n  v: #0f0;\n  w: lime;\n  x: rgba(0, 255, 0, 0.5);\n  y: lime;\n  z: #00ff01;\n}\n\nd {\n  q: 1px solid silver;\n  r: 1px solid #ddd;\n  s: 1px solid green;\n  t: 1px solid #00FF00;\n  v: 1px solid #0f0;\n  w: 1px solid lime;\n  x: 1px solid rgba(0, 255, 0, 0.5);\n  y: 1px solid lime;\n  z: 1px solid #00ff01;\n}\n"
+        "a {\n  q: silver;\n  r: #ddd;\n  s: green;\n  t: #00FF00;\n  v: #0f0;\n  w: lime;\n  x: rgba(0, 255, 0, 0.5);\n  y: lime;\n  z: #00ff01;\n}\nb {\n  q: 1px solid silver;\n  r: 1px solid #ddd;\n  s: 1px solid green;\n  t: 1px solid #00FF00;\n  v: 1px solid #0f0;\n  w: 1px solid lime;\n  x: 1px solid rgba(0, 255, 0, 0.5);\n  y: 1px solid lime;\n  z: 1px solid #00ff01;\n}\nc {\n  q: silver;\n  r: #ddd;\n  s: green;\n  t: #00FF00;\n  v: #0f0;\n  w: lime;\n  x: rgba(0, 255, 0, 0.5);\n  y: lime;\n  z: #00ff01;\n}\nd {\n  q: 1px solid silver;\n  r: 1px solid #ddd;\n  s: 1px solid green;\n  t: 1px solid #00FF00;\n  v: 1px solid #0f0;\n  w: 1px solid lime;\n  x: 1px solid rgba(0, 255, 0, 0.5);\n  y: 1px solid lime;\n  z: 1px solid #00ff01;\n}\n"
     );
 }
 
@@ -201,7 +201,7 @@ fn concat() {
 fn cons_up() {
     assert_eq!(
         rsass(
-            "$inputs-list: \'input[type=\"email\"]\',\n              \'input[type=\"number\"]\',\n              \'input[type=\"password\"]\',\n              \'input[type=\"search\"]\',\n              \'input[type=\"tel\"]\',\n              \'input[type=\"text\"]\',\n              \'input[type=\"url\"]\',\n\n              // Webkit & Gecko may change the display of these in the future\n              \'input[type=\"color\"]\',\n              \'input[type=\"date\"]\',\n              \'input[type=\"datetime\"]\',\n              \'input[type=\"datetime-local\"]\',\n              \'input[type=\"month\"]\',\n              \'input[type=\"time\"]\',\n              \'input[type=\"week\"]\';\n\n$unquoted-inputs-list: ();\n\n@each $input-type in $inputs-list {\n  $unquoted-inputs-list: append($unquoted-inputs-list, unquote($input-type), comma);\n}\n\ndiv {\n  content: $unquoted-inputs-list;\n  content: append((), hello);\n  content: length(());\n}"
+            "$inputs-list: \'input[type=\"email\"]\',\n              \'input[type=\"number\"]\',\n              \'input[type=\"password\"]\',\n              \'input[type=\"search\"]\',\n              \'input[type=\"tel\"]\',\n              \'input[type=\"text\"]\',\n              \'input[type=\"url\"]\',\n              // Webkit & Gecko may change the display of these in the future\n              \'input[type=\"color\"]\',\n              \'input[type=\"date\"]\',\n              \'input[type=\"datetime\"]\',\n              \'input[type=\"datetime-local\"]\',\n              \'input[type=\"month\"]\',\n              \'input[type=\"time\"]\',\n              \'input[type=\"week\"]\';\n$unquoted-inputs-list: ();\n@each $input-type in $inputs-list {\n  $unquoted-inputs-list: append($unquoted-inputs-list, unquote($input-type), comma);\n}\ndiv {\n  content: $unquoted-inputs-list;\n  content: append((), hello);\n  content: length(());\n}"
         )
         .unwrap(),
         "div {\n  content: input[type=\"email\"], input[type=\"number\"], input[type=\"password\"], input[type=\"search\"], input[type=\"tel\"], input[type=\"text\"], input[type=\"url\"], input[type=\"color\"], input[type=\"date\"], input[type=\"datetime\"], input[type=\"datetime-local\"], input[type=\"month\"], input[type=\"time\"], input[type=\"week\"];\n  content: hello;\n  content: 0;\n}\n"
@@ -218,7 +218,7 @@ fn css_basic_scss() {
 #[test]
 fn css_block_directive_with_semicolon() {
     assert_eq!(
-        rsass("@foo {\n  a: b; }\n\n@bar {\n  a: b; }\n").unwrap(),
+        rsass("@foo {\n  a: b; }\n@bar {\n  a: b; }\n").unwrap(),
         "@foo {\n  a: b;\n}\n@bar {\n  a: b;\n}\n"
     );
 }
@@ -228,10 +228,10 @@ fn css_block_directive_with_semicolon() {
 fn css_cdo_and_cdc_ignored_at_toplevel() {
     assert_eq!(
         rsass(
-            "foo {\n  bar: baz; }\n\nbar {\n  bar: baz; }\n\nbaz {\n  bar: baz; }\n"
+            "foo {\n  bar: baz; }\nbar {\n  bar: baz; }\nbaz {\n  bar: baz; }\n"
         )
         .unwrap(),
-        "foo {\n  bar: baz;\n}\n\nbar {\n  bar: baz;\n}\n\nbaz {\n  bar: baz;\n}\n"
+        "foo {\n  bar: baz;\n}\nbar {\n  bar: baz;\n}\nbaz {\n  bar: baz;\n}\n"
     );
 }
 
@@ -240,10 +240,10 @@ fn css_cdo_and_cdc_ignored_at_toplevel() {
 fn css_crazy_comments() {
     assert_eq!(
         rsass(
-            "/* This is a CSS comment. */\n.one {\n  color: green; }\n\n/* Another comment */\n/* The following should not be used:\n.two {color: red;} */\n.three {\n  color: green;\n  /* color: red; */ }\n\n/**\n.four {color: red;} */\n.five {\n  color: green; }\n\n/**/\n.six {\n  color: green; }\n\n/*********/\n.seven {\n  color: green; }\n\n/* a comment **/\n.eight {\n  color: green; }\n"
+            "/* This is a CSS comment. */\n.one {\n  color: green; }\n/* Another comment */\n/* The following should not be used:\n.two {color: red;} */\n.three {\n  color: green;\n  /* color: red; */ }\n/**\n.four {color: red;} */\n.five {\n  color: green; }\n/**/\n.six {\n  color: green; }\n/*********/\n.seven {\n  color: green; }\n/* a comment **/\n.eight {\n  color: green; }\n"
         )
         .unwrap(),
-        "/* This is a CSS comment. */\n.one {\n  color: green;\n}\n\n/* Another comment */\n/* The following should not be used:\n.two {color: red;} */\n.three {\n  color: green;\n  /* color: red; */\n}\n\n/**\n.four {color: red;} */\n.five {\n  color: green;\n}\n\n/**/\n.six {\n  color: green;\n}\n\n/*********/\n.seven {\n  color: green;\n}\n\n/* a comment **/\n.eight {\n  color: green;\n}\n"
+        "/* This is a CSS comment. */\n.one {\n  color: green;\n}\n/* Another comment */\n/* The following should not be used:\n.two {color: red;} */\n.three {\n  color: green;\n  /* color: red; */\n}\n/**\n.four {color: red;} */\n.five {\n  color: green;\n}\n/**/\n.six {\n  color: green;\n}\n/*********/\n.seven {\n  color: green;\n}\n/* a comment **/\n.eight {\n  color: green;\n}\n"
     );
 }
 
@@ -339,10 +339,10 @@ fn css_unary_ops() {
 fn default_args() {
     assert_eq!(
         rsass(
-            "@mixin foo($x: 1, $y: $x + 1) {\n  value: $x, $y;\n}\n\ndiv {\n  @include foo();\n  @include foo(2);\n  @include foo($y: 3);\n}\n\n$v: hey;\n\n@mixin bar($x: $v) {\n  value: $x;\n}\n\ndiv {\n  $v: ho !global;\n  @include bar();\n}\n"
+            "@mixin foo($x: 1, $y: $x + 1) {\n  value: $x, $y;\n}\ndiv {\n  @include foo();\n  @include foo(2);\n  @include foo($y: 3);\n}\n$v: hey;\n@mixin bar($x: $v) {\n  value: $x;\n}\ndiv {\n  $v: ho !global;\n  @include bar();\n}\n"
         )
         .unwrap(),
-        "div {\n  value: 1, 2;\n  value: 2, 3;\n  value: 1, 3;\n}\n\ndiv {\n  value: ho;\n}\n"
+        "div {\n  value: 1, 2;\n  value: 2, 3;\n  value: 1, 3;\n}\ndiv {\n  value: ho;\n}\n"
     );
 }
 
@@ -351,10 +351,10 @@ fn default_args() {
 fn default_parameters() {
     assert_eq!(
         rsass(
-            "$a: red;\n\n@mixin f($a: $a) {\n  color: $a;\n}\n\nh1 {\n  @include f;\n}\n\nh2 {\n  @include f(blue);\n}"
+            "$a: red;\n@mixin f($a: $a) {\n  color: $a;\n}\nh1 {\n  @include f;\n}\nh2 {\n  @include f(blue);\n}"
         )
         .unwrap(),
-        "h1 {\n  color: red;\n}\n\nh2 {\n  color: blue;\n}\n"
+        "h1 {\n  color: red;\n}\nh2 {\n  color: blue;\n}\n"
     );
 }
 
@@ -363,7 +363,7 @@ fn default_parameters() {
 fn default_vars_in_default_params() {
     assert_eq!(
         rsass(
-            "$y: why;\n\n@mixin foo($x, $y: $y) {\n  stuff: $x $y;\n}\n\ndiv {\n  why: $y;\n  @include foo(ecks);\n}"
+            "$y: why;\n@mixin foo($x, $y: $y) {\n  stuff: $x $y;\n}\ndiv {\n  why: $y;\n  @include foo(ecks);\n}"
         )
         .unwrap(),
         "div {\n  why: why;\n  stuff: ecks why;\n}\n"
@@ -375,7 +375,7 @@ fn default_vars_in_default_params() {
 fn directives_in_propsets() {
     assert_eq!(
         rsass(
-            "$color: red;\n$position: 50%;\n$x: 0;\n\n@mixin foo() {\n  image: url(foo.png);\n}\n\ndiv {\n  background: {\n    something: {\n      color: green;\n    }\n    @if (type-of($color) == \"color\") {\n      color: $color;\n    }\n    @if (type-of($position) == \"number\") {\n      position: $position;\n      @include foo();\n    }\n    groo: foo;\n  }\n  width: $x;\n}"
+            "$color: red;\n$position: 50%;\n$x: 0;\n@mixin foo() {\n  image: url(foo.png);\n}\ndiv {\n  background: {\n    something: {\n      color: green;\n    }\n    @if (type-of($color) == \"color\") {\n      color: $color;\n    }\n    @if (type-of($position) == \"number\") {\n      position: $position;\n      @include foo();\n    }\n    groo: foo;\n  }\n  width: $x;\n}"
         )
         .unwrap(),
         "div {\n  background-something-color: green;\n  background-color: red;\n  background-position: 50%;\n  background-image: url(foo.png);\n  background-groo: foo;\n  width: 0;\n}\n"
@@ -402,7 +402,7 @@ fn each_directive() {
             "a {\n  @each $number in 1px 2px 3px 4px {\n    b: $number;\n  }\n}\nc {\n  @each $str in foo, bar, baz, bang {\n    d: $str;\n  }\n}\n"
         )
         .unwrap(),
-        "a {\n  b: 1px;\n  b: 2px;\n  b: 3px;\n  b: 4px;\n}\n\nc {\n  d: foo;\n  d: bar;\n  d: baz;\n  d: bang;\n}\n"
+        "a {\n  b: 1px;\n  b: 2px;\n  b: 3px;\n  b: 4px;\n}\nc {\n  d: foo;\n  d: bar;\n  d: baz;\n  d: bang;\n}\n"
     );
 }
 
@@ -411,7 +411,7 @@ fn each_directive() {
 fn each_in_functions() {
     assert_eq!(
         rsass(
-            "$GLOBAL: global;\n\n@function foo($g1, $g2, $g3) {\n  @each $value in $g1, $g2, $g3 {\n    $GLOBAL: $GLOBAL each $value !global;\n    $GLOBAL: $GLOBAL type1 type-of(nth($value, 1)) !global;\n    $GLOBAL: $GLOBAL type2 type-of(nth($value, 2)) !global;\n  }\n  @each $value in (foo: foo, bar: bar) {\n    $GLOBAL: $GLOBAL map $value !global;\n  }\n  @return 0;\n}\n\ndiv {\n  a: foo(50% 50%, cover circle, red blue);\n  b: $GLOBAL;\n  $colors: red green blue;\n  c: a, b, type-of(nth($colors, 2)), d;\n}\n"
+            "$GLOBAL: global;\n@function foo($g1, $g2, $g3) {\n  @each $value in $g1, $g2, $g3 {\n    $GLOBAL: $GLOBAL each $value !global;\n    $GLOBAL: $GLOBAL type1 type-of(nth($value, 1)) !global;\n    $GLOBAL: $GLOBAL type2 type-of(nth($value, 2)) !global;\n  }\n  @each $value in (foo: foo, bar: bar) {\n    $GLOBAL: $GLOBAL map $value !global;\n  }\n  @return 0;\n}\ndiv {\n  a: foo(50% 50%, cover circle, red blue);\n  b: $GLOBAL;\n  $colors: red green blue;\n  c: a, b, type-of(nth($colors, 2)), d;\n}\n"
         )
         .unwrap(),
         "div {\n  a: 0;\n  b: global each 50% 50% type1 number type2 number each cover circle type1 string type2 string each red blue type1 color type2 color map foo foo map bar bar;\n  c: a, b, color, d;\n}\n"
@@ -425,10 +425,10 @@ mod feature_queries;
 fn test_for() {
     assert_eq!(
         rsass(
-            "$limit: 10;\n\n@for $x from 1 through $limit {\n  $limit: 4;\n  div {\n    content: $limit thing $x;\n  }\n}\n"
+            "$limit: 10;\n@for $x from 1 through $limit {\n  $limit: 4;\n  div {\n    content: $limit thing $x;\n  }\n}\n"
         )
         .unwrap(),
-        "div {\n  content: 4 thing 1;\n}\n\ndiv {\n  content: 4 thing 2;\n}\n\ndiv {\n  content: 4 thing 3;\n}\n\ndiv {\n  content: 4 thing 4;\n}\n\ndiv {\n  content: 4 thing 5;\n}\n\ndiv {\n  content: 4 thing 6;\n}\n\ndiv {\n  content: 4 thing 7;\n}\n\ndiv {\n  content: 4 thing 8;\n}\n\ndiv {\n  content: 4 thing 9;\n}\n\ndiv {\n  content: 4 thing 10;\n}\n"
+        "div {\n  content: 4 thing 1;\n}\ndiv {\n  content: 4 thing 2;\n}\ndiv {\n  content: 4 thing 3;\n}\ndiv {\n  content: 4 thing 4;\n}\ndiv {\n  content: 4 thing 5;\n}\ndiv {\n  content: 4 thing 6;\n}\ndiv {\n  content: 4 thing 7;\n}\ndiv {\n  content: 4 thing 8;\n}\ndiv {\n  content: 4 thing 9;\n}\ndiv {\n  content: 4 thing 10;\n}\n"
     );
 }
 
@@ -447,7 +447,7 @@ fn for_directive() {
 fn for_in_functions() {
     assert_eq!(
         rsass(
-            "@function foo() {\n\t$limit: 10;\n\t$y: 0;\n\t@for $x from 1 through $limit {\n\t  $limit: 4;\n\t  $y: $y + $x;\n\t}\n\t@return $y;\n}\n\ndiv {\n\twidth: foo();\n}"
+            "@function foo() {\n\t$limit: 10;\n\t$y: 0;\n\t@for $x from 1 through $limit {\n\t  $limit: 4;\n\t  $y: $y + $x;\n\t}\n\t@return $y;\n}\ndiv {\n\twidth: foo();\n}"
         )
         .unwrap(),
         "div {\n  width: 55;\n}\n"
@@ -463,7 +463,7 @@ fn for_in_functions() {
 fn function_args() {
     assert_eq!(
         rsass(
-            "@function plus($var1, $var2) {\n  @return $var1 + $var2;\n}\n\nbar {\n  a: plus(1, 2);\n}\n"
+            "@function plus($var1, $var2) {\n  @return $var1 + $var2;\n}\nbar {\n  a: plus(1, 2);\n}\n"
         )
         .unwrap(),
         "bar {\n  a: 3;\n}\n"
@@ -475,7 +475,7 @@ fn function_args() {
 fn functions() {
     assert_eq!(
         rsass(
-            "@function foo($x, $y, $z) {\n  @while $x < $y {\n    $z: transform($z);\n    @return $z;\n  }\n}\n\n@function bar($x) {\n  @if $x {\n    @return YES;\n  }\n}\n\ndiv {\n  answer: bar(true);\n  flanswer: fudge(mux+flux) + mudge(a/b);\n}"
+            "@function foo($x, $y, $z) {\n  @while $x < $y {\n    $z: transform($z);\n    @return $z;\n  }\n}\n@function bar($x) {\n  @if $x {\n    @return YES;\n  }\n}\ndiv {\n  answer: bar(true);\n  flanswer: fudge(mux+flux) + mudge(a/b);\n}"
         )
         .unwrap(),
         "div {\n  answer: YES;\n  flanswer: fudge(muxflux)mudge(a/b);\n}\n"
@@ -487,7 +487,7 @@ fn functions() {
 fn functions_and_mixins() {
     assert_eq!(
         rsass(
-            "@function foo() {\n  @return \"hello\";\n}\n\n@mixin foo() {\n  content: \"hello\";\n}\n\ndiv {\n  span {\n    @function length($a, $b, $c, $d) {\n      @return $a + $b + $c + $d;\n    }\n\n    div {\n      content: foo();\n      @include foo();\n      width: length(1,2,2,3);\n    }\n  }\n\n  height: length(a b c d e);\n\n}"
+            "@function foo() {\n  @return \"hello\";\n}\n@mixin foo() {\n  content: \"hello\";\n}\ndiv {\n  span {\n    @function length($a, $b, $c, $d) {\n      @return $a + $b + $c + $d;\n    }\n    div {\n      content: foo();\n      @include foo();\n      width: length(1,2,2,3);\n    }\n  }\n  height: length(a b c d e);\n}"
         )
         .unwrap(),
         "div {\n  height: 5;\n}\ndiv span div {\n  content: \"hello\";\n  content: \"hello\";\n  width: 8;\n}\n"
@@ -498,7 +498,7 @@ fn functions_and_mixins() {
 #[test]
 fn guard_assign() {
     assert_eq!(
-        rsass("$var: 2 !default;\n\nfoo {a: $var}\n").unwrap(),
+        rsass("$var: 2 !default;\nfoo {a: $var}\n").unwrap(),
         "foo {\n  a: 2;\n}\n"
     );
 }
@@ -553,10 +553,10 @@ fn ie_hex_str() {
 fn test_if() {
     assert_eq!(
         rsass(
-            "@if false {\n  div {\n    color: red;\n  }\n}\n@else if true {\n  span {\n    color: blue;\n  }\n}\n\ndiv {\n  @if true {\n    color: green;\n  }\n  @if false {\n    height: 10px;\n  }\n  @else if false {\n    height: 20px;\n  }\n  @else if false {\n    height: 30px;\n  }\n  @else {\n    height: 40px;\n  }\n}"
+            "@if false {\n  div {\n    color: red;\n  }\n}\n@else if true {\n  span {\n    color: blue;\n  }\n}\ndiv {\n  @if true {\n    color: green;\n  }\n  @if false {\n    height: 10px;\n  }\n  @else if false {\n    height: 20px;\n  }\n  @else if false {\n    height: 30px;\n  }\n  @else {\n    height: 40px;\n  }\n}"
         )
         .unwrap(),
-        "span {\n  color: blue;\n}\n\ndiv {\n  color: green;\n  height: 40px;\n}\n"
+        "span {\n  color: blue;\n}\ndiv {\n  color: green;\n  height: 40px;\n}\n"
     );
 }
 
@@ -565,7 +565,7 @@ fn test_if() {
 fn if_in_mixin() {
     assert_eq!(
         rsass(
-            "$x: true;\n\n@mixin foobar() {\n  @if $x {\n    $x: false !global;\n    content: foo;\n  }\n  @else {\n    $x: true !global;\n    content: bar;\n  }\n}\n\ndiv {\n  @include foobar();\n  @include foobar();\n  @include foobar();\n  $x: true !global;\n  @include foobar();\n}\n"
+            "$x: true;\n@mixin foobar() {\n  @if $x {\n    $x: false !global;\n    content: foo;\n  }\n  @else {\n    $x: true !global;\n    content: bar;\n  }\n}\ndiv {\n  @include foobar();\n  @include foobar();\n  @include foobar();\n  $x: true !global;\n  @include foobar();\n}\n"
         )
         .unwrap(),
         "div {\n  content: foo;\n  content: bar;\n  content: foo;\n  content: foo;\n}\n"
@@ -620,7 +620,7 @@ fn important() {
 fn important_in_arglist() {
     assert_eq!(
         rsass(
-            "@mixin foo($x) {\n  style: $x;\n}\n\ndiv {\n  @include foo(0px 0px 0px 0px #ef8086 inset !important);\n  fludge: foo bar ! important hux;\n}"
+            "@mixin foo($x) {\n  style: $x;\n}\ndiv {\n  @include foo(0px 0px 0px 0px #ef8086 inset !important);\n  fludge: foo bar ! important hux;\n}"
         )
         .unwrap(),
         "div {\n  style: 0px 0px 0px 0px #ef8086 inset !important;\n  fludge: foo bar !important hux;\n}\n"
@@ -653,7 +653,7 @@ fn interpolated_selectors() {
 fn interpolated_strings() {
     assert_eq!(
         rsass(
-            "$x: ecks;\n$y: why;\n\ndiv {\n  blah: \"hey #{$x} ho\";\n  blee: hey#{$y}ho;\n  bluh: \"foo #{$x}\";\n  bleg: foo#{\"hey\"}bar;\n}"
+            "$x: ecks;\n$y: why;\ndiv {\n  blah: \"hey #{$x} ho\";\n  blee: hey#{$y}ho;\n  bluh: \"foo #{$x}\";\n  bleg: foo#{\"hey\"}bar;\n}"
         )
         .unwrap(),
         "div {\n  blah: \"hey ecks ho\";\n  blee: heywhyho;\n  bluh: \"foo ecks\";\n  bleg: fooheybar;\n}\n"
@@ -664,10 +664,8 @@ fn interpolated_strings() {
 #[test]
 fn interpolation() {
     assert_eq!(
-        rsass(
-            "$bar : \"#foo\";\n\n\n\nul li#{$bar} a span.label { foo: bar; }\n"
-        )
-        .unwrap(),
+        rsass("$bar : \"#foo\";\nul li#{$bar} a span.label { foo: bar; }\n")
+            .unwrap(),
         "ul li#foo a span.label {\n  foo: bar;\n}\n"
     );
 }
@@ -702,7 +700,7 @@ fn lang() {
             "h1:lang(as),h1:lang(bn),h1:lang(gu),h1:lang(hi),h1:lang(kn),h1:lang(ml),h1:lang(mr),h1:lang(or),h1:lang(pa),h1:lang(sa),h1:lang(ta),h1:lang(te) {\n  line-height:1.5em !important\n}\nh2:lang(as),h3:lang(as),h4:lang(as),h5:lang(as),h6:lang(as),h2:lang(bn),h3:lang(bn),h4:lang(bn),h5:lang(bn),h6:lang(bn),h2:lang(gu),h3:lang(gu),h4:lang(gu),h5:lang(gu),h6:lang(gu),h2:lang(hi),h3:lang(hi),h4:lang(hi),h5:lang(hi),h6:lang(hi),h2:lang(kn),h3:lang(kn),h4:lang(kn),h5:lang(kn),h6:lang(kn),h2:lang(ml),h3:lang(ml),h4:lang(ml),h5:lang(ml),h6:lang(ml),h2:lang(mr),h3:lang(mr),h4:lang(mr),h5:lang(mr),h6:lang(mr),h2:lang(or),h3:lang(or),h4:lang(or),h5:lang(or),h6:lang(or),h2:lang(pa),h3:lang(pa),h4:lang(pa),h5:lang(pa),h6:lang(pa),h2:lang(sa),h3:lang(sa),h4:lang(sa),h5:lang(sa),h6:lang(sa),h2:lang(ta),h3:lang(ta),h4:lang(ta),h5:lang(ta),h6:lang(ta),h2:lang(te),h3:lang(te),h4:lang(te),h5:lang(te),h6:lang(te)\n{\n  line-height:1.2em\n}\nol:lang(bcc) li,ol:lang(bqi) li,ol:lang(fa) li,ol:lang(glk) li,ol:lang(kk-arab) li,ol:lang(mzn) li {\n  list-style-type:-moz-persian;list-style-type:persian\n}\nol:lang(ckb) li {\n  list-style-type:-moz-arabic-indic;list-style-type:arabic-indic\n}\nol:lang(as) li,ol:lang(bn) li{\n  list-style-type:-moz-bengali;list-style-type:bengali\n}\nol:lang(or) li {\n  list-style-type:-moz-oriya;list-style-type:oriya\n}"
         )
         .unwrap(),
-        "h1:lang(as), h1:lang(bn), h1:lang(gu), h1:lang(hi), h1:lang(kn), h1:lang(ml), h1:lang(mr), h1:lang(or), h1:lang(pa), h1:lang(sa), h1:lang(ta), h1:lang(te) {\n  line-height: 1.5em !important;\n}\n\nh2:lang(as), h3:lang(as), h4:lang(as), h5:lang(as), h6:lang(as), h2:lang(bn), h3:lang(bn), h4:lang(bn), h5:lang(bn), h6:lang(bn), h2:lang(gu), h3:lang(gu), h4:lang(gu), h5:lang(gu), h6:lang(gu), h2:lang(hi), h3:lang(hi), h4:lang(hi), h5:lang(hi), h6:lang(hi), h2:lang(kn), h3:lang(kn), h4:lang(kn), h5:lang(kn), h6:lang(kn), h2:lang(ml), h3:lang(ml), h4:lang(ml), h5:lang(ml), h6:lang(ml), h2:lang(mr), h3:lang(mr), h4:lang(mr), h5:lang(mr), h6:lang(mr), h2:lang(or), h3:lang(or), h4:lang(or), h5:lang(or), h6:lang(or), h2:lang(pa), h3:lang(pa), h4:lang(pa), h5:lang(pa), h6:lang(pa), h2:lang(sa), h3:lang(sa), h4:lang(sa), h5:lang(sa), h6:lang(sa), h2:lang(ta), h3:lang(ta), h4:lang(ta), h5:lang(ta), h6:lang(ta), h2:lang(te), h3:lang(te), h4:lang(te), h5:lang(te), h6:lang(te) {\n  line-height: 1.2em;\n}\n\nol:lang(bcc) li, ol:lang(bqi) li, ol:lang(fa) li, ol:lang(glk) li, ol:lang(kk-arab) li, ol:lang(mzn) li {\n  list-style-type: -moz-persian;\n  list-style-type: persian;\n}\n\nol:lang(ckb) li {\n  list-style-type: -moz-arabic-indic;\n  list-style-type: arabic-indic;\n}\n\nol:lang(as) li, ol:lang(bn) li {\n  list-style-type: -moz-bengali;\n  list-style-type: bengali;\n}\n\nol:lang(or) li {\n  list-style-type: -moz-oriya;\n  list-style-type: oriya;\n}\n"
+        "h1:lang(as), h1:lang(bn), h1:lang(gu), h1:lang(hi), h1:lang(kn), h1:lang(ml), h1:lang(mr), h1:lang(or), h1:lang(pa), h1:lang(sa), h1:lang(ta), h1:lang(te) {\n  line-height: 1.5em !important;\n}\nh2:lang(as), h3:lang(as), h4:lang(as), h5:lang(as), h6:lang(as), h2:lang(bn), h3:lang(bn), h4:lang(bn), h5:lang(bn), h6:lang(bn), h2:lang(gu), h3:lang(gu), h4:lang(gu), h5:lang(gu), h6:lang(gu), h2:lang(hi), h3:lang(hi), h4:lang(hi), h5:lang(hi), h6:lang(hi), h2:lang(kn), h3:lang(kn), h4:lang(kn), h5:lang(kn), h6:lang(kn), h2:lang(ml), h3:lang(ml), h4:lang(ml), h5:lang(ml), h6:lang(ml), h2:lang(mr), h3:lang(mr), h4:lang(mr), h5:lang(mr), h6:lang(mr), h2:lang(or), h3:lang(or), h4:lang(or), h5:lang(or), h6:lang(or), h2:lang(pa), h3:lang(pa), h4:lang(pa), h5:lang(pa), h6:lang(pa), h2:lang(sa), h3:lang(sa), h4:lang(sa), h5:lang(sa), h6:lang(sa), h2:lang(ta), h3:lang(ta), h4:lang(ta), h5:lang(ta), h6:lang(ta), h2:lang(te), h3:lang(te), h4:lang(te), h5:lang(te), h6:lang(te) {\n  line-height: 1.2em;\n}\nol:lang(bcc) li, ol:lang(bqi) li, ol:lang(fa) li, ol:lang(glk) li, ol:lang(kk-arab) li, ol:lang(mzn) li {\n  list-style-type: -moz-persian;\n  list-style-type: persian;\n}\nol:lang(ckb) li {\n  list-style-type: -moz-arabic-indic;\n  list-style-type: arabic-indic;\n}\nol:lang(as) li, ol:lang(bn) li {\n  list-style-type: -moz-bengali;\n  list-style-type: bengali;\n}\nol:lang(or) li {\n  list-style-type: -moz-oriya;\n  list-style-type: oriya;\n}\n"
     );
 }
 
@@ -750,7 +748,7 @@ fn mix() {
 fn mixin_content_with_no_block() {
     assert_eq!(
         rsass(
-            "@mixin foo {\n  .foo {\n    color: red;\n    @content;\n  }\n}\n\ndiv.a {\n  @include foo() {\n    hey: now;\n  }\n}"
+            "@mixin foo {\n  .foo {\n    color: red;\n    @content;\n  }\n}\ndiv.a {\n  @include foo() {\n    hey: now;\n  }\n}"
         )
         .unwrap(),
         "div.a .foo {\n  color: red;\n  hey: now;\n}\n"
@@ -774,7 +772,7 @@ fn mixin_with_keyword_args() {
 fn mixins_with_args() {
     assert_eq!(
         rsass(
-            "@mixin foo($a, $b) {\n  a: $a;\n  b: $b; }\n\n.foo {@include foo(bar, 12px)}\n"
+            "@mixin foo($a, $b) {\n  a: $a;\n  b: $b; }\n.foo {@include foo(bar, 12px)}\n"
         )
         .unwrap(),
         ".foo {\n  a: bar;\n  b: 12px;\n}\n"
@@ -785,7 +783,7 @@ fn mixins_with_args() {
 #[test]
 fn mixins_with_empty_args() {
     assert_eq!(
-        rsass("@mixin foo {a: b}\n\n.foo {@include foo();}\n").unwrap(),
+        rsass("@mixin foo {a: b}\n.foo {@include foo();}\n").unwrap(),
         ".foo {\n  a: b;\n}\n"
     );
 }
@@ -809,7 +807,7 @@ fn multiline_var() {
 fn multiple_operators() {
     assert_eq!(
         rsass(
-            "$x: 2;\n$y: 1;\n\n@function getResult() { @return true; }\n\n.test {\n    a: $x > $y == getResult();\n}\n"
+            "$x: 2;\n$y: 1;\n@function getResult() { @return true; }\n.test {\n    a: $x > $y == getResult();\n}\n"
         )
         .unwrap(),
         ".test {\n  a: true;\n}\n"
@@ -901,7 +899,7 @@ fn no_namespace_properties_without_space() {
 fn null() {
     assert_eq!(
         rsass(
-            "$x: 2;\n\ndiv {\n  $x: null;\n  a: length(null null null);\n  b: #{null};\n  d: type-of($x);\n  e: null == null;\n  f: -null;\n  g: -fudge;\n  h: (null null null);\n  i: froo(null, 4);\n  j: (null), (null), 3, 4;\n  k: length(((null), (null), 3, 4));\n  \n  a2: length($x $x $x);\n  b2: #{$x};\n  e2: $x == null;\n  f2: -$x;\n  h2: ($x $x $x);\n  i2: froo($x, 4);\n  j2: ($x), ($x), 3, 4;\n  k2: length((($x), ($x), 3, 4));\n}"
+            "$x: 2;\ndiv {\n  $x: null;\n  a: length(null null null);\n  b: #{null};\n  d: type-of($x);\n  e: null == null;\n  f: -null;\n  g: -fudge;\n  h: (null null null);\n  i: froo(null, 4);\n  j: (null), (null), 3, 4;\n  k: length(((null), (null), 3, 4));\n  \n  a2: length($x $x $x);\n  b2: #{$x};\n  e2: $x == null;\n  f2: -$x;\n  h2: ($x $x $x);\n  i2: froo($x, 4);\n  j2: ($x), ($x), 3, 4;\n  k2: length((($x), ($x), 3, 4));\n}"
         )
         .unwrap(),
         "div {\n  a: 3;\n  d: null;\n  e: true;\n  f: -null;\n  g: -fudge;\n  i: froo(, 4);\n  j: 3, 4;\n  k: 4;\n  a2: 3;\n  e2: true;\n  f2: -;\n  i2: froo(, 4);\n  j2: 3, 4;\n  k2: 4;\n}\n"
@@ -1016,7 +1014,7 @@ fn quotes_in_interpolated_strings() {
             "$bar: \"bar\";\n$foobar: \"foo#{$bar}\";\n#{$bar} {\n  #{$bar}: #{$bar};\n  #{$bar}: $bar;\n}\nfoobar {\n  #{$foobar}: #{$foobar};\n  #{$foobar}: $foobar;\n}"
         )
         .unwrap(),
-        "bar {\n  bar: bar;\n  bar: \"bar\";\n}\n\nfoobar {\n  foobar: foobar;\n  foobar: \"foobar\";\n}\n"
+        "bar {\n  bar: bar;\n  bar: \"bar\";\n}\nfoobar {\n  foobar: foobar;\n  foobar: \"foobar\";\n}\n"
     );
 }
 
@@ -1162,7 +1160,7 @@ fn variables() {
 fn vars() {
     assert_eq!(
         rsass(
-            "$x: hello;\n$y: 1/2 3/4 (2+3);\n\ndiv {\n  content: 1 2 $x;\n  content: $y;\n}"
+            "$x: hello;\n$y: 1/2 3/4 (2+3);\ndiv {\n  content: 1 2 $x;\n  content: $y;\n}"
         )
         .unwrap(),
         "div {\n  content: 1 2 hello;\n  content: 1/2 3/4 5;\n}\n"
@@ -1174,10 +1172,10 @@ fn vars() {
 fn weird_selectors() {
     assert_eq!(
         rsass(
-            "> > E {\n  color: red;\n}\n\nE > > {\n  color: red;\n}\n\n> > E > > {\n  > > F > > {\n    color: red;\n  }\n}"
+            "> > E {\n  color: red;\n}\nE > > {\n  color: red;\n}\n> > E > > {\n  > > F > > {\n    color: red;\n  }\n}"
         )
         .unwrap(),
-        "> > E {\n  color: red;\n}\n\nE > > {\n  color: red;\n}\n\n> > E > > > > F > > {\n  color: red;\n}\n"
+        "> > E {\n  color: red;\n}\nE > > {\n  color: red;\n}\n> > E > > > > F > > {\n  color: red;\n}\n"
     );
 }
 
@@ -1185,7 +1183,7 @@ fn weird_selectors() {
 #[test]
 fn weird_added_space() {
     assert_eq!(
-        rsass("$value : bip;\n\nfoo {\n  bar: -moz-#{$value};\n}\n").unwrap(),
+        rsass("$value : bip;\nfoo {\n  bar: -moz-#{$value};\n}\n").unwrap(),
         "foo {\n  bar: -moz-bip;\n}\n"
     );
 }
@@ -1207,7 +1205,7 @@ fn test_while() {
 fn while_directive() {
     assert_eq!(
         rsass(
-            "$i: 1;\n\n.foo {\n  @while $i != 5 {\n    a: $i;\n    $i: $i + 1;\n  }\n}\n"
+            "$i: 1;\n.foo {\n  @while $i != 5 {\n    a: $i;\n    $i: $i + 1;\n  }\n}\n"
         )
         .unwrap(),
         ".foo {\n  a: 1;\n  a: 2;\n  a: 3;\n  a: 4;\n}\n"
@@ -1219,7 +1217,7 @@ fn while_directive() {
 fn while_in_functions() {
     assert_eq!(
         rsass(
-            "@function test-while() {\n  $x : true;\n  @while $x {\n    @return $x\n  }\n}\n\ndiv {\n  y: test-while();\n}"
+            "@function test-while() {\n  $x : true;\n  @while $x {\n    @return $x\n  }\n}\ndiv {\n  y: test-while();\n}"
         )
         .unwrap(),
         "div {\n  y: true;\n}\n"
@@ -1235,5 +1233,9 @@ fn while_in_functions() {
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)
         .map_err(|e| format!("rsass failed: {}", e))
-        .and_then(|s| String::from_utf8(s).map_err(|e| format!("{:?}", e)))
+        .and_then(|s| {
+            String::from_utf8(s)
+                .map(|s| s.replace("\n\n", "\n"))
+                .map_err(|e| format!("{:?}", e))
+        })
 }

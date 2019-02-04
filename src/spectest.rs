@@ -1,4 +1,6 @@
 use deunicode::deunicode;
+use lazy_static::lazy_static;
+use regex::Regex;
 use std::ffi::OsStr;
 use std::fs::{create_dir, DirEntry, File};
 use std::io::{self, Read, Write};
@@ -28,7 +30,6 @@ fn main() -> Result<(), Error> {
             "custom_properties",            // Most fails  :-(
             "moz_document",                 // Deprecated functionality
             "ms_long_filter_syntax",        // ?
-            "multi_star_comments",          // Some problem with whitespace?
             "plain", // Need to access separate files in tests
             "selector/slotted", // Requires @extend
             "unknown_directive", // ?
@@ -254,8 +255,13 @@ fn handle_suite(
         "\nfn rsass(input: &str) -> Result<String, String> {{\
          \n    compile_scss(input.as_bytes(), OutputStyle::Expanded)\
          \n        .map_err(|e| format!(\"rsass failed: {{}}\", e))\
-         \n        .and_then(|s| String::from_utf8(s).map_err(|e| format!(\"{{:?}}\", e)))\
-         \n}}")?;
+         \n        .and_then(|s| {{\
+         \n            String::from_utf8(s)\
+         \n                .map(|s| s.replace(\"\\n\\n\", \"\\n\"))\
+         \n                .map_err(|e| format!(\"{{:?}}\", e))\
+         \n        }})\
+         \n}}"
+    )?;
     Ok(())
 }
 
@@ -397,7 +403,7 @@ fn spec_to_test(
              \n    );",
             input, expected
         )?;
-    } else if input.len() < 62 {
+    } else if input.len() < 63 {
         writeln!(
             rs,
             "    assert_eq!(\
@@ -449,7 +455,14 @@ fn fn_name(name: &str) -> String {
 fn content(path: &Path) -> Result<String, io::Error> {
     let mut buf = String::new();
     File::open(path)?.read_to_string(&mut buf)?;
-    Ok(buf)
+    // Normalizes the whitespace in the given CSS to make it easier to compare. Based on:
+    // https://github.com/sass/sass-spec/blob/0f59164aabb3273645fda068d0fb1b879aa3f1dc/lib/sass_spec/util.rb#L5-L7
+    // NOTE: This is done on input and expected output.
+    // The actual result is normalized in a simler way in the rsass function in gereted tests.
+    lazy_static! {
+        static ref RE: Regex = Regex::new("(?:\r?\n)+").unwrap();
+    }
+    Ok(RE.replace_all(&buf, "\n").to_string())
 }
 
 #[derive(Debug)]

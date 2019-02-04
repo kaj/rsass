@@ -33,7 +33,7 @@ fn t02_simple_nesting() {
 #[test]
 fn t03_simple_variable() {
     assert_eq!(
-        rsass("$color: red;\n\na {\n  color: $color;\n}").unwrap(),
+        rsass("$color: red;\na {\n  color: $color;\n}").unwrap(),
         "a {\n  color: red;\n}\n"
     );
 }
@@ -43,10 +43,10 @@ fn t03_simple_variable() {
 fn t04_basic_variables() {
     assert_eq!(
         rsass(
-            "$color: \"black\";\n$color: red;\n$background: \"blue\";\n\na {\n  color: $color;\n  background: $background;\n}\n\n$y: before;\n\n$x: 1 2 $y;\n\nfoo {\n  a: $x;\n}\n\n$y: after;\n\nfoo {\n  a: $x;\n}"
+            "$color: \"black\";\n$color: red;\n$background: \"blue\";\na {\n  color: $color;\n  background: $background;\n}\n$y: before;\n$x: 1 2 $y;\nfoo {\n  a: $x;\n}\n$y: after;\nfoo {\n  a: $x;\n}"
         )
         .unwrap(),
-        "a {\n  color: red;\n  background: \"blue\";\n}\n\nfoo {\n  a: 1 2 before;\n}\n\nfoo {\n  a: 1 2 before;\n}\n"
+        "a {\n  color: red;\n  background: \"blue\";\n}\nfoo {\n  a: 1 2 before;\n}\nfoo {\n  a: 1 2 before;\n}\n"
     );
 }
 
@@ -55,10 +55,10 @@ fn t04_basic_variables() {
 fn t05_empty_levels() {
     assert_eq!(
         rsass(
-            "div {\n  span {\n    color: red;\n    background: blue;\n  }\n}\n\ndiv {\n  color: gray;\n  empty {\n    span {\n      color: red;\n      background: blue;\n    }\n  }\n}\n\nempty1 {\n  empty2 {\n    div {\n      blah: blah;\n    }\n  }\n}\n\nempty1 {\n  empty2 {\n    div {\n      bloo: blee;\n      empty3 {\n        span {\n          blah: blah;\n          blah: blah;\n        }\n      }\n    }\n  }\n}\n"
+            "div {\n  span {\n    color: red;\n    background: blue;\n  }\n}\ndiv {\n  color: gray;\n  empty {\n    span {\n      color: red;\n      background: blue;\n    }\n  }\n}\nempty1 {\n  empty2 {\n    div {\n      blah: blah;\n    }\n  }\n}\nempty1 {\n  empty2 {\n    div {\n      bloo: blee;\n      empty3 {\n        span {\n          blah: blah;\n          blah: blah;\n        }\n      }\n    }\n  }\n}\n"
         )
         .unwrap(),
-        "div span {\n  color: red;\n  background: blue;\n}\n\ndiv {\n  color: gray;\n}\ndiv empty span {\n  color: red;\n  background: blue;\n}\n\nempty1 empty2 div {\n  blah: blah;\n}\n\nempty1 empty2 div {\n  bloo: blee;\n}\nempty1 empty2 div empty3 span {\n  blah: blah;\n  blah: blah;\n}\n"
+        "div span {\n  color: red;\n  background: blue;\n}\ndiv {\n  color: gray;\n}\ndiv empty span {\n  color: red;\n  background: blue;\n}\nempty1 empty2 div {\n  blah: blah;\n}\nempty1 empty2 div {\n  bloo: blee;\n}\nempty1 empty2 div empty3 span {\n  blah: blah;\n  blah: blah;\n}\n"
     );
 }
 
@@ -67,10 +67,10 @@ fn t05_empty_levels() {
 fn t06_nesting_and_comments() {
     assert_eq!(
         rsass(
-            "$blah: bloo blee;\n$blip: \"a \'red\' and \\\"blue\\\" value\";\n\n/* top level comment -- should be preserved */\ndiv {\n  /* another comment that should be preserved */\n  color: red;\n  background: blue;\n  $blux: hux; // gone!\n  span {\n    font-weight: bold;\n    a {\n      text-decoration: none; /* where will this comment go? */\n      color: green;\n      /* what about this comment? */ border: 1px $blah red;\n    }\n    /* yet another comment that should be preserved */\n    display: inline-block;\n  }  // gone!\n  /* the next selector should be indented two spaces */\n  empty {\n    not_empty {\n      blah: blah; // gone!\n      bloo: bloo;\n    }\n  }\n  p {\n    padding: 10px 8%;\n    -webkit-box-sizing: $blux;\n  }\n  margin: 10px 5px;\n  h1 {\n    color: $blip;\n  }\n}\n/* last comment, top level again --\n   compare the indentation! */\n   \ndiv {\n  f: g;\n  empty {\n    span {\n      a: b;\n    }\n  }\n  empty_with_comment {\n    /* hey now */\n    span {\n      c: d;\n    }\n  }\n}"
+            "$blah: bloo blee;\n$blip: \"a \'red\' and \\\"blue\\\" value\";\n/* top level comment -- should be preserved */\ndiv {\n  /* another comment that should be preserved */\n  color: red;\n  background: blue;\n  $blux: hux; // gone!\n  span {\n    font-weight: bold;\n    a {\n      text-decoration: none; /* where will this comment go? */\n      color: green;\n      /* what about this comment? */ border: 1px $blah red;\n    }\n    /* yet another comment that should be preserved */\n    display: inline-block;\n  }  // gone!\n  /* the next selector should be indented two spaces */\n  empty {\n    not_empty {\n      blah: blah; // gone!\n      bloo: bloo;\n    }\n  }\n  p {\n    padding: 10px 8%;\n    -webkit-box-sizing: $blux;\n  }\n  margin: 10px 5px;\n  h1 {\n    color: $blip;\n  }\n}\n/* last comment, top level again --\n   compare the indentation! */\n   \ndiv {\n  f: g;\n  empty {\n    span {\n      a: b;\n    }\n  }\n  empty_with_comment {\n    /* hey now */\n    span {\n      c: d;\n    }\n  }\n}"
         )
         .unwrap(),
-        "/* top level comment -- should be preserved */\ndiv {\n  /* another comment that should be preserved */\n  color: red;\n  background: blue;\n  /* the next selector should be indented two spaces */\n  margin: 10px 5px;\n}\ndiv span {\n  font-weight: bold;\n  /* yet another comment that should be preserved */\n  display: inline-block;\n}\ndiv span a {\n  text-decoration: none;\n  /* where will this comment go? */\n  color: green;\n  /* what about this comment? */\n  border: 1px bloo blee red;\n}\ndiv empty not_empty {\n  blah: blah;\n  bloo: bloo;\n}\ndiv p {\n  padding: 10px 8%;\n  -webkit-box-sizing: hux;\n}\ndiv h1 {\n  color: \"a \'red\' and \\\"blue\\\" value\";\n}\n\n/* last comment, top level again --\n   compare the indentation! */\ndiv {\n  f: g;\n}\ndiv empty span {\n  a: b;\n}\ndiv empty_with_comment {\n  /* hey now */\n}\ndiv empty_with_comment span {\n  c: d;\n}\n"
+        "/* top level comment -- should be preserved */\ndiv {\n  /* another comment that should be preserved */\n  color: red;\n  background: blue;\n  /* the next selector should be indented two spaces */\n  margin: 10px 5px;\n}\ndiv span {\n  font-weight: bold;\n  /* yet another comment that should be preserved */\n  display: inline-block;\n}\ndiv span a {\n  text-decoration: none;\n  /* where will this comment go? */\n  color: green;\n  /* what about this comment? */\n  border: 1px bloo blee red;\n}\ndiv empty not_empty {\n  blah: blah;\n  bloo: bloo;\n}\ndiv p {\n  padding: 10px 8%;\n  -webkit-box-sizing: hux;\n}\ndiv h1 {\n  color: \"a \'red\' and \\\"blue\\\" value\";\n}\n/* last comment, top level again --\n   compare the indentation! */\ndiv {\n  f: g;\n}\ndiv empty span {\n  a: b;\n}\ndiv empty_with_comment {\n  /* hey now */\n}\ndiv empty_with_comment span {\n  c: d;\n}\n"
     );
 }
 
@@ -79,10 +79,10 @@ fn t06_nesting_and_comments() {
 fn t07_nested_simple_selector_groups() {
     assert_eq!(
         rsass(
-            "a, b {\n  color: red;\n  background: blue;\n}\n\nc, d {\n  color: gray;\n  e, f {\n    background: blue;\n    padding: 10px 5px;\n  }\n  g, h {\n    blah: blah;\n    bloo: bloo;\n  }\n  i, j {\n    foo: goo;\n    k, l {\n      m, n, o {\n        wow: we are far inside;\n        but: it still works;\n      }\n      hoo: boo;\n    }\n  }\n}"
+            "a, b {\n  color: red;\n  background: blue;\n}\nc, d {\n  color: gray;\n  e, f {\n    background: blue;\n    padding: 10px 5px;\n  }\n  g, h {\n    blah: blah;\n    bloo: bloo;\n  }\n  i, j {\n    foo: goo;\n    k, l {\n      m, n, o {\n        wow: we are far inside;\n        but: it still works;\n      }\n      hoo: boo;\n    }\n  }\n}"
         )
         .unwrap(),
-        "a, b {\n  color: red;\n  background: blue;\n}\n\nc, d {\n  color: gray;\n}\nc e, c f, d e, d f {\n  background: blue;\n  padding: 10px 5px;\n}\nc g, c h, d g, d h {\n  blah: blah;\n  bloo: bloo;\n}\nc i, c j, d i, d j {\n  foo: goo;\n}\nc i k, c i l, c j k, c j l, d i k, d i l, d j k, d j l {\n  hoo: boo;\n}\nc i k m, c i k n, c i k o, c i l m, c i l n, c i l o, c j k m, c j k n, c j k o, c j l m, c j l n, c j l o, d i k m, d i k n, d i k o, d i l m, d i l n, d i l o, d j k m, d j k n, d j k o, d j l m, d j l n, d j l o {\n  wow: we are far inside;\n  but: it still works;\n}\n"
+        "a, b {\n  color: red;\n  background: blue;\n}\nc, d {\n  color: gray;\n}\nc e, c f, d e, d f {\n  background: blue;\n  padding: 10px 5px;\n}\nc g, c h, d g, d h {\n  blah: blah;\n  bloo: bloo;\n}\nc i, c j, d i, d j {\n  foo: goo;\n}\nc i k, c i l, c j k, c j l, d i k, d i l, d j k, d j l {\n  hoo: boo;\n}\nc i k m, c i k n, c i k o, c i l m, c i l n, c i l o, c j k m, c j k n, c j k o, c j l m, c j l n, c j l o, d i k m, d i k n, d i k o, d i l m, d i l n, d i l o, d j k m, d j k n, d j k o, d j l m, d j l n, d j l o {\n  wow: we are far inside;\n  but: it still works;\n}\n"
     );
 }
 
@@ -169,10 +169,10 @@ fn t13_back_references() {
 fn t17_basic_mixins() {
     assert_eq!(
         rsass(
-            "@mixin foo($x, $y) {\n  hugabug: $y $x;\n}\n\n@mixin bar($a, $b: flug) {\n  flugablug: $a $b glug;\n}\n\n@mixin hux() {\n  no: parameters here;\n  div, span {\n    some: nested stuff;\n    foo, bar {\n      more: stuff so forth;\n      blah: blah;\n    }\n  }\n  /* end of hux */\n}\n\na {\n  hey: ho;\n  @include foo(second, third);\n  @include foo($y: kwd-y, $x: kwd-x);\n  goo: boo hoo;\n  @include hux;\n  @include bar(pug);\n  @include bar(pug, mug);\n}\n\n\n$x: from a variable;\n\ndiv {\n  blah: blah $x blah;\n}"
+            "@mixin foo($x, $y) {\n  hugabug: $y $x;\n}\n@mixin bar($a, $b: flug) {\n  flugablug: $a $b glug;\n}\n@mixin hux() {\n  no: parameters here;\n  div, span {\n    some: nested stuff;\n    foo, bar {\n      more: stuff so forth;\n      blah: blah;\n    }\n  }\n  /* end of hux */\n}\na {\n  hey: ho;\n  @include foo(second, third);\n  @include foo($y: kwd-y, $x: kwd-x);\n  goo: boo hoo;\n  @include hux;\n  @include bar(pug);\n  @include bar(pug, mug);\n}\n$x: from a variable;\ndiv {\n  blah: blah $x blah;\n}"
         )
         .unwrap(),
-        "a {\n  hey: ho;\n  hugabug: third second;\n  hugabug: kwd-y kwd-x;\n  goo: boo hoo;\n  no: parameters here;\n  /* end of hux */\n  flugablug: pug flug glug;\n  flugablug: pug mug glug;\n}\na div, a span {\n  some: nested stuff;\n}\na div foo, a div bar, a span foo, a span bar {\n  more: stuff so forth;\n  blah: blah;\n}\n\ndiv {\n  blah: blah from a variable blah;\n}\n"
+        "a {\n  hey: ho;\n  hugabug: third second;\n  hugabug: kwd-y kwd-x;\n  goo: boo hoo;\n  no: parameters here;\n  /* end of hux */\n  flugablug: pug flug glug;\n  flugablug: pug mug glug;\n}\na div, a span {\n  some: nested stuff;\n}\na div foo, a div bar, a span foo, a span bar {\n  more: stuff so forth;\n  blah: blah;\n}\ndiv {\n  blah: blah from a variable blah;\n}\n"
     );
 }
 
@@ -181,7 +181,7 @@ fn t17_basic_mixins() {
 fn t18_mixin_scope() {
     assert_eq!(
         rsass(
-            "$x: global x;\n$y: global y;\n\n@mixin foo($x) {\n  f-a: $x;\n  f-b: $y;\n  $x: local x changed by foo;\n  $y: global y changed by foo !global;\n  $z: new local z;\n  f-a: $x;\n  f-b: $y;\n  f-c: $z;\n}\n\ndiv {\n  a: $x;\n  b: $y;\n  @include foo(arg);\n  a: $x;\n  b: $y;\n}\n"
+            "$x: global x;\n$y: global y;\n@mixin foo($x) {\n  f-a: $x;\n  f-b: $y;\n  $x: local x changed by foo;\n  $y: global y changed by foo !global;\n  $z: new local z;\n  f-a: $x;\n  f-b: $y;\n  f-c: $z;\n}\ndiv {\n  a: $x;\n  b: $y;\n  @include foo(arg);\n  a: $x;\n  b: $y;\n}\n"
         )
         .unwrap(),
         "div {\n  a: global x;\n  b: global y;\n  f-a: arg;\n  f-b: global y;\n  f-a: local x changed by foo;\n  f-b: global y changed by foo;\n  f-c: new local z;\n  a: global x;\n  b: global y changed by foo;\n}\n"
@@ -193,10 +193,10 @@ fn t18_mixin_scope() {
 fn t19_full_mixin_craziness() {
     assert_eq!(
         rsass(
-            "$x: global-x;\n$y: global-y;\n$z: global-z;\n\n@mixin foo($x, $y) {\n  /* begin foo */\n  margin: $x $y;\n  blip {\n    hey: now;\n  }\n  /* end foo */\n}\n\n@mixin foogoo($x, $y, $z) {\n  margin: $x $y $z;\n}\n\n@mixin hux($y) {\n  /* begin hux */\n  color: $y;\n  @include foo(called-from-hux, $y: $y);\n  /* end hux */\n}\n\ndiv {\n  @include foo(1, 2);\n  @include foo(1, 3);\n  @include foogoo(1, 2, $z: zee);\n  @include foogoo(1, $y /* blah */ : kwd-y, $z: kwd-z);\n}\n\ndiv {\n  @include hux($y: $y);\n}\n\n$y: different-global-y;\n\ndiv {\n  @include hux(calling-hux-again);\n}\n\n@mixin bung() {\n  blah: original-bung;\n}\n\ndiv {\n  @include bung();\n}\n\n@mixin bung() {\n  blah: redefined-bung;\n}\n\ndiv {\n  @include bung();\n}\n\ndiv {\n  /* calls to nullary mixins may omit the empty argument list */\n  @include bung;\n}\n\ndiv {\n  @include foo($x: kwdarg1, $y: kwdarg2);\n}\n\n@mixin ruleset() {\n  hoo {\n    color: boo;\n  }\n}\n\n@include ruleset();\n\n$da: default argument;\n\n@mixin default_args($x, $y: $da) {\n  blah: $x $y;\n}\n$da: some other default;\n\ndiv {\n  @include default_args(boogoo);\n}\n\n@mixin original() {\n  value: original;\n}\n\ndiv {\n  @include original();\n}\n\n@mixin original() {\n  value: no longer original;\n}\n\ndiv {\n  @include original();\n}\n\n@mixin set-x($x) {\n  $x: changed local x;\n  arg: $x;\n  $y: changed global y !global;\n  blarg: $y;\n}\n\ndiv {\n  @include set-x(blah);\n  a: $x;\n  b: $y;\n}\n"
+            "$x: global-x;\n$y: global-y;\n$z: global-z;\n@mixin foo($x, $y) {\n  /* begin foo */\n  margin: $x $y;\n  blip {\n    hey: now;\n  }\n  /* end foo */\n}\n@mixin foogoo($x, $y, $z) {\n  margin: $x $y $z;\n}\n@mixin hux($y) {\n  /* begin hux */\n  color: $y;\n  @include foo(called-from-hux, $y: $y);\n  /* end hux */\n}\ndiv {\n  @include foo(1, 2);\n  @include foo(1, 3);\n  @include foogoo(1, 2, $z: zee);\n  @include foogoo(1, $y /* blah */ : kwd-y, $z: kwd-z);\n}\ndiv {\n  @include hux($y: $y);\n}\n$y: different-global-y;\ndiv {\n  @include hux(calling-hux-again);\n}\n@mixin bung() {\n  blah: original-bung;\n}\ndiv {\n  @include bung();\n}\n@mixin bung() {\n  blah: redefined-bung;\n}\ndiv {\n  @include bung();\n}\ndiv {\n  /* calls to nullary mixins may omit the empty argument list */\n  @include bung;\n}\ndiv {\n  @include foo($x: kwdarg1, $y: kwdarg2);\n}\n@mixin ruleset() {\n  hoo {\n    color: boo;\n  }\n}\n@include ruleset();\n$da: default argument;\n@mixin default_args($x, $y: $da) {\n  blah: $x $y;\n}\n$da: some other default;\ndiv {\n  @include default_args(boogoo);\n}\n@mixin original() {\n  value: original;\n}\ndiv {\n  @include original();\n}\n@mixin original() {\n  value: no longer original;\n}\ndiv {\n  @include original();\n}\n@mixin set-x($x) {\n  $x: changed local x;\n  arg: $x;\n  $y: changed global y !global;\n  blarg: $y;\n}\ndiv {\n  @include set-x(blah);\n  a: $x;\n  b: $y;\n}\n"
         )
         .unwrap(),
-        "div {\n  /* begin foo */\n  margin: 1 2;\n  /* end foo */\n  /* begin foo */\n  margin: 1 3;\n  /* end foo */\n  margin: 1 2 zee;\n  margin: 1 kwd-y kwd-z;\n}\ndiv blip {\n  hey: now;\n}\ndiv blip {\n  hey: now;\n}\n\ndiv {\n  /* begin hux */\n  color: global-y;\n  /* begin foo */\n  margin: called-from-hux global-y;\n  /* end foo */\n  /* end hux */\n}\ndiv blip {\n  hey: now;\n}\n\ndiv {\n  /* begin hux */\n  color: calling-hux-again;\n  /* begin foo */\n  margin: called-from-hux calling-hux-again;\n  /* end foo */\n  /* end hux */\n}\ndiv blip {\n  hey: now;\n}\n\ndiv {\n  blah: original-bung;\n}\n\ndiv {\n  blah: redefined-bung;\n}\n\ndiv {\n  /* calls to nullary mixins may omit the empty argument list */\n  blah: redefined-bung;\n}\n\ndiv {\n  /* begin foo */\n  margin: kwdarg1 kwdarg2;\n  /* end foo */\n}\ndiv blip {\n  hey: now;\n}\n\nhoo {\n  color: boo;\n}\n\ndiv {\n  blah: boogoo some other default;\n}\n\ndiv {\n  value: original;\n}\n\ndiv {\n  value: no longer original;\n}\n\ndiv {\n  arg: changed local x;\n  blarg: changed global y;\n  a: global-x;\n  b: changed global y;\n}\n"
+        "div {\n  /* begin foo */\n  margin: 1 2;\n  /* end foo */\n  /* begin foo */\n  margin: 1 3;\n  /* end foo */\n  margin: 1 2 zee;\n  margin: 1 kwd-y kwd-z;\n}\ndiv blip {\n  hey: now;\n}\ndiv blip {\n  hey: now;\n}\ndiv {\n  /* begin hux */\n  color: global-y;\n  /* begin foo */\n  margin: called-from-hux global-y;\n  /* end foo */\n  /* end hux */\n}\ndiv blip {\n  hey: now;\n}\ndiv {\n  /* begin hux */\n  color: calling-hux-again;\n  /* begin foo */\n  margin: called-from-hux calling-hux-again;\n  /* end foo */\n  /* end hux */\n}\ndiv blip {\n  hey: now;\n}\ndiv {\n  blah: original-bung;\n}\ndiv {\n  blah: redefined-bung;\n}\ndiv {\n  /* calls to nullary mixins may omit the empty argument list */\n  blah: redefined-bung;\n}\ndiv {\n  /* begin foo */\n  margin: kwdarg1 kwdarg2;\n  /* end foo */\n}\ndiv blip {\n  hey: now;\n}\nhoo {\n  color: boo;\n}\ndiv {\n  blah: boogoo some other default;\n}\ndiv {\n  value: original;\n}\ndiv {\n  value: no longer original;\n}\ndiv {\n  arg: changed local x;\n  blarg: changed global y;\n  a: global-x;\n  b: changed global y;\n}\n"
     );
 }
 
@@ -205,7 +205,7 @@ fn t19_full_mixin_craziness() {
 fn t20_scoped_variables() {
     assert_eq!(
         rsass(
-            "@mixin foo() {\n  /* begin foo */\n  /* assigning to $x */\n  $x: inside foo;\n  x: $x;\n  /* end foo */\n}\n\nouter {\n  /* assigning to $x */\n  $x: inside outer scope;\n  blah: blah;\n  inner {\n    @include foo();\n    x: $x;\n  }\n}"
+            "@mixin foo() {\n  /* begin foo */\n  /* assigning to $x */\n  $x: inside foo;\n  x: $x;\n  /* end foo */\n}\nouter {\n  /* assigning to $x */\n  $x: inside outer scope;\n  blah: blah;\n  inner {\n    @include foo();\n    x: $x;\n  }\n}"
         )
         .unwrap(),
         "outer {\n  /* assigning to $x */\n  blah: blah;\n}\nouter inner {\n  /* begin foo */\n  /* assigning to $x */\n  x: inside foo;\n  /* end foo */\n  x: inside outer scope;\n}\n"
@@ -229,7 +229,7 @@ fn t21_one_builtin_function() {
 fn t22_colors_with_alpha() {
     assert_eq!(
         rsass(
-            "$x: rgb(0, 255, 255);\n\ndiv {\n  color: rgb(255, $blue: 0, $green: 255);\n  background: rgb(123, 45, 6);\n  grah: rgba(#f0e, $alpha: .5);\n  blah: rgba(1,2,3,.6);\n  \n  floo: $x;\n  bloo: rgba($x, 0.7);\n  groo: $x;\n  \n  $x: rgb(123, 45, 6);\n  \n  hoo: red($x);\n  moo: green($x);\n  poo: blue($x);\n  \n  goo: mix(rgba(255, 0, 0, 0.5), #00f);\n  \n  boo: invert(#123456);\n}\n"
+            "$x: rgb(0, 255, 255);\ndiv {\n  color: rgb(255, $blue: 0, $green: 255);\n  background: rgb(123, 45, 6);\n  grah: rgba(#f0e, $alpha: .5);\n  blah: rgba(1,2,3,.6);\n  \n  floo: $x;\n  bloo: rgba($x, 0.7);\n  groo: $x;\n  \n  $x: rgb(123, 45, 6);\n  \n  hoo: red($x);\n  moo: green($x);\n  poo: blue($x);\n  \n  goo: mix(rgba(255, 0, 0, 0.5), #00f);\n  \n  boo: invert(#123456);\n}\n"
         )
         .unwrap(),
         "div {\n  color: yellow;\n  background: #7b2d06;\n  grah: rgba(255, 0, 238, 0.5);\n  blah: rgba(1, 2, 3, 0.6);\n  floo: cyan;\n  bloo: rgba(0, 255, 255, 0.7);\n  groo: cyan;\n  hoo: 123;\n  moo: 45;\n  poo: 6;\n  goo: rgba(64, 0, 191, 0.75);\n  boo: #edcba9;\n}\n"
@@ -245,10 +245,10 @@ fn t22_colors_with_alpha() {
 fn t24_namespace_properties() {
     assert_eq!(
         rsass(
-            "div {\n  a: {\n    p1: q;\n    b: {\n      p2: q;\n    }\n    p3: q;\n  }\n}\n\nfoo {\n  bar: baz {\n    bip: bop;\n    bing: type-of(\"hello\");\n    bang: 1 + 2;\n    bung: bap;\n    bong: bup {\n      x: x;\n      y: y;\n      z: z;\n    }\n  }\n}\n"
+            "div {\n  a: {\n    p1: q;\n    b: {\n      p2: q;\n    }\n    p3: q;\n  }\n}\nfoo {\n  bar: baz {\n    bip: bop;\n    bing: type-of(\"hello\");\n    bang: 1 + 2;\n    bung: bap;\n    bong: bup {\n      x: x;\n      y: y;\n      z: z;\n    }\n  }\n}\n"
         )
         .unwrap(),
-        "div {\n  a-p1: q;\n  a-b-p2: q;\n  a-p3: q;\n}\n\nfoo {\n  bar: baz;\n  bar-bip: bop;\n  bar-bing: string;\n  bar-bang: 3;\n  bar-bung: bap;\n  bar-bong: bup;\n  bar-bong-x: x;\n  bar-bong-y: y;\n  bar-bong-z: z;\n}\n"
+        "div {\n  a-p1: q;\n  a-b-p2: q;\n  a-p3: q;\n}\nfoo {\n  bar: baz;\n  bar-bip: bop;\n  bar-bing: string;\n  bar-bang: 3;\n  bar-bung: bap;\n  bar-bong: bup;\n  bar-bong-x: x;\n  bar-bong-y: y;\n  bar-bong-z: z;\n}\n"
     );
 }
 
@@ -269,7 +269,7 @@ fn t25_basic_string_interpolation() {
 fn t26_selector_interpolation() {
     assert_eq!(
         rsass(
-            "$x: oo, ba;\n$y: az, hu;\n\nf#{$x}r {\n  p: 1;\n  b#{$y}x {\n    q: 2;\n    mumble#{length($x) + length($y)} {\n      r: 3;\n    }\n  }\n}"
+            "$x: oo, ba;\n$y: az, hu;\nf#{$x}r {\n  p: 1;\n  b#{$y}x {\n    q: 2;\n    mumble#{length($x) + length($y)} {\n      r: 3;\n    }\n  }\n}"
         )
         .unwrap(),
         "foo, bar {\n  p: 1;\n}\nfoo baz, foo hux, bar baz, bar hux {\n  q: 2;\n}\nfoo baz mumble4, foo hux mumble4, bar baz mumble4, bar hux mumble4 {\n  r: 3;\n}\n"
@@ -281,7 +281,7 @@ fn t26_selector_interpolation() {
 fn t27_media_queries() {
     assert_eq!(
         rsass(
-            "a b c {\n  blee: blee;\n  d e f {\n    blah: blah;\n    bloo: bloo;\n  }\n  g h, i j {\n    @media print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen {\n      hey: ho;\n      k l m {\n        hee: fee;\n      }\n    }\n  }\n  blah: blah;\n}\n\n\n"
+            "a b c {\n  blee: blee;\n  d e f {\n    blah: blah;\n    bloo: bloo;\n  }\n  g h, i j {\n    @media print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen {\n      hey: ho;\n      k l m {\n        hee: fee;\n      }\n    }\n  }\n  blah: blah;\n}\n"
         )
         .unwrap(),
         "a b c {\n  blee: blee;\n  blah: blah;\n}\na b c d e f {\n  blah: blah;\n  bloo: bloo;\n}\n@media print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen {\n  a b c g h, a b c i j {\n    hey: ho;\n  }\n  a b c g h k l m, a b c i j k l m {\n    hee: fee;\n  }\n}\n"
@@ -293,7 +293,7 @@ fn t27_media_queries() {
 fn t28_url() {
     assert_eq!(
         rsass(
-            "$x: pop;\n$y: 123;\n\n\n\ndiv {\n  foo: url(bloo/blah.css);\n  bar: url(http://foo/bar/hux.css);\n  foo: url(fudge#{$x}.css);\n  bar: url(\"http://fudge#{$x}/styles.css\");\n  hux: url(http://box_#{$y}////fudge#{$x}.css);\n  @each $i in (1 2 3 4 5) {\n    hux: url(http://box_#{$y}////fudge#{$x}.css);\n    foo: url(http://blah.com/bar-#{$i}.css);\n    bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,400italic|Anonymous+Pro:400,700,400italic);\n  }\n  gloo: url(\"hey#{1+2}.css\");\n  floo: url(hadoop-#{$y+321}.css);\n}\n"
+            "$x: pop;\n$y: 123;\ndiv {\n  foo: url(bloo/blah.css);\n  bar: url(http://foo/bar/hux.css);\n  foo: url(fudge#{$x}.css);\n  bar: url(\"http://fudge#{$x}/styles.css\");\n  hux: url(http://box_#{$y}////fudge#{$x}.css);\n  @each $i in (1 2 3 4 5) {\n    hux: url(http://box_#{$y}////fudge#{$x}.css);\n    foo: url(http://blah.com/bar-#{$i}.css);\n    bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,400italic|Anonymous+Pro:400,700,400italic);\n  }\n  gloo: url(\"hey#{1+2}.css\");\n  floo: url(hadoop-#{$y+321}.css);\n}\n"
         )
         .unwrap(),
         "div {\n  foo: url(bloo/blah.css);\n  bar: url(http://foo/bar/hux.css);\n  foo: url(fudgepop.css);\n  bar: url(\"http://fudgepop/styles.css\");\n  hux: url(http://box_123////fudgepop.css);\n  hux: url(http://box_123////fudgepop.css);\n  foo: url(http://blah.com/bar-1.css);\n  bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,400italic|Anonymous+Pro:400,700,400italic);\n  hux: url(http://box_123////fudgepop.css);\n  foo: url(http://blah.com/bar-2.css);\n  bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,400italic|Anonymous+Pro:400,700,400italic);\n  hux: url(http://box_123////fudgepop.css);\n  foo: url(http://blah.com/bar-3.css);\n  bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,400italic|Anonymous+Pro:400,700,400italic);\n  hux: url(http://box_123////fudgepop.css);\n  foo: url(http://blah.com/bar-4.css);\n  bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,400italic|Anonymous+Pro:400,700,400italic);\n  hux: url(http://box_123////fudgepop.css);\n  foo: url(http://blah.com/bar-5.css);\n  bar: url(http://fonts.googleapis.com/css?family=Karla:400,700,400italic|Anonymous+Pro:400,700,400italic);\n  gloo: url(\"hey3.css\");\n  floo: url(hadoop-444.css);\n}\n"
@@ -305,10 +305,10 @@ fn t28_url() {
 fn t29_if() {
     assert_eq!(
         rsass(
-            "$x: a, b, 1+2;\n\n@if type-of(nth($x, 3)) == number {\n  div {\n    background: gray;\n  }\n}\n\n@if type-of(nth($x, 2)) == number {\n  div {\n    background: gray;\n  }\n}\n@else if type-of(nth($x, 2)) == string {\n  div {\n    background: blue;\n  }\n}\n\n@if type-of(nth($x, 2)) == number {\n  div {\n    background: gray;\n  }\n}\n@else if type-of(nth($x, 2)) == color {\n  div {\n    background: blue;\n  }\n}\n@else {\n  div {\n    background: red;\n  }\n}"
+            "$x: a, b, 1+2;\n@if type-of(nth($x, 3)) == number {\n  div {\n    background: gray;\n  }\n}\n@if type-of(nth($x, 2)) == number {\n  div {\n    background: gray;\n  }\n}\n@else if type-of(nth($x, 2)) == string {\n  div {\n    background: blue;\n  }\n}\n@if type-of(nth($x, 2)) == number {\n  div {\n    background: gray;\n  }\n}\n@else if type-of(nth($x, 2)) == color {\n  div {\n    background: blue;\n  }\n}\n@else {\n  div {\n    background: red;\n  }\n}"
         )
         .unwrap(),
-        "div {\n  background: gray;\n}\n\ndiv {\n  background: blue;\n}\n\ndiv {\n  background: red;\n}\n"
+        "div {\n  background: gray;\n}\ndiv {\n  background: blue;\n}\ndiv {\n  background: red;\n}\n"
     );
 }
 
@@ -317,7 +317,7 @@ fn t29_if() {
 fn t30_if_in_function() {
     assert_eq!(
         rsass(
-            "$x: true;\n\n@function foobar() {\n  @if $x {\n    $x: false !global;\n    @return foo;\n  }\n  @else {\n    $x: true !global;\n    @return bar;\n  }\n}\n\ndiv {\n  content: foobar();\n  content: foobar();\n  content: foobar();\n  content: foobar();\n  $x: false !global;\n  content: foobar();\n}\n"
+            "$x: true;\n@function foobar() {\n  @if $x {\n    $x: false !global;\n    @return foo;\n  }\n  @else {\n    $x: true !global;\n    @return bar;\n  }\n}\ndiv {\n  content: foobar();\n  content: foobar();\n  content: foobar();\n  content: foobar();\n  $x: false !global;\n  content: foobar();\n}\n"
         )
         .unwrap(),
         "div {\n  content: foo;\n  content: bar;\n  content: foo;\n  content: bar;\n  content: bar;\n}\n"
@@ -329,7 +329,7 @@ fn t30_if_in_function() {
 fn t31_if_in_mixin() {
     assert_eq!(
         rsass(
-            "$x: true;\n\n@mixin foobar() {\n  @if $x {\n    $x: false !global;\n    content: foo;\n  }\n  @else {\n    $x: true !global;\n    content: bar;\n  }\n}\n\ndiv {\n  @include foobar();\n  @include foobar();\n  @include foobar();\n  $x: true !global;\n  @include foobar();\n}\n"
+            "$x: true;\n@mixin foobar() {\n  @if $x {\n    $x: false !global;\n    content: foo;\n  }\n  @else {\n    $x: true !global;\n    content: bar;\n  }\n}\ndiv {\n  @include foobar();\n  @include foobar();\n  @include foobar();\n  $x: true !global;\n  @include foobar();\n}\n"
         )
         .unwrap(),
         "div {\n  content: foo;\n  content: bar;\n  content: foo;\n  content: foo;\n}\n"
@@ -355,7 +355,7 @@ fn t32_percentages() {
 fn t35_varargs_false() {
     assert_eq!(
         rsass(
-            "@mixin foo($args...) {\n  @each $arg in $args {\n    @if $arg {\n      thing: $arg;\n    }\n  }\n}\n\ndiv {\n  @include foo(a, b, false);\n}\n"
+            "@mixin foo($args...) {\n  @each $arg in $args {\n    @if $arg {\n      thing: $arg;\n    }\n  }\n}\ndiv {\n  @include foo(a, b, false);\n}\n"
         )
         .unwrap(),
         "div {\n  thing: a;\n  thing: b;\n}\n"
@@ -376,7 +376,7 @@ fn t36_extra_commas_in_selectors() {
 fn t37_url_expressions() {
     assert_eq!(
         rsass(
-            "$x: true;\n$file-1x: \"budge.png\";\n\n@function fudge($str) {\n  @return \"assets/fudge/\" + $str;\n}\n\ndiv {\n  blah: url(foo + bar);\n  blah: url(fn(\"s\"));\n  blah: url(if(true, \"red.png\", \"blue.png\"));\n  blah: url(hello-#{world}.png);\n  blah: url(if($x, fudge(\"#{$file-1x}\"), \"#{$file-1x}\"));\n}"
+            "$x: true;\n$file-1x: \"budge.png\";\n@function fudge($str) {\n  @return \"assets/fudge/\" + $str;\n}\ndiv {\n  blah: url(foo + bar);\n  blah: url(fn(\"s\"));\n  blah: url(if(true, \"red.png\", \"blue.png\"));\n  blah: url(hello-#{world}.png);\n  blah: url(if($x, fudge(\"#{$file-1x}\"), \"#{$file-1x}\"));\n}"
         )
         .unwrap(),
         "div {\n  blah: url(foobar);\n  blah: url(fn(\"s\"));\n  blah: url(\"red.png\");\n  blah: url(hello-world.png);\n  blah: url(\"assets/fudge/budge.png\");\n}\n"
@@ -388,7 +388,7 @@ fn t37_url_expressions() {
 fn t38_expressions_in_at_directives() {
     assert_eq!(
         rsass(
-            "$x: 1;\n$y: 2;\n\n@foo $x $y, hux {\n  bar {\n    whatever: whatever;\n  }\n}\n"
+            "$x: 1;\n$y: 2;\n@foo $x $y, hux {\n  bar {\n    whatever: whatever;\n  }\n}\n"
         )
         .unwrap(),
         "@foo $x $y, hux {\n  bar {\n    whatever: whatever;\n  }\n}\n"
@@ -430,10 +430,10 @@ fn t41_slashy_urls() {
 fn t42_css_imports() {
     assert_eq!(
         rsass(
-            "div {\n  color: red;\n}\n\n@import \"hux\\ bux.css\";\n@import \"foo.css\";\n\nspan {\n  color: blue;\n}\n\n@import \"bar.css\";"
+            "div {\n  color: red;\n}\n@import \"hux\\ bux.css\";\n@import \"foo.css\";\nspan {\n  color: blue;\n}\n@import \"bar.css\";"
         )
         .unwrap(),
-        "@import url(hux bux.css);\n@import url(foo.css);\n@import url(bar.css);\ndiv {\n  color: red;\n}\n\nspan {\n  color: blue;\n}\n"
+        "@import url(hux bux.css);\n@import url(foo.css);\n@import url(bar.css);\ndiv {\n  color: red;\n}\nspan {\n  color: blue;\n}\n"
     );
 }
 
@@ -454,7 +454,7 @@ fn t43_str_length() {
 fn t44_bem_selectors() {
     assert_eq!(
         rsass(
-            "div {\n\n  &_foo {\n    blah: blah;\n  }\n  &--modifier {\n    blach: blah;\n  }\n  &hux {\n    blah: blah;\n  }\n  &div.foo#bar[hux] {\n    blah: blah;\n  }\n\n}"
+            "div {\n  &_foo {\n    blah: blah;\n  }\n  &--modifier {\n    blach: blah;\n  }\n  &hux {\n    blah: blah;\n  }\n  &div.foo#bar[hux] {\n    blah: blah;\n  }\n}"
         )
         .unwrap(),
         "div_foo {\n  blah: blah;\n}\ndiv--modifier {\n  blach: blah;\n}\ndivhux {\n  blah: blah;\n}\ndivdiv.foo#bar[hux] {\n  blah: blah;\n}\n"
@@ -466,7 +466,7 @@ fn t44_bem_selectors() {
 fn t45_str_insert() {
     assert_eq!(
         rsass(
-            "div {\n  bar: str-insert(\"abcd\", \"X\", 1);\n  bar: str-insert(\"abcd\", \'X\', 1);\n  bar: str-insert(\"abcd\", \'X\\\'fjd\\\'sk\', 1);\n  bar: str-insert(\"abcd\", \"e\", 3);\n  bar: str-insert(\"abcd\", \"e\", 18);\n  bar: str-insert(\"abcd\", \"e\", -2);\n  bar: str-insert(\"abcd\", \"e\", -18);\n  bar: str-insert(\"abcd\", \"e\", 0);\n  bar: str-insert(\"abcd\", e, 0);\n  bar: str-insert(abcd, \"e\", 0);\n  bar: str-insert(abcd, e, 0);\n  bar: str-insert(\"Déjà vu\", \"abcd\", 0);\n  bar: str-insert(\"Déjà vu\", \"abcd\", 2);\n  bar: str-insert(\"Déjà vu\", \"abcd\", -3);\n  bar: str-insert(\"Déjà vu\", \"abcd\", 18);\n\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 0);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 2);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 5);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 9);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 28);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", -3);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", -28);\n\n}"
+            "div {\n  bar: str-insert(\"abcd\", \"X\", 1);\n  bar: str-insert(\"abcd\", \'X\', 1);\n  bar: str-insert(\"abcd\", \'X\\\'fjd\\\'sk\', 1);\n  bar: str-insert(\"abcd\", \"e\", 3);\n  bar: str-insert(\"abcd\", \"e\", 18);\n  bar: str-insert(\"abcd\", \"e\", -2);\n  bar: str-insert(\"abcd\", \"e\", -18);\n  bar: str-insert(\"abcd\", \"e\", 0);\n  bar: str-insert(\"abcd\", e, 0);\n  bar: str-insert(abcd, \"e\", 0);\n  bar: str-insert(abcd, e, 0);\n  bar: str-insert(\"Déjà vu\", \"abcd\", 0);\n  bar: str-insert(\"Déjà vu\", \"abcd\", 2);\n  bar: str-insert(\"Déjà vu\", \"abcd\", -3);\n  bar: str-insert(\"Déjà vu\", \"abcd\", 18);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 0);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 2);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 5);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 9);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 28);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", -3);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", -28);\n}"
         )
         .unwrap(),
         "@charset \"UTF-8\";\ndiv {\n  bar: \"Xabcd\";\n  bar: \"Xabcd\";\n  bar: \"X\'fjd\'skabcd\";\n  bar: \"abecd\";\n  bar: \"abcde\";\n  bar: \"abced\";\n  bar: \"eabcd\";\n  bar: \"eabcd\";\n  bar: \"eabcd\";\n  bar: eabcd;\n  bar: eabcd;\n  bar: \"abcdDéjà vu\";\n  bar: \"Dabcdéjà vu\";\n  bar: \"Déjà abcdvu\";\n  bar: \"Déjà vuabcd\";\n  bar: \" ABCD øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\n  bar: \"ø ABCD áéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\n  bar: \"øáéí ABCD óúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\n  bar: \"øáéíóúüñ ABCD ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\n  bar: \"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ ABCD \";\n  bar: \"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ ABCD \u{488}ݓ\";\n  bar: \" ABCD øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\n}\n"
@@ -478,7 +478,7 @@ fn t45_str_insert() {
 fn t46_str_index() {
     assert_eq!(
         rsass(
-            "div {\n\n  bar: a str-index(\"abcde\", \"bc\");\n  bar: a str-index(\"abcde\", \"a\");\n  bar: a str-index(\"abcde\", \"e\");\n  bar: a str-index(\"abcde\", \"xyz\");\n  bar: a str-index(\"\", \"abc\");\n  bar: a str-index(\"abcde\", \"abcdefg\");\n  bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \"Ɋ\"); // 15\n  bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \"úüñ\"); // 6\n  bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \"abcde\");\n  bar: a str-index(\"abcde\", \"\");\n  bar: a str-index(\"\", \"\");\n\n}"
+            "div {\n  bar: a str-index(\"abcde\", \"bc\");\n  bar: a str-index(\"abcde\", \"a\");\n  bar: a str-index(\"abcde\", \"e\");\n  bar: a str-index(\"abcde\", \"xyz\");\n  bar: a str-index(\"\", \"abc\");\n  bar: a str-index(\"abcde\", \"abcdefg\");\n  bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \"Ɋ\"); // 15\n  bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \"úüñ\"); // 6\n  bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \"abcde\");\n  bar: a str-index(\"abcde\", \"\");\n  bar: a str-index(\"\", \"\");\n}"
         )
         .unwrap(),
         "div {\n  bar: a 2;\n  bar: a 1;\n  bar: a 5;\n  bar: a;\n  bar: a;\n  bar: a;\n  bar: a 15;\n  bar: a 6;\n  bar: a;\n  bar: a 1;\n  bar: a 1;\n}\n"
@@ -490,7 +490,7 @@ fn t46_str_index() {
 fn t48_case_conversion() {
     assert_eq!(
         rsass(
-            "div {\n\n  bar: to-upper-case(\"blah\");\n  bar: to-upper-case(\"BLAH\");\n  bar: to-upper-case(\"bLaH\");\n  bar: to-upper-case(\"1232178942\");\n  bar: to-upper-case(blah);\n  bar: to-upper-case(BLAH);\n  bar: to-upper-case(bLaH);\n  bar: to-upper-case(\"\");\n\n  bar: to-lower-case(\"blah\");\n  bar: to-lower-case(\"BLAH\");\n  bar: to-lower-case(\"bLaH\");\n  bar: to-lower-case(\"1232178942\");\n  bar: to-lower-case(blah);\n  bar: to-lower-case(BLAH);\n  bar: to-lower-case(bLaH);\n  bar: to-lower-case(\"\");\n\n}\n"
+            "div {\n  bar: to-upper-case(\"blah\");\n  bar: to-upper-case(\"BLAH\");\n  bar: to-upper-case(\"bLaH\");\n  bar: to-upper-case(\"1232178942\");\n  bar: to-upper-case(blah);\n  bar: to-upper-case(BLAH);\n  bar: to-upper-case(bLaH);\n  bar: to-upper-case(\"\");\n  bar: to-lower-case(\"blah\");\n  bar: to-lower-case(\"BLAH\");\n  bar: to-lower-case(\"bLaH\");\n  bar: to-lower-case(\"1232178942\");\n  bar: to-lower-case(blah);\n  bar: to-lower-case(BLAH);\n  bar: to-lower-case(bLaH);\n  bar: to-lower-case(\"\");\n}\n"
         )
         .unwrap(),
         "div {\n  bar: \"BLAH\";\n  bar: \"BLAH\";\n  bar: \"BLAH\";\n  bar: \"1232178942\";\n  bar: BLAH;\n  bar: BLAH;\n  bar: BLAH;\n  bar: \"\";\n  bar: \"blah\";\n  bar: \"blah\";\n  bar: \"blah\";\n  bar: \"1232178942\";\n  bar: blah;\n  bar: blah;\n  bar: blah;\n  bar: \"\";\n}\n"
@@ -502,7 +502,7 @@ fn t48_case_conversion() {
 fn t49_interpolants_in_css_imports() {
     assert_eq!(
         rsass(
-            "$google-protocol: \"http\"; // choose http or https\n$google-webfont: \"Open+Sans:400italic,700italic,400,700|Oswald\"; // pull string after ?family= from step 3\n\n@import url(\"#{$google-protocol}://fonts.googleapis.com/css?family=#{$google-webfont}\");"
+            "$google-protocol: \"http\"; // choose http or https\n$google-webfont: \"Open+Sans:400italic,700italic,400,700|Oswald\"; // pull string after ?family= from step 3\n@import url(\"#{$google-protocol}://fonts.googleapis.com/css?family=#{$google-webfont}\");"
         )
         .unwrap(),
         "@import url(\"http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700|Oswald\");\n"
@@ -538,10 +538,10 @@ fn t51_trailing_commas_in_list() {
 fn t52_interchangeable_hyphens_underscores() {
     assert_eq!(
         rsass(
-            "$my-cool-var: \"hello\";\n@mixin my-cool-mixin($yada-yada) {\n  blah: blah;\n  hi: $yada_yada;\n}\n@function my-cool-function($cool_arg) {\n  @return $cool-arg;\n}\n\ndiv {\n  @include my_cool-mixin($yada_yada: \"hi\");\n  @include my_cool-mixin($my_cool-var);\n  foo: my-cool_function($cool-arg: \"boop\");\n  foo: my-cool_function($my-cool_var);\n  bar: $my_cool_var;\n}\n\n@each $my_cool_var in a, b, c {\n  div {\n    color: $my-cool-var;\n  }\n}\n\n@for $my_cool_var from 1 to 10 {\n  div {\n    color: $my-cool-var;\n  }\n}\n\n\n@function blah_blah() {\n  @return blah;\n}\n\ndiv {\n  foo: blah-blah();\n}"
+            "$my-cool-var: \"hello\";\n@mixin my-cool-mixin($yada-yada) {\n  blah: blah;\n  hi: $yada_yada;\n}\n@function my-cool-function($cool_arg) {\n  @return $cool-arg;\n}\ndiv {\n  @include my_cool-mixin($yada_yada: \"hi\");\n  @include my_cool-mixin($my_cool-var);\n  foo: my-cool_function($cool-arg: \"boop\");\n  foo: my-cool_function($my-cool_var);\n  bar: $my_cool_var;\n}\n@each $my_cool_var in a, b, c {\n  div {\n    color: $my-cool-var;\n  }\n}\n@for $my_cool_var from 1 to 10 {\n  div {\n    color: $my-cool-var;\n  }\n}\n@function blah_blah() {\n  @return blah;\n}\ndiv {\n  foo: blah-blah();\n}"
         )
         .unwrap(),
-        "div {\n  blah: blah;\n  hi: \"hi\";\n  blah: blah;\n  hi: \"hello\";\n  foo: \"boop\";\n  foo: \"hello\";\n  bar: \"hello\";\n}\n\ndiv {\n  color: a;\n}\n\ndiv {\n  color: b;\n}\n\ndiv {\n  color: c;\n}\n\ndiv {\n  color: 1;\n}\n\ndiv {\n  color: 2;\n}\n\ndiv {\n  color: 3;\n}\n\ndiv {\n  color: 4;\n}\n\ndiv {\n  color: 5;\n}\n\ndiv {\n  color: 6;\n}\n\ndiv {\n  color: 7;\n}\n\ndiv {\n  color: 8;\n}\n\ndiv {\n  color: 9;\n}\n\ndiv {\n  foo: blah;\n}\n"
+        "div {\n  blah: blah;\n  hi: \"hi\";\n  blah: blah;\n  hi: \"hello\";\n  foo: \"boop\";\n  foo: \"hello\";\n  bar: \"hello\";\n}\ndiv {\n  color: a;\n}\ndiv {\n  color: b;\n}\ndiv {\n  color: c;\n}\ndiv {\n  color: 1;\n}\ndiv {\n  color: 2;\n}\ndiv {\n  color: 3;\n}\ndiv {\n  color: 4;\n}\ndiv {\n  color: 5;\n}\ndiv {\n  color: 6;\n}\ndiv {\n  color: 7;\n}\ndiv {\n  color: 8;\n}\ndiv {\n  color: 9;\n}\ndiv {\n  foo: blah;\n}\n"
     );
 }
 
@@ -564,7 +564,7 @@ fn t54_adjacent_identifiers_with_hyphens() {
 fn t55_variable_exists() {
     assert_eq!(
         rsass(
-            "@function exists($name) {\n  @return variable-exists($name);\n}\n\n@function f() {\n  $foo: hi;\n  @return g();\n}\n\n@function g() {\n  @return variable-exists(foo);\n}\n\ndiv {\n  foo: variable-exists(x);\n  foo: variable-exists(\"x\");\n\n  span {\n    $x: false;\n\n    foo: variable-exists(x);\n    foo: variable-exists(\"x\");\n    foo: variable-exists(y);\n    foo: variable-exists(\"y\");\n    foo: exists(x);\n    foo: exists(\"x\");\n\n    p {\n      foo: variable-exists(x);\n      foo: variable-exists(\"x\");\n      foo: exists(x);\n      foo: exists(\"x\");\n      foo: variable-exists(y);\n      foo: variable-exists(\"y\");\n      foo: f();\n      $y: blah;\n    }\n  }\n\n}"
+            "@function exists($name) {\n  @return variable-exists($name);\n}\n@function f() {\n  $foo: hi;\n  @return g();\n}\n@function g() {\n  @return variable-exists(foo);\n}\ndiv {\n  foo: variable-exists(x);\n  foo: variable-exists(\"x\");\n  span {\n    $x: false;\n    foo: variable-exists(x);\n    foo: variable-exists(\"x\");\n    foo: variable-exists(y);\n    foo: variable-exists(\"y\");\n    foo: exists(x);\n    foo: exists(\"x\");\n    p {\n      foo: variable-exists(x);\n      foo: variable-exists(\"x\");\n      foo: exists(x);\n      foo: exists(\"x\");\n      foo: variable-exists(y);\n      foo: variable-exists(\"y\");\n      foo: f();\n      $y: blah;\n    }\n  }\n}"
         )
         .unwrap(),
         "div {\n  foo: false;\n  foo: false;\n}\ndiv span {\n  foo: true;\n  foo: true;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n}\ndiv span p {\n  foo: true;\n  foo: true;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n}\n"
@@ -576,7 +576,7 @@ fn t55_variable_exists() {
 fn t56_global_variable_exists() {
     assert_eq!(
         rsass(
-            "@function exists($name) {\n  @return global-variable-exists($name);\n}\n\n@function f() {\n  $foo: hi;\n  @return g();\n}\n\n@function g() {\n  @return global-variable-exists(foo);\n}\n\n$z: hi;\n\ndiv {\n  foo: global-variable-exists(x);    \n  foo: global-variable-exists(\"x\");    \n  foo: global-variable-exists(z);\n  foo: global-variable-exists(\"z\");    \n\n  span {\n    $x: false;\n\n    foo: global-variable-exists(x);\n    foo: global-variable-exists(\"x\");    \n    foo: global-variable-exists(y);\n    foo: global-variable-exists(\"y\");    \n\n    foo: global-variable-exists(z);\n    foo: global-variable-exists(\"z\");    \n\n    p {\n      foo: global-variable-exists(x);\n      foo: global-variable-exists(\"x\");    \n      foo: exists(x);\n      foo: exists(\"x\");    \n      foo: global-variable-exists(z);\n      foo: global-variable-exists(\"z\");    \n      foo: global-variable-exists(y);\n      foo: global-variable-exists(\"y\");    \n      foo: f();\n      $y: blah;\n      //TODO: check for shadowing\n    }\n  }\n\n}\n"
+            "@function exists($name) {\n  @return global-variable-exists($name);\n}\n@function f() {\n  $foo: hi;\n  @return g();\n}\n@function g() {\n  @return global-variable-exists(foo);\n}\n$z: hi;\ndiv {\n  foo: global-variable-exists(x);    \n  foo: global-variable-exists(\"x\");    \n  foo: global-variable-exists(z);\n  foo: global-variable-exists(\"z\");    \n  span {\n    $x: false;\n    foo: global-variable-exists(x);\n    foo: global-variable-exists(\"x\");    \n    foo: global-variable-exists(y);\n    foo: global-variable-exists(\"y\");    \n    foo: global-variable-exists(z);\n    foo: global-variable-exists(\"z\");    \n    p {\n      foo: global-variable-exists(x);\n      foo: global-variable-exists(\"x\");    \n      foo: exists(x);\n      foo: exists(\"x\");    \n      foo: global-variable-exists(z);\n      foo: global-variable-exists(\"z\");    \n      foo: global-variable-exists(y);\n      foo: global-variable-exists(\"y\");    \n      foo: f();\n      $y: blah;\n      //TODO: check for shadowing\n    }\n  }\n}\n"
         )
         .unwrap(),
         "div {\n  foo: false;\n  foo: false;\n  foo: true;\n  foo: true;\n}\ndiv span {\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: true;\n  foo: true;\n}\ndiv span p {\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: true;\n  foo: true;\n  foo: false;\n  foo: false;\n  foo: false;\n}\n"
@@ -588,7 +588,7 @@ fn t56_global_variable_exists() {
 fn t57_function_exists() {
     assert_eq!(
         rsass(
-            "@function exists($name) {\n  @return function-exists($name);\n}\n\n@function f() {\n  $foo: hi;\n  @return g();\n}\n\n@function g() {\n  @return function-exists(foo);\n}\n\n@function h() {\n  @return function-exists(lighten);\n}\n\ndiv {\n  foo: function-exists(lighten); \n  foo: function-exists(\"lighten\"); \n  foo: function-exists(exists);\n  foo: function-exists(\"exists\"); \n  foo: function-exists(f);\n  foo: function-exists(\"f\"); \n  foo: function-exists(g);\n  foo: function-exists(\"g\"); \n  foo: function-exists(nope);\n  foo: function-exists(\"nope\"); \n  foo: g();\n  foo: f();\n  foo: h();\n\n\n  span {\n    foo: function-exists(lighten); \n    foo: function-exists(\"lighten\"); \n    foo: function-exists(exists);\n    foo: function-exists(\"exists\"); \n    foo: function-exists(f);\n    foo: function-exists(\"f\"); \n    foo: function-exists(g);\n    foo: function-exists(\"g\"); \n    foo: function-exists(nope);\n    foo: function-exists(\"nope\"); \n    foo: g();\n    foo: f();\n    foo: h();\n    p {\n      foo: function-exists(lighten); \n      foo: function-exists(\"lighten\"); \n      foo: function-exists(exists);\n      foo: function-exists(\"exists\"); \n      foo: function-exists(f);\n      foo: function-exists(\"f\"); \n      foo: function-exists(g);\n      foo: function-exists(\"g\"); \n      foo: function-exists(nope);\n      foo: function-exists(\"nope\"); \n      foo: g();\n      foo: f();\n      foo: h();\n    }\n  }\n\n}\n"
+            "@function exists($name) {\n  @return function-exists($name);\n}\n@function f() {\n  $foo: hi;\n  @return g();\n}\n@function g() {\n  @return function-exists(foo);\n}\n@function h() {\n  @return function-exists(lighten);\n}\ndiv {\n  foo: function-exists(lighten); \n  foo: function-exists(\"lighten\"); \n  foo: function-exists(exists);\n  foo: function-exists(\"exists\"); \n  foo: function-exists(f);\n  foo: function-exists(\"f\"); \n  foo: function-exists(g);\n  foo: function-exists(\"g\"); \n  foo: function-exists(nope);\n  foo: function-exists(\"nope\"); \n  foo: g();\n  foo: f();\n  foo: h();\n  span {\n    foo: function-exists(lighten); \n    foo: function-exists(\"lighten\"); \n    foo: function-exists(exists);\n    foo: function-exists(\"exists\"); \n    foo: function-exists(f);\n    foo: function-exists(\"f\"); \n    foo: function-exists(g);\n    foo: function-exists(\"g\"); \n    foo: function-exists(nope);\n    foo: function-exists(\"nope\"); \n    foo: g();\n    foo: f();\n    foo: h();\n    p {\n      foo: function-exists(lighten); \n      foo: function-exists(\"lighten\"); \n      foo: function-exists(exists);\n      foo: function-exists(\"exists\"); \n      foo: function-exists(f);\n      foo: function-exists(\"f\"); \n      foo: function-exists(g);\n      foo: function-exists(\"g\"); \n      foo: function-exists(nope);\n      foo: function-exists(\"nope\"); \n      foo: g();\n      foo: f();\n      foo: h();\n    }\n  }\n}\n"
         )
         .unwrap(),
         "div {\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: true;\n}\ndiv span {\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: true;\n}\ndiv span p {\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: true;\n}\n"
@@ -600,7 +600,7 @@ fn t57_function_exists() {
 fn t58_mixin_exists() {
     assert_eq!(
         rsass(
-            "@function exists($name) {\n  @return mixin-exists($name);\n}\n\n@function f() {\n  $foo: hi;\n  @return g();\n}\n\n@function g() {\n  @return mixin-exists(foo);\n}\n\n@function h() {\n  @return mixin-exists(lighten);\n}\n\n@mixin red-text { color: red; }\n@mixin blue-text { color: red; }\n@mixin green-text { color: red; }\n\ndiv {\n  foo: mixin-exists(red-text); \n  foo: mixin-exists(\"red-text\"); \n  foo: mixin-exists(blue-text); \n  foo: mixin-exists(\"blue-text\"); \n  foo: mixin-exists(green-text);   \n  foo: mixin-exists(\"green-text\"); \n  foo: mixin-exists(nope);\n  foo: mixin-exists(\"nope\");\n  foo: g();\n  foo: f();\n  foo: h();\n\n\n  span {\n    foo: mixin-exists(red-text); \n    foo: mixin-exists(\"red-text\"); \n    foo: mixin-exists(blue-text); \n    foo: mixin-exists(\"blue-text\"); \n    foo: mixin-exists(green-text);   \n    foo: mixin-exists(\"green-text\"); \n    foo: mixin-exists(nope);\n    foo: mixin-exists(\"nope\");\n    foo: g();\n    foo: f();\n    foo: h();\n    p {\n      foo: mixin-exists(red-text); \n      foo: mixin-exists(\"red-text\"); \n      foo: mixin-exists(blue-text); \n      foo: mixin-exists(\"blue-text\"); \n      foo: mixin-exists(green-text);   \n      foo: mixin-exists(\"green-text\"); \n      foo: mixin-exists(nope);\n      foo: mixin-exists(\"nope\");\n      foo: g();\n      foo: f();\n      foo: h();\n    }\n  }\n\n}"
+            "@function exists($name) {\n  @return mixin-exists($name);\n}\n@function f() {\n  $foo: hi;\n  @return g();\n}\n@function g() {\n  @return mixin-exists(foo);\n}\n@function h() {\n  @return mixin-exists(lighten);\n}\n@mixin red-text { color: red; }\n@mixin blue-text { color: red; }\n@mixin green-text { color: red; }\ndiv {\n  foo: mixin-exists(red-text); \n  foo: mixin-exists(\"red-text\"); \n  foo: mixin-exists(blue-text); \n  foo: mixin-exists(\"blue-text\"); \n  foo: mixin-exists(green-text);   \n  foo: mixin-exists(\"green-text\"); \n  foo: mixin-exists(nope);\n  foo: mixin-exists(\"nope\");\n  foo: g();\n  foo: f();\n  foo: h();\n  span {\n    foo: mixin-exists(red-text); \n    foo: mixin-exists(\"red-text\"); \n    foo: mixin-exists(blue-text); \n    foo: mixin-exists(\"blue-text\"); \n    foo: mixin-exists(green-text);   \n    foo: mixin-exists(\"green-text\"); \n    foo: mixin-exists(nope);\n    foo: mixin-exists(\"nope\");\n    foo: g();\n    foo: f();\n    foo: h();\n    p {\n      foo: mixin-exists(red-text); \n      foo: mixin-exists(\"red-text\"); \n      foo: mixin-exists(blue-text); \n      foo: mixin-exists(\"blue-text\"); \n      foo: mixin-exists(green-text);   \n      foo: mixin-exists(\"green-text\"); \n      foo: mixin-exists(nope);\n      foo: mixin-exists(\"nope\");\n      foo: g();\n      foo: f();\n      foo: h();\n    }\n  }\n}"
         )
         .unwrap(),
         "div {\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n}\ndiv span {\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n}\ndiv span p {\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: true;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n  foo: false;\n}\n"
@@ -612,7 +612,7 @@ fn t58_mixin_exists() {
 fn t59_if_expression() {
     assert_eq!(
         rsass(
-            "$x: 0;\n$if-false: whatever;\n\ndiv {\n  foo: if($if-true: hey, $if-false: ho, $condition: true);\n  foo: if($if-true: hey, $if-false: ho, $condition: false);\n  foo: if($x != 0, if($x, true, false), unquote(\"x is zero\"));\n  foo: if(false, 1/0, $if-false: $if-false);\n}"
+            "$x: 0;\n$if-false: whatever;\ndiv {\n  foo: if($if-true: hey, $if-false: ho, $condition: true);\n  foo: if($if-true: hey, $if-false: ho, $condition: false);\n  foo: if($x != 0, if($x, true, false), unquote(\"x is zero\"));\n  foo: if(false, 1/0, $if-false: $if-false);\n}"
         )
         .unwrap(),
         "div {\n  foo: hey;\n  foo: ho;\n  foo: x is zero;\n  foo: whatever;\n}\n"
@@ -624,7 +624,7 @@ fn t59_if_expression() {
 fn t60_call() {
     assert_eq!(
         rsass(
-            "@function foobar() {\n  @return foobar;\n}\n\n@function fudge($str) {\n  @return \"assets/fudge/\" + $str;\n}\n\n\nbody {\n  display: call(foobar); \n  display: call(min, 1,3,5,7);\n  display: call(min, 5);\n  display: call(max, 10,3,5,7);\n  color: fudge(\"blah\");\n}"
+            "@function foobar() {\n  @return foobar;\n}\n@function fudge($str) {\n  @return \"assets/fudge/\" + $str;\n}\nbody {\n  display: call(foobar); \n  display: call(min, 1,3,5,7);\n  display: call(min, 5);\n  display: call(max, 10,3,5,7);\n  color: fudge(\"blah\");\n}"
         )
         .unwrap(),
         "body {\n  display: foobar;\n  display: 1;\n  display: 5;\n  display: 10;\n  color: \"assets/fudge/blah\";\n}\n"
@@ -634,5 +634,9 @@ fn t60_call() {
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)
         .map_err(|e| format!("rsass failed: {}", e))
-        .and_then(|s| String::from_utf8(s).map_err(|e| format!("{:?}", e)))
+        .and_then(|s| {
+            String::from_utf8(s)
+                .map(|s| s.replace("\n\n", "\n"))
+                .map_err(|e| format!("{:?}", e))
+        })
 }

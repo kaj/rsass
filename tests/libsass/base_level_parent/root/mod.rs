@@ -26,8 +26,7 @@ use rsass::set_precision;
 #[test]
 fn basic_postfix_itpl() {
     assert_eq!(
-        rsass("#{&}post {\r\n  foo {\r\n    bar: baz;\r\n  }\r\n}\r\n")
-            .unwrap(),
+        rsass("#{&}post {\n  foo {\n    bar: baz;\n  }\n}\n").unwrap(),
         "post foo {\n  bar: baz;\n}\n"
     );
 }
@@ -38,8 +37,7 @@ fn basic_postfix_itpl() {
 #[test]
 fn basic_prefix_itpl() {
     assert_eq!(
-        rsass("pre#{&} {\r\n  foo {\r\n    bar: baz;\r\n  }\r\n}\r\n")
-            .unwrap(),
+        rsass("pre#{&} {\n  foo {\n    bar: baz;\n  }\n}\n").unwrap(),
         "pre foo {\n  bar: baz;\n}\n"
     );
 }
