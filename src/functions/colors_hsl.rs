@@ -1,10 +1,10 @@
 use super::{Error, SassFunction};
-use css::Value;
+use crate::css::Value;
+use crate::value::{Number, Unit};
+use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Zero};
 use std::collections::BTreeMap;
-use value::{Number, Unit};
-use variablescope::Scope;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, hsl(hue, saturation, lightness), |s: &Scope| Ok(

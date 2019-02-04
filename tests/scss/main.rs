@@ -3,7 +3,6 @@
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["multiline-var", "mixin-content", "huge", "comparable", "composed-args", "ie-functions", "media/interpolated", "media/nesting/merged", "media/nesting/merged_and_retained", "media/nesting/removed", "media/nesting/retained", "media/script_features", "mixin-content-selectors", "negation", "nested-extend", "newlines_in_selectors", "placeholder", "placeholder-with-media", "precision", "simple-inheritance"]
-extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 /// From "sass-spec/spec/scss/almost_ambiguous_nested_rules_and_declarations"

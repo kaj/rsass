@@ -1,8 +1,8 @@
 use super::{Error, SassFunction};
-use css::{CallArgs, Value};
+use crate::css::{CallArgs, Value};
+use crate::value::{Quotes, Unit};
+use crate::variablescope::Scope;
 use std::collections::BTreeMap;
-use value::{Quotes, Unit};
-use variablescope::Scope;
 
 static IMPLEMENTED_FEATURES: &[&'static str] = &[
     // A local variable will shadow a global variable unless

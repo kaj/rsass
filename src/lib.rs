@@ -33,16 +33,6 @@
 //! That said, this implementation has reached a version where I find it
 //! usable for my personal projects, and the number of working tests are
 //! improving.
-#[cfg(feature = "clap")]
-extern crate clap;
-#[macro_use]
-extern crate lazy_static;
-#[macro_use]
-extern crate nom;
-extern crate num_rational;
-extern crate num_traits;
-extern crate rand;
-
 use std::path::Path;
 
 pub mod css;
@@ -57,15 +47,15 @@ pub mod selectors;
 mod value;
 mod variablescope;
 
-pub use error::Error;
-pub use file_context::FileContext;
-pub use functions::SassFunction;
+pub use crate::error::Error;
+pub use crate::file_context::FileContext;
+pub use crate::functions::SassFunction;
+pub use crate::output_style::OutputStyle;
+pub use crate::parser::{parse_scss_data, parse_scss_file, parse_value_data};
+pub use crate::sass::Item;
+pub use crate::value::{set_precision, ListSeparator, Number, Quotes, Unit};
+pub use crate::variablescope::{GlobalScope, Scope};
 pub use num_rational::Rational;
-pub use output_style::OutputStyle;
-pub use parser::{parse_scss_data, parse_scss_file, parse_value_data};
-pub use sass::Item;
-pub use value::{set_precision, ListSeparator, Number, Quotes, Unit};
-pub use variablescope::{GlobalScope, Scope};
 
 /// Parse scss data from a buffer and write css in the given style.
 ///

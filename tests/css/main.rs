@@ -3,7 +3,6 @@
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["bizarrely_formatted_comments", "custom_properties", "moz_document", "ms_long_filter_syntax", "multi_star_comments", "plain", "selector/slotted", "unknown_directive"]
-extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 // Ignoring "bizarrely_formatted_comments", not expected to work yet.

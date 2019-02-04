@@ -1,10 +1,11 @@
-use css;
-use error::Error;
-use sass;
+use crate::css;
+use crate::error::Error;
+use crate::sass;
+use crate::variablescope::Scope;
+use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::{cmp, fmt};
-use variablescope::Scope;
 
 #[macro_use]
 mod macros;
@@ -156,10 +157,10 @@ lazy_static! {
 
 #[test]
 fn test_rgb() {
+    use crate::parser::formalargs::call_args;
+    use crate::value::Rgba;
+    use crate::variablescope::GlobalScope;
     use nom::types::CompleteByteSlice as Input;
-    use parser::formalargs::call_args;
-    use value::Rgba;
-    use variablescope::GlobalScope;
     let scope = GlobalScope::new();
     assert_eq!(
         FUNCTIONS

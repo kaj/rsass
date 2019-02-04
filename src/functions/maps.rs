@@ -1,8 +1,8 @@
 use super::{Error, SassFunction};
-use css::Value;
-use ordermap::OrderMap;
+use crate::css::Value;
+use crate::ordermap::OrderMap;
+use crate::value::ListSeparator;
 use std::collections::BTreeMap;
-use value::ListSeparator;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, map_get(map, key), |s| Ok(get_map(s.get("map")?)?
@@ -95,7 +95,7 @@ mod test {
     }
 
     fn check_val(src: &str, correct: &str) {
-        use variablescope::test::do_evaluate;
+        use crate::variablescope::test::do_evaluate;
         assert_eq!(do_evaluate(&[], src.as_bytes()), correct)
     }
 }

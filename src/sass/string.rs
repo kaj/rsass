@@ -1,8 +1,8 @@
-use error::Error;
-use sass::Value;
+use crate::error::Error;
+use crate::sass::Value;
+use crate::value::Quotes;
+use crate::variablescope::Scope;
 use std::fmt;
-use value::Quotes;
-use variablescope::Scope;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct SassString {

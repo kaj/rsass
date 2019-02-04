@@ -1,9 +1,9 @@
 use super::{Error, SassFunction};
-use css::{CallArgs, Value};
+use crate::css::{CallArgs, Value};
+use crate::value::{ListSeparator, Number, Unit};
 use num_rational::Rational;
 use num_traits::One;
 use std::collections::BTreeMap;
-use value::{ListSeparator, Number, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, rgb(red, green, blue), |s| Ok(Value::rgba(
@@ -136,7 +136,7 @@ fn to_rational(v: Value) -> Result<Rational, Error> {
 
 #[cfg(test)]
 mod test {
-    use variablescope::test::do_evaluate;
+    use crate::variablescope::test::do_evaluate;
 
     #[test]
     fn test_high() {

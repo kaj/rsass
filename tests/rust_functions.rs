@@ -1,4 +1,3 @@
-extern crate rsass;
 use rsass::*;
 use std::sync::Arc;
 

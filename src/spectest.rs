@@ -1,4 +1,3 @@
-extern crate deunicode;
 use deunicode::deunicode;
 use std::ffi::OsStr;
 use std::fs::{create_dir, DirEntry, File};
@@ -246,11 +245,7 @@ fn handle_suite(
             ignored,
         )?;
     }
-    writeln!(
-        rs,
-        "extern crate rsass;\
-         \nuse rsass::{{compile_scss, OutputStyle}};",
-    )?;
+    writeln!(rs, "use rsass::{{compile_scss, OutputStyle}};",)?;
 
     handle_entries(&mut rs, &suitedir, &rssuitedir, None, ignored)?;
 
@@ -489,7 +484,6 @@ impl fmt::Display for Error {
     }
 }
 
-extern crate yaml_rust;
 use yaml_rust::{Yaml, YamlLoader};
 
 struct Options {

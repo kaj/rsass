@@ -1,10 +1,11 @@
 use super::util::{is_name_char, take_char};
 use super::value::value_expression;
 use super::{input_to_str, input_to_string};
+use crate::sass::{SassString, StringPart};
+use crate::value::Quotes;
 use nom::alphanumeric;
 use nom::types::CompleteByteSlice as Input;
-use sass::{SassString, StringPart};
-use value::Quotes;
+use nom::*;
 
 named!(pub sass_string<Input, SassString>,
        map!(

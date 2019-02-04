@@ -3,12 +3,13 @@ use super::strings::{sass_string_dq, sass_string_ext, sass_string_sq};
 use super::unit::unit;
 use super::util::{name, opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string};
+use crate::sass::{SassString, Value};
+use crate::value::{ListSeparator, Number, Operator, Rgba};
 use nom::multispace;
 use nom::types::CompleteByteSlice as Input;
+use nom::*;
 use num_rational::Rational;
-use sass::{SassString, Value};
 use std::str::from_utf8;
-use value::{ListSeparator, Number, Operator, Rgba};
 
 named!(pub value_expression<Input, Value>,
        do_parse!(
@@ -435,11 +436,11 @@ named!(
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::sass::CallArgs;
+    use crate::sass::Value::*;
+    use crate::value::Unit;
+    use crate::variablescope::GlobalScope;
     use num_rational::Rational;
-    use sass::CallArgs;
-    use sass::Value::*;
-    use value::Unit;
-    use variablescope::GlobalScope;
 
     #[test]
     fn simple_number() {

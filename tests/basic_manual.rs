@@ -2,7 +2,6 @@
 //! See <https://github.com/sass/sass-spec> for source material.
 //! See `tests/basic/main.rs` for semi-autoimported tests.
 //! This file contains old tests that need special handling.
-extern crate rsass;
 use rsass::{compile_scss, compile_scss_file, OutputStyle};
 
 #[test]

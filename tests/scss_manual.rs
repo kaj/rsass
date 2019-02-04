@@ -1,5 +1,4 @@
 //! Tests from spec/scss
-extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 /// My own addition

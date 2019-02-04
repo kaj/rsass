@@ -1,5 +1,6 @@
+use crate::value::Unit;
 use nom::types::CompleteByteSlice as Input;
-use value::Unit;
+use nom::*;
 
 named!(pub unit<Input, Unit>,
        alt_complete!(

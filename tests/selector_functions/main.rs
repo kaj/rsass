@@ -3,7 +3,6 @@
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["extend/nested", "extend/simple", "is_superselector", "parse", "replace", "unify/base", "unify/universal_simple"]
-extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 /// From "sass-spec/spec/selector-functions/append"

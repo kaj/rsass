@@ -1,8 +1,8 @@
 use super::{Error, SassFunction};
-use css::Value;
+use crate::css::Value;
+use crate::value::{Number, Quotes, Unit};
 use num_traits::Signed;
 use std::collections::BTreeMap;
-use value::{Number, Quotes, Unit};
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, quote(contents), |s| match s.get("contents")? {

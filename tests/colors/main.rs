@@ -1,7 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/colors"
 //! version 0f59164a, 2019-02-01 17:21:13 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
-extern crate rsass;
 use rsass::{compile_scss, OutputStyle};
 
 /// From "sass-spec/spec/colors/adjust-color"

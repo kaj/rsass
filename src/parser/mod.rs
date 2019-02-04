@@ -12,21 +12,21 @@ use self::util::{comment, ignore_space, name, opt_spacelike, spacelike};
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
-use error::Error;
-use functions::SassFunction;
-use nom::types::CompleteByteSlice as Input;
-use nom::Err;
+use crate::error::Error;
+use crate::functions::SassFunction;
 #[cfg(test)]
-use sass::{CallArgs, FormalArgs};
-use sass::{Item, Value};
-use selectors::Selectors;
+use crate::sass::{CallArgs, FormalArgs};
+use crate::sass::{Item, Value};
+use crate::selectors::Selectors;
+use crate::value::ListSeparator;
+#[cfg(test)]
+use crate::value::{Number, Rgba, Unit};
+use nom::types::CompleteByteSlice as Input;
+use nom::*;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::str::{from_utf8, Utf8Error};
-use value::ListSeparator;
-#[cfg(test)]
-use value::{Number, Rgba, Unit};
 
 /// Parse a scss value.
 ///

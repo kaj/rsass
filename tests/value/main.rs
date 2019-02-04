@@ -1,5 +1,3 @@
-extern crate rsass;
-
 mod unquote;
 
 use rsass::compile_value;
