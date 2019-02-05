@@ -4,4 +4,15 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "feature-test", not expected to work yet.
+/// From "sass-spec/spec/libsass/at-error/feature-test"
+#[test]
+#[ignore] // failing
+fn feature_test() {
+    assert_eq!(
+        rsass(
+            "@if feature-exists(at-error) {\n  div {\n    feature: true;\n  }\n}\n"
+        )
+        .unwrap(),
+        "div {\n  feature: true;\n}\n"
+    );
+}

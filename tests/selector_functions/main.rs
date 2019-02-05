@@ -1,8 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/selector-functions"
-//! version 0f59164a, 2019-02-01 17:21:13 -0800.
+//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["extend/nested", "extend/simple", "is_superselector", "parse", "replace", "unify/base", "unify/universal_simple"]
+//! ["is_superselector"]
 use rsass::{compile_scss, OutputStyle};
 
 /// From "sass-spec/spec/selector-functions/append"
@@ -33,9 +33,31 @@ fn nest() {
     );
 }
 
-// Ignoring "parse", not expected to work yet.
+/// From "sass-spec/spec/selector-functions/parse"
+#[test]
+#[ignore] // failing
+fn parse() {
+    assert_eq!(
+        rsass(
+            "@mixin selector-info($selector) {\n  parse: selector-parse($selector);\n}\n\n.foo {\n  parse: selector-parse(&)\n}\n\n#foo {\n  parse: selector-parse(&)\n}\n\n.bar a {\n  parse: selector-parse(&);\n}\n\n.bar,\n.baz {\n  parse: selector-parse(&)\n}\n\n.qux {\n  &.waldo {\n    .where & {\n      .final {\n        parse: selector-parse(&)\n      }\n    }\n  }\n}\n\ninside {\n  &.of {\n    #a {\n      .mixin{\n        parse: selector-parse(&)\n      }\n    }\n  }\n}\n\n"
+        )
+        .unwrap(),
+        ".foo {\n  parse: .foo;\n}\n#foo {\n  parse: #foo;\n}\n.bar a {\n  parse: .bar a;\n}\n.bar,\n.baz {\n  parse: .bar, .baz;\n}\n.where .qux.waldo .final {\n  parse: .where .qux.waldo .final;\n}\ninside.of #a .mixin {\n  parse: inside.of #a .mixin;\n}\n"
+    );
+}
 
-// Ignoring "replace", not expected to work yet.
+/// From "sass-spec/spec/selector-functions/replace"
+#[test]
+#[ignore] // failing
+fn replace() {
+    assert_eq!(
+        rsass(
+            ".simple {\n  a: selector-replace(\'.foo\', \'.foo\', \'.bar\');\n  b: selector-replace(\'.foo.bar\', \'.bar\', \'.baz\');\n  c: selector-replace(\'.foo.bar\', \'.bar\', \'.a .baz\');\n  d: selector-replace(\'.foo.bar\', \'.baz.bar\', \'.qux\');\n  e: selector-replace(\'.foo.bar.baz\', \'.foo.baz\', \'.qux\');\n}"
+        )
+        .unwrap(),
+        ".simple {\n  a: .bar;\n  b: .foo.baz;\n  c: .a .foo.baz;\n  d: .foo.bar;\n  e: .bar.qux;\n}\n"
+    );
+}
 
 mod unify;
 

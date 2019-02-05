@@ -4,6 +4,23 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "bare", not expected to work yet.
+/// From "sass-spec/spec/libsass/selectors/variables/multiple/bare"
+#[test]
+#[ignore] // failing
+fn bare() {
+    assert_eq!(
+        rsass(".foo a,\n.bar p {\n  $bar: &;\n  content: $bar;\n}").unwrap(),
+        ".foo a,\n.bar p {\n  content: .foo a, .bar p;\n}\n"
+    );
+}
 
-// Ignoring "interpolated", not expected to work yet.
+/// From "sass-spec/spec/libsass/selectors/variables/multiple/interpolated"
+#[test]
+#[ignore] // failing
+fn interpolated() {
+    assert_eq!(
+        rsass(".foo a,\n.bar p {\n  $bar: &;\n  content: #{$bar};\n}")
+            .unwrap(),
+        ".foo a,\n.bar p {\n  content: .foo a, .bar p;\n}\n"
+    );
+}

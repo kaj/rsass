@@ -1,15 +1,24 @@
 //! Tests auto-converted from "sass-spec/spec/values"
-//! version 0f59164a, 2019-02-01 17:21:13 -0800.
+//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
-//! The following tests are excluded from conversion:
-//! ["ids", "numbers/units/multiple"]
 use rsass::{compile_scss, OutputStyle};
 
 mod colors;
 
 mod identifiers;
 
-// Ignoring "ids", not expected to work yet.
+/// From "sass-spec/spec/values/ids"
+#[test]
+#[ignore] // failing
+fn ids() {
+    assert_eq!(
+        rsass(
+            "// The CSS nav-up property and its siblings allow ID tokens in their values, so\n// Sass parses any tokens that start with a \"#\" followed by an identifier as an\n// ID if it can\'t be parsed as a color.\na {\n  // These IDs are the wrong number of letters to be a hex color.\n  two-letters: #ab;\n  five-letters: #abcde;\n  seven-letters: #abcdefa;\n  nine-letters: #abcdefabc;\n\n  // These IDs contain letters outside the hexadecimal gamut.\n  three-letters-not-hex: #axc;\n  four-letters-not-hex: #axcd;\n  six-letters-not-hex: #abcxde;\n  eight-letters-not-hex: #abcxdefa;\n}\n"
+        )
+        .unwrap(),
+        "a {\n  two-letters: #ab;\n  five-letters: #abcde;\n  seven-letters: #abcdefa;\n  nine-letters: #abcdefabc;\n  three-letters-not-hex: #axc;\n  four-letters-not-hex: #axcd;\n  six-letters-not-hex: #abcxde;\n  eight-letters-not-hex: #abcxdefa;\n}\n"
+    );
+}
 
 mod lists;
 

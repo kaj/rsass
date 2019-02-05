@@ -1,11 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/misc"
-//! version 0f59164a, 2019-02-01 17:21:13 -0800.
+//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
-//! The following tests are excluded from conversion:
-//! ["mixin_content", "negative_numbers", "JMA-pseudo-test", "trailing_comma_in_selector", "warn-directive"]
 use rsass::{compile_scss, OutputStyle};
 
-// Ignoring "JMA-pseudo-test", not expected to work yet.
+/// From "sass-spec/spec/misc/JMA-pseudo-test"
+#[test]
+#[ignore] // failing
+fn jma_pseudo_test() {
+    assert_eq!(
+        rsass(
+            ".foo {\n        h1 {\n                color:red;\n        }\n}\n\n.bar {\n        &:hover h3,\n        h3 {\n                @extend h1;\n        }\n}\n"
+        )
+        .unwrap(),
+        ".foo h1,\n.foo .bar h3,\n.bar .foo h3 {\n  color: red;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/misc/directive_interpolation"
 #[test]
@@ -70,7 +79,18 @@ fn media_interpolation() {
     );
 }
 
-// Ignoring "mixin_content", not expected to work yet.
+/// From "sass-spec/spec/misc/mixin_content"
+#[test]
+#[ignore] // failing
+fn mixin_content() {
+    assert_eq!(
+        rsass(
+            "$color: blue;\n@mixin context($class, $color: red) {\n  .#{$class} {\n    background-color: $color;\n    @content;\n    border-color: $color;\n  }\n}\n@include context(parent) {\n  @include context(child, $color: yellow) {\n    color: $color;\n  }\n}\n"
+        )
+        .unwrap(),
+        ".parent {\n  background-color: red;\n  border-color: red;\n}\n.parent .child {\n  background-color: yellow;\n  color: blue;\n  border-color: yellow;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/misc/namespace_properties_with_script_value"
 #[test]
@@ -84,7 +104,18 @@ fn namespace_properties_with_script_value() {
     );
 }
 
-// Ignoring "negative_numbers", not expected to work yet.
+/// From "sass-spec/spec/misc/negative_numbers"
+#[test]
+#[ignore] // failing
+fn negative_numbers() {
+    assert_eq!(
+        rsass(
+            "$zero: 0;\na {\n  zero: -$zero;\n  zero: $zero * -1;\n}\n$near: 0.000000000001;\na {\n  near: -$near;\n  near: $near * -1;\n}\n"
+        )
+        .unwrap(),
+        "a {\n  zero: 0;\n  zero: 0;\n}\na {\n  near: 0;\n  near: 0;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/misc/selector_interpolation_before_element_name"
 #[test]
@@ -104,18 +135,38 @@ fn selector_only_interpolation() {
     );
 }
 
-// Ignoring "trailing_comma_in_selector", not expected to work yet.
+/// From "sass-spec/spec/misc/trailing_comma_in_selector"
+#[test]
+#[ignore] // failing
+fn trailing_comma_in_selector() {
+    assert_eq!(
+        rsass("#foo #bar,,\n,#baz #boom, {a: b}\n\n#bip #bop, ,, {c: d}\n")
+            .unwrap(),
+        "#foo #bar,\n#baz #boom {\n  a: b;\n}\n#bip #bop {\n  c: d;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/misc/unicode_variables"
 #[test]
 fn unicode_variables() {
     assert_eq!(
-        rsass("$vär: foo;\nblat {a: $vär}\n").unwrap(),
+        rsass("$vär: foo;\n\nblat {a: $vär}\n").unwrap(),
         "blat {\n  a: foo;\n}\n"
     );
 }
 
-// Ignoring "warn-directive", not expected to work yet.
+/// From "sass-spec/spec/misc/warn-directive"
+#[test]
+#[ignore] // failing
+fn warn_directive() {
+    assert_eq!(
+        rsass(
+            "h1 { color: blue; } \n@warn \"Don\'t crash the ambulance, whatever you do\"\n"
+        )
+        .unwrap(),
+        "h1 {\n  color: blue;\n}\n"
+    );
+}
 
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)

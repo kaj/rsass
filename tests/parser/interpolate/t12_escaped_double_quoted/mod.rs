@@ -64,4 +64,4 @@ fn t05_variable_quoted_double() {
     );
 }
 
-// Ignoring "06_escape_interpolation", not expected to work yet.
+// Ignoring "06_escape_interpolation", start_version is 3.7.

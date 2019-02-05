@@ -8,4 +8,15 @@ use rsass::set_precision;
 
 // Ignoring "inline", tests with expected error not implemented yet.
 
-// Ignoring "mixin", not expected to work yet.
+/// From "sass-spec/spec/libsass/debug-directive-nested/mixin"
+#[test]
+#[ignore] // failing
+fn mixin() {
+    assert_eq!(
+        rsass(
+            "@mixin c() {\n  @warn test;\n  c: d;\n}\n\na {\n  b: {\n    @include c();\n  }\n}\n"
+        )
+        .unwrap(),
+        "a {\n  b-c: d;\n}\n"
+    );
+}

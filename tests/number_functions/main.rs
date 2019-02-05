@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/number-functions"
-//! version 0f59164a, 2019-02-01 17:21:13 -0800.
+//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
@@ -92,7 +92,7 @@ fn random() {
 fn round() {
     assert_eq!(
         rsass(
-            "round {\n  positive-middle: round(1.5);\n  positive-high: round(1.51);\n  positive-low: round(1.49);\n  negative-middle: round(-1.5);\n  negative-high: round(-1.51);\n  negative-low: round(-1.49);\n  almost-middle: round(1.49999999999);\n  with-units: round(1.1px);\n  with-named: round($number: 1.1px);\n}\n"
+            "round {\n  positive-middle: round(1.5);\n  positive-high: round(1.51);\n  positive-low: round(1.49);\n\n  negative-middle: round(-1.5);\n  negative-high: round(-1.51);\n  negative-low: round(-1.49);\n\n  almost-middle: round(1.49999999999);\n  with-units: round(1.1px);\n  with-named: round($number: 1.1px);\n}\n"
         )
         .unwrap(),
         "round {\n  positive-middle: 2;\n  positive-high: 2;\n  positive-low: 1;\n  negative-middle: -2;\n  negative-high: -2;\n  negative-low: -1;\n  almost-middle: 1;\n  with-units: 1px;\n  with-named: 1px;\n}\n"

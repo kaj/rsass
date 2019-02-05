@@ -4,36 +4,102 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "at-root", not expected to work yet.
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/at-root"
+#[test]
+#[ignore] // failing
+fn at_root() {
+    assert_eq!(
+        rsass(
+            "$root_default: initial;\r\n$root_implicit: initial;\r\n$root_explicit: initial !global;\r\n\r\n@at-root {\r\n  $root_implicit: outer;\r\n  $root_explicit: outer !global;\r\n  $root_default: outer !default;\r\n  $local_implicit: outer;\r\n  $local_explicit: outer !global;\r\n  $local_default: outer !default;\r\n  @at-root {\r\n    $root_implicit: inner;\r\n    $root_explicit: inner !global;\r\n    $root_default: inner !default;\r\n    $local_implicit: inner;\r\n    $local_explicit: inner !global;\r\n    $local_default: inner !default;\r\n  }\r\n}\r\n\r\nresult {\r\n  root_default: $root_default;\r\n  root_implicit: $root_implicit;\r\n  root_explicit: $root_explicit;\r\n  @if variable-exists(local_default) {\r\n    local_default: $local_default;\r\n  }\r\n  @if variable-exists(local_implicit) {\r\n    local_implicit: $local_implicit;\r\n  }\r\n  @if variable-exists(local_explicit) {\r\n    local_explicit: $local_explicit;\r\n  }\r\n}\r\n"
+        )
+        .unwrap(),
+        "result {\n  root_default: initial;\n  root_implicit: initial;\n  root_explicit: inner;\n  local_explicit: inner;\n}\n"
+    );
+}
 
-// Ignoring "each", not expected to work yet.
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/each"
+#[test]
+#[ignore] // failing
+fn each() {
+    assert_eq!(
+        rsass(
+            "$root_default: initial;\r\n$root_implicit: initial;\r\n$root_explicit: initial !global;\r\n\r\n@each $outer in 1 {\r\n  $root_implicit: outer;\r\n  $root_explicit: outer !global;\r\n  $root_default: outer !default;\r\n  $local_implicit: outer;\r\n  $local_explicit: outer !global;\r\n  $local_default: outer !default;\r\n  @each $inner in 2 {\r\n    $root_implicit: inner;\r\n    $root_explicit: inner !global;\r\n    $root_default: inner !default;\r\n    $local_implicit: inner;\r\n    $local_explicit: inner !global;\r\n    $local_default: inner !default;\r\n  }\r\n}\r\n\r\nresult {\r\n  @if variable-exists(outer) {\r\n    outer: $outer;\r\n  }\r\n  @if variable-exists(inner) {\r\n    inner: $inner;\r\n  }\r\n  root_default: $root_default;\r\n  root_implicit: $root_implicit;\r\n  root_explicit: $root_explicit;\r\n  @if variable-exists(local_default) {\r\n    local_default: $local_default;\r\n  }\r\n  @if variable-exists(local_implicit) {\r\n    local_implicit: $local_implicit;\r\n  }\r\n  @if variable-exists(local_explicit) {\r\n    local_explicit: $local_explicit;\r\n  }\r\n}\r\n"
+        )
+        .unwrap(),
+        "result {\n  root_default: initial;\n  root_implicit: inner;\n  root_explicit: inner;\n  local_explicit: inner;\n}\n"
+    );
+}
 
-// Ignoring "else", not expected to work yet.
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/else"
+#[test]
+#[ignore] // failing
+fn test_else() {
+    assert_eq!(
+        rsass(
+            "$root_default: initial;\r\n$root_implicit: initial;\r\n$root_explicit: initial !global;\r\n\r\n@if false {\r\n  // nothing\r\n}\r\n@else {\r\n  $root_implicit: outer;\r\n  $root_explicit: outer !global;\r\n  $root_default: outer !default;\r\n  $local_implicit: outer;\r\n  $local_explicit: outer !global;\r\n  $local_default: outer !default;\r\n  @if false {\r\n    // nothing\r\n  }\r\n  @else {\r\n    $root_implicit: inner;\r\n    $root_explicit: inner !global;\r\n    $root_default: inner !default;\r\n    $local_implicit: inner;\r\n    $local_explicit: inner !global;\r\n    $local_default: inner !default;\r\n  }\r\n}\r\n\r\nresult {\r\n  root_default: $root_default;\r\n  root_implicit: $root_implicit;\r\n  root_explicit: $root_explicit;\r\n  @if variable-exists(local_default) {\r\n    local_default: $local_default;\r\n  }\r\n  @if variable-exists(local_implicit) {\r\n    local_implicit: $local_implicit;\r\n  }\r\n  @if variable-exists(local_explicit) {\r\n    local_explicit: $local_explicit;\r\n  }\r\n}\r\n"
+        )
+        .unwrap(),
+        "result {\n  root_default: initial;\n  root_implicit: inner;\n  root_explicit: inner;\n  local_explicit: inner;\n}\n"
+    );
+}
 
-// Ignoring "elseif", not expected to work yet.
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/elseif"
+#[test]
+#[ignore] // failing
+fn elseif() {
+    assert_eq!(
+        rsass(
+            "$root_default: initial;\r\n$root_implicit: initial;\r\n$root_explicit: initial !global;\r\n\r\n@if false {\r\n  // nothing\r\n}\r\n@else if true {\r\n  $root_implicit: outer;\r\n  $root_explicit: outer !global;\r\n  $root_default: outer !default;\r\n  $local_implicit: outer;\r\n  $local_explicit: outer !global;\r\n  $local_default: outer !default;\r\n  @if false {\r\n    // nothing\r\n  }\r\n  @else if true {\r\n    $root_implicit: inner;\r\n    $root_explicit: inner !global;\r\n    $root_default: inner !default;\r\n    $local_implicit: inner;\r\n    $local_explicit: inner !global;\r\n    $local_default: inner !default;\r\n  }\r\n}\r\n\r\nresult {\r\n  root_default: $root_default;\r\n  root_implicit: $root_implicit;\r\n  root_explicit: $root_explicit;\r\n  @if variable-exists(local_default) {\r\n    local_default: $local_default;\r\n  }\r\n  @if variable-exists(local_implicit) {\r\n    local_implicit: $local_implicit;\r\n  }\r\n  @if variable-exists(local_explicit) {\r\n    local_explicit: $local_explicit;\r\n  }\r\n}\r\n"
+        )
+        .unwrap(),
+        "result {\n  root_default: initial;\n  root_implicit: inner;\n  root_explicit: inner;\n  local_explicit: inner;\n}\n"
+    );
+}
 
-// Ignoring "for", not expected to work yet.
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/for"
+#[test]
+#[ignore] // failing
+fn test_for() {
+    assert_eq!(
+        rsass(
+            "$continue: true;\r\n$root_default: initial;\r\n$root_implicit: initial;\r\n$root_explicit: initial !global;\r\n\r\n@for $outer from 1 to 2 {\r\n  $root_implicit: outer;\r\n  $root_explicit: outer !global;\r\n  $root_default: outer !default;\r\n  $local_implicit: outer;\r\n  $local_explicit: outer !global;\r\n  $local_default: outer !default;\r\n  @for $inner from 3 to 4 {\r\n    $root_implicit: inner;\r\n    $root_explicit: inner !global;\r\n    $root_default: inner !default;\r\n    $local_implicit: inner;\r\n    $local_explicit: inner !global;\r\n    $local_default: inner !default;\r\n  }\r\n}\r\n\r\nresult {\r\n  @if variable-exists(outer) {\r\n    outer: $outer;\r\n  }\r\n  @if variable-exists(inner) {\r\n    inner: $inner;\r\n  }\r\n  root_default: $root_default;\r\n  root_implicit: $root_implicit;\r\n  root_explicit: $root_explicit;\r\n  @if variable-exists(local_default) {\r\n    local_default: $local_default;\r\n  }\r\n  @if variable-exists(local_implicit) {\r\n    local_implicit: $local_implicit;\r\n  }\r\n  @if variable-exists(local_explicit) {\r\n    local_explicit: $local_explicit;\r\n  }\r\n}\r\n"
+        )
+        .unwrap(),
+        "result {\n  root_default: initial;\n  root_implicit: inner;\n  root_explicit: inner;\n  local_explicit: inner;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/function"
 #[test]
 fn function() {
     assert_eq!(
         rsass(
-            "$continue_inner: true;\n$continue_outer: true;\n$root_default: initial;\n$root_implicit: initial;\n$root_explicit: initial !global;\n@function fn() {\n  $root_implicit: outer;\n  $root_explicit: outer !global;\n  $root_default: outer !default;\n  $local_implicit: outer;\n  $local_explicit: outer !global;\n  $local_default: outer !default;\n  @while $continue_inner {\n    $root_implicit: inner;\n    $root_explicit: inner !global;\n    $root_default: inner !default;\n    $local_implicit: inner;\n    $local_explicit: inner !global;\n    $local_default: inner !default;\n    $continue_inner: false;\n  }\n  $continue_outer: false;\n  @return null;\n}\nresult {\n  fn: fn();\n  @if variable-exists(continue_outer) {\n    continue_outer: $continue_outer;\n  }\n  @if variable-exists(continue_inner) {\n    continue_inner: $continue_inner;\n  }\n  root_default: $root_default;\n  root_implicit: $root_implicit;\n  root_explicit: $root_explicit;\n  @if variable-exists(local_default) {\n    local_default: $local_default;\n  }\n  @if variable-exists(local_implicit) {\n    local_implicit: $local_implicit;\n  }\n  @if variable-exists(local_explicit) {\n    local_explicit: $local_explicit;\n  }\n}\n"
+            "$continue_inner: true;\r\n$continue_outer: true;\r\n$root_default: initial;\r\n$root_implicit: initial;\r\n$root_explicit: initial !global;\r\n\r\n@function fn() {\r\n  $root_implicit: outer;\r\n  $root_explicit: outer !global;\r\n  $root_default: outer !default;\r\n  $local_implicit: outer;\r\n  $local_explicit: outer !global;\r\n  $local_default: outer !default;\r\n  @while $continue_inner {\r\n    $root_implicit: inner;\r\n    $root_explicit: inner !global;\r\n    $root_default: inner !default;\r\n    $local_implicit: inner;\r\n    $local_explicit: inner !global;\r\n    $local_default: inner !default;\r\n    $continue_inner: false;\r\n  }\r\n  $continue_outer: false;\r\n  @return null;\r\n}\r\n\r\nresult {\r\n  fn: fn();\r\n  @if variable-exists(continue_outer) {\r\n    continue_outer: $continue_outer;\r\n  }\r\n  @if variable-exists(continue_inner) {\r\n    continue_inner: $continue_inner;\r\n  }\r\n  root_default: $root_default;\r\n  root_implicit: $root_implicit;\r\n  root_explicit: $root_explicit;\r\n  @if variable-exists(local_default) {\r\n    local_default: $local_default;\r\n  }\r\n  @if variable-exists(local_implicit) {\r\n    local_implicit: $local_implicit;\r\n  }\r\n  @if variable-exists(local_explicit) {\r\n    local_explicit: $local_explicit;\r\n  }\r\n}\r\n"
         )
         .unwrap(),
         "result {\n  continue_outer: true;\n  continue_inner: true;\n  root_default: initial;\n  root_implicit: initial;\n  root_explicit: inner;\n  local_explicit: inner;\n}\n"
     );
 }
 
-// Ignoring "if", not expected to work yet.
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/if"
+#[test]
+#[ignore] // failing
+fn test_if() {
+    assert_eq!(
+        rsass(
+            "$root_default: initial;\r\n$root_implicit: initial;\r\n$root_explicit: initial !global;\r\n\r\n@if true {\r\n  $root_implicit: outer;\r\n  $root_explicit: outer !global;\r\n  $root_default: outer !default;\r\n  $local_implicit: outer;\r\n  $local_explicit: outer !global;\r\n  $local_default: outer !default;\r\n  @if true {\r\n    $root_implicit: inner;\r\n    $root_explicit: inner !global;\r\n    $root_default: inner !default;\r\n    $local_implicit: inner;\r\n    $local_explicit: inner !global;\r\n    $local_default: inner !default;\r\n  }\r\n}\r\n\r\nresult {\r\n  root_default: $root_default;\r\n  root_implicit: $root_implicit;\r\n  root_explicit: $root_explicit;\r\n  @if variable-exists(local_default) {\r\n    local_default: $local_default;\r\n  }\r\n  @if variable-exists(local_implicit) {\r\n    local_implicit: $local_implicit;\r\n  }\r\n  @if variable-exists(local_explicit) {\r\n    local_explicit: $local_explicit;\r\n  }\r\n}\r\n"
+        )
+        .unwrap(),
+        "result {\n  root_default: initial;\n  root_implicit: inner;\n  root_explicit: inner;\n  local_explicit: inner;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/mixin"
 #[test]
 fn mixin() {
     assert_eq!(
         rsass(
-            "$root_default: initial;\n$root_implicit: initial;\n$root_explicit: initial !global;\n@mixin set_variable_inner() {\n  $root_implicit: inner;\n  $root_explicit: inner !global;\n  $root_default: inner !default;\n  $local_implicit: inner;\n  $local_explicit: inner !global;\n  $local_default: inner !default;\n}\n@mixin set_variable_outer() {\n  $root_implicit: outer;\n  $root_explicit: outer !global;\n  $root_default: outer !default;\n  $local_implicit: outer;\n  $local_explicit: outer !global;\n  $local_default: outer !default;\n  @include set_variable_inner();\n}\n@include set_variable_outer();\nresult {\n  root_default: $root_default;\n  root_implicit: $root_implicit;\n  root_explicit: $root_explicit;\n  @if variable-exists(local_default) {\n    local_default: $local_default;\n  }\n  @if variable-exists(local_implicit) {\n    local_implicit: $local_implicit;\n  }\n  @if variable-exists(local_explicit) {\n    local_explicit: $local_explicit;\n  }\n}\n"
+            "$root_default: initial;\r\n$root_implicit: initial;\r\n$root_explicit: initial !global;\r\n\r\n@mixin set_variable_inner() {\r\n  $root_implicit: inner;\r\n  $root_explicit: inner !global;\r\n  $root_default: inner !default;\r\n  $local_implicit: inner;\r\n  $local_explicit: inner !global;\r\n  $local_default: inner !default;\r\n}\r\n\r\n@mixin set_variable_outer() {\r\n  $root_implicit: outer;\r\n  $root_explicit: outer !global;\r\n  $root_default: outer !default;\r\n  $local_implicit: outer;\r\n  $local_explicit: outer !global;\r\n  $local_default: outer !default;\r\n  @include set_variable_inner();\r\n}\r\n\r\n@include set_variable_outer();\r\n\r\nresult {\r\n  root_default: $root_default;\r\n  root_implicit: $root_implicit;\r\n  root_explicit: $root_explicit;\r\n  @if variable-exists(local_default) {\r\n    local_default: $local_default;\r\n  }\r\n  @if variable-exists(local_implicit) {\r\n    local_implicit: $local_implicit;\r\n  }\r\n  @if variable-exists(local_explicit) {\r\n    local_explicit: $local_explicit;\r\n  }\r\n}\r\n"
         )
         .unwrap(),
         "result {\n  root_default: initial;\n  root_implicit: initial;\n  root_explicit: inner;\n  local_explicit: inner;\n}\n"
@@ -45,11 +111,22 @@ fn mixin() {
 fn ruleset() {
     assert_eq!(
         rsass(
-            "$root_default: initial;\n$root_implicit: initial;\n$root_explicit: initial !global;\nruleset {\n  $root_implicit: outer;\n  $root_explicit: outer !global;\n  $root_default: outer !default;\n  $local_implicit: outer;\n  $local_explicit: outer !global;\n  $local_default: outer !default;\n  inner {\n    $root_implicit: inner;\n    $root_explicit: inner !global;\n    $root_default: inner !default;\n    $local_implicit: inner;\n    $local_explicit: inner !global;\n    $local_default: inner !default;\n  }\n}\nresult {\n  root_default: $root_default;\n  root_implicit: $root_implicit;\n  root_explicit: $root_explicit;\n  @if variable-exists(local_default) {\n    local_default: $local_default;\n  }\n  @if variable-exists(local_implicit) {\n    local_implicit: $local_implicit;\n  }\n  @if variable-exists(local_explicit) {\n    local_explicit: $local_explicit;\n  }\n}\n"
+            "$root_default: initial;\r\n$root_implicit: initial;\r\n$root_explicit: initial !global;\r\n\r\nruleset {\r\n  $root_implicit: outer;\r\n  $root_explicit: outer !global;\r\n  $root_default: outer !default;\r\n  $local_implicit: outer;\r\n  $local_explicit: outer !global;\r\n  $local_default: outer !default;\r\n  inner {\r\n    $root_implicit: inner;\r\n    $root_explicit: inner !global;\r\n    $root_default: inner !default;\r\n    $local_implicit: inner;\r\n    $local_explicit: inner !global;\r\n    $local_default: inner !default;\r\n  }\r\n}\r\n\r\nresult {\r\n  root_default: $root_default;\r\n  root_implicit: $root_implicit;\r\n  root_explicit: $root_explicit;\r\n  @if variable-exists(local_default) {\r\n    local_default: $local_default;\r\n  }\r\n  @if variable-exists(local_implicit) {\r\n    local_implicit: $local_implicit;\r\n  }\r\n  @if variable-exists(local_explicit) {\r\n    local_explicit: $local_explicit;\r\n  }\r\n}\r\n"
         )
         .unwrap(),
         "result {\n  root_default: initial;\n  root_implicit: initial;\n  root_explicit: inner;\n  local_explicit: inner;\n}\n"
     );
 }
 
-// Ignoring "while", not expected to work yet.
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/while"
+#[test]
+#[ignore] // failing
+fn test_while() {
+    assert_eq!(
+        rsass(
+            "$continue_inner: true;\r\n$continue_outer: true;\r\n$root_default: initial;\r\n$root_implicit: initial;\r\n$root_explicit: initial !global;\r\n\r\n@while $continue_outer {\r\n  $root_implicit: outer;\r\n  $root_explicit: outer !global;\r\n  $root_default: outer !default;\r\n  $local_implicit: outer;\r\n  $local_explicit: outer !global;\r\n  $local_default: outer !default;\r\n  @while $continue_inner {\r\n    $root_implicit: inner;\r\n    $root_explicit: inner !global;\r\n    $root_default: inner !default;\r\n    $local_implicit: inner;\r\n    $local_explicit: inner !global;\r\n    $local_default: inner !default;\r\n    $continue_inner: false;\r\n  }\r\n  $continue_outer: false;\r\n}\r\n\r\nresult {\r\n  @if variable-exists(continue_outer) {\r\n    continue_outer: $continue_outer;\r\n  }\r\n  @if variable-exists(continue_inner) {\r\n    continue_inner: $continue_inner;\r\n  }\r\n  root_default: $root_default;\r\n  root_implicit: $root_implicit;\r\n  root_explicit: $root_explicit;\r\n  @if variable-exists(local_default) {\r\n    local_default: $local_default;\r\n  }\r\n  @if variable-exists(local_implicit) {\r\n    local_implicit: $local_implicit;\r\n  }\r\n  @if variable-exists(local_explicit) {\r\n    local_explicit: $local_explicit;\r\n  }\r\n}\r\n"
+        )
+        .unwrap(),
+        "result {\n  continue_outer: false;\n  continue_inner: false;\n  root_default: initial;\n  root_implicit: inner;\n  root_explicit: inner;\n  local_explicit: inner;\n}\n"
+    );
+}
