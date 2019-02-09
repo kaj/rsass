@@ -22,31 +22,31 @@ mod t07_comma_list_complex;
 
 mod t10_escaped_backslash;
 
-// Ignoring "11_escaped_literal", not expected to work yet.
+mod t11_escaped_literal;
 
 mod t12_escaped_double_quoted;
 
 mod t13_escaped_single_quoted;
 
-// Ignoring "14_escapes_literal_numbers", not expected to work yet.
+mod t14_escapes_literal_numbers;
 
 mod t15_escapes_double_quoted_numbers;
 
 mod t16_escapes_single_quoted_numbers;
 
-// Ignoring "17_escapes_literal_lowercase", not expected to work yet.
+mod t17_escapes_literal_lowercase;
 
 mod t18_escapes_double_quoted_lowercase;
 
 mod t19_escapes_single_quoted_lowercase;
 
-// Ignoring "20_escapes_literal_uppercase", not expected to work yet.
+mod t20_escapes_literal_uppercase;
 
 mod t21_escapes_double_quoted_uppercase;
 
 mod t22_escapes_single_quoted_uppercase;
 
-// Ignoring "23_escapes_literal_specials", not expected to work yet.
+mod t23_escapes_literal_specials;
 
 mod t24_escapes_double_quoted_specials;
 

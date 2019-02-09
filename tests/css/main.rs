@@ -1,11 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/css"
-//! version 0f59164a, 2019-02-01 17:21:13 -0800.
+//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["bizarrely_formatted_comments", "custom_properties", "moz_document", "ms_long_filter_syntax", "plain", "selector/slotted", "unknown_directive"]
+//! ["plain"]
 use rsass::{compile_scss, OutputStyle};
 
-// Ignoring "bizarrely_formatted_comments", not expected to work yet.
+/// From "sass-spec/spec/css/bizarrely_formatted_comments"
+#[test]
+#[ignore] // failing
+fn bizarrely_formatted_comments() {
+    assert_eq!(
+        rsass(".foo {\n    /* Foo\n Bar\nBaz */\n  a: b; }\n").unwrap(),
+        ".foo {\n  /* Foo\n   Bar\n  Baz */\n  a: b;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/css/blockless_directive_without_semicolon"
 #[test]
@@ -22,7 +30,7 @@ fn closing_line_comment_end_with_compact_output() {
     );
 }
 
-// Ignoring "custom_properties", not expected to work yet.
+mod custom_properties;
 
 /// From "sass-spec/spec/css/directive_with_lots_of_whitespace"
 #[test]
@@ -52,9 +60,20 @@ mod media;
 
 // Ignoring "min_max", start_version is 3.7.
 
-// Ignoring "moz_document", not expected to work yet.
+mod moz_document;
 
-// Ignoring "ms_long_filter_syntax", not expected to work yet.
+/// From "sass-spec/spec/css/ms_long_filter_syntax"
+#[test]
+#[ignore] // failing
+fn ms_long_filter_syntax() {
+    assert_eq!(
+        rsass(
+            "foo {\n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000);\n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000); }\n"
+        )
+        .unwrap(),
+        "foo {\n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000);\n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000);\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/css/multi_star_comments"
 #[test]
@@ -83,7 +102,7 @@ mod selector;
 
 mod unicode_range;
 
-// Ignoring "unknown_directive", not expected to work yet.
+mod unknown_directive;
 
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)

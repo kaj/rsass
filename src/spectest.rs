@@ -16,8 +16,7 @@ fn main() -> Result<(), Error> {
         &base,
         "basic",
         &[
-            "14_imports", // Need to handle separate files in tests
-            "15_arithmetic_and_lists", // requirements changed
+            "14_imports",           // Need to handle separate files in tests
             "33_ambiguous_imports", // Need to handle separate files in tests
         ],
     )?;
@@ -26,13 +25,7 @@ fn main() -> Result<(), Error> {
         &base,
         "css",
         &[
-            "bizarrely_formatted_comments", // Strange indent?
-            "custom_properties",            // Most fails  :-(
-            "moz_document",                 // Deprecated functionality
-            "ms_long_filter_syntax",        // ?
             "plain", // Need to access separate files in tests
-            "selector/slotted", // Requires @extend
-            "unknown_directive", // ?
         ],
     )?;
     handle_suite(
@@ -40,148 +33,23 @@ fn main() -> Result<(), Error> {
         "libsass",
         &[
             "Sa\u{301}ss-UT\u{327}F8", // resolves to duplicate name
-            "at-error/feature-test",
-            "at-root/ampersand",
-            "at-root/extend",
-            "at-root/138_test_at_root_in_media",
-            "at-root/139_test_at_root_in_bubbled_media",
-            "at-root/140_test_at_root_in_unknown_directive",
-            "at-root/with_without",
-            "at-stuff",
-            "base-level-parent/imported",
-            "base-level-parent/nested/at-root-alone-itpl",
-            "base-level-parent/nested/at-root-postfix-itpl",
-            "base-level-parent/nested/at-root-prefix-itpl",
-            "base-level-parent/root/at-root-postfix-itpl",
-            "base-level-parent/root/at-root-prefix-itpl",
-            "bool",
             "bourbon", // Need to handle separate files in tests
-            "calc",
-            "charset", // actually expects to-upper-case('ø...') to NOT work?
-            "color-functions/opacity/fade-out",
-            "color-functions/opacity/transparentize",
-            "color-functions/other/change-color/a",
-            "color-functions/rgb/rgba/a",
-            "color-functions/saturate",
-            "conversions",
-            "css-import",
-            "css_nth_selectors",
-            "css_unicode",
-            "debug-directive-nested/function",
-            "debug-directive-nested/mixin",
-            "delayed",
-            "div",
-            "env",
-            "features/at-error",
-            "features/extend-selector-pseudoclass",
-            "http_import",
-            "import",
-            "inh", // Requires @extend
-            "inheritance",
-            "interpolated-function-call",
-            "interpolated-urls",
-            "list-evaluation",
-            "lists",
-            "media",
-            "mixin", // requires arbitrary (unknown) units
-            "mixins-and-media-queries",
-            "multi-blocks",
-            "placeholder-mediaquery",
-            "placeholder-nested",
-            "precision/default",
-            "precision/lower",
-            "properties-in-media",
-            "propsets",
-            "rel",
-            "selector-functions/is_superselector",
-            "selector-functions/selector-length",
-            "selector-functions/simple-selector",
-            "selectors/access",
-            "selectors/interpolation",
-            "selectors/mixin-argument",
-            "selectors/simple",
-            "selectors/variables/multiple/bare",
-            "selectors/variables/multiple/interpolated",
-            "selectors/variables/nested/bare",
-            "selectors/variables/nested/interpolated",
-            "test",
-            "unary-ops",
+            "base-level-parent/imported", // multiple input files
+            "selector-functions/is_superselector", // multiple input files
             "unicode-bom/utf-16-big", // rsass only handles utf8
             "unicode-bom/utf-16-little", // rsass only handles utf8
-            "units/conversion/angle",
-            "units/conversion/frequency",
-            "units/conversion/resolution",
-            "units/conversion/size",
-            "units/conversion/time",
-            "units/simple",
-            "url",
-            "variable-scoping/blead-global/expanding/at-root",
-            "variable-scoping/blead-global/expanding/each",
-            "variable-scoping/blead-global/expanding/else",
-            "variable-scoping/blead-global/expanding/elseif",
-            "variable-scoping/blead-global/expanding/for",
-            "variable-scoping/blead-global/expanding/if",
-            "variable-scoping/blead-global/expanding/while",
-            "variable-scoping/blead-global/functional/each",
-            "variable-scoping/blead-global/functional/else",
-            "variable-scoping/blead-global/functional/elseif",
-            "variable-scoping/blead-global/functional/for",
-            "variable-scoping/blead-global/functional/if",
-            "variable-scoping/defaults",
-            "variable-scoping/lexical-scope",
-            "variable-scoping/root-scope",
-            "variables_in_media",
-            "warn-directive-nested/function",
-            "warn-directive-nested/mixin",
+            "debug-directive-nested/function", // panic
+            "warn-directive-nested/function", // panic
         ],
     )?;
-    handle_suite(
-        &base,
-        "misc",
-        &[
-            "mixin_content", // ?
-            "negative_numbers",
-            "JMA-pseudo-test", // Requires @extend
-            "trailing_comma_in_selector",
-            "warn-directive",
-        ],
-    )?;
+    handle_suite(&base, "misc", &[])?;
     handle_suite(&base, "number-functions", &[])?;
-    handle_suite(
-        &base,
-        "parser",
-        &[
-            "interpolate/11_escaped_literal",
-            "interpolate/12_escaped_double_quoted/06_escape_interpolation",
-            "interpolate/13_escaped_single_quoted/06_escape_interpolation",
-            "interpolate/14_escapes_literal_numbers",
-            "interpolate/15_escapes_double_quoted_numbers/06_escape_interpolation",
-            "interpolate/16_escapes_single_quoted_numbers/06_escape_interpolation",
-            "interpolate/17_escapes_literal_lowercase",
-            "interpolate/18_escapes_double_quoted_lowercase/06_escape_interpolation",
-            "interpolate/19_escapes_single_quoted_lowercase/06_escape_interpolation",
-            "interpolate/20_escapes_literal_uppercase",
-            "interpolate/21_escapes_double_quoted_uppercase/06_escape_interpolation",
-            "interpolate/22_escapes_single_quoted_uppercase/06_escape_interpolation",
-            "interpolate/23_escapes_literal_specials",
-            "interpolate/24_escapes_double_quoted_specials/todo_05_variable_quoted_double-4.0",
-            "interpolate/24_escapes_double_quoted_specials/06_escape_interpolation",
-            "interpolate/25_escapes_single_quoted_specials/todo_05_variable_quoted_double-4.0",
-            "interpolate/25_escapes_single_quoted_specials/06_escape_interpolation",
-            "operations/binary-and-unary",
-        ],
-    )?;
+    handle_suite(&base, "parser", &[])?;
     handle_suite(
         &base,
         "selector-functions",
         &[
-            "extend/nested",
-            "extend/simple",
-            "is_superselector",
-            "parse",
-            "replace",
-            "unify/base",
-            "unify/universal_simple",
+            "is_superselector", // multiple input files
         ],
     )?;
     handle_suite(
@@ -191,26 +59,9 @@ fn main() -> Result<(), Error> {
             "multiline-var", // name conflict with other test.
             "mixin-content", // stack overflow?!?
             "huge",          // stack overflow
-            "comparable",
-            "composed-args",
-            "ie-functions",
-            "media/interpolated",
-            "media/nesting/merged",
-            "media/nesting/merged_and_retained",
-            "media/nesting/removed",
-            "media/nesting/retained",
-            "media/script_features",
-            "mixin-content-selectors",
-            "negation",
-            "nested-extend",
-            "newlines_in_selectors",
-            "placeholder",
-            "placeholder-with-media",
-            "precision",
-            "simple-inheritance",
         ],
     )?;
-    handle_suite(&base, "values", &["ids", "numbers/units/multiple"])?;
+    handle_suite(&base, "values", &[])?;
     Ok(())
 }
 
@@ -248,7 +99,7 @@ fn handle_suite(
     }
     writeln!(rs, "use rsass::{{compile_scss, OutputStyle}};",)?;
 
-    handle_entries(&mut rs, &suitedir, &rssuitedir, None, ignored)?;
+    handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)?;
 
     writeln!(
         rs,
@@ -267,6 +118,7 @@ fn handle_suite(
 
 fn handle_entries(
     rs: &mut Write,
+    root: &Path,
     suitedir: &Path,
     rssuitedir: &Path,
     precision: Option<i64>,
@@ -286,7 +138,10 @@ fn handle_entries(
             } else if ignored.iter().any(|&i| &entry.file_name() == i) {
                 ignore(rs, &entry.file_name(), "not expected to work yet")?;
             } else {
-                eprintln!("Should handle {:?}", entry.file_name());
+                eprintln!(
+                    "Should handle {}",
+                    entry.path().strip_prefix(root)?.display()
+                );
                 let input = entry.path().join("input.scss");
                 if input.exists() {
                     spec_to_test(
@@ -338,6 +193,7 @@ fn handle_entries(
                             .collect();
                         handle_entries(
                             &mut rs,
+                            &root,
                             &entry.path(),
                             &rssuitedir,
                             precision,
@@ -367,33 +223,72 @@ fn spec_to_test(
     precision: Option<i64>,
 ) -> Result<(), Error> {
     let specdir = suite.join(test);
-    let options = load_options(&specdir)?;
-    if let Some(ref reason) = options.should_skip {
+    let fixture = load_test_fixture(&specdir)?;
+
+    if let Some(ref reason) = fixture.options.should_skip {
         ignore(rs, &specdir.file_name().unwrap_or_default(), reason)?;
         return Ok(());
     }
-    let precision = options.precision.or(precision);
-    let input = specdir.join("input.scss");
-    let expected = specdir.join("output.css");
-    writeln!(
-        rs,
-        "\n/// From {:?}\
-         \n#[test]\
-         \nfn {}() {{",
-        specdir,
-        fn_name_os(test),
-    )?;
-    if let Some(precision) = precision {
-        writeln!(rs, "    set_precision({});", precision)?;
+    match fixture.expectation {
+        ExpectedError(_) => {
+            // TODO: Support error tests;
+            ignore(
+                rs,
+                &specdir.file_name().unwrap_or_default(),
+                "error tests are not supported yet",
+            )?;
+            return Ok(());
+        }
+        ExpectedCSS(ref expected) => {
+            writeln!(rs, "\n/// From {:?}", specdir)?;
+            rs.write_all(b"#[test]\n")?;
+            if !check_test(&fixture.input, expected) {
+                rs.write_all(b"#[ignore] // failing\n")?;
+            }
+            writeln!(rs, "fn {}() {{", fn_name_os(test))?;
+            let precision = fixture.options.precision.or(precision);
+            if let Some(precision) = precision {
+                writeln!(rs, "    set_precision({});", precision)?;
+            }
+            write_test_input_expected(rs, &fixture.input, expected)?;
+        }
     }
-    let input = format!("{:?}", content(&input)?);
-    let expected = format!("{:?}", content(&expected)?.replace("\r\n", "\n"));
+    rs.write_all(b"}\n")?;
+    Ok(())
+}
+
+fn check_test(input: &str, expected_output: &str) -> bool {
+    match rsass(input) {
+        Ok(ref output) => output == expected_output,
+        Err(_) => false,
+    }
+}
+
+use rsass::{compile_scss, OutputStyle};
+
+fn rsass(input: &str) -> Result<String, String> {
+    compile_scss(input.as_bytes(), OutputStyle::Expanded)
+        .map_err(|e| format!("rsass failed: {}", e))
+        .and_then(|s| {
+            String::from_utf8(s)
+                .map(|s| normalize_output_css(s.as_str()))
+                .map_err(|e| format!("{:?}", e))
+        })
+}
+
+fn write_test_input_expected(
+    rs: &mut Write,
+    input: &str,
+    expected: &str,
+) -> Result<(), std::io::Error> {
+    let input = format!("{:?}", input);
+    let expected = format!("{:?}", expected);
     if input.len() + expected.len() < 45 {
         writeln!(
             rs,
             "    assert_eq!(rsass({}).unwrap(), {});",
             input, expected
-        )?;
+        )
     } else if input.len() < 54 {
         writeln!(
             rs,
@@ -402,7 +297,7 @@ fn spec_to_test(
              \n        {}\
              \n    );",
             input, expected
-        )?;
+        )
     } else if input.len() < 63 {
         writeln!(
             rs,
@@ -412,7 +307,7 @@ fn spec_to_test(
              \n        {}\
              \n    );",
             input, expected
-        )?;
+        )
     } else {
         writeln!(
             rs,
@@ -424,10 +319,8 @@ fn spec_to_test(
              \n        {}\
              \n    );",
             input, expected
-        )?;
+        )
     }
-    writeln!(rs, "}}")?;
-    Ok(())
 }
 
 fn fn_name_os(name: &OsStr) -> String {
@@ -452,50 +345,18 @@ fn fn_name(name: &str) -> String {
     }
 }
 
-fn content(path: &Path) -> Result<String, io::Error> {
-    let mut buf = String::new();
-    File::open(path)?.read_to_string(&mut buf)?;
-    // Normalizes the whitespace in the given CSS to make it easier to compare. Based on:
-    // https://github.com/sass/sass-spec/blob/0f59164aabb3273645fda068d0fb1b879aa3f1dc/lib/sass_spec/util.rb#L5-L7
-    // NOTE: This is done on input and expected output.
-    // The actual result is normalized in a simler way in the rsass function in gereted tests.
-    lazy_static! {
-        static ref RE: Regex = Regex::new("(?:\r?\n)+").unwrap();
-    }
-    Ok(RE.replace_all(&buf, "\n").to_string())
+struct TestFixture {
+    pub input: String,
+    pub expectation: TestExpectation,
+    pub options: Options,
 }
 
-#[derive(Debug)]
-struct Error(String);
-use std::convert::From;
-
-impl From<io::Error> for Error {
-    fn from(e: io::Error) -> Self {
-        Error(format!("io error: {}", e))
-    }
-}
-impl From<std::string::FromUtf8Error> for Error {
-    fn from(e: std::string::FromUtf8Error) -> Self {
-        Error(format!("utf8 error: {}", e))
-    }
-}
-impl From<yaml_rust::ScanError> for Error {
-    fn from(e: yaml_rust::ScanError) -> Self {
-        Error(format!("utf8 error: {}", e))
-    }
-}
-impl From<std::num::ParseFloatError> for Error {
-    fn from(e: std::num::ParseFloatError) -> Self {
-        Error(format!("utf8 error: {}", e))
-    }
+enum TestExpectation {
+    ExpectedCSS(String),
+    ExpectedError(String),
 }
 
-use std::fmt;
-impl fmt::Display for Error {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        self.0.fmt(out)
-    }
-}
+use TestExpectation::{ExpectedCSS, ExpectedError};
 
 use yaml_rust::{Yaml, YamlLoader};
 
@@ -503,6 +364,54 @@ struct Options {
     pub precision: Option<i64>,
     /// None for tests that should work, or Some(reason to skip).
     pub should_skip: Option<String>,
+}
+
+fn normalize_output_css(css: &str) -> String {
+    // Normalizes the whitespace in the given CSS to make it easier to compare. Based on:
+    // https://github.com/sass/sass-spec/blob/0f59164aabb3273645fda068d0fb1b879aa3f1dc/lib/sass_spec/util.rb#L5-L7
+    // NOTE: This is done on input and expected output.
+    // The actual result is normalized in a simler way in the rsass function in generated tests.
+    lazy_static! {
+        static ref RE: Regex = Regex::new("(?:\r?\n)+").unwrap();
+    }
+    RE.replace_all(&css, "\n").to_string()
+}
+
+fn load_test_fixture(specdir: &Path) -> Result<TestFixture, Error> {
+    static INPUT_FILENAME: &str = "input.scss";
+    static EXPECTED_OUTPUT_FILENAME: &str = "output.css";
+    static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
+
+    // TODO: hrx support.
+    let options = load_options(&specdir)?;
+    let input = content(&specdir.join(INPUT_FILENAME))?;
+
+    {
+        let path = specdir.join(EXPECTED_OUTPUT_FILENAME);
+        if path.exists() {
+            return Ok(TestFixture {
+                input: input,
+                options: options,
+                expectation: ExpectedCSS(normalize_output_css(&content(
+                    &path,
+                )?)),
+            });
+        }
+    }
+    for filename in EXPECTED_ERROR_FILENAMES {
+        let path = specdir.join(filename);
+        if path.exists() {
+            return Ok(TestFixture {
+                input: input,
+                expectation: ExpectedError(content(&path)?),
+                options: options,
+            });
+        }
+    }
+    Err(Error(format!(
+        "No expected CSS / error found for {}",
+        specdir.file_name().unwrap_or_default().to_str().unwrap()
+    )))
 }
 
 /// Load options from options.yml.
@@ -558,5 +467,48 @@ fn skip_unstarted(options: &Yaml) -> Result<Option<String>, Error> {
         }
     } else {
         Ok(None)
+    }
+}
+
+fn content(path: &Path) -> Result<String, io::Error> {
+    let mut buf = String::new();
+    File::open(path)?.read_to_string(&mut buf)?;
+    Ok(buf)
+}
+
+#[derive(Debug)]
+struct Error(String);
+use std::convert::From;
+
+impl From<io::Error> for Error {
+    fn from(e: io::Error) -> Self {
+        Error(format!("io error: {}", e))
+    }
+}
+impl From<std::string::FromUtf8Error> for Error {
+    fn from(e: std::string::FromUtf8Error) -> Self {
+        Error(format!("utf8 error: {}", e))
+    }
+}
+impl From<yaml_rust::ScanError> for Error {
+    fn from(e: yaml_rust::ScanError) -> Self {
+        Error(format!("utf8 error: {}", e))
+    }
+}
+impl From<std::num::ParseFloatError> for Error {
+    fn from(e: std::num::ParseFloatError) -> Self {
+        Error(format!("utf8 error: {}", e))
+    }
+}
+impl From<std::path::StripPrefixError> for Error {
+    fn from(e: std::path::StripPrefixError) -> Self {
+        Error(format!("{}", e))
+    }
+}
+
+use std::fmt;
+impl fmt::Display for Error {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        self.0.fmt(out)
     }
 }

@@ -27,18 +27,46 @@ fn t136_test_at_root_with_selector() {
 fn t137_test_at_root_in_mixin() {
     assert_eq!(
         rsass(
-            "@mixin bar {\n  @at-root .bar {a: b}\n}\n.foo {\n  @include bar;\n}\n"
+            "@mixin bar {\n  @at-root .bar {a: b}\n}\n\n.foo {\n  @include bar;\n}\n"
         )
         .unwrap(),
         ".bar {\n  a: b;\n}\n"
     );
 }
 
-// Ignoring "138_test_at_root_in_media", not expected to work yet.
+/// From "sass-spec/spec/libsass/at-root/138_test_at_root_in_media"
+#[test]
+fn t138_test_at_root_in_media() {
+    assert_eq!(
+        rsass(
+            "@media screen {\n  .foo {\n    @at-root .bar {a: b}\n  }\n}\n"
+        )
+        .unwrap(),
+        "@media screen {\n  .bar {\n    a: b;\n  }\n}\n"
+    );
+}
 
-// Ignoring "139_test_at_root_in_bubbled_media", not expected to work yet.
+/// From "sass-spec/spec/libsass/at-root/139_test_at_root_in_bubbled_media"
+#[test]
+fn t139_test_at_root_in_bubbled_media() {
+    assert_eq!(
+        rsass(
+            ".foo {\n  @media screen {\n    @at-root .bar {a: b}\n  }\n}\n"
+        )
+        .unwrap(),
+        "@media screen {\n  .bar {\n    a: b;\n  }\n}\n"
+    );
+}
 
-// Ignoring "140_test_at_root_in_unknown_directive", not expected to work yet.
+/// From "sass-spec/spec/libsass/at-root/140_test_at_root_in_unknown_directive"
+#[test]
+fn t140_test_at_root_in_unknown_directive() {
+    assert_eq!(
+        rsass("@fblthp {\n  .foo {\n    @at-root .bar {a: b}\n  }\n}\n")
+            .unwrap(),
+        "@fblthp {\n  .bar {\n    a: b;\n  }\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/libsass/at-root/141_test_at_root_with_parent_ref"
 #[test]
@@ -73,28 +101,49 @@ fn t143_test_multi_level_at_root_with_inner_parent_ref() {
     );
 }
 
-// Ignoring "ampersand", not expected to work yet.
+/// From "sass-spec/spec/libsass/at-root/ampersand"
+#[test]
+fn ampersand() {
+    assert_eq!(
+        rsass(
+            "foo {\n  @at-root {\n    & {\n      color: blue;\n    }\n\n    &--modifier {\n      color: red;\n    }\n  }\n}\n"
+        )
+        .unwrap(),
+        "foo {\n  color: blue;\n}\nfoo--modifier {\n  color: red;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/libsass/at-root/basic"
 #[test]
 fn basic() {
     assert_eq!(
         rsass(
-            "foo {\n  color: blue;\n  @at-root {\n    bar {\n      color: red;\n    }\n  }\n}\nfoo {\n  color: blue;\n  @at-root bar {\n    color: red;\n  }\n}\n"
+            "foo {\n  color: blue;\n\n  @at-root {\n    bar {\n      color: red;\n    }\n  }\n}\n\nfoo {\n  color: blue;\n\n  @at-root bar {\n    color: red;\n  }\n}\n"
         )
         .unwrap(),
         "foo {\n  color: blue;\n}\nbar {\n  color: red;\n}\nfoo {\n  color: blue;\n}\nbar {\n  color: red;\n}\n"
     );
 }
 
-// Ignoring "extend", not expected to work yet.
+/// From "sass-spec/spec/libsass/at-root/extend"
+#[test]
+#[ignore] // failing
+fn extend() {
+    assert_eq!(
+        rsass(
+            "foo {\n  @at-root {\n    %placeholder {\n      color: red;\n    }\n  }\n\n  baz {\n    @at-root {\n      %other-placeholder {\n        color: blue;\n      }\n    }\n  }\n}\n\nbar {\n  @extend %placeholder;\n}\n\nbaz {\n  @extend %other-placeholder;\n}\n"
+        )
+        .unwrap(),
+        "bar {\n  color: red;\n}\nbaz {\n  color: blue;\n}\n"
+    );
+}
 
 /// From "sass-spec/spec/libsass/at-root/keyframes"
 #[test]
 fn keyframes() {
     assert_eq!(
         rsass(
-            "foo {\n  color: red;\n  @at-root {\n    @keyframes animation {\n      to { color: red; }\n    }\n  }\n  bar {\n    color: blue;\n    @at-root {\n      @keyframes other-animation {\n        to { color: blue; }\n      }\n    }\n  }\n}\n"
+            "foo {\n  color: red;\n\n  @at-root {\n    @keyframes animation {\n      to { color: red; }\n    }\n  }\n\n  bar {\n    color: blue;\n\n    @at-root {\n      @keyframes other-animation {\n        to { color: blue; }\n      }\n    }\n  }\n}\n"
         )
         .unwrap(),
         "foo {\n  color: red;\n}\n@keyframes animation {\n  to {\n    color: red;\n  }\n}\nfoo bar {\n  color: blue;\n}\n@keyframes other-animation {\n  to {\n    color: blue;\n  }\n}\n"
@@ -106,7 +155,7 @@ fn keyframes() {
 fn media() {
     assert_eq!(
         rsass(
-            "foo {\n  @at-root {\n    @media print {\n      bar {\n        color: red;\n      }\n    }\n    baz {\n      @media speech {\n        color: blue;\n      }\n    }\n  }\n}\n"
+            "foo {\n  @at-root {\n    @media print {\n      bar {\n        color: red;\n      }\n    }\n\n    baz {\n      @media speech {\n        color: blue;\n      }\n    }\n  }\n}\n"
         )
         .unwrap(),
         "@media print {\n  bar {\n    color: red;\n  }\n}\n@media speech {\n  baz {\n    color: blue;\n  }\n}\n"
@@ -118,11 +167,22 @@ fn media() {
 fn nested() {
     assert_eq!(
         rsass(
-            "foo {\n  color: blue;\n  baz {\n    color: purple;\n    @at-root {\n      bar {\n        color: red;\n      }\n    }\n  }\n}\nfoo {\n  color: blue;\n  baz {\n    color: purple;\n    @at-root bar {\n      color: red;\n    }\n  }\n}\n"
+            "foo {\n  color: blue;\n\n  baz {\n    color: purple;\n\n    @at-root {\n      bar {\n        color: red;\n      }\n    }\n  }\n}\n\nfoo {\n  color: blue;\n\n  baz {\n    color: purple;\n\n    @at-root bar {\n      color: red;\n    }\n  }\n}\n"
         )
         .unwrap(),
         "foo {\n  color: blue;\n}\nfoo baz {\n  color: purple;\n}\nbar {\n  color: red;\n}\nfoo {\n  color: blue;\n}\nfoo baz {\n  color: purple;\n}\nbar {\n  color: red;\n}\n"
     );
 }
 
-// Ignoring "with_without", not expected to work yet.
+/// From "sass-spec/spec/libsass/at-root/with_without"
+#[test]
+#[ignore] // failing
+fn with_without() {
+    assert_eq!(
+        rsass(
+            "// Unquoted\n\n@media (min-width: 1337px) {\n  .foo {\n    content: baz;\n  }\n\n  @at-root (without: media) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  .foo {\n    content: baz;\n  }\n\n  @at-root (without: all) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n\n@supports (color: red) {\n  .foo {\n    content: baz;\n  }\n\n  @at-root (without: supports) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n\n@supports (color: red) {\n  .foo {\n    content: baz;\n  }\n\n  @at-root (without: all) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (without: all) {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (without: media supports) {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (without: media) {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (without: supports) {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (with: all) {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (with: media supports) {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (with: media) {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (with: supports) {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n// Quoted\n\n@media (min-width: 1337px) {\n  .foo {\n    content: baz;\n  }\n\n  @at-root (without: \"media\") {\n    .foo {\n      content: bar;\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  .foo {\n    content: baz;\n  }\n\n  @at-root (without: \"all\") {\n    .foo {\n      content: bar;\n    }\n  }\n}\n\n@supports (color: red) {\n  .foo {\n    content: baz;\n  }\n\n  @at-root (without: \"supports\") {\n    .foo {\n      content: bar;\n    }\n  }\n}\n\n@supports (color: red) {\n  .foo {\n    content: baz;\n  }\n\n  @at-root (without: \"all\") {\n    .foo {\n      content: bar;\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (without: \"all\") {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (without: \"media\" \"supports\") {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (without: \"media\" supports) {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (without: media \"supports\") {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (without: \"media\") {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (without: \"supports\") {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (with: \"all\") {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (with: \"media\" \"supports\") {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (with: \"media\" supports) {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (with: media \"supports\") {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (with: \"media\") {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    @at-root (with: \"supports\") {\n      .foo {\n        content: bar;\n      }\n    }\n  }\n}\n"
+        )
+        .unwrap(),
+        "@media (min-width: 1337px) {\n  .foo {\n    content: baz;\n  }\n}\n.foo {\n  content: bar;\n}\n@media (min-width: 1337px) {\n  .foo {\n    content: baz;\n  }\n}\n.foo {\n  content: bar;\n}\n@supports (color: red) {\n  .foo {\n    content: baz;\n  }\n}\n.foo {\n  content: bar;\n}\n@supports (color: red) {\n  .foo {\n    content: baz;\n  }\n}\n.foo {\n  content: bar;\n}\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n.foo {\n  content: bar;\n}\n.foo {\n  content: bar;\n}\n@supports (color: red) {\n  .foo {\n    content: bar;\n  }\n}\n@media (min-width: 1337px) {\n  .foo {\n    content: bar;\n  }\n}\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n@media (min-width: 1337px) {\n  .foo {\n    content: bar;\n  }\n}\n@supports (color: red) {\n  .foo {\n    content: bar;\n  }\n}\n@media (min-width: 1337px) {\n  .foo {\n    content: baz;\n  }\n}\n.foo {\n  content: bar;\n}\n@media (min-width: 1337px) {\n  .foo {\n    content: baz;\n  }\n}\n.foo {\n  content: bar;\n}\n@supports (color: red) {\n  .foo {\n    content: baz;\n  }\n}\n.foo {\n  content: bar;\n}\n@supports (color: red) {\n  .foo {\n    content: baz;\n  }\n}\n.foo {\n  content: bar;\n}\n.foo {\n  content: bar;\n}\n.foo {\n  content: bar;\n}\n.foo {\n  content: bar;\n}\n.foo {\n  content: bar;\n}\n@supports (color: red) {\n  .foo {\n    content: bar;\n  }\n}\n@media (min-width: 1337px) {\n  .foo {\n    content: bar;\n  }\n}\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n@media (min-width: 1337px) {\n  @supports (color: red) {\n    .foo {\n      content: bar;\n    }\n  }\n}\n@media (min-width: 1337px) {\n  .foo {\n    content: bar;\n  }\n}\n@supports (color: red) {\n  .foo {\n    content: bar;\n  }\n}\n"
+    );
+}

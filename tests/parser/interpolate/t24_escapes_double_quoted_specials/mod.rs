@@ -52,8 +52,8 @@ fn t04_variable_double() {
     );
 }
 
-// Ignoring "06_escape_interpolation", not expected to work yet.
+// Ignoring "06_escape_interpolation", start_version is 3.7.
 
 // Ignoring "todo_05_variable_quoted_double", end_version is 3.5.
 
-// Ignoring "todo_05_variable_quoted_double-4.0", not expected to work yet.
+// Ignoring "todo_05_variable_quoted_double-4.0", start_version is 4.0.
