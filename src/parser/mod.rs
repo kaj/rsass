@@ -12,7 +12,7 @@ use self::util::{comment, ignore_space, name, opt_spacelike, spacelike};
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
-use crate::error::Error;
+use crate::error::{ErrPos, Error};
 use crate::functions::SassFunction;
 #[cfg(test)]
 use crate::sass::{CallArgs, FormalArgs};
@@ -45,34 +45,35 @@ pub fn parse_scss_file(file: &Path) -> Result<Vec<Item>, Error> {
     let mut data = vec![];
     f.read_to_end(&mut data)
         .map_err(|e| Error::Input(file.into(), e))?;
-    parse_scss_data(&data)
+    parse_scss_data(&data).map_err(|(pos, kind)| Error::ParseError {
+        file: file.to_string_lossy().into(),
+        pos: ErrPos::pos_of(pos, &data),
+        kind,
+    })
 }
 
 /// Parse scss data from a buffer.
 ///
 /// Returns a vec of the top level items of the file (or an error message).
-pub fn parse_scss_data(data: &[u8]) -> Result<Vec<Item>, Error> {
+pub fn parse_scss_data(
+    data: &[u8],
+) -> Result<Vec<Item>, (usize, Option<ErrorKind>)> {
     match sassfile(Input(data)) {
         Ok((Input(b""), items)) => Ok(items),
-        Ok((rest, _styles)) => {
-            let t = from_utf8(&rest)
-                .map(|s| s.to_string())
-                .unwrap_or_else(|_| format!("{:?}", rest));
-            Err(Error::S(format!(
-                "Failed to parse entire input: `{}` remains.",
-                t
-            )))
+        Ok((rest, _styles)) => Err((data.len() - rest.len(), None)),
+        Err(Err::Incomplete(_needed)) => Err((data.len(), None)),
+        Err(Err::Error(Context::Code(rest, ek))) => {
+            Err((data.len() - rest.len(), Some(ek)))
         }
-        Err(Err::Incomplete(x)) => {
-            Err(Error::S(format!("Incomplete: {:?}", x)))
+        Err(Err::Failure(Context::Code(rest, ek))) => {
+            Err((data.len() - rest.len(), Some(ek)))
         }
-        Err(x) => Err(Error::S(format!("Error: {:?}", x))),
     }
 }
 
 named!(
     sassfile<Input, Vec<Item>>,
-    preceded!(
+    delimited!(
         opt!(tag!("\u{feff}".as_bytes())),
         many0!(alt!(value!(Item::None, spacelike) |
                     import |
@@ -87,7 +88,8 @@ named!(
                     at_rule |
                     rule |
                     map!(map_res!(comment, input_to_string), Item::Comment)
-        ))
+        )),
+        eof!()
     )
 );
 
