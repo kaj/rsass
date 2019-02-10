@@ -8,9 +8,7 @@ pub mod value;
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
 use self::strings::{sass_string, sass_string_dq, sass_string_sq};
-use self::util::{
-    comment, comment2, ignore_space, name, opt_spacelike, spacelike,
-};
+use self::util::{comment2, ignore_space, name, opt_spacelike, spacelike};
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
@@ -138,40 +136,71 @@ named!(
 
 named!(
     rule<Input, Item>,
-    do_parse!(
-        opt_spacelike
-            >> selectors: selectors
-            >> opt!(is_a!(", \t\n"))
-            >> body: body_block
-            >> (Item::Rule(selectors, body))
+    map!(
+        pair!(
+            rule_start,
+            body_block2
+        ),
+        |(selectors, body)| Item::Rule(selectors, body)
+    )
+);
+
+named!(
+    rule_start<Input, Selectors>,
+    terminated!(
+        selectors,
+        terminated!(opt!(is_a!(", \t\n")), tag!("{"))
     )
 );
 
 named!(
     body_item<Input, Item>,
-    alt_complete!(
-        value!(Item::None, spacelike)
-            | mixin_declaration
-            | variable_declaration
-            | rule
-            | namespace_rule
-            | property
-            | each_loop
-            | for_loop
-            | while_loop
-            | function_declaration
-            | mixin_call
-            | import
-            | at_root
-            | if_statement
-            | return_stmt
-            | content_stmt
-            | at_rule
-            | value!(
-                Item::None,
-                delimited!(opt_spacelike, tag!(";"), opt_spacelike)
+    switch!(
+        alt!(
+            tag!("$") |
+            tag!("/*") |
+            tag!(";") |
+            tag!("@at-root") |
+            tag!("@content") |
+            tag!("@each") |
+            tag!("@for") |
+            tag!("@function") |
+            tag!("@if") |
+            tag!("@import") |
+            tag!("@include") |
+            tag!("@mixin") |
+            tag!("@return") |
+            tag!("@while") |
+            tag!("@") |
+            tag!("")
+        ),
+        Input(b"$") => call!(variable_declaration2) |
+        Input(b"/*") => map!(map_res!(comment2, input_to_string),
+                             Item::Comment) |
+        Input(b";") => value!(Item::None) |
+        Input(b"@at-root") => call!(at_root2) |
+        Input(b"@content") => call!(content_stmt2) |
+        Input(b"@each") => call!(each_loop2) |
+        Input(b"@for") => call!(for_loop2) |
+        Input(b"@function") => call!(function_declaration2) |
+        Input(b"@if") => call!(if_statement2) |
+        Input(b"@import") => call!(import2) |
+        Input(b"@include") => call!(mixin_call2) |
+        Input(b"@mixin") => call!(mixin_declaration2) |
+        Input(b"@return") => call!(return_stmt2) |
+        Input(b"@while") => call!(while_loop2) |
+        Input(b"@") => call!(at_rule2) |
+        Input(b"") => switch!(
+            opt!(rule_start),
+            Some(selectors) => map!(
+                body_block2,
+                |body| Item::Rule(selectors, body)
+            ) |
+            None => alt_complete!(
+                namespace_rule
+                    | property
             )
-            | map!(map_res!(comment, input_to_string), Item::Comment)
+        )
     )
 );
 
@@ -189,8 +218,12 @@ named!(
 
 named!(
     at_root<Input, Item>,
+    preceded!(tag!("@at-root"), at_root2));
+
+named!(
+    at_root2<Input, Item>,
     preceded!(
-        terminated!(tag!("@at-root"), opt_spacelike),
+        opt_spacelike,
         map!(
             pair!(
                 map!(opt!(selectors), |s| s
@@ -409,9 +442,12 @@ named!(
 
 named!(
     return_stmt<Input, Item>,
+    preceded!(tag!("@return"), return_stmt2));
+
+named!(
+    return_stmt2<Input, Item>,
     do_parse!(
-        tag!("@return")
-            >> spacelike
+        spacelike
             >> v: value_expression
             >> opt_spacelike
             >> opt!(tag!(";"))
@@ -421,9 +457,12 @@ named!(
 
 named!(
     content_stmt<Input, Item>,
+    preceded!(tag!("@content"), content_stmt2));
+
+named!(
+    content_stmt2<Input, Item>,
     do_parse!(
-        tag!("@content")
-            >> opt_spacelike
+        opt_spacelike
             >> opt!(tag!(";"))
             >> (Item::Content)
     )
@@ -440,8 +479,7 @@ named!(property<Input, Item>,
 named!(
     namespace_rule<Input, Item>,
     do_parse!(
-        opt_spacelike
-            >> n1: sass_string
+        n1: sass_string
             >> opt_spacelike
             >> tag!(":")
             >> opt_spacelike
@@ -454,10 +492,17 @@ named!(
 
 named!(
     body_block<Input, Vec<Item>>,
+    preceded!(tag!("{"), body_block2));
+
+named!(
+    body_block2<Input, Vec<Item>>,
     preceded!(
-        preceded!(tag!("{"), opt_spacelike),
+        opt_spacelike,
         map!(
-            many_till!(body_item, tag!("}")),
+            many_till!(
+                terminated!(body_item, opt_spacelike),
+                tag!("}")
+            ),
             |(v, _end)| v
         )
     )
@@ -518,13 +563,10 @@ fn if_with_no_else() {
             Input(b"\n"),
             Item::IfStatement(
                 Value::True,
-                vec![
-                    Item::Rule(
-                        selectors(Input(b"p")).unwrap().1,
-                        vec![Item::Property("color".into(), Value::black())],
-                    ),
-                    Item::None,
-                ],
+                vec![Item::Rule(
+                    selectors(Input(b"p")).unwrap().1,
+                    vec![Item::Property("color".into(), Value::black())],
+                )],
                 vec![]
             )
         ))
@@ -653,7 +695,6 @@ fn test_mixin_declaration_default_and_subrules() {
                             Value::Variable("b".into()),
                         )],
                     ),
-                    Item::None,
                 ],
             }
         ))
