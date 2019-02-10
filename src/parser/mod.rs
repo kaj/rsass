@@ -8,7 +8,9 @@ pub mod value;
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
 use self::strings::{sass_string, sass_string_dq, sass_string_sq};
-use self::util::{comment, ignore_space, name, opt_spacelike, spacelike};
+use self::util::{
+    comment, comment2, ignore_space, name, opt_spacelike, spacelike,
+};
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
@@ -65,31 +67,72 @@ pub fn parse_scss_data(
         Err(Err::Error(Context::Code(rest, ek))) => {
             Err((data.len() - rest.len(), Some(ek)))
         }
+        Err(Err::Error(Context::List(list))) => {
+            if let Some((rest, ek)) = list.first() {
+                Err((data.len() - rest.len(), Some(ek.clone())))
+            } else {
+                Err((0, None))
+            }
+        }
         Err(Err::Failure(Context::Code(rest, ek))) => {
             Err((data.len() - rest.len(), Some(ek)))
+        }
+        Err(Err::Failure(Context::List(list))) => {
+            if let Some((rest, ek)) = list.first() {
+                Err((data.len() - rest.len(), Some(ek.clone())))
+            } else {
+                Err((0, None))
+            }
         }
     }
 }
 
 named!(
     sassfile<Input, Vec<Item>>,
-    delimited!(
+    preceded!(
         opt!(tag!("\u{feff}".as_bytes())),
-        many0!(alt!(value!(Item::None, spacelike) |
-                    import |
-                    variable_declaration |
-                    mixin_declaration |
-                    each_loop |
-                    for_loop |
-                    while_loop |
-                    function_declaration |
-                    mixin_call |
-                    if_statement |
-                    at_rule |
-                    rule |
-                    map!(map_res!(comment, input_to_string), Item::Comment)
-        )),
-        eof!()
+        map!(
+            many_till!(
+                preceded!(opt_spacelike, top_level_item),
+                preceded!(opt_spacelike, eof!())
+            ),
+            |(v, _eof)| v
+        )
+    )
+);
+
+named!(
+    top_level_item<Input, Item>,
+    switch!(
+        alt!(
+            tag!("$") |
+            tag!("/*") |
+            tag!("@each") |
+            tag!("@for") |
+            tag!("@function") |
+            tag!("@if") |
+            tag!("@import") |
+            tag!("@include") |
+            tag!("@mixin") |
+            tag!("@while") |
+            tag!("@") |
+            tag!("")
+        ),
+        Input(b"$") => call!(variable_declaration2) |
+        Input(b"/*") => map!(
+            map_res!(comment2, input_to_string),
+            Item::Comment
+        ) |
+        Input(b"@each") => call!(each_loop2) |
+        Input(b"@for") => call!(for_loop2) |
+        Input(b"@function") => call!(function_declaration2) |
+        Input(b"@if") => call!(if_statement2) |
+        Input(b"@import") => call!(import2) |
+        Input(b"@include") => call!(mixin_call2) |
+        Input(b"@mixin") => call!(mixin_declaration2) |
+        Input(b"@while") => call!(while_loop2) |
+        Input(b"@") => call!(at_rule2) |
+        Input(b"") => call!(rule)
     )
 );
 
@@ -134,8 +177,12 @@ named!(
 
 named!(
     import<Input, Item>,
+    preceded!(tag!("@import"), import2));
+
+named!(
+    import2<Input, Item>,
     map!(
-        delimited!(tag!("@import "), value_expression, tag!(";")),
+        delimited!(tag!(" "), value_expression, tag!(";")),
         Item::Import
     )
 );
@@ -157,9 +204,12 @@ named!(
 
 named!(
     mixin_call<Input, Item>,
+    preceded!(tag!("@include"), mixin_call2));
+
+named!(
+    mixin_call2<Input, Item>,
     do_parse!(
-        tag!("@include")
-            >> spacelike
+        spacelike
             >> name: name
             >> opt_spacelike
             >> args: opt!(call_args)
@@ -177,9 +227,12 @@ named!(
 
 named!(
     at_rule<Input, Item>,
+    preceded!(tag!("@"), at_rule2));
+
+named!(
+    at_rule2<Input, Item>,
     do_parse!(
-        tag!("@")
-            >> name: name
+        name: name
             >> args: many0!(preceded!(
                 opt!(ignore_space),
                 alt!(
@@ -216,13 +269,18 @@ named!(
     )
 );
 
-named!(if_statement<Input, Item>, preceded!(tag!("@"), if_statement_inner));
+named!(
+    if_statement<Input, Item>,
+    preceded!(tag!("@if"), if_statement2));
 
 named!(
     if_statement_inner<Input, Item>,
+    preceded!(tag!("if"), if_statement2));
+
+named!(
+    if_statement2<Input, Item>,
     do_parse!(
-        tag!("if")
-            >> spacelike
+        spacelike
             >> cond: value_expression
             >> opt_spacelike
             >> body: body_block
@@ -239,10 +297,14 @@ named!(
 
 named!(
     each_loop<Input, Item>,
+    preceded!(tag!("@each"), each_loop2));
+
+named!(
+    each_loop2<Input, Item>,
     map!(
         tuple!(
             preceded!(
-                terminated!(tag!("@each"), spacelike),
+                spacelike,
                 separated_nonempty_list!(
                     complete!(delimited!(
                         opt_spacelike,
@@ -265,9 +327,12 @@ named!(
 
 named!(
     for_loop<Input, Item>,
+    preceded!(tag!("@for"), for_loop2));
+
+named!(
+    for_loop2<Input, Item>,
     do_parse!(
-        tag!("@for")
-            >> spacelike
+        spacelike
             >> tag!("$")
             >> name: name
             >> spacelike
@@ -295,9 +360,12 @@ named!(
 
 named!(
     while_loop<Input, Item>,
+    preceded!(tag!("@while"), while_loop2));
+
+named!(
+    while_loop2<Input, Item>,
     do_parse!(
-        tag!("@while")
-            >> spacelike
+        spacelike
             >> cond: value_expression
             >> spacelike
             >> body: body_block
@@ -306,7 +374,10 @@ named!(
 );
 
 named!(mixin_declaration<Input, Item>,
-       do_parse!(tag!("@mixin") >> spacelike >>
+       preceded!(tag!("@mixin"), mixin_declaration2));
+
+named!(mixin_declaration2<Input, Item>,
+       do_parse!(spacelike >>
                  name: name >> opt_spacelike >>
                  args: opt!(formal_args) >> opt_spacelike >>
                  body: body_block >>
@@ -318,9 +389,12 @@ named!(mixin_declaration<Input, Item>,
 
 named!(
     function_declaration<Input, Item>,
+    preceded!(tag!("@function"), function_declaration2));
+
+named!(
+    function_declaration2<Input, Item>,
     do_parse!(
-        tag!("@function")
-            >> spacelike
+        spacelike
             >> name: name
             >> opt_spacelike
             >> args: formal_args
@@ -380,18 +454,24 @@ named!(
 
 named!(
     body_block<Input, Vec<Item>>,
-    delimited!(
+    preceded!(
         preceded!(tag!("{"), opt_spacelike),
-        many0!(body_item),
-        tag!("}")
+        map!(
+            many_till!(body_item, tag!("}")),
+            |(v, _end)| v
+        )
     )
 );
 
 named!(
     variable_declaration<Input, Item>,
+    preceded!(tag!("$"), variable_declaration2)
+);
+
+named!(
+    variable_declaration2<Input, Item>,
     do_parse!(
-        tag!("$")
-            >> name: name
+        name: name
             >> opt_spacelike
             >> tag!(":")
             >> opt_spacelike
