@@ -1,6 +1,6 @@
 [package]
 name = "rsass"
-version = "0.9.7-PRE"
+version = "0.9.8"
 authors = ["Rasmus Kaj <kaj@kth.se>"]
 categories = ["command-line-utilities", "web-programming"]
 keywords = ["scss", "sass", "css"]
@@ -34,7 +34,7 @@ num-traits = "^0.2.0"
 rand = "0.6.1"
 clap = { version = "^2.19", features = ["color", "wrap_help"], optional = true }
 deunicode = { version = "0.4", optional = true }
-regex = { version = "*", optional = true }
+regex = { version = "1.1.0", optional = true }
 yaml-rust = { version = "0.4", optional = true }
 
 [badges]
