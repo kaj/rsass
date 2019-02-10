@@ -1,5 +1,3 @@
-//! These are from the `output_styles/compressed/basic` directory in the
-//! sass specification.
 use rsass::{compile_scss, OutputStyle};
 
 #[test]
@@ -18,7 +16,7 @@ fn unicode_in_expanded() {
 #[test]
 fn unicode_in_compressed() {
     // Blåbärsöl is a proper swedish word.  Translates to blueberry beer.
-    // The charset declaration is replace with a byte order mark.
+    // The charset declaration is replaced with a byte order mark.
     check(
         "a {\n  \
          content: \"Blåbärsöl\";\n\

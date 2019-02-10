@@ -20,6 +20,7 @@ fn main() -> Result<(), Error> {
             "33_ambiguous_imports", // Need to handle separate files in tests
         ],
     )?;
+    handle_suite(&base, "core_functions", &[])?;
     handle_suite(&base, "colors", &[])?;
     handle_suite(
         &base,
@@ -43,6 +44,7 @@ fn main() -> Result<(), Error> {
         ],
     )?;
     handle_suite(&base, "misc", &[])?;
+    handle_suite(&base, "mixin", &[])?;
     handle_suite(&base, "number-functions", &[])?;
     handle_suite(&base, "parser", &[])?;
     handle_suite(
@@ -52,6 +54,7 @@ fn main() -> Result<(), Error> {
             "is_superselector", // multiple input files
         ],
     )?;
+    handle_suite(&base, "scope", &[])?;
     handle_suite(
         &base,
         "scss",
@@ -61,6 +64,7 @@ fn main() -> Result<(), Error> {
             "huge",          // stack overflow
         ],
     )?;
+    handle_suite(&base, "scss-tests", &[])?;
     handle_suite(&base, "values", &[])?;
     Ok(())
 }
