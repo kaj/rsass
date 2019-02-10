@@ -26,7 +26,6 @@ mod three_args;
 
 /// From "sass-spec/spec/core_functions/color/rgba/two_args"
 #[test]
-#[ignore] // failing
 fn two_args() {
     assert_eq!(
         rsass(

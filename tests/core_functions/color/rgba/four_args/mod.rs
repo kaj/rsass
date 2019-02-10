@@ -8,7 +8,6 @@ use rsass::set_precision;
 
 /// From "sass-spec/spec/core_functions/color/rgba/four_args/alpha_unitless"
 #[test]
-#[ignore] // failing
 fn alpha_unitless() {
     assert_eq!(
         rsass(
@@ -21,7 +20,6 @@ fn alpha_unitless() {
 
 /// From "sass-spec/spec/core_functions/color/rgba/four_args/basic"
 #[test]
-#[ignore] // failing
 fn basic() {
     assert_eq!(
         rsass(

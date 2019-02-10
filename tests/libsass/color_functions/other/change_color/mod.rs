@@ -6,7 +6,6 @@ use rsass::set_precision;
 
 /// From "sass-spec/spec/libsass/color-functions/other/change-color/a"
 #[test]
-#[ignore] // failing
 fn a() {
     assert_eq!(
         rsass(

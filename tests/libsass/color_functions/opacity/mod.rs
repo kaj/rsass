@@ -30,7 +30,6 @@ fn fade_in() {
 
 /// From "sass-spec/spec/libsass/color-functions/opacity/fade-out"
 #[test]
-#[ignore] // failing
 fn fade_out() {
     assert_eq!(
         rsass(
@@ -61,7 +60,6 @@ fn opacity() {
 
 /// From "sass-spec/spec/libsass/color-functions/opacity/transparentize"
 #[test]
-#[ignore] // failing
 fn transparentize() {
     assert_eq!(
         rsass(

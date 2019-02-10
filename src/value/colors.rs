@@ -92,6 +92,9 @@ impl Rgba {
         }
     }
     pub fn from_name(name: &str) -> Option<Self> {
+        if name == "transparent" {
+            return Some(Self::from_rgba(0, 0, 0, 0));
+        }
         LOOKUP.n2v.get(name).map(|n| {
             // Note: nicer but not yet supported code:
             // let [_, r, g, b] = n.to_be().to_bytes()
@@ -231,7 +234,7 @@ impl Display for Rgba {
             } else {
                 write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
             }
-        } else if self.all_zero() {
+        } else if out.alternate() && self.all_zero() {
             write!(out, "transparent")
         } else if out.alternate() {
             // I think the last {} should be {:#} here,
