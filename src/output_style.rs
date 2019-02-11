@@ -594,8 +594,8 @@ impl OutputStyle {
                 Item::NamespaceRule(ref name, ref value, ref body) => {
                     let value = value.evaluate(scope)?;
                     if !value.is_null() {
-                        direct
-                            .push(CssBodyItem::Property(name.clone(), value));
+                        let (name, _quotes) = name.evaluate(scope)?;
+                        direct.push(CssBodyItem::Property(name, value));
                     }
                     let mut t = Vec::new();
                     self.handle_body(

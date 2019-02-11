@@ -365,7 +365,7 @@ named!(
     namespace_rule<Input, Item>,
     do_parse!(
         opt_spacelike
-            >> n1: name
+            >> n1: sass_string
             >> opt_spacelike
             >> tag!(":")
             >> opt_spacelike
