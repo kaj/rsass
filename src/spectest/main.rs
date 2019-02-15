@@ -1,6 +1,4 @@
 use deunicode::deunicode;
-use lazy_static::lazy_static;
-use regex::Regex;
 use std::ffi::OsStr;
 use std::fs::{create_dir, DirEntry, File};
 use std::io::{self, Read, Write};
@@ -9,6 +7,11 @@ use std::process::Command;
 
 /// Sass spec version targeted.
 const VERSION: f32 = 3.6;
+
+mod options;
+use options::Options;
+mod testfixture;
+use testfixture::TestFixture;
 
 fn main() -> Result<(), Error> {
     let base = PathBuf::from("sass-spec/spec");
@@ -228,103 +231,7 @@ fn spec_to_test(
 ) -> Result<(), Error> {
     let specdir = suite.join(test);
     let fixture = load_test_fixture(&specdir)?;
-
-    if let Some(ref reason) = fixture.options.should_skip {
-        ignore(rs, &specdir.file_name().unwrap_or_default(), reason)?;
-        return Ok(());
-    }
-    match fixture.expectation {
-        ExpectedError(_) => {
-            // TODO: Support error tests;
-            ignore(
-                rs,
-                &specdir.file_name().unwrap_or_default(),
-                "error tests are not supported yet",
-            )?;
-            return Ok(());
-        }
-        ExpectedCSS(ref expected) => {
-            writeln!(rs, "\n/// From {:?}", specdir)?;
-            rs.write_all(b"#[test]\n")?;
-            if !check_test(&fixture.input, expected) {
-                rs.write_all(b"#[ignore] // failing\n")?;
-            }
-            writeln!(rs, "fn {}() {{", fn_name_os(test))?;
-            let precision = fixture.options.precision.or(precision);
-            if let Some(precision) = precision {
-                writeln!(rs, "    set_precision({});", precision)?;
-            }
-            write_test_input_expected(rs, &fixture.input, expected)?;
-        }
-    }
-    rs.write_all(b"}\n")?;
-    Ok(())
-}
-
-fn check_test(input: &str, expected_output: &str) -> bool {
-    match rsass(input) {
-        Ok(ref output) => output == expected_output,
-        Err(_) => false,
-    }
-}
-
-use rsass::{compile_scss, OutputStyle};
-
-fn rsass(input: &str) -> Result<String, String> {
-    compile_scss(input.as_bytes(), OutputStyle::Expanded)
-        .map_err(|e| format!("rsass failed: {}", e))
-        .and_then(|s| {
-            String::from_utf8(s)
-                .map(|s| normalize_output_css(s.as_str()))
-                .map_err(|e| format!("{:?}", e))
-        })
-}
-
-fn write_test_input_expected(
-    rs: &mut Write,
-    input: &str,
-    expected: &str,
-) -> Result<(), std::io::Error> {
-    let input = format!("{:?}", input);
-    let expected = format!("{:?}", expected);
-    if input.len() + expected.len() < 45 {
-        writeln!(
-            rs,
-            "    assert_eq!(rsass({}).unwrap(), {});",
-            input, expected
-        )
-    } else if input.len() < 54 {
-        writeln!(
-            rs,
-            "    assert_eq!(\
-             \n        rsass({}).unwrap(),\
-             \n        {}\
-             \n    );",
-            input, expected
-        )
-    } else if input.len() < 63 {
-        writeln!(
-            rs,
-            "    assert_eq!(\
-             \n        rsass({})\
-             \n            .unwrap(),\
-             \n        {}\
-             \n    );",
-            input, expected
-        )
-    } else {
-        writeln!(
-            rs,
-            "    assert_eq!(\
-             \n        rsass(\
-             \n            {}\
-             \n        )\
-             \n        .unwrap(),\
-             \n        {}\
-             \n    );",
-            input, expected
-        )
-    }
+    fixture.write_test(rs, &specdir, precision)
 }
 
 fn fn_name_os(name: &OsStr) -> String {
@@ -349,38 +256,6 @@ fn fn_name(name: &str) -> String {
     }
 }
 
-struct TestFixture {
-    pub input: String,
-    pub expectation: TestExpectation,
-    pub options: Options,
-}
-
-enum TestExpectation {
-    ExpectedCSS(String),
-    ExpectedError(String),
-}
-
-use TestExpectation::{ExpectedCSS, ExpectedError};
-
-use yaml_rust::{Yaml, YamlLoader};
-
-struct Options {
-    pub precision: Option<i64>,
-    /// None for tests that should work, or Some(reason to skip).
-    pub should_skip: Option<String>,
-}
-
-fn normalize_output_css(css: &str) -> String {
-    // Normalizes the whitespace in the given CSS to make it easier to compare. Based on:
-    // https://github.com/sass/sass-spec/blob/0f59164aabb3273645fda068d0fb1b879aa3f1dc/lib/sass_spec/util.rb#L5-L7
-    // NOTE: This is done on input and expected output.
-    // The actual result is normalized in a simler way in the rsass function in generated tests.
-    lazy_static! {
-        static ref RE: Regex = Regex::new("(?:\r?\n)+").unwrap();
-    }
-    RE.replace_all(&css, "\n").to_string()
-}
-
 fn load_test_fixture(specdir: &Path) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAME: &str = "output.css";
@@ -393,23 +268,13 @@ fn load_test_fixture(specdir: &Path) -> Result<TestFixture, Error> {
     {
         let path = specdir.join(EXPECTED_OUTPUT_FILENAME);
         if path.exists() {
-            return Ok(TestFixture {
-                input: input,
-                options: options,
-                expectation: ExpectedCSS(normalize_output_css(&content(
-                    &path,
-                )?)),
-            });
+            return Ok(TestFixture::new_ok(input, content(&path)?, options));
         }
     }
     for filename in EXPECTED_ERROR_FILENAMES {
         let path = specdir.join(filename);
         if path.exists() {
-            return Ok(TestFixture {
-                input: input,
-                expectation: ExpectedError(content(&path)?),
-                options: options,
-            });
+            return Ok(TestFixture::new_err(input, content(&path)?, options));
         }
     }
     Err(Error(format!(
@@ -422,55 +287,12 @@ fn load_test_fixture(specdir: &Path) -> Result<TestFixture, Error> {
 fn load_options(path: &Path) -> Result<Options, Error> {
     let yml = path.join("options.yml");
     if yml.exists() {
-        let options = content(&yml)?;
-        let options = YamlLoader::load_from_str(&options)?;
-        if options.len() > 1 {
-            Err(Error(format!("Found multiple-doc options {:?}", options)))?;
-        }
-        if options.len() == 0 {
-            Err(Error(format!("Found zero-doc options {:?}", options)))?;
-        }
-        let options = &options[0];
-        eprintln!("Found options: {:?}", options);
-        Ok(Options {
-            precision: options[":precision"].as_i64(),
-            should_skip: {
-                if let Some(skip) = skip_ended(options)? {
-                    Some(skip)
-                } else {
-                    skip_unstarted(options)?
-                }
-            },
-        })
+        Options::parse(&content(&yml)?)
     } else {
         Ok(Options {
             precision: None,
             should_skip: None,
         })
-    }
-}
-
-fn skip_ended(options: &Yaml) -> Result<Option<String>, Error> {
-    if let Some(end) = options[":end_version"].as_str() {
-        if end.parse::<f32>()? <= VERSION {
-            Ok(Some(format!("end_version is {}", end)))
-        } else {
-            Ok(None)
-        }
-    } else {
-        Ok(None)
-    }
-}
-
-fn skip_unstarted(options: &Yaml) -> Result<Option<String>, Error> {
-    if let Some(start) = options[":start_version"].as_str() {
-        if start.parse::<f32>()? <= VERSION {
-            Ok(None)
-        } else {
-            Ok(Some(format!("start_version is {}", start)))
-        }
-    } else {
-        Ok(None)
     }
 }
 
@@ -481,7 +303,7 @@ fn content(path: &Path) -> Result<String, io::Error> {
 }
 
 #[derive(Debug)]
-struct Error(String);
+pub struct Error(String);
 use std::convert::From;
 
 impl From<io::Error> for Error {
