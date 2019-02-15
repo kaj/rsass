@@ -4,4 +4,4 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "pairs", end_version is 3.5.
+// Ignoring "pairs.hrx", end_version is 3.5.

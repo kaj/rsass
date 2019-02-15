@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/core_functions/color/rgb/three_args/basic"
+/// From "sass-spec/spec/core_functions/color/rgb/three_args/basic.hrx"
 #[test]
 fn basic() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn basic() {
     );
 }
 
-/// From "sass-spec/spec/core_functions/color/rgb/three_args/special_functions"
+/// From "sass-spec/spec/core_functions/color/rgb/three_args/special_functions.hrx"
 #[test]
 #[ignore] // failing
 fn special_functions() {

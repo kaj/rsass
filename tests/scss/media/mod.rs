@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/scss/media/interpolated"
+/// From "sass-spec/spec/scss/media/interpolated.hrx"
 #[test]
 fn interpolated() {
     assert_eq!(
@@ -18,7 +18,7 @@ fn interpolated() {
 
 mod nesting;
 
-/// From "sass-spec/spec/scss/media/script_features"
+/// From "sass-spec/spec/scss/media/script_features.hrx"
 #[test]
 fn script_features() {
     assert_eq!(

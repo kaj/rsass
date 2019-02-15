@@ -4,9 +4,9 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-mod error;
+// Ignoring "error.hrx", not a single spec.
 
-/// From "sass-spec/spec/core_functions/join/valid"
+/// From "sass-spec/spec/core_functions/join/valid.hrx"
 #[test]
 fn valid() {
     assert_eq!(

@@ -1,4 +1,5 @@
 use deunicode::deunicode;
+use hrx_get::Archive;
 use std::ffi::OsStr;
 use std::fs::{create_dir, DirEntry, File};
 use std::io::{self, Read, Write};
@@ -19,8 +20,8 @@ fn main() -> Result<(), Error> {
         &base,
         "basic",
         &[
-            "14_imports",           // Need to handle separate files in tests
-            "33_ambiguous_imports", // Need to handle separate files in tests
+            "14_imports.hrx", // Need to handle separate files in tests
+            "33_ambiguous_imports.hrx", // Need to handle separate files in tests
         ],
     )?;
     handle_suite(&base, "core_functions", &[])?;
@@ -36,14 +37,14 @@ fn main() -> Result<(), Error> {
         &base,
         "libsass",
         &[
-            "Sa\u{301}ss-UT\u{327}F8", // resolves to duplicate name
-            "bourbon", // Need to handle separate files in tests
+            "Sa\u{301}ss-UT\u{327}F8.hrx", // resolves to duplicate name
+            "bourbon.hrx", // Need to handle separate files in tests
             "base-level-parent/imported", // multiple input files
             "selector-functions/is_superselector", // multiple input files
             "unicode-bom/utf-16-big", // rsass only handles utf8
             "unicode-bom/utf-16-little", // rsass only handles utf8
-            "debug-directive-nested/function", // panic
-            "warn-directive-nested/function", // panic
+            "debug-directive-nested/function.hrx", // panic
+            "warn-directive-nested/function.hrx", // panic
         ],
     )?;
     handle_suite(&base, "misc", &[])?;
@@ -62,9 +63,9 @@ fn main() -> Result<(), Error> {
         &base,
         "scss",
         &[
-            "multiline-var", // name conflict with other test.
-            "mixin-content", // stack overflow?!?
-            "huge",          // stack overflow
+            "multiline-var.hrx", // name conflict with other test.
+            "mixin-content.hrx", // stack overflow?!?
+            "huge.hrx",          // stack overflow
         ],
     )?;
     handle_suite(&base, "scss-tests", &[])?;
@@ -135,15 +136,21 @@ fn handle_entries(
         suitedir.read_dir()?.collect::<Result<_, _>>()?;
     entries.sort_by_key(|e| e.file_name());
     for entry in entries {
-        if entry.file_type()?.is_dir() {
+        if ignored.iter().any(|&i| &entry.file_name() == i) {
+            ignore(rs, &entry.file_name(), "not expected to work yet")?;
+        } else if entry.file_type()?.is_file()
+            && entry.file_name().to_string_lossy().ends_with(".hrx")
+        {
+            spec_hrx_to_test(rs, &entry.path(), precision).map_err(|e| {
+                Error(format!("Failed to handle {:?}: {}", entry.path(), e))
+            })?;
+        } else if entry.file_type()?.is_dir() {
             if entry.path().join("error").is_file() {
                 ignore(
                     rs,
                     &entry.file_name(),
                     "tests with expected error not implemented yet",
                 )?;
-            } else if ignored.iter().any(|&i| &entry.file_name() == i) {
-                ignore(rs, &entry.file_name(), "not expected to work yet")?;
             } else {
                 eprintln!(
                     "Should handle {}",
@@ -151,7 +158,7 @@ fn handle_entries(
                 );
                 let input = entry.path().join("input.scss");
                 if input.exists() {
-                    spec_to_test(
+                    spec_dir_to_test(
                         rs,
                         &suitedir,
                         &entry.file_name(),
@@ -223,15 +230,36 @@ fn ignore(
     writeln!(rs, "\n// Ignoring {:?}, {}.", name, reason)
 }
 
-fn spec_to_test(
+fn spec_dir_to_test(
     rs: &mut Write,
     suite: &Path,
     test: &OsStr,
     precision: Option<i64>,
 ) -> Result<(), Error> {
     let specdir = suite.join(test);
-    let fixture = load_test_fixture(&specdir)?;
+    let fixture = load_test_fixture_dir(&specdir)?;
     fixture.write_test(rs, &specdir, precision)
+}
+
+fn spec_hrx_to_test(
+    rs: &mut Write,
+    suite: &Path,
+    precision: Option<i64>,
+) -> Result<(), Error> {
+    let archive = Archive::load(suite)
+        .map_err(|e| Error(format!("Failed to load hrx: {}", e)))?;
+    if archive.get("input.scss").is_some() {
+        let fixture = load_test_fixture_hrx(&archive)?;
+        fixture.write_test(rs, &suite, precision)
+    } else {
+        // TODO Handle multiple tests in same archive!
+        ignore(
+            rs,
+            &suite.file_name().unwrap_or_default(),
+            "not a single spec",
+        )?;
+        Ok(())
+    }
 }
 
 fn fn_name_os(name: &OsStr) -> String {
@@ -240,6 +268,7 @@ fn fn_name_os(name: &OsStr) -> String {
 fn fn_name(name: &str) -> String {
     let t = deunicode(name)
         .to_lowercase()
+        .replace(".hrx", "")
         .replace('-', "_")
         .replace('.', "_");
     if t.chars().next().unwrap_or('0').is_numeric() {
@@ -256,7 +285,7 @@ fn fn_name(name: &str) -> String {
     }
 }
 
-fn load_test_fixture(specdir: &Path) -> Result<TestFixture, Error> {
+fn load_test_fixture_dir(specdir: &Path) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAME: &str = "output.css";
     static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
@@ -268,7 +297,7 @@ fn load_test_fixture(specdir: &Path) -> Result<TestFixture, Error> {
     {
         let path = specdir.join(EXPECTED_OUTPUT_FILENAME);
         if path.exists() {
-            return Ok(TestFixture::new_ok(input, content(&path)?, options));
+            return Ok(TestFixture::new_ok(input, &content(&path)?, options));
         }
     }
     for filename in EXPECTED_ERROR_FILENAMES {
@@ -281,6 +310,38 @@ fn load_test_fixture(specdir: &Path) -> Result<TestFixture, Error> {
         "No expected CSS / error found for {}",
         specdir.file_name().unwrap_or_default().to_str().unwrap()
     )))
+}
+
+fn load_test_fixture_hrx(archive: &Archive) -> Result<TestFixture, Error> {
+    static INPUT_FILENAME: &str = "input.scss";
+    static EXPECTED_OUTPUT_FILENAME: &str = "output.css";
+    static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
+
+    let options = if let Some(yml) = archive.get("options.yml") {
+        Options::parse(yml)?
+    } else {
+        Options::default()
+    };
+
+    if let Some(input) = archive.get(INPUT_FILENAME) {
+        if let Some(output) = archive.get(EXPECTED_OUTPUT_FILENAME) {
+            return Ok(TestFixture::new_ok(
+                input.to_string(),
+                output,
+                options,
+            ));
+        }
+        for filename in EXPECTED_ERROR_FILENAMES {
+            if let Some(error) = archive.get(filename) {
+                return Ok(TestFixture::new_err(
+                    input.to_string(),
+                    error.to_string(),
+                    options,
+                ));
+            }
+        }
+    }
+    Err(Error("No expected CSS / error found".into()))
 }
 
 /// Load options from options.yml.

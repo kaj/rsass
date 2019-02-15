@@ -6,9 +6,9 @@ use rsass::set_precision;
 
 mod attribute;
 
-// Ignoring "reference_combinator", tests with expected error not implemented yet.
+// Ignoring "reference_combinator.hrx", start_version is 4.0.
 
-/// From "sass-spec/spec/css/selector/slotted"
+/// From "sass-spec/spec/css/selector/slotted.hrx"
 #[test]
 #[ignore] // failing
 fn slotted() {

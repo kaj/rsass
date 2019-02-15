@@ -1,6 +1,7 @@
 use super::{Error, VERSION};
 use yaml_rust::{Yaml, YamlLoader};
 
+#[derive(Default)]
 pub struct Options {
     pub precision: Option<i64>,
     /// None for tests that should work, or Some(reason to skip).

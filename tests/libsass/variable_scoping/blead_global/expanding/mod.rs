@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/at-root"
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/at-root.hrx"
 #[test]
 #[ignore] // failing
 fn at_root() {
@@ -17,7 +17,7 @@ fn at_root() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/each"
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/each.hrx"
 #[test]
 #[ignore] // failing
 fn each() {
@@ -30,7 +30,7 @@ fn each() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/else"
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/else.hrx"
 #[test]
 #[ignore] // failing
 fn test_else() {
@@ -43,7 +43,7 @@ fn test_else() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/elseif"
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/elseif.hrx"
 #[test]
 #[ignore] // failing
 fn elseif() {
@@ -56,7 +56,7 @@ fn elseif() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/for"
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/for.hrx"
 #[test]
 #[ignore] // failing
 fn test_for() {
@@ -69,7 +69,7 @@ fn test_for() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/function"
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/function.hrx"
 #[test]
 fn function() {
     assert_eq!(
@@ -81,7 +81,7 @@ fn function() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/if"
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/if.hrx"
 #[test]
 #[ignore] // failing
 fn test_if() {
@@ -94,7 +94,7 @@ fn test_if() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/mixin"
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/mixin.hrx"
 #[test]
 fn mixin() {
     assert_eq!(
@@ -106,7 +106,7 @@ fn mixin() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/ruleset"
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/ruleset.hrx"
 #[test]
 fn ruleset() {
     assert_eq!(
@@ -118,7 +118,7 @@ fn ruleset() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/while"
+/// From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/while.hrx"
 #[test]
 #[ignore] // failing
 fn test_while() {

@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/parser/interpolate/29_binary_operation/01_inline"
+/// From "sass-spec/spec/parser/interpolate/29_binary_operation/01_inline.hrx"
 #[test]
 fn t01_inline() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn t01_inline() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/29_binary_operation/02_variable"
+/// From "sass-spec/spec/parser/interpolate/29_binary_operation/02_variable.hrx"
 #[test]
 fn t02_variable() {
     assert_eq!(
@@ -28,7 +28,7 @@ fn t02_variable() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/29_binary_operation/03_inline_double"
+/// From "sass-spec/spec/parser/interpolate/29_binary_operation/03_inline_double.hrx"
 #[test]
 fn t03_inline_double() {
     assert_eq!(
@@ -40,7 +40,7 @@ fn t03_inline_double() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/29_binary_operation/04_variable_double"
+/// From "sass-spec/spec/parser/interpolate/29_binary_operation/04_variable_double.hrx"
 #[test]
 fn t04_variable_double() {
     assert_eq!(
@@ -52,7 +52,7 @@ fn t04_variable_double() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/29_binary_operation/05_variable_quoted_double"
+/// From "sass-spec/spec/parser/interpolate/29_binary_operation/05_variable_quoted_double.hrx"
 #[test]
 fn t05_variable_quoted_double() {
     assert_eq!(
@@ -64,6 +64,6 @@ fn t05_variable_quoted_double() {
     );
 }
 
-// Ignoring "06_escape_interpolation", end_version is 3.5.
+// Ignoring "06_escape_interpolation-4.0.hrx", start_version is 4.0.
 
-// Ignoring "06_escape_interpolation-4.0", start_version is 4.0.
+// Ignoring "06_escape_interpolation.hrx", end_version is 3.5.

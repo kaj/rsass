@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/basic/44_not_number_expression"
+/// From "sass-spec/spec/libsass/basic/44_not_number_expression.hrx"
 #[test]
 fn t44_not_number_expression() {
     assert_eq!(

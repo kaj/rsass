@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/core_functions/color/hsl/four_args/alpha_percent"
+/// From "sass-spec/spec/core_functions/color/hsl/four_args/alpha_percent.hrx"
 #[test]
 #[ignore] // failing
 fn alpha_percent() {
@@ -17,7 +17,7 @@ fn alpha_percent() {
     );
 }
 
-/// From "sass-spec/spec/core_functions/color/hsl/four_args/alpha_unitless"
+/// From "sass-spec/spec/core_functions/color/hsl/four_args/alpha_unitless.hrx"
 #[test]
 #[ignore] // failing
 fn alpha_unitless() {
@@ -30,7 +30,7 @@ fn alpha_unitless() {
     );
 }
 
-/// From "sass-spec/spec/core_functions/color/hsl/four_args/basic"
+/// From "sass-spec/spec/core_functions/color/hsl/four_args/basic.hrx"
 #[test]
 #[ignore] // failing
 fn basic() {
@@ -43,7 +43,7 @@ fn basic() {
     );
 }
 
-/// From "sass-spec/spec/core_functions/color/hsl/four_args/special_functions"
+/// From "sass-spec/spec/core_functions/color/hsl/four_args/special_functions.hrx"
 #[test]
 #[ignore] // failing
 fn special_functions() {

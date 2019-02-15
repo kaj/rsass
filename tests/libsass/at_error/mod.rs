@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/at-error/feature-test"
+/// From "sass-spec/spec/libsass/at-error/feature-test.hrx"
 #[test]
 #[ignore] // failing
 fn feature_test() {

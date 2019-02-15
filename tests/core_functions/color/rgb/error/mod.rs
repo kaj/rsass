@@ -4,12 +4,12 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "five_args", tests with expected error not implemented yet.
+// Ignoring "five_args.hrx", error tests are not supported yet.
 
-mod four_args;
+// Ignoring "four_args.hrx", not a single spec.
 
-mod one_arg;
+// Ignoring "one_arg.hrx", not a single spec.
 
-mod three_args;
+// Ignoring "three_args.hrx", not a single spec.
 
-mod two_args;
+// Ignoring "two_args.hrx", not a single spec.

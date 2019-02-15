@@ -4,13 +4,11 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "at-root-alone", tests with expected error not implemented yet.
+// Ignoring "at-root-alone-itpl.hrx", error tests are not supported yet.
 
-// Ignoring "at-root-alone-itpl", tests with expected error not implemented yet.
+// Ignoring "at-root-alone.hrx", error tests are not supported yet.
 
-// Ignoring "at-root-postfix", tests with expected error not implemented yet.
-
-/// From "sass-spec/spec/libsass/base-level-parent/root/at-root-postfix-itpl"
+/// From "sass-spec/spec/libsass/base-level-parent/root/at-root-postfix-itpl.hrx"
 #[test]
 #[ignore] // failing
 fn at_root_postfix_itpl() {
@@ -23,9 +21,9 @@ fn at_root_postfix_itpl() {
     );
 }
 
-// Ignoring "at-root-prefix", tests with expected error not implemented yet.
+// Ignoring "at-root-postfix.hrx", error tests are not supported yet.
 
-/// From "sass-spec/spec/libsass/base-level-parent/root/at-root-prefix-itpl"
+/// From "sass-spec/spec/libsass/base-level-parent/root/at-root-prefix-itpl.hrx"
 #[test]
 #[ignore] // failing
 fn at_root_prefix_itpl() {
@@ -38,13 +36,13 @@ fn at_root_prefix_itpl() {
     );
 }
 
-// Ignoring "basic-alone", tests with expected error not implemented yet.
+// Ignoring "at-root-prefix.hrx", error tests are not supported yet.
 
-// Ignoring "basic-alone-itpl", tests with expected error not implemented yet.
+// Ignoring "basic-alone-itpl.hrx", error tests are not supported yet.
 
-// Ignoring "basic-postfix", tests with expected error not implemented yet.
+// Ignoring "basic-alone.hrx", error tests are not supported yet.
 
-/// From "sass-spec/spec/libsass/base-level-parent/root/basic-postfix-itpl"
+/// From "sass-spec/spec/libsass/base-level-parent/root/basic-postfix-itpl.hrx"
 #[test]
 fn basic_postfix_itpl() {
     assert_eq!(
@@ -54,9 +52,9 @@ fn basic_postfix_itpl() {
     );
 }
 
-// Ignoring "basic-prefix", tests with expected error not implemented yet.
+// Ignoring "basic-postfix.hrx", error tests are not supported yet.
 
-/// From "sass-spec/spec/libsass/base-level-parent/root/basic-prefix-itpl"
+/// From "sass-spec/spec/libsass/base-level-parent/root/basic-prefix-itpl.hrx"
 #[test]
 fn basic_prefix_itpl() {
     assert_eq!(
@@ -65,3 +63,5 @@ fn basic_prefix_itpl() {
         "pre foo {\n  bar: baz;\n}\n"
     );
 }
+
+// Ignoring "basic-prefix.hrx", error tests are not supported yet.

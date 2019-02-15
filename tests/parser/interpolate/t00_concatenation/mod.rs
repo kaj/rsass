@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/parser/interpolate/00_concatenation/spaced"
+/// From "sass-spec/spec/parser/interpolate/00_concatenation/spaced.hrx"
 #[test]
 fn spaced() {
     assert_eq!(
@@ -16,6 +16,6 @@ fn spaced() {
     );
 }
 
-// Ignoring "unspaced", end_version is 3.5.
+// Ignoring "unspaced-4.0.hrx", start_version is 4.0.
 
-// Ignoring "unspaced-4.0", start_version is 4.0.
+// Ignoring "unspaced.hrx", end_version is 3.5.

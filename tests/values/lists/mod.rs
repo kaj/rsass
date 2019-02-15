@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/values/lists/brackets"
+/// From "sass-spec/spec/values/lists/brackets.hrx"
 #[test]
 fn brackets() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn brackets() {
     );
 }
 
-/// From "sass-spec/spec/values/lists/equality"
+/// From "sass-spec/spec/values/lists/equality.hrx"
 #[test]
 fn equality() {
     assert_eq!(

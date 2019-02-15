@@ -6,7 +6,43 @@ use rsass::set_precision;
 
 mod blead_global;
 
-/// From "sass-spec/spec/libsass/variable-scoping/defaults"
+/// From "sass-spec/spec/libsass/variable-scoping/defaults-global-null.hrx"
+#[test]
+fn defaults_global_null() {
+    assert_eq!(
+        rsass(
+            "div {\n  $foo: null !default !global;\n  $foo: inner !default !global;\n  $foo: null !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n$foo: null !default !global;\n$foo: outer !default !global;\n$foo: null !default !global;\nouter { foo: $foo; }\n\ndiv {\n  $foo: null !default !global;\n  $foo: footer !default !global;\n  $foo: null !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
+        )
+        .unwrap(),
+        "div inner {\n  foo: lexical;\n}\nouter {\n  foo: inner;\n}\ndiv inner {\n  foo: lexical;\n}\n"
+    );
+}
+
+/// From "sass-spec/spec/libsass/variable-scoping/defaults-global.hrx"
+#[test]
+fn defaults_global() {
+    assert_eq!(
+        rsass(
+            "div {\n  $foo: inner !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n$foo: outer !default !global;\nouter { foo: $foo; }\n\ndiv {\n  $foo: footer !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
+        )
+        .unwrap(),
+        "div inner {\n  foo: lexical;\n}\nouter {\n  foo: inner;\n}\ndiv inner {\n  foo: lexical;\n}\n"
+    );
+}
+
+/// From "sass-spec/spec/libsass/variable-scoping/defaults-null.hrx"
+#[test]
+fn defaults_null() {
+    assert_eq!(
+        rsass(
+            "div {\n  $foo: null !default;\n  $foo: inner !default;\n  $foo: null !default;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n// this should error\n// empty { foo: $foo; }\n\n$foo: null !default;\n$foo: outer !default;\n$foo: null !default;\nouter { foo: $foo; }\n\ndiv {\n  $foo: null !default;\n  $foo: footer !default;\n  $foo: null !default;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
+        )
+        .unwrap(),
+        "div inner {\n  foo: lexical;\n}\nouter {\n  foo: outer;\n}\ndiv inner {\n  foo: lexical;\n}\n"
+    );
+}
+
+/// From "sass-spec/spec/libsass/variable-scoping/defaults.hrx"
 #[test]
 #[ignore] // failing
 fn defaults() {
@@ -19,43 +55,7 @@ fn defaults() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/defaults-global"
-#[test]
-fn defaults_global() {
-    assert_eq!(
-        rsass(
-            "div {\n  $foo: inner !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n$foo: outer !default !global;\nouter { foo: $foo; }\n\ndiv {\n  $foo: footer !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
-        )
-        .unwrap(),
-        "div inner {\n  foo: lexical;\n}\nouter {\n  foo: inner;\n}\ndiv inner {\n  foo: lexical;\n}\n"
-    );
-}
-
-/// From "sass-spec/spec/libsass/variable-scoping/defaults-global-null"
-#[test]
-fn defaults_global_null() {
-    assert_eq!(
-        rsass(
-            "div {\n  $foo: null !default !global;\n  $foo: inner !default !global;\n  $foo: null !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n$foo: null !default !global;\n$foo: outer !default !global;\n$foo: null !default !global;\nouter { foo: $foo; }\n\ndiv {\n  $foo: null !default !global;\n  $foo: footer !default !global;\n  $foo: null !default !global;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
-        )
-        .unwrap(),
-        "div inner {\n  foo: lexical;\n}\nouter {\n  foo: inner;\n}\ndiv inner {\n  foo: lexical;\n}\n"
-    );
-}
-
-/// From "sass-spec/spec/libsass/variable-scoping/defaults-null"
-#[test]
-fn defaults_null() {
-    assert_eq!(
-        rsass(
-            "div {\n  $foo: null !default;\n  $foo: inner !default;\n  $foo: null !default;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n\n// this should error\n// empty { foo: $foo; }\n\n$foo: null !default;\n$foo: outer !default;\n$foo: null !default;\nouter { foo: $foo; }\n\ndiv {\n  $foo: null !default;\n  $foo: footer !default;\n  $foo: null !default;\n  $foo: lexical;\n  inner { foo: $foo; }\n}\n"
-        )
-        .unwrap(),
-        "div inner {\n  foo: lexical;\n}\nouter {\n  foo: outer;\n}\ndiv inner {\n  foo: lexical;\n}\n"
-    );
-}
-
-/// From "sass-spec/spec/libsass/variable-scoping/feature-test"
+/// From "sass-spec/spec/libsass/variable-scoping/feature-test.hrx"
 #[test]
 fn feature_test() {
     assert_eq!(
@@ -67,7 +67,7 @@ fn feature_test() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/lexical-scope"
+/// From "sass-spec/spec/libsass/variable-scoping/lexical-scope.hrx"
 #[test]
 #[ignore] // failing
 fn lexical_scope() {
@@ -80,7 +80,7 @@ fn lexical_scope() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/root-scope"
+/// From "sass-spec/spec/libsass/variable-scoping/root-scope.hrx"
 #[test]
 #[ignore] // failing
 fn root_scope() {

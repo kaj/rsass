@@ -1,11 +1,11 @@
 //! Tests auto-converted from "sass-spec/spec/css"
-//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
+//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["plain"]
 use rsass::{compile_scss, OutputStyle};
 
-/// From "sass-spec/spec/css/bizarrely_formatted_comments"
+/// From "sass-spec/spec/css/bizarrely_formatted_comments.hrx"
 #[test]
 #[ignore] // failing
 fn bizarrely_formatted_comments() {
@@ -15,13 +15,13 @@ fn bizarrely_formatted_comments() {
     );
 }
 
-/// From "sass-spec/spec/css/blockless_directive_without_semicolon"
+/// From "sass-spec/spec/css/blockless_directive_without_semicolon.hrx"
 #[test]
 fn blockless_directive_without_semicolon() {
     assert_eq!(rsass("@foo \"bar\";\n").unwrap(), "@foo \"bar\";\n");
 }
 
-/// From "sass-spec/spec/css/closing_line_comment_end_with_compact_output"
+/// From "sass-spec/spec/css/closing_line_comment_end_with_compact_output.hrx"
 #[test]
 fn closing_line_comment_end_with_compact_output() {
     assert_eq!(
@@ -32,19 +32,19 @@ fn closing_line_comment_end_with_compact_output() {
 
 mod custom_properties;
 
-/// From "sass-spec/spec/css/directive_with_lots_of_whitespace"
+/// From "sass-spec/spec/css/directive_with_lots_of_whitespace.hrx"
 #[test]
 fn directive_with_lots_of_whitespace() {
     assert_eq!(rsass("@foo \"bar\";\n").unwrap(), "@foo \"bar\";\n");
 }
 
-/// From "sass-spec/spec/css/empty_block_directive"
+/// From "sass-spec/spec/css/empty_block_directive.hrx"
 #[test]
 fn empty_block_directive() {
     assert_eq!(rsass("@foo {}\n").unwrap(), "@foo {}\n");
 }
 
-/// From "sass-spec/spec/css/function_name_identifiers"
+/// From "sass-spec/spec/css/function_name_identifiers.hrx"
 #[test]
 fn function_name_identifiers() {
     assert_eq!(
@@ -62,7 +62,7 @@ mod media;
 
 mod moz_document;
 
-/// From "sass-spec/spec/css/ms_long_filter_syntax"
+/// From "sass-spec/spec/css/ms_long_filter_syntax.hrx"
 #[test]
 #[ignore] // failing
 fn ms_long_filter_syntax() {
@@ -75,7 +75,7 @@ fn ms_long_filter_syntax() {
     );
 }
 
-/// From "sass-spec/spec/css/multi_star_comments"
+/// From "sass-spec/spec/css/multi_star_comments.hrx"
 #[test]
 fn multi_star_comments() {
     assert_eq!(
@@ -87,7 +87,7 @@ fn multi_star_comments() {
     );
 }
 
-/// From "sass-spec/spec/css/multiple_comments"
+/// From "sass-spec/spec/css/multiple_comments.hrx"
 #[test]
 fn multiple_comments() {
     assert_eq!(

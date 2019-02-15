@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/css/moz_document/functions/interpolated"
+/// From "sass-spec/spec/css/moz_document/functions/interpolated.hrx"
 #[test]
 fn interpolated() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn interpolated() {
     );
 }
 
-/// From "sass-spec/spec/css/moz_document/functions/static"
+/// From "sass-spec/spec/css/moz_document/functions/static.hrx"
 #[test]
 fn test_static() {
     assert_eq!(

@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/color-functions/hsl/adjust-hue"
+/// From "sass-spec/spec/libsass/color-functions/hsl/adjust-hue.hrx"
 #[test]
 fn adjust_hue() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn adjust_hue() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/hsl/complement"
+/// From "sass-spec/spec/libsass/color-functions/hsl/complement.hrx"
 #[test]
 fn complement() {
     assert_eq!(
@@ -28,7 +28,7 @@ fn complement() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/hsl/darken"
+/// From "sass-spec/spec/libsass/color-functions/hsl/darken.hrx"
 #[test]
 fn darken() {
     assert_eq!(
@@ -40,7 +40,7 @@ fn darken() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/hsl/desaturate"
+/// From "sass-spec/spec/libsass/color-functions/hsl/desaturate.hrx"
 #[test]
 fn desaturate() {
     assert_eq!(
@@ -52,7 +52,7 @@ fn desaturate() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/hsl/hue"
+/// From "sass-spec/spec/libsass/color-functions/hsl/hue.hrx"
 #[test]
 fn hue() {
     assert_eq!(
@@ -64,7 +64,7 @@ fn hue() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/hsl/lighten"
+/// From "sass-spec/spec/libsass/color-functions/hsl/lighten.hrx"
 #[test]
 fn lighten() {
     assert_eq!(
@@ -76,7 +76,7 @@ fn lighten() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/hsl/lightness"
+/// From "sass-spec/spec/libsass/color-functions/hsl/lightness.hrx"
 #[test]
 fn lightness() {
     assert_eq!(
@@ -88,7 +88,7 @@ fn lightness() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/hsl/saturation"
+/// From "sass-spec/spec/libsass/color-functions/hsl/saturation.hrx"
 #[test]
 fn saturation() {
     assert_eq!(

@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/selector-functions/unify/base"
+/// From "sass-spec/spec/selector-functions/unify/base.hrx"
 #[test]
 #[ignore] // failing
 fn base() {
@@ -17,7 +17,7 @@ fn base() {
     );
 }
 
-/// From "sass-spec/spec/selector-functions/unify/universal_simple"
+/// From "sass-spec/spec/selector-functions/unify/universal_simple.hrx"
 #[test]
 #[ignore] // failing
 fn universal_simple() {

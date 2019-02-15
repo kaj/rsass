@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/core_functions/get-function/basic"
+/// From "sass-spec/spec/core_functions/get-function/basic.hrx"
 #[test]
 fn basic() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn basic() {
     );
 }
 
-/// From "sass-spec/spec/core_functions/get-function/builtins"
+/// From "sass-spec/spec/core_functions/get-function/builtins.hrx"
 #[test]
 fn builtins() {
     assert_eq!(
@@ -28,7 +28,7 @@ fn builtins() {
     );
 }
 
-/// From "sass-spec/spec/core_functions/get-function/css-fn-reference"
+/// From "sass-spec/spec/core_functions/get-function/css-fn-reference.hrx"
 #[test]
 fn css_fn_reference() {
     assert_eq!(
@@ -40,7 +40,7 @@ fn css_fn_reference() {
     );
 }
 
-/// From "sass-spec/spec/core_functions/get-function/equality"
+/// From "sass-spec/spec/core_functions/get-function/equality.hrx"
 #[test]
 #[ignore] // failing
 fn equality() {
@@ -55,7 +55,7 @@ fn equality() {
 
 mod errors;
 
-/// From "sass-spec/spec/core_functions/get-function/local-scope"
+/// From "sass-spec/spec/core_functions/get-function/local-scope.hrx"
 #[test]
 fn local_scope() {
     assert_eq!(
@@ -67,7 +67,7 @@ fn local_scope() {
     );
 }
 
-/// From "sass-spec/spec/core_functions/get-function/overrides"
+/// From "sass-spec/spec/core_functions/get-function/overrides.hrx"
 #[test]
 fn overrides() {
     assert_eq!(

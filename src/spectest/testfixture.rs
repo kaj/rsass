@@ -23,13 +23,13 @@ use TestExpectation::{ExpectedCSS, ExpectedError};
 impl TestFixture {
     pub fn new_ok(
         input: String,
-        expected_css: String,
+        expected_css: &str,
         options: Options,
     ) -> Self {
         TestFixture {
             input: input,
             options: options,
-            expectation: ExpectedCSS(normalize_output_css(&expected_css)),
+            expectation: ExpectedCSS(normalize_output_css(expected_css)),
         }
     }
 

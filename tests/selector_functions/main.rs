@@ -1,11 +1,11 @@
 //! Tests auto-converted from "sass-spec/spec/selector-functions"
-//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
+//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["is_superselector"]
 use rsass::{compile_scss, OutputStyle};
 
-/// From "sass-spec/spec/selector-functions/append"
+/// From "sass-spec/spec/selector-functions/append.hrx"
 #[test]
 fn append() {
     assert_eq!(
@@ -21,7 +21,7 @@ mod extend;
 
 // Ignoring "is_superselector", not expected to work yet.
 
-/// From "sass-spec/spec/selector-functions/nest"
+/// From "sass-spec/spec/selector-functions/nest.hrx"
 #[test]
 fn nest() {
     assert_eq!(
@@ -33,7 +33,7 @@ fn nest() {
     );
 }
 
-/// From "sass-spec/spec/selector-functions/parse"
+/// From "sass-spec/spec/selector-functions/parse.hrx"
 #[test]
 #[ignore] // failing
 fn parse() {
@@ -46,7 +46,7 @@ fn parse() {
     );
 }
 
-/// From "sass-spec/spec/selector-functions/replace"
+/// From "sass-spec/spec/selector-functions/replace.hrx"
 #[test]
 #[ignore] // failing
 fn replace() {

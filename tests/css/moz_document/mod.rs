@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/css/moz_document/empty_prefix"
+/// From "sass-spec/spec/css/moz_document/empty_prefix.hrx"
 #[test]
 #[ignore] // failing
 fn empty_prefix() {
@@ -19,7 +19,7 @@ fn empty_prefix() {
 
 mod functions;
 
-/// From "sass-spec/spec/css/moz_document/multi_function"
+/// From "sass-spec/spec/css/moz_document/multi_function.hrx"
 #[test]
 #[ignore] // failing
 fn multi_function() {

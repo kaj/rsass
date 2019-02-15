@@ -4,19 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-alone"
-#[test]
-fn at_root_alone() {
-    assert_eq!(
-        rsass(
-            "test {\r\n  @at-root {\r\n    & {\r\n      foo {\r\n        bar: baz;\r\n      }\r\n    }\r\n  }\r\n}"
-        )
-        .unwrap(),
-        "test foo {\n  bar: baz;\n}\n"
-    );
-}
-
-/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-alone-itpl"
+/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-alone-itpl.hrx"
 #[test]
 #[ignore] // failing
 fn at_root_alone_itpl() {
@@ -29,19 +17,19 @@ fn at_root_alone_itpl() {
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-postfix"
+/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-alone.hrx"
 #[test]
-fn at_root_postfix() {
+fn at_root_alone() {
     assert_eq!(
         rsass(
-            "test {\r\n  @at-root {\r\n    &post {\r\n      foo {\r\n        bar: baz;\r\n      }\r\n    }\r\n  }\r\n}"
+            "test {\r\n  @at-root {\r\n    & {\r\n      foo {\r\n        bar: baz;\r\n      }\r\n    }\r\n  }\r\n}"
         )
         .unwrap(),
-        "testpost foo {\n  bar: baz;\n}\n"
+        "test foo {\n  bar: baz;\n}\n"
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-postfix-itpl"
+/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-postfix-itpl.hrx"
 #[test]
 #[ignore] // failing
 fn at_root_postfix_itpl() {
@@ -54,9 +42,19 @@ fn at_root_postfix_itpl() {
     );
 }
 
-// Ignoring "at-root-prefix", tests with expected error not implemented yet.
+/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-postfix.hrx"
+#[test]
+fn at_root_postfix() {
+    assert_eq!(
+        rsass(
+            "test {\r\n  @at-root {\r\n    &post {\r\n      foo {\r\n        bar: baz;\r\n      }\r\n    }\r\n  }\r\n}"
+        )
+        .unwrap(),
+        "testpost foo {\n  bar: baz;\n}\n"
+    );
+}
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-prefix-itpl"
+/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-prefix-itpl.hrx"
 #[test]
 #[ignore] // failing
 fn at_root_prefix_itpl() {
@@ -69,19 +67,9 @@ fn at_root_prefix_itpl() {
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-alone"
-#[test]
-fn basic_alone() {
-    assert_eq!(
-        rsass(
-            "test {\r\n  & {\r\n    foo {\r\n      bar: baz;\r\n    }\r\n  }\r\n}"
-        )
-        .unwrap(),
-        "test foo {\n  bar: baz;\n}\n"
-    );
-}
+// Ignoring "at-root-prefix.hrx", error tests are not supported yet.
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-alone-itpl"
+/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-alone-itpl.hrx"
 #[test]
 fn basic_alone_itpl() {
     assert_eq!(
@@ -93,19 +81,19 @@ fn basic_alone_itpl() {
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-postfix"
+/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-alone.hrx"
 #[test]
-fn basic_postfix() {
+fn basic_alone() {
     assert_eq!(
         rsass(
-            "test {\r\n  &post {\r\n    foo {\r\n      bar: baz;\r\n    }\r\n  }\r\n}"
+            "test {\r\n  & {\r\n    foo {\r\n      bar: baz;\r\n    }\r\n  }\r\n}"
         )
         .unwrap(),
-        "testpost foo {\n  bar: baz;\n}\n"
+        "test foo {\n  bar: baz;\n}\n"
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-postfix-itpl"
+/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-postfix-itpl.hrx"
 #[test]
 fn basic_postfix_itpl() {
     assert_eq!(
@@ -117,9 +105,19 @@ fn basic_postfix_itpl() {
     );
 }
 
-// Ignoring "basic-prefix", tests with expected error not implemented yet.
+/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-postfix.hrx"
+#[test]
+fn basic_postfix() {
+    assert_eq!(
+        rsass(
+            "test {\r\n  &post {\r\n    foo {\r\n      bar: baz;\r\n    }\r\n  }\r\n}"
+        )
+        .unwrap(),
+        "testpost foo {\n  bar: baz;\n}\n"
+    );
+}
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-prefix-itpl"
+/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-prefix-itpl.hrx"
 #[test]
 fn basic_prefix_itpl() {
     assert_eq!(
@@ -130,3 +128,5 @@ fn basic_prefix_itpl() {
         "test pretest foo {\n  bar: baz;\n}\n"
     );
 }
+
+// Ignoring "basic-prefix.hrx", error tests are not supported yet.

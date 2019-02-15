@@ -4,31 +4,31 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "error-call-1", tests with expected error not implemented yet.
+// Ignoring "error-call-1.hrx", error tests are not supported yet.
 
-// Ignoring "error-call-2", tests with expected error not implemented yet.
+// Ignoring "error-call-2.hrx", error tests are not supported yet.
 
-// Ignoring "error-call-3", tests with expected error not implemented yet.
+// Ignoring "error-call-3.hrx", error tests are not supported yet.
 
-// Ignoring "error-function-1", tests with expected error not implemented yet.
+// Ignoring "error-function-1.hrx", error tests are not supported yet.
 
-// Ignoring "error-function-2", tests with expected error not implemented yet.
+// Ignoring "error-function-2.hrx", error tests are not supported yet.
 
-// Ignoring "error-function-3", tests with expected error not implemented yet.
+// Ignoring "error-function-3.hrx", error tests are not supported yet.
 
-// Ignoring "error-include-1", tests with expected error not implemented yet.
+// Ignoring "error-include-1.hrx", error tests are not supported yet.
 
-// Ignoring "error-include-2", tests with expected error not implemented yet.
+// Ignoring "error-include-2.hrx", error tests are not supported yet.
 
-// Ignoring "error-include-3", tests with expected error not implemented yet.
+// Ignoring "error-include-3.hrx", error tests are not supported yet.
 
-// Ignoring "error-mixin-1", tests with expected error not implemented yet.
+// Ignoring "error-mixin-1.hrx", error tests are not supported yet.
 
-// Ignoring "error-mixin-2", tests with expected error not implemented yet.
+// Ignoring "error-mixin-2.hrx", error tests are not supported yet.
 
-// Ignoring "error-mixin-3", tests with expected error not implemented yet.
+// Ignoring "error-mixin-3.hrx", error tests are not supported yet.
 
-/// From "sass-spec/spec/parser/arglists/can-end-with-comma/functions"
+/// From "sass-spec/spec/parser/arglists/can-end-with-comma/functions.hrx"
 #[test]
 fn functions() {
     assert_eq!(
@@ -40,7 +40,7 @@ fn functions() {
     );
 }
 
-/// From "sass-spec/spec/parser/arglists/can-end-with-comma/mixins"
+/// From "sass-spec/spec/parser/arglists/can-end-with-comma/mixins.hrx"
 #[test]
 fn mixins() {
     assert_eq!(

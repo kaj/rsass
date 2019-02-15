@@ -1,11 +1,11 @@
 //! Tests auto-converted from "sass-spec/spec/mixin"
-//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
+//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
 mod content;
 
-/// From "sass-spec/spec/mixin/environment_locality"
+/// From "sass-spec/spec/mixin/environment_locality.hrx"
 #[test]
 fn environment_locality() {
     assert_eq!(

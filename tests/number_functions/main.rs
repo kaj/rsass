@@ -1,9 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/number-functions"
-//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
+//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
-/// From "sass-spec/spec/number-functions/abs"
+/// From "sass-spec/spec/number-functions/abs.hrx"
 #[test]
 fn abs() {
     assert_eq!(
@@ -15,7 +15,7 @@ fn abs() {
     );
 }
 
-/// From "sass-spec/spec/number-functions/ceil"
+/// From "sass-spec/spec/number-functions/ceil.hrx"
 #[test]
 fn ceil() {
     assert_eq!(
@@ -27,7 +27,7 @@ fn ceil() {
     );
 }
 
-/// From "sass-spec/spec/number-functions/floor"
+/// From "sass-spec/spec/number-functions/floor.hrx"
 #[test]
 fn floor() {
     assert_eq!(
@@ -39,7 +39,7 @@ fn floor() {
     );
 }
 
-/// From "sass-spec/spec/number-functions/max"
+/// From "sass-spec/spec/number-functions/max.hrx"
 #[test]
 fn max() {
     assert_eq!(
@@ -51,7 +51,7 @@ fn max() {
     );
 }
 
-/// From "sass-spec/spec/number-functions/min"
+/// From "sass-spec/spec/number-functions/min.hrx"
 #[test]
 fn min() {
     assert_eq!(
@@ -63,7 +63,7 @@ fn min() {
     );
 }
 
-/// From "sass-spec/spec/number-functions/percentage"
+/// From "sass-spec/spec/number-functions/percentage.hrx"
 #[test]
 fn percentage() {
     assert_eq!(
@@ -75,7 +75,7 @@ fn percentage() {
     );
 }
 
-/// From "sass-spec/spec/number-functions/random"
+/// From "sass-spec/spec/number-functions/random.hrx"
 #[test]
 fn random() {
     assert_eq!(
@@ -87,7 +87,7 @@ fn random() {
     );
 }
 
-/// From "sass-spec/spec/number-functions/round"
+/// From "sass-spec/spec/number-functions/round.hrx"
 #[test]
 fn round() {
     assert_eq!(

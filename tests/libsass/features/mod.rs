@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/features/at-error"
+/// From "sass-spec/spec/libsass/features/at-error.hrx"
 #[test]
 #[ignore] // failing
 fn at_error() {
@@ -14,7 +14,7 @@ fn at_error() {
     );
 }
 
-/// From "sass-spec/spec/libsass/features/extend-selector-pseudoclass"
+/// From "sass-spec/spec/libsass/features/extend-selector-pseudoclass.hrx"
 #[test]
 #[ignore] // failing
 fn extend_selector_pseudoclass() {
@@ -27,7 +27,7 @@ fn extend_selector_pseudoclass() {
     );
 }
 
-/// From "sass-spec/spec/libsass/features/global-variable-shadowing"
+/// From "sass-spec/spec/libsass/features/global-variable-shadowing.hrx"
 #[test]
 fn global_variable_shadowing() {
     assert_eq!(
@@ -39,7 +39,7 @@ fn global_variable_shadowing() {
     );
 }
 
-/// From "sass-spec/spec/libsass/features/units-level-3"
+/// From "sass-spec/spec/libsass/features/units-level-3.hrx"
 #[test]
 fn units_level_3() {
     assert_eq!(

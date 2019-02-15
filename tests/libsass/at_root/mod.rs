@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/at-root/135_test_simple_at_root"
+/// From "sass-spec/spec/libsass/at-root/135_test_simple_at_root.hrx"
 #[test]
 fn t135_test_simple_at_root() {
     assert_eq!(
@@ -13,7 +13,7 @@ fn t135_test_simple_at_root() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/136_test_at_root_with_selector"
+/// From "sass-spec/spec/libsass/at-root/136_test_at_root_with_selector.hrx"
 #[test]
 fn t136_test_at_root_with_selector() {
     assert_eq!(
@@ -22,7 +22,7 @@ fn t136_test_at_root_with_selector() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/137_test_at_root_in_mixin"
+/// From "sass-spec/spec/libsass/at-root/137_test_at_root_in_mixin.hrx"
 #[test]
 fn t137_test_at_root_in_mixin() {
     assert_eq!(
@@ -34,7 +34,7 @@ fn t137_test_at_root_in_mixin() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/138_test_at_root_in_media"
+/// From "sass-spec/spec/libsass/at-root/138_test_at_root_in_media.hrx"
 #[test]
 fn t138_test_at_root_in_media() {
     assert_eq!(
@@ -46,7 +46,7 @@ fn t138_test_at_root_in_media() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/139_test_at_root_in_bubbled_media"
+/// From "sass-spec/spec/libsass/at-root/139_test_at_root_in_bubbled_media.hrx"
 #[test]
 fn t139_test_at_root_in_bubbled_media() {
     assert_eq!(
@@ -58,7 +58,7 @@ fn t139_test_at_root_in_bubbled_media() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/140_test_at_root_in_unknown_directive"
+/// From "sass-spec/spec/libsass/at-root/140_test_at_root_in_unknown_directive.hrx"
 #[test]
 fn t140_test_at_root_in_unknown_directive() {
     assert_eq!(
@@ -68,7 +68,7 @@ fn t140_test_at_root_in_unknown_directive() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/141_test_at_root_with_parent_ref"
+/// From "sass-spec/spec/libsass/at-root/141_test_at_root_with_parent_ref.hrx"
 #[test]
 fn t141_test_at_root_with_parent_ref() {
     assert_eq!(
@@ -77,7 +77,7 @@ fn t141_test_at_root_with_parent_ref() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/142_test_multi_level_at_root_with_parent_ref"
+/// From "sass-spec/spec/libsass/at-root/142_test_multi_level_at_root_with_parent_ref.hrx"
 #[test]
 fn t142_test_multi_level_at_root_with_parent_ref() {
     assert_eq!(
@@ -89,7 +89,7 @@ fn t142_test_multi_level_at_root_with_parent_ref() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/143_test_multi_level_at_root_with_inner_parent_ref"
+/// From "sass-spec/spec/libsass/at-root/143_test_multi_level_at_root_with_inner_parent_ref.hrx"
 #[test]
 fn t143_test_multi_level_at_root_with_inner_parent_ref() {
     assert_eq!(
@@ -101,7 +101,7 @@ fn t143_test_multi_level_at_root_with_inner_parent_ref() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/ampersand"
+/// From "sass-spec/spec/libsass/at-root/ampersand.hrx"
 #[test]
 fn ampersand() {
     assert_eq!(
@@ -113,7 +113,7 @@ fn ampersand() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/basic"
+/// From "sass-spec/spec/libsass/at-root/basic.hrx"
 #[test]
 fn basic() {
     assert_eq!(
@@ -125,7 +125,7 @@ fn basic() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/extend"
+/// From "sass-spec/spec/libsass/at-root/extend.hrx"
 #[test]
 #[ignore] // failing
 fn extend() {
@@ -138,7 +138,7 @@ fn extend() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/keyframes"
+/// From "sass-spec/spec/libsass/at-root/keyframes.hrx"
 #[test]
 fn keyframes() {
     assert_eq!(
@@ -150,7 +150,7 @@ fn keyframes() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/media"
+/// From "sass-spec/spec/libsass/at-root/media.hrx"
 #[test]
 fn media() {
     assert_eq!(
@@ -162,7 +162,7 @@ fn media() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/nested"
+/// From "sass-spec/spec/libsass/at-root/nested.hrx"
 #[test]
 fn nested() {
     assert_eq!(
@@ -174,7 +174,7 @@ fn nested() {
     );
 }
 
-/// From "sass-spec/spec/libsass/at-root/with_without"
+/// From "sass-spec/spec/libsass/at-root/with_without.hrx"
 #[test]
 #[ignore] // failing
 fn with_without() {

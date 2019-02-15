@@ -4,9 +4,9 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-mod error;
+// Ignoring "error.hrx", not a single spec.
 
-/// From "sass-spec/spec/css/unknown_directive/name_interpolation"
+/// From "sass-spec/spec/css/unknown_directive/name_interpolation.hrx"
 #[test]
 #[ignore] // failing
 fn name_interpolation() {
@@ -19,7 +19,7 @@ fn name_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/css/unknown_directive/plain"
+/// From "sass-spec/spec/css/unknown_directive/plain.hrx"
 #[test]
 fn plain() {
     assert_eq!(
@@ -31,7 +31,7 @@ fn plain() {
     );
 }
 
-/// From "sass-spec/spec/css/unknown_directive/value_interpolation"
+/// From "sass-spec/spec/css/unknown_directive/value_interpolation.hrx"
 #[test]
 fn value_interpolation() {
     assert_eq!(

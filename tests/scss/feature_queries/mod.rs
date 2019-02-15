@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/scss/feature-queries/basic"
+/// From "sass-spec/spec/scss/feature-queries/basic.hrx"
 #[test]
 fn basic() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn basic() {
     );
 }
 
-/// From "sass-spec/spec/scss/feature-queries/nested"
+/// From "sass-spec/spec/scss/feature-queries/nested.hrx"
 #[test]
 fn nested() {
     assert_eq!(
@@ -28,4 +28,4 @@ fn nested() {
     );
 }
 
-// Ignoring "without-query", tests with expected error not implemented yet.
+// Ignoring "without-query.hrx", error tests are not supported yet.

@@ -4,8 +4,8 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "function", tests with expected error not implemented yet.
+// Ignoring "function.hrx", error tests are not supported yet.
 
-// Ignoring "inline", tests with expected error not implemented yet.
+// Ignoring "inline.hrx", error tests are not supported yet.
 
-// Ignoring "mixin", tests with expected error not implemented yet.
+// Ignoring "mixin.hrx", error tests are not supported yet.

@@ -4,9 +4,9 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-mod error;
+// Ignoring "error.hrx", not a single spec.
 
-/// From "sass-spec/spec/css/custom_properties/exclamation"
+/// From "sass-spec/spec/css/custom_properties/exclamation.hrx"
 #[test]
 #[ignore] // failing
 fn exclamation() {
@@ -19,7 +19,7 @@ fn exclamation() {
     );
 }
 
-/// From "sass-spec/spec/css/custom_properties/indentation"
+/// From "sass-spec/spec/css/custom_properties/indentation.hrx"
 #[test]
 #[ignore] // failing
 fn indentation() {
@@ -32,7 +32,7 @@ fn indentation() {
     );
 }
 
-/// From "sass-spec/spec/css/custom_properties/name_interpolation"
+/// From "sass-spec/spec/css/custom_properties/name_interpolation.hrx"
 #[test]
 #[ignore] // failing
 fn name_interpolation() {
@@ -45,7 +45,7 @@ fn name_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/css/custom_properties/nesting_characters"
+/// From "sass-spec/spec/css/custom_properties/nesting_characters.hrx"
 #[test]
 #[ignore] // failing
 fn nesting_characters() {
@@ -58,7 +58,7 @@ fn nesting_characters() {
     );
 }
 
-/// From "sass-spec/spec/css/custom_properties/script"
+/// From "sass-spec/spec/css/custom_properties/script.hrx"
 #[test]
 #[ignore] // failing
 fn script() {
@@ -71,7 +71,7 @@ fn script() {
     );
 }
 
-/// From "sass-spec/spec/css/custom_properties/simple"
+/// From "sass-spec/spec/css/custom_properties/simple.hrx"
 #[test]
 #[ignore] // failing
 fn simple() {
@@ -84,7 +84,7 @@ fn simple() {
     );
 }
 
-/// From "sass-spec/spec/css/custom_properties/strings"
+/// From "sass-spec/spec/css/custom_properties/strings.hrx"
 #[test]
 fn strings() {
     assert_eq!(
@@ -96,7 +96,7 @@ fn strings() {
     );
 }
 
-/// From "sass-spec/spec/css/custom_properties/trailing_whitespace"
+/// From "sass-spec/spec/css/custom_properties/trailing_whitespace.hrx"
 #[test]
 #[ignore] // failing
 fn trailing_whitespace() {
@@ -109,7 +109,7 @@ fn trailing_whitespace() {
     );
 }
 
-/// From "sass-spec/spec/css/custom_properties/value_interpolation"
+/// From "sass-spec/spec/css/custom_properties/value_interpolation.hrx"
 #[test]
 fn value_interpolation() {
     assert_eq!(
@@ -121,7 +121,7 @@ fn value_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/css/custom_properties/without_semicolon"
+/// From "sass-spec/spec/css/custom_properties/without_semicolon.hrx"
 #[test]
 #[ignore] // failing
 fn without_semicolon() {

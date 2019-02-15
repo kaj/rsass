@@ -1,9 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/scope"
-//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
+//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
-/// From "sass-spec/spec/scope/clash"
+/// From "sass-spec/spec/scope/clash.hrx"
 #[test]
 fn clash() {
     assert_eq!(
@@ -15,7 +15,7 @@ fn clash() {
     );
 }
 
-/// From "sass-spec/spec/scope/each"
+/// From "sass-spec/spec/scope/each.hrx"
 #[test]
 fn each() {
     assert_eq!(
@@ -27,7 +27,7 @@ fn each() {
     );
 }
 
-/// From "sass-spec/spec/scope/for"
+/// From "sass-spec/spec/scope/for.hrx"
 #[test]
 fn test_for() {
     assert_eq!(
@@ -39,7 +39,7 @@ fn test_for() {
     );
 }
 
-/// From "sass-spec/spec/scope/function"
+/// From "sass-spec/spec/scope/function.hrx"
 #[test]
 fn function() {
     assert_eq!(
@@ -51,7 +51,7 @@ fn function() {
     );
 }
 
-/// From "sass-spec/spec/scope/if"
+/// From "sass-spec/spec/scope/if.hrx"
 #[test]
 fn test_if() {
     assert_eq!(
@@ -63,7 +63,7 @@ fn test_if() {
     );
 }
 
-/// From "sass-spec/spec/scope/mixin"
+/// From "sass-spec/spec/scope/mixin.hrx"
 #[test]
 fn mixin() {
     assert_eq!(
@@ -75,7 +75,7 @@ fn mixin() {
     );
 }
 
-/// From "sass-spec/spec/scope/nested"
+/// From "sass-spec/spec/scope/nested.hrx"
 #[test]
 fn nested() {
     assert_eq!(
@@ -87,7 +87,7 @@ fn nested() {
     );
 }
 
-/// From "sass-spec/spec/scope/root"
+/// From "sass-spec/spec/scope/root.hrx"
 #[test]
 fn root() {
     assert_eq!(
@@ -99,7 +99,7 @@ fn root() {
     );
 }
 
-/// From "sass-spec/spec/scope/ruleset"
+/// From "sass-spec/spec/scope/ruleset.hrx"
 #[test]
 fn ruleset() {
     assert_eq!(
@@ -111,7 +111,7 @@ fn ruleset() {
     );
 }
 
-/// From "sass-spec/spec/scope/while"
+/// From "sass-spec/spec/scope/while.hrx"
 #[test]
 fn test_while() {
     assert_eq!(

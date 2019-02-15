@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 mod arguments;
 
-/// From "sass-spec/spec/mixin/content/before_if"
+/// From "sass-spec/spec/mixin/content/before_if.hrx"
 #[test]
 fn before_if() {
     assert_eq!(
@@ -18,7 +18,7 @@ fn before_if() {
     );
 }
 
-/// From "sass-spec/spec/mixin/content/recursive"
+/// From "sass-spec/spec/mixin/content/recursive.hrx"
 #[test]
 fn recursive() {
     assert_eq!(

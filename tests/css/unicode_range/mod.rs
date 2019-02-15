@@ -4,9 +4,9 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-mod error;
+// Ignoring "error.hrx", not a single spec.
 
-/// From "sass-spec/spec/css/unicode_range/question_mark"
+/// From "sass-spec/spec/css/unicode_range/question_mark.hrx"
 #[test]
 fn question_mark() {
     assert_eq!(
@@ -18,7 +18,7 @@ fn question_mark() {
     );
 }
 
-/// From "sass-spec/spec/css/unicode_range/range"
+/// From "sass-spec/spec/css/unicode_range/range.hrx"
 #[test]
 fn range() {
     assert_eq!(
@@ -30,7 +30,7 @@ fn range() {
     );
 }
 
-/// From "sass-spec/spec/css/unicode_range/simple"
+/// From "sass-spec/spec/css/unicode_range/simple.hrx"
 #[test]
 fn simple() {
     assert_eq!(

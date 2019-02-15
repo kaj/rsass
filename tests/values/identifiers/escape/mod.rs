@@ -6,4 +6,4 @@ use rsass::set_precision;
 
 // Ignoring "normalize", start_version is 3.7.
 
-// Ignoring "script", start_version is 3.7.
+// Ignoring "script.hrx", start_version is 3.7.

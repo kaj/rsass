@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/precision/default"
+/// From "sass-spec/spec/libsass/precision/default.hrx"
 #[test]
 #[ignore] // failing
 fn default() {
@@ -17,7 +17,7 @@ fn default() {
     );
 }
 
-/// From "sass-spec/spec/libsass/precision/higher"
+/// From "sass-spec/spec/libsass/precision/higher.hrx"
 #[test]
 #[ignore] // failing
 fn higher() {
@@ -31,7 +31,7 @@ fn higher() {
     );
 }
 
-/// From "sass-spec/spec/libsass/precision/lower"
+/// From "sass-spec/spec/libsass/precision/lower.hrx"
 #[test]
 #[ignore] // failing
 fn lower() {

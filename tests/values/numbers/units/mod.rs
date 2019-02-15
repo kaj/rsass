@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/values/numbers/units/multiple"
+/// From "sass-spec/spec/values/numbers/units/multiple.hrx"
 #[test]
 #[ignore] // failing
 fn multiple() {

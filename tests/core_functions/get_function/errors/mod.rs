@@ -4,14 +4,14 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "function-exists", tests with expected error not implemented yet.
+// Ignoring "function-exists.hrx", error tests are not supported yet.
 
-// Ignoring "illegal-argument", tests with expected error not implemented yet.
+// Ignoring "illegal-argument.hrx", error tests are not supported yet.
 
-// Ignoring "illegal-kwarg", tests with expected error not implemented yet.
+// Ignoring "illegal-kwarg.hrx", error tests are not supported yet.
 
 mod math;
 
-// Ignoring "non-existent", tests with expected error not implemented yet.
+// Ignoring "non-existent.hrx", error tests are not supported yet.
 
-// Ignoring "passed-fn-ref", tests with expected error not implemented yet.
+// Ignoring "passed-fn-ref.hrx", error tests are not supported yet.

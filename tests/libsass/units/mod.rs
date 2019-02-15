@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 mod conversion;
 
-/// From "sass-spec/spec/libsass/units/feature-test"
+/// From "sass-spec/spec/libsass/units/feature-test.hrx"
 #[test]
 fn feature_test() {
     assert_eq!(
@@ -18,7 +18,7 @@ fn feature_test() {
     );
 }
 
-/// From "sass-spec/spec/libsass/units/simple"
+/// From "sass-spec/spec/libsass/units/simple.hrx"
 #[test]
 #[ignore] // failing
 fn simple() {

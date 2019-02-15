@@ -18,13 +18,13 @@ required-features = ["commandline"]
 
 [[bin]]
 name = "spectest"
-path = "src/spectest.rs"
+path = "src/spectest/main.rs"
 doc = false
 required-features = ["spectest"]
 
 [features]
 commandline = ["clap"]
-spectest = ["yaml-rust", "deunicode", "regex"]
+spectest = ["yaml-rust", "deunicode", "hrx-get", "regex"]
 
 [dependencies]
 lazy_static = "1.0"
@@ -34,6 +34,7 @@ num-traits = "^0.2.0"
 rand = "0.6.1"
 clap = { version = "^2.19", features = ["color", "wrap_help"], optional = true }
 deunicode = { version = "0.4", optional = true }
+hrx-get = { version = "0.1", optional = true }
 regex = { version = "1.1.0", optional = true }
 yaml-rust = { version = "0.4", optional = true }
 

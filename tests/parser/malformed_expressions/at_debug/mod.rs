@@ -4,6 +4,6 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "incomplete-expression", tests with expected error not implemented yet.
+// Ignoring "incomplete-expression.hrx", error tests are not supported yet.
 
-// Ignoring "no-argument", tests with expected error not implemented yet.
+// Ignoring "no-argument.hrx", error tests are not supported yet.

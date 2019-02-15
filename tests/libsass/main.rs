@@ -1,13 +1,13 @@
 //! Tests auto-converted from "sass-spec/spec/libsass"
-//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
+//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["Sa\u{301}ss-UT\u{327}F8", "bourbon", "base-level-parent/imported", "selector-functions/is_superselector", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "debug-directive-nested/function", "warn-directive-nested/function"]
+//! ["Sa\u{301}ss-UT\u{327}F8.hrx", "bourbon.hrx", "base-level-parent/imported", "selector-functions/is_superselector", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "debug-directive-nested/function.hrx", "warn-directive-nested/function.hrx"]
 use rsass::{compile_scss, OutputStyle};
 
-// Ignoring "Sa\u{301}ss-UT\u{327}F8", not expected to work yet.
+// Ignoring "Sa\u{301}ss-UT\u{327}F8.hrx", not expected to work yet.
 
-/// From "sass-spec/spec/libsass/Sáss-UŢF8"
+/// From "sass-spec/spec/libsass/Sáss-UŢF8.hrx"
 #[test]
 fn sass_utf8() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn sass_utf8() {
     );
 }
 
-/// From "sass-spec/spec/libsass/arg-eval"
+/// From "sass-spec/spec/libsass/arg-eval.hrx"
 #[test]
 fn arg_eval() {
     assert_eq!(
@@ -28,13 +28,13 @@ fn arg_eval() {
     );
 }
 
-// Ignoring "arithmetic", end_version is 3.5.
+// Ignoring "arithmetic.hrx", end_version is 3.5.
 
 mod at_error;
 
 mod at_root;
 
-/// From "sass-spec/spec/libsass/at-stuff"
+/// From "sass-spec/spec/libsass/at-stuff.hrx"
 #[test]
 #[ignore] // failing
 fn at_stuff() {
@@ -51,7 +51,7 @@ mod base_level_parent;
 
 mod basic;
 
-/// From "sass-spec/spec/libsass/bool"
+/// From "sass-spec/spec/libsass/bool.hrx"
 #[test]
 #[ignore] // failing
 fn bool() {
@@ -64,9 +64,9 @@ fn bool() {
     );
 }
 
-// Ignoring "bourbon", not expected to work yet.
+// Ignoring "bourbon.hrx", not expected to work yet.
 
-/// From "sass-spec/spec/libsass/calc"
+/// From "sass-spec/spec/libsass/calc.hrx"
 #[test]
 #[ignore] // failing
 fn calc() {
@@ -94,9 +94,9 @@ fn charset() {
 
 mod color_functions;
 
-// Ignoring "color-names", end_version is 3.5.
+// Ignoring "color-names.hrx", end_version is 3.5.
 
-/// From "sass-spec/spec/libsass/conversions"
+/// From "sass-spec/spec/libsass/conversions.hrx"
 #[test]
 #[ignore] // failing
 fn conversions() {
@@ -109,7 +109,7 @@ fn conversions() {
     );
 }
 
-/// From "sass-spec/spec/libsass/css-import"
+/// From "sass-spec/spec/libsass/css-import.hrx"
 #[test]
 #[ignore] // failing
 fn css_import() {
@@ -120,7 +120,7 @@ fn css_import() {
     );
 }
 
-/// From "sass-spec/spec/libsass/css_nth_selectors"
+/// From "sass-spec/spec/libsass/css_nth_selectors.hrx"
 #[test]
 #[ignore] // failing
 fn css_nth_selectors() {
@@ -145,7 +145,7 @@ fn css_unicode() {
 
 mod debug_directive_nested;
 
-/// From "sass-spec/spec/libsass/delayed"
+/// From "sass-spec/spec/libsass/delayed.hrx"
 #[test]
 #[ignore] // failing
 fn delayed() {
@@ -158,7 +158,7 @@ fn delayed() {
     );
 }
 
-/// From "sass-spec/spec/libsass/div"
+/// From "sass-spec/spec/libsass/div.hrx"
 #[test]
 #[ignore] // failing
 fn div() {
@@ -171,7 +171,7 @@ fn div() {
     );
 }
 
-/// From "sass-spec/spec/libsass/env"
+/// From "sass-spec/spec/libsass/env.hrx"
 #[test]
 #[ignore] // failing
 fn env() {
@@ -184,7 +184,7 @@ fn env() {
     );
 }
 
-/// From "sass-spec/spec/libsass/eq"
+/// From "sass-spec/spec/libsass/eq.hrx"
 #[test]
 fn eq() {
     assert_eq!(
@@ -200,7 +200,7 @@ mod error_directive_nested;
 
 mod features;
 
-/// From "sass-spec/spec/libsass/filter-functions"
+/// From "sass-spec/spec/libsass/filter-functions.hrx"
 #[test]
 fn filter_functions() {
     assert_eq!(
@@ -212,7 +212,7 @@ fn filter_functions() {
     );
 }
 
-/// From "sass-spec/spec/libsass/http_import"
+/// From "sass-spec/spec/libsass/http_import.hrx"
 #[test]
 #[ignore] // failing
 fn http_import() {
@@ -225,7 +225,7 @@ fn http_import() {
     );
 }
 
-/// From "sass-spec/spec/libsass/image-url"
+/// From "sass-spec/spec/libsass/image-url.hrx"
 #[test]
 fn image_url() {
     assert_eq!(
@@ -237,7 +237,7 @@ fn image_url() {
     );
 }
 
-/// From "sass-spec/spec/libsass/import"
+/// From "sass-spec/spec/libsass/import.hrx"
 #[test]
 #[ignore] // failing
 fn import() {
@@ -250,7 +250,7 @@ fn import() {
     );
 }
 
-/// From "sass-spec/spec/libsass/inh"
+/// From "sass-spec/spec/libsass/inh.hrx"
 #[test]
 #[ignore] // failing
 fn inh() {
@@ -263,17 +263,17 @@ fn inh() {
     );
 }
 
-// Ignoring "inheritance", end_version is 3.5.
+// Ignoring "inheritance.hrx", end_version is 3.5.
 
-// Ignoring "interpolated-function-call", end_version is 3.5.
+// Ignoring "interpolated-function-call-4.0.hrx", start_version is 4.0.
 
-// Ignoring "interpolated-function-call-4.0", start_version is 4.0.
+// Ignoring "interpolated-function-call.hrx", end_version is 3.5.
 
-// Ignoring "interpolated-urls", end_version is 3.5.
+// Ignoring "interpolated-urls-4.0.hrx", start_version is 4.0.
 
-// Ignoring "interpolated-urls-4.0", start_version is 4.0.
+// Ignoring "interpolated-urls.hrx", end_version is 3.5.
 
-/// From "sass-spec/spec/libsass/keyframes"
+/// From "sass-spec/spec/libsass/keyframes.hrx"
 #[test]
 fn keyframes() {
     assert_eq!(
@@ -297,7 +297,7 @@ fn length() {
     );
 }
 
-/// From "sass-spec/spec/libsass/list-evaluation"
+/// From "sass-spec/spec/libsass/list-evaluation.hrx"
 #[test]
 #[ignore] // failing
 fn list_evaluation() {
@@ -310,7 +310,7 @@ fn list_evaluation() {
     );
 }
 
-/// From "sass-spec/spec/libsass/lists"
+/// From "sass-spec/spec/libsass/lists.hrx"
 #[test]
 #[ignore] // failing
 fn lists() {
@@ -323,19 +323,7 @@ fn lists() {
     );
 }
 
-/// From "sass-spec/spec/libsass/media"
-#[test]
-fn media() {
-    assert_eq!(
-        rsass(
-            "@media all and (min-width: 960px) {\n  b {\n    font-weight: normal;\n  }\n}\n\n@media (min-width: 980px) {\n  a {\n    color: red;\n  }\n}\n\n@media all {\n  /* hey */\n  p {\n    color: blue;\n    a {\n      color: green;\n      &:after {\n        content: \">>\";\n      }\n    }\n  }\n  span {\n    display: inline-block;\n  }\n}\n\na b c {\n  /* a */\n  blee: blee;\n  /* b */\n  d e f {\n    blah: blah;\n    bloo: bloo;\n  }\n  /* c */\n  g h, i j {\n    @media print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen {\n      /* aa */\n      hey: ho;\n      /* bb */\n      k l m {\n        hee: fee;\n      }\n      /* cc */\n      haa: hoo;\n      /* dd */\n    }\n  }\n  /* d */\n  blah: blah;\n}\n\n@mixin simple-media-query($max-width, $min-width) {\n  @media only screen and (max-width : $max-width) and (min-width : $min-width) {\n    @content;\n  }\n}\n\n@mixin test($value) {\n  border-color: $value;\n}\n\nbody {\n  @include test(\"#ccc\");\n  @include simple-media-query(900px, 400px) {\n    border-color: black;\n  }\n}\n\n$foo: 23;\n$bar: 45;\n\n@media only screen and (max-width: $foo) and (min-width: $bar) {\n  hey {\n    ho: hoo;\n  }\n}\n\n@media (max-width: 200) and (min-width: 100) {\n  div {\n    color: red;\n  }\n}\n\n@media not bl#{ah} and (width: 200px) {\n  div {\n    color: brown, blue, black;\n  }\n}\n\n@mixin media($var1, $var2) {\n  @media screen and ($var1: $var2) {\n    @content;\n  }\n}\n\n@include media(max-device-width, 500px) {\n  foo {\n    bar: \"works\";\n  }\n}\n\ndiv {\n  color: red;\n  span {\n    color: blue;\n    @media screen {\n      p {\n        color: green;\n      }\n    }\n  }\n}"
-        )
-        .unwrap(),
-        "@media all and (min-width: 960px) {\n  b {\n    font-weight: normal;\n  }\n}\n@media (min-width: 980px) {\n  a {\n    color: red;\n  }\n}\n@media all {\n  /* hey */\n  p {\n    color: blue;\n  }\n  p a {\n    color: green;\n  }\n  p a:after {\n    content: \">>\";\n  }\n  span {\n    display: inline-block;\n  }\n}\na b c {\n  /* a */\n  blee: blee;\n  /* b */\n  /* c */\n  /* d */\n  blah: blah;\n}\na b c d e f {\n  blah: blah;\n  bloo: bloo;\n}\n@media print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen {\n  a b c g h, a b c i j {\n    /* aa */\n    hey: ho;\n    /* bb */\n    /* cc */\n    haa: hoo;\n    /* dd */\n  }\n  a b c g h k l m, a b c i j k l m {\n    hee: fee;\n  }\n}\nbody {\n  border-color: \"#ccc\";\n}\n@media only screen and (max-width: 900px) and (min-width: 400px) {\n  body {\n    border-color: black;\n  }\n}\n@media only screen and (max-width: 23) and (min-width: 45) {\n  hey {\n    ho: hoo;\n  }\n}\n@media (max-width: 200) and (min-width: 100) {\n  div {\n    color: red;\n  }\n}\n@media not blah and (width: 200px) {\n  div {\n    color: brown, blue, black;\n  }\n}\n@media screen and (max-device-width: 500px) {\n  foo {\n    bar: \"works\";\n  }\n}\ndiv {\n  color: red;\n}\ndiv span {\n  color: blue;\n}\n@media screen {\n  div span p {\n    color: green;\n  }\n}\n"
-    );
-}
-
-/// From "sass-spec/spec/libsass/media-hoisting"
+/// From "sass-spec/spec/libsass/media-hoisting.hrx"
 #[test]
 fn media_hoisting() {
     assert_eq!(
@@ -347,7 +335,19 @@ fn media_hoisting() {
     );
 }
 
-/// From "sass-spec/spec/libsass/mixin"
+/// From "sass-spec/spec/libsass/media.hrx"
+#[test]
+fn media() {
+    assert_eq!(
+        rsass(
+            "@media all and (min-width: 960px) {\n  b {\n    font-weight: normal;\n  }\n}\n\n@media (min-width: 980px) {\n  a {\n    color: red;\n  }\n}\n\n@media all {\n  /* hey */\n  p {\n    color: blue;\n    a {\n      color: green;\n      &:after {\n        content: \">>\";\n      }\n    }\n  }\n  span {\n    display: inline-block;\n  }\n}\n\na b c {\n  /* a */\n  blee: blee;\n  /* b */\n  d e f {\n    blah: blah;\n    bloo: bloo;\n  }\n  /* c */\n  g h, i j {\n    @media print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen {\n      /* aa */\n      hey: ho;\n      /* bb */\n      k l m {\n        hee: fee;\n      }\n      /* cc */\n      haa: hoo;\n      /* dd */\n    }\n  }\n  /* d */\n  blah: blah;\n}\n\n@mixin simple-media-query($max-width, $min-width) {\n  @media only screen and (max-width : $max-width) and (min-width : $min-width) {\n    @content;\n  }\n}\n\n@mixin test($value) {\n  border-color: $value;\n}\n\nbody {\n  @include test(\"#ccc\");\n  @include simple-media-query(900px, 400px) {\n    border-color: black;\n  }\n}\n\n$foo: 23;\n$bar: 45;\n\n@media only screen and (max-width: $foo) and (min-width: $bar) {\n  hey {\n    ho: hoo;\n  }\n}\n\n@media (max-width: 200) and (min-width: 100) {\n  div {\n    color: red;\n  }\n}\n\n@media not bl#{ah} and (width: 200px) {\n  div {\n    color: brown, blue, black;\n  }\n}\n\n@mixin media($var1, $var2) {\n  @media screen and ($var1: $var2) {\n    @content;\n  }\n}\n\n@include media(max-device-width, 500px) {\n  foo {\n    bar: \"works\";\n  }\n}\n\ndiv {\n  color: red;\n  span {\n    color: blue;\n    @media screen {\n      p {\n        color: green;\n      }\n    }\n  }\n}"
+        )
+        .unwrap(),
+        "@media all and (min-width: 960px) {\n  b {\n    font-weight: normal;\n  }\n}\n@media (min-width: 980px) {\n  a {\n    color: red;\n  }\n}\n@media all {\n  /* hey */\n  p {\n    color: blue;\n  }\n  p a {\n    color: green;\n  }\n  p a:after {\n    content: \">>\";\n  }\n  span {\n    display: inline-block;\n  }\n}\na b c {\n  /* a */\n  blee: blee;\n  /* b */\n  /* c */\n  /* d */\n  blah: blah;\n}\na b c d e f {\n  blah: blah;\n  bloo: bloo;\n}\n@media print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen {\n  a b c g h, a b c i j {\n    /* aa */\n    hey: ho;\n    /* bb */\n    /* cc */\n    haa: hoo;\n    /* dd */\n  }\n  a b c g h k l m, a b c i j k l m {\n    hee: fee;\n  }\n}\nbody {\n  border-color: \"#ccc\";\n}\n@media only screen and (max-width: 900px) and (min-width: 400px) {\n  body {\n    border-color: black;\n  }\n}\n@media only screen and (max-width: 23) and (min-width: 45) {\n  hey {\n    ho: hoo;\n  }\n}\n@media (max-width: 200) and (min-width: 100) {\n  div {\n    color: red;\n  }\n}\n@media not blah and (width: 200px) {\n  div {\n    color: brown, blue, black;\n  }\n}\n@media screen and (max-device-width: 500px) {\n  foo {\n    bar: \"works\";\n  }\n}\ndiv {\n  color: red;\n}\ndiv span {\n  color: blue;\n}\n@media screen {\n  div span p {\n    color: green;\n  }\n}\n"
+    );
+}
+
+/// From "sass-spec/spec/libsass/mixin.hrx"
 #[test]
 #[ignore] // failing
 fn mixin() {
@@ -360,7 +360,7 @@ fn mixin() {
     );
 }
 
-/// From "sass-spec/spec/libsass/mixins-and-media-queries"
+/// From "sass-spec/spec/libsass/mixins-and-media-queries.hrx"
 #[test]
 #[ignore] // failing
 fn mixins_and_media_queries() {
@@ -373,7 +373,7 @@ fn mixins_and_media_queries() {
     );
 }
 
-/// From "sass-spec/spec/libsass/multi-blocks"
+/// From "sass-spec/spec/libsass/multi-blocks.hrx"
 #[test]
 fn multi_blocks() {
     assert_eq!(
@@ -387,7 +387,7 @@ fn multi_blocks() {
 
 mod parent_selector;
 
-/// From "sass-spec/spec/libsass/placeholder-mediaquery"
+/// From "sass-spec/spec/libsass/placeholder-mediaquery.hrx"
 #[test]
 #[ignore] // failing
 fn placeholder_mediaquery() {
@@ -400,7 +400,7 @@ fn placeholder_mediaquery() {
     );
 }
 
-/// From "sass-spec/spec/libsass/placeholder-nested"
+/// From "sass-spec/spec/libsass/placeholder-nested.hrx"
 #[test]
 #[ignore] // failing
 fn placeholder_nested() {
@@ -415,7 +415,7 @@ fn placeholder_nested() {
 
 mod precision;
 
-/// From "sass-spec/spec/libsass/properties-in-media"
+/// From "sass-spec/spec/libsass/properties-in-media.hrx"
 #[test]
 #[ignore] // failing
 fn properties_in_media() {
@@ -428,9 +428,9 @@ fn properties_in_media() {
     );
 }
 
-// Ignoring "propsets", start_version is 3.7.
+// Ignoring "propsets.hrx", start_version is 3.7.
 
-/// From "sass-spec/spec/libsass/rel"
+/// From "sass-spec/spec/libsass/rel.hrx"
 #[test]
 #[ignore] // failing
 fn rel() {
@@ -443,7 +443,7 @@ fn rel() {
     );
 }
 
-/// From "sass-spec/spec/libsass/scale"
+/// From "sass-spec/spec/libsass/scale.hrx"
 #[test]
 fn scale() {
     assert_eq!(
@@ -457,7 +457,7 @@ fn scale() {
 
 mod selector_functions;
 
-/// From "sass-spec/spec/libsass/selector_interpolation_in_string"
+/// From "sass-spec/spec/libsass/selector_interpolation_in_string.hrx"
 #[test]
 fn selector_interpolation_in_string() {
     assert_eq!(
@@ -468,7 +468,7 @@ fn selector_interpolation_in_string() {
 
 mod selectors;
 
-/// From "sass-spec/spec/libsass/test"
+/// From "sass-spec/spec/libsass/test.hrx"
 #[test]
 #[ignore] // failing
 fn test() {
@@ -481,7 +481,7 @@ fn test() {
     );
 }
 
-/// From "sass-spec/spec/libsass/unary-ops"
+/// From "sass-spec/spec/libsass/unary-ops.hrx"
 #[test]
 #[ignore] // failing
 fn unary_ops() {
@@ -496,7 +496,7 @@ fn unary_ops() {
 
 mod unicode_bom;
 
-/// From "sass-spec/spec/libsass/unitless"
+/// From "sass-spec/spec/libsass/unitless.hrx"
 #[test]
 fn unitless() {
     assert_eq!(
@@ -510,7 +510,7 @@ fn unitless() {
 
 mod units;
 
-/// From "sass-spec/spec/libsass/unquote"
+/// From "sass-spec/spec/libsass/unquote.hrx"
 #[test]
 fn unquote() {
     assert_eq!(
@@ -522,7 +522,7 @@ fn unquote() {
     );
 }
 
-/// From "sass-spec/spec/libsass/url"
+/// From "sass-spec/spec/libsass/url.hrx"
 #[test]
 #[ignore] // failing
 fn url() {
@@ -537,7 +537,7 @@ fn url() {
 
 mod variable_scoping;
 
-/// From "sass-spec/spec/libsass/variables_in_media"
+/// From "sass-spec/spec/libsass/variables_in_media.hrx"
 #[test]
 #[ignore] // failing
 fn variables_in_media() {

@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions"
-//! version dd3a5edf, 2019-02-04 13:14:26 -0800.
+//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
@@ -7,7 +7,7 @@ mod color;
 
 mod content_exists;
 
-/// From "sass-spec/spec/core_functions/feature_exists"
+/// From "sass-spec/spec/core_functions/feature_exists.hrx"
 #[test]
 #[ignore] // failing
 fn feature_exists() {
@@ -22,9 +22,11 @@ fn feature_exists() {
 
 mod get_function;
 
+// Ignoring "inspect.hrx", not a single spec.
+
 mod invert;
 
-/// From "sass-spec/spec/core_functions/is_bracketed"
+/// From "sass-spec/spec/core_functions/is_bracketed.hrx"
 #[test]
 fn is_bracketed() {
     assert_eq!(

@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/scss/media/nesting/merged"
+/// From "sass-spec/spec/scss/media/nesting/merged.hrx"
 #[test]
 #[ignore] // failing
 fn merged() {
@@ -17,7 +17,7 @@ fn merged() {
     );
 }
 
-/// From "sass-spec/spec/scss/media/nesting/merged_and_retained"
+/// From "sass-spec/spec/scss/media/nesting/merged_and_retained.hrx"
 #[test]
 #[ignore] // failing
 fn merged_and_retained() {
@@ -30,7 +30,7 @@ fn merged_and_retained() {
     );
 }
 
-/// From "sass-spec/spec/scss/media/nesting/removed"
+/// From "sass-spec/spec/scss/media/nesting/removed.hrx"
 #[test]
 #[ignore] // failing
 fn removed() {
@@ -43,7 +43,7 @@ fn removed() {
     );
 }
 
-/// From "sass-spec/spec/scss/media/nesting/retained"
+/// From "sass-spec/spec/scss/media/nesting/retained.hrx"
 #[test]
 #[ignore] // failing
 fn retained() {

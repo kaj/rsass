@@ -4,11 +4,11 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "function", not expected to work yet.
+// Ignoring "function.hrx", not expected to work yet.
 
-// Ignoring "inline", tests with expected error not implemented yet.
+// Ignoring "inline.hrx", error tests are not supported yet.
 
-/// From "sass-spec/spec/libsass/warn-directive-nested/mixin"
+/// From "sass-spec/spec/libsass/warn-directive-nested/mixin.hrx"
 #[test]
 #[ignore] // failing
 fn mixin() {

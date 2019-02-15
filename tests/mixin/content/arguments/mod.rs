@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 mod error;
 
-/// From "sass-spec/spec/mixin/content/arguments/none"
+/// From "sass-spec/spec/mixin/content/arguments/none.hrx"
 #[test]
 #[ignore] // failing
 fn none() {
@@ -19,7 +19,7 @@ fn none() {
     );
 }
 
-/// From "sass-spec/spec/mixin/content/arguments/passing"
+/// From "sass-spec/spec/mixin/content/arguments/passing.hrx"
 #[test]
 #[ignore] // failing
 fn passing() {
@@ -32,7 +32,7 @@ fn passing() {
     );
 }
 
-/// From "sass-spec/spec/mixin/content/arguments/receiving"
+/// From "sass-spec/spec/mixin/content/arguments/receiving.hrx"
 #[test]
 #[ignore] // failing
 fn receiving() {
@@ -45,7 +45,7 @@ fn receiving() {
     );
 }
 
-/// From "sass-spec/spec/mixin/content/arguments/scope"
+/// From "sass-spec/spec/mixin/content/arguments/scope.hrx"
 #[test]
 #[ignore] // failing
 fn scope() {
@@ -58,7 +58,7 @@ fn scope() {
     );
 }
 
-/// From "sass-spec/spec/mixin/content/arguments/weird_syntax"
+/// From "sass-spec/spec/mixin/content/arguments/weird_syntax.hrx"
 #[test]
 #[ignore] // failing
 fn weird_syntax() {

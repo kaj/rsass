@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/core_functions/content-exists/basic"
+/// From "sass-spec/spec/core_functions/content-exists/basic.hrx"
 #[test]
 fn basic() {
     assert_eq!(
@@ -16,4 +16,4 @@ fn basic() {
     );
 }
 
-mod errors;
+// Ignoring "error.hrx", not a single spec.
