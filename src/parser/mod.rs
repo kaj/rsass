@@ -196,10 +196,7 @@ named!(
                 body_block2,
                 |body| Item::Rule(selectors, body)
             ) |
-            None => alt_complete!(
-                namespace_rule
-                    | property
-            )
+            None => call!(property_or_namespace_rule)
         )
     )
 );
@@ -421,10 +418,6 @@ named!(mixin_declaration2<Input, Item>,
                  })));
 
 named!(
-    function_declaration<Input, Item>,
-    preceded!(tag!("@function"), function_declaration2));
-
-named!(
     function_declaration2<Input, Item>,
     do_parse!(
         spacelike
@@ -441,10 +434,6 @@ named!(
 );
 
 named!(
-    return_stmt<Input, Item>,
-    preceded!(tag!("@return"), return_stmt2));
-
-named!(
     return_stmt2<Input, Item>,
     do_parse!(
         spacelike
@@ -456,10 +445,6 @@ named!(
 );
 
 named!(
-    content_stmt<Input, Item>,
-    preceded!(tag!("@content"), content_stmt2));
-
-named!(
     content_stmt2<Input, Item>,
     do_parse!(
         opt_spacelike
@@ -468,27 +453,40 @@ named!(
     )
 );
 
-named!(property<Input, Item>,
-       do_parse!(opt_spacelike >>
-                 name: sass_string >> opt_spacelike >>
-                 tag!(":") >> opt_spacelike >>
-                 val: value_expression >> opt_spacelike >>
-                 opt!(tag!(";")) >> opt_spacelike >>
-                 (Item::Property(name, val))));
-
 named!(
-    namespace_rule<Input, Item>,
+    property_or_namespace_rule<Input, Item>,
     do_parse!(
-        n1: sass_string
-            >> opt_spacelike
-            >> tag!(":")
-            >> opt_spacelike
-            >> value: opt!(value_expression)
-            >> opt_spacelike
-            >> body: body_block
-            >> (Item::NamespaceRule(n1, value.unwrap_or(Value::Null), body))
+        name: terminated!(sass_string,
+                          delimited!(opt_spacelike, tag!(":"), opt_spacelike)) >>
+        val: opt!(terminated!(value_expression, opt_spacelike)) >>
+        body: terminated!(
+            switch!(
+                alt!(tag!("{") | cond_reduce!(val.is_some(), alt!(tag!(";") | tag!("")))),
+                Input(b"{") => map!(body_block2, |b| Some(b)) |
+                //Input(b";") => value!(None) |
+                //Input(b"") => value!(None) |
+                _ => value!(None)
+                //None => return_error!(call!())
+            ),
+            opt_spacelike
+        ) >> (ns_or_prop_item(name, val, body))
     )
 );
+
+use crate::sass::SassString;
+fn ns_or_prop_item(
+    name: SassString,
+    value: Option<Value>,
+    body: Option<Vec<Item>>,
+) -> Item {
+    if let Some(body) = body {
+        Item::NamespaceRule(name, value.unwrap_or(Value::Null), body)
+    } else if let Some(value) = value {
+        Item::Property(name, value)
+    } else {
+        unreachable!()
+    }
+}
 
 named!(
     body_block<Input, Vec<Item>>,
@@ -704,7 +702,7 @@ fn test_mixin_declaration_default_and_subrules() {
 #[test]
 fn test_simple_property() {
     assert_eq!(
-        property(Input(b"color: red;\n")),
+        property_or_namespace_rule(Input(b"color: red;\n")),
         Ok((
             Input(b""),
             Item::Property(
@@ -714,10 +712,11 @@ fn test_simple_property() {
         ))
     )
 }
+
 #[test]
 fn test_property_2() {
     assert_eq!(
-        property(Input(b"background-position: 90% 50%;\n")),
+        property_or_namespace_rule(Input(b"background-position: 90% 50%;\n")),
         Ok((
             Input(b""),
             Item::Property(
