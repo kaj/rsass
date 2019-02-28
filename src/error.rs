@@ -16,7 +16,11 @@ pub enum Error {
     Encoding(FromUtf8Error),
     BadValue(String),
     BadArguments(String),
-    ParseError(nom::ErrorKind),
+    ParseError {
+        file: String,
+        pos: ErrPos,
+        kind: Option<nom::ErrorKind>,
+    },
     S(String),
     UndefinedVariable(String),
 }
@@ -67,6 +71,19 @@ impl fmt::Display for Error {
             Error::UndefinedVariable(ref name) => {
                 write!(out, "Undefined variable: \"${}\"", name)
             }
+            Error::ParseError {
+                ref file,
+                ref pos,
+                ref kind,
+            } => write!(
+                out,
+                "{}:{}: Parse error, expected {}",
+                file,
+                pos,
+                kind.as_ref()
+                    .map(|k| k.description())
+                    .unwrap_or("something else"),
+            ),
             // fallback
             ref x => write!(out, "{:?}", x),
         }
@@ -85,11 +102,6 @@ impl From<FromUtf8Error> for Error {
     }
 }
 
-impl From<nom::ErrorKind> for Error {
-    fn from(e: nom::ErrorKind) -> Self {
-        Error::ParseError(e)
-    }
-}
 impl<'a> From<nom::Err<Input<'a>>> for Error {
     fn from(e: nom::Err<Input<'a>>) -> Self {
         Error::S(format!("Parse error: {:?}", e))
@@ -100,5 +112,38 @@ impl<'a> From<nom::Err<Input<'a>>> for Error {
 impl<'a> From<clap::Error> for Error {
     fn from(e: clap::Error) -> Self {
         Error::S(format!("{}", e))
+    }
+}
+
+/// Position data for a parse error.
+///
+/// To be usefull for reporting the error to an end user, this
+/// contains the position in two forms, both the byte index (an
+/// index of the parsed byte slice) and the line number and character
+/// position in that line.
+#[derive(Debug)]
+pub struct ErrPos {
+    pub index: usize,
+    pub line: usize,
+    pub pos: usize,
+}
+
+impl ErrPos {
+    pub fn pos_of(index: usize, buffer: &[u8]) -> Self {
+        let before = &buffer[0..index];
+        ErrPos {
+            index,
+            line: 1 + bytecount::count(before, b'\n'),
+            pos: bytecount::num_chars(
+                before.rsplit(|c| *c == b'\n').next().unwrap(),
+            ),
+        }
+    }
+}
+impl fmt::Display for ErrPos {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        self.line.fmt(out)?;
+        out.write_str(":")?;
+        self.pos.fmt(out)
     }
 }

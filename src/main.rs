@@ -45,7 +45,7 @@ fn main() {
     match run(&args) {
         Ok(()) => (),
         Err(err) => {
-            eprintln!("Error: {}!", err);
+            eprintln!("{}", err);
             exit(1);
         }
     }

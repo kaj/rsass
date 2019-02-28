@@ -47,7 +47,7 @@ pub mod selectors;
 mod value;
 mod variablescope;
 
-pub use crate::error::Error;
+pub use crate::error::{ErrPos, Error};
 pub use crate::file_context::FileContext;
 pub use crate::functions::SassFunction;
 pub use crate::output_style::OutputStyle;
@@ -97,7 +97,12 @@ pub fn compile_scss(
     style: OutputStyle,
 ) -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
-    let items = parse_scss_data(input)?;
+    let items =
+        parse_scss_data(input).map_err(|(pos, kind)| Error::ParseError {
+            file: "-".into(),
+            pos: ErrPos::pos_of(pos, input),
+            kind,
+        })?;
     style.write_root(&items, &mut GlobalScope::new(), &file_context)
 }
 

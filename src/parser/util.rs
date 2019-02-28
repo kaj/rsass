@@ -59,12 +59,15 @@ pub fn is_name_char(c: char) -> bool {
 }
 
 named!(pub comment<Input, Input>,
-       delimited!(tag!("/*"),
-                  recognize!(many0!(alt_complete!(
-                      value!((), is_not!("*")) |
-                      preceded!(tag!("*"), not!(tag!("/")))
-                  ))),
-                  tag!("*/")));
+       preceded!(tag!("/*"), comment2)
+);
+named!(pub comment2<Input, Input>,
+       terminated!(
+           recognize!(many0!(alt_complete!(
+               value!((), is_not!("*")) |
+               preceded!(tag!("*"), not!(tag!("/")))
+           ))),
+           tag!("*/")));
 
 named!(pub ignore_space<Input, ()>, map!(multispace, |_|()));
 named!(
