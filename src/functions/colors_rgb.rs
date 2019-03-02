@@ -1,4 +1,4 @@
-use super::{Error, SassFunction};
+use super::{make_call, Error, SassFunction};
 use crate::css::{CallArgs, Value};
 use crate::value::{ListSeparator, Number, Unit};
 use num_rational::Rational;
@@ -6,12 +6,18 @@ use num_traits::One;
 use std::collections::BTreeMap;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, rgb(red, green, blue), |s| Ok(Value::rgba(
-        to_int(s.get("red")?)?,
-        to_int(s.get("green")?)?,
-        to_int(s.get("blue")?)?,
-        Rational::one()
-    )));
+    def!(f, rgb(red, green, blue), |s| {
+        let red = s.get("red")?;
+        let green = s.get("green")?;
+        let blue = s.get("blue")?;
+        if let (Ok(red), Ok(green), Ok(blue)) =
+            (to_int(&red), to_int(&green), to_int(&blue))
+        {
+            Ok(Value::rgba(red, green, blue, Rational::one()))
+        } else {
+            Ok(make_call("rgb", vec![red, green, blue]))
+        }
+    });
     def!(f, rgba(red, green, blue, alpha, color), |s| {
         let a = s.get("alpha")?;
         let red = s.get("red")?;
@@ -37,12 +43,15 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 )),
             }
         } else {
-            Ok(Value::rgba(
-                to_int(red)?,
-                to_int(s.get("green")?)?,
-                to_int(s.get("blue")?)?,
-                to_rational(a)?,
-            ))
+            let green = s.get("green")?;
+            let blue = s.get("blue")?;
+            if let (Ok(red), Ok(green), Ok(blue), Ok(a)) =
+                (to_int(&red), to_int(&green), to_int(&blue), to_rational(&a))
+            {
+                Ok(Value::rgba(red, green, blue, a))
+            } else {
+                Ok(make_call("rgba", vec![red, green, blue, a]))
+            }
         }
     });
     fn num(v: &Rational) -> Result<Value, Error> {
@@ -109,9 +118,13 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 rgba.alpha,
             ))
         }
-        (value, weight) => {
-            Err(Error::badargs(&["color", "percentage"], &[&value, &weight]))
+        (ref by, Value::Numeric(Number { ref value, .. }, ref wu, ..))
+            if value == &Rational::from_integer(100)
+                && wu == &Unit::Percent =>
+        {
+            Ok(make_call("invert", vec![by.clone()]))
         }
+        (value, weight) => Ok(make_call("invert", vec![value, weight])),
     });
 }
 
@@ -119,7 +132,7 @@ fn int_value(v: Rational) -> Value {
     Value::scalar(v.to_integer())
 }
 
-fn to_int(v: Value) -> Result<Rational, Error> {
+fn to_int(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(v, Unit::Percent, _) => Ok(v.value * 255 / 100),
         Value::Numeric(v, ..) => Ok(v.value),
@@ -127,7 +140,7 @@ fn to_int(v: Value) -> Result<Rational, Error> {
     }
 }
 
-fn to_rational(v: Value) -> Result<Rational, Error> {
+fn to_rational(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(num, ..) => Ok(num.value),
         v => Err(Error::badarg("number", &v)),

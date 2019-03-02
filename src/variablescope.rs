@@ -82,7 +82,7 @@ pub trait Scope {
         &self,
         name: &str,
         args: &css::CallArgs,
-    ) -> Option<Value>;
+    ) -> Option<Result<Value, Error>>;
 
     fn eval_body(&mut self, body: &[Item]) -> Result<Option<Value>, Error>
     where
@@ -229,10 +229,10 @@ impl<'a> Scope for ScopeImpl<'a> {
         &self,
         name: &str,
         args: &css::CallArgs,
-    ) -> Option<Value> {
+    ) -> Option<Result<Value, Error>> {
         let name = name.replace('-', "_");
         if let Some(f) = self.functions.get(&name).cloned() {
-            return f.call(self, args).ok();
+            return Some(f.call(self, args));
         }
         self.parent.call_function(&name, args)
     }
@@ -337,10 +337,10 @@ impl Scope for GlobalScope {
         &self,
         name: &str,
         args: &css::CallArgs,
-    ) -> Option<Value> {
+    ) -> Option<Result<Value, Error>> {
         let name = name.replace('-', "_");
         if let Some(f) = self.functions.get(&name).cloned() {
-            return f.call(self, args).ok();
+            return Some(f.call(self, args));
         }
         None
     }

@@ -135,12 +135,12 @@ impl Value {
                 let args = args.evaluate(scope, true)?;
                 if let Some(name) = name.single_raw() {
                     match scope.call_function(name, &args) {
-                        Some(value) => Ok(value),
-                        None => Ok(get_builtin_function(name)
-                            .and_then(|f| f.call(scope, &args).ok())
+                        Some(value) => Ok(value?),
+                        None => get_builtin_function(name)
+                            .map(|f| f.call(scope, &args))
                             .unwrap_or_else(|| {
-                                css::Value::Call(name.to_string(), args)
-                            })),
+                                Ok(css::Value::Call(name.to_string(), args))
+                            }),
                     }
                 } else {
                     let (name, _) = name.evaluate(scope)?;

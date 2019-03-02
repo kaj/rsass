@@ -1,4 +1,4 @@
-use super::{Error, SassFunction};
+use super::{make_call, Error, SassFunction};
 use crate::css::Value;
 use crate::value::{Number, Quotes, Unit};
 use crate::variablescope::Scope;
@@ -95,7 +95,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Color(ref rgba, _) => {
                 Ok(Value::Numeric(Number::from(rgba.alpha), Unit::None, true))
             }
-            v => Err(Error::badarg("color", &v)),
+            v => Ok(make_call("opacity", vec![v])),
         }
     }
     f.insert("opacity", func2!(opacity(color)));

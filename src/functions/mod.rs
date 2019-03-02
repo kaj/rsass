@@ -155,6 +155,16 @@ lazy_static! {
     };
 }
 
+fn make_call(name: &str, mut args: Vec<css::Value>) -> css::Value {
+    while args.last() == Some(&css::Value::Null) {
+        args.pop();
+    }
+    css::Value::Call(
+        name.into(),
+        css::CallArgs::new(args.into_iter().map(|v| (None, v)).collect()),
+    )
+}
+
 #[test]
 fn test_rgb() {
     use crate::parser::formalargs::call_args;

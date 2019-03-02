@@ -1,4 +1,4 @@
-use super::{Error, SassFunction};
+use super::{make_call, Error, SassFunction};
 use crate::css::Value;
 use crate::value::{Number, Unit};
 use crate::variablescope::Scope;
@@ -7,22 +7,36 @@ use num_traits::{One, Zero};
 use std::collections::BTreeMap;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, hsl(hue, saturation, lightness), |s: &Scope| Ok(
-        Value::hsla(
-            to_rational(s.get("hue")?)?,
-            to_rational_percent(s.get("saturation")?)?,
-            to_rational_percent(s.get("lightness")?)?,
-            Rational::one()
-        )
-    ));
-    def!(f, hsla(hue, saturation, lightness, alpha), |s: &Scope| Ok(
-        Value::hsla(
-            to_rational(s.get("hue")?)?,
-            to_rational_percent(s.get("saturation")?)?,
-            to_rational_percent(s.get("lightness")?)?,
-            to_rational(s.get("alpha")?)?
-        )
-    ));
+    def!(f, hsl(hue, saturation, lightness), |s| {
+        let hue = s.get("hue")?;
+        let sat = s.get("saturation")?;
+        let lig = s.get("lightness")?;
+        if let (Ok(hue), Ok(sat), Ok(lig)) = (
+            to_rational(&hue),
+            to_rational_percent(&sat),
+            to_rational_percent(&lig),
+        ) {
+            Ok(Value::hsla(hue, sat, lig, Rational::one()))
+        } else {
+            Ok(make_call("hsl", vec![hue, sat, lig]))
+        }
+    });
+    def!(f, hsla(hue, saturation, lightness, alpha), |s| {
+        let hue = s.get("hue")?;
+        let sat = s.get("saturation")?;
+        let lig = s.get("lightness")?;
+        let a = s.get("alpha")?;
+        if let (Ok(hue), Ok(sat), Ok(lig), Ok(a)) = (
+            to_rational(&hue),
+            to_rational_percent(&sat),
+            to_rational_percent(&lig),
+            to_rational(&a),
+        ) {
+            Ok(Value::hsla(hue, sat, lig, a))
+        } else {
+            Ok(make_call("hsla", vec![hue, sat, lig, a]))
+        }
+    });
     def!(f, adjust_hue(color, degrees), |s: &Scope| match (
         s.get("color")?,
         s.get("degrees")?,
@@ -52,7 +66,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             let v = if u == Unit::Percent { v / 100 } else { v };
             Ok(Value::hsla(h, s + v, l, alpha))
         }
-        (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
+        (c, v) => Ok(make_call("saturate", vec![c, v])),
     });
     def!(
         f,
@@ -60,7 +74,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         |args: &Scope| match &args.get("color")? {
             &Value::Color(ref rgba, _) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
-                let amount = to_rational_percent(args.get("amount")?)?;
+                let amount = to_rational_percent(&args.get("amount")?)?;
                 Ok(Value::hsla(h, s, l + amount, alpha))
             }
             v => Err(Error::badarg("color", v)),
@@ -72,7 +86,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         |args: &Scope| match &args.get("color")? {
             &Value::Color(ref rgba, _) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
-                let amount = to_rational_percent(args.get("amount")?)?;
+                let amount = to_rational_percent(&args.get("amount")?)?;
                 Ok(Value::hsla(h, s, l - amount, alpha))
             }
             v => Err(Error::badarg("color", v)),
@@ -104,7 +118,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     {
         &Value::Color(ref rgba, _) => {
             let (h, s, l, alpha) = rgba.to_hsla();
-            let amount = to_rational_percent(args.get("amount")?)?;
+            let amount = to_rational_percent(&args.get("amount")?)?;
             Ok(Value::hsla(h, s - amount, l, alpha))
         }
         v => Err(Error::badarg("color", v)),
@@ -115,16 +129,16 @@ fn percentage(v: Rational) -> Value {
     Value::Numeric(Number::from(v * 100), Unit::Percent, true)
 }
 
-fn to_rational(v: Value) -> Result<Rational, Error> {
+fn to_rational(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(v, ..) => Ok(v.value),
-        v => Err(Error::badarg("number", &v)),
+        v => Err(Error::badarg("number", v)),
     }
 }
 
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-fn to_rational_percent(v: Value) -> Result<Rational, Error> {
+fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, Unit::Percent, _) => Ok(v.value / 100),
