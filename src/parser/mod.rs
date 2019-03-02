@@ -277,7 +277,7 @@ named!(
                         peek!(one_of!(" \n\t{;"))
                     ) | map!(
                         map_res!(is_not!("\"'{};"), input_to_str),
-                        |s| Value::Literal(s.trim_right().into(),
+                        |s| Value::Literal(s.trim_end().into(),
                     ))
                 )
             ))
