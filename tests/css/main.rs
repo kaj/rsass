@@ -1,50 +1,90 @@
 //! Tests auto-converted from "sass-spec/spec/css"
-//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
+//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["plain"]
 use rsass::{compile_scss, OutputStyle};
 
-/// From "sass-spec/spec/css/bizarrely_formatted_comments.hrx"
-#[test]
-#[ignore] // failing
-fn bizarrely_formatted_comments() {
-    assert_eq!(
-        rsass(".foo {\n    /* Foo\n Bar\nBaz */\n  a: b; }\n").unwrap(),
-        ".foo {\n  /* Foo\n   Bar\n  Baz */\n  a: b;\n}\n"
-    );
-}
-
-/// From "sass-spec/spec/css/blockless_directive_without_semicolon.hrx"
+// From "sass-spec/spec/css/blockless_directive_without_semicolon.hrx"
 #[test]
 fn blockless_directive_without_semicolon() {
     assert_eq!(rsass("@foo \"bar\";\n").unwrap(), "@foo \"bar\";\n");
 }
 
-/// From "sass-spec/spec/css/closing_line_comment_end_with_compact_output.hrx"
-#[test]
-fn closing_line_comment_end_with_compact_output() {
-    assert_eq!(
-        rsass("/* foo */\nbar { baz: bang; }\n").unwrap(),
-        "/* foo */\nbar {\n  baz: bang;\n}\n"
+// From "sass-spec/spec/css/comment.hrx"
+mod comment {
+    #[allow(unused)]
+    use super::rsass;
+    mod converts_newlines {
+        #[allow(unused)]
+        use super::rsass;
+        mod sass {
+            #[allow(unused)]
+            use super::rsass;
+        }
+        mod scss {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            #[ignore] // failing
+            fn cr() {
+                assert_eq!(
+                    rsass("/* foo\r * bar */\n").unwrap(),
+                    "/* foo\n * bar */\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn ff() {
+                assert_eq!(
+                    rsass("/* foo\u{c} * bar */\n").unwrap(),
+                    "/* foo\n * bar */\n"
+                );
+            }
+        }
+    }
+    #[test]
+    fn multiple() {
+        assert_eq!(
+            rsass(".foo {\n  /* Foo Bar */\n  /* Baz Bang */ }\n").unwrap(),
+            ".foo {\n  /* Foo Bar */\n  /* Baz Bang */\n}\n"
+        );
+    }
+    #[test]
+    fn multiple_stars() {
+        assert_eq!(
+        rsass(
+            "a /***/ b {x: y}\na /****/ b {x: y}\na /* **/ b {x: y}\na /** */ b {x: y}\n"
+        )
+        .unwrap(),
+        "a b {\n  x: y;\n}\na b {\n  x: y;\n}\na b {\n  x: y;\n}\na b {\n  x: y;\n}\n"
     );
+    }
+    #[test]
+    #[ignore] // failing
+    fn weird_indentation() {
+        assert_eq!(
+            rsass(".foo {\n    /* Foo\n Bar\nBaz */\n  a: b; }\n").unwrap(),
+            ".foo {\n  /* Foo\n   Bar\n  Baz */\n  a: b;\n}\n"
+        );
+    }
 }
 
 mod custom_properties;
 
-/// From "sass-spec/spec/css/directive_with_lots_of_whitespace.hrx"
+// From "sass-spec/spec/css/directive_with_lots_of_whitespace.hrx"
 #[test]
 fn directive_with_lots_of_whitespace() {
     assert_eq!(rsass("@foo \"bar\";\n").unwrap(), "@foo \"bar\";\n");
 }
 
-/// From "sass-spec/spec/css/empty_block_directive.hrx"
+// From "sass-spec/spec/css/empty_block_directive.hrx"
 #[test]
 fn empty_block_directive() {
     assert_eq!(rsass("@foo {}\n").unwrap(), "@foo {}\n");
 }
 
-/// From "sass-spec/spec/css/function_name_identifiers.hrx"
+// From "sass-spec/spec/css/function_name_identifiers.hrx"
 #[test]
 fn function_name_identifiers() {
     assert_eq!(
@@ -56,13 +96,34 @@ fn function_name_identifiers() {
     );
 }
 
+// From "sass-spec/spec/css/keyframes.hrx"
+mod keyframes {
+    #[allow(unused)]
+    use super::rsass;
+    mod bubble {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // failing
+        fn empty() {
+            assert_eq!(
+        rsass(
+            "// Regression test for sass/dart-sass#611.\na {\n  @keyframes {/**/}\n}\n"
+        )
+        .unwrap(),
+        "@keyframes {\n  /**/\n}\n"
+    );
+        }
+    }
+}
+
 mod media;
 
 // Ignoring "min_max", start_version is 3.7.
 
 mod moz_document;
 
-/// From "sass-spec/spec/css/ms_long_filter_syntax.hrx"
+// From "sass-spec/spec/css/ms_long_filter_syntax.hrx"
 #[test]
 #[ignore] // failing
 fn ms_long_filter_syntax() {
@@ -72,27 +133,6 @@ fn ms_long_filter_syntax() {
         )
         .unwrap(),
         "foo {\n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000);\n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000);\n}\n"
-    );
-}
-
-/// From "sass-spec/spec/css/multi_star_comments.hrx"
-#[test]
-fn multi_star_comments() {
-    assert_eq!(
-        rsass(
-            "a /***/ b {x: y}\na /****/ b {x: y}\na /* **/ b {x: y}\na /** */ b {x: y}\n"
-        )
-        .unwrap(),
-        "a b {\n  x: y;\n}\na b {\n  x: y;\n}\na b {\n  x: y;\n}\na b {\n  x: y;\n}\n"
-    );
-}
-
-/// From "sass-spec/spec/css/multiple_comments.hrx"
-#[test]
-fn multiple_comments() {
-    assert_eq!(
-        rsass(".foo {\n  /* Foo Bar */\n  /* Baz Bang */ }\n").unwrap(),
-        ".foo {\n  /* Foo Bar */\n  /* Baz Bang */\n}\n"
     );
 }
 

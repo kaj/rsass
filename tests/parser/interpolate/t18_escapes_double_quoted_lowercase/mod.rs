@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/parser/interpolate/18_escapes_double_quoted_lowercase/01_inline.hrx"
+// From "sass-spec/spec/parser/interpolate/18_escapes_double_quoted_lowercase/01_inline.hrx"
 #[test]
 fn t01_inline() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn t01_inline() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/18_escapes_double_quoted_lowercase/02_variable.hrx"
+// From "sass-spec/spec/parser/interpolate/18_escapes_double_quoted_lowercase/02_variable.hrx"
 #[test]
 fn t02_variable() {
     assert_eq!(
@@ -28,7 +28,7 @@ fn t02_variable() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/18_escapes_double_quoted_lowercase/03_inline_double.hrx"
+// From "sass-spec/spec/parser/interpolate/18_escapes_double_quoted_lowercase/03_inline_double.hrx"
 #[test]
 fn t03_inline_double() {
     assert_eq!(
@@ -40,7 +40,7 @@ fn t03_inline_double() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/18_escapes_double_quoted_lowercase/04_variable_double.hrx"
+// From "sass-spec/spec/parser/interpolate/18_escapes_double_quoted_lowercase/04_variable_double.hrx"
 #[test]
 fn t04_variable_double() {
     assert_eq!(
@@ -52,7 +52,7 @@ fn t04_variable_double() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/18_escapes_double_quoted_lowercase/05_variable_quoted_double.hrx"
+// From "sass-spec/spec/parser/interpolate/18_escapes_double_quoted_lowercase/05_variable_quoted_double.hrx"
 #[test]
 fn t05_variable_quoted_double() {
     assert_eq!(
@@ -64,4 +64,6 @@ fn t05_variable_quoted_double() {
     );
 }
 
-// Ignoring "06_escape_interpolation.hrx", start_version is 3.7.
+// From "sass-spec/spec/parser/interpolate/18_escapes_double_quoted_lowercase/06_escape_interpolation.hrx"
+
+// Ignoring "t06_escape_interpolation", start_version is 3.7.

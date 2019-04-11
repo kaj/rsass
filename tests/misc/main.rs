@@ -1,9 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/misc"
-//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
+//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
-/// From "sass-spec/spec/misc/JMA-pseudo-test.hrx"
+// From "sass-spec/spec/misc/JMA-pseudo-test.hrx"
 #[test]
 #[ignore] // failing
 fn jma_pseudo_test() {
@@ -16,7 +16,7 @@ fn jma_pseudo_test() {
     );
 }
 
-/// From "sass-spec/spec/misc/directive_interpolation.hrx"
+// From "sass-spec/spec/misc/directive_interpolation.hrx"
 #[test]
 fn directive_interpolation() {
     assert_eq!(
@@ -25,7 +25,7 @@ fn directive_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/misc/empty_content.hrx"
+// From "sass-spec/spec/misc/empty_content.hrx"
 #[test]
 fn empty_content() {
     assert_eq!(
@@ -35,9 +35,11 @@ fn empty_content() {
     );
 }
 
-// Ignoring "error-directive.hrx", error tests are not supported yet.
+// From "sass-spec/spec/misc/error-directive.hrx"
 
-/// From "sass-spec/spec/misc/import_in_mixin.hrx"
+// Ignoring "error_directive", error tests are not supported yet.
+
+// From "sass-spec/spec/misc/import_in_mixin.hrx"
 #[test]
 fn import_in_mixin() {
     assert_eq!(
@@ -49,7 +51,7 @@ fn import_in_mixin() {
     );
 }
 
-/// From "sass-spec/spec/misc/import_with_interpolation.hrx"
+// From "sass-spec/spec/misc/import_with_interpolation.hrx"
 #[test]
 fn import_with_interpolation() {
     assert_eq!(
@@ -61,7 +63,7 @@ fn import_with_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/misc/lang-bug.hrx"
+// From "sass-spec/spec/misc/lang-bug.hrx"
 #[test]
 fn lang_bug() {
     assert_eq!(
@@ -70,7 +72,7 @@ fn lang_bug() {
     );
 }
 
-/// From "sass-spec/spec/misc/media_interpolation.hrx"
+// From "sass-spec/spec/misc/media_interpolation.hrx"
 #[test]
 fn media_interpolation() {
     assert_eq!(
@@ -79,7 +81,7 @@ fn media_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/misc/mixin_content.hrx"
+// From "sass-spec/spec/misc/mixin_content.hrx"
 #[test]
 #[ignore] // failing
 fn mixin_content() {
@@ -92,7 +94,7 @@ fn mixin_content() {
     );
 }
 
-/// From "sass-spec/spec/misc/namespace_properties_with_script_value.hrx"
+// From "sass-spec/spec/misc/namespace_properties_with_script_value.hrx"
 #[test]
 fn namespace_properties_with_script_value() {
     assert_eq!(
@@ -104,7 +106,7 @@ fn namespace_properties_with_script_value() {
     );
 }
 
-/// From "sass-spec/spec/misc/negative_numbers.hrx"
+// From "sass-spec/spec/misc/negative_numbers.hrx"
 #[test]
 #[ignore] // failing
 fn negative_numbers() {
@@ -117,7 +119,7 @@ fn negative_numbers() {
     );
 }
 
-/// From "sass-spec/spec/misc/selector_interpolation_before_element_name.hrx"
+// From "sass-spec/spec/misc/selector_interpolation_before_element_name.hrx"
 #[test]
 fn selector_interpolation_before_element_name() {
     assert_eq!(
@@ -126,7 +128,7 @@ fn selector_interpolation_before_element_name() {
     );
 }
 
-/// From "sass-spec/spec/misc/selector_only_interpolation.hrx"
+// From "sass-spec/spec/misc/selector_only_interpolation.hrx"
 #[test]
 fn selector_only_interpolation() {
     assert_eq!(
@@ -135,7 +137,7 @@ fn selector_only_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/misc/trailing_comma_in_selector.hrx"
+// From "sass-spec/spec/misc/trailing_comma_in_selector.hrx"
 #[test]
 #[ignore] // failing
 fn trailing_comma_in_selector() {
@@ -146,7 +148,7 @@ fn trailing_comma_in_selector() {
     );
 }
 
-/// From "sass-spec/spec/misc/unicode_variables"
+// From "sass-spec/spec/misc/unicode_variables"
 #[test]
 fn unicode_variables() {
     assert_eq!(
@@ -155,7 +157,7 @@ fn unicode_variables() {
     );
 }
 
-/// From "sass-spec/spec/misc/warn-directive.hrx"
+// From "sass-spec/spec/misc/warn-directive.hrx"
 #[test]
 #[ignore] // failing
 fn warn_directive() {

@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/color-functions/other/scale-color/a.hrx"
+// From "sass-spec/spec/libsass/color-functions/other/scale-color/a.hrx"
 #[test]
 fn a() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn a() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/other/scale-color/b.hrx"
+// From "sass-spec/spec/libsass/color-functions/other/scale-color/b.hrx"
 #[test]
 fn b() {
     assert_eq!(
@@ -28,7 +28,7 @@ fn b() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/other/scale-color/g.hrx"
+// From "sass-spec/spec/libsass/color-functions/other/scale-color/g.hrx"
 #[test]
 fn g() {
     assert_eq!(
@@ -40,7 +40,7 @@ fn g() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/other/scale-color/l.hrx"
+// From "sass-spec/spec/libsass/color-functions/other/scale-color/l.hrx"
 #[test]
 fn l() {
     assert_eq!(
@@ -52,7 +52,7 @@ fn l() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/other/scale-color/r.hrx"
+// From "sass-spec/spec/libsass/color-functions/other/scale-color/r.hrx"
 #[test]
 fn r() {
     assert_eq!(
@@ -64,7 +64,7 @@ fn r() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/other/scale-color/s.hrx"
+// From "sass-spec/spec/libsass/color-functions/other/scale-color/s.hrx"
 #[test]
 fn s() {
     assert_eq!(

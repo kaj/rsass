@@ -4,17 +4,27 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "01_inline.hrx", start_version is 3.7.
+// From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/01_inline.hrx"
 
-// Ignoring "02_variable.hrx", start_version is 3.7.
+// Ignoring "t01_inline", start_version is 3.7.
 
-// Ignoring "03_inline_double.hrx", start_version is 3.7.
+// From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/02_variable.hrx"
 
-// Ignoring "04_variable_double.hrx", start_version is 3.7.
+// Ignoring "t02_variable", start_version is 3.7.
 
-// Ignoring "05_variable_quoted_double.hrx", start_version is 3.7.
+// From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/03_inline_double.hrx"
 
-/// From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/06_escape_interpolation.hrx"
+// Ignoring "t03_inline_double", start_version is 3.7.
+
+// From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/04_variable_double.hrx"
+
+// Ignoring "t04_variable_double", start_version is 3.7.
+
+// From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/05_variable_quoted_double.hrx"
+
+// Ignoring "t05_variable_quoted_double", start_version is 3.7.
+
+// From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/06_escape_interpolation.hrx"
 #[test]
 fn t06_escape_interpolation() {
     assert_eq!(

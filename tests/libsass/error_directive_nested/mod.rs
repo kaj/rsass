@@ -4,8 +4,14 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "function.hrx", error tests are not supported yet.
+// From "sass-spec/spec/libsass/error-directive-nested/function.hrx"
 
-// Ignoring "inline.hrx", error tests are not supported yet.
+// Ignoring "function", error tests are not supported yet.
 
-// Ignoring "mixin.hrx", error tests are not supported yet.
+// From "sass-spec/spec/libsass/error-directive-nested/inline.hrx"
+
+// Ignoring "inline", error tests are not supported yet.
+
+// From "sass-spec/spec/libsass/error-directive-nested/mixin.hrx"
+
+// Ignoring "mixin", error tests are not supported yet.

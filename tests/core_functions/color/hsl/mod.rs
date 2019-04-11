@@ -10,7 +10,7 @@ mod error;
 
 mod four_args;
 
-/// From "sass-spec/spec/core_functions/color/hsl/multi_argument_var.hrx"
+// From "sass-spec/spec/core_functions/color/hsl/multi_argument_var.hrx"
 #[test]
 fn multi_argument_var() {
     assert_eq!(
@@ -26,4 +26,6 @@ mod one_arg;
 
 mod three_args;
 
-// Ignoring "two_args.hrx", error tests are not supported yet.
+// From "sass-spec/spec/core_functions/color/hsl/two_args.hrx"
+
+// Ignoring "two_args", error tests are not supported yet.

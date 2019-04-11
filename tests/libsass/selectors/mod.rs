@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/selectors/access.hrx"
+// From "sass-spec/spec/libsass/selectors/access.hrx"
 #[test]
 #[ignore] // failing
 fn access() {
@@ -17,7 +17,7 @@ fn access() {
     );
 }
 
-/// From "sass-spec/spec/libsass/selectors/function-argument.hrx"
+// From "sass-spec/spec/libsass/selectors/function-argument.hrx"
 #[test]
 fn function_argument() {
     assert_eq!(
@@ -29,7 +29,7 @@ fn function_argument() {
     );
 }
 
-/// From "sass-spec/spec/libsass/selectors/interpolation.hrx"
+// From "sass-spec/spec/libsass/selectors/interpolation.hrx"
 #[test]
 #[ignore] // failing
 fn interpolation() {
@@ -42,7 +42,7 @@ fn interpolation() {
     );
 }
 
-/// From "sass-spec/spec/libsass/selectors/mixin-argument.hrx"
+// From "sass-spec/spec/libsass/selectors/mixin-argument.hrx"
 #[test]
 #[ignore] // failing
 fn mixin_argument() {
@@ -55,7 +55,7 @@ fn mixin_argument() {
     );
 }
 
-/// From "sass-spec/spec/libsass/selectors/simple.hrx"
+// From "sass-spec/spec/libsass/selectors/simple.hrx"
 #[test]
 #[ignore] // failing
 fn simple() {

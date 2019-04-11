@@ -8,7 +8,7 @@ use rsass::set_precision;
 
 // Ignoring "utf-16-little", not expected to work yet.
 
-/// From "sass-spec/spec/libsass/unicode-bom/utf-8"
+// From "sass-spec/spec/libsass/unicode-bom/utf-8"
 #[test]
 fn utf_8() {
     assert_eq!(

@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 mod addition;
 
-/// From "sass-spec/spec/parser/operations/binary-and-unary.hrx"
+// From "sass-spec/spec/parser/operations/binary-and-unary.hrx"
 #[test]
 #[ignore] // failing
 fn binary_and_unary() {

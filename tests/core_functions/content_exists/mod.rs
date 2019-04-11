@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/core_functions/content-exists/basic.hrx"
+// From "sass-spec/spec/core_functions/content-exists/basic.hrx"
 #[test]
 fn basic() {
     assert_eq!(
@@ -16,4 +16,12 @@ fn basic() {
     );
 }
 
-// Ignoring "error.hrx", not a single spec.
+// From "sass-spec/spec/core_functions/content-exists/error.hrx"
+mod error {
+    #[allow(unused)]
+    use super::rsass;
+
+    // Ignoring "inside_function", error tests are not supported yet.
+
+    // Ignoring "outside_mixin", error tests are not supported yet.
+}

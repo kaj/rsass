@@ -4,7 +4,9 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "colon_twice_todo.hrx", error tests are not supported yet.
+// From "sass-spec/spec/parser/interpolate/44_selector/colon_twice_todo.hrx"
+
+// Ignoring "colon_twice_todo", error tests are not supported yet.
 
 mod double_escape;
 

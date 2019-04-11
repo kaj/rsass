@@ -4,9 +4,29 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "error.hrx", not a single spec.
+// From "sass-spec/spec/css/unknown_directive/error.hrx"
+mod error {
+    #[allow(unused)]
+    use super::rsass;
 
-/// From "sass-spec/spec/css/unknown_directive/name_interpolation.hrx"
+    // Ignoring "in_declaration", error tests are not supported yet.
+
+    // Ignoring "in_function", error tests are not supported yet.
+    mod interpolation {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "in_declaration", error tests are not supported yet.
+
+        // Ignoring "in_function", error tests are not supported yet.
+
+        // Ignoring "space_after_at", error tests are not supported yet.
+    }
+
+    // Ignoring "space_after_at", error tests are not supported yet.
+}
+
+// From "sass-spec/spec/css/unknown_directive/name_interpolation.hrx"
 #[test]
 #[ignore] // failing
 fn name_interpolation() {
@@ -19,7 +39,7 @@ fn name_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/css/unknown_directive/plain.hrx"
+// From "sass-spec/spec/css/unknown_directive/plain.hrx"
 #[test]
 fn plain() {
     assert_eq!(
@@ -31,7 +51,7 @@ fn plain() {
     );
 }
 
-/// From "sass-spec/spec/css/unknown_directive/value_interpolation.hrx"
+// From "sass-spec/spec/css/unknown_directive/value_interpolation.hrx"
 #[test]
 fn value_interpolation() {
     assert_eq!(

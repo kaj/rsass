@@ -6,9 +6,11 @@ use rsass::set_precision;
 
 mod attribute;
 
-// Ignoring "reference_combinator.hrx", start_version is 4.0.
+// From "sass-spec/spec/css/selector/reference_combinator.hrx"
 
-/// From "sass-spec/spec/css/selector/slotted.hrx"
+// Ignoring "reference_combinator", start_version is 4.0.
+
+// From "sass-spec/spec/css/selector/slotted.hrx"
 #[test]
 #[ignore] // failing
 fn slotted() {

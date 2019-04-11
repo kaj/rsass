@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/values/colors/alpha_hex/initial_digit.hrx"
+// From "sass-spec/spec/values/colors/alpha_hex/initial_digit.hrx"
 #[test]
 #[ignore] // failing
 fn initial_digit() {
@@ -18,7 +18,7 @@ fn initial_digit() {
     );
 }
 
-/// From "sass-spec/spec/values/colors/alpha_hex/initial_letter.hrx"
+// From "sass-spec/spec/values/colors/alpha_hex/initial_letter.hrx"
 #[test]
 #[ignore] // failing
 fn initial_letter() {

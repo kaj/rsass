@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/each.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/each.hrx"
 #[test]
 #[ignore] // failing
 fn each() {
@@ -17,7 +17,7 @@ fn each() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/else.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/else.hrx"
 #[test]
 #[ignore] // failing
 fn test_else() {
@@ -30,7 +30,7 @@ fn test_else() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/elseif.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/elseif.hrx"
 #[test]
 #[ignore] // failing
 fn elseif() {
@@ -43,7 +43,7 @@ fn elseif() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/for.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/for.hrx"
 #[test]
 #[ignore] // failing
 fn test_for() {
@@ -56,7 +56,7 @@ fn test_for() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/if.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/if.hrx"
 #[test]
 #[ignore] // failing
 fn test_if() {
@@ -69,7 +69,7 @@ fn test_if() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/while.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/while.hrx"
 #[test]
 fn test_while() {
     assert_eq!(

@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/core_functions/invert/weight-parameter.hrx"
+// From "sass-spec/spec/core_functions/invert/weight-parameter.hrx"
 #[test]
 fn weight_parameter() {
     assert_eq!(

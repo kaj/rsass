@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/values"
-//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
+//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
@@ -7,7 +7,7 @@ mod colors;
 
 mod identifiers;
 
-/// From "sass-spec/spec/values/ids.hrx"
+// From "sass-spec/spec/values/ids.hrx"
 #[test]
 #[ignore] // failing
 fn ids() {

@@ -1,17 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/basic"
-//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
+//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["14_imports.hrx", "33_ambiguous_imports.hrx"]
 use rsass::{compile_scss, OutputStyle};
 
-/// From "sass-spec/spec/basic/00_empty.hrx"
+// From "sass-spec/spec/basic/00_empty.hrx"
 #[test]
 fn t00_empty() {
     assert_eq!(rsass("\n").unwrap(), "");
 }
 
-/// From "sass-spec/spec/basic/01_simple_css.hrx"
+// From "sass-spec/spec/basic/01_simple_css.hrx"
 #[test]
 fn t01_simple_css() {
     assert_eq!(
@@ -20,7 +20,7 @@ fn t01_simple_css() {
     );
 }
 
-/// From "sass-spec/spec/basic/02_simple_nesting.hrx"
+// From "sass-spec/spec/basic/02_simple_nesting.hrx"
 #[test]
 fn t02_simple_nesting() {
     assert_eq!(
@@ -29,7 +29,7 @@ fn t02_simple_nesting() {
     );
 }
 
-/// From "sass-spec/spec/basic/03_simple_variable.hrx"
+// From "sass-spec/spec/basic/03_simple_variable.hrx"
 #[test]
 fn t03_simple_variable() {
     assert_eq!(
@@ -38,7 +38,7 @@ fn t03_simple_variable() {
     );
 }
 
-/// From "sass-spec/spec/basic/04_basic_variables.hrx"
+// From "sass-spec/spec/basic/04_basic_variables.hrx"
 #[test]
 fn t04_basic_variables() {
     assert_eq!(
@@ -50,7 +50,7 @@ fn t04_basic_variables() {
     );
 }
 
-/// From "sass-spec/spec/basic/05_empty_levels.hrx"
+// From "sass-spec/spec/basic/05_empty_levels.hrx"
 #[test]
 fn t05_empty_levels() {
     assert_eq!(
@@ -62,7 +62,7 @@ fn t05_empty_levels() {
     );
 }
 
-/// From "sass-spec/spec/basic/06_nesting_and_comments.hrx"
+// From "sass-spec/spec/basic/06_nesting_and_comments.hrx"
 #[test]
 fn t06_nesting_and_comments() {
     assert_eq!(
@@ -74,7 +74,7 @@ fn t06_nesting_and_comments() {
     );
 }
 
-/// From "sass-spec/spec/basic/07_nested_simple_selector_groups.hrx"
+// From "sass-spec/spec/basic/07_nested_simple_selector_groups.hrx"
 #[test]
 fn t07_nested_simple_selector_groups() {
     assert_eq!(
@@ -86,7 +86,7 @@ fn t07_nested_simple_selector_groups() {
     );
 }
 
-/// From "sass-spec/spec/basic/08_selector_combinators.hrx"
+// From "sass-spec/spec/basic/08_selector_combinators.hrx"
 #[test]
 fn t08_selector_combinators() {
     assert_eq!(
@@ -98,7 +98,7 @@ fn t08_selector_combinators() {
     );
 }
 
-/// From "sass-spec/spec/basic/09_selector_groups_and_combinators.hrx"
+// From "sass-spec/spec/basic/09_selector_groups_and_combinators.hrx"
 #[test]
 fn t09_selector_groups_and_combinators() {
     assert_eq!(
@@ -110,7 +110,7 @@ fn t09_selector_groups_and_combinators() {
     );
 }
 
-/// From "sass-spec/spec/basic/10_classes_and_ids.hrx"
+// From "sass-spec/spec/basic/10_classes_and_ids.hrx"
 #[test]
 fn t10_classes_and_ids() {
     assert_eq!(
@@ -122,7 +122,7 @@ fn t10_classes_and_ids() {
     );
 }
 
-/// From "sass-spec/spec/basic/11_attribute_selectors.hrx"
+// From "sass-spec/spec/basic/11_attribute_selectors.hrx"
 #[test]
 fn t11_attribute_selectors() {
     assert_eq!(
@@ -134,7 +134,7 @@ fn t11_attribute_selectors() {
     );
 }
 
-/// From "sass-spec/spec/basic/12_pseudo_classes_and_elements.hrx"
+// From "sass-spec/spec/basic/12_pseudo_classes_and_elements.hrx"
 #[test]
 fn t12_pseudo_classes_and_elements() {
     assert_eq!(
@@ -146,7 +146,7 @@ fn t12_pseudo_classes_and_elements() {
     );
 }
 
-/// From "sass-spec/spec/basic/13_back_references.hrx"
+// From "sass-spec/spec/basic/13_back_references.hrx"
 #[test]
 fn t13_back_references() {
     assert_eq!(
@@ -160,7 +160,7 @@ fn t13_back_references() {
 
 // Ignoring "14_imports.hrx", not expected to work yet.
 
-/// From "sass-spec/spec/basic/15_arithmetic_and_lists.hrx"
+// From "sass-spec/spec/basic/15_arithmetic_and_lists.hrx"
 #[test]
 #[ignore] // failing
 fn t15_arithmetic_and_lists() {
@@ -173,9 +173,11 @@ fn t15_arithmetic_and_lists() {
     );
 }
 
-// Ignoring "16_hex_arithmetic.hrx", end_version is 3.5.
+// From "sass-spec/spec/basic/16_hex_arithmetic.hrx"
 
-/// From "sass-spec/spec/basic/17_basic_mixins.hrx"
+// Ignoring "t16_hex_arithmetic", end_version is 3.5.
+
+// From "sass-spec/spec/basic/17_basic_mixins.hrx"
 #[test]
 fn t17_basic_mixins() {
     assert_eq!(
@@ -187,7 +189,7 @@ fn t17_basic_mixins() {
     );
 }
 
-/// From "sass-spec/spec/basic/18_mixin_scope.hrx"
+// From "sass-spec/spec/basic/18_mixin_scope.hrx"
 #[test]
 fn t18_mixin_scope() {
     assert_eq!(
@@ -199,7 +201,7 @@ fn t18_mixin_scope() {
     );
 }
 
-/// From "sass-spec/spec/basic/19_full_mixin_craziness.hrx"
+// From "sass-spec/spec/basic/19_full_mixin_craziness.hrx"
 #[test]
 fn t19_full_mixin_craziness() {
     assert_eq!(
@@ -211,7 +213,7 @@ fn t19_full_mixin_craziness() {
     );
 }
 
-/// From "sass-spec/spec/basic/20_scoped_variables.hrx"
+// From "sass-spec/spec/basic/20_scoped_variables.hrx"
 #[test]
 fn t20_scoped_variables() {
     assert_eq!(
@@ -223,7 +225,7 @@ fn t20_scoped_variables() {
     );
 }
 
-/// From "sass-spec/spec/basic/21_one_builtin_function.hrx"
+// From "sass-spec/spec/basic/21_one_builtin_function.hrx"
 #[test]
 fn t21_one_builtin_function() {
     assert_eq!(
@@ -235,7 +237,7 @@ fn t21_one_builtin_function() {
     );
 }
 
-/// From "sass-spec/spec/basic/22_colors_with_alpha.hrx"
+// From "sass-spec/spec/basic/22_colors_with_alpha.hrx"
 #[test]
 fn t22_colors_with_alpha() {
     assert_eq!(
@@ -247,11 +249,15 @@ fn t22_colors_with_alpha() {
     );
 }
 
-// Ignoring "23_basic_value_interpolation-4.0.hrx", start_version is 4.0.
+// From "sass-spec/spec/basic/23_basic_value_interpolation-4.0.hrx"
 
-// Ignoring "23_basic_value_interpolation.hrx", end_version is 3.5.
+// Ignoring "t23_basic_value_interpolation_4_0", start_version is 4.0.
 
-/// From "sass-spec/spec/basic/24_namespace_properties.hrx"
+// From "sass-spec/spec/basic/23_basic_value_interpolation.hrx"
+
+// Ignoring "t23_basic_value_interpolation", end_version is 3.5.
+
+// From "sass-spec/spec/basic/24_namespace_properties.hrx"
 #[test]
 fn t24_namespace_properties() {
     assert_eq!(
@@ -263,7 +269,7 @@ fn t24_namespace_properties() {
     );
 }
 
-/// From "sass-spec/spec/basic/25_basic_string_interpolation.hrx"
+// From "sass-spec/spec/basic/25_basic_string_interpolation.hrx"
 #[test]
 fn t25_basic_string_interpolation() {
     assert_eq!(
@@ -275,7 +281,7 @@ fn t25_basic_string_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/basic/26_selector_interpolation.hrx"
+// From "sass-spec/spec/basic/26_selector_interpolation.hrx"
 #[test]
 fn t26_selector_interpolation() {
     assert_eq!(
@@ -287,7 +293,7 @@ fn t26_selector_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/basic/27_media_queries.hrx"
+// From "sass-spec/spec/basic/27_media_queries.hrx"
 #[test]
 fn t27_media_queries() {
     assert_eq!(
@@ -299,7 +305,7 @@ fn t27_media_queries() {
     );
 }
 
-/// From "sass-spec/spec/basic/28_url.hrx"
+// From "sass-spec/spec/basic/28_url.hrx"
 #[test]
 fn t28_url() {
     assert_eq!(
@@ -311,7 +317,7 @@ fn t28_url() {
     );
 }
 
-/// From "sass-spec/spec/basic/29_if.hrx"
+// From "sass-spec/spec/basic/29_if.hrx"
 #[test]
 fn t29_if() {
     assert_eq!(
@@ -323,7 +329,7 @@ fn t29_if() {
     );
 }
 
-/// From "sass-spec/spec/basic/30_if_in_function.hrx"
+// From "sass-spec/spec/basic/30_if_in_function.hrx"
 #[test]
 fn t30_if_in_function() {
     assert_eq!(
@@ -335,7 +341,7 @@ fn t30_if_in_function() {
     );
 }
 
-/// From "sass-spec/spec/basic/31_if_in_mixin.hrx"
+// From "sass-spec/spec/basic/31_if_in_mixin.hrx"
 #[test]
 fn t31_if_in_mixin() {
     assert_eq!(
@@ -347,7 +353,7 @@ fn t31_if_in_mixin() {
     );
 }
 
-/// From "sass-spec/spec/basic/32_percentages.hrx"
+// From "sass-spec/spec/basic/32_percentages.hrx"
 #[test]
 fn t32_percentages() {
     assert_eq!(
@@ -361,7 +367,7 @@ fn t32_percentages() {
 
 // Ignoring "33_ambiguous_imports.hrx", not expected to work yet.
 
-/// From "sass-spec/spec/basic/35_varargs_false.hrx"
+// From "sass-spec/spec/basic/35_varargs_false.hrx"
 #[test]
 fn t35_varargs_false() {
     assert_eq!(
@@ -373,7 +379,7 @@ fn t35_varargs_false() {
     );
 }
 
-/// From "sass-spec/spec/basic/36_extra_commas_in_selectors.hrx"
+// From "sass-spec/spec/basic/36_extra_commas_in_selectors.hrx"
 #[test]
 fn t36_extra_commas_in_selectors() {
     assert_eq!(
@@ -382,7 +388,7 @@ fn t36_extra_commas_in_selectors() {
     );
 }
 
-/// From "sass-spec/spec/basic/37_url_expressions.hrx"
+// From "sass-spec/spec/basic/37_url_expressions.hrx"
 #[test]
 fn t37_url_expressions() {
     assert_eq!(
@@ -394,7 +400,7 @@ fn t37_url_expressions() {
     );
 }
 
-/// From "sass-spec/spec/basic/38_expressions_in_at_directives.hrx"
+// From "sass-spec/spec/basic/38_expressions_in_at_directives.hrx"
 #[test]
 fn t38_expressions_in_at_directives() {
     assert_eq!(
@@ -406,7 +412,7 @@ fn t38_expressions_in_at_directives() {
     );
 }
 
-/// From "sass-spec/spec/basic/39_dash_match_attribute_selector.hrx"
+// From "sass-spec/spec/basic/39_dash_match_attribute_selector.hrx"
 #[test]
 fn t39_dash_match_attribute_selector() {
     assert_eq!(
@@ -415,7 +421,7 @@ fn t39_dash_match_attribute_selector() {
     );
 }
 
-/// From "sass-spec/spec/basic/40_pseudo_class_identifier_starting_with_n.hrx"
+// From "sass-spec/spec/basic/40_pseudo_class_identifier_starting_with_n.hrx"
 #[test]
 fn t40_pseudo_class_identifier_starting_with_n() {
     assert_eq!(
@@ -424,7 +430,7 @@ fn t40_pseudo_class_identifier_starting_with_n() {
     );
 }
 
-/// From "sass-spec/spec/basic/41_slashy_urls.hrx"
+// From "sass-spec/spec/basic/41_slashy_urls.hrx"
 #[test]
 fn t41_slashy_urls() {
     assert_eq!(
@@ -436,7 +442,7 @@ fn t41_slashy_urls() {
     );
 }
 
-/// From "sass-spec/spec/basic/42_css_imports.hrx"
+// From "sass-spec/spec/basic/42_css_imports.hrx"
 #[test]
 fn t42_css_imports() {
     assert_eq!(
@@ -448,7 +454,7 @@ fn t42_css_imports() {
     );
 }
 
-/// From "sass-spec/spec/basic/43_str_length"
+// From "sass-spec/spec/basic/43_str_length"
 #[test]
 fn t43_str_length() {
     assert_eq!(
@@ -460,7 +466,7 @@ fn t43_str_length() {
     );
 }
 
-/// From "sass-spec/spec/basic/44_bem_selectors.hrx"
+// From "sass-spec/spec/basic/44_bem_selectors.hrx"
 #[test]
 fn t44_bem_selectors() {
     assert_eq!(
@@ -472,7 +478,7 @@ fn t44_bem_selectors() {
     );
 }
 
-/// From "sass-spec/spec/basic/45_str_insert"
+// From "sass-spec/spec/basic/45_str_insert"
 #[test]
 fn t45_str_insert() {
     assert_eq!(
@@ -484,7 +490,7 @@ fn t45_str_insert() {
     );
 }
 
-/// From "sass-spec/spec/basic/46_str_index"
+// From "sass-spec/spec/basic/46_str_index"
 #[test]
 fn t46_str_index() {
     assert_eq!(
@@ -496,7 +502,7 @@ fn t46_str_index() {
     );
 }
 
-/// From "sass-spec/spec/basic/48_case_conversion.hrx"
+// From "sass-spec/spec/basic/48_case_conversion.hrx"
 #[test]
 fn t48_case_conversion() {
     assert_eq!(
@@ -508,7 +514,7 @@ fn t48_case_conversion() {
     );
 }
 
-/// From "sass-spec/spec/basic/49_interpolants_in_css_imports.hrx"
+// From "sass-spec/spec/basic/49_interpolants_in_css_imports.hrx"
 #[test]
 fn t49_interpolants_in_css_imports() {
     assert_eq!(
@@ -520,7 +526,7 @@ fn t49_interpolants_in_css_imports() {
     );
 }
 
-/// From "sass-spec/spec/basic/50_wrapped_pseudo_selectors.hrx"
+// From "sass-spec/spec/basic/50_wrapped_pseudo_selectors.hrx"
 #[test]
 fn t50_wrapped_pseudo_selectors() {
     assert_eq!(
@@ -532,7 +538,7 @@ fn t50_wrapped_pseudo_selectors() {
     );
 }
 
-/// From "sass-spec/spec/basic/51_trailing_commas_in_list.hrx"
+// From "sass-spec/spec/basic/51_trailing_commas_in_list.hrx"
 #[test]
 fn t51_trailing_commas_in_list() {
     assert_eq!(
@@ -544,7 +550,7 @@ fn t51_trailing_commas_in_list() {
     );
 }
 
-/// From "sass-spec/spec/basic/52_interchangeable_hyphens_underscores.hrx"
+// From "sass-spec/spec/basic/52_interchangeable_hyphens_underscores.hrx"
 #[test]
 fn t52_interchangeable_hyphens_underscores() {
     assert_eq!(
@@ -556,9 +562,11 @@ fn t52_interchangeable_hyphens_underscores() {
     );
 }
 
-// Ignoring "53_escaped_quotes", start_version is 3.7.
+// From "sass-spec/spec/basic/53_escaped_quotes"
 
-/// From "sass-spec/spec/basic/54_adjacent_identifiers_with_hyphens.hrx"
+// Ignoring "t53_escaped_quotes", start_version is 3.7.
+
+// From "sass-spec/spec/basic/54_adjacent_identifiers_with_hyphens.hrx"
 #[test]
 fn t54_adjacent_identifiers_with_hyphens() {
     assert_eq!(
@@ -570,7 +578,7 @@ fn t54_adjacent_identifiers_with_hyphens() {
     );
 }
 
-/// From "sass-spec/spec/basic/55_variable_exists.hrx"
+// From "sass-spec/spec/basic/55_variable_exists.hrx"
 #[test]
 fn t55_variable_exists() {
     assert_eq!(
@@ -582,7 +590,7 @@ fn t55_variable_exists() {
     );
 }
 
-/// From "sass-spec/spec/basic/56_global_variable_exists.hrx"
+// From "sass-spec/spec/basic/56_global_variable_exists.hrx"
 #[test]
 fn t56_global_variable_exists() {
     assert_eq!(
@@ -594,7 +602,7 @@ fn t56_global_variable_exists() {
     );
 }
 
-/// From "sass-spec/spec/basic/57_function_exists.hrx"
+// From "sass-spec/spec/basic/57_function_exists.hrx"
 #[test]
 fn t57_function_exists() {
     assert_eq!(
@@ -606,7 +614,7 @@ fn t57_function_exists() {
     );
 }
 
-/// From "sass-spec/spec/basic/58_mixin_exists.hrx"
+// From "sass-spec/spec/basic/58_mixin_exists.hrx"
 #[test]
 fn t58_mixin_exists() {
     assert_eq!(
@@ -618,7 +626,7 @@ fn t58_mixin_exists() {
     );
 }
 
-/// From "sass-spec/spec/basic/59_if_expression.hrx"
+// From "sass-spec/spec/basic/59_if_expression.hrx"
 #[test]
 fn t59_if_expression() {
     assert_eq!(
@@ -630,7 +638,7 @@ fn t59_if_expression() {
     );
 }
 
-/// From "sass-spec/spec/basic/60_call.hrx"
+// From "sass-spec/spec/basic/60_call.hrx"
 #[test]
 fn t60_call() {
     assert_eq!(

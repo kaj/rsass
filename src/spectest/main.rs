@@ -221,9 +221,9 @@ fn handle_entries(
     Ok(())
 }
 
-fn ignore(
+fn ignore<T: std::fmt::Debug>(
     rs: &mut Write,
-    name: &OsStr,
+    name: &T,
     reason: &str,
 ) -> Result<(), io::Error> {
     eprintln!("Ignoring {:?}, {}.", name, reason);
@@ -238,7 +238,8 @@ fn spec_dir_to_test(
 ) -> Result<(), Error> {
     let specdir = suite.join(test);
     let fixture = load_test_fixture_dir(&specdir)?;
-    fixture.write_test(rs, &specdir, precision)
+    writeln!(rs, "\n// From {:?}", specdir)?;
+    fixture.write_test(rs, precision)
 }
 
 fn spec_hrx_to_test(
@@ -248,17 +249,84 @@ fn spec_hrx_to_test(
 ) -> Result<(), Error> {
     let archive = Archive::load(suite)
         .map_err(|e| Error(format!("Failed to load hrx: {}", e)))?;
-    if archive.get("input.scss").is_some() {
-        let fixture = load_test_fixture_hrx(&archive)?;
-        fixture.write_test(rs, &suite, precision)
+
+    writeln!(rs, "\n// From {:?}", suite)?;
+    handle_hrx_part(rs, suite, &archive, "", precision)
+}
+
+fn handle_hrx_part(
+    rs: &mut Write,
+    suite: &Path,
+    archive: &Archive,
+    prefix: &str,
+    precision: Option<i64>,
+) -> Result<(), Error> {
+    use std::collections::BTreeSet;
+    let tests = archive
+        .names()
+        .iter()
+        .flat_map(|s| {
+            if s.starts_with(prefix) {
+                let t = prefix.len();
+                if let Some(pos) = s[t..].find('/') {
+                    Some(&s[t..t + pos + 1])
+                } else {
+                    None // Some("")
+                }
+            } else {
+                None
+            }
+        })
+        .collect::<BTreeSet<_>>();
+
+    let name = if prefix.is_empty() {
+        fn_name_os(&suite.file_name().unwrap_or_default())
     } else {
-        // TODO Handle multiple tests in same archive!
-        ignore(
-            rs,
-            &suite.file_name().unwrap_or_default(),
-            "not a single spec",
-        )?;
-        Ok(())
+        let t = if prefix.ends_with('/') {
+            &prefix[0..prefix.len() - 1]
+        } else {
+            prefix
+        };
+        let t = if let Some(p) = t.rfind('/') {
+            &t[p + 1..]
+        } else {
+            t
+        };
+        fn_name(t)
+    };
+
+    if archive.get(&format!("{}input.scss", prefix)).is_some() {
+        let fixture = load_test_fixture_hrx(name, &archive, prefix)?;
+        fixture.write_test(rs, precision)
+    } else {
+        let options = archive
+            .get(&format!("{}options.yml", prefix))
+            .map(Options::parse)
+            .transpose()?
+            .unwrap_or_default();
+        if let Some(ref reason) = options.should_skip {
+            ignore(rs, &suite.file_name(), reason).map_err(|e| e.into())
+        } else {
+            let precision = options.precision.or(precision);
+            if !tests.is_empty() {
+                writeln!(
+                    rs,
+                    "mod {} {{\n#[allow(unused)]\nuse super::rsass;",
+                    name,
+                )?;
+                for name in tests {
+                    handle_hrx_part(
+                        rs,
+                        suite,
+                        &archive,
+                        &format!("{}{}", prefix, name),
+                        precision,
+                    )?;
+                }
+                writeln!(rs, "}}")?;
+            }
+            Ok(())
+        }
     }
 }
 
@@ -269,6 +337,7 @@ fn fn_name(name: &str) -> String {
     let t = deunicode(name)
         .to_lowercase()
         .replace(".hrx", "")
+        .replace('/', "_")
         .replace('-', "_")
         .replace('.', "_");
     if t.chars().next().unwrap_or('0').is_numeric() {
@@ -277,6 +346,7 @@ fn fn_name(name: &str) -> String {
         || t == "for"
         || t == "if"
         || t == "static"
+        || t == "type"
         || t == "while"
     {
         format!("test_{}", t)
@@ -290,20 +360,30 @@ fn load_test_fixture_dir(specdir: &Path) -> Result<TestFixture, Error> {
     static EXPECTED_OUTPUT_FILENAME: &str = "output.css";
     static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
 
-    // TODO: hrx support.
+    let name = fn_name_os(specdir.file_name().unwrap_or_default());
     let options = load_options(&specdir)?;
     let input = content(&specdir.join(INPUT_FILENAME))?;
 
     {
         let path = specdir.join(EXPECTED_OUTPUT_FILENAME);
         if path.exists() {
-            return Ok(TestFixture::new_ok(input, &content(&path)?, options));
+            return Ok(TestFixture::new_ok(
+                name,
+                input,
+                &content(&path)?,
+                options,
+            ));
         }
     }
     for filename in EXPECTED_ERROR_FILENAMES {
         let path = specdir.join(filename);
         if path.exists() {
-            return Ok(TestFixture::new_err(input, content(&path)?, options));
+            return Ok(TestFixture::new_err(
+                name,
+                input,
+                content(&path)?,
+                options,
+            ));
         }
     }
     Err(Error(format!(
@@ -312,28 +392,40 @@ fn load_test_fixture_dir(specdir: &Path) -> Result<TestFixture, Error> {
     )))
 }
 
-fn load_test_fixture_hrx(archive: &Archive) -> Result<TestFixture, Error> {
+fn load_test_fixture_hrx(
+    name: String,
+    archive: &Archive,
+    prefix: &str,
+) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAME: &str = "output.css";
     static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
 
-    let options = if let Some(yml) = archive.get("options.yml") {
-        Options::parse(yml)?
-    } else {
-        Options::default()
-    };
+    let options =
+        if let Some(yml) = archive.get(&format!("{}options.yml", prefix)) {
+            Options::parse(yml)?
+        } else {
+            Options::default()
+        };
 
-    if let Some(input) = archive.get(INPUT_FILENAME) {
-        if let Some(output) = archive.get(EXPECTED_OUTPUT_FILENAME) {
+    if let Some(input) = archive.get(&format!("{}{}", prefix, INPUT_FILENAME))
+    {
+        if let Some(output) =
+            archive.get(&format!("{}{}", prefix, EXPECTED_OUTPUT_FILENAME))
+        {
             return Ok(TestFixture::new_ok(
+                name,
                 input.to_string(),
                 output,
                 options,
             ));
         }
         for filename in EXPECTED_ERROR_FILENAMES {
-            if let Some(error) = archive.get(filename) {
+            if let Some(error) =
+                archive.get(&format!("{}{}", prefix, filename))
+            {
                 return Ok(TestFixture::new_err(
+                    name,
                     input.to_string(),
                     error.to_string(),
                     options,

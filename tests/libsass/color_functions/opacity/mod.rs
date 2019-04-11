@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/color-functions/opacity/alpha.hrx"
+// From "sass-spec/spec/libsass/color-functions/opacity/alpha.hrx"
 #[test]
 fn alpha() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn alpha() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/opacity/fade-in.hrx"
+// From "sass-spec/spec/libsass/color-functions/opacity/fade-in.hrx"
 #[test]
 fn fade_in() {
     assert_eq!(
@@ -28,7 +28,7 @@ fn fade_in() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/opacity/fade-out.hrx"
+// From "sass-spec/spec/libsass/color-functions/opacity/fade-out.hrx"
 #[test]
 fn fade_out() {
     assert_eq!(
@@ -40,13 +40,13 @@ fn fade_out() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/opacity/opacify.hrx"
+// From "sass-spec/spec/libsass/color-functions/opacity/opacify.hrx"
 #[test]
 fn opacify() {
     assert_eq!(rsass("").unwrap(), "");
 }
 
-/// From "sass-spec/spec/libsass/color-functions/opacity/opacity.hrx"
+// From "sass-spec/spec/libsass/color-functions/opacity/opacity.hrx"
 #[test]
 fn opacity() {
     assert_eq!(
@@ -58,7 +58,7 @@ fn opacity() {
     );
 }
 
-/// From "sass-spec/spec/libsass/color-functions/opacity/transparentize.hrx"
+// From "sass-spec/spec/libsass/color-functions/opacity/transparentize.hrx"
 #[test]
 fn transparentize() {
     assert_eq!(

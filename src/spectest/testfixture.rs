@@ -1,13 +1,12 @@
-use super::fn_name_os;
 use super::ignore;
 use super::options::Options;
 use super::Error;
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::io::Write;
-use std::path::Path;
 
 pub struct TestFixture {
+    fn_name: String,
     input: String,
     expectation: TestExpectation,
     options: Options,
@@ -22,19 +21,27 @@ use TestExpectation::{ExpectedCSS, ExpectedError};
 
 impl TestFixture {
     pub fn new_ok(
+        fn_name: String,
         input: String,
         expected_css: &str,
         options: Options,
     ) -> Self {
         TestFixture {
+            fn_name,
             input: input,
             options: options,
             expectation: ExpectedCSS(normalize_output_css(expected_css)),
         }
     }
 
-    pub fn new_err(input: String, error: String, options: Options) -> Self {
+    pub fn new_err(
+        fn_name: String,
+        input: String,
+        error: String,
+        options: Options,
+    ) -> Self {
         TestFixture {
+            fn_name,
             input: input,
             expectation: ExpectedError(error),
             options: options,
@@ -44,12 +51,10 @@ impl TestFixture {
     pub fn write_test(
         &self,
         rs: &mut Write,
-        specdir: &Path,
         precision: Option<i64>,
     ) -> Result<(), Error> {
-        let test = &specdir.file_name().unwrap_or_default();
         if let Some(ref reason) = self.options.should_skip {
-            ignore(rs, &specdir.file_name().unwrap_or_default(), reason)?;
+            ignore(rs, &self.fn_name, reason)?;
             return Ok(());
         }
         match self.expectation {
@@ -57,17 +62,16 @@ impl TestFixture {
                 // TODO: Support error tests;
                 ignore(
                     rs,
-                    &specdir.file_name().unwrap_or_default(),
+                    &self.fn_name,
                     "error tests are not supported yet",
                 )?;
             }
             ExpectedCSS(ref expected) => {
-                writeln!(rs, "\n/// From {:?}", specdir)?;
                 rs.write_all(b"#[test]\n")?;
                 if !check_test(&self.input, expected) {
                     rs.write_all(b"#[ignore] // failing\n")?;
                 }
-                writeln!(rs, "fn {}() {{", fn_name_os(test))?;
+                writeln!(rs, "fn {}() {{", self.fn_name)?;
                 let precision = self.options.precision.or(precision);
                 if let Some(precision) = precision {
                     writeln!(rs, "    set_precision({});", precision)?;

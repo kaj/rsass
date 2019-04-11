@@ -4,31 +4,55 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "error-call-1.hrx", error tests are not supported yet.
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-call-1.hrx"
 
-// Ignoring "error-call-2.hrx", error tests are not supported yet.
+// Ignoring "error_call_1", error tests are not supported yet.
 
-// Ignoring "error-call-3.hrx", error tests are not supported yet.
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-call-2.hrx"
 
-// Ignoring "error-function-1.hrx", error tests are not supported yet.
+// Ignoring "error_call_2", error tests are not supported yet.
 
-// Ignoring "error-function-2.hrx", error tests are not supported yet.
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-call-3.hrx"
 
-// Ignoring "error-function-3.hrx", error tests are not supported yet.
+// Ignoring "error_call_3", error tests are not supported yet.
 
-// Ignoring "error-include-1.hrx", error tests are not supported yet.
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-function-1.hrx"
 
-// Ignoring "error-include-2.hrx", error tests are not supported yet.
+// Ignoring "error_function_1", error tests are not supported yet.
 
-// Ignoring "error-include-3.hrx", error tests are not supported yet.
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-function-2.hrx"
 
-// Ignoring "error-mixin-1.hrx", error tests are not supported yet.
+// Ignoring "error_function_2", error tests are not supported yet.
 
-// Ignoring "error-mixin-2.hrx", error tests are not supported yet.
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-function-3.hrx"
 
-// Ignoring "error-mixin-3.hrx", error tests are not supported yet.
+// Ignoring "error_function_3", error tests are not supported yet.
 
-/// From "sass-spec/spec/parser/arglists/can-end-with-comma/functions.hrx"
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-include-1.hrx"
+
+// Ignoring "error_include_1", error tests are not supported yet.
+
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-include-2.hrx"
+
+// Ignoring "error_include_2", error tests are not supported yet.
+
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-include-3.hrx"
+
+// Ignoring "error_include_3", error tests are not supported yet.
+
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-mixin-1.hrx"
+
+// Ignoring "error_mixin_1", error tests are not supported yet.
+
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-mixin-2.hrx"
+
+// Ignoring "error_mixin_2", error tests are not supported yet.
+
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/error-mixin-3.hrx"
+
+// Ignoring "error_mixin_3", error tests are not supported yet.
+
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/functions.hrx"
 #[test]
 fn functions() {
     assert_eq!(
@@ -40,7 +64,7 @@ fn functions() {
     );
 }
 
-/// From "sass-spec/spec/parser/arglists/can-end-with-comma/mixins.hrx"
+// From "sass-spec/spec/parser/arglists/can-end-with-comma/mixins.hrx"
 #[test]
 fn mixins() {
     assert_eq!(

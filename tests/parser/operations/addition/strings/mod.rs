@@ -4,6 +4,10 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "pairs-4.0.hrx", start_version is 4.0.
+// From "sass-spec/spec/parser/operations/addition/strings/pairs-4.0.hrx"
 
-// Ignoring "pairs.hrx", end_version is 3.5.
+// Ignoring "pairs_4_0", start_version is 4.0.
+
+// From "sass-spec/spec/parser/operations/addition/strings/pairs.hrx"
+
+// Ignoring "pairs", end_version is 3.5.

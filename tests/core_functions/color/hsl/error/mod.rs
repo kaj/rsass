@@ -4,12 +4,114 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "five_args.hrx", error tests are not supported yet.
+// From "sass-spec/spec/core_functions/color/hsl/error/five_args.hrx"
 
-// Ignoring "four_args.hrx", not a single spec.
+// Ignoring "five_args", error tests are not supported yet.
 
-// Ignoring "one_arg.hrx", not a single spec.
+// From "sass-spec/spec/core_functions/color/hsl/error/four_args.hrx"
+mod four_args {
+    #[allow(unused)]
+    use super::rsass;
+    mod alpha {
+        #[allow(unused)]
+        use super::rsass;
 
-// Ignoring "three_args.hrx", not a single spec.
+        // Ignoring "unit", error tests are not supported yet.
+    }
+    mod hue {
+        #[allow(unused)]
+        use super::rsass;
 
-// Ignoring "two_args.hrx", not a single spec.
+        // Ignoring "test_type", error tests are not supported yet.
+    }
+    mod lightness {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "test_type", error tests are not supported yet.
+    }
+    mod saturation {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "test_type", error tests are not supported yet.
+    }
+}
+
+// From "sass-spec/spec/core_functions/color/hsl/error/one_arg.hrx"
+mod one_arg {
+    #[allow(unused)]
+    use super::rsass;
+    mod list {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "bracketed", error tests are not supported yet.
+
+        // Ignoring "comma_separated", error tests are not supported yet.
+
+        // Ignoring "empty", error tests are not supported yet.
+
+        // Ignoring "four_elements", error tests are not supported yet.
+
+        // Ignoring "one_element", error tests are not supported yet.
+
+        // Ignoring "two_elements", error tests are not supported yet.
+    }
+
+    // Ignoring "quoted_var_slash", error tests are not supported yet.
+    mod test_type {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "hue", error tests are not supported yet.
+
+        // Ignoring "lightness", error tests are not supported yet.
+
+        // Ignoring "saturation", error tests are not supported yet.
+    }
+}
+
+// From "sass-spec/spec/core_functions/color/hsl/error/three_args.hrx"
+mod three_args {
+    #[allow(unused)]
+    use super::rsass;
+    mod hue {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "test_type", error tests are not supported yet.
+    }
+    mod lightness {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "test_type", error tests are not supported yet.
+    }
+    mod saturation {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "test_type", error tests are not supported yet.
+    }
+}
+
+// From "sass-spec/spec/core_functions/color/hsl/error/two_args.hrx"
+mod two_args {
+    #[allow(unused)]
+    use super::rsass;
+    mod alpha {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "test_type", error tests are not supported yet.
+
+        // Ignoring "unit", error tests are not supported yet.
+    }
+    mod color {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "test_type", error tests are not supported yet.
+    }
+}

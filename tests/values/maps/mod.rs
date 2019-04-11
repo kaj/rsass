@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/values/maps/append.hrx"
+// From "sass-spec/spec/values/maps/append.hrx"
 #[test]
 fn append() {
     assert_eq!(
@@ -16,11 +16,15 @@ fn append() {
     );
 }
 
-// Ignoring "duplicate-keys.hrx", error tests are not supported yet.
+// From "sass-spec/spec/values/maps/duplicate-keys.hrx"
 
-// Ignoring "errors.hrx", error tests are not supported yet.
+// Ignoring "duplicate_keys", error tests are not supported yet.
 
-/// From "sass-spec/spec/values/maps/index.hrx"
+// From "sass-spec/spec/values/maps/errors.hrx"
+
+// Ignoring "errors", error tests are not supported yet.
+
+// From "sass-spec/spec/values/maps/index.hrx"
 #[test]
 fn index() {
     assert_eq!(
@@ -32,9 +36,11 @@ fn index() {
     );
 }
 
-// Ignoring "invalid-key.hrx", error tests are not supported yet.
+// From "sass-spec/spec/values/maps/invalid-key.hrx"
 
-/// From "sass-spec/spec/values/maps/join.hrx"
+// Ignoring "invalid_key", error tests are not supported yet.
+
+// From "sass-spec/spec/values/maps/join.hrx"
 #[test]
 fn join() {
     assert_eq!(
@@ -46,7 +52,7 @@ fn join() {
     );
 }
 
-/// From "sass-spec/spec/values/maps/length.hrx"
+// From "sass-spec/spec/values/maps/length.hrx"
 #[test]
 fn length() {
     assert_eq!(
@@ -58,7 +64,7 @@ fn length() {
     );
 }
 
-/// From "sass-spec/spec/values/maps/map-get.hrx"
+// From "sass-spec/spec/values/maps/map-get.hrx"
 #[test]
 fn map_get() {
     assert_eq!(
@@ -70,7 +76,7 @@ fn map_get() {
     );
 }
 
-/// From "sass-spec/spec/values/maps/map-has-key.hrx"
+// From "sass-spec/spec/values/maps/map-has-key.hrx"
 #[test]
 fn map_has_key() {
     assert_eq!(
@@ -82,7 +88,7 @@ fn map_has_key() {
     );
 }
 
-/// From "sass-spec/spec/values/maps/map-keys.hrx"
+// From "sass-spec/spec/values/maps/map-keys.hrx"
 #[test]
 fn map_keys() {
     assert_eq!(
@@ -91,7 +97,7 @@ fn map_keys() {
     );
 }
 
-/// From "sass-spec/spec/values/maps/map-merge.hrx"
+// From "sass-spec/spec/values/maps/map-merge.hrx"
 #[test]
 fn map_merge() {
     assert_eq!(
@@ -103,7 +109,7 @@ fn map_merge() {
     );
 }
 
-/// From "sass-spec/spec/values/maps/map-remove.hrx"
+// From "sass-spec/spec/values/maps/map-remove.hrx"
 #[test]
 fn map_remove() {
     assert_eq!(
@@ -115,7 +121,7 @@ fn map_remove() {
     );
 }
 
-/// From "sass-spec/spec/values/maps/map-values.hrx"
+// From "sass-spec/spec/values/maps/map-values.hrx"
 #[test]
 fn map_values() {
     assert_eq!(
@@ -127,7 +133,7 @@ fn map_values() {
     );
 }
 
-/// From "sass-spec/spec/values/maps/nth.hrx"
+// From "sass-spec/spec/values/maps/nth.hrx"
 #[test]
 fn nth() {
     assert_eq!(
@@ -139,7 +145,7 @@ fn nth() {
     );
 }
 
-/// From "sass-spec/spec/values/maps/set-nth.hrx"
+// From "sass-spec/spec/values/maps/set-nth.hrx"
 #[test]
 fn set_nth() {
     assert_eq!(
@@ -151,7 +157,7 @@ fn set_nth() {
     );
 }
 
-/// From "sass-spec/spec/values/maps/zip.hrx"
+// From "sass-spec/spec/values/maps/zip.hrx"
 #[test]
 fn zip() {
     assert_eq!(

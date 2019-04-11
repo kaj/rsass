@@ -1,11 +1,11 @@
 //! Tests auto-converted from "sass-spec/spec/scss"
-//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
+//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["multiline-var.hrx", "mixin-content.hrx", "huge.hrx"]
 use rsass::{compile_scss, OutputStyle};
 
-/// From "sass-spec/spec/scss/almost_ambiguous_nested_rules_and_declarations.hrx"
+// From "sass-spec/spec/scss/almost_ambiguous_nested_rules_and_declarations.hrx"
 #[test]
 fn almost_ambiguous_nested_rules_and_declarations() {
     assert_eq!(
@@ -17,7 +17,7 @@ fn almost_ambiguous_nested_rules_and_declarations() {
     );
 }
 
-/// From "sass-spec/spec/scss/alpha.hrx"
+// From "sass-spec/spec/scss/alpha.hrx"
 #[test]
 fn alpha() {
     assert_eq!(
@@ -29,7 +29,7 @@ fn alpha() {
     );
 }
 
-/// From "sass-spec/spec/scss/append.hrx"
+// From "sass-spec/spec/scss/append.hrx"
 #[test]
 fn append() {
     assert_eq!(
@@ -41,7 +41,7 @@ fn append() {
     );
 }
 
-/// From "sass-spec/spec/scss/arglist.hrx"
+// From "sass-spec/spec/scss/arglist.hrx"
 #[test]
 fn arglist() {
     assert_eq!(
@@ -53,7 +53,7 @@ fn arglist() {
     );
 }
 
-/// From "sass-spec/spec/scss/backrefs-in-selector-groups.hrx"
+// From "sass-spec/spec/scss/backrefs-in-selector-groups.hrx"
 #[test]
 fn backrefs_in_selector_groups() {
     assert_eq!(
@@ -65,7 +65,7 @@ fn backrefs_in_selector_groups() {
     );
 }
 
-/// From "sass-spec/spec/scss/backslash.hrx"
+// From "sass-spec/spec/scss/backslash.hrx"
 #[test]
 fn backslash() {
     assert_eq!(
@@ -77,7 +77,7 @@ fn backslash() {
     );
 }
 
-/// From "sass-spec/spec/scss/basic_function.hrx"
+// From "sass-spec/spec/scss/basic_function.hrx"
 #[test]
 fn basic_function() {
     assert_eq!(
@@ -89,7 +89,7 @@ fn basic_function() {
     );
 }
 
-/// From "sass-spec/spec/scss/basic_mixins.hrx"
+// From "sass-spec/spec/scss/basic_mixins.hrx"
 #[test]
 fn basic_mixins() {
     assert_eq!(
@@ -99,7 +99,7 @@ fn basic_mixins() {
     );
 }
 
-/// From "sass-spec/spec/scss/basic_prop_name_interpolation.hrx"
+// From "sass-spec/spec/scss/basic_prop_name_interpolation.hrx"
 #[test]
 fn basic_prop_name_interpolation() {
     assert_eq!(
@@ -108,7 +108,7 @@ fn basic_prop_name_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/scss/basic_selector_interpolation.hrx"
+// From "sass-spec/spec/scss/basic_selector_interpolation.hrx"
 #[test]
 fn basic_selector_interpolation() {
     assert_eq!(
@@ -117,7 +117,7 @@ fn basic_selector_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/scss/blimp.hrx"
+// From "sass-spec/spec/scss/blimp.hrx"
 #[test]
 fn blimp() {
     assert_eq!(
@@ -126,7 +126,7 @@ fn blimp() {
     );
 }
 
-/// From "sass-spec/spec/scss/block_comment_in_script.hrx"
+// From "sass-spec/spec/scss/block_comment_in_script.hrx"
 #[test]
 fn block_comment_in_script() {
     assert_eq!(
@@ -135,7 +135,7 @@ fn block_comment_in_script() {
     );
 }
 
-/// From "sass-spec/spec/scss/cfunc.hrx"
+// From "sass-spec/spec/scss/cfunc.hrx"
 #[test]
 fn cfunc() {
     assert_eq!(
@@ -144,7 +144,7 @@ fn cfunc() {
     );
 }
 
-/// From "sass-spec/spec/scss/classes-and-ids.hrx"
+// From "sass-spec/spec/scss/classes-and-ids.hrx"
 #[test]
 fn classes_and_ids() {
     assert_eq!(
@@ -156,7 +156,7 @@ fn classes_and_ids() {
     );
 }
 
-/// From "sass-spec/spec/scss/color_output.hrx"
+// From "sass-spec/spec/scss/color_output.hrx"
 #[test]
 fn color_output() {
     assert_eq!(
@@ -168,7 +168,7 @@ fn color_output() {
     );
 }
 
-/// From "sass-spec/spec/scss/comment_after_if_directive.hrx"
+// From "sass-spec/spec/scss/comment_after_if_directive.hrx"
 #[test]
 fn comment_after_if_directive() {
     assert_eq!(
@@ -180,7 +180,7 @@ fn comment_after_if_directive() {
     );
 }
 
-/// From "sass-spec/spec/scss/comparable.hrx"
+// From "sass-spec/spec/scss/comparable.hrx"
 #[test]
 #[ignore] // failing
 fn comparable() {
@@ -193,7 +193,7 @@ fn comparable() {
     );
 }
 
-/// From "sass-spec/spec/scss/composed-args.hrx"
+// From "sass-spec/spec/scss/composed-args.hrx"
 #[test]
 #[ignore] // failing
 fn composed_args() {
@@ -206,7 +206,7 @@ fn composed_args() {
     );
 }
 
-/// From "sass-spec/spec/scss/concat.hrx"
+// From "sass-spec/spec/scss/concat.hrx"
 #[test]
 fn concat() {
     assert_eq!(
@@ -218,7 +218,7 @@ fn concat() {
     );
 }
 
-/// From "sass-spec/spec/scss/cons-up.hrx"
+// From "sass-spec/spec/scss/cons-up.hrx"
 #[test]
 fn cons_up() {
     assert_eq!(
@@ -230,13 +230,13 @@ fn cons_up() {
     );
 }
 
-/// From "sass-spec/spec/scss/css_basic_scss.hrx"
+// From "sass-spec/spec/scss/css_basic_scss.hrx"
 #[test]
 fn css_basic_scss() {
     assert_eq!(rsass("sel {\n  p: v; }\n").unwrap(), "sel {\n  p: v;\n}\n");
 }
 
-/// From "sass-spec/spec/scss/css_block_directive_with_semicolon.hrx"
+// From "sass-spec/spec/scss/css_block_directive_with_semicolon.hrx"
 #[test]
 fn css_block_directive_with_semicolon() {
     assert_eq!(
@@ -245,7 +245,7 @@ fn css_block_directive_with_semicolon() {
     );
 }
 
-/// From "sass-spec/spec/scss/css_cdo_and_cdc_ignored_at_toplevel.hrx"
+// From "sass-spec/spec/scss/css_cdo_and_cdc_ignored_at_toplevel.hrx"
 #[test]
 fn css_cdo_and_cdc_ignored_at_toplevel() {
     assert_eq!(
@@ -257,7 +257,7 @@ fn css_cdo_and_cdc_ignored_at_toplevel() {
     );
 }
 
-/// From "sass-spec/spec/scss/css_crazy_comments.hrx"
+// From "sass-spec/spec/scss/css_crazy_comments.hrx"
 #[test]
 fn css_crazy_comments() {
     assert_eq!(
@@ -269,7 +269,7 @@ fn css_crazy_comments() {
     );
 }
 
-/// From "sass-spec/spec/scss/css_empty_declarations.hrx"
+// From "sass-spec/spec/scss/css_empty_declarations.hrx"
 #[test]
 fn css_empty_declarations() {
     assert_eq!(
@@ -278,13 +278,13 @@ fn css_empty_declarations() {
     );
 }
 
-/// From "sass-spec/spec/scss/css_empty_rule.hrx"
+// From "sass-spec/spec/scss/css_empty_rule.hrx"
 #[test]
 fn css_empty_rule() {
     assert_eq!(rsass("").unwrap(), "");
 }
 
-/// From "sass-spec/spec/scss/css_import_directive.hrx"
+// From "sass-spec/spec/scss/css_import_directive.hrx"
 #[test]
 fn css_import_directive() {
     assert_eq!(
@@ -293,13 +293,13 @@ fn css_import_directive() {
     );
 }
 
-/// From "sass-spec/spec/scss/css_invisible_comments.hrx"
+// From "sass-spec/spec/scss/css_invisible_comments.hrx"
 #[test]
 fn css_invisible_comments() {
     assert_eq!(rsass("foo {\n  a: d; }\n").unwrap(), "foo {\n  a: d;\n}\n");
 }
 
-/// From "sass-spec/spec/scss/css_property_comments.hrx"
+// From "sass-spec/spec/scss/css_property_comments.hrx"
 #[test]
 fn css_property_comments() {
     assert_eq!(
@@ -308,7 +308,7 @@ fn css_property_comments() {
     );
 }
 
-/// From "sass-spec/spec/scss/css_rule_comments.hrx"
+// From "sass-spec/spec/scss/css_rule_comments.hrx"
 #[test]
 fn css_rule_comments() {
     assert_eq!(
@@ -317,7 +317,7 @@ fn css_rule_comments() {
     );
 }
 
-/// From "sass-spec/spec/scss/css_selector_comments.hrx"
+// From "sass-spec/spec/scss/css_selector_comments.hrx"
 #[test]
 fn css_selector_comments() {
     assert_eq!(
@@ -326,7 +326,7 @@ fn css_selector_comments() {
     );
 }
 
-/// From "sass-spec/spec/scss/css_selector_hacks.hrx"
+// From "sass-spec/spec/scss/css_selector_hacks.hrx"
 #[test]
 fn css_selector_hacks() {
     assert_eq!(
@@ -335,7 +335,7 @@ fn css_selector_hacks() {
     );
 }
 
-/// From "sass-spec/spec/scss/css_spaceless_combo_selectors.hrx"
+// From "sass-spec/spec/scss/css_spaceless_combo_selectors.hrx"
 #[test]
 fn css_spaceless_combo_selectors() {
     assert_eq!(
@@ -344,7 +344,7 @@ fn css_spaceless_combo_selectors() {
     );
 }
 
-/// From "sass-spec/spec/scss/css_unary_ops.hrx"
+// From "sass-spec/spec/scss/css_unary_ops.hrx"
 #[test]
 fn css_unary_ops() {
     assert_eq!(
@@ -356,7 +356,7 @@ fn css_unary_ops() {
     );
 }
 
-/// From "sass-spec/spec/scss/default-args.hrx"
+// From "sass-spec/spec/scss/default-args.hrx"
 #[test]
 fn default_args() {
     assert_eq!(
@@ -368,7 +368,7 @@ fn default_args() {
     );
 }
 
-/// From "sass-spec/spec/scss/default-parameters.hrx"
+// From "sass-spec/spec/scss/default-parameters.hrx"
 #[test]
 fn default_parameters() {
     assert_eq!(
@@ -380,7 +380,7 @@ fn default_parameters() {
     );
 }
 
-/// From "sass-spec/spec/scss/default-vars-in-default-params.hrx"
+// From "sass-spec/spec/scss/default-vars-in-default-params.hrx"
 #[test]
 fn default_vars_in_default_params() {
     assert_eq!(
@@ -392,7 +392,7 @@ fn default_vars_in_default_params() {
     );
 }
 
-/// From "sass-spec/spec/scss/directives-in-propsets.hrx"
+// From "sass-spec/spec/scss/directives-in-propsets.hrx"
 #[test]
 fn directives_in_propsets() {
     assert_eq!(
@@ -404,7 +404,7 @@ fn directives_in_propsets() {
     );
 }
 
-/// From "sass-spec/spec/scss/each.hrx"
+// From "sass-spec/spec/scss/each.hrx"
 #[test]
 fn each() {
     assert_eq!(
@@ -416,7 +416,7 @@ fn each() {
     );
 }
 
-/// From "sass-spec/spec/scss/each_directive.hrx"
+// From "sass-spec/spec/scss/each_directive.hrx"
 #[test]
 fn each_directive() {
     assert_eq!(
@@ -428,7 +428,7 @@ fn each_directive() {
     );
 }
 
-/// From "sass-spec/spec/scss/each_in_functions.hrx"
+// From "sass-spec/spec/scss/each_in_functions.hrx"
 #[test]
 fn each_in_functions() {
     assert_eq!(
@@ -442,7 +442,7 @@ fn each_in_functions() {
 
 mod feature_queries;
 
-/// From "sass-spec/spec/scss/for.hrx"
+// From "sass-spec/spec/scss/for.hrx"
 #[test]
 fn test_for() {
     assert_eq!(
@@ -454,7 +454,7 @@ fn test_for() {
     );
 }
 
-/// From "sass-spec/spec/scss/for_directive.hrx"
+// From "sass-spec/spec/scss/for_directive.hrx"
 #[test]
 fn for_directive() {
     assert_eq!(
@@ -464,7 +464,7 @@ fn for_directive() {
     );
 }
 
-/// From "sass-spec/spec/scss/for_in_functions.hrx"
+// From "sass-spec/spec/scss/for_in_functions.hrx"
 #[test]
 fn for_in_functions() {
     assert_eq!(
@@ -476,11 +476,15 @@ fn for_in_functions() {
     );
 }
 
-// Ignoring "function-names-4.0.hrx", start_version is 4.0.
+// From "sass-spec/spec/scss/function-names-4.0.hrx"
 
-// Ignoring "function-names.hrx", end_version is 3.5.
+// Ignoring "function_names_4_0", start_version is 4.0.
 
-/// From "sass-spec/spec/scss/function_args.hrx"
+// From "sass-spec/spec/scss/function-names.hrx"
+
+// Ignoring "function_names", end_version is 3.5.
+
+// From "sass-spec/spec/scss/function_args.hrx"
 #[test]
 fn function_args() {
     assert_eq!(
@@ -492,7 +496,7 @@ fn function_args() {
     );
 }
 
-/// From "sass-spec/spec/scss/functions-and-mixins.hrx"
+// From "sass-spec/spec/scss/functions-and-mixins.hrx"
 #[test]
 fn functions_and_mixins() {
     assert_eq!(
@@ -504,7 +508,7 @@ fn functions_and_mixins() {
     );
 }
 
-/// From "sass-spec/spec/scss/functions.hrx"
+// From "sass-spec/spec/scss/functions.hrx"
 #[test]
 fn functions() {
     assert_eq!(
@@ -516,7 +520,7 @@ fn functions() {
     );
 }
 
-/// From "sass-spec/spec/scss/guard_assign.hrx"
+// From "sass-spec/spec/scss/guard_assign.hrx"
 #[test]
 fn guard_assign() {
     assert_eq!(
@@ -525,7 +529,7 @@ fn guard_assign() {
     );
 }
 
-/// From "sass-spec/spec/scss/hey1.hrx"
+// From "sass-spec/spec/scss/hey1.hrx"
 #[test]
 fn hey1() {
     assert_eq!(
@@ -534,7 +538,7 @@ fn hey1() {
     );
 }
 
-/// From "sass-spec/spec/scss/hey2.hrx"
+// From "sass-spec/spec/scss/hey2.hrx"
 #[test]
 fn hey2() {
     assert_eq!(
@@ -545,7 +549,7 @@ fn hey2() {
 
 // Ignoring "huge.hrx", not expected to work yet.
 
-/// From "sass-spec/spec/scss/hyphen-interpolated.hrx"
+// From "sass-spec/spec/scss/hyphen-interpolated.hrx"
 #[test]
 fn hyphen_interpolated() {
     assert_eq!(
@@ -554,9 +558,11 @@ fn hyphen_interpolated() {
     );
 }
 
-// Ignoring "ie-backslash.hrx", start_version is 3.7.
+// From "sass-spec/spec/scss/ie-backslash.hrx"
 
-/// From "sass-spec/spec/scss/ie-functions.hrx"
+// Ignoring "ie_backslash", start_version is 3.7.
+
+// From "sass-spec/spec/scss/ie-functions.hrx"
 #[test]
 #[ignore] // failing
 fn ie_functions() {
@@ -569,7 +575,7 @@ fn ie_functions() {
     );
 }
 
-/// From "sass-spec/spec/scss/ie-hex-str.hrx"
+// From "sass-spec/spec/scss/ie-hex-str.hrx"
 #[test]
 fn ie_hex_str() {
     assert_eq!(
@@ -581,7 +587,7 @@ fn ie_hex_str() {
     );
 }
 
-/// From "sass-spec/spec/scss/if-in-mixin.hrx"
+// From "sass-spec/spec/scss/if-in-mixin.hrx"
 #[test]
 fn if_in_mixin() {
     assert_eq!(
@@ -593,7 +599,7 @@ fn if_in_mixin() {
     );
 }
 
-/// From "sass-spec/spec/scss/if-in-propset.hrx"
+// From "sass-spec/spec/scss/if-in-propset.hrx"
 #[test]
 fn if_in_propset() {
     assert_eq!(
@@ -605,7 +611,7 @@ fn if_in_propset() {
     );
 }
 
-/// From "sass-spec/spec/scss/if.hrx"
+// From "sass-spec/spec/scss/if.hrx"
 #[test]
 fn test_if() {
     assert_eq!(
@@ -617,7 +623,7 @@ fn test_if() {
     );
 }
 
-/// From "sass-spec/spec/scss/if_directive.hrx"
+// From "sass-spec/spec/scss/if_directive.hrx"
 #[test]
 fn if_directive() {
     assert_eq!(
@@ -627,7 +633,7 @@ fn if_directive() {
     );
 }
 
-/// From "sass-spec/spec/scss/imp.hrx"
+// From "sass-spec/spec/scss/imp.hrx"
 #[test]
 fn imp() {
     assert_eq!(
@@ -636,7 +642,7 @@ fn imp() {
     );
 }
 
-/// From "sass-spec/spec/scss/important-in-arglist.hrx"
+// From "sass-spec/spec/scss/important-in-arglist.hrx"
 #[test]
 fn important_in_arglist() {
     assert_eq!(
@@ -648,7 +654,7 @@ fn important_in_arglist() {
     );
 }
 
-/// From "sass-spec/spec/scss/important.hrx"
+// From "sass-spec/spec/scss/important.hrx"
 #[test]
 fn important() {
     assert_eq!(
@@ -660,7 +666,7 @@ fn important() {
     );
 }
 
-/// From "sass-spec/spec/scss/index.hrx"
+// From "sass-spec/spec/scss/index.hrx"
 #[test]
 fn index() {
     assert_eq!(
@@ -672,7 +678,7 @@ fn index() {
     );
 }
 
-/// From "sass-spec/spec/scss/interpolated-selectors.hrx"
+// From "sass-spec/spec/scss/interpolated-selectors.hrx"
 #[test]
 fn interpolated_selectors() {
     assert_eq!(
@@ -681,7 +687,7 @@ fn interpolated_selectors() {
     );
 }
 
-/// From "sass-spec/spec/scss/interpolated-strings.hrx"
+// From "sass-spec/spec/scss/interpolated-strings.hrx"
 #[test]
 fn interpolated_strings() {
     assert_eq!(
@@ -693,11 +699,15 @@ fn interpolated_strings() {
     );
 }
 
-// Ignoring "interpolation-operators-precedence-4.0.hrx", start_version is 4.0.
+// From "sass-spec/spec/scss/interpolation-operators-precedence-4.0.hrx"
 
-// Ignoring "interpolation-operators-precedence.hrx", end_version is 3.5.
+// Ignoring "interpolation_operators_precedence_4_0", start_version is 4.0.
 
-/// From "sass-spec/spec/scss/interpolation.hrx"
+// From "sass-spec/spec/scss/interpolation-operators-precedence.hrx"
+
+// Ignoring "interpolation_operators_precedence", end_version is 3.5.
+
+// From "sass-spec/spec/scss/interpolation.hrx"
 #[test]
 fn interpolation() {
     assert_eq!(
@@ -709,7 +719,7 @@ fn interpolation() {
     );
 }
 
-/// From "sass-spec/spec/scss/interpolation_with_bracket_on_next_line.hrx"
+// From "sass-spec/spec/scss/interpolation_with_bracket_on_next_line.hrx"
 #[test]
 fn interpolation_with_bracket_on_next_line() {
     assert_eq!(
@@ -718,7 +728,7 @@ fn interpolation_with_bracket_on_next_line() {
     );
 }
 
-/// From "sass-spec/spec/scss/keyword_args_in_functions.hrx"
+// From "sass-spec/spec/scss/keyword_args_in_functions.hrx"
 #[test]
 fn keyword_args_in_functions() {
     assert_eq!(
@@ -727,7 +737,7 @@ fn keyword_args_in_functions() {
     );
 }
 
-/// From "sass-spec/spec/scss/lang.hrx"
+// From "sass-spec/spec/scss/lang.hrx"
 #[test]
 fn lang() {
     assert_eq!(
@@ -739,7 +749,7 @@ fn lang() {
     );
 }
 
-/// From "sass-spec/spec/scss/line_comment_in_script.hrx"
+// From "sass-spec/spec/scss/line_comment_in_script.hrx"
 #[test]
 fn line_comment_in_script() {
     assert_eq!(
@@ -748,7 +758,7 @@ fn line_comment_in_script() {
     );
 }
 
-/// From "sass-spec/spec/scss/long-selector.hrx"
+// From "sass-spec/spec/scss/long-selector.hrx"
 #[test]
 fn long_selector() {
     assert_eq!(
@@ -762,7 +772,7 @@ fn long_selector() {
 
 mod media;
 
-/// From "sass-spec/spec/scss/mix.hrx"
+// From "sass-spec/spec/scss/mix.hrx"
 #[test]
 fn mix() {
     assert_eq!(
@@ -774,7 +784,7 @@ fn mix() {
     );
 }
 
-/// From "sass-spec/spec/scss/mixin-content-selectors.hrx"
+// From "sass-spec/spec/scss/mixin-content-selectors.hrx"
 #[test]
 #[ignore] // failing
 fn mixin_content_selectors() {
@@ -787,7 +797,7 @@ fn mixin_content_selectors() {
     );
 }
 
-/// From "sass-spec/spec/scss/mixin-content-with-no-block.hrx"
+// From "sass-spec/spec/scss/mixin-content-with-no-block.hrx"
 #[test]
 fn mixin_content_with_no_block() {
     assert_eq!(
@@ -801,7 +811,7 @@ fn mixin_content_with_no_block() {
 
 // Ignoring "mixin-content.hrx", not expected to work yet.
 
-/// From "sass-spec/spec/scss/mixin_with_keyword_args.hrx"
+// From "sass-spec/spec/scss/mixin_with_keyword_args.hrx"
 #[test]
 fn mixin_with_keyword_args() {
     assert_eq!(
@@ -813,7 +823,7 @@ fn mixin_with_keyword_args() {
     );
 }
 
-/// From "sass-spec/spec/scss/mixins_with_args.hrx"
+// From "sass-spec/spec/scss/mixins_with_args.hrx"
 #[test]
 fn mixins_with_args() {
     assert_eq!(
@@ -825,7 +835,7 @@ fn mixins_with_args() {
     );
 }
 
-/// From "sass-spec/spec/scss/mixins_with_empty_args.hrx"
+// From "sass-spec/spec/scss/mixins_with_empty_args.hrx"
 #[test]
 fn mixins_with_empty_args() {
     assert_eq!(
@@ -836,7 +846,7 @@ fn mixins_with_empty_args() {
 
 // Ignoring "multiline-var.hrx", not expected to work yet.
 
-/// From "sass-spec/spec/scss/multiline_var.hrx"
+// From "sass-spec/spec/scss/multiline_var.hrx"
 #[test]
 fn multiline_var() {
     assert_eq!(
@@ -848,7 +858,7 @@ fn multiline_var() {
     );
 }
 
-/// From "sass-spec/spec/scss/multiple-operators.hrx"
+// From "sass-spec/spec/scss/multiple-operators.hrx"
 #[test]
 fn multiple_operators() {
     assert_eq!(
@@ -860,7 +870,7 @@ fn multiple_operators() {
     );
 }
 
-/// From "sass-spec/spec/scss/namespace_properties.hrx"
+// From "sass-spec/spec/scss/namespace_properties.hrx"
 #[test]
 fn namespace_properties() {
     assert_eq!(
@@ -872,7 +882,7 @@ fn namespace_properties() {
     );
 }
 
-/// From "sass-spec/spec/scss/namespace_properties_with_value.hrx"
+// From "sass-spec/spec/scss/namespace_properties_with_value.hrx"
 #[test]
 fn namespace_properties_with_value() {
     assert_eq!(
@@ -882,7 +892,7 @@ fn namespace_properties_with_value() {
     );
 }
 
-/// From "sass-spec/spec/scss/negation.hrx"
+// From "sass-spec/spec/scss/negation.hrx"
 #[test]
 #[ignore] // failing
 fn negation() {
@@ -895,7 +905,7 @@ fn negation() {
     );
 }
 
-/// From "sass-spec/spec/scss/nested-extend.hrx"
+// From "sass-spec/spec/scss/nested-extend.hrx"
 #[test]
 #[ignore] // failing
 fn nested_extend() {
@@ -908,7 +918,7 @@ fn nested_extend() {
     );
 }
 
-/// From "sass-spec/spec/scss/nested_namespace_properties.hrx"
+// From "sass-spec/spec/scss/nested_namespace_properties.hrx"
 #[test]
 fn nested_namespace_properties() {
     assert_eq!(
@@ -920,7 +930,7 @@ fn nested_namespace_properties() {
     );
 }
 
-/// From "sass-spec/spec/scss/nested_rules.hrx"
+// From "sass-spec/spec/scss/nested_rules.hrx"
 #[test]
 fn nested_rules() {
     assert_eq!(
@@ -929,7 +939,7 @@ fn nested_rules() {
     );
 }
 
-/// From "sass-spec/spec/scss/nested_rules_with_declarations.hrx"
+// From "sass-spec/spec/scss/nested_rules_with_declarations.hrx"
 #[test]
 fn nested_rules_with_declarations() {
     assert_eq!(
@@ -941,7 +951,7 @@ fn nested_rules_with_declarations() {
     );
 }
 
-/// From "sass-spec/spec/scss/nested_rules_with_fancy_selectors.hrx"
+// From "sass-spec/spec/scss/nested_rules_with_fancy_selectors.hrx"
 #[test]
 fn nested_rules_with_fancy_selectors() {
     assert_eq!(
@@ -951,7 +961,7 @@ fn nested_rules_with_fancy_selectors() {
     );
 }
 
-/// From "sass-spec/spec/scss/newlines_in_selectors.hrx"
+// From "sass-spec/spec/scss/newlines_in_selectors.hrx"
 #[test]
 #[ignore] // failing
 fn newlines_in_selectors() {
@@ -961,7 +971,7 @@ fn newlines_in_selectors() {
     );
 }
 
-/// From "sass-spec/spec/scss/no_namespace_properties_without_space.hrx"
+// From "sass-spec/spec/scss/no_namespace_properties_without_space.hrx"
 #[test]
 fn no_namespace_properties_without_space() {
     assert_eq!(
@@ -970,7 +980,7 @@ fn no_namespace_properties_without_space() {
     );
 }
 
-/// From "sass-spec/spec/scss/null.hrx"
+// From "sass-spec/spec/scss/null.hrx"
 #[test]
 fn null() {
     assert_eq!(
@@ -982,7 +992,7 @@ fn null() {
     );
 }
 
-/// From "sass-spec/spec/scss/numbers.hrx"
+// From "sass-spec/spec/scss/numbers.hrx"
 #[test]
 fn numbers() {
     assert_eq!(
@@ -994,7 +1004,7 @@ fn numbers() {
     );
 }
 
-/// From "sass-spec/spec/scss/one_line_comments.hrx"
+// From "sass-spec/spec/scss/one_line_comments.hrx"
 #[test]
 fn one_line_comments() {
     assert_eq!(
@@ -1003,7 +1013,7 @@ fn one_line_comments() {
     );
 }
 
-/// From "sass-spec/spec/scss/parent_selectors.hrx"
+// From "sass-spec/spec/scss/parent_selectors.hrx"
 #[test]
 fn parent_selectors() {
     assert_eq!(
@@ -1012,7 +1022,7 @@ fn parent_selectors() {
     );
 }
 
-/// From "sass-spec/spec/scss/passing_all_as_keyword_args_in_opposite_order.hrx"
+// From "sass-spec/spec/scss/passing_all_as_keyword_args_in_opposite_order.hrx"
 #[test]
 fn passing_all_as_keyword_args_in_opposite_order() {
     assert_eq!(
@@ -1024,7 +1034,7 @@ fn passing_all_as_keyword_args_in_opposite_order() {
     );
 }
 
-/// From "sass-spec/spec/scss/passing_required_args_as_a_keyword_arg.hrx"
+// From "sass-spec/spec/scss/passing_required_args_as_a_keyword_arg.hrx"
 #[test]
 fn passing_required_args_as_a_keyword_arg() {
     assert_eq!(
@@ -1036,7 +1046,7 @@ fn passing_required_args_as_a_keyword_arg() {
     );
 }
 
-/// From "sass-spec/spec/scss/percentages.hrx"
+// From "sass-spec/spec/scss/percentages.hrx"
 #[test]
 fn percentages() {
     assert_eq!(
@@ -1048,7 +1058,7 @@ fn percentages() {
     );
 }
 
-/// From "sass-spec/spec/scss/placeholder-with-media.hrx"
+// From "sass-spec/spec/scss/placeholder-with-media.hrx"
 #[test]
 #[ignore] // failing
 fn placeholder_with_media() {
@@ -1061,7 +1071,7 @@ fn placeholder_with_media() {
     );
 }
 
-/// From "sass-spec/spec/scss/placeholder.hrx"
+// From "sass-spec/spec/scss/placeholder.hrx"
 #[test]
 #[ignore] // failing
 fn placeholder() {
@@ -1074,7 +1084,7 @@ fn placeholder() {
     );
 }
 
-/// From "sass-spec/spec/scss/precision.hrx"
+// From "sass-spec/spec/scss/precision.hrx"
 #[test]
 #[ignore] // failing
 fn precision() {
@@ -1087,7 +1097,7 @@ fn precision() {
     );
 }
 
-/// From "sass-spec/spec/scss/prop_name_interpolation_after_hyphen.hrx"
+// From "sass-spec/spec/scss/prop_name_interpolation_after_hyphen.hrx"
 #[test]
 fn prop_name_interpolation_after_hyphen() {
     assert_eq!(
@@ -1096,7 +1106,7 @@ fn prop_name_interpolation_after_hyphen() {
     );
 }
 
-/// From "sass-spec/spec/scss/prop_name_only_interpolation.hrx"
+// From "sass-spec/spec/scss/prop_name_only_interpolation.hrx"
 #[test]
 fn prop_name_only_interpolation() {
     assert_eq!(
@@ -1105,7 +1115,7 @@ fn prop_name_only_interpolation() {
     );
 }
 
-/// From "sass-spec/spec/scss/property_interpolation_at_dashes.hrx"
+// From "sass-spec/spec/scss/property_interpolation_at_dashes.hrx"
 #[test]
 fn property_interpolation_at_dashes() {
     assert_eq!(
@@ -1115,7 +1125,7 @@ fn property_interpolation_at_dashes() {
     );
 }
 
-/// From "sass-spec/spec/scss/quotes-in-interpolated-strings.hrx"
+// From "sass-spec/spec/scss/quotes-in-interpolated-strings.hrx"
 #[test]
 fn quotes_in_interpolated_strings() {
     assert_eq!(
@@ -1127,7 +1137,7 @@ fn quotes_in_interpolated_strings() {
     );
 }
 
-/// From "sass-spec/spec/scss/retina-image.hrx"
+// From "sass-spec/spec/scss/retina-image.hrx"
 #[test]
 fn retina_image() {
     assert_eq!(
@@ -1139,7 +1149,7 @@ fn retina_image() {
     );
 }
 
-/// From "sass-spec/spec/scss/sass_script.hrx"
+// From "sass-spec/spec/scss/sass_script.hrx"
 #[test]
 fn sass_script() {
     assert_eq!(
@@ -1151,7 +1161,7 @@ fn sass_script() {
     );
 }
 
-/// From "sass-spec/spec/scss/selector_interpolation_at_attr_beginning.hrx"
+// From "sass-spec/spec/scss/selector_interpolation_at_attr_beginning.hrx"
 #[test]
 fn selector_interpolation_at_attr_beginning() {
     assert_eq!(
@@ -1160,7 +1170,7 @@ fn selector_interpolation_at_attr_beginning() {
     );
 }
 
-/// From "sass-spec/spec/scss/selector_interpolation_at_class_begininng.hrx"
+// From "sass-spec/spec/scss/selector_interpolation_at_class_begininng.hrx"
 #[test]
 fn selector_interpolation_at_class_begininng() {
     assert_eq!(
@@ -1169,7 +1179,7 @@ fn selector_interpolation_at_class_begininng() {
     );
 }
 
-/// From "sass-spec/spec/scss/selector_interpolation_at_id_begininng.hrx"
+// From "sass-spec/spec/scss/selector_interpolation_at_id_begininng.hrx"
 #[test]
 fn selector_interpolation_at_id_begininng() {
     assert_eq!(
@@ -1178,7 +1188,7 @@ fn selector_interpolation_at_id_begininng() {
     );
 }
 
-/// From "sass-spec/spec/scss/selector_interpolation_at_pseudo_begininng.hrx"
+// From "sass-spec/spec/scss/selector_interpolation_at_pseudo_begininng.hrx"
 #[test]
 fn selector_interpolation_at_pseudo_begininng() {
     assert_eq!(
@@ -1187,7 +1197,7 @@ fn selector_interpolation_at_pseudo_begininng() {
     );
 }
 
-/// From "sass-spec/spec/scss/selector_interpolation_in_pseudoclass.hrx"
+// From "sass-spec/spec/scss/selector_interpolation_in_pseudoclass.hrx"
 #[test]
 fn selector_interpolation_in_pseudoclass() {
     assert_eq!(
@@ -1196,7 +1206,7 @@ fn selector_interpolation_in_pseudoclass() {
     );
 }
 
-/// From "sass-spec/spec/scss/several_namespace_properties.hrx"
+// From "sass-spec/spec/scss/several_namespace_properties.hrx"
 #[test]
 fn several_namespace_properties() {
     assert_eq!(
@@ -1208,7 +1218,7 @@ fn several_namespace_properties() {
     );
 }
 
-/// From "sass-spec/spec/scss/simple-inheritance.hrx"
+// From "sass-spec/spec/scss/simple-inheritance.hrx"
 #[test]
 #[ignore] // failing
 fn simple_inheritance() {
@@ -1221,7 +1231,7 @@ fn simple_inheritance() {
     );
 }
 
-/// From "sass-spec/spec/scss/simple-lists.hrx"
+// From "sass-spec/spec/scss/simple-lists.hrx"
 #[test]
 fn simple_lists() {
     assert_eq!(
@@ -1233,7 +1243,7 @@ fn simple_lists() {
     );
 }
 
-/// From "sass-spec/spec/scss/star_plus_and_parent.hrx"
+// From "sass-spec/spec/scss/star_plus_and_parent.hrx"
 #[test]
 fn star_plus_and_parent() {
     assert_eq!(
@@ -1242,7 +1252,7 @@ fn star_plus_and_parent() {
     );
 }
 
-/// From "sass-spec/spec/scss/strings.hrx"
+// From "sass-spec/spec/scss/strings.hrx"
 #[test]
 fn strings() {
     assert_eq!(
@@ -1254,7 +1264,7 @@ fn strings() {
     );
 }
 
-/// From "sass-spec/spec/scss/url_import.hrx"
+// From "sass-spec/spec/scss/url_import.hrx"
 #[test]
 fn url_import() {
     assert_eq!(
@@ -1263,7 +1273,7 @@ fn url_import() {
     );
 }
 
-/// From "sass-spec/spec/scss/variables.hrx"
+// From "sass-spec/spec/scss/variables.hrx"
 #[test]
 fn variables() {
     assert_eq!(
@@ -1275,7 +1285,7 @@ fn variables() {
     );
 }
 
-/// From "sass-spec/spec/scss/vars.hrx"
+// From "sass-spec/spec/scss/vars.hrx"
 #[test]
 fn vars() {
     assert_eq!(
@@ -1287,7 +1297,7 @@ fn vars() {
     );
 }
 
-/// From "sass-spec/spec/scss/weird-selectors.hrx"
+// From "sass-spec/spec/scss/weird-selectors.hrx"
 #[test]
 fn weird_selectors() {
     assert_eq!(
@@ -1299,7 +1309,7 @@ fn weird_selectors() {
     );
 }
 
-/// From "sass-spec/spec/scss/weird_added_space.hrx"
+// From "sass-spec/spec/scss/weird_added_space.hrx"
 #[test]
 fn weird_added_space() {
     assert_eq!(
@@ -1308,7 +1318,7 @@ fn weird_added_space() {
     );
 }
 
-/// From "sass-spec/spec/scss/while.hrx"
+// From "sass-spec/spec/scss/while.hrx"
 #[test]
 fn test_while() {
     assert_eq!(
@@ -1320,7 +1330,7 @@ fn test_while() {
     );
 }
 
-/// From "sass-spec/spec/scss/while_directive.hrx"
+// From "sass-spec/spec/scss/while_directive.hrx"
 #[test]
 fn while_directive() {
     assert_eq!(
@@ -1332,7 +1342,7 @@ fn while_directive() {
     );
 }
 
-/// From "sass-spec/spec/scss/while_in_functions.hrx"
+// From "sass-spec/spec/scss/while_in_functions.hrx"
 #[test]
 fn while_in_functions() {
     assert_eq!(
@@ -1344,11 +1354,17 @@ fn while_in_functions() {
     );
 }
 
-// Ignoring "while_without_condition.hrx", error tests are not supported yet.
+// From "sass-spec/spec/scss/while_without_condition.hrx"
 
-// Ignoring "zero-compression-4.0.hrx", start_version is 4.0.
+// Ignoring "while_without_condition", error tests are not supported yet.
 
-// Ignoring "zero-compression.hrx", end_version is 3.5.
+// From "sass-spec/spec/scss/zero-compression-4.0.hrx"
+
+// Ignoring "zero_compression_4_0", start_version is 4.0.
+
+// From "sass-spec/spec/scss/zero-compression.hrx"
+
+// Ignoring "zero_compression", end_version is 3.5.
 
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)

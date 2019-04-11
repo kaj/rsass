@@ -1,9 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/colors"
-//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
+//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
-/// From "sass-spec/spec/colors/adjust-color.hrx"
+// From "sass-spec/spec/colors/adjust-color.hrx"
 #[test]
 fn adjust_color() {
     assert_eq!(
@@ -15,7 +15,7 @@ fn adjust_color() {
     );
 }
 
-/// From "sass-spec/spec/colors/adjust-hue.hrx"
+// From "sass-spec/spec/colors/adjust-hue.hrx"
 #[test]
 fn adjust_hue() {
     assert_eq!(
@@ -27,11 +27,15 @@ fn adjust_hue() {
     );
 }
 
-// Ignoring "basic-4.0.hrx", start_version is 4.0.
+// From "sass-spec/spec/colors/basic-4.0.hrx"
 
-// Ignoring "basic.hrx", end_version is 3.5.
+// Ignoring "basic_4_0", start_version is 4.0.
 
-/// From "sass-spec/spec/colors/change-color.hrx"
+// From "sass-spec/spec/colors/basic.hrx"
+
+// Ignoring "basic", end_version is 3.5.
+
+// From "sass-spec/spec/colors/change-color.hrx"
 #[test]
 fn change_color() {
     assert_eq!(
@@ -43,7 +47,7 @@ fn change_color() {
     );
 }
 
-/// From "sass-spec/spec/colors/complement.hrx"
+// From "sass-spec/spec/colors/complement.hrx"
 #[test]
 fn complement() {
     assert_eq!(
@@ -55,7 +59,7 @@ fn complement() {
     );
 }
 
-/// From "sass-spec/spec/colors/desaturate.hrx"
+// From "sass-spec/spec/colors/desaturate.hrx"
 #[test]
 fn desaturate() {
     assert_eq!(
@@ -67,7 +71,7 @@ fn desaturate() {
     );
 }
 
-/// From "sass-spec/spec/colors/fade-in.hrx"
+// From "sass-spec/spec/colors/fade-in.hrx"
 #[test]
 fn fade_in() {
     assert_eq!(
@@ -79,7 +83,7 @@ fn fade_in() {
     );
 }
 
-/// From "sass-spec/spec/colors/fade-out.hrx"
+// From "sass-spec/spec/colors/fade-out.hrx"
 #[test]
 fn fade_out() {
     assert_eq!(
@@ -91,7 +95,7 @@ fn fade_out() {
     );
 }
 
-/// From "sass-spec/spec/colors/saturate.hrx"
+// From "sass-spec/spec/colors/saturate.hrx"
 #[test]
 fn saturate() {
     assert_eq!(
@@ -103,7 +107,7 @@ fn saturate() {
     );
 }
 
-/// From "sass-spec/spec/colors/saturation.hrx"
+// From "sass-spec/spec/colors/saturation.hrx"
 #[test]
 fn saturation() {
     assert_eq!(
@@ -115,7 +119,7 @@ fn saturation() {
     );
 }
 
-/// From "sass-spec/spec/colors/scale-color.hrx"
+// From "sass-spec/spec/colors/scale-color.hrx"
 #[test]
 fn scale_color() {
     assert_eq!(

@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/selectors/variables/single/bare.hrx"
+// From "sass-spec/spec/libsass/selectors/variables/single/bare.hrx"
 #[test]
 fn bare() {
     assert_eq!(
@@ -13,7 +13,7 @@ fn bare() {
     );
 }
 
-/// From "sass-spec/spec/libsass/selectors/variables/single/interpolated.hrx"
+// From "sass-spec/spec/libsass/selectors/variables/single/interpolated.hrx"
 #[test]
 fn interpolated() {
     assert_eq!(

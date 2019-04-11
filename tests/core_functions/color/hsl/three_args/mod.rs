@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/core_functions/color/hsl/three_args/basic.hrx"
+// From "sass-spec/spec/core_functions/color/hsl/three_args/basic.hrx"
 #[test]
 #[ignore] // failing
 fn basic() {
@@ -17,7 +17,7 @@ fn basic() {
     );
 }
 
-/// From "sass-spec/spec/core_functions/color/hsl/three_args/special_functions.hrx"
+// From "sass-spec/spec/core_functions/color/hsl/three_args/special_functions.hrx"
 #[test]
 #[ignore] // failing
 fn special_functions() {

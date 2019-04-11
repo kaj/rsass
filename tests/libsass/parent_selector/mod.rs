@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/parent-selector/basic.hrx"
+// From "sass-spec/spec/libsass/parent-selector/basic.hrx"
 #[test]
 fn basic() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn basic() {
     );
 }
 
-/// From "sass-spec/spec/libsass/parent-selector/inner-combinator.hrx"
+// From "sass-spec/spec/libsass/parent-selector/inner-combinator.hrx"
 #[test]
 fn inner_combinator() {
     assert_eq!(
@@ -28,7 +28,7 @@ fn inner_combinator() {
     );
 }
 
-/// From "sass-spec/spec/libsass/parent-selector/inner-pseudo.hrx"
+// From "sass-spec/spec/libsass/parent-selector/inner-pseudo.hrx"
 #[test]
 fn inner_pseudo() {
     assert_eq!(
@@ -40,9 +40,11 @@ fn inner_pseudo() {
     );
 }
 
-// Ignoring "missing.hrx", error tests are not supported yet.
+// From "sass-spec/spec/libsass/parent-selector/missing.hrx"
 
-/// From "sass-spec/spec/libsass/parent-selector/outer-combinator.hrx"
+// Ignoring "missing", error tests are not supported yet.
+
+// From "sass-spec/spec/libsass/parent-selector/outer-combinator.hrx"
 #[test]
 fn outer_combinator() {
     assert_eq!(
@@ -54,7 +56,7 @@ fn outer_combinator() {
     );
 }
 
-/// From "sass-spec/spec/libsass/parent-selector/outer-pseudo.hrx"
+// From "sass-spec/spec/libsass/parent-selector/outer-pseudo.hrx"
 #[test]
 fn outer_pseudo() {
     assert_eq!(

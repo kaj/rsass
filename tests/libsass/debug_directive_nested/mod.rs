@@ -6,9 +6,11 @@ use rsass::set_precision;
 
 // Ignoring "function.hrx", not expected to work yet.
 
-// Ignoring "inline.hrx", error tests are not supported yet.
+// From "sass-spec/spec/libsass/debug-directive-nested/inline.hrx"
 
-/// From "sass-spec/spec/libsass/debug-directive-nested/mixin.hrx"
+// Ignoring "inline", error tests are not supported yet.
+
+// From "sass-spec/spec/libsass/debug-directive-nested/mixin.hrx"
 #[test]
 #[ignore] // failing
 fn mixin() {

@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 mod blead_global;
 
-/// From "sass-spec/spec/libsass/variable-scoping/defaults-global-null.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/defaults-global-null.hrx"
 #[test]
 fn defaults_global_null() {
     assert_eq!(
@@ -18,7 +18,7 @@ fn defaults_global_null() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/defaults-global.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/defaults-global.hrx"
 #[test]
 fn defaults_global() {
     assert_eq!(
@@ -30,7 +30,7 @@ fn defaults_global() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/defaults-null.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/defaults-null.hrx"
 #[test]
 fn defaults_null() {
     assert_eq!(
@@ -42,7 +42,7 @@ fn defaults_null() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/defaults.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/defaults.hrx"
 #[test]
 #[ignore] // failing
 fn defaults() {
@@ -55,7 +55,7 @@ fn defaults() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/feature-test.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/feature-test.hrx"
 #[test]
 fn feature_test() {
     assert_eq!(
@@ -67,7 +67,7 @@ fn feature_test() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/lexical-scope.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/lexical-scope.hrx"
 #[test]
 #[ignore] // failing
 fn lexical_scope() {
@@ -80,7 +80,7 @@ fn lexical_scope() {
     );
 }
 
-/// From "sass-spec/spec/libsass/variable-scoping/root-scope.hrx"
+// From "sass-spec/spec/libsass/variable-scoping/root-scope.hrx"
 #[test]
 #[ignore] // failing
 fn root_scope() {

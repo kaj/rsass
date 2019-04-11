@@ -12,7 +12,7 @@ mod other;
 
 mod rgb;
 
-/// From "sass-spec/spec/libsass/color-functions/saturate.hrx"
+// From "sass-spec/spec/libsass/color-functions/saturate.hrx"
 #[test]
 #[ignore] // failing
 fn saturate() {

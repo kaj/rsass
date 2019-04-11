@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/parser/interpolate/44_selector/double_escape/12_double_escaped_interpolated_value_todo.hrx"
+// From "sass-spec/spec/parser/interpolate/44_selector/double_escape/12_double_escaped_interpolated_value_todo.hrx"
 #[test]
 fn t12_double_escaped_interpolated_value_todo() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn t12_double_escaped_interpolated_value_todo() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/44_selector/double_escape/22_double_escaped_interpolated_variable.hrx"
+// From "sass-spec/spec/parser/interpolate/44_selector/double_escape/22_double_escaped_interpolated_variable.hrx"
 #[test]
 fn t22_double_escaped_interpolated_variable() {
     assert_eq!(
@@ -28,7 +28,7 @@ fn t22_double_escaped_interpolated_variable() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/44_selector/double_escape/32_double_escaped_literal.hrx"
+// From "sass-spec/spec/parser/interpolate/44_selector/double_escape/32_double_escaped_literal.hrx"
 #[test]
 fn t32_double_escaped_literal() {
     assert_eq!(

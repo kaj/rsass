@@ -4,9 +4,11 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "alpha_percent.hrx", start_version is 3.7.
+// From "sass-spec/spec/core_functions/color/rgba/four_args/alpha_percent.hrx"
 
-/// From "sass-spec/spec/core_functions/color/rgba/four_args/alpha_unitless.hrx"
+// Ignoring "alpha_percent", start_version is 3.7.
+
+// From "sass-spec/spec/core_functions/color/rgba/four_args/alpha_unitless.hrx"
 #[test]
 fn alpha_unitless() {
     assert_eq!(
@@ -18,7 +20,7 @@ fn alpha_unitless() {
     );
 }
 
-/// From "sass-spec/spec/core_functions/color/rgba/four_args/basic.hrx"
+// From "sass-spec/spec/core_functions/color/rgba/four_args/basic.hrx"
 #[test]
 fn basic() {
     assert_eq!(
@@ -30,7 +32,7 @@ fn basic() {
     );
 }
 
-/// From "sass-spec/spec/core_functions/color/rgba/four_args/special_functions.hrx"
+// From "sass-spec/spec/core_functions/color/rgba/four_args/special_functions.hrx"
 #[test]
 #[ignore] // failing
 fn special_functions() {

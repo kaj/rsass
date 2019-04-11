@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/units/conversion/angle.hrx"
+// From "sass-spec/spec/libsass/units/conversion/angle.hrx"
 #[test]
 #[ignore] // failing
 fn angle() {
@@ -17,7 +17,7 @@ fn angle() {
     );
 }
 
-/// From "sass-spec/spec/libsass/units/conversion/frequency.hrx"
+// From "sass-spec/spec/libsass/units/conversion/frequency.hrx"
 #[test]
 #[ignore] // failing
 fn frequency() {
@@ -30,7 +30,7 @@ fn frequency() {
     );
 }
 
-/// From "sass-spec/spec/libsass/units/conversion/resolution.hrx"
+// From "sass-spec/spec/libsass/units/conversion/resolution.hrx"
 #[test]
 #[ignore] // failing
 fn resolution() {
@@ -43,7 +43,7 @@ fn resolution() {
     );
 }
 
-/// From "sass-spec/spec/libsass/units/conversion/size.hrx"
+// From "sass-spec/spec/libsass/units/conversion/size.hrx"
 #[test]
 #[ignore] // failing
 fn size() {
@@ -56,7 +56,7 @@ fn size() {
     );
 }
 
-/// From "sass-spec/spec/libsass/units/conversion/time.hrx"
+// From "sass-spec/spec/libsass/units/conversion/time.hrx"
 #[test]
 #[ignore] // failing
 fn time() {

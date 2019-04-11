@@ -4,6 +4,10 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "incomplete-expression.hrx", error tests are not supported yet.
+// From "sass-spec/spec/parser/malformed_expressions/at-debug/incomplete-expression.hrx"
 
-// Ignoring "no-argument.hrx", error tests are not supported yet.
+// Ignoring "incomplete_expression", error tests are not supported yet.
+
+// From "sass-spec/spec/parser/malformed_expressions/at-debug/no-argument.hrx"
+
+// Ignoring "no_argument", error tests are not supported yet.

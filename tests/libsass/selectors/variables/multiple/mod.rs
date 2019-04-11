@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/selectors/variables/multiple/bare.hrx"
+// From "sass-spec/spec/libsass/selectors/variables/multiple/bare.hrx"
 #[test]
 #[ignore] // failing
 fn bare() {
@@ -14,7 +14,7 @@ fn bare() {
     );
 }
 
-/// From "sass-spec/spec/libsass/selectors/variables/multiple/interpolated.hrx"
+// From "sass-spec/spec/libsass/selectors/variables/multiple/interpolated.hrx"
 #[test]
 #[ignore] // failing
 fn interpolated() {

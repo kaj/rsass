@@ -4,4 +4,6 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "no_content.hrx", error tests are not supported yet.
+// From "sass-spec/spec/mixin/error/no_content.hrx"
+
+// Ignoring "no_content", error tests are not supported yet.

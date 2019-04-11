@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-alone-itpl.hrx"
+// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-alone-itpl.hrx"
 #[test]
 #[ignore] // failing
 fn at_root_alone_itpl() {
@@ -17,7 +17,7 @@ fn at_root_alone_itpl() {
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-alone.hrx"
+// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-alone.hrx"
 #[test]
 fn at_root_alone() {
     assert_eq!(
@@ -29,7 +29,7 @@ fn at_root_alone() {
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-postfix-itpl.hrx"
+// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-postfix-itpl.hrx"
 #[test]
 #[ignore] // failing
 fn at_root_postfix_itpl() {
@@ -42,7 +42,7 @@ fn at_root_postfix_itpl() {
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-postfix.hrx"
+// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-postfix.hrx"
 #[test]
 fn at_root_postfix() {
     assert_eq!(
@@ -54,7 +54,7 @@ fn at_root_postfix() {
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-prefix-itpl.hrx"
+// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-prefix-itpl.hrx"
 #[test]
 #[ignore] // failing
 fn at_root_prefix_itpl() {
@@ -67,9 +67,11 @@ fn at_root_prefix_itpl() {
     );
 }
 
-// Ignoring "at-root-prefix.hrx", error tests are not supported yet.
+// From "sass-spec/spec/libsass/base-level-parent/nested/at-root-prefix.hrx"
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-alone-itpl.hrx"
+// Ignoring "at_root_prefix", error tests are not supported yet.
+
+// From "sass-spec/spec/libsass/base-level-parent/nested/basic-alone-itpl.hrx"
 #[test]
 fn basic_alone_itpl() {
     assert_eq!(
@@ -81,7 +83,7 @@ fn basic_alone_itpl() {
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-alone.hrx"
+// From "sass-spec/spec/libsass/base-level-parent/nested/basic-alone.hrx"
 #[test]
 fn basic_alone() {
     assert_eq!(
@@ -93,7 +95,7 @@ fn basic_alone() {
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-postfix-itpl.hrx"
+// From "sass-spec/spec/libsass/base-level-parent/nested/basic-postfix-itpl.hrx"
 #[test]
 fn basic_postfix_itpl() {
     assert_eq!(
@@ -105,7 +107,7 @@ fn basic_postfix_itpl() {
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-postfix.hrx"
+// From "sass-spec/spec/libsass/base-level-parent/nested/basic-postfix.hrx"
 #[test]
 fn basic_postfix() {
     assert_eq!(
@@ -117,7 +119,7 @@ fn basic_postfix() {
     );
 }
 
-/// From "sass-spec/spec/libsass/base-level-parent/nested/basic-prefix-itpl.hrx"
+// From "sass-spec/spec/libsass/base-level-parent/nested/basic-prefix-itpl.hrx"
 #[test]
 fn basic_prefix_itpl() {
     assert_eq!(
@@ -129,4 +131,6 @@ fn basic_prefix_itpl() {
     );
 }
 
-// Ignoring "basic-prefix.hrx", error tests are not supported yet.
+// From "sass-spec/spec/libsass/base-level-parent/nested/basic-prefix.hrx"
+
+// Ignoring "basic_prefix", error tests are not supported yet.

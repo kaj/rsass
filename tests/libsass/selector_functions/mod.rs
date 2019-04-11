@@ -6,13 +6,19 @@ use rsass::set_precision;
 
 // Ignoring "is_superselector", not expected to work yet.
 
-// Ignoring "selector-append-empty.hrx", error tests are not supported yet.
+// From "sass-spec/spec/libsass/selector-functions/selector-append-empty.hrx"
 
-// Ignoring "selector-append-error-1.hrx", error tests are not supported yet.
+// Ignoring "selector_append_empty", error tests are not supported yet.
 
-// Ignoring "selector-append-error-2.hrx", error tests are not supported yet.
+// From "sass-spec/spec/libsass/selector-functions/selector-append-error-1.hrx"
 
-/// From "sass-spec/spec/libsass/selector-functions/selector-length.hrx"
+// Ignoring "selector_append_error_1", error tests are not supported yet.
+
+// From "sass-spec/spec/libsass/selector-functions/selector-append-error-2.hrx"
+
+// Ignoring "selector_append_error_2", error tests are not supported yet.
+
+// From "sass-spec/spec/libsass/selector-functions/selector-length.hrx"
 #[test]
 fn selector_length() {
     assert_eq!(
@@ -24,7 +30,7 @@ fn selector_length() {
     );
 }
 
-/// From "sass-spec/spec/libsass/selector-functions/simple-selector.hrx"
+// From "sass-spec/spec/libsass/selector-functions/simple-selector.hrx"
 #[test]
 #[ignore] // failing
 fn simple_selector() {

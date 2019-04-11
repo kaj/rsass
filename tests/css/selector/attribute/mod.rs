@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/css/selector/attribute/dash-dash.hrx"
+// From "sass-spec/spec/css/selector/attribute/dash-dash.hrx"
 #[test]
 fn dash_dash() {
     assert_eq!(

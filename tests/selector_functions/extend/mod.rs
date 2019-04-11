@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/selector-functions/extend/nested.hrx"
+// From "sass-spec/spec/selector-functions/extend/nested.hrx"
 #[test]
 #[ignore] // failing
 fn nested() {
@@ -17,7 +17,7 @@ fn nested() {
     );
 }
 
-/// From "sass-spec/spec/selector-functions/extend/simple.hrx"
+// From "sass-spec/spec/selector-functions/extend/simple.hrx"
 #[test]
 #[ignore] // failing
 fn simple() {

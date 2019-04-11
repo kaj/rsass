@@ -4,7 +4,7 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-/// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/01_inline"
+// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/01_inline"
 #[test]
 fn t01_inline() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn t01_inline() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/02_variable"
+// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/02_variable"
 #[test]
 fn t02_variable() {
     assert_eq!(
@@ -28,7 +28,7 @@ fn t02_variable() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/03_inline_double"
+// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/03_inline_double"
 #[test]
 fn t03_inline_double() {
     assert_eq!(
@@ -40,7 +40,7 @@ fn t03_inline_double() {
     );
 }
 
-/// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/04_variable_double"
+// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/04_variable_double"
 #[test]
 fn t04_variable_double() {
     assert_eq!(
@@ -52,8 +52,14 @@ fn t04_variable_double() {
     );
 }
 
-// Ignoring "06_escape_interpolation", start_version is 3.7.
+// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/06_escape_interpolation"
+
+// Ignoring "t06_escape_interpolation", start_version is 3.7.
+
+// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/todo_05_variable_quoted_double"
 
 // Ignoring "todo_05_variable_quoted_double", end_version is 3.5.
 
-// Ignoring "todo_05_variable_quoted_double-4.0", start_version is 4.0.
+// From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/todo_05_variable_quoted_double-4.0"
+
+// Ignoring "todo_05_variable_quoted_double_4_0", start_version is 4.0.

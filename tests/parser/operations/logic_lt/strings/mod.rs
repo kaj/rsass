@@ -4,4 +4,6 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "pairs.hrx", end_version is 3.5.
+// From "sass-spec/spec/parser/operations/logic_lt/strings/pairs.hrx"
+
+// Ignoring "pairs", end_version is 3.5.

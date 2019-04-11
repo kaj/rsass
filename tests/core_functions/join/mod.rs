@@ -4,9 +4,19 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "error.hrx", not a single spec.
+// From "sass-spec/spec/core_functions/join/error.hrx"
+mod error {
+    #[allow(unused)]
+    use super::rsass;
 
-/// From "sass-spec/spec/core_functions/join/valid.hrx"
+    // Ignoring "named", error tests are not supported yet.
+
+    // Ignoring "positional", error tests are not supported yet.
+
+    // Ignoring "positional_and_named", error tests are not supported yet.
+}
+
+// From "sass-spec/spec/core_functions/join/valid.hrx"
 #[test]
 fn valid() {
     assert_eq!(

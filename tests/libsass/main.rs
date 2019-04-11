@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass"
-//! version 6c9bd98c, 2019-02-13 14:56:19 -0800.
+//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["Sa\u{301}ss-UT\u{327}F8.hrx", "bourbon.hrx", "base-level-parent/imported", "selector-functions/is_superselector", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "debug-directive-nested/function.hrx", "warn-directive-nested/function.hrx"]
@@ -7,7 +7,7 @@ use rsass::{compile_scss, OutputStyle};
 
 // Ignoring "Sa\u{301}ss-UT\u{327}F8.hrx", not expected to work yet.
 
-/// From "sass-spec/spec/libsass/Sáss-UŢF8.hrx"
+// From "sass-spec/spec/libsass/Sáss-UŢF8.hrx"
 #[test]
 fn sass_utf8() {
     assert_eq!(
@@ -16,7 +16,7 @@ fn sass_utf8() {
     );
 }
 
-/// From "sass-spec/spec/libsass/arg-eval.hrx"
+// From "sass-spec/spec/libsass/arg-eval.hrx"
 #[test]
 fn arg_eval() {
     assert_eq!(
@@ -28,13 +28,15 @@ fn arg_eval() {
     );
 }
 
-// Ignoring "arithmetic.hrx", end_version is 3.5.
+// From "sass-spec/spec/libsass/arithmetic.hrx"
+
+// Ignoring "arithmetic", end_version is 3.5.
 
 mod at_error;
 
 mod at_root;
 
-/// From "sass-spec/spec/libsass/at-stuff.hrx"
+// From "sass-spec/spec/libsass/at-stuff.hrx"
 #[test]
 #[ignore] // failing
 fn at_stuff() {
@@ -51,7 +53,7 @@ mod base_level_parent;
 
 mod basic;
 
-/// From "sass-spec/spec/libsass/bool.hrx"
+// From "sass-spec/spec/libsass/bool.hrx"
 #[test]
 #[ignore] // failing
 fn bool() {
@@ -66,7 +68,7 @@ fn bool() {
 
 // Ignoring "bourbon.hrx", not expected to work yet.
 
-/// From "sass-spec/spec/libsass/calc.hrx"
+// From "sass-spec/spec/libsass/calc.hrx"
 #[test]
 #[ignore] // failing
 fn calc() {
@@ -79,7 +81,7 @@ fn calc() {
     );
 }
 
-/// From "sass-spec/spec/libsass/charset"
+// From "sass-spec/spec/libsass/charset"
 #[test]
 #[ignore] // failing
 fn charset() {
@@ -94,9 +96,11 @@ fn charset() {
 
 mod color_functions;
 
-// Ignoring "color-names.hrx", end_version is 3.5.
+// From "sass-spec/spec/libsass/color-names.hrx"
 
-/// From "sass-spec/spec/libsass/conversions.hrx"
+// Ignoring "color_names", end_version is 3.5.
+
+// From "sass-spec/spec/libsass/conversions.hrx"
 #[test]
 #[ignore] // failing
 fn conversions() {
@@ -109,7 +113,7 @@ fn conversions() {
     );
 }
 
-/// From "sass-spec/spec/libsass/css-import.hrx"
+// From "sass-spec/spec/libsass/css-import.hrx"
 #[test]
 #[ignore] // failing
 fn css_import() {
@@ -120,7 +124,7 @@ fn css_import() {
     );
 }
 
-/// From "sass-spec/spec/libsass/css_nth_selectors.hrx"
+// From "sass-spec/spec/libsass/css_nth_selectors.hrx"
 #[test]
 #[ignore] // failing
 fn css_nth_selectors() {
@@ -133,7 +137,7 @@ fn css_nth_selectors() {
     );
 }
 
-/// From "sass-spec/spec/libsass/css_unicode"
+// From "sass-spec/spec/libsass/css_unicode"
 #[test]
 #[ignore] // failing
 fn css_unicode() {
@@ -145,7 +149,7 @@ fn css_unicode() {
 
 mod debug_directive_nested;
 
-/// From "sass-spec/spec/libsass/delayed.hrx"
+// From "sass-spec/spec/libsass/delayed.hrx"
 #[test]
 #[ignore] // failing
 fn delayed() {
@@ -158,7 +162,7 @@ fn delayed() {
     );
 }
 
-/// From "sass-spec/spec/libsass/div.hrx"
+// From "sass-spec/spec/libsass/div.hrx"
 #[test]
 #[ignore] // failing
 fn div() {
@@ -171,7 +175,7 @@ fn div() {
     );
 }
 
-/// From "sass-spec/spec/libsass/env.hrx"
+// From "sass-spec/spec/libsass/env.hrx"
 #[test]
 #[ignore] // failing
 fn env() {
@@ -184,7 +188,7 @@ fn env() {
     );
 }
 
-/// From "sass-spec/spec/libsass/eq.hrx"
+// From "sass-spec/spec/libsass/eq.hrx"
 #[test]
 fn eq() {
     assert_eq!(
@@ -200,7 +204,7 @@ mod error_directive_nested;
 
 mod features;
 
-/// From "sass-spec/spec/libsass/filter-functions.hrx"
+// From "sass-spec/spec/libsass/filter-functions.hrx"
 #[test]
 fn filter_functions() {
     assert_eq!(
@@ -212,7 +216,7 @@ fn filter_functions() {
     );
 }
 
-/// From "sass-spec/spec/libsass/http_import.hrx"
+// From "sass-spec/spec/libsass/http_import.hrx"
 #[test]
 #[ignore] // failing
 fn http_import() {
@@ -225,7 +229,7 @@ fn http_import() {
     );
 }
 
-/// From "sass-spec/spec/libsass/image-url.hrx"
+// From "sass-spec/spec/libsass/image-url.hrx"
 #[test]
 fn image_url() {
     assert_eq!(
@@ -237,7 +241,7 @@ fn image_url() {
     );
 }
 
-/// From "sass-spec/spec/libsass/import.hrx"
+// From "sass-spec/spec/libsass/import.hrx"
 #[test]
 #[ignore] // failing
 fn import() {
@@ -250,7 +254,7 @@ fn import() {
     );
 }
 
-/// From "sass-spec/spec/libsass/inh.hrx"
+// From "sass-spec/spec/libsass/inh.hrx"
 #[test]
 #[ignore] // failing
 fn inh() {
@@ -263,17 +267,27 @@ fn inh() {
     );
 }
 
-// Ignoring "inheritance.hrx", end_version is 3.5.
+// From "sass-spec/spec/libsass/inheritance.hrx"
 
-// Ignoring "interpolated-function-call-4.0.hrx", start_version is 4.0.
+// Ignoring "inheritance", end_version is 3.5.
 
-// Ignoring "interpolated-function-call.hrx", end_version is 3.5.
+// From "sass-spec/spec/libsass/interpolated-function-call-4.0.hrx"
 
-// Ignoring "interpolated-urls-4.0.hrx", start_version is 4.0.
+// Ignoring "interpolated_function_call_4_0", start_version is 4.0.
 
-// Ignoring "interpolated-urls.hrx", end_version is 3.5.
+// From "sass-spec/spec/libsass/interpolated-function-call.hrx"
 
-/// From "sass-spec/spec/libsass/keyframes.hrx"
+// Ignoring "interpolated_function_call", end_version is 3.5.
+
+// From "sass-spec/spec/libsass/interpolated-urls-4.0.hrx"
+
+// Ignoring "interpolated_urls_4_0", start_version is 4.0.
+
+// From "sass-spec/spec/libsass/interpolated-urls.hrx"
+
+// Ignoring "interpolated_urls", end_version is 3.5.
+
+// From "sass-spec/spec/libsass/keyframes.hrx"
 #[test]
 fn keyframes() {
     assert_eq!(
@@ -285,7 +299,7 @@ fn keyframes() {
     );
 }
 
-/// From "sass-spec/spec/libsass/length"
+// From "sass-spec/spec/libsass/length"
 #[test]
 fn length() {
     assert_eq!(
@@ -297,7 +311,7 @@ fn length() {
     );
 }
 
-/// From "sass-spec/spec/libsass/list-evaluation.hrx"
+// From "sass-spec/spec/libsass/list-evaluation.hrx"
 #[test]
 #[ignore] // failing
 fn list_evaluation() {
@@ -310,7 +324,7 @@ fn list_evaluation() {
     );
 }
 
-/// From "sass-spec/spec/libsass/lists.hrx"
+// From "sass-spec/spec/libsass/lists.hrx"
 #[test]
 #[ignore] // failing
 fn lists() {
@@ -323,7 +337,7 @@ fn lists() {
     );
 }
 
-/// From "sass-spec/spec/libsass/media-hoisting.hrx"
+// From "sass-spec/spec/libsass/media-hoisting.hrx"
 #[test]
 fn media_hoisting() {
     assert_eq!(
@@ -335,7 +349,7 @@ fn media_hoisting() {
     );
 }
 
-/// From "sass-spec/spec/libsass/media.hrx"
+// From "sass-spec/spec/libsass/media.hrx"
 #[test]
 fn media() {
     assert_eq!(
@@ -347,7 +361,7 @@ fn media() {
     );
 }
 
-/// From "sass-spec/spec/libsass/mixin.hrx"
+// From "sass-spec/spec/libsass/mixin.hrx"
 #[test]
 #[ignore] // failing
 fn mixin() {
@@ -360,7 +374,7 @@ fn mixin() {
     );
 }
 
-/// From "sass-spec/spec/libsass/mixins-and-media-queries.hrx"
+// From "sass-spec/spec/libsass/mixins-and-media-queries.hrx"
 #[test]
 #[ignore] // failing
 fn mixins_and_media_queries() {
@@ -373,7 +387,7 @@ fn mixins_and_media_queries() {
     );
 }
 
-/// From "sass-spec/spec/libsass/multi-blocks.hrx"
+// From "sass-spec/spec/libsass/multi-blocks.hrx"
 #[test]
 fn multi_blocks() {
     assert_eq!(
@@ -387,7 +401,7 @@ fn multi_blocks() {
 
 mod parent_selector;
 
-/// From "sass-spec/spec/libsass/placeholder-mediaquery.hrx"
+// From "sass-spec/spec/libsass/placeholder-mediaquery.hrx"
 #[test]
 #[ignore] // failing
 fn placeholder_mediaquery() {
@@ -400,7 +414,7 @@ fn placeholder_mediaquery() {
     );
 }
 
-/// From "sass-spec/spec/libsass/placeholder-nested.hrx"
+// From "sass-spec/spec/libsass/placeholder-nested.hrx"
 #[test]
 #[ignore] // failing
 fn placeholder_nested() {
@@ -415,7 +429,7 @@ fn placeholder_nested() {
 
 mod precision;
 
-/// From "sass-spec/spec/libsass/properties-in-media.hrx"
+// From "sass-spec/spec/libsass/properties-in-media.hrx"
 #[test]
 #[ignore] // failing
 fn properties_in_media() {
@@ -428,9 +442,11 @@ fn properties_in_media() {
     );
 }
 
-// Ignoring "propsets.hrx", start_version is 3.7.
+// From "sass-spec/spec/libsass/propsets.hrx"
 
-/// From "sass-spec/spec/libsass/rel.hrx"
+// Ignoring "propsets", start_version is 3.7.
+
+// From "sass-spec/spec/libsass/rel.hrx"
 #[test]
 #[ignore] // failing
 fn rel() {
@@ -443,7 +459,7 @@ fn rel() {
     );
 }
 
-/// From "sass-spec/spec/libsass/scale.hrx"
+// From "sass-spec/spec/libsass/scale.hrx"
 #[test]
 fn scale() {
     assert_eq!(
@@ -457,7 +473,7 @@ fn scale() {
 
 mod selector_functions;
 
-/// From "sass-spec/spec/libsass/selector_interpolation_in_string.hrx"
+// From "sass-spec/spec/libsass/selector_interpolation_in_string.hrx"
 #[test]
 fn selector_interpolation_in_string() {
     assert_eq!(
@@ -468,7 +484,7 @@ fn selector_interpolation_in_string() {
 
 mod selectors;
 
-/// From "sass-spec/spec/libsass/test.hrx"
+// From "sass-spec/spec/libsass/test.hrx"
 #[test]
 #[ignore] // failing
 fn test() {
@@ -481,7 +497,7 @@ fn test() {
     );
 }
 
-/// From "sass-spec/spec/libsass/unary-ops.hrx"
+// From "sass-spec/spec/libsass/unary-ops.hrx"
 #[test]
 #[ignore] // failing
 fn unary_ops() {
@@ -496,7 +512,7 @@ fn unary_ops() {
 
 mod unicode_bom;
 
-/// From "sass-spec/spec/libsass/unitless.hrx"
+// From "sass-spec/spec/libsass/unitless.hrx"
 #[test]
 fn unitless() {
     assert_eq!(
@@ -510,7 +526,7 @@ fn unitless() {
 
 mod units;
 
-/// From "sass-spec/spec/libsass/unquote.hrx"
+// From "sass-spec/spec/libsass/unquote.hrx"
 #[test]
 fn unquote() {
     assert_eq!(
@@ -522,7 +538,7 @@ fn unquote() {
     );
 }
 
-/// From "sass-spec/spec/libsass/url.hrx"
+// From "sass-spec/spec/libsass/url.hrx"
 #[test]
 #[ignore] // failing
 fn url() {
@@ -537,7 +553,7 @@ fn url() {
 
 mod variable_scoping;
 
-/// From "sass-spec/spec/libsass/variables_in_media.hrx"
+// From "sass-spec/spec/libsass/variables_in_media.hrx"
 #[test]
 #[ignore] // failing
 fn variables_in_media() {
