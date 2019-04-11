@@ -1,5 +1,5 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
-#![cfg_attr(feature = "cargo-clippy", allow(unreadable_literal))]
+#![allow(clippy::unreadable_literal)]
 
 use crate::value::Number;
 use lazy_static::lazy_static;

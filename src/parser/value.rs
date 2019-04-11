@@ -405,7 +405,11 @@ named!(hexchar2<Input, Input>, recognize!(pair!(hexchar, hexchar)));
 
 fn from_hex(v: &[u8]) -> u8 {
     let i = u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap();
-    return if v.len() > 1 { i } else { i * 0x11 };
+    if v.len() > 1 {
+        i
+    } else {
+        i * 0x11
+    }
 }
 
 named!(pub dictionary<Input, Value>,

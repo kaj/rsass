@@ -462,7 +462,7 @@ named!(
         body: terminated!(
             switch!(
                 alt!(tag!("{") | cond_reduce!(val.is_some(), alt!(tag!(";") | tag!("")))),
-                Input(b"{") => map!(body_block2, |b| Some(b)) |
+                Input(b"{") => map!(body_block2, Some) |
                 //Input(b";") => value!(None) |
                 //Input(b"") => value!(None) |
                 _ => value!(None)
