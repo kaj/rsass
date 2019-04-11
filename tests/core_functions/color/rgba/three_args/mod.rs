@@ -6,7 +6,6 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/core_functions/color/rgba/three_args/basic.hrx"
 #[test]
-#[ignore] // failing
 fn basic() {
     assert_eq!(
         rsass(
