@@ -30,7 +30,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             to_rational(&hue),
             to_rational_percent(&sat),
             to_rational_percent(&lig),
-            to_rational(&a),
+            if a.is_null() {
+                Ok(Rational::one())
+            } else {
+                to_rational(&a)
+            },
         ) {
             Ok(Value::hsla(hue, sat, lig, a))
         } else {

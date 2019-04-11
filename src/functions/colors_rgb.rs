@@ -45,16 +45,15 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         } else {
             let green = s.get("green")?;
             let blue = s.get("blue")?;
-            let alpha = if a.is_null() {
-                Value::scalar(1)
-            } else {
-                a.clone()
-            };
             if let (Ok(red), Ok(green), Ok(blue), Ok(alpha)) = (
                 to_int(&red),
                 to_int(&green),
                 to_int(&blue),
-                to_rational(&alpha),
+                if a.is_null() {
+                    Ok(Rational::one())
+                } else {
+                    to_rational(&a)
+                },
             ) {
                 Ok(Value::rgba(red, green, blue, alpha))
             } else {
