@@ -65,7 +65,7 @@ fn main() -> Result<(), Error> {
         &[
             "multiline-var.hrx", // name conflict with other test.
             "mixin-content.hrx", // stack overflow?!?
-            "huge.hrx",          // stack overflow
+            "huge.hrx", // actually works, but almost 3MB of test code ...
         ],
     )?;
     handle_suite(&base, "scss-tests", &[])?;
