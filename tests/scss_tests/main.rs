@@ -217,7 +217,6 @@ fn t023_test_css_import_directive() {
 
 // From "sass-spec/spec/scss-tests/024_test_media_import.hrx"
 #[test]
-#[ignore] // failing
 fn t024_test_media_import() {
     assert_eq!(
         rsass("@import \"./fonts.sass\" all;").unwrap(),
@@ -240,7 +239,6 @@ fn t025_test_dynamic_media_import() {
 
 // From "sass-spec/spec/scss-tests/027_test_protocol_relative_import.hrx"
 #[test]
-#[ignore] // failing
 fn t027_test_protocol_relative_import() {
     assert_eq!(
         rsass("@import \"//fonts.googleapis.com/css?family=Droid+Sans\";")

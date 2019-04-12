@@ -61,8 +61,8 @@ impl OutputStyle {
     ) -> Result<(), Error> {
         match *item {
             Item::Import(ref name) => {
-                let name = name.evaluate(scope)?.unquote();
-                if let Value::Literal(ref x, _) = name {
+                let name = name.evaluate(scope)?;
+                if let Value::Literal(ref x, _) = name.clone().unquote() {
                     if let Some((sub_context, file)) =
                         file_context.find_file(x.as_ref())
                     {
@@ -75,12 +75,21 @@ impl OutputStyle {
                             )?;
                         }
                     } else {
-                        write!(
-                            result.to_imports(),
-                            "@import url({});{}",
-                            x,
-                            if self.is_compressed() { "" } else { "\n" }
-                        )?;
+                        if x.starts_with('/') {
+                            write!(
+                                result.to_imports(),
+                                "@import {};{}",
+                                name,
+                                if self.is_compressed() { "" } else { "\n" }
+                            )?;
+                        } else {
+                            write!(
+                                result.to_imports(),
+                                "@import url({});{}",
+                                x,
+                                if self.is_compressed() { "" } else { "\n" }
+                            )?;
+                        }
                     }
                 } else {
                     write!(
