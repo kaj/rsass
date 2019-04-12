@@ -5,8 +5,17 @@ use super::rsass;
 use rsass::set_precision;
 
 // From "sass-spec/spec/core_functions/color/hsla/four_args/alpha_percent.hrx"
-
-// Ignoring "alpha_percent", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn alpha_percent() {
+    assert_eq!(
+        rsass(
+            ".alpha-percent {\n  negative: hsla(0, 0, 0, -10%);\n  min: hsla(0, 0, 0, 0%);\n  positive: hsla(0, 0, 0, 45.6%);\n  max: hsla(0, 0, 0, 100%);\n  above-max: hsla(0, 0, 0, 250%);\n}\n"
+        )
+        .unwrap(),
+        ".alpha-percent {\n  negative: rgba(0, 0, 0, 0);\n  min: rgba(0, 0, 0, 0);\n  positive: rgba(0, 0, 0, 0.456);\n  max: black;\n  above-max: black;\n}\n"
+    );
+}
 
 // From "sass-spec/spec/core_functions/color/hsla/four_args/alpha_unitless.hrx"
 #[test]

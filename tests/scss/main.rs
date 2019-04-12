@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/scss"
-//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
+//! version e58d9b74, 2019-04-12 03:40:58 +0200.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["multiline-var.hrx", "mixin-content.hrx", "huge.hrx"]
@@ -476,13 +476,17 @@ fn for_in_functions() {
     );
 }
 
-// From "sass-spec/spec/scss/function-names-4.0.hrx"
-
-// Ignoring "function_names_4_0", start_version is 4.0.
-
 // From "sass-spec/spec/scss/function-names.hrx"
-
-// Ignoring "function_names", end_version is 3.5.
+#[test]
+fn function_names() {
+    assert_eq!(
+        rsass(
+            "div {\n  color: unquote(\"hello\");\n  color: un#{quo}te(\"hello\");\n  color: (\"hello\")un#{quo}te;\n}\n"
+        )
+        .unwrap(),
+        "div {\n  color: hello;\n  color: unquote(\"hello\");\n  color: \"hello\" unquote;\n}\n"
+    );
+}
 
 // From "sass-spec/spec/scss/function_args.hrx"
 #[test]
@@ -559,8 +563,14 @@ fn hyphen_interpolated() {
 }
 
 // From "sass-spec/spec/scss/ie-backslash.hrx"
-
-// Ignoring "ie_backslash", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn ie_backslash() {
+    assert_eq!(
+        rsass("div {\n  background-color: darken(red, 10%) \\9;\n}").unwrap(),
+        "div {\n  background-color: #cc0000 \\9 ;\n}\n"
+    );
+}
 
 // From "sass-spec/spec/scss/ie-functions.hrx"
 #[test]
@@ -699,13 +709,9 @@ fn interpolated_strings() {
     );
 }
 
-// From "sass-spec/spec/scss/interpolation-operators-precedence-4.0.hrx"
-
-// Ignoring "interpolation_operators_precedence_4_0", start_version is 4.0.
-
 // From "sass-spec/spec/scss/interpolation-operators-precedence.hrx"
 
-// Ignoring "interpolation_operators_precedence", end_version is 3.5.
+// Ignoring "interpolation_operators_precedence", error tests are not supported yet.
 
 // From "sass-spec/spec/scss/interpolation.hrx"
 #[test]
@@ -1358,13 +1364,17 @@ fn while_in_functions() {
 
 // Ignoring "while_without_condition", error tests are not supported yet.
 
-// From "sass-spec/spec/scss/zero-compression-4.0.hrx"
-
-// Ignoring "zero_compression_4_0", start_version is 4.0.
-
 // From "sass-spec/spec/scss/zero-compression.hrx"
-
-// Ignoring "zero_compression", end_version is 3.5.
+#[test]
+fn zero_compression() {
+    assert_eq!(
+        rsass(
+            "$orig: 0.12em;\r\n$value: (0.12em);\r\n$score: (item-height: 0.12em);\r\nfoo {\r\n    tst-1: 0 -#{0.12em};\r\n    tst-2: 0 -#{$orig};\r\n    tst-3: 0 -#{$value};\r\n    tst-4: 0 -#{map-get($score, item-height)};\r\n}"
+        )
+        .unwrap(),
+        "foo {\n  tst-1: 0 -0.12em;\n  tst-2: 0 -0.12em;\n  tst-3: 0 -0.12em;\n  tst-4: 0 -0.12em;\n}\n"
+    );
+}
 
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)

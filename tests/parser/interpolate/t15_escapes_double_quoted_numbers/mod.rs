@@ -65,5 +65,14 @@ fn t05_variable_quoted_double() {
 }
 
 // From "sass-spec/spec/parser/interpolate/15_escapes_double_quoted_numbers/06_escape_interpolation.hrx"
-
-// Ignoring "t06_escape_interpolation", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn t06_escape_interpolation() {
+    assert_eq!(
+        rsass(
+            "$input: \"\\1\\2\\3\\4\\5\\6\\7\\8\\9\";\n.result {\n  output: \"[\\#{\"\\1\\2\\3\\4\\5\\6\\7\\8\\9\"}]\";\n  output: \"\\#{\"\\1\\2\\3\\4\\5\\6\\7\\8\\9\"}\";\n  output: \'\\#{\"\\1\\2\\3\\4\\5\\6\\7\\8\\9\"}\';\n  output: \"[\'\\#{\"\\1\\2\\3\\4\\5\\6\\7\\8\\9\"}\']\";\n}\n"
+        )
+        .unwrap(),
+        ".result {\n  output: \"[#{\" \\1 \\2 \\3 \\4 \\5 \\6 \\7 \\8 \\9  \"}]\";\n  output: \"#{\" \\1 \\2 \\3 \\4 \\5 \\6 \\7 \\8 \\9  \"}\";\n  output: \'\\#{\"\\1\\2\\3\\4\\5\\6\\7\\8\\9\"}\';\n  output: \"[\'#{\" \\1 \\2 \\3 \\4 \\5 \\6 \\7 \\8 \\9  \"}\']\";\n}\n"
+    );
+}

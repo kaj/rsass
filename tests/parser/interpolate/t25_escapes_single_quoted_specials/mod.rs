@@ -53,13 +53,27 @@ fn t04_variable_double() {
 }
 
 // From "sass-spec/spec/parser/interpolate/25_escapes_single_quoted_specials/06_escape_interpolation"
-
-// Ignoring "t06_escape_interpolation", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn t06_escape_interpolation() {
+    assert_eq!(
+        rsass(
+            "$input: \'\\0_\\a_\\A\';\n.result {\n  output: \"[\\#{\'\\0_\\a_\\A\'}]\";\n  output: \"\\#{\'\\0_\\a_\\A\'}\";\n  output: \'\\#{\'\\0_\\a_\\A\'}\';\n  output: \"[\'\\#{\'\\0_\\a_\\A\'}\']\";\n}\n"
+        )
+        .unwrap(),
+        ".result {\n  output: \"[\\#{\'\\0_\\a_\\A\'}]\";\n  output: \"\\#{\'\\0_\\a_\\A\'}\";\n  output: \"#{\" \\0 _\\a _\\a  \"}\";\n  output: \"[\'\\#{\'\\0_\\a_\\A\'}\']\";\n}\n"
+    );
+}
 
 // From "sass-spec/spec/parser/interpolate/25_escapes_single_quoted_specials/todo_05_variable_quoted_double"
-
-// Ignoring "todo_05_variable_quoted_double", end_version is 3.5.
-
-// From "sass-spec/spec/parser/interpolate/25_escapes_single_quoted_specials/todo_05_variable_quoted_double-4.0"
-
-// Ignoring "todo_05_variable_quoted_double_4_0", start_version is 4.0.
+#[test]
+#[ignore] // failing
+fn todo_05_variable_quoted_double() {
+    assert_eq!(
+        rsass(
+            "$input: \'\\0_\\a_\\A\';\n.result {\n  dquoted: \"#{#{$input}}\";\n  dquoted: \"#{\"[#{$input}]\"}\";\n  dquoted: \"#{\"#{$input}\"}\";\n  dquoted: \"#{\'#{$input}\'}\";\n  dquoted: \"#{\"[\'#{$input}\']\"}\";\n  squoted: \'#{#{$input}}\';\n  squoted: \'#{\"[#{$input}]\"}\';\n  squoted: \'#{\"#{$input}\"}\';\n  squoted: \'#{\'#{$input}\'}\';\n  squoted: \'#{\"[\'#{$input}\']\"}\';\n}\n"
+        )
+        .unwrap(),
+        "@charset \"UTF-8\";\n.result {\n  dquoted: \"�_\\a_\\a\";\n  dquoted: \"[�_\\a_\\a]\";\n  dquoted: \"�_\\a_\\a\";\n  dquoted: \"�_\\a_\\a\";\n  dquoted: \"[\'�_\\a_\\a\']\";\n  squoted: \"�_\\a_\\a\";\n  squoted: \"[�_\\a_\\a]\";\n  squoted: \"�_\\a_\\a\";\n  squoted: \"�_\\a_\\a\";\n  squoted: \"[\'�_\\a_\\a\']\";\n}\n"
+    );
+}

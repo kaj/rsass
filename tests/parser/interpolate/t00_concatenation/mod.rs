@@ -16,10 +16,14 @@ fn spaced() {
     );
 }
 
-// From "sass-spec/spec/parser/interpolate/00_concatenation/unspaced-4.0.hrx"
-
-// Ignoring "unspaced_4_0", start_version is 4.0.
-
 // From "sass-spec/spec/parser/interpolate/00_concatenation/unspaced.hrx"
-
-// Ignoring "unspaced", end_version is 3.5.
+#[test]
+fn unspaced() {
+    assert_eq!(
+        rsass(
+            "$input: literal;\n.result {\n  output: literal$input;\n  output: literal#{$input};\n  output: literal#{literal};\n  output: literal#{\"literal\"};\n  output: $input$input;\n  output: $input#{$input};\n  output: $input#{literal};\n  output: $input#{\"literal\"};\n  output: #{$input}literal;\n  output: #{$input}$input;\n  output: #{$input}#{$input};\n  output: #{$input}#{literal};\n  output: #{$input}#{\"literal\"};\n  output: #{literal}literal;\n  output: #{literal}$input;\n  output: #{literal}#{$input};\n  output: #{literal}#{literal};\n  output: #{literal}#{\"literal\"};\n  output: #{\"literal\"}literal;\n  output: #{\"literal\"}$input;\n  output: #{\"literal\"}#{$input};\n  output: #{\"literal\"}#{literal};\n  output: #{\"literal\"}#{\"literal\"};\n  output: \"literal#{$input}\";\n  output: \"literal#{literal}\";\n  output: \"literal#{\"literal\"}\";\n  output: \"#{$input}literal\";\n  output: \"#{$input}#{$input}\";\n  output: \"#{$input}#{literal}\";\n  output: \"#{$input}#{\"literal\"}\";\n  output: \"#{literal}literal\";\n  output: \"#{literal}#{$input}\";\n  output: \"#{literal}#{literal}\";\n  output: \"#{literal}#{\"literal\"}\";\n  output: \"#{\"literal\"}literal\";\n  output: \"#{\"literal\"}#{$input}\";\n  output: \"#{\"literal\"}#{literal}\";\n  output: \"#{\"literal\"}#{\"literal\"}\";\n}"
+        )
+        .unwrap(),
+        ".result {\n  output: literal literal;\n  output: literalliteral;\n  output: literalliteral;\n  output: literalliteral;\n  output: literal literal;\n  output: literal literal;\n  output: literal literal;\n  output: literal literal;\n  output: literalliteral;\n  output: literal literal;\n  output: literalliteral;\n  output: literalliteral;\n  output: literalliteral;\n  output: literalliteral;\n  output: literal literal;\n  output: literalliteral;\n  output: literalliteral;\n  output: literalliteral;\n  output: literalliteral;\n  output: literal literal;\n  output: literalliteral;\n  output: literalliteral;\n  output: literalliteral;\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n  output: \"literalliteral\";\n}\n"
+    );
+}

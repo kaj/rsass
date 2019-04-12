@@ -5,24 +5,69 @@ use super::rsass;
 use rsass::set_precision;
 
 // From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/01_inline.hrx"
-
-// Ignoring "t01_inline", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn t01_inline() {
+    assert_eq!(
+        rsass(
+            ".result {\n  output: \\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z;\n  output: #{\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z};\n  output: \"[#{\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z}]\";\n  output: \"#{\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z}\";\n  output: \'#{\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z}\';\n  output: \"[\'#{\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z}\']\";\n}\n"
+        )
+        .unwrap(),
+        ".result {\n  output: \\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz;\n  output: \\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz;\n  output: \"[\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz]\";\n  output: \"\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\";\n  output: \"\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\";\n  output: \"[\'\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\']\";\n}\n"
+    );
+}
 
 // From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/02_variable.hrx"
-
-// Ignoring "t02_variable", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn t02_variable() {
+    assert_eq!(
+        rsass(
+            "$input: \\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z;\n.result {\n  output: $input;\n  output: #{$input};\n  output: \"[#{$input}]\";\n  output: \"#{$input}\";\n  output: \'#{$input}\';\n  output: \"[\'#{$input}\']\";\n}\n"
+        )
+        .unwrap(),
+        ".result {\n  output: \\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz;\n  output: \\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz;\n  output: \"[\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz]\";\n  output: \"\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\";\n  output: \"\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\";\n  output: \"[\'\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\']\";\n}\n"
+    );
+}
 
 // From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/03_inline_double.hrx"
-
-// Ignoring "t03_inline_double", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn t03_inline_double() {
+    assert_eq!(
+        rsass(
+            ".result {\n  output: #{#{\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z}};\n  output: #{\"[#{\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z}]\"};\n  output: #{\"#{\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z}\"};\n  output: #{\'#{\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z}\'};\n  output: #{\"[\'#{\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z}\']\"};\n}\n"
+        )
+        .unwrap(),
+        ".result {\n  output: \\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz;\n  output: [\\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz];\n  output: \\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz;\n  output: \\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz;\n  output: [\'\\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz\'];\n}\n"
+    );
+}
 
 // From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/04_variable_double.hrx"
-
-// Ignoring "t04_variable_double", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn t04_variable_double() {
+    assert_eq!(
+        rsass(
+            "$input: \\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z;\n.result {\n  output: #{#{$input}};\n  output: #{\"[#{$input}]\"};\n  output: #{\"#{$input}\"};\n  output: #{\'#{$input}\'};\n  output: #{\"[\'#{$input}\']\"};\n}\n"
+        )
+        .unwrap(),
+        ".result {\n  output: \\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz;\n  output: [\\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz];\n  output: \\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz;\n  output: \\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz;\n  output: [\'\\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz\'];\n}\n"
+    );
+}
 
 // From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/05_variable_quoted_double.hrx"
-
-// Ignoring "t05_variable_quoted_double", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn t05_variable_quoted_double() {
+    assert_eq!(
+        rsass(
+            "$input: \\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z;\n.result {\n  dquoted: \"#{#{$input}}\";\n  dquoted: \"#{\"[#{$input}]\"}\";\n  dquoted: \"#{\"#{$input}\"}\";\n  dquoted: \"#{\'#{$input}\'}\";\n  dquoted: \"#{\"[\'#{$input}\']\"}\";\n  squoted: \'#{#{$input}}\';\n  squoted: \'#{\"[#{$input}]\"}\';\n  squoted: \'#{\"#{$input}\"}\';\n  squoted: \'#{\'#{$input}\'}\';\n  squoted: \'#{\"[\'#{$input}\']\"}\';\n}\n"
+        )
+        .unwrap(),
+        ".result {\n  dquoted: \"\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\";\n  dquoted: \"[\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz]\";\n  dquoted: \"\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\";\n  dquoted: \"\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\";\n  dquoted: \"[\'\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\']\";\n  squoted: \"\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\";\n  squoted: \"[\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz]\";\n  squoted: \"\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\";\n  squoted: \"\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\";\n  squoted: \"[\'\\\\b \\\\c \\\\d \\\\e \\\\f ghijklmnopqrstuvwxyz\']\";\n}\n"
+    );
+}
 
 // From "sass-spec/spec/parser/interpolate/17_escapes_literal_lowercase/06_escape_interpolation.hrx"
 #[test]

@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/mixin"
-//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
+//! version e58d9b74, 2019-04-12 03:40:58 +0200.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 

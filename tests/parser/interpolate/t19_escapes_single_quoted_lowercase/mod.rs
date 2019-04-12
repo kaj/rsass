@@ -65,5 +65,14 @@ fn t05_variable_quoted_double() {
 }
 
 // From "sass-spec/spec/parser/interpolate/19_escapes_single_quoted_lowercase/06_escape_interpolation.hrx"
-
-// Ignoring "t06_escape_interpolation", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn t06_escape_interpolation() {
+    assert_eq!(
+        rsass(
+            "$input: \'\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z\';\n.result {\n  output: \"[\\#{\'\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z\'}]\";\n  output: \"\\#{\'\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z\'}\";\n  output: \'\\#{\'\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z\'}\';\n  output: \"[\'\\#{\'\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z\'}\']\";\n}\n"
+        )
+        .unwrap(),
+        ".result {\n  output: \"[\\#{\'\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z\'}]\";\n  output: \"\\#{\'\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z\'}\";\n  output: \"#{\" \\b \\c \\d \\e \\f ghijklmnopqrstuvwxyz \"}\";\n  output: \"[\'\\#{\'\\b\\c\\d\\e\\f\\g\\h\\i\\j\\k\\l\\m\\n\\o\\p\\q\\r\\s\\t\\u\\v\\w\\x\\y\\z\'}\']\";\n}\n"
+    );
+}

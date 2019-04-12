@@ -23,18 +23,6 @@ mod division;
 
 mod logic_eq;
 
-mod logic_ge;
-
-mod logic_gt;
-
-mod logic_le;
-
-mod logic_lt;
-
 mod logic_ne;
-
-mod modulo;
-
-mod multiply;
 
 mod subtract;

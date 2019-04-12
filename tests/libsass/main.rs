@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass"
-//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
+//! version e58d9b74, 2019-04-12 03:40:58 +0200.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["Sa\u{301}ss-UT\u{327}F8.hrx", "bourbon.hrx", "base-level-parent/imported", "selector-functions/is_superselector", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "debug-directive-nested/function.hrx", "warn-directive-nested/function.hrx"]
@@ -27,10 +27,6 @@ fn arg_eval() {
         "div {\n  content: foobar(3 3/4 11, orange);\n  content: 3 2/3 11 orange;\n  content: 3 2/3 11;\n  content: number;\n  content: color;\n  content: 3 3/4 11;\n  bar-content: 0.75;\n}\n"
     );
 }
-
-// From "sass-spec/spec/libsass/arithmetic.hrx"
-
-// Ignoring "arithmetic", end_version is 3.5.
 
 mod at_error;
 
@@ -95,10 +91,6 @@ fn charset() {
 }
 
 mod color_functions;
-
-// From "sass-spec/spec/libsass/color-names.hrx"
-
-// Ignoring "color_names", end_version is 3.5.
 
 // From "sass-spec/spec/libsass/conversions.hrx"
 #[test]
@@ -267,25 +259,26 @@ fn inh() {
     );
 }
 
-// From "sass-spec/spec/libsass/inheritance.hrx"
-
-// Ignoring "inheritance", end_version is 3.5.
-
-// From "sass-spec/spec/libsass/interpolated-function-call-4.0.hrx"
-
-// Ignoring "interpolated_function_call_4_0", start_version is 4.0.
-
 // From "sass-spec/spec/libsass/interpolated-function-call.hrx"
-
-// Ignoring "interpolated_function_call", end_version is 3.5.
-
-// From "sass-spec/spec/libsass/interpolated-urls-4.0.hrx"
-
-// Ignoring "interpolated_urls_4_0", start_version is 4.0.
+#[test]
+fn interpolated_function_call() {
+    assert_eq!(
+        rsass("$f: foo;\n\ndiv {\n  color: #{$f}(a, 1+2, c);\n}").unwrap(),
+        "div {\n  color: foo(a, 3, c);\n}\n"
+    );
+}
 
 // From "sass-spec/spec/libsass/interpolated-urls.hrx"
-
-// Ignoring "interpolated_urls", end_version is 3.5.
+#[test]
+fn interpolated_urls() {
+    assert_eq!(
+        rsass(
+            "$base_url: \"/static_loc/\";\ndiv {\n  background-image: \"url(\"#{$base_url}\"img/beta.png)\";\n}\n\nspan {\n  background-image: url(#{$base_url}img/beta.png);\n}\n\nfudge {\n  walnuts: blix\"fludge\"#{hey now}123;\n}"
+        )
+        .unwrap(),
+        "div {\n  background-image: \"url(\" /static_loc/ \"img/beta.png)\";\n}\nspan {\n  background-image: url(/static_loc/img/beta.png);\n}\nfudge {\n  walnuts: blix \"fludge\" hey now123;\n}\n"
+    );
+}
 
 // From "sass-spec/spec/libsass/keyframes.hrx"
 #[test]
@@ -443,8 +436,17 @@ fn properties_in_media() {
 }
 
 // From "sass-spec/spec/libsass/propsets.hrx"
-
-// Ignoring "propsets", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn propsets() {
+    assert_eq!(
+        rsass(
+            "$x: ground;\n$y: e;\n$z: it;\n\ndiv {\n  back#{$x}: {\n    imag#{$y}: url(foo.png);\n    pos#{$z}ion: 50%;\n  }\n}\n\nspan {\n  background: {\n    image: url(bar.png);\n    position: 100%;\n  }\n}\n\np {\n  border: {\n    upper: {\n      left: 2px;\n      right: 3px;\n    }\n  }\n}\n\n@warn 2 + 3;\n\n/* 2 + 3 */\n/* #{2 + 3} */\n\nfoo|div {\n  color: red;\n}\n\n$-hey : hey;\n\ndiv sp\\ ,#abcan {\n  color: red;\n  p, |q {\n    background: blue;\n    color: \\hey;\n    width: \\10 + \\20 \\ ;\n    a {\n      height: 1;\n    }\n  }\n}\n\nd\\ v, sp\\ n {\n  a {\n    color: blue;\n  }\n}"
+        )
+        .unwrap(),
+        "div {\n  background-image: url(foo.png);\n  background-position: 50%;\n}\nspan {\n  background-image: url(bar.png);\n  background-position: 100%;\n}\np {\n  border-upper-left: 2px;\n  border-upper-right: 3px;\n}\n/* 2 + 3 */\n/* 5 */\nfoo|div {\n  color: red;\n}\ndiv sp\\ , #abcan {\n  color: red;\n}\ndiv sp\\  p, div sp\\  |q, #abcan p, #abcan |q {\n  background: blue;\n  color: hey;\n  width: \\10 \\ \\ ;\n}\ndiv sp\\  p a, div sp\\  |q a, #abcan p a, #abcan |q a {\n  height: 1;\n}\nd\\ v a, sp\\ n a {\n  color: blue;\n}\n"
+    );
+}
 
 // From "sass-spec/spec/libsass/rel.hrx"
 #[test]

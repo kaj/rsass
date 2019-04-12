@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/basic"
-//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
+//! version e58d9b74, 2019-04-12 03:40:58 +0200.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["14_imports.hrx", "33_ambiguous_imports.hrx"]
@@ -173,10 +173,6 @@ fn t15_arithmetic_and_lists() {
     );
 }
 
-// From "sass-spec/spec/basic/16_hex_arithmetic.hrx"
-
-// Ignoring "t16_hex_arithmetic", end_version is 3.5.
-
 // From "sass-spec/spec/basic/17_basic_mixins.hrx"
 #[test]
 fn t17_basic_mixins() {
@@ -249,13 +245,17 @@ fn t22_colors_with_alpha() {
     );
 }
 
-// From "sass-spec/spec/basic/23_basic_value_interpolation-4.0.hrx"
-
-// Ignoring "t23_basic_value_interpolation_4_0", start_version is 4.0.
-
 // From "sass-spec/spec/basic/23_basic_value_interpolation.hrx"
-
-// Ignoring "t23_basic_value_interpolation", end_version is 3.5.
+#[test]
+fn t23_basic_value_interpolation() {
+    assert_eq!(
+        rsass(
+            "div {\n  a: hello#{world};\n  a: hello #{world};\n  b: 12#{3};\n  b: type-of(12#{3});\n  b: #{12 + 111};\n  b: type-of(#{12 + 111});\n}"
+        )
+        .unwrap(),
+        "div {\n  a: helloworld;\n  a: hello world;\n  b: 12 3;\n  b: list;\n  b: 123;\n  b: string;\n}\n"
+    );
+}
 
 // From "sass-spec/spec/basic/24_namespace_properties.hrx"
 #[test]
@@ -563,8 +563,17 @@ fn t52_interchangeable_hyphens_underscores() {
 }
 
 // From "sass-spec/spec/basic/53_escaped_quotes"
-
-// Ignoring "t53_escaped_quotes", start_version is 3.7.
+#[test]
+#[ignore] // failing
+fn t53_escaped_quotes() {
+    assert_eq!(
+        rsass(
+            "[data-icon=\'test-1\']:before {\n    content:\'\\\\\';\n}\n\n[data-icon=\'test-2\']:before {\n    content:\'\\\'\';\n}\n\n[data-icon=\'test-3\']:before {\n    content:\"\\\"\";\n}\n\n[data-icon=\'test-4\']:before {\n    content:\'\\\\\';\n}\n\n[data-icon=\'test-5\']:before {\n    content:\'\\\'\';\n}\n\n[data-icon=\'test-6\']:before {\n    content:\"\\\"\";\n}\n\n$open-quote:    «;\n$close-quote:   »;\n\n$open-quote: \\201C;\n$close-quote: \\201D;\n\n.\\E9motion { \nblah: hi; }\n.\\E9 dition { \nblah: hi; }\n.\\0000E9dition { \nblah: hi; }"
+        )
+        .unwrap(),
+        "@charset \"UTF-8\";\n[data-icon=\'test-1\']:before {\n  content: \'\\\\\';\n}\n[data-icon=\'test-2\']:before {\n  content: \'\\\'\';\n}\n[data-icon=\'test-3\']:before {\n  content: \"\\\"\";\n}\n[data-icon=\'test-4\']:before {\n  content: \'\\\\\';\n}\n[data-icon=\'test-5\']:before {\n  content: \'\\\'\';\n}\n[data-icon=\'test-6\']:before {\n  content: \"\\\"\";\n}\n.émotion {\n  blah: hi;\n}\n.édition {\n  blah: hi;\n}\n.édition {\n  blah: hi;\n}\n"
+    );
+}
 
 // From "sass-spec/spec/basic/54_adjacent_identifiers_with_hyphens.hrx"
 #[test]

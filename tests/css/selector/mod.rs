@@ -8,7 +8,7 @@ mod attribute;
 
 // From "sass-spec/spec/css/selector/reference_combinator.hrx"
 
-// Ignoring "reference_combinator", start_version is 4.0.
+// Ignoring "reference_combinator", error tests are not supported yet.
 
 // From "sass-spec/spec/css/selector/slotted.hrx"
 #[test]

@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/scss-tests"
-//! version 499ca9a2, 2019-04-10 19:00:12 -0700.
+//! version e58d9b74, 2019-04-12 03:40:58 +0200.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
@@ -992,10 +992,6 @@ fn t116_test_selector_interpolation_at_dashes() {
         "div {\n  -foo-a-b-foo: foo;\n}\n"
     );
 }
-
-// From "sass-spec/spec/scss-tests/117_test_selector_interpolation_in_reference_combinator.hrx"
-
-// Ignoring "t117_test_selector_interpolation_in_reference_combinator", end_version is 3.5.
 
 // From "sass-spec/spec/scss-tests/119_test_basic_prop_name_interpolation.hrx"
 #[test]

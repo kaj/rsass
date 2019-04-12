@@ -64,10 +64,14 @@ fn t05_variable_quoted_double() {
     );
 }
 
-// From "sass-spec/spec/parser/interpolate/30_base_test/06_escape_interpolation-4.0.hrx"
-
-// Ignoring "t06_escape_interpolation_4_0", start_version is 4.0.
-
 // From "sass-spec/spec/parser/interpolate/30_base_test/06_escape_interpolation.hrx"
-
-// Ignoring "t06_escape_interpolation", end_version is 3.5.
+#[test]
+fn t06_escape_interpolation() {
+    assert_eq!(
+        rsass(
+            "$input: \"foo#{\'ba\' + \'r\'}baz\";\n.result {\n  output: \"[\\#{\"foo#{\'ba\' + \'r\'}baz\"}]\";\n  output: \"\\#{\"foo#{\'ba\' + \'r\'}baz\"}\";\n  output: \'\\#{\"foo#{\'ba\' + \'r\'}baz\"}\';\n  output: \"[\'\\#{\"foo#{\'ba\' + \'r\'}baz\"}\']\";\n}\n"
+        )
+        .unwrap(),
+        ".result {\n  output: \"[#{\" foobarbaz \"}]\";\n  output: \"#{\" foobarbaz \"}\";\n  output: \'#{\"foobarbaz\"}\';\n  output: \"[\'#{\" foobarbaz \"}\']\";\n}\n"
+    );
+}

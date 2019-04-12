@@ -16,7 +16,7 @@ mod four_args {
         #[allow(unused)]
         use super::rsass;
 
-        // Ignoring "test_type", start_version is 3.7.
+        // Ignoring "test_type", error tests are not supported yet.
     }
     mod hue {
         #[allow(unused)]

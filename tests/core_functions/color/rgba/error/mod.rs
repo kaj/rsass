@@ -16,7 +16,7 @@ mod four_args {
         #[allow(unused)]
         use super::rsass;
 
-        // Ignoring "unit", start_version is 3.7.
+        // Ignoring "unit", error tests are not supported yet.
     }
     mod blue {
         #[allow(unused)]
@@ -106,7 +106,7 @@ mod two_args {
 
         // Ignoring "test_type", error tests are not supported yet.
 
-        // Ignoring "unit", start_version is 3.7.
+        // Ignoring "unit", error tests are not supported yet.
     }
     mod color {
         #[allow(unused)]
