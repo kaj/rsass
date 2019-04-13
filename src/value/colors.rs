@@ -92,6 +92,8 @@ impl Rgba {
         }
     }
     pub fn from_name(name: &str) -> Option<Self> {
+        let name = name.to_lowercase();
+        let name: &str = &name;
         if name == "transparent" {
             return Some(Self::from_rgba(0, 0, 0, 0));
         }
