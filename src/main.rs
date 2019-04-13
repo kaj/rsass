@@ -8,6 +8,7 @@ fn main() {
         .version(env!("CARGO_PKG_VERSION"))
         .author("Rasmus Kaj <rasmus@krats.se>")
         .about("Transform sass to css.")
+        .version_short("v")
         .arg(
             Arg::with_name("PRECISION")
                 .long("precision")
