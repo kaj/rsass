@@ -159,7 +159,6 @@ mod selector {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
             fn after_string() {
                 assert_eq!(
                     rsass("[a=\"b\"i] {c: d}\n").unwrap(),
@@ -167,7 +166,6 @@ mod selector {
                 );
             }
             #[test]
-            #[ignore] // failing
             fn caps() {
                 assert_eq!(
                     rsass("[a=b I] {c: d}\n").unwrap(),
@@ -175,7 +173,6 @@ mod selector {
                 );
             }
             #[test]
-            #[ignore] // failing
             fn unknown() {
                 assert_eq!(
         rsass(

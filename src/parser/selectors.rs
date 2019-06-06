@@ -51,11 +51,16 @@ named!(selector_part<Input, SelectorPart>,
                      val: alt_complete!(sass_string_dq | sass_string_sq |
                                         sass_string) >>
                      opt_spacelike >>
+                     modifier: opt!(terminated!(
+                         one_of!("ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                                  abcdefghijklmnopqrstuvwxyz"),
+                         opt_spacelike)) >>
                      tag!("]") >>
                      (SelectorPart::Attribute {
                          name,
                          op,
                          val,
+                         modifier
                      })) |
            do_parse!(tag!("[") >> opt_spacelike >>
                      name: sass_string >> opt_spacelike >>
@@ -64,6 +69,7 @@ named!(selector_part<Input, SelectorPart>,
                          name,
                          op: "".to_string(),
                          val: "".into(),
+                         modifier: None,
                      })) |
            value!(SelectorPart::BackRef, tag!("&")) |
            delimited!(opt_spacelike,
@@ -145,6 +151,7 @@ mod test {
                         vec![StringPart::Raw("test-1".into())],
                         Quotes::Single,
                     ),
+                    modifier: None,
                 }])
             ))
         )

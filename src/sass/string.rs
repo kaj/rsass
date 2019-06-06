@@ -96,6 +96,17 @@ impl SassString {
             quotes,
         })
     }
+    pub fn evaluate_opt_unquote(
+        &self,
+        scope: &Scope,
+    ) -> Result<SassString, Error> {
+        let (result, quotes) = self.evaluate(scope)?;
+        let t = quotes == Quotes::Double;
+        Ok(SassString {
+            parts: vec![StringPart::Raw(result)],
+            quotes: if t { Quotes::None } else { quotes },
+        })
+    }
     pub fn is_unquoted(&self) -> bool {
         self.quotes == Quotes::None
     }

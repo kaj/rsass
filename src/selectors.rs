@@ -133,6 +133,7 @@ pub enum SelectorPart {
         name: SassString,
         op: String,
         val: SassString,
+        modifier: Option<char>,
     },
     /// A css3 pseudo-element (::foo)
     PseudoElement {
@@ -214,7 +215,15 @@ impl fmt::Display for SelectorPart {
                 ref name,
                 ref op,
                 ref val,
-            } => write!(out, "[{}{}{}]", name, op, val),
+                ref modifier,
+            } => write!(
+                out,
+                "[{}{}{}{}]",
+                name,
+                op,
+                val,
+                modifier.map(|m| format!(" {}", m)).unwrap_or_default()
+            ),
             SelectorPart::PseudoElement { ref name, ref arg } => {
                 write!(out, "::{}", name)?;
                 if let Some(ref arg) = *arg {
