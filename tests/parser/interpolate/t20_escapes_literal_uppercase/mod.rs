@@ -6,7 +6,6 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/parser/interpolate/20_escapes_literal_uppercase/01_inline.hrx"
 #[test]
-#[ignore] // failing
 fn t01_inline() {
     assert_eq!(
         rsass(
@@ -19,7 +18,6 @@ fn t01_inline() {
 
 // From "sass-spec/spec/parser/interpolate/20_escapes_literal_uppercase/02_variable.hrx"
 #[test]
-#[ignore] // failing
 fn t02_variable() {
     assert_eq!(
         rsass(
@@ -32,7 +30,6 @@ fn t02_variable() {
 
 // From "sass-spec/spec/parser/interpolate/20_escapes_literal_uppercase/03_inline_double.hrx"
 #[test]
-#[ignore] // failing
 fn t03_inline_double() {
     assert_eq!(
         rsass(
@@ -45,7 +42,6 @@ fn t03_inline_double() {
 
 // From "sass-spec/spec/parser/interpolate/20_escapes_literal_uppercase/04_variable_double.hrx"
 #[test]
-#[ignore] // failing
 fn t04_variable_double() {
     assert_eq!(
         rsass(
@@ -58,7 +54,6 @@ fn t04_variable_double() {
 
 // From "sass-spec/spec/parser/interpolate/20_escapes_literal_uppercase/05_variable_quoted_double.hrx"
 #[test]
-#[ignore] // failing
 fn t05_variable_quoted_double() {
     assert_eq!(
         rsass(

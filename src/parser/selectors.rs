@@ -103,7 +103,7 @@ mod test {
             selector(Input(b"\\E9m ")),
             Ok((
                 Input(b""),
-                Selector(vec![SelectorPart::Simple("\\E9m".into())])
+                Selector(vec![SelectorPart::Simple("ém".into())])
             ))
         )
     }

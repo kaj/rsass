@@ -1,7 +1,7 @@
 use super::formalargs::call_args;
-use super::strings::{sass_string_dq, sass_string_ext, sass_string_sq};
+use super::strings::{name, sass_string_dq, sass_string_ext, sass_string_sq};
 use super::unit::unit;
-use super::util::{name, opt_spacelike, spacelike2};
+use super::util::{opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string};
 use crate::sass::{SassString, Value};
 use crate::value::{ListSeparator, Number, Operator, Rgba};

@@ -1,4 +1,5 @@
-use super::util::{ignore_comments, name, opt_spacelike};
+use super::strings::name;
+use super::util::{ignore_comments, opt_spacelike};
 use super::value::space_list;
 use crate::sass::{CallArgs, FormalArgs, Value};
 use nom::types::CompleteByteSlice as Input;

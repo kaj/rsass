@@ -551,7 +551,6 @@ fn hyphen_interpolated() {
 
 // From "sass-spec/spec/scss/ie-backslash.hrx"
 #[test]
-#[ignore] // failing
 fn ie_backslash() {
     assert_eq!(
         rsass("div {\n  background-color: darken(red, 10%) \\9;\n}").unwrap(),

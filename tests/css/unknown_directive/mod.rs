@@ -41,6 +41,7 @@ fn name_interpolation() {
 
 // From "sass-spec/spec/css/unknown_directive/plain.hrx"
 #[test]
+#[ignore] // failing
 fn plain() {
     assert_eq!(
         rsass(

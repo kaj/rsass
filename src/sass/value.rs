@@ -104,7 +104,7 @@ impl Value {
             Value::Bang(ref s) => Ok(css::Value::Bang(s.clone())),
             Value::Literal(ref s) => {
                 let (s, q) = s.evaluate(scope)?;
-                if s == "" && q == Quotes::None {
+                if s.is_empty() && q == Quotes::None {
                     Ok(css::Value::Null)
                 } else {
                     Ok(css::Value::Literal(s, q))
