@@ -97,21 +97,5 @@ mod three_args {
 }
 
 // From "sass-spec/spec/core_functions/color/hsl/error/two_args.hrx"
-mod two_args {
-    #[allow(unused)]
-    use super::rsass;
-    mod alpha {
-        #[allow(unused)]
-        use super::rsass;
 
-        // Ignoring "test_type", error tests are not supported yet.
-
-        // Ignoring "unit", error tests are not supported yet.
-    }
-    mod color {
-        #[allow(unused)]
-        use super::rsass;
-
-        // Ignoring "test_type", error tests are not supported yet.
-    }
-}
+// Ignoring "two_args", error tests are not supported yet.

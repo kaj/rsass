@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions"
-//! version e58d9b74, 2019-04-12 03:40:58 +0200.
+//! version 98496644, 2019-06-04 12:57:39 +0100.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
@@ -524,6 +524,17 @@ mod inspect {
         }
         #[test]
         #[ignore] // failing
+        fn nested() {
+            assert_eq!(
+        rsass(
+            "a {\n  $a: inspect([() ()]);\n  a: $a;\n  b: type-of($a);\n}\n"
+        )
+        .unwrap(),
+        "a {\n  a: [() ()];\n  b: string;\n}\n"
+    );
+        }
+        #[test]
+        #[ignore] // failing
         fn single_with_comma() {
             assert_eq!(
         rsass(
@@ -703,6 +714,8 @@ mod mixin_exists {
         );
     }
 }
+
+mod string;
 
 // From "sass-spec/spec/core_functions/variable_exists.hrx"
 mod variable_exists {

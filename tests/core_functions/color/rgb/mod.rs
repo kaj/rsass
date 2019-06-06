@@ -9,15 +9,54 @@ mod error;
 mod four_args;
 
 // From "sass-spec/spec/core_functions/color/rgb/multi_argument_var.hrx"
-#[test]
-fn multi_argument_var() {
-    assert_eq!(
+mod multi_argument_var {
+    #[allow(unused)]
+    use super::rsass;
+    #[test]
+    fn t1_of_1() {
+        assert_eq!(
+            rsass("a {b: rgb(var(--foo))}\n").unwrap(),
+            "a {\n  b: rgb(var(--foo));\n}\n"
+        );
+    }
+    #[test]
+    fn t1_of_2() {
+        assert_eq!(
+            rsass("a {b: rgb(var(--foo), 0.4)}\n").unwrap(),
+            "a {\n  b: rgb(var(--foo), 0.4);\n}\n"
+        );
+    }
+    #[test]
+    fn t1_of_3() {
+        assert_eq!(
         rsass(
-            "a {\n  // var() is substituted before parsing, so it may contain multiple arguments.\n  b: rgb(var(--foo), 3, 0.4);\n  b: rgb(1, var(--foo), 0.4);\n  b: rgb(1, 2, var(--foo));\n  b: rgb(var(--foo), 0.4);\n  b: rgb(1, var(--foo));\n  b: rgb(var(--foo));\n}\n"
+            "// var() is substituted before parsing, so it may contain multiple arguments.\na {b: rgb(var(--foo), 3, 0.4)}\n"
         )
         .unwrap(),
-        "a {\n  b: rgb(var(--foo), 3, 0.4);\n  b: rgb(1, var(--foo), 0.4);\n  b: rgb(1, 2, var(--foo));\n  b: rgb(var(--foo), 0.4);\n  b: rgb(1, var(--foo));\n  b: rgb(var(--foo));\n}\n"
+        "a {\n  b: rgb(var(--foo), 3, 0.4);\n}\n"
     );
+    }
+    #[test]
+    fn t2_of_2() {
+        assert_eq!(
+            rsass("a {b: rgb(1, var(--foo))}\n").unwrap(),
+            "a {\n  b: rgb(1, var(--foo));\n}\n"
+        );
+    }
+    #[test]
+    fn t2_of_3() {
+        assert_eq!(
+            rsass("a {b: rgb(1, var(--foo), 0.4)}\n").unwrap(),
+            "a {\n  b: rgb(1, var(--foo), 0.4);\n}\n"
+        );
+    }
+    #[test]
+    fn t3_of_3() {
+        assert_eq!(
+            rsass("a {b: rgb(1, 2, var(--foo))}\n").unwrap(),
+            "a {\n  b: rgb(1, 2, var(--foo));\n}\n"
+        );
+    }
 }
 
 mod one_arg;
@@ -25,14 +64,119 @@ mod one_arg;
 mod three_args;
 
 // From "sass-spec/spec/core_functions/color/rgb/two_args.hrx"
-#[test]
-#[ignore] // failing
-fn two_args() {
-    assert_eq!(
-        rsass(
-            "opaque-to {\n  opaque: rgb(#123, 1);\n  partial: rgb(#123, 0.5);\n  transparent: rgb(#123, 0);\n}\n\npartial-to {\n  $color: rgb(0, 0, 255, 0.3);\n  opaque: rgb($color, 1);\n  partial: rgb($color, 0.5);\n  transparent: rgb($color, 0);\n}\n\ntransparent-to {\n  opaque: rgb(transparent, 1);\n  partial: rgb(transparent, 0.5);\n  transparent: rgb(transparent, 0);\n}\n\nclamped {\n  opaque: rgb(#123, 1.1);\n  transparent: rgb(#123, -0.1);\n}\n\nnamed {\n  x: rgb($color: #123, $alpha: 0.5);\n}\n"
-        )
-        .unwrap(),
-        "opaque-to {\n  opaque: #112233;\n  partial: rgba(17, 34, 51, 0.5);\n  transparent: rgba(17, 34, 51, 0);\n}\npartial-to {\n  opaque: blue;\n  partial: rgba(0, 0, 255, 0.5);\n  transparent: rgba(0, 0, 255, 0);\n}\ntransparent-to {\n  opaque: black;\n  partial: rgba(0, 0, 0, 0.5);\n  transparent: rgba(0, 0, 0, 0);\n}\nclamped {\n  opaque: #112233;\n  transparent: rgba(17, 34, 51, 0);\n}\nnamed {\n  x: rgba(17, 34, 51, 0.5);\n}\n"
-    );
+mod two_args {
+    #[allow(unused)]
+    use super::rsass;
+    mod clamped {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // failing
+        fn opaque() {
+            assert_eq!(
+                rsass("a {b: rgb(#123, 1.1)}\n").unwrap(),
+                "a {\n  b: #112233;\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn transparent() {
+            assert_eq!(
+                rsass("a {b: rgb(#123, -0.1)}\n").unwrap(),
+                "a {\n  b: rgba(17, 34, 51, 0);\n}\n"
+            );
+        }
+    }
+    #[test]
+    #[ignore] // failing
+    fn named() {
+        assert_eq!(
+            rsass("a {b: rgb($color: #123, $alpha: 0.5)}\n").unwrap(),
+            "a {\n  b: rgba(17, 34, 51, 0.5);\n}\n"
+        );
+    }
+    mod opaque_to {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // failing
+        fn opaque() {
+            assert_eq!(
+                rsass("a {b: rgb(#123, 1)}\n").unwrap(),
+                "a {\n  b: #112233;\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn partial() {
+            assert_eq!(
+                rsass("a {b: rgb(#123, 0.5)}\n").unwrap(),
+                "a {\n  b: rgba(17, 34, 51, 0.5);\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn transparent() {
+            assert_eq!(
+                rsass("a {b: rgb(#123, 0)}\n").unwrap(),
+                "a {\n  b: rgba(17, 34, 51, 0);\n}\n"
+            );
+        }
+    }
+    mod partial_to {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // failing
+        fn opaque() {
+            assert_eq!(
+                rsass("a {b: rgb(rgba(0, 0, 255, 0.3), 1)}\n").unwrap(),
+                "a {\n  b: blue;\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn partial() {
+            assert_eq!(
+                rsass("a {b: rgb(rgba(0, 0, 255, 0.3), 0.5)}\n").unwrap(),
+                "a {\n  b: rgba(0, 0, 255, 0.5);\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn transparent() {
+            assert_eq!(
+                rsass("a {b: rgb(rgba(0, 0, 255, 0.3), 0)}\n").unwrap(),
+                "a {\n  b: rgba(0, 0, 255, 0);\n}\n"
+            );
+        }
+    }
+    mod transparent_to {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // failing
+        fn opaque() {
+            assert_eq!(
+                rsass("a {b: rgb(transparent, 1)}\n").unwrap(),
+                "a {\n  b: black;\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn partial() {
+            assert_eq!(
+                rsass("a {b: rgb(transparent, 0.5)}\n").unwrap(),
+                "a {\n  b: rgba(0, 0, 0, 0.5);\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn transparent() {
+            assert_eq!(
+                rsass("a {b: rgb(transparent, 0)}\n").unwrap(),
+                "a {\n  b: rgba(0, 0, 0, 0);\n}\n"
+            );
+        }
+    }
 }

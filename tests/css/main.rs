@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css"
-//! version e58d9b74, 2019-04-12 03:40:58 +0200.
+//! version 98496644, 2019-06-04 12:57:39 +0100.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["plain"]
@@ -138,11 +138,121 @@ fn ms_long_filter_syntax() {
 
 // Ignoring "plain", not expected to work yet.
 
-mod selector;
+// From "sass-spec/spec/css/selector.hrx"
+mod selector {
+    #[allow(unused)]
+    use super::rsass;
+    mod attribute {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        fn dash_dash() {
+            assert_eq!(
+        rsass(
+            "// Attribute selector values are allowed to be unquoted as long as they\'re plain\n// CSS identifiers. However, IE 11 doesn\'t recognize custom-property-style\n// identifiers like `--foo` as identifiers, so they should always be quoted.\n\n[class=\"--foo\"], [class*=\"--foo\"] {\n  x: y;\n}\n"
+        )
+        .unwrap(),
+        "[class=\"--foo\"], [class*=\"--foo\"] {\n  x: y;\n}\n"
+    );
+        }
+        mod modifier {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            #[ignore] // failing
+            fn after_string() {
+                assert_eq!(
+                    rsass("[a=\"b\"i] {c: d}\n").unwrap(),
+                    "[a=b i] {\n  c: d;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn caps() {
+                assert_eq!(
+                    rsass("[a=b I] {c: d}\n").unwrap(),
+                    "[a=b I] {\n  c: d;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn unknown() {
+                assert_eq!(
+        rsass(
+            "// At time of writing, only the modifiers \"i\" and \"s\" are allowed by the CSS\n// spec. However, for forwards-compatibility with future CSS additions, any\n// single character should be allowed.\n[a=b c] {d: e}\n"
+        )
+        .unwrap(),
+        "[a=b c] {\n  d: e;\n}\n"
+    );
+            }
+        }
+    }
+    mod error {
+        #[allow(unused)]
+        use super::rsass;
+        mod attribute {
+            #[allow(unused)]
+            use super::rsass;
+            mod modifier {
+                #[allow(unused)]
+                use super::rsass;
+
+                // Ignoring "digit", error tests are not supported yet.
+
+                // Ignoring "no_operator", error tests are not supported yet.
+
+                // Ignoring "too_long", error tests are not supported yet.
+
+                // Ignoring "underscore", error tests are not supported yet.
+
+                // Ignoring "unicode", error tests are not supported yet.
+            }
+        }
+    }
+
+    // Ignoring "reference_combinator", error tests are not supported yet.
+    #[test]
+    #[ignore] // failing
+    fn slotted() {
+        assert_eq!(
+        rsass(
+            "::slotted(.a) {x: y}\n\n::slotted(.c.d) {x: y}\n.e {@extend .c}\n\n::slotted(.f) {x: y}\n::slotted(.g) {@extend .f}\n"
+        )
+        .unwrap(),
+        "::slotted(.a) {\n  x: y;\n}\n::slotted(.c.d, .d.e) {\n  x: y;\n}\n::slotted(.f, ::slotted(.g)) {\n  x: y;\n}\n"
+    );
+    }
+}
 
 mod unicode_range;
 
 mod unknown_directive;
+
+// From "sass-spec/spec/css/url.hrx"
+mod url {
+    #[allow(unused)]
+    use super::rsass;
+    mod exclam {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // failing
+        fn middle() {
+            assert_eq!(
+                rsass("a {b: url(http://c.d/e!f)}\n").unwrap(),
+                "a {\n  b: url(http://c.d/e!f);\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn only() {
+            assert_eq!(
+                rsass("a {b: url(!)}\n").unwrap(),
+                "a {\n  b: url(!);\n}\n"
+            );
+        }
+    }
+}
 
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)
