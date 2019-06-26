@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass"
-//! version 98496644, 2019-06-04 12:57:39 +0100.
+//! version 7071a548, 2019-06-24 16:40:39 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["Sa\u{301}ss-UT\u{327}F8.hrx", "bourbon.hrx", "base-level-parent/imported", "selector-functions/is_superselector", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "debug-directive-nested/function.hrx", "warn-directive-nested/function.hrx"]
@@ -150,7 +150,7 @@ fn delayed() {
             "$x: a 3/4 b;\n$y: hey;\n\n@function foo() {\n  @return 3/4;\n}\n\ndiv {\n  hoo: 3/4;\n  goo: nth($x, 2);\n  foo: 15 / nth($x, 2);\n  foo: .25 + nth($x, 2);\n  coo: 2/3 / nth($x, 2);\n  bar: $y and true;\n  bar: false and true;\n  bar: (false) and true;\n  @each $elem in $x {\n    blah: $elem;\n  }\n  bloo: foo();\n  @warn 2/3;\n  blix: \"hey #{nth($x, 2)} ho\";\n}\n\n@media screen and (hux: 3/4) {\n  div {\n    color: red;\n  }\n}\n\n@warn \"blah blah\";\n\ndiv {\n  blah: \"ho #{nth($x, 2) } ho\";\n}\n\nspan {\n  fludge: (true and 3/4);\n}"
         )
         .unwrap(),
-        "div {\n  hoo: 3/4;\n  goo: 0.75;\n  foo: 20;\n  foo: 1;\n  coo: 0.8888888889;\n  bar: true;\n  bar: false and true;\n  bar: false;\n  blah: a;\n  blah: 0.75;\n  blah: b;\n  bloo: 0.75;\n  blix: \"hey 0.75 ho\";\n}\n@media screen and (hux: 3 / 4) {\n  div {\n    color: red;\n  }\n}\ndiv {\n  blah: \"ho 0.75 ho\";\n}\nspan {\n  fludge: 0.75;\n}\n"
+        "div {\n  hoo: 3/4;\n  goo: 0.75;\n  foo: 20;\n  foo: 1;\n  coo: 0.8888888889;\n  bar: true;\n  bar: false;\n  bar: false;\n  blah: a;\n  blah: 0.75;\n  blah: b;\n  bloo: 0.75;\n  blix: \"hey 0.75 ho\";\n}\n@media screen and (hux: 3/4) {\n  div {\n    color: red;\n  }\n}\ndiv {\n  blah: \"ho 0.75 ho\";\n}\nspan {\n  fludge: 0.75;\n}\n"
     );
 }
 
@@ -195,18 +195,6 @@ fn eq() {
 mod error_directive_nested;
 
 mod features;
-
-// From "sass-spec/spec/libsass/filter-functions.hrx"
-#[test]
-fn filter_functions() {
-    assert_eq!(
-        rsass(
-            "div {\n  hoo: grayscale(0.3) grayscale(200%);\n  moo: opacity(0.3) opacity(200%);\n  poo: invert(0.3) invert(200%);\n  goo: saturate(0.3) saturate(200%);\n}\n"
-        )
-        .unwrap(),
-        "div {\n  hoo: grayscale(0.3) grayscale(200%);\n  moo: opacity(0.3) opacity(200%);\n  poo: invert(0.3) invert(200%);\n  goo: saturate(0.3) saturate(200%);\n}\n"
-    );
-}
 
 // From "sass-spec/spec/libsass/http_import.hrx"
 #[test]
@@ -461,18 +449,6 @@ fn rel() {
     );
 }
 
-// From "sass-spec/spec/libsass/scale.hrx"
-#[test]
-fn scale() {
-    assert_eq!(
-        rsass(
-            "div {\n  color: scale-color(red, $red: -23%);\n  color: scale-color(hsl(120, 70, 80), $lightness: 50%);\n  color: scale-color(rgb(200, 150, 170), $green: -40%, $blue: 70%);\n  color: scale-color(hsl(200, 70, 80), $saturation: -90%, $alpha: 10%);\n  blah: #d4f7d4;\n}"
-        )
-        .unwrap(),
-        "div {\n  color: #c40000;\n  color: #d4f7d4;\n  color: #c85ae6;\n  color: #c8cdd0;\n  blah: #d4f7d4;\n}\n"
-    );
-}
-
 mod selector_functions;
 
 // From "sass-spec/spec/libsass/selector_interpolation_in_string.hrx"
@@ -513,18 +489,6 @@ fn unary_ops() {
 }
 
 mod unicode_bom;
-
-// From "sass-spec/spec/libsass/unitless.hrx"
-#[test]
-fn unitless() {
-    assert_eq!(
-        rsass(
-            "div {\n  hoo: unitless(42);\n  hee: unitless(42px);\n  foo: unitless(3.14in);\n}"
-        )
-        .unwrap(),
-        "div {\n  hoo: true;\n  hee: false;\n  foo: false;\n}\n"
-    );
-}
 
 mod units;
 

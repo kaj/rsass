@@ -49,7 +49,6 @@ fn main() -> Result<(), Error> {
     )?;
     handle_suite(&base, "misc", &[])?;
     handle_suite(&base, "mixin", &[])?;
-    handle_suite(&base, "number-functions", &[])?;
     handle_suite(&base, "parser", &[])?;
     handle_suite(
         &base,

@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/scss"
-//! version 98496644, 2019-06-04 12:57:39 +0100.
+//! version 7071a548, 2019-06-24 16:40:39 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["multiline-var.hrx", "mixin-content.hrx", "huge.hrx"]
@@ -177,19 +177,6 @@ fn comment_after_if_directive() {
         )
         .unwrap(),
         "foo {\n  a: b;\n  /* This is a comment */\n  c: d;\n}\n"
-    );
-}
-
-// From "sass-spec/spec/scss/comparable.hrx"
-#[test]
-#[ignore] // failing
-fn comparable() {
-    assert_eq!(
-        rsass(
-            ".color-functions {\n  $color: red;\n  hue: hue($color);\n  hue-type: type-of(hue($color));\n  hue-unit: unit(hue($color));\n  hue-comparable: comparable(hue($color), hue($color));\n  x: comparable(10fu, 10fu);\n  x: comparable(10px, 10px);\n  x: comparable(10, 10);\n  y: type-of(10px);\n  y: type-of(10deg);\n  z: lightness(red);\n  z: type-of(lightness(red));\n  z: type-of(50%);\n  z: comparable(lightness(red), 50%);\n}"
-        )
-        .unwrap(),
-        ".color-functions {\n  hue: 0deg;\n  hue-type: number;\n  hue-unit: \"deg\";\n  hue-comparable: true;\n  x: true;\n  x: true;\n  x: true;\n  y: number;\n  y: number;\n  z: 50%;\n  z: number;\n  z: number;\n  z: true;\n}\n"
     );
 }
 
@@ -585,18 +572,6 @@ fn ie_functions() {
     );
 }
 
-// From "sass-spec/spec/scss/ie-hex-str.hrx"
-#[test]
-fn ie_hex_str() {
-    assert_eq!(
-        rsass(
-            "div {\n  blah: foo + \"bar\";\n  color: ie-hex-str(red) + \"bar\";\n  color: \"foo \" + ie-hex-str(brown);\n}"
-        )
-        .unwrap(),
-        "div {\n  blah: foobar;\n  color: #FFFF0000bar;\n  color: \"foo #FFA52A2A\";\n}\n"
-    );
-}
-
 // From "sass-spec/spec/scss/if-in-mixin.hrx"
 #[test]
 fn if_in_mixin() {
@@ -777,18 +752,6 @@ fn long_selector() {
 }
 
 mod media;
-
-// From "sass-spec/spec/scss/mix.hrx"
-#[test]
-fn mix() {
-    assert_eq!(
-        rsass(
-            "div {\n  roo: mix(#f00, #00f);\n  doo: mix(#f00, #00f, 25%); \n}"
-        )
-        .unwrap(),
-        "div {\n  roo: purple;\n  doo: #4000bf;\n}\n"
-    );
-}
 
 // From "sass-spec/spec/scss/mixin-content-selectors.hrx"
 #[test]
@@ -1086,7 +1049,7 @@ fn placeholder() {
             "%x {\n  color: red;\n}\n\nfoo {\n  width: 10px;\n  @extend %x;\n}\n\nhux {\n  height: 12px;\n  @extend %x;\n}"
         )
         .unwrap(),
-        "foo, hux {\n  color: red;\n}\nfoo {\n  width: 10px;\n}\nhux {\n  height: 12px;\n}\n"
+        "hux, foo {\n  color: red;\n}\nfoo {\n  width: 10px;\n}\nhux {\n  height: 12px;\n}\n"
     );
 }
 
@@ -1233,7 +1196,7 @@ fn simple_inheritance() {
             "earth {\n  mammal, bird {\n    blood: warm;\n  }\n}\n\nearth {\n  mammal {\n    produces-milk: true;\n  }\n}\n\n@mixin mammal-says($message) {\n  @extend mammal;\n  says: $message;\n}\n\ndog {\n  @include mammal-says(\"Woof!\");\n}\n\ncat {\n  @include mammal-says(\"Meow.\");\n}\n\nhorse, naysayer {\n  @include mammal-says(\"Nay.\");\n}\n\n[hey] {\n  a: b;\n}\n\nho {\n  @extend [hey];\n  c: d;\n}\n\nfancy outer space vehicle {\n  insides: advanced;\n}\n\nnew american mars rover {\n  wheels: big;\n  @extend vehicle;\n}\n\nfoo {\n  something: whatever;\n}\n\na b c {\n  blah: blah;\n  @extend foo;\n}\n\nd e f {\n  blah: blah;\n}\n\ng {\n  @extend f;\n  bloo: bloo;\n}"
         )
         .unwrap(),
-        "earth mammal, earth dog, earth cat, earth horse, earth naysayer, earth bird {\n  blood: warm;\n}\nearth mammal, earth dog, earth cat, earth horse, earth naysayer {\n  produces-milk: true;\n}\ndog {\n  says: \"Woof!\";\n}\ncat {\n  says: \"Meow.\";\n}\nhorse, naysayer {\n  says: \"Nay.\";\n}\n[hey], ho {\n  a: b;\n}\nho {\n  c: d;\n}\nfancy outer space vehicle, fancy outer space new american mars rover, new american mars fancy outer space rover {\n  insides: advanced;\n}\nnew american mars rover {\n  wheels: big;\n}\nfoo, a b c {\n  something: whatever;\n}\na b c {\n  blah: blah;\n}\nd e f, d e g {\n  blah: blah;\n}\ng {\n  bloo: bloo;\n}\n"
+        "earth mammal, earth horse, earth naysayer, earth cat, earth dog, earth bird {\n  blood: warm;\n}\nearth mammal, earth horse, earth naysayer, earth cat, earth dog {\n  produces-milk: true;\n}\ndog {\n  says: \"Woof!\";\n}\ncat {\n  says: \"Meow.\";\n}\nhorse, naysayer {\n  says: \"Nay.\";\n}\n[hey], ho {\n  a: b;\n}\nho {\n  c: d;\n}\nfancy outer space vehicle, fancy outer space new american mars rover, new american mars fancy outer space rover {\n  insides: advanced;\n}\nnew american mars rover {\n  wheels: big;\n}\nfoo, a b c {\n  something: whatever;\n}\na b c {\n  blah: blah;\n}\nd e f, d e g {\n  blah: blah;\n}\ng {\n  bloo: bloo;\n}\n"
     );
 }
 

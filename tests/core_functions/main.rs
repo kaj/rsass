@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions"
-//! version 98496644, 2019-06-04 12:57:39 +0100.
+//! version 7071a548, 2019-06-24 16:40:39 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
@@ -626,8 +626,6 @@ mod inspect {
     }
 }
 
-mod invert;
-
 // From "sass-spec/spec/core_functions/is_bracketed.hrx"
 #[test]
 fn is_bracketed() {
@@ -641,6 +639,8 @@ fn is_bracketed() {
 }
 
 mod join;
+
+mod math;
 
 // From "sass-spec/spec/core_functions/mixin_exists.hrx"
 mod mixin_exists {

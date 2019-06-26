@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/selector-functions"
-//! version 98496644, 2019-06-04 12:57:39 +0100.
+//! version 7071a548, 2019-06-24 16:40:39 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["is_superselector"]
@@ -43,6 +43,19 @@ fn parse() {
         )
         .unwrap(),
         ".foo {\n  parse: .foo;\n}\n#foo {\n  parse: #foo;\n}\n.bar a {\n  parse: .bar a;\n}\n.bar,\n.baz {\n  parse: .bar, .baz;\n}\n.where .qux.waldo .final {\n  parse: .where .qux.waldo .final;\n}\ninside.of #a .mixin {\n  parse: inside.of #a .mixin;\n}\n"
+    );
+}
+
+// From "sass-spec/spec/selector-functions/replace-not.hrx"
+#[test]
+#[ignore] // failing
+fn replace_not() {
+    assert_eq!(
+        rsass(
+            ".not {\n  a: selector-replace(\':not(.foo)\', \'.foo\', \'.bar\');\n  b: selector-replace(\':not(.foo)\', \':not(.foo)\', \'.bar\');\n}"
+        )
+        .unwrap(),
+        ".not {\n  a: :not(.bar);\n  b: .bar;\n}\n"
     );
 }
 

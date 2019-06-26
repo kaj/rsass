@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/scss-tests"
-//! version 98496644, 2019-06-04 12:57:39 +0100.
+//! version 7071a548, 2019-06-24 16:40:39 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
@@ -423,6 +423,19 @@ fn t045_test_parent_selectors() {
     assert_eq!(
         rsass("foo {\n  &:hover {a: b}\n  bar &.baz {c: d}}\n").unwrap(),
         "foo:hover {\n  a: b;\n}\nbar foo.baz {\n  c: d;\n}\n"
+    );
+}
+
+// From "sass-spec/spec/scss-tests/046_test_parent_selector_with_subject.hrx"
+#[test]
+#[ignore] // failing
+fn t046_test_parent_selector_with_subject() {
+    assert_eq!(
+        rsass(
+            "foo {\n  bar &.baz! .bip {a: b}}\n\nfoo bar {\n  bar &.baz! .bip {c: d}}\n"
+        )
+        .unwrap(),
+        "bar foo.baz! .bip {\n  a: b;\n}\nbar foo bar.baz! .bip {\n  c: d;\n}\n"
     );
 }
 
@@ -993,6 +1006,19 @@ fn t116_test_selector_interpolation_at_dashes() {
     );
 }
 
+// From "sass-spec/spec/scss-tests/118_test_parent_selector_with_parent_and_subject.hrx"
+#[test]
+#[ignore] // failing
+fn t118_test_parent_selector_with_parent_and_subject() {
+    assert_eq!(
+        rsass(
+            "$subject: \"!\";\nfoo {\n  bar &.baz#{$subject} .bip {c: d}}\n"
+        )
+        .unwrap(),
+        "bar foo.baz! .bip {\n  c: d;\n}\n"
+    );
+}
+
 // From "sass-spec/spec/scss-tests/119_test_basic_prop_name_interpolation.hrx"
 #[test]
 fn t119_test_basic_prop_name_interpolation() {
@@ -1312,18 +1338,6 @@ fn t190_test_options_passed_to_script() {
     assert_eq!(
         rsass("foo {color: darken(black, 10%)}\n").unwrap(),
         "foo {\n  color: black;\n}\n"
-    );
-}
-
-// From "sass-spec/spec/scss-tests/191_test_color_translation_functions.hrx"
-#[test]
-fn t191_test_color_translation_functions() {
-    assert_eq!(
-        rsass(
-            "$color: #c09853;\n\n.bar {\n\tcolor1: rgba($color,0.5);\n\tcolor2: rgba($color,1);\n}\n\n.darken {\n\tcolor1: darken($color, 10%); \n\tcolor2: darken($color, 20%); \n\tcolor3: darken($color, 30%); \n\tcolor4: darken($color, 40%); \n\tcolor5: darken($color, 50%); \n\tcolor6: darken($color, 60%); \n\tcolor7: darken($color, 70%); \n\tcolor8: darken($color, 80%); \n\tcolor9: darken($color, 90%); \n\tcolor10: darken($color, 100%); \n}\n\n.lighten {\n\tcolor1: lighten($color, 10%); \n\tcolor2: lighten($color, 20%); \n\tcolor3: lighten($color, 30%); \n\tcolor4: lighten($color, 40%); \n\tcolor5: lighten($color, 50%); \n\tcolor6: lighten($color, 60%); \n\tcolor7: lighten($color, 70%); \n\tcolor8: lighten($color, 80%); \n\tcolor9: lighten($color, 90%); \n\tcolor10: lighten($color, 100%); \n}\n"
-        )
-        .unwrap(),
-        ".bar {\n  color1: rgba(192, 152, 83, 0.5);\n  color2: #c09853;\n}\n.darken {\n  color1: #a47e3c;\n  color2: #7f612e;\n  color3: #594521;\n  color4: #342813;\n  color5: #0f0b05;\n  color6: black;\n  color7: black;\n  color8: black;\n  color9: black;\n  color10: black;\n}\n.lighten {\n  color1: #ceae78;\n  color2: #dbc59e;\n  color3: #e9dbc3;\n  color4: #f7f1e8;\n  color5: white;\n  color6: white;\n  color7: white;\n  color8: white;\n  color9: white;\n  color10: white;\n}\n"
     );
 }
 
