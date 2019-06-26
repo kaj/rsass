@@ -213,7 +213,10 @@ impl OutputStyle {
                         )?;
                     }
                 } else {
-                    panic!(format!("Unknown mixin {}({:?})", name, args))
+                    return Err(Error::S(format!(
+                        "Unknown mixin {}({:?})",
+                        name, args
+                    )));
                 }
             }
             Item::Content => {
