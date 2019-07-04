@@ -66,7 +66,6 @@ fn t05_variable_quoted_double() {
 
 // From "sass-spec/spec/parser/interpolate/22_escapes_single_quoted_uppercase/06_escape_interpolation.hrx"
 #[test]
-#[ignore] // failing
 fn t06_escape_interpolation() {
     assert_eq!(
         rsass(

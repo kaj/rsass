@@ -76,7 +76,15 @@ impl SassString {
                     }
                     result.push_str(&v)
                 }
-                StringPart::Raw(ref s) => result.push_str(s),
+                StringPart::Raw(ref s) => {
+                    for c in s.chars() {
+                        if c.is_control() {
+                            result.push_str(&format!("\\{:x} ", c as usize))
+                        } else {
+                            result.push(c)
+                        }
+                    }
+                }
             }
         }
         if interpolated
@@ -138,10 +146,16 @@ impl fmt::Display for SassString {
     }
 }
 
+impl From<&str> for StringPart {
+    fn from(s: &str) -> Self {
+        StringPart::Raw(s.to_string())
+    }
+}
+
 impl<'a> From<&'a str> for SassString {
     fn from(s: &'a str) -> Self {
         SassString {
-            parts: vec![StringPart::Raw(s.to_string())],
+            parts: vec![StringPart::from(s)],
             quotes: Quotes::None,
         }
     }

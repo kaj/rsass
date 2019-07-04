@@ -54,7 +54,6 @@ fn t04_variable_double() {
 
 // From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/06_escape_interpolation"
 #[test]
-#[ignore] // failing
 fn t06_escape_interpolation() {
     assert_eq!(
         rsass(

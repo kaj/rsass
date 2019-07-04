@@ -7,8 +7,8 @@ pub mod value;
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
-use self::strings::{sass_string, sass_string_dq, sass_string_sq};
-use self::util::{comment2, ignore_space, name, opt_spacelike, spacelike};
+use self::strings::{name, sass_string, sass_string_dq, sass_string_sq};
+use self::util::{comment2, ignore_space, opt_spacelike, spacelike};
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
