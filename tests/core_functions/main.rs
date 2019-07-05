@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions"
-//! version 7071a548, 2019-06-24 16:40:39 -0700.
+//! version d8dc38cd, 2019-07-03 17:55:12 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 
@@ -626,19 +626,9 @@ mod inspect {
     }
 }
 
-// From "sass-spec/spec/core_functions/is_bracketed.hrx"
-#[test]
-fn is_bracketed() {
-    assert_eq!(
-        rsass(
-            ".is-bracketed {\n  unbracketed-empty: is-bracketed(());\n  unbracketed-singleton: is-bracketed(foo);\n  unbracketed-multiple: is-bracketed(foo bar);\n  bracketed-empty: is-bracketed([]);\n  bracketed-singleton: is-bracketed([foo]);\n  bracketed-multiple: is-bracketed([foo bar]);\n}"
-        )
-        .unwrap(),
-        ".is-bracketed {\n  unbracketed-empty: false;\n  unbracketed-singleton: false;\n  unbracketed-multiple: false;\n  bracketed-empty: true;\n  bracketed-singleton: true;\n  bracketed-multiple: true;\n}\n"
-    );
-}
+mod list;
 
-mod join;
+mod map;
 
 mod math;
 

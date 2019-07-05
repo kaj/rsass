@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/basic"
-//! version 7071a548, 2019-06-24 16:40:39 -0700.
+//! version d8dc38cd, 2019-07-03 17:55:12 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["14_imports.hrx", "33_ambiguous_imports.hrx"]
@@ -454,18 +454,6 @@ fn t42_css_imports() {
     );
 }
 
-// From "sass-spec/spec/basic/43_str_length"
-#[test]
-fn t43_str_length() {
-    assert_eq!(
-        rsass(
-            "div {\n  foo: str-length(\"protégé\");\n  foo: str-length(protégé);\n  foo: str-length(\"\");\n  foo: str-length(\"hello there\");\n  foo: str-length(\"Façade\");\n  foo: str-length(\"Tromsø\");\n  foo: str-length(\"Ãlso\");\n}"
-        )
-        .unwrap(),
-        "div {\n  foo: 7;\n  foo: 7;\n  foo: 0;\n  foo: 11;\n  foo: 6;\n  foo: 6;\n  foo: 4;\n}\n"
-    );
-}
-
 // From "sass-spec/spec/basic/44_bem_selectors.hrx"
 #[test]
 fn t44_bem_selectors() {
@@ -475,42 +463,6 @@ fn t44_bem_selectors() {
         )
         .unwrap(),
         "div_foo {\n  blah: blah;\n}\ndiv--modifier {\n  blach: blah;\n}\ndivhux {\n  blah: blah;\n}\ndivdiv.foo#bar[hux] {\n  blah: blah;\n}\n"
-    );
-}
-
-// From "sass-spec/spec/basic/45_str_insert"
-#[test]
-fn t45_str_insert() {
-    assert_eq!(
-        rsass(
-            "div {\n  bar: str-insert(\"abcd\", \"X\", 1);\n  bar: str-insert(\"abcd\", \'X\', 1);\n  bar: str-insert(\"abcd\", \'X\\\'fjd\\\'sk\', 1);\n  bar: str-insert(\"abcd\", \"e\", 3);\n  bar: str-insert(\"abcd\", \"e\", 18);\n  bar: str-insert(\"abcd\", \"e\", -2);\n  bar: str-insert(\"abcd\", \"e\", -18);\n  bar: str-insert(\"abcd\", \"e\", 0);\n  bar: str-insert(\"abcd\", e, 0);\n  bar: str-insert(abcd, \"e\", 0);\n  bar: str-insert(abcd, e, 0);\n  bar: str-insert(\"Déjà vu\", \"abcd\", 0);\n  bar: str-insert(\"Déjà vu\", \"abcd\", 2);\n  bar: str-insert(\"Déjà vu\", \"abcd\", -3);\n  bar: str-insert(\"Déjà vu\", \"abcd\", 18);\n\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 0);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 2);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 5);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 9);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", 28);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", -3);\n  bar: str-insert(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \" ABCD \", -28);\n\n}"
-        )
-        .unwrap(),
-        "@charset \"UTF-8\";\ndiv {\n  bar: \"Xabcd\";\n  bar: \"Xabcd\";\n  bar: \"X\'fjd\'skabcd\";\n  bar: \"abecd\";\n  bar: \"abcde\";\n  bar: \"abced\";\n  bar: \"eabcd\";\n  bar: \"eabcd\";\n  bar: \"eabcd\";\n  bar: eabcd;\n  bar: eabcd;\n  bar: \"abcdDéjà vu\";\n  bar: \"Dabcdéjà vu\";\n  bar: \"Déjà abcdvu\";\n  bar: \"Déjà vuabcd\";\n  bar: \" ABCD øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\n  bar: \"ø ABCD áéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\n  bar: \"øáéí ABCD óúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\n  bar: \"øáéíóúüñ ABCD ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\n  bar: \"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ ABCD \";\n  bar: \"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ ABCD \u{488}ݓ\";\n  bar: \" ABCD øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\n}\n"
-    );
-}
-
-// From "sass-spec/spec/basic/46_str_index"
-#[test]
-fn t46_str_index() {
-    assert_eq!(
-        rsass(
-            "div {\n\n  bar: a str-index(\"abcde\", \"bc\");\n  bar: a str-index(\"abcde\", \"a\");\n  bar: a str-index(\"abcde\", \"e\");\n  bar: a str-index(\"abcde\", \"xyz\");\n  bar: a str-index(\"\", \"abc\");\n  bar: a str-index(\"abcde\", \"abcdefg\");\n  bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \"Ɋ\"); // 15\n  bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \"úüñ\"); // 6\n  bar: a str-index(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\", \"abcde\");\n  bar: a str-index(\"abcde\", \"\");\n  bar: a str-index(\"\", \"\");\n\n}"
-        )
-        .unwrap(),
-        "div {\n  bar: a 2;\n  bar: a 1;\n  bar: a 5;\n  bar: a;\n  bar: a;\n  bar: a;\n  bar: a 15;\n  bar: a 6;\n  bar: a;\n  bar: a 1;\n  bar: a 1;\n}\n"
-    );
-}
-
-// From "sass-spec/spec/basic/48_case_conversion.hrx"
-#[test]
-fn t48_case_conversion() {
-    assert_eq!(
-        rsass(
-            "div {\n\n  bar: to-upper-case(\"blah\");\n  bar: to-upper-case(\"BLAH\");\n  bar: to-upper-case(\"bLaH\");\n  bar: to-upper-case(\"1232178942\");\n  bar: to-upper-case(blah);\n  bar: to-upper-case(BLAH);\n  bar: to-upper-case(bLaH);\n  bar: to-upper-case(\"\");\n\n  bar: to-lower-case(\"blah\");\n  bar: to-lower-case(\"BLAH\");\n  bar: to-lower-case(\"bLaH\");\n  bar: to-lower-case(\"1232178942\");\n  bar: to-lower-case(blah);\n  bar: to-lower-case(BLAH);\n  bar: to-lower-case(bLaH);\n  bar: to-lower-case(\"\");\n\n}\n"
-        )
-        .unwrap(),
-        "div {\n  bar: \"BLAH\";\n  bar: \"BLAH\";\n  bar: \"BLAH\";\n  bar: \"1232178942\";\n  bar: BLAH;\n  bar: BLAH;\n  bar: BLAH;\n  bar: \"\";\n  bar: \"blah\";\n  bar: \"blah\";\n  bar: \"blah\";\n  bar: \"1232178942\";\n  bar: blah;\n  bar: blah;\n  bar: blah;\n  bar: \"\";\n}\n"
     );
 }
 

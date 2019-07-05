@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/scss"
-//! version 7071a548, 2019-06-24 16:40:39 -0700.
+//! version d8dc38cd, 2019-07-03 17:55:12 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["multiline-var.hrx", "mixin-content.hrx", "huge.hrx"]
@@ -26,18 +26,6 @@ fn alpha() {
         )
         .unwrap(),
         "div {\n  color: yellow;\n  background: #7b2d06;\n  grah: rgba(255, 0, 238, 0.5);\n  floo: cyan;\n  groo: cyan;\n  hoo: 123;\n  moo: 45;\n  poo: 6;\n  boo: #edcba9;\n}\n"
-    );
-}
-
-// From "sass-spec/spec/scss/append.hrx"
-#[test]
-fn append() {
-    assert_eq!(
-        rsass(
-            "div {\n  $l: append(a b, c d);\n  foo: nth($l, 3);\n  bar: type-of($l);\n}"
-        )
-        .unwrap(),
-        "div {\n  foo: c d;\n  bar: list;\n}\n"
     );
 }
 
@@ -647,18 +635,6 @@ fn important() {
         )
         .unwrap(),
         "div {\n  color: red !important;\n  width: 5px !important;\n}\n"
-    );
-}
-
-// From "sass-spec/spec/scss/index.hrx"
-#[test]
-fn index() {
-    assert_eq!(
-        rsass(
-            "div {\n  foo: index(hello goodbye futz, goodbye);\n  bar: index(hello goodbye futz, badbye);\n  baz: index((hello world) (my name) (is aaron), is aaron);\n}"
-        )
-        .unwrap(),
-        "div {\n  foo: 2;\n  baz: 3;\n}\n"
     );
 }
 

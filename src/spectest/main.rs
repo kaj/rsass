@@ -342,9 +342,11 @@ fn fn_name(name: &str) -> String {
     if t.chars().next().unwrap_or('0').is_numeric() {
         format!("t{}", t)
     } else if t == "else"
+        || t == "false"
         || t == "for"
         || t == "if"
         || t == "static"
+        || t == "true"
         || t == "type"
         || t == "while"
     {

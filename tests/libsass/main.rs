@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass"
-//! version 7071a548, 2019-06-24 16:40:39 -0700.
+//! version d8dc38cd, 2019-07-03 17:55:12 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["Sa\u{301}ss-UT\u{327}F8.hrx", "bourbon.hrx", "base-level-parent/imported", "selector-functions/is_superselector", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "debug-directive-nested/function.hrx", "warn-directive-nested/function.hrx"]
@@ -280,18 +280,6 @@ fn keyframes() {
     );
 }
 
-// From "sass-spec/spec/libsass/length"
-#[test]
-fn length() {
-    assert_eq!(
-        rsass(
-            "div {\n\n  foo: length(null);\n  foo: length(true);\n  foo: length(false);\n\n  foo: length(\"protégé\");\n  foo: length(protégé);\n  foo: length(\"\");\n  foo: length(\"hello there\");\n  foo: length(\"Façade\");\n  foo: length(\"Tromsø\");\n  foo: length(\"Ãlso\");\n\n  foo: length((foo: foo, bar: bar));\n  foo: length((foo, bar, baz, bang));\n\n}\n"
-        )
-        .unwrap(),
-        "div {\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 1;\n  foo: 2;\n  foo: 4;\n}\n"
-    );
-}
-
 // From "sass-spec/spec/libsass/list-evaluation.hrx"
 #[test]
 #[ignore] // failing
@@ -491,18 +479,6 @@ fn unary_ops() {
 mod unicode_bom;
 
 mod units;
-
-// From "sass-spec/spec/libsass/unquote.hrx"
-#[test]
-fn unquote() {
-    assert_eq!(
-        rsass(
-            "div {\n  a: unquote(\"foo\");\n  b: unquote(\"I\'m a \\\"fashion\\\" \\\"expert\\\".\");\n  c: unquote(\\\"wha);\n  d: unquote(\"column1\\tcolumn2\");\n  e: unquote(23+1);\n}\n"
-        )
-        .unwrap(),
-        "div {\n  a: foo;\n  b: I\'m a \"fashion\" \"expert\".;\n  c: \\\"wha;\n  d: column1tcolumn2;\n  e: 24;\n}\n"
-    );
-}
 
 // From "sass-spec/spec/libsass/url.hrx"
 #[test]
