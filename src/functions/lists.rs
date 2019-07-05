@@ -7,6 +7,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, length(list), |s| match s.get("list")? {
         Value::List(v, _, _) => Ok(Value::scalar(v.len() as isize)),
         Value::Map(m) => Ok(Value::scalar(m.len() as isize)),
+        // A null value is considered eqivalent to an empty list
+        Value::Null => Ok(Value::scalar(0)),
         // Any other value is a singleton list of that value
         _ => Ok(Value::scalar(1)),
     });

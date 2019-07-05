@@ -633,7 +633,6 @@ fn t064_test_mixin_var_args() {
 
 // From "sass-spec/spec/scss-tests/065_test_mixin_empty_var_args.hrx"
 #[test]
-#[ignore] // failing
 fn t065_test_mixin_empty_var_args() {
     assert_eq!(
         rsass(
@@ -761,7 +760,6 @@ fn t083_test_function_var_args() {
 
 // From "sass-spec/spec/scss-tests/084_test_function_empty_var_args.hrx"
 #[test]
-#[ignore] // failing
 fn t084_test_function_empty_var_args() {
     assert_eq!(
         rsass(
