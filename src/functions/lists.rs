@@ -125,7 +125,13 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             }
             _ => Ok(Value::Null),
         },
-        v => Err(Error::badarg("list", &v)),
+        v => {
+            if v == s.get("value")? {
+                Ok(Value::scalar(1))
+            } else {
+                Ok(Value::Null)
+            }
+        }
     });
     def!(f, list_separator(list), |s| Ok(Value::Literal(
         match s.get("list")? {

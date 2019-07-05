@@ -225,7 +225,6 @@ mod index {
             );
         }
         #[test]
-        #[ignore] // failing
         fn non_list() {
             assert_eq!(
                 rsass("a {b: index(c, c)}\n").unwrap(),
@@ -296,7 +295,6 @@ mod index {
             );
         }
         #[test]
-        #[ignore] // failing
         fn non_list() {
             assert_eq!(
                 rsass("a {b: inspect(index(c, d))}\n").unwrap(),
