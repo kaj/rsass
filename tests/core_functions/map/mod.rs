@@ -176,7 +176,6 @@ mod keys {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
     fn empty() {
         assert_eq!(
         rsass(
@@ -439,7 +438,6 @@ mod values {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
     fn empty() {
         assert_eq!(
         rsass(

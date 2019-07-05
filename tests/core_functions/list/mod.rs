@@ -1079,7 +1079,6 @@ mod zip {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn first_empty() {
             assert_eq!(
                 rsass("a {b: inspect(zip((), 1 2 3))}\n").unwrap(),
@@ -1101,7 +1100,6 @@ mod zip {
             );
         }
         #[test]
-        #[ignore] // failing
         fn second_empty() {
             assert_eq!(
                 rsass("a {b: inspect(zip(1 2 3, ()))}\n").unwrap(),

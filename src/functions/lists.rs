@@ -150,7 +150,14 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 
 fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
     match value {
-        Value::List(v, s, bra) => (v, Some(s), bra),
+        Value::List(v, s, bra) => {
+            let sep = if v.is_empty() && s == ListSeparator::Space {
+                None
+            } else {
+                Some(s)
+            };
+            (v, sep, bra)
+        }
         Value::Map(map) => (
             map.iter()
                 .map(|&(ref k, ref v)| {

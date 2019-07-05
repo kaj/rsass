@@ -104,7 +104,6 @@ mod empty {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
             fn and_comma() {
                 assert_eq!(
                     rsass("a {b: join((), (1, 2, 3))}\n").unwrap(),
