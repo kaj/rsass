@@ -76,7 +76,9 @@ impl cmp::PartialEq for FuncImpl {
                 &FuncImpl::UserDefined(ref a),
                 &FuncImpl::UserDefined(ref b),
             ) => a == b,
-            // Note: Maybe consider builtins equal if same Arc?
+            (&FuncImpl::Builtin(ref a), &FuncImpl::Builtin(ref b)) => {
+                Arc::ptr_eq(a, b)
+            }
             _ => false,
         }
     }

@@ -124,7 +124,6 @@ mod get_function {
     );
             }
             #[test]
-            #[ignore] // failing
             fn same() {
                 assert_eq!(
         rsass("a {b: get-function(lighten) == get-function(lighten)}\n")
@@ -134,7 +133,6 @@ mod get_function {
             }
         }
         #[test]
-        #[ignore] // failing
         fn same_value() {
             assert_eq!(
         rsass(
