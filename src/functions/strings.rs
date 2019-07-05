@@ -56,12 +56,19 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             let start_at = index_to_rust(&start_at, &s);
             let end_at = index_to_rust(&end_at, &s);
             let c = s.chars();
-            Ok(Value::Literal(
-                c.skip(start_at)
-                    .take(end_at + 1 - start_at)
-                    .collect::<String>(),
-                q,
-            ))
+            if start_at <= end_at {
+                Ok(Value::Literal(
+                    c.skip(start_at)
+                        .take(end_at + 1 - start_at)
+                        .collect::<String>(),
+                    q,
+                ))
+            } else {
+                Err(Error::S(format!(
+                    "Bad indexes: {}..{}",
+                    start_at, end_at
+                )))
+            }
         }
         (v, s, e) => Err(Error::badargs(
             &["string", "number", "number"],
