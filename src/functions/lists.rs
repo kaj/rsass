@@ -28,7 +28,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     Ok(Value::Null)
                 }
             }
-            v => Err(Error::badarg("list", &v)),
+            v => Ok(if n == 1 { v } else { Value::Null }),
         }
     });
     def!(f, set_nth(list, n, value), |s| {
@@ -136,6 +136,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, list_separator(list), |s| Ok(Value::Literal(
         match s.get("list")? {
             Value::List(_, ListSeparator::Comma, _) => "comma",
+            Value::Map(_) => "comma",
             _ => "space",
         }
         .into(),

@@ -574,7 +574,6 @@ mod nth {
         }
     }
     #[test]
-    #[ignore] // failing
     fn non_list() {
         assert_eq!(rsass("a {b: nth(c, 1)}\n").unwrap(), "a {\n  b: c;\n}\n");
     }
@@ -633,7 +632,6 @@ mod separator {
             );
         }
         #[test]
-        #[ignore] // failing
         fn map() {
             assert_eq!(
                 rsass("a {b: list-separator((c: d, e: f, g: h))}\n").unwrap(),
