@@ -74,7 +74,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         ))
     });
     def!(f, inspect(value), |s| Ok(Value::Literal(
-        format!("{}", s.get("value")?),
+        match s.get("value")? {
+            Value::Null => "null".to_string(),
+            v => format!("{}", v),
+        },
         Quotes::None
     )));
     def!(f, type_of(value), |s| Ok(Value::Literal(

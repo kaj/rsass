@@ -68,7 +68,6 @@ mod index {
         );
     }
     #[test]
-    #[ignore] // failing
     fn not_found() {
         assert_eq!(
             rsass("a {b: inspect(str-index(\"cde\", \"f\"))}\n").unwrap(),

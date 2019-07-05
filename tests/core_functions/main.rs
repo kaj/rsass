@@ -564,7 +564,6 @@ mod inspect {
     );
     }
     #[test]
-    #[ignore] // failing
     fn null() {
         assert_eq!(
         rsass(

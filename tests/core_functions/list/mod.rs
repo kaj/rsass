@@ -259,7 +259,6 @@ mod index {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn empty() {
             assert_eq!(
                 rsass("a {b: inspect(index((), c))}\n").unwrap(),
@@ -281,7 +280,6 @@ mod index {
     );
             }
             #[test]
-            #[ignore] // failing
             fn non_empty() {
                 assert_eq!(
                     rsass("a {b: inspect(index((c: d, e: f, g: h), e))}\n")
@@ -291,7 +289,6 @@ mod index {
             }
         }
         #[test]
-        #[ignore] // failing
         fn non_empty() {
             assert_eq!(
                 rsass("a {b: inspect(index(c d e, f))}\n").unwrap(),

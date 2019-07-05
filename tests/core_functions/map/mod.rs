@@ -68,7 +68,6 @@ mod get {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn dash_sensitive() {
             assert_eq!(
                 rsass("a {b: inspect(map-get((c-d: e), c_d))}\n").unwrap(),
@@ -76,7 +75,6 @@ mod get {
             );
         }
         #[test]
-        #[ignore] // failing
         fn empty() {
             assert_eq!(
                 rsass("a {b: inspect(map-get((), 1))}\n").unwrap(),
@@ -84,7 +82,6 @@ mod get {
             );
         }
         #[test]
-        #[ignore] // failing
         fn non_empty() {
             assert_eq!(
                 rsass("a {b: inspect(map-get((c: d), d))}\n").unwrap(),
