@@ -1,8 +1,10 @@
 use super::{Error, SassFunction};
 use crate::css::Value;
 use crate::value::{Number, Quotes, Unit};
+use lazy_static::lazy_static;
 use num_traits::Signed;
 use std::collections::BTreeMap;
+use std::sync::Mutex;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, quote(contents), |s| match s.get("contents")? {
@@ -100,6 +102,20 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, to_lower_case(string), |s| match s.get("string")? {
         Value::Literal(v, q) => Ok(Value::Literal(v.to_lowercase(), q)),
         v => Ok(v),
+    });
+    def!(f, unique_id(), |_s| {
+        lazy_static! {
+            static ref CALL_ID: Mutex<u64> =
+                Mutex::new(u64::from(std::process::id()) * 0xa01);
+        };
+        Ok(Value::Literal(
+            format!("x{:x}", {
+                let mut v = CALL_ID.lock().unwrap();
+                *v += 1;
+                *v
+            }),
+            Quotes::None,
+        ))
     });
 }
 
