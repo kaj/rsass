@@ -22,7 +22,7 @@ use std::path::{Path, PathBuf};
 /// ```
 #[derive(Clone, Debug)]
 pub struct FileContext {
-    path: PathBuf,
+    path: Vec<PathBuf>,
 }
 
 impl FileContext {
@@ -31,24 +31,25 @@ impl FileContext {
     /// Files will be resolved from the current working directory.
     pub fn new() -> Self {
         FileContext {
-            path: PathBuf::new(),
+            path: vec![PathBuf::new()],
         }
     }
+
+    pub fn push_path(&mut self, path: &Path) {
+        self.path.push(path.into());
+    }
+
     /// Get a file from this context.
     ///
     /// Get a path and a FileContext from this FileContext and a path.
     pub fn file(&self, file: &Path) -> (Self, PathBuf) {
-        let t = self.path.join(file);
+        let t = self.path[0].join(file);
+        let mut path = vec![];
         if let Some(dir) = t.parent() {
-            (
-                FileContext {
-                    path: PathBuf::from(dir),
-                },
-                t.clone(),
-            )
-        } else {
-            (FileContext::new(), t.clone())
+            path.push(PathBuf::from(dir));
         }
+        path.extend_from_slice(&self.path);
+        (FileContext { path }, t.clone())
     }
 
     pub fn find_file(&self, name: &Path) -> Option<(Self, PathBuf)> {
@@ -56,19 +57,30 @@ impl FileContext {
         // Files with .sass extension needs another parser.
         let parent = name.parent();
         if let Some(name) = name.file_name().and_then(|n| n.to_str()) {
-            for name in &[
-                name,
-                &format!("{}.scss", name),
-                &format!("_{}.scss", name),
-                &format!("{}/index.scss", name),
-                &format!("{}/_index.scss", name),
-            ] {
-                let full = parent
-                    .map(|p| p.join(name))
-                    .unwrap_or_else(|| name.into());
-                let (c, p) = self.file(&full);
-                if p.is_file() {
-                    return Some((c, p));
+            for base in &self.path {
+                for name in &[
+                    name,
+                    &format!("{}.scss", name),
+                    &format!("_{}.scss", name),
+                    &format!("{}/index.scss", name),
+                    &format!("{}/_index.scss", name),
+                ] {
+                    let full = if let Some(parent) = parent {
+                        base.join(parent).join(name)
+                    } else {
+                        base.join(name)
+                    };
+                    if full.is_file() {
+                        let c = if let Some(parent) = parent {
+                            let mut path = vec![];
+                            path.push(PathBuf::from(parent));
+                            path.extend_from_slice(&self.path);
+                            FileContext { path }
+                        } else {
+                            self.clone()
+                        };
+                        return Some((c, full));
+                    }
                 }
             }
         }
