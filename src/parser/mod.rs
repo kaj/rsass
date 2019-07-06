@@ -499,7 +499,7 @@ named!(
         map!(
             many_till!(
                 terminated!(body_item, opt_spacelike),
-                tag!("}")
+                terminated!(tag!("}"), opt!(tag!(";")))
             ),
             |(v, _end)| v
         )

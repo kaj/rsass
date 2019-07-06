@@ -204,7 +204,6 @@ mod get_function {
         // Ignoring "non_existent", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
     fn inspect() {
         assert_eq!(
             rsass("a {b: inspect(get-function(lighten))};\n").unwrap(),
@@ -267,7 +266,6 @@ mod get_function {
     );
     }
     #[test]
-    #[ignore] // failing
     fn type_of() {
         assert_eq!(
             rsass("a {b: type-of(get-function(lighten))};\n").unwrap(),
