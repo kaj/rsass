@@ -1439,7 +1439,6 @@ mod saturate {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn named() {
             assert_eq!(
                 rsass("a {b: saturate($amount: 50%)}\n").unwrap(),

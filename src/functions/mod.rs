@@ -157,13 +157,15 @@ lazy_static! {
     };
 }
 
-fn make_call(name: &str, mut args: Vec<css::Value>) -> css::Value {
-    while args.last() == Some(&css::Value::Null) {
-        args.pop();
-    }
+fn make_call(name: &str, args: Vec<css::Value>) -> css::Value {
     css::Value::Call(
         name.into(),
-        css::CallArgs::new(args.into_iter().map(|v| (None, v)).collect()),
+        css::CallArgs::new(
+            args.into_iter()
+                .filter(|v| v != &css::Value::Null)
+                .map(|v| (None, v))
+                .collect(),
+        ),
     )
 }
 
