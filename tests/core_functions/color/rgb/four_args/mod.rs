@@ -30,7 +30,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
         fn min() {
             assert_eq!(
                 rsass("a {b: rgb(0, 0, 0, 0%)}\n").unwrap(),
@@ -38,7 +37,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
         fn negative() {
             assert_eq!(
                 rsass("a {b: rgb(0, 0, 0, -10%)}\n").unwrap(),
@@ -76,7 +74,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
         fn min() {
             assert_eq!(
                 rsass("a {b: rgb(0, 0, 0, 0)}\n").unwrap(),
@@ -84,7 +81,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
         fn negative() {
             assert_eq!(
                 rsass("a {b: rgb(0, 0, 0, -10)}\n").unwrap(),
@@ -92,7 +88,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
         fn positive() {
             assert_eq!(
                 rsass("a {b: rgb(0, 0, 0, 0.456)}\n").unwrap(),
@@ -117,7 +112,6 @@ mod clamped {
             );
         }
         #[test]
-        #[ignore] // failing
         fn below() {
             assert_eq!(
                 rsass("a {b: rgb(0, 0, 0, -0.1)}\n").unwrap(),
@@ -126,7 +120,6 @@ mod clamped {
         }
     }
     #[test]
-    #[ignore] // failing
     fn blue() {
         assert_eq!(
             rsass("a {b: rgb(0, 0, 9999, 0.5)}\n").unwrap(),
@@ -134,7 +127,6 @@ mod clamped {
         );
     }
     #[test]
-    #[ignore] // failing
     fn green() {
         assert_eq!(
             rsass("a {b: rgb(0, -1, 0, 0.5)}\n").unwrap(),
@@ -142,7 +134,6 @@ mod clamped {
         );
     }
     #[test]
-    #[ignore] // failing
     fn red() {
         assert_eq!(
             rsass("a {b: rgb(256, 0, 0, 0.5)}\n").unwrap(),
@@ -156,7 +147,6 @@ mod in_gamut {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
     fn named() {
         assert_eq!(
             rsass(
@@ -174,7 +164,6 @@ mod in_gamut {
         );
     }
     #[test]
-    #[ignore] // failing
     fn partial() {
         assert_eq!(
             rsass("a {b: rgb(18, 52, 86, 0.5)}\n").unwrap(),
@@ -182,7 +171,6 @@ mod in_gamut {
         );
     }
     #[test]
-    #[ignore] // failing
     fn transparent() {
         assert_eq!(
             rsass("a {b: rgb(0, 255, 127, 0)}\n").unwrap(),
@@ -199,7 +187,6 @@ mod special_functions {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn arg_1() {
             assert_eq!(
                 rsass("a {b: rgb(calc(1), 2, 3, 0.4)}\n").unwrap(),
@@ -207,7 +194,6 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
         fn arg_2() {
             assert_eq!(
                 rsass("a {b: rgb(1, calc(2), 3, 0.4)}\n").unwrap(),
@@ -215,7 +201,6 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
         fn arg_3() {
             assert_eq!(
                 rsass("a {b: rgb(1, 2, calc(3), 0.4)}\n").unwrap(),
@@ -223,7 +208,6 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
         fn arg_4() {
             assert_eq!(
                 rsass("a {b: rgb(1, 2, 3, calc(0.4))}\n").unwrap(),
@@ -235,7 +219,6 @@ mod special_functions {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn arg_1() {
             assert_eq!(
                 rsass("a {b: rgb(env(--foo), 2, 3, 0.4)}\n").unwrap(),
@@ -243,7 +226,6 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
         fn arg_2() {
             assert_eq!(
                 rsass("a {b: rgb(1, env(--foo), 3, 0.4)}\n").unwrap(),
@@ -251,7 +233,6 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
         fn arg_3() {
             assert_eq!(
                 rsass("a {b: rgb(1, 2, env(--foo), 0.4)}\n").unwrap(),
@@ -259,7 +240,6 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
         fn arg_4() {
             assert_eq!(
                 rsass("a {b: rgb(1, 2, 3, env(--foo))}\n").unwrap(),
@@ -343,7 +323,6 @@ mod special_functions {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn arg_1() {
             assert_eq!(
                 rsass("a {b: rgb(var(--foo), 2, 3, 0.4)}\n").unwrap(),
@@ -351,7 +330,6 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
         fn arg_2() {
             assert_eq!(
                 rsass("a {b: rgb(1, var(--foo), 3, 0.4)}\n").unwrap(),
@@ -359,7 +337,6 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
         fn arg_3() {
             assert_eq!(
                 rsass("a {b: rgb(1, 2, var(--foo), 0.4)}\n").unwrap(),
@@ -367,7 +344,6 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
         fn arg_4() {
             assert_eq!(
                 rsass("a {b: rgb(1, 2, 3, var(--foo))}\n").unwrap(),

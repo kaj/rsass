@@ -1,66 +1,58 @@
 use super::{make_call, Error, SassFunction};
-use crate::css::{CallArgs, Value};
-use crate::value::{ListSeparator, Number, Unit};
+use crate::css::Value;
+use crate::value::{Number, Unit};
+use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Zero};
 use std::collections::BTreeMap;
 
-pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, rgb(red, green, blue), |s| {
-        let red = s.get("red")?;
+fn do_rgba(fn_name: &str, s: &Scope) -> Result<Value, Error> {
+    let a = s.get("alpha")?;
+    let red = s.get("red")?;
+    let red = if red.is_null() { s.get("color")? } else { red };
+    if let Value::Color(rgba, _) = red {
+        let a = if a.is_null() { s.get("green")? } else { a };
+        match a {
+            Value::Numeric(a, ..) => {
+                Ok(Value::rgba(rgba.red, rgba.green, rgba.blue, a.value))
+            }
+            _ => Ok(make_call(
+                fn_name,
+                vec![
+                    int_value(rgba.red),
+                    int_value(rgba.green),
+                    int_value(rgba.blue),
+                    a,
+                ],
+            )),
+        }
+    } else {
         let green = s.get("green")?;
         let blue = s.get("blue")?;
-        if let (Ok(red), Ok(green), Ok(blue)) =
-            (to_int(&red), to_int(&green), to_int(&blue))
-        {
-            Ok(Value::rgba(red, green, blue, Rational::one()))
-        } else {
-            Ok(make_call("rgb", vec![red, green, blue]))
-        }
-    });
-    def!(f, rgba(red, green, blue, alpha, color), |s| {
-        let a = s.get("alpha")?;
-        let red = s.get("red")?;
-        let red = if red.is_null() { s.get("color")? } else { red };
-        if let Value::Color(rgba, _) = red {
-            let a = if a.is_null() { s.get("green")? } else { a };
-            match a {
-                Value::Numeric(a, ..) => {
-                    Ok(Value::rgba(rgba.red, rgba.green, rgba.blue, a.value))
-                }
-                _ => Ok(Value::Call(
-                    "rgba".into(),
-                    CallArgs::from_value(Value::List(
-                        vec![
-                            int_value(rgba.red),
-                            int_value(rgba.green),
-                            int_value(rgba.blue),
-                            a,
-                        ],
-                        ListSeparator::Space,
-                        false,
-                    )),
-                )),
-            }
-        } else {
-            let green = s.get("green")?;
-            let blue = s.get("blue")?;
-            if let (Ok(red), Ok(green), Ok(blue), Ok(alpha)) = (
-                to_int(&red),
-                to_int(&green),
-                to_int(&blue),
-                if a.is_null() {
-                    Ok(Rational::one())
-                } else {
-                    to_rational(&a)
-                },
-            ) {
-                Ok(Value::rgba(red, green, blue, alpha))
+        if let (Ok(red), Ok(green), Ok(blue), Ok(alpha)) = (
+            to_int(&red),
+            to_int(&green),
+            to_int(&blue),
+            if a.is_null() {
+                Ok(Rational::one())
             } else {
-                Ok(make_call("rgba", vec![red, green, blue, a]))
-            }
+                to_rational(&a)
+            },
+        ) {
+            Ok(Value::rgba(red, green, blue, alpha))
+        } else {
+            Ok(make_call(fn_name, vec![red, green, blue, a]))
         }
-    });
+    }
+}
+
+pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
+    def!(f, rgb(red, green, blue, alpha, color), |s| do_rgba(
+        "rgb", s
+    ));
+    def!(f, rgba(red, green, blue, alpha, color), |s| do_rgba(
+        "rgba", s
+    ));
     fn num(v: &Rational) -> Result<Value, Error> {
         Ok(Value::Numeric(Number::from(*v), Unit::None, true))
     }

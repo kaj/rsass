@@ -71,7 +71,6 @@ mod two_args {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn opaque() {
             assert_eq!(
                 rsass("a {b: rgb(#123, 1.1)}\n").unwrap(),
@@ -79,7 +78,6 @@ mod two_args {
             );
         }
         #[test]
-        #[ignore] // failing
         fn transparent() {
             assert_eq!(
                 rsass("a {b: rgb(#123, -0.1)}\n").unwrap(),
@@ -88,7 +86,6 @@ mod two_args {
         }
     }
     #[test]
-    #[ignore] // failing
     fn named() {
         assert_eq!(
             rsass("a {b: rgb($color: #123, $alpha: 0.5)}\n").unwrap(),
@@ -99,7 +96,6 @@ mod two_args {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn opaque() {
             assert_eq!(
                 rsass("a {b: rgb(#123, 1)}\n").unwrap(),
@@ -107,7 +103,6 @@ mod two_args {
             );
         }
         #[test]
-        #[ignore] // failing
         fn partial() {
             assert_eq!(
                 rsass("a {b: rgb(#123, 0.5)}\n").unwrap(),
@@ -115,7 +110,6 @@ mod two_args {
             );
         }
         #[test]
-        #[ignore] // failing
         fn transparent() {
             assert_eq!(
                 rsass("a {b: rgb(#123, 0)}\n").unwrap(),
@@ -127,7 +121,6 @@ mod two_args {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn opaque() {
             assert_eq!(
                 rsass("a {b: rgb(rgba(0, 0, 255, 0.3), 1)}\n").unwrap(),
@@ -135,7 +128,6 @@ mod two_args {
             );
         }
         #[test]
-        #[ignore] // failing
         fn partial() {
             assert_eq!(
                 rsass("a {b: rgb(rgba(0, 0, 255, 0.3), 0.5)}\n").unwrap(),
@@ -143,7 +135,6 @@ mod two_args {
             );
         }
         #[test]
-        #[ignore] // failing
         fn transparent() {
             assert_eq!(
                 rsass("a {b: rgb(rgba(0, 0, 255, 0.3), 0)}\n").unwrap(),
@@ -155,7 +146,6 @@ mod two_args {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn opaque() {
             assert_eq!(
                 rsass("a {b: rgb(transparent, 1)}\n").unwrap(),
@@ -163,7 +153,6 @@ mod two_args {
             );
         }
         #[test]
-        #[ignore] // failing
         fn partial() {
             assert_eq!(
                 rsass("a {b: rgb(transparent, 0.5)}\n").unwrap(),
@@ -171,7 +160,6 @@ mod two_args {
             );
         }
         #[test]
-        #[ignore] // failing
         fn transparent() {
             assert_eq!(
                 rsass("a {b: rgb(transparent, 0)}\n").unwrap(),
