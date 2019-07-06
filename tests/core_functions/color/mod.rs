@@ -622,7 +622,6 @@ mod grayscale {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
     fn alpha() {
         assert_eq!(
             rsass("a {b: grayscale(rgba(#633736, 0.3))}\n").unwrap(),
@@ -640,7 +639,6 @@ mod grayscale {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
     fn max_saturation() {
         assert_eq!(
             rsass("a {b: grayscale(red)}\n").unwrap(),
@@ -648,7 +646,6 @@ mod grayscale {
         );
     }
     #[test]
-    #[ignore] // failing
     fn mid_saturation() {
         assert_eq!(
             rsass("a {b: grayscale(#633736)}\n").unwrap(),
@@ -656,7 +653,6 @@ mod grayscale {
         );
     }
     #[test]
-    #[ignore] // failing
     fn named() {
         assert_eq!(
             rsass("a {b: grayscale($color: white)}\n").unwrap(),
@@ -667,7 +663,6 @@ mod grayscale {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn black() {
             assert_eq!(
                 rsass("a {b: grayscale(black)}\n").unwrap(),
@@ -675,7 +670,6 @@ mod grayscale {
             );
         }
         #[test]
-        #[ignore] // failing
         fn gray() {
             assert_eq!(
                 rsass("a {b: grayscale(#494949)}\n").unwrap(),
@@ -683,7 +677,6 @@ mod grayscale {
             );
         }
         #[test]
-        #[ignore] // failing
         fn white() {
             assert_eq!(
                 rsass("a {b: grayscale(white)}\n").unwrap(),

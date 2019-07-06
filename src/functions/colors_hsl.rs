@@ -127,6 +127,13 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("color", v)),
     });
+    def!(f, grayscale(color), |args| match args.get("color")? {
+        Value::Color(ref rgba, _) => {
+            let (h, _s, l, alpha) = rgba.to_hsla();
+            Ok(Value::hsla(h, Zero::zero(), l, alpha))
+        }
+        v => Ok(make_call("grayscale", vec![v])),
+    });
 }
 
 fn percentage(v: Rational) -> Value {
