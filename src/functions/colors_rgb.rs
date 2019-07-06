@@ -147,6 +147,7 @@ fn to_int(v: &Value) -> Result<Rational, Error> {
 
 fn to_rational(v: &Value) -> Result<Rational, Error> {
     match v {
+        Value::Numeric(num, Unit::Percent, _) => Ok(num.value / 100),
         Value::Numeric(num, ..) => Ok(num.value),
         v => Err(Error::badarg("number", &v)),
     }

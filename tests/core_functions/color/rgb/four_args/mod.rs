@@ -44,7 +44,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
         fn positive() {
             assert_eq!(
                 rsass("a {b: rgb(0, 0, 0, 45.6%)}\n").unwrap(),
