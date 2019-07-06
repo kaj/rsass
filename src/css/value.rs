@@ -39,8 +39,8 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn scalar(v: isize) -> Self {
-        Value::Numeric(Number::from(v), Unit::None, false)
+    pub fn scalar<T: Into<Number>>(v: T) -> Self {
+        Value::Numeric(v.into(), Unit::None, false)
     }
     pub fn bool(v: bool) -> Self {
         if v {

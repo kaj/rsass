@@ -144,7 +144,6 @@ mod alpha {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn multi_args() {
             assert_eq!(
                 rsass("a {b: alpha(c=d, e=f, g=h)}\n").unwrap(),
@@ -152,7 +151,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
         fn one_arg() {
             assert_eq!(
                 rsass("a {b: alpha(c=d)}\n").unwrap(),
@@ -160,7 +158,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
         fn space_before_equals() {
             assert_eq!(
                 rsass("a {b: alpha(unquote(\"c = d\"))}\n").unwrap(),

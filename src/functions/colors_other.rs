@@ -1,6 +1,6 @@
 use super::{make_call, Error, SassFunction};
 use crate::css::Value;
-use crate::value::{Number, Quotes, Unit};
+use crate::value::{Quotes, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
@@ -90,16 +90,14 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     );
 
-    fn opacity(color: Value) -> Result<Value, Error> {
-        match color {
-            Value::Color(ref rgba, _) => {
-                Ok(Value::Numeric(Number::from(rgba.alpha), Unit::None, true))
-            }
-            v => Ok(make_call("opacity", vec![v])),
-        }
-    }
-    f.insert("opacity", func2!(opacity(color)));
-    f.insert("alpha", func2!(opacity(color)));
+    def!(f, opacity(color), |args| match args.get("color")? {
+        Value::Color(ref rgba, _) => Ok(Value::scalar(rgba.alpha)),
+        v => Ok(make_call("opacity", vec![v])),
+    });
+    def!(f, alpha(color), |args| match args.get("color")? {
+        Value::Color(ref rgba, _) => Ok(Value::scalar(rgba.alpha)),
+        v => Ok(make_call("alpha", vec![v])),
+    });
 
     fn fade_in(color: Value, amount: Value) -> Result<Value, Error> {
         match (color, amount) {
