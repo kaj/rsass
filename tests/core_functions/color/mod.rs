@@ -1128,7 +1128,6 @@ mod mix {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn even() {
             assert_eq!(
                 rsass("a {b: mix(rgba(#91e16f, 0.3), rgba(#0144bf, 0.3))}\n")
@@ -1144,7 +1143,6 @@ mod mix {
             );
         }
         #[test]
-        #[ignore] // failing
         fn firstwards() {
             assert_eq!(
                 rsass("a {b: mix(rgba(#91e16f, 0.8), rgba(#0144bf, 0.3))}\n")
@@ -1160,7 +1158,6 @@ mod mix {
             );
         }
         #[test]
-        #[ignore] // failing
         fn lastwards() {
             assert_eq!(
                 rsass("a {b: mix(rgba(#91e16f, 0.4), rgba(#0144bf, 0.9))}\n")
@@ -1173,7 +1170,6 @@ mod mix {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn contradiction() {
             assert_eq!(
         rsass(
@@ -1187,7 +1183,6 @@ mod mix {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
             fn firstwards() {
                 assert_eq!(
         rsass("a {b: mix(rgba(#91e16f, 0.8), rgba(#0144bf, 0.3), 63%)}\n")
@@ -1196,7 +1191,6 @@ mod mix {
     );
             }
             #[test]
-            #[ignore] // failing
             fn lastwards() {
                 assert_eq!(
         rsass("a {b: mix(rgba(#91e16f, 0.2), rgba(#0144bf, 0.7), 42%)}\n")
@@ -1227,7 +1221,6 @@ mod mix {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
             fn first() {
                 assert_eq!(
         rsass("a {b: mix(rgba(#91e16f, 0.2), rgba(#0144bf, 0.7), 100%)}\n")
@@ -1236,7 +1229,6 @@ mod mix {
     );
             }
             #[test]
-            #[ignore] // failing
             fn last() {
                 assert_eq!(
         rsass("a {b: mix(rgba(#91e16f, 0.2), rgba(#0144bf, 0.7), 0%)}\n")

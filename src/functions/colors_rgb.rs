@@ -2,7 +2,7 @@ use super::{make_call, Error, SassFunction};
 use crate::css::{CallArgs, Value};
 use crate::value::{ListSeparator, Number, Unit};
 use num_rational::Rational;
-use num_traits::One;
+use num_traits::{One, Zero};
 use std::collections::BTreeMap;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
@@ -86,20 +86,26 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Color(b, _),
             Value::Numeric(w, wu, ..),
         ) => {
-            let w = if wu == Unit::Percent {
+            let p = if wu == Unit::Percent {
                 w.value / 100
             } else {
                 w.value
             };
             let one = Rational::one();
-            let w2 = one - (one - w * a.alpha) * b.alpha;
-            let m_c = |a, b| a * w2 + b * (one - w2);;
-            let m_a = |a, b| a * w + b * (one - w);
+            let w = p * 2 - one;
+            let wa = a.alpha - b.alpha;
+
+            let divis = w * wa + 1;
+            let w1 =
+                (if divis.is_zero() { w } else { (w + wa) / divis } + 1) / 2;
+            let w2 = one - w1;
+
+            let m_c = |c1, c2| w1 * c1 + w2 * c2;
             Ok(Value::rgba(
                 m_c(a.red, b.red),
                 m_c(a.green, b.green),
                 m_c(a.blue, b.blue),
-                m_a(a.alpha, b.alpha),
+                a.alpha * p + b.alpha * (one - p),
             ))
         }
         (color1, color2, weight) => Err(Error::badargs(
