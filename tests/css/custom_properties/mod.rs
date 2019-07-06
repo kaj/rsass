@@ -129,7 +129,7 @@ fn trailing_whitespace() {
             ".trailing-whitespace {\n  --space: value ;\n  --tab: value\t;\n  --newline: value\n;\n  --before-closing-brace: value\n}\n"
         )
         .unwrap(),
-        ".trailing-whitespace {\n  --space: value ;\n  --tab: value ;\n  --newline: value ;\n  --before-closing-brace: value ;\n}\n"
+        ".trailing-whitespace {\n  --space: value ;\n  --tab: value\t;\n  --newline: value\n;\n  --before-closing-brace: value\n;\n}\n"
     );
 }
 
@@ -154,6 +154,6 @@ fn without_semicolon() {
             ".simple-value {\n  // A custom property at the end of a style rule doesn\'t need a semicolon.\n  --without-semicolon: value\n}\n\n.bracketed-value {\n  --without-semicolon: {\n    a: b\n  }\n}\n"
         )
         .unwrap(),
-        ".simple-value {\n  --without-semicolon: value ;\n}\n.bracketed-value {\n  --without-semicolon: {\n    a: b\n  } ;\n}\n"
+        ".simple-value {\n  --without-semicolon: value\n;\n}\n.bracketed-value {\n  --without-semicolon: {\n    a: b\n  }\n;\n}\n"
     );
 }

@@ -17,11 +17,14 @@ else
    git clone https://github.com/sass/sass-spec.git >&2
 fi
 
-IMPL=rsass
+IMPL=libsass
 check() {
     cargo build --release --features=commandline >&2
-    LC_ALL=C sass-spec/sass-spec.rb -c target/release/rsass \
-	  --impl $IMPL -V 4.0 sass-spec/spec/$1
+    echo "About to test $1"
+    (cd sass-spec && \
+	 bundle install && \
+	 bundle exec sass-spec.rb -c '../target/release/rsass' \
+		--impl $IMPL spec/$1)
 }
 
 list_fails() {
@@ -40,9 +43,6 @@ case "$1" in
 	echo "Examples: basic core_functions selector-functions"
 	echo "          scss parser values"
 	;;
-    "impersonate")
-        IMPL=libsass check | list_fails
-        ;;
     "stats")
 	check \
             | rg --no-line-number '^([0-9]+) runs, ([0-9]+) assertions.*' \

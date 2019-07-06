@@ -696,7 +696,7 @@ mod unit {
     fn multiple_denominators() {
         assert_eq!(
             rsass("a {b: unit(1 / 1px / 3em / 4rad)}\n").unwrap(),
-            "a {\n  b: \"(px*em*rad)^-1\";\n}\n"
+            "a {\n  b: \"/em*px*rad\";\n}\n"
         );
     }
     #[test]
@@ -704,7 +704,7 @@ mod unit {
     fn multiple_numerators() {
         assert_eq!(
             rsass("a {b: unit(1px * 1em * 1rad)}\n").unwrap(),
-            "a {\n  b: \"px*em*rad\";\n}\n"
+            "a {\n  b: \"em*px*rad\";\n}\n"
         );
     }
     #[test]
@@ -729,7 +729,7 @@ mod unit {
         fn multiple() {
             assert_eq!(
                 rsass("a {b: unit(1px * 1em / 1rad / 1s)}\n").unwrap(),
-                "a {\n  b: \"px*em/rad*s\";\n}\n"
+                "a {\n  b: \"em*px/rad*s\";\n}\n"
             );
         }
         #[test]
@@ -746,7 +746,7 @@ mod unit {
     fn one_denominator() {
         assert_eq!(
             rsass("a {b: unit(1/1px)}\n").unwrap(),
-            "a {\n  b: \"px^-1\";\n}\n"
+            "a {\n  b: \"/px\";\n}\n"
         );
     }
     #[test]

@@ -61,11 +61,10 @@ mod comment {
     );
     }
     #[test]
-    #[ignore] // failing
     fn weird_indentation() {
         assert_eq!(
             rsass(".foo {\n    /* Foo\n Bar\nBaz */\n  a: b; }\n").unwrap(),
-            ".foo {\n  /* Foo\n   Bar\n  Baz */\n  a: b;\n}\n"
+            ".foo {\n  /* Foo\n Bar\nBaz */\n  a: b;\n}\n"
         );
     }
 }
@@ -159,10 +158,11 @@ mod selector {
             #[allow(unused)]
             use super::rsass;
             #[test]
+            #[ignore] // failing
             fn after_string() {
                 assert_eq!(
                     rsass("[a=\"b\"i] {c: d}\n").unwrap(),
-                    "[a=b i] {\n  c: d;\n}\n"
+                    "[a=\"b\" i] {\n  c: d;\n}\n"
                 );
             }
             #[test]

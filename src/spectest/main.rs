@@ -399,8 +399,9 @@ fn load_test_fixture_hrx(
     prefix: &str,
 ) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
-    static EXPECTED_OUTPUT_FILENAME: &str = "output.css";
-    static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
+    static EXPECTED_OUTPUT_FILENAMES: &[&str] =
+        &["output-libsass.css", "output.css"];
+    static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-libsass", "error"];
 
     let options =
         if let Some(yml) = archive.get(&format!("{}options.yml", prefix)) {
@@ -411,15 +412,17 @@ fn load_test_fixture_hrx(
 
     if let Some(input) = archive.get(&format!("{}{}", prefix, INPUT_FILENAME))
     {
-        if let Some(output) =
-            archive.get(&format!("{}{}", prefix, EXPECTED_OUTPUT_FILENAME))
-        {
-            return Ok(TestFixture::new_ok(
-                name,
-                input.to_string(),
-                output,
-                options,
-            ));
+        for filename in EXPECTED_OUTPUT_FILENAMES {
+            if let Some(output) =
+                archive.get(&format!("{}{}", prefix, filename))
+            {
+                return Ok(TestFixture::new_ok(
+                    name,
+                    input.to_string(),
+                    output,
+                    options,
+                ));
+            }
         }
         for filename in EXPECTED_ERROR_FILENAMES {
             if let Some(error) =

@@ -44,11 +44,10 @@ mod hsl {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn above_max() {
             assert_eq!(
                 rsass("a {b: change-color(red, $hue: 540)}\n").unwrap(),
-                "a {\n  b: aqua;\n}\n"
+                "a {\n  b: cyan;\n}\n"
             );
         }
         #[test]
@@ -80,11 +79,10 @@ mod hsl {
             );
         }
         #[test]
-        #[ignore] // failing
         fn negative() {
             assert_eq!(
                 rsass("a {b: change-color(red, $hue: -60)}\n").unwrap(),
-                "a {\n  b: fuchsia;\n}\n"
+                "a {\n  b: magenta;\n}\n"
             );
         }
     }

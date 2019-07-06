@@ -11,11 +11,10 @@ mod adjust_hue {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
     fn above_max() {
         assert_eq!(
             rsass("a {b: adjust-hue(red, 540)}\n").unwrap(),
-            "a {\n  b: aqua;\n}\n"
+            "a {\n  b: cyan;\n}\n"
         );
     }
     #[test]
@@ -77,11 +76,10 @@ mod adjust_hue {
         );
     }
     #[test]
-    #[ignore] // failing
     fn negative() {
         assert_eq!(
             rsass("a {b: adjust-hue(red, -180)}\n").unwrap(),
-            "a {\n  b: aqua;\n}\n"
+            "a {\n  b: cyan;\n}\n"
         );
     }
 }
@@ -290,19 +288,17 @@ mod complement {
         }
     }
     #[test]
-    #[ignore] // failing
     fn named() {
         assert_eq!(
             rsass("a {b: complement($color: red)}\n").unwrap(),
-            "a {\n  b: aqua;\n}\n"
+            "a {\n  b: cyan;\n}\n"
         );
     }
     #[test]
-    #[ignore] // failing
     fn red() {
         assert_eq!(
             rsass("a {b: complement(red)}\n").unwrap(),
-            "a {\n  b: aqua;\n}\n"
+            "a {\n  b: cyan;\n}\n"
         );
     }
     #[test]

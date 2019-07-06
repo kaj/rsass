@@ -347,7 +347,7 @@ mod quote {
     fn escape() {
         assert_eq!(
             rsass("a {b: quote(\\0)}\n").unwrap(),
-            "a {\n  b: \"\\\\0 \";\n}\n"
+            "a {\n  b: \"\\\\0\";\n}\n"
         );
     }
     #[test]

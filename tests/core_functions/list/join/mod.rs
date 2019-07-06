@@ -637,7 +637,7 @@ mod single {
             "@import \"core_functions/list/utils\";\n\n$result: join(c, ());\na {\n  value: inspect($result);\n  type: type-of($result);\n\n  // Note: LibSass\'s output here is strange but not strictly-speaking wrong.\n  // See sass/libsass#2926 for details.\n  separator: real-separator($result);\n}\n"
         )
         .unwrap(),
-        "a {\n  value: c;\n  type: list;\n  separator: space;\n}\n"
+        "a {\n  value: (c,);\n  type: list;\n  separator: space;\n}\n"
     );
             }
         }
@@ -666,7 +666,7 @@ mod single {
             "@import \"core_functions/list/utils\";\n\n$result: join((), c);\na {\n  value: inspect($result);\n  type: type-of($result);\n\n  // Note: LibSass\'s output here is strange but not strictly-speaking wrong.\n  // See sass/libsass#2926 for details.\n  separator: real-separator($result);\n}\n"
         )
         .unwrap(),
-        "a {\n  value: c;\n  type: list;\n  separator: space;\n}\n"
+        "a {\n  value: (c,);\n  type: list;\n  separator: space;\n}\n"
     );
             }
         }
