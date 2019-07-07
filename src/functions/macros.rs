@@ -3,11 +3,10 @@ macro_rules! one_arg {
         (stringify!($name).into(), $crate::sass::Value::Null)
     };
     ($name:ident = $value:expr) => {{
-        use nom::types::CompleteByteSlice as Input;
         use $crate::parser::value::value_expression;
         (
             stringify!($name).into(),
-            value_expression(Input($value)).unwrap().1,
+            value_expression($value).unwrap().1,
         )
     }};
 }

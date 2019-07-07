@@ -5,7 +5,6 @@ use crate::parser::parse_scss_file;
 use crate::sass::{FormalArgs, Item};
 use crate::selectors::{Selector, SelectorPart, Selectors};
 use crate::variablescope::{Scope, ScopeImpl};
-use nom::types::CompleteByteSlice as Input;
 use std::fmt;
 use std::io::Write;
 use std::str::FromStr;
@@ -774,7 +773,7 @@ fn eval_selectors(s: &Selectors, scope: &Scope) -> Result<Selectors, Error> {
     // contain high-level selector separators (i.e. ","), so we need to
     // parse the selectors again, from a string representation.
     use crate::parser::selectors::selectors;
-    Ok(selectors(Input(format!("{} ", s).as_bytes()))?.1)
+    Ok(selectors(format!("{} ", s).as_bytes())?.1)
 }
 
 struct CssWriter {

@@ -5,18 +5,21 @@ use super::util::{opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string};
 use crate::sass::{SassString, Value};
 use crate::value::{ListSeparator, Number, Operator, Rgba};
-use nom::multispace;
-use nom::types::CompleteByteSlice as Input;
+use nom::branch::alt;
+use nom::bytes::complete::{tag, tag_no_case};
+use nom::character::complete::{multispace0, multispace1, one_of};
+use nom::combinator::{map, opt, value};
+use nom::sequence::{pair, preceded, terminated, tuple};
 use nom::*;
 use num_rational::Rational;
 use std::str::from_utf8;
 
-named!(pub value_expression<Input, Value>,
+named!(pub value_expression<Value>,
        do_parse!(
            result: separated_nonempty_list!(
-               complete!(preceded!(tag!(","), opt_spacelike)),
+               complete!(preceded!(tag(","), opt_spacelike)),
                space_list) >>
-           trail: many0!(delimited!(opt_spacelike, tag!(","),
+           trail: many0!(delimited!(opt_spacelike, tag(","),
                                     opt_spacelike)) >>
            (if result.len() == 1 && trail.is_empty() {
                result.into_iter().next().unwrap()
@@ -24,14 +27,14 @@ named!(pub value_expression<Input, Value>,
                Value::List(result, ListSeparator::Comma, false, false)
            })));
 
-named!(pub space_list<Input, Value>,
+named!(pub space_list<Value>,
        do_parse!(first: se_or_ext_string >>
                  list: fold_many0!(
-                     pair!(opt!(multispace), se_or_ext_string),
+                     pair!(multispace0, se_or_ext_string),
                      (vec![first], false),
                      |(mut list, mut unreq): (Vec<Value>, bool), (s, item)| {
                          let mut appended = false;
-                         if let (None, &Value::Literal(ref s2)) = (s, &item) {
+                         if let (b"", &Value::Literal(ref s2)) = (s, &item) {
                              if let Some(&mut Value::Literal(ref mut s1)) =
                                  list.last_mut()
                              {
@@ -57,23 +60,23 @@ named!(pub space_list<Input, Value>,
                  })));
 
 named!(
-    se_or_ext_string<Input, Value>,
-    alt_complete!(single_expression | map!(sass_string_ext, Value::Literal))
+    se_or_ext_string<Value>,
+    alt!(single_expression | map!(sass_string_ext, Value::Literal))
 );
 
 named!(
-    single_expression<Input, Value>,
+    single_expression<Value>,
     do_parse!(
         a: logic_expression
             >> r: fold_many0!(
                 pair!(
                     delimited!(
-                        opt!(multispace),
-                        alt_complete!(
-                            value!(Operator::And, tag!("and"))
-                                | value!(Operator::Or, tag!("or"))
+                        multispace0,
+                        alt!(
+                            value!(Operator::And, tag("and"))
+                                | value!(Operator::Or, tag("or"))
                         ),
-                        multispace
+                        multispace1
                     ),
                     single_expression
                 ),
@@ -91,22 +94,22 @@ named!(
 );
 
 named!(
-    logic_expression<Input, Value>,
+    logic_expression<Value>,
     do_parse!(
         a: sum_expression
             >> r: fold_many0!(
                 pair!(
                     delimited!(
-                        opt!(multispace),
-                        alt_complete!(
-                            value!(Operator::Equal, tag!("=="))
-                                | value!(Operator::NotEqual, tag!("!="))
-                                | value!(Operator::GreaterE, tag!(">="))
-                                | value!(Operator::Greater, tag!(">"))
-                                | value!(Operator::LesserE, tag!("<="))
-                                | value!(Operator::Lesser, tag!("<"))
+                        multispace0,
+                        alt!(
+                            value!(Operator::Equal, tag("=="))
+                                | value!(Operator::NotEqual, tag("!="))
+                                | value!(Operator::GreaterE, tag(">="))
+                                | value!(Operator::Greater, tag(">"))
+                                | value!(Operator::LesserE, tag("<="))
+                                | value!(Operator::Lesser, tag("<"))
                         ),
-                        opt!(multispace)
+                        multispace0
                     ),
                     sum_expression
                 ),
@@ -123,75 +126,59 @@ named!(
     )
 );
 
-named!(
-    sum_expression<Input, Value>,
-    do_parse!(
-        a: term_value
-            >> r: fold_many0!(
-                alt_complete!(
-                    do_parse!(
-                        op: alt_complete!(
-                            value!(Operator::Plus, tag!("+"))
-                                | value!(Operator::Minus, tag!("-"))
-                        ) >> opt!(spacelike2)
-                            >> b: term_value
-                            >> (op, b)
-                    ) | do_parse!(
-                        spacelike2
-                            >> op: alt_complete!(
-                                value!(Operator::Plus, tag!("+"))
-                                    | value!(Operator::Minus, tag!("-"))
-                            )
-                            >> spacelike2
-                            >> b: term_value
-                            >> (op, b)
-                    )
-                ),
-                a,
-                |a, (op, b)| Value::BinOp(
-                    Box::new(a),
-                    false,
-                    op,
-                    false,
-                    Box::new(b)
-                )
-            )
-            >> (r)
-    )
-);
+fn sum_expression(input: &[u8]) -> IResult<&[u8], Value> {
+    let (mut rest, mut v) = term_value(input)?;
+    while let Ok((nrest, (op, v2))) = alt((
+        pair(
+            alt((
+                value(Operator::Plus, tag("+")),
+                value(Operator::Minus, tag("-")),
+            )),
+            preceded(opt(spacelike2), term_value),
+        ),
+        pair(
+            preceded(
+                spacelike2,
+                alt((
+                    value(Operator::Plus, tag("+")),
+                    value(Operator::Minus, tag("-")),
+                )),
+            ),
+            preceded(spacelike2, term_value),
+        ),
+    ))(rest)
+    {
+        v = Value::BinOp(Box::new(v), false, op, false, Box::new(v2));
+        rest = nrest;
+    }
+    Ok((rest, v))
+}
 
-named!(
-    term_value<Input, Value>,
-    do_parse!(
-        one: single_value
-            >> all: fold_many0!(
-                tuple!(
-                    map!(opt!(multispace), |s| s.is_some()),
-                    alt_complete!(
-                        value!(Operator::Multiply, tag!("*"))
-                            | value!(Operator::Div, tag!("/"))
-                    ),
-                    map!(opt!(multispace), |s| s.is_some()),
-                    map!(opt!(single_value), |v| v.unwrap_or(Value::Null))
-                ),
-                one,
-                |a, (s1, op, s2, b)| Value::BinOp(
-                    Box::new(a),
-                    s1,
-                    op,
-                    s2,
-                    Box::new(b)
-                )
-            )
-            >> (all)
-    )
-);
+fn term_value(input: &[u8]) -> IResult<&[u8], Value> {
+    let (mut rest, mut v) = single_value(input)?;
+    while let Ok((nrest, (s1, op, s2, v2))) = tuple((
+        map(multispace0, |s: &[u8]| !s.is_empty()),
+        alt((
+            value(Operator::Multiply, tag(b"*")),
+            value(Operator::Div, tag(b"/")),
+        )),
+        map(multispace0, |s: &[u8]| !s.is_empty()),
+        map(opt(single_value), |v: Option<Value>| {
+            v.unwrap_or(Value::Null)
+        }),
+    ))(rest)
+    {
+        rest = nrest;
+        v = Value::BinOp(Box::new(v), s1, op, s2, Box::new(v2));
+    }
+    Ok((rest, v))
+}
 
-named!(pub single_value<Input, Value>,
-       alt_complete!(
+named!(pub single_value<&[u8], Value>,
+       alt!(
            simple_value |
-           delimited!(preceded!(tag!("("), opt_spacelike),
-                      alt_complete!(
+           delimited!(preceded!(tag("("), opt_spacelike),
+                      alt!(
                           dictionary_inner |
                           map!(value_expression,
                                |v| Value::Paren(Box::new(v))) |
@@ -199,40 +186,40 @@ named!(pub single_value<Input, Value>,
                               vec![], ListSeparator::Space, false, false
                           ))
                       ),
-                      terminated!(opt_spacelike, tag!(")")))
+                      terminated!(opt_spacelike, tag(")")))
                ));
 
-named!(
-    simple_value<Input, Value>,
-    alt_complete!(
-        bang
-            | value!(Value::True, tag!("true"))
-            | value!(Value::False, tag!("false"))
-            | value!(Value::HereSelector, tag!("&"))
-            | unicode_range
-            | bracket_list
-            | number
-            | variable
-            | hex_color
-            | value!(Value::Null, tag!("null"))
-            // Really ugly special case ... sorry.
-            | value!(Value::Literal("-null".into()), tag!("-null"))
-            | unary_op
-            | function_call
-            // And a bunch of string variants
-            | map!(sass_string, literal_or_color)
-            | map!(sass_string_dq, Value::Literal)
-            | map!(sass_string_sq, Value::Literal)
-    )
-);
+fn simple_value(input: &[u8]) -> IResult<&[u8], Value> {
+    let s_v = alt((
+        bang,
+        value(Value::True, tag("true")),
+        value(Value::False, tag("false")),
+        value(Value::HereSelector, tag("&")),
+        unicode_range,
+        bracket_list,
+        number,
+        variable,
+        hex_color,
+        value(Value::Null, tag("null")),
+        // Really ugly special case ... sorry.
+        value(Value::Literal("-null".into()), tag("-null")),
+        unary_op,
+        function_call,
+        // And a bunch of string variants
+        map(sass_string, literal_or_color),
+        map(sass_string_dq, Value::Literal),
+        map(sass_string_sq, Value::Literal),
+    ));
+    Ok(s_v(input)?)
+}
 
 named!(
-    bang<Input, Value>,
+    bang<Value>,
     map!(
         map_res!(
             preceded!(
-                pair!(tag!("!"), opt_spacelike),
-                tag!("important") // TODO Pretty much anythig goes, here?
+                pair!(tag("!"), opt_spacelike),
+                tag("important") // TODO Pretty much anythig goes, here?
             ),
             input_to_string
         ),
@@ -241,28 +228,39 @@ named!(
 );
 
 named!(
-    unicode_range<Input, Value>,
-    map!(map_res!(
-        recognize!(do_parse!(
-            tag_no_case!("U+")
-                >> a: many_m_n!(0, 6, one_of!("0123456789ABCDEFabcdef"))
-                >> alt_complete!(
-                    preceded!(
-                        tag!("-"),
-                        many_m_n!(1, 6, one_of!("0123456789ABCDEFabcdef"))
-                    ) | many_m_n!(1, 6 - a.len(), one_of!("?"))
-                        | value!(vec![])
-                )
-                >> ()
-        )),
-        input_to_string), Value::UnicodeRange
+    unicode_range<Value>,
+    map!(
+        map_res!(
+            recognize!(do_parse!(
+                call!(tag_no_case("U+"))
+                    >> a: many_m_n!(
+                        0,
+                        6,
+                        call!(one_of("0123456789ABCDEFabcdef"))
+                    )
+                    >> alt!(
+                        preceded!(
+                            tag("-"),
+                            many_m_n!(
+                                1,
+                                6,
+                                call!(one_of("0123456789ABCDEFabcdef"))
+                            )
+                        ) | many_m_n!(1, 6 - a.len(), call!(one_of("?")))
+                            | value!(vec![])
+                    )
+                    >> ()
+            )),
+            input_to_string
+        ),
+        Value::UnicodeRange
     )
 );
 
 named!(
-    bracket_list<Input, Value>,
+    bracket_list<Value>,
     map!(
-        delimited!(tag!("["), opt!(value_expression), tag!("]")),
+        delimited!(tag("["), opt!(value_expression), tag("]")),
         |item| match item {
             Some(Value::List(list, sep, false, _)) => {
                 Value::List(list, sep, true, false)
@@ -276,10 +274,10 @@ named!(
 );
 
 named!(
-    number<Input, Value>,
+    number<Value>,
     map!(
         tuple!(
-            opt!(alt!(tag!("-") | tag!("+"))),
+            opt!(alt((tag("-"), tag("+")))),
             alt!(
                 map!(
                     pair!(decimal_integer, opt!(decimal_decimals)),
@@ -290,8 +288,8 @@ named!(
         ),
         |(sign, (lead_zero, num), unit)| Value::Numeric(
             Number {
-                value: if sign == Some(Input(b"-")) { -num } else { num },
-                plus_sign: sign == Some(Input(b"+")),
+                value: if sign == Some(b"-") { -num } else { num },
+                plus_sign: sign == Some(b"+"),
                 lead_zero,
             },
             unit,
@@ -300,13 +298,13 @@ named!(
 );
 
 named!(
-    decimal_integer<Input, Rational>,
+    decimal_integer<Rational>,
     map!(
         fold_many1!(
             // Note: We should use bytes directly, one_of returns a char.
             // Also, rustc 1.25 and earlier does not have isize::from(u8),
             // so use i8 for bytes.
-            one_of!("0123456789"),
+            one_of("0123456789"),
             0,
             |r, d| r * 10 + isize::from(d as i8 - b'0' as i8)
         ),
@@ -315,10 +313,10 @@ named!(
 );
 
 named!(
-    decimal_decimals<Input, Rational>,
+    decimal_decimals<Rational>,
     map!(
         preceded!(
-            complete!(tag!(".")),
+            complete!(tag(".")),
             fold_many1!(one_of!("0123456789"), (0, 1), |(r, n), d| (
                 r * 10 + isize::from(d as i8 - b'0' as i8),
                 n * 10
@@ -329,20 +327,20 @@ named!(
 );
 
 named!(
-    variable<Input, Value>,
-    map!(preceded!(tag!("$"), name), Value::Variable)
+    variable<Value>,
+    map!(preceded!(tag("$"), name), Value::Variable)
 );
 
 named!(
-    hex_color<Input, Value>,
+    hex_color<Value>,
     preceded!(
-        tag!("#"),
+        tag("#"),
         map!(
             alt!(
                 tuple!(hexchar2, hexchar2, hexchar2, opt!(hexchar2))
                     | tuple!(hexchar, hexchar, hexchar, opt!(hexchar))
             ),
-            |(r, g, b, a): (Input, Input, Input, Option<Input>)| Value::Color(
+            |(r, g, b, a): (&[u8], &[u8], &[u8], Option<&[u8]>)| Value::Color(
                 Rgba::from_rgba(
                     from_hex(&r),
                     from_hex(&g),
@@ -362,18 +360,15 @@ named!(
 );
 
 named!(
-    unary_op<Input, Value>,
+    unary_op<Value>,
     map!(
         pair!(
             terminated!(
-                alt!(
-                    value!(Operator::Plus, tag!("+"))
-                        | value!(Operator::Minus, tag!("-"))
-                        | value!(
-                            Operator::Not,
-                            terminated!(tag!("not"), spacelike2)
-                        )
-                ),
+                alt((
+                    value(Operator::Plus, tag("+")),
+                    value(Operator::Minus, tag("-")),
+                    value(Operator::Not, terminated(tag("not"), spacelike2)),
+                )),
                 opt_spacelike
             ),
             single_value
@@ -383,7 +378,7 @@ named!(
 );
 
 named!(
-    pub function_call<Input, Value>,
+    pub function_call<Value>,
     map!(
         pair!(sass_string, call_args),
         |(name, args)| Value::Call(name, args)
@@ -399,9 +394,9 @@ fn literal_or_color(s: SassString) -> Value {
     Value::Literal(s)
 }
 
-named!(hexchar<Input, Input>, recognize!(one_of!("0123456789ABCDEFabcdef")));
+named!(hexchar<&[u8]>, recognize!(one_of("0123456789ABCDEFabcdef")));
 
-named!(hexchar2<Input, Input>, recognize!(pair!(hexchar, hexchar)));
+named!(hexchar2<&[u8]>, recognize!(pair(hexchar, hexchar)));
 
 fn from_hex(v: &[u8]) -> u8 {
     let i = u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap();
@@ -412,26 +407,26 @@ fn from_hex(v: &[u8]) -> u8 {
     }
 }
 
-named!(pub dictionary<Input, Value>,
-       delimited!(preceded!(tag!("("), opt_spacelike),
+named!(pub dictionary<Value>,
+       delimited!(preceded!(tag("("), opt_spacelike),
                   dictionary_inner,
-                  terminated!(opt_spacelike, tag!(")"))));
+                  terminated!(opt_spacelike, tag(")"))));
 
 named!(
-    dictionary_inner<Input, Value>,
+    dictionary_inner<Value>,
     map!(
         terminated!(
             separated_nonempty_list!(
-                delimited!(opt_spacelike, tag!(","), opt_spacelike),
+                delimited!(opt_spacelike, tag(","), opt_spacelike),
                 pair!(
                     simple_value,
                     preceded!(
-                        delimited!(opt_spacelike, tag!(":"), opt_spacelike),
+                        delimited!(opt_spacelike, tag(":"), opt_spacelike),
                         space_list
                     )
                 )
             ),
-            opt!(delimited!(opt_spacelike, tag!(","), opt_spacelike))
+            opt!(delimited!(opt_spacelike, tag(","), opt_spacelike))
         ),
         |items| Value::Map(items.into_iter().collect())
     )
@@ -730,15 +725,12 @@ mod test {
     }
 
     fn check_expr(expr: &str, value: Value) {
-        assert_eq!(
-            value_expression(Input(expr.as_bytes())),
-            Ok((Input(b";"), value))
-        )
+        assert_eq!(value_expression(expr.as_bytes()), Ok((&b";"[..], value)))
     }
 
     #[test]
     fn parse_extended_literal() {
-        let t = value_expression_eof(Input(b"http://#{\")\"}.com/"));
+        let t = value_expression_eof(b"http://#{\")\"}.com/");
         if let &Ok((rest, ref result)) = &t {
             assert_eq!(
                 (
@@ -748,7 +740,7 @@ mod test {
                     ),
                     rest
                 ),
-                ("http://).com/".to_string(), Input(b""))
+                ("http://).com/".to_string(), &b""[..])
             );
         } else {
             assert_eq!(format!("{:?}", t), "Done")
@@ -756,7 +748,7 @@ mod test {
     }
     #[test]
     fn parse_extended_literal_in_arg() {
-        let t = value_expression_eof(Input(b"url(http://#{\")\"}.com/)"));
+        let t = value_expression_eof(b"url(http://#{\")\"}.com/)");
         if let &Ok((rest, ref result)) = &t {
             assert_eq!(
                 (
@@ -766,7 +758,7 @@ mod test {
                     ),
                     rest
                 ),
-                ("url(http://).com/)".to_string(), Input(b""))
+                ("url(http://).com/)".to_string(), &b""[..])
             );
         } else {
             assert_eq!(format!("{:?}", t), "Done")
@@ -774,7 +766,7 @@ mod test {
     }
     #[test]
     fn parse_extended_literal_in_arg_2() {
-        let t = value_expression_eof(Input(b"url(//#{\")\"}.com/)"));
+        let t = value_expression_eof(b"url(//#{\")\"}.com/)");
         if let &Ok((rest, ref result)) = &t {
             assert_eq!(
                 (
@@ -784,7 +776,7 @@ mod test {
                     ),
                     rest
                 ),
-                ("url(//).com/)".to_string(), Input(b""))
+                ("url(//).com/)".to_string(), &b""[..])
             );
         } else {
             assert_eq!(format!("{:?}", t), "Done")
@@ -792,7 +784,7 @@ mod test {
     }
 
     named!(
-        value_expression_eof<Input, Value>,
+        value_expression_eof<Value>,
         terminated!(value_expression, eof!())
     );
 
