@@ -6,28 +6,25 @@ use nom::branch::alt;
 use nom::bytes::complete::{is_a, tag};
 use nom::character::complete::one_of;
 use nom::combinator::{map, map_res, opt, value};
+use nom::multi::{many1, separated_nonempty_list};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
-use nom::*;
+use nom::IResult;
 
-named!(pub selectors<Selectors>,
-       map!(
-           separated_nonempty_list!(
-               terminated(tag(","), opt(is_a(", \t\n"))),
-               //complete!(do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ())),
-               selector),
-           Selectors::new
-       )
-);
+pub fn selectors(input: &[u8]) -> IResult<&[u8], Selectors> {
+    let (input, v) = separated_nonempty_list(
+        terminated(tag(","), opt(is_a(", \t\n"))),
+        selector,
+    )(input)?;
+    Ok((input, Selectors::new(v)))
+}
 
-named!(pub selector<Selector>,
-       map!(many1!(selector_part),
-            |s: Vec<SelectorPart>| {
-                let mut s = s;
-                if s.last() == Some(&SelectorPart::Descendant) {
-                    s.pop();
-                }
-                Selector(s)
-            }));
+pub fn selector(input: &[u8]) -> IResult<&[u8], Selector> {
+    let (input, mut s) = many1(selector_part)(input)?;
+    if s.last() == Some(&SelectorPart::Descendant) {
+        s.pop();
+    }
+    Ok((input, Selector(s)))
+}
 
 fn selector_part(input: &[u8]) -> IResult<&[u8], SelectorPart> {
     alt((
