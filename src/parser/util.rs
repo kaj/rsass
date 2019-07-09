@@ -1,59 +1,52 @@
+use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::multispace1;
-use nom::combinator::opt;
-use nom::sequence::terminated;
-use nom::*;
+use nom::combinator::{map, not, opt, recognize, value};
+use nom::multi::{fold_many0, fold_many1, many0};
+use nom::sequence::{preceded, terminated};
+use nom::IResult;
 
-named!(pub spacelike<()>,
-       fold_many1!(alt!(ignore_space |ignore_lcomment),
-                   (),
-                   |(), ()| ()));
-named!(pub spacelike2<()>,
-       terminated!(spacelike,
-                   ignore_comments));
+pub fn spacelike(input: &[u8]) -> IResult<&[u8], ()> {
+    fold_many1(alt((ignore_space, ignore_lcomment)), (), |(), ()| ())(input)
+}
 
-named!(
-    pub opt_spacelike<&[u8], ()>,
-    map!(many0!(alt!(ignore_space | ignore_lcomment)), |_| ())
-    /*
-    fold_many0!(alt!(ignore_space | ignore_lcomment),
-                (),
-                |(), ()| ())
-     */
-);
+pub fn spacelike2(input: &[u8]) -> IResult<&[u8], ()> {
+    terminated(spacelike, ignore_comments)(input)
+}
 
-named!(
-    pub ignore_comments<&[u8], ()>,
-    map!(many0!(alt!(ignore_space |
-                     ignore_lcomment |
-                     map!(comment, |_| ()))),
-         |_| ())
-    /*
-    fold_many0!(alt!(ignore_space |
-                     ignore_lcomment |
-                     map!(comment, |_| ())),
-                (),
-                |(), ()| ())
-     */
-);
+pub fn opt_spacelike(input: &[u8]) -> IResult<&[u8], ()> {
+    fold_many0(alt((ignore_space, ignore_lcomment)), (), |(), ()| ())(input)
+}
 
-named!(pub comment<&[u8], &[u8]>,
-       preceded!(tag("/*"), comment2)
-);
-named!(pub comment2<&[u8]>,
-       terminated!(
-           recognize!(many0!(alt!(
-               value!((), is_not!("*")) |
-               preceded!(tag("*"), not!(tag("/")))
-           ))),
-           tag("*/")));
+pub fn ignore_comments(input: &[u8]) -> IResult<&[u8], ()> {
+    fold_many0(
+        alt((ignore_space, ignore_lcomment, map(comment, |_| ()))),
+        (),
+        |(), ()| (),
+    )(input)
+}
 
-named!(pub ignore_space<&[u8], ()>, map!(multispace1, |_: &[u8]|()));
+pub fn comment(input: &[u8]) -> IResult<&[u8], &[u8]> {
+    preceded(tag("/*"), comment2)(input)
+}
 
-named!(
-    ignore_lcomment<&[u8], ()>,
-    map!(terminated(tag("//"), opt(is_not("\n"))), |_| ())
-);
+pub fn comment2(input: &[u8]) -> IResult<&[u8], &[u8]> {
+    terminated(
+        recognize(many0(alt((
+            value((), is_not("*")),
+            preceded(tag("*"), not(tag("/"))),
+        )))),
+        tag("*/"),
+    )(input)
+}
+
+pub fn ignore_space(input: &[u8]) -> IResult<&[u8], ()> {
+    map(multispace1, |_| ())(input)
+}
+
+fn ignore_lcomment(input: &[u8]) -> IResult<&[u8], ()> {
+    map(terminated(tag("//"), opt(is_not("\n"))), |_| ())(input)
+}
 
 #[cfg(test)]
 mod test {
