@@ -353,7 +353,6 @@ impl Scope for GlobalScope {
 pub mod test {
     use crate::parser::value::value_expression;
     use crate::variablescope::*;
-    use nom::types::CompleteByteSlice as Input;
     use std::str::from_utf8;
 
     #[test]
@@ -698,12 +697,12 @@ pub mod test {
     ) -> Result<String, Error> {
         let mut scope = GlobalScope::new();
         for &(name, ref val) in s {
-            let (end, value) = value_expression(Input(val.as_bytes()))?;
+            let (end, value) = value_expression(val.as_bytes())?;
             let value = value.evaluate(&scope)?;
             assert_eq!(Ok(""), from_utf8(&end));
             scope.define(name, &value);
         }
-        let (end, foo) = value_expression(Input(expression))?;
+        let (end, foo) = value_expression(expression)?;
         assert_eq!(Ok(";"), from_utf8(&end));
         Ok(format!("{}", foo.evaluate(&mut scope)?))
     }

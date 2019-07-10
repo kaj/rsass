@@ -2,7 +2,6 @@ use crate::css::Value;
 #[cfg(feature = "clap")]
 use clap;
 use nom;
-use nom::types::CompleteByteSlice as Input;
 use std::convert::From;
 use std::path::PathBuf;
 use std::string::FromUtf8Error;
@@ -19,7 +18,7 @@ pub enum Error {
     ParseError {
         file: String,
         pos: ErrPos,
-        kind: Option<nom::ErrorKind>,
+        kind: Option<nom::error::ErrorKind>,
     },
     S(String),
     UndefinedVariable(String),
@@ -102,8 +101,8 @@ impl From<FromUtf8Error> for Error {
     }
 }
 
-impl<'a> From<nom::Err<Input<'a>>> for Error {
-    fn from(e: nom::Err<Input<'a>>) -> Self {
+impl<'a> From<nom::Err<(&[u8], nom::error::ErrorKind)>> for Error {
+    fn from(e: nom::Err<(&[u8], nom::error::ErrorKind)>) -> Self {
         Error::S(format!("Parse error: {:?}", e))
     }
 }

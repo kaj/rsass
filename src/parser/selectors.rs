@@ -2,84 +2,114 @@ use super::input_to_string;
 use super::strings::{sass_string, sass_string_dq, sass_string_sq};
 use super::util::{opt_spacelike, spacelike2};
 use crate::selectors::{Selector, SelectorPart, Selectors};
-use nom::types::CompleteByteSlice as Input;
-use nom::*;
+use nom::branch::alt;
+use nom::bytes::complete::{is_a, tag};
+use nom::character::complete::one_of;
+use nom::combinator::{map, map_res, opt, value};
+use nom::multi::{many1, separated_nonempty_list};
+use nom::sequence::{delimited, pair, preceded, terminated, tuple};
+use nom::IResult;
 
-named!(pub selectors<Input, Selectors>,
-       map!(separated_nonempty_list!(
-           complete!(do_parse!(tag!(",") >> opt!(is_a!(", \t\n")) >> ())),
-           selector),
-            Selectors::new));
+pub fn selectors(input: &[u8]) -> IResult<&[u8], Selectors> {
+    let (input, v) = separated_nonempty_list(
+        terminated(tag(","), opt(is_a(", \t\n"))),
+        selector,
+    )(input)?;
+    Ok((input, Selectors::new(v)))
+}
 
-named!(pub selector<Input, Selector>,
-       map!(many1!(selector_part),
-            |s: Vec<SelectorPart>| {
-                let mut s = s;
-                if s.last() == Some(&SelectorPart::Descendant) {
-                    s.pop();
-                }
-                Selector(s)
-            }));
+pub fn selector(input: &[u8]) -> IResult<&[u8], Selector> {
+    let (input, mut s) = many1(selector_part)(input)?;
+    if s.last() == Some(&SelectorPart::Descendant) {
+        s.pop();
+    }
+    Ok((input, Selector(s)))
+}
 
-named!(selector_part<Input, SelectorPart>,
-       alt_complete!(
-           map!(sass_string, SelectorPart::Simple) |
-           value!(SelectorPart::Simple("*".into()), tag!("*")) |
-           do_parse!(tag!("::") >>
-                     name: sass_string >>
-                     arg: opt!(delimited!(tag!("("), selectors,
-                                          tag!(")"))) >>
-                     (SelectorPart::PseudoElement {
-                         name,
-                         arg,
-                     })) |
-           do_parse!(tag!(":") >>
-                     name: sass_string >>
-                     arg: opt!(delimited!(tag!("("), selectors,
-                                          tag!(")"))) >>
-                     (SelectorPart::Pseudo {
-                         name,
-                         arg,
-                     })) |
-           do_parse!(tag!("[") >> opt_spacelike >>
-                     name: sass_string >> opt_spacelike >>
-                     op: map_res!(
-                         alt_complete!(tag!("*=") | tag!("|=") | tag!("=")),
-                         input_to_string
-                     ) >>
-                     opt_spacelike >>
-                     val: alt_complete!(sass_string_dq | sass_string_sq |
-                                        sass_string) >>
-                     opt_spacelike >>
-                     modifier: opt!(terminated!(
-                         one_of!("ABCDEFGHIJKLMNOPQRSTUVWXYZ\
-                                  abcdefghijklmnopqrstuvwxyz"),
-                         opt_spacelike)) >>
-                     tag!("]") >>
-                     (SelectorPart::Attribute {
-                         name,
-                         op,
-                         val,
-                         modifier
-                     })) |
-           do_parse!(tag!("[") >> opt_spacelike >>
-                     name: sass_string >> opt_spacelike >>
-                     tag!("]") >>
-                     (SelectorPart::Attribute {
-                         name,
-                         op: "".to_string(),
-                         val: "".into(),
-                         modifier: None,
-                     })) |
-           value!(SelectorPart::BackRef, tag!("&")) |
-           delimited!(opt_spacelike,
-                      alt!(value!(SelectorPart::RelOp(b'>'), tag!(">")) |
-                           value!(SelectorPart::RelOp(b'+'), tag!("+")) |
-                           value!(SelectorPart::RelOp(b'~'), tag!("~")) |
-                           value!(SelectorPart::RelOp(b'\\'), tag!("\\"))),
-                      opt_spacelike) |
-           value!(SelectorPart::Descendant, spacelike2)
-           ));
+fn selector_part(input: &[u8]) -> IResult<&[u8], SelectorPart> {
+    alt((
+        map(sass_string, SelectorPart::Simple),
+        value(SelectorPart::Simple("*".into()), tag("*")),
+        map(
+            preceded(
+                tag("::"),
+                pair(
+                    sass_string,
+                    opt(delimited(tag("("), selectors, tag(")"))),
+                ),
+            ),
+            |(name, arg)| SelectorPart::PseudoElement { name, arg },
+        ),
+        map(
+            preceded(
+                tag(":"),
+                pair(
+                    sass_string,
+                    opt(delimited(tag("("), selectors, tag(")"))),
+                ),
+            ),
+            |(name, arg)| SelectorPart::Pseudo { name, arg },
+        ),
+        map(
+            delimited(
+                terminated(tag("["), opt_spacelike),
+                tuple((
+                    terminated(sass_string, opt_spacelike),
+                    terminated(
+                        map_res(
+                            alt((tag("*="), tag("|="), tag("="))),
+                            input_to_string,
+                        ),
+                        opt_spacelike,
+                    ),
+                    terminated(
+                        alt((sass_string_dq, sass_string_sq, sass_string)),
+                        opt_spacelike,
+                    ),
+                    opt(terminated(
+                        one_of(
+                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                             abcdefghijklmnopqrstuvwxyz",
+                        ),
+                        opt_spacelike,
+                    )),
+                )),
+                tag("]"),
+            ),
+            |(name, op, val, modifier)| SelectorPart::Attribute {
+                name,
+                op,
+                val,
+                modifier,
+            },
+        ),
+        map(
+            delimited(
+                terminated(tag("["), opt_spacelike),
+                sass_string,
+                preceded(opt_spacelike, tag("]")),
+            ),
+            |name| SelectorPart::Attribute {
+                name,
+                op: "".to_string(),
+                val: "".into(),
+                modifier: None,
+            },
+        ),
+        value(SelectorPart::BackRef, tag("&")),
+        delimited(
+            opt_spacelike,
+            alt((
+                value(SelectorPart::RelOp(b'>'), tag(">")),
+                value(SelectorPart::RelOp(b'+'), tag("+")),
+                value(SelectorPart::RelOp(b'~'), tag("~")),
+                value(SelectorPart::RelOp(b'\\'), tag("\\")),
+            )),
+            opt_spacelike,
+        ),
+        value(SelectorPart::Descendant, spacelike2),
+    ))(input)
+}
 
 #[cfg(test)]
 mod test {
@@ -90,9 +120,9 @@ mod test {
     #[test]
     fn simple_selector() {
         assert_eq!(
-            selector(Input(b"foo ")),
+            selector(b"foo "),
             Ok((
-                Input(b""),
+                &b""[..],
                 Selector(vec![SelectorPart::Simple("foo".into())])
             ))
         )
@@ -100,9 +130,9 @@ mod test {
     #[test]
     fn escaped_simple_selector() {
         assert_eq!(
-            selector(Input(b"\\E9m ")),
+            selector(b"\\E9m "),
             Ok((
-                Input(b""),
+                &b""[..],
                 Selector(vec![SelectorPart::Simple("ém".into())])
             ))
         )
@@ -111,9 +141,9 @@ mod test {
     #[test]
     fn selector2() {
         assert_eq!(
-            selector(Input(b"foo bar ")),
+            selector(b"foo bar "),
             Ok((
-                Input(b""),
+                &b""[..],
                 Selector(vec![
                     SelectorPart::Simple("foo".into()),
                     SelectorPart::Descendant,
@@ -126,9 +156,9 @@ mod test {
     #[test]
     fn child_selector() {
         assert_eq!(
-            selector(Input(b"foo > bar ")),
+            selector(b"foo > bar "),
             Ok((
-                Input(b""),
+                &b""[..],
                 Selector(vec![
                     SelectorPart::Simple("foo".into()),
                     SelectorPart::RelOp(b'>'),
@@ -141,9 +171,9 @@ mod test {
     #[test]
     fn foo1_selector() {
         assert_eq!(
-            selector(Input(b"[data-icon='test-1'] ")),
+            selector(b"[data-icon='test-1'] "),
             Ok((
-                Input(b""),
+                &b""[..],
                 Selector(vec![SelectorPart::Attribute {
                     name: "data-icon".into(),
                     op: "=".into(),
@@ -160,9 +190,9 @@ mod test {
     #[test]
     fn pseudo_selector() {
         assert_eq!(
-            selector(Input(b":before ")),
+            selector(b":before "),
             Ok((
-                Input(b""),
+                &b""[..],
                 Selector(vec![SelectorPart::Pseudo {
                     name: "before".into(),
                     arg: None,
@@ -173,9 +203,9 @@ mod test {
     #[test]
     fn pseudo_on_simple_selector() {
         assert_eq!(
-            selector(Input(b"figure:before ")),
+            selector(b"figure:before "),
             Ok((
-                Input(b""),
+                &b""[..],
                 Selector(vec![
                     SelectorPart::Simple("figure".into()),
                     SelectorPart::Pseudo {
@@ -190,9 +220,9 @@ mod test {
     #[test]
     fn selectors_simple() {
         assert_eq!(
-            selectors(Input(b"foo, bar ")),
+            selectors(b"foo, bar "),
             Ok((
-                Input(b""),
+                &b""[..],
                 Selectors::new(vec![
                     Selector(vec![SelectorPart::Simple("foo".into())]),
                     Selector(vec![SelectorPart::Simple("bar".into())]),

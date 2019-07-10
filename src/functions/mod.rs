@@ -174,7 +174,6 @@ fn test_rgb() {
     use crate::parser::formalargs::call_args;
     use crate::value::Rgba;
     use crate::variablescope::GlobalScope;
-    use nom::types::CompleteByteSlice as Input;
     let scope = GlobalScope::new();
     assert_eq!(
         FUNCTIONS
@@ -182,7 +181,7 @@ fn test_rgb() {
             .unwrap()
             .call(
                 &scope,
-                &call_args(Input(b"(17, 0, 225)"))
+                &call_args(b"(17, 0, 225)")
                     .unwrap()
                     .1
                     .evaluate(&scope, true)

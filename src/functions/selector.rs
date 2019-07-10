@@ -3,7 +3,6 @@ use crate::css::Value;
 use crate::parser::selectors::{selector, selectors};
 use crate::selectors::{Selector, Selectors};
 use crate::value::Quotes;
-use nom::types::CompleteByteSlice as Input;
 use std::collections::BTreeMap;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
@@ -61,15 +60,15 @@ fn parse_selectors(v: Value) -> Selectors {
     if s.is_empty() {
         Selectors::root()
     } else {
-        let (rest, result) = selectors(Input(s.as_bytes())).unwrap();
-        assert!(rest.is_empty() || rest == Input(b","));
+        let (rest, result) = selectors(s.as_bytes()).unwrap();
+        assert!(rest.is_empty() || rest == b",");
         result
     }
 }
 
 // Note, this helper should probably handle errors and return a Result.
 fn parse_selector(s: &str) -> Selector {
-    let (rest, result) = selector(Input(s.as_bytes())).unwrap();
+    let (rest, result) = selector(s.as_bytes()).unwrap();
     assert!(rest.is_empty());
     result
 }
