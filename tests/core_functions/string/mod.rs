@@ -473,7 +473,6 @@ mod slice {
                 );
             }
             #[test]
-            #[ignore] // failing
             fn t2() {
                 assert_eq!(
                     rsass("a {b: str-slice(\"\", 2)}\n").unwrap(),
@@ -673,7 +672,6 @@ mod slice {
                 );
             }
             #[test]
-            #[ignore] // failing
             fn after_end() {
                 assert_eq!(
                     rsass("a {b: str-slice(\"cdef\", 3, 2)}\n").unwrap(),

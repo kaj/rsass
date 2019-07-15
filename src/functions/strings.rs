@@ -63,12 +63,12 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Numeric(end_at, Unit::None, ..),
         ) => {
             let start_at = index_to_rust(&start_at, &s);
-            let end_at = index_to_rust(&end_at, &s);
+            let end_at = index_to_rust(&end_at, &s) + 1;
             let c = s.chars();
             if start_at <= end_at {
                 Ok(Value::Literal(
                     c.skip(start_at)
-                        .take(end_at + 1 - start_at)
+                        .take(end_at - start_at)
                         .collect::<String>(),
                     q,
                 ))
