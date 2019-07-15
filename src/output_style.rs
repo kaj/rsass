@@ -219,14 +219,18 @@ impl OutputStyle {
                 }
             }
             Item::Content => {
-                panic!("@content not allowed in global context");
+                return Err(Error::S(
+                    "@content not allowed in global context".into(),
+                ));
             }
 
             Item::FunctionDeclaration { ref name, ref func } => {
                 scope.define_function(name, func.clone());
             }
             Item::Return(_) => {
-                panic!("Return not allowed in global context");
+                return Err(Error::S(
+                    "Return not allowed in global context".into(),
+                ));
             }
 
             Item::IfStatement(ref cond, ref do_if, ref do_else) => {
