@@ -7,9 +7,16 @@ use std::collections::BTreeMap;
 use std::sync::Mutex;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, quote(contents), |s| match s.get("contents")? {
-        Value::Literal(v, _) => Ok(Value::Literal(v, Quotes::Double)),
-        v => Ok(Value::Literal(format!("{}", v), Quotes::Double)),
+    def!(f, quote(contents), |s| {
+        let v = match s.get("contents")? {
+            Value::Literal(v, _) => v,
+            v => format!("{}", v),
+        };
+        if v.contains('"') && !v.contains('\'') {
+            Ok(Value::Literal(v, Quotes::Single))
+        } else {
+            Ok(Value::Literal(v, Quotes::Double))
+        }
     });
     def!(f, unquote(contents), |s| match s.get("contents")? {
         Value::Literal(v, _) => Ok(Value::Literal(v, Quotes::None)),

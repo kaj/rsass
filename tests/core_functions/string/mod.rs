@@ -372,7 +372,6 @@ mod quote {
     );
         }
         #[test]
-        #[ignore] // failing
         fn single() {
             assert_eq!(
         rsass("// See sass/libsass#2873\na {b: quote(unquote(\'\"\'))}\n")
