@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/scss"
-//! version d8dc38cd, 2019-07-03 17:55:12 -0700.
+//! version a62d3300, 2019-07-12 01:55:28 +0100.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["multiline-var.hrx", "mixin-content.hrx", "huge.hrx"]

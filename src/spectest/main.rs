@@ -341,7 +341,8 @@ fn fn_name(name: &str) -> String {
         .replace('.', "_");
     if t.chars().next().unwrap_or('0').is_numeric() {
         format!("t{}", t)
-    } else if t == "else"
+    } else if t == "as"
+        || t == "else"
         || t == "false"
         || t == "for"
         || t == "if"
@@ -436,8 +437,12 @@ fn load_test_fixture_hrx(
                 ));
             }
         }
+        return Err(Error(format!(
+            "No expected CSS / error found for {:?}",
+            prefix,
+        )));
     }
-    Err(Error("No expected CSS / error found".into()))
+    Err(Error(format!("No input found for {:?}", prefix)))
 }
 
 /// Load options from options.yml.

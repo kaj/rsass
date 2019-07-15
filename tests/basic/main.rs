@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/basic"
-//! version d8dc38cd, 2019-07-03 17:55:12 -0700.
+//! version a62d3300, 2019-07-12 01:55:28 +0100.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["14_imports.hrx", "33_ambiguous_imports.hrx"]
@@ -595,18 +595,6 @@ fn t59_if_expression() {
         )
         .unwrap(),
         "div {\n  foo: hey;\n  foo: ho;\n  foo: x is zero;\n  foo: whatever;\n}\n"
-    );
-}
-
-// From "sass-spec/spec/basic/60_call.hrx"
-#[test]
-fn t60_call() {
-    assert_eq!(
-        rsass(
-            "@function foobar() {\n  @return foobar;\n}\n\n@function fudge($str) {\n  @return \"assets/fudge/\" + $str;\n}\n\n\nbody {\n  display: call(foobar); \n  display: call(min, 1,3,5,7);\n  display: call(min, 5);\n  display: call(max, 10,3,5,7);\n  color: fudge(\"blah\");\n}"
-        )
-        .unwrap(),
-        "body {\n  display: foobar;\n  display: 1;\n  display: 5;\n  display: 10;\n  color: \"assets/fudge/blah\";\n}\n"
     );
 }
 
