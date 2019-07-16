@@ -2,7 +2,9 @@ use super::{Error, SassFunction};
 use crate::css::Value;
 use crate::value::{Number, Quotes, Unit};
 use lazy_static::lazy_static;
+use num_rational::Rational;
 use num_traits::Signed;
+use std::cmp::max;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
@@ -35,7 +37,15 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Literal(insert, _),
             Value::Numeric(index, Unit::None, ..),
         ) => {
-            let i = index_to_rust(&index, &s);
+            let index = index.value.to_integer();
+            let i = if index.is_negative() {
+                let len = s.chars().count() as isize;
+                max(len + 1 + index, 0) as usize
+            } else if index.is_positive() {
+                index as usize - 1
+            } else {
+                0
+            };
             let mut s = s.chars();
             Ok(Value::Literal(
                 format!(
@@ -62,8 +72,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Numeric(start_at, Unit::None, ..),
             Value::Numeric(end_at, Unit::None, ..),
         ) => {
-            let start_at = index_to_rust(&start_at, &s);
-            let end_at = index_to_rust(&end_at, &s) + 1;
+            let start_at = index_to_rust(start_at.value, &s);
+            let end_at = index_to_rust_end(end_at.value, &s);
             let c = s.chars();
             if start_at <= end_at {
                 Ok(Value::Literal(
@@ -133,17 +143,40 @@ fn intvalue(n: usize) -> Value {
 /// Convert index from sass (rational number, first is one) to rust
 /// (usize, first is zero).  Sass values might be negative, then -1 is
 /// the last char in the string.
-fn index_to_rust(index: &Number, s: &str) -> usize {
-    if index.value.is_negative() {
-        let l = s.chars().count();
+fn index_to_rust(index: Rational, s: &str) -> usize {
+    let len = s.chars().count();
+    if index.is_negative() {
         let i = index.to_integer().abs() as usize;
-        if l > i {
-            l - i + 1
+        if i <= len {
+            len - i
         } else {
             0
         }
-    } else if index.value.is_positive() {
-        index.to_integer() as usize - 1
+    } else if index.is_positive() {
+        let i = index.to_integer() as usize - 1;
+        if i <= len {
+            i
+        } else {
+            len
+        }
+    } else {
+        0
+    }
+}
+/// Convert index from sass (rational number, first is one) to rust
+/// (usize, first is zero).  Sass values might be negative, then -1 is
+/// the last char in the string.
+fn index_to_rust_end(index: Rational, s: &str) -> usize {
+    if index.is_negative() {
+        let len = s.chars().count();
+        let i = index.to_integer().abs() as usize - 1;
+        if i <= len {
+            len - i
+        } else {
+            0
+        }
+    } else if index.is_positive() {
+        index.to_integer() as usize
     } else {
         0
     }

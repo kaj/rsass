@@ -502,7 +502,6 @@ mod slice {
                 );
             }
             #[test]
-            #[ignore] // failing
             fn t2() {
                 assert_eq!(
                     rsass("a {b: str-slice(\"cde\", 1, -2)}\n").unwrap(),
@@ -510,7 +509,6 @@ mod slice {
                 );
             }
             #[test]
-            #[ignore] // failing
             fn after_last() {
                 assert_eq!(
                     rsass("a {b: str-slice(\"cde\", 1, -100)}\n").unwrap(),
@@ -518,7 +516,6 @@ mod slice {
                 );
             }
             #[test]
-            #[ignore] // failing
             fn last() {
                 assert_eq!(
                     rsass("a {b: str-slice(\"cde\", 1, -4)}\n").unwrap(),
@@ -530,7 +527,6 @@ mod slice {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
             fn t0() {
                 assert_eq!(
                     rsass("a {b: str-slice(\"cde\", 1, 0)}\n").unwrap(),
@@ -617,7 +613,6 @@ mod slice {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
             fn t1() {
                 assert_eq!(
                     rsass("a {b: str-slice(\"cde\", -1)}\n").unwrap(),
@@ -625,7 +620,6 @@ mod slice {
                 );
             }
             #[test]
-            #[ignore] // failing
             fn t2() {
                 assert_eq!(
                     rsass("a {b: str-slice(\"cde\", -2)}\n").unwrap(),
@@ -679,7 +673,6 @@ mod slice {
                 );
             }
             #[test]
-            #[ignore] // failing
             fn after_last() {
                 assert_eq!(
                     rsass("a {b: str-slice(\"cde\", 100)}\n").unwrap(),
