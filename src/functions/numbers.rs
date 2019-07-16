@@ -45,9 +45,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             let rez = 1_000_000;
             Ok(number(Rational::new(intrand(rez), rez), Unit::None))
         }
-        Value::Numeric(val, unit, ..) => {
+        Value::Numeric(val, ..) => {
             let res = 1 + intrand(val.to_integer());
-            Ok(number(Rational::from_integer(res), unit))
+            Ok(number(Rational::from_integer(res), Unit::None))
         }
         v => Err(Error::badarg("number or null", &v)),
     });

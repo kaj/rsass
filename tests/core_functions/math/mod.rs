@@ -483,7 +483,6 @@ mod random {
         // Ignoring "zero", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
     fn ignores_units() {
         assert_eq!(
             rsass("a {b: random(1px)}\n").unwrap(),
