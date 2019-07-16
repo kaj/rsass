@@ -106,6 +106,7 @@ impl Value {
             Value::List(ref list, _, false) => {
                 list.iter().all(|v| v.is_null())
             }
+            Value::Literal(ref s, Quotes::None) if s.is_empty() => true,
             _ => false,
         }
     }
