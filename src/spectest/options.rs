@@ -1,5 +1,5 @@
-use super::{Error, VERSION};
-use yaml_rust::{Yaml, YamlLoader};
+use super::Error;
+use yaml_rust::YamlLoader;
 
 #[derive(Default)]
 pub struct Options {
@@ -21,37 +21,9 @@ impl Options {
         eprintln!("Found options: {:?}", options);
         Ok(Options {
             precision: options[":precision"].as_i64(),
-            should_skip: {
-                if let Some(skip) = skip_ended(options)? {
-                    Some(skip)
-                } else {
-                    skip_unstarted(options)?
-                }
-            },
+            // Target version no longer used by sass-spec,
+            // and no other reasons to skip implemented here.
+            should_skip: None,
         })
-    }
-}
-
-fn skip_ended(options: &Yaml) -> Result<Option<String>, Error> {
-    if let Some(end) = options[":end_version"].as_str() {
-        if end.parse::<f32>()? <= VERSION {
-            Ok(Some(format!("end_version is {}", end)))
-        } else {
-            Ok(None)
-        }
-    } else {
-        Ok(None)
-    }
-}
-
-fn skip_unstarted(options: &Yaml) -> Result<Option<String>, Error> {
-    if let Some(start) = options[":start_version"].as_str() {
-        if start.parse::<f32>()? <= VERSION {
-            Ok(None)
-        } else {
-            Ok(Some(format!("start_version is {}", start)))
-        }
-    } else {
-        Ok(None)
     }
 }

@@ -6,9 +6,6 @@ use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-/// Sass spec version targeted.
-const VERSION: f32 = 3.6;
-
 mod options;
 use options::Options;
 mod testfixture;
