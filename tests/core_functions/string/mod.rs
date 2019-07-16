@@ -351,7 +351,6 @@ mod quote {
         );
     }
     #[test]
-    #[ignore] // failing
     fn named() {
         assert_eq!(
             rsass("a {b: quote($string: c)}\n").unwrap(),
@@ -925,7 +924,6 @@ mod unquote {
     );
     }
     #[test]
-    #[ignore] // failing
     fn named() {
         assert_eq!(
             rsass("a {b: unquote($string: c)}\n").unwrap(),

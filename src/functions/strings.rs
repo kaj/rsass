@@ -9,8 +9,8 @@ use std::collections::BTreeMap;
 use std::sync::Mutex;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, quote(contents), |s| {
-        let v = match s.get("contents")? {
+    def!(f, quote(string), |s| {
+        let v = match s.get("string")? {
             Value::Literal(v, _) => v,
             v => format!("{}", v),
         };
@@ -20,7 +20,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Ok(Value::Literal(v, Quotes::Double))
         }
     });
-    def!(f, unquote(contents), |s| match s.get("contents")? {
+    def!(f, unquote(string), |s| match s.get("string")? {
         Value::Literal(v, _) => Ok(Value::Literal(v, Quotes::None)),
         v => {
             dep_warn!("Passing {}, a non-string value, to unquote()", v);
