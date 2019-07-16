@@ -7,8 +7,10 @@ use crate::sass::{SassString, Value};
 use crate::value::{ListSeparator, Number, Operator, Rgba};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
-use nom::character::complete::{multispace0, multispace1, one_of};
-use nom::combinator::{map, map_res, opt, recognize, value};
+use nom::character::complete::{
+    alphanumeric1, multispace0, multispace1, one_of,
+};
+use nom::combinator::{map, map_res, not, opt, peek, recognize, value};
 use nom::multi::{
     fold_many0, fold_many1, many0, many_m_n, separated_nonempty_list,
 };
@@ -305,7 +307,7 @@ pub fn variable(input: &[u8]) -> IResult<&[u8], Value> {
 }
 
 fn hex_color(input: &[u8]) -> IResult<&[u8], Value> {
-    let (rest, rgba) = preceded(
+    let (rest, rgba) = delimited(
         tag("#"),
         map(
             alt((
@@ -321,6 +323,10 @@ fn hex_color(input: &[u8]) -> IResult<&[u8], Value> {
                 )
             },
         ),
+        peek(alt((
+            map(super::my_eof, |_| ()),
+            map(not(alphanumeric1), |_| ()),
+        ))),
     )(input)?;
     let length = input.len() - rest.len();
     // Unwrap should be ok as only ascii is matched.
