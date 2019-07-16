@@ -118,14 +118,14 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         s.get("value")?.type_name().into(),
         Quotes::None
     )));
-    def!(f, unit(value), |s| {
-        let v = match s.get("value")? {
+    def!(f, unit(number), |s| {
+        let v = match s.get("number")? {
             Value::Numeric(_, ref unit, ..) => format!("{}", unit),
             _ => "".into(),
         };
         Ok(Value::Literal(v, Quotes::Double))
     });
-    def!(f, unitless(value), |s| match s.get("value")? {
+    def!(f, unitless(number), |s| match s.get("number")? {
         Value::Numeric(_, unit, ..) => Ok(Value::bool(unit == Unit::None)),
         v => Err(Error::badarg("number", &v)),
     });
