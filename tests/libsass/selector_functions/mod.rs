@@ -4,8 +4,6 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// Ignoring "is_superselector", not expected to work yet.
-
 // From "sass-spec/spec/libsass/selector-functions/selector-append-empty.hrx"
 
 // Ignoring "selector_append_empty", error tests are not supported yet.

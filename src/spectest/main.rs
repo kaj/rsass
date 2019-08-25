@@ -37,7 +37,6 @@ fn main() -> Result<(), Error> {
             "Sa\u{301}ss-UT\u{327}F8.hrx", // resolves to duplicate name
             "bourbon.hrx", // Need to handle separate files in tests
             "base-level-parent/imported", // multiple input files
-            "selector-functions/is_superselector", // multiple input files
             "unicode-bom/utf-16-big", // rsass only handles utf8
             "unicode-bom/utf-16-little", // rsass only handles utf8
             "debug-directive-nested/function.hrx", // panic
@@ -47,13 +46,6 @@ fn main() -> Result<(), Error> {
     handle_suite(&base, "misc", &[])?;
     handle_suite(&base, "mixin", &[])?;
     handle_suite(&base, "parser", &[])?;
-    handle_suite(
-        &base,
-        "selector-functions",
-        &[
-            "is_superselector", // multiple input files
-        ],
-    )?;
     handle_suite(&base, "scope", &[])?;
     handle_suite(
         &base,
@@ -103,7 +95,10 @@ fn handle_suite(
     }
     writeln!(rs, "use rsass::{{compile_scss, OutputStyle}};",)?;
 
-    handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)?;
+    handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)
+        .map_err(|e| {
+            Error(format!("Failed to handle suite {:?}: {}", suite, e))
+        })?;
 
     writeln!(
         rs,
@@ -121,7 +116,7 @@ fn handle_suite(
 }
 
 fn handle_entries(
-    rs: &mut Write,
+    rs: &mut dyn Write,
     root: &Path,
     suitedir: &Path,
     rssuitedir: &Path,
@@ -218,7 +213,7 @@ fn handle_entries(
 }
 
 fn ignore<T: std::fmt::Debug>(
-    rs: &mut Write,
+    rs: &mut dyn Write,
     name: &T,
     reason: &str,
 ) -> Result<(), io::Error> {
@@ -227,7 +222,7 @@ fn ignore<T: std::fmt::Debug>(
 }
 
 fn spec_dir_to_test(
-    rs: &mut Write,
+    rs: &mut dyn Write,
     suite: &Path,
     test: &OsStr,
     precision: Option<i64>,
@@ -239,7 +234,7 @@ fn spec_dir_to_test(
 }
 
 fn spec_hrx_to_test(
-    rs: &mut Write,
+    rs: &mut dyn Write,
     suite: &Path,
     precision: Option<i64>,
 ) -> Result<(), Error> {
@@ -251,7 +246,7 @@ fn spec_hrx_to_test(
 }
 
 fn handle_hrx_part(
-    rs: &mut Write,
+    rs: &mut dyn Write,
     suite: &Path,
     archive: &Archive,
     prefix: &str,
@@ -344,6 +339,7 @@ fn fn_name(name: &str) -> String {
         || t == "for"
         || t == "if"
         || t == "static"
+        || t == "super"
         || t == "true"
         || t == "type"
         || t == "while"

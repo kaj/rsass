@@ -1,0 +1,744 @@
+//! Tests auto-converted from "sass-spec/spec/core_functions/selector/is_superselector"
+#[allow(unused)]
+use super::rsass;
+#[allow(unused)]
+use rsass::set_precision;
+
+// From "sass-spec/spec/core_functions/selector/is_superselector/complex.hrx"
+mod complex {
+    #[allow(unused)]
+    use super::rsass;
+    mod adjacent_sibling {
+        #[allow(unused)]
+        use super::rsass;
+        mod multiple {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            #[ignore] // failing
+            fn first() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"d + c\", \"d + e + c\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn in_sub() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c\", \"d + e + c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn neither() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"f + c\", \"d + e + c\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn second() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"e + c\", \"d + e + c\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+        }
+        mod single {
+            #[allow(unused)]
+            use super::rsass;
+            mod in_both {
+                #[allow(unused)]
+                use super::rsass;
+                #[test]
+                #[ignore] // failing
+                fn equal() {
+                    assert_eq!(
+                        rsass(
+                            "a {b: is-superselector(\"c + d\", \"c + d\")}\n"
+                        )
+                        .unwrap(),
+                        "a {\n  b: true;\n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn subset() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"c + d\", \"c.e + d.f\")}\n").unwrap(),
+        "a {\n  b: true;\n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn superset() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"c.e + d.f\", \"c + d\")}\n").unwrap(),
+        "a {\n  b: false;\n}\n"
+    );
+                }
+            }
+            #[test]
+            #[ignore] // failing
+            fn in_sub() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c\", \"d + c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn in_super() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c + d\", \"d\")}\n")
+                        .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+        }
+    }
+    mod child {
+        #[allow(unused)]
+        use super::rsass;
+        mod multiple {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            #[ignore] // failing
+            fn first() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"d > c\", \"d > e > c\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn in_sub() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c\", \"d > e > c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn neither() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"f > c\", \"d > e > c\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn second() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"e > c\", \"d > e > c\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+        }
+        mod single {
+            #[allow(unused)]
+            use super::rsass;
+            mod in_both {
+                #[allow(unused)]
+                use super::rsass;
+                #[test]
+                #[ignore] // failing
+                fn equal() {
+                    assert_eq!(
+                        rsass(
+                            "a {b: is-superselector(\"c > d\", \"c > d\")}\n"
+                        )
+                        .unwrap(),
+                        "a {\n  b: true;\n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn subset() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"c > d\", \"c.e > d.f\")}\n").unwrap(),
+        "a {\n  b: true;\n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn superset() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"c.e > d.f\", \"c > d\")}\n").unwrap(),
+        "a {\n  b: false;\n}\n"
+    );
+                }
+            }
+            #[test]
+            #[ignore] // failing
+            fn in_sub() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c\", \"d > c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn in_super() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c > d\", \"d\")}\n")
+                        .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+        }
+    }
+    mod descendant {
+        #[allow(unused)]
+        use super::rsass;
+        mod and_child {
+            #[allow(unused)]
+            use super::rsass;
+            mod multiple {
+                #[allow(unused)]
+                use super::rsass;
+                #[test]
+                #[ignore] // failing
+                fn first() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"d c\", \"d > e > c\")}\n").unwrap(),
+        "a {\n  b: true;\n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn neither() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"f c\", \"d > e > c\")}\n").unwrap(),
+        "a {\n  b: false;\n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn second() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"e c\", \"d > e > c\")}\n").unwrap(),
+        "a {\n  b: true;\n}\n"
+    );
+                }
+            }
+            #[test]
+            #[ignore] // failing
+            fn sub() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"d > c\", \"d c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn test_super() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"d c\", \"d > c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+        }
+        mod multiple {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            #[ignore] // failing
+            fn in_sub() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c\", \"d e c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn match_first() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"d c\", \"d e c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn match_neither() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"f c\", \"d e c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn match_second() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"e c\", \"d e c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+        }
+        mod single {
+            #[allow(unused)]
+            use super::rsass;
+            mod in_both {
+                #[allow(unused)]
+                use super::rsass;
+                #[test]
+                #[ignore] // failing
+                fn equal() {
+                    assert_eq!(
+                        rsass("a {b: is-superselector(\"c d\", \"c d\")}\n")
+                            .unwrap(),
+                        "a {\n  b: true;\n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn subset() {
+                    assert_eq!(
+                        rsass(
+                            "a {b: is-superselector(\"c d\", \"c.e d.f\")}\n"
+                        )
+                        .unwrap(),
+                        "a {\n  b: true;\n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn superset() {
+                    assert_eq!(
+                        rsass(
+                            "a {b: is-superselector(\"c.e d.f\", \"c d\")}\n"
+                        )
+                        .unwrap(),
+                        "a {\n  b: false;\n}\n"
+                    );
+                }
+            }
+            #[test]
+            #[ignore] // failing
+            fn in_sub() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c\", \"d c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn in_super() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c d\", \"d\")}\n")
+                        .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+        }
+    }
+    mod sibling {
+        #[allow(unused)]
+        use super::rsass;
+        mod and_adjacent_sibling {
+            #[allow(unused)]
+            use super::rsass;
+            mod multiple {
+                #[allow(unused)]
+                use super::rsass;
+                #[test]
+                #[ignore] // failing
+                fn first() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"d ~ c\", \"d + e + c\")}\n").unwrap(),
+        "a {\n  b: true;\n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn neither() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"f ~ c\", \"d + e + c\")}\n").unwrap(),
+        "a {\n  b: false;\n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn second() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"e ~ c\", \"d + e + c\")}\n").unwrap(),
+        "a {\n  b: true;\n}\n"
+    );
+                }
+            }
+            #[test]
+            #[ignore] // failing
+            fn sub() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"d + c\", \"d ~ c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn test_super() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"d ~ c\", \"d + c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+        }
+        mod multiple {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            #[ignore] // failing
+            fn first() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"d ~ c\", \"d ~ e ~ c\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn in_sub() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c\", \"d ~ e ~ c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn neither() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"f ~ c\", \"d ~ e ~ c\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn second() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"e ~ c\", \"d ~ e ~ c\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+        }
+        mod single {
+            #[allow(unused)]
+            use super::rsass;
+            mod in_both {
+                #[allow(unused)]
+                use super::rsass;
+                #[test]
+                #[ignore] // failing
+                fn equal() {
+                    assert_eq!(
+                        rsass(
+                            "a {b: is-superselector(\"c ~ d\", \"c ~ d\")}\n"
+                        )
+                        .unwrap(),
+                        "a {\n  b: true;\n}\n"
+                    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn subset() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"c ~ d\", \"c.e ~ d.f\")}\n").unwrap(),
+        "a {\n  b: true;\n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // failing
+                fn superset() {
+                    assert_eq!(
+        rsass("a {b: is-superselector(\"c.e ~ d.f\", \"c ~ d\")}\n").unwrap(),
+        "a {\n  b: false;\n}\n"
+    );
+                }
+            }
+            #[test]
+            #[ignore] // failing
+            fn in_sub() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c\", \"d ~ c\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn in_super() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c ~ d\", \"d\")}\n")
+                        .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+        }
+    }
+}
+
+// From "sass-spec/spec/core_functions/selector/is_superselector/compound.hrx"
+mod compound {
+    #[allow(unused)]
+    use super::rsass;
+    #[test]
+    #[ignore] // failing
+    fn different_order() {
+        assert_eq!(
+            rsass("a {b: is-superselector(\"c.e\", \"c:d.e\")}\n").unwrap(),
+            "a {\n  b: true;\n}\n"
+        );
+    }
+    mod pseudo_element {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // failing
+        fn absent() {
+            assert_eq!(
+                rsass("a {b: is-superselector(\"c\", \"c::d\")}\n").unwrap(),
+                "a {\n  b: false;\n}\n"
+            );
+        }
+        mod class_syntax {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            #[ignore] // failing
+            fn after() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c\", \"c:after\")}\n")
+                        .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn before() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c\", \"c:before\")}\n")
+                        .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn first_letter() {
+                assert_eq!(
+        rsass("a {b: is-superselector(\"c\", \"c:first-letter\")}\n")
+            .unwrap(),
+        "a {\n  b: false;\n}\n"
+    );
+            }
+            #[test]
+            #[ignore] // failing
+            fn first_line() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"c\", \"c:first-line\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+        }
+        #[test]
+        #[ignore] // failing
+        fn different_order() {
+            assert_eq!(
+                rsass("a {b: is-superselector(\":e::d\", \"::d:e\")}\n")
+                    .unwrap(),
+                "a {\n  b: false;\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn present() {
+            assert_eq!(
+                rsass("a {b: is-superselector(\"::d\", \"c::d\")}\n")
+                    .unwrap(),
+                "a {\n  b: true;\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn same_order() {
+            assert_eq!(
+                rsass("a {b: is-superselector(\"::d:e\", \"::d:e\")}\n")
+                    .unwrap(),
+                "a {\n  b: true;\n}\n"
+            );
+        }
+    }
+    #[test]
+    #[ignore] // failing
+    fn same_order() {
+        assert_eq!(
+            rsass("a {b: is-superselector(\"c\", \"c.d\")}\n").unwrap(),
+            "a {\n  b: true;\n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // failing
+    fn superset() {
+        assert_eq!(
+            rsass("a {b: is-superselector(\"c.d\", \"c\")}\n").unwrap(),
+            "a {\n  b: false;\n}\n"
+        );
+    }
+}
+
+// From "sass-spec/spec/core_functions/selector/is_superselector/list.hrx"
+mod list {
+    #[allow(unused)]
+    use super::rsass;
+    mod three {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // failing
+        fn match_one() {
+            assert_eq!(
+                rsass("a {b: is-superselector(\"c, d, e\", \"d\")}\n")
+                    .unwrap(),
+                "a {\n  b: true;\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn match_three() {
+            assert_eq!(
+                rsass("a {b: is-superselector(\"c, d, e\", \"d, c, e\")}\n")
+                    .unwrap(),
+                "a {\n  b: true;\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn match_two() {
+            assert_eq!(
+                rsass("a {b: is-superselector(\"c, d, e\", \"e, c\")}\n")
+                    .unwrap(),
+                "a {\n  b: true;\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn miss_one() {
+            assert_eq!(
+                rsass("a {b: is-superselector(\"c, d, e\", \"c, f\")}\n")
+                    .unwrap(),
+                "a {\n  b: false;\n}\n"
+            );
+        }
+    }
+    mod two {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // failing
+        fn both_satisfied_by_one_superselector() {
+            assert_eq!(
+                rsass("a {b: is-superselector(\".c\", \"d.c, e.c\")}\n")
+                    .unwrap(),
+                "a {\n  b: true;\n}\n"
+            );
+        }
+        mod in_both {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            #[ignore] // failing
+            fn equal() {
+                assert_eq!(
+                    rsass("a {b: is-superselector(\"c, d\", \"c, d\")}\n")
+                        .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn subset() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"c, d\", \"c.e, d.f\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: true;\n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // failing
+            fn superset() {
+                assert_eq!(
+                    rsass(
+                        "a {b: is-superselector(\"c.e, d.f\", \"c, d\")}\n"
+                    )
+                    .unwrap(),
+                    "a {\n  b: false;\n}\n"
+                );
+            }
+        }
+        #[test]
+        #[ignore] // failing
+        fn in_sub() {
+            assert_eq!(
+                rsass("a {b: is-superselector(\"c\", \"c, d\")}\n").unwrap(),
+                "a {\n  b: false;\n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // failing
+        fn in_super() {
+            assert_eq!(
+                rsass("a {b: is-superselector(\"c, d\", \"c\")}\n").unwrap(),
+                "a {\n  b: true;\n}\n"
+            );
+        }
+    }
+}
+
+mod simple;

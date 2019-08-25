@@ -263,6 +263,30 @@ mod same_module {
         "a {\n  b: #ff9999;\n}\n"
     );
     }
+    mod dash_insensitive {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        fn dash_to_underscore() {
+            assert_eq!(
+        rsass(
+            "@function add_two($v) {@return $v + 2}\n\na {b: call(get-function(add-two), 10)}\n"
+        )
+        .unwrap(),
+        "a {\n  b: 12;\n}\n"
+    );
+        }
+        #[test]
+        fn underscore_to_dash() {
+            assert_eq!(
+        rsass(
+            "@function add-two($v) {@return $v + 2}\n\na {b: call(get-function(add_two), 10)}\n"
+        )
+        .unwrap(),
+        "a {\n  b: 12;\n}\n"
+    );
+        }
+    }
     #[test]
     fn plain_css() {
         assert_eq!(

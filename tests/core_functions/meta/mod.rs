@@ -421,6 +421,30 @@ mod function_exists {
     mod same_module {
         #[allow(unused)]
         use super::rsass;
+        mod dash_insensitive {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            fn dash_to_underscore() {
+                assert_eq!(
+        rsass(
+            "@function a_b() {@return null}\n\nc {d: function-exists(a-b)}\n"
+        )
+        .unwrap(),
+        "c {\n  d: true;\n}\n"
+    );
+            }
+            #[test]
+            fn underscore_to_dash() {
+                assert_eq!(
+        rsass(
+            "@function a-b() {@return null}\n\nc {d: function-exists(a_b)}\n"
+        )
+        .unwrap(),
+        "c {\n  d: true;\n}\n"
+    );
+            }
+        }
         #[test]
         fn global() {
             assert_eq!(
@@ -469,6 +493,26 @@ mod get_function;
 mod global_variable_exists {
     #[allow(unused)]
     use super::rsass;
+    mod dash_insensitive {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        fn dash_to_underscore() {
+            assert_eq!(
+                rsass("$a_b: null;\n\nc {d: global-variable-exists(a-b)}\n")
+                    .unwrap(),
+                "c {\n  d: true;\n}\n"
+            );
+        }
+        #[test]
+        fn underscore_to_dash() {
+            assert_eq!(
+                rsass("$a-b: null;\n\nc {d: global-variable-exists(a_b)}\n")
+                    .unwrap(),
+                "c {\n  d: true;\n}\n"
+            );
+        }
+    }
     mod different_module {
         #[allow(unused)]
         use super::rsass;
@@ -1253,13 +1297,13 @@ mod keywords {
     use super::rsass;
     #[test]
     #[ignore] // failing
-    fn dash_sensitive() {
+    fn dash_insensitive() {
         assert_eq!(
         rsass(
             "@import \"../utils\";\na {b: inspect(args-to-keywords($c-d: e, $f_g: h))}\n"
         )
         .unwrap(),
-        "a {\n  b: (c-d: e, f_g: h);\n}\n"
+        "a {\n  b: (c-d: e, f-g: h);\n}\n"
     );
     }
     mod empty {
@@ -2018,6 +2062,26 @@ mod variable_exists {
     use super::rsass;
 
     // Ignoring "conflict", error tests are not supported yet.
+    mod dash_insensitive {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        fn dash_to_underscore() {
+            assert_eq!(
+                rsass("$a_b: null;\n\nc {d: variable-exists(a-b)}\n")
+                    .unwrap(),
+                "c {\n  d: true;\n}\n"
+            );
+        }
+        #[test]
+        fn underscore_to_dash() {
+            assert_eq!(
+                rsass("$a-b: null;\n\nc {d: variable-exists(a_b)}\n")
+                    .unwrap(),
+                "c {\n  d: true;\n}\n"
+            );
+        }
+    }
     mod error {
         #[allow(unused)]
         use super::rsass;

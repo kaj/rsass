@@ -1,8 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass"
-//! version 3f45fb61, 2019-07-16 01:44:33 +0200.
+//! version cb1ab541, 2019-08-16 17:59:57 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
-//! ["Sa\u{301}ss-UT\u{327}F8.hrx", "bourbon.hrx", "base-level-parent/imported", "selector-functions/is_superselector", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "debug-directive-nested/function.hrx", "warn-directive-nested/function.hrx"]
+//! ["Sa\u{301}ss-UT\u{327}F8.hrx", "bourbon.hrx", "base-level-parent/imported", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "debug-directive-nested/function.hrx", "warn-directive-nested/function.hrx"]
 use rsass::{compile_scss, OutputStyle};
 
 // Ignoring "Sa\u{301}ss-UT\u{327}F8.hrx", not expected to work yet.

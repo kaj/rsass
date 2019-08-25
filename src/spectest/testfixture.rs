@@ -50,7 +50,7 @@ impl TestFixture {
 
     pub fn write_test(
         &self,
-        rs: &mut Write,
+        rs: &mut dyn Write,
         precision: Option<i64>,
     ) -> Result<(), Error> {
         if let Some(ref reason) = self.options.should_skip {
@@ -85,7 +85,7 @@ impl TestFixture {
 }
 
 fn write_test_input_expected(
-    rs: &mut Write,
+    rs: &mut dyn Write,
     input: &str,
     expected: &str,
 ) -> Result<(), std::io::Error> {
