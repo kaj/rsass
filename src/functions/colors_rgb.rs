@@ -6,7 +6,7 @@ use num_rational::Rational;
 use num_traits::{One, Zero};
 use std::collections::BTreeMap;
 
-fn do_rgba(fn_name: &str, s: &Scope) -> Result<Value, Error> {
+fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
     let red = s.get("red")?;
     let red = if red.is_null() { s.get("color")? } else { red };

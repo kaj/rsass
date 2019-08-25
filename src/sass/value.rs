@@ -92,12 +92,12 @@ impl Value {
         }
     }
 
-    pub fn evaluate(&self, scope: &Scope) -> Result<css::Value, Error> {
+    pub fn evaluate(&self, scope: &dyn Scope) -> Result<css::Value, Error> {
         self.do_evaluate(scope, false)
     }
     pub fn do_evaluate(
         &self,
-        scope: &Scope,
+        scope: &dyn Scope,
         arithmetic: bool,
     ) -> Result<css::Value, Error> {
         match *self {

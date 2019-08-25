@@ -26,7 +26,8 @@ pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
     FUNCTIONS.get(name)
 }
 
-type BuiltinFn = Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
+type BuiltinFn =
+    dyn Fn(&dyn Scope) -> Result<css::Value, Error> + Send + Sync;
 
 /// A function that can be called from a sass value.
 ///
@@ -121,7 +122,7 @@ impl SassFunction {
     /// arguments.
     pub fn call(
         &self,
-        scope: &Scope,
+        scope: &dyn Scope,
         args: &css::CallArgs,
     ) -> Result<css::Value, Error> {
         let mut s = self.args.eval(scope, args)?;

@@ -19,7 +19,7 @@ impl FormalArgs {
 
     pub fn eval<'a>(
         &self,
-        scope: &'a Scope,
+        scope: &'a dyn Scope,
         args: &css::CallArgs,
     ) -> Result<ScopeImpl<'a>, Error> {
         let mut argscope = ScopeImpl::sub(scope);

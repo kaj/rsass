@@ -143,7 +143,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             (v1, v2) => Err(Error::badargs(&["number", "number"], &[v1, v2])),
         }
     });
-    def_va!(f, call(name, args), |s: &Scope| {
+    def_va!(f, call(name, args), |s: &dyn Scope| {
         let (function, name) = match s.get("name")? {
             Value::Function(ref name, ref func) => {
                 (func.clone(), name.clone())

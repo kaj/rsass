@@ -43,7 +43,7 @@ impl CallArgs {
 
     pub fn evaluate(
         &self,
-        scope: &Scope,
+        scope: &dyn Scope,
         arithmetic: bool,
     ) -> Result<css::CallArgs, Error> {
         let args = self.0

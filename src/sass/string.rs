@@ -46,7 +46,10 @@ impl SassString {
         }
         SassString { parts: p2, quotes }
     }
-    pub fn evaluate(&self, scope: &Scope) -> Result<(String, Quotes), Error> {
+    pub fn evaluate(
+        &self,
+        scope: &dyn Scope,
+    ) -> Result<(String, Quotes), Error> {
         // Note This is an extremely peculiar special case;
         // A single-quoted string consisting only of an interpolation
         // becomes double-quoted.
@@ -97,7 +100,7 @@ impl SassString {
             Ok((result, self.quotes))
         }
     }
-    pub fn evaluate2(&self, scope: &Scope) -> Result<SassString, Error> {
+    pub fn evaluate2(&self, scope: &dyn Scope) -> Result<SassString, Error> {
         let (result, quotes) = self.evaluate(scope)?;
         Ok(SassString {
             parts: vec![StringPart::Raw(result)],
@@ -106,7 +109,7 @@ impl SassString {
     }
     pub fn evaluate_opt_unquote(
         &self,
-        scope: &Scope,
+        scope: &dyn Scope,
     ) -> Result<SassString, Error> {
         let (result, quotes) = self.evaluate(scope)?;
         let t = quotes == Quotes::Double;

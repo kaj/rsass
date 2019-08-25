@@ -41,7 +41,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Ok(make_call("hsla", vec![hue, sat, lig, a]))
         }
     });
-    def!(f, adjust_hue(color, degrees), |s: &Scope| match (
+    def!(f, adjust_hue(color, degrees), |s: &dyn Scope| match (
         s.get("color")?,
         s.get("degrees")?,
     ) {
@@ -52,14 +52,18 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
     });
-    def!(f, complement(color), |s: &Scope| match &s.get("color")? {
-        &Value::Color(ref rgba, _) => {
-            let (h, s, l, alpha) = rgba.to_hsla();
-            Ok(Value::hsla(h + 180, s, l, alpha))
+    def!(
+        f,
+        complement(color),
+        |s: &dyn Scope| match &s.get("color")? {
+            &Value::Color(ref rgba, _) => {
+                let (h, s, l, alpha) = rgba.to_hsla();
+                Ok(Value::hsla(h + 180, s, l, alpha))
+            }
+            v => Err(Error::badarg("color", v)),
         }
-        v => Err(Error::badarg("color", v)),
-    });
-    def!(f, saturate(color, amount), |s: &Scope| match (
+    );
+    def!(f, saturate(color, amount), |s: &dyn Scope| match (
         s.get("color")?,
         s.get("amount")?
     ) {
@@ -72,37 +76,37 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         (c, v) => Ok(make_call("saturate", vec![c, v])),
     });
-    def!(
-        f,
-        lighten(color, amount),
-        |args: &Scope| match &args.get("color")? {
-            &Value::Color(ref rgba, _) => {
-                let (h, s, l, alpha) = rgba.to_hsla();
-                let amount = to_rational_percent(&args.get("amount")?)?;
-                Ok(Value::hsla(h, s, l + amount, alpha))
-            }
-            v => Err(Error::badarg("color", v)),
-        }
-    );
-    def!(
-        f,
-        darken(color, amount),
-        |args: &Scope| match &args.get("color")? {
-            &Value::Color(ref rgba, _) => {
-                let (h, s, l, alpha) = rgba.to_hsla();
-                let amount = to_rational_percent(&args.get("amount")?)?;
-                Ok(Value::hsla(h, s, l - amount, alpha))
-            }
-            v => Err(Error::badarg("color", v)),
-        }
-    );
-    def!(f, hue(color), |args: &Scope| match &args.get("color")? {
+    def!(f, lighten(color, amount), |args: &dyn Scope| match &args
+        .get("color")?
+    {
         &Value::Color(ref rgba, _) => {
-            let (h, _s, _l, _a) = rgba.to_hsla();
-            Ok(Value::Numeric(Number::from(h), Unit::Deg, true))
+            let (h, s, l, alpha) = rgba.to_hsla();
+            let amount = to_rational_percent(&args.get("amount")?)?;
+            Ok(Value::hsla(h, s, l + amount, alpha))
         }
         v => Err(Error::badarg("color", v)),
     });
+    def!(f, darken(color, amount), |args: &dyn Scope| match &args
+        .get("color")?
+    {
+        &Value::Color(ref rgba, _) => {
+            let (h, s, l, alpha) = rgba.to_hsla();
+            let amount = to_rational_percent(&args.get("amount")?)?;
+            Ok(Value::hsla(h, s, l - amount, alpha))
+        }
+        v => Err(Error::badarg("color", v)),
+    });
+    def!(
+        f,
+        hue(color),
+        |args: &dyn Scope| match &args.get("color")? {
+            &Value::Color(ref rgba, _) => {
+                let (h, _s, _l, _a) = rgba.to_hsla();
+                Ok(Value::Numeric(Number::from(h), Unit::Deg, true))
+            }
+            v => Err(Error::badarg("color", v)),
+        }
+    );
     def!(f, saturation(color), |args| match &args.get("color")? {
         &Value::Color(ref rgba, _) => {
             let (_h, s, _l, _a) = rgba.to_hsla();
@@ -117,7 +121,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("color", v)),
     });
-    def!(f, desaturate(color, amount), |args: &Scope| match &args
+    def!(f, desaturate(color, amount), |args: &dyn Scope| match &args
         .get("color")?
     {
         &Value::Color(ref rgba, _) => {

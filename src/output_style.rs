@@ -42,7 +42,7 @@ impl OutputStyle {
     pub fn write_root(
         &self,
         items: &[Item],
-        globals: &mut Scope,
+        globals: &mut dyn Scope,
         file_context: &FileContext,
     ) -> Result<Vec<u8>, Error> {
         let mut result = CssWriter::new(*self);
@@ -54,7 +54,7 @@ impl OutputStyle {
     fn handle_root_item(
         &self,
         item: &Item,
-        scope: &mut Scope,
+        scope: &mut dyn Scope,
         file_context: &FileContext,
         result: &mut CssWriter,
     ) -> Result<(), Error> {
@@ -322,8 +322,8 @@ impl OutputStyle {
         &self,
         selectors: &Selectors,
         body: &[Item],
-        out: &mut Write,
-        scope: &mut Scope,
+        out: &mut dyn Write,
+        scope: &mut dyn Scope,
         file_context: &FileContext,
         indent: usize,
     ) -> Result<(), Error> {
@@ -357,8 +357,8 @@ impl OutputStyle {
     fn handle_body(
         &self,
         direct: &mut Vec<CssBodyItem>,
-        sub: &mut Write,
-        scope: &mut Scope,
+        sub: &mut dyn Write,
+        scope: &mut dyn Scope,
         body: &[Item],
         file_context: &FileContext,
         indent: usize,
@@ -654,7 +654,7 @@ impl OutputStyle {
 
     fn write_items(
         &self,
-        out: &mut Write,
+        out: &mut dyn Write,
         items: &[CssBodyItem],
         indent: usize,
     ) -> Result<(), Error> {
@@ -677,7 +677,11 @@ impl OutputStyle {
         Ok(())
     }
 
-    fn do_indent(&self, out: &mut Write, steps: usize) -> Result<(), Error> {
+    fn do_indent(
+        &self,
+        out: &mut dyn Write,
+        steps: usize,
+    ) -> Result<(), Error> {
         if !self.is_compressed() {
             writeln!(out)?;
             for _i in 0..steps {
@@ -688,7 +692,7 @@ impl OutputStyle {
     }
     fn do_indent_no_lf(
         &self,
-        out: &mut Write,
+        out: &mut dyn Write,
         steps: usize,
     ) -> Result<(), Error> {
         if !self.is_compressed() {
@@ -704,7 +708,10 @@ impl OutputStyle {
     }
 }
 
-fn eval_selectors(s: &Selectors, scope: &Scope) -> Result<Selectors, Error> {
+fn eval_selectors(
+    s: &Selectors,
+    scope: &dyn Scope,
+) -> Result<Selectors, Error> {
     let s = Selectors::new(
         s.s.iter()
             .map(|s| -> Result<Selector, Error> {
@@ -818,10 +825,10 @@ impl CssWriter {
         Ok(result)
     }
 
-    fn to_imports(&mut self) -> &mut Write {
+    fn to_imports(&mut self) -> &mut impl Write {
         &mut self.imports
     }
-    fn to_content(&mut self) -> &mut Write {
+    fn to_content(&mut self) -> &mut impl Write {
         &mut self.contents
     }
     fn do_separate(&mut self) -> Result<(), Error> {

@@ -163,7 +163,7 @@ pub trait Scope {
 }
 
 pub struct ScopeImpl<'a> {
-    parent: &'a Scope,
+    parent: &'a dyn Scope,
     variables: BTreeMap<String, Value>,
     mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
     functions: BTreeMap<String, SassFunction>,
@@ -244,7 +244,7 @@ impl<'a> Scope for ScopeImpl<'a> {
 }
 
 impl<'a> ScopeImpl<'a> {
-    pub fn sub(parent: &'a Scope) -> Self {
+    pub fn sub(parent: &'a dyn Scope) -> Self {
         ScopeImpl {
             parent,
             variables: BTreeMap::new(),
@@ -253,7 +253,10 @@ impl<'a> ScopeImpl<'a> {
             selectors: None,
         }
     }
-    pub fn sub_selectors(parent: &'a Scope, selectors: Selectors) -> Self {
+    pub fn sub_selectors(
+        parent: &'a dyn Scope,
+        selectors: Selectors,
+    ) -> Self {
         ScopeImpl {
             parent,
             variables: BTreeMap::new(),
