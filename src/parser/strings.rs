@@ -26,6 +26,15 @@ pub fn sass_string_ext(input: &[u8]) -> IResult<&[u8], SassString> {
     Ok((input, SassString::new(parts, Quotes::None)))
 }
 
+pub fn special_args(input: &[u8]) -> IResult<&[u8], SassString> {
+    let (input, parts) = many1(alt((
+        string_part_interpolation,
+        map(hash_no_interpolation, StringPart::from),
+        map(map_res(is_not("#()"), input_to_str), StringPart::from),
+    )))(input)?;
+    Ok((input, SassString::new(parts, Quotes::None)))
+}
+
 pub fn sass_string_dq(input: &[u8]) -> IResult<&[u8], SassString> {
     let (input, parts) = delimited(
         tag("\""),
@@ -69,7 +78,7 @@ fn simple_qstring_part(input: &[u8]) -> IResult<&[u8], StringPart> {
     Ok((input, StringPart::Raw(part)))
 }
 
-fn selector_string(input: &[u8]) -> IResult<&[u8], String> {
+pub fn selector_string(input: &[u8]) -> IResult<&[u8], String> {
     fold_many1(
         // Note: This could probably be a whole lot more efficient,
         // but try to get stuff correct before caring too much about that.
