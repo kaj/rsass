@@ -51,15 +51,15 @@ macro_rules! func2 {
 
 macro_rules! dep_warn {
     ($first: expr, $($arg:expr),*) => {{
-        use std::sync::{ONCE_INIT, Once};
-        static WARN: Once = ONCE_INIT;
+        use std::sync::Once;
+        static WARN: Once = Once::new();
         WARN.call_once(|| {
             eprintln!(concat!("DEPRECATION WARNING: ", $first), $($arg),*);
         });
     }};
     ($first: expr) => {{
-        use std::sync::{ONCE_INIT, Once};
-        static WARN: Once = ONCE_INIT;
+        use std::sync::Once;
+        static WARN: Once = Once::new();
         WARN.call_once(|| eprintln!(concat!("DEPRECATION WARNING: ", $first)));
     }}
 }
