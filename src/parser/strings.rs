@@ -32,7 +32,7 @@ pub fn special_args(input: &[u8]) -> IResult<&[u8], SassString> {
 }
 
 pub fn special_arg_parts(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
-    let (input, parts) = many1(alt((
+    let (input, parts) = many0(alt((
         map(string_part_interpolation, |part| vec![part]),
         map(hash_no_interpolation, |s| vec![StringPart::from(s)]),
         map(dq_parts, |mut v| {
