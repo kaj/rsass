@@ -27,16 +27,38 @@ pub fn sass_string_ext(input: &[u8]) -> IResult<&[u8], SassString> {
 }
 
 pub fn special_args(input: &[u8]) -> IResult<&[u8], SassString> {
-    let (input, parts) = many1(alt((
-        string_part_interpolation,
-        map(hash_no_interpolation, StringPart::from),
-        map(map_res(is_not("#()"), input_to_str), StringPart::from),
-    )))(input)?;
+    let (input, parts) = special_arg_parts(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
 }
 
+pub fn special_arg_parts(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
+    let (input, parts) = many1(alt((
+        map(string_part_interpolation, |part| vec![part]),
+        map(hash_no_interpolation, |s| vec![StringPart::from(s)]),
+        map(dq_parts, |mut v| {
+            v.insert(0, StringPart::from("\""));
+            v.push(StringPart::from("\""));
+            v
+        }),
+        map(delimited(tag("("), special_arg_parts, tag(")")), |mut v| {
+            v.insert(0, StringPart::from("("));
+            v.push(StringPart::from(")"));
+            v
+        }),
+        map(map_res(is_not("#()\""), input_to_str), |s| {
+            vec![StringPart::from(s)]
+        }),
+    )))(input)?;
+    Ok((input, parts.into_iter().flatten().collect()))
+}
+
 pub fn sass_string_dq(input: &[u8]) -> IResult<&[u8], SassString> {
-    let (input, parts) = delimited(
+    let (input, parts) = dq_parts(input)?;
+    Ok((input, SassString::new(parts, Quotes::Double)))
+}
+
+fn dq_parts(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
+    delimited(
         tag("\""),
         many0(alt((
             simple_qstring_part,
@@ -47,8 +69,7 @@ pub fn sass_string_dq(input: &[u8]) -> IResult<&[u8], SassString> {
             extra_escape,
         ))),
         tag("\""),
-    )(input)?;
-    Ok((input, SassString::new(parts, Quotes::Double)))
+    )(input)
 }
 
 pub fn sass_string_sq(input: &[u8]) -> IResult<&[u8], SassString> {
