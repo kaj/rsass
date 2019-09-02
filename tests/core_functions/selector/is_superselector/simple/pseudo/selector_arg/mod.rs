@@ -16,10 +16,14 @@ mod any {
         fn subset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-any(c d.i, e j f)\", \"c d, e f, g h\")}\n"
+            "a {b: is-superselector(\":-pfx-any(c d.i, e j f)\", \"c d, e f, g h\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
         }
         #[test]
@@ -27,10 +31,14 @@ mod any {
         fn superset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-any(c d, e f, g h)\", \"c d.i, e j f\")}\n"
+            "a {b: is-superselector(\":-pfx-any(c d, e f, g h)\", \"c d.i, e j f\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
         }
     }
@@ -39,10 +47,14 @@ mod any {
     fn subset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":any(c d.i, e j f)\", \"c d, e f, g h\")}\n"
+            "a {b: is-superselector(\":any(c d.i, e j f)\", \"c d, e f, g h\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     #[test]
@@ -50,10 +62,14 @@ mod any {
     fn superset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":any(c d, e f, g h)\", \"c d.i, e j f\")}\n"
+            "a {b: is-superselector(\":any(c d, e f, g h)\", \"c d.i, e j f\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
     }
 }
@@ -67,10 +83,14 @@ mod current {
     fn bare_sub() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":current(c d, e f)\", \"c d, e f\")}\n"
+            "a {b: is-superselector(\":current(c d, e f)\", \"c d, e f\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     #[test]
@@ -78,10 +98,14 @@ mod current {
     fn equal() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":current(c d, e f)\", \":current(c d, e f)\")}\n"
+            "a {b: is-superselector(\":current(c d, e f)\", \":current(c d, e f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
     }
     mod prefix {
@@ -92,33 +116,53 @@ mod current {
         fn equal() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-current(c d, e f)\", \":-pfx-current(c d, e f)\")}\n"
+            "a {b: is-superselector(\":-pfx-current(c d, e f)\", \":-pfx-current(c d, e f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
         }
         #[test]
         #[ignore] // failing
         fn subset() {
             assert_eq!(
-        rsass(
-            "a {\n  b: is-superselector(\n      \":-pfx-current(c d.i, e j f)\",\n      \":-pfx-current(c d, e f, g h)\");\n}\n"
-        )
-        .unwrap(),
-        "a {\n  b: false;\n}\n"
-    );
+                rsass(
+                    "a {\
+                     \n  b: is-superselector(\
+                     \n      \":-pfx-current(c d.i, e j f)\",\
+                     \n      \":-pfx-current(c d, e f, g h)\");\
+                     \n}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
+            );
         }
         #[test]
         #[ignore] // failing
         fn superset() {
             assert_eq!(
-        rsass(
-            "a {\n  b: is-superselector(\n      \":-pfx-current(c d, e f, g h)\",\n      \":-pfx-current(c d.i, e j f)\");\n}\n"
-        )
-        .unwrap(),
-        "a {\n  b: false;\n}\n"
-    );
+                rsass(
+                    "a {\
+                     \n  b: is-superselector(\
+                     \n      \":-pfx-current(c d, e f, g h)\",\
+                     \n      \":-pfx-current(c d.i, e j f)\");\
+                     \n}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
+            );
         }
     }
     #[test]
@@ -126,10 +170,14 @@ mod current {
     fn subset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":current(c d.i, e j f)\", \":current(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\":current(c d.i, e j f)\", \":current(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     #[test]
@@ -137,10 +185,14 @@ mod current {
     fn superset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":current(c d, e f, g h)\", \":current(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\":current(c d, e f, g h)\", \":current(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
 }
@@ -154,10 +206,14 @@ mod has {
     fn bare_sub() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":has(c d, e f, g h)\", \"c d, e f, g h\")}\n"
+            "a {b: is-superselector(\":has(c d, e f, g h)\", \"c d, e f, g h\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     mod prefix {
@@ -168,10 +224,14 @@ mod has {
         fn subset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-has(c d.i, e j f)\", \":-pfx-has(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\":-pfx-has(c d.i, e j f)\", \":-pfx-has(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
         }
         #[test]
@@ -179,10 +239,14 @@ mod has {
         fn superset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-has(c d, e f, g h)\", \":-pfx-has(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\":-pfx-has(c d, e f, g h)\", \":-pfx-has(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
         }
     }
@@ -191,10 +255,14 @@ mod has {
     fn subset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":has(c d.i, e j f)\", \":has(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\":has(c d.i, e j f)\", \":has(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     #[test]
@@ -202,10 +270,14 @@ mod has {
     fn superset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":has(c d, e f, g h)\", \":has(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\":has(c d, e f, g h)\", \":has(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
     }
 }
@@ -219,10 +291,14 @@ mod host {
     fn bare_sub() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":host(c d, e f, g h)\", \"c d, e f, g h\")}\n"
+            "a {b: is-superselector(\":host(c d, e f, g h)\", \"c d, e f, g h\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     mod prefix {
@@ -233,10 +309,14 @@ mod host {
         fn subset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-host(c d.i, e j f)\", \":-pfx-host(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\":-pfx-host(c d.i, e j f)\", \":-pfx-host(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
         }
         #[test]
@@ -244,10 +324,14 @@ mod host {
         fn superset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-host(c d, e f, g h)\", \":-pfx-host(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\":-pfx-host(c d, e f, g h)\", \":-pfx-host(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
         }
     }
@@ -256,10 +340,14 @@ mod host {
     fn subset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":host(c d.i, e j f)\", \":host(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\":host(c d.i, e j f)\", \":host(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     #[test]
@@ -267,10 +355,14 @@ mod host {
     fn superset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":host(c d, e f, g h)\", \":host(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\":host(c d, e f, g h)\", \":host(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
     }
 }
@@ -284,10 +376,14 @@ mod host_context {
     fn bare_sub() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":host-context(c d, e f, g h)\", \"c d, e f, g h\")}\n"
+            "a {b: is-superselector(\":host-context(c d, e f, g h)\", \"c d, e f, g h\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     mod prefix {
@@ -298,10 +394,14 @@ mod host_context {
         fn subset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-host-context(c d.i, e j f)\", \":-pfx-host-context(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\":-pfx-host-context(c d.i, e j f)\", \":-pfx-host-context(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
         }
         #[test]
@@ -309,10 +409,14 @@ mod host_context {
         fn superset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-host-context(c d, e f, g h)\", \":-pfx-host-context(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\":-pfx-host-context(c d, e f, g h)\", \":-pfx-host-context(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
         }
     }
@@ -321,10 +425,14 @@ mod host_context {
     fn subset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":host-context(c d.i, e j f)\", \":host-context(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\":host-context(c d.i, e j f)\", \":host-context(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     #[test]
@@ -332,10 +440,14 @@ mod host_context {
     fn superset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":host-context(c d, e f, g h)\", \":host-context(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\":host-context(c d, e f, g h)\", \":host-context(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
     }
 }
@@ -352,10 +464,14 @@ mod matches {
         fn subset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":matches(c d.i, e j f)\", \":matches(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\":matches(c d.i, e j f)\", \":matches(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
         }
         #[test]
@@ -363,10 +479,14 @@ mod matches {
         fn superset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":matches(c d, e f, g h)\", \":matches(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\":matches(c d, e f, g h)\", \":matches(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
         }
     }
@@ -378,10 +498,14 @@ mod matches {
         fn subset() {
             assert_eq!(
                 rsass(
-                    "a {b: is-superselector(\":matches(c d e)\", \"c e\")}\n"
+                    "a {b: is-superselector(\":matches(c d e)\", \"c e\")}\
+                     \n"
                 )
                 .unwrap(),
-                "a {\n  b: false;\n}\n"
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
@@ -389,10 +513,14 @@ mod matches {
         fn superset() {
             assert_eq!(
                 rsass(
-                    "a {b: is-superselector(\":matches(c e)\", \"c d e\")}\n"
+                    "a {b: is-superselector(\":matches(c e)\", \"c d e\")}\
+                     \n"
                 )
                 .unwrap(),
-                "a {\n  b: true;\n}\n"
+                "a {\
+                 \n  b: true;\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -404,10 +532,14 @@ mod matches {
         fn subset() {
             assert_eq!(
                 rsass(
-                    "a {b: is-superselector(\":matches(c.d.e)\", \"c e\")}\n"
+                    "a {b: is-superselector(\":matches(c.d.e)\", \"c e\")}\
+                     \n"
                 )
                 .unwrap(),
-                "a {\n  b: false;\n}\n"
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
@@ -415,10 +547,14 @@ mod matches {
         fn superset() {
             assert_eq!(
                 rsass(
-                    "a {b: is-superselector(\":matches(c.e)\", \"c.d.e\")}\n"
+                    "a {b: is-superselector(\":matches(c.e)\", \"c.d.e\")}\
+                     \n"
                 )
                 .unwrap(),
-                "a {\n  b: true;\n}\n"
+                "a {\
+                 \n  b: true;\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -430,10 +566,14 @@ mod matches {
         fn subset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":matches(c d, e f)\", \"c d, e f, g h\")}\n"
+            "a {b: is-superselector(\":matches(c d, e f)\", \"c d, e f, g h\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
         }
         #[test]
@@ -441,10 +581,14 @@ mod matches {
         fn superset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":matches(c d, e f, g h)\", \"c d, e f\")}\n"
+            "a {b: is-superselector(\":matches(c d, e f, g h)\", \"c d, e f\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
         }
     }
@@ -456,10 +600,14 @@ mod matches {
         fn any() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":matches(c, d)\", \":any(c, d)\")}\n"
+            "a {b: is-superselector(\":matches(c, d)\", \":any(c, d)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
         }
         #[test]
@@ -467,10 +615,14 @@ mod matches {
         fn prefixed() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":matches(c, d)\", \":-pfx-matches(c, d)\")}\n"
+            "a {b: is-superselector(\":matches(c, d)\", \":-pfx-matches(c, d)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
         }
     }
@@ -482,10 +634,14 @@ mod matches {
         fn subset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-matches(c d.i, e j f)\", \"c d, e f, g h\")}\n"
+            "a {b: is-superselector(\":-pfx-matches(c d.i, e j f)\", \"c d, e f, g h\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
         }
         #[test]
@@ -493,10 +649,14 @@ mod matches {
         fn superset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-matches(c d, e f, g h)\", \"c d.i, e j f\")}\n"
+            "a {b: is-superselector(\":-pfx-matches(c d, e f, g h)\", \"c d.i, e j f\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
         }
     }
@@ -507,18 +667,30 @@ mod matches {
         #[ignore] // failing
         fn equal() {
             assert_eq!(
-                rsass("a {b: is-superselector(\":matches(c)\", \"c\")}\n")
-                    .unwrap(),
-                "a {\n  b: true;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\":matches(c)\", \"c\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: true;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn unequal() {
             assert_eq!(
-                rsass("a {b: is-superselector(\":matches(c)\", \"d\")}\n")
-                    .unwrap(),
-                "a {\n  b: false;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\":matches(c)\", \"d\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -533,10 +705,14 @@ mod not {
     fn bare_sub() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":not(c d, e f, g h)\", \"c d, e f, g h\")}\n"
+            "a {b: is-superselector(\":not(c d, e f, g h)\", \"c d, e f, g h\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     mod equivalence {
@@ -550,10 +726,14 @@ mod not {
             fn subset() {
                 assert_eq!(
         rsass(
-            "a {b: is-superselector(\":not(c d.i, e j f)\", \":not(c d):not(e f):not(g h)\")}\n"
+            "a {b: is-superselector(\":not(c d.i, e j f)\", \":not(c d):not(e f):not(g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
             }
             #[test]
@@ -561,10 +741,14 @@ mod not {
             fn superset() {
                 assert_eq!(
         rsass(
-            "a {b: is-superselector(\":not(c d, e f, g h)\", \":not(c d.i):not(e j f)\")}\n"
+            "a {b: is-superselector(\":not(c d, e f, g h)\", \":not(c d.i):not(e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
             }
         }
@@ -576,10 +760,14 @@ mod not {
             fn subset() {
                 assert_eq!(
         rsass(
-            "a {b: is-superselector(\":not(c d.i):not(e j f)\", \":not(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\":not(c d.i):not(e j f)\", \":not(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
             }
             #[test]
@@ -590,7 +778,10 @@ mod not {
             "a {b: is-superselector(\":not(c d):not(e f):not(g h)\", \":not(c d.i, e j f)\")}"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
             }
         }
@@ -599,9 +790,15 @@ mod not {
     #[ignore] // failing
     fn id() {
         assert_eq!(
-            rsass("a {b: is-superselector(\":not(#c.d)\", \"#e\")}\n")
-                .unwrap(),
-            "a {\n  b: true;\n}\n"
+            rsass(
+                "a {b: is-superselector(\":not(#c.d)\", \"#e\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
         );
     }
     mod prefix {
@@ -612,10 +809,14 @@ mod not {
         fn subset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-not(c d.i, e j f)\", \":-pfx-not(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\":-pfx-not(c d.i, e j f)\", \":-pfx-not(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
         }
         #[test]
@@ -623,10 +824,14 @@ mod not {
         fn superset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\":-pfx-not(c d, e f, g h)\", \":-pfx-not(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\":-pfx-not(c d, e f, g h)\", \":-pfx-not(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
         }
     }
@@ -635,10 +840,14 @@ mod not {
     fn subset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":not(c d.i, e j f)\", \":not(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\":not(c d.i, e j f)\", \":not(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
     }
     #[test]
@@ -646,18 +855,29 @@ mod not {
     fn superset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":not(c d, e f, g h)\", \":not(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\":not(c d, e f, g h)\", \":not(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     #[test]
     #[ignore] // failing
     fn test_type() {
         assert_eq!(
-            rsass("a {b: is-superselector(\":not(c.d)\", \"e\")}\n").unwrap(),
-            "a {\n  b: true;\n}\n"
+            rsass(
+                "a {b: is-superselector(\":not(c.d)\", \"e\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
         );
     }
 }
@@ -671,10 +891,14 @@ mod nth_child {
     fn bare_sub() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":nth-child(n+1 of c d, e f, g h)\", \"c d, e f, g h\")}\n"
+            "a {b: is-superselector(\":nth-child(n+1 of c d, e f, g h)\", \"c d, e f, g h\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     #[test]
@@ -682,10 +906,14 @@ mod nth_child {
     fn bare_super() {
         assert_eq!(
             rsass(
-                "a {b: is-superselector(\"c\", \":nth-child(n+1 of c)\")}\n"
+                "a {b: is-superselector(\"c\", \":nth-child(n+1 of c)\")}\
+                 \n"
             )
             .unwrap(),
-            "a {\n  b: true;\n}\n"
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
         );
     }
     #[test]
@@ -693,10 +921,14 @@ mod nth_child {
     fn different_arg() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":nth-child(n+1 of c)\", \":nth-child(n+2 of c)\")}\n"
+            "a {b: is-superselector(\":nth-child(n+1 of c)\", \":nth-child(n+2 of c)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     mod prefix {
@@ -706,46 +938,78 @@ mod nth_child {
         #[ignore] // failing
         fn subset() {
             assert_eq!(
-        rsass(
-            "a {\n  b: is-superselector(\n      \":-pfx-nth-child(n+1 of c d.i, e j f)\",\n      \":-pfx-nth-child(n+1 of c d, e f, g h)\");\n}\n"
-        )
-        .unwrap(),
-        "a {\n  b: false;\n}\n"
-    );
+                rsass(
+                    "a {\
+                     \n  b: is-superselector(\
+                     \n      \":-pfx-nth-child(n+1 of c d.i, e j f)\",\
+                     \n      \":-pfx-nth-child(n+1 of c d, e f, g h)\");\
+                     \n}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
+            );
         }
         #[test]
         #[ignore] // failing
         fn superset() {
             assert_eq!(
-        rsass(
-            "a {\n  b: is-superselector(\n      \":-pfx-nth-child(n+1 of c d, e f, g h)\",\n      \":-pfx-nth-child(n+1 of c d.i, e j f)\");\n}\n"
-        )
-        .unwrap(),
-        "a {\n  b: true;\n}\n"
-    );
+                rsass(
+                    "a {\
+                     \n  b: is-superselector(\
+                     \n      \":-pfx-nth-child(n+1 of c d, e f, g h)\",\
+                     \n      \":-pfx-nth-child(n+1 of c d.i, e j f)\");\
+                     \n}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: true;\
+                 \n}\
+                 \n"
+            );
         }
     }
     #[test]
     #[ignore] // failing
     fn subset() {
         assert_eq!(
-        rsass(
-            "a {\n  b: is-superselector(\n      \":nth-child(n+1 of c d.i, e j f)\",\n      \":nth-child(n+1 of c d, e f, g h)\");\n}\n"
-        )
-        .unwrap(),
-        "a {\n  b: false;\n}\n"
-    );
+            rsass(
+                "a {\
+                 \n  b: is-superselector(\
+                 \n      \":nth-child(n+1 of c d.i, e j f)\",\
+                 \n      \":nth-child(n+1 of c d, e f, g h)\");\
+                 \n}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: false;\
+             \n}\
+             \n"
+        );
     }
     #[test]
     #[ignore] // failing
     fn superset() {
         assert_eq!(
-        rsass(
-            "a {\n  b: is-superselector(\n    \":nth-child(n+1 of c d, e f, g h)\",\n    \":nth-child(n+1 of c d.i, e j f)\");\n}\n"
-        )
-        .unwrap(),
-        "a {\n  b: true;\n}\n"
-    );
+            rsass(
+                "a {\
+                 \n  b: is-superselector(\
+                 \n    \":nth-child(n+1 of c d, e f, g h)\",\
+                 \n    \":nth-child(n+1 of c d.i, e j f)\");\
+                 \n}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
+        );
     }
 }
 
@@ -758,10 +1022,14 @@ mod nth_last_child {
     fn bare_sub() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\":nth-last-child(n+1 of c d, e f, g h)\", \"c d, e f, g h\")}\n"
+            "a {b: is-superselector(\":nth-last-child(n+1 of c d, e f, g h)\", \"c d, e f, g h\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     #[test]
@@ -769,22 +1037,34 @@ mod nth_last_child {
     fn bare_super() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\"c\", \":nth-last-child(n+1 of c)\")}\n"
+            "a {b: is-superselector(\"c\", \":nth-last-child(n+1 of c)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
     }
     #[test]
     #[ignore] // failing
     fn different_arg() {
         assert_eq!(
-        rsass(
-            "a {\n  b: is-superselector(\n      \":nth-last-child(n+1 of c)\",\n      \":nth-last-child(n+2 of c)\");\n}\n"
-        )
-        .unwrap(),
-        "a {\n  b: false;\n}\n"
-    );
+            rsass(
+                "a {\
+                 \n  b: is-superselector(\
+                 \n      \":nth-last-child(n+1 of c)\",\
+                 \n      \":nth-last-child(n+2 of c)\");\
+                 \n}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: false;\
+             \n}\
+             \n"
+        );
     }
     mod prefix {
         #[allow(unused)]
@@ -793,46 +1073,78 @@ mod nth_last_child {
         #[ignore] // failing
         fn subset() {
             assert_eq!(
-        rsass(
-            "a {\n  b: is-superselector(\n      \":-pfx-nth-last-child(n+1 of c d.i, e j f)\",\n      \":-pfx-nth-last-child(n+1 of c d, e f, g h)\");\n}\n"
-        )
-        .unwrap(),
-        "a {\n  b: false;\n}\n"
-    );
+                rsass(
+                    "a {\
+                     \n  b: is-superselector(\
+                     \n      \":-pfx-nth-last-child(n+1 of c d.i, e j f)\",\
+                     \n      \":-pfx-nth-last-child(n+1 of c d, e f, g h)\");\
+                     \n}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
+            );
         }
         #[test]
         #[ignore] // failing
         fn superset() {
             assert_eq!(
-        rsass(
-            "a {\n  b: is-superselector(\n      \":-pfx-nth-last-child(n+1 of c d, e f, g h)\",\n      \":-pfx-nth-last-child(n+1 of c d.i, e j f)\");\n}\n"
-        )
-        .unwrap(),
-        "a {\n  b: true;\n}\n"
-    );
+                rsass(
+                    "a {\
+                     \n  b: is-superselector(\
+                     \n      \":-pfx-nth-last-child(n+1 of c d, e f, g h)\",\
+                     \n      \":-pfx-nth-last-child(n+1 of c d.i, e j f)\");\
+                     \n}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: true;\
+                 \n}\
+                 \n"
+            );
         }
     }
     #[test]
     #[ignore] // failing
     fn subset() {
         assert_eq!(
-        rsass(
-            "a {\n  b: is-superselector(\n      \":nth-last-child(n+1 of c d.i, e j f)\",\n      \":nth-last-child(n+1 of c d, e f, g h)\");\n}\n"
-        )
-        .unwrap(),
-        "a {\n  b: false;\n}\n"
-    );
+            rsass(
+                "a {\
+                 \n  b: is-superselector(\
+                 \n      \":nth-last-child(n+1 of c d.i, e j f)\",\
+                 \n      \":nth-last-child(n+1 of c d, e f, g h)\");\
+                 \n}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: false;\
+             \n}\
+             \n"
+        );
     }
     #[test]
     #[ignore] // failing
     fn superset() {
         assert_eq!(
-        rsass(
-            "a {\n  b: is-superselector(\n      \":nth-last-child(n+1 of c d, e f, g h)\",\n      \":nth-last-child(n+1 of c d.i, e j f)\");\n}\n"
-        )
-        .unwrap(),
-        "a {\n  b: true;\n}\n"
-    );
+            rsass(
+                "a {\
+                 \n  b: is-superselector(\
+                 \n      \":nth-last-child(n+1 of c d, e f, g h)\",\
+                 \n      \":nth-last-child(n+1 of c d.i, e j f)\");\
+                 \n}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
+        );
     }
 }
 
@@ -845,10 +1157,14 @@ mod slotted {
     fn bare_sub() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\"::slotted(c d, e f, g h)\", \"c d, e f, g h\")}\n"
+            "a {b: is-superselector(\"::slotted(c d, e f, g h)\", \"c d, e f, g h\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     mod prefix {
@@ -859,10 +1175,14 @@ mod slotted {
         fn subset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\"::-pfx-slotted(c d.i, e j f)\", \"::-pfx-slotted(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\"::-pfx-slotted(c d.i, e j f)\", \"::-pfx-slotted(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
         }
         #[test]
@@ -870,10 +1190,14 @@ mod slotted {
         fn superset() {
             assert_eq!(
         rsass(
-            "a {b: is-superselector(\"::-pfx-slotted(c d, e f, g h)\", \"::-pfx-slotted(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\"::-pfx-slotted(c d, e f, g h)\", \"::-pfx-slotted(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
         }
     }
@@ -882,10 +1206,14 @@ mod slotted {
     fn subset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\"::slotted(c d.i, e j f)\", \"::slotted(c d, e f, g h)\")}\n"
+            "a {b: is-superselector(\"::slotted(c d.i, e j f)\", \"::slotted(c d, e f, g h)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: false;\n}\n"
+        "a {\
+        \n  b: false;\
+        \n}\
+        \n"
     );
     }
     #[test]
@@ -893,10 +1221,14 @@ mod slotted {
     fn superset() {
         assert_eq!(
         rsass(
-            "a {b: is-superselector(\"::slotted(c d, e f, g h)\", \"::slotted(c d.i, e j f)\")}\n"
+            "a {b: is-superselector(\"::slotted(c d, e f, g h)\", \"::slotted(c d.i, e j f)\")}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: true;\n}\n"
+        "a {\
+        \n  b: true;\
+        \n}\
+        \n"
     );
     }
 }

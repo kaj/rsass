@@ -9,10 +9,27 @@ use rsass::set_precision;
 fn basic() {
     assert_eq!(
         rsass(
-            "foo bar {\n    baz & {\n        bam: true;\n    }\n}\n\nfoo {\n    bar baz & {\n        bam: true;\n    }\n}\n"
+            "foo bar {\
+             \n    baz & {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo {\
+             \n    bar baz & {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "baz foo bar {\n  bam: true;\n}\nbar baz foo {\n  bam: true;\n}\n"
+        "baz foo bar {\
+         \n  bam: true;\
+         \n}\
+         \nbar baz foo {\
+         \n  bam: true;\
+         \n}\
+         \n"
     );
 }
 
@@ -21,10 +38,69 @@ fn basic() {
 fn inner_combinator() {
     assert_eq!(
         rsass(
-            "foo {\n    & bar baz {\n        bam: true;\n    }\n    bar baz & {\n        bam: true;\n    }\n}\n\nfoo {\n    & bar + baz {\n        bam: true;\n    }\n    bar + baz & {\n        bam: true;\n    }\n}\n\nfoo {\n    & bar > baz {\n        bam: true;\n    }\n    bar > baz & {\n        bam: true;\n    }\n}\n\nfoo {\n    & bar ~ baz {\n        bam: true;\n    }\n    bar ~ baz & {\n        bam: true;\n    }\n}\n"
+            "foo {\
+             \n    & bar baz {\
+             \n        bam: true;\
+             \n    }\
+             \n    bar baz & {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo {\
+             \n    & bar + baz {\
+             \n        bam: true;\
+             \n    }\
+             \n    bar + baz & {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo {\
+             \n    & bar > baz {\
+             \n        bam: true;\
+             \n    }\
+             \n    bar > baz & {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo {\
+             \n    & bar ~ baz {\
+             \n        bam: true;\
+             \n    }\
+             \n    bar ~ baz & {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "foo bar baz {\n  bam: true;\n}\nbar baz foo {\n  bam: true;\n}\nfoo bar + baz {\n  bam: true;\n}\nbar + baz foo {\n  bam: true;\n}\nfoo bar > baz {\n  bam: true;\n}\nbar > baz foo {\n  bam: true;\n}\nfoo bar ~ baz {\n  bam: true;\n}\nbar ~ baz foo {\n  bam: true;\n}\n"
+        "foo bar baz {\
+         \n  bam: true;\
+         \n}\
+         \nbar baz foo {\
+         \n  bam: true;\
+         \n}\
+         \nfoo bar + baz {\
+         \n  bam: true;\
+         \n}\
+         \nbar + baz foo {\
+         \n  bam: true;\
+         \n}\
+         \nfoo bar > baz {\
+         \n  bam: true;\
+         \n}\
+         \nbar > baz foo {\
+         \n  bam: true;\
+         \n}\
+         \nfoo bar ~ baz {\
+         \n  bam: true;\
+         \n}\
+         \nbar ~ baz foo {\
+         \n  bam: true;\
+         \n}\
+         \n"
     );
 }
 
@@ -33,10 +109,45 @@ fn inner_combinator() {
 fn inner_pseudo() {
     assert_eq!(
         rsass(
-            "foo {\n    &:bar baz {\n        bam: true;\n    }\n}\n\nfoo {\n    &:bar + baz {\n        bam: true;\n    }\n}\n\nfoo {\n    &:bar > baz {\n        bam: true;\n    }\n}\n\nfoo {\n    &:bar ~ baz {\n        bam: true;\n    }\n}\n"
+            "foo {\
+             \n    &:bar baz {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo {\
+             \n    &:bar + baz {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo {\
+             \n    &:bar > baz {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo {\
+             \n    &:bar ~ baz {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "foo:bar baz {\n  bam: true;\n}\nfoo:bar + baz {\n  bam: true;\n}\nfoo:bar > baz {\n  bam: true;\n}\nfoo:bar ~ baz {\n  bam: true;\n}\n"
+        "foo:bar baz {\
+         \n  bam: true;\
+         \n}\
+         \nfoo:bar + baz {\
+         \n  bam: true;\
+         \n}\
+         \nfoo:bar > baz {\
+         \n  bam: true;\
+         \n}\
+         \nfoo:bar ~ baz {\
+         \n  bam: true;\
+         \n}\
+         \n"
     );
 }
 
@@ -49,10 +160,69 @@ fn inner_pseudo() {
 fn outer_combinator() {
     assert_eq!(
         rsass(
-            "foo bar {\n    & baz {\n        bam: true;\n    }\n    baz & {\n        bam: true;\n    }\n}\n\nfoo + bar {\n    & baz {\n        bam: true;\n    }\n    baz & {\n        bam: true;\n    }\n}\n\nfoo > bar {\n    & baz {\n        bam: true;\n    }\n    baz & {\n        bam: true;\n    }\n}\n\nfoo ~ bar {\n    & baz {\n        bam: true;\n    }\n    baz & {\n        bam: true;\n    }\n}\n"
+            "foo bar {\
+             \n    & baz {\
+             \n        bam: true;\
+             \n    }\
+             \n    baz & {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo + bar {\
+             \n    & baz {\
+             \n        bam: true;\
+             \n    }\
+             \n    baz & {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo > bar {\
+             \n    & baz {\
+             \n        bam: true;\
+             \n    }\
+             \n    baz & {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo ~ bar {\
+             \n    & baz {\
+             \n        bam: true;\
+             \n    }\
+             \n    baz & {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "foo bar baz {\n  bam: true;\n}\nbaz foo bar {\n  bam: true;\n}\nfoo + bar baz {\n  bam: true;\n}\nbaz foo + bar {\n  bam: true;\n}\nfoo > bar baz {\n  bam: true;\n}\nbaz foo > bar {\n  bam: true;\n}\nfoo ~ bar baz {\n  bam: true;\n}\nbaz foo ~ bar {\n  bam: true;\n}\n"
+        "foo bar baz {\
+         \n  bam: true;\
+         \n}\
+         \nbaz foo bar {\
+         \n  bam: true;\
+         \n}\
+         \nfoo + bar baz {\
+         \n  bam: true;\
+         \n}\
+         \nbaz foo + bar {\
+         \n  bam: true;\
+         \n}\
+         \nfoo > bar baz {\
+         \n  bam: true;\
+         \n}\
+         \nbaz foo > bar {\
+         \n  bam: true;\
+         \n}\
+         \nfoo ~ bar baz {\
+         \n  bam: true;\
+         \n}\
+         \nbaz foo ~ bar {\
+         \n  bam: true;\
+         \n}\
+         \n"
     );
 }
 
@@ -61,9 +231,44 @@ fn outer_combinator() {
 fn outer_pseudo() {
     assert_eq!(
         rsass(
-            "foo bar {\n    &:baz {\n        bam: true;\n    }\n}\n\nfoo + bar {\n    &:baz {\n        bam: true;\n    }\n}\n\nfoo > bar {\n    &:baz {\n        bam: true;\n    }\n}\n\nfoo ~ bar {\n    &:baz {\n        bam: true;\n    }\n}\n"
+            "foo bar {\
+             \n    &:baz {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo + bar {\
+             \n    &:baz {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo > bar {\
+             \n    &:baz {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n\
+             \nfoo ~ bar {\
+             \n    &:baz {\
+             \n        bam: true;\
+             \n    }\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "foo bar:baz {\n  bam: true;\n}\nfoo + bar:baz {\n  bam: true;\n}\nfoo > bar:baz {\n  bam: true;\n}\nfoo ~ bar:baz {\n  bam: true;\n}\n"
+        "foo bar:baz {\
+         \n  bam: true;\
+         \n}\
+         \nfoo + bar:baz {\
+         \n  bam: true;\
+         \n}\
+         \nfoo > bar:baz {\
+         \n  bam: true;\
+         \n}\
+         \nfoo ~ bar:baz {\
+         \n  bam: true;\
+         \n}\
+         \n"
     );
 }

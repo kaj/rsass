@@ -8,8 +8,17 @@ use rsass::set_precision;
 #[test]
 fn bare() {
     assert_eq!(
-        rsass(".foo {\n  $bar: &;\n  content: $bar;\n}").unwrap(),
-        ".foo {\n  content: .foo;\n}\n"
+        rsass(
+            ".foo {\
+             \n  $bar: &;\
+             \n  content: $bar;\
+             \n}"
+        )
+        .unwrap(),
+        ".foo {\
+         \n  content: .foo;\
+         \n}\
+         \n"
     );
 }
 
@@ -17,7 +26,16 @@ fn bare() {
 #[test]
 fn interpolated() {
     assert_eq!(
-        rsass(".foo {\n  $bar: &;\n  content: #{$bar};\n}").unwrap(),
-        ".foo {\n  content: .foo;\n}\n"
+        rsass(
+            ".foo {\
+             \n  $bar: &;\
+             \n  content: #{$bar};\
+             \n}"
+        )
+        .unwrap(),
+        ".foo {\
+         \n  content: .foo;\
+         \n}\
+         \n"
     );
 }

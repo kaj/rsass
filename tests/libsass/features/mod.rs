@@ -9,8 +9,17 @@ use rsass::set_precision;
 #[ignore] // failing
 fn at_error() {
     assert_eq!(
-        rsass("foo {\n  foo: feature-exists(\'at-error\');\n}\n").unwrap(),
-        "foo {\n  foo: true;\n}\n"
+        rsass(
+            "foo {\
+             \n  foo: feature-exists(\'at-error\');\
+             \n}\
+             \n"
+        )
+        .unwrap(),
+        "foo {\
+         \n  foo: true;\
+         \n}\
+         \n"
     );
 }
 
@@ -20,10 +29,16 @@ fn at_error() {
 fn extend_selector_pseudoclass() {
     assert_eq!(
         rsass(
-            "foo {\n  foo: feature-exists(\'extend-selector-pseudoclass\');\n}\n"
+            "foo {\
+             \n  foo: feature-exists(\'extend-selector-pseudoclass\');\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "foo {\n  foo: true;\n}\n"
+        "foo {\
+         \n  foo: true;\
+         \n}\
+         \n"
     );
 }
 
@@ -32,10 +47,16 @@ fn extend_selector_pseudoclass() {
 fn global_variable_shadowing() {
     assert_eq!(
         rsass(
-            "foo {\n  foo: feature-exists(\'global-variable-shadowing\');\n}\n"
+            "foo {\
+             \n  foo: feature-exists(\'global-variable-shadowing\');\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "foo {\n  foo: true;\n}\n"
+        "foo {\
+         \n  foo: true;\
+         \n}\
+         \n"
     );
 }
 
@@ -43,8 +64,16 @@ fn global_variable_shadowing() {
 #[test]
 fn units_level_3() {
     assert_eq!(
-        rsass("foo {\n  foo: feature-exists(\'units-level-3\');\n}\n")
-            .unwrap(),
-        "foo {\n  foo: true;\n}\n"
+        rsass(
+            "foo {\
+             \n  foo: feature-exists(\'units-level-3\');\
+             \n}\
+             \n"
+        )
+        .unwrap(),
+        "foo {\
+         \n  foo: true;\
+         \n}\
+         \n"
     );
 }

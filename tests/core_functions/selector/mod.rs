@@ -15,16 +15,29 @@ mod append {
         #[ignore] // failing
         fn double() {
             assert_eq!(
-                rsass("a {b: selector-append(\".c, .d\", \".e, .f\")}\n")
-                    .unwrap(),
-                "a {\n  b: .c.e, .d.e, .c.f, .d.f;\n}\n"
+                rsass(
+                    "a {b: selector-append(\".c, .d\", \".e, .f\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: .c.e, .d.e, .c.f, .d.f;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn single() {
             assert_eq!(
-                rsass("a {b: selector-append(\".c\", \".d\")}\n").unwrap(),
-                "a {\n  b: .c.d;\n}\n"
+                rsass(
+                    "a {b: selector-append(\".c\", \".d\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: .c.d;\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -51,25 +64,44 @@ mod append {
     fn input() {
         assert_eq!(
         rsass(
-            "// The full set of possible input formats is tested with `selector-parse()`;\n// this spec just verifies one example for `selector-append()`.\na {b: selector-append((c, d e), (f, g h))}\n"
+            "// The full set of possible input formats is tested with `selector-parse()`;\
+            \n// this spec just verifies one example for `selector-append()`.\
+            \na {b: selector-append((c, d e), (f, g h))}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: cf, d ef, cg h, d eg h;\n}\n"
+        "a {\
+        \n  b: cf, d ef, cg h, d eg h;\
+        \n}\
+        \n"
     );
     }
     #[test]
     fn many_args() {
         assert_eq!(
-            rsass("a {b: selector-append(\".c\", \".d\", \".e\")}\n")
-                .unwrap(),
-            "a {\n  b: .c.d.e;\n}\n"
+            rsass(
+                "a {b: selector-append(\".c\", \".d\", \".e\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: .c.d.e;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn one_arg() {
         assert_eq!(
-            rsass("a {b: selector-append(\".c.d\")}\n").unwrap(),
-            "a {\n  b: .c.d;\n}\n"
+            rsass(
+                "a {b: selector-append(\".c.d\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: .c.d;\
+             \n}\
+             \n"
         );
     }
     mod suffix {
@@ -78,24 +110,44 @@ mod append {
         #[test]
         fn descendant() {
             assert_eq!(
-                rsass("a {b: selector-append(\"c d\", \"e f\")}\n").unwrap(),
-                "a {\n  b: c de f;\n}\n"
+                rsass(
+                    "a {b: selector-append(\"c d\", \"e f\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: c de f;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn multiple() {
             assert_eq!(
-                rsass("a {b: selector-append(\".c, .d\", \"e, f\")}\n")
-                    .unwrap(),
-                "a {\n  b: .ce, .de, .cf, .df;\n}\n"
+                rsass(
+                    "a {b: selector-append(\".c, .d\", \"e, f\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: .ce, .de, .cf, .df;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn single() {
             assert_eq!(
-                rsass("a {b: selector-append(\".c\", \"d\")}\n").unwrap(),
-                "a {\n  b: .cd;\n}\n"
+                rsass(
+                    "a {b: selector-append(\".c\", \"d\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: .cd;\
+                 \n}\
+                 \n"
             );
         }
     }

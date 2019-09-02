@@ -21,10 +21,18 @@ use rsass::set_precision;
 fn length() {
     assert_eq!(
         rsass(
-            "$map: (aaa: 100, bbb: 200, ccc: 300);\n\na {\n  b: length($map);\n}\n"
+            "$map: (aaa: 100, bbb: 200, ccc: 300);\
+             \n\
+             \na {\
+             \n  b: length($map);\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "a {\n  b: 3;\n}\n"
+        "a {\
+         \n  b: 3;\
+         \n}\
+         \n"
     );
 }
 
@@ -33,9 +41,17 @@ fn length() {
 fn map_values() {
     assert_eq!(
         rsass(
-            "div {\n  foo: map-values((foo: 1, bar: 2));\n  foo: map-values((foo: 1, bar: 2, baz: 2));\n}\n"
+            "div {\
+             \n  foo: map-values((foo: 1, bar: 2));\
+             \n  foo: map-values((foo: 1, bar: 2, baz: 2));\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "div {\n  foo: 1, 2;\n  foo: 1, 2, 2;\n}\n"
+        "div {\
+         \n  foo: 1, 2;\
+         \n  foo: 1, 2, 2;\
+         \n}\
+         \n"
     );
 }

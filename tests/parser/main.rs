@@ -7,8 +7,17 @@ use rsass::{compile_scss, OutputStyle};
 #[test]
 fn and_and() {
     assert_eq!(
-        rsass(".and-and {\n  value: true && false;\n}\n").unwrap(),
-        ".and-and {\n  value: true .and-and .and-and false;\n}\n"
+        rsass(
+            ".and-and {\
+             \n  value: true && false;\
+             \n}\
+             \n"
+        )
+        .unwrap(),
+        ".and-and {\
+         \n  value: true .and-and .and-and false;\
+         \n}\
+         \n"
     );
 }
 

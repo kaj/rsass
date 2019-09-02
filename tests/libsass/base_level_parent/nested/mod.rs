@@ -10,10 +10,22 @@ use rsass::set_precision;
 fn at_root_alone_itpl() {
     assert_eq!(
         rsass(
-            "test {\r\n  @at-root {\r\n    #{&} {\r\n      foo {\r\n        bar: baz;\r\n      }\r\n    }\r\n  }\r\n}\r\n"
+            "test {\r\
+             \n  @at-root {\r\
+             \n    #{&} {\r\
+             \n      foo {\r\
+             \n        bar: baz;\r\
+             \n      }\r\
+             \n    }\r\
+             \n  }\r\
+             \n}\r\
+             \n"
         )
         .unwrap(),
-        "test foo {\n  bar: baz;\n}\n"
+        "test foo {\
+         \n  bar: baz;\
+         \n}\
+         \n"
     );
 }
 
@@ -22,10 +34,21 @@ fn at_root_alone_itpl() {
 fn at_root_alone() {
     assert_eq!(
         rsass(
-            "test {\r\n  @at-root {\r\n    & {\r\n      foo {\r\n        bar: baz;\r\n      }\r\n    }\r\n  }\r\n}"
+            "test {\r\
+             \n  @at-root {\r\
+             \n    & {\r\
+             \n      foo {\r\
+             \n        bar: baz;\r\
+             \n      }\r\
+             \n    }\r\
+             \n  }\r\
+             \n}"
         )
         .unwrap(),
-        "test foo {\n  bar: baz;\n}\n"
+        "test foo {\
+         \n  bar: baz;\
+         \n}\
+         \n"
     );
 }
 
@@ -35,10 +58,22 @@ fn at_root_alone() {
 fn at_root_postfix_itpl() {
     assert_eq!(
         rsass(
-            "test {\r\n  @at-root {\r\n    #{&}post {\r\n      foo {\r\n        bar: baz;\r\n      }\r\n    }\r\n  }\r\n}\r\n"
+            "test {\r\
+             \n  @at-root {\r\
+             \n    #{&}post {\r\
+             \n      foo {\r\
+             \n        bar: baz;\r\
+             \n      }\r\
+             \n    }\r\
+             \n  }\r\
+             \n}\r\
+             \n"
         )
         .unwrap(),
-        "testpost foo {\n  bar: baz;\n}\n"
+        "testpost foo {\
+         \n  bar: baz;\
+         \n}\
+         \n"
     );
 }
 
@@ -47,10 +82,21 @@ fn at_root_postfix_itpl() {
 fn at_root_postfix() {
     assert_eq!(
         rsass(
-            "test {\r\n  @at-root {\r\n    &post {\r\n      foo {\r\n        bar: baz;\r\n      }\r\n    }\r\n  }\r\n}"
+            "test {\r\
+             \n  @at-root {\r\
+             \n    &post {\r\
+             \n      foo {\r\
+             \n        bar: baz;\r\
+             \n      }\r\
+             \n    }\r\
+             \n  }\r\
+             \n}"
         )
         .unwrap(),
-        "testpost foo {\n  bar: baz;\n}\n"
+        "testpost foo {\
+         \n  bar: baz;\
+         \n}\
+         \n"
     );
 }
 
@@ -60,10 +106,22 @@ fn at_root_postfix() {
 fn at_root_prefix_itpl() {
     assert_eq!(
         rsass(
-            "test {\r\n  @at-root {\r\n    pre#{&} {\r\n      foo {\r\n        bar: baz;\r\n      }\r\n    }\r\n  }\r\n}\r\n"
+            "test {\r\
+             \n  @at-root {\r\
+             \n    pre#{&} {\r\
+             \n      foo {\r\
+             \n        bar: baz;\r\
+             \n      }\r\
+             \n    }\r\
+             \n  }\r\
+             \n}\r\
+             \n"
         )
         .unwrap(),
-        "pretest foo {\n  bar: baz;\n}\n"
+        "pretest foo {\
+         \n  bar: baz;\
+         \n}\
+         \n"
     );
 }
 
@@ -76,10 +134,20 @@ fn at_root_prefix_itpl() {
 fn basic_alone_itpl() {
     assert_eq!(
         rsass(
-            "test {\r\n  #{&} {\r\n    foo {\r\n      bar: baz;\r\n    }\r\n  }\r\n}\r\n"
+            "test {\r\
+             \n  #{&} {\r\
+             \n    foo {\r\
+             \n      bar: baz;\r\
+             \n    }\r\
+             \n  }\r\
+             \n}\r\
+             \n"
         )
         .unwrap(),
-        "test test foo {\n  bar: baz;\n}\n"
+        "test test foo {\
+         \n  bar: baz;\
+         \n}\
+         \n"
     );
 }
 
@@ -88,10 +156,19 @@ fn basic_alone_itpl() {
 fn basic_alone() {
     assert_eq!(
         rsass(
-            "test {\r\n  & {\r\n    foo {\r\n      bar: baz;\r\n    }\r\n  }\r\n}"
+            "test {\r\
+             \n  & {\r\
+             \n    foo {\r\
+             \n      bar: baz;\r\
+             \n    }\r\
+             \n  }\r\
+             \n}"
         )
         .unwrap(),
-        "test foo {\n  bar: baz;\n}\n"
+        "test foo {\
+         \n  bar: baz;\
+         \n}\
+         \n"
     );
 }
 
@@ -100,10 +177,20 @@ fn basic_alone() {
 fn basic_postfix_itpl() {
     assert_eq!(
         rsass(
-            "test {\r\n  #{&}post {\r\n    foo {\r\n      bar: baz;\r\n    }\r\n  }\r\n}\r\n"
+            "test {\r\
+             \n  #{&}post {\r\
+             \n    foo {\r\
+             \n      bar: baz;\r\
+             \n    }\r\
+             \n  }\r\
+             \n}\r\
+             \n"
         )
         .unwrap(),
-        "test testpost foo {\n  bar: baz;\n}\n"
+        "test testpost foo {\
+         \n  bar: baz;\
+         \n}\
+         \n"
     );
 }
 
@@ -112,10 +199,19 @@ fn basic_postfix_itpl() {
 fn basic_postfix() {
     assert_eq!(
         rsass(
-            "test {\r\n  &post {\r\n    foo {\r\n      bar: baz;\r\n    }\r\n  }\r\n}"
+            "test {\r\
+             \n  &post {\r\
+             \n    foo {\r\
+             \n      bar: baz;\r\
+             \n    }\r\
+             \n  }\r\
+             \n}"
         )
         .unwrap(),
-        "testpost foo {\n  bar: baz;\n}\n"
+        "testpost foo {\
+         \n  bar: baz;\
+         \n}\
+         \n"
     );
 }
 
@@ -124,10 +220,20 @@ fn basic_postfix() {
 fn basic_prefix_itpl() {
     assert_eq!(
         rsass(
-            "test {\r\n  pre#{&} {\r\n    foo {\r\n      bar: baz;\r\n    }\r\n  }\r\n}\r\n"
+            "test {\r\
+             \n  pre#{&} {\r\
+             \n    foo {\r\
+             \n      bar: baz;\r\
+             \n    }\r\
+             \n  }\r\
+             \n}\r\
+             \n"
         )
         .unwrap(),
-        "test pretest foo {\n  bar: baz;\n}\n"
+        "test pretest foo {\
+         \n  bar: baz;\
+         \n}\
+         \n"
     );
 }
 

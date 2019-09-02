@@ -8,7 +8,15 @@ use rsass::{compile_scss, OutputStyle};
 // From "sass-spec/spec/css/blockless_directive_without_semicolon.hrx"
 #[test]
 fn blockless_directive_without_semicolon() {
-    assert_eq!(rsass("@foo \"bar\";\n").unwrap(), "@foo \"bar\";\n");
+    assert_eq!(
+        rsass(
+            "@foo \"bar\";\
+             \n"
+        )
+        .unwrap(),
+        "@foo \"bar\";\
+         \n"
+    );
 }
 
 // From "sass-spec/spec/css/comment.hrx"
@@ -29,16 +37,28 @@ mod comment {
             #[ignore] // failing
             fn cr() {
                 assert_eq!(
-                    rsass("/* foo\r * bar */\n").unwrap(),
-                    "/* foo\n * bar */\n"
+                    rsass(
+                        "/* foo\r * bar */\
+                         \n"
+                    )
+                    .unwrap(),
+                    "/* foo\
+                     \n * bar */\
+                     \n"
                 );
             }
             #[test]
             #[ignore] // failing
             fn ff() {
                 assert_eq!(
-                    rsass("/* foo\u{c} * bar */\n").unwrap(),
-                    "/* foo\n * bar */\n"
+                    rsass(
+                        "/* foo\u{c} * bar */\
+                         \n"
+                    )
+                    .unwrap(),
+                    "/* foo\
+                     \n * bar */\
+                     \n"
                 );
             }
         }
@@ -46,25 +66,65 @@ mod comment {
     #[test]
     fn multiple() {
         assert_eq!(
-            rsass(".foo {\n  /* Foo Bar */\n  /* Baz Bang */ }\n").unwrap(),
-            ".foo {\n  /* Foo Bar */\n  /* Baz Bang */\n}\n"
+            rsass(
+                ".foo {\
+                 \n  /* Foo Bar */\
+                 \n  /* Baz Bang */ }\
+                 \n"
+            )
+            .unwrap(),
+            ".foo {\
+             \n  /* Foo Bar */\
+             \n  /* Baz Bang */\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn multiple_stars() {
         assert_eq!(
-        rsass(
-            "a /***/ b {x: y}\na /****/ b {x: y}\na /* **/ b {x: y}\na /** */ b {x: y}\n"
-        )
-        .unwrap(),
-        "a b {\n  x: y;\n}\na b {\n  x: y;\n}\na b {\n  x: y;\n}\na b {\n  x: y;\n}\n"
-    );
+            rsass(
+                "a /***/ b {x: y}\
+                 \na /****/ b {x: y}\
+                 \na /* **/ b {x: y}\
+                 \na /** */ b {x: y}\
+                 \n"
+            )
+            .unwrap(),
+            "a b {\
+             \n  x: y;\
+             \n}\
+             \na b {\
+             \n  x: y;\
+             \n}\
+             \na b {\
+             \n  x: y;\
+             \n}\
+             \na b {\
+             \n  x: y;\
+             \n}\
+             \n"
+        );
     }
     #[test]
     fn weird_indentation() {
         assert_eq!(
-            rsass(".foo {\n    /* Foo\n Bar\nBaz */\n  a: b; }\n").unwrap(),
-            ".foo {\n  /* Foo\n Bar\nBaz */\n  a: b;\n}\n"
+            rsass(
+                ".foo {\
+                 \n    /* Foo\
+                 \n Bar\
+                 \nBaz */\
+                 \n  a: b; }\
+                 \n"
+            )
+            .unwrap(),
+            ".foo {\
+             \n  /* Foo\
+             \n Bar\
+             \nBaz */\
+             \n  a: b;\
+             \n}\
+             \n"
         );
     }
 }
@@ -74,13 +134,29 @@ mod custom_properties;
 // From "sass-spec/spec/css/directive_with_lots_of_whitespace.hrx"
 #[test]
 fn directive_with_lots_of_whitespace() {
-    assert_eq!(rsass("@foo \"bar\";\n").unwrap(), "@foo \"bar\";\n");
+    assert_eq!(
+        rsass(
+            "@foo \"bar\";\
+             \n"
+        )
+        .unwrap(),
+        "@foo \"bar\";\
+         \n"
+    );
 }
 
 // From "sass-spec/spec/css/empty_block_directive.hrx"
 #[test]
 fn empty_block_directive() {
-    assert_eq!(rsass("@foo {}\n").unwrap(), "@foo {}\n");
+    assert_eq!(
+        rsass(
+            "@foo {}\
+             \n"
+        )
+        .unwrap(),
+        "@foo {}\
+         \n"
+    );
 }
 
 // From "sass-spec/spec/css/function_name_identifiers.hrx"
@@ -88,10 +164,24 @@ fn empty_block_directive() {
 fn function_name_identifiers() {
     assert_eq!(
         rsass(
-            "a {\n  b: url;\n  c: calc;\n  d: element;\n  e: expression;\n  f: progid;\n}\n"
+            "a {\
+             \n  b: url;\
+             \n  c: calc;\
+             \n  d: element;\
+             \n  e: expression;\
+             \n  f: progid;\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "a {\n  b: url;\n  c: calc;\n  d: element;\n  e: expression;\n  f: progid;\n}\n"
+        "a {\
+         \n  b: url;\
+         \n  c: calc;\
+         \n  d: element;\
+         \n  e: expression;\
+         \n  f: progid;\
+         \n}\
+         \n"
     );
 }
 
@@ -106,12 +196,19 @@ mod keyframes {
         #[ignore] // failing
         fn empty() {
             assert_eq!(
-        rsass(
-            "// Regression test for sass/dart-sass#611.\na {\n  @keyframes {/**/}\n}\n"
-        )
-        .unwrap(),
-        "@keyframes {\n  /**/\n}\n"
-    );
+                rsass(
+                    "// Regression test for sass/dart-sass#611.\
+                     \na {\
+                     \n  @keyframes {/**/}\
+                     \n}\
+                     \n"
+                )
+                .unwrap(),
+                "@keyframes {\
+                 \n  /**/\
+                 \n}\
+                 \n"
+            );
         }
     }
 }
@@ -128,10 +225,17 @@ mod moz_document;
 fn ms_long_filter_syntax() {
     assert_eq!(
         rsass(
-            "foo {\n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000);\n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000); }\n"
+            "foo {\
+            \n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000);\
+            \n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000); }\
+            \n"
         )
         .unwrap(),
-        "foo {\n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000);\n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000);\n}\n"
+        "foo {\
+        \n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000);\
+        \n  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr=#c0ff3300, endColorstr=#ff000000);\
+        \n}\
+        \n"
     );
 }
 
@@ -148,10 +252,20 @@ mod selector {
         fn dash_dash() {
             assert_eq!(
         rsass(
-            "// Attribute selector values are allowed to be unquoted as long as they\'re plain\n// CSS identifiers. However, IE 11 doesn\'t recognize custom-property-style\n// identifiers like `--foo` as identifiers, so they should always be quoted.\n\n[class=\"--foo\"], [class*=\"--foo\"] {\n  x: y;\n}\n"
+            "// Attribute selector values are allowed to be unquoted as long as they\'re plain\
+            \n// CSS identifiers. However, IE 11 doesn\'t recognize custom-property-style\
+            \n// identifiers like `--foo` as identifiers, so they should always be quoted.\
+            \n\
+            \n[class=\"--foo\"], [class*=\"--foo\"] {\
+            \n  x: y;\
+            \n}\
+            \n"
         )
         .unwrap(),
-        "[class=\"--foo\"], [class*=\"--foo\"] {\n  x: y;\n}\n"
+        "[class=\"--foo\"], [class*=\"--foo\"] {\
+        \n  x: y;\
+        \n}\
+        \n"
     );
         }
         mod modifier {
@@ -161,25 +275,46 @@ mod selector {
             #[ignore] // failing
             fn after_string() {
                 assert_eq!(
-                    rsass("[a=\"b\"i] {c: d}\n").unwrap(),
-                    "[a=\"b\" i] {\n  c: d;\n}\n"
+                    rsass(
+                        "[a=\"b\"i] {c: d}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "[a=\"b\" i] {\
+                     \n  c: d;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             fn caps() {
                 assert_eq!(
-                    rsass("[a=b I] {c: d}\n").unwrap(),
-                    "[a=b I] {\n  c: d;\n}\n"
+                    rsass(
+                        "[a=b I] {c: d}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "[a=b I] {\
+                     \n  c: d;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             fn unknown() {
                 assert_eq!(
         rsass(
-            "// At time of writing, only the modifiers \"i\" and \"s\" are allowed by the CSS\n// spec. However, for forwards-compatibility with future CSS additions, any\n// single character should be allowed.\n[a=b c] {d: e}\n"
+            "// At time of writing, only the modifiers \"i\" and \"s\" are allowed by the CSS\
+            \n// spec. However, for forwards-compatibility with future CSS additions, any\
+            \n// single character should be allowed.\
+            \n[a=b c] {d: e}\
+            \n"
         )
         .unwrap(),
-        "[a=b c] {\n  d: e;\n}\n"
+        "[a=b c] {\
+        \n  d: e;\
+        \n}\
+        \n"
     );
             }
         }
@@ -212,12 +347,28 @@ mod selector {
     #[ignore] // failing
     fn slotted() {
         assert_eq!(
-        rsass(
-            "::slotted(.a) {x: y}\n\n::slotted(.c.d) {x: y}\n.e {@extend .c}\n\n::slotted(.f) {x: y}\n::slotted(.g) {@extend .f}\n"
-        )
-        .unwrap(),
-        "::slotted(.a) {\n  x: y;\n}\n::slotted(.c.d, .d.e) {\n  x: y;\n}\n::slotted(.f, ::slotted(.g)) {\n  x: y;\n}\n"
-    );
+            rsass(
+                "::slotted(.a) {x: y}\
+                 \n\
+                 \n::slotted(.c.d) {x: y}\
+                 \n.e {@extend .c}\
+                 \n\
+                 \n::slotted(.f) {x: y}\
+                 \n::slotted(.g) {@extend .f}\
+                 \n"
+            )
+            .unwrap(),
+            "::slotted(.a) {\
+             \n  x: y;\
+             \n}\
+             \n::slotted(.c.d, .d.e) {\
+             \n  x: y;\
+             \n}\
+             \n::slotted(.f, ::slotted(.g)) {\
+             \n  x: y;\
+             \n}\
+             \n"
+        );
     }
 }
 
@@ -236,16 +387,30 @@ mod url {
         #[ignore] // failing
         fn middle() {
             assert_eq!(
-                rsass("a {b: url(http://c.d/e!f)}\n").unwrap(),
-                "a {\n  b: url(http://c.d/e!f);\n}\n"
+                rsass(
+                    "a {b: url(http://c.d/e!f)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: url(http://c.d/e!f);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn only() {
             assert_eq!(
-                rsass("a {b: url(!)}\n").unwrap(),
-                "a {\n  b: url(!);\n}\n"
+                rsass(
+                    "a {b: url(!)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: url(!);\
+                 \n}\
+                 \n"
             );
         }
     }

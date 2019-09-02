@@ -15,9 +15,15 @@ mod arg {
         #[ignore] // failing
         fn equal() {
             assert_eq!(
-                rsass("a {b: is-superselector(\":c(@#$)\", \":c(@#$)\")}\n")
-                    .unwrap(),
-                "a {\n  b: true;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\":c(@#$)\", \":c(@#$)\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: true;\
+                 \n}\
+                 \n"
             );
         }
         mod unequal {
@@ -28,19 +34,29 @@ mod arg {
             fn argument() {
                 assert_eq!(
                     rsass(
-                        "a {b: is-superselector(\":c(@#$)\", \":c(*&^)\")}\n"
+                        "a {b: is-superselector(\":c(@#$)\", \":c(*&^)\")}\
+                         \n"
                     )
                     .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             #[ignore] // failing
             fn has_argument() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\":c(@#$)\", \":c\")}\n")
-                        .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\":c(@#$)\", \":c\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
@@ -48,10 +64,14 @@ mod arg {
             fn name() {
                 assert_eq!(
                     rsass(
-                        "a {b: is-superselector(\":c(@#$)\", \":d(@#$)\")}\n"
+                        "a {b: is-superselector(\":c(@#$)\", \":d(@#$)\")}\
+                         \n"
                     )
                     .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
         }
@@ -64,10 +84,14 @@ mod arg {
         fn equal() {
             assert_eq!(
                 rsass(
-                    "a {b: is-superselector(\"::c(@#$)\", \"::c(@#$)\")}\n"
+                    "a {b: is-superselector(\"::c(@#$)\", \"::c(@#$)\")}\
+                     \n"
                 )
                 .unwrap(),
-                "a {\n  b: true;\n}\n"
+                "a {\
+                 \n  b: true;\
+                 \n}\
+                 \n"
             );
         }
         mod unequal {
@@ -77,28 +101,46 @@ mod arg {
             #[ignore] // failing
             fn argument() {
                 assert_eq!(
-        rsass("a {b: is-superselector(\"::c(@#$)\", \"::c(*&^)\")}\n")
-            .unwrap(),
-        "a {\n  b: false;\n}\n"
-    );
+                    rsass(
+                        "a {b: is-superselector(\"::c(@#$)\", \"::c(*&^)\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
+                );
             }
             #[test]
             #[ignore] // failing
             fn has_argument() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"::c(@#$)\", \"::c\")}\n")
-                        .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"::c(@#$)\", \"::c\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             #[ignore] // failing
             fn name() {
                 assert_eq!(
-        rsass("a {b: is-superselector(\"::c(@#$)\", \":d(@#$)\")}\n")
-            .unwrap(),
-        "a {\n  b: false;\n}\n"
-    );
+                    rsass(
+                        "a {b: is-superselector(\"::c(@#$)\", \":d(@#$)\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
+                );
             }
         }
     }
@@ -115,24 +157,45 @@ mod no_arg {
         #[ignore] // failing
         fn and_element() {
             assert_eq!(
-                rsass("a {b: is-superselector(\":c\", \"::c\")}\n").unwrap(),
-                "a {\n  b: false;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\":c\", \"::c\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn equal() {
             assert_eq!(
-                rsass("a {b: is-superselector(\":c\", \":c\")}\n").unwrap(),
-                "a {\n  b: true;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\":c\", \":c\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: true;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn unequal() {
             assert_eq!(
-                rsass("a {b: is-superselector(\":c\", \":d\")}\n").unwrap(),
-                "a {\n  b: false;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\":c\", \":d\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -143,24 +206,45 @@ mod no_arg {
         #[ignore] // failing
         fn and_class() {
             assert_eq!(
-                rsass("a {b: is-superselector(\"::c\", \":c\")}\n").unwrap(),
-                "a {\n  b: false;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\"::c\", \":c\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn equal() {
             assert_eq!(
-                rsass("a {b: is-superselector(\"::c\", \"::c\")}\n").unwrap(),
-                "a {\n  b: true;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\"::c\", \"::c\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: true;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn unequal() {
             assert_eq!(
-                rsass("a {b: is-superselector(\"::c\", \"::d\")}\n").unwrap(),
-                "a {\n  b: false;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\"::c\", \"::d\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
             );
         }
     }

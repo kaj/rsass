@@ -13,15 +13,29 @@ mod adjust_hue {
     #[test]
     fn above_max() {
         assert_eq!(
-            rsass("a {b: adjust-hue(red, 540)}\n").unwrap(),
-            "a {\n  b: cyan;\n}\n"
+            rsass(
+                "a {b: adjust-hue(red, 540)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: cyan;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn alpha() {
         assert_eq!(
-            rsass("a {b: adjust-hue(rgba(red, 0.1), 359)}\n").unwrap(),
-            "a {\n  b: rgba(255, 0, 4, 0.1);\n}\n"
+            rsass(
+                "a {b: adjust-hue(rgba(red, 0.1), 359)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 0, 4, 0.1);\
+             \n}\
+             \n"
         );
     }
     mod error {
@@ -43,43 +57,85 @@ mod adjust_hue {
     #[test]
     fn fraction() {
         assert_eq!(
-            rsass("a {b: adjust-hue(red, 0.5)}\n").unwrap(),
-            "a {\n  b: #ff0200;\n}\n"
+            rsass(
+                "a {b: adjust-hue(red, 0.5)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #ff0200;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn max() {
         assert_eq!(
-            rsass("a {b: adjust-hue(red, 359)}\n").unwrap(),
-            "a {\n  b: #ff0004;\n}\n"
+            rsass(
+                "a {b: adjust-hue(red, 359)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #ff0004;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            rsass("a {b: adjust-hue(red, 123)}\n").unwrap(),
-            "a {\n  b: #00ff0d;\n}\n"
+            rsass(
+                "a {b: adjust-hue(red, 123)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #00ff0d;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: adjust-hue(blue, 0)}\n").unwrap(),
-            "a {\n  b: blue;\n}\n"
+            rsass(
+                "a {b: adjust-hue(blue, 0)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: blue;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: adjust-hue($color: red, $degrees: 123)}\n").unwrap(),
-            "a {\n  b: #00ff0d;\n}\n"
+            rsass(
+                "a {b: adjust-hue($color: red, $degrees: 123)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #00ff0d;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn negative() {
         assert_eq!(
-            rsass("a {b: adjust-hue(red, -180)}\n").unwrap(),
-            "a {\n  b: cyan;\n}\n"
+            rsass(
+                "a {b: adjust-hue(red, -180)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: cyan;\
+             \n}\
+             \n"
         );
     }
 }
@@ -94,29 +150,57 @@ mod alpha {
         #[test]
         fn max() {
             assert_eq!(
-                rsass("a {b: alpha(red)}\n").unwrap(),
-                "a {\n  b: 1;\n}\n"
+                rsass(
+                    "a {b: alpha(red)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: 1;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn middle() {
             assert_eq!(
-                rsass("a {b: alpha(rgba(red, 0.42))}\n").unwrap(),
-                "a {\n  b: 0.42;\n}\n"
+                rsass(
+                    "a {b: alpha(rgba(red, 0.42))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: 0.42;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn min() {
             assert_eq!(
-                rsass("a {b: alpha(rgba(red, 0))}\n").unwrap(),
-                "a {\n  b: 0;\n}\n"
+                rsass(
+                    "a {b: alpha(rgba(red, 0))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: 0;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn named() {
             assert_eq!(
-                rsass("a {b: alpha($color: rgba(red, 0.73))}\n").unwrap(),
-                "a {\n  b: 0.73;\n}\n"
+                rsass(
+                    "a {b: alpha($color: rgba(red, 0.73))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: 0.73;\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -146,22 +230,43 @@ mod alpha {
         #[test]
         fn multi_args() {
             assert_eq!(
-                rsass("a {b: alpha(c=d, e=f, g=h)}\n").unwrap(),
-                "a {\n  b: alpha(c=d, e=f, g=h);\n}\n"
+                rsass(
+                    "a {b: alpha(c=d, e=f, g=h)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: alpha(c=d, e=f, g=h);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn one_arg() {
             assert_eq!(
-                rsass("a {b: alpha(c=d)}\n").unwrap(),
-                "a {\n  b: alpha(c=d);\n}\n"
+                rsass(
+                    "a {b: alpha(c=d)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: alpha(c=d);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn space_before_equals() {
             assert_eq!(
-                rsass("a {b: alpha(unquote(\"c = d\"))}\n").unwrap(),
-                "a {\n  b: alpha(c = d);\n}\n"
+                rsass(
+                    "a {b: alpha(unquote(\"c = d\"))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: alpha(c = d);\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -171,22 +276,43 @@ mod alpha {
         #[test]
         fn filter() {
             assert_eq!(
-                rsass("a {b: opacity(10%)}\n").unwrap(),
-                "a {\n  b: opacity(10%);\n}\n"
+                rsass(
+                    "a {b: opacity(10%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: opacity(10%);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn named() {
             assert_eq!(
-                rsass("a {b: opacity($color: rgba(red, 0.2))}\n").unwrap(),
-                "a {\n  b: 0.2;\n}\n"
+                rsass(
+                    "a {b: opacity($color: rgba(red, 0.2))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: 0.2;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn positional() {
             assert_eq!(
-                rsass("a {b: opacity(rgba(red, 0.2))}\n").unwrap(),
-                "a {\n  b: 0.2;\n}\n"
+                rsass(
+                    "a {b: opacity(rgba(red, 0.2))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: 0.2;\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -209,29 +335,57 @@ mod blue {
     #[test]
     fn max() {
         assert_eq!(
-            rsass("a {b: blue(rgb(0, 0, 255))}\n").unwrap(),
-            "a {\n  b: 255;\n}\n"
+            rsass(
+                "a {b: blue(rgb(0, 0, 255))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 255;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            rsass("a {b: blue(rgb(0, 0, 123))}\n").unwrap(),
-            "a {\n  b: 123;\n}\n"
+            rsass(
+                "a {b: blue(rgb(0, 0, 123))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 123;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: blue(rgb(0, 0, 0))}\n").unwrap(),
-            "a {\n  b: 0;\n}\n"
+            rsass(
+                "a {b: blue(rgb(0, 0, 0))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 0;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: blue($color: rgb(0, 0, 234))}\n").unwrap(),
-            "a {\n  b: 234;\n}\n"
+            rsass(
+                "a {b: blue($color: rgb(0, 0, 234))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 234;\
+             \n}\
+             \n"
         );
     }
 }
@@ -245,8 +399,15 @@ mod complement {
     #[test]
     fn alpha() {
         assert_eq!(
-            rsass("a {b: complement(rgba(turquoise, 0.7))}\n").unwrap(),
-            "a {\n  b: rgba(224, 64, 80, 0.7);\n}\n"
+            rsass(
+                "a {b: complement(rgba(turquoise, 0.7))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(224, 64, 80, 0.7);\
+             \n}\
+             \n"
         );
     }
     mod error {
@@ -265,44 +426,86 @@ mod complement {
         #[test]
         fn black() {
             assert_eq!(
-                rsass("a {b: complement(black)}\n").unwrap(),
-                "a {\n  b: black;\n}\n"
+                rsass(
+                    "a {b: complement(black)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: black;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn gray() {
             assert_eq!(
-                rsass("a {b: complement(gray)}\n").unwrap(),
-                "a {\n  b: gray;\n}\n"
+                rsass(
+                    "a {b: complement(gray)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: gray;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn white() {
             assert_eq!(
-                rsass("a {b: complement(white)}\n").unwrap(),
-                "a {\n  b: white;\n}\n"
+                rsass(
+                    "a {b: complement(white)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: white;\
+                 \n}\
+                 \n"
             );
         }
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: complement($color: red)}\n").unwrap(),
-            "a {\n  b: cyan;\n}\n"
+            rsass(
+                "a {b: complement($color: red)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: cyan;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn red() {
         assert_eq!(
-            rsass("a {b: complement(red)}\n").unwrap(),
-            "a {\n  b: cyan;\n}\n"
+            rsass(
+                "a {b: complement(red)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: cyan;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn turquoise() {
         assert_eq!(
-            rsass("a {b: complement(turquoise)}\n").unwrap(),
-            "a {\n  b: #e04050;\n}\n"
+            rsass(
+                "a {b: complement(turquoise)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #e04050;\
+             \n}\
+             \n"
         );
     }
 }
@@ -314,8 +517,15 @@ mod darken {
     #[test]
     fn alpha() {
         assert_eq!(
-            rsass("a {b: darken(rgba(red, 0.2), 100%)}\n").unwrap(),
-            "a {\n  b: rgba(0, 0, 0, 0.2);\n}\n"
+            rsass(
+                "a {b: darken(rgba(red, 0.2), 100%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(0, 0, 0, 0.2);\
+             \n}\
+             \n"
         );
     }
     mod error {
@@ -345,43 +555,85 @@ mod darken {
     #[test]
     fn fraction() {
         assert_eq!(
-            rsass("a {b: darken(red, 0.5%)}\n").unwrap(),
-            "a {\n  b: #fc0000;\n}\n"
+            rsass(
+                "a {b: darken(red, 0.5%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #fc0000;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn max() {
         assert_eq!(
-            rsass("a {b: darken(red, 100%)}\n").unwrap(),
-            "a {\n  b: black;\n}\n"
+            rsass(
+                "a {b: darken(red, 100%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: black;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn max_remaining() {
         assert_eq!(
-            rsass("a {b: darken(red, 50%)}\n").unwrap(),
-            "a {\n  b: black;\n}\n"
+            rsass(
+                "a {b: darken(red, 50%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: black;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            rsass("a {b: darken(red, 14%)}\n").unwrap(),
-            "a {\n  b: #b80000;\n}\n"
+            rsass(
+                "a {b: darken(red, 14%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #b80000;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: darken(red, 0%)}\n").unwrap(),
-            "a {\n  b: red;\n}\n"
+            rsass(
+                "a {b: darken(red, 0%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: red;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: darken($color: red, $amount: 14%)}\n").unwrap(),
-            "a {\n  b: #b80000;\n}\n"
+            rsass(
+                "a {b: darken($color: red, $amount: 14%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #b80000;\
+             \n}\
+             \n"
         );
     }
 }
@@ -393,8 +645,15 @@ mod desaturate {
     #[test]
     fn alpha() {
         assert_eq!(
-            rsass("a {b: desaturate(rgba(plum, 0.3), 100%)}\n").unwrap(),
-            "a {\n  b: rgba(191, 191, 191, 0.3);\n}\n"
+            rsass(
+                "a {b: desaturate(rgba(plum, 0.3), 100%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(191, 191, 191, 0.3);\
+             \n}\
+             \n"
         );
     }
     mod error {
@@ -430,36 +689,71 @@ mod desaturate {
     #[test]
     fn max() {
         assert_eq!(
-            rsass("a {b: desaturate(plum, 100%)}\n").unwrap(),
-            "a {\n  b: #bfbfbf;\n}\n"
+            rsass(
+                "a {b: desaturate(plum, 100%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #bfbfbf;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn max_remaining() {
         assert_eq!(
-            rsass("a {b: desaturate(plum, 48%)}\n").unwrap(),
-            "a {\n  b: #bfbfbf;\n}\n"
+            rsass(
+                "a {b: desaturate(plum, 48%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #bfbfbf;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            rsass("a {b: desaturate(plum, 14%)}\n").unwrap(),
-            "a {\n  b: #d4a9d4;\n}\n"
+            rsass(
+                "a {b: desaturate(plum, 14%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #d4a9d4;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: desaturate(plum, 0%)}\n").unwrap(),
-            "a {\n  b: plum;\n}\n"
+            rsass(
+                "a {b: desaturate(plum, 0%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: plum;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: desaturate($color: plum, $amount: 14%)}\n").unwrap(),
-            "a {\n  b: #d4a9d4;\n}\n"
+            rsass(
+                "a {b: desaturate($color: plum, $amount: 14%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #d4a9d4;\
+             \n}\
+             \n"
         );
     }
 }
@@ -495,45 +789,85 @@ mod fade_in {
     #[test]
     fn max() {
         assert_eq!(
-            rsass("a {b: fade-in(rgba(red, 0.5), 1)}\n").unwrap(),
-            "a {\n  b: red;\n}\n"
+            rsass(
+                "a {b: fade-in(rgba(red, 0.5), 1)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: red;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn max_remaining() {
         assert_eq!(
-            rsass("a {b: fade-in(rgba(red, 0.5), 0.5)}\n").unwrap(),
-            "a {\n  b: red;\n}\n"
+            rsass(
+                "a {b: fade-in(rgba(red, 0.5), 0.5)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: red;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            rsass("a {b: fade-in(rgba(red, 0.5), 0.14)}\n").unwrap(),
-            "a {\n  b: rgba(255, 0, 0, 0.64);\n}\n"
+            rsass(
+                "a {b: fade-in(rgba(red, 0.5), 0.14)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 0, 0, 0.64);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: fade-in(rgba(red, 0.5), 0)}\n").unwrap(),
-            "a {\n  b: rgba(255, 0, 0, 0.5);\n}\n"
+            rsass(
+                "a {b: fade-in(rgba(red, 0.5), 0)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 0, 0, 0.5);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: fade-in($color: rgba(red, 0.5), $amount: 0.14)}\n")
-                .unwrap(),
-            "a {\n  b: rgba(255, 0, 0, 0.64);\n}\n"
+            rsass(
+                "a {b: fade-in($color: rgba(red, 0.5), $amount: 0.14)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 0, 0, 0.64);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn opacify() {
         assert_eq!(
-            rsass("a {b: opacify($color: rgba(red, 0.5), $amount: 0.14)}\n")
-                .unwrap(),
-            "a {\n  b: rgba(255, 0, 0, 0.64);\n}\n"
+            rsass(
+                "a {b: opacify($color: rgba(red, 0.5), $amount: 0.14)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 0, 0, 0.64);\
+             \n}\
+             \n"
         );
     }
 }
@@ -569,47 +903,85 @@ mod fade_out {
     #[test]
     fn max() {
         assert_eq!(
-            rsass("a {b: fade-out(rgba(red, 0.5), 1)}\n").unwrap(),
-            "a {\n  b: rgba(255, 0, 0, 0);\n}\n"
+            rsass(
+                "a {b: fade-out(rgba(red, 0.5), 1)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 0, 0, 0);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn max_remaining() {
         assert_eq!(
-            rsass("a {b: fade-out(rgba(red, 0.5), 0.5)}\n").unwrap(),
-            "a {\n  b: rgba(255, 0, 0, 0);\n}\n"
+            rsass(
+                "a {b: fade-out(rgba(red, 0.5), 0.5)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 0, 0, 0);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            rsass("a {b: fade-out(rgba(red, 0.5), 0.14)}\n").unwrap(),
-            "a {\n  b: rgba(255, 0, 0, 0.36);\n}\n"
+            rsass(
+                "a {b: fade-out(rgba(red, 0.5), 0.14)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 0, 0, 0.36);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: fade-out(rgba(red, 0.5), 0)}\n").unwrap(),
-            "a {\n  b: rgba(255, 0, 0, 0.5);\n}\n"
+            rsass(
+                "a {b: fade-out(rgba(red, 0.5), 0)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 0, 0, 0.5);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: fade-out($color: rgba(red, 0.5), $amount: 0.14)}\n")
-                .unwrap(),
-            "a {\n  b: rgba(255, 0, 0, 0.36);\n}\n"
+            rsass(
+                "a {b: fade-out($color: rgba(red, 0.5), $amount: 0.14)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 0, 0, 0.36);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn transparentize() {
         assert_eq!(
         rsass(
-            "a {b: transparentize($color: rgba(red, 0.5), $amount: 0.14)}\n"
+            "a {b: transparentize($color: rgba(red, 0.5), $amount: 0.14)}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: rgba(255, 0, 0, 0.36);\n}\n"
+        "a {\
+        \n  b: rgba(255, 0, 0, 0.36);\
+        \n}\
+        \n"
     );
     }
 }
@@ -621,8 +993,15 @@ mod grayscale {
     #[test]
     fn alpha() {
         assert_eq!(
-            rsass("a {b: grayscale(rgba(#633736, 0.3))}\n").unwrap(),
-            "a {\n  b: rgba(77, 77, 77, 0.3);\n}\n"
+            rsass(
+                "a {b: grayscale(rgba(#633736, 0.3))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(77, 77, 77, 0.3);\
+             \n}\
+             \n"
         );
     }
     mod error {
@@ -638,22 +1017,43 @@ mod grayscale {
     #[test]
     fn max_saturation() {
         assert_eq!(
-            rsass("a {b: grayscale(red)}\n").unwrap(),
-            "a {\n  b: gray;\n}\n"
+            rsass(
+                "a {b: grayscale(red)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: gray;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn mid_saturation() {
         assert_eq!(
-            rsass("a {b: grayscale(#633736)}\n").unwrap(),
-            "a {\n  b: #4d4d4d;\n}\n"
+            rsass(
+                "a {b: grayscale(#633736)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #4d4d4d;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: grayscale($color: white)}\n").unwrap(),
-            "a {\n  b: white;\n}\n"
+            rsass(
+                "a {b: grayscale($color: white)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: white;\
+             \n}\
+             \n"
         );
     }
     mod no_saturation {
@@ -662,22 +1062,43 @@ mod grayscale {
         #[test]
         fn black() {
             assert_eq!(
-                rsass("a {b: grayscale(black)}\n").unwrap(),
-                "a {\n  b: black;\n}\n"
+                rsass(
+                    "a {b: grayscale(black)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: black;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn gray() {
             assert_eq!(
-                rsass("a {b: grayscale(#494949)}\n").unwrap(),
-                "a {\n  b: #494949;\n}\n"
+                rsass(
+                    "a {b: grayscale(#494949)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #494949;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn white() {
             assert_eq!(
-                rsass("a {b: grayscale(white)}\n").unwrap(),
-                "a {\n  b: white;\n}\n"
+                rsass(
+                    "a {b: grayscale(white)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: white;\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -685,10 +1106,15 @@ mod grayscale {
     fn number() {
         assert_eq!(
         rsass(
-            "// A number should produce a plain function string, for CSS filter functions.\na {b: grayscale(15%)}\n"
+            "// A number should produce a plain function string, for CSS filter functions.\
+            \na {b: grayscale(15%)}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: grayscale(15%);\n}\n"
+        "a {\
+        \n  b: grayscale(15%);\
+        \n}\
+        \n"
     );
     }
 }
@@ -710,29 +1136,57 @@ mod green {
     #[test]
     fn max() {
         assert_eq!(
-            rsass("a {b: green(rgb(0, 255, 0))}\n").unwrap(),
-            "a {\n  b: 255;\n}\n"
+            rsass(
+                "a {b: green(rgb(0, 255, 0))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 255;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            rsass("a {b: green(rgb(0, 123, 0))}\n").unwrap(),
-            "a {\n  b: 123;\n}\n"
+            rsass(
+                "a {b: green(rgb(0, 123, 0))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 123;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: green(rgb(0, 0, 0))}\n").unwrap(),
-            "a {\n  b: 0;\n}\n"
+            rsass(
+                "a {b: green(rgb(0, 0, 0))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 0;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: green($color: rgb(0, 234, 0))}\n").unwrap(),
-            "a {\n  b: 234;\n}\n"
+            rsass(
+                "a {b: green($color: rgb(0, 234, 0))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 234;\
+             \n}\
+             \n"
         );
     }
 }
@@ -749,8 +1203,15 @@ mod hue {
     #[ignore] // failing
     fn above_max() {
         assert_eq!(
-            rsass("a {b: hue(hsl(540, 100%, 100%))}\n").unwrap(),
-            "a {\n  b: 180deg;\n}\n"
+            rsass(
+                "a {b: hue(hsl(540, 100%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 180deg;\
+             \n}\
+             \n"
         );
     }
     mod error {
@@ -767,47 +1228,89 @@ mod hue {
     #[ignore] // failing
     fn fraction() {
         assert_eq!(
-            rsass("a {b: hue(hsl(0.5, 100%, 100%))}\n").unwrap(),
-            "a {\n  b: 0.5deg;\n}\n"
+            rsass(
+                "a {b: hue(hsl(0.5, 100%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 0.5deg;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn max() {
         assert_eq!(
-            rsass("a {b: hue(hsl(359, 100%, 100%))}\n").unwrap(),
-            "a {\n  b: 359deg;\n}\n"
+            rsass(
+                "a {b: hue(hsl(359, 100%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 359deg;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn middle() {
         assert_eq!(
-            rsass("a {b: hue(hsl(123, 100%, 100%))}\n").unwrap(),
-            "a {\n  b: 123deg;\n}\n"
+            rsass(
+                "a {b: hue(hsl(123, 100%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 123deg;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: hue(hsl(0, 100%, 100%))}\n").unwrap(),
-            "a {\n  b: 0deg;\n}\n"
+            rsass(
+                "a {b: hue(hsl(0, 100%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 0deg;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn named() {
         assert_eq!(
-            rsass("a {b: hue($color: hsl(234, 100%, 100%))}\n").unwrap(),
-            "a {\n  b: 234deg;\n}\n"
+            rsass(
+                "a {b: hue($color: hsl(234, 100%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 234deg;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn negative() {
         assert_eq!(
-            rsass("a {b: hue(hsl(-180, 100%, 100%))}\n").unwrap(),
-            "a {\n  b: 180deg;\n}\n"
+            rsass(
+                "a {b: hue(hsl(-180, 100%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 180deg;\
+             \n}\
+             \n"
         );
     }
 }
@@ -829,43 +1332,85 @@ mod ie_hex_str {
     #[test]
     fn leading_zero() {
         assert_eq!(
-            rsass("a {b: ie-hex-str(rgba(#020304, 0.003))}\n").unwrap(),
-            "a {\n  b: #01020304;\n}\n"
+            rsass(
+                "a {b: ie-hex-str(rgba(#020304, 0.003))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #01020304;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: ie-hex-str($color: #daddee)}\n").unwrap(),
-            "a {\n  b: #FFDADDEE;\n}\n"
+            rsass(
+                "a {b: ie-hex-str($color: #daddee)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #FFDADDEE;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn opaque() {
         assert_eq!(
-            rsass("a {b: ie-hex-str(#daddee)}\n").unwrap(),
-            "a {\n  b: #FFDADDEE;\n}\n"
+            rsass(
+                "a {b: ie-hex-str(#daddee)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #FFDADDEE;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn translucent() {
         assert_eq!(
-            rsass("a {b: ie-hex-str(rgba(#daddee, 0.3))}\n").unwrap(),
-            "a {\n  b: #4DDADDEE;\n}\n"
+            rsass(
+                "a {b: ie-hex-str(rgba(#daddee, 0.3))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #4DDADDEE;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn transparent() {
         assert_eq!(
-            rsass("a {b: ie-hex-str(rgba(turquoise, 0))}\n").unwrap(),
-            "a {\n  b: #0040E0D0;\n}\n"
+            rsass(
+                "a {b: ie-hex-str(rgba(turquoise, 0))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #0040E0D0;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn test_type() {
         assert_eq!(
-            rsass("a {b: type-of(ie-hex-str(#daddee))}\n").unwrap(),
-            "a {\n  b: string;\n}\n"
+            rsass(
+                "a {b: type-of(ie-hex-str(#daddee))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: string;\
+             \n}\
+             \n"
         );
     }
 }
@@ -877,15 +1422,29 @@ mod invert {
     #[test]
     fn alpha() {
         assert_eq!(
-            rsass("a {b: invert(rgba(turquoise, 0.4))}\n").unwrap(),
-            "a {\n  b: rgba(191, 31, 47, 0.4);\n}\n"
+            rsass(
+                "a {b: invert(rgba(turquoise, 0.4))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(191, 31, 47, 0.4);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn black() {
         assert_eq!(
-            rsass("a {b: invert(black)}\n").unwrap(),
-            "a {\n  b: white;\n}\n"
+            rsass(
+                "a {b: invert(black)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: white;\
+             \n}\
+             \n"
         );
     }
     mod error {
@@ -917,29 +1476,57 @@ mod invert {
     #[test]
     fn gray() {
         assert_eq!(
-            rsass("a {b: invert(gray)}\n").unwrap(),
-            "a {\n  b: #7f7f7f;\n}\n"
+            rsass(
+                "a {b: invert(gray)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #7f7f7f;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: invert($color: turquoise, $weight: 0%)}\n").unwrap(),
-            "a {\n  b: turquoise;\n}\n"
+            rsass(
+                "a {b: invert($color: turquoise, $weight: 0%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: turquoise;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn number() {
         assert_eq!(
-            rsass("a {b: invert(10%)}\n").unwrap(),
-            "a {\n  b: invert(10%);\n}\n"
+            rsass(
+                "a {b: invert(10%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: invert(10%);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn turquoise() {
         assert_eq!(
-            rsass("a {b: invert(turquoise)}\n").unwrap(),
-            "a {\n  b: #bf1f2f;\n}\n"
+            rsass(
+                "a {b: invert(turquoise)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #bf1f2f;\
+             \n}\
+             \n"
         );
     }
     mod weighted {
@@ -948,44 +1535,86 @@ mod invert {
         #[test]
         fn high() {
             assert_eq!(
-                rsass("a {b: invert(turquoise, 92%)}\n").unwrap(),
-                "a {\n  b: #b52e3c;\n}\n"
+                rsass(
+                    "a {b: invert(turquoise, 92%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #b52e3c;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn low() {
             assert_eq!(
-                rsass("a {b: invert(turquoise, 23%)}\n").unwrap(),
-                "a {\n  b: #5db4ab;\n}\n"
+                rsass(
+                    "a {b: invert(turquoise, 23%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #5db4ab;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn max() {
             assert_eq!(
-                rsass("a {b: invert(turquoise, 100%)}\n").unwrap(),
-                "a {\n  b: #bf1f2f;\n}\n"
+                rsass(
+                    "a {b: invert(turquoise, 100%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #bf1f2f;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn middle() {
             assert_eq!(
-                rsass("a {b: invert(turquoise, 50%)}\n").unwrap(),
-                "a {\n  b: gray;\n}\n"
+                rsass(
+                    "a {b: invert(turquoise, 50%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: gray;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn min() {
             assert_eq!(
-                rsass("a {b: invert(turquoise, 0%)}\n").unwrap(),
-                "a {\n  b: turquoise;\n}\n"
+                rsass(
+                    "a {b: invert(turquoise, 0%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: turquoise;\
+                 \n}\
+                 \n"
             );
         }
     }
     #[test]
     fn white() {
         assert_eq!(
-            rsass("a {b: invert(white)}\n").unwrap(),
-            "a {\n  b: black;\n}\n"
+            rsass(
+                "a {b: invert(white)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: black;\
+             \n}\
+             \n"
         );
     }
 }
@@ -997,8 +1626,15 @@ mod lighten {
     #[test]
     fn alpha() {
         assert_eq!(
-            rsass("a {b: lighten(rgba(red, 0.4), 100%)}\n").unwrap(),
-            "a {\n  b: rgba(255, 255, 255, 0.4);\n}\n"
+            rsass(
+                "a {b: lighten(rgba(red, 0.4), 100%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 255, 255, 0.4);\
+             \n}\
+             \n"
         );
     }
     mod error {
@@ -1028,43 +1664,85 @@ mod lighten {
     #[test]
     fn fraction() {
         assert_eq!(
-            rsass("a {b: lighten(red, 0.5%)}\n").unwrap(),
-            "a {\n  b: #ff0303;\n}\n"
+            rsass(
+                "a {b: lighten(red, 0.5%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #ff0303;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn max() {
         assert_eq!(
-            rsass("a {b: lighten(red, 100%)}\n").unwrap(),
-            "a {\n  b: white;\n}\n"
+            rsass(
+                "a {b: lighten(red, 100%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: white;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn max_remaining() {
         assert_eq!(
-            rsass("a {b: lighten(red, 50%)}\n").unwrap(),
-            "a {\n  b: white;\n}\n"
+            rsass(
+                "a {b: lighten(red, 50%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: white;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            rsass("a {b: lighten(red, 14%)}\n").unwrap(),
-            "a {\n  b: #ff4747;\n}\n"
+            rsass(
+                "a {b: lighten(red, 14%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #ff4747;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: lighten(red, 0%)}\n").unwrap(),
-            "a {\n  b: red;\n}\n"
+            rsass(
+                "a {b: lighten(red, 0%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: red;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: lighten($color: red, $amount: 14%)}\n").unwrap(),
-            "a {\n  b: #ff4747;\n}\n"
+            rsass(
+                "a {b: lighten($color: red, $amount: 14%)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #ff4747;\
+             \n}\
+             \n"
         );
     }
 }
@@ -1086,36 +1764,71 @@ mod lightness {
     #[test]
     fn fraction() {
         assert_eq!(
-            rsass("a {b: lightness(hsl(0, 100%, 0.5%))}\n").unwrap(),
-            "a {\n  b: 0.5%;\n}\n"
+            rsass(
+                "a {b: lightness(hsl(0, 100%, 0.5%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 0.5%;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn max() {
         assert_eq!(
-            rsass("a {b: lightness(hsl(0, 100%, 100%))}\n").unwrap(),
-            "a {\n  b: 100%;\n}\n"
+            rsass(
+                "a {b: lightness(hsl(0, 100%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 100%;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            rsass("a {b: lightness(hsl(0, 100%, 50%))}\n").unwrap(),
-            "a {\n  b: 50%;\n}\n"
+            rsass(
+                "a {b: lightness(hsl(0, 100%, 50%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 50%;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: lightness(hsl(0, 100%, 0%))}\n").unwrap(),
-            "a {\n  b: 0%;\n}\n"
+            rsass(
+                "a {b: lightness(hsl(0, 100%, 0%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 0%;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: lightness($color: hsl(0, 100%, 42%))}\n").unwrap(),
-            "a {\n  b: 42%;\n}\n"
+            rsass(
+                "a {b: lightness($color: hsl(0, 100%, 42%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 42%;\
+             \n}\
+             \n"
         );
     }
 }
@@ -1130,39 +1843,71 @@ mod mix {
         #[test]
         fn even() {
             assert_eq!(
-                rsass("a {b: mix(rgba(#91e16f, 0.3), rgba(#0144bf, 0.3))}\n")
-                    .unwrap(),
-                "a {\n  b: rgba(73, 147, 151, 0.3);\n}\n"
+                rsass(
+                    "a {b: mix(rgba(#91e16f, 0.3), rgba(#0144bf, 0.3))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(73, 147, 151, 0.3);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn first() {
             assert_eq!(
-                rsass("a {b: mix(#91e16f, transparent)}\n").unwrap(),
-                "a {\n  b: rgba(145, 225, 111, 0.5);\n}\n"
+                rsass(
+                    "a {b: mix(#91e16f, transparent)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(145, 225, 111, 0.5);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn firstwards() {
             assert_eq!(
-                rsass("a {b: mix(rgba(#91e16f, 0.8), rgba(#0144bf, 0.3))}\n")
-                    .unwrap(),
-                "a {\n  b: rgba(109, 186, 131, 0.55);\n}\n"
+                rsass(
+                    "a {b: mix(rgba(#91e16f, 0.8), rgba(#0144bf, 0.3))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(109, 186, 131, 0.55);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn last() {
             assert_eq!(
-                rsass("a {b: mix(transparent, #0144bf)}\n").unwrap(),
-                "a {\n  b: rgba(1, 68, 191, 0.5);\n}\n"
+                rsass(
+                    "a {b: mix(transparent, #0144bf)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(1, 68, 191, 0.5);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn lastwards() {
             assert_eq!(
-                rsass("a {b: mix(rgba(#91e16f, 0.4), rgba(#0144bf, 0.9))}\n")
-                    .unwrap(),
-                "a {\n  b: rgba(37, 107, 171, 0.65);\n}\n"
+                rsass(
+                    "a {b: mix(rgba(#91e16f, 0.4), rgba(#0144bf, 0.9))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(37, 107, 171, 0.65);\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -1173,10 +1918,17 @@ mod mix {
         fn contradiction() {
             assert_eq!(
         rsass(
-            "// When we weight entirely towards a transparent color, the formula for\n// computing the combined alpha would divide by zero, so we just return\n// transparent as a special case.\na {b: mix(transparent, #0144bf, 100%)}\n"
+            "// When we weight entirely towards a transparent color, the formula for\
+            \n// computing the combined alpha would divide by zero, so we just return\
+            \n// transparent as a special case.\
+            \na {b: mix(transparent, #0144bf, 100%)}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: rgba(0, 0, 0, 0);\n}\n"
+        "a {\
+        \n  b: rgba(0, 0, 0, 0);\
+        \n}\
+        \n"
     );
         }
         mod mixed {
@@ -1185,17 +1937,29 @@ mod mix {
             #[test]
             fn firstwards() {
                 assert_eq!(
-        rsass("a {b: mix(rgba(#91e16f, 0.8), rgba(#0144bf, 0.3), 63%)}\n")
-            .unwrap(),
-        "a {\n  b: rgba(121, 199, 124, 0.615);\n}\n"
+        rsass(
+            "a {b: mix(rgba(#91e16f, 0.8), rgba(#0144bf, 0.3), 63%)}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b: rgba(121, 199, 124, 0.615);\
+        \n}\
+        \n"
     );
             }
             #[test]
             fn lastwards() {
                 assert_eq!(
-        rsass("a {b: mix(rgba(#91e16f, 0.2), rgba(#0144bf, 0.7), 42%)}\n")
-            .unwrap(),
-        "a {\n  b: rgba(29, 99, 175, 0.49);\n}\n"
+        rsass(
+            "a {b: mix(rgba(#91e16f, 0.2), rgba(#0144bf, 0.7), 42%)}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b: rgba(29, 99, 175, 0.49);\
+        \n}\
+        \n"
     );
             }
         }
@@ -1205,15 +1969,29 @@ mod mix {
             #[test]
             fn first() {
                 assert_eq!(
-                    rsass("a {b: mix(transparent, #0144bf, 70%)}\n").unwrap(),
-                    "a {\n  b: rgba(1, 68, 191, 0.3);\n}\n"
+                    rsass(
+                        "a {b: mix(transparent, #0144bf, 70%)}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: rgba(1, 68, 191, 0.3);\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             fn last() {
                 assert_eq!(
-                    rsass("a {b: mix(#91e16f, transparent, 70%)}\n").unwrap(),
-                    "a {\n  b: rgba(145, 225, 111, 0.7);\n}\n"
+                    rsass(
+                        "a {b: mix(#91e16f, transparent, 70%)}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: rgba(145, 225, 111, 0.7);\
+                     \n}\
+                     \n"
                 );
             }
         }
@@ -1223,17 +2001,29 @@ mod mix {
             #[test]
             fn first() {
                 assert_eq!(
-        rsass("a {b: mix(rgba(#91e16f, 0.2), rgba(#0144bf, 0.7), 100%)}\n")
-            .unwrap(),
-        "a {\n  b: rgba(145, 225, 111, 0.2);\n}\n"
+        rsass(
+            "a {b: mix(rgba(#91e16f, 0.2), rgba(#0144bf, 0.7), 100%)}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b: rgba(145, 225, 111, 0.2);\
+        \n}\
+        \n"
     );
             }
             #[test]
             fn last() {
                 assert_eq!(
-        rsass("a {b: mix(rgba(#91e16f, 0.2), rgba(#0144bf, 0.7), 0%)}\n")
-            .unwrap(),
-        "a {\n  b: rgba(1, 68, 191, 0.7);\n}\n"
+        rsass(
+            "a {b: mix(rgba(#91e16f, 0.2), rgba(#0144bf, 0.7), 0%)}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b: rgba(1, 68, 191, 0.7);\
+        \n}\
+        \n"
     );
             }
         }
@@ -1270,36 +2060,71 @@ mod mix {
         #[test]
         fn even() {
             assert_eq!(
-                rsass("a {b: mix(#91e16f, #0144bf, 50%)}\n").unwrap(),
-                "a {\n  b: #499397;\n}\n"
+                rsass(
+                    "a {b: mix(#91e16f, #0144bf, 50%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #499397;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn first() {
             assert_eq!(
-                rsass("a {b: mix(#91e16f, #0144bf, 100%)}\n").unwrap(),
-                "a {\n  b: #91e16f;\n}\n"
+                rsass(
+                    "a {b: mix(#91e16f, #0144bf, 100%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #91e16f;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn firstwards() {
             assert_eq!(
-                rsass("a {b: mix(#91e16f, #0144bf, 92%)}\n").unwrap(),
-                "a {\n  b: #85d475;\n}\n"
+                rsass(
+                    "a {b: mix(#91e16f, #0144bf, 92%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #85d475;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn last() {
             assert_eq!(
-                rsass("a {b: mix(#91e16f, #0144bf, 0%)}\n").unwrap(),
-                "a {\n  b: #0144bf;\n}\n"
+                rsass(
+                    "a {b: mix(#91e16f, #0144bf, 0%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #0144bf;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn lastwards() {
             assert_eq!(
-                rsass("a {b: mix(#91e16f, #0144bf, 43%)}\n").unwrap(),
-                "a {\n  b: #3f889d;\n}\n"
+                rsass(
+                    "a {b: mix(#91e16f, #0144bf, 43%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #3f889d;\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -1307,10 +2132,14 @@ mod mix {
     fn named() {
         assert_eq!(
         rsass(
-            "a {b: mix($color1: #91e16f, $color2: #0144bf, $weight: 92%)}\n"
+            "a {b: mix($color1: #91e16f, $color2: #0144bf, $weight: 92%)}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: #85d475;\n}\n"
+        "a {\
+        \n  b: #85d475;\
+        \n}\
+        \n"
     );
     }
     mod unweighted {
@@ -1320,30 +2149,45 @@ mod mix {
         fn average() {
             assert_eq!(
         rsass(
-            "// All channels should be averaged across the two colors.\na {b: mix(#91e16f, #0144bf)}\n"
+            "// All channels should be averaged across the two colors.\
+            \na {b: mix(#91e16f, #0144bf)}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: #499397;\n}\n"
+        "a {\
+        \n  b: #499397;\
+        \n}\
+        \n"
     );
         }
         #[test]
         fn identical() {
             assert_eq!(
         rsass(
-            "// If two channels have the same values, they should be the same in the output.\na {b: mix(#123456, #123456)}\n"
+            "// If two channels have the same values, they should be the same in the output.\
+            \na {b: mix(#123456, #123456)}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: #123456;\n}\n"
+        "a {\
+        \n  b: #123456;\
+        \n}\
+        \n"
     );
         }
         #[test]
         fn min_and_max() {
             assert_eq!(
         rsass(
-            "// Each channel becomes the average of 255 and 0, which is 128 = 0xAA.\na {b: mix(#ff00ff, #00ff00)}\n"
+            "// Each channel becomes the average of 255 and 0, which is 128 = 0xAA.\
+            \na {b: mix(#ff00ff, #00ff00)}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: gray;\n}\n"
+        "a {\
+        \n  b: gray;\
+        \n}\
+        \n"
     );
         }
     }
@@ -1366,29 +2210,57 @@ mod red {
     #[test]
     fn max() {
         assert_eq!(
-            rsass("a {b: red(rgb(255, 0, 0))}\n").unwrap(),
-            "a {\n  b: 255;\n}\n"
+            rsass(
+                "a {b: red(rgb(255, 0, 0))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 255;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            rsass("a {b: red(rgb(123, 0, 0))}\n").unwrap(),
-            "a {\n  b: 123;\n}\n"
+            rsass(
+                "a {b: red(rgb(123, 0, 0))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 123;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: red(rgb(0, 0, 0))}\n").unwrap(),
-            "a {\n  b: 0;\n}\n"
+            rsass(
+                "a {b: red(rgb(0, 0, 0))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 0;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn named() {
         assert_eq!(
-            rsass("a {b: red($color: rgb(234, 0, 0))}\n").unwrap(),
-            "a {\n  b: 234;\n}\n"
+            rsass(
+                "a {b: red($color: rgb(234, 0, 0))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 234;\
+             \n}\
+             \n"
         );
     }
 }
@@ -1441,22 +2313,43 @@ mod saturate {
         #[test]
         fn named() {
             assert_eq!(
-                rsass("a {b: saturate($amount: 50%)}\n").unwrap(),
-                "a {\n  b: saturate(50%);\n}\n"
+                rsass(
+                    "a {b: saturate($amount: 50%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: saturate(50%);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn unit() {
             assert_eq!(
-                rsass("a {b: saturate(50%)}\n").unwrap(),
-                "a {\n  b: saturate(50%);\n}\n"
+                rsass(
+                    "a {b: saturate(50%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: saturate(50%);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn unitless() {
             assert_eq!(
-                rsass("a {b: saturate(1)}\n").unwrap(),
-                "a {\n  b: saturate(1);\n}\n"
+                rsass(
+                    "a {b: saturate(1)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: saturate(1);\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -1466,44 +2359,85 @@ mod saturate {
         #[test]
         fn alpha() {
             assert_eq!(
-                rsass("a {b: saturate(rgba(plum, 0.5), 100%)}\n").unwrap(),
-                "a {\n  b: rgba(255, 126, 255, 0.5);\n}\n"
+                rsass(
+                    "a {b: saturate(rgba(plum, 0.5), 100%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(255, 126, 255, 0.5);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn max() {
             assert_eq!(
-                rsass("a {b: saturate(plum, 100%)}\n").unwrap(),
-                "a {\n  b: #ff7eff;\n}\n"
+                rsass(
+                    "a {b: saturate(plum, 100%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #ff7eff;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn max_remaining() {
             assert_eq!(
-                rsass("a {b: saturate(plum, 53%)}\n").unwrap(),
-                "a {\n  b: #ff7eff;\n}\n"
+                rsass(
+                    "a {b: saturate(plum, 53%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #ff7eff;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn middle() {
             assert_eq!(
-                rsass("a {b: saturate(plum, 14%)}\n").unwrap(),
-                "a {\n  b: #e697e6;\n}\n"
+                rsass(
+                    "a {b: saturate(plum, 14%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #e697e6;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn min() {
             assert_eq!(
-                rsass("a {b: saturate(plum, 0%)}\n").unwrap(),
-                "a {\n  b: plum;\n}\n"
+                rsass(
+                    "a {b: saturate(plum, 0%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: plum;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn named() {
             assert_eq!(
-                rsass("a {b: saturate($color: plum, $amount: 14%)}\n")
-                    .unwrap(),
-                "a {\n  b: #e697e6;\n}\n"
+                rsass(
+                    "a {b: saturate($color: plum, $amount: 14%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: #e697e6;\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -1527,39 +2461,74 @@ mod saturation {
     #[ignore] // failing
     fn fraction() {
         assert_eq!(
-            rsass("a {b: saturation(hsl(0, 0.5%, 100%))}\n").unwrap(),
-            "a {\n  b: 0.5%;\n}\n"
+            rsass(
+                "a {b: saturation(hsl(0, 0.5%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 0.5%;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn max() {
         assert_eq!(
-            rsass("a {b: saturation(hsl(0, 100%, 100%))}\n").unwrap(),
-            "a {\n  b: 100%;\n}\n"
+            rsass(
+                "a {b: saturation(hsl(0, 100%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 100%;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn middle() {
         assert_eq!(
-            rsass("a {b: saturation(hsl(0, 50%, 100%))}\n").unwrap(),
-            "a {\n  b: 50%;\n}\n"
+            rsass(
+                "a {b: saturation(hsl(0, 50%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 50%;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            rsass("a {b: saturation(hsl(0, 0%, 100%))}\n").unwrap(),
-            "a {\n  b: 0%;\n}\n"
+            rsass(
+                "a {b: saturation(hsl(0, 0%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 0%;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn named() {
         assert_eq!(
-            rsass("a {b: saturation($color: hsl(0, 42%, 100%))}\n").unwrap(),
-            "a {\n  b: 42%;\n}\n"
+            rsass(
+                "a {b: saturation($color: hsl(0, 42%, 100%))}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: 42%;\
+             \n}\
+             \n"
         );
     }
 }

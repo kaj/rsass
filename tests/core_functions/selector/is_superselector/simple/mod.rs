@@ -12,8 +12,15 @@ mod attribute {
     #[ignore] // failing
     fn equal() {
         assert_eq!(
-            rsass("a {b: is-superselector(\"[c=d]\", \"[c=d]\")}\n").unwrap(),
-            "a {\n  b: true;\n}\n"
+            rsass(
+                "a {b: is-superselector(\"[c=d]\", \"[c=d]\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
         );
     }
     mod unequal {
@@ -23,27 +30,45 @@ mod attribute {
         #[ignore] // failing
         fn name() {
             assert_eq!(
-                rsass("a {b: is-superselector(\"[c=d]\", \"[e=d]\")}\n")
-                    .unwrap(),
-                "a {\n  b: false;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\"[c=d]\", \"[e=d]\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn operator() {
             assert_eq!(
-                rsass("a {b: is-superselector(\"[c=d]\", \"[c^=d]\")}\n")
-                    .unwrap(),
-                "a {\n  b: false;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\"[c=d]\", \"[c^=d]\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn value() {
             assert_eq!(
-                rsass("a {b: is-superselector(\"[c=d]\", \"[c=e]\")}\n")
-                    .unwrap(),
-                "a {\n  b: false;\n}\n"
+                rsass(
+                    "a {b: is-superselector(\"[c=d]\", \"[c=e]\")}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: false;\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -57,16 +82,30 @@ mod class {
     #[ignore] // failing
     fn equal() {
         assert_eq!(
-            rsass("a {b: is-superselector(\".c\", \".c\")}\n").unwrap(),
-            "a {\n  b: true;\n}\n"
+            rsass(
+                "a {b: is-superselector(\".c\", \".c\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn unequal() {
         assert_eq!(
-            rsass("a {b: is-superselector(\".c\", \".d\")}\n").unwrap(),
-            "a {\n  b: false;\n}\n"
+            rsass(
+                "a {b: is-superselector(\".c\", \".d\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: false;\
+             \n}\
+             \n"
         );
     }
 }
@@ -79,16 +118,30 @@ mod id {
     #[ignore] // failing
     fn equal() {
         assert_eq!(
-            rsass("a {b: is-superselector(\"#c\", \"#c\")}\n").unwrap(),
-            "a {\n  b: true;\n}\n"
+            rsass(
+                "a {b: is-superselector(\"#c\", \"#c\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn unequal() {
         assert_eq!(
-            rsass("a {b: is-superselector(\"#c\", \"#d\")}\n").unwrap(),
-            "a {\n  b: false;\n}\n"
+            rsass(
+                "a {b: is-superselector(\"#c\", \"#d\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: false;\
+             \n}\
+             \n"
         );
     }
 }
@@ -101,16 +154,30 @@ mod placeholder {
     #[ignore] // failing
     fn equal() {
         assert_eq!(
-            rsass("a {b: is-superselector(\"%c\", \"%c\")}\n").unwrap(),
-            "a {\n  b: true;\n}\n"
+            rsass(
+                "a {b: is-superselector(\"%c\", \"%c\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn unequal() {
         assert_eq!(
-            rsass("a {b: is-superselector(\"%c\", \"%d\")}\n").unwrap(),
-            "a {\n  b: false;\n}\n"
+            rsass(
+                "a {b: is-superselector(\"%c\", \"%d\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: false;\
+             \n}\
+             \n"
         );
     }
 }
@@ -125,16 +192,30 @@ mod test_type {
     #[ignore] // failing
     fn and_universal() {
         assert_eq!(
-            rsass("a {b: is-superselector(\"c\", \"*\")}\n").unwrap(),
-            "a {\n  b: false;\n}\n"
+            rsass(
+                "a {b: is-superselector(\"c\", \"*\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: false;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn equal() {
         assert_eq!(
-            rsass("a {b: is-superselector(\"c\", \"c\")}\n").unwrap(),
-            "a {\n  b: true;\n}\n"
+            rsass(
+                "a {b: is-superselector(\"c\", \"c\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
         );
     }
     mod namespace {
@@ -147,36 +228,60 @@ mod test_type {
             #[ignore] // failing
             fn and_empty() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"|c\", \"|c\")}\n")
-                        .unwrap(),
-                    "a {\n  b: true;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"|c\", \"|c\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: true;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             #[ignore] // failing
             fn and_explicit() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"|c\", \"d|c\")}\n")
-                        .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"|c\", \"d|c\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             #[ignore] // failing
             fn and_implicit() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"|c\", \"c\")}\n")
-                        .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"|c\", \"c\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             #[ignore] // failing
             fn and_universal() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"|c\", \"*|c\")}\n")
-                        .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"|c\", \"*|c\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
         }
@@ -187,9 +292,15 @@ mod test_type {
             #[ignore] // failing
             fn and_empty() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"c|d\", \"|d\")}\n")
-                        .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"c|d\", \"|d\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
             mod and_explicit {
@@ -199,18 +310,30 @@ mod test_type {
                 #[ignore] // failing
                 fn equal() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"c|d\", \"c|d\")}\n")
-                            .unwrap(),
-                        "a {\n  b: true;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"c|d\", \"c|d\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: true;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn unequal() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"c|d\", \"e|d\")}\n")
-                            .unwrap(),
-                        "a {\n  b: false;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"c|d\", \"e|d\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: false;\
+                         \n}\
+                         \n"
                     );
                 }
             }
@@ -218,18 +341,30 @@ mod test_type {
             #[ignore] // failing
             fn and_implicit() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"c|d\", \"d\")}\n")
-                        .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"c|d\", \"d\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             #[ignore] // failing
             fn and_universal() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"c|d\", \"*|d\")}\n")
-                        .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"c|d\", \"*|d\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
         }
@@ -240,36 +375,60 @@ mod test_type {
             #[ignore] // failing
             fn and_empty() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"*|c\", \"|c\")}\n")
-                        .unwrap(),
-                    "a {\n  b: true;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"*|c\", \"|c\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: true;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             #[ignore] // failing
             fn and_explicit() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"*|c\", \"d|c\")}\n")
-                        .unwrap(),
-                    "a {\n  b: true;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"*|c\", \"d|c\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: true;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             #[ignore] // failing
             fn and_implicit() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"*|c\", \"c\")}\n")
-                        .unwrap(),
-                    "a {\n  b: true;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"*|c\", \"c\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: true;\
+                     \n}\
+                     \n"
                 );
             }
             #[test]
             #[ignore] // failing
             fn and_universal() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"*|c\", \"*|c\")}\n")
-                        .unwrap(),
-                    "a {\n  b: true;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"*|c\", \"*|c\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: true;\
+                     \n}\
+                     \n"
                 );
             }
         }
@@ -278,8 +437,15 @@ mod test_type {
     #[ignore] // failing
     fn unequal() {
         assert_eq!(
-            rsass("a {b: is-superselector(\"c\", \"d\")}\n").unwrap(),
-            "a {\n  b: false;\n}\n"
+            rsass(
+                "a {b: is-superselector(\"c\", \"d\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: false;\
+             \n}\
+             \n"
         );
     }
 }
@@ -292,24 +458,45 @@ mod universal {
     #[ignore] // failing
     fn and_class() {
         assert_eq!(
-            rsass("a {b: is-superselector(\"*\", \".c\")}\n").unwrap(),
-            "a {\n  b: true;\n}\n"
+            rsass(
+                "a {b: is-superselector(\"*\", \".c\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn and_type() {
         assert_eq!(
-            rsass("a {b: is-superselector(\"*\", \"c\")}\n").unwrap(),
-            "a {\n  b: true;\n}\n"
+            rsass(
+                "a {b: is-superselector(\"*\", \"c\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
         );
     }
     #[test]
     #[ignore] // failing
     fn equal() {
         assert_eq!(
-            rsass("a {b: is-superselector(\"*\", \"*\")}\n").unwrap(),
-            "a {\n  b: true;\n}\n"
+            rsass(
+                "a {b: is-superselector(\"*\", \"*\")}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: true;\
+             \n}\
+             \n"
         );
     }
     mod namespace {
@@ -322,9 +509,15 @@ mod universal {
             #[ignore] // failing
             fn and_class() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"|*\", \".d\")}\n")
-                        .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"|*\", \".d\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
             mod and_type {
@@ -334,27 +527,45 @@ mod universal {
                 #[ignore] // failing
                 fn empty() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"|*\", \"|d\")}\n")
-                            .unwrap(),
-                        "a {\n  b: true;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"|*\", \"|d\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: true;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn explicit() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"|*\", \"c|d\")}\n")
-                            .unwrap(),
-                        "a {\n  b: false;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"|*\", \"c|d\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: false;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn implicit() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"|*\", \"d\")}\n")
-                            .unwrap(),
-                        "a {\n  b: false;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"|*\", \"d\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: false;\
+                         \n}\
+                         \n"
                     );
                 }
             }
@@ -365,36 +576,60 @@ mod universal {
                 #[ignore] // failing
                 fn empty() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"|*\", \"|*\")}\n")
-                            .unwrap(),
-                        "a {\n  b: true;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"|*\", \"|*\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: true;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn explicit() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"|*\", \"c|*\")}\n")
-                            .unwrap(),
-                        "a {\n  b: false;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"|*\", \"c|*\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: false;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn implicit() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"|*\", \"*\")}\n")
-                            .unwrap(),
-                        "a {\n  b: false;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"|*\", \"*\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: false;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn universal() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"|*\", \"*|*\")}\n")
-                            .unwrap(),
-                        "a {\n  b: false;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"|*\", \"*|*\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: false;\
+                         \n}\
+                         \n"
                     );
                 }
             }
@@ -406,9 +641,15 @@ mod universal {
             #[ignore] // failing
             fn and_class() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"c|*\", \".d\")}\n")
-                        .unwrap(),
-                    "a {\n  b: false;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"c|*\", \".d\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: false;\
+                     \n}\
+                     \n"
                 );
             }
             mod and_type {
@@ -418,9 +659,15 @@ mod universal {
                 #[ignore] // failing
                 fn empty() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"c|*\", \"|d\")}\n")
-                            .unwrap(),
-                        "a {\n  b: false;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"c|*\", \"|d\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: false;\
+                         \n}\
+                         \n"
                     );
                 }
                 mod explicit {
@@ -431,10 +678,14 @@ mod universal {
                     fn equal() {
                         assert_eq!(
                             rsass(
-                                "a {b: is-superselector(\"c|*\", \"c|d\")}\n"
+                                "a {b: is-superselector(\"c|*\", \"c|d\")}\
+                                 \n"
                             )
                             .unwrap(),
-                            "a {\n  b: true;\n}\n"
+                            "a {\
+                             \n  b: true;\
+                             \n}\
+                             \n"
                         );
                     }
                     #[test]
@@ -442,10 +693,14 @@ mod universal {
                     fn unequal() {
                         assert_eq!(
                             rsass(
-                                "a {b: is-superselector(\"c|*\", \"e|d\")}\n"
+                                "a {b: is-superselector(\"c|*\", \"e|d\")}\
+                                 \n"
                             )
                             .unwrap(),
-                            "a {\n  b: false;\n}\n"
+                            "a {\
+                             \n  b: false;\
+                             \n}\
+                             \n"
                         );
                     }
                 }
@@ -453,9 +708,15 @@ mod universal {
                 #[ignore] // failing
                 fn implicit() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"c|*\", \"d\")}\n")
-                            .unwrap(),
-                        "a {\n  b: false;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"c|*\", \"d\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: false;\
+                         \n}\
+                         \n"
                     );
                 }
             }
@@ -466,9 +727,15 @@ mod universal {
                 #[ignore] // failing
                 fn empty() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"c|*\", \"|*\")}\n")
-                            .unwrap(),
-                        "a {\n  b: false;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"c|*\", \"|*\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: false;\
+                         \n}\
+                         \n"
                     );
                 }
                 mod explicit {
@@ -479,10 +746,14 @@ mod universal {
                     fn equal() {
                         assert_eq!(
                             rsass(
-                                "a {b: is-superselector(\"c|*\", \"c|*\")}\n"
+                                "a {b: is-superselector(\"c|*\", \"c|*\")}\
+                                 \n"
                             )
                             .unwrap(),
-                            "a {\n  b: true;\n}\n"
+                            "a {\
+                             \n  b: true;\
+                             \n}\
+                             \n"
                         );
                     }
                     #[test]
@@ -490,10 +761,14 @@ mod universal {
                     fn unequal() {
                         assert_eq!(
                             rsass(
-                                "a {b: is-superselector(\"c|*\", \"d|*\")}\n"
+                                "a {b: is-superselector(\"c|*\", \"d|*\")}\
+                                 \n"
                             )
                             .unwrap(),
-                            "a {\n  b: false;\n}\n"
+                            "a {\
+                             \n  b: false;\
+                             \n}\
+                             \n"
                         );
                     }
                 }
@@ -501,18 +776,30 @@ mod universal {
                 #[ignore] // failing
                 fn implicit() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"c|*\", \"*\")}\n")
-                            .unwrap(),
-                        "a {\n  b: false;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"c|*\", \"*\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: false;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn universal() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"c|*\", \"*|*\")}\n")
-                            .unwrap(),
-                        "a {\n  b: false;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"c|*\", \"*|*\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: false;\
+                         \n}\
+                         \n"
                     );
                 }
             }
@@ -524,9 +811,15 @@ mod universal {
             #[ignore] // failing
             fn and_class() {
                 assert_eq!(
-                    rsass("a {b: is-superselector(\"*|*\", \".d\")}\n")
-                        .unwrap(),
-                    "a {\n  b: true;\n}\n"
+                    rsass(
+                        "a {b: is-superselector(\"*|*\", \".d\")}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: true;\
+                     \n}\
+                     \n"
                 );
             }
             mod and_type {
@@ -536,27 +829,45 @@ mod universal {
                 #[ignore] // failing
                 fn empty() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"*|*\", \"|d\")}\n")
-                            .unwrap(),
-                        "a {\n  b: true;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"*|*\", \"|d\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: true;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn explicit() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"*|*\", \"c|d\")}\n")
-                            .unwrap(),
-                        "a {\n  b: true;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"*|*\", \"c|d\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: true;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn implicit() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"*|*\", \"d\")}\n")
-                            .unwrap(),
-                        "a {\n  b: true;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"*|*\", \"d\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: true;\
+                         \n}\
+                         \n"
                     );
                 }
             }
@@ -567,36 +878,60 @@ mod universal {
                 #[ignore] // failing
                 fn empty() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"*|*\", \"|*\")}\n")
-                            .unwrap(),
-                        "a {\n  b: true;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"*|*\", \"|*\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: true;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn explicit() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"*|*\", \"c|*\")}\n")
-                            .unwrap(),
-                        "a {\n  b: true;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"*|*\", \"c|*\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: true;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn implicit() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"*|*\", \"*\")}\n")
-                            .unwrap(),
-                        "a {\n  b: true;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"*|*\", \"*\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: true;\
+                         \n}\
+                         \n"
                     );
                 }
                 #[test]
                 #[ignore] // failing
                 fn universal() {
                     assert_eq!(
-                        rsass("a {b: is-superselector(\"*|*\", \"*|*\")}\n")
-                            .unwrap(),
-                        "a {\n  b: true;\n}\n"
+                        rsass(
+                            "a {b: is-superselector(\"*|*\", \"*|*\")}\
+                             \n"
+                        )
+                        .unwrap(),
+                        "a {\
+                         \n  b: true;\
+                         \n}\
+                         \n"
                     );
                 }
             }

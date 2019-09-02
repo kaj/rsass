@@ -9,10 +9,27 @@ use rsass::{compile_scss, OutputStyle};
 fn jma_pseudo_test() {
     assert_eq!(
         rsass(
-            ".foo {\n        h1 {\n                color:red;\n        }\n}\n\n.bar {\n        &:hover h3,\n        h3 {\n                @extend h1;\n        }\n}\n"
+            ".foo {\
+             \n        h1 {\
+             \n                color:red;\
+             \n        }\
+             \n}\
+             \n\
+             \n.bar {\
+             \n        &:hover h3,\
+             \n        h3 {\
+             \n                @extend h1;\
+             \n        }\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".foo h1,\n.foo .bar h3,\n.bar .foo h3 {\n  color: red;\n}\n"
+        ".foo h1,\
+         \n.foo .bar h3,\
+         \n.bar .foo h3 {\
+         \n  color: red;\
+         \n}\
+         \n"
     );
 }
 
@@ -20,8 +37,16 @@ fn jma_pseudo_test() {
 #[test]
 fn directive_interpolation() {
     assert_eq!(
-        rsass("$baz: 12;\n@foo bar#{$baz} qux {a: b}\n").unwrap(),
-        "@foo bar12 qux {\n  a: b;\n}\n"
+        rsass(
+            "$baz: 12;\
+             \n@foo bar#{$baz} qux {a: b}\
+             \n"
+        )
+        .unwrap(),
+        "@foo bar12 qux {\
+         \n  a: b;\
+         \n}\
+         \n"
     );
 }
 
@@ -29,9 +54,16 @@ fn directive_interpolation() {
 #[test]
 fn empty_content() {
     assert_eq!(
-        rsass("@mixin foo { @content }\na { b: c; @include foo {} }\n")
-            .unwrap(),
-        "a {\n  b: c;\n}\n"
+        rsass(
+            "@mixin foo { @content }\
+             \na { b: c; @include foo {} }\
+             \n"
+        )
+        .unwrap(),
+        "a {\
+         \n  b: c;\
+         \n}\
+         \n"
     );
 }
 
@@ -44,10 +76,16 @@ fn empty_content() {
 fn import_in_mixin() {
     assert_eq!(
         rsass(
-            "@mixin import-google-fonts() {\n  @import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\n}\n$family: unquote(\"Droid+Sans\");\n@include import-google-fonts();\n"
+            "@mixin import-google-fonts() {\
+            \n  @import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\
+            \n}\
+            \n$family: unquote(\"Droid+Sans\");\
+            \n@include import-google-fonts();\
+            \n"
         )
         .unwrap(),
-        "@import url(\"http://fonts.googleapis.com/css?family=Droid+Sans\");\n"
+        "@import url(\"http://fonts.googleapis.com/css?family=Droid+Sans\");\
+        \n"
     );
 }
 
@@ -56,10 +94,13 @@ fn import_in_mixin() {
 fn import_with_interpolation() {
     assert_eq!(
         rsass(
-            "$family: unquote(\"Droid+Sans\");\n@import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\n"
+            "$family: unquote(\"Droid+Sans\");\
+            \n@import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\
+            \n"
         )
         .unwrap(),
-        "@import url(\"http://fonts.googleapis.com/css?family=Droid+Sans\");\n"
+        "@import url(\"http://fonts.googleapis.com/css?family=Droid+Sans\");\
+        \n"
     );
 }
 
@@ -67,8 +108,16 @@ fn import_with_interpolation() {
 #[test]
 fn lang_bug() {
     assert_eq!(
-        rsass("div:lang(nb) {\n  color: red;\n}").unwrap(),
-        "div:lang(nb) {\n  color: red;\n}\n"
+        rsass(
+            "div:lang(nb) {\
+             \n  color: red;\
+             \n}"
+        )
+        .unwrap(),
+        "div:lang(nb) {\
+         \n  color: red;\
+         \n}\
+         \n"
     );
 }
 
@@ -76,8 +125,18 @@ fn lang_bug() {
 #[test]
 fn media_interpolation() {
     assert_eq!(
-        rsass("$baz: 12;\n@media bar#{$baz} {a {b: c}}\n").unwrap(),
-        "@media bar12 {\n  a {\n    b: c;\n  }\n}\n"
+        rsass(
+            "$baz: 12;\
+             \n@media bar#{$baz} {a {b: c}}\
+             \n"
+        )
+        .unwrap(),
+        "@media bar12 {\
+         \n  a {\
+         \n    b: c;\
+         \n  }\
+         \n}\
+         \n"
     );
 }
 
@@ -87,10 +146,32 @@ fn media_interpolation() {
 fn mixin_content() {
     assert_eq!(
         rsass(
-            "$color: blue;\n@mixin context($class, $color: red) {\n  .#{$class} {\n    background-color: $color;\n    @content;\n    border-color: $color;\n  }\n}\n@include context(parent) {\n  @include context(child, $color: yellow) {\n    color: $color;\n  }\n}\n"
+            "$color: blue;\
+             \n@mixin context($class, $color: red) {\
+             \n  .#{$class} {\
+             \n    background-color: $color;\
+             \n    @content;\
+             \n    border-color: $color;\
+             \n  }\
+             \n}\
+             \n@include context(parent) {\
+             \n  @include context(child, $color: yellow) {\
+             \n    color: $color;\
+             \n  }\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".parent {\n  background-color: red;\n  border-color: red;\n}\n.parent .child {\n  background-color: yellow;\n  color: blue;\n  border-color: yellow;\n}\n"
+        ".parent {\
+         \n  background-color: red;\
+         \n  border-color: red;\
+         \n}\
+         \n.parent .child {\
+         \n  background-color: yellow;\
+         \n  color: blue;\
+         \n  border-color: yellow;\
+         \n}\
+         \n"
     );
 }
 
@@ -99,10 +180,19 @@ fn mixin_content() {
 fn namespace_properties_with_script_value() {
     assert_eq!(
         rsass(
-            "foo {\n  bar: baz + bang {\n    bip: bop;\n    bing: bop; }}\n"
+            "foo {\
+             \n  bar: baz + bang {\
+             \n    bip: bop;\
+             \n    bing: bop; }}\
+             \n"
         )
         .unwrap(),
-        "foo {\n  bar: bazbang;\n  bar-bip: bop;\n  bar-bing: bop;\n}\n"
+        "foo {\
+         \n  bar: bazbang;\
+         \n  bar-bip: bop;\
+         \n  bar-bing: bop;\
+         \n}\
+         \n"
     );
 }
 
@@ -112,10 +202,28 @@ fn namespace_properties_with_script_value() {
 fn negative_numbers() {
     assert_eq!(
         rsass(
-            "$zero: 0;\na {\n  zero: -$zero;\n  zero: $zero * -1;\n}\n$near: 0.000000000001;\na {\n  near: -$near;\n  near: $near * -1;\n}\n"
+            "$zero: 0;\
+             \na {\
+             \n  zero: -$zero;\
+             \n  zero: $zero * -1;\
+             \n}\
+             \n$near: 0.000000000001;\
+             \na {\
+             \n  near: -$near;\
+             \n  near: $near * -1;\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "a {\n  zero: 0;\n  zero: 0;\n}\na {\n  near: 0;\n  near: 0;\n}\n"
+        "a {\
+         \n  zero: 0;\
+         \n  zero: 0;\
+         \n}\
+         \na {\
+         \n  near: 0;\
+         \n  near: 0;\
+         \n}\
+         \n"
     );
 }
 
@@ -123,8 +231,15 @@ fn negative_numbers() {
 #[test]
 fn selector_interpolation_before_element_name() {
     assert_eq!(
-        rsass("#{\"foo\" + \" bar\"}baz {a: b}\n").unwrap(),
-        "foo barbaz {\n  a: b;\n}\n"
+        rsass(
+            "#{\"foo\" + \" bar\"}baz {a: b}\
+             \n"
+        )
+        .unwrap(),
+        "foo barbaz {\
+         \n  a: b;\
+         \n}\
+         \n"
     );
 }
 
@@ -132,8 +247,15 @@ fn selector_interpolation_before_element_name() {
 #[test]
 fn selector_only_interpolation() {
     assert_eq!(
-        rsass("#{\"foo\" + \" bar\"} {a: b}\n").unwrap(),
-        "foo bar {\n  a: b;\n}\n"
+        rsass(
+            "#{\"foo\" + \" bar\"} {a: b}\
+             \n"
+        )
+        .unwrap(),
+        "foo bar {\
+         \n  a: b;\
+         \n}\
+         \n"
     );
 }
 
@@ -142,9 +264,22 @@ fn selector_only_interpolation() {
 #[ignore] // failing
 fn trailing_comma_in_selector() {
     assert_eq!(
-        rsass("#foo #bar,,\n,#baz #boom, {a: b}\n\n#bip #bop, ,, {c: d}\n")
-            .unwrap(),
-        "#foo #bar,\n#baz #boom {\n  a: b;\n}\n#bip #bop {\n  c: d;\n}\n"
+        rsass(
+            "#foo #bar,,\
+             \n,#baz #boom, {a: b}\
+             \n\
+             \n#bip #bop, ,, {c: d}\
+             \n"
+        )
+        .unwrap(),
+        "#foo #bar,\
+         \n#baz #boom {\
+         \n  a: b;\
+         \n}\
+         \n#bip #bop {\
+         \n  c: d;\
+         \n}\
+         \n"
     );
 }
 
@@ -152,8 +287,17 @@ fn trailing_comma_in_selector() {
 #[test]
 fn unicode_variables() {
     assert_eq!(
-        rsass("$vär: foo;\n\nblat {a: $vär}\n").unwrap(),
-        "blat {\n  a: foo;\n}\n"
+        rsass(
+            "$vär: foo;\
+             \n\
+             \nblat {a: $vär}\
+             \n"
+        )
+        .unwrap(),
+        "blat {\
+         \n  a: foo;\
+         \n}\
+         \n"
     );
 }
 
@@ -163,10 +307,15 @@ fn unicode_variables() {
 fn warn_directive() {
     assert_eq!(
         rsass(
-            "h1 { color: blue; } \n@warn \"Don\'t crash the ambulance, whatever you do\"\n"
+            "h1 { color: blue; } \
+             \n@warn \"Don\'t crash the ambulance, whatever you do\"\
+             \n"
         )
         .unwrap(),
-        "h1 {\n  color: blue;\n}\n"
+        "h1 {\
+         \n  color: blue;\
+         \n}\
+         \n"
     );
 }
 

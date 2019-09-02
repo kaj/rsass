@@ -84,13 +84,27 @@ impl TestFixture {
     }
 }
 
+/// Return a pattern function matching the 'n' in \n, unless the
+/// backslash is also escaped.
+fn escaped_newline() -> impl FnMut(char) -> bool {
+    let mut n = 0;
+    move |c: char| {
+        let next_n = if c == '\\' { n + 1 } else { 0 };
+        let result = n % 2 == 1 && c == 'n';
+        n = next_n;
+        result
+    }
+}
+
 fn write_test_input_expected(
     rs: &mut dyn Write,
     input: &str,
     expected: &str,
 ) -> Result<(), std::io::Error> {
-    let input = format!("{:?}", input);
-    let expected = format!("{:?}", expected);
+    let input = format!("{:?}", input)
+        .replace(escaped_newline(), "\n            \\n");
+    let expected =
+        format!("{:?}", expected).replace(escaped_newline(), "\n        \\n");
     if input.len() + expected.len() < 45 {
         writeln!(
             rs,

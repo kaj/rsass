@@ -9,10 +9,27 @@ use rsass::set_precision;
 fn t01_inline() {
     assert_eq!(
         rsass(
-            ".result {\n  output: \'\\0_\\a_\\A\';\n  output: #{\'\\0_\\a_\\A\'};\n  output: \"[#{\'\\0_\\a_\\A\'}]\";\n  output: \"#{\'\\0_\\a_\\A\'}\";\n  output: \'#{\'\\0_\\a_\\A\'}\';\n  output: \"[\'#{\'\\0_\\a_\\A\'}\']\";\n}\n"
+            ".result {\
+             \n  output: \'\\0_\\a_\\A\';\
+             \n  output: #{\'\\0_\\a_\\A\'};\
+             \n  output: \"[#{\'\\0_\\a_\\A\'}]\";\
+             \n  output: \"#{\'\\0_\\a_\\A\'}\";\
+             \n  output: \'#{\'\\0_\\a_\\A\'}\';\
+             \n  output: \"[\'#{\'\\0_\\a_\\A\'}\']\";\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "@charset \"UTF-8\";\n.result {\n  output: \'\\0_\\a_\\A\';\n  output: �_ _ ;\n  output: \"[�_\\a_\\a]\";\n  output: \"�_\\a_\\a\";\n  output: \"�_\\a_\\a\";\n  output: \"[\'�_\\a_\\a\']\";\n}\n"
+        "@charset \"UTF-8\";\
+         \n.result {\
+         \n  output: \'\\0_\\a_\\A\';\
+         \n  output: �_ _ ;\
+         \n  output: \"[�_\\a_\\a]\";\
+         \n  output: \"�_\\a_\\a\";\
+         \n  output: \"�_\\a_\\a\";\
+         \n  output: \"[\'�_\\a_\\a\']\";\
+         \n}\
+         \n"
     );
 }
 
@@ -21,10 +38,28 @@ fn t01_inline() {
 fn t02_variable() {
     assert_eq!(
         rsass(
-            "$input: \'\\0_\\a_\\A\';\n.result {\n  output: $input;\n  output: #{$input};\n  output: \"[#{$input}]\";\n  output: \"#{$input}\";\n  output: \'#{$input}\';\n  output: \"[\'#{$input}\']\";\n}\n"
+            "$input: \'\\0_\\a_\\A\';\
+             \n.result {\
+             \n  output: $input;\
+             \n  output: #{$input};\
+             \n  output: \"[#{$input}]\";\
+             \n  output: \"#{$input}\";\
+             \n  output: \'#{$input}\';\
+             \n  output: \"[\'#{$input}\']\";\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "@charset \"UTF-8\";\n.result {\n  output: \"�_\\a_\\a\";\n  output: �_ _ ;\n  output: \"[�_\\a_\\a]\";\n  output: \"�_\\a_\\a\";\n  output: \"�_\\a_\\a\";\n  output: \"[\'�_\\a_\\a\']\";\n}\n"
+        "@charset \"UTF-8\";\
+         \n.result {\
+         \n  output: \"�_\\a_\\a\";\
+         \n  output: �_ _ ;\
+         \n  output: \"[�_\\a_\\a]\";\
+         \n  output: \"�_\\a_\\a\";\
+         \n  output: \"�_\\a_\\a\";\
+         \n  output: \"[\'�_\\a_\\a\']\";\
+         \n}\
+         \n"
     );
 }
 
@@ -33,10 +68,25 @@ fn t02_variable() {
 fn t03_inline_double() {
     assert_eq!(
         rsass(
-            ".result {\n  output: #{#{\'\\0_\\a_\\A\'}};\n  output: #{\"[#{\'\\0_\\a_\\A\'}]\"};\n  output: #{\"#{\'\\0_\\a_\\A\'}\"};\n  output: #{\'#{\'\\0_\\a_\\A\'}\'};\n  output: #{\"[\'#{\'\\0_\\a_\\A\'}\']\"};\n}\n"
+            ".result {\
+             \n  output: #{#{\'\\0_\\a_\\A\'}};\
+             \n  output: #{\"[#{\'\\0_\\a_\\A\'}]\"};\
+             \n  output: #{\"#{\'\\0_\\a_\\A\'}\"};\
+             \n  output: #{\'#{\'\\0_\\a_\\A\'}\'};\
+             \n  output: #{\"[\'#{\'\\0_\\a_\\A\'}\']\"};\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "@charset \"UTF-8\";\n.result {\n  output: �_ _ ;\n  output: [�_ _ ];\n  output: �_ _ ;\n  output: �_ _ ;\n  output: [\'�_ _ \'];\n}\n"
+        "@charset \"UTF-8\";\
+         \n.result {\
+         \n  output: �_ _ ;\
+         \n  output: [�_ _ ];\
+         \n  output: �_ _ ;\
+         \n  output: �_ _ ;\
+         \n  output: [\'�_ _ \'];\
+         \n}\
+         \n"
     );
 }
 
@@ -45,10 +95,26 @@ fn t03_inline_double() {
 fn t04_variable_double() {
     assert_eq!(
         rsass(
-            "$input: \'\\0_\\a_\\A\';\n.result {\n  output: #{#{$input}};\n  output: #{\"[#{$input}]\"};\n  output: #{\"#{$input}\"};\n  output: #{\'#{$input}\'};\n  output: #{\"[\'#{$input}\']\"};\n}\n"
+            "$input: \'\\0_\\a_\\A\';\
+             \n.result {\
+             \n  output: #{#{$input}};\
+             \n  output: #{\"[#{$input}]\"};\
+             \n  output: #{\"#{$input}\"};\
+             \n  output: #{\'#{$input}\'};\
+             \n  output: #{\"[\'#{$input}\']\"};\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "@charset \"UTF-8\";\n.result {\n  output: �_ _ ;\n  output: [�_ _ ];\n  output: �_ _ ;\n  output: �_ _ ;\n  output: [\'�_ _ \'];\n}\n"
+        "@charset \"UTF-8\";\
+         \n.result {\
+         \n  output: �_ _ ;\
+         \n  output: [�_ _ ];\
+         \n  output: �_ _ ;\
+         \n  output: �_ _ ;\
+         \n  output: [\'�_ _ \'];\
+         \n}\
+         \n"
     );
 }
 
@@ -57,10 +123,23 @@ fn t04_variable_double() {
 fn t06_escape_interpolation() {
     assert_eq!(
         rsass(
-            "$input: \'\\0_\\a_\\A\';\n.result {\n  output: \"[\\#{\'\\0_\\a_\\A\'}]\";\n  output: \"\\#{\'\\0_\\a_\\A\'}\";\n  output: \'\\#{\'\\0_\\a_\\A\'}\';\n  output: \"[\'\\#{\'\\0_\\a_\\A\'}\']\";\n}\n"
+            "$input: \'\\0_\\a_\\A\';\
+             \n.result {\
+             \n  output: \"[\\#{\'\\0_\\a_\\A\'}]\";\
+             \n  output: \"\\#{\'\\0_\\a_\\A\'}\";\
+             \n  output: \'\\#{\'\\0_\\a_\\A\'}\';\
+             \n  output: \"[\'\\#{\'\\0_\\a_\\A\'}\']\";\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".result {\n  output: \"[\\#{\'\\0_\\a_\\A\'}]\";\n  output: \"\\#{\'\\0_\\a_\\A\'}\";\n  output: \"#{\" \\0 _\\a _\\a  \"}\";\n  output: \"[\'\\#{\'\\0_\\a_\\A\'}\']\";\n}\n"
+        ".result {\
+         \n  output: \"[\\#{\'\\0_\\a_\\A\'}]\";\
+         \n  output: \"\\#{\'\\0_\\a_\\A\'}\";\
+         \n  output: \"#{\" \\0 _\\a _\\a  \"}\";\
+         \n  output: \"[\'\\#{\'\\0_\\a_\\A\'}\']\";\
+         \n}\
+         \n"
     );
 }
 
@@ -70,9 +149,35 @@ fn t06_escape_interpolation() {
 fn todo_05_variable_quoted_double() {
     assert_eq!(
         rsass(
-            "$input: \'\\0_\\a_\\A\';\n.result {\n  dquoted: \"#{#{$input}}\";\n  dquoted: \"#{\"[#{$input}]\"}\";\n  dquoted: \"#{\"#{$input}\"}\";\n  dquoted: \"#{\'#{$input}\'}\";\n  dquoted: \"#{\"[\'#{$input}\']\"}\";\n  squoted: \'#{#{$input}}\';\n  squoted: \'#{\"[#{$input}]\"}\';\n  squoted: \'#{\"#{$input}\"}\';\n  squoted: \'#{\'#{$input}\'}\';\n  squoted: \'#{\"[\'#{$input}\']\"}\';\n}\n"
+            "$input: \'\\0_\\a_\\A\';\
+             \n.result {\
+             \n  dquoted: \"#{#{$input}}\";\
+             \n  dquoted: \"#{\"[#{$input}]\"}\";\
+             \n  dquoted: \"#{\"#{$input}\"}\";\
+             \n  dquoted: \"#{\'#{$input}\'}\";\
+             \n  dquoted: \"#{\"[\'#{$input}\']\"}\";\
+             \n  squoted: \'#{#{$input}}\';\
+             \n  squoted: \'#{\"[#{$input}]\"}\';\
+             \n  squoted: \'#{\"#{$input}\"}\';\
+             \n  squoted: \'#{\'#{$input}\'}\';\
+             \n  squoted: \'#{\"[\'#{$input}\']\"}\';\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "@charset \"UTF-8\";\n.result {\n  dquoted: \"�_\\a_\\a\";\n  dquoted: \"[�_\\a_\\a]\";\n  dquoted: \"�_\\a_\\a\";\n  dquoted: \"�_\\a_\\a\";\n  dquoted: \"[\'�_\\a_\\a\']\";\n  squoted: \"�_\\a_\\a\";\n  squoted: \"[�_\\a_\\a]\";\n  squoted: \"�_\\a_\\a\";\n  squoted: \"�_\\a_\\a\";\n  squoted: \"[\'�_\\a_\\a\']\";\n}\n"
+        "@charset \"UTF-8\";\
+         \n.result {\
+         \n  dquoted: \"�_\\a_\\a\";\
+         \n  dquoted: \"[�_\\a_\\a]\";\
+         \n  dquoted: \"�_\\a_\\a\";\
+         \n  dquoted: \"�_\\a_\\a\";\
+         \n  dquoted: \"[\'�_\\a_\\a\']\";\
+         \n  squoted: \"�_\\a_\\a\";\
+         \n  squoted: \"[�_\\a_\\a]\";\
+         \n  squoted: \"�_\\a_\\a\";\
+         \n  squoted: \"�_\\a_\\a\";\
+         \n  squoted: \"[\'�_\\a_\\a\']\";\
+         \n}\
+         \n"
     );
 }

@@ -10,9 +10,17 @@ use rsass::set_precision;
 fn feature_test() {
     assert_eq!(
         rsass(
-            "@if feature-exists(at-error) {\n  div {\n    feature: true;\n  }\n}\n"
+            "@if feature-exists(at-error) {\
+             \n  div {\
+             \n    feature: true;\
+             \n  }\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "div {\n  feature: true;\n}\n"
+        "div {\
+         \n  feature: true;\
+         \n}\
+         \n"
     );
 }

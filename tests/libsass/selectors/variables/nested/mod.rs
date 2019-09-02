@@ -10,10 +10,22 @@ use rsass::set_precision;
 fn bare() {
     assert_eq!(
         rsass(
-            ".foo a,\n.bar p {\n\n  .baz {\n    $bar: &;\n    content: $bar;\n  }\n\n}"
+            ".foo a,\
+             \n.bar p {\
+             \n\
+             \n  .baz {\
+             \n    $bar: &;\
+             \n    content: $bar;\
+             \n  }\
+             \n\
+             \n}"
         )
         .unwrap(),
-        ".foo a .baz,\n.bar p .baz {\n  content: .foo a .baz, .bar p .baz;\n}\n"
+        ".foo a .baz,\
+         \n.bar p .baz {\
+         \n  content: .foo a .baz, .bar p .baz;\
+         \n}\
+         \n"
     );
 }
 
@@ -23,9 +35,21 @@ fn bare() {
 fn interpolated() {
     assert_eq!(
         rsass(
-            ".foo a,\n.bar p {\n\n  .baz {\n    $bar: &;\n    content: #{$bar};\n  }\n\n}"
+            ".foo a,\
+             \n.bar p {\
+             \n\
+             \n  .baz {\
+             \n    $bar: &;\
+             \n    content: #{$bar};\
+             \n  }\
+             \n\
+             \n}"
         )
         .unwrap(),
-        ".foo a .baz,\n.bar p .baz {\n  content: .foo a .baz, .bar p .baz;\n}\n"
+        ".foo a .baz,\
+         \n.bar p .baz {\
+         \n  content: .foo a .baz, .bar p .baz;\
+         \n}\
+         \n"
     );
 }

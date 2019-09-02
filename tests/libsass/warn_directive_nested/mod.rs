@@ -16,9 +16,22 @@ use rsass::set_precision;
 fn mixin() {
     assert_eq!(
         rsass(
-            "@mixin c() {\n  @warn test;\n  c: d;\n}\n\na {\n  b: {\n    @include c();\n  }\n}\n"
+            "@mixin c() {\
+             \n  @warn test;\
+             \n  c: d;\
+             \n}\
+             \n\
+             \na {\
+             \n  b: {\
+             \n    @include c();\
+             \n  }\
+             \n}\
+             \n"
         )
         .unwrap(),
-        "a {\n  b-c: d;\n}\n"
+        "a {\
+         \n  b-c: d;\
+         \n}\
+         \n"
     );
 }

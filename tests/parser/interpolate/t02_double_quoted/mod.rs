@@ -9,10 +9,26 @@ use rsass::set_precision;
 fn t01_inline() {
     assert_eq!(
         rsass(
-            ".result {\n  output: \"dquoted\";\n  output: #{\"dquoted\"};\n  output: \"[#{\"dquoted\"}]\";\n  output: \"#{\"dquoted\"}\";\n  output: \'#{\"dquoted\"}\';\n  output: \"[\'#{\"dquoted\"}\']\";\n}\n"
+            ".result {\
+             \n  output: \"dquoted\";\
+             \n  output: #{\"dquoted\"};\
+             \n  output: \"[#{\"dquoted\"}]\";\
+             \n  output: \"#{\"dquoted\"}\";\
+             \n  output: \'#{\"dquoted\"}\';\
+             \n  output: \"[\'#{\"dquoted\"}\']\";\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".result {\n  output: \"dquoted\";\n  output: dquoted;\n  output: \"[dquoted]\";\n  output: \"dquoted\";\n  output: \"dquoted\";\n  output: \"[\'dquoted\']\";\n}\n"
+        ".result {\
+         \n  output: \"dquoted\";\
+         \n  output: dquoted;\
+         \n  output: \"[dquoted]\";\
+         \n  output: \"dquoted\";\
+         \n  output: \"dquoted\";\
+         \n  output: \"[\'dquoted\']\";\
+         \n}\
+         \n"
     );
 }
 
@@ -21,10 +37,27 @@ fn t01_inline() {
 fn t02_variable() {
     assert_eq!(
         rsass(
-            "$input: \"dquoted\";\n.result {\n  output: $input;\n  output: #{$input};\n  output: \"[#{$input}]\";\n  output: \"#{$input}\";\n  output: \'#{$input}\';\n  output: \"[\'#{$input}\']\";\n}\n"
+            "$input: \"dquoted\";\
+             \n.result {\
+             \n  output: $input;\
+             \n  output: #{$input};\
+             \n  output: \"[#{$input}]\";\
+             \n  output: \"#{$input}\";\
+             \n  output: \'#{$input}\';\
+             \n  output: \"[\'#{$input}\']\";\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".result {\n  output: \"dquoted\";\n  output: dquoted;\n  output: \"[dquoted]\";\n  output: \"dquoted\";\n  output: \"dquoted\";\n  output: \"[\'dquoted\']\";\n}\n"
+        ".result {\
+         \n  output: \"dquoted\";\
+         \n  output: dquoted;\
+         \n  output: \"[dquoted]\";\
+         \n  output: \"dquoted\";\
+         \n  output: \"dquoted\";\
+         \n  output: \"[\'dquoted\']\";\
+         \n}\
+         \n"
     );
 }
 
@@ -33,10 +66,24 @@ fn t02_variable() {
 fn t03_inline_double() {
     assert_eq!(
         rsass(
-            ".result {\n  output: #{#{\"dquoted\"}};\n  output: #{\"[#{\"dquoted\"}]\"};\n  output: #{\"#{\"dquoted\"}\"};\n  output: #{\'#{\"dquoted\"}\'};\n  output: #{\"[\'#{\"dquoted\"}\']\"};\n}\n"
+            ".result {\
+             \n  output: #{#{\"dquoted\"}};\
+             \n  output: #{\"[#{\"dquoted\"}]\"};\
+             \n  output: #{\"#{\"dquoted\"}\"};\
+             \n  output: #{\'#{\"dquoted\"}\'};\
+             \n  output: #{\"[\'#{\"dquoted\"}\']\"};\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".result {\n  output: dquoted;\n  output: [dquoted];\n  output: dquoted;\n  output: dquoted;\n  output: [\'dquoted\'];\n}\n"
+        ".result {\
+         \n  output: dquoted;\
+         \n  output: [dquoted];\
+         \n  output: dquoted;\
+         \n  output: dquoted;\
+         \n  output: [\'dquoted\'];\
+         \n}\
+         \n"
     );
 }
 
@@ -45,10 +92,25 @@ fn t03_inline_double() {
 fn t04_variable_double() {
     assert_eq!(
         rsass(
-            "$input: \"dquoted\";\n.result {\n  output: #{#{$input}};\n  output: #{\"[#{$input}]\"};\n  output: #{\"#{$input}\"};\n  output: #{\'#{$input}\'};\n  output: #{\"[\'#{$input}\']\"};\n}\n"
+            "$input: \"dquoted\";\
+             \n.result {\
+             \n  output: #{#{$input}};\
+             \n  output: #{\"[#{$input}]\"};\
+             \n  output: #{\"#{$input}\"};\
+             \n  output: #{\'#{$input}\'};\
+             \n  output: #{\"[\'#{$input}\']\"};\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".result {\n  output: dquoted;\n  output: [dquoted];\n  output: dquoted;\n  output: dquoted;\n  output: [\'dquoted\'];\n}\n"
+        ".result {\
+         \n  output: dquoted;\
+         \n  output: [dquoted];\
+         \n  output: dquoted;\
+         \n  output: dquoted;\
+         \n  output: [\'dquoted\'];\
+         \n}\
+         \n"
     );
 }
 
@@ -57,10 +119,35 @@ fn t04_variable_double() {
 fn t05_variable_quoted_double() {
     assert_eq!(
         rsass(
-            "$input: \"dquoted\";\n.result {\n  dquoted: \"#{#{$input}}\";\n  dquoted: \"#{\"[#{$input}]\"}\";\n  dquoted: \"#{\"#{$input}\"}\";\n  dquoted: \"#{\'#{$input}\'}\";\n  dquoted: \"#{\"[\'#{$input}\']\"}\";\n  squoted: \'#{#{$input}}\';\n  squoted: \'#{\"[#{$input}]\"}\';\n  squoted: \'#{\"#{$input}\"}\';\n  squoted: \'#{\'#{$input}\'}\';\n  squoted: \'#{\"[\'#{$input}\']\"}\';\n}\n"
+            "$input: \"dquoted\";\
+             \n.result {\
+             \n  dquoted: \"#{#{$input}}\";\
+             \n  dquoted: \"#{\"[#{$input}]\"}\";\
+             \n  dquoted: \"#{\"#{$input}\"}\";\
+             \n  dquoted: \"#{\'#{$input}\'}\";\
+             \n  dquoted: \"#{\"[\'#{$input}\']\"}\";\
+             \n  squoted: \'#{#{$input}}\';\
+             \n  squoted: \'#{\"[#{$input}]\"}\';\
+             \n  squoted: \'#{\"#{$input}\"}\';\
+             \n  squoted: \'#{\'#{$input}\'}\';\
+             \n  squoted: \'#{\"[\'#{$input}\']\"}\';\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".result {\n  dquoted: \"dquoted\";\n  dquoted: \"[dquoted]\";\n  dquoted: \"dquoted\";\n  dquoted: \"dquoted\";\n  dquoted: \"[\'dquoted\']\";\n  squoted: \"dquoted\";\n  squoted: \"[dquoted]\";\n  squoted: \"dquoted\";\n  squoted: \"dquoted\";\n  squoted: \"[\'dquoted\']\";\n}\n"
+        ".result {\
+         \n  dquoted: \"dquoted\";\
+         \n  dquoted: \"[dquoted]\";\
+         \n  dquoted: \"dquoted\";\
+         \n  dquoted: \"dquoted\";\
+         \n  dquoted: \"[\'dquoted\']\";\
+         \n  squoted: \"dquoted\";\
+         \n  squoted: \"[dquoted]\";\
+         \n  squoted: \"dquoted\";\
+         \n  squoted: \"dquoted\";\
+         \n  squoted: \"[\'dquoted\']\";\
+         \n}\
+         \n"
     );
 }
 
@@ -69,9 +156,22 @@ fn t05_variable_quoted_double() {
 fn t06_escape_interpolation() {
     assert_eq!(
         rsass(
-            "$input: \"dquoted\";\n.result {\n  output: \"[\\#{\"dquoted\"}]\";\n  output: \"\\#{\"dquoted\"}\";\n  output: \'\\#{\"dquoted\"}\';\n  output: \"[\'\\#{\"dquoted\"}\']\";\n}\n"
+            "$input: \"dquoted\";\
+             \n.result {\
+             \n  output: \"[\\#{\"dquoted\"}]\";\
+             \n  output: \"\\#{\"dquoted\"}\";\
+             \n  output: \'\\#{\"dquoted\"}\';\
+             \n  output: \"[\'\\#{\"dquoted\"}\']\";\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".result {\n  output: \"[#{\" dquoted \"}]\";\n  output: \"#{\" dquoted \"}\";\n  output: \'\\#{\"dquoted\"}\';\n  output: \"[\'#{\" dquoted \"}\']\";\n}\n"
+        ".result {\
+         \n  output: \"[#{\" dquoted \"}]\";\
+         \n  output: \"#{\" dquoted \"}\";\
+         \n  output: \'\\#{\"dquoted\"}\';\
+         \n  output: \"[\'#{\" dquoted \"}\']\";\
+         \n}\
+         \n"
     );
 }

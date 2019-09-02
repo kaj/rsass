@@ -9,10 +9,19 @@ use rsass::set_precision;
 fn selector_length() {
     assert_eq!(
         rsass(
-            "foo.bar.baz asd.qwe xyz, second {\r\n  length: length(&);\r\n  length: length(nth(&, 1));\r\n  length: length(nth(nth(&, 1), 1));\r\n}"
+            "foo.bar.baz asd.qwe xyz, second {\r\
+             \n  length: length(&);\r\
+             \n  length: length(nth(&, 1));\r\
+             \n  length: length(nth(nth(&, 1), 1));\r\
+             \n}"
         )
         .unwrap(),
-        "foo.bar.baz asd.qwe xyz, second {\n  length: 2;\n  length: 3;\n  length: 1;\n}\n"
+        "foo.bar.baz asd.qwe xyz, second {\
+         \n  length: 2;\
+         \n  length: 3;\
+         \n  length: 1;\
+         \n}\
+         \n"
     );
 }
 
@@ -22,9 +31,16 @@ fn selector_length() {
 fn simple_selector() {
     assert_eq!(
         rsass(
-            "foo {\r\n  test-01: simple-selectors(\".foo.bar\");\r\n  test-02: simple-selectors(\".foo.bar.baz\");\r\n}"
+            "foo {\r\
+             \n  test-01: simple-selectors(\".foo.bar\");\r\
+             \n  test-02: simple-selectors(\".foo.bar.baz\");\r\
+             \n}"
         )
         .unwrap(),
-        "foo {\n  test-01: .foo, .bar;\n  test-02: .foo, .bar, .baz;\n}\n"
+        "foo {\
+         \n  test-01: .foo, .bar;\
+         \n  test-02: .foo, .bar, .baz;\
+         \n}\
+         \n"
     );
 }

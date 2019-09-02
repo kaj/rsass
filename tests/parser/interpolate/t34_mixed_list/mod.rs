@@ -9,10 +9,26 @@ use rsass::set_precision;
 fn t01_inline() {
     assert_eq!(
         rsass(
-            ".result {\n  output: \"[\"\',foo   ,   \'\"]\"    \"bar\";\n  output: #{\"[\"\',foo   ,   \'\"]\"    \"bar\"};\n  output: \"[#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}]\";\n  output: \"#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\";\n  output: \'#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\';\n  output: \"[\'#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\']\";\n}\n"
+            ".result {\
+             \n  output: \"[\"\',foo   ,   \'\"]\"    \"bar\";\
+             \n  output: #{\"[\"\',foo   ,   \'\"]\"    \"bar\"};\
+             \n  output: \"[#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}]\";\
+             \n  output: \"#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\";\
+             \n  output: \'#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\';\
+             \n  output: \"[\'#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\']\";\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".result {\n  output: \"[\" \",foo   ,   \" \"]\" \"bar\";\n  output: [ ,foo   ,    ] bar;\n  output: \"[[ ,foo   ,    ] bar]\";\n  output: \"[ ,foo   ,    ] bar\";\n  output: \"[ ,foo   ,    ] bar\";\n  output: \"[\'[ ,foo   ,    ] bar\']\";\n}\n"
+        ".result {\
+         \n  output: \"[\" \",foo   ,   \" \"]\" \"bar\";\
+         \n  output: [ ,foo   ,    ] bar;\
+         \n  output: \"[[ ,foo   ,    ] bar]\";\
+         \n  output: \"[ ,foo   ,    ] bar\";\
+         \n  output: \"[ ,foo   ,    ] bar\";\
+         \n  output: \"[\'[ ,foo   ,    ] bar\']\";\
+         \n}\
+         \n"
     );
 }
 
@@ -21,10 +37,27 @@ fn t01_inline() {
 fn t02_variable() {
     assert_eq!(
         rsass(
-            "$input: \"[\"\',foo   ,   \'\"]\"    \"bar\";\n.result {\n  output: $input;\n  output: #{$input};\n  output: \"[#{$input}]\";\n  output: \"#{$input}\";\n  output: \'#{$input}\';\n  output: \"[\'#{$input}\']\";\n}\n"
+            "$input: \"[\"\',foo   ,   \'\"]\"    \"bar\";\
+             \n.result {\
+             \n  output: $input;\
+             \n  output: #{$input};\
+             \n  output: \"[#{$input}]\";\
+             \n  output: \"#{$input}\";\
+             \n  output: \'#{$input}\';\
+             \n  output: \"[\'#{$input}\']\";\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".result {\n  output: \"[\" \",foo   ,   \" \"]\" \"bar\";\n  output: [ ,foo   ,    ] bar;\n  output: \"[[ ,foo   ,    ] bar]\";\n  output: \"[ ,foo   ,    ] bar\";\n  output: \"[ ,foo   ,    ] bar\";\n  output: \"[\'[ ,foo   ,    ] bar\']\";\n}\n"
+        ".result {\
+         \n  output: \"[\" \",foo   ,   \" \"]\" \"bar\";\
+         \n  output: [ ,foo   ,    ] bar;\
+         \n  output: \"[[ ,foo   ,    ] bar]\";\
+         \n  output: \"[ ,foo   ,    ] bar\";\
+         \n  output: \"[ ,foo   ,    ] bar\";\
+         \n  output: \"[\'[ ,foo   ,    ] bar\']\";\
+         \n}\
+         \n"
     );
 }
 
@@ -33,10 +66,24 @@ fn t02_variable() {
 fn t03_inline_double() {
     assert_eq!(
         rsass(
-            ".result {\n  output: #{#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}};\n  output: #{\"[#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}]\"};\n  output: #{\"#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\"};\n  output: #{\'#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\'};\n  output: #{\"[\'#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\']\"};\n}\n"
+            ".result {\
+            \n  output: #{#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}};\
+            \n  output: #{\"[#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}]\"};\
+            \n  output: #{\"#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\"};\
+            \n  output: #{\'#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\'};\
+            \n  output: #{\"[\'#{\"[\"\',foo   ,   \'\"]\"    \"bar\"}\']\"};\
+            \n}\
+            \n"
         )
         .unwrap(),
-        ".result {\n  output: [ ,foo   ,    ] bar;\n  output: [[ ,foo   ,    ] bar];\n  output: [ ,foo   ,    ] bar;\n  output: [ ,foo   ,    ] bar;\n  output: [\'[ ,foo   ,    ] bar\'];\n}\n"
+        ".result {\
+        \n  output: [ ,foo   ,    ] bar;\
+        \n  output: [[ ,foo   ,    ] bar];\
+        \n  output: [ ,foo   ,    ] bar;\
+        \n  output: [ ,foo   ,    ] bar;\
+        \n  output: [\'[ ,foo   ,    ] bar\'];\
+        \n}\
+        \n"
     );
 }
 
@@ -45,10 +92,25 @@ fn t03_inline_double() {
 fn t04_variable_double() {
     assert_eq!(
         rsass(
-            "$input: \"[\"\',foo   ,   \'\"]\"    \"bar\";\n.result {\n  output: #{#{$input}};\n  output: #{\"[#{$input}]\"};\n  output: #{\"#{$input}\"};\n  output: #{\'#{$input}\'};\n  output: #{\"[\'#{$input}\']\"};\n}\n"
+            "$input: \"[\"\',foo   ,   \'\"]\"    \"bar\";\
+             \n.result {\
+             \n  output: #{#{$input}};\
+             \n  output: #{\"[#{$input}]\"};\
+             \n  output: #{\"#{$input}\"};\
+             \n  output: #{\'#{$input}\'};\
+             \n  output: #{\"[\'#{$input}\']\"};\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".result {\n  output: [ ,foo   ,    ] bar;\n  output: [[ ,foo   ,    ] bar];\n  output: [ ,foo   ,    ] bar;\n  output: [ ,foo   ,    ] bar;\n  output: [\'[ ,foo   ,    ] bar\'];\n}\n"
+        ".result {\
+         \n  output: [ ,foo   ,    ] bar;\
+         \n  output: [[ ,foo   ,    ] bar];\
+         \n  output: [ ,foo   ,    ] bar;\
+         \n  output: [ ,foo   ,    ] bar;\
+         \n  output: [\'[ ,foo   ,    ] bar\'];\
+         \n}\
+         \n"
     );
 }
 
@@ -57,9 +119,34 @@ fn t04_variable_double() {
 fn t05_variable_quoted_double() {
     assert_eq!(
         rsass(
-            "$input: \"[\"\',foo   ,   \'\"]\"    \"bar\";\n.result {\n  dquoted: \"#{#{$input}}\";\n  dquoted: \"#{\"[#{$input}]\"}\";\n  dquoted: \"#{\"#{$input}\"}\";\n  dquoted: \"#{\'#{$input}\'}\";\n  dquoted: \"#{\"[\'#{$input}\']\"}\";\n  squoted: \'#{#{$input}}\';\n  squoted: \'#{\"[#{$input}]\"}\';\n  squoted: \'#{\"#{$input}\"}\';\n  squoted: \'#{\'#{$input}\'}\';\n  squoted: \'#{\"[\'#{$input}\']\"}\';\n}\n"
+            "$input: \"[\"\',foo   ,   \'\"]\"    \"bar\";\
+             \n.result {\
+             \n  dquoted: \"#{#{$input}}\";\
+             \n  dquoted: \"#{\"[#{$input}]\"}\";\
+             \n  dquoted: \"#{\"#{$input}\"}\";\
+             \n  dquoted: \"#{\'#{$input}\'}\";\
+             \n  dquoted: \"#{\"[\'#{$input}\']\"}\";\
+             \n  squoted: \'#{#{$input}}\';\
+             \n  squoted: \'#{\"[#{$input}]\"}\';\
+             \n  squoted: \'#{\"#{$input}\"}\';\
+             \n  squoted: \'#{\'#{$input}\'}\';\
+             \n  squoted: \'#{\"[\'#{$input}\']\"}\';\
+             \n}\
+             \n"
         )
         .unwrap(),
-        ".result {\n  dquoted: \"[ ,foo   ,    ] bar\";\n  dquoted: \"[[ ,foo   ,    ] bar]\";\n  dquoted: \"[ ,foo   ,    ] bar\";\n  dquoted: \"[ ,foo   ,    ] bar\";\n  dquoted: \"[\'[ ,foo   ,    ] bar\']\";\n  squoted: \"[ ,foo   ,    ] bar\";\n  squoted: \"[[ ,foo   ,    ] bar]\";\n  squoted: \"[ ,foo   ,    ] bar\";\n  squoted: \"[ ,foo   ,    ] bar\";\n  squoted: \"[\'[ ,foo   ,    ] bar\']\";\n}\n"
+        ".result {\
+         \n  dquoted: \"[ ,foo   ,    ] bar\";\
+         \n  dquoted: \"[[ ,foo   ,    ] bar]\";\
+         \n  dquoted: \"[ ,foo   ,    ] bar\";\
+         \n  dquoted: \"[ ,foo   ,    ] bar\";\
+         \n  dquoted: \"[\'[ ,foo   ,    ] bar\']\";\
+         \n  squoted: \"[ ,foo   ,    ] bar\";\
+         \n  squoted: \"[[ ,foo   ,    ] bar]\";\
+         \n  squoted: \"[ ,foo   ,    ] bar\";\
+         \n  squoted: \"[ ,foo   ,    ] bar\";\
+         \n  squoted: \"[\'[ ,foo   ,    ] bar\']\";\
+         \n}\
+         \n"
     );
 }

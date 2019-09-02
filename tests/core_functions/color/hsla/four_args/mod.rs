@@ -14,37 +14,72 @@ mod alpha {
         #[test]
         fn above_max() {
             assert_eq!(
-                rsass("a {b: hsla(0, 0, 0, 250%)}\n").unwrap(),
-                "a {\n  b: black;\n}\n"
+                rsass(
+                    "a {b: hsla(0, 0, 0, 250%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: black;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn max() {
             assert_eq!(
-                rsass("a {b: hsla(0, 0, 0, 100%)}\n").unwrap(),
-                "a {\n  b: black;\n}\n"
+                rsass(
+                    "a {b: hsla(0, 0, 0, 100%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: black;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn min() {
             assert_eq!(
-                rsass("a {b: hsla(0, 0, 0, 0%)}\n").unwrap(),
-                "a {\n  b: rgba(0, 0, 0, 0);\n}\n"
+                rsass(
+                    "a {b: hsla(0, 0, 0, 0%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(0, 0, 0, 0);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn negative() {
             assert_eq!(
-                rsass("a {b: hsla(0, 0, 0, -10%)}\n").unwrap(),
-                "a {\n  b: rgba(0, 0, 0, 0);\n}\n"
+                rsass(
+                    "a {b: hsla(0, 0, 0, -10%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(0, 0, 0, 0);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn positive() {
             assert_eq!(
-                rsass("a {b: hsla(0, 0, 0, 45.6%)}\n").unwrap(),
-                "a {\n  b: rgba(0, 0, 0, 0.456);\n}\n"
+                rsass(
+                    "a {b: hsla(0, 0, 0, 45.6%)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(0, 0, 0, 0.456);\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -54,36 +89,71 @@ mod alpha {
         #[test]
         fn above_max() {
             assert_eq!(
-                rsass("a {b: hsla(0, 0, 0, 250)}\n").unwrap(),
-                "a {\n  b: black;\n}\n"
+                rsass(
+                    "a {b: hsla(0, 0, 0, 250)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: black;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn max() {
             assert_eq!(
-                rsass("a {b: hsla(0, 0, 0, 1)}\n").unwrap(),
-                "a {\n  b: black;\n}\n"
+                rsass(
+                    "a {b: hsla(0, 0, 0, 1)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: black;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn min() {
             assert_eq!(
-                rsass("a {b: hsla(0, 0, 0, 0)}\n").unwrap(),
-                "a {\n  b: rgba(0, 0, 0, 0);\n}\n"
+                rsass(
+                    "a {b: hsla(0, 0, 0, 0)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(0, 0, 0, 0);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn negative() {
             assert_eq!(
-                rsass("a {b: hsla(0, 0, 0, -10)}\n").unwrap(),
-                "a {\n  b: rgba(0, 0, 0, 0);\n}\n"
+                rsass(
+                    "a {b: hsla(0, 0, 0, -10)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(0, 0, 0, 0);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn positive() {
             assert_eq!(
-                rsass("a {b: hsla(0, 0, 0, 0.456)}\n").unwrap(),
-                "a {\n  b: rgba(0, 0, 0, 0.456);\n}\n"
+                rsass(
+                    "a {b: hsla(0, 0, 0, 0.456)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(0, 0, 0, 0.456);\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -99,30 +169,58 @@ mod clamped {
         #[test]
         fn above() {
             assert_eq!(
-                rsass("a {b: hsla(0, 100%, 50%, 1.1)}\n").unwrap(),
-                "a {\n  b: red;\n}\n"
+                rsass(
+                    "a {b: hsla(0, 100%, 50%, 1.1)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: red;\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn below() {
             assert_eq!(
-                rsass("a {b: rgba(0, 100%, 50%, -0.1)}\n").unwrap(),
-                "a {\n  b: rgba(0, 255, 128, 0);\n}\n"
+                rsass(
+                    "a {b: rgba(0, 100%, 50%, -0.1)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: rgba(0, 255, 128, 0);\
+                 \n}\
+                 \n"
             );
         }
     }
     #[test]
     fn lightness() {
         assert_eq!(
-            rsass("a {b: hsla(0, 100%, 9999%, 0.5)}\n").unwrap(),
-            "a {\n  b: rgba(255, 255, 255, 0.5);\n}\n"
+            rsass(
+                "a {b: hsla(0, 100%, 9999%, 0.5)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(255, 255, 255, 0.5);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn saturation() {
         assert_eq!(
-            rsass("a {b: hsla(0, -0.1%, 50%, 0.5)}\n").unwrap(),
-            "a {\n  b: rgba(128, 128, 128, 0.5);\n}\n"
+            rsass(
+                "a {b: hsla(0, -0.1%, 50%, 0.5)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(128, 128, 128, 0.5);\
+             \n}\
+             \n"
         );
     }
 }
@@ -135,31 +233,56 @@ mod in_gamut {
     fn named() {
         assert_eq!(
         rsass(
-            "a {b: hsla($hue: 180, $saturation: 60%, $lightness: 50%, $alpha: 0.4)}\n"
+            "a {b: hsla($hue: 180, $saturation: 60%, $lightness: 50%, $alpha: 0.4)}\
+            \n"
         )
         .unwrap(),
-        "a {\n  b: rgba(51, 204, 204, 0.4);\n}\n"
+        "a {\
+        \n  b: rgba(51, 204, 204, 0.4);\
+        \n}\
+        \n"
     );
     }
     #[test]
     fn opaque() {
         assert_eq!(
-            rsass("a {b: hsla(180, 60%, 50%, 1)}\n").unwrap(),
-            "a {\n  b: #33cccc;\n}\n"
+            rsass(
+                "a {b: hsla(180, 60%, 50%, 1)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: #33cccc;\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn partial() {
         assert_eq!(
-            rsass("a {b: hsla(180, 60%, 50%, 0.5)}\n").unwrap(),
-            "a {\n  b: rgba(51, 204, 204, 0.5);\n}\n"
+            rsass(
+                "a {b: hsla(180, 60%, 50%, 0.5)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(51, 204, 204, 0.5);\
+             \n}\
+             \n"
         );
     }
     #[test]
     fn transparent() {
         assert_eq!(
-            rsass("a {b: hsla(180, 60%, 50%, 0)}\n").unwrap(),
-            "a {\n  b: rgba(51, 204, 204, 0);\n}\n"
+            rsass(
+                "a {b: hsla(180, 60%, 50%, 0)}\
+                 \n"
+            )
+            .unwrap(),
+            "a {\
+             \n  b: rgba(51, 204, 204, 0);\
+             \n}\
+             \n"
         );
     }
 }
@@ -174,29 +297,57 @@ mod special_functions {
         #[test]
         fn arg_1() {
             assert_eq!(
-                rsass("a {b: hsla(calc(1), 2%, 3%, 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(calc(1), 2%, 3%, 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(calc(1), 2%, 3%, 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(calc(1), 2%, 3%, 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn arg_2() {
             assert_eq!(
-                rsass("a {b: hsla(1, calc(2%), 3%, 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(1, calc(2%), 3%, 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(1, calc(2%), 3%, 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, calc(2%), 3%, 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn arg_3() {
             assert_eq!(
-                rsass("a {b: hsla(1, 2%, calc(3%), 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(1, 2%, calc(3%), 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(1, 2%, calc(3%), 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, 2%, calc(3%), 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn arg_4() {
             assert_eq!(
-                rsass("a {b: hsla(1, 2%, 3%, calc(0.4))}\n").unwrap(),
-                "a {\n  b: hsla(1, 2%, 3%, calc(0.4));\n}\n"
+                rsass(
+                    "a {b: hsla(1, 2%, 3%, calc(0.4))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, 2%, 3%, calc(0.4));\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -206,29 +357,57 @@ mod special_functions {
         #[test]
         fn arg_1() {
             assert_eq!(
-                rsass("a {b: hsla(env(--foo), 2%, 3%, 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(env(--foo), 2%, 3%, 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(env(--foo), 2%, 3%, 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(env(--foo), 2%, 3%, 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn arg_2() {
             assert_eq!(
-                rsass("a {b: hsla(1, env(--foo), 3%, 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(1, env(--foo), 3%, 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(1, env(--foo), 3%, 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, env(--foo), 3%, 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn arg_3() {
             assert_eq!(
-                rsass("a {b: hsla(1, 2%, env(--foo), 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(1, 2%, env(--foo), 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(1, 2%, env(--foo), 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, 2%, env(--foo), 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn arg_4() {
             assert_eq!(
-                rsass("a {b: hsla(1, 2%, 3%, env(--foo))}\n").unwrap(),
-                "a {\n  b: hsla(1, 2%, 3%, env(--foo));\n}\n"
+                rsass(
+                    "a {b: hsla(1, 2%, 3%, env(--foo))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, 2%, 3%, env(--foo));\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -239,32 +418,60 @@ mod special_functions {
         #[ignore] // failing
         fn arg_1() {
             assert_eq!(
-                rsass("a {b: hsla(max(1), 2%, 3%, 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(max(1), 2%, 3%, 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(max(1), 2%, 3%, 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(max(1), 2%, 3%, 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn arg_2() {
             assert_eq!(
-                rsass("a {b: hsla(1, max(2%), 3%, 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(1, max(2%), 3%, 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(1, max(2%), 3%, 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, max(2%), 3%, 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn arg_3() {
             assert_eq!(
-                rsass("a {b: hsla(1, 2%, max(3%), 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(1, 2%, max(3%), 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(1, 2%, max(3%), 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, 2%, max(3%), 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn arg_4() {
             assert_eq!(
-                rsass("a {b: hsla(1, 2%, 3%, max(0.4))}\n").unwrap(),
-                "a {\n  b: hsla(1, 2%, 3%, max(0.4));\n}\n"
+                rsass(
+                    "a {b: hsla(1, 2%, 3%, max(0.4))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, 2%, 3%, max(0.4));\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -275,32 +482,60 @@ mod special_functions {
         #[ignore] // failing
         fn arg_1() {
             assert_eq!(
-                rsass("a {b: hsla(min(1), 2%, 3%, 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(min(1), 2%, 3%, 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(min(1), 2%, 3%, 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(min(1), 2%, 3%, 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn arg_2() {
             assert_eq!(
-                rsass("a {b: hsla(1, min(2%), 3%, 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(1, min(2%), 3%, 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(1, min(2%), 3%, 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, min(2%), 3%, 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn arg_3() {
             assert_eq!(
-                rsass("a {b: hsla(1, 2%, min(3%), 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(1, 2%, min(3%), 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(1, 2%, min(3%), 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, 2%, min(3%), 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         #[ignore] // failing
         fn arg_4() {
             assert_eq!(
-                rsass("a {b: hsla(1, 2%, 3%, min(0.4))}\n").unwrap(),
-                "a {\n  b: hsla(1, 2%, 3%, min(0.4));\n}\n"
+                rsass(
+                    "a {b: hsla(1, 2%, 3%, min(0.4))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, 2%, 3%, min(0.4));\
+                 \n}\
+                 \n"
             );
         }
     }
@@ -310,29 +545,57 @@ mod special_functions {
         #[test]
         fn arg_1() {
             assert_eq!(
-                rsass("a {b: hsla(var(--foo), 2%, 3%, 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(var(--foo), 2%, 3%, 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(var(--foo), 2%, 3%, 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(var(--foo), 2%, 3%, 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn arg_2() {
             assert_eq!(
-                rsass("a {b: hsla(1, var(--foo), 3%, 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(1, var(--foo), 3%, 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(1, var(--foo), 3%, 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, var(--foo), 3%, 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn arg_3() {
             assert_eq!(
-                rsass("a {b: hsla(1, 2%, var(--foo), 0.4)}\n").unwrap(),
-                "a {\n  b: hsla(1, 2%, var(--foo), 0.4);\n}\n"
+                rsass(
+                    "a {b: hsla(1, 2%, var(--foo), 0.4)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, 2%, var(--foo), 0.4);\
+                 \n}\
+                 \n"
             );
         }
         #[test]
         fn arg_4() {
             assert_eq!(
-                rsass("a {b: hsla(1, 2%, 3%, var(--foo))}\n").unwrap(),
-                "a {\n  b: hsla(1, 2%, 3%, var(--foo));\n}\n"
+                rsass(
+                    "a {b: hsla(1, 2%, 3%, var(--foo))}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: hsla(1, 2%, 3%, var(--foo));\
+                 \n}\
+                 \n"
             );
         }
     }
