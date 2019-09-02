@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass"
-//! version cb1ab541, 2019-08-16 17:59:57 -0700.
+//! version a8100f0ac, 2019-08-29 16:23:21 -0700.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["Sa\u{301}ss-UT\u{327}F8.hrx", "bourbon.hrx", "base-level-parent/imported", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "debug-directive-nested/function.hrx", "warn-directive-nested/function.hrx"]

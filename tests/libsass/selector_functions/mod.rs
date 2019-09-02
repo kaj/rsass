@@ -4,18 +4,6 @@ use super::rsass;
 #[allow(unused)]
 use rsass::set_precision;
 
-// From "sass-spec/spec/libsass/selector-functions/selector-append-empty.hrx"
-
-// Ignoring "selector_append_empty", error tests are not supported yet.
-
-// From "sass-spec/spec/libsass/selector-functions/selector-append-error-1.hrx"
-
-// Ignoring "selector_append_error_1", error tests are not supported yet.
-
-// From "sass-spec/spec/libsass/selector-functions/selector-append-error-2.hrx"
-
-// Ignoring "selector_append_error_2", error tests are not supported yet.
-
 // From "sass-spec/spec/libsass/selector-functions/selector-length.hrx"
 #[test]
 fn selector_length() {

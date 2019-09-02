@@ -631,6 +631,49 @@ mod compound {
     }
 }
 
+// From "sass-spec/spec/core_functions/selector/is_superselector/error.hrx"
+mod error {
+    #[allow(unused)]
+    use super::rsass;
+    mod sub {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "invalid", error tests are not supported yet.
+
+        // Ignoring "parent", error tests are not supported yet.
+
+        // Ignoring "test_type", error tests are not supported yet.
+    }
+    mod test_super {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "invalid", error tests are not supported yet.
+
+        // Ignoring "parent", error tests are not supported yet.
+
+        // Ignoring "test_type", error tests are not supported yet.
+    }
+
+    // Ignoring "too_few_args", error tests are not supported yet.
+
+    // Ignoring "too_many_args", error tests are not supported yet.
+}
+
+// From "sass-spec/spec/core_functions/selector/is_superselector/input.hrx"
+#[test]
+#[ignore] // failing
+fn input() {
+    assert_eq!(
+        rsass(
+            "// The full set of possible input formats is tested with `selector-parse()`;\n// this spec just verifies one example for `is-superselector()`.\na {b: is-superselector((c, d e), (c, d e))}\n"
+        )
+        .unwrap(),
+        "a {\n  b: true;\n}\n"
+    );
+}
+
 // From "sass-spec/spec/core_functions/selector/is_superselector/list.hrx"
 mod list {
     #[allow(unused)]
@@ -739,6 +782,17 @@ mod list {
             );
         }
     }
+}
+
+// From "sass-spec/spec/core_functions/selector/is_superselector/named.hrx"
+#[test]
+#[ignore] // failing
+fn named() {
+    assert_eq!(
+        rsass("a {b: is-superselector($super: \"c\", $sub: \"c.d\")}\n")
+            .unwrap(),
+        "a {\n  b: true;\n}\n"
+    );
 }
 
 mod simple;
