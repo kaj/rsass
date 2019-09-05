@@ -221,7 +221,6 @@ mod moz_document;
 
 // From "sass-spec/spec/css/ms_long_filter_syntax.hrx"
 #[test]
-#[ignore] // failing
 fn ms_long_filter_syntax() {
     assert_eq!(
         rsass(

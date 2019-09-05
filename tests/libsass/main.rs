@@ -218,7 +218,6 @@ fn bool() {
 
 // From "sass-spec/spec/libsass/calc.hrx"
 #[test]
-#[ignore] // failing
 fn calc() {
     assert_eq!(
         rsass(

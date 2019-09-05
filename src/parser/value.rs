@@ -1,5 +1,8 @@
 use super::formalargs::call_args;
-use super::strings::{name, sass_string_dq, sass_string_ext, sass_string_sq};
+use super::strings::{
+    name, sass_string_dq, sass_string_ext, sass_string_sq, selector_string,
+    special_args,
+};
 use super::unit::unit;
 use super::util::{opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string};
@@ -196,6 +199,7 @@ fn simple_value(input: &[u8]) -> IResult<&[u8], Value> {
         variable,
         hex_color,
         value(Value::Null, tag("null")),
+        special_function,
         // Really ugly special case ... sorry.
         value(Value::Literal("-null".into()), tag("-null")),
         unary_op,
@@ -349,6 +353,38 @@ pub fn unary_op(input: &[u8]) -> IResult<&[u8], Value> {
         ),
         |(op, v)| Value::UnaryOp(op, Box::new(v)),
     )(input)
+}
+
+fn special_function(input: &[u8]) -> IResult<&[u8], Value> {
+    let (input, start) = recognize(terminated(
+        alt((
+            map(
+                tuple((
+                    opt(delimited(
+                        tag("-"),
+                        alt((tag("moz"), tag("webkit"), tag("ms"))),
+                        tag("-"),
+                    )),
+                    alt((
+                        tag("calc"),
+                        tag("element"),
+                        tag("env"),
+                        tag("expression"),
+                        tag("var"),
+                    )),
+                )),
+                |_| (),
+            ),
+            map(preceded(tag("progid:"), selector_string), |_| ()),
+        )),
+        tag("("),
+    ))(input)?;
+    let (input, mut args) = special_args(input)?;
+    let (input, end) = tag(")")(input)?;
+
+    args.prepend(from_utf8(start).unwrap());
+    args.append(&from_utf8(end).unwrap().into());
+    Ok((input, Value::Literal(args)))
 }
 
 pub fn function_call(input: &[u8]) -> IResult<&[u8], Value> {

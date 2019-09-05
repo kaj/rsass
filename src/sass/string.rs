@@ -129,6 +129,13 @@ impl SassString {
         }
         None
     }
+    pub fn prepend(&mut self, data: &str) {
+        if let Some(StringPart::Raw(ref mut first)) = self.parts.get_mut(0) {
+            first.insert_str(0, data);
+        } else {
+            self.parts.insert(0, data.into());
+        }
+    }
     pub fn append(&mut self, other: &Self) {
         self.parts.extend_from_slice(&other.parts);
     }
