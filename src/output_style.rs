@@ -29,7 +29,7 @@ impl FromStr for OutputStyle {
     }
 }
 
-static FORMAT_NAMES: [&'static str; 2] = ["Compressed", "Expanded"];
+static FORMAT_NAMES: [&str; 2] = ["Compressed", "Expanded"];
 
 impl OutputStyle {
     /// Get the names of the supported output styles.

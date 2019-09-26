@@ -4,7 +4,7 @@ use crate::value::{ListSeparator, Quotes, Unit};
 use crate::variablescope::Scope;
 use std::collections::BTreeMap;
 
-static IMPLEMENTED_FEATURES: &[&'static str] = &[
+static IMPLEMENTED_FEATURES: &[&str] = &[
     // A local variable will shadow a global variable unless
     // `!global` is used.
     "global-variable-shadowing",
