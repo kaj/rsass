@@ -131,10 +131,7 @@ mod test {
     fn escaped_simple_selector() {
         assert_eq!(
             selector(b"\\E9m "),
-            Ok((
-                &b""[..],
-                Selector(vec![SelectorPart::Simple("ém".into())])
-            ))
+            Ok((&b""[..], Selector(vec![SelectorPart::Simple("ém".into())])))
         )
     }
 
@@ -230,5 +227,4 @@ mod test {
             ))
         )
     }
-
 }
