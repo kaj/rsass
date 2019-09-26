@@ -342,6 +342,7 @@ fn fn_name(name: &str) -> String {
         || t == "super"
         || t == "true"
         || t == "type"
+        || t == "use"
         || t == "while"
     {
         format!("test_{}", t)

@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/scss-tests"
-//! version a8100f0ac, 2019-08-29 16:23:21 -0700.
+//! version fcd6bd6c0, 2019-09-24 10:25:31 +0100.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 use rsass::{compile_scss, OutputStyle};
 

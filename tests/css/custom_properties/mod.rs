@@ -318,6 +318,108 @@ fn strings() {
     );
 }
 
+// From "sass-spec/spec/css/custom_properties/syntax.hrx"
+mod syntax {
+    #[allow(unused)]
+    use super::rsass;
+    mod double_dash {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        fn declare() {
+            assert_eq!(
+                rsass(
+                    "a {--: b}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  --: b;\
+                 \n}\
+                 \n"
+            );
+        }
+        #[test]
+        fn test_use() {
+            assert_eq!(
+                rsass(
+                    "a {b: var(--)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: var(--);\
+                 \n}\
+                 \n"
+            );
+        }
+    }
+    mod initial_digit {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        fn declare() {
+            assert_eq!(
+                rsass(
+                    "a {--1: b}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  --1: b;\
+                 \n}\
+                 \n"
+            );
+        }
+        #[test]
+        fn test_use() {
+            assert_eq!(
+                rsass(
+                    "a {b: var(--1)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: var(--1);\
+                 \n}\
+                 \n"
+            );
+        }
+    }
+    mod triple_dash {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        fn declare() {
+            assert_eq!(
+                rsass(
+                    "a {---: b}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  ---: b;\
+                 \n}\
+                 \n"
+            );
+        }
+        #[test]
+        fn test_use() {
+            assert_eq!(
+                rsass(
+                    "a {b: var(---)}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  b: var(---);\
+                 \n}\
+                 \n"
+            );
+        }
+    }
+}
+
 // From "sass-spec/spec/css/custom_properties/trailing_whitespace.hrx"
 #[test]
 #[ignore] // failing
