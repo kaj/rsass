@@ -78,21 +78,22 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Null => "null".to_string(),
             Value::List(ref v, ref sep, brackets) => {
                 // TODO Try to unify this with the Display formatting?
+                let do_fmt: &dyn Fn(&Value) -> String =
+                    if brackets && *sep == ListSeparator::Space {
+                        &|v: &Value| {
+                            if let Value::List(_, _, false) = &v {
+                                format!("({})", v)
+                            } else {
+                                format!("{}", v)
+                            }
+                        }
+                    } else {
+                        format!("{}", v)
+                    };
                 let t = v
                     .iter()
                     .filter(|v| !v.is_null())
-                    .map(|v| {
-                        let needs_paren = match *v {
-                            Value::List(_, _, false) => {
-                                brackets && *sep == ListSeparator::Space
-                            }
-                            _ => false,
-                        };
-                        match needs_paren {
-                            true => format!("({})", v),
-                            false => format!("{}", v),
-                        }
-                    })
+                    .map(do_fmt)
                     .collect::<Vec<_>>();
                 let t = if t.is_empty() && !brackets {
                     "()".to_string()
