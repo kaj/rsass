@@ -80,7 +80,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 // TODO Try to unify this with the Display formatting?
                 let do_fmt: &dyn Fn(&Value) -> String =
                     if brackets && *sep == ListSeparator::Space {
-                        &|v: &Value| {
+                        &|v| {
                             if let Value::List(_, _, false) = &v {
                                 format!("({})", v)
                             } else {
@@ -88,7 +88,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                             }
                         }
                     } else {
-                        format!("{}", v)
+                        &|v| format!("{}", v)
                     };
                 let t = v
                     .iter()
