@@ -1,7 +1,7 @@
 use super::formalargs::call_args;
 use super::strings::{
     name, sass_string_dq, sass_string_ext, sass_string_sq, selector_string,
-    special_args,
+    special_args, special_url,
 };
 use super::unit::unit;
 use super::util::{opt_spacelike, spacelike2};
@@ -199,6 +199,7 @@ fn simple_value(input: &[u8]) -> IResult<&[u8], Value> {
         variable,
         hex_color,
         value(Value::Null, tag("null")),
+        map(special_url, Value::Literal),
         special_function,
         // Really ugly special case ... sorry.
         value(Value::Literal("-null".into()), tag("-null")),

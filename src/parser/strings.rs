@@ -3,7 +3,7 @@ use super::{input_to_str, input_to_string};
 use crate::sass::{SassString, StringPart};
 use crate::value::Quotes;
 use nom::branch::alt;
-use nom::bytes::complete::{is_not, tag, take};
+use nom::bytes::complete::{is_a, is_not, tag, take};
 use nom::character::complete::{alphanumeric1, one_of};
 use nom::combinator::{
     map, map_opt, map_res, not, opt, peek, recognize, value, verify,
@@ -50,6 +50,19 @@ pub fn special_arg_parts(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
         }),
     )))(input)?;
     Ok((input, parts.into_iter().flatten().collect()))
+}
+
+pub fn special_url(input: &[u8]) -> IResult<&[u8], SassString> {
+    let (input, _start) = tag("url(")(input)?;
+    let (input, mut parts) = many1(alt((
+        string_part_interpolation,
+        map(selector_string, StringPart::Raw),
+        map(map_res(is_a(":.!/"), input_to_string), StringPart::Raw),
+    )))(input)?;
+    let (input, _end) = tag(")")(input)?;
+    parts.insert(0, "url(".into());
+    parts.push(")".into());
+    Ok((input, SassString::new(parts, Quotes::None)))
 }
 
 pub fn sass_string_dq(input: &[u8]) -> IResult<&[u8], SassString> {

@@ -134,6 +134,12 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Quotes::None,
         ))
     });
+    def!(f, url(string), |s| {
+        Ok(Value::Literal(
+            format!("url({})", s.get("string")?),
+            Quotes::None,
+        ))
+    });
 }
 
 fn intvalue(n: usize) -> Value {
