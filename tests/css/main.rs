@@ -383,7 +383,6 @@ mod url {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
         fn middle() {
             assert_eq!(
                 rsass(
@@ -398,7 +397,6 @@ mod url {
             );
         }
         #[test]
-        #[ignore] // failing
         fn only() {
             assert_eq!(
                 rsass(

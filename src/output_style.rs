@@ -74,7 +74,9 @@ impl OutputStyle {
                             )?;
                         }
                     } else {
-                        if x.starts_with('/') {
+                        if (x.starts_with("url(") && x.ends_with(")"))
+                            || x.starts_with('/')
+                        {
                             write!(
                                 result.to_imports(),
                                 "@import {};{}",
