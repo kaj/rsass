@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/basic"
-//! version fcd6bd6c0, 2019-09-24 10:25:31 +0100.
+//! version 3653ded68, 2019-11-15 15:45:05 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["14_imports.hrx", "33_ambiguous_imports.hrx"]

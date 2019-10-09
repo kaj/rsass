@@ -15,7 +15,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, nth(list, n), |s| {
         let n = s.get("n")?.integer_value()?;
         match s.get("list")? {
-            Value::List(list, _, _) => Ok(list[list_index(n, &list)?].clone()),
+            Value::List(list, _, _) => {
+                Ok(list[list_index(n, &list)?].clone())
+            }
             Value::Map(map) => {
                 let n = rust_index(n, map.len())?;
                 if let Some(&(ref k, ref v)) = map.get_item(n) {

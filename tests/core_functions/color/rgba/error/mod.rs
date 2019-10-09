@@ -115,3 +115,7 @@ mod two_args {
         // Ignoring "test_type", error tests are not supported yet.
     }
 }
+
+// From "sass-spec/spec/core_functions/color/rgba/error/zero_args.hrx"
+
+// Ignoring "zero_args", error tests are not supported yet.

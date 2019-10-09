@@ -99,3 +99,7 @@ mod three_args {
 // From "sass-spec/spec/core_functions/color/hsl/error/two_args.hrx"
 
 // Ignoring "two_args", error tests are not supported yet.
+
+// From "sass-spec/spec/core_functions/color/hsl/error/zero_args.hrx"
+
+// Ignoring "zero_args", error tests are not supported yet.

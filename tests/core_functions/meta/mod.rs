@@ -2282,6 +2282,8 @@ mod keywords {
     }
 }
 
+mod load_css;
+
 // From "sass-spec/spec/core_functions/meta/mixin_exists.hrx"
 mod mixin_exists {
     #[allow(unused)]
@@ -2620,7 +2622,7 @@ mod module_functions {
         .unwrap(),
         "a {\
         \n  b-c: b-c value;\
-        \n  d_e: d_e value;\
+        \n  d-e: d_e value;\
         \n}\
         \n"
     );
@@ -2863,7 +2865,7 @@ mod module_variables {
             )
             .unwrap(),
             "a {\
-             \n  b: (\"c-d\": c-d value, \"e_f\": e_f value);\
+             \n  b: (\"c-d\": c-d value, \"e-f\": e_f value);\
              \n}\
              \n"
         );

@@ -420,6 +420,53 @@ mod syntax {
     }
 }
 
+// From "sass-spec/spec/css/custom_properties/trailing_comment.hrx"
+mod trailing_comment {
+    #[allow(unused)]
+    use super::rsass;
+    mod sass {
+        #[allow(unused)]
+        use super::rsass;
+    }
+    mod scss {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // failing
+        fn loud() {
+            assert_eq!(
+                rsass(
+                    "a {\
+                     \n  --b: c /* comment */;\
+                     \n}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  --b: c /* comment */;\
+                 \n}\
+                 \n"
+            );
+        }
+        #[test]
+        fn silent() {
+            assert_eq!(
+                rsass(
+                    "a {\
+                     \n  --b: c // comment;\
+                     \n}\
+                     \n"
+                )
+                .unwrap(),
+                "a {\
+                 \n  --b: c // comment;\
+                 \n}\
+                 \n"
+            );
+        }
+    }
+}
+
 // From "sass-spec/spec/css/custom_properties/trailing_whitespace.hrx"
 #[test]
 #[ignore] // failing

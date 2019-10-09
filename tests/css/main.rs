@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/css"
-//! version fcd6bd6c0, 2019-09-24 10:25:31 +0100.
+//! version 3653ded68, 2019-11-15 15:45:05 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["plain"]
@@ -58,6 +58,70 @@ mod comment {
                     .unwrap(),
                     "/* foo\
                      \n * bar */\
+                     \n"
+                );
+            }
+        }
+    }
+    mod error {
+        #[allow(unused)]
+        use super::rsass;
+        mod loud {
+            #[allow(unused)]
+            use super::rsass;
+            mod multi_line {
+                #[allow(unused)]
+                use super::rsass;
+            }
+            mod unterminated {
+                #[allow(unused)]
+                use super::rsass;
+
+                // Ignoring "scss", error tests are not supported yet.
+            }
+        }
+    }
+    mod inline {
+        #[allow(unused)]
+        use super::rsass;
+        mod loud {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            #[ignore] // failing
+            fn scss() {
+                assert_eq!(
+                    rsass(
+                        "a {\
+                         \n  b: c /* d */ e;\
+                         \n}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: c e;\
+                     \n}\
+                     \n"
+                );
+            }
+        }
+        mod silent {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            #[ignore] // failing
+            fn scss() {
+                assert_eq!(
+                    rsass(
+                        "a {\
+                         \n  b: c // d\
+                         \n}\
+                         \n"
+                    )
+                    .unwrap(),
+                    "a {\
+                     \n  b: c;\
+                     \n}\
                      \n"
                 );
             }

@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec/libsass"
-//! version fcd6bd6c0, 2019-09-24 10:25:31 +0100.
+//! version 3653ded68, 2019-11-15 15:45:05 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["Sa\u{301}ss-UT\u{327}F8.hrx", "bourbon.hrx", "base-level-parent/imported", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "debug-directive-nested/function.hrx", "warn-directive-nested/function.hrx"]
@@ -2035,6 +2035,33 @@ fn variables_in_media() {
 }
 
 mod warn_directive_nested;
+
+// From "sass-spec/spec/libsass/wrapped-selector-whitespace.hrx"
+#[test]
+#[ignore] // failing
+fn wrapped_selector_whitespace() {
+    assert_eq!(
+        rsass(
+            "div {\r\
+             \n  :-moz-any(a , b) {\r\
+             \n    foo: foo;\r\
+             \n  }\r\
+             \n  :foo(a , b) {\r\
+             \n    bar: bar;\r\
+             \n  }\r\
+             \n}\r\
+             \n"
+        )
+        .unwrap(),
+        "div :-moz-any(a, b) {\
+         \n  foo: foo;\
+         \n}\
+         \ndiv :foo(a , b) {\
+         \n  bar: bar;\
+         \n}\
+         \n"
+    );
+}
 
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)
