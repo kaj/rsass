@@ -92,7 +92,7 @@ fn named() {
 
 // From "sass-spec/spec/core_functions/color/hsl/three_args/special_functions.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn special_functions() {
     assert_eq!(
         rsass(

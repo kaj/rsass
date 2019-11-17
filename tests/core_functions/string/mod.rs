@@ -129,7 +129,7 @@ mod insert {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn combining_character() {
         assert_eq!(
         rsass(
@@ -433,7 +433,7 @@ mod length {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn combining_character() {
         assert_eq!(
         rsass(
@@ -563,7 +563,7 @@ mod quote {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn escape() {
         assert_eq!(
             rsass(
@@ -1236,7 +1236,7 @@ mod to_lower_case {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn non_ascii() {
         assert_eq!(
             rsass(
@@ -1339,7 +1339,7 @@ mod to_upper_case {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn non_ascii() {
         assert_eq!(
             rsass(
@@ -1469,7 +1469,7 @@ mod unquote {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn escaped_backslash() {
         assert_eq!(
             rsass(

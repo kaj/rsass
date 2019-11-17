@@ -12,7 +12,7 @@ mod rgb;
 
 // From "sass-spec/spec/libsass/color-functions/saturate.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn saturate() {
     assert_eq!(
         rsass(

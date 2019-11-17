@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/parser/operations/subtract/numbers/pairs.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn pairs() {
     assert_eq!(
         rsass(

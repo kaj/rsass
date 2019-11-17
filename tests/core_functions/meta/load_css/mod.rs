@@ -116,7 +116,7 @@ mod extend {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn after() {
             assert_eq!(
                 rsass(
@@ -134,7 +134,7 @@ mod extend {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn before() {
             assert_eq!(
                 rsass(
@@ -156,7 +156,7 @@ mod extend {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn after() {
             assert_eq!(
                 rsass(
@@ -174,7 +174,7 @@ mod extend {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn before() {
             assert_eq!(
                 rsass(
@@ -199,7 +199,7 @@ mod plain_css {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn at_rule() {
         assert_eq!(
             rsass(
@@ -220,7 +220,7 @@ mod plain_css {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn built_in() {
             assert_eq!(
                 rsass(
@@ -236,7 +236,7 @@ mod plain_css {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn user_defined() {
             assert_eq!(
                 rsass(
@@ -253,7 +253,7 @@ mod plain_css {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn named() {
         assert_eq!(
             rsass(
@@ -272,7 +272,7 @@ mod plain_css {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn media_query() {
             assert_eq!(
                 rsass(
@@ -292,7 +292,7 @@ mod plain_css {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn parent_selector() {
             assert_eq!(
                 rsass(
@@ -308,7 +308,7 @@ mod plain_css {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn plain_plain_css() {
             assert_eq!(
                 rsass(
@@ -325,7 +325,7 @@ mod plain_css {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn plain_css_import() {
         assert_eq!(
             rsass(
@@ -348,7 +348,7 @@ mod plain_css {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn style_rule() {
         assert_eq!(
             rsass(
@@ -364,7 +364,7 @@ mod plain_css {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn through_other_mixin() {
         assert_eq!(
             rsass(
@@ -389,7 +389,7 @@ mod twice {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn different_extend() {
             assert_eq!(
                 rsass(
@@ -408,7 +408,7 @@ mod twice {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn different_nesting() {
             assert_eq!(
                 rsass(
@@ -428,7 +428,7 @@ mod twice {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn runs_once() {
             assert_eq!(
                 rsass(
@@ -446,7 +446,7 @@ mod twice {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn shares_state() {
         assert_eq!(
             rsass(
@@ -468,7 +468,7 @@ mod twice {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn different_extend() {
             assert_eq!(
                 rsass(
@@ -488,7 +488,7 @@ mod twice {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn different_nesting() {
             assert_eq!(
                 rsass(
@@ -511,7 +511,7 @@ mod twice {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn different_text() {
                 assert_eq!(
                     rsass(
@@ -528,7 +528,7 @@ mod twice {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn same_text() {
                 assert_eq!(
                     rsass(
@@ -556,7 +556,7 @@ mod with {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn indirect() {
             assert_eq!(
                 rsass(
@@ -574,7 +574,7 @@ mod with {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn dash_insensitive() {
         assert_eq!(
         rsass(
@@ -590,7 +590,7 @@ mod with {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn doesnt_run_default() {
         assert_eq!(
             rsass(
@@ -606,7 +606,7 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn empty() {
         assert_eq!(
             rsass(
@@ -625,7 +625,7 @@ mod with {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn empty() {
             assert_eq!(
         rsass(
@@ -644,7 +644,7 @@ mod with {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn forward() {
             assert_eq!(
         rsass(
@@ -664,7 +664,7 @@ mod with {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn test_use() {
             assert_eq!(
         rsass(
@@ -685,7 +685,7 @@ mod with {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn multiple() {
         assert_eq!(
             rsass(
@@ -707,7 +707,7 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn single() {
         assert_eq!(
             rsass(
@@ -723,7 +723,7 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn some_unconfigured() {
         assert_eq!(
         rsass(
@@ -743,7 +743,7 @@ mod with {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn test_as() {
             assert_eq!(
         rsass(
@@ -759,7 +759,7 @@ mod with {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn bare() {
             assert_eq!(
         rsass(
@@ -775,7 +775,7 @@ mod with {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn hide() {
             assert_eq!(
         rsass(
@@ -791,7 +791,7 @@ mod with {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn show() {
             assert_eq!(
         rsass(
@@ -807,7 +807,7 @@ mod with {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn transitive() {
             assert_eq!(
         rsass(
@@ -827,7 +827,7 @@ mod with {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn direct() {
             assert_eq!(
         rsass(
@@ -843,7 +843,7 @@ mod with {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn transitive() {
             assert_eq!(
         rsass(
@@ -860,7 +860,7 @@ mod with {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn variable_exists() {
         assert_eq!(
             rsass(

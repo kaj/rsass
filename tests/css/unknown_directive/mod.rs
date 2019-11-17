@@ -28,7 +28,7 @@ mod error {
 
 // From "sass-spec/spec/css/unknown_directive/name_interpolation.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn name_interpolation() {
     assert_eq!(
         rsass(
@@ -99,7 +99,7 @@ fn name_interpolation() {
 
 // From "sass-spec/spec/css/unknown_directive/plain.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn plain() {
     assert_eq!(
         rsass(

@@ -40,7 +40,7 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn min() {
             assert_eq!(
                 rsass(
@@ -55,7 +55,7 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn negative() {
             assert_eq!(
                 rsass(
@@ -70,7 +70,7 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn positive() {
             assert_eq!(
                 rsass(
@@ -117,7 +117,7 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn min() {
             assert_eq!(
                 rsass(
@@ -132,7 +132,7 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn negative() {
             assert_eq!(
                 rsass(
@@ -147,7 +147,7 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn positive() {
             assert_eq!(
                 rsass(
@@ -201,7 +201,7 @@ mod clamped {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn blue() {
         assert_eq!(
             rsass(
@@ -216,7 +216,7 @@ mod clamped {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn saturation() {
         assert_eq!(
             rsass(
@@ -237,7 +237,7 @@ mod in_gamut {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
         rsass(
@@ -266,7 +266,7 @@ mod in_gamut {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn partial() {
         assert_eq!(
             rsass(
@@ -281,7 +281,7 @@ mod in_gamut {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn transparent() {
         assert_eq!(
             rsass(
@@ -305,7 +305,7 @@ mod special_functions {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_1() {
             assert_eq!(
                 rsass(
@@ -320,7 +320,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_2() {
             assert_eq!(
                 rsass(
@@ -335,7 +335,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 rsass(
@@ -350,7 +350,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_4() {
             assert_eq!(
                 rsass(
@@ -369,7 +369,7 @@ mod special_functions {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_1() {
             assert_eq!(
                 rsass(
@@ -384,7 +384,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_2() {
             assert_eq!(
                 rsass(
@@ -399,7 +399,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 rsass(
@@ -414,7 +414,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_4() {
             assert_eq!(
                 rsass(
@@ -433,7 +433,7 @@ mod special_functions {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_1() {
             assert_eq!(
                 rsass(
@@ -448,7 +448,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_2() {
             assert_eq!(
                 rsass(
@@ -463,7 +463,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 rsass(
@@ -478,7 +478,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_4() {
             assert_eq!(
                 rsass(
@@ -497,7 +497,7 @@ mod special_functions {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_1() {
             assert_eq!(
                 rsass(
@@ -512,7 +512,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_2() {
             assert_eq!(
                 rsass(
@@ -527,7 +527,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 rsass(
@@ -542,7 +542,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_4() {
             assert_eq!(
                 rsass(
@@ -561,7 +561,7 @@ mod special_functions {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_1() {
             assert_eq!(
                 rsass(
@@ -576,7 +576,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_2() {
             assert_eq!(
                 rsass(
@@ -591,7 +591,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 rsass(
@@ -606,7 +606,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_4() {
             assert_eq!(
                 rsass(

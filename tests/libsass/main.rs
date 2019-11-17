@@ -68,7 +68,7 @@ mod at_root;
 
 // From "sass-spec/spec/libsass/at-stuff.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn at_stuff() {
     assert_eq!(
         rsass(
@@ -188,7 +188,7 @@ mod basic;
 
 // From "sass-spec/spec/libsass/bool.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn bool() {
     assert_eq!(
         rsass(
@@ -245,7 +245,7 @@ fn calc() {
 
 // From "sass-spec/spec/libsass/charset"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn charset() {
     assert_eq!(
         rsass(
@@ -267,7 +267,7 @@ mod color_functions;
 
 // From "sass-spec/spec/libsass/conversions.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn conversions() {
     assert_eq!(
         rsass(
@@ -289,7 +289,7 @@ fn conversions() {
 
 // From "sass-spec/spec/libsass/css-import.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn css_import() {
     assert_eq!(
         rsass(
@@ -311,7 +311,7 @@ fn css_import() {
 
 // From "sass-spec/spec/libsass/css_nth_selectors.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn css_nth_selectors() {
     assert_eq!(
         rsass(
@@ -338,7 +338,7 @@ fn css_nth_selectors() {
 
 // From "sass-spec/spec/libsass/css_unicode"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn css_unicode() {
     assert_eq!(
         rsass(
@@ -360,7 +360,7 @@ mod debug_directive_nested;
 
 // From "sass-spec/spec/libsass/delayed.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn delayed() {
     assert_eq!(
         rsass(
@@ -437,7 +437,7 @@ fn delayed() {
 
 // From "sass-spec/spec/libsass/div.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn div() {
     assert_eq!(
         rsass(
@@ -472,7 +472,7 @@ fn div() {
 
 // From "sass-spec/spec/libsass/env.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn env() {
     assert_eq!(
         rsass(
@@ -587,7 +587,7 @@ mod features;
 
 // From "sass-spec/spec/libsass/http_import.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn http_import() {
     assert_eq!(
         rsass(
@@ -620,7 +620,7 @@ fn image_url() {
 
 // From "sass-spec/spec/libsass/import.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn import() {
     assert_eq!(
         rsass(
@@ -648,7 +648,7 @@ fn import() {
 
 // From "sass-spec/spec/libsass/inh.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn inh() {
     assert_eq!(
         rsass(
@@ -801,7 +801,7 @@ fn keyframes() {
 
 // From "sass-spec/spec/libsass/list-evaluation.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn list_evaluation() {
     assert_eq!(
         rsass(
@@ -850,7 +850,7 @@ fn list_evaluation() {
 
 // From "sass-spec/spec/libsass/lists.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn lists() {
     assert_eq!(
         rsass(
@@ -1189,7 +1189,7 @@ fn media() {
 
 // From "sass-spec/spec/libsass/mixin.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn mixin() {
     assert_eq!(
         rsass(
@@ -1287,7 +1287,7 @@ fn mixin() {
 
 // From "sass-spec/spec/libsass/mixins-and-media-queries.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn mixins_and_media_queries() {
     assert_eq!(
         rsass(
@@ -1472,7 +1472,7 @@ mod parent_selector;
 
 // From "sass-spec/spec/libsass/placeholder-mediaquery.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn placeholder_mediaquery() {
     assert_eq!(
         rsass(
@@ -1499,7 +1499,7 @@ fn placeholder_mediaquery() {
 
 // From "sass-spec/spec/libsass/placeholder-nested.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn placeholder_nested() {
     assert_eq!(
         rsass(
@@ -1533,7 +1533,7 @@ mod precision;
 
 // From "sass-spec/spec/libsass/properties-in-media.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn properties_in_media() {
     assert_eq!(
         rsass(
@@ -1571,7 +1571,7 @@ fn properties_in_media() {
 
 // From "sass-spec/spec/libsass/propsets.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn propsets() {
     assert_eq!(
         rsass(
@@ -1669,7 +1669,7 @@ fn propsets() {
 
 // From "sass-spec/spec/libsass/rel.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn rel() {
     assert_eq!(
         rsass(
@@ -1744,7 +1744,7 @@ mod selectors;
 
 // From "sass-spec/spec/libsass/test.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         rsass(
@@ -1899,7 +1899,7 @@ fn test() {
 
 // From "sass-spec/spec/libsass/unary-ops.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn unary_ops() {
     assert_eq!(
         rsass(
@@ -1941,7 +1941,7 @@ mod units;
 
 // From "sass-spec/spec/libsass/url.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn url() {
     assert_eq!(
         rsass(
@@ -2013,7 +2013,7 @@ mod variable_scoping;
 
 // From "sass-spec/spec/libsass/variables_in_media.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn variables_in_media() {
     assert_eq!(
         rsass(
@@ -2038,7 +2038,7 @@ mod warn_directive_nested;
 
 // From "sass-spec/spec/libsass/wrapped-selector-whitespace.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn wrapped_selector_whitespace() {
     assert_eq!(
         rsass(

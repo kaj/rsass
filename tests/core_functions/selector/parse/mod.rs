@@ -56,7 +56,7 @@ mod selector {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn adjacent_sibling() {
             assert_eq!(
                 rsass(
@@ -76,7 +76,7 @@ mod selector {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn child() {
             assert_eq!(
                 rsass(
@@ -96,7 +96,7 @@ mod selector {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn descendant() {
             assert_eq!(
                 rsass(
@@ -116,7 +116,7 @@ mod selector {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn sibling() {
             assert_eq!(
                 rsass(
@@ -137,7 +137,7 @@ mod selector {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn compound() {
         assert_eq!(
             rsass(
@@ -241,7 +241,7 @@ mod selector {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // unexepected error
                 fn arg() {
                     assert_eq!(
                         rsass(
@@ -256,7 +256,7 @@ mod selector {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn combined_arg() {
                     assert_eq!(
         rsass(
@@ -290,7 +290,7 @@ mod selector {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn selector_arg() {
                     assert_eq!(
         rsass(
@@ -314,7 +314,7 @@ mod selector {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // unexepected error
                 fn arg() {
                     assert_eq!(
                         rsass(
@@ -343,7 +343,7 @@ mod selector {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn selector_arg() {
                     assert_eq!(
         rsass(

@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/values/numbers/units/multiple.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn multiple() {
     assert_eq!(
         rsass(

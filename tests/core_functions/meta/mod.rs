@@ -12,7 +12,7 @@ mod call {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn named() {
             assert_eq!(
         rsass(
@@ -59,7 +59,7 @@ mod call {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn combined() {
                 assert_eq!(
         rsass(
@@ -76,7 +76,7 @@ mod call {
     );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn named() {
                 assert_eq!(
                     rsass(
@@ -92,7 +92,7 @@ mod call {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn positional() {
                 assert_eq!(
                     rsass(
@@ -120,7 +120,7 @@ mod call {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn named() {
         assert_eq!(
         rsass(
@@ -189,7 +189,7 @@ mod content_exists {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn through_content() {
             assert_eq!(
                 rsass(
@@ -235,7 +235,7 @@ mod content_exists {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn empty() {
             assert_eq!(
                 rsass(
@@ -254,7 +254,7 @@ mod content_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn non_empty() {
             assert_eq!(
                 rsass(
@@ -285,7 +285,7 @@ mod feature_exists {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn at_error() {
         assert_eq!(
             rsass(
@@ -300,7 +300,7 @@ mod feature_exists {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn custom_property() {
         assert_eq!(
             rsass(
@@ -339,7 +339,7 @@ mod feature_exists {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn extend_selector_pseudoclass() {
         assert_eq!(
             rsass(
@@ -368,7 +368,7 @@ mod feature_exists {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn named() {
         assert_eq!(
             rsass(
@@ -383,7 +383,7 @@ mod feature_exists {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn quote_insensitive() {
         assert_eq!(
             rsass(
@@ -435,7 +435,7 @@ mod function_exists {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn chosen_prefix() {
             assert_eq!(
                 rsass(
@@ -451,7 +451,7 @@ mod function_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn defined() {
             assert_eq!(
                 rsass(
@@ -470,7 +470,7 @@ mod function_exists {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn test_as() {
                 assert_eq!(
                     rsass(
@@ -490,7 +490,7 @@ mod function_exists {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn bare() {
                 assert_eq!(
                     rsass(
@@ -506,7 +506,7 @@ mod function_exists {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn hide() {
                 assert_eq!(
                     rsass(
@@ -526,7 +526,7 @@ mod function_exists {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn show() {
                 assert_eq!(
                     rsass(
@@ -547,7 +547,7 @@ mod function_exists {
             }
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn through_use() {
             assert_eq!(
                 rsass(
@@ -563,7 +563,7 @@ mod function_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn undefined() {
             assert_eq!(
                 rsass(
@@ -612,7 +612,7 @@ mod function_exists {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
             rsass(
@@ -717,7 +717,7 @@ mod function_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn through_import() {
             assert_eq!(
                 rsass(
@@ -781,7 +781,7 @@ mod global_variable_exists {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn chosen_prefix() {
             assert_eq!(
                 rsass(
@@ -797,7 +797,7 @@ mod global_variable_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn defined() {
             assert_eq!(
                 rsass(
@@ -816,7 +816,7 @@ mod global_variable_exists {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn test_as() {
                 assert_eq!(
                     rsass(
@@ -836,7 +836,7 @@ mod global_variable_exists {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn bare() {
                 assert_eq!(
                     rsass(
@@ -852,7 +852,7 @@ mod global_variable_exists {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn hide() {
                 assert_eq!(
                     rsass(
@@ -872,7 +872,7 @@ mod global_variable_exists {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn show() {
                 assert_eq!(
                     rsass(
@@ -893,7 +893,7 @@ mod global_variable_exists {
             }
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn through_use() {
             assert_eq!(
                 rsass(
@@ -909,7 +909,7 @@ mod global_variable_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn undefined() {
             assert_eq!(
                 rsass(
@@ -958,7 +958,7 @@ mod global_variable_exists {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
         rsass(
@@ -1026,7 +1026,7 @@ mod global_variable_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn through_import() {
             assert_eq!(
                 rsass(
@@ -1116,7 +1116,7 @@ mod inspect {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn long_hex() {
                 assert_eq!(
                     rsass(
@@ -1137,7 +1137,7 @@ mod inspect {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn named() {
                 assert_eq!(
                     rsass(
@@ -1158,7 +1158,7 @@ mod inspect {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn short_hex() {
                 assert_eq!(
                     rsass(
@@ -1179,7 +1179,7 @@ mod inspect {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn transparent() {
                 assert_eq!(
                     rsass(
@@ -1397,7 +1397,7 @@ mod inspect {
                         );
                     }
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn unbracketed() {
                         assert_eq!(
                             rsass(
@@ -1467,7 +1467,7 @@ mod inspect {
                     #[allow(unused)]
                     use super::rsass;
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn bracketed() {
                         assert_eq!(
                             rsass(
@@ -1487,7 +1487,7 @@ mod inspect {
                         );
                     }
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn unbracketed() {
                         assert_eq!(
                             rsass(
@@ -1530,7 +1530,7 @@ mod inspect {
                         );
                     }
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn unbracketed() {
                         assert_eq!(
                             rsass(
@@ -1558,7 +1558,7 @@ mod inspect {
                     #[allow(unused)]
                     use super::rsass;
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn bracketed() {
                         assert_eq!(
                             rsass(
@@ -1578,7 +1578,7 @@ mod inspect {
                         );
                     }
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn unbracketed() {
                         assert_eq!(
                             rsass(
@@ -1602,7 +1602,7 @@ mod inspect {
                     #[allow(unused)]
                     use super::rsass;
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn bracketed() {
                         assert_eq!(
                             rsass(
@@ -1622,7 +1622,7 @@ mod inspect {
                         );
                     }
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn unbracketed() {
                         assert_eq!(
                             rsass(
@@ -1711,7 +1711,7 @@ mod inspect {
                         );
                     }
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn unbracketed() {
                         assert_eq!(
                             rsass(
@@ -1779,7 +1779,7 @@ mod inspect {
                 }
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn comma() {
                 assert_eq!(
                     rsass(
@@ -1848,7 +1848,7 @@ mod inspect {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn comma() {
                     assert_eq!(
                         rsass(
@@ -1868,7 +1868,7 @@ mod inspect {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn space() {
                     assert_eq!(
                         rsass(
@@ -1892,7 +1892,7 @@ mod inspect {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn comma() {
                     assert_eq!(
                         rsass(
@@ -1912,7 +1912,7 @@ mod inspect {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn space() {
                     assert_eq!(
                         rsass(
@@ -2072,7 +2072,7 @@ mod keywords {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn dash_insensitive() {
         assert_eq!(
             rsass(
@@ -2091,7 +2091,7 @@ mod keywords {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn no_args() {
             assert_eq!(
                 rsass(
@@ -2107,7 +2107,7 @@ mod keywords {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn positional() {
             assert_eq!(
                 rsass(
@@ -2143,7 +2143,7 @@ mod keywords {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn call() {
             assert_eq!(
         rsass(
@@ -2164,7 +2164,7 @@ mod keywords {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn content() {
             assert_eq!(
         rsass(
@@ -2187,7 +2187,7 @@ mod keywords {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn function() {
             assert_eq!(
                 rsass(
@@ -2208,7 +2208,7 @@ mod keywords {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn mixin() {
             assert_eq!(
                 rsass(
@@ -2230,7 +2230,7 @@ mod keywords {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn multi_arg() {
         assert_eq!(
             rsass(
@@ -2246,7 +2246,7 @@ mod keywords {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
             rsass(
@@ -2265,7 +2265,7 @@ mod keywords {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn one_arg() {
         assert_eq!(
             rsass(
@@ -2292,7 +2292,7 @@ mod mixin_exists {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn chosen_prefix() {
             assert_eq!(
                 rsass(
@@ -2308,7 +2308,7 @@ mod mixin_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn defined() {
             assert_eq!(
                 rsass(
@@ -2327,7 +2327,7 @@ mod mixin_exists {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn test_as() {
                 assert_eq!(
                     rsass(
@@ -2347,7 +2347,7 @@ mod mixin_exists {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn bare() {
                 assert_eq!(
                     rsass(
@@ -2363,7 +2363,7 @@ mod mixin_exists {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn hide() {
                 assert_eq!(
                     rsass(
@@ -2383,7 +2383,7 @@ mod mixin_exists {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn show() {
                 assert_eq!(
                     rsass(
@@ -2404,7 +2404,7 @@ mod mixin_exists {
             }
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn through_use() {
             assert_eq!(
                 rsass(
@@ -2420,7 +2420,7 @@ mod mixin_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn undefined() {
             assert_eq!(
                 rsass(
@@ -2469,7 +2469,7 @@ mod mixin_exists {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
             rsass(
@@ -2537,7 +2537,7 @@ mod mixin_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn through_import() {
             assert_eq!(
                 rsass(
@@ -2560,7 +2560,7 @@ mod module_functions {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn test_as() {
         assert_eq!(
         rsass(
@@ -2581,7 +2581,7 @@ mod module_functions {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn core_module() {
         assert_eq!(
         rsass(
@@ -2608,7 +2608,7 @@ mod module_functions {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn dash_sensitive() {
         assert_eq!(
         rsass(
@@ -2628,7 +2628,7 @@ mod module_functions {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn empty() {
         assert_eq!(
             rsass(
@@ -2664,7 +2664,7 @@ mod module_functions {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn multiple() {
         assert_eq!(
         rsass(
@@ -2685,7 +2685,7 @@ mod module_functions {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn named() {
         assert_eq!(
         rsass(
@@ -2709,7 +2709,7 @@ mod module_functions {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn test_as() {
             assert_eq!(
         rsass(
@@ -2730,7 +2730,7 @@ mod module_functions {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn bare() {
             assert_eq!(
         rsass(
@@ -2751,7 +2751,7 @@ mod module_functions {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn hide() {
             assert_eq!(
         rsass(
@@ -2770,7 +2770,7 @@ mod module_functions {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn show() {
             assert_eq!(
         rsass(
@@ -2791,7 +2791,7 @@ mod module_functions {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn through_import() {
         assert_eq!(
         rsass(
@@ -2818,7 +2818,7 @@ mod module_variables {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn test_as() {
         assert_eq!(
             rsass(
@@ -2836,7 +2836,7 @@ mod module_variables {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn core_module() {
         assert_eq!(
             rsass(
@@ -2853,7 +2853,7 @@ mod module_variables {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn dash_sensitive() {
         assert_eq!(
             rsass(
@@ -2871,7 +2871,7 @@ mod module_variables {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn empty() {
         assert_eq!(
             rsass(
@@ -2907,7 +2907,7 @@ mod module_variables {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn multiple() {
         assert_eq!(
             rsass(
@@ -2925,7 +2925,7 @@ mod module_variables {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
         rsass(
@@ -2946,7 +2946,7 @@ mod module_variables {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn test_as() {
             assert_eq!(
         rsass(
@@ -2964,7 +2964,7 @@ mod module_variables {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn bare() {
             assert_eq!(
                 rsass(
@@ -2982,7 +2982,7 @@ mod module_variables {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn hide() {
             assert_eq!(
                 rsass(
@@ -3000,7 +3000,7 @@ mod module_variables {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn show() {
             assert_eq!(
                 rsass(
@@ -3019,7 +3019,7 @@ mod module_variables {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn through_import() {
         assert_eq!(
             rsass(
@@ -3043,7 +3043,7 @@ mod type_of {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn arglist() {
         assert_eq!(
             rsass(
@@ -3165,7 +3165,7 @@ mod type_of {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn empty() {
             assert_eq!(
                 rsass(
@@ -3180,7 +3180,7 @@ mod type_of {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn non_empty() {
             assert_eq!(
                 rsass(
@@ -3227,7 +3227,7 @@ mod type_of {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn unit() {
             assert_eq!(
                 rsass(
@@ -3413,7 +3413,7 @@ mod variable_exists {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn test_as() {
             assert_eq!(
                 rsass(
@@ -3433,7 +3433,7 @@ mod variable_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn hide() {
             assert_eq!(
                 rsass(
@@ -3453,7 +3453,7 @@ mod variable_exists {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn show() {
             assert_eq!(
                 rsass(
@@ -3474,7 +3474,7 @@ mod variable_exists {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn through_import() {
         assert_eq!(
             rsass(
@@ -3490,7 +3490,7 @@ mod variable_exists {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn through_use() {
         assert_eq!(
             rsass(

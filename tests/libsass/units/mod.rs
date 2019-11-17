@@ -28,7 +28,7 @@ fn feature_test() {
 
 // From "sass-spec/spec/libsass/units/simple.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn simple() {
     assert_eq!(
         rsass(

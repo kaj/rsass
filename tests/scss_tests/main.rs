@@ -390,7 +390,7 @@ fn t024_test_media_import() {
 
 // From "sass-spec/spec/scss-tests/025_test_dynamic_media_import.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t025_test_dynamic_media_import() {
     assert_eq!(
         rsass(
@@ -666,7 +666,7 @@ fn t039_test_almost_ambiguous_nested_rules_and_declarations() {
 
 // From "sass-spec/spec/scss-tests/040_test_newlines_in_selectors.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t040_test_newlines_in_selectors() {
     assert_eq!(
         rsass(
@@ -685,7 +685,7 @@ fn t040_test_newlines_in_selectors() {
 
 // From "sass-spec/spec/scss-tests/041_test_newlines_in_selectors.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t041_test_newlines_in_selectors() {
     assert_eq!(
         rsass(
@@ -708,7 +708,7 @@ fn t041_test_newlines_in_selectors() {
 
 // From "sass-spec/spec/scss-tests/042_test_newlines_in_selectors.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t042_test_newlines_in_selectors() {
     assert_eq!(
         rsass(
@@ -736,7 +736,7 @@ fn t042_test_newlines_in_selectors() {
 
 // From "sass-spec/spec/scss-tests/043_test_newlines_in_selectors.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t043_test_newlines_in_selectors() {
     assert_eq!(
         rsass(
@@ -760,7 +760,7 @@ fn t043_test_newlines_in_selectors() {
 
 // From "sass-spec/spec/scss-tests/044_test_trailing_comma_in_selector.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t044_test_trailing_comma_in_selector() {
     assert_eq!(
         rsass(
@@ -805,7 +805,7 @@ fn t045_test_parent_selectors() {
 
 // From "sass-spec/spec/scss-tests/046_test_parent_selector_with_subject.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn t046_test_parent_selector_with_subject() {
     assert_eq!(
         rsass(
@@ -1253,7 +1253,7 @@ fn t066_test_mixin_var_args_act_like_list() {
 
 // From "sass-spec/spec/scss-tests/067_test_mixin_splat_args.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t067_test_mixin_splat_args() {
     assert_eq!(
         rsass(
@@ -1281,7 +1281,7 @@ fn t067_test_mixin_splat_args() {
 
 // From "sass-spec/spec/scss-tests/068_test_mixin_splat_expression.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t068_test_mixin_splat_expression() {
     assert_eq!(
         rsass(
@@ -1308,7 +1308,7 @@ fn t068_test_mixin_splat_expression() {
 
 // From "sass-spec/spec/scss-tests/069_test_mixin_splat_args_with_var_args.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t069_test_mixin_splat_args_with_var_args() {
     assert_eq!(
         rsass(
@@ -1332,7 +1332,7 @@ fn t069_test_mixin_splat_args_with_var_args() {
 
 // From "sass-spec/spec/scss-tests/070_test_mixin_splat_args_with_var_args_and_normal_args.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t070_test_mixin_splat_args_with_var_args_and_normal_args() {
     assert_eq!(
         rsass(
@@ -1358,7 +1358,7 @@ fn t070_test_mixin_splat_args_with_var_args_and_normal_args() {
 
 // From "sass-spec/spec/scss-tests/071_test_mixin_splat_args_with_var_args_preserves_separator.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t071_test_mixin_splat_args_with_var_args_preserves_separator() {
     assert_eq!(
         rsass(
@@ -1382,7 +1382,7 @@ fn t071_test_mixin_splat_args_with_var_args_preserves_separator() {
 
 // From "sass-spec/spec/scss-tests/072_test_mixin_var_and_splat_args_pass_through_keywords.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t072_test_mixin_var_and_splat_args_pass_through_keywords() {
     assert_eq!(
         rsass(
@@ -1411,7 +1411,7 @@ fn t072_test_mixin_var_and_splat_args_pass_through_keywords() {
 
 // From "sass-spec/spec/scss-tests/078_test_mixin_list_of_pairs_splat_treated_as_list.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t078_test_mixin_list_of_pairs_splat_treated_as_list() {
     assert_eq!(
         rsass(
@@ -1498,7 +1498,7 @@ fn t085_test_function_var_args_act_like_list() {
 
 // From "sass-spec/spec/scss-tests/086_test_function_splat_args.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t086_test_function_splat_args() {
     assert_eq!(
         rsass(
@@ -1520,7 +1520,7 @@ fn t086_test_function_splat_args() {
 
 // From "sass-spec/spec/scss-tests/087_test_function_splat_expression.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t087_test_function_splat_expression() {
     assert_eq!(
         rsass(
@@ -1541,7 +1541,7 @@ fn t087_test_function_splat_expression() {
 
 // From "sass-spec/spec/scss-tests/088_test_function_splat_args_with_var_args.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t088_test_function_splat_args_with_var_args() {
     assert_eq!(
         rsass(
@@ -1563,7 +1563,7 @@ fn t088_test_function_splat_args_with_var_args() {
 
 // From "sass-spec/spec/scss-tests/089_test_function_splat_args_with_var_args_and_normal_args.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t089_test_function_splat_args_with_var_args_and_normal_args() {
     assert_eq!(
         rsass(
@@ -1585,7 +1585,7 @@ fn t089_test_function_splat_args_with_var_args_and_normal_args() {
 
 // From "sass-spec/spec/scss-tests/090_test_function_splat_args_with_var_args_preserves_separator.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t090_test_function_splat_args_with_var_args_preserves_separator() {
     assert_eq!(
         rsass(
@@ -1607,7 +1607,7 @@ fn t090_test_function_splat_args_with_var_args_preserves_separator() {
 
 // From "sass-spec/spec/scss-tests/091_test_function_var_and_splat_args_pass_through_keywords.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t091_test_function_var_and_splat_args_pass_through_keywords() {
     assert_eq!(
         rsass(
@@ -1632,7 +1632,7 @@ fn t091_test_function_var_and_splat_args_pass_through_keywords() {
 
 // From "sass-spec/spec/scss-tests/098_test_function_list_of_pairs_splat_treated_as_list.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t098_test_function_list_of_pairs_splat_treated_as_list() {
     assert_eq!(
         rsass(
@@ -1655,7 +1655,7 @@ fn t098_test_function_list_of_pairs_splat_treated_as_list() {
 
 // From "sass-spec/spec/scss-tests/103_test_function_var_args_passed_to_native.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn t103_test_function_var_args_passed_to_native() {
     assert_eq!(
         rsass(
@@ -1891,7 +1891,7 @@ fn t116_test_selector_interpolation_at_dashes() {
 
 // From "sass-spec/spec/scss-tests/118_test_parent_selector_with_parent_and_subject.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t118_test_parent_selector_with_parent_and_subject() {
     assert_eq!(
         rsass(
@@ -1975,7 +1975,7 @@ fn t122_test_directive_interpolation() {
 
 // From "sass-spec/spec/scss-tests/128_test_supports_with_expressions.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn t128_test_supports_with_expressions() {
     assert_eq!(
         rsass(
@@ -1999,7 +1999,7 @@ fn t128_test_supports_with_expressions() {
 
 // From "sass-spec/spec/scss-tests/129_test_supports_bubbling.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t129_test_supports_bubbling() {
     assert_eq!(
         rsass(
@@ -2030,7 +2030,7 @@ fn t129_test_supports_bubbling() {
 
 // From "sass-spec/spec/scss-tests/130_test_random_directive_interpolation.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn t130_test_random_directive_interpolation() {
     assert_eq!(
         rsass(
@@ -2165,7 +2165,7 @@ fn t171_test_loud_comment_in_compressed_mode() {
 
 // From "sass-spec/spec/scss-tests/172_test_parsing_decimals_followed_by_comments_doesnt_take_forever.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t172_test_parsing_decimals_followed_by_comments_doesnt_take_forever() {
     assert_eq!(
         rsass(
@@ -2202,7 +2202,7 @@ fn t173_test_parsing_many_numbers_doesnt_take_forever() {
 
 // From "sass-spec/spec/scss-tests/174_test_import_comments_in_imports.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t174_test_import_comments_in_imports() {
     assert_eq!(
         rsass(
@@ -2221,7 +2221,7 @@ fn t174_test_import_comments_in_imports() {
 
 // From "sass-spec/spec/scss-tests/176_test_newline_selector_rendered_multiple_times.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t176_test_newline_selector_rendered_multiple_times() {
     assert_eq!(
         rsass(
@@ -2419,7 +2419,7 @@ fn t185_test_keyword_args_in_functions() {
 
 // From "sass-spec/spec/scss-tests/186_test_newlines_removed_from_selectors_when_compressed.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t186_test_newlines_removed_from_selectors_when_compressed() {
     assert_eq!(
         rsass(
@@ -2469,7 +2469,7 @@ fn t187_test_multiline_var() {
 
 // From "sass-spec/spec/scss-tests/188_test_mixin_content.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t188_test_mixin_content() {
     assert_eq!(
         rsass(
@@ -2537,7 +2537,7 @@ fn t190_test_options_passed_to_script() {
 
 // From "sass-spec/spec/scss-tests/191_test_extend_in_media_in_rule.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t191_test_extend_in_media_in_rule() {
     assert_eq!(
         rsass(

@@ -16,7 +16,7 @@ mod error {
 
 // From "sass-spec/spec/css/min_max/plain_css.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn plain_css() {
     assert_eq!(
         rsass(
@@ -60,7 +60,7 @@ fn plain_css() {
 
 // From "sass-spec/spec/css/min_max/sass_function.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn sass_function() {
     assert_eq!(
         rsass(

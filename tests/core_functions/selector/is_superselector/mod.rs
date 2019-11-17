@@ -15,7 +15,7 @@ mod complex {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn first() {
                 assert_eq!(
                     rsass(
@@ -30,7 +30,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_sub() {
                 assert_eq!(
                     rsass(
@@ -45,7 +45,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn neither() {
                 assert_eq!(
                     rsass(
@@ -60,7 +60,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn second() {
                 assert_eq!(
                     rsass(
@@ -82,7 +82,7 @@ mod complex {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn equal() {
                     assert_eq!(
                         rsass(
@@ -97,7 +97,7 @@ mod complex {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn subset() {
                     assert_eq!(
         rsass(
@@ -112,7 +112,7 @@ mod complex {
     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn superset() {
                     assert_eq!(
         rsass(
@@ -128,7 +128,7 @@ mod complex {
                 }
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_sub() {
                 assert_eq!(
                     rsass(
@@ -143,7 +143,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_super() {
                 assert_eq!(
                     rsass(
@@ -166,7 +166,7 @@ mod complex {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn first() {
                 assert_eq!(
                     rsass(
@@ -181,7 +181,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_sub() {
                 assert_eq!(
                     rsass(
@@ -196,7 +196,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn neither() {
                 assert_eq!(
                     rsass(
@@ -211,7 +211,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn second() {
                 assert_eq!(
                     rsass(
@@ -233,7 +233,7 @@ mod complex {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn equal() {
                     assert_eq!(
                         rsass(
@@ -248,7 +248,7 @@ mod complex {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn subset() {
                     assert_eq!(
         rsass(
@@ -263,7 +263,7 @@ mod complex {
     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn superset() {
                     assert_eq!(
         rsass(
@@ -279,7 +279,7 @@ mod complex {
                 }
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_sub() {
                 assert_eq!(
                     rsass(
@@ -294,7 +294,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_super() {
                 assert_eq!(
                     rsass(
@@ -320,7 +320,7 @@ mod complex {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn first() {
                     assert_eq!(
                         rsass(
@@ -335,7 +335,7 @@ mod complex {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn neither() {
                     assert_eq!(
                         rsass(
@@ -350,7 +350,7 @@ mod complex {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn second() {
                     assert_eq!(
                         rsass(
@@ -366,7 +366,7 @@ mod complex {
                 }
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn sub() {
                 assert_eq!(
                     rsass(
@@ -381,7 +381,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn test_super() {
                 assert_eq!(
                     rsass(
@@ -400,7 +400,7 @@ mod complex {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_sub() {
                 assert_eq!(
                     rsass(
@@ -415,7 +415,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn match_first() {
                 assert_eq!(
                     rsass(
@@ -430,7 +430,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn match_neither() {
                 assert_eq!(
                     rsass(
@@ -445,7 +445,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn match_second() {
                 assert_eq!(
                     rsass(
@@ -467,7 +467,7 @@ mod complex {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn equal() {
                     assert_eq!(
                         rsass(
@@ -482,7 +482,7 @@ mod complex {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn subset() {
                     assert_eq!(
                         rsass(
@@ -497,7 +497,7 @@ mod complex {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn superset() {
                     assert_eq!(
                         rsass(
@@ -513,7 +513,7 @@ mod complex {
                 }
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_sub() {
                 assert_eq!(
                     rsass(
@@ -528,7 +528,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_super() {
                 assert_eq!(
                     rsass(
@@ -554,7 +554,7 @@ mod complex {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn first() {
                     assert_eq!(
         rsass(
@@ -569,7 +569,7 @@ mod complex {
     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn neither() {
                     assert_eq!(
         rsass(
@@ -584,7 +584,7 @@ mod complex {
     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn second() {
                     assert_eq!(
         rsass(
@@ -600,7 +600,7 @@ mod complex {
                 }
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn sub() {
                 assert_eq!(
                     rsass(
@@ -615,7 +615,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn test_super() {
                 assert_eq!(
                     rsass(
@@ -634,7 +634,7 @@ mod complex {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn first() {
                 assert_eq!(
                     rsass(
@@ -649,7 +649,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_sub() {
                 assert_eq!(
                     rsass(
@@ -664,7 +664,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn neither() {
                 assert_eq!(
                     rsass(
@@ -679,7 +679,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn second() {
                 assert_eq!(
                     rsass(
@@ -701,7 +701,7 @@ mod complex {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn equal() {
                     assert_eq!(
                         rsass(
@@ -716,7 +716,7 @@ mod complex {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn subset() {
                     assert_eq!(
         rsass(
@@ -731,7 +731,7 @@ mod complex {
     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn superset() {
                     assert_eq!(
         rsass(
@@ -747,7 +747,7 @@ mod complex {
                 }
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_sub() {
                 assert_eq!(
                     rsass(
@@ -762,7 +762,7 @@ mod complex {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn in_super() {
                 assert_eq!(
                     rsass(
@@ -785,7 +785,7 @@ mod compound {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn different_order() {
         assert_eq!(
             rsass(
@@ -803,7 +803,7 @@ mod compound {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn absent() {
             assert_eq!(
                 rsass(
@@ -821,7 +821,7 @@ mod compound {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn after() {
                 assert_eq!(
                     rsass(
@@ -836,7 +836,7 @@ mod compound {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn before() {
                 assert_eq!(
                     rsass(
@@ -851,7 +851,7 @@ mod compound {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn first_letter() {
                 assert_eq!(
                     rsass(
@@ -866,7 +866,7 @@ mod compound {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn first_line() {
                 assert_eq!(
                     rsass(
@@ -882,7 +882,7 @@ mod compound {
             }
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn different_order() {
             assert_eq!(
                 rsass(
@@ -897,7 +897,7 @@ mod compound {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn present() {
             assert_eq!(
                 rsass(
@@ -912,7 +912,7 @@ mod compound {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn same_order() {
             assert_eq!(
                 rsass(
@@ -928,7 +928,7 @@ mod compound {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn same_order() {
         assert_eq!(
             rsass(
@@ -943,7 +943,7 @@ mod compound {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn superset() {
         assert_eq!(
             rsass(
@@ -991,7 +991,7 @@ mod error {
 
 // From "sass-spec/spec/core_functions/selector/is_superselector/input.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn input() {
     assert_eq!(
         rsass(
@@ -1016,7 +1016,7 @@ mod list {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn match_one() {
             assert_eq!(
                 rsass(
@@ -1031,7 +1031,7 @@ mod list {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn match_three() {
             assert_eq!(
                 rsass(
@@ -1046,7 +1046,7 @@ mod list {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn match_two() {
             assert_eq!(
                 rsass(
@@ -1061,7 +1061,7 @@ mod list {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn miss_one() {
             assert_eq!(
                 rsass(
@@ -1080,7 +1080,7 @@ mod list {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn both_satisfied_by_one_superselector() {
             assert_eq!(
                 rsass(
@@ -1098,7 +1098,7 @@ mod list {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn equal() {
                 assert_eq!(
                     rsass(
@@ -1113,7 +1113,7 @@ mod list {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn subset() {
                 assert_eq!(
                     rsass(
@@ -1128,7 +1128,7 @@ mod list {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn superset() {
                 assert_eq!(
                     rsass(
@@ -1144,7 +1144,7 @@ mod list {
             }
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn in_sub() {
             assert_eq!(
                 rsass(
@@ -1159,7 +1159,7 @@ mod list {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn in_super() {
             assert_eq!(
                 rsass(
@@ -1178,7 +1178,7 @@ mod list {
 
 // From "sass-spec/spec/core_functions/selector/is_superselector/named.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn named() {
     assert_eq!(
         rsass(

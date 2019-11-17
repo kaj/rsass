@@ -1200,7 +1200,7 @@ mod hue {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn above_max() {
         assert_eq!(
             rsass(
@@ -1225,7 +1225,7 @@ mod hue {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn fraction() {
         assert_eq!(
             rsass(
@@ -1240,7 +1240,7 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             rsass(
@@ -1255,7 +1255,7 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn middle() {
         assert_eq!(
             rsass(
@@ -1284,7 +1284,7 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
             rsass(
@@ -1299,7 +1299,7 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn negative() {
         assert_eq!(
             rsass(
@@ -2458,7 +2458,7 @@ mod saturation {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn fraction() {
         assert_eq!(
             rsass(
@@ -2473,7 +2473,7 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             rsass(
@@ -2488,7 +2488,7 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn middle() {
         assert_eq!(
             rsass(
@@ -2517,7 +2517,7 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
             rsass(

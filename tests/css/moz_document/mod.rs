@@ -49,7 +49,7 @@ mod functions;
 
 // From "sass-spec/spec/css/moz_document/multi_function.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn multi_function() {
     assert_eq!(
         rsass(

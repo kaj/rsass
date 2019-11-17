@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/selectors/variables/multiple/bare.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn bare() {
     assert_eq!(
         rsass(
@@ -27,7 +27,7 @@ fn bare() {
 
 // From "sass-spec/spec/libsass/selectors/variables/multiple/interpolated.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn interpolated() {
     assert_eq!(
         rsass(

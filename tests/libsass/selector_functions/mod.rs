@@ -27,7 +27,7 @@ fn selector_length() {
 
 // From "sass-spec/spec/libsass/selector-functions/simple-selector.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn simple_selector() {
     assert_eq!(
         rsass(

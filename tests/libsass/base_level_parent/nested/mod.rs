@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/base-level-parent/nested/at-root-alone-itpl.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn at_root_alone_itpl() {
     assert_eq!(
         rsass(
@@ -54,7 +54,7 @@ fn at_root_alone() {
 
 // From "sass-spec/spec/libsass/base-level-parent/nested/at-root-postfix-itpl.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn at_root_postfix_itpl() {
     assert_eq!(
         rsass(
@@ -102,7 +102,7 @@ fn at_root_postfix() {
 
 // From "sass-spec/spec/libsass/base-level-parent/nested/at-root-prefix-itpl.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn at_root_prefix_itpl() {
     assert_eq!(
         rsass(

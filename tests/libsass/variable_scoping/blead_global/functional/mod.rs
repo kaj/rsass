@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/each.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn each() {
     assert_eq!(
         rsass(
@@ -85,7 +85,7 @@ fn each() {
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/else.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn test_else() {
     assert_eq!(
         rsass(
@@ -170,7 +170,7 @@ fn test_else() {
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/elseif.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn elseif() {
     assert_eq!(
         rsass(
@@ -255,7 +255,7 @@ fn elseif() {
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/for.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn test_for() {
     assert_eq!(
         rsass(
@@ -334,7 +334,7 @@ fn test_for() {
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/functional/if.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn test_if() {
     assert_eq!(
         rsass(

@@ -440,7 +440,7 @@ fn comment_after_if_directive() {
 
 // From "sass-spec/spec/scss/composed-args.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn composed_args() {
     assert_eq!(
         rsass(
@@ -1478,7 +1478,7 @@ fn ie_backslash() {
 
 // From "sass-spec/spec/scss/ie-functions.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn ie_functions() {
     assert_eq!(
         rsass(
@@ -1949,7 +1949,7 @@ mod media;
 
 // From "sass-spec/spec/scss/mixin-content-selectors.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn mixin_content_selectors() {
     assert_eq!(
         rsass(
@@ -2170,7 +2170,7 @@ fn namespace_properties_with_value() {
 
 // From "sass-spec/spec/scss/negation.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn negation() {
     assert_eq!(
         rsass(
@@ -2195,7 +2195,7 @@ fn negation() {
 
 // From "sass-spec/spec/scss/nested-extend.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn nested_extend() {
     assert_eq!(
         rsass(
@@ -2351,7 +2351,7 @@ fn nested_rules_with_fancy_selectors() {
 
 // From "sass-spec/spec/scss/newlines_in_selectors.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn newlines_in_selectors() {
     assert_eq!(
         rsass(
@@ -2586,7 +2586,7 @@ fn percentages() {
 
 // From "sass-spec/spec/scss/placeholder-with-media.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn placeholder_with_media() {
     assert_eq!(
         rsass(
@@ -2613,7 +2613,7 @@ fn placeholder_with_media() {
 
 // From "sass-spec/spec/scss/placeholder.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn placeholder() {
     assert_eq!(
         rsass(
@@ -2647,7 +2647,7 @@ fn placeholder() {
 
 // From "sass-spec/spec/scss/precision.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn precision() {
     assert_eq!(
         rsass(
@@ -2928,7 +2928,7 @@ fn several_namespace_properties() {
 
 // From "sass-spec/spec/scss/simple-inheritance.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn simple_inheritance() {
     assert_eq!(
         rsass(

@@ -26,7 +26,7 @@ mod get {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn first() {
             assert_eq!(
                 rsass(
@@ -41,7 +41,7 @@ mod get {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn last() {
             assert_eq!(
                 rsass(
@@ -56,7 +56,7 @@ mod get {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn middle() {
             assert_eq!(
                 rsass(
@@ -169,7 +169,7 @@ mod has_key {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn first() {
             assert_eq!(
                 rsass(
@@ -184,7 +184,7 @@ mod has_key {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn last() {
             assert_eq!(
                 rsass(
@@ -199,7 +199,7 @@ mod has_key {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn middle() {
             assert_eq!(
                 rsass(
@@ -338,7 +338,7 @@ mod keys {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn single() {
         assert_eq!(
             rsass(
@@ -507,7 +507,7 @@ mod remove {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn first() {
             assert_eq!(
                 rsass(
@@ -522,7 +522,7 @@ mod remove {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn last() {
             assert_eq!(
                 rsass(
@@ -537,7 +537,7 @@ mod remove {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn middle() {
             assert_eq!(
                 rsass(
@@ -555,7 +555,7 @@ mod remove {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn all() {
                 assert_eq!(
         rsass(
@@ -570,7 +570,7 @@ mod remove {
     );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn some() {
                 assert_eq!(
         rsass(
@@ -601,7 +601,7 @@ mod remove {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
             rsass(
@@ -739,7 +739,7 @@ mod values {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn single() {
         assert_eq!(
             rsass(

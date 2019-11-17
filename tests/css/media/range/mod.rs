@@ -52,7 +52,7 @@ mod error {
 
 // From "sass-spec/spec/css/media/range/from_interpolation.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn from_interpolation() {
     assert_eq!(
         rsass(
@@ -202,7 +202,7 @@ fn test_static() {
 
 // From "sass-spec/spec/css/media/range/with_expressions.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn with_expressions() {
     assert_eq!(
         rsass(

@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/precision/default.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn default() {
     assert_eq!(
         rsass(
@@ -31,7 +31,7 @@ fn default() {
 
 // From "sass-spec/spec/libsass/precision/higher.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn higher() {
     set_precision(6);
     assert_eq!(
@@ -54,7 +54,7 @@ fn higher() {
 
 // From "sass-spec/spec/libsass/precision/lower.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn lower() {
     set_precision(4);
     assert_eq!(

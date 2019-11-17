@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/features/at-error.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn at_error() {
     assert_eq!(
         rsass(
@@ -25,7 +25,7 @@ fn at_error() {
 
 // From "sass-spec/spec/libsass/features/extend-selector-pseudoclass.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn extend_selector_pseudoclass() {
     assert_eq!(
         rsass(

@@ -12,7 +12,7 @@ mod append {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn double() {
             assert_eq!(
                 rsass(
@@ -60,7 +60,7 @@ mod append {
         // Ignoring "universal", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn input() {
         assert_eq!(
         rsass(
@@ -122,7 +122,7 @@ mod append {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn multiple() {
             assert_eq!(
                 rsass(

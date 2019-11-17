@@ -145,7 +145,7 @@ fn t06_escape_interpolation() {
 
 // From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/todo_05_variable_quoted_double"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn todo_05_variable_quoted_double() {
     assert_eq!(
         rsass(

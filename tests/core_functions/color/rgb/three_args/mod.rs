@@ -224,7 +224,7 @@ mod special_functions {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_1() {
             assert_eq!(
                 rsass(
@@ -239,7 +239,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_2() {
             assert_eq!(
                 rsass(
@@ -254,7 +254,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 rsass(
@@ -273,7 +273,7 @@ mod special_functions {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_1() {
             assert_eq!(
                 rsass(
@@ -288,7 +288,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_2() {
             assert_eq!(
                 rsass(
@@ -303,7 +303,7 @@ mod special_functions {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn arg_3() {
             assert_eq!(
                 rsass(

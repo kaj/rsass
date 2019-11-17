@@ -92,7 +92,7 @@ fn named() {
 
 // From "sass-spec/spec/core_functions/color/hsla/three_args/special_functions.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn special_functions() {
     assert_eq!(
         rsass(
@@ -245,7 +245,7 @@ mod w3c {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn cyan() {
             assert_eq!(
                 rsass(
@@ -318,7 +318,7 @@ mod w3c {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn purple() {
             assert_eq!(
                 rsass(
@@ -428,7 +428,7 @@ mod w3c {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn blue_to_red() {
         assert_eq!(
             rsass(
@@ -488,7 +488,7 @@ mod w3c {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn cyan() {
             assert_eq!(
                 rsass(
@@ -529,7 +529,7 @@ mod w3c {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn purple() {
             assert_eq!(
                 rsass(
@@ -591,7 +591,7 @@ mod w3c {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn green_to_blue() {
         assert_eq!(
             rsass(
@@ -628,7 +628,7 @@ mod w3c {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn hue() {
         assert_eq!(
             rsass(

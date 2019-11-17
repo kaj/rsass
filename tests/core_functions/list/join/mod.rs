@@ -15,7 +15,7 @@ mod empty {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn first() {
                 assert_eq!(
                     rsass(
@@ -37,7 +37,7 @@ mod empty {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn last() {
                 assert_eq!(
                     rsass(
@@ -63,7 +63,7 @@ mod empty {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn first() {
                 assert_eq!(
                     rsass(
@@ -85,7 +85,7 @@ mod empty {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn last() {
                 assert_eq!(
                     rsass(
@@ -108,7 +108,7 @@ mod empty {
             }
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn undecided() {
             assert_eq!(
         rsass(
@@ -137,7 +137,7 @@ mod empty {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn comma() {
             assert_eq!(
                 rsass(
@@ -153,7 +153,7 @@ mod empty {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn space() {
             assert_eq!(
                 rsass(
@@ -208,7 +208,7 @@ mod empty {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn comma() {
                 assert_eq!(
                     rsass(
@@ -224,7 +224,7 @@ mod empty {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn space() {
                 assert_eq!(
                     rsass(
@@ -240,7 +240,7 @@ mod empty {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn undecided() {
                 assert_eq!(
                     rsass(
@@ -266,7 +266,7 @@ mod empty {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn comma() {
                 assert_eq!(
                     rsass(
@@ -282,7 +282,7 @@ mod empty {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn space() {
                 assert_eq!(
                     rsass(
@@ -298,7 +298,7 @@ mod empty {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // unexepected error
             fn undecided() {
                 assert_eq!(
                     rsass(
@@ -325,7 +325,7 @@ mod empty {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn comma() {
             assert_eq!(
                 rsass(
@@ -341,7 +341,7 @@ mod empty {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn space() {
             assert_eq!(
                 rsass(
@@ -724,7 +724,7 @@ mod multi {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn space() {
                 assert_eq!(
         rsass(
@@ -818,7 +818,7 @@ mod single {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn first() {
                 assert_eq!(
                     rsass(
@@ -834,7 +834,7 @@ mod single {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn last() {
                 assert_eq!(
                     rsass(
@@ -855,7 +855,7 @@ mod single {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn first() {
                 assert_eq!(
                     rsass(
@@ -871,7 +871,7 @@ mod single {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn last() {
                 assert_eq!(
                     rsass(
@@ -920,7 +920,7 @@ mod single {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn space() {
             assert_eq!(
                 rsass(
@@ -939,7 +939,7 @@ mod single {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_comma() {
                 assert_eq!(
                     rsass(
@@ -1018,7 +1018,7 @@ mod single {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn undecided() {
                 assert_eq!(
         rsass(
@@ -1077,7 +1077,7 @@ mod single {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn undecided() {
                 assert_eq!(
         rsass(
@@ -1123,7 +1123,7 @@ mod single {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn space() {
             assert_eq!(
                 rsass(

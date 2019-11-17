@@ -8,7 +8,7 @@ mod error;
 
 // From "sass-spec/spec/mixin/content/arguments/none.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn none() {
     assert_eq!(
         rsass(
@@ -84,7 +84,7 @@ fn none() {
 
 // From "sass-spec/spec/mixin/content/arguments/passing.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn passing() {
     assert_eq!(
         rsass(
@@ -174,7 +174,7 @@ fn passing() {
 
 // From "sass-spec/spec/mixin/content/arguments/receiving.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn receiving() {
     assert_eq!(
         rsass(
@@ -297,7 +297,7 @@ fn receiving() {
 
 // From "sass-spec/spec/mixin/content/arguments/scope.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn scope() {
     assert_eq!(
         rsass(
@@ -342,7 +342,7 @@ fn scope() {
 
 // From "sass-spec/spec/mixin/content/arguments/weird_syntax.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn weird_syntax() {
     assert_eq!(
         rsass(

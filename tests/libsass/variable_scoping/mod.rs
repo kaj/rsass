@@ -128,7 +128,7 @@ fn defaults_null() {
 
 // From "sass-spec/spec/libsass/variable-scoping/defaults.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn defaults() {
     assert_eq!(
         rsass(
@@ -212,7 +212,7 @@ fn feature_test() {
 
 // From "sass-spec/spec/libsass/variable-scoping/lexical-scope.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn lexical_scope() {
     assert_eq!(
         rsass(
@@ -264,7 +264,7 @@ fn lexical_scope() {
 
 // From "sass-spec/spec/libsass/variable-scoping/root-scope.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn root_scope() {
     assert_eq!(
         rsass(

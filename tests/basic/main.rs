@@ -535,7 +535,7 @@ fn t13_back_references() {
 
 // From "sass-spec/spec/basic/15_arithmetic_and_lists.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn t15_arithmetic_and_lists() {
     assert_eq!(
         rsass(

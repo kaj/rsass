@@ -12,7 +12,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/debug-directive-nested/mixin.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn mixin() {
     assert_eq!(
         rsass(

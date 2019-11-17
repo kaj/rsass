@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/scss/media/nesting/merged.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn merged() {
     assert_eq!(
         rsass(
@@ -278,7 +278,7 @@ fn merged() {
 
 // From "sass-spec/spec/scss/media/nesting/merged_and_retained.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn merged_and_retained() {
     assert_eq!(
         rsass(
@@ -325,7 +325,7 @@ fn merged_and_retained() {
 
 // From "sass-spec/spec/scss/media/nesting/removed.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn removed() {
     assert_eq!(
         rsass(
@@ -448,7 +448,7 @@ fn removed() {
 
 // From "sass-spec/spec/scss/media/nesting/retained.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn retained() {
     assert_eq!(
         rsass(

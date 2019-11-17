@@ -68,8 +68,8 @@ impl TestFixture {
             }
             ExpectedCSS(ref expected) => {
                 rs.write_all(b"#[test]\n")?;
-                if !check_test(&self.input, expected) {
-                    rs.write_all(b"#[ignore] // failing\n")?;
+                if let Some(reason) = self.is_failure() {
+                    writeln!(rs, "#[ignore] // {}", reason)?;
                 }
                 writeln!(rs, "fn {}() {{", self.fn_name)?;
                 let precision = self.options.precision.or(precision);
@@ -81,6 +81,24 @@ impl TestFixture {
             }
         }
         Ok(())
+    }
+
+    /// Execute the test here and now, return None for success or Some
+    /// reason to fail.
+    fn is_failure(&self) -> Option<&'static str> {
+        match &self.expectation {
+            ExpectedError(_) => Some("Error tests not supported yet"),
+            ExpectedCSS(ref expected) => match rsass(&self.input) {
+                Ok(ref actual) => {
+                    if expected == actual {
+                        None // Yes!
+                    } else {
+                        Some("wrong result")
+                    }
+                }
+                Err(_) => Some("unexepected error"),
+            },
+        }
     }
 }
 
@@ -142,13 +160,6 @@ fn write_test_input_expected(
              \n    );",
             input, expected
         )
-    }
-}
-
-fn check_test(input: &str, expected_output: &str) -> bool {
-    match rsass(input) {
-        Ok(ref output) => output == expected_output,
-        Err(_) => false,
     }
 }
 

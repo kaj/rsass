@@ -34,7 +34,7 @@ mod comment {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn cr() {
                 assert_eq!(
                     rsass(
@@ -48,7 +48,7 @@ mod comment {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn ff() {
                 assert_eq!(
                     rsass(
@@ -88,7 +88,7 @@ mod comment {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn scss() {
                 assert_eq!(
                     rsass(
@@ -109,7 +109,7 @@ mod comment {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn scss() {
                 assert_eq!(
                     rsass(
@@ -257,7 +257,7 @@ mod keyframes {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn empty() {
             assert_eq!(
                 rsass(
@@ -335,7 +335,7 @@ mod selector {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn after_string() {
                 assert_eq!(
                     rsass(
@@ -407,7 +407,7 @@ mod selector {
 
     // Ignoring "reference_combinator", error tests are not supported yet.
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn slotted() {
         assert_eq!(
             rsass(

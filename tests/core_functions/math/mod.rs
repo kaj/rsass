@@ -97,7 +97,7 @@ mod abs {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn preserves_units() {
         assert_eq!(
             rsass(
@@ -212,7 +212,7 @@ mod ceil {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn preserves_units() {
         assert_eq!(
             rsass(
@@ -266,7 +266,7 @@ mod comparable {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn to_compatible() {
             assert_eq!(
                 rsass(
@@ -295,7 +295,7 @@ mod comparable {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn to_inverse() {
             assert_eq!(
                 rsass(
@@ -328,7 +328,7 @@ mod comparable {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn to_unit() {
             assert_eq!(
                 rsass(
@@ -444,7 +444,7 @@ mod floor {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn preserves_units() {
         assert_eq!(
             rsass(
@@ -859,7 +859,7 @@ mod random {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn null() {
         assert_eq!(
         rsass(
@@ -873,7 +873,7 @@ mod random {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn one() {
         assert_eq!(
             rsass(
@@ -887,7 +887,7 @@ mod random {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn one_hundred() {
         assert_eq!(
         rsass(
@@ -901,7 +901,7 @@ mod random {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn two() {
         assert_eq!(
         rsass(
@@ -1036,7 +1036,7 @@ mod round {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn preserves_units() {
         assert_eq!(
             rsass(
@@ -1110,7 +1110,7 @@ mod round {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn within_precision() {
             assert_eq!(
         rsass(
@@ -1144,7 +1144,7 @@ mod unit {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn multiple_denominators() {
         assert_eq!(
             rsass(
@@ -1159,7 +1159,7 @@ mod unit {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn multiple_numerators() {
         assert_eq!(
             rsass(
@@ -1205,7 +1205,7 @@ mod unit {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn multiple() {
             assert_eq!(
                 rsass(
@@ -1220,7 +1220,7 @@ mod unit {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn single() {
             assert_eq!(
                 rsass(
@@ -1236,7 +1236,7 @@ mod unit {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn one_denominator() {
         assert_eq!(
             rsass(
@@ -1271,7 +1271,7 @@ mod unitless {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn denominator() {
         assert_eq!(
             rsass(
@@ -1324,7 +1324,7 @@ mod unitless {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn numerator_and_denominator() {
         assert_eq!(
             rsass(

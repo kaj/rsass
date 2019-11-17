@@ -5,7 +5,7 @@ use rsass::{compile_scss, OutputStyle};
 
 // From "sass-spec/spec/misc/JMA-pseudo-test.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn jma_pseudo_test() {
     assert_eq!(
         rsass(
@@ -142,7 +142,7 @@ fn media_interpolation() {
 
 // From "sass-spec/spec/misc/mixin_content.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn mixin_content() {
     assert_eq!(
         rsass(
@@ -198,7 +198,7 @@ fn namespace_properties_with_script_value() {
 
 // From "sass-spec/spec/misc/negative_numbers.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn negative_numbers() {
     assert_eq!(
         rsass(
@@ -261,7 +261,7 @@ fn selector_only_interpolation() {
 
 // From "sass-spec/spec/misc/trailing_comma_in_selector.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn trailing_comma_in_selector() {
     assert_eq!(
         rsass(
@@ -303,7 +303,7 @@ fn unicode_variables() {
 
 // From "sass-spec/spec/misc/warn-directive.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn warn_directive() {
     assert_eq!(
         rsass(

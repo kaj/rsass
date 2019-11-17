@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/selectors/access.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn access() {
     assert_eq!(
         rsass(
@@ -136,7 +136,7 @@ fn function_argument() {
 
 // From "sass-spec/spec/libsass/selectors/interpolation.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn interpolation() {
     assert_eq!(
         rsass(
@@ -183,7 +183,7 @@ fn interpolation() {
 
 // From "sass-spec/spec/libsass/selectors/mixin-argument.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn mixin_argument() {
     assert_eq!(
         rsass(
@@ -270,7 +270,7 @@ fn mixin_argument() {
 
 // From "sass-spec/spec/libsass/selectors/simple.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn simple() {
     assert_eq!(
         rsass(

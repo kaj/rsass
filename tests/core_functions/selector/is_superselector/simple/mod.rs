@@ -9,7 +9,7 @@ mod attribute {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
             rsass(
@@ -27,7 +27,7 @@ mod attribute {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn name() {
             assert_eq!(
                 rsass(
@@ -42,7 +42,7 @@ mod attribute {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn operator() {
             assert_eq!(
                 rsass(
@@ -57,7 +57,7 @@ mod attribute {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn value() {
             assert_eq!(
                 rsass(
@@ -79,7 +79,7 @@ mod class {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
             rsass(
@@ -94,7 +94,7 @@ mod class {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn unequal() {
         assert_eq!(
             rsass(
@@ -115,7 +115,7 @@ mod id {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
             rsass(
@@ -130,7 +130,7 @@ mod id {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn unequal() {
         assert_eq!(
             rsass(
@@ -151,7 +151,7 @@ mod placeholder {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
             rsass(
@@ -166,7 +166,7 @@ mod placeholder {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn unequal() {
         assert_eq!(
             rsass(
@@ -189,7 +189,7 @@ mod test_type {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn and_universal() {
         assert_eq!(
             rsass(
@@ -204,7 +204,7 @@ mod test_type {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
             rsass(
@@ -225,7 +225,7 @@ mod test_type {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_empty() {
                 assert_eq!(
                     rsass(
@@ -240,7 +240,7 @@ mod test_type {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_explicit() {
                 assert_eq!(
                     rsass(
@@ -255,7 +255,7 @@ mod test_type {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_implicit() {
                 assert_eq!(
                     rsass(
@@ -270,7 +270,7 @@ mod test_type {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_universal() {
                 assert_eq!(
                     rsass(
@@ -289,7 +289,7 @@ mod test_type {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_empty() {
                 assert_eq!(
                     rsass(
@@ -307,7 +307,7 @@ mod test_type {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn equal() {
                     assert_eq!(
                         rsass(
@@ -322,7 +322,7 @@ mod test_type {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn unequal() {
                     assert_eq!(
                         rsass(
@@ -338,7 +338,7 @@ mod test_type {
                 }
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_implicit() {
                 assert_eq!(
                     rsass(
@@ -353,7 +353,7 @@ mod test_type {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_universal() {
                 assert_eq!(
                     rsass(
@@ -372,7 +372,7 @@ mod test_type {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_empty() {
                 assert_eq!(
                     rsass(
@@ -387,7 +387,7 @@ mod test_type {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_explicit() {
                 assert_eq!(
                     rsass(
@@ -402,7 +402,7 @@ mod test_type {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_implicit() {
                 assert_eq!(
                     rsass(
@@ -417,7 +417,7 @@ mod test_type {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_universal() {
                 assert_eq!(
                     rsass(
@@ -434,7 +434,7 @@ mod test_type {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn unequal() {
         assert_eq!(
             rsass(
@@ -455,7 +455,7 @@ mod universal {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn and_class() {
         assert_eq!(
             rsass(
@@ -470,7 +470,7 @@ mod universal {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn and_type() {
         assert_eq!(
             rsass(
@@ -485,7 +485,7 @@ mod universal {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
             rsass(
@@ -506,7 +506,7 @@ mod universal {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_class() {
                 assert_eq!(
                     rsass(
@@ -524,7 +524,7 @@ mod universal {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn empty() {
                     assert_eq!(
                         rsass(
@@ -539,7 +539,7 @@ mod universal {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn explicit() {
                     assert_eq!(
                         rsass(
@@ -554,7 +554,7 @@ mod universal {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn implicit() {
                     assert_eq!(
                         rsass(
@@ -573,7 +573,7 @@ mod universal {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn empty() {
                     assert_eq!(
                         rsass(
@@ -588,7 +588,7 @@ mod universal {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn explicit() {
                     assert_eq!(
                         rsass(
@@ -603,7 +603,7 @@ mod universal {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn implicit() {
                     assert_eq!(
                         rsass(
@@ -618,7 +618,7 @@ mod universal {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn universal() {
                     assert_eq!(
                         rsass(
@@ -638,7 +638,7 @@ mod universal {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_class() {
                 assert_eq!(
                     rsass(
@@ -656,7 +656,7 @@ mod universal {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn empty() {
                     assert_eq!(
                         rsass(
@@ -674,7 +674,7 @@ mod universal {
                     #[allow(unused)]
                     use super::rsass;
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn equal() {
                         assert_eq!(
                             rsass(
@@ -689,7 +689,7 @@ mod universal {
                         );
                     }
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn unequal() {
                         assert_eq!(
                             rsass(
@@ -705,7 +705,7 @@ mod universal {
                     }
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn implicit() {
                     assert_eq!(
                         rsass(
@@ -724,7 +724,7 @@ mod universal {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn empty() {
                     assert_eq!(
                         rsass(
@@ -742,7 +742,7 @@ mod universal {
                     #[allow(unused)]
                     use super::rsass;
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn equal() {
                         assert_eq!(
                             rsass(
@@ -757,7 +757,7 @@ mod universal {
                         );
                     }
                     #[test]
-                    #[ignore] // failing
+                    #[ignore] // wrong result
                     fn unequal() {
                         assert_eq!(
                             rsass(
@@ -773,7 +773,7 @@ mod universal {
                     }
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn implicit() {
                     assert_eq!(
                         rsass(
@@ -788,7 +788,7 @@ mod universal {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn universal() {
                     assert_eq!(
                         rsass(
@@ -808,7 +808,7 @@ mod universal {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn and_class() {
                 assert_eq!(
                     rsass(
@@ -826,7 +826,7 @@ mod universal {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn empty() {
                     assert_eq!(
                         rsass(
@@ -841,7 +841,7 @@ mod universal {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn explicit() {
                     assert_eq!(
                         rsass(
@@ -856,7 +856,7 @@ mod universal {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn implicit() {
                     assert_eq!(
                         rsass(
@@ -875,7 +875,7 @@ mod universal {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn empty() {
                     assert_eq!(
                         rsass(
@@ -890,7 +890,7 @@ mod universal {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn explicit() {
                     assert_eq!(
                         rsass(
@@ -905,7 +905,7 @@ mod universal {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn implicit() {
                     assert_eq!(
                         rsass(
@@ -920,7 +920,7 @@ mod universal {
                     );
                 }
                 #[test]
-                #[ignore] // failing
+                #[ignore] // wrong result
                 fn universal() {
                     assert_eq!(
                         rsass(

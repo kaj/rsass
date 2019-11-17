@@ -12,7 +12,7 @@ mod arg {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn equal() {
             assert_eq!(
                 rsass(
@@ -30,7 +30,7 @@ mod arg {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn argument() {
                 assert_eq!(
                     rsass(
@@ -45,7 +45,7 @@ mod arg {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn has_argument() {
                 assert_eq!(
                     rsass(
@@ -60,7 +60,7 @@ mod arg {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn name() {
                 assert_eq!(
                     rsass(
@@ -80,7 +80,7 @@ mod arg {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn equal() {
             assert_eq!(
                 rsass(
@@ -98,7 +98,7 @@ mod arg {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn argument() {
                 assert_eq!(
                     rsass(
@@ -113,7 +113,7 @@ mod arg {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn has_argument() {
                 assert_eq!(
                     rsass(
@@ -128,7 +128,7 @@ mod arg {
                 );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn name() {
                 assert_eq!(
                     rsass(
@@ -154,7 +154,7 @@ mod no_arg {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn and_element() {
             assert_eq!(
                 rsass(
@@ -169,7 +169,7 @@ mod no_arg {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn equal() {
             assert_eq!(
                 rsass(
@@ -184,7 +184,7 @@ mod no_arg {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn unequal() {
             assert_eq!(
                 rsass(
@@ -203,7 +203,7 @@ mod no_arg {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn and_class() {
             assert_eq!(
                 rsass(
@@ -218,7 +218,7 @@ mod no_arg {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn equal() {
             assert_eq!(
                 rsass(
@@ -233,7 +233,7 @@ mod no_arg {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn unequal() {
             assert_eq!(
                 rsass(

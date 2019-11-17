@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/at-root.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn at_root() {
     assert_eq!(
         rsass(
@@ -60,7 +60,7 @@ fn at_root() {
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/each.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn each() {
     assert_eq!(
         rsass(
@@ -120,7 +120,7 @@ fn each() {
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/else.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn test_else() {
     assert_eq!(
         rsass(
@@ -180,7 +180,7 @@ fn test_else() {
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/elseif.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn elseif() {
     assert_eq!(
         rsass(
@@ -240,7 +240,7 @@ fn elseif() {
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/for.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn test_for() {
     assert_eq!(
         rsass(
@@ -368,7 +368,7 @@ fn function() {
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/if.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn test_if() {
     assert_eq!(
         rsass(
@@ -532,7 +532,7 @@ fn ruleset() {
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/while.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn test_while() {
     assert_eq!(
         rsass(

@@ -9,7 +9,7 @@ mod different_module {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn chosen_prefix() {
         assert_eq!(
         rsass(
@@ -25,7 +25,7 @@ mod different_module {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn defined() {
         assert_eq!(
         rsass(
@@ -41,7 +41,7 @@ mod different_module {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn named() {
         assert_eq!(
         rsass(
@@ -60,7 +60,7 @@ mod different_module {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn test_as() {
             assert_eq!(
                 rsass(
@@ -78,7 +78,7 @@ mod different_module {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn bare() {
             assert_eq!(
                 rsass(
@@ -94,7 +94,7 @@ mod different_module {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn hide() {
             assert_eq!(
                 rsass(
@@ -112,7 +112,7 @@ mod different_module {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // unexepected error
         fn show() {
             assert_eq!(
                 rsass(
@@ -131,7 +131,7 @@ mod different_module {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn through_use() {
         assert_eq!(
             rsass(
@@ -219,7 +219,7 @@ mod equality {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn redefined() {
             assert_eq!(
                 rsass(
@@ -422,7 +422,7 @@ mod same_module {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn redefined() {
         assert_eq!(
         rsass(
@@ -445,7 +445,7 @@ mod same_module {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn through_import() {
         assert_eq!(
             rsass(
@@ -484,7 +484,7 @@ mod scope {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // unexepected error
     fn captures_inner_scope() {
         assert_eq!(
         rsass(

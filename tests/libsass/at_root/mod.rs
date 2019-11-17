@@ -268,7 +268,7 @@ fn basic() {
 
 // From "sass-spec/spec/libsass/at-root/extend.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn extend() {
     assert_eq!(
         rsass(
@@ -449,7 +449,7 @@ fn nested() {
 
 // From "sass-spec/spec/libsass/at-root/with_without.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn with_without() {
     assert_eq!(
         rsass(

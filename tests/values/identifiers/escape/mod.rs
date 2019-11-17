@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/values/identifiers/escape/normalize"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn normalize() {
     assert_eq!(
         rsass(
@@ -77,7 +77,7 @@ fn normalize() {
 
 // From "sass-spec/spec/values/identifiers/escape/script.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn script() {
     assert_eq!(
         rsass(

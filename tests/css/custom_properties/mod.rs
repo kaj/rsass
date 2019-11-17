@@ -32,7 +32,7 @@ mod error {
 
 // From "sass-spec/spec/css/custom_properties/exclamation.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn exclamation() {
     assert_eq!(
         rsass(
@@ -67,7 +67,7 @@ fn exclamation() {
 
 // From "sass-spec/spec/css/custom_properties/indentation.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn indentation() {
     assert_eq!(
         rsass(
@@ -141,7 +141,7 @@ fn indentation() {
 
 // From "sass-spec/spec/css/custom_properties/name_interpolation.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn name_interpolation() {
     assert_eq!(
         rsass(
@@ -183,7 +183,7 @@ fn name_interpolation() {
 
 // From "sass-spec/spec/css/custom_properties/nesting_characters.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn nesting_characters() {
     assert_eq!(
         rsass(
@@ -217,7 +217,7 @@ fn nesting_characters() {
 
 // From "sass-spec/spec/css/custom_properties/script.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn script() {
     assert_eq!(
         rsass(
@@ -245,7 +245,7 @@ fn script() {
 
 // From "sass-spec/spec/css/custom_properties/simple.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // unexepected error
 fn simple() {
     assert_eq!(
         rsass(
@@ -432,7 +432,7 @@ mod trailing_comment {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn loud() {
             assert_eq!(
                 rsass(
@@ -469,7 +469,7 @@ mod trailing_comment {
 
 // From "sass-spec/spec/css/custom_properties/trailing_whitespace.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn trailing_whitespace() {
     assert_eq!(
         rsass(
@@ -525,7 +525,7 @@ fn value_interpolation() {
 
 // From "sass-spec/spec/css/custom_properties/without_semicolon.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn without_semicolon() {
     assert_eq!(
         rsass(

@@ -12,7 +12,7 @@ mod any {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
         rsass(
@@ -27,7 +27,7 @@ mod any {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
         rsass(
@@ -43,7 +43,7 @@ mod any {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn subset() {
         assert_eq!(
         rsass(
@@ -58,7 +58,7 @@ mod any {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn superset() {
         assert_eq!(
         rsass(
@@ -79,7 +79,7 @@ mod current {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn bare_sub() {
         assert_eq!(
         rsass(
@@ -94,7 +94,7 @@ mod current {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn equal() {
         assert_eq!(
         rsass(
@@ -112,7 +112,7 @@ mod current {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn equal() {
             assert_eq!(
         rsass(
@@ -127,7 +127,7 @@ mod current {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
                 rsass(
@@ -146,7 +146,7 @@ mod current {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
                 rsass(
@@ -166,7 +166,7 @@ mod current {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn subset() {
         assert_eq!(
         rsass(
@@ -181,7 +181,7 @@ mod current {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn superset() {
         assert_eq!(
         rsass(
@@ -202,7 +202,7 @@ mod has {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn bare_sub() {
         assert_eq!(
         rsass(
@@ -220,7 +220,7 @@ mod has {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
         rsass(
@@ -235,7 +235,7 @@ mod has {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
         rsass(
@@ -251,7 +251,7 @@ mod has {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn subset() {
         assert_eq!(
         rsass(
@@ -266,7 +266,7 @@ mod has {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn superset() {
         assert_eq!(
         rsass(
@@ -287,7 +287,7 @@ mod host {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn bare_sub() {
         assert_eq!(
         rsass(
@@ -305,7 +305,7 @@ mod host {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
         rsass(
@@ -320,7 +320,7 @@ mod host {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
         rsass(
@@ -336,7 +336,7 @@ mod host {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn subset() {
         assert_eq!(
         rsass(
@@ -351,7 +351,7 @@ mod host {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn superset() {
         assert_eq!(
         rsass(
@@ -372,7 +372,7 @@ mod host_context {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn bare_sub() {
         assert_eq!(
         rsass(
@@ -390,7 +390,7 @@ mod host_context {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
         rsass(
@@ -405,7 +405,7 @@ mod host_context {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
         rsass(
@@ -421,7 +421,7 @@ mod host_context {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn subset() {
         assert_eq!(
         rsass(
@@ -436,7 +436,7 @@ mod host_context {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn superset() {
         assert_eq!(
         rsass(
@@ -460,7 +460,7 @@ mod matches {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
         rsass(
@@ -475,7 +475,7 @@ mod matches {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
         rsass(
@@ -494,7 +494,7 @@ mod matches {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
                 rsass(
@@ -509,7 +509,7 @@ mod matches {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
                 rsass(
@@ -528,7 +528,7 @@ mod matches {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
                 rsass(
@@ -543,7 +543,7 @@ mod matches {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
                 rsass(
@@ -562,7 +562,7 @@ mod matches {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
         rsass(
@@ -577,7 +577,7 @@ mod matches {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
         rsass(
@@ -596,7 +596,7 @@ mod matches {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn any() {
             assert_eq!(
         rsass(
@@ -611,7 +611,7 @@ mod matches {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn prefixed() {
             assert_eq!(
         rsass(
@@ -630,7 +630,7 @@ mod matches {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
         rsass(
@@ -645,7 +645,7 @@ mod matches {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
         rsass(
@@ -664,7 +664,7 @@ mod matches {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn equal() {
             assert_eq!(
                 rsass(
@@ -679,7 +679,7 @@ mod matches {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn unequal() {
             assert_eq!(
                 rsass(
@@ -701,7 +701,7 @@ mod not {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn bare_sub() {
         assert_eq!(
         rsass(
@@ -722,7 +722,7 @@ mod not {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn subset() {
                 assert_eq!(
         rsass(
@@ -737,7 +737,7 @@ mod not {
     );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn superset() {
                 assert_eq!(
         rsass(
@@ -756,7 +756,7 @@ mod not {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn subset() {
                 assert_eq!(
         rsass(
@@ -771,7 +771,7 @@ mod not {
     );
             }
             #[test]
-            #[ignore] // failing
+            #[ignore] // wrong result
             fn superset() {
                 assert_eq!(
         rsass(
@@ -787,7 +787,7 @@ mod not {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn id() {
         assert_eq!(
             rsass(
@@ -805,7 +805,7 @@ mod not {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
         rsass(
@@ -820,7 +820,7 @@ mod not {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
         rsass(
@@ -836,7 +836,7 @@ mod not {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn subset() {
         assert_eq!(
         rsass(
@@ -851,7 +851,7 @@ mod not {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn superset() {
         assert_eq!(
         rsass(
@@ -866,7 +866,7 @@ mod not {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn test_type() {
         assert_eq!(
             rsass(
@@ -887,7 +887,7 @@ mod nth_child {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn bare_sub() {
         assert_eq!(
         rsass(
@@ -902,7 +902,7 @@ mod nth_child {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn bare_super() {
         assert_eq!(
             rsass(
@@ -917,7 +917,7 @@ mod nth_child {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn different_arg() {
         assert_eq!(
         rsass(
@@ -935,7 +935,7 @@ mod nth_child {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
                 rsass(
@@ -954,7 +954,7 @@ mod nth_child {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
                 rsass(
@@ -974,7 +974,7 @@ mod nth_child {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn subset() {
         assert_eq!(
             rsass(
@@ -993,7 +993,7 @@ mod nth_child {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn superset() {
         assert_eq!(
             rsass(
@@ -1018,7 +1018,7 @@ mod nth_last_child {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn bare_sub() {
         assert_eq!(
         rsass(
@@ -1033,7 +1033,7 @@ mod nth_last_child {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn bare_super() {
         assert_eq!(
         rsass(
@@ -1048,7 +1048,7 @@ mod nth_last_child {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn different_arg() {
         assert_eq!(
             rsass(
@@ -1070,7 +1070,7 @@ mod nth_last_child {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
                 rsass(
@@ -1089,7 +1089,7 @@ mod nth_last_child {
             );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
                 rsass(
@@ -1109,7 +1109,7 @@ mod nth_last_child {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn subset() {
         assert_eq!(
             rsass(
@@ -1128,7 +1128,7 @@ mod nth_last_child {
         );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn superset() {
         assert_eq!(
             rsass(
@@ -1153,7 +1153,7 @@ mod slotted {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn bare_sub() {
         assert_eq!(
         rsass(
@@ -1171,7 +1171,7 @@ mod slotted {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn subset() {
             assert_eq!(
         rsass(
@@ -1186,7 +1186,7 @@ mod slotted {
     );
         }
         #[test]
-        #[ignore] // failing
+        #[ignore] // wrong result
         fn superset() {
             assert_eq!(
         rsass(
@@ -1202,7 +1202,7 @@ mod slotted {
         }
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn subset() {
         assert_eq!(
         rsass(
@@ -1217,7 +1217,7 @@ mod slotted {
     );
     }
     #[test]
-    #[ignore] // failing
+    #[ignore] // wrong result
     fn superset() {
         assert_eq!(
         rsass(

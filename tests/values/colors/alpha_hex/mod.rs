@@ -6,7 +6,7 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/values/colors/alpha_hex/initial_digit.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn initial_digit() {
     set_precision(10);
     assert_eq!(
@@ -47,7 +47,7 @@ fn initial_digit() {
 
 // From "sass-spec/spec/values/colors/alpha_hex/initial_letter.hrx"
 #[test]
-#[ignore] // failing
+#[ignore] // wrong result
 fn initial_letter() {
     set_precision(10);
     assert_eq!(
