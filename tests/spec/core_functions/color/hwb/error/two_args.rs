@@ -1,3 +1,25 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hwb/error/two_args.hrx"
 
-// Ignoring "test", error tests are not supported yet.
+#[test]
+#[ignore] // wrong error
+fn test() {
+    assert_eq!(
+        crate::rsass(
+            "@use \'sass:color\';\
+             \na {b: color.hwb(#123, 0.5)}\
+             \n"
+        )
+        .unwrap_err(),
+        "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n2 | a {b: color.hwb(#123, 0.5)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,\
+         \n1 | @function hwb($channels) {\
+         \n  |           ============== declaration\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+    );
+}

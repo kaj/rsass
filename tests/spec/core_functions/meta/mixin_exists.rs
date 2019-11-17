@@ -145,26 +145,164 @@ mod different_module {
 }
 mod error {
     mod argument {
-
-        // Ignoring "too_few", error tests are not supported yet.
-
-        // Ignoring "too_many", error tests are not supported yet.
+        #[test]
+        fn too_few() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: mixin-exists()}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Missing argument $name.\
+         \n  ,--> input.scss\
+         \n1 | a {b: mixin-exists()}\
+         \n  |       ^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:meta\
+         \n1 | @function mixin-exists($name, $module: null) {\
+         \n  |           ================================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn too_many() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: mixin-exists(c, d, e)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Only 2 arguments allowed, but 3 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: mixin-exists(c, d, e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:meta\
+         \n1 | @function mixin-exists($name, $module: null) {\
+         \n  |           ================================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
         mod test_type {
-
-            // Ignoring "module", error tests are not supported yet.
-
-            // Ignoring "name", error tests are not supported yet.
+            #[test]
+            fn module() {
+                assert_eq!(
+                    crate::rsass(
+                        "a {b: mixin-exists(c, 1)}\
+             \n"
+                    )
+                    .unwrap_err(),
+                    "Error: $module: 1 is not a string.\
+         \n  ,\
+         \n1 | a {b: mixin-exists(c, 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+                );
+            }
+            #[test]
+            fn name() {
+                assert_eq!(
+                    crate::rsass(
+                        "a {b: mixin-exists(12px)}\
+             \n"
+                    )
+                    .unwrap_err(),
+                    "Error: $name: 12px is not a string.\
+         \n  ,\
+         \n1 | a {b: mixin-exists(12px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+                );
+            }
         }
     }
-
-    // Ignoring "conflict", error tests are not supported yet.
+    #[test]
+    #[ignore] // wrong error
+    fn conflict() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"other1\" as *;\
+             \n@use \"other2\" as *;\
+             \n\
+             \na {b: mixin-exists(member)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: This mixin is available from multiple global modules.\
+         \n    ,\
+         \n1   | @use \"other1\" as *;\
+         \n    | ================== includes mixin\
+         \n2   | @use \"other2\" as *;\
+         \n    | ================== includes mixin\
+         \n... |\
+         \n4   | a {b: mixin-exists(member)}\
+         \n    |       ^^^^^^^^^^^^^^^^^^^^ mixin use\
+         \n    \'\
+         \n  input.scss 4:7  root stylesheet\
+         \n",
+        );
+    }
     mod module {
-
-        // Ignoring "built_in_but_not_loaded", error tests are not supported yet.
-
-        // Ignoring "dash_sensitive", error tests are not supported yet.
-
-        // Ignoring "non_existent", error tests are not supported yet.
+        #[test]
+        fn built_in_but_not_loaded() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: mixin-exists(\"c\", \"color\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: There is no module with the namespace \"color\".\
+         \n  ,\
+         \n1 | a {b: mixin-exists(\"c\", \"color\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn dash_sensitive() {
+            assert_eq!(
+                crate::rsass(
+                    "@use \"sass:color\" as a-b;\
+             \nc {d: mixin-exists(\"c\", $module: \"a_b\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: There is no module with the namespace \"a_b\".\
+         \n  ,\
+         \n2 | c {d: mixin-exists(\"c\", $module: \"a_b\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn non_existent() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: mixin-exists(\"c\", \"d\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: There is no module with the namespace \"d\".\
+         \n  ,\
+         \n1 | a {b: mixin-exists(\"c\", \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 #[test]

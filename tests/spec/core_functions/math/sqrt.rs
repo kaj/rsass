@@ -1,14 +1,86 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/sqrt.hrx"
 
 mod error {
-
-    // Ignoring "too_many_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
-
-    // Ignoring "units", error tests are not supported yet.
-
-    // Ignoring "zero_args", error tests are not supported yet.
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:math\" as math;\
+             \na {b: math.sqrt(0, 0)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n2 | a {b: math.sqrt(0, 0)}\
+         \n  |       ^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:math\
+         \n1 | @function sqrt($number) {\
+         \n  |           ============= declaration\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:math\" as math;\
+             \na {b: math.sqrt(\"0\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $number: \"0\" is not a number.\
+         \n  ,\
+         \n2 | a {b: math.sqrt(\"0\")}\
+         \n  |       ^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn units() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:math\" as math;\
+             \na {b: math.sqrt(1px)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $number: Expected 1px to have no units.\
+         \n  ,\
+         \n2 | a {b: math.sqrt(1px)}\
+         \n  |       ^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn zero_args() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:math\" as math;\
+             \na {b: math.sqrt()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $number.\
+         \n  ,--> input.scss\
+         \n2 | a {b: math.sqrt()}\
+         \n  |       ^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:math\
+         \n1 | @function sqrt($number) {\
+         \n  |           ============= declaration\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn infinity() {
@@ -26,6 +98,7 @@ fn infinity() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn named_arg() {
     assert_eq!(
         crate::rsass(
@@ -86,6 +159,7 @@ fn negative_zero_fuzzy() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn positive() {
     assert_eq!(
         crate::rsass(

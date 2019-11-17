@@ -67,19 +67,117 @@ mod t2 {
 }
 mod error {
     mod index {
-
-        // Ignoring "t0", error tests are not supported yet.
-
-        // Ignoring "too_few_args", error tests are not supported yet.
-
-        // Ignoring "too_high", error tests are not supported yet.
-
-        // Ignoring "too_low", error tests are not supported yet.
-
-        // Ignoring "too_many_args", error tests are not supported yet.
+        #[test]
+        fn t0() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: set-nth(c d, 0, e)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $n: List index may not be 0.\
+         \n  ,\
+         \n1 | a {b: set-nth(c d, 0, e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn too_few_args() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: set-nth(c d, 1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Missing argument $value.\
+         \n  ,--> input.scss\
+         \n1 | a {b: set-nth(c d, 1)}\
+         \n  |       ^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function set-nth($list, $n, $value) {\
+         \n  |           ========================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn too_high() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: set-nth(c d, 3, e)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $n: Invalid index 3 for a list with 2 elements.\
+         \n  ,\
+         \n1 | a {b: set-nth(c d, 3, e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn too_low() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: set-nth(c d, -3, e)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $n: Invalid index -3 for a list with 2 elements.\
+         \n  ,\
+         \n1 | a {b: set-nth(c d, -3, e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn too_many_args() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: set-nth(c d, 1, 2, 3)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Only 3 arguments allowed, but 4 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: set-nth(c d, 1, 2, 3)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function set-nth($list, $n, $value) {\
+         \n  |           ========================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
-
-    // Ignoring "test_type", error tests are not supported yet.
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: set-nth(c d, e, f)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $n: e is not a number.\
+         \n  ,\
+         \n1 | a {b: set-nth(c d, e, f)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn map() {

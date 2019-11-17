@@ -64,10 +64,48 @@ fn color() {
     );
 }
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: type-of()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $value.\
+         \n  ,--> input.scss\
+         \n1 | a {b: type-of()}\
+         \n  |       ^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:meta\
+         \n1 | @function type-of($value) {\
+         \n  |           =============== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: type-of(1, 2)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: type-of(1, 2)}\
+         \n  |       ^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:meta\
+         \n1 | @function type-of($value) {\
+         \n  |           =============== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn function() {

@@ -1,3 +1,54 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/parent-selector/missing.hrx"
 
-// Ignoring "test", error tests are not supported yet.
+#[test]
+#[ignore] // missing error
+fn test() {
+    assert_eq!(
+        crate::rsass(
+            "$tablet-portrait:                 768px;\
+             \n$tablet-landscape:                980px;\
+             \n$desk-normal:                     1120px;\
+             \n$desk-big:                        1280px;\
+             \n$grid-breakpoints-immobile: (\
+             \n        \'tablet-portrait\':   \'(min-width: \' + $tablet-portrait + \') and (max-width: \' + $tablet-landscape + \')\',\
+             \n        \'tablet-landscape\':  \'(min-width: \' +  $tablet-landscape + \') and (max-width: \' + $desk-normal + \')\',\
+             \n        \'desk-normal\':       \'(min-width: \' +  $desk-normal + \') and (max-width: \' + $desk-big + \')\',\
+             \n        \'desk-big\':          \'(min-width: \' +  $desk-big + \')\'\
+             \n);\
+             \n@mixin grid-media-query($media-query, $breakpointDefinitions) {\
+             \n  $breakpoint-found: false;\
+             \n\
+             \n  @each $breakpoint, $breakpointvalue in $breakpointDefinitions{\
+             \n    $name: $breakpoint;\
+             \n    $declaration: $breakpointvalue;\
+             \n\
+             \n    @if $media-query == $name and $declaration{\
+             \n      $breakpoint-found: true;\
+             \n\
+             \n      @media only screen and #{$declaration} {\
+             \n        @content;\
+             \n      }\
+             \n    }\
+             \n  }\
+             \n}\
+             \n\
+             \n@each $name in map-keys($grid-breakpoints-immobile) {\
+             \n  @include grid-media-query($name, $grid-breakpoints-immobile) {\
+             \n    body.immobile & {\
+             \n      margin-bottom: 0;\
+             \n    }\
+             \n  }\
+             \n}\
+             \n"
+        ).unwrap_err(),
+        "Error: Top-level selectors may not contain the parent selector \"&\".\
+         \n   ,\
+         \n30 |     body.immobile & {\
+         \n   |     ^^^^^^^^^^^^^^^^\
+         \n   \'\
+         \n  input.scss 30:5  @content\
+         \n  input.scss 22:9  grid-media-query()\
+         \n  input.scss 29:3  root stylesheet\
+         \n",
+    );
+}

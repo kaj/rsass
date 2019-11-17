@@ -1,6 +1,31 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/variable_exists.hrx"
 
-// Ignoring "conflict", error tests are not supported yet.
+#[test]
+#[ignore] // wrong error
+fn conflict() {
+    assert_eq!(
+        crate::rsass(
+            "@use \"other1\" as *;\
+             \n@use \"other2\" as *;\
+             \n\
+             \na {b: variable-exists(member)}\
+             \n"
+        )
+        .unwrap_err(),
+        "Error: This variable is available from multiple global modules.\
+         \n    ,\
+         \n1   | @use \"other1\" as *;\
+         \n    | ================== includes variable\
+         \n2   | @use \"other2\" as *;\
+         \n    | ================== includes variable\
+         \n... |\
+         \n4   | a {b: variable-exists(member)}\
+         \n    |       ^^^^^^^^^^^^^^^^^^^^^^^ variable use\
+         \n    \'\
+         \n  input.scss 4:7  root stylesheet\
+         \n",
+    );
+}
 mod dash_insensitive {
     #[test]
     fn dash_to_underscore() {
@@ -37,12 +62,65 @@ mod dash_insensitive {
 }
 mod error {
     mod argument {
-
-        // Ignoring "too_few", error tests are not supported yet.
-
-        // Ignoring "too_many", error tests are not supported yet.
-
-        // Ignoring "test_type", error tests are not supported yet.
+        #[test]
+        fn too_few() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: variable-exists()}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Missing argument $name.\
+         \n  ,--> input.scss\
+         \n1 | a {b: variable-exists()}\
+         \n  |       ^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:meta\
+         \n1 | @function variable-exists($name) {\
+         \n  |           ====================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn too_many() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: variable-exists(foo, bar)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: variable-exists(foo, bar)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:meta\
+         \n1 | @function variable-exists($name) {\
+         \n  |           ====================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn test_type() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: variable-exists(12px)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $name: 12px is not a string.\
+         \n  ,\
+         \n1 | a {b: variable-exists(12px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 #[test]

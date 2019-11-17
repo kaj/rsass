@@ -88,16 +88,97 @@ mod attribute {
 mod error {
     mod attribute {
         mod modifier {
-
-            // Ignoring "digit", error tests are not supported yet.
-
-            // Ignoring "no_operator", error tests are not supported yet.
-
-            // Ignoring "too_long", error tests are not supported yet.
-
-            // Ignoring "underscore", error tests are not supported yet.
-
-            // Ignoring "unicode", error tests are not supported yet.
+            #[test]
+            #[ignore] // wrong error
+            fn digit() {
+                assert_eq!(
+        crate::rsass(
+            "// Attribute modifiers must be ASCII alphabetical characters.\
+             \n[a=b 1] {c: d}\
+             \n"
+        ).unwrap_err(),
+        "Error: expected \"]\".\
+         \n  ,\
+         \n2 | [a=b 1]{c: d}\
+         \n  |      ^\
+         \n  \'\
+         \n  input.scss 2:6  root stylesheet\
+         \n",
+    );
+            }
+            #[test]
+            #[ignore] // wrong error
+            fn no_operator() {
+                assert_eq!(
+                    crate::rsass(
+                        "[a b] {c: d}\
+             \n"
+                    )
+                    .unwrap_err(),
+                    "Error: Expected \"]\".\
+         \n  ,\
+         \n1 | [a b]{c: d}\
+         \n  |    ^\
+         \n  \'\
+         \n  input.scss 1:4  root stylesheet\
+         \n",
+                );
+            }
+            #[test]
+            #[ignore] // wrong error
+            fn too_long() {
+                assert_eq!(
+                    crate::rsass(
+                        "// Attribute modifiers must be single characters.\
+             \n[a=b cd] {e: f}\
+             \n"
+                    )
+                    .unwrap_err(),
+                    "Error: expected \"]\".\
+         \n  ,\
+         \n2 | [a=b cd]{e: f}\
+         \n  |       ^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+                );
+            }
+            #[test]
+            #[ignore] // wrong error
+            fn underscore() {
+                assert_eq!(
+        crate::rsass(
+            "// Attribute modifiers must be ASCII alphabetical characters.\
+             \n[a=b _] {c: d}\
+             \n"
+        ).unwrap_err(),
+        "Error: expected \"]\".\
+         \n  ,\
+         \n2 | [a=b _]{c: d}\
+         \n  |      ^\
+         \n  \'\
+         \n  input.scss 2:6  root stylesheet\
+         \n",
+    );
+            }
+            #[test]
+            #[ignore] // wrong error
+            fn unicode() {
+                assert_eq!(
+        crate::rsass(
+            "// Attribute modifiers must be ASCII alphabetical characters.\
+             \n[a=b ï] {c: d}\
+             \n"
+        ).unwrap_err(),
+        "Error: expected \"]\".\
+         \n  ,\
+         \n2 | [a=b ï]{c: d}\
+         \n  |      ^\
+         \n  \'\
+         \n  input.scss 2:6  root stylesheet\
+         \n",
+    );
+            }
         }
     }
 }
@@ -314,8 +395,27 @@ mod pseudoselector {
         }
     }
 }
-
-// Ignoring "reference_combinator", error tests are not supported yet.
+#[test]
+#[ignore] // wrong error
+fn reference_combinator() {
+    assert_eq!(
+        crate::rsass(
+            "// Reference combinators used to be supported by Sass when they were part of the\
+             \n// CSS spec, but they\'re no longer supported and should now produce errors.\
+             \n.foo /bar/ .baz {\
+             \n  a: b;\
+             \n}\
+             \n"
+        ).unwrap_err(),
+        "Error: expected selector.\
+         \n  ,\
+         \n3 | .foo /bar/ .baz{\
+         \n  |      ^\
+         \n  \'\
+         \n  input.scss 3:6  root stylesheet\
+         \n",
+    );
+}
 #[test]
 #[ignore] // unexepected error
 fn slotted() {

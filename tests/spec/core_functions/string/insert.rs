@@ -124,19 +124,117 @@ fn empty_insertion() {
     );
 }
 mod error {
-
-    // Ignoring "decimal", error tests are not supported yet.
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn decimal() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: str-insert(\"\", \"\", 0.5)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $index: 0.5 is not an int.\
+         \n  ,\
+         \n1 | a {b: str-insert(\"\", \"\", 0.5)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: str-insert(\"\", \"\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $index.\
+         \n  ,--> input.scss\
+         \n1 | a {b: str-insert(\"\", \"\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:string\
+         \n1 | @function insert($string, $insert, $index) {\
+         \n  |           ================================ declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: str-insert(\"\", \"\", 1, 2)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 3 arguments allowed, but 4 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: str-insert(\"\", \"\", 1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:string\
+         \n1 | @function insert($string, $insert, $index) {\
+         \n  |           ================================ declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "index", error tests are not supported yet.
-
-        // Ignoring "insert", error tests are not supported yet.
-
-        // Ignoring "string", error tests are not supported yet.
+        #[test]
+        fn index() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: str-insert(\"\", \"\", \"\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $index: \"\" is not a number.\
+         \n  ,\
+         \n1 | a {b: str-insert(\"\", \"\", \"\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn insert() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: str-insert(\"\", 1, 1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $insert: 1 is not a string.\
+         \n  ,\
+         \n1 | a {b: str-insert(\"\", 1, 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn string() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: str-insert(1, \"\", 1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $string: 1 is not a string.\
+         \n  ,\
+         \n1 | a {b: str-insert(1, \"\", 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 mod index {

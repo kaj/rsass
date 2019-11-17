@@ -1,12 +1,65 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/ie_hex_str.hrx"
 
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: ie-hex-str()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $color.\
+         \n  ,--> input.scss\
+         \n1 | a {b: ie-hex-str()}\
+         \n  |       ^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function ie-hex-str($color) {\
+         \n  |           ================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: ie-hex-str(red, blue)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: ie-hex-str(red, blue)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function ie-hex-str($color) {\
+         \n  |           ================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: ie-hex-str(c)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $color: c is not a color.\
+         \n  ,\
+         \n1 | a {b: ie-hex-str(c)}\
+         \n  |       ^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn leading_zero() {

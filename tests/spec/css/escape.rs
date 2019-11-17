@@ -2,8 +2,25 @@
 
 mod error {
     mod syntax {
-
-        // Ignoring "too_high", error tests are not supported yet.
+        #[test]
+        #[ignore] // missing error
+        fn too_high() {
+            assert_eq!(
+                crate::rsass(
+                    "// Regression test for sass/dart-sass#1030.\
+             \na {b: \\110000}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Invalid Unicode code point.\
+         \n  ,\
+         \n2 | a {b: \\110000}\
+         \n  |       ^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 #[test]

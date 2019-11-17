@@ -1,14 +1,82 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/percentage.hrx"
 
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
-
-    // Ignoring "unit", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: percentage()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $number.\
+         \n  ,--> input.scss\
+         \n1 | a {b: percentage()}\
+         \n  |       ^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:math\
+         \n1 | @function percentage($number) {\
+         \n  |           =================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: percentage(1, 2)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: percentage(1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:math\
+         \n1 | @function percentage($number) {\
+         \n  |           =================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: percentage(c)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $number: c is not a number.\
+         \n  ,\
+         \n1 | a {b: percentage(c)}\
+         \n  |       ^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn unit() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: percentage(1%)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $number: Expected 1% to have no units.\
+         \n  ,\
+         \n1 | a {b: percentage(1%)}\
+         \n  |       ^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn integer() {

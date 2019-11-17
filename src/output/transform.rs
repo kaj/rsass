@@ -418,7 +418,11 @@ fn handle_item(
                         c => c,
                     })
                 }
-                assert!(sub.is_empty());
+                if !sub.is_empty() {
+                    return Err(Error::S(
+                        "Unexpected content in namespace rule".into(),
+                    ));
+                }
             } else {
                 return Err(Error::S(
                     "Global namespaced property not allowed".into(),

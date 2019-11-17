@@ -1,14 +1,78 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/modules/string.hrx"
 
 mod error {
-
-    // Ignoring "str_index", error tests are not supported yet.
-
-    // Ignoring "str_insert", error tests are not supported yet.
-
-    // Ignoring "str_length", error tests are not supported yet.
-
-    // Ignoring "str_slice", error tests are not supported yet.
+    #[test]
+    fn str_index() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:string\";\
+             \na {b: string.str-index(\"c\", \"c\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: string.str-index(\"c\", \"c\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn str_insert() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:string\";\
+             \na {b: string.str-insert(\"c\", 1, \"d\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: string.str-insert(\"c\", 1, \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn str_length() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:string\";\
+             \na {b: string.str-length(\"c\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: string.str-length(\"c\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn str_slice() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:string\";\
+             \na {b: string.str-slice(\"c\", 1, 1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: string.str-slice(\"c\", 1, 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn index() {

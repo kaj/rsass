@@ -1,6 +1,7 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_666/angle.hrx"
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         crate::rsass(

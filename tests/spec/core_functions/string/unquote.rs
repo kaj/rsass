@@ -21,12 +21,65 @@ fn empty() {
     );
 }
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: unquote()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $string.\
+         \n  ,--> input.scss\
+         \n1 | a {b: unquote()}\
+         \n  |       ^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:string\
+         \n1 | @function unquote($string) {\
+         \n  |           ================ declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: unquote(c, d)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: unquote(c, d)}\
+         \n  |       ^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:string\
+         \n1 | @function unquote($string) {\
+         \n  |           ================ declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: unquote(1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $string: 1 is not a string.\
+         \n  ,\
+         \n1 | a {b: unquote(1)}\
+         \n  |       ^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn escaped_backslash() {

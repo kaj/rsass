@@ -96,14 +96,82 @@ mod args {
     }
 }
 mod error {
-
-    // Ignoring "if_args", error tests are not supported yet.
-
-    // Ignoring "invalid_args", error tests are not supported yet.
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
+    #[test]
+    #[ignore] // wrong error
+    fn if_args() {
+        assert_eq!(
+        crate::rsass(
+            "// The if() function has a special behavior to avoid evaluating the\
+             \n// non-returned argument but that behavior does not propagate to call()\
+             \n// itself when using call() to call if().\
+             \na {b: call(get-function(\"if\"), true, \"\", $undefined)}\
+             \n"
+        ).unwrap_err(),
+        "Error: Undefined variable.\
+         \n  ,\
+         \n4 | a {b: call(get-function(\"if\"), true, \"\", $undefined)}\
+         \n  |                                          ^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:42  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn invalid_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: call(get-function(\"rgb\"), 1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing element $green.\
+         \n  ,\
+         \n1 | a {b: call(get-function(\"rgb\"), 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: call()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $function.\
+         \n  ,--> input.scss\
+         \n1 | a {b: call()}\
+         \n  |       ^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:meta\
+         \n1 | @function call($function, $args...) {\
+         \n  |           ========================= declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: call(1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $function: 1 is not a function reference.\
+         \n  ,\
+         \n1 | a {b: call(1)}\
+         \n  |       ^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn named() {

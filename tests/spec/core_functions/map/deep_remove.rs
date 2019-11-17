@@ -1,10 +1,46 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/deep_remove.hrx"
 
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "@use \'sass:map\';\
+             \na {b: map.deep-remove((c: d))}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $key.\
+         \n  ,--> input.scss\
+         \n2 | a {b: map.deep-remove((c: d))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:map\
+         \n1 | @function deep-remove($map, $key, $keys...) {\
+         \n  |           ================================= declaration\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "@use \'sass:map\';\
+             \na {b: map.deep-remove(1, 2)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $map: 1 is not a map.\
+         \n  ,\
+         \n2 | a {b: map.deep-remove(1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
 }
 mod found {
     mod nested {

@@ -16,14 +16,83 @@ fn empty() {
     );
 }
 mod error {
-
-    // Ignoring "one_arg", error tests are not supported yet.
-
-    // Ignoring "two_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
-
-    // Ignoring "zero_args", error tests are not supported yet.
+    #[test]
+    fn one_arg() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:map\";\
+             \na {b: map.set((c: d))}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Expected $args to contain a key.\
+         \n  ,\
+         \n2 | a {b: map.set((c: d))}\
+         \n  |       ^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn two_args() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:map\";\
+             \na {b: map.set((c: d), e)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Expected $args to contain a value.\
+         \n  ,\
+         \n2 | a {b: map.set((c: d), e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:map\";\
+             \na {b: map.set(1, c, d)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $map: 1 is not a map.\
+         \n  ,\
+         \n2 | a {b: map.set(1, c, d)}\
+         \n  |       ^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn zero_args() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:map\";\
+             \na {b: map.set()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $map.\
+         \n  ,--> input.scss\
+         \n2 | a {b: map.set()}\
+         \n  |       ^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,\
+         \n1 | @function set($map, $args...) {\
+         \n  |           =================== declaration\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn named() {

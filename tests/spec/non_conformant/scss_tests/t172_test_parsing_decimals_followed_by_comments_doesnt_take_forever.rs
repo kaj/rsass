@@ -1,6 +1,7 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/172_test_parsing_decimals_followed_by_comments_doesnt_take_forever.hrx"
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         crate::rsass(

@@ -288,22 +288,137 @@ mod end {
 }
 mod error {
     mod decimal {
-
-        // Ignoring "end", error tests are not supported yet.
-
-        // Ignoring "start", error tests are not supported yet.
+        #[test]
+        #[ignore] // wrong error
+        fn end() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: str-slice(\"\", 1, 1.5)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: 1.5 is not an int.\
+         \n  ,\
+         \n1 | a {b: str-slice(\"\", 1, 1.5)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn start() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: str-slice(\"\", 0.5)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: 0.5 is not an int.\
+         \n  ,\
+         \n1 | a {b: str-slice(\"\", 0.5)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: str-slice(\"cde\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $start-at.\
+         \n  ,--> input.scss\
+         \n1 | a {b: str-slice(\"cde\")}\
+         \n  |       ^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:string\
+         \n1 | @function slice($string, $start-at, $end-at: -1) {\
+         \n  |           ====================================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: str-slice(\"cde\", 1, 2, 3)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 3 arguments allowed, but 4 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: str-slice(\"cde\", 1, 2, 3)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:string\
+         \n1 | @function slice($string, $start-at, $end-at: -1) {\
+         \n  |           ====================================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "end_at", error tests are not supported yet.
-
-        // Ignoring "start_at", error tests are not supported yet.
-
-        // Ignoring "string", error tests are not supported yet.
+        #[test]
+        fn end_at() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: str-slice(\"cde\", 1, \"f\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $end-at: \"f\" is not a number.\
+         \n  ,\
+         \n1 | a {b: str-slice(\"cde\", 1, \"f\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn start_at() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: str-slice(\"cde\", \"f\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $start-at: \"f\" is not a number.\
+         \n  ,\
+         \n1 | a {b: str-slice(\"cde\", \"f\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn string() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: str-slice(1, 2)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $string: 1 is not a string.\
+         \n  ,\
+         \n1 | a {b: str-slice(1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 #[test]

@@ -90,15 +90,83 @@ fn end() {
     );
 }
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: str-index(\"c\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $substring.\
+         \n  ,--> input.scss\
+         \n1 | a {b: str-index(\"c\")}\
+         \n  |       ^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:string\
+         \n1 | @function index($string, $substring) {\
+         \n  |           ========================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: str-index(\"c\", \"d\", \"e\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 2 arguments allowed, but 3 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: str-index(\"c\", \"d\", \"e\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:string\
+         \n1 | @function index($string, $substring) {\
+         \n  |           ========================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "string", error tests are not supported yet.
-
-        // Ignoring "substring", error tests are not supported yet.
+        #[test]
+        fn string() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: str-index(1, \"c\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $string: 1 is not a string.\
+         \n  ,\
+         \n1 | a {b: str-index(1, \"c\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn substring() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: str-index(\"c\", 1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $substring: 1 is not a string.\
+         \n  ,\
+         \n1 | a {b: str-index(\"c\", 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 #[test]

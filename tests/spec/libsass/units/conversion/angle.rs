@@ -1,6 +1,7 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/units/conversion/angle.hrx"
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         crate::rsass(

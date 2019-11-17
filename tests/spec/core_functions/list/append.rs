@@ -130,16 +130,84 @@ mod empty {
     }
 }
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
-    mod test_type {
-
-        // Ignoring "separator", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: append(c)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $val.\
+         \n  ,--> input.scss\
+         \n1 | a {b: append(c)}\
+         \n  |       ^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function append($list, $val, $separator: auto) {\
+         \n  |           ===================================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
     }
-
-    // Ignoring "unknown_separator", error tests are not supported yet.
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: append(c, d, comma, e)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 3 arguments allowed, but 4 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: append(c, d, comma, e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function append($list, $val, $separator: auto) {\
+         \n  |           ===================================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    mod test_type {
+        #[test]
+        fn separator() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: append(c, d, $separator: 1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $separator: 1 is not a string.\
+         \n  ,\
+         \n1 | a {b: append(c, d, $separator: 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+    }
+    #[test]
+    fn unknown_separator() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: append(c, d, $separator: e)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $separator: Must be \"space\", \"comma\", or \"auto\".\
+         \n  ,\
+         \n1 | a {b: append(c, d, $separator: e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 mod map {
     #[test]

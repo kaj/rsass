@@ -35,8 +35,26 @@ mod error {
     mod loud {
         mod multi_line {}
         mod unterminated {
-
-            // Ignoring "scss", error tests are not supported yet.
+            #[test]
+            #[ignore] // missing error
+            fn scss() {
+                assert_eq!(
+                    crate::rsass(
+                        "a {\
+             \n  b: c /* d\
+             \n}\
+             \n"
+                    )
+                    .unwrap_err(),
+                    "Error: expected more input.\
+         \n  ,\
+         \n3 | }\
+         \n  |  ^\
+         \n  \'\
+         \n  input.scss 3:2  root stylesheet\
+         \n",
+                );
+            }
         }
     }
 }

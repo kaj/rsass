@@ -3,8 +3,8 @@ use super::options::Options;
 use super::Error;
 use lazy_static::lazy_static;
 use regex::Regex;
-use rsass::output::Format;
-use rsass::{parse_scss_data, FsFileContext, ScopeRef};
+use rsass::output::{Format, Style};
+use rsass::{parse_scss_file, FsFileContext, ScopeRef};
 use std::io::Write;
 
 pub struct TestFixture {
@@ -55,21 +55,29 @@ impl TestFixture {
             ignore(rs, &self.fn_name, reason)?;
             return Ok(());
         }
+        rs.write_all(b"#[test]\n")?;
+        if let Some(reason) = self.is_failure() {
+            writeln!(rs, "#[ignore] // {}", reason)?;
+        }
+        writeln!(rs, "fn {}() {{", self.fn_name)?;
         match self.expectation {
-            ExpectedError(_) => {
-                // TODO: Support error tests;
-                ignore(
+            ExpectedError(ref err) => {
+                let input = format!("{:?}", self.input)
+                    .replace(escaped_newline(), "\n             \\n");
+                let err = format!("{:?}", err)
+                    .replace(escaped_newline(), "\n         \\n");
+                writeln!(
                     rs,
-                    &self.fn_name,
-                    "error tests are not supported yet",
+                    "    assert_eq!(\
+                     \n        crate::rsass(\
+                     \n            {}\
+                     \n        ).unwrap_err(),\
+                     \n        {},\
+                     \n    );",
+                    input, err,
                 )?;
             }
             ExpectedCSS(ref expected) => {
-                rs.write_all(b"#[test]\n")?;
-                if let Some(reason) = self.is_failure() {
-                    writeln!(rs, "#[ignore] // {}", reason)?;
-                }
-                writeln!(rs, "fn {}() {{", self.fn_name)?;
                 let precision = self.options.precision;
                 if let Some(precision) = precision {
                     writeln!(
@@ -102,33 +110,36 @@ impl TestFixture {
                     input,
                     expected,
                 )?;
-                rs.write_all(b"}\n")?;
             }
         }
+        rs.write_all(b"}\n")?;
         Ok(())
     }
 
-    /// Execute the test here and now, return None for success or Some
-    /// reason to fail.
+    /// Execute the test here and now, return None for success or Some reason to fail.
     fn is_failure(&self) -> Option<&'static str> {
-        match &self.expectation {
-            ExpectedError(_) => Some("Error tests not supported yet"),
-            ExpectedCSS(ref expected) => {
-                let mut format = Format::default();
-                if let Some(precision) = self.options.precision {
-                    format.precision = precision as usize;
-                }
-                match rsass(&self.input, format) {
-                    Ok(ref actual) => {
-                        if expected == actual {
-                            None // Yes!
-                        } else {
-                            Some("wrong result")
-                        }
-                    }
-                    Err(_) => Some("unexepected error"),
+        let format = Format {
+            style: Style::Expanded,
+            precision: self.options.precision.unwrap_or(6) as usize,
+        };
+        match (&self.expectation, rsass(&self.input, format)) {
+            (ExpectedError(_), Ok(_)) => Some("missing error"),
+            (ExpectedError(ref expected), Err(ref actual)) => {
+                // TODO: some flexibility in comparision?
+                if expected == actual {
+                    None
+                } else {
+                    Some("wrong error")
                 }
             }
+            (ExpectedCSS(ref expected), Ok(ref actual)) => {
+                if expected == actual {
+                    None
+                } else {
+                    Some("wrong result")
+                }
+            }
+            (ExpectedCSS(_), Err(_)) => Some("unexepected error"),
         }
     }
 }
@@ -147,7 +158,7 @@ fn escaped_newline() -> impl FnMut(char) -> bool {
 
 fn rsass(input: &str, format: Format) -> Result<String, String> {
     compile_scss(input.as_bytes(), format)
-        .map_err(|e| format!("rsass failed: {}", e))
+        .map_err(|e| format!("{}\n", e))
         .and_then(|s| {
             String::from_utf8(s)
                 .map(|s| normalize_output_css(s.as_str()))
@@ -161,7 +172,7 @@ pub fn compile_scss(
 ) -> Result<Vec<u8>, rsass::Error> {
     let mut file_context = FsFileContext::new();
     file_context.push_path("tests/spec".as_ref());
-    let items = parse_scss_data(input)?;
+    let items = parse_scss_file(&mut &input[..], "input.scss")?;
     format.write_root(&items, ScopeRef::new_global(format), &file_context)
 }
 

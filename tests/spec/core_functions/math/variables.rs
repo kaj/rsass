@@ -1,6 +1,7 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/variables.hrx"
 
 #[test]
+#[ignore] // wrong result
 fn e() {
     assert_eq!(
         crate::rsass(
@@ -17,13 +18,48 @@ fn e() {
 }
 mod error {
     mod assignment {
-
-        // Ignoring "e", error tests are not supported yet.
-
-        // Ignoring "pi", error tests are not supported yet.
+        #[test]
+        #[ignore] // wrong error
+        fn e() {
+            assert_eq!(
+                crate::rsass(
+                    "@use \"sass:math\" as math;\
+             \nmath.$e: 0;\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Cannot modify built-in variable.\
+         \n  ,\
+         \n2 | math.$e: 0;\
+         \n  | ^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn pi() {
+            assert_eq!(
+                crate::rsass(
+                    "@use \"sass:math\" as math;\
+             \nmath.$pi: 0;\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Cannot modify built-in variable.\
+         \n  ,\
+         \n2 | math.$pi: 0;\
+         \n  | ^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 #[test]
+#[ignore] // wrong result
 fn pi() {
     assert_eq!(
         crate::rsass(

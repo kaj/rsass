@@ -46,10 +46,42 @@ fn compatible() {
     );
 }
 mod error {
-
-    // Ignoring "comparable", error tests are not supported yet.
-
-    // Ignoring "unitless", error tests are not supported yet.
+    #[test]
+    fn comparable() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:math\";\
+             \na {b: math.comparable(1px, 1in)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: math.comparable(1px, 1in)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn unitless() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:math\";\
+             \na {b: math.unitless(1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: math.unitless(1)}\
+         \n  |       ^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn floor() {

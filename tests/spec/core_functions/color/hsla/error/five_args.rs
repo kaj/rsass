@@ -1,3 +1,25 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hsla/error/five_args.hrx"
 
-// Ignoring "test", error tests are not supported yet.
+#[test]
+#[ignore] // missing error
+fn test() {
+    assert_eq!(
+        crate::rsass(
+            "a {\
+             \n  b: hsla(0, 100%, 50%, 0.5, 0);\
+             \n}\
+             \n"
+        ).unwrap_err(),
+        "Error: Only 4 arguments allowed, but 5 were passed.\
+         \n  ,--> input.scss\
+         \n2 |   b: hsla(0, 100%, 50%, 0.5, 0);\
+         \n  |      ^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,\
+         \n1 | @function hsla($hue, $saturation, $lightness, $alpha) {\
+         \n  |           =========================================== declaration\
+         \n  \'\
+         \n  input.scss 2:6  root stylesheet\
+         \n",
+    );
+}

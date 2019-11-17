@@ -1,11 +1,45 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/has_key.hrx"
 
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: map-has-key(1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $key.\
+         \n  ,--> input.scss\
+         \n1 | a {b: map-has-key(1)}\
+         \n  |       ^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:map\
+         \n1 | @function has-key($map, $key, $keys...) {\
+         \n  |           ============================= declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "map", error tests are not supported yet.
+        #[test]
+        fn map() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: map-has-key(1, 2)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $map: 1 is not a map.\
+         \n  ,\
+         \n1 | a {b: map-has-key(1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 mod found {

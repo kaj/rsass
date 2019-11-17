@@ -1,17 +1,97 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/max.hrx"
 
 mod error {
-
-    // Ignoring "incompatible_units", error tests are not supported yet.
-
-    // Ignoring "too_few_args", error tests are not supported yet.
+    #[test]
+    fn incompatible_units() {
+        assert_eq!(
+            crate::rsass(
+                "$arg: 1px;\
+             \na {b: max($arg, 2s)}\
+             \n\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: 1px and 2s have incompatible units.\
+         \n  ,\
+         \n2 | a {b: max($arg, 2s)}\
+         \n  |       ^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: max()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: At least one argument must be passed.\
+         \n  ,\
+         \n1 | a {b: max()}\
+         \n  |       ^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "arg_1", error tests are not supported yet.
-
-        // Ignoring "arg_2", error tests are not supported yet.
-
-        // Ignoring "arg_3", error tests are not supported yet.
+        #[test]
+        fn arg_1() {
+            assert_eq!(
+                crate::rsass(
+                    "$arg: c;\
+             \na {b: max($arg)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: c is not a number.\
+         \n  ,\
+         \n2 | a {b: max($arg)}\
+         \n  |       ^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn arg_2() {
+            assert_eq!(
+                crate::rsass(
+                    "$arg: c;\
+             \na {b: max(1, $arg)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: c is not a number.\
+         \n  ,\
+         \n2 | a {b: max(1, $arg)}\
+         \n  |       ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn arg_3() {
+            assert_eq!(
+                crate::rsass(
+                    "$arg: c;\
+             \na {b: max(1, 2, $arg)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: c is not a number.\
+         \n  ,\
+         \n2 | a {b: max(1, 2, $arg)}\
+         \n  |       ^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 #[test]

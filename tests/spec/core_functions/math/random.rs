@@ -1,14 +1,74 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/random.hrx"
 
 mod error {
-
-    // Ignoring "decimal", error tests are not supported yet.
-
-    // Ignoring "negative", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
-
-    // Ignoring "zero", error tests are not supported yet.
+    #[test]
+    fn decimal() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: random(1.5)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $limit: 1.5 is not an int.\
+         \n  ,\
+         \n1 | a {b: random(1.5)}\
+         \n  |       ^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn negative() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: random(-1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $limit: Must be greater than 0, was -1.\
+         \n  ,\
+         \n1 | a {b: random(-1)}\
+         \n  |       ^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: random(c)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $limit: c is not a number.\
+         \n  ,\
+         \n1 | a {b: random(c)}\
+         \n  |       ^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn zero() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: random(0)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $limit: Must be greater than 0, was 0.\
+         \n  ,\
+         \n1 | a {b: random(0)}\
+         \n  |       ^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn ignores_units() {
