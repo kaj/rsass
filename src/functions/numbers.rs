@@ -46,8 +46,13 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Ok(number(Rational::new(intrand(rez), rez), Unit::None))
         }
         Value::Numeric(val, ..) => {
-            let res = 1 + intrand(val.to_integer());
-            Ok(number(Rational::from_integer(res), Unit::None))
+            let bound = val.to_integer();
+            if bound > 0 {
+                let res = 1 + intrand(bound);
+                Ok(number(Rational::from_integer(res), Unit::None))
+            } else {
+                return Err(Error::S("bound must be > 0".into()));
+            }
         }
         v => Err(Error::badarg("number or null", &v)),
     });
