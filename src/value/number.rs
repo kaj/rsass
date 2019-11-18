@@ -1,7 +1,7 @@
 use num_rational::Rational;
 use num_traits::{Signed, Zero};
 use std::fmt::{self, Write};
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 // TODO Using a global static setting like this makes the API unusable
@@ -77,6 +77,12 @@ impl<'a> Mul for &'a Number {
     type Output = Number;
     fn mul(self, rhs: Self) -> Self::Output {
         Number::from(self.value * rhs.value)
+    }
+}
+impl<'a> Rem for &'a Number {
+    type Output = Number;
+    fn rem(self, rhs: Self) -> Self::Output {
+        Number::from(self.value % rhs.value)
     }
 }
 impl<'a> Neg for &'a Number {

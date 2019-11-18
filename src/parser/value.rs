@@ -156,6 +156,7 @@ fn term_value(input: &[u8]) -> IResult<&[u8], Value> {
         alt((
             value(Operator::Multiply, tag(b"*")),
             value(Operator::Div, tag(b"/")),
+            value(Operator::Modulo, tag(b"%")),
         )),
         map(multispace0, |s: &[u8]| !s.is_empty()),
         map(opt(single_value), |v: Option<Value>| {

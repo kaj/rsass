@@ -60,7 +60,6 @@ fn plain_css() {
 
 // From "sass-spec/spec/css/min_max/sass_function.hrx"
 #[test]
-#[ignore] // wrong result
 fn sass_function() {
     assert_eq!(
         rsass(

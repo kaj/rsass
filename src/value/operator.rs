@@ -18,6 +18,7 @@ pub enum Operator {
     Minus,
     Multiply,
     Div,
+    Modulo,
 
     Not,
 }
@@ -180,6 +181,21 @@ impl Operator {
                     None
                 }
             }
+            Operator::Modulo => match (&a, &b) {
+                (
+                    &Value::Numeric(ref av, ref au, ..),
+                    &Value::Numeric(ref bv, ref bu, ..),
+                ) => {
+                    if au == bu && !bv.is_zero() {
+                        Some(Value::Numeric(av % bv, Unit::None, true))
+                    } else if bu == &Unit::None && !bv.is_zero() {
+                        Some(Value::Numeric(av % bv, au.clone(), true))
+                    } else {
+                        None
+                    }
+                }
+                _ => None,
+            },
             Operator::Not => panic!("not is a unary operator only"),
         }
     }
@@ -202,6 +218,7 @@ impl fmt::Display for Operator {
                 Operator::Plus => "+",
                 Operator::Minus => "-",
                 Operator::Multiply => "*",
+                Operator::Modulo => "%",
                 Operator::Div => "/",
                 Operator::Not => "not",
             }
