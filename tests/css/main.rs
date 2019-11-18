@@ -34,7 +34,6 @@ mod comment {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn cr() {
                 assert_eq!(
                     rsass(
@@ -48,7 +47,6 @@ mod comment {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn ff() {
                 assert_eq!(
                     rsass(

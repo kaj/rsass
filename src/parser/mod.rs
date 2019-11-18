@@ -109,9 +109,7 @@ fn top_level_item(input: &[u8]) -> IResult<&[u8], Item> {
     ))(input)?;
     match tag {
         b"$" => variable_declaration2(input),
-        b"/*" => {
-            map(map_res(comment2, input_to_string), Item::Comment)(input)
-        }
+        b"/*" => comment_item(input),
         b"@each" => each_loop2(input),
         b"@for" => for_loop2(input),
         b"@function" => function_declaration2(input),
@@ -124,6 +122,15 @@ fn top_level_item(input: &[u8]) -> IResult<&[u8], Item> {
         b"" => rule(input),
         _ => unreachable!(),
     }
+}
+
+fn comment_item(input: &[u8]) -> IResult<&[u8], Item> {
+    let (rest, comment) = map_res(comment2, input_to_string)(input)?;
+    let comment = comment
+        .replace("\r\n", "\n")
+        .replace('\r', "\n")
+        .replace('\u{c}', "\n");
+    Ok((rest, Item::Comment(comment)))
 }
 
 fn rule(input: &[u8]) -> IResult<&[u8], Item> {
@@ -157,9 +164,7 @@ fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
     ))(input)?;
     match tag {
         b"$" => variable_declaration2(input),
-        b"/*" => {
-            map(map_res(comment2, input_to_string), Item::Comment)(input)
-        }
+        b"/*" => comment_item(input),
         b";" => Ok((input, Item::None)),
         b"@at-root" => at_root2(input),
         b"@content" => content_stmt2(input),
