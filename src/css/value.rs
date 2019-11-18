@@ -4,6 +4,7 @@ use crate::functions::SassFunction;
 use crate::ordermap::OrderMap;
 use crate::value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
 use num_rational::Rational;
+use std::convert::TryFrom;
 use std::fmt::{self, Write};
 
 /// A sass value.
@@ -127,22 +128,59 @@ impl Value {
             }
             Value::Literal(s, _) => {
                 let mut result = String::new();
-                let mut iter = s.chars();
+                let mut iter = s.chars().peekable();
                 while let Some(c) = iter.next() {
                     if c == '\\' {
-                        match iter.next() {
-                            Some('0') => result.push('\u{fffd}'),
-                            Some(c) if (c >= '1' && c <= '9') => {
-                                result.push((c as u8 - b'0') as char)
+                        let mut val: u32 = 0;
+                        let mut got_num = false;
+                        let nextchar = loop {
+                            match iter.peek() {
+                                Some(&c) if (c >= '0' && c <= '9') => {
+                                    val =
+                                        val * 10 + u32::from(c as u8 - b'0');
+                                    got_num = true;
+                                    iter.next();
+                                }
+                                Some(&c) if (c >= 'a' && c <= 'f') => {
+                                    val = val * 10
+                                        + u32::from(c as u8 - b'a' + 10);
+                                    got_num = true;
+                                    iter.next();
+                                }
+                                Some(&c) if (c >= 'A' && c <= 'F') => {
+                                    val = val * 10
+                                        + u32::from(c as u8 - b'A' + 10);
+                                    got_num = true;
+                                    iter.next();
+                                }
+                                Some(' ') if got_num => {
+                                    iter.next();
+                                    break (None);
+                                }
+                                Some(_) if !got_num => break (iter.next()),
+                                _ => break (None),
                             }
-                            Some(c) if (c >= 'a' && c <= 'f') => {
-                                result.push((c as u8 - b'a' + 10) as char)
+                        };
+                        if got_num {
+                            if val == 0 {
+                                result.push('\u{fffd}');
+                            } else {
+                                if let Ok(c) = char::try_from(val) {
+                                    result.push(c);
+                                } else {
+                                    result.push('\u{fffd}');
+                                }
                             }
-                            Some(c) if (c >= 'A' && c <= 'F') => {
-                                result.push((c as u8 - b'A' + 10) as char)
+                        }
+                        match nextchar {
+                            Some('\n') => {
+                                result.push('\\');
+                                result.push('a');
                             }
-                            Some(c) => result.push(c),
-                            None => result.push('\\'), // ??
+                            Some(c) => {
+                                result.push(c);
+                            }
+                            None => (),
                         }
                     } else {
                         result.push(c)
@@ -165,24 +203,74 @@ impl Value {
             }
             Value::Literal(ref s, _) => {
                 let mut result = String::new();
-                let mut iter = s.chars();
+                let mut iter = s.chars().peekable();
                 while let Some(c) = iter.next() {
                     if c == '\\' {
-                        match iter.next() {
-                            Some('\\') => result.push_str("\\\\"),
-                            Some('0') => result.push('\u{fffd}'),
-                            Some(c) if (c >= '1' && c <= '9') => {
-                                result.push((c as u8 - b'0') as char)
+                        let mut val: u32 = 0;
+                        let mut got_num = false;
+                        let radix = 16;
+                        let nextchar = loop {
+                            match iter.peek() {
+                                Some(c) if (c >= &'0' && c <= &'9') => {
+                                    val = val * radix
+                                        + u32::from(*c as u8 - b'0');
+                                    got_num = true;
+                                    iter.next();
+                                }
+                                Some(c) if (c >= &'a' && c <= &'f') => {
+                                    val = val * radix
+                                        + u32::from(*c as u8 - b'a' + 10);
+                                    got_num = true;
+                                    iter.next();
+                                }
+                                Some(c) if (c >= &'A' && c <= &'F') => {
+                                    val = val * radix
+                                        + u32::from(*c as u8 - b'A' + 10);
+                                    got_num = true;
+                                    iter.next();
+                                }
+                                Some(' ') if got_num => {
+                                    iter.next();
+                                    break (None);
+                                }
+                                Some(_) if !got_num => break (iter.next()),
+                                _ => break (None),
                             }
-                            Some('a') | Some('A') => result.push_str("\\a"),
-                            Some(c) if (c >= 'b' && c <= 'f') => {
-                                result.push((c as u8 - b'a' + 10) as char)
+                        };
+                        if got_num {
+                            if val == 0 {
+                                result.push('\u{fffd}');
+                            } else {
+                                if let Ok(c) = char::try_from(val) {
+                                    if c != '\n' {
+                                        result.push(c);
+                                    } else {
+                                        result.push('\\');
+                                        result.push('a');
+                                    }
+                                } else {
+                                    result.push('\u{fffd}');
+                                }
                             }
-                            Some(c) if (c >= 'B' && c <= 'F') => {
-                                result.push((c as u8 - b'A' + 10) as char)
+                        } /* else if nextchar == Some('\\') {
+                              result.push('\\');
+                          }
+                          if let Some(nextchar) = nextchar {
+                              result.push(nextchar)
+                          }*/
+                        match nextchar {
+                            Some('\n') => {
+                                result.push('\\');
+                                result.push('n');
                             }
-                            Some(c) => result.push(c),
-                            None => result.push('\\'), // ??
+                            Some('\\') => {
+                                result.push('\\');
+                                result.push('\\');
+                            }
+                            Some(c) => {
+                                result.push(c);
+                            }
+                            None => (),
                         }
                     } else {
                         result.push(c)

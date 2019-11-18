@@ -129,7 +129,6 @@ mod insert {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn combining_character() {
         assert_eq!(
         rsass(
@@ -433,7 +432,6 @@ mod length {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn combining_character() {
         assert_eq!(
         rsass(
