@@ -22,6 +22,7 @@ pub enum Item {
         args: Value,
         body: Option<Vec<Item>>,
     },
+    Error(Value),
 
     MixinDeclaration {
         name: String,

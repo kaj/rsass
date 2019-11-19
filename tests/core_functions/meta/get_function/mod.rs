@@ -422,7 +422,6 @@ mod same_module {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn redefined() {
         assert_eq!(
         rsass(
@@ -484,7 +483,6 @@ mod scope {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // unexepected error
     fn captures_inner_scope() {
         assert_eq!(
         rsass(

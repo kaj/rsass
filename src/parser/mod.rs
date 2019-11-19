@@ -97,6 +97,7 @@ fn top_level_item(input: &[u8]) -> IResult<&[u8], Item> {
         tag("$"),
         tag("/*"),
         tag("@each"),
+        tag("@error"),
         tag("@for"),
         tag("@function"),
         tag("@if"),
@@ -112,6 +113,7 @@ fn top_level_item(input: &[u8]) -> IResult<&[u8], Item> {
         b"$" => variable_declaration2(input),
         b"/*" => comment_item(input),
         b"@each" => each_loop2(input),
+        b"@error" => error2(input),
         b"@for" => for_loop2(input),
         b"@function" => function_declaration2(input),
         b"@if" => if_statement2(input),
@@ -153,6 +155,7 @@ fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
         tag("@at-root"),
         tag("@content"),
         tag("@each"),
+        tag("@error"),
         tag("@for"),
         tag("@function"),
         tag("@if"),
@@ -171,6 +174,7 @@ fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
         b";" => Ok((input, Item::None)),
         b"@at-root" => at_root2(input),
         b"@content" => content_stmt2(input),
+        b"@error" => error2(input),
         b"@each" => each_loop2(input),
         b"@for" => for_loop2(input),
         b"@function" => function_declaration2(input),
@@ -355,6 +359,12 @@ fn warn2(input: &[u8]) -> IResult<&[u8], Item> {
     let (input, arg) =
         delimited(spacelike, value_expression, opt(tag(";")))(input)?;
     Ok((input, Item::Warn(arg)))
+}
+
+fn error2(input: &[u8]) -> IResult<&[u8], Item> {
+    let (input, arg) =
+        delimited(spacelike, value_expression, opt(tag(";")))(input)?;
+    Ok((input, Item::Error(arg)))
 }
 
 fn while_loop2(input: &[u8]) -> IResult<&[u8], Item> {

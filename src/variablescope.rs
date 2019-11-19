@@ -154,6 +154,12 @@ pub trait Scope {
                     eprintln!("WARNING: {}", value.evaluate(self)?);
                     None
                 }
+                Item::Error(ref value) => {
+                    return Err(Error::S(format!(
+                        "Error: {}",
+                        value.evaluate(self)?
+                    )));
+                }
                 Item::None => None,
                 ref x => panic!("Not implemented in fuction: {:?}", x),
             };

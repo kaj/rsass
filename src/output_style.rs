@@ -282,6 +282,12 @@ impl OutputStyle {
             Item::Warn(ref value) => {
                 eprintln!("WARNING: {}", value.evaluate(scope)?);
             }
+            Item::Error(ref value) => {
+                return Err(Error::S(format!(
+                    "Error: {}",
+                    value.evaluate(scope)?
+                )));
+            }
             Item::While(ref cond, ref body) => {
                 let mut scope = ScopeImpl::sub(scope);
                 while cond.evaluate(&scope)?.is_true() {
@@ -596,6 +602,12 @@ impl OutputStyle {
                 }
                 Item::Warn(ref value) => {
                     eprintln!("WARNING: {}", value.evaluate(scope)?);
+                }
+                Item::Error(ref value) => {
+                    return Err(Error::S(format!(
+                        "Error: {}",
+                        value.evaluate(scope)?
+                    )));
                 }
                 Item::While(ref cond, ref body) => {
                     let mut scope = ScopeImpl::sub(scope);
