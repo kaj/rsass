@@ -150,6 +150,10 @@ pub trait Scope {
                     }
                     None
                 }
+                Item::Warn(ref value) => {
+                    eprintln!("WARNING: {}", value.evaluate(self)?);
+                    None
+                }
                 Item::None => None,
                 ref x => panic!("Not implemented in fuction: {:?}", x),
             };

@@ -279,6 +279,9 @@ impl OutputStyle {
                     }
                 }
             }
+            Item::Warn(ref value) => {
+                eprintln!("WARNING: {}", value.evaluate(scope)?);
+            }
             Item::While(ref cond, ref body) => {
                 let mut scope = ScopeImpl::sub(scope);
                 while cond.evaluate(&scope)?.is_true() {
@@ -590,6 +593,9 @@ impl OutputStyle {
                             0,
                         )?;
                     }
+                }
+                Item::Warn(ref value) => {
+                    eprintln!("WARNING: {}", value.evaluate(scope)?);
                 }
                 Item::While(ref cond, ref body) => {
                     let mut scope = ScopeImpl::sub(scope);

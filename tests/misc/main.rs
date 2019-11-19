@@ -303,7 +303,6 @@ fn unicode_variables() {
 
 // From "sass-spec/spec/misc/warn-directive.hrx"
 #[test]
-#[ignore] // wrong result
 fn warn_directive() {
     assert_eq!(
         rsass(

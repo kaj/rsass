@@ -12,7 +12,6 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/warn-directive-nested/mixin.hrx"
 #[test]
-#[ignore] // wrong result
 fn mixin() {
     assert_eq!(
         rsass(

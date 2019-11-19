@@ -103,6 +103,7 @@ fn top_level_item(input: &[u8]) -> IResult<&[u8], Item> {
         tag("@import"),
         tag("@include"),
         tag("@mixin"),
+        tag("@warn"),
         tag("@while"),
         tag("@"),
         tag(""),
@@ -117,6 +118,7 @@ fn top_level_item(input: &[u8]) -> IResult<&[u8], Item> {
         b"@import" => import2(input),
         b"@include" => mixin_call2(input),
         b"@mixin" => mixin_declaration2(input),
+        b"@warn" => warn2(input),
         b"@while" => while_loop2(input),
         b"@" => at_rule2(input),
         b"" => rule(input),
@@ -158,6 +160,7 @@ fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
         tag("@include"),
         tag("@mixin"),
         tag("@return"),
+        tag("@warn"),
         tag("@while"),
         tag("@"),
         tag(""),
@@ -176,6 +179,7 @@ fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
         b"@include" => mixin_call2(input),
         b"@mixin" => mixin_declaration2(input),
         b"@return" => return_stmt2(input),
+        b"@warn" => warn2(input),
         b"@while" => while_loop2(input),
         b"@" => at_rule2(input),
         b"" => {
@@ -345,6 +349,12 @@ fn for_loop2(input: &[u8]) -> IResult<&[u8], Item> {
             body,
         },
     ))
+}
+
+fn warn2(input: &[u8]) -> IResult<&[u8], Item> {
+    let (input, arg) =
+        delimited(spacelike, value_expression, opt(tag(";")))(input)?;
+    Ok((input, Item::Warn(arg)))
 }
 
 fn while_loop2(input: &[u8]) -> IResult<&[u8], Item> {
