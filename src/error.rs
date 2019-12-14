@@ -24,6 +24,8 @@ pub enum Error {
     UndefinedVariable(String),
 }
 
+impl std::error::Error for Error {}
+
 impl Error {
     pub fn bad_value(expected: &str, actual: &Value) -> Self {
         Error::BadValue(format!(
