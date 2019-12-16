@@ -1,6 +1,6 @@
 use super::{make_call, Error, SassFunction};
-use crate::css::Value;
-use crate::value::{Number, Unit};
+use crate::css::{CallArgs, Value};
+use crate::value::{Number, Quotes, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Zero};
@@ -25,6 +25,29 @@ fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
                     a,
                 ],
             )),
+        }
+    } else if let Value::List(vec, sep, bracketed) = red {
+        if vec.len() > 3 {
+            Err(Error::badarg(
+                "3 elements",
+                &Value::List(vec, sep, bracketed),
+            ))
+        } else {
+            // If less than 3 arguments are passed, one of the arguments could be a variable containing
+            // multiple values, so we want to preserve the original separator.
+            let call_args = if vec.len() < 3 {
+                CallArgs::new(vec![(
+                    None,
+                    Value::Literal(
+                        format!("{}", Value::List(vec, sep, bracketed)),
+                        Quotes::None,
+                    ),
+                )])
+            } else {
+                CallArgs::new(vec.into_iter().map(|v| (None, v)).collect())
+            };
+
+            Ok(Value::Call(fn_name.into(), call_args))
         }
     } else {
         let green = s.get("green")?;
