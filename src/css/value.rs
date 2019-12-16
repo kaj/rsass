@@ -420,6 +420,9 @@ impl fmt::Display for Value {
             }
             Value::UnaryOp(ref op, ref v) => {
                 op.fmt(out)?;
+                if *op == Operator::Not {
+                    out.write_char(' ')?;
+                }
                 v.fmt(out)
             }
             Value::True => write!(out, "true"),

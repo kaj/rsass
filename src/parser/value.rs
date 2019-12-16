@@ -433,7 +433,7 @@ pub fn dictionary_inner(input: &[u8]) -> IResult<&[u8], Value> {
         separated_nonempty_list(
             delimited(opt_spacelike, tag(","), opt_spacelike),
             pair(
-                simple_value,
+                sum_expression,
                 preceded(
                     delimited(opt_spacelike, tag(":"), opt_spacelike),
                     space_list,

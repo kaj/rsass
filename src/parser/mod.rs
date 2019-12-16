@@ -8,7 +8,9 @@ pub mod value;
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
 use self::strings::{name, sass_string, sass_string_dq, sass_string_sq};
-use self::util::{comment2, ignore_space, opt_spacelike, spacelike};
+use self::util::{
+    comment2, ignore_comments, ignore_space, opt_spacelike, spacelike,
+};
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
@@ -26,7 +28,7 @@ use nom::bytes::complete::{is_a, is_not, tag};
 use nom::character::complete::one_of;
 use nom::combinator::{map, map_res, opt, peek, value};
 use nom::error::ErrorKind;
-use nom::multi::{many0, many_till, separated_nonempty_list};
+use nom::multi::{many0, many_till, separated_list, separated_nonempty_list};
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::{eof, named, Err, IResult};
 use std::fs::File;
@@ -202,8 +204,18 @@ fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
 /// What follows the `@import` tag.
 fn import2(input: &[u8]) -> IResult<&[u8], Item> {
     map(
-        delimited(tag(" "), value_expression, tag(";")),
-        Item::Import,
+        delimited(
+            tag(" "),
+            pair(
+                separated_list(
+                    preceded(tag(","), ignore_comments),
+                    single_value,
+                ),
+                opt(media_args),
+            ),
+            preceded(opt(ignore_space), tag(";")),
+        ),
+        |(import, args)| Item::Import(import, args.unwrap_or(Value::Null)),
     )(input)
 }
 
@@ -247,24 +259,7 @@ fn mixin_call2(input: &[u8]) -> IResult<&[u8], Item> {
 /// What follows an `@` sign (unless specifically handled).
 fn at_rule2(input: &[u8]) -> IResult<&[u8], Item> {
     let (input, name) = name(input)?;
-    let (input, args) = many0(preceded(
-        opt(ignore_space),
-        alt((
-            terminated(
-                alt((
-                    function_call,
-                    dictionary,
-                    map(sass_string, Value::Literal),
-                    map(sass_string_dq, Value::Literal),
-                    map(sass_string_sq, Value::Literal),
-                )),
-                peek(one_of(" \n\t{;")),
-            ),
-            map(map_res(is_not("\"'{};"), input_to_str), |s| {
-                Value::Literal(s.trim_end().into())
-            }),
-        )),
-    ))(input)?;
+    let (input, args) = opt(media_args)(input)?;
     let (input, body) = preceded(
         opt(ignore_space),
         alt((
@@ -277,14 +272,66 @@ fn at_rule2(input: &[u8]) -> IResult<&[u8], Item> {
         input,
         Item::AtRule {
             name,
-            args: if args.len() == 1 {
-                args.into_iter().next().unwrap()
-            } else {
-                Value::List(args, ListSeparator::Space, false, false)
-            },
+            args: args.unwrap_or(Value::Null),
             body,
         },
     ))
+}
+
+fn media_args(input: &[u8]) -> IResult<&[u8], Value> {
+    let (input, args) = separated_list(
+        preceded(tag(","), opt_spacelike),
+        map(
+            many0(preceded(
+                opt(ignore_space),
+                alt((
+                    terminated(
+                        alt((
+                            function_call,
+                            dictionary,
+                            map(sass_string, Value::Literal),
+                            map(sass_string_dq, Value::Literal),
+                            map(sass_string_sq, Value::Literal),
+                        )),
+                        peek(one_of(" \n\t{,;")),
+                    ),
+                    map(map_res(is_not("\"'{};, "), input_to_str), |s| {
+                        Value::Literal(s.trim_end().into())
+                    }),
+                )),
+            )),
+            |args| {
+                if args.len() == 1 {
+                    args.into_iter().next().unwrap()
+                } else {
+                    Value::List(args, ListSeparator::Space, false, false)
+                }
+            },
+        ),
+    )(input)?;
+    Ok((
+        input,
+        if args.len() == 1 {
+            args.into_iter().next().unwrap()
+        } else {
+            Value::List(args, ListSeparator::Comma, false, false)
+        },
+    ))
+}
+
+#[test]
+fn test_media_args_1() {
+    let (rest, _) =
+        media_args(b"#{$media} and ($key + \"-foo\": $value + 5);").unwrap();
+    assert_eq!(from_utf8(rest).unwrap(), ";");
+}
+#[test]
+fn test_media_args_2() {
+    let (rest, _) = media_args(
+        b"print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen;",
+    )
+    .unwrap();
+    assert_eq!(from_utf8(rest).unwrap(), ";");
 }
 
 #[cfg(test)] // TODO: Or remove this?

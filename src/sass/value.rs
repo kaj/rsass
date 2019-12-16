@@ -219,6 +219,13 @@ impl Value {
                             true,
                         ))
                     }
+                    (
+                        Operator::Minus,
+                        css::Value::Literal(s, Quotes::None),
+                    ) => Ok(css::Value::Literal(
+                        format!("-{}", s),
+                        Quotes::None,
+                    )),
                     (op, v) => Ok(css::Value::UnaryOp(op, Box::new(v))),
                 }
             }

@@ -59,46 +59,70 @@ impl OutputStyle {
         result: &mut CssWriter,
     ) -> Result<(), Error> {
         match *item {
-            Item::Import(ref name) => {
-                let name = name.evaluate(scope)?;
-                if let Value::Literal(ref x, _) = name.clone().unquote() {
-                    if let Some((sub_context, file)) =
-                        file_context.find_file(x.as_ref())
-                    {
-                        for item in parse_scss_file(&file)? {
-                            self.handle_root_item(
-                                &item,
-                                scope,
-                                &sub_context,
-                                result,
-                            )?;
-                        }
-                    } else {
-                        if (x.starts_with("url(") && x.ends_with(")"))
-                            || x.starts_with('/')
+            Item::Import(ref names, ref args) => {
+                if args.is_null() {
+                    for name in names {
+                        let name = name.evaluate(scope)?;
+                        if let Value::Literal(ref x, _) =
+                            name.clone().unquote()
                         {
+                            if let Some((sub_context, file)) =
+                                file_context.find_file(x.as_ref())
+                            {
+                                for item in parse_scss_file(&file)? {
+                                    self.handle_root_item(
+                                        &item,
+                                        scope,
+                                        &sub_context,
+                                        result,
+                                    )?;
+                                }
+                            } else {
+                                if (x.starts_with("url(") && x.ends_with(")"))
+                                    || x.starts_with('/')
+                                {
+                                    write!(
+                                        result.to_imports(),
+                                        "@import {};{}",
+                                        name,
+                                        if self.is_compressed() {
+                                            ""
+                                        } else {
+                                            "\n"
+                                        }
+                                    )?;
+                                } else {
+                                    write!(
+                                        result.to_imports(),
+                                        "@import url({});{}",
+                                        x,
+                                        if self.is_compressed() {
+                                            ""
+                                        } else {
+                                            "\n"
+                                        }
+                                    )?;
+                                }
+                            }
+                        } else {
                             write!(
                                 result.to_imports(),
                                 "@import {};{}",
                                 name,
                                 if self.is_compressed() { "" } else { "\n" }
                             )?;
-                        } else {
-                            write!(
-                                result.to_imports(),
-                                "@import url({});{}",
-                                x,
-                                if self.is_compressed() { "" } else { "\n" }
-                            )?;
                         }
                     }
                 } else {
-                    write!(
-                        result.to_imports(),
-                        "@import {};{}",
-                        name,
-                        if self.is_compressed() { "" } else { "\n" }
-                    )?;
+                    for name in names {
+                        write!(
+                            result.to_imports(),
+                            "@import {} {};{}",
+                            name.evaluate(scope)?,
+                            args.evaluate(scope)?,
+                            if self.is_compressed() { "" } else { "\n" }
+                        )?;
+                    }
                 }
             }
             Item::VariableDeclaration {
@@ -376,22 +400,45 @@ impl OutputStyle {
     ) -> Result<(), Error> {
         for b in body {
             match *b {
-                Item::Import(ref name) => {
-                    let name = name.evaluate(scope)?;
-                    if let Value::Literal(ref x, _) = name {
-                        let (sub_context, file) =
-                            file_context.file(x.as_ref());
-                        let items = parse_scss_file(&file)?;
-                        self.handle_body(
-                            direct,
-                            sub,
-                            scope,
-                            &items,
-                            &sub_context,
-                            0,
-                        )?;
+                Item::Import(ref names, ref args) => {
+                    if args.is_null() {
+                        for name in names {
+                            let name = name.evaluate(scope)?;
+                            if let Value::Literal(ref x, _) = name {
+                                let (sub_context, file) =
+                                    file_context.file(x.as_ref());
+                                let items = parse_scss_file(&file)?;
+                                self.handle_body(
+                                    direct,
+                                    sub,
+                                    scope,
+                                    &items,
+                                    &sub_context,
+                                    0,
+                                )?;
+                            } else {
+                                write!(
+                                    sub, // TODO:  Should be topmost!
+                                    "@import {};{}",
+                                    name,
+                                    if self.is_compressed() {
+                                        ""
+                                    } else {
+                                        "\n"
+                                    }
+                                )?;
+                            }
+                        }
                     } else {
-                        // TODO writeln!(direct, "@import {};", name)?;
+                        for name in names {
+                            write!(
+                                sub, // TODO:  Should be topmost!
+                                "@import {} {};{}",
+                                name.evaluate(scope)?,
+                                args.evaluate(scope)?,
+                                if self.is_compressed() { "" } else { "\n" }
+                            )?;
+                        }
                     }
                 }
                 Item::VariableDeclaration {

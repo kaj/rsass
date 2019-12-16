@@ -289,7 +289,6 @@ fn conversions() {
 
 // From "sass-spec/spec/libsass/css-import.hrx"
 #[test]
-#[ignore] // wrong result
 fn css_import() {
     assert_eq!(
         rsass(
@@ -620,7 +619,6 @@ fn image_url() {
 
 // From "sass-spec/spec/libsass/import.hrx"
 #[test]
-#[ignore] // wrong result
 fn import() {
     assert_eq!(
         rsass(
@@ -2013,7 +2011,6 @@ mod variable_scoping;
 
 // From "sass-spec/spec/libsass/variables_in_media.hrx"
 #[test]
-#[ignore] // unexepected error
 fn variables_in_media() {
     assert_eq!(
         rsass(

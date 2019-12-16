@@ -390,7 +390,6 @@ fn t024_test_media_import() {
 
 // From "sass-spec/spec/scss-tests/025_test_dynamic_media_import.hrx"
 #[test]
-#[ignore] // wrong result
 fn t025_test_dynamic_media_import() {
     assert_eq!(
         rsass(
@@ -2030,7 +2029,7 @@ fn t129_test_supports_bubbling() {
 
 // From "sass-spec/spec/scss-tests/130_test_random_directive_interpolation.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn t130_test_random_directive_interpolation() {
     assert_eq!(
         rsass(
@@ -2202,7 +2201,6 @@ fn t173_test_parsing_many_numbers_doesnt_take_forever() {
 
 // From "sass-spec/spec/scss-tests/174_test_import_comments_in_imports.hrx"
 #[test]
-#[ignore] // wrong result
 fn t174_test_import_comments_in_imports() {
     assert_eq!(
         rsass(
