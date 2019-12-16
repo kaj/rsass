@@ -13,7 +13,7 @@ static IMPLEMENTED_FEATURES: &[&str] = &[
     // [Values and Units Level 3][] spec.
     "units-level-3",
     // The Sass `@error` directive is supported.
-    // "at-error",
+    "at-error",
     // The "Custom Properties Level 1" spec is supported. This means
     // that custom properties are parsed statically, with only
     // interpolation treated as SassScript.
@@ -21,7 +21,7 @@ static IMPLEMENTED_FEATURES: &[&str] = &[
 ];
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, feature_exists(name), |s| match &s.get("name")? {
+    def!(f, feature_exists(feature), |s| match &s.get("feature")? {
         &Value::Literal(ref v, _) => {
             Ok(Value::bool(IMPLEMENTED_FEATURES.iter().any(|s| s == v)))
         }

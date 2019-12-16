@@ -285,7 +285,6 @@ mod feature_exists {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn at_error() {
         assert_eq!(
             rsass(
@@ -368,7 +367,6 @@ mod feature_exists {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn named() {
         assert_eq!(
             rsass(
@@ -383,7 +381,6 @@ mod feature_exists {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn quote_insensitive() {
         assert_eq!(
             rsass(

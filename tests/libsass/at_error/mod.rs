@@ -6,7 +6,6 @@ use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/at-error/feature-test.hrx"
 #[test]
-#[ignore] // wrong result
 fn feature_test() {
     assert_eq!(
         rsass(
