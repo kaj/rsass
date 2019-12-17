@@ -791,21 +791,12 @@ fn eval_selectors(
                                     ref op,
                                     ref val,
                                     ref modifier,
-                                } => {
-                                    // A bit strange, but tests seems to
-                                    // suggest this.
-                                    let val = if modifier.is_some() {
-                                        val.evaluate_opt_unquote(scope)?
-                                    } else {
-                                        val.evaluate2(scope)?
-                                    };
-                                    Ok(SelectorPart::Attribute {
-                                        name: name.evaluate2(scope)?,
-                                        op: op.clone(),
-                                        val,
-                                        modifier: modifier.clone(),
-                                    })
-                                }
+                                } => Ok(SelectorPart::Attribute {
+                                    name: name.evaluate2(scope)?,
+                                    op: op.clone(),
+                                    val: val.evaluate2(scope)?,
+                                    modifier: modifier.clone(),
+                                }),
                                 SelectorPart::Simple(ref v) => Ok(
                                     SelectorPart::Simple(v.evaluate2(scope)?),
                                 ),

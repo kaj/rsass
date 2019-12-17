@@ -333,7 +333,6 @@ mod selector {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn after_string() {
                 assert_eq!(
                     rsass(
