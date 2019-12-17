@@ -432,7 +432,6 @@ mod trailing_comment {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn loud() {
             assert_eq!(
                 rsass(

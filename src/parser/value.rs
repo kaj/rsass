@@ -159,9 +159,7 @@ fn term_value(input: &[u8]) -> IResult<&[u8], Value> {
             value(Operator::Modulo, tag(b"%")),
         )),
         map(multispace0, |s: &[u8]| !s.is_empty()),
-        map(opt(single_value), |v: Option<Value>| {
-            v.unwrap_or(Value::Null)
-        }),
+        single_value,
     ))(rest)
     {
         rest = nrest;
