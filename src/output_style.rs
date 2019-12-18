@@ -3,7 +3,7 @@ use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_scss_file;
 use crate::sass::{FormalArgs, Item};
-use crate::selectors::{Selector, SelectorPart, Selectors};
+use crate::selectors::Selectors;
 use crate::variablescope::{Scope, ScopeImpl};
 use std::fmt;
 use std::io::Write;
@@ -144,7 +144,8 @@ impl OutputStyle {
                 ref selectors,
                 ref body,
             } => {
-                let selectors = eval_selectors(selectors, scope)?
+                let selectors = selectors
+                    .eval(scope)?
                     .with_backref(scope.get_selectors().one());
                 let mut s1 = vec![];
                 let mut s2 = vec![];
@@ -362,8 +363,7 @@ impl OutputStyle {
         file_context: &FileContext,
         indent: usize,
     ) -> Result<(), Error> {
-        let selectors =
-            eval_selectors(selectors, scope)?.inside(scope.get_selectors());
+        let selectors = selectors.eval(scope)?.inside(scope.get_selectors());
         let mut direct = Vec::new();
         let mut sub = Vec::new();
         self.handle_body(
@@ -460,7 +460,8 @@ impl OutputStyle {
                     ref selectors,
                     ref body,
                 } => {
-                    let selectors = eval_selectors(selectors, scope)?
+                    let selectors = selectors
+                        .eval(scope)?
                         .with_backref(scope.get_selectors().one());
                     let mut s1 = vec![];
                     let mut s2 = vec![];
@@ -773,76 +774,6 @@ impl OutputStyle {
     fn is_compressed(&self) -> bool {
         self == &OutputStyle::Compressed
     }
-}
-
-fn eval_selectors(
-    s: &Selectors,
-    scope: &dyn Scope,
-) -> Result<Selectors, Error> {
-    let s = Selectors::new(
-        s.s.iter()
-            .map(|s| -> Result<Selector, Error> {
-                Ok(Selector(
-                    s.0.iter()
-                        .map(|sp| -> Result<SelectorPart, Error> {
-                            match *sp {
-                                SelectorPart::Attribute {
-                                    ref name,
-                                    ref op,
-                                    ref val,
-                                    ref modifier,
-                                } => Ok(SelectorPart::Attribute {
-                                    name: name.evaluate2(scope)?,
-                                    op: op.clone(),
-                                    val: val.evaluate2(scope)?,
-                                    modifier: modifier.clone(),
-                                }),
-                                SelectorPart::Simple(ref v) => Ok(
-                                    SelectorPart::Simple(v.evaluate2(scope)?),
-                                ),
-                                SelectorPart::Pseudo {
-                                    ref name,
-                                    ref arg,
-                                } => {
-                                    let evaluated_arg = match &arg {
-                                        Some(ref a) => {
-                                            Some(eval_selectors(a, scope)?)
-                                        }
-                                        None => None,
-                                    };
-                                    Ok(SelectorPart::Pseudo {
-                                        name: name.evaluate2(scope)?,
-                                        arg: evaluated_arg,
-                                    })
-                                }
-                                SelectorPart::PseudoElement {
-                                    ref name,
-                                    ref arg,
-                                } => {
-                                    let evaluated_arg = match &arg {
-                                        Some(ref a) => {
-                                            Some(eval_selectors(a, scope)?)
-                                        }
-                                        None => None,
-                                    };
-                                    Ok(SelectorPart::PseudoElement {
-                                        name: name.evaluate2(scope)?,
-                                        arg: evaluated_arg,
-                                    })
-                                }
-                                ref sp => Ok(sp.clone()),
-                            }
-                        })
-                        .collect::<Result<Vec<_>, Error>>()?,
-                ))
-            })
-            .collect::<Result<Vec<_>, Error>>()?,
-    );
-    // The "simple" parts we get from evaluating interpolations may
-    // contain high-level selector separators (i.e. ","), so we need to
-    // parse the selectors again, from a string representation.
-    use crate::parser::selectors::selectors;
-    Ok(selectors(format!("{} ", s).as_bytes())?.1)
 }
 
 struct CssWriter {

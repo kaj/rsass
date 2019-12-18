@@ -7,8 +7,10 @@
 //! This _may_ change to a something like a tree of operators with
 //! leafs of simple selectors in some future release.
 use crate::css::Value;
+use crate::error::Error;
 use crate::sass::SassString;
 use crate::value::{ListSeparator, Quotes};
+use crate::variablescope::Scope;
 use std::fmt;
 use std::io::Write;
 
@@ -75,6 +77,19 @@ impl Selectors {
         };
         Value::List(content, sep, false)
     }
+    pub fn eval(&self, scope: &dyn Scope) -> Result<Selectors, Error> {
+        let s = Selectors::new(
+            self.s
+                .iter()
+                .map(|s| s.eval(scope))
+                .collect::<Result<Vec<_>, Error>>()?,
+        );
+        // The "simple" parts we get from evaluating interpolations may
+        // contain high-level selector separators (i.e. ","), so we need to
+        // parse the selectors again, from a string representation.
+        use crate::parser::selectors::selectors;
+        Ok(selectors(format!("{} ", s).as_bytes())?.1)
+    }
 }
 
 /// A css (or sass) selector.
@@ -111,6 +126,14 @@ impl Selector {
             result.extend(other.0.iter().cloned());
             Selector(result)
         }
+    }
+
+    fn eval(&self, scope: &dyn Scope) -> Result<Selector, Error> {
+        self.0
+            .iter()
+            .map(|sp| sp.eval(scope))
+            .collect::<Result<_, _>>()
+            .map(Selector)
     }
 }
 
@@ -158,6 +181,46 @@ impl SelectorPart {
             | SelectorPart::PseudoElement { .. }
             | SelectorPart::Pseudo { .. }
             | SelectorPart::BackRef => false,
+        }
+    }
+
+    fn eval(&self, scope: &dyn Scope) -> Result<SelectorPart, Error> {
+        match *self {
+            SelectorPart::Attribute {
+                ref name,
+                ref op,
+                ref val,
+                ref modifier,
+            } => Ok(SelectorPart::Attribute {
+                name: name.evaluate2(scope)?,
+                op: op.clone(),
+                val: val.evaluate2(scope)?,
+                modifier: modifier.clone(),
+            }),
+            SelectorPart::Simple(ref v) => {
+                Ok(SelectorPart::Simple(v.evaluate2(scope)?))
+            }
+            SelectorPart::Pseudo { ref name, ref arg } => {
+                let arg = match &arg {
+                    Some(ref a) => Some(a.eval(scope)?),
+                    None => None,
+                };
+                Ok(SelectorPart::Pseudo {
+                    name: name.evaluate2(scope)?,
+                    arg,
+                })
+            }
+            SelectorPart::PseudoElement { ref name, ref arg } => {
+                let arg = match &arg {
+                    Some(ref a) => Some(a.eval(scope)?),
+                    None => None,
+                };
+                Ok(SelectorPart::PseudoElement {
+                    name: name.evaluate2(scope)?,
+                    arg,
+                })
+            }
+            ref sp => Ok(sp.clone()),
         }
     }
 }
