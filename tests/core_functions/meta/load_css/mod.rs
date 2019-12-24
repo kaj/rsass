@@ -102,6 +102,8 @@ mod error {
             // Ignoring "hide", error tests are not supported yet.
 
             // Ignoring "show", error tests are not supported yet.
+
+            // Ignoring "with", error tests are not supported yet.
         }
 
         // Ignoring "undefined", error tests are not supported yet.
@@ -821,6 +823,59 @@ mod with {
         \n}\
         \n"
     );
+        }
+        mod with {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            #[ignore] // unexepected error
+            fn default() {
+                assert_eq!(
+        rsass(
+            "@use \"sass:meta\";\
+            \n@include meta.load-css(\"loaded\", $with: (a: from input));\
+            \n"
+        )
+        .unwrap(),
+        "b {\
+        \n  c: from input;\
+        \n}\
+        \n"
+    );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn null() {
+                assert_eq!(
+        rsass(
+            "@use \"sass:meta\";\
+            \n@include meta.load-css(\"loaded\", $with: (a: null));\
+            \n"
+        )
+        .unwrap(),
+        "b {\
+        \n  c: from loaded;\
+        \n}\
+        \n"
+    );
+            }
+            #[test]
+            #[ignore] // unexepected error
+            fn unconfigured() {
+                assert_eq!(
+        rsass(
+            "@use \"sass:meta\";\
+            \n@include meta.load-css(\"loaded\", $with: (a: from input));\
+            \n"
+        )
+        .unwrap(),
+        "c {\
+        \n  a: from input;\
+        \n  b: from loaded;\
+        \n}\
+        \n"
+    );
+            }
         }
     }
     mod through_import {
