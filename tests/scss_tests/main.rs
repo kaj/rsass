@@ -1974,7 +1974,6 @@ fn t122_test_directive_interpolation() {
 
 // From "sass-spec/spec/scss-tests/128_test_supports_with_expressions.hrx"
 #[test]
-#[ignore] // unexepected error
 fn t128_test_supports_with_expressions() {
     assert_eq!(
         rsass(

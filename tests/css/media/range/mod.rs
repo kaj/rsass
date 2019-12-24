@@ -52,7 +52,6 @@ mod error {
 
 // From "sass-spec/spec/css/media/range/from_interpolation.hrx"
 #[test]
-#[ignore] // unexepected error
 fn from_interpolation() {
     assert_eq!(
         rsass(

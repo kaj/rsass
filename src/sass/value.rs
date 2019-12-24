@@ -24,7 +24,8 @@ pub enum Value {
     /// "(a/b) and a/b differs semantically.  Parens means the value
     /// should be evaluated numerically if possible, without parens /
     /// is not allways division.
-    Paren(Box<Value>),
+    /// The boolean tells if the paren itself should be kept for output.
+    Paren(Box<Value>, bool),
     Variable(String),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
@@ -110,7 +111,14 @@ impl Value {
                     Ok(css::Value::Literal(s, q))
                 }
             }
-            Value::Paren(ref v) => v.do_evaluate(scope, true),
+            Value::Paren(ref v, ref expl) => {
+                let v = v.do_evaluate(scope, !expl)?;
+                if !expl {
+                    Ok(v)
+                } else {
+                    Ok(css::Value::Paren(Box::new(v)))
+                }
+            }
             Value::Color(ref rgba, ref name) => {
                 Ok(css::Value::Color(rgba.clone(), name.clone()))
             }

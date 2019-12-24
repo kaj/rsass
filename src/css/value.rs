@@ -37,6 +37,7 @@ pub enum Value {
     /// A unicode range for font selections. U+NN, U+N?, U+NN-MM.
     /// The string is the entire value, including the "U+" tag.
     UnicodeRange(String),
+    Paren(Box<Value>),
 }
 
 impl Value {
@@ -108,6 +109,7 @@ impl Value {
                 list.iter().all(|v| v.is_null())
             }
             Value::Literal(ref s, Quotes::None) if s.is_empty() => true,
+            Value::Paren(ref v) => v.is_null(),
             _ => false,
         }
     }
@@ -193,6 +195,7 @@ impl Value {
                 s,
                 b,
             ),
+            Value::Paren(v) => *v,
             v => v,
         }
     }
@@ -287,6 +290,7 @@ impl Value {
                 s.clone(),
                 *b,
             ),
+            Value::Paren(ref v) => *v.clone(),
             ref v => v.clone(),
         }
     }
@@ -304,6 +308,7 @@ impl Value {
                     )
                 })
                 .collect(),
+            Value::Paren(v) => v.iter_items(),
             v => vec![v],
         }
     }
@@ -437,6 +442,11 @@ impl fmt::Display for Value {
                     .join(", ")
             ),
             Value::UnicodeRange(ref s) => write!(out, "{}", s),
+            Value::Paren(ref v) => {
+                out.write_char('(')?;
+                v.fmt(out)?;
+                out.write_char(')')
+            }
         }
     }
 }

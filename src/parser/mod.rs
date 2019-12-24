@@ -289,13 +289,17 @@ fn media_args(input: &[u8]) -> IResult<&[u8], Value> {
                         alt((
                             function_call,
                             dictionary,
+                            map(
+                                delimited(tag("("), media_args, tag(")")),
+                                |v| Value::Paren(Box::new(v), true),
+                            ),
                             map(sass_string, Value::Literal),
                             map(sass_string_dq, Value::Literal),
                             map(sass_string_sq, Value::Literal),
                         )),
-                        peek(one_of(" \n\t{,;")),
+                        peek(one_of(") \n\t{,;")),
                     ),
-                    map(map_res(is_not("\"'{};, "), input_to_str), |s| {
+                    map(map_res(is_not("#()\"'{};, "), input_to_str), |s| {
                         Value::Literal(s.trim_end().into())
                     }),
                 )),

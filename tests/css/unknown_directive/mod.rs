@@ -99,7 +99,7 @@ fn name_interpolation() {
 
 // From "sass-spec/spec/css/unknown_directive/plain.hrx"
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn plain() {
     assert_eq!(
         rsass(

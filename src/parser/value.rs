@@ -175,7 +175,7 @@ pub fn single_value(input: &[u8]) -> IResult<&[u8], Value> {
             preceded(tag("("), opt_spacelike),
             alt((
                 dictionary_inner,
-                map(value_expression, |v| Value::Paren(Box::new(v))),
+                map(value_expression, |v| Value::Paren(Box::new(v), false)),
                 value(
                     Value::List(vec![], ListSeparator::Space, false, false),
                     tag(""),
@@ -548,19 +548,22 @@ mod test {
 
     #[test]
     fn paren_literal() {
-        check_expr("(rad);", Paren(Box::new(Literal("rad".into()))))
+        check_expr("(rad);", Paren(Box::new(Literal("rad".into())), false))
     }
 
     #[test]
     fn paren_multi() {
         check_expr(
             "(rod bloe);",
-            Paren(Box::new(List(
-                vec![Literal("rod".into()), Literal("bloe".into())],
-                ListSeparator::Space,
+            Paren(
+                Box::new(List(
+                    vec![Literal("rod".into()), Literal("bloe".into())],
+                    ListSeparator::Space,
+                    false,
+                    false,
+                )),
                 false,
-                false,
-            ))),
+            ),
         )
     }
 
@@ -568,12 +571,15 @@ mod test {
     fn paren_multi_comma() {
         check_expr(
             "(rod, bloe);",
-            Paren(Box::new(List(
-                vec![Literal("rod".into()), Literal("bloe".into())],
-                ListSeparator::Comma,
+            Paren(
+                Box::new(List(
+                    vec![Literal("rod".into()), Literal("bloe".into())],
+                    ListSeparator::Comma,
+                    false,
+                    false,
+                )),
                 false,
-                false,
-            ))),
+            ),
         )
     }
 
@@ -594,12 +600,15 @@ mod test {
     fn paren_multi_comma_trailing() {
         check_expr(
             "(rod, bloe, );",
-            Paren(Box::new(List(
-                vec![Literal("rod".into()), Literal("bloe".into())],
-                ListSeparator::Comma,
+            Paren(
+                Box::new(List(
+                    vec![Literal("rod".into()), Literal("bloe".into())],
+                    ListSeparator::Comma,
+                    false,
+                    false,
+                )),
                 false,
-                false,
-            ))),
+            ),
         )
     }
 
