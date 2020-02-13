@@ -7,7 +7,7 @@ use num_rational::Rational;
 use std::convert::TryFrom;
 use std::fmt::{self, Write};
 
-/// A sass value.
+/// A css value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
     /// A special kind of escape.  Only really used for !important.
