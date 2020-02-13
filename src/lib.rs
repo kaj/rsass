@@ -33,6 +33,7 @@
 //! That said, this implementation has reached a version where I find it
 //! usable for my personal projects, and the number of working tests are
 //! improving.
+#![forbid(unsafe_code)]
 use std::path::Path;
 
 pub mod css;
