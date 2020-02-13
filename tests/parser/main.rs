@@ -9,15 +9,15 @@ fn and_and() {
     assert_eq!(
         rsass(
             ".and-and {\
-             \n  value: true && false;\
-             \n}\
-             \n"
+            \n  value: true && false;\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".and-and {\
-         \n  value: true .and-and .and-and false;\
-         \n}\
-         \n"
+        \n  value: true .and-and .and-and false;\
+        \n}\
+        \n"
     );
 }
 

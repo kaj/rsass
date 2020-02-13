@@ -14,8 +14,8 @@ fn utf_8() {
     assert_eq!(
         rsass("\u{feff}foo { bar: baz; }").unwrap(),
         "foo {\
-         \n  bar: baz;\
-         \n}\
-         \n"
+        \n  bar: baz;\
+        \n}\
+        \n"
     );
 }

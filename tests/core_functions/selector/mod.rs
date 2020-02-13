@@ -17,13 +17,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: selector-append(\".c, .d\", \".e, .f\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: .c.e, .d.e, .c.f, .d.f;\
-                 \n}\
-                 \n"
+        \n  b: .c.e, .d.e, .c.f, .d.f;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -31,13 +31,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: selector-append(\".c\", \".d\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: .c.d;\
-                 \n}\
-                 \n"
+        \n  b: .c.d;\
+        \n}\
+        \n"
             );
         }
     }
@@ -81,13 +81,13 @@ mod append {
         assert_eq!(
             rsass(
                 "a {b: selector-append(\".c\", \".d\", \".e\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: .c.d.e;\
-             \n}\
-             \n"
+        \n  b: .c.d.e;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -95,13 +95,13 @@ mod append {
         assert_eq!(
             rsass(
                 "a {b: selector-append(\".c.d\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: .c.d;\
-             \n}\
-             \n"
+        \n  b: .c.d;\
+        \n}\
+        \n"
         );
     }
     mod suffix {
@@ -112,13 +112,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: selector-append(\"c d\", \"e f\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c de f;\
-                 \n}\
-                 \n"
+        \n  b: c de f;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -127,13 +127,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: selector-append(\".c, .d\", \"e, f\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: .ce, .de, .cf, .df;\
-                 \n}\
-                 \n"
+        \n  b: .ce, .de, .cf, .df;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -141,13 +141,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: selector-append(\".c\", \"d\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: .cd;\
-                 \n}\
-                 \n"
+        \n  b: .cd;\
+        \n}\
+        \n"
             );
         }
     }

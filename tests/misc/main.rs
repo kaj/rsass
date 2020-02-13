@@ -10,26 +10,26 @@ fn jma_pseudo_test() {
     assert_eq!(
         rsass(
             ".foo {\
-             \n        h1 {\
-             \n                color:red;\
-             \n        }\
-             \n}\
-             \n\
-             \n.bar {\
-             \n        &:hover h3,\
-             \n        h3 {\
-             \n                @extend h1;\
-             \n        }\
-             \n}\
-             \n"
+            \n        h1 {\
+            \n                color:red;\
+            \n        }\
+            \n}\
+            \n\
+            \n.bar {\
+            \n        &:hover h3,\
+            \n        h3 {\
+            \n                @extend h1;\
+            \n        }\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".foo h1,\
-         \n.foo .bar h3,\
-         \n.bar .foo h3 {\
-         \n  color: red;\
-         \n}\
-         \n"
+        \n.foo .bar h3,\
+        \n.bar .foo h3 {\
+        \n  color: red;\
+        \n}\
+        \n"
     );
 }
 
@@ -39,14 +39,14 @@ fn directive_interpolation() {
     assert_eq!(
         rsass(
             "$baz: 12;\
-             \n@foo bar#{$baz} qux {a: b}\
-             \n"
+            \n@foo bar#{$baz} qux {a: b}\
+            \n"
         )
         .unwrap(),
         "@foo bar12 qux {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -56,14 +56,14 @@ fn empty_content() {
     assert_eq!(
         rsass(
             "@mixin foo { @content }\
-             \na { b: c; @include foo {} }\
-             \n"
+            \na { b: c; @include foo {} }\
+            \n"
         )
         .unwrap(),
         "a {\
-         \n  b: c;\
-         \n}\
-         \n"
+        \n  b: c;\
+        \n}\
+        \n"
     );
 }
 
@@ -110,14 +110,14 @@ fn lang_bug() {
     assert_eq!(
         rsass(
             "div:lang(nb) {\
-             \n  color: red;\
-             \n}"
+            \n  color: red;\
+            \n}"
         )
         .unwrap(),
         "div:lang(nb) {\
-         \n  color: red;\
-         \n}\
-         \n"
+        \n  color: red;\
+        \n}\
+        \n"
     );
 }
 
@@ -127,16 +127,16 @@ fn media_interpolation() {
     assert_eq!(
         rsass(
             "$baz: 12;\
-             \n@media bar#{$baz} {a {b: c}}\
-             \n"
+            \n@media bar#{$baz} {a {b: c}}\
+            \n"
         )
         .unwrap(),
         "@media bar12 {\
-         \n  a {\
-         \n    b: c;\
-         \n  }\
-         \n}\
-         \n"
+        \n  a {\
+        \n    b: c;\
+        \n  }\
+        \n}\
+        \n"
     );
 }
 
@@ -147,31 +147,31 @@ fn mixin_content() {
     assert_eq!(
         rsass(
             "$color: blue;\
-             \n@mixin context($class, $color: red) {\
-             \n  .#{$class} {\
-             \n    background-color: $color;\
-             \n    @content;\
-             \n    border-color: $color;\
-             \n  }\
-             \n}\
-             \n@include context(parent) {\
-             \n  @include context(child, $color: yellow) {\
-             \n    color: $color;\
-             \n  }\
-             \n}\
-             \n"
+            \n@mixin context($class, $color: red) {\
+            \n  .#{$class} {\
+            \n    background-color: $color;\
+            \n    @content;\
+            \n    border-color: $color;\
+            \n  }\
+            \n}\
+            \n@include context(parent) {\
+            \n  @include context(child, $color: yellow) {\
+            \n    color: $color;\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".parent {\
-         \n  background-color: red;\
-         \n  border-color: red;\
-         \n}\
-         \n.parent .child {\
-         \n  background-color: yellow;\
-         \n  color: blue;\
-         \n  border-color: yellow;\
-         \n}\
-         \n"
+        \n  background-color: red;\
+        \n  border-color: red;\
+        \n}\
+        \n.parent .child {\
+        \n  background-color: yellow;\
+        \n  color: blue;\
+        \n  border-color: yellow;\
+        \n}\
+        \n"
     );
 }
 
@@ -181,18 +181,18 @@ fn namespace_properties_with_script_value() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  bar: baz + bang {\
-             \n    bip: bop;\
-             \n    bing: bop; }}\
-             \n"
+            \n  bar: baz + bang {\
+            \n    bip: bop;\
+            \n    bing: bop; }}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  bar: bazbang;\
-         \n  bar-bip: bop;\
-         \n  bar-bing: bop;\
-         \n}\
-         \n"
+        \n  bar: bazbang;\
+        \n  bar-bip: bop;\
+        \n  bar-bing: bop;\
+        \n}\
+        \n"
     );
 }
 
@@ -203,27 +203,27 @@ fn negative_numbers() {
     assert_eq!(
         rsass(
             "$zero: 0;\
-             \na {\
-             \n  zero: -$zero;\
-             \n  zero: $zero * -1;\
-             \n}\
-             \n$near: 0.000000000001;\
-             \na {\
-             \n  near: -$near;\
-             \n  near: $near * -1;\
-             \n}\
-             \n"
+            \na {\
+            \n  zero: -$zero;\
+            \n  zero: $zero * -1;\
+            \n}\
+            \n$near: 0.000000000001;\
+            \na {\
+            \n  near: -$near;\
+            \n  near: $near * -1;\
+            \n}\
+            \n"
         )
         .unwrap(),
         "a {\
-         \n  zero: 0;\
-         \n  zero: 0;\
-         \n}\
-         \na {\
-         \n  near: 0;\
-         \n  near: 0;\
-         \n}\
-         \n"
+        \n  zero: 0;\
+        \n  zero: 0;\
+        \n}\
+        \na {\
+        \n  near: 0;\
+        \n  near: 0;\
+        \n}\
+        \n"
     );
 }
 
@@ -233,13 +233,13 @@ fn selector_interpolation_before_element_name() {
     assert_eq!(
         rsass(
             "#{\"foo\" + \" bar\"}baz {a: b}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo barbaz {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -249,13 +249,13 @@ fn selector_only_interpolation() {
     assert_eq!(
         rsass(
             "#{\"foo\" + \" bar\"} {a: b}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo bar {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -266,20 +266,20 @@ fn trailing_comma_in_selector() {
     assert_eq!(
         rsass(
             "#foo #bar,,\
-             \n,#baz #boom, {a: b}\
-             \n\
-             \n#bip #bop, ,, {c: d}\
-             \n"
+            \n,#baz #boom, {a: b}\
+            \n\
+            \n#bip #bop, ,, {c: d}\
+            \n"
         )
         .unwrap(),
         "#foo #bar,\
-         \n#baz #boom {\
-         \n  a: b;\
-         \n}\
-         \n#bip #bop {\
-         \n  c: d;\
-         \n}\
-         \n"
+        \n#baz #boom {\
+        \n  a: b;\
+        \n}\
+        \n#bip #bop {\
+        \n  c: d;\
+        \n}\
+        \n"
     );
 }
 
@@ -289,15 +289,15 @@ fn unicode_variables() {
     assert_eq!(
         rsass(
             "$vär: foo;\
-             \n\
-             \nblat {a: $vär}\
-             \n"
+            \n\
+            \nblat {a: $vär}\
+            \n"
         )
         .unwrap(),
         "blat {\
-         \n  a: foo;\
-         \n}\
-         \n"
+        \n  a: foo;\
+        \n}\
+        \n"
     );
 }
 
@@ -307,14 +307,14 @@ fn warn_directive() {
     assert_eq!(
         rsass(
             "h1 { color: blue; } \
-             \n@warn \"Don\'t crash the ambulance, whatever you do\"\
-             \n"
+            \n@warn \"Don\'t crash the ambulance, whatever you do\"\
+            \n"
         )
         .unwrap(),
         "h1 {\
-         \n  color: blue;\
-         \n}\
-         \n"
+        \n  color: blue;\
+        \n}\
+        \n"
     );
 }
 

@@ -10,25 +10,25 @@ fn t01_inline() {
     assert_eq!(
         rsass(
             ".result {\
-             \n  output: l\\\\ite\\ral;\
-             \n  output: #{l\\\\ite\\ral};\
-             \n  output: \"[#{l\\\\ite\\ral}]\";\
-             \n  output: \"#{l\\\\ite\\ral}\";\
-             \n  output: \'#{l\\\\ite\\ral}\';\
-             \n  output: \"[\'#{l\\\\ite\\ral}\']\";\
-             \n}\
-             \n"
+            \n  output: l\\\\ite\\ral;\
+            \n  output: #{l\\\\ite\\ral};\
+            \n  output: \"[#{l\\\\ite\\ral}]\";\
+            \n  output: \"#{l\\\\ite\\ral}\";\
+            \n  output: \'#{l\\\\ite\\ral}\';\
+            \n  output: \"[\'#{l\\\\ite\\ral}\']\";\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".result {\
-         \n  output: l\\\\iteral;\
-         \n  output: l\\\\iteral;\
-         \n  output: \"[l\\\\\\\\iteral]\";\
-         \n  output: \"l\\\\\\\\iteral\";\
-         \n  output: \"l\\\\\\\\iteral\";\
-         \n  output: \"[\'l\\\\\\\\iteral\']\";\
-         \n}\
-         \n"
+        \n  output: l\\\\iteral;\
+        \n  output: l\\\\iteral;\
+        \n  output: \"[l\\\\\\\\iteral]\";\
+        \n  output: \"l\\\\\\\\iteral\";\
+        \n  output: \"l\\\\\\\\iteral\";\
+        \n  output: \"[\'l\\\\\\\\iteral\']\";\
+        \n}\
+        \n"
     );
 }
 
@@ -38,26 +38,26 @@ fn t02_variable() {
     assert_eq!(
         rsass(
             "$input: l\\\\ite\\ral;\
-             \n.result {\
-             \n  output: $input;\
-             \n  output: #{$input};\
-             \n  output: \"[#{$input}]\";\
-             \n  output: \"#{$input}\";\
-             \n  output: \'#{$input}\';\
-             \n  output: \"[\'#{$input}\']\";\
-             \n}\
-             \n"
+            \n.result {\
+            \n  output: $input;\
+            \n  output: #{$input};\
+            \n  output: \"[#{$input}]\";\
+            \n  output: \"#{$input}\";\
+            \n  output: \'#{$input}\';\
+            \n  output: \"[\'#{$input}\']\";\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".result {\
-         \n  output: l\\\\iteral;\
-         \n  output: l\\\\iteral;\
-         \n  output: \"[l\\\\\\\\iteral]\";\
-         \n  output: \"l\\\\\\\\iteral\";\
-         \n  output: \"l\\\\\\\\iteral\";\
-         \n  output: \"[\'l\\\\\\\\iteral\']\";\
-         \n}\
-         \n"
+        \n  output: l\\\\iteral;\
+        \n  output: l\\\\iteral;\
+        \n  output: \"[l\\\\\\\\iteral]\";\
+        \n  output: \"l\\\\\\\\iteral\";\
+        \n  output: \"l\\\\\\\\iteral\";\
+        \n  output: \"[\'l\\\\\\\\iteral\']\";\
+        \n}\
+        \n"
     );
 }
 
@@ -67,23 +67,23 @@ fn t03_inline_double() {
     assert_eq!(
         rsass(
             ".result {\
-             \n  output: #{#{l\\\\ite\\ral}};\
-             \n  output: #{\"[#{l\\\\ite\\ral}]\"};\
-             \n  output: #{\"#{l\\\\ite\\ral}\"};\
-             \n  output: #{\'#{l\\\\ite\\ral}\'};\
-             \n  output: #{\"[\'#{l\\\\ite\\ral}\']\"};\
-             \n}\
-             \n"
+            \n  output: #{#{l\\\\ite\\ral}};\
+            \n  output: #{\"[#{l\\\\ite\\ral}]\"};\
+            \n  output: #{\"#{l\\\\ite\\ral}\"};\
+            \n  output: #{\'#{l\\\\ite\\ral}\'};\
+            \n  output: #{\"[\'#{l\\\\ite\\ral}\']\"};\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".result {\
-         \n  output: l\\\\iteral;\
-         \n  output: [l\\\\iteral];\
-         \n  output: l\\\\iteral;\
-         \n  output: l\\\\iteral;\
-         \n  output: [\'l\\\\iteral\'];\
-         \n}\
-         \n"
+        \n  output: l\\\\iteral;\
+        \n  output: [l\\\\iteral];\
+        \n  output: l\\\\iteral;\
+        \n  output: l\\\\iteral;\
+        \n  output: [\'l\\\\iteral\'];\
+        \n}\
+        \n"
     );
 }
 
@@ -93,24 +93,24 @@ fn t04_variable_double() {
     assert_eq!(
         rsass(
             "$input: l\\\\ite\\ral;\
-             \n.result {\
-             \n  output: #{#{$input}};\
-             \n  output: #{\"[#{$input}]\"};\
-             \n  output: #{\"#{$input}\"};\
-             \n  output: #{\'#{$input}\'};\
-             \n  output: #{\"[\'#{$input}\']\"};\
-             \n}\
-             \n"
+            \n.result {\
+            \n  output: #{#{$input}};\
+            \n  output: #{\"[#{$input}]\"};\
+            \n  output: #{\"#{$input}\"};\
+            \n  output: #{\'#{$input}\'};\
+            \n  output: #{\"[\'#{$input}\']\"};\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".result {\
-         \n  output: l\\\\iteral;\
-         \n  output: [l\\\\iteral];\
-         \n  output: l\\\\iteral;\
-         \n  output: l\\\\iteral;\
-         \n  output: [\'l\\\\iteral\'];\
-         \n}\
-         \n"
+        \n  output: l\\\\iteral;\
+        \n  output: [l\\\\iteral];\
+        \n  output: l\\\\iteral;\
+        \n  output: l\\\\iteral;\
+        \n  output: [\'l\\\\iteral\'];\
+        \n}\
+        \n"
     );
 }
 
@@ -120,34 +120,34 @@ fn t05_variable_quoted_double() {
     assert_eq!(
         rsass(
             "$input: l\\\\ite\\ral;\
-             \n.result {\
-             \n  dquoted: \"#{#{$input}}\";\
-             \n  dquoted: \"#{\"[#{$input}]\"}\";\
-             \n  dquoted: \"#{\"#{$input}\"}\";\
-             \n  dquoted: \"#{\'#{$input}\'}\";\
-             \n  dquoted: \"#{\"[\'#{$input}\']\"}\";\
-             \n  squoted: \'#{#{$input}}\';\
-             \n  squoted: \'#{\"[#{$input}]\"}\';\
-             \n  squoted: \'#{\"#{$input}\"}\';\
-             \n  squoted: \'#{\'#{$input}\'}\';\
-             \n  squoted: \'#{\"[\'#{$input}\']\"}\';\
-             \n}\
-             \n"
+            \n.result {\
+            \n  dquoted: \"#{#{$input}}\";\
+            \n  dquoted: \"#{\"[#{$input}]\"}\";\
+            \n  dquoted: \"#{\"#{$input}\"}\";\
+            \n  dquoted: \"#{\'#{$input}\'}\";\
+            \n  dquoted: \"#{\"[\'#{$input}\']\"}\";\
+            \n  squoted: \'#{#{$input}}\';\
+            \n  squoted: \'#{\"[#{$input}]\"}\';\
+            \n  squoted: \'#{\"#{$input}\"}\';\
+            \n  squoted: \'#{\'#{$input}\'}\';\
+            \n  squoted: \'#{\"[\'#{$input}\']\"}\';\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".result {\
-         \n  dquoted: \"l\\\\\\\\iteral\";\
-         \n  dquoted: \"[l\\\\\\\\iteral]\";\
-         \n  dquoted: \"l\\\\\\\\iteral\";\
-         \n  dquoted: \"l\\\\\\\\iteral\";\
-         \n  dquoted: \"[\'l\\\\\\\\iteral\']\";\
-         \n  squoted: \"l\\\\\\\\iteral\";\
-         \n  squoted: \"[l\\\\\\\\iteral]\";\
-         \n  squoted: \"l\\\\\\\\iteral\";\
-         \n  squoted: \"l\\\\\\\\iteral\";\
-         \n  squoted: \"[\'l\\\\\\\\iteral\']\";\
-         \n}\
-         \n"
+        \n  dquoted: \"l\\\\\\\\iteral\";\
+        \n  dquoted: \"[l\\\\\\\\iteral]\";\
+        \n  dquoted: \"l\\\\\\\\iteral\";\
+        \n  dquoted: \"l\\\\\\\\iteral\";\
+        \n  dquoted: \"[\'l\\\\\\\\iteral\']\";\
+        \n  squoted: \"l\\\\\\\\iteral\";\
+        \n  squoted: \"[l\\\\\\\\iteral]\";\
+        \n  squoted: \"l\\\\\\\\iteral\";\
+        \n  squoted: \"l\\\\\\\\iteral\";\
+        \n  squoted: \"[\'l\\\\\\\\iteral\']\";\
+        \n}\
+        \n"
     );
 }
 
@@ -157,21 +157,21 @@ fn t06_escape_interpolation() {
     assert_eq!(
         rsass(
             "$input: l\\\\ite\\ral;\
-             \n.result {\
-             \n  output: \"[\\#{l\\\\ite\\ral}]\";\
-             \n  output: \"\\#{l\\\\ite\\ral}\";\
-             \n  output: \'\\#{l\\\\ite\\ral}\';\
-             \n  output: \"[\'\\#{l\\\\ite\\ral}\']\";\
-             \n}\
-             \n"
+            \n.result {\
+            \n  output: \"[\\#{l\\\\ite\\ral}]\";\
+            \n  output: \"\\#{l\\\\ite\\ral}\";\
+            \n  output: \'\\#{l\\\\ite\\ral}\';\
+            \n  output: \"[\'\\#{l\\\\ite\\ral}\']\";\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".result {\
-         \n  output: \"[\\#{l\\\\ite\\ral}]\";\
-         \n  output: \"\\#{l\\\\ite\\ral}\";\
-         \n  output: \'\\#{l\\\\ite\\ral}\';\
-         \n  output: \"[\'\\#{l\\\\ite\\ral}\']\";\
-         \n}\
-         \n"
+        \n  output: \"[\\#{l\\\\ite\\ral}]\";\
+        \n  output: \"\\#{l\\\\ite\\ral}\";\
+        \n  output: \'\\#{l\\\\ite\\ral}\';\
+        \n  output: \"[\'\\#{l\\\\ite\\ral}\']\";\
+        \n}\
+        \n"
     );
 }

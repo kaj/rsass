@@ -17,13 +17,13 @@ mod arg {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\":c(@#$)\", \":c(@#$)\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         mod unequal {
@@ -35,13 +35,13 @@ mod arg {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\":c(@#$)\", \":c(*&^)\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -50,13 +50,13 @@ mod arg {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\":c(@#$)\", \":c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -65,13 +65,13 @@ mod arg {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\":c(@#$)\", \":d(@#$)\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -85,13 +85,13 @@ mod arg {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"::c(@#$)\", \"::c(@#$)\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         mod unequal {
@@ -103,13 +103,13 @@ mod arg {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"::c(@#$)\", \"::c(*&^)\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -118,13 +118,13 @@ mod arg {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"::c(@#$)\", \"::c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -133,13 +133,13 @@ mod arg {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"::c(@#$)\", \":d(@#$)\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -159,13 +159,13 @@ mod no_arg {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\":c\", \"::c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -174,13 +174,13 @@ mod no_arg {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\":c\", \":c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -189,13 +189,13 @@ mod no_arg {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\":c\", \":d\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
     }
@@ -208,13 +208,13 @@ mod no_arg {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"::c\", \":c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -223,13 +223,13 @@ mod no_arg {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"::c\", \"::c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -238,13 +238,13 @@ mod no_arg {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"::c\", \"::d\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
     }

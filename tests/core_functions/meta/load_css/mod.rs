@@ -123,16 +123,16 @@ mod extend {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \n@include meta.load-css(\"other\");\
-                     \n\
-                     \nd {@extend a}\
-                     \n"
+            \n@include meta.load-css(\"other\");\
+            \n\
+            \nd {@extend a}\
+            \n"
                 )
                 .unwrap(),
                 "a, d {\
-                 \n  b: c;\
-                 \n}\
-                 \n"
+        \n  b: c;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -141,16 +141,16 @@ mod extend {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \n\
-                     \nd {@extend a}\
-                     \n@include meta.load-css(\"other\");\
-                     \n"
+            \n\
+            \nd {@extend a}\
+            \n@include meta.load-css(\"other\");\
+            \n"
                 )
                 .unwrap(),
                 "a, d {\
-                 \n  b: c;\
-                 \n}\
-                 \n"
+        \n  b: c;\
+        \n}\
+        \n"
             );
         }
     }
@@ -163,16 +163,16 @@ mod extend {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \n\
-                     \n@include meta.load-css(\"other\");\
-                     \na {b: c}\
-                     \n"
+            \n\
+            \n@include meta.load-css(\"other\");\
+            \na {b: c}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c;\
-                 \n}\
-                 \n"
+        \n  b: c;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -181,16 +181,16 @@ mod extend {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \n\
-                     \na {b: c}\
-                     \n@include meta.load-css(\"other\");\
-                     \n"
+            \n\
+            \na {b: c}\
+            \n@include meta.load-css(\"other\");\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c;\
-                 \n}\
-                 \n"
+        \n  b: c;\
+        \n}\
+        \n"
             );
         }
     }
@@ -206,16 +206,16 @@ mod plain_css {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n@include meta.load-css(\"other\");\
-                 \n"
+            \n@include meta.load-css(\"other\");\
+            \n"
             )
             .unwrap(),
             "@media screen {\
-             \n  a {\
-             \n    b: c;\
-             \n  }\
-             \n}\
-             \n"
+        \n  a {\
+        \n    b: c;\
+        \n  }\
+        \n}\
+        \n"
         );
     }
     mod empty {
@@ -227,14 +227,14 @@ mod plain_css {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \n@include meta.load-css(\"sass:color\");\
-                     \n\
-                     \n/* No output other than this */\
-                     \n"
+            \n@include meta.load-css(\"sass:color\");\
+            \n\
+            \n/* No output other than this */\
+            \n"
                 )
                 .unwrap(),
                 "/* No output other than this */\
-                 \n"
+        \n"
             );
         }
         #[test]
@@ -243,14 +243,14 @@ mod plain_css {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \n@include meta.load-css(\"other\");\
-                     \n\
-                     \n/* No output other than this */\
-                     \n"
+            \n@include meta.load-css(\"other\");\
+            \n\
+            \n/* No output other than this */\
+            \n"
                 )
                 .unwrap(),
                 "/* No output other than this */\
-                 \n"
+        \n"
             );
         }
     }
@@ -260,14 +260,14 @@ mod plain_css {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n@include meta.load-css($module: \"other\");\
-                 \n"
+            \n@include meta.load-css($module: \"other\");\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c;\
-             \n}\
-             \n"
+        \n  b: c;\
+        \n}\
+        \n"
         );
     }
     mod nested {
@@ -279,18 +279,18 @@ mod plain_css {
             assert_eq!(
                 rsass(
                     "// Regression test for dart-sass#843\
-                     \n@use \"sass:meta\";\
-                     \n@include meta.load-css(\"midstream\")\
-                     \n"
+            \n@use \"sass:meta\";\
+            \n@include meta.load-css(\"midstream\")\
+            \n"
                 )
                 .unwrap(),
                 "/**/\
-                 \n@media b {\
-                 \n  a {\
-                 \n    c: d;\
-                 \n  }\
-                 \n}\
-                 \n"
+        \n@media b {\
+        \n  a {\
+        \n    c: d;\
+        \n  }\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -299,14 +299,14 @@ mod plain_css {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \na {@include meta.load-css(\"other\")}\
-                     \n"
+            \na {@include meta.load-css(\"other\")}\
+            \n"
                 )
                 .unwrap(),
                 "a c b {\
-                 \n  x: y;\
-                 \n}\
-                 \n"
+        \n  x: y;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -315,14 +315,14 @@ mod plain_css {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \na {@include meta.load-css(\"other\")}\
-                     \n"
+            \na {@include meta.load-css(\"other\")}\
+            \n"
                 )
                 .unwrap(),
                 "a b {\
-                 \n  c: d;\
-                 \n}\
-                 \n"
+        \n  c: d;\
+        \n}\
+        \n"
             );
         }
     }
@@ -332,21 +332,21 @@ mod plain_css {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n\
-                 \na {b: c}\
-                 \n\
-                 \n@include meta.load-css(\"other\");\
-                 \n"
+            \n\
+            \na {b: c}\
+            \n\
+            \n@include meta.load-css(\"other\");\
+            \n"
             )
             .unwrap(),
             "@import \"style.css\";\
-             \na {\
-             \n  b: c;\
-             \n}\
-             \nd {\
-             \n  e: f;\
-             \n}\
-             \n"
+        \na {\
+        \n  b: c;\
+        \n}\
+        \nd {\
+        \n  e: f;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -355,14 +355,14 @@ mod plain_css {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n@include meta.load-css(\"other\");\
-                 \n"
+            \n@include meta.load-css(\"other\");\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c;\
-             \n}\
-             \n"
+        \n  b: c;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -371,14 +371,14 @@ mod plain_css {
         assert_eq!(
             rsass(
                 "@use \"subdir/midstream\";\
-                 \n@include midstream.load-css(\"upstream\");\
-                 \n"
+            \n@include midstream.load-css(\"upstream\");\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: in subdir;\
-             \n}\
-             \n"
+        \n  b: in subdir;\
+        \n}\
+        \n"
         );
     }
 }
@@ -396,17 +396,17 @@ mod twice {
             assert_eq!(
                 rsass(
                     "@use \"left\";\
-                     \n@use \"right\";\
-                     \n"
+            \n@use \"right\";\
+            \n"
                 )
                 .unwrap(),
                 "a, left {\
-                 \n  b: c;\
-                 \n}\
-                 \na, right {\
-                 \n  b: c;\
-                 \n}\
-                 \n"
+        \n  b: c;\
+        \n}\
+        \na, right {\
+        \n  b: c;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -415,18 +415,18 @@ mod twice {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \na {@include meta.load-css(\"other\")}\
-                     \nb {@include meta.load-css(\"other\")}\
-                     \n"
+            \na {@include meta.load-css(\"other\")}\
+            \nb {@include meta.load-css(\"other\")}\
+            \n"
                 )
                 .unwrap(),
                 "a c {\
-                 \n  d: e;\
-                 \n}\
-                 \nb c {\
-                 \n  d: e;\
-                 \n}\
-                 \n"
+        \n  d: e;\
+        \n}\
+        \nb c {\
+        \n  d: e;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -435,15 +435,15 @@ mod twice {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \n@include meta.load-css(\"other\");\
-                     \n@include meta.load-css(\"other\");\
-                     \n\
-                     \n/* No output other than this */\
-                     \n"
+            \n@include meta.load-css(\"other\");\
+            \n@include meta.load-css(\"other\");\
+            \n\
+            \n/* No output other than this */\
+            \n"
                 )
                 .unwrap(),
                 "/* No output other than this */\
-                 \n"
+        \n"
             );
         }
     }
@@ -453,17 +453,17 @@ mod twice {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n@use \"shared\";\
-                 \n@include meta.load-css(\"other\");\
-                 \n\
-                 \na {shared-b: shared.$b}\
-                 \n"
+            \n@use \"shared\";\
+            \n@include meta.load-css(\"other\");\
+            \n\
+            \na {shared-b: shared.$b}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  shared-b: value set by other;\
-             \n}\
-             \n"
+        \n  shared-b: value set by other;\
+        \n}\
+        \n"
         );
     }
     mod test_use {
@@ -475,18 +475,18 @@ mod twice {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \n@use \"midstream\";\
-                     \n@include meta.load-css(\"other\")\
-                     \n"
+            \n@use \"midstream\";\
+            \n@include meta.load-css(\"other\")\
+            \n"
                 )
                 .unwrap(),
                 "b, a {\
-                 \n  c: d;\
-                 \n}\
-                 \nb {\
-                 \n  c: d;\
-                 \n}\
-                 \n"
+        \n  c: d;\
+        \n}\
+        \nb {\
+        \n  c: d;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -495,18 +495,18 @@ mod twice {
             assert_eq!(
                 rsass(
                     "@use \"sass:meta\";\
-                     \n@use \"other\";\
-                     \na {@include meta.load-css(\"other\")}\
-                     \n"
+            \n@use \"other\";\
+            \na {@include meta.load-css(\"other\")}\
+            \n"
                 )
                 .unwrap(),
                 "b {\
-                 \n  c: d;\
-                 \n}\
-                 \na b {\
-                 \n  c: d;\
-                 \n}\
-                 \n"
+        \n  c: d;\
+        \n}\
+        \na b {\
+        \n  c: d;\
+        \n}\
+        \n"
             );
         }
         mod runs_once {
@@ -518,15 +518,15 @@ mod twice {
                 assert_eq!(
                     rsass(
                         "@use \"sass:meta\";\
-                         \n@use \"other\";\
-                         \n@include meta.load-css(\"_other\");\
-                         \n\
-                         \n/* No output other than this */\
-                         \n"
+            \n@use \"other\";\
+            \n@include meta.load-css(\"_other\");\
+            \n\
+            \n/* No output other than this */\
+            \n"
                     )
                     .unwrap(),
                     "/* No output other than this */\
-                     \n"
+        \n"
                 );
             }
             #[test]
@@ -535,15 +535,15 @@ mod twice {
                 assert_eq!(
                     rsass(
                         "@use \"sass:meta\";\
-                         \n@use \"other\";\
-                         \n@include meta.load-css(\"other\");\
-                         \n\
-                         \n/* No output other than this */\
-                         \n"
+            \n@use \"other\";\
+            \n@include meta.load-css(\"other\");\
+            \n\
+            \n/* No output other than this */\
+            \n"
                     )
                     .unwrap(),
                     "/* No output other than this */\
-                     \n"
+        \n"
                 );
             }
         }
@@ -563,15 +563,15 @@ mod with {
             assert_eq!(
                 rsass(
                     "// Regression test for sass/dart-sass#838.\
-                     \n@use \"sass:meta\";\
-                     \n@include meta.load-css(\"other\", $with: (c: e));\
-                     \n"
+            \n@use \"sass:meta\";\
+            \n@include meta.load-css(\"other\", $with: (c: e));\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: e;\
-                 \n}\
-                 \n"
+        \n  b: e;\
+        \n}\
+        \n"
             );
         }
     }
@@ -579,17 +579,17 @@ mod with {
     #[ignore] // unexepected error
     fn dash_insensitive() {
         assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+            rsass(
+                "@use \"sass:meta\";\
             \n@include meta.load-css(\"other\", $with: (a_b: configured));\
             \n"
-        )
-        .unwrap(),
-        "b {\
+            )
+            .unwrap(),
+            "b {\
         \n  c: configured;\
         \n}\
         \n"
-    );
+        );
     }
     #[test]
     #[ignore] // unexepected error
@@ -597,14 +597,14 @@ mod with {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n@include meta.load-css(\"other\", $with: (a: configured));\
-                 \n"
+            \n@include meta.load-css(\"other\", $with: (a: configured));\
+            \n"
             )
             .unwrap(),
             "b {\
-             \n  c: configured;\
-             \n}\
-             \n"
+        \n  c: configured;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -613,14 +613,14 @@ mod with {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n@include meta.load-css(\"other\", $with: ());\
-                 \n"
+            \n@include meta.load-css(\"other\", $with: ());\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c;\
-             \n}\
-             \n"
+        \n  b: c;\
+        \n}\
+        \n"
         );
     }
     mod multi_load {
@@ -630,20 +630,20 @@ mod with {
         #[ignore] // unexepected error
         fn empty() {
             assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+                rsass(
+                    "@use \"sass:meta\";\
             \n@include meta.load-css(\"upstream\", $with: (a: configured));\
             \n\
             \n// An empty configuration map counts as no configuration.\
             \n@include meta.load-css(\"midstream\", $with: ());\
             \n"
-        )
-        .unwrap(),
-        "b {\
+                )
+                .unwrap(),
+                "b {\
         \n  c: configured;\
         \n}\
         \n"
-    );
+            );
         }
         #[test]
         #[ignore] // unexepected error
@@ -692,20 +692,20 @@ mod with {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n@include meta.load-css(\"other\", $with: (\
-                 \n  a: configured a,\
-                 \n  b: configured b,\
-                 \n  c: configured c\
-                 \n));\
-                 \n"
+            \n@include meta.load-css(\"other\", $with: (\
+            \n  a: configured a,\
+            \n  b: configured b,\
+            \n  c: configured c\
+            \n));\
+            \n"
             )
             .unwrap(),
             "d {\
-             \n  a: configured a;\
-             \n  b: configured b;\
-             \n  c: configured c;\
-             \n}\
-             \n"
+        \n  a: configured a;\
+        \n  b: configured b;\
+        \n  c: configured c;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -714,32 +714,32 @@ mod with {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n@include meta.load-css(\"other\", $with: (a: configured));\
-                 \n"
+            \n@include meta.load-css(\"other\", $with: (a: configured));\
+            \n"
             )
             .unwrap(),
             "b {\
-             \n  c: configured;\
-             \n}\
-             \n"
+        \n  c: configured;\
+        \n}\
+        \n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn some_unconfigured() {
         assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+            rsass(
+                "@use \"sass:meta\";\
             \n@include meta.load-css(\"other\", $with: (a: configured a));\
             \n"
-        )
-        .unwrap(),
-        "c {\
+            )
+            .unwrap(),
+            "c {\
         \n  a: configured a;\
         \n  b: original b;\
         \n}\
         \n"
-    );
+        );
     }
     mod through_forward {
         #[allow(unused)]
@@ -748,81 +748,81 @@ mod with {
         #[ignore] // unexepected error
         fn test_as() {
             assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+                rsass(
+                    "@use \"sass:meta\";\
             \n@include meta.load-css(\"loaded\", $with: (b-a: configured));\
             \n"
-        )
-        .unwrap(),
-        "c {\
+                )
+                .unwrap(),
+                "c {\
         \n  d: configured;\
         \n}\
         \n"
-    );
+            );
         }
         #[test]
         #[ignore] // unexepected error
         fn bare() {
             assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+                rsass(
+                    "@use \"sass:meta\";\
             \n@include meta.load-css(\"loaded\", $with: (a: configured));\
             \n"
-        )
-        .unwrap(),
-        "b {\
+                )
+                .unwrap(),
+                "b {\
         \n  c: configured;\
         \n}\
         \n"
-    );
+            );
         }
         #[test]
         #[ignore] // unexepected error
         fn hide() {
             assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+                rsass(
+                    "@use \"sass:meta\";\
             \n@include meta.load-css(\"loaded\", $with: (a: configured));\
             \n"
-        )
-        .unwrap(),
-        "b {\
+                )
+                .unwrap(),
+                "b {\
         \n  c: configured;\
         \n}\
         \n"
-    );
+            );
         }
         #[test]
         #[ignore] // unexepected error
         fn show() {
             assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+                rsass(
+                    "@use \"sass:meta\";\
             \n@include meta.load-css(\"loaded\", $with: (a: configured));\
             \n"
-        )
-        .unwrap(),
-        "b {\
+                )
+                .unwrap(),
+                "b {\
         \n  c: configured;\
         \n}\
         \n"
-    );
+            );
         }
         #[test]
         #[ignore] // unexepected error
         fn transitive() {
             assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+                rsass(
+                    "@use \"sass:meta\";\
             \n@include meta.load-css(\"loaded\", $with: (a: configured));\
             \n"
-        )
-        .unwrap(),
-        "b {\
+                )
+                .unwrap(),
+                "b {\
         \n  c: configured;\
         \n}\
         \n"
-    );
+            );
         }
         mod with {
             #[allow(unused)]
@@ -831,50 +831,50 @@ mod with {
             #[ignore] // unexepected error
             fn default() {
                 assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+                    rsass(
+                        "@use \"sass:meta\";\
             \n@include meta.load-css(\"loaded\", $with: (a: from input));\
             \n"
-        )
-        .unwrap(),
-        "b {\
+                    )
+                    .unwrap(),
+                    "b {\
         \n  c: from input;\
         \n}\
         \n"
-    );
+                );
             }
             #[test]
             #[ignore] // unexepected error
             fn null() {
                 assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+                    rsass(
+                        "@use \"sass:meta\";\
             \n@include meta.load-css(\"loaded\", $with: (a: null));\
             \n"
-        )
-        .unwrap(),
-        "b {\
+                    )
+                    .unwrap(),
+                    "b {\
         \n  c: from loaded;\
         \n}\
         \n"
-    );
+                );
             }
             #[test]
             #[ignore] // unexepected error
             fn unconfigured() {
                 assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+                    rsass(
+                        "@use \"sass:meta\";\
             \n@include meta.load-css(\"loaded\", $with: (a: from input));\
             \n"
-        )
-        .unwrap(),
-        "c {\
+                    )
+                    .unwrap(),
+                    "c {\
         \n  a: from input;\
         \n  b: from loaded;\
         \n}\
         \n"
-    );
+                );
             }
         }
     }
@@ -885,33 +885,33 @@ mod with {
         #[ignore] // unexepected error
         fn direct() {
             assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+                rsass(
+                    "@use \"sass:meta\";\
             \n@include meta.load-css(\"loaded\", $with: (a: configured));\
             \n"
-        )
-        .unwrap(),
-        "b {\
+                )
+                .unwrap(),
+                "b {\
         \n  c: configured;\
         \n}\
         \n"
-    );
+            );
         }
         #[test]
         #[ignore] // unexepected error
         fn transitive() {
             assert_eq!(
-        rsass(
-            "@use \"sass:meta\";\
+                rsass(
+                    "@use \"sass:meta\";\
             \n@include meta.load-css(\"loaded\", $with: (a: configured));\
             \n"
-        )
-        .unwrap(),
-        "b {\
+                )
+                .unwrap(),
+                "b {\
         \n  c: configured;\
         \n}\
         \n"
-    );
+            );
         }
     }
     #[test]
@@ -920,15 +920,15 @@ mod with {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n@include meta.load-css(\"other\", $with: (a: configured));\
-                 \n"
+            \n@include meta.load-css(\"other\", $with: (a: configured));\
+            \n"
             )
             .unwrap(),
             "b {\
-             \n  before-declaration: false;\
-             \n  after-declaration: true;\
-             \n}\
-             \n"
+        \n  before-declaration: false;\
+        \n  after-declaration: true;\
+        \n}\
+        \n"
         );
     }
 }

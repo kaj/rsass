@@ -17,13 +17,13 @@ mod multi_argument_var {
         assert_eq!(
             rsass(
                 "a {b: rgba(var(--foo))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(var(--foo));\
-             \n}\
-             \n"
+        \n  b: rgba(var(--foo));\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -31,13 +31,13 @@ mod multi_argument_var {
         assert_eq!(
             rsass(
                 "a {b: rgba(var(--foo), 0.4)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(var(--foo), 0.4);\
-             \n}\
-             \n"
+        \n  b: rgba(var(--foo), 0.4);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -60,13 +60,13 @@ mod multi_argument_var {
         assert_eq!(
             rsass(
                 "a {b: rgba(1, var(--foo))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(1, var(--foo));\
-             \n}\
-             \n"
+        \n  b: rgba(1, var(--foo));\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -74,13 +74,13 @@ mod multi_argument_var {
         assert_eq!(
             rsass(
                 "a {b: rgba(1, var(--foo), 0.4)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(1, var(--foo), 0.4);\
-             \n}\
-             \n"
+        \n  b: rgba(1, var(--foo), 0.4);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -88,13 +88,13 @@ mod multi_argument_var {
         assert_eq!(
             rsass(
                 "a {b: rgba(1, 2, var(--foo))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(1, 2, var(--foo));\
-             \n}\
-             \n"
+        \n  b: rgba(1, 2, var(--foo));\
+        \n}\
+        \n"
         );
     }
 }
@@ -115,13 +115,13 @@ mod two_args {
             assert_eq!(
                 rsass(
                     "a {b: rgba(#123, 1.1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #112233;\
-                 \n}\
-                 \n"
+        \n  b: #112233;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -129,13 +129,13 @@ mod two_args {
             assert_eq!(
                 rsass(
                     "a {b: rgba(#123, -0.1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(17, 34, 51, 0);\
-                 \n}\
-                 \n"
+        \n  b: rgba(17, 34, 51, 0);\
+        \n}\
+        \n"
             );
         }
     }
@@ -144,13 +144,13 @@ mod two_args {
         assert_eq!(
             rsass(
                 "a {b: rgba($color: #123, $alpha: 0.5)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(17, 34, 51, 0.5);\
-             \n}\
-             \n"
+        \n  b: rgba(17, 34, 51, 0.5);\
+        \n}\
+        \n"
         );
     }
     mod opaque_to {
@@ -161,13 +161,13 @@ mod two_args {
             assert_eq!(
                 rsass(
                     "a {b: rgba(#123, 1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #112233;\
-                 \n}\
-                 \n"
+        \n  b: #112233;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -175,13 +175,13 @@ mod two_args {
             assert_eq!(
                 rsass(
                     "a {b: rgba(#123, 0.5)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(17, 34, 51, 0.5);\
-                 \n}\
-                 \n"
+        \n  b: rgba(17, 34, 51, 0.5);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -189,13 +189,13 @@ mod two_args {
             assert_eq!(
                 rsass(
                     "a {b: rgba(#123, 0)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(17, 34, 51, 0);\
-                 \n}\
-                 \n"
+        \n  b: rgba(17, 34, 51, 0);\
+        \n}\
+        \n"
             );
         }
     }
@@ -207,13 +207,13 @@ mod two_args {
             assert_eq!(
                 rsass(
                     "a {b: rgba(rgba(0, 0, 255, 0.3), 1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: blue;\
-                 \n}\
-                 \n"
+        \n  b: blue;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -221,13 +221,13 @@ mod two_args {
             assert_eq!(
                 rsass(
                     "a {b: rgba(rgba(0, 0, 255, 0.3), 0.5)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(0, 0, 255, 0.5);\
-                 \n}\
-                 \n"
+        \n  b: rgba(0, 0, 255, 0.5);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -235,13 +235,13 @@ mod two_args {
             assert_eq!(
                 rsass(
                     "a {b: rgba(rgba(0, 0, 255, 0.3), 0)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(0, 0, 255, 0);\
-                 \n}\
-                 \n"
+        \n  b: rgba(0, 0, 255, 0);\
+        \n}\
+        \n"
             );
         }
     }
@@ -253,13 +253,13 @@ mod two_args {
             assert_eq!(
                 rsass(
                     "a {b: rgba(transparent, 1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: black;\
-                 \n}\
-                 \n"
+        \n  b: black;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -267,13 +267,13 @@ mod two_args {
             assert_eq!(
                 rsass(
                     "a {b: rgba(transparent, 0.5)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(0, 0, 0, 0.5);\
-                 \n}\
-                 \n"
+        \n  b: rgba(0, 0, 0, 0.5);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -281,13 +281,13 @@ mod two_args {
             assert_eq!(
                 rsass(
                     "a {b: rgba(transparent, 0)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(0, 0, 0, 0);\
-                 \n}\
-                 \n"
+        \n  b: rgba(0, 0, 0, 0);\
+        \n}\
+        \n"
             );
         }
     }

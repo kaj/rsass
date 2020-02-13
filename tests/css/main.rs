@@ -11,11 +11,11 @@ fn blockless_directive_without_semicolon() {
     assert_eq!(
         rsass(
             "@foo \"bar\";\
-             \n"
+            \n"
         )
         .unwrap(),
         "@foo \"bar\";\
-         \n"
+        \n"
     );
 }
 
@@ -38,12 +38,12 @@ mod comment {
                 assert_eq!(
                     rsass(
                         "/* foo\r * bar */\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "/* foo\
-                     \n * bar */\
-                     \n"
+        \n * bar */\
+        \n"
                 );
             }
             #[test]
@@ -51,12 +51,12 @@ mod comment {
                 assert_eq!(
                     rsass(
                         "/* foo\u{c} * bar */\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "/* foo\
-                     \n * bar */\
-                     \n"
+        \n * bar */\
+        \n"
                 );
             }
         }
@@ -91,15 +91,15 @@ mod comment {
                 assert_eq!(
                     rsass(
                         "a {\
-                         \n  b: c /* d */ e;\
-                         \n}\
-                         \n"
+            \n  b: c /* d */ e;\
+            \n}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c e;\
-                     \n}\
-                     \n"
+        \n  b: c e;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -112,15 +112,15 @@ mod comment {
                 assert_eq!(
                     rsass(
                         "a {\
-                         \n  b: c // d\
-                         \n}\
-                         \n"
+            \n  b: c // d\
+            \n}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c;\
-                     \n}\
-                     \n"
+        \n  b: c;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -130,16 +130,16 @@ mod comment {
         assert_eq!(
             rsass(
                 ".foo {\
-                 \n  /* Foo Bar */\
-                 \n  /* Baz Bang */ }\
-                 \n"
+            \n  /* Foo Bar */\
+            \n  /* Baz Bang */ }\
+            \n"
             )
             .unwrap(),
             ".foo {\
-             \n  /* Foo Bar */\
-             \n  /* Baz Bang */\
-             \n}\
-             \n"
+        \n  /* Foo Bar */\
+        \n  /* Baz Bang */\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -147,25 +147,25 @@ mod comment {
         assert_eq!(
             rsass(
                 "a /***/ b {x: y}\
-                 \na /****/ b {x: y}\
-                 \na /* **/ b {x: y}\
-                 \na /** */ b {x: y}\
-                 \n"
+            \na /****/ b {x: y}\
+            \na /* **/ b {x: y}\
+            \na /** */ b {x: y}\
+            \n"
             )
             .unwrap(),
             "a b {\
-             \n  x: y;\
-             \n}\
-             \na b {\
-             \n  x: y;\
-             \n}\
-             \na b {\
-             \n  x: y;\
-             \n}\
-             \na b {\
-             \n  x: y;\
-             \n}\
-             \n"
+        \n  x: y;\
+        \n}\
+        \na b {\
+        \n  x: y;\
+        \n}\
+        \na b {\
+        \n  x: y;\
+        \n}\
+        \na b {\
+        \n  x: y;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -173,20 +173,20 @@ mod comment {
         assert_eq!(
             rsass(
                 ".foo {\
-                 \n    /* Foo\
-                 \n Bar\
-                 \nBaz */\
-                 \n  a: b; }\
-                 \n"
+            \n    /* Foo\
+            \n Bar\
+            \nBaz */\
+            \n  a: b; }\
+            \n"
             )
             .unwrap(),
             ".foo {\
-             \n  /* Foo\
-             \n Bar\
-             \nBaz */\
-             \n  a: b;\
-             \n}\
-             \n"
+        \n  /* Foo\
+        \n Bar\
+        \nBaz */\
+        \n  a: b;\
+        \n}\
+        \n"
         );
     }
 }
@@ -199,11 +199,11 @@ fn directive_with_lots_of_whitespace() {
     assert_eq!(
         rsass(
             "@foo \"bar\";\
-             \n"
+            \n"
         )
         .unwrap(),
         "@foo \"bar\";\
-         \n"
+        \n"
     );
 }
 
@@ -213,11 +213,11 @@ fn empty_block_directive() {
     assert_eq!(
         rsass(
             "@foo {}\
-             \n"
+            \n"
         )
         .unwrap(),
         "@foo {}\
-         \n"
+        \n"
     );
 }
 
@@ -227,23 +227,23 @@ fn function_name_identifiers() {
     assert_eq!(
         rsass(
             "a {\
-             \n  b: url;\
-             \n  c: calc;\
-             \n  d: element;\
-             \n  e: expression;\
-             \n  f: progid;\
-             \n}\
-             \n"
+            \n  b: url;\
+            \n  c: calc;\
+            \n  d: element;\
+            \n  e: expression;\
+            \n  f: progid;\
+            \n}\
+            \n"
         )
         .unwrap(),
         "a {\
-         \n  b: url;\
-         \n  c: calc;\
-         \n  d: element;\
-         \n  e: expression;\
-         \n  f: progid;\
-         \n}\
-         \n"
+        \n  b: url;\
+        \n  c: calc;\
+        \n  d: element;\
+        \n  e: expression;\
+        \n  f: progid;\
+        \n}\
+        \n"
     );
 }
 
@@ -260,16 +260,16 @@ mod keyframes {
             assert_eq!(
                 rsass(
                     "// Regression test for sass/dart-sass#611.\
-                     \na {\
-                     \n  @keyframes {/**/}\
-                     \n}\
-                     \n"
+            \na {\
+            \n  @keyframes {/**/}\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "@keyframes {\
-                 \n  /**/\
-                 \n}\
-                 \n"
+        \n  /**/\
+        \n}\
+        \n"
             );
         }
     }
@@ -337,13 +337,13 @@ mod selector {
                 assert_eq!(
                     rsass(
                         "[a=\"b\"i] {c: d}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "[a=\"b\" i] {\
-                     \n  c: d;\
-                     \n}\
-                     \n"
+        \n  c: d;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -351,13 +351,13 @@ mod selector {
                 assert_eq!(
                     rsass(
                         "[a=b I] {c: d}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "[a=b I] {\
-                     \n  c: d;\
-                     \n}\
-                     \n"
+        \n  c: d;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -409,25 +409,25 @@ mod selector {
         assert_eq!(
             rsass(
                 "::slotted(.a) {x: y}\
-                 \n\
-                 \n::slotted(.c.d) {x: y}\
-                 \n.e {@extend .c}\
-                 \n\
-                 \n::slotted(.f) {x: y}\
-                 \n::slotted(.g) {@extend .f}\
-                 \n"
+            \n\
+            \n::slotted(.c.d) {x: y}\
+            \n.e {@extend .c}\
+            \n\
+            \n::slotted(.f) {x: y}\
+            \n::slotted(.g) {@extend .f}\
+            \n"
             )
             .unwrap(),
             "::slotted(.a) {\
-             \n  x: y;\
-             \n}\
-             \n::slotted(.c.d, .d.e) {\
-             \n  x: y;\
-             \n}\
-             \n::slotted(.f, ::slotted(.g)) {\
-             \n  x: y;\
-             \n}\
-             \n"
+        \n  x: y;\
+        \n}\
+        \n::slotted(.c.d, .d.e) {\
+        \n  x: y;\
+        \n}\
+        \n::slotted(.f, ::slotted(.g)) {\
+        \n  x: y;\
+        \n}\
+        \n"
         );
     }
 }
@@ -448,13 +448,13 @@ mod url {
             assert_eq!(
                 rsass(
                     "a {b: url(http://c.d/e!f)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: url(http://c.d/e!f);\
-                 \n}\
-                 \n"
+        \n  b: url(http://c.d/e!f);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -462,13 +462,13 @@ mod url {
             assert_eq!(
                 rsass(
                     "a {b: url(!)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: url(!);\
-                 \n}\
-                 \n"
+        \n  b: url(!);\
+        \n}\
+        \n"
             );
         }
     }

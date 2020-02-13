@@ -10,89 +10,89 @@ fn spaced() {
     assert_eq!(
         rsass(
             "$input: literal;\
-             \n.result {\
-             \n  output: literal  $input;\
-             \n  output: literal  #{$input};\
-             \n  output: literal  #{literal};\
-             \n  output: literal  #{\"literal\"};\
-             \n  output: $input  $input;\
-             \n  output: $input  #{$input};\
-             \n  output: $input  #{literal};\
-             \n  output: $input  #{\"literal\"};\
-             \n  output: #{$input}  literal;\
-             \n  output: #{$input}  $input;\
-             \n  output: #{$input}  #{$input};\
-             \n  output: #{$input}  #{literal};\
-             \n  output: #{$input}  #{\"literal\"};\
-             \n  output: #{literal}  literal;\
-             \n  output: #{literal}  $input;\
-             \n  output: #{literal}  #{$input};\
-             \n  output: #{literal}  #{literal};\
-             \n  output: #{literal}  #{\"literal\"};\
-             \n  output: #{\"literal\"}  literal;\
-             \n  output: #{\"literal\"}  $input;\
-             \n  output: #{\"literal\"}  #{$input};\
-             \n  output: #{\"literal\"}  #{literal};\
-             \n  output: #{\"literal\"}  #{\"literal\"};\
-             \n  output: \"literal  #{$input}\";\
-             \n  output: \"literal  #{literal}\";\
-             \n  output: \"literal  #{\"literal\"}\";\
-             \n  output: \"#{$input}  literal\";\
-             \n  output: \"#{$input}  #{$input}\";\
-             \n  output: \"#{$input}  #{literal}\";\
-             \n  output: \"#{$input}  #{\"literal\"}\";\
-             \n  output: \"#{literal}  literal\";\
-             \n  output: \"#{literal}  #{$input}\";\
-             \n  output: \"#{literal}  #{literal}\";\
-             \n  output: \"#{literal}  #{\"literal\"}\";\
-             \n  output: \"#{\"literal\"}  literal\";\
-             \n  output: \"#{\"literal\"}  #{$input}\";\
-             \n  output: \"#{\"literal\"}  #{literal}\";\
-             \n  output: \"#{\"literal\"}  #{\"literal\"}\";\
-             \n}"
+            \n.result {\
+            \n  output: literal  $input;\
+            \n  output: literal  #{$input};\
+            \n  output: literal  #{literal};\
+            \n  output: literal  #{\"literal\"};\
+            \n  output: $input  $input;\
+            \n  output: $input  #{$input};\
+            \n  output: $input  #{literal};\
+            \n  output: $input  #{\"literal\"};\
+            \n  output: #{$input}  literal;\
+            \n  output: #{$input}  $input;\
+            \n  output: #{$input}  #{$input};\
+            \n  output: #{$input}  #{literal};\
+            \n  output: #{$input}  #{\"literal\"};\
+            \n  output: #{literal}  literal;\
+            \n  output: #{literal}  $input;\
+            \n  output: #{literal}  #{$input};\
+            \n  output: #{literal}  #{literal};\
+            \n  output: #{literal}  #{\"literal\"};\
+            \n  output: #{\"literal\"}  literal;\
+            \n  output: #{\"literal\"}  $input;\
+            \n  output: #{\"literal\"}  #{$input};\
+            \n  output: #{\"literal\"}  #{literal};\
+            \n  output: #{\"literal\"}  #{\"literal\"};\
+            \n  output: \"literal  #{$input}\";\
+            \n  output: \"literal  #{literal}\";\
+            \n  output: \"literal  #{\"literal\"}\";\
+            \n  output: \"#{$input}  literal\";\
+            \n  output: \"#{$input}  #{$input}\";\
+            \n  output: \"#{$input}  #{literal}\";\
+            \n  output: \"#{$input}  #{\"literal\"}\";\
+            \n  output: \"#{literal}  literal\";\
+            \n  output: \"#{literal}  #{$input}\";\
+            \n  output: \"#{literal}  #{literal}\";\
+            \n  output: \"#{literal}  #{\"literal\"}\";\
+            \n  output: \"#{\"literal\"}  literal\";\
+            \n  output: \"#{\"literal\"}  #{$input}\";\
+            \n  output: \"#{\"literal\"}  #{literal}\";\
+            \n  output: \"#{\"literal\"}  #{\"literal\"}\";\
+            \n}"
         )
         .unwrap(),
         ".result {\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n  output: \"literal  literal\";\
-         \n}\
-         \n"
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n  output: \"literal  literal\";\
+        \n}\
+        \n"
     );
 }
 
@@ -102,88 +102,88 @@ fn unspaced() {
     assert_eq!(
         rsass(
             "$input: literal;\
-             \n.result {\
-             \n  output: literal$input;\
-             \n  output: literal#{$input};\
-             \n  output: literal#{literal};\
-             \n  output: literal#{\"literal\"};\
-             \n  output: $input$input;\
-             \n  output: $input#{$input};\
-             \n  output: $input#{literal};\
-             \n  output: $input#{\"literal\"};\
-             \n  output: #{$input}literal;\
-             \n  output: #{$input}$input;\
-             \n  output: #{$input}#{$input};\
-             \n  output: #{$input}#{literal};\
-             \n  output: #{$input}#{\"literal\"};\
-             \n  output: #{literal}literal;\
-             \n  output: #{literal}$input;\
-             \n  output: #{literal}#{$input};\
-             \n  output: #{literal}#{literal};\
-             \n  output: #{literal}#{\"literal\"};\
-             \n  output: #{\"literal\"}literal;\
-             \n  output: #{\"literal\"}$input;\
-             \n  output: #{\"literal\"}#{$input};\
-             \n  output: #{\"literal\"}#{literal};\
-             \n  output: #{\"literal\"}#{\"literal\"};\
-             \n  output: \"literal#{$input}\";\
-             \n  output: \"literal#{literal}\";\
-             \n  output: \"literal#{\"literal\"}\";\
-             \n  output: \"#{$input}literal\";\
-             \n  output: \"#{$input}#{$input}\";\
-             \n  output: \"#{$input}#{literal}\";\
-             \n  output: \"#{$input}#{\"literal\"}\";\
-             \n  output: \"#{literal}literal\";\
-             \n  output: \"#{literal}#{$input}\";\
-             \n  output: \"#{literal}#{literal}\";\
-             \n  output: \"#{literal}#{\"literal\"}\";\
-             \n  output: \"#{\"literal\"}literal\";\
-             \n  output: \"#{\"literal\"}#{$input}\";\
-             \n  output: \"#{\"literal\"}#{literal}\";\
-             \n  output: \"#{\"literal\"}#{\"literal\"}\";\
-             \n}"
+            \n.result {\
+            \n  output: literal$input;\
+            \n  output: literal#{$input};\
+            \n  output: literal#{literal};\
+            \n  output: literal#{\"literal\"};\
+            \n  output: $input$input;\
+            \n  output: $input#{$input};\
+            \n  output: $input#{literal};\
+            \n  output: $input#{\"literal\"};\
+            \n  output: #{$input}literal;\
+            \n  output: #{$input}$input;\
+            \n  output: #{$input}#{$input};\
+            \n  output: #{$input}#{literal};\
+            \n  output: #{$input}#{\"literal\"};\
+            \n  output: #{literal}literal;\
+            \n  output: #{literal}$input;\
+            \n  output: #{literal}#{$input};\
+            \n  output: #{literal}#{literal};\
+            \n  output: #{literal}#{\"literal\"};\
+            \n  output: #{\"literal\"}literal;\
+            \n  output: #{\"literal\"}$input;\
+            \n  output: #{\"literal\"}#{$input};\
+            \n  output: #{\"literal\"}#{literal};\
+            \n  output: #{\"literal\"}#{\"literal\"};\
+            \n  output: \"literal#{$input}\";\
+            \n  output: \"literal#{literal}\";\
+            \n  output: \"literal#{\"literal\"}\";\
+            \n  output: \"#{$input}literal\";\
+            \n  output: \"#{$input}#{$input}\";\
+            \n  output: \"#{$input}#{literal}\";\
+            \n  output: \"#{$input}#{\"literal\"}\";\
+            \n  output: \"#{literal}literal\";\
+            \n  output: \"#{literal}#{$input}\";\
+            \n  output: \"#{literal}#{literal}\";\
+            \n  output: \"#{literal}#{\"literal\"}\";\
+            \n  output: \"#{\"literal\"}literal\";\
+            \n  output: \"#{\"literal\"}#{$input}\";\
+            \n  output: \"#{\"literal\"}#{literal}\";\
+            \n  output: \"#{\"literal\"}#{\"literal\"}\";\
+            \n}"
         )
         .unwrap(),
         ".result {\
-         \n  output: literal literal;\
-         \n  output: literalliteral;\
-         \n  output: literalliteral;\
-         \n  output: literalliteral;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literal literal;\
-         \n  output: literalliteral;\
-         \n  output: literal literal;\
-         \n  output: literalliteral;\
-         \n  output: literalliteral;\
-         \n  output: literalliteral;\
-         \n  output: literalliteral;\
-         \n  output: literal literal;\
-         \n  output: literalliteral;\
-         \n  output: literalliteral;\
-         \n  output: literalliteral;\
-         \n  output: literalliteral;\
-         \n  output: literal literal;\
-         \n  output: literalliteral;\
-         \n  output: literalliteral;\
-         \n  output: literalliteral;\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n  output: \"literalliteral\";\
-         \n}\
-         \n"
+        \n  output: literal literal;\
+        \n  output: literalliteral;\
+        \n  output: literalliteral;\
+        \n  output: literalliteral;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literal literal;\
+        \n  output: literalliteral;\
+        \n  output: literal literal;\
+        \n  output: literalliteral;\
+        \n  output: literalliteral;\
+        \n  output: literalliteral;\
+        \n  output: literalliteral;\
+        \n  output: literal literal;\
+        \n  output: literalliteral;\
+        \n  output: literalliteral;\
+        \n  output: literalliteral;\
+        \n  output: literalliteral;\
+        \n  output: literal literal;\
+        \n  output: literalliteral;\
+        \n  output: literalliteral;\
+        \n  output: literalliteral;\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n  output: \"literalliteral\";\
+        \n}\
+        \n"
     );
 }

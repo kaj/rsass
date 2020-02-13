@@ -72,70 +72,70 @@ fn indentation() {
     assert_eq!(
         rsass(
             ".indentation {\
-             \n  --simple: {\
-             \n    foo: bar;\
-             \n  };\
-             \n\
-             \n  --empty-line: {\
-             \n    foo: bar;\
-             \n\
-             \n    baz: bang;\
-             \n  };\
-             \n\
-             \n  --multi-level: {\
-             \n   one\
-             \n    two\
-             \n     three\
-             \n      four\
-             \n  };\
-             \n\
-             \n  --all-indented: {\
-             \n    foo: bar; };\
-             \n\
-             \n  --below-base:\
-             \n    foo\
-             \n bar\
-             \n   baz;\
-             \n\
-             \n         --deep-base: {\
-             \n           foo: bar;\
-             \n         };\
-             \n\
-             \n\t--hard-tabs: {\
-             \n\t\tfoo: bar;\
-             \n\t};\
-             \n}\
-             \n"
+            \n  --simple: {\
+            \n    foo: bar;\
+            \n  };\
+            \n\
+            \n  --empty-line: {\
+            \n    foo: bar;\
+            \n\
+            \n    baz: bang;\
+            \n  };\
+            \n\
+            \n  --multi-level: {\
+            \n   one\
+            \n    two\
+            \n     three\
+            \n      four\
+            \n  };\
+            \n\
+            \n  --all-indented: {\
+            \n    foo: bar; };\
+            \n\
+            \n  --below-base:\
+            \n    foo\
+            \n bar\
+            \n   baz;\
+            \n\
+            \n         --deep-base: {\
+            \n           foo: bar;\
+            \n         };\
+            \n\
+            \n\t--hard-tabs: {\
+            \n\t\tfoo: bar;\
+            \n\t};\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".indentation {\
-         \n  --simple: {\
-         \n    foo: bar;\
-         \n  };\
-         \n  --empty-line: {\
-         \n    foo: bar;\
-         \n    baz: bang;\
-         \n  };\
-         \n  --multi-level: {\
-         \n   one\
-         \n    two\
-         \n     three\
-         \n      four\
-         \n  };\
-         \n  --all-indented: {\
-         \n    foo: bar; };\
-         \n  --below-base:\
-         \n     foo\
-         \n  bar\
-         \n    baz;\
-         \n  --deep-base: {\
-         \n    foo: bar;\
-         \n  };\
-         \n  --hard-tabs: {\
-         \n  \tfoo: bar;\
-         \n  };\
-         \n}\
-         \n"
+        \n  --simple: {\
+        \n    foo: bar;\
+        \n  };\
+        \n  --empty-line: {\
+        \n    foo: bar;\
+        \n    baz: bang;\
+        \n  };\
+        \n  --multi-level: {\
+        \n   one\
+        \n    two\
+        \n     three\
+        \n      four\
+        \n  };\
+        \n  --all-indented: {\
+        \n    foo: bar; };\
+        \n  --below-base:\
+        \n     foo\
+        \n  bar\
+        \n    baz;\
+        \n  --deep-base: {\
+        \n    foo: bar;\
+        \n  };\
+        \n  --hard-tabs: {\
+        \n  \tfoo: bar;\
+        \n  };\
+        \n}\
+        \n"
     );
 }
 
@@ -330,13 +330,13 @@ mod syntax {
             assert_eq!(
                 rsass(
                     "a {--: b}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  --: b;\
-                 \n}\
-                 \n"
+        \n  --: b;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -344,13 +344,13 @@ mod syntax {
             assert_eq!(
                 rsass(
                     "a {b: var(--)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: var(--);\
-                 \n}\
-                 \n"
+        \n  b: var(--);\
+        \n}\
+        \n"
             );
         }
     }
@@ -362,13 +362,13 @@ mod syntax {
             assert_eq!(
                 rsass(
                     "a {--1: b}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  --1: b;\
-                 \n}\
-                 \n"
+        \n  --1: b;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -376,13 +376,13 @@ mod syntax {
             assert_eq!(
                 rsass(
                     "a {b: var(--1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: var(--1);\
-                 \n}\
-                 \n"
+        \n  b: var(--1);\
+        \n}\
+        \n"
             );
         }
     }
@@ -394,13 +394,13 @@ mod syntax {
             assert_eq!(
                 rsass(
                     "a {---: b}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  ---: b;\
-                 \n}\
-                 \n"
+        \n  ---: b;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -408,13 +408,13 @@ mod syntax {
             assert_eq!(
                 rsass(
                     "a {b: var(---)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: var(---);\
-                 \n}\
-                 \n"
+        \n  b: var(---);\
+        \n}\
+        \n"
             );
         }
     }
@@ -436,15 +436,15 @@ mod trailing_comment {
             assert_eq!(
                 rsass(
                     "a {\
-                     \n  --b: c /* comment */;\
-                     \n}\
-                     \n"
+            \n  --b: c /* comment */;\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  --b: c /* comment */;\
-                 \n}\
-                 \n"
+        \n  --b: c /* comment */;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -452,15 +452,15 @@ mod trailing_comment {
             assert_eq!(
                 rsass(
                     "a {\
-                     \n  --b: c // comment;\
-                     \n}\
-                     \n"
+            \n  --b: c // comment;\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  --b: c // comment;\
-                 \n}\
-                 \n"
+        \n  --b: c // comment;\
+        \n}\
+        \n"
             );
         }
     }
@@ -473,24 +473,24 @@ fn trailing_whitespace() {
     assert_eq!(
         rsass(
             ".trailing-whitespace {\
-             \n  --space: value ;\
-             \n  --tab: value\t;\
-             \n  --newline: value\
-             \n;\
-             \n  --before-closing-brace: value\
-             \n}\
-             \n"
+            \n  --space: value ;\
+            \n  --tab: value\t;\
+            \n  --newline: value\
+            \n;\
+            \n  --before-closing-brace: value\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".trailing-whitespace {\
-         \n  --space: value ;\
-         \n  --tab: value\t;\
-         \n  --newline: value\
-         \n;\
-         \n  --before-closing-brace: value\
-         \n;\
-         \n}\
-         \n"
+        \n  --space: value ;\
+        \n  --tab: value\t;\
+        \n  --newline: value\
+        \n;\
+        \n  --before-closing-brace: value\
+        \n;\
+        \n}\
+        \n"
     );
 }
 

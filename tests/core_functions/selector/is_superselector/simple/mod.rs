@@ -14,13 +14,13 @@ mod attribute {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"[c=d]\", \"[c=d]\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     mod unequal {
@@ -32,13 +32,13 @@ mod attribute {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"[c=d]\", \"[e=d]\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -47,13 +47,13 @@ mod attribute {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"[c=d]\", \"[c^=d]\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -62,13 +62,13 @@ mod attribute {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"[c=d]\", \"[c=e]\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
     }
@@ -84,13 +84,13 @@ mod class {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\".c\", \".c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -99,13 +99,13 @@ mod class {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\".c\", \".d\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
 }
@@ -120,13 +120,13 @@ mod id {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"#c\", \"#c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -135,13 +135,13 @@ mod id {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"#c\", \"#d\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
 }
@@ -156,13 +156,13 @@ mod placeholder {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"%c\", \"%c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -171,13 +171,13 @@ mod placeholder {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"%c\", \"%d\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
 }
@@ -194,13 +194,13 @@ mod test_type {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"c\", \"*\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -209,13 +209,13 @@ mod test_type {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"c\", \"c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     mod namespace {
@@ -230,13 +230,13 @@ mod test_type {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"|c\", \"|c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -245,13 +245,13 @@ mod test_type {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"|c\", \"d|c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -260,13 +260,13 @@ mod test_type {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"|c\", \"c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -275,13 +275,13 @@ mod test_type {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"|c\", \"*|c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -294,13 +294,13 @@ mod test_type {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c|d\", \"|d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             mod and_explicit {
@@ -312,13 +312,13 @@ mod test_type {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c|d\", \"c|d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -327,13 +327,13 @@ mod test_type {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c|d\", \"e|d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
             }
@@ -343,13 +343,13 @@ mod test_type {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c|d\", \"d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -358,13 +358,13 @@ mod test_type {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c|d\", \"*|d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -377,13 +377,13 @@ mod test_type {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"*|c\", \"|c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -392,13 +392,13 @@ mod test_type {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"*|c\", \"d|c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -407,13 +407,13 @@ mod test_type {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"*|c\", \"c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -422,13 +422,13 @@ mod test_type {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"*|c\", \"*|c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -439,13 +439,13 @@ mod test_type {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"c\", \"d\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
 }
@@ -460,13 +460,13 @@ mod universal {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"*\", \".c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -475,13 +475,13 @@ mod universal {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"*\", \"c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -490,13 +490,13 @@ mod universal {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"*\", \"*\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     mod namespace {
@@ -511,13 +511,13 @@ mod universal {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"|*\", \".d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             mod and_type {
@@ -529,13 +529,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"|*\", \"|d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -544,13 +544,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"|*\", \"c|d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -559,13 +559,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"|*\", \"d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
             }
@@ -578,13 +578,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"|*\", \"|*\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -593,13 +593,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"|*\", \"c|*\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -608,13 +608,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"|*\", \"*\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -623,13 +623,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"|*\", \"*|*\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
             }
@@ -643,13 +643,13 @@ mod universal {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c|*\", \".d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             mod and_type {
@@ -661,13 +661,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c|*\", \"|d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
                 mod explicit {
@@ -679,13 +679,13 @@ mod universal {
                         assert_eq!(
                             rsass(
                                 "a {b: is-superselector(\"c|*\", \"c|d\")}\
-                                 \n"
+            \n"
                             )
                             .unwrap(),
                             "a {\
-                             \n  b: true;\
-                             \n}\
-                             \n"
+        \n  b: true;\
+        \n}\
+        \n"
                         );
                     }
                     #[test]
@@ -694,13 +694,13 @@ mod universal {
                         assert_eq!(
                             rsass(
                                 "a {b: is-superselector(\"c|*\", \"e|d\")}\
-                                 \n"
+            \n"
                             )
                             .unwrap(),
                             "a {\
-                             \n  b: false;\
-                             \n}\
-                             \n"
+        \n  b: false;\
+        \n}\
+        \n"
                         );
                     }
                 }
@@ -710,13 +710,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c|*\", \"d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
             }
@@ -729,13 +729,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c|*\", \"|*\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
                 mod explicit {
@@ -747,13 +747,13 @@ mod universal {
                         assert_eq!(
                             rsass(
                                 "a {b: is-superselector(\"c|*\", \"c|*\")}\
-                                 \n"
+            \n"
                             )
                             .unwrap(),
                             "a {\
-                             \n  b: true;\
-                             \n}\
-                             \n"
+        \n  b: true;\
+        \n}\
+        \n"
                         );
                     }
                     #[test]
@@ -762,13 +762,13 @@ mod universal {
                         assert_eq!(
                             rsass(
                                 "a {b: is-superselector(\"c|*\", \"d|*\")}\
-                                 \n"
+            \n"
                             )
                             .unwrap(),
                             "a {\
-                             \n  b: false;\
-                             \n}\
-                             \n"
+        \n  b: false;\
+        \n}\
+        \n"
                         );
                     }
                 }
@@ -778,13 +778,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c|*\", \"*\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -793,13 +793,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c|*\", \"*|*\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
             }
@@ -813,13 +813,13 @@ mod universal {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"*|*\", \".d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             mod and_type {
@@ -831,13 +831,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"*|*\", \"|d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -846,13 +846,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"*|*\", \"c|d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -861,13 +861,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"*|*\", \"d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
             }
@@ -880,13 +880,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"*|*\", \"|*\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -895,13 +895,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"*|*\", \"c|*\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -910,13 +910,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"*|*\", \"*\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -925,13 +925,13 @@ mod universal {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"*|*\", \"*|*\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
             }

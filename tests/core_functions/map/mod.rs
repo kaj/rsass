@@ -31,13 +31,13 @@ mod get {
             assert_eq!(
                 rsass(
                     "a {b: map-get((1: 2, 3: 4, 5: 6), 1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 2;\
-                 \n}\
-                 \n"
+        \n  b: 2;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -46,13 +46,13 @@ mod get {
             assert_eq!(
                 rsass(
                     "a {b: map-get((1: 2, 3: 4, 5: 6), 5)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 6;\
-                 \n}\
-                 \n"
+        \n  b: 6;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -61,13 +61,13 @@ mod get {
             assert_eq!(
                 rsass(
                     "a {b: map-get((1: 2, 3: 4, 5: 6), 3)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 4;\
-                 \n}\
-                 \n"
+        \n  b: 4;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -75,13 +75,13 @@ mod get {
             assert_eq!(
                 rsass(
                     "a {b: map-get((c: d), c)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: d;\
-                 \n}\
-                 \n"
+        \n  b: d;\
+        \n}\
+        \n"
             );
         }
     }
@@ -90,13 +90,13 @@ mod get {
         assert_eq!(
             rsass(
                 "a {b: map-get($map: (c: d), $key: c)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: d;\
-             \n}\
-             \n"
+        \n  b: d;\
+        \n}\
+        \n"
         );
     }
     mod not_found {
@@ -107,13 +107,13 @@ mod get {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-get((c-d: e), c_d))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: null;\
-                 \n}\
-                 \n"
+        \n  b: null;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -121,13 +121,13 @@ mod get {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-get((), 1))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: null;\
-                 \n}\
-                 \n"
+        \n  b: null;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -135,13 +135,13 @@ mod get {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-get((c: d), d))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: null;\
-                 \n}\
-                 \n"
+        \n  b: null;\
+        \n}\
+        \n"
             );
         }
     }
@@ -174,13 +174,13 @@ mod has_key {
             assert_eq!(
                 rsass(
                     "a {b: map-has-key((1: 2, 3: 4, 5: 6), 1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -189,13 +189,13 @@ mod has_key {
             assert_eq!(
                 rsass(
                     "a {b: map-has-key((1: 2, 3: 4, 5: 6), 5)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -204,13 +204,13 @@ mod has_key {
             assert_eq!(
                 rsass(
                     "a {b: map-has-key((1: 2, 3: 4, 5: 6), 3)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -218,13 +218,13 @@ mod has_key {
             assert_eq!(
                 rsass(
                     "a {b: map-has-key((c: d), c)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -233,13 +233,13 @@ mod has_key {
         assert_eq!(
             rsass(
                 "a {b: map-has-key($map: (c: d), $key: c)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     mod not_found {
@@ -250,13 +250,13 @@ mod has_key {
             assert_eq!(
                 rsass(
                     "a {b: map-has-key((), 1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -264,13 +264,13 @@ mod has_key {
             assert_eq!(
                 rsass(
                     "a {b: map-has-key((c: d), d)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
     }
@@ -285,18 +285,18 @@ mod keys {
         assert_eq!(
             rsass(
                 "$result: map-keys(());\
-                 \na {\
-                 \n  value: inspect($result);\
-                 \n  separator: list-separator($result);\
-                 \n}\
-                 \n"
+            \na {\
+            \n  value: inspect($result);\
+            \n  separator: list-separator($result);\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  value: ();\
-             \n  separator: comma;\
-             \n}\
-             \n"
+        \n  value: ();\
+        \n  separator: comma;\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -314,13 +314,13 @@ mod keys {
         assert_eq!(
             rsass(
                 "a {b: map-keys((c: d, e: f, g: h))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c, e, g;\
-             \n}\
-             \n"
+        \n  b: c, e, g;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -328,13 +328,13 @@ mod keys {
         assert_eq!(
             rsass(
                 "a {b: map-keys($map: (1: 2, 3: 4))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1, 3;\
-             \n}\
-             \n"
+        \n  b: 1, 3;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -343,20 +343,20 @@ mod keys {
         assert_eq!(
             rsass(
                 "$result: map-keys((1: 2));\
-                 \na {\
-                 \n  value: $result;\
-                 \n  type: type-of($result);\
-                 \n  separator: list-separator($result);\
-                 \n}\
-                 \n"
+            \na {\
+            \n  value: $result;\
+            \n  type: type-of($result);\
+            \n  separator: list-separator($result);\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  value: 1;\
-             \n  type: list;\
-             \n  separator: comma;\
-             \n}\
-             \n"
+        \n  value: 1;\
+        \n  type: list;\
+        \n  separator: comma;\
+        \n}\
+        \n"
         );
     }
 }
@@ -370,13 +370,13 @@ mod merge {
         assert_eq!(
             rsass(
                 "a {b: inspect(map-merge((c: d, e: f), (1: 2, 3: 4)))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: (c: d, e: f, 1: 2, 3: 4);\
-             \n}\
-             \n"
+        \n  b: (c: d, e: f, 1: 2, 3: 4);\
+        \n}\
+        \n"
         );
     }
     mod empty {
@@ -387,13 +387,13 @@ mod merge {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-merge((), ()))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: ();\
-                 \n}\
-                 \n"
+        \n  b: ();\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -401,13 +401,13 @@ mod merge {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-merge((), (c: d, e: f)))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: (c: d, e: f);\
-                 \n}\
-                 \n"
+        \n  b: (c: d, e: f);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -415,13 +415,13 @@ mod merge {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-merge((c: d, e: f), ()))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: (c: d, e: f);\
-                 \n}\
-                 \n"
+        \n  b: (c: d, e: f);\
+        \n}\
+        \n"
             );
         }
     }
@@ -446,13 +446,13 @@ mod merge {
         assert_eq!(
             rsass(
                 "a {b: inspect(map-merge($map1: (c: d), $map2: (1: 2)))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: (c: d, 1: 2);\
-             \n}\
-             \n"
+        \n  b: (c: d, 1: 2);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -474,13 +474,13 @@ mod merge {
         assert_eq!(
             rsass(
                 "a {b: inspect(map-merge((c: d, e: f), (c: 1, e: 2)))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: (c: 1, e: 2);\
-             \n}\
-             \n"
+        \n  b: (c: 1, e: 2);\
+        \n}\
+        \n"
         );
     }
 }
@@ -512,13 +512,13 @@ mod remove {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-remove((1: 2, 3: 4, 5: 6), 1))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: (3: 4, 5: 6);\
-                 \n}\
-                 \n"
+        \n  b: (3: 4, 5: 6);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -527,13 +527,13 @@ mod remove {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-remove((1: 2, 3: 4, 5: 6), 5))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: (1: 2, 3: 4);\
-                 \n}\
-                 \n"
+        \n  b: (1: 2, 3: 4);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -542,13 +542,13 @@ mod remove {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-remove((1: 2, 3: 4, 5: 6), 3))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: (1: 2, 5: 6);\
-                 \n}\
-                 \n"
+        \n  b: (1: 2, 5: 6);\
+        \n}\
+        \n"
             );
         }
         mod multiple {
@@ -590,13 +590,13 @@ mod remove {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-remove((c: d), c))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: ();\
-                 \n}\
-                 \n"
+        \n  b: ();\
+        \n}\
+        \n"
             );
         }
     }
@@ -606,13 +606,13 @@ mod remove {
         assert_eq!(
             rsass(
                 "a {b: inspect(map-remove($map: (c: d), $key: c))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: ();\
-             \n}\
-             \n"
+        \n  b: ();\
+        \n}\
+        \n"
         );
     }
     mod not_found {
@@ -623,13 +623,13 @@ mod remove {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-remove((), 1))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: ();\
-                 \n}\
-                 \n"
+        \n  b: ();\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -637,13 +637,13 @@ mod remove {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-remove((c: d), e, f, g))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: (c: d);\
-                 \n}\
-                 \n"
+        \n  b: (c: d);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -651,13 +651,13 @@ mod remove {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-remove((c: d)))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: (c: d);\
-                 \n}\
-                 \n"
+        \n  b: (c: d);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -665,13 +665,13 @@ mod remove {
             assert_eq!(
                 rsass(
                     "a {b: inspect(map-remove((c: d), d))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: (c: d);\
-                 \n}\
-                 \n"
+        \n  b: (c: d);\
+        \n}\
+        \n"
             );
         }
     }
@@ -686,18 +686,18 @@ mod values {
         assert_eq!(
             rsass(
                 "$result: map-values(());\
-                 \na {\
-                 \n  value: inspect($result);\
-                 \n  separator: list-separator($result);\
-                 \n}\
-                 \n"
+            \na {\
+            \n  value: inspect($result);\
+            \n  separator: list-separator($result);\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  value: ();\
-             \n  separator: comma;\
-             \n}\
-             \n"
+        \n  value: ();\
+        \n  separator: comma;\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -715,13 +715,13 @@ mod values {
         assert_eq!(
             rsass(
                 "a {b: map-values((c: d, e: f, g: h))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: d, f, h;\
-             \n}\
-             \n"
+        \n  b: d, f, h;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -729,13 +729,13 @@ mod values {
         assert_eq!(
             rsass(
                 "a {b: map-values($map: (1: 2, 3: 4))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 2, 4;\
-             \n}\
-             \n"
+        \n  b: 2, 4;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -744,20 +744,20 @@ mod values {
         assert_eq!(
             rsass(
                 "$result: map-values((1: 2));\
-                 \na {\
-                 \n  value: $result;\
-                 \n  type: type-of($result);\
-                 \n  separator: list-separator($result);\
-                 \n}\
-                 \n"
+            \na {\
+            \n  value: $result;\
+            \n  type: type-of($result);\
+            \n  separator: list-separator($result);\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  value: 2;\
-             \n  type: list;\
-             \n  separator: comma;\
-             \n}\
-             \n"
+        \n  value: 2;\
+        \n  type: list;\
+        \n  separator: comma;\
+        \n}\
+        \n"
         );
     }
 }

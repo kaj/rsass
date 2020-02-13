@@ -13,13 +13,13 @@ mod append {
         assert_eq!(
             rsass(
                 "a {b: append(c d, e, $separator: auto)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c d e;\
-             \n}\
-             \n"
+        \n  b: c d e;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -27,13 +27,13 @@ mod append {
         assert_eq!(
             rsass(
                 "a {b: append([], 1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: [1];\
-             \n}\
-             \n"
+        \n  b: [1];\
+        \n}\
+        \n"
         );
     }
     mod comma {
@@ -44,13 +44,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: append((1, 2, 3), 4)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1, 2, 3, 4;\
-                 \n}\
-                 \n"
+        \n  b: 1, 2, 3, 4;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -58,13 +58,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: append(1 2 3, 4, $separator: comma)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1, 2, 3, 4;\
-                 \n}\
-                 \n"
+        \n  b: 1, 2, 3, 4;\
+        \n}\
+        \n"
             );
         }
     }
@@ -77,22 +77,22 @@ mod append {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \n\
-                     \n$result: append($empty-comma-list, 1);\
-                     \na {\
-                     \n  value: $result;\
-                     \n  type: type-of($result);\
-                     \n  separator: real-separator($result);\
-                     \n}\
-                     \n"
+            \n\
+            \n$result: append($empty-comma-list, 1);\
+            \na {\
+            \n  value: $result;\
+            \n  type: type-of($result);\
+            \n  separator: real-separator($result);\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  value: 1;\
-                 \n  type: list;\
-                 \n  separator: comma;\
-                 \n}\
-                 \n"
+        \n  value: 1;\
+        \n  type: list;\
+        \n  separator: comma;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -101,22 +101,22 @@ mod append {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \n\
-                     \n$result: append($empty-space-list, 1);\
-                     \na {\
-                     \n  value: $result;\
-                     \n  type: type-of($result);\
-                     \n  separator: real-separator($result);\
-                     \n}\
-                     \n"
+            \n\
+            \n$result: append($empty-space-list, 1);\
+            \na {\
+            \n  value: $result;\
+            \n  type: type-of($result);\
+            \n  separator: real-separator($result);\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  value: 1;\
-                 \n  type: list;\
-                 \n  separator: space;\
-                 \n}\
-                 \n"
+        \n  value: 1;\
+        \n  type: list;\
+        \n  separator: space;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -125,22 +125,22 @@ mod append {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \n\
-                     \n$result: append((), 1);\
-                     \na {\
-                     \n  value: $result;\
-                     \n  type: type-of($result);\
-                     \n  separator: real-separator($result);\
-                     \n}\
-                     \n"
+            \n\
+            \n$result: append((), 1);\
+            \na {\
+            \n  value: $result;\
+            \n  type: type-of($result);\
+            \n  separator: real-separator($result);\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  value: 1;\
-                 \n  type: list;\
-                 \n  separator: space;\
-                 \n}\
-                 \n"
+        \n  value: 1;\
+        \n  type: list;\
+        \n  separator: space;\
+        \n}\
+        \n"
             );
         }
     }
@@ -169,22 +169,22 @@ mod append {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \n\
-                     \n$result: append($empty-map, 1);\
-                     \na {\
-                     \n  value: $result;\
-                     \n  type: type-of($result);\
-                     \n  separator: real-separator($result);\
-                     \n}\
-                     \n"
+            \n\
+            \n$result: append($empty-map, 1);\
+            \na {\
+            \n  value: $result;\
+            \n  type: type-of($result);\
+            \n  separator: real-separator($result);\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  value: 1;\
-                 \n  type: list;\
-                 \n  separator: space;\
-                 \n}\
-                 \n"
+        \n  value: 1;\
+        \n  type: list;\
+        \n  separator: space;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -192,13 +192,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: append((c: d, e: f), g)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c d, e f, g;\
-                 \n}\
-                 \n"
+        \n  b: c d, e f, g;\
+        \n}\
+        \n"
             );
         }
     }
@@ -207,13 +207,13 @@ mod append {
         assert_eq!(
             rsass(
                 "a {b: append($list: c d, $val: e, $separator: comma)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c, d, e;\
-             \n}\
-             \n"
+        \n  b: c, d, e;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -221,13 +221,13 @@ mod append {
         assert_eq!(
             rsass(
                 "a {b: append(c, d)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c d;\
-             \n}\
-             \n"
+        \n  b: c d;\
+        \n}\
+        \n"
         );
     }
     mod single {
@@ -238,13 +238,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: append((1,), 2)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1, 2;\
-                 \n}\
-                 \n"
+        \n  b: 1, 2;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -253,14 +253,14 @@ mod append {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \na {b: append(with-separator(1, space), 2)}\
-                     \n"
+            \na {b: append(with-separator(1, space), 2)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1 2;\
-                 \n}\
-                 \n"
+        \n  b: 1 2;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -268,13 +268,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: append(1, 2)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1 2;\
-                 \n}\
-                 \n"
+        \n  b: 1 2;\
+        \n}\
+        \n"
             );
         }
     }
@@ -286,13 +286,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: append(1 2 3, 4)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1 2 3 4;\
-                 \n}\
-                 \n"
+        \n  b: 1 2 3 4;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -300,13 +300,13 @@ mod append {
             assert_eq!(
                 rsass(
                     "a {b: append((1, 2, 3), 4, $separator: space)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1 2 3 4;\
-                 \n}\
-                 \n"
+        \n  b: 1 2 3 4;\
+        \n}\
+        \n"
             );
         }
     }
@@ -332,13 +332,13 @@ mod index {
             assert_eq!(
                 rsass(
                     "a {b: index(a b c, a)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1;\
-                 \n}\
-                 \n"
+        \n  b: 1;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -346,13 +346,13 @@ mod index {
             assert_eq!(
                 rsass(
                     "a {b: index(a b c, c)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 3;\
-                 \n}\
-                 \n"
+        \n  b: 3;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -360,13 +360,13 @@ mod index {
             assert_eq!(
                 rsass(
                     "a {b: index((c: d, e: f, g: h), e f)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 2;\
-                 \n}\
-                 \n"
+        \n  b: 2;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -374,13 +374,13 @@ mod index {
             assert_eq!(
                 rsass(
                     "a {b: index(a b c a b c, b)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 2;\
-                 \n}\
-                 \n"
+        \n  b: 2;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -388,13 +388,13 @@ mod index {
             assert_eq!(
                 rsass(
                     "a {b: index(c, c)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1;\
-                 \n}\
-                 \n"
+        \n  b: 1;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -403,13 +403,13 @@ mod index {
             assert_eq!(
                 rsass(
                     "a {b: index(1px 1in 1cm, 96px)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 2;\
-                 \n}\
-                 \n"
+        \n  b: 2;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -417,13 +417,13 @@ mod index {
             assert_eq!(
                 rsass(
                     "a {b: index([c], c)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1;\
-                 \n}\
-                 \n"
+        \n  b: 1;\
+        \n}\
+        \n"
             );
         }
     }
@@ -432,13 +432,13 @@ mod index {
         assert_eq!(
             rsass(
                 "a {b: index($list: c d e, $value: d)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 2;\
-             \n}\
-             \n"
+        \n  b: 2;\
+        \n}\
+        \n"
         );
     }
     mod not_found {
@@ -449,13 +449,13 @@ mod index {
             assert_eq!(
                 rsass(
                     "a {b: inspect(index((), c))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: null;\
-                 \n}\
-                 \n"
+        \n  b: null;\
+        \n}\
+        \n"
             );
         }
         mod map {
@@ -467,14 +467,14 @@ mod index {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: inspect(index($empty-map, e))}\
-                         \n"
+            \na {b: inspect(index($empty-map, e))}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: null;\
-                     \n}\
-                     \n"
+        \n  b: null;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -482,13 +482,13 @@ mod index {
                 assert_eq!(
                     rsass(
                         "a {b: inspect(index((c: d, e: f, g: h), e))}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: null;\
-                     \n}\
-                     \n"
+        \n  b: null;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -497,13 +497,13 @@ mod index {
             assert_eq!(
                 rsass(
                     "a {b: inspect(index(c d e, f))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: null;\
-                 \n}\
-                 \n"
+        \n  b: null;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -511,13 +511,13 @@ mod index {
             assert_eq!(
                 rsass(
                     "a {b: inspect(index(c, d))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: null;\
-                 \n}\
-                 \n"
+        \n  b: null;\
+        \n}\
+        \n"
             );
         }
     }
@@ -535,13 +535,13 @@ mod is_bracketed {
             assert_eq!(
                 rsass(
                     "a {b: is-bracketed([])}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -549,13 +549,13 @@ mod is_bracketed {
             assert_eq!(
                 rsass(
                     "a {b: is-bracketed([1, 2, 3])}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -563,13 +563,13 @@ mod is_bracketed {
             assert_eq!(
                 rsass(
                     "a {b: is-bracketed([1])}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -589,13 +589,13 @@ mod is_bracketed {
             assert_eq!(
                 rsass(
                     "a {b: is-bracketed(())}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -603,13 +603,13 @@ mod is_bracketed {
             assert_eq!(
                 rsass(
                     "a {b: is-bracketed((c: d, e: f, g: h))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -617,13 +617,13 @@ mod is_bracketed {
             assert_eq!(
                 rsass(
                     "a {b: is-bracketed(1 2 3)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -631,13 +631,13 @@ mod is_bracketed {
             assert_eq!(
                 rsass(
                     "a {b: is-bracketed(1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -645,13 +645,13 @@ mod is_bracketed {
             assert_eq!(
                 rsass(
                     "a {b: is-bracketed((1,))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
     }
@@ -668,13 +668,13 @@ mod length {
         assert_eq!(
             rsass(
                 "a {b: length(())}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0;\
-             \n}\
-             \n"
+        \n  b: 0;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -682,13 +682,13 @@ mod length {
         assert_eq!(
             rsass(
                 "a {b: length(join((), 1))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -696,13 +696,13 @@ mod length {
         assert_eq!(
             rsass(
                 "a {b: length(c d)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 2;\
-             \n}\
-             \n"
+        \n  b: 2;\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -718,13 +718,13 @@ mod length {
         assert_eq!(
             rsass(
                 "a {b: length((1, 2, 3, 4, 5))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 5;\
-             \n}\
-             \n"
+        \n  b: 5;\
+        \n}\
+        \n"
         );
     }
     mod map {
@@ -736,14 +736,14 @@ mod length {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \na {b: length($empty-map)}\
-                     \n"
+            \na {b: length($empty-map)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 0;\
-                 \n}\
-                 \n"
+        \n  b: 0;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -751,13 +751,13 @@ mod length {
             assert_eq!(
                 rsass(
                     "a {b: length((1: 2, 3: 4))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 2;\
-                 \n}\
-                 \n"
+        \n  b: 2;\
+        \n}\
+        \n"
             );
         }
     }
@@ -766,13 +766,13 @@ mod length {
         assert_eq!(
             rsass(
                 "a {b: length($list: 1 2 3)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 3;\
-             \n}\
-             \n"
+        \n  b: 3;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -780,13 +780,13 @@ mod length {
         assert_eq!(
             rsass(
                 "a {b: length(c)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
 }
@@ -803,13 +803,13 @@ mod nth {
             assert_eq!(
                 rsass(
                     "a {b: nth(join((), c), 1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c;\
-                 \n}\
-                 \n"
+        \n  b: c;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -817,13 +817,13 @@ mod nth {
             assert_eq!(
                 rsass(
                     "a {b: nth(c d, 1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c;\
-                 \n}\
-                 \n"
+        \n  b: c;\
+        \n}\
+        \n"
             );
         }
     }
@@ -835,13 +835,13 @@ mod nth {
             assert_eq!(
                 rsass(
                     "a {b: nth(c d, 2)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: d;\
-                 \n}\
-                 \n"
+        \n  b: d;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -849,13 +849,13 @@ mod nth {
             assert_eq!(
                 rsass(
                     "a {b: nth(c d e f, 2)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: d;\
-                 \n}\
-                 \n"
+        \n  b: d;\
+        \n}\
+        \n"
             );
         }
     }
@@ -884,13 +884,13 @@ mod nth {
         assert_eq!(
             rsass(
                 "a {b: nth((c: d, e: f, g: h), 2)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: e f;\
-             \n}\
-             \n"
+        \n  b: e f;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -898,13 +898,13 @@ mod nth {
         assert_eq!(
             rsass(
                 "a {b: nth($list: c d, $n: 1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c;\
-             \n}\
-             \n"
+        \n  b: c;\
+        \n}\
+        \n"
         );
     }
     mod negative {
@@ -918,13 +918,13 @@ mod nth {
                 assert_eq!(
                     rsass(
                         "a {b: nth(join((), c), -1)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c;\
-                     \n}\
-                     \n"
+        \n  b: c;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -932,13 +932,13 @@ mod nth {
                 assert_eq!(
                     rsass(
                         "a {b: nth(c d, -1)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: d;\
-                     \n}\
-                     \n"
+        \n  b: d;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -950,13 +950,13 @@ mod nth {
                 assert_eq!(
                     rsass(
                         "a {b: nth(c d, -2)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c;\
-                     \n}\
-                     \n"
+        \n  b: c;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -964,13 +964,13 @@ mod nth {
                 assert_eq!(
                     rsass(
                         "a {b: nth(c d e f, -2)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: e;\
-                     \n}\
-                     \n"
+        \n  b: e;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -980,13 +980,13 @@ mod nth {
         assert_eq!(
             rsass(
                 "a {b: nth(c, 1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c;\
-             \n}\
-             \n"
+        \n  b: c;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1003,13 +1003,13 @@ mod separator {
             assert_eq!(
                 rsass(
                     "a {b: list-separator(join((), (), comma))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: comma;\
-                 \n}\
-                 \n"
+        \n  b: comma;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1018,15 +1018,15 @@ mod separator {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \n\
-                     \na {b: list-separator($empty-map)}\
-                     \n"
+            \n\
+            \na {b: list-separator($empty-map)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: space;\
-                 \n}\
-                 \n"
+        \n  b: space;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1034,13 +1034,13 @@ mod separator {
             assert_eq!(
                 rsass(
                     "a {b: list-separator(())}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: space;\
-                 \n}\
-                 \n"
+        \n  b: space;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1060,13 +1060,13 @@ mod separator {
             assert_eq!(
                 rsass(
                     "a {b: list-separator((1, 2, 3))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: comma;\
-                 \n}\
-                 \n"
+        \n  b: comma;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1074,13 +1074,13 @@ mod separator {
             assert_eq!(
                 rsass(
                     "a {b: list-separator((c: d, e: f, g: h))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: comma;\
-                 \n}\
-                 \n"
+        \n  b: comma;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1088,13 +1088,13 @@ mod separator {
             assert_eq!(
                 rsass(
                     "a {b: list-separator(1 2 3)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: space;\
-                 \n}\
-                 \n"
+        \n  b: space;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1106,13 +1106,13 @@ mod separator {
             assert_eq!(
                 rsass(
                     "a {b: list-separator((1,))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: comma;\
-                 \n}\
-                 \n"
+        \n  b: comma;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1120,13 +1120,13 @@ mod separator {
             assert_eq!(
                 rsass(
                     "a {b: list-separator(1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: space;\
-                 \n}\
-                 \n"
+        \n  b: space;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1134,13 +1134,13 @@ mod separator {
             assert_eq!(
                 rsass(
                     "a {b: list-separator([1])}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: space;\
-                 \n}\
-                 \n"
+        \n  b: space;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1158,18 +1158,18 @@ mod set_nth {
             assert_eq!(
                 rsass(
                     "$result: set-nth(join((), b), 1, c);\
-                     \na {\
-                     \n  result: $result;\
-                     \n  type: type-of($result);\
-                     \n}\
-                     \n"
+            \na {\
+            \n  result: $result;\
+            \n  type: type-of($result);\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  result: c;\
-                 \n  type: list;\
-                 \n}\
-                 \n"
+        \n  result: c;\
+        \n  type: list;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1177,13 +1177,13 @@ mod set_nth {
             assert_eq!(
                 rsass(
                     "a {b: set-nth(c d, 1, e)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: e d;\
-                 \n}\
-                 \n"
+        \n  b: e d;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1195,13 +1195,13 @@ mod set_nth {
             assert_eq!(
                 rsass(
                     "a {b: set-nth(c d, 2, e)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c e;\
-                 \n}\
-                 \n"
+        \n  b: c e;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1209,13 +1209,13 @@ mod set_nth {
             assert_eq!(
                 rsass(
                     "a {b: set-nth(c d e f, 2, g)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c g e f;\
-                 \n}\
-                 \n"
+        \n  b: c g e f;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1244,13 +1244,13 @@ mod set_nth {
         assert_eq!(
             rsass(
                 "a {b: set-nth((c: d, e: f, g: h), 2, i)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c d, i, g h;\
-             \n}\
-             \n"
+        \n  b: c d, i, g h;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1258,13 +1258,13 @@ mod set_nth {
         assert_eq!(
             rsass(
                 "a {b: set-nth($list: c d, $n: 1, $value: e)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: e d;\
-             \n}\
-             \n"
+        \n  b: e d;\
+        \n}\
+        \n"
         );
     }
     mod negative {
@@ -1278,18 +1278,18 @@ mod set_nth {
                 assert_eq!(
                     rsass(
                         "$result: set-nth(join((), b), -1, c);\
-                         \na {\
-                         \n  result: $result;\
-                         \n  type: type-of($result);\
-                         \n}\
-                         \n"
+            \na {\
+            \n  result: $result;\
+            \n  type: type-of($result);\
+            \n}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  result: c;\
-                     \n  type: list;\
-                     \n}\
-                     \n"
+        \n  result: c;\
+        \n  type: list;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1297,13 +1297,13 @@ mod set_nth {
                 assert_eq!(
                     rsass(
                         "a {b: set-nth(c d, -1, e)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c e;\
-                     \n}\
-                     \n"
+        \n  b: c e;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -1315,13 +1315,13 @@ mod set_nth {
                 assert_eq!(
                     rsass(
                         "a {b: set-nth(c d, -2, e)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: e d;\
-                     \n}\
-                     \n"
+        \n  b: e d;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1329,13 +1329,13 @@ mod set_nth {
                 assert_eq!(
                     rsass(
                         "a {b: set-nth(c d e f, -2, g)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d g f;\
-                     \n}\
-                     \n"
+        \n  b: c d g f;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -1345,18 +1345,18 @@ mod set_nth {
         assert_eq!(
             rsass(
                 "$result: set-nth(b, 1, c);\
-                 \na {\
-                 \n  result: $result;\
-                 \n  type: type-of($result);\
-                 \n}\
-                 \n"
+            \na {\
+            \n  result: $result;\
+            \n  type: type-of($result);\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  result: c;\
-             \n  type: list;\
-             \n}\
-             \n"
+        \n  result: c;\
+        \n  type: list;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1374,14 +1374,14 @@ mod utils {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \na {b: $empty-map == ()}\
-                     \n"
+            \na {b: $empty-map == ()}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1397,14 +1397,14 @@ mod utils {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: real-separator($empty-comma-list)}\
-                         \n"
+            \na {b: real-separator($empty-comma-list)}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: comma;\
-                     \n}\
-                     \n"
+        \n  b: comma;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1413,14 +1413,14 @@ mod utils {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: real-separator($empty-space-list)}\
-                         \n"
+            \na {b: real-separator($empty-space-list)}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: space;\
-                     \n}\
-                     \n"
+        \n  b: space;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1429,14 +1429,14 @@ mod utils {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: real-separator(())}\
-                         \n"
+            \na {b: real-separator(())}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: undecided;\
-                     \n}\
-                     \n"
+        \n  b: undecided;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -1449,14 +1449,14 @@ mod utils {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: real-separator((1, 2))}\
-                         \n"
+            \na {b: real-separator((1, 2))}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: comma;\
-                     \n}\
-                     \n"
+        \n  b: comma;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1465,14 +1465,14 @@ mod utils {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: real-separator(1 2)}\
-                         \n"
+            \na {b: real-separator(1 2)}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: space;\
-                     \n}\
-                     \n"
+        \n  b: space;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -1485,14 +1485,14 @@ mod utils {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: real-separator((1,))}\
-                         \n"
+            \na {b: real-separator((1,))}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: comma;\
-                     \n}\
-                     \n"
+        \n  b: comma;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1501,14 +1501,14 @@ mod utils {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: real-separator([1])}\
-                         \n"
+            \na {b: real-separator([1])}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: undecided;\
-                     \n}\
-                     \n"
+        \n  b: undecided;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -1525,14 +1525,14 @@ mod utils {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: with-separator(1 2, comma)}\
-                         \n"
+            \na {b: with-separator(1 2, comma)}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: 1, 2;\
-                     \n}\
-                     \n"
+        \n  b: 1, 2;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1541,14 +1541,14 @@ mod utils {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: with-separator((1, 2), space)}\
-                         \n"
+            \na {b: with-separator((1, 2), space)}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: 1 2;\
-                     \n}\
-                     \n"
+        \n  b: 1 2;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -1561,14 +1561,14 @@ mod utils {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: real-separator(with-separator([1], comma))}\
-                         \n"
+            \na {b: real-separator(with-separator([1], comma))}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: comma;\
-                     \n}\
-                     \n"
+        \n  b: comma;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1577,14 +1577,14 @@ mod utils {
                 assert_eq!(
                     rsass(
                         "@import \"core_functions/list/utils\";\
-                         \na {b: real-separator(with-separator((1,), space))}\
-                         \n"
+            \na {b: real-separator(with-separator((1,), space))}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: space;\
-                     \n}\
-                     \n"
+        \n  b: space;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -1604,13 +1604,13 @@ mod zip {
             assert_eq!(
                 rsass(
                     "a {b: inspect(zip(map-remove((c: d), c)))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: ();\
-                 \n}\
-                 \n"
+        \n  b: ();\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1619,13 +1619,13 @@ mod zip {
             assert_eq!(
                 rsass(
                     "a {b: inspect(zip((c: d, e: f, g: h), 1 2 3))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: (c d) 1, (e f) 2, (g h) 3;\
-                 \n}\
-                 \n"
+        \n  b: (c d) 1, (e f) 2, (g h) 3;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1635,20 +1635,20 @@ mod zip {
         assert_eq!(
             rsass(
                 "@import \"core_functions/list/utils\";\
-                 \n\
-                 \n$result: zip();\
-                 \na {\
-                 \n  value: inspect($result);\
-                 \n  separator: real-separator($result);\
-                 \n}\
-                 \n"
+            \n\
+            \n$result: zip();\
+            \na {\
+            \n  value: inspect($result);\
+            \n  separator: real-separator($result);\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  value: ();\
-             \n  separator: comma;\
-             \n}\
-             \n"
+        \n  value: ();\
+        \n  separator: comma;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1657,13 +1657,13 @@ mod zip {
         assert_eq!(
             rsass(
                 "a {b: zip(c, d, e)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c d e;\
-             \n}\
-             \n"
+        \n  b: c d e;\
+        \n}\
+        \n"
         );
     }
     mod one_list {
@@ -1675,27 +1675,27 @@ mod zip {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \n\
-                     \n$result: zip([1 2 3]);\
-                     \n$element: nth($result, 2);\
-                     \n\
-                     \na {\
-                     \n  value: $result;\
-                     \n  element: $element {\
-                     \n    type: type-of($element);\
-                     \n    separator: real-separator($element);\
-                     \n  }\
-                     \n}\
-                     \n"
+            \n\
+            \n$result: zip([1 2 3]);\
+            \n$element: nth($result, 2);\
+            \n\
+            \na {\
+            \n  value: $result;\
+            \n  element: $element {\
+            \n    type: type-of($element);\
+            \n    separator: real-separator($element);\
+            \n  }\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  value: 1, 2, 3;\
-                 \n  element: 2;\
-                 \n  element-type: list;\
-                 \n  element-separator: space;\
-                 \n}\
-                 \n"
+        \n  value: 1, 2, 3;\
+        \n  element: 2;\
+        \n  element-type: list;\
+        \n  element-separator: space;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1704,27 +1704,27 @@ mod zip {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \n\
-                     \n$result: zip((1, 2, 3));\
-                     \n$element: nth($result, 2);\
-                     \n\
-                     \na {\
-                     \n  value: $result;\
-                     \n  element: $element {\
-                     \n    type: type-of($element);\
-                     \n    separator: real-separator($element);\
-                     \n  }\
-                     \n}\
-                     \n"
+            \n\
+            \n$result: zip((1, 2, 3));\
+            \n$element: nth($result, 2);\
+            \n\
+            \na {\
+            \n  value: $result;\
+            \n  element: $element {\
+            \n    type: type-of($element);\
+            \n    separator: real-separator($element);\
+            \n  }\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  value: 1, 2, 3;\
-                 \n  element: 2;\
-                 \n  element-type: list;\
-                 \n  element-separator: space;\
-                 \n}\
-                 \n"
+        \n  value: 1, 2, 3;\
+        \n  element: 2;\
+        \n  element-type: list;\
+        \n  element-separator: space;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1733,20 +1733,20 @@ mod zip {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \n\
-                     \n$result: zip(());\
-                     \na {\
-                     \n  value: inspect($result);\
-                     \n  separator: real-separator($result);\
-                     \n}\
-                     \n"
+            \n\
+            \n$result: zip(());\
+            \na {\
+            \n  value: inspect($result);\
+            \n  separator: real-separator($result);\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  value: ();\
-                 \n  separator: comma;\
-                 \n}\
-                 \n"
+        \n  value: ();\
+        \n  separator: comma;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1755,27 +1755,27 @@ mod zip {
             assert_eq!(
                 rsass(
                     "@import \"core_functions/list/utils\";\
-                     \n\
-                     \n$result: zip(1 2 3);\
-                     \n$element: nth($result, 2);\
-                     \n\
-                     \na {\
-                     \n  value: $result;\
-                     \n  element: $element {\
-                     \n    type: type-of($element);\
-                     \n    separator: real-separator($element);\
-                     \n  }\
-                     \n}\
-                     \n"
+            \n\
+            \n$result: zip(1 2 3);\
+            \n$element: nth($result, 2);\
+            \n\
+            \na {\
+            \n  value: $result;\
+            \n  element: $element {\
+            \n    type: type-of($element);\
+            \n    separator: real-separator($element);\
+            \n  }\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  value: 1, 2, 3;\
-                 \n  element: 2;\
-                 \n  element-type: list;\
-                 \n  element-separator: space;\
-                 \n}\
-                 \n"
+        \n  value: 1, 2, 3;\
+        \n  element: 2;\
+        \n  element-type: list;\
+        \n  element-separator: space;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1784,13 +1784,13 @@ mod zip {
         assert_eq!(
             rsass(
                 "a {b: zip(1 2 3, c d e, red green blue)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1 c red, 2 d green, 3 e blue;\
-             \n}\
-             \n"
+        \n  b: 1 c red, 2 d green, 3 e blue;\
+        \n}\
+        \n"
         );
     }
     mod two_lists {
@@ -1801,13 +1801,13 @@ mod zip {
             assert_eq!(
                 rsass(
                     "a {b: inspect(zip((), 1 2 3))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: ();\
-                 \n}\
-                 \n"
+        \n  b: ();\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1815,13 +1815,13 @@ mod zip {
             assert_eq!(
                 rsass(
                     "a {b: zip(1 2 3 4, c d)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1 c, 2 d;\
-                 \n}\
-                 \n"
+        \n  b: 1 c, 2 d;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1829,13 +1829,13 @@ mod zip {
             assert_eq!(
                 rsass(
                     "a {b: zip(1 2 3, c d e)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1 c, 2 d, 3 e;\
-                 \n}\
-                 \n"
+        \n  b: 1 c, 2 d, 3 e;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1843,13 +1843,13 @@ mod zip {
             assert_eq!(
                 rsass(
                     "a {b: inspect(zip(1 2 3, ()))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: ();\
-                 \n}\
-                 \n"
+        \n  b: ();\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1857,13 +1857,13 @@ mod zip {
             assert_eq!(
                 rsass(
                     "a {b: zip(1 2, c d e f)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1 c, 2 d;\
-                 \n}\
-                 \n"
+        \n  b: 1 c, 2 d;\
+        \n}\
+        \n"
             );
         }
     }

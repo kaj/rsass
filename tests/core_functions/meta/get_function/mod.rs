@@ -12,33 +12,33 @@ mod different_module {
     #[ignore] // wrong result
     fn chosen_prefix() {
         assert_eq!(
-        rsass(
-            "@use \"sass:color\" as a;\
+            rsass(
+                "@use \"sass:color\" as a;\
             \nb {c: call(get-function(\"red\", $module: \"a\"), #abcdef)}\
             \n"
-        )
-        .unwrap(),
-        "b {\
+            )
+            .unwrap(),
+            "b {\
         \n  c: 171;\
         \n}\
         \n"
-    );
+        );
     }
     #[test]
     #[ignore] // wrong result
     fn defined() {
         assert_eq!(
-        rsass(
-            "@use \"sass:color\";\
+            rsass(
+                "@use \"sass:color\";\
             \na {b: call(get-function(\"red\", $module: \"color\"), #abcdef)}\
             \n"
-        )
-        .unwrap(),
-        "a {\
+            )
+            .unwrap(),
+            "a {\
         \n  b: 171;\
         \n}\
         \n"
-    );
+        );
     }
     #[test]
     #[ignore] // wrong result
@@ -65,16 +65,16 @@ mod different_module {
             assert_eq!(
                 rsass(
                     "@use \"midstream\" as *;\
-                     \na {\
-                     \n  b: call(get-function(c-d));\
-                     \n}\
-                     \n"
+            \na {\
+            \n  b: call(get-function(c-d));\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: d;\
-                 \n}\
-                 \n"
+        \n  b: d;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -83,14 +83,14 @@ mod different_module {
             assert_eq!(
                 rsass(
                     "@use \"midstream\" as *;\
-                     \na {b: call(get-function(c))}\
-                     \n"
+            \na {b: call(get-function(c))}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c;\
-                 \n}\
-                 \n"
+        \n  b: c;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -99,16 +99,16 @@ mod different_module {
             assert_eq!(
                 rsass(
                     "@use \"midstream\" as *;\
-                     \na {\
-                     \n  b: call(get-function(d));\
-                     \n}\
-                     \n"
+            \na {\
+            \n  b: call(get-function(d));\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: d;\
-                 \n}\
-                 \n"
+        \n  b: d;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -117,16 +117,16 @@ mod different_module {
             assert_eq!(
                 rsass(
                     "@use \"midstream\" as *;\
-                     \na {\
-                     \n  b: call(get-function(c));\
-                     \n}\
-                     \n"
+            \na {\
+            \n  b: call(get-function(c));\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c;\
-                 \n}\
-                 \n"
+        \n  b: c;\
+        \n}\
+        \n"
             );
         }
     }
@@ -136,14 +136,14 @@ mod different_module {
         assert_eq!(
             rsass(
                 "@use \"other\" as *;\
-                 \na {b: call(get-function(add-two), 10)}\
-                 \n"
+            \na {b: call(get-function(add-two), 10)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 12;\
-             \n}\
-             \n"
+        \n  b: 12;\
+        \n}\
+        \n"
         );
     }
 }
@@ -160,13 +160,13 @@ mod equality {
             assert_eq!(
                 rsass(
                     "a {b: get-function(lighten) == get-function(darken)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -174,13 +174,13 @@ mod equality {
             assert_eq!(
                 rsass(
                     "a {b: get-function(lighten) == get-function(lighten)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -189,14 +189,14 @@ mod equality {
         assert_eq!(
             rsass(
                 "$lighten-fn: get-function(lighten);\
-                 \na {b: $lighten-fn == $lighten-fn}\
-                 \n"
+            \na {b: $lighten-fn == $lighten-fn}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     mod user_defined {
@@ -224,34 +224,34 @@ mod equality {
             assert_eq!(
                 rsass(
                     "@function user-defined() {@return null}\
-                     \n$first-reference: get-function(user-defined);\
-                     \n\
-                     \n@function user-defined() {@return null}\
-                     \n$second-reference: get-function(user-defined);\
-                     \na {b: $first-reference == $second-reference}\
-                     \n"
+            \n$first-reference: get-function(user-defined);\
+            \n\
+            \n@function user-defined() {@return null}\
+            \n$second-reference: get-function(user-defined);\
+            \na {b: $first-reference == $second-reference}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
         fn same() {
             assert_eq!(
-        rsass(
-            "@function user-defined() {@return null}\
+                rsass(
+                    "@function user-defined() {@return null}\
             \na {b: get-function(user-defined) == get-function(user-defined)}\
             \n"
-        )
-        .unwrap(),
-        "a {\
+                )
+                .unwrap(),
+                "a {\
         \n  b: true;\
         \n}\
         \n"
-    );
+            );
         }
     }
 }
@@ -319,13 +319,13 @@ mod meta {
         assert_eq!(
             rsass(
                 "a {b: inspect(get-function(lighten))};\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: get-function(\"lighten\");\
-             \n}\
-             \n"
+        \n  b: get-function(\"lighten\");\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -333,13 +333,13 @@ mod meta {
         assert_eq!(
             rsass(
                 "a {b: type-of(get-function(lighten))};\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: function;\
-             \n}\
-             \n"
+        \n  b: function;\
+        \n}\
+        \n"
         );
     }
 }
@@ -353,15 +353,15 @@ mod same_module {
         assert_eq!(
             rsass(
                 "$lighten-fn: get-function(lighten);\
-                 \n\
-                 \na {b: call($lighten-fn, red, 30%)}\
-                 \n"
+            \n\
+            \na {b: call($lighten-fn, red, 30%)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #ff9999;\
-             \n}\
-             \n"
+        \n  b: #ff9999;\
+        \n}\
+        \n"
         );
     }
     mod dash_insensitive {
@@ -372,15 +372,15 @@ mod same_module {
             assert_eq!(
                 rsass(
                     "@function add_two($v) {@return $v + 2}\
-                     \n\
-                     \na {b: call(get-function(add-two), 10)}\
-                     \n"
+            \n\
+            \na {b: call(get-function(add-two), 10)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 12;\
-                 \n}\
-                 \n"
+        \n  b: 12;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -388,15 +388,15 @@ mod same_module {
             assert_eq!(
                 rsass(
                     "@function add-two($v) {@return $v + 2}\
-                     \n\
-                     \na {b: call(get-function(add_two), 10)}\
-                     \n"
+            \n\
+            \na {b: call(get-function(add_two), 10)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 12;\
-                 \n}\
-                 \n"
+        \n  b: 12;\
+        \n}\
+        \n"
             );
         }
     }
@@ -405,20 +405,20 @@ mod same_module {
         assert_eq!(
             rsass(
                 "$sass-fn: get-function(lighten);\
-                 \n$css-fn: get-function(lighten, $css: true);\
-                 \n\
-                 \na {\
-                 \n  sass-fn: call($sass-fn, red, 30%);\
-                 \n  css-fn: call($css-fn, red, 30%);\
-                 \n}\
-                 \n"
+            \n$css-fn: get-function(lighten, $css: true);\
+            \n\
+            \na {\
+            \n  sass-fn: call($sass-fn, red, 30%);\
+            \n  css-fn: call($css-fn, red, 30%);\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  sass-fn: #ff9999;\
-             \n  css-fn: lighten(red, 30%);\
-             \n}\
-             \n"
+        \n  sass-fn: #ff9999;\
+        \n  css-fn: lighten(red, 30%);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -449,14 +449,14 @@ mod same_module {
         assert_eq!(
             rsass(
                 "@import \"other\";\
-                 \na {b: call(get-function(add-two), 10)}\
-                 \n"
+            \na {b: call(get-function(add-two), 10)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 12;\
-             \n}\
-             \n"
+        \n  b: 12;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -464,16 +464,16 @@ mod same_module {
         assert_eq!(
             rsass(
                 "@function add-two($v) {@return $v + 2}\
-                 \n$add-two-fn: get-function(add-two);\
-                 \n\
-                 \na {b: call($add-two-fn, 10)}\
-                 \n"
+            \n$add-two-fn: get-function(add-two);\
+            \n\
+            \na {b: call($add-two-fn, 10)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 12;\
-             \n}\
-             \n"
+        \n  b: 12;\
+        \n}\
+        \n"
         );
     }
 }

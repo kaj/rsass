@@ -17,13 +17,13 @@ mod multi_argument_var {
         assert_eq!(
             rsass(
                 "a {b: hsla(var(--foo))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: hsla(var(--foo));\
-             \n}\
-             \n"
+        \n  b: hsla(var(--foo));\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -31,13 +31,13 @@ mod multi_argument_var {
         assert_eq!(
             rsass(
                 "a {b: hsla(var(--foo), 0.4)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: hsla(var(--foo), 0.4);\
-             \n}\
-             \n"
+        \n  b: hsla(var(--foo), 0.4);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -60,13 +60,13 @@ mod multi_argument_var {
         assert_eq!(
             rsass(
                 "a {b: hsla(1, var(--foo))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: hsla(1, var(--foo));\
-             \n}\
-             \n"
+        \n  b: hsla(1, var(--foo));\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -74,13 +74,13 @@ mod multi_argument_var {
         assert_eq!(
             rsass(
                 "a {b: hsla(1, var(--foo), 0.4)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: hsla(1, var(--foo), 0.4);\
-             \n}\
-             \n"
+        \n  b: hsla(1, var(--foo), 0.4);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -88,13 +88,13 @@ mod multi_argument_var {
         assert_eq!(
             rsass(
                 "a {b: hsla(1, 2%, var(--foo))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: hsla(1, 2%, var(--foo));\
-             \n}\
-             \n"
+        \n  b: hsla(1, 2%, var(--foo));\
+        \n}\
+        \n"
         );
     }
 }

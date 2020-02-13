@@ -23,13 +23,13 @@ mod abs {
         assert_eq!(
             rsass(
                 "a {b: abs($number: -3)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 3;\
-             \n}\
-             \n"
+        \n  b: 3;\
+        \n}\
+        \n"
         );
     }
     mod negative {
@@ -40,13 +40,13 @@ mod abs {
             assert_eq!(
                 rsass(
                     "a {b: abs(-123.456)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 123.456;\
-                 \n}\
-                 \n"
+        \n  b: 123.456;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -54,13 +54,13 @@ mod abs {
             assert_eq!(
                 rsass(
                     "a {b: abs(-17)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 17;\
-                 \n}\
-                 \n"
+        \n  b: 17;\
+        \n}\
+        \n"
             );
         }
     }
@@ -72,13 +72,13 @@ mod abs {
             assert_eq!(
                 rsass(
                     "a {b: abs(5.6)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 5.6;\
-                 \n}\
-                 \n"
+        \n  b: 5.6;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -86,13 +86,13 @@ mod abs {
             assert_eq!(
                 rsass(
                     "a {b: abs(1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1;\
-                 \n}\
-                 \n"
+        \n  b: 1;\
+        \n}\
+        \n"
             );
         }
     }
@@ -102,13 +102,13 @@ mod abs {
         assert_eq!(
             rsass(
                 "a {b: abs(-7px / 4em) * 1em}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1.75px;\
-             \n}\
-             \n"
+        \n  b: 1.75px;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -116,13 +116,13 @@ mod abs {
         assert_eq!(
             rsass(
                 "a {b: abs(0)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0;\
-             \n}\
-             \n"
+        \n  b: 0;\
+        \n}\
+        \n"
         );
     }
 }
@@ -146,13 +146,13 @@ mod ceil {
         assert_eq!(
             rsass(
                 "a {b: ceil(2.9)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 3;\
-             \n}\
-             \n"
+        \n  b: 3;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -160,13 +160,13 @@ mod ceil {
         assert_eq!(
             rsass(
                 "a {b: ceil(1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -174,13 +174,13 @@ mod ceil {
         assert_eq!(
             rsass(
                 "a {b: ceil(6.000000000000001)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 7;\
-             \n}\
-             \n"
+        \n  b: 7;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -188,13 +188,13 @@ mod ceil {
         assert_eq!(
             rsass(
                 "a {b: ceil($number: 1.6)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 2;\
-             \n}\
-             \n"
+        \n  b: 2;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -202,13 +202,13 @@ mod ceil {
         assert_eq!(
             rsass(
                 "a {b: ceil(-7.6)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: -7;\
-             \n}\
-             \n"
+        \n  b: -7;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -217,13 +217,13 @@ mod ceil {
         assert_eq!(
             rsass(
                 "a {b: ceil(7px / 4em) * 1em}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 2px;\
-             \n}\
-             \n"
+        \n  b: 2px;\
+        \n}\
+        \n"
         );
     }
 }
@@ -253,13 +253,13 @@ mod comparable {
         assert_eq!(
             rsass(
                 "a {b: comparable($number1: 1, $number2: 2)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     mod unit {
@@ -271,13 +271,13 @@ mod comparable {
             assert_eq!(
                 rsass(
                     "a {b: comparable(1px, 2in)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -285,13 +285,13 @@ mod comparable {
             assert_eq!(
                 rsass(
                     "a {b: comparable(1px, 2em)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -300,13 +300,13 @@ mod comparable {
             assert_eq!(
                 rsass(
                     "a {b: comparable(1px, 1/1px)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -314,13 +314,13 @@ mod comparable {
             assert_eq!(
                 rsass(
                     "a {b: comparable(1px, 2px)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -333,13 +333,13 @@ mod comparable {
             assert_eq!(
                 rsass(
                     "a {b: comparable(1, 2px)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -347,13 +347,13 @@ mod comparable {
             assert_eq!(
                 rsass(
                     "a {b: comparable(1, 2)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -378,13 +378,13 @@ mod floor {
         assert_eq!(
             rsass(
                 "a {b: floor(2.999999999999999)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 2;\
-             \n}\
-             \n"
+        \n  b: 2;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -392,13 +392,13 @@ mod floor {
         assert_eq!(
             rsass(
                 "a {b: floor(1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -406,13 +406,13 @@ mod floor {
         assert_eq!(
             rsass(
                 "a {b: floor(6.1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 6;\
-             \n}\
-             \n"
+        \n  b: 6;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -420,13 +420,13 @@ mod floor {
         assert_eq!(
             rsass(
                 "a {b: floor($number: 1.6)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -434,13 +434,13 @@ mod floor {
         assert_eq!(
             rsass(
                 "a {b: floor(-7.2)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: -8;\
-             \n}\
-             \n"
+        \n  b: -8;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -449,13 +449,13 @@ mod floor {
         assert_eq!(
             rsass(
                 "a {b: floor(7px / 4em) * 1em}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1px;\
-             \n}\
-             \n"
+        \n  b: 1px;\
+        \n}\
+        \n"
         );
     }
 }
@@ -487,14 +487,14 @@ mod max {
         assert_eq!(
             rsass(
                 "$arg: 1;\
-                 \na {b: max($arg)}\
-                 \n"
+            \na {b: max($arg)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -502,14 +502,14 @@ mod max {
         assert_eq!(
             rsass(
                 "$arg: 1;\
-                 \na {b: max(3, $arg, 2)}\
-                 \n"
+            \na {b: max(3, $arg, 2)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 3;\
-             \n}\
-             \n"
+        \n  b: 3;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -517,14 +517,14 @@ mod max {
         assert_eq!(
             rsass(
                 "$arg: 1;\
-                 \na {b: max($arg, 2)}\
-                 \n"
+            \na {b: max($arg, 2)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 2;\
-             \n}\
-             \n"
+        \n  b: 2;\
+        \n}\
+        \n"
         );
     }
     mod units {
@@ -535,14 +535,14 @@ mod max {
             assert_eq!(
                 rsass(
                     "$arg: 2px;\
-                     \na {b: max($arg, 1)}\
-                     \n"
+            \na {b: max($arg, 1)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 2px;\
-                 \n}\
-                 \n"
+        \n  b: 2px;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -550,14 +550,14 @@ mod max {
             assert_eq!(
                 rsass(
                     "$arg: 1px;\
-                     \na {b: max($arg, 1in, 1cm)}\
-                     \n"
+            \na {b: max($arg, 1in, 1cm)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1in;\
-                 \n}\
-                 \n"
+        \n  b: 1in;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -565,14 +565,14 @@ mod max {
             assert_eq!(
                 rsass(
                     "$arg: 6px;\
-                     \na {b: max($arg, 2px, 10px)}\
-                     \n"
+            \na {b: max($arg, 2px, 10px)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 10px;\
-                 \n}\
-                 \n"
+        \n  b: 10px;\
+        \n}\
+        \n"
             );
         }
     }
@@ -605,14 +605,14 @@ mod min {
         assert_eq!(
             rsass(
                 "$arg: 1;\
-                 \na {b: min($arg)}\
-                 \n"
+            \na {b: min($arg)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -620,14 +620,14 @@ mod min {
         assert_eq!(
             rsass(
                 "$arg: 1;\
-                 \na {b: min(3, $arg, 2)}\
-                 \n"
+            \na {b: min(3, $arg, 2)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -635,14 +635,14 @@ mod min {
         assert_eq!(
             rsass(
                 "$arg: 1;\
-                 \na {b: min($arg, 2)}\
-                 \n"
+            \na {b: min($arg, 2)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     mod units {
@@ -653,14 +653,14 @@ mod min {
             assert_eq!(
                 rsass(
                     "$arg: 2px;\
-                     \na {b: min($arg, 1)}\
-                     \n"
+            \na {b: min($arg, 1)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1;\
-                 \n}\
-                 \n"
+        \n  b: 1;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -668,14 +668,14 @@ mod min {
             assert_eq!(
                 rsass(
                     "$arg: 1px;\
-                     \na {b: min($arg, 1in, 1cm)}\
-                     \n"
+            \na {b: min($arg, 1in, 1cm)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1px;\
-                 \n}\
-                 \n"
+        \n  b: 1px;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -683,14 +683,14 @@ mod min {
             assert_eq!(
                 rsass(
                     "$arg: 6px;\
-                     \na {b: min($arg, 2px, 10px)}\
-                     \n"
+            \na {b: min($arg, 2px, 10px)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 2px;\
-                 \n}\
-                 \n"
+        \n  b: 2px;\
+        \n}\
+        \n"
             );
         }
     }
@@ -717,13 +717,13 @@ mod percentage {
         assert_eq!(
             rsass(
                 "a {b: percentage(42)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 4200%;\
-             \n}\
-             \n"
+        \n  b: 4200%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -731,13 +731,13 @@ mod percentage {
         assert_eq!(
             rsass(
                 "a {b: percentage(123.456)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 12345.6%;\
-             \n}\
-             \n"
+        \n  b: 12345.6%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -745,13 +745,13 @@ mod percentage {
         assert_eq!(
             rsass(
                 "a {b: percentage($number: 1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 100%;\
-             \n}\
-             \n"
+        \n  b: 100%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -759,13 +759,13 @@ mod percentage {
         assert_eq!(
             rsass(
                 "a {b: percentage(-0.4)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: -40%;\
-             \n}\
-             \n"
+        \n  b: -40%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -773,13 +773,13 @@ mod percentage {
         assert_eq!(
             rsass(
                 "a {b: percentage(0.246)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 24.6%;\
-             \n}\
-             \n"
+        \n  b: 24.6%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -787,13 +787,13 @@ mod percentage {
         assert_eq!(
             rsass(
                 "a {b: percentage(0)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0%;\
-             \n}\
-             \n"
+        \n  b: 0%;\
+        \n}\
+        \n"
         );
     }
 }
@@ -819,13 +819,13 @@ mod random {
         assert_eq!(
             rsass(
                 "a {b: random(1px)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -833,14 +833,14 @@ mod random {
         assert_eq!(
             rsass(
                 "$value: random($limit: 10);\
-                 \na {b: $value > 0 and $value <= 10}\
-                 \n"
+            \na {b: $value > 0 and $value <= 10}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -848,29 +848,29 @@ mod random {
         assert_eq!(
             rsass(
                 "$value: random();\
-                 \na {b: $value >= 0 and $value < 1}\
-                 \n"
+            \na {b: $value >= 0 and $value < 1}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn null() {
         assert_eq!(
-        rsass(
-            "@import \"../util\";\
+            rsass(
+                "@import \"../util\";\
             \n@function check($value) {@return $value >= 0 and $value < 1}\
             \n@include check-values(null, get-function(check));\
             \n"
-        )
-        .unwrap(),
-        ""
-    );
+            )
+            .unwrap(),
+            ""
+        );
     }
     #[test]
     #[ignore] // unexepected error
@@ -878,9 +878,9 @@ mod random {
         assert_eq!(
             rsass(
                 "@import \"../util\";\
-                 \n@function check($value) {@return $value == 1}\
-                 \n@include check-values(1, get-function(check));\
-                 \n"
+            \n@function check($value) {@return $value == 1}\
+            \n@include check-values(1, get-function(check));\
+            \n"
             )
             .unwrap(),
             ""
@@ -904,15 +904,15 @@ mod random {
     #[ignore] // unexepected error
     fn two() {
         assert_eq!(
-        rsass(
-            "@import \"../util\";\
+            rsass(
+                "@import \"../util\";\
             \n@function check($value) {@return $value == 1 or $value == 2}\
             \n@include check-values(2, get-function(check));\
             \n"
-        )
-        .unwrap(),
-        ""
-    );
+            )
+            .unwrap(),
+            ""
+        );
     }
     #[test]
     fn within_precision() {
@@ -943,13 +943,13 @@ mod round {
             assert_eq!(
                 rsass(
                     "a {b: round(2.2)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 2;\
-                 \n}\
-                 \n"
+        \n  b: 2;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -957,13 +957,13 @@ mod round {
             assert_eq!(
                 rsass(
                     "a {b: round(-5.6)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: -6;\
-                 \n}\
-                 \n"
+        \n  b: -6;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -971,13 +971,13 @@ mod round {
             assert_eq!(
                 rsass(
                     "a {b: round(0.2)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 0;\
-                 \n}\
-                 \n"
+        \n  b: 0;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1012,13 +1012,13 @@ mod round {
         assert_eq!(
             rsass(
                 "a {b: round(1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1026,13 +1026,13 @@ mod round {
         assert_eq!(
             rsass(
                 "a {b: round($number: 1.6)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 2;\
-             \n}\
-             \n"
+        \n  b: 2;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1041,13 +1041,13 @@ mod round {
         assert_eq!(
             rsass(
                 "a {b: round(7px / 4em) * 1em}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 2px;\
-             \n}\
-             \n"
+        \n  b: 2px;\
+        \n}\
+        \n"
         );
     }
     mod up {
@@ -1058,13 +1058,13 @@ mod round {
             assert_eq!(
                 rsass(
                     "a {b: round(2.9)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 3;\
-                 \n}\
-                 \n"
+        \n  b: 3;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1072,13 +1072,13 @@ mod round {
             assert_eq!(
                 rsass(
                     "a {b: round(-5.4)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: -5;\
-                 \n}\
-                 \n"
+        \n  b: -5;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1086,13 +1086,13 @@ mod round {
             assert_eq!(
                 rsass(
                     "a {b: round(16.5)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 17;\
-                 \n}\
-                 \n"
+        \n  b: 17;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1100,13 +1100,13 @@ mod round {
             assert_eq!(
                 rsass(
                     "a {b: round(-0.2)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 0;\
-                 \n}\
-                 \n"
+        \n  b: 0;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1149,13 +1149,13 @@ mod unit {
         assert_eq!(
             rsass(
                 "a {b: unit(1 / 1px / 3em / 4rad)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"/em*px*rad\";\
-             \n}\
-             \n"
+        \n  b: \"/em*px*rad\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1164,13 +1164,13 @@ mod unit {
         assert_eq!(
             rsass(
                 "a {b: unit(1px * 1em * 1rad)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"em*px*rad\";\
-             \n}\
-             \n"
+        \n  b: \"em*px*rad\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1178,13 +1178,13 @@ mod unit {
         assert_eq!(
             rsass(
                 "a {b: unit($number: 1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"\";\
-             \n}\
-             \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1192,13 +1192,13 @@ mod unit {
         assert_eq!(
             rsass(
                 "a {b: unit(1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"\";\
-             \n}\
-             \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
         );
     }
     mod numerator_and_denominator {
@@ -1210,13 +1210,13 @@ mod unit {
             assert_eq!(
                 rsass(
                     "a {b: unit(1px * 1em / 1rad / 1s)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: \"em*px/rad*s\";\
-                 \n}\
-                 \n"
+        \n  b: \"em*px/rad*s\";\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1225,13 +1225,13 @@ mod unit {
             assert_eq!(
                 rsass(
                     "a {b: unit(1px / 1em)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: \"px/em\";\
-                 \n}\
-                 \n"
+        \n  b: \"px/em\";\
+        \n}\
+        \n"
             );
         }
     }
@@ -1241,13 +1241,13 @@ mod unit {
         assert_eq!(
             rsass(
                 "a {b: unit(1/1px)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"/px\";\
-             \n}\
-             \n"
+        \n  b: \"/px\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1255,13 +1255,13 @@ mod unit {
         assert_eq!(
             rsass(
                 "a {b: unit(1px)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"px\";\
-             \n}\
-             \n"
+        \n  b: \"px\";\
+        \n}\
+        \n"
         );
     }
 }
@@ -1276,13 +1276,13 @@ mod unitless {
         assert_eq!(
             rsass(
                 "a {b: unitless(1/1px)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -1300,13 +1300,13 @@ mod unitless {
         assert_eq!(
             rsass(
                 "a {b: unitless($number: 100)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1314,13 +1314,13 @@ mod unitless {
         assert_eq!(
             rsass(
                 "a {b: unitless(1px)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1329,13 +1329,13 @@ mod unitless {
         assert_eq!(
             rsass(
                 "a {b: unitless(1px/1em)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1343,13 +1343,13 @@ mod unitless {
         assert_eq!(
             rsass(
                 "a {b: unitless(1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
 }

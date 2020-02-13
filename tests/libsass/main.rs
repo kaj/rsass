@@ -13,15 +13,15 @@ fn sass_utf8() {
     assert_eq!(
         rsass(
             "span.utf8-in-path {\
-             \n  margin: auto;\
-             \n}\
-             \n"
+            \n  margin: auto;\
+            \n}\
+            \n"
         )
         .unwrap(),
         "span.utf8-in-path {\
-         \n  margin: auto;\
-         \n}\
-         \n"
+        \n  margin: auto;\
+        \n}\
+        \n"
     );
 }
 
@@ -31,34 +31,34 @@ fn arg_eval() {
     assert_eq!(
         rsass(
             "@function foo() {\
-             \n  @return 1+2 3/4 5+6;\
-             \n}\
-             \n\
-             \n@mixin bar($x: 3/4) {\
-             \n  bar-content: $x;\
-             \n}\
-             \n\
-             \ndiv {\
-             \n  content: foobar(1+2 3/4 5+6, orange);\
-             \n  content: append(1+2 2/3 5+6, orange);\
-             \n  content: 1+2 2/3 5+6;\
-             \n  content: type-of(2/3);\
-             \n  content: type-of(orange);\
-             \n  content: foo();\
-             \n  @include bar();\
-             \n}"
+            \n  @return 1+2 3/4 5+6;\
+            \n}\
+            \n\
+            \n@mixin bar($x: 3/4) {\
+            \n  bar-content: $x;\
+            \n}\
+            \n\
+            \ndiv {\
+            \n  content: foobar(1+2 3/4 5+6, orange);\
+            \n  content: append(1+2 2/3 5+6, orange);\
+            \n  content: 1+2 2/3 5+6;\
+            \n  content: type-of(2/3);\
+            \n  content: type-of(orange);\
+            \n  content: foo();\
+            \n  @include bar();\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  content: foobar(3 3/4 11, orange);\
-         \n  content: 3 2/3 11 orange;\
-         \n  content: 3 2/3 11;\
-         \n  content: number;\
-         \n  content: color;\
-         \n  content: 3 3/4 11;\
-         \n  bar-content: 0.75;\
-         \n}\
-         \n"
+        \n  content: foobar(3 3/4 11, orange);\
+        \n  content: 3 2/3 11 orange;\
+        \n  content: 3 2/3 11;\
+        \n  content: number;\
+        \n  content: color;\
+        \n  content: 3 3/4 11;\
+        \n  bar-content: 0.75;\
+        \n}\
+        \n"
     );
 }
 
@@ -73,112 +73,112 @@ fn at_stuff() {
     assert_eq!(
         rsass(
             "@fudge hux bloo;\
-             \n\
-             \ndiv {\
-             \n\tcolor: red;\
-             \n\t@fudge {\
-             \n\t\tspan {\
-             \n\t\t\twidth: 10px;\
-             \n\t\t\ta {\
-             \n\t\t\t\tfont: whatever;\
-             \n\t\t\t}\
-             \n\t\t}\
-             \n\t}\
-             \n\theight: 20px;\
-             \n\t@-webkit-keyframes SOMETHING {\
-             \n\t\t0%   { opacity: 0; }\
-             \n\t\t50%  { opacity: 0.5; }\
-             \n\t\t100% { opacity: 1.0; }\
-             \n\t}\
-             \n\t@-webkit-keyframes BOUNCE {\
-             \n\t\tfrom {\
-             \n\t\t\tleft: 0px;\
-             \n\t\t}\
-             \n\t\tto {\
-             \n\t\t\tleft: 200px;\
-             \n\t\t}\
-             \n\t}\
-             \n}\
-             \n\
-             \ndiv {\
-             \n\tspan {\
-             \n\t\tfont: whatever;\
-             \n\t}\
-             \n\tborder: {\
-             \n\t\tupper: {\
-             \n\t\t\tleft: 10px;\
-             \n\t\t\tright: 9px;\
-             \n\t\t}\
-             \n\t\tlower: {\
-             \n\t\t\tleft: 8px;\
-             \n\t\t\tright: 7px;\
-             \n\t\t}\
-             \n\t}\
-             \n\tbackground: gray;\
-             \n}\
-             \n\
-             \n@fudge HEY, HOO, HA:first-child {\
-             \n\tcolor: blue;\
-             \n}\
-             \n\
-             \n@mudge div span, a:visited;\
-             \n\
-             \n@fu#{dge} foo {\
-             \n\tcolor: red;\
-             \n}\
-             \n"
+            \n\
+            \ndiv {\
+            \n\tcolor: red;\
+            \n\t@fudge {\
+            \n\t\tspan {\
+            \n\t\t\twidth: 10px;\
+            \n\t\t\ta {\
+            \n\t\t\t\tfont: whatever;\
+            \n\t\t\t}\
+            \n\t\t}\
+            \n\t}\
+            \n\theight: 20px;\
+            \n\t@-webkit-keyframes SOMETHING {\
+            \n\t\t0%   { opacity: 0; }\
+            \n\t\t50%  { opacity: 0.5; }\
+            \n\t\t100% { opacity: 1.0; }\
+            \n\t}\
+            \n\t@-webkit-keyframes BOUNCE {\
+            \n\t\tfrom {\
+            \n\t\t\tleft: 0px;\
+            \n\t\t}\
+            \n\t\tto {\
+            \n\t\t\tleft: 200px;\
+            \n\t\t}\
+            \n\t}\
+            \n}\
+            \n\
+            \ndiv {\
+            \n\tspan {\
+            \n\t\tfont: whatever;\
+            \n\t}\
+            \n\tborder: {\
+            \n\t\tupper: {\
+            \n\t\t\tleft: 10px;\
+            \n\t\t\tright: 9px;\
+            \n\t\t}\
+            \n\t\tlower: {\
+            \n\t\t\tleft: 8px;\
+            \n\t\t\tright: 7px;\
+            \n\t\t}\
+            \n\t}\
+            \n\tbackground: gray;\
+            \n}\
+            \n\
+            \n@fudge HEY, HOO, HA:first-child {\
+            \n\tcolor: blue;\
+            \n}\
+            \n\
+            \n@mudge div span, a:visited;\
+            \n\
+            \n@fu#{dge} foo {\
+            \n\tcolor: red;\
+            \n}\
+            \n"
         )
         .unwrap(),
         "@fudge hux bloo;\
-         \ndiv {\
-         \n  color: red;\
-         \n  height: 20px;\
-         \n}\
-         \n@fudge {\
-         \n  div span {\
-         \n    width: 10px;\
-         \n  }\
-         \n  div span a {\
-         \n    font: whatever;\
-         \n  }\
-         \n}\
-         \n@-webkit-keyframes SOMETHING {\
-         \n  0% {\
-         \n    opacity: 0;\
-         \n  }\
-         \n  50% {\
-         \n    opacity: 0.5;\
-         \n  }\
-         \n  100% {\
-         \n    opacity: 1.0;\
-         \n  }\
-         \n}\
-         \n@-webkit-keyframes BOUNCE {\
-         \n  from {\
-         \n    left: 0px;\
-         \n  }\
-         \n  to {\
-         \n    left: 200px;\
-         \n  }\
-         \n}\
-         \ndiv {\
-         \n  border-upper-left: 10px;\
-         \n  border-upper-right: 9px;\
-         \n  border-lower-left: 8px;\
-         \n  border-lower-right: 7px;\
-         \n  background: gray;\
-         \n}\
-         \ndiv span {\
-         \n  font: whatever;\
-         \n}\
-         \n@fudge HEY, HOO, HA:first-child {\
-         \n  color: blue;\
-         \n}\
-         \n@mudge div span, a:visited;\
-         \n@fu dge foo {\
-         \n  color: red;\
-         \n}\
-         \n"
+        \ndiv {\
+        \n  color: red;\
+        \n  height: 20px;\
+        \n}\
+        \n@fudge {\
+        \n  div span {\
+        \n    width: 10px;\
+        \n  }\
+        \n  div span a {\
+        \n    font: whatever;\
+        \n  }\
+        \n}\
+        \n@-webkit-keyframes SOMETHING {\
+        \n  0% {\
+        \n    opacity: 0;\
+        \n  }\
+        \n  50% {\
+        \n    opacity: 0.5;\
+        \n  }\
+        \n  100% {\
+        \n    opacity: 1.0;\
+        \n  }\
+        \n}\
+        \n@-webkit-keyframes BOUNCE {\
+        \n  from {\
+        \n    left: 0px;\
+        \n  }\
+        \n  to {\
+        \n    left: 200px;\
+        \n  }\
+        \n}\
+        \ndiv {\
+        \n  border-upper-left: 10px;\
+        \n  border-upper-right: 9px;\
+        \n  border-lower-left: 8px;\
+        \n  border-lower-right: 7px;\
+        \n  background: gray;\
+        \n}\
+        \ndiv span {\
+        \n  font: whatever;\
+        \n}\
+        \n@fudge HEY, HOO, HA:first-child {\
+        \n  color: blue;\
+        \n}\
+        \n@mudge div span, a:visited;\
+        \n@fu dge foo {\
+        \n  color: red;\
+        \n}\
+        \n"
     );
 }
 
@@ -193,24 +193,24 @@ fn bool() {
     assert_eq!(
         rsass(
             "div {\
-             \n  a: (false and \"hey\");\
-             \n  b: (\"hey\" and \"ho\");\
-             \n  b: (\"hey\" or \"ho\");\
-             \n  a: false and \"hey\";\
-             \n  b: \"hey\" and \"ho\";\
-             \n  b: unquote(\"hey\") or \"ho\";\
-             \n}"
+            \n  a: (false and \"hey\");\
+            \n  b: (\"hey\" and \"ho\");\
+            \n  b: (\"hey\" or \"ho\");\
+            \n  a: false and \"hey\";\
+            \n  b: \"hey\" and \"ho\";\
+            \n  b: unquote(\"hey\") or \"ho\";\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  a: false;\
-         \n  b: \"ho\";\
-         \n  b: \"hey\";\
-         \n  a: false and \"hey\";\
-         \n  b: \"hey\" and \"ho\";\
-         \n  b: hey;\
-         \n}\
-         \n"
+        \n  a: false;\
+        \n  b: \"ho\";\
+        \n  b: \"hey\";\
+        \n  a: false and \"hey\";\
+        \n  b: \"hey\" and \"ho\";\
+        \n  b: hey;\
+        \n}\
+        \n"
     );
 }
 
@@ -222,24 +222,24 @@ fn calc() {
     assert_eq!(
         rsass(
             "$x: 2;\
-             \nbody {\
-             \n  width: calc($x + 2 - 3em / hoolabaloo);\
-             \n  width: -moz-calc($x + 2 - 3em / hoolabaloo);\
-             \n  width: -webkit-calc($x + 2 - 3em / hoolabaloo);\
-             \n  width: -ms-calc($x + 2 - 3em / hoolabaloo);\
-             \n  height: foo(2 + 2);\
-             \n}\
-             \n"
+            \nbody {\
+            \n  width: calc($x + 2 - 3em / hoolabaloo);\
+            \n  width: -moz-calc($x + 2 - 3em / hoolabaloo);\
+            \n  width: -webkit-calc($x + 2 - 3em / hoolabaloo);\
+            \n  width: -ms-calc($x + 2 - 3em / hoolabaloo);\
+            \n  height: foo(2 + 2);\
+            \n}\
+            \n"
         )
         .unwrap(),
         "body {\
-         \n  width: calc($x + 2 - 3em / hoolabaloo);\
-         \n  width: -moz-calc($x + 2 - 3em / hoolabaloo);\
-         \n  width: -webkit-calc($x + 2 - 3em / hoolabaloo);\
-         \n  width: -ms-calc($x + 2 - 3em / hoolabaloo);\
-         \n  height: foo(4);\
-         \n}\
-         \n"
+        \n  width: calc($x + 2 - 3em / hoolabaloo);\
+        \n  width: -moz-calc($x + 2 - 3em / hoolabaloo);\
+        \n  width: -webkit-calc($x + 2 - 3em / hoolabaloo);\
+        \n  width: -ms-calc($x + 2 - 3em / hoolabaloo);\
+        \n  height: foo(4);\
+        \n}\
+        \n"
     );
 }
 
@@ -250,16 +250,16 @@ fn charset() {
     assert_eq!(
         rsass(
             "div {\
-             \n  content: to-upper-case(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\");\
-             \n}\
-             \n"
+            \n  content: to-upper-case(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\");\
+            \n}\
+            \n"
         )
         .unwrap(),
         "@charset \"UTF-8\";\
-         \ndiv {\
-         \n  content: \"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\
-         \n}\
-         \n"
+        \ndiv {\
+        \n  content: \"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\
+        \n}\
+        \n"
     );
 }
 
@@ -272,18 +272,18 @@ fn conversions() {
     assert_eq!(
         rsass(
             "div {\
-             \n  width: 3cm * 2in * 2in / 1cm / 1cm;\
-             \n  width: 3cm * 2in / 1cm;\
-             \n  width: 4cm * (12in / 3in);\
-             \n}"
+            \n  width: 3cm * 2in * 2in / 1cm / 1cm;\
+            \n  width: 3cm * 2in / 1cm;\
+            \n  width: 4cm * (12in / 3in);\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  width: 30.48in;\
-         \n  width: 6in;\
-         \n  width: 16cm;\
-         \n}\
-         \n"
+        \n  width: 30.48in;\
+        \n  width: 6in;\
+        \n  width: 16cm;\
+        \n}\
+        \n"
     );
 }
 
@@ -293,18 +293,18 @@ fn css_import() {
     assert_eq!(
         rsass(
             "@import \'foo.css\', \"bar.css\";\
-             \n\
-             \ndiv {\
-             \n  color: red;\
-             \n}"
+            \n\
+            \ndiv {\
+            \n  color: red;\
+            \n}"
         )
         .unwrap(),
         "@import url(foo.css);\
-         \n@import url(bar.css);\
-         \ndiv {\
-         \n  color: red;\
-         \n}\
-         \n"
+        \n@import url(bar.css);\
+        \ndiv {\
+        \n  color: red;\
+        \n}\
+        \n"
     );
 }
 
@@ -315,23 +315,23 @@ fn css_nth_selectors() {
     assert_eq!(
         rsass(
             ":nth-child(2n + 3) {\
-             \n  outer-whitespace: false;\
-             \n}\
-             \n\
-             \n// Regression test for sass/dart-sass#465.\
-             \n:nth-child( 2n + 3 ) {\
-             \n  outer-whitespace: true;\
-             \n}\
-             \n"
+            \n  outer-whitespace: false;\
+            \n}\
+            \n\
+            \n// Regression test for sass/dart-sass#465.\
+            \n:nth-child( 2n + 3 ) {\
+            \n  outer-whitespace: true;\
+            \n}\
+            \n"
         )
         .unwrap(),
         ":nth-child(2n + 3) {\
-         \n  outer-whitespace: false;\
-         \n}\
-         \n:nth-child(2n + 3) {\
-         \n  outer-whitespace: true;\
-         \n}\
-         \n"
+        \n  outer-whitespace: false;\
+        \n}\
+        \n:nth-child(2n + 3) {\
+        \n  outer-whitespace: true;\
+        \n}\
+        \n"
     );
 }
 
@@ -342,16 +342,16 @@ fn css_unicode() {
     assert_eq!(
         rsass(
             "@charset \"UTF-8\";\
-             \nfoo {\
-             \n  bar: föö bâr; }\
-             \n"
+            \nfoo {\
+            \n  bar: föö bâr; }\
+            \n"
         )
         .unwrap(),
         "@charset \"UTF-8\";\
-         \nfoo {\
-         \n  bar: föö bâr;\
-         \n}\
-         \n"
+        \nfoo {\
+        \n  bar: föö bâr;\
+        \n}\
+        \n"
     );
 }
 
@@ -364,73 +364,73 @@ fn delayed() {
     assert_eq!(
         rsass(
             "$x: a 3/4 b;\
-             \n$y: hey;\
-             \n\
-             \n@function foo() {\
-             \n  @return 3/4;\
-             \n}\
-             \n\
-             \ndiv {\
-             \n  hoo: 3/4;\
-             \n  goo: nth($x, 2);\
-             \n  foo: 15 / nth($x, 2);\
-             \n  foo: .25 + nth($x, 2);\
-             \n  coo: 2/3 / nth($x, 2);\
-             \n  bar: $y and true;\
-             \n  bar: false and true;\
-             \n  bar: (false) and true;\
-             \n  @each $elem in $x {\
-             \n    blah: $elem;\
-             \n  }\
-             \n  bloo: foo();\
-             \n  @warn 2/3;\
-             \n  blix: \"hey #{nth($x, 2)} ho\";\
-             \n}\
-             \n\
-             \n@media screen and (hux: 3/4) {\
-             \n  div {\
-             \n    color: red;\
-             \n  }\
-             \n}\
-             \n\
-             \n@warn \"blah blah\";\
-             \n\
-             \ndiv {\
-             \n  blah: \"ho #{nth($x, 2) } ho\";\
-             \n}\
-             \n\
-             \nspan {\
-             \n  fludge: (true and 3/4);\
-             \n}"
+            \n$y: hey;\
+            \n\
+            \n@function foo() {\
+            \n  @return 3/4;\
+            \n}\
+            \n\
+            \ndiv {\
+            \n  hoo: 3/4;\
+            \n  goo: nth($x, 2);\
+            \n  foo: 15 / nth($x, 2);\
+            \n  foo: .25 + nth($x, 2);\
+            \n  coo: 2/3 / nth($x, 2);\
+            \n  bar: $y and true;\
+            \n  bar: false and true;\
+            \n  bar: (false) and true;\
+            \n  @each $elem in $x {\
+            \n    blah: $elem;\
+            \n  }\
+            \n  bloo: foo();\
+            \n  @warn 2/3;\
+            \n  blix: \"hey #{nth($x, 2)} ho\";\
+            \n}\
+            \n\
+            \n@media screen and (hux: 3/4) {\
+            \n  div {\
+            \n    color: red;\
+            \n  }\
+            \n}\
+            \n\
+            \n@warn \"blah blah\";\
+            \n\
+            \ndiv {\
+            \n  blah: \"ho #{nth($x, 2) } ho\";\
+            \n}\
+            \n\
+            \nspan {\
+            \n  fludge: (true and 3/4);\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  hoo: 3/4;\
-         \n  goo: 0.75;\
-         \n  foo: 20;\
-         \n  foo: 1;\
-         \n  coo: 0.8888888889;\
-         \n  bar: true;\
-         \n  bar: false and true;\
-         \n  bar: false;\
-         \n  blah: a;\
-         \n  blah: 0.75;\
-         \n  blah: b;\
-         \n  bloo: 0.75;\
-         \n  blix: \"hey 0.75 ho\";\
-         \n}\
-         \n@media screen and (hux: 3/4) {\
-         \n  div {\
-         \n    color: red;\
-         \n  }\
-         \n}\
-         \ndiv {\
-         \n  blah: \"ho 0.75 ho\";\
-         \n}\
-         \nspan {\
-         \n  fludge: 0.75;\
-         \n}\
-         \n"
+        \n  hoo: 3/4;\
+        \n  goo: 0.75;\
+        \n  foo: 20;\
+        \n  foo: 1;\
+        \n  coo: 0.8888888889;\
+        \n  bar: true;\
+        \n  bar: false and true;\
+        \n  bar: false;\
+        \n  blah: a;\
+        \n  blah: 0.75;\
+        \n  blah: b;\
+        \n  bloo: 0.75;\
+        \n  blix: \"hey 0.75 ho\";\
+        \n}\
+        \n@media screen and (hux: 3/4) {\
+        \n  div {\
+        \n    color: red;\
+        \n  }\
+        \n}\
+        \ndiv {\
+        \n  blah: \"ho 0.75 ho\";\
+        \n}\
+        \nspan {\
+        \n  fludge: 0.75;\
+        \n}\
+        \n"
     );
 }
 
@@ -441,31 +441,31 @@ fn div() {
     assert_eq!(
         rsass(
             "$x: 3/4;\
-             \n$xs: hey 3/4 ho;\
-             \n\
-             \ndiv {\
-             \n  /* $x: 3/4 */\
-             \n  a: $x;\
-             \n  b: hey $x ho;\
-             \n  /* $xs: hey 3/4 ho */\
-             \n  c: $xs;\
-             \n  d: nth($xs, 2);\
-             \n  e: nth($xs, 2) == 0.75;\
-             \n  f: type-of(nth($xs, 2));\
-             \n}"
+            \n$xs: hey 3/4 ho;\
+            \n\
+            \ndiv {\
+            \n  /* $x: 3/4 */\
+            \n  a: $x;\
+            \n  b: hey $x ho;\
+            \n  /* $xs: hey 3/4 ho */\
+            \n  c: $xs;\
+            \n  d: nth($xs, 2);\
+            \n  e: nth($xs, 2) == 0.75;\
+            \n  f: type-of(nth($xs, 2));\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  /* $x: 3/4 */\
-         \n  a: 0.75;\
-         \n  b: hey 0.75 ho;\
-         \n  /* $xs: hey 3/4 ho */\
-         \n  c: hey 3/4 ho;\
-         \n  d: 0.75;\
-         \n  e: true;\
-         \n  f: number;\
-         \n}\
-         \n"
+        \n  /* $x: 3/4 */\
+        \n  a: 0.75;\
+        \n  b: hey 0.75 ho;\
+        \n  /* $xs: hey 3/4 ho */\
+        \n  c: hey 3/4 ho;\
+        \n  d: 0.75;\
+        \n  e: true;\
+        \n  f: number;\
+        \n}\
+        \n"
     );
 }
 
@@ -476,85 +476,85 @@ fn env() {
     assert_eq!(
         rsass(
             "$x: 0;\
-             \n\
-             \ndiv {\
-             \n  /* 0 */\
-             \n  font: $x;\
-             \n  $x: 1 !global;\
-             \n  /* 1 */\
-             \n  font: $x;\
-             \n  span {\
-             \n    $x: 2 !global;\
-             \n    /* 2 */\
-             \n    font: $x;\
-             \n  }\
-             \n  /* 2 */\
-             \n  font: $x;\
-             \n  p {\
-             \n    /* 2 */\
-             \n    font: $x;\
-             \n  }\
-             \n}\
-             \n\
-             \ndiv {\
-             \n  @foo {\
-             \n    $y: 2;\
-             \n    font: $y;\
-             \n  }\
-             \n  @bar {\
-             \n    $y: 3;\
-             \n    font: $y;\
-             \n  }\
-             \n}\
-             \n\
-             \n@mixin foo() {\
-             \n  content: \"foo\";\
-             \n  @content;\
-             \n}\
-             \n\
-             \ndiv {\
-             \n  $z: \"whatever\";\
-             \n  @include foo() {\
-             \n    $z: \"block for foo!\";\
-             \n    font: fudge;\
-             \n  }\
-             \n  width: $z;\
-             \n}\
-             \n"
+            \n\
+            \ndiv {\
+            \n  /* 0 */\
+            \n  font: $x;\
+            \n  $x: 1 !global;\
+            \n  /* 1 */\
+            \n  font: $x;\
+            \n  span {\
+            \n    $x: 2 !global;\
+            \n    /* 2 */\
+            \n    font: $x;\
+            \n  }\
+            \n  /* 2 */\
+            \n  font: $x;\
+            \n  p {\
+            \n    /* 2 */\
+            \n    font: $x;\
+            \n  }\
+            \n}\
+            \n\
+            \ndiv {\
+            \n  @foo {\
+            \n    $y: 2;\
+            \n    font: $y;\
+            \n  }\
+            \n  @bar {\
+            \n    $y: 3;\
+            \n    font: $y;\
+            \n  }\
+            \n}\
+            \n\
+            \n@mixin foo() {\
+            \n  content: \"foo\";\
+            \n  @content;\
+            \n}\
+            \n\
+            \ndiv {\
+            \n  $z: \"whatever\";\
+            \n  @include foo() {\
+            \n    $z: \"block for foo!\";\
+            \n    font: fudge;\
+            \n  }\
+            \n  width: $z;\
+            \n}\
+            \n"
         )
         .unwrap(),
         "div {\
-         \n  /* 0 */\
-         \n  font: 0;\
-         \n  /* 1 */\
-         \n  font: 1;\
-         \n  /* 2 */\
-         \n  font: 2;\
-         \n}\
-         \ndiv span {\
-         \n  /* 2 */\
-         \n  font: 2;\
-         \n}\
-         \ndiv p {\
-         \n  /* 2 */\
-         \n  font: 2;\
-         \n}\
-         \n@foo {\
-         \n  div {\
-         \n    font: 2;\
-         \n  }\
-         \n}\
-         \n@bar {\
-         \n  div {\
-         \n    font: 3;\
-         \n  }\
-         \n}\
-         \ndiv {\
-         \n  content: \"foo\";\
-         \n  font: fudge;\
-         \n  width: \"block for foo!\";\
-         \n}\
-         \n"
+        \n  /* 0 */\
+        \n  font: 0;\
+        \n  /* 1 */\
+        \n  font: 1;\
+        \n  /* 2 */\
+        \n  font: 2;\
+        \n}\
+        \ndiv span {\
+        \n  /* 2 */\
+        \n  font: 2;\
+        \n}\
+        \ndiv p {\
+        \n  /* 2 */\
+        \n  font: 2;\
+        \n}\
+        \n@foo {\
+        \n  div {\
+        \n    font: 2;\
+        \n  }\
+        \n}\
+        \n@bar {\
+        \n  div {\
+        \n    font: 3;\
+        \n  }\
+        \n}\
+        \ndiv {\
+        \n  content: \"foo\";\
+        \n  font: fudge;\
+        \n  width: \"block for foo!\";\
+        \n}\
+        \n"
     );
 }
 
@@ -564,19 +564,19 @@ fn eq() {
     assert_eq!(
         rsass(
             "div {\
-             \n  foo: center == \"center\";\
-             \n  foo: (a b c) == (a b c);\
-             \n  foo: a b c == a b c;\
-             \n}\
-             \n"
+            \n  foo: center == \"center\";\
+            \n  foo: (a b c) == (a b c);\
+            \n  foo: a b c == a b c;\
+            \n}\
+            \n"
         )
         .unwrap(),
         "div {\
-         \n  foo: true;\
-         \n  foo: true;\
-         \n  foo: a b false b c;\
-         \n}\
-         \n"
+        \n  foo: true;\
+        \n  foo: true;\
+        \n  foo: a b false b c;\
+        \n}\
+        \n"
     );
 }
 
@@ -594,7 +594,7 @@ fn http_import() {
         )
         .unwrap(),
         "@import \"http://fonts.googleapis.com/css?family=Droid+Sans\";\
-         \n"
+        \n"
     );
 }
 
@@ -604,16 +604,16 @@ fn image_url() {
     assert_eq!(
         rsass(
             "div {\
-             \n  blah: image-url(\"hello.png\", false);\
-             \n  blah: image-url(\"hello.png\", true);\
-             \n}"
+            \n  blah: image-url(\"hello.png\", false);\
+            \n  blah: image-url(\"hello.png\", true);\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  blah: image-url(\"hello.png\", false);\
-         \n  blah: image-url(\"hello.png\", true);\
-         \n}\
-         \n"
+        \n  blah: image-url(\"hello.png\", false);\
+        \n  blah: image-url(\"hello.png\", true);\
+        \n}\
+        \n"
     );
 }
 
@@ -651,22 +651,22 @@ fn inh() {
     assert_eq!(
         rsass(
             "foo.a {\
-             \n  width: 10px;\
-             \n}\
-             \n\
-             \nbar {\
-             \n  color: red;\
-             \n  @extend foo;\
-             \n}"
+            \n  width: 10px;\
+            \n}\
+            \n\
+            \nbar {\
+            \n  color: red;\
+            \n  @extend foo;\
+            \n}"
         )
         .unwrap(),
         "foo.a, bar.a {\
-         \n  width: 10px;\
-         \n}\
-         \nbar {\
-         \n  color: red;\
-         \n}\
-         \n"
+        \n  width: 10px;\
+        \n}\
+        \nbar {\
+        \n  color: red;\
+        \n}\
+        \n"
     );
 }
 
@@ -676,16 +676,16 @@ fn interpolated_function_call() {
     assert_eq!(
         rsass(
             "$f: foo;\
-             \n\
-             \ndiv {\
-             \n  color: #{$f}(a, 1+2, c);\
-             \n}"
+            \n\
+            \ndiv {\
+            \n  color: #{$f}(a, 1+2, c);\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  color: foo(a, 3, c);\
-         \n}\
-         \n"
+        \n  color: foo(a, 3, c);\
+        \n}\
+        \n"
     );
 }
 
@@ -695,29 +695,29 @@ fn interpolated_urls() {
     assert_eq!(
         rsass(
             "$base_url: \"/static_loc/\";\
-             \ndiv {\
-             \n  background-image: \"url(\"#{$base_url}\"img/beta.png)\";\
-             \n}\
-             \n\
-             \nspan {\
-             \n  background-image: url(#{$base_url}img/beta.png);\
-             \n}\
-             \n\
-             \nfudge {\
-             \n  walnuts: blix\"fludge\"#{hey now}123;\
-             \n}"
+            \ndiv {\
+            \n  background-image: \"url(\"#{$base_url}\"img/beta.png)\";\
+            \n}\
+            \n\
+            \nspan {\
+            \n  background-image: url(#{$base_url}img/beta.png);\
+            \n}\
+            \n\
+            \nfudge {\
+            \n  walnuts: blix\"fludge\"#{hey now}123;\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  background-image: \"url(\" /static_loc/ \"img/beta.png)\";\
-         \n}\
-         \nspan {\
-         \n  background-image: url(/static_loc/img/beta.png);\
-         \n}\
-         \nfudge {\
-         \n  walnuts: blix \"fludge\" hey now123;\
-         \n}\
-         \n"
+        \n  background-image: \"url(\" /static_loc/ \"img/beta.png)\";\
+        \n}\
+        \nspan {\
+        \n  background-image: url(/static_loc/img/beta.png);\
+        \n}\
+        \nfudge {\
+        \n  walnuts: blix \"fludge\" hey now123;\
+        \n}\
+        \n"
     );
 }
 
@@ -727,73 +727,73 @@ fn keyframes() {
     assert_eq!(
         rsass(
             "div {\
-             \n  color: #181818;\
-             \n}\
-             \n\
-             \n@-webkit-keyframes uiDelayedFadeIn {\
-             \n\t0% { opacity: 0; }\
-             \n\t50% { opacity: .5; }\
-             \n\t100% { opacity: 1; }\
-             \n}\
-             \n\
-             \n@-webkit-keyframes bounce {\
-             \n\tfrom {\
-             \n\t\tleft: 0px;\
-             \n\t}\
-             \n\tto {\
-             \n\t\tleft: 200px;\
-             \n\t}\
-             \n}\
-             \n\
-             \n$name: bounce;\
-             \n\
-             \n@-webkit-keyframes #{$name} {\
-             \n  blah: blee;\
-             \n}\
-             \n\
-             \n@mixin fudge() {\
-             \n  @content;\
-             \n}\
-             \n\
-             \nfoo {\
-             \n  @include fudge() {\
-             \n    div {\
-             \n      color: red;\
-             \n    }\
-             \n  }\
-             \n}\
-             \n"
+            \n  color: #181818;\
+            \n}\
+            \n\
+            \n@-webkit-keyframes uiDelayedFadeIn {\
+            \n\t0% { opacity: 0; }\
+            \n\t50% { opacity: .5; }\
+            \n\t100% { opacity: 1; }\
+            \n}\
+            \n\
+            \n@-webkit-keyframes bounce {\
+            \n\tfrom {\
+            \n\t\tleft: 0px;\
+            \n\t}\
+            \n\tto {\
+            \n\t\tleft: 200px;\
+            \n\t}\
+            \n}\
+            \n\
+            \n$name: bounce;\
+            \n\
+            \n@-webkit-keyframes #{$name} {\
+            \n  blah: blee;\
+            \n}\
+            \n\
+            \n@mixin fudge() {\
+            \n  @content;\
+            \n}\
+            \n\
+            \nfoo {\
+            \n  @include fudge() {\
+            \n    div {\
+            \n      color: red;\
+            \n    }\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         "div {\
-         \n  color: #181818;\
-         \n}\
-         \n@-webkit-keyframes uiDelayedFadeIn {\
-         \n  0% {\
-         \n    opacity: 0;\
-         \n  }\
-         \n  50% {\
-         \n    opacity: .5;\
-         \n  }\
-         \n  100% {\
-         \n    opacity: 1;\
-         \n  }\
-         \n}\
-         \n@-webkit-keyframes bounce {\
-         \n  from {\
-         \n    left: 0px;\
-         \n  }\
-         \n  to {\
-         \n    left: 200px;\
-         \n  }\
-         \n}\
-         \n@-webkit-keyframes bounce {\
-         \n  blah: blee;\
-         \n}\
-         \nfoo div {\
-         \n  color: red;\
-         \n}\
-         \n"
+        \n  color: #181818;\
+        \n}\
+        \n@-webkit-keyframes uiDelayedFadeIn {\
+        \n  0% {\
+        \n    opacity: 0;\
+        \n  }\
+        \n  50% {\
+        \n    opacity: .5;\
+        \n  }\
+        \n  100% {\
+        \n    opacity: 1;\
+        \n  }\
+        \n}\
+        \n@-webkit-keyframes bounce {\
+        \n  from {\
+        \n    left: 0px;\
+        \n  }\
+        \n  to {\
+        \n    left: 200px;\
+        \n  }\
+        \n}\
+        \n@-webkit-keyframes bounce {\
+        \n  blah: blee;\
+        \n}\
+        \nfoo div {\
+        \n  color: red;\
+        \n}\
+        \n"
     );
 }
 
@@ -804,45 +804,45 @@ fn list_evaluation() {
     assert_eq!(
         rsass(
             "div {\
-             \n  $things: red 2/3 blue;\
-             \n  content: $things;\
-             \n  content: nth($things, 2);\
-             \n  content: type-of(nth($things, 2));\
-             \n  content: type-of(nth($things, 3));\
-             \n  /**** #{2+2} ****/\
-             \n  content: (1 / 2 3 / 4) + (5/6 7/8);\
-             \n  content: (1/2 3/4), (5/6 7/8);\
-             \n  /**** ****/\
-             \n  @each $x in 1 2 3/4 {\
-             \n    foo: $x;\
-             \n    bar: $x + 1;\
-             \n  }\
-             \n  /*** ***/\
-             \n  stuff: 1, (2 3/4 5), 6;\
-             \n  stuff: ((1 + 2)/3/4);\
-             \n}"
+            \n  $things: red 2/3 blue;\
+            \n  content: $things;\
+            \n  content: nth($things, 2);\
+            \n  content: type-of(nth($things, 2));\
+            \n  content: type-of(nth($things, 3));\
+            \n  /**** #{2+2} ****/\
+            \n  content: (1 / 2 3 / 4) + (5/6 7/8);\
+            \n  content: (1/2 3/4), (5/6 7/8);\
+            \n  /**** ****/\
+            \n  @each $x in 1 2 3/4 {\
+            \n    foo: $x;\
+            \n    bar: $x + 1;\
+            \n  }\
+            \n  /*** ***/\
+            \n  stuff: 1, (2 3/4 5), 6;\
+            \n  stuff: ((1 + 2)/3/4);\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  content: red 2/3 blue;\
-         \n  content: 0.6666666667;\
-         \n  content: number;\
-         \n  content: color;\
-         \n  /**** 4 ****/\
-         \n  content: 1/2 3/45/6 7/8;\
-         \n  content: 1/2 3/4, 5/6 7/8;\
-         \n  /**** ****/\
-         \n  foo: 1;\
-         \n  bar: 2;\
-         \n  foo: 2;\
-         \n  bar: 3;\
-         \n  foo: 0.75;\
-         \n  bar: 1.75;\
-         \n  /*** ***/\
-         \n  stuff: 1, 2 3/4 5, 6;\
-         \n  stuff: 0.25;\
-         \n}\
-         \n"
+        \n  content: red 2/3 blue;\
+        \n  content: 0.6666666667;\
+        \n  content: number;\
+        \n  content: color;\
+        \n  /**** 4 ****/\
+        \n  content: 1/2 3/45/6 7/8;\
+        \n  content: 1/2 3/4, 5/6 7/8;\
+        \n  /**** ****/\
+        \n  foo: 1;\
+        \n  bar: 2;\
+        \n  foo: 2;\
+        \n  bar: 3;\
+        \n  foo: 0.75;\
+        \n  bar: 1.75;\
+        \n  /*** ***/\
+        \n  stuff: 1, 2 3/4 5, 6;\
+        \n  stuff: 0.25;\
+        \n}\
+        \n"
     );
 }
 
@@ -853,52 +853,52 @@ fn lists() {
     assert_eq!(
         rsass(
             "div {\
-             \n  $list: append(1/2 3, 4);\
-             \n  content: (1 2 3) == (1, 2, 3);\
-             \n  content: (1 2 3) == (1 2 3);\
-             \n  content: var $list;\
-             \n  content: lit (1/2 3 4);\
-             \n  content: (1/2 3 4) == $list;\
-             \n  a: length((1/2 3 4)), length($list);\
-             \n  b: nth((1/2 3 4), 1), nth($list, 1);\
-             \n  content: (1/2 3 4) == (1/2 3 4);\
-             \n  /***/\
-             \n  content: length($list);\
-             \n  content: type-of(nth($list, 1));\
-             \n  content: nth($list, 1);\
-             \n  content: nth(1/2 3 4, 1);\
-             \n  $a: 1 2 3;\
-             \n  $b: (1 2 3);\
-             \n  content: $a == $b;\
-             \n  content: 1 2 () 3;\
-             \n  color: red == #ff0000;\
-             \n  $color-list : fudge red blue;\
-             \n  color: nth($color-list, 2) == #ff0000;\
-             \n  color: nth($color-list, 2) == red;\
-             \n}"
+            \n  $list: append(1/2 3, 4);\
+            \n  content: (1 2 3) == (1, 2, 3);\
+            \n  content: (1 2 3) == (1 2 3);\
+            \n  content: var $list;\
+            \n  content: lit (1/2 3 4);\
+            \n  content: (1/2 3 4) == $list;\
+            \n  a: length((1/2 3 4)), length($list);\
+            \n  b: nth((1/2 3 4), 1), nth($list, 1);\
+            \n  content: (1/2 3 4) == (1/2 3 4);\
+            \n  /***/\
+            \n  content: length($list);\
+            \n  content: type-of(nth($list, 1));\
+            \n  content: nth($list, 1);\
+            \n  content: nth(1/2 3 4, 1);\
+            \n  $a: 1 2 3;\
+            \n  $b: (1 2 3);\
+            \n  content: $a == $b;\
+            \n  content: 1 2 () 3;\
+            \n  color: red == #ff0000;\
+            \n  $color-list : fudge red blue;\
+            \n  color: nth($color-list, 2) == #ff0000;\
+            \n  color: nth($color-list, 2) == red;\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  content: false;\
-         \n  content: true;\
-         \n  content: var 1/2 3 4;\
-         \n  content: lit 1/2 3 4;\
-         \n  content: true;\
-         \n  a: 3, 3;\
-         \n  b: 0.5, 0.5;\
-         \n  content: true;\
-         \n  /***/\
-         \n  content: 3;\
-         \n  content: number;\
-         \n  content: 0.5;\
-         \n  content: 0.5;\
-         \n  content: true;\
-         \n  content: 1 2 3;\
-         \n  color: true;\
-         \n  color: true;\
-         \n  color: true;\
-         \n}\
-         \n"
+        \n  content: false;\
+        \n  content: true;\
+        \n  content: var 1/2 3 4;\
+        \n  content: lit 1/2 3 4;\
+        \n  content: true;\
+        \n  a: 3, 3;\
+        \n  b: 0.5, 0.5;\
+        \n  content: true;\
+        \n  /***/\
+        \n  content: 3;\
+        \n  content: number;\
+        \n  content: 0.5;\
+        \n  content: 0.5;\
+        \n  content: true;\
+        \n  content: 1 2 3;\
+        \n  color: true;\
+        \n  color: true;\
+        \n  color: true;\
+        \n}\
+        \n"
     );
 }
 
@@ -908,65 +908,65 @@ fn media_hoisting() {
     assert_eq!(
         rsass(
             "@media screen {\
-             \n  a {\
-             \n    color: black;\
-             \n    height: 8px;\
-             \n  }\
-             \n}\
-             \n\
-             \na {\
-             \n  color: red;\
-             \n  @media screen {\
-             \n    color: blue;\
-             \n    height: 10px;\
-             \n  }\
-             \n}\
-             \n\
-             \na {\
-             \n  color: beige;\
-             \n  b {\
-             \n    color: teal;\
-             \n    @media screen {\
-             \n      color: orange;\
-             \n      c {\
-             \n        height: 12px;\
-             \n      }\
-             \n    }\
-             \n  }\
-             \n}\
-             \n"
+            \n  a {\
+            \n    color: black;\
+            \n    height: 8px;\
+            \n  }\
+            \n}\
+            \n\
+            \na {\
+            \n  color: red;\
+            \n  @media screen {\
+            \n    color: blue;\
+            \n    height: 10px;\
+            \n  }\
+            \n}\
+            \n\
+            \na {\
+            \n  color: beige;\
+            \n  b {\
+            \n    color: teal;\
+            \n    @media screen {\
+            \n      color: orange;\
+            \n      c {\
+            \n        height: 12px;\
+            \n      }\
+            \n    }\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         "@media screen {\
-         \n  a {\
-         \n    color: black;\
-         \n    height: 8px;\
-         \n  }\
-         \n}\
-         \na {\
-         \n  color: red;\
-         \n}\
-         \n@media screen {\
-         \n  a {\
-         \n    color: blue;\
-         \n    height: 10px;\
-         \n  }\
-         \n}\
-         \na {\
-         \n  color: beige;\
-         \n}\
-         \na b {\
-         \n  color: teal;\
-         \n}\
-         \n@media screen {\
-         \n  a b {\
-         \n    color: orange;\
-         \n  }\
-         \n  a b c {\
-         \n    height: 12px;\
-         \n  }\
-         \n}\
-         \n"
+        \n  a {\
+        \n    color: black;\
+        \n    height: 8px;\
+        \n  }\
+        \n}\
+        \na {\
+        \n  color: red;\
+        \n}\
+        \n@media screen {\
+        \n  a {\
+        \n    color: blue;\
+        \n    height: 10px;\
+        \n  }\
+        \n}\
+        \na {\
+        \n  color: beige;\
+        \n}\
+        \na b {\
+        \n  color: teal;\
+        \n}\
+        \n@media screen {\
+        \n  a b {\
+        \n    color: orange;\
+        \n  }\
+        \n  a b c {\
+        \n    height: 12px;\
+        \n  }\
+        \n}\
+        \n"
     );
 }
 
@@ -1290,46 +1290,46 @@ fn mixins_and_media_queries() {
     assert_eq!(
         rsass(
             "@media screen and (orientation:landscape) {\
-             \n  span {\
-             \n    background: blue;\
-             \n  }\
-             \n  /* fudge */\
-             \n  // @include foo;\
-             \n  /* budge */\
-             \n  div {\
-             \n    color: red;\
-             \n  }\
-             \n}\
-             \n\
-             \n@mixin testComments {\
-             \n  /* crash */\
-             \n  p {\
-             \n    width: 100px;\
-             \n  }\
-             \n}\
-             \n\
-             \n@media screen and (orientation:landscape) {\
-             \n  @include testComments;\
-             \n}"
+            \n  span {\
+            \n    background: blue;\
+            \n  }\
+            \n  /* fudge */\
+            \n  // @include foo;\
+            \n  /* budge */\
+            \n  div {\
+            \n    color: red;\
+            \n  }\
+            \n}\
+            \n\
+            \n@mixin testComments {\
+            \n  /* crash */\
+            \n  p {\
+            \n    width: 100px;\
+            \n  }\
+            \n}\
+            \n\
+            \n@media screen and (orientation:landscape) {\
+            \n  @include testComments;\
+            \n}"
         )
         .unwrap(),
         "@media screen and (orientation: landscape) {\
-         \n  span {\
-         \n    background: blue;\
-         \n  }\
-         \n  /* fudge */\
-         \n  /* budge */\
-         \n  div {\
-         \n    color: red;\
-         \n  }\
-         \n}\
-         \n@media screen and (orientation: landscape) {\
-         \n  /* crash */\
-         \n  p {\
-         \n    width: 100px;\
-         \n  }\
-         \n}\
-         \n"
+        \n  span {\
+        \n    background: blue;\
+        \n  }\
+        \n  /* fudge */\
+        \n  /* budge */\
+        \n  div {\
+        \n    color: red;\
+        \n  }\
+        \n}\
+        \n@media screen and (orientation: landscape) {\
+        \n  /* crash */\
+        \n  p {\
+        \n    width: 100px;\
+        \n  }\
+        \n}\
+        \n"
     );
 }
 
@@ -1475,23 +1475,23 @@ fn placeholder_mediaquery() {
     assert_eq!(
         rsass(
             "%foo {\
-             \n\t@media screen and (min-width: 300px) {\
-             \n\t\tmax-width: 80%;\
-             \n\t}\
-             \n}\
-             \n\
-             \nbar {\
-             \n\t@extend %foo;\
-             \n}\
-             \n"
+            \n\t@media screen and (min-width: 300px) {\
+            \n\t\tmax-width: 80%;\
+            \n\t}\
+            \n}\
+            \n\
+            \nbar {\
+            \n\t@extend %foo;\
+            \n}\
+            \n"
         )
         .unwrap(),
         "@media screen and (min-width: 300px) {\
-         \n  bar {\
-         \n    max-width: 80%;\
-         \n  }\
-         \n}\
-         \n"
+        \n  bar {\
+        \n    max-width: 80%;\
+        \n  }\
+        \n}\
+        \n"
     );
 }
 
@@ -1502,28 +1502,28 @@ fn placeholder_nested() {
     assert_eq!(
         rsass(
             "%x {\
-             \n  width: 100px;\
-             \n\
-             \n  %y {\
-             \n    height: 100px;\
-             \n  }\
-             \n}\
-             \n\
-             \n.foo {\
-             \n  @extend %x;\
-             \n\
-             \n  .bar { @extend %y }\
-             \n}\
-             \n"
+            \n  width: 100px;\
+            \n\
+            \n  %y {\
+            \n    height: 100px;\
+            \n  }\
+            \n}\
+            \n\
+            \n.foo {\
+            \n  @extend %x;\
+            \n\
+            \n  .bar { @extend %y }\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  width: 100px;\
-         \n}\
-         \n.foo .bar {\
-         \n  height: 100px;\
-         \n}\
-         \n"
+        \n  width: 100px;\
+        \n}\
+        \n.foo .bar {\
+        \n  height: 100px;\
+        \n}\
+        \n"
     );
 }
 
@@ -1536,34 +1536,34 @@ fn properties_in_media() {
     assert_eq!(
         rsass(
             "@media only screen {\r\
-             \n    /* asd */\r\
-             \n  color: red;\r\
-             \n  color: gray;\r\
-             \n    /* asd */\r\
-             \n  color: green;\r\
-             \n  foo {\r\
-             \n    bar: baz;\r\
-             \n    qwe: baz;\r\
-             \n  }\r\
-             \n  color: blue;\r\
-             \n  color: yellow;\r\
-             \n}"
+            \n    /* asd */\r\
+            \n  color: red;\r\
+            \n  color: gray;\r\
+            \n    /* asd */\r\
+            \n  color: green;\r\
+            \n  foo {\r\
+            \n    bar: baz;\r\
+            \n    qwe: baz;\r\
+            \n  }\r\
+            \n  color: blue;\r\
+            \n  color: yellow;\r\
+            \n}"
         )
         .unwrap(),
         "@media only screen {\
-         \n  /* asd */\
-         \n  color: red;\
-         \n  color: gray;\
-         \n  /* asd */\
-         \n  color: green;\
-         \n  foo {\
-         \n    bar: baz;\
-         \n    qwe: baz;\
-         \n  }\
-         \n  color: blue;\
-         \n  color: yellow;\
-         \n}\
-         \n"
+        \n  /* asd */\
+        \n  color: red;\
+        \n  color: gray;\
+        \n  /* asd */\
+        \n  color: green;\
+        \n  foo {\
+        \n    bar: baz;\
+        \n    qwe: baz;\
+        \n  }\
+        \n  color: blue;\
+        \n  color: yellow;\
+        \n}\
+        \n"
     );
 }
 
@@ -1574,94 +1574,94 @@ fn propsets() {
     assert_eq!(
         rsass(
             "$x: ground;\
-             \n$y: e;\
-             \n$z: it;\
-             \n\
-             \ndiv {\
-             \n  back#{$x}: {\
-             \n    imag#{$y}: url(foo.png);\
-             \n    pos#{$z}ion: 50%;\
-             \n  }\
-             \n}\
-             \n\
-             \nspan {\
-             \n  background: {\
-             \n    image: url(bar.png);\
-             \n    position: 100%;\
-             \n  }\
-             \n}\
-             \n\
-             \np {\
-             \n  border: {\
-             \n    upper: {\
-             \n      left: 2px;\
-             \n      right: 3px;\
-             \n    }\
-             \n  }\
-             \n}\
-             \n\
-             \n@warn 2 + 3;\
-             \n\
-             \n/* 2 + 3 */\
-             \n/* #{2 + 3} */\
-             \n\
-             \nfoo|div {\
-             \n  color: red;\
-             \n}\
-             \n\
-             \n$-hey : hey;\
-             \n\
-             \ndiv sp\\ ,#abcan {\
-             \n  color: red;\
-             \n  p, |q {\
-             \n    background: blue;\
-             \n    color: \\hey;\
-             \n    width: \\10 + \\20 \\ ;\
-             \n    a {\
-             \n      height: 1;\
-             \n    }\
-             \n  }\
-             \n}\
-             \n\
-             \nd\\ v, sp\\ n {\
-             \n  a {\
-             \n    color: blue;\
-             \n  }\
-             \n}"
+            \n$y: e;\
+            \n$z: it;\
+            \n\
+            \ndiv {\
+            \n  back#{$x}: {\
+            \n    imag#{$y}: url(foo.png);\
+            \n    pos#{$z}ion: 50%;\
+            \n  }\
+            \n}\
+            \n\
+            \nspan {\
+            \n  background: {\
+            \n    image: url(bar.png);\
+            \n    position: 100%;\
+            \n  }\
+            \n}\
+            \n\
+            \np {\
+            \n  border: {\
+            \n    upper: {\
+            \n      left: 2px;\
+            \n      right: 3px;\
+            \n    }\
+            \n  }\
+            \n}\
+            \n\
+            \n@warn 2 + 3;\
+            \n\
+            \n/* 2 + 3 */\
+            \n/* #{2 + 3} */\
+            \n\
+            \nfoo|div {\
+            \n  color: red;\
+            \n}\
+            \n\
+            \n$-hey : hey;\
+            \n\
+            \ndiv sp\\ ,#abcan {\
+            \n  color: red;\
+            \n  p, |q {\
+            \n    background: blue;\
+            \n    color: \\hey;\
+            \n    width: \\10 + \\20 \\ ;\
+            \n    a {\
+            \n      height: 1;\
+            \n    }\
+            \n  }\
+            \n}\
+            \n\
+            \nd\\ v, sp\\ n {\
+            \n  a {\
+            \n    color: blue;\
+            \n  }\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  background-image: url(foo.png);\
-         \n  background-position: 50%;\
-         \n}\
-         \nspan {\
-         \n  background-image: url(bar.png);\
-         \n  background-position: 100%;\
-         \n}\
-         \np {\
-         \n  border-upper-left: 2px;\
-         \n  border-upper-right: 3px;\
-         \n}\
-         \n/* 2 + 3 */\
-         \n/* 5 */\
-         \nfoo|div {\
-         \n  color: red;\
-         \n}\
-         \ndiv sp\\ , #abcan {\
-         \n  color: red;\
-         \n}\
-         \ndiv sp\\  p, div sp\\  |q, #abcan p, #abcan |q {\
-         \n  background: blue;\
-         \n  color: hey;\
-         \n  width: \\10 \\ \\ ;\
-         \n}\
-         \ndiv sp\\  p a, div sp\\  |q a, #abcan p a, #abcan |q a {\
-         \n  height: 1;\
-         \n}\
-         \nd\\ v a, sp\\ n a {\
-         \n  color: blue;\
-         \n}\
-         \n"
+        \n  background-image: url(foo.png);\
+        \n  background-position: 50%;\
+        \n}\
+        \nspan {\
+        \n  background-image: url(bar.png);\
+        \n  background-position: 100%;\
+        \n}\
+        \np {\
+        \n  border-upper-left: 2px;\
+        \n  border-upper-right: 3px;\
+        \n}\
+        \n/* 2 + 3 */\
+        \n/* 5 */\
+        \nfoo|div {\
+        \n  color: red;\
+        \n}\
+        \ndiv sp\\ , #abcan {\
+        \n  color: red;\
+        \n}\
+        \ndiv sp\\  p, div sp\\  |q, #abcan p, #abcan |q {\
+        \n  background: blue;\
+        \n  color: hey;\
+        \n  width: \\10 \\ \\ ;\
+        \n}\
+        \ndiv sp\\  p a, div sp\\  |q a, #abcan p a, #abcan |q a {\
+        \n  height: 1;\
+        \n}\
+        \nd\\ v a, sp\\ n a {\
+        \n  color: blue;\
+        \n}\
+        \n"
     );
 }
 
@@ -1672,51 +1672,51 @@ fn rel() {
     assert_eq!(
         rsass(
             "div {\
-             \n  less: 3px < 3pt;\
-             \n  less: (1px / 1pt);\
-             \n  less: 23fu < 120;\
-             \n  eq: hello == hello;\
-             \n  eq: \"hello\" == hello;\
-             \n  eq: (1 2 3) == (1 2 3);\
-             \n  eq: (1 2 3) == (1, 2, 3);\
-             \n  eq: 23px == 23fu;\
-             \n  eq: 3.1in == 2.54cm;\
-             \n  eq: 2.54cm == 3.1in;\
-             \n  eq: (1in) == (1cm*1in/1cm);\
-             \n  x: 1in, (1cm*1in/1cm);\
-             \n  y: 1cm*1in/1in;\
-             \n  eq: (2cm*1in/2cm) == (1in*2cm/2cm);\
-             \n  blah: (1cm/1in);\
-             \n  in: (1in*2.54cm/1in);\
-             \n  lt: 1in < 2.54cm;\
-             \n  lt: 2.54cm < 1in;\
-             \n  lt: 5 < 4;\
-             \n}\
-             \n"
+            \n  less: 3px < 3pt;\
+            \n  less: (1px / 1pt);\
+            \n  less: 23fu < 120;\
+            \n  eq: hello == hello;\
+            \n  eq: \"hello\" == hello;\
+            \n  eq: (1 2 3) == (1 2 3);\
+            \n  eq: (1 2 3) == (1, 2, 3);\
+            \n  eq: 23px == 23fu;\
+            \n  eq: 3.1in == 2.54cm;\
+            \n  eq: 2.54cm == 3.1in;\
+            \n  eq: (1in) == (1cm*1in/1cm);\
+            \n  x: 1in, (1cm*1in/1cm);\
+            \n  y: 1cm*1in/1in;\
+            \n  eq: (2cm*1in/2cm) == (1in*2cm/2cm);\
+            \n  blah: (1cm/1in);\
+            \n  in: (1in*2.54cm/1in);\
+            \n  lt: 1in < 2.54cm;\
+            \n  lt: 2.54cm < 1in;\
+            \n  lt: 5 < 4;\
+            \n}\
+            \n"
         )
         .unwrap(),
         "div {\
-         \n  less: true;\
-         \n  less: 0.75;\
-         \n  less: true;\
-         \n  eq: true;\
-         \n  eq: true;\
-         \n  eq: true;\
-         \n  eq: false;\
-         \n  eq: false;\
-         \n  eq: false;\
-         \n  eq: false;\
-         \n  eq: true;\
-         \n  x: 1in, 1in;\
-         \n  y: 1cm;\
-         \n  eq: true;\
-         \n  blah: 0.3937007874;\
-         \n  in: 2.54cm;\
-         \n  lt: false;\
-         \n  lt: false;\
-         \n  lt: false;\
-         \n}\
-         \n"
+        \n  less: true;\
+        \n  less: 0.75;\
+        \n  less: true;\
+        \n  eq: true;\
+        \n  eq: true;\
+        \n  eq: true;\
+        \n  eq: false;\
+        \n  eq: false;\
+        \n  eq: false;\
+        \n  eq: false;\
+        \n  eq: true;\
+        \n  x: 1in, 1in;\
+        \n  y: 1cm;\
+        \n  eq: true;\
+        \n  blah: 0.3937007874;\
+        \n  in: 2.54cm;\
+        \n  lt: false;\
+        \n  lt: false;\
+        \n  lt: false;\
+        \n}\
+        \n"
     );
 }
 
@@ -1728,13 +1728,13 @@ fn selector_interpolation_in_string() {
     assert_eq!(
         rsass(
             "foo[val=\"bar #{\"foo\" + \" bar\"} baz\"] {a: b}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo[val=\"bar foo bar baz\"] {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1902,34 +1902,34 @@ fn unary_ops() {
     assert_eq!(
         rsass(
             "$x: 20%;\
-             \n\
-             \ndiv {\
-             \n  a: -10;\
-             \n  b: -10px + 10px;\
-             \n  c: +10;\
-             \n  d: +10px + -10px;\
-             \n  e: -$x;\
-             \n  f: +$x;\
-             \n  g: -hello;\
-             \n  h: +hello;\
-             \n  i: + hello;\
-             \n  j: type-of(+ hello);\
-             \n}"
+            \n\
+            \ndiv {\
+            \n  a: -10;\
+            \n  b: -10px + 10px;\
+            \n  c: +10;\
+            \n  d: +10px + -10px;\
+            \n  e: -$x;\
+            \n  f: +$x;\
+            \n  g: -hello;\
+            \n  h: +hello;\
+            \n  i: + hello;\
+            \n  j: type-of(+ hello);\
+            \n}"
         )
         .unwrap(),
         "div {\
-         \n  a: -10;\
-         \n  b: 0px;\
-         \n  c: +10;\
-         \n  d: 0px;\
-         \n  e: -20%;\
-         \n  f: 20%;\
-         \n  g: -hello;\
-         \n  h: +hello;\
-         \n  i: +hello;\
-         \n  j: string;\
-         \n}\
-         \n"
+        \n  a: -10;\
+        \n  b: 0px;\
+        \n  c: +10;\
+        \n  d: 0px;\
+        \n  e: -20%;\
+        \n  f: 20%;\
+        \n  g: -hello;\
+        \n  h: +hello;\
+        \n  i: +hello;\
+        \n  j: string;\
+        \n}\
+        \n"
     );
 }
 
@@ -2040,23 +2040,23 @@ fn wrapped_selector_whitespace() {
     assert_eq!(
         rsass(
             "div {\r\
-             \n  :-moz-any(a , b) {\r\
-             \n    foo: foo;\r\
-             \n  }\r\
-             \n  :foo(a , b) {\r\
-             \n    bar: bar;\r\
-             \n  }\r\
-             \n}\r\
-             \n"
+            \n  :-moz-any(a , b) {\r\
+            \n    foo: foo;\r\
+            \n  }\r\
+            \n  :foo(a , b) {\r\
+            \n    bar: bar;\r\
+            \n  }\r\
+            \n}\r\
+            \n"
         )
         .unwrap(),
         "div :-moz-any(a, b) {\
-         \n  foo: foo;\
-         \n}\
-         \ndiv :foo(a , b) {\
-         \n  bar: bar;\
-         \n}\
-         \n"
+        \n  foo: foo;\
+        \n}\
+        \ndiv :foo(a , b) {\
+        \n  bar: bar;\
+        \n}\
+        \n"
     );
 }
 

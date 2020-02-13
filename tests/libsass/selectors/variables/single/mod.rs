@@ -10,15 +10,15 @@ fn bare() {
     assert_eq!(
         rsass(
             ".foo {\
-             \n  $bar: &;\
-             \n  content: $bar;\
-             \n}"
+            \n  $bar: &;\
+            \n  content: $bar;\
+            \n}"
         )
         .unwrap(),
         ".foo {\
-         \n  content: .foo;\
-         \n}\
-         \n"
+        \n  content: .foo;\
+        \n}\
+        \n"
     );
 }
 
@@ -28,14 +28,14 @@ fn interpolated() {
     assert_eq!(
         rsass(
             ".foo {\
-             \n  $bar: &;\
-             \n  content: #{$bar};\
-             \n}"
+            \n  $bar: &;\
+            \n  content: #{$bar};\
+            \n}"
         )
         .unwrap(),
         ".foo {\
-         \n  content: .foo;\
-         \n}\
-         \n"
+        \n  content: .foo;\
+        \n}\
+        \n"
     );
 }

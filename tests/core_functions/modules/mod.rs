@@ -14,14 +14,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.adjust(#abcdef, $red: 10)}\
-                 \n"
+            \na {b: color.adjust(#abcdef, $red: 10)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #b5cdef;\
-             \n}\
-             \n"
+        \n  b: #b5cdef;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -30,14 +30,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.alpha(#abcdef)}\
-                 \n"
+            \na {b: color.alpha(#abcdef)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -46,14 +46,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.blue(#abcdef)}\
-                 \n"
+            \na {b: color.blue(#abcdef)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 239;\
-             \n}\
-             \n"
+        \n  b: 239;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -62,14 +62,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.change(#abcdef, $red: 10)}\
-                 \n"
+            \na {b: color.change(#abcdef, $red: 10)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #0acdef;\
-             \n}\
-             \n"
+        \n  b: #0acdef;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -78,14 +78,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.complement(#abcdef)}\
-                 \n"
+            \na {b: color.complement(#abcdef)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #efcdab;\
-             \n}\
-             \n"
+        \n  b: #efcdab;\
+        \n}\
+        \n"
         );
     }
     mod css_overloads {
@@ -100,14 +100,14 @@ mod color {
                 assert_eq!(
                     rsass(
                         "@use \"sass:color\";\
-                         \na {b: color.alpha(c=d, e=f, g=h)}\
-                         \n"
+            \na {b: color.alpha(c=d, e=f, g=h)}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: alpha(c=d, e=f, g=h);\
-                     \n}\
-                     \n"
+        \n  b: alpha(c=d, e=f, g=h);\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -116,14 +116,14 @@ mod color {
                 assert_eq!(
                     rsass(
                         "@use \"sass:color\";\
-                         \na {b: color.alpha(c=d)}\
-                         \n"
+            \na {b: color.alpha(c=d)}\
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: alpha(c=d);\
-                     \n}\
-                     \n"
+        \n  b: alpha(c=d);\
+        \n}\
+        \n"
                 );
             }
         }
@@ -133,14 +133,14 @@ mod color {
             assert_eq!(
                 rsass(
                     "@use \"sass:color\";\
-                     \na {b: color.grayscale(1)}\
-                     \n"
+            \na {b: color.grayscale(1)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: grayscale(1);\
-                 \n}\
-                 \n"
+        \n  b: grayscale(1);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -149,14 +149,14 @@ mod color {
             assert_eq!(
                 rsass(
                     "@use \"sass:color\";\
-                     \na {b: color.invert(1)}\
-                     \n"
+            \na {b: color.invert(1)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: invert(1);\
-                 \n}\
-                 \n"
+        \n  b: invert(1);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -165,14 +165,14 @@ mod color {
             assert_eq!(
                 rsass(
                     "@use \"sass:color\";\
-                     \na {b: color.opacity(1)}\
-                     \n"
+            \na {b: color.opacity(1)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: opacity(1);\
-                 \n}\
-                 \n"
+        \n  b: opacity(1);\
+        \n}\
+        \n"
             );
         }
     }
@@ -210,14 +210,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.green(#abcdef)}\
-                 \n"
+            \na {b: color.green(#abcdef)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 205;\
-             \n}\
-             \n"
+        \n  b: 205;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -226,14 +226,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.hue(#abcdef)}\
-                 \n"
+            \na {b: color.hue(#abcdef)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 210deg;\
-             \n}\
-             \n"
+        \n  b: 210deg;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -242,14 +242,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.ie-hex-str(#abcdef)}\
-                 \n"
+            \na {b: color.ie-hex-str(#abcdef)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #FFABCDEF;\
-             \n}\
-             \n"
+        \n  b: #FFABCDEF;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -258,14 +258,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.invert(#abcdef)}\
-                 \n"
+            \na {b: color.invert(#abcdef)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #543210;\
-             \n}\
-             \n"
+        \n  b: #543210;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -274,14 +274,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.lightness(#abcdef)}\
-                 \n"
+            \na {b: color.lightness(#abcdef)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 80.3921568627%;\
-             \n}\
-             \n"
+        \n  b: 80.3921568627%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -290,14 +290,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.mix(#abcdef, #daddee)}\
-                 \n"
+            \na {b: color.mix(#abcdef, #daddee)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #c3d5ef;\
-             \n}\
-             \n"
+        \n  b: #c3d5ef;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -306,14 +306,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.red(#abcdef)}\
-                 \n"
+            \na {b: color.red(#abcdef)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 171;\
-             \n}\
-             \n"
+        \n  b: 171;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -322,14 +322,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.saturation(#abcdef)}\
-                 \n"
+            \na {b: color.saturation(#abcdef)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 68%;\
-             \n}\
-             \n"
+        \n  b: 68%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -338,14 +338,14 @@ mod color {
         assert_eq!(
             rsass(
                 "@use \"sass:color\";\
-                 \na {b: color.scale(#abcdef, $red: 10%)}\
-                 \n"
+            \na {b: color.scale(#abcdef, $red: 10%)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #b3cdef;\
-             \n}\
-             \n"
+        \n  b: #b3cdef;\
+        \n}\
+        \n"
         );
     }
 }
@@ -360,14 +360,14 @@ mod general {
         assert_eq!(
             rsass(
                 "@use \"sass:math\" as m;\
-                 \na {b: m.round(0.7)}\
-                 \n"
+            \na {b: m.round(0.7)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -385,14 +385,14 @@ mod general {
             assert_eq!(
                 rsass(
                     "@use \"other\";\
-                     \na {b: other.s-round(0.7)}\
-                     \n"
+            \na {b: other.s-round(0.7)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1;\
-                 \n}\
-                 \n"
+        \n  b: 1;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -401,14 +401,14 @@ mod general {
             assert_eq!(
                 rsass(
                     "@use \"other\";\
-                     \na {b: other.round(0.7)}\
-                     \n"
+            \na {b: other.round(0.7)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1;\
-                 \n}\
-                 \n"
+        \n  b: 1;\
+        \n}\
+        \n"
             );
         }
         mod error {
@@ -425,14 +425,14 @@ mod general {
             assert_eq!(
                 rsass(
                     "@use \"other\";\
-                     \na {b: other.round(0.7)}\
-                     \n"
+            \na {b: other.round(0.7)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1;\
-                 \n}\
-                 \n"
+        \n  b: 1;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -441,14 +441,14 @@ mod general {
             assert_eq!(
                 rsass(
                     "@use \"other\";\
-                     \na {b: other.round(0.7)}\
-                     \n"
+            \na {b: other.round(0.7)}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1;\
-                 \n}\
-                 \n"
+        \n  b: 1;\
+        \n}\
+        \n"
             );
         }
     }
@@ -458,14 +458,14 @@ mod general {
         assert_eq!(
             rsass(
                 "@use \"sass:math\" as *;\
-                 \na {b: compatible(1px, 1in)}\
-                 \n"
+            \na {b: compatible(1px, 1in)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
 }
@@ -496,14 +496,14 @@ mod map {
         assert_eq!(
             rsass(
                 "@use \"sass:map\";\
-                 \na {b: map.get((c: d), c)}\
-                 \n"
+            \na {b: map.get((c: d), c)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: d;\
-             \n}\
-             \n"
+        \n  b: d;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -512,14 +512,14 @@ mod map {
         assert_eq!(
             rsass(
                 "@use \"sass:map\";\
-                 \na {b: map.has-key((c: d), c)}\
-                 \n"
+            \na {b: map.has-key((c: d), c)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -528,14 +528,14 @@ mod map {
         assert_eq!(
             rsass(
                 "@use \"sass:map\";\
-                 \na {b: map.keys((c: d))}\
-                 \n"
+            \na {b: map.keys((c: d))}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c;\
-             \n}\
-             \n"
+        \n  b: c;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -544,15 +544,15 @@ mod map {
         assert_eq!(
             rsass(
                 "@use \"sass:map\";\
-                 \n@use \"sass:meta\";\
-                 \na {b: meta.inspect(map.merge((c: d), (e: f)))}\
-                 \n"
+            \n@use \"sass:meta\";\
+            \na {b: meta.inspect(map.merge((c: d), (e: f)))}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: (c: d, e: f);\
-             \n}\
-             \n"
+        \n  b: (c: d, e: f);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -561,15 +561,15 @@ mod map {
         assert_eq!(
             rsass(
                 "@use \"sass:map\";\
-                 \n@use \"sass:meta\";\
-                 \na {b: meta.inspect(map.remove((c: d), c))}\
-                 \n"
+            \n@use \"sass:meta\";\
+            \na {b: meta.inspect(map.remove((c: d), c))}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: ();\
-             \n}\
-             \n"
+        \n  b: ();\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -578,14 +578,14 @@ mod map {
         assert_eq!(
             rsass(
                 "@use \"sass:map\";\
-                 \na {b: map.values((c: d))}\
-                 \n"
+            \na {b: map.values((c: d))}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: d;\
-             \n}\
-             \n"
+        \n  b: d;\
+        \n}\
+        \n"
         );
     }
 }
@@ -600,14 +600,14 @@ mod math {
         assert_eq!(
             rsass(
                 "@use \"sass:math\";\
-                 \na {b: math.abs(-1)}\
-                 \n"
+            \na {b: math.abs(-1)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -616,14 +616,14 @@ mod math {
         assert_eq!(
             rsass(
                 "@use \"sass:math\";\
-                 \na {b: math.ceil(0.5)}\
-                 \n"
+            \na {b: math.ceil(0.5)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -632,14 +632,14 @@ mod math {
         assert_eq!(
             rsass(
                 "@use \"sass:math\";\
-                 \na {b: math.compatible(1px, 1in)}\
-                 \n"
+            \na {b: math.compatible(1px, 1in)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -656,14 +656,14 @@ mod math {
         assert_eq!(
             rsass(
                 "@use \"sass:math\";\
-                 \na {b: math.floor(0.5)}\
-                 \n"
+            \na {b: math.floor(0.5)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0;\
-             \n}\
-             \n"
+        \n  b: 0;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -672,14 +672,14 @@ mod math {
         assert_eq!(
             rsass(
                 "@use \"sass:math\";\
-                 \na {b: math.is-unitless(1)}\
-                 \n"
+            \na {b: math.is-unitless(1)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -688,14 +688,14 @@ mod math {
         assert_eq!(
             rsass(
                 "@use \"sass:math\";\
-                 \na {b: math.max(1, 2, 3)}\
-                 \n"
+            \na {b: math.max(1, 2, 3)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 3;\
-             \n}\
-             \n"
+        \n  b: 3;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -704,14 +704,14 @@ mod math {
         assert_eq!(
             rsass(
                 "@use \"sass:math\";\
-                 \na {b: math.min(1, 2, 3)}\
-                 \n"
+            \na {b: math.min(1, 2, 3)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -720,14 +720,14 @@ mod math {
         assert_eq!(
             rsass(
                 "@use \"sass:math\";\
-                 \na {b: math.percentage(0.5)}\
-                 \n"
+            \na {b: math.percentage(0.5)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 50%;\
-             \n}\
-             \n"
+        \n  b: 50%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -736,14 +736,14 @@ mod math {
         assert_eq!(
             rsass(
                 "@use \"sass:math\";\
-                 \na {b: math.random(5) <= 5}\
-                 \n"
+            \na {b: math.random(5) <= 5}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -752,14 +752,14 @@ mod math {
         assert_eq!(
             rsass(
                 "@use \"sass:math\";\
-                 \na {b: math.round(0.5)}\
-                 \n"
+            \na {b: math.round(0.5)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -768,14 +768,14 @@ mod math {
         assert_eq!(
             rsass(
                 "@use \"sass:math\";\
-                 \na {b: math.unit(5px)}\
-                 \n"
+            \na {b: math.unit(5px)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"px\";\
-             \n}\
-             \n"
+        \n  b: \"px\";\
+        \n}\
+        \n"
         );
     }
 }
@@ -790,14 +790,14 @@ mod meta {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \na {b: meta.call(meta.get-function(\"rgb\"), 1, 2, 3)}\
-                 \n"
+            \na {b: meta.call(meta.get-function(\"rgb\"), 1, 2, 3)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #010203;\
-             \n}\
-             \n"
+        \n  b: #010203;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -806,19 +806,19 @@ mod meta {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n\
-                 \n@mixin print-content-exists {\
-                 \n  a {b: meta.content-exists()}\
-                 \n}\
-                 \n\
-                 \n@include print-content-exists;\
-                 \n"
+            \n\
+            \n@mixin print-content-exists {\
+            \n  a {b: meta.content-exists()}\
+            \n}\
+            \n\
+            \n@include print-content-exists;\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -827,14 +827,14 @@ mod meta {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \na {b: meta.feature-exists(at-error)}\
-                 \n"
+            \na {b: meta.feature-exists(at-error)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -843,14 +843,14 @@ mod meta {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \na {b: meta.function-exists(c)}\
-                 \n"
+            \na {b: meta.function-exists(c)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -859,14 +859,14 @@ mod meta {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \na {b: meta.inspect(meta.get-function(rgb))}\
-                 \n"
+            \na {b: meta.inspect(meta.get-function(rgb))}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: get-function(\"rgb\");\
-             \n}\
-             \n"
+        \n  b: get-function(\"rgb\");\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -875,14 +875,14 @@ mod meta {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \na {b: meta.global-variable-exists(c)}\
-                 \n"
+            \na {b: meta.global-variable-exists(c)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -891,14 +891,14 @@ mod meta {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \na {b: meta.inspect(())}\
-                 \n"
+            \na {b: meta.inspect(())}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: ();\
-             \n}\
-             \n"
+        \n  b: ();\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -907,19 +907,19 @@ mod meta {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n\
-                 \n@function keywords($args...) {\
-                 \n  @return meta.keywords($args);\
-                 \n}\
-                 \n\
-                 \na {b: meta.inspect(keywords($c: d))}\
-                 \n"
+            \n\
+            \n@function keywords($args...) {\
+            \n  @return meta.keywords($args);\
+            \n}\
+            \n\
+            \na {b: meta.inspect(keywords($c: d))}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: (c: d);\
-             \n}\
-             \n"
+        \n  b: (c: d);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -928,14 +928,14 @@ mod meta {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \na {b: meta.mixin-exists(c)}\
-                 \n"
+            \na {b: meta.mixin-exists(c)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -944,14 +944,14 @@ mod meta {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \na {b: meta.type-of(())}\
-                 \n"
+            \na {b: meta.type-of(())}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: list;\
-             \n}\
-             \n"
+        \n  b: list;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -960,14 +960,14 @@ mod meta {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \na {b: meta.variable-exists(c)}\
-                 \n"
+            \na {b: meta.variable-exists(c)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
 }
@@ -982,14 +982,14 @@ mod selector {
         assert_eq!(
             rsass(
                 "@use \"sass:selector\";\
-                 \na {b: selector.append(c, d)}\
-                 \n"
+            \na {b: selector.append(c, d)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: cd;\
-             \n}\
-             \n"
+        \n  b: cd;\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -1014,14 +1014,14 @@ mod selector {
         assert_eq!(
             rsass(
                 "@use \"sass:selector\";\
-                 \na {b: selector.extend(c, c, d)}\
-                 \n"
+            \na {b: selector.extend(c, c, d)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c, d;\
-             \n}\
-             \n"
+        \n  b: c, d;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1030,14 +1030,14 @@ mod selector {
         assert_eq!(
             rsass(
                 "@use \"sass:selector\";\
-                 \na {b: selector.is-superselector(c, d)}\
-                 \n"
+            \na {b: selector.is-superselector(c, d)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1046,14 +1046,14 @@ mod selector {
         assert_eq!(
             rsass(
                 "@use \"sass:selector\";\
-                 \na {b: selector.nest(c, d)}\
-                 \n"
+            \na {b: selector.nest(c, d)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c d;\
-             \n}\
-             \n"
+        \n  b: c d;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1062,14 +1062,14 @@ mod selector {
         assert_eq!(
             rsass(
                 "@use \"sass:selector\";\
-                 \na {b: selector.parse(\".c, .d\")}\
-                 \n"
+            \na {b: selector.parse(\".c, .d\")}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: .c, .d;\
-             \n}\
-             \n"
+        \n  b: .c, .d;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1078,14 +1078,14 @@ mod selector {
         assert_eq!(
             rsass(
                 "@use \"sass:selector\";\
-                 \na {b: selector.replace(c, c, d)}\
-                 \n"
+            \na {b: selector.replace(c, c, d)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: d;\
-             \n}\
-             \n"
+        \n  b: d;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1094,14 +1094,14 @@ mod selector {
         assert_eq!(
             rsass(
                 "@use \"sass:selector\";\
-                 \na {b: selector.simple-selectors(\".c.d\")}\
-                 \n"
+            \na {b: selector.simple-selectors(\".c.d\")}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: .c, .d;\
-             \n}\
-             \n"
+        \n  b: .c, .d;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1110,14 +1110,14 @@ mod selector {
         assert_eq!(
             rsass(
                 "@use \"sass:selector\";\
-                 \na {b: selector.unify(\".c\", \".d\")}\
-                 \n"
+            \na {b: selector.unify(\".c\", \".d\")}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: .c.d;\
-             \n}\
-             \n"
+        \n  b: .c.d;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1144,14 +1144,14 @@ mod string {
         assert_eq!(
             rsass(
                 "@use \"sass:string\";\
-                 \na {b: string.index(\"c\", \"c\")}\
-                 \n"
+            \na {b: string.index(\"c\", \"c\")}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1160,14 +1160,14 @@ mod string {
         assert_eq!(
             rsass(
                 "@use \"sass:string\";\
-                 \na {b: string.insert(\"c\", \"d\", 1)}\
-                 \n"
+            \na {b: string.insert(\"c\", \"d\", 1)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"dc\";\
-             \n}\
-             \n"
+        \n  b: \"dc\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1176,14 +1176,14 @@ mod string {
         assert_eq!(
             rsass(
                 "@use \"sass:string\";\
-                 \na {b: string.length(\"c\")}\
-                 \n"
+            \na {b: string.length(\"c\")}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1192,14 +1192,14 @@ mod string {
         assert_eq!(
             rsass(
                 "@use \"sass:string\";\
-                 \na {b: string.quote(c)}\
-                 \n"
+            \na {b: string.quote(c)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"c\";\
-             \n}\
-             \n"
+        \n  b: \"c\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1208,14 +1208,14 @@ mod string {
         assert_eq!(
             rsass(
                 "@use \"sass:string\";\
-                 \na {b: string.slice(\"c\", 1, 1)}\
-                 \n"
+            \na {b: string.slice(\"c\", 1, 1)}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"c\";\
-             \n}\
-             \n"
+        \n  b: \"c\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1224,14 +1224,14 @@ mod string {
         assert_eq!(
             rsass(
                 "@use \"sass:string\";\
-                 \na {b: string.to-upper-case(\"c\")}\
-                 \n"
+            \na {b: string.to-upper-case(\"c\")}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"C\";\
-             \n}\
-             \n"
+        \n  b: \"C\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1240,15 +1240,15 @@ mod string {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-                 \n@use \"sass:string\";\
-                 \na {b: meta.type-of(string.unique-id())}\
-                 \n"
+            \n@use \"sass:string\";\
+            \na {b: meta.type-of(string.unique-id())}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: string;\
-             \n}\
-             \n"
+        \n  b: string;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1257,14 +1257,14 @@ mod string {
         assert_eq!(
             rsass(
                 "@use \"sass:string\";\
-                 \na {b: string.unquote(\"c\")}\
-                 \n"
+            \na {b: string.unquote(\"c\")}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c;\
-             \n}\
-             \n"
+        \n  b: c;\
+        \n}\
+        \n"
         );
     }
 }

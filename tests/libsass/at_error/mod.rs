@@ -10,16 +10,16 @@ fn feature_test() {
     assert_eq!(
         rsass(
             "@if feature-exists(at-error) {\
-             \n  div {\
-             \n    feature: true;\
-             \n  }\
-             \n}\
-             \n"
+            \n  div {\
+            \n    feature: true;\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         "div {\
-         \n  feature: true;\
-         \n}\
-         \n"
+        \n  feature: true;\
+        \n}\
+        \n"
     );
 }

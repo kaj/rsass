@@ -13,13 +13,13 @@ mod index {
         assert_eq!(
             rsass(
                 "a {b: str-index(\"cde\", \"c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -27,13 +27,13 @@ mod index {
         assert_eq!(
             rsass(
                 "a {b: str-index(\"\", \"\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -41,13 +41,13 @@ mod index {
         assert_eq!(
             rsass(
                 "a {b: str-index(\"cde\", \"\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -55,13 +55,13 @@ mod index {
         assert_eq!(
             rsass(
                 "a {b: str-index(\"cde\", \"e\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 3;\
-             \n}\
-             \n"
+        \n  b: 3;\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -85,13 +85,13 @@ mod index {
         assert_eq!(
             rsass(
                 "a {b: str-index(\"cde\", \"d\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 2;\
-             \n}\
-             \n"
+        \n  b: 2;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -99,13 +99,13 @@ mod index {
         assert_eq!(
             rsass(
                 "a {b: str-index($string: \"cde\", $substring: \"c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -113,13 +113,13 @@ mod index {
         assert_eq!(
             rsass(
                 "a {b: inspect(str-index(\"cde\", \"f\"))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: null;\
-             \n}\
-             \n"
+        \n  b: null;\
+        \n}\
+        \n"
         );
     }
 }
@@ -173,13 +173,13 @@ mod insert {
             assert_eq!(
                 rsass(
                     "a {b: str-insert(\"\", \"\", 1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: \"\";\
-                 \n}\
-                 \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -187,13 +187,13 @@ mod insert {
             assert_eq!(
                 rsass(
                     "a {b: str-insert(\"\", \"c\", 0)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: \"c\";\
-                 \n}\
-                 \n"
+        \n  b: \"c\";\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -201,13 +201,13 @@ mod insert {
             assert_eq!(
                 rsass(
                     "a {b: str-insert(\"\", \"c\", 1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: \"c\";\
-                 \n}\
-                 \n"
+        \n  b: \"c\";\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -215,13 +215,13 @@ mod insert {
             assert_eq!(
                 rsass(
                     "a {b: str-insert(\"\", \"c\", 2)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: \"c\";\
-                 \n}\
-                 \n"
+        \n  b: \"c\";\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -229,13 +229,13 @@ mod insert {
             assert_eq!(
                 rsass(
                     "a {b: str-insert(\"\", \"c\", -1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: \"c\";\
-                 \n}\
-                 \n"
+        \n  b: \"c\";\
+        \n}\
+        \n"
             );
         }
     }
@@ -244,13 +244,13 @@ mod insert {
         assert_eq!(
             rsass(
                 "a {b: str-insert(\"cde\", \"\", 1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"cde\";\
-             \n}\
-             \n"
+        \n  b: \"cde\";\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -284,13 +284,13 @@ mod insert {
                 assert_eq!(
                     rsass(
                         "a {b: str-insert(\"cde\", \"f\", -1)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cdef\";\
-                     \n}\
-                     \n"
+        \n  b: \"cdef\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -298,13 +298,13 @@ mod insert {
                 assert_eq!(
                     rsass(
                         "a {b: str-insert(\"cde\", \"f\", -2)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cdfe\";\
-                     \n}\
-                     \n"
+        \n  b: \"cdfe\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -312,13 +312,13 @@ mod insert {
                 assert_eq!(
                     rsass(
                         "a {b: str-insert(\"cde\", \"f\", -100)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"fcde\";\
-                     \n}\
-                     \n"
+        \n  b: \"fcde\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -326,13 +326,13 @@ mod insert {
                 assert_eq!(
                     rsass(
                         "a {b: str-insert(\"cde\", \"f\", -4)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"fcde\";\
-                     \n}\
-                     \n"
+        \n  b: \"fcde\";\
+        \n}\
+        \n"
                 );
             }
         }
@@ -344,13 +344,13 @@ mod insert {
                 assert_eq!(
                     rsass(
                         "a {b: str-insert(\"cde\", \"f\", 0)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"fcde\";\
-                     \n}\
-                     \n"
+        \n  b: \"fcde\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -358,13 +358,13 @@ mod insert {
                 assert_eq!(
                     rsass(
                         "a {b: str-insert(\"cde\", \"f\", 1)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"fcde\";\
-                     \n}\
-                     \n"
+        \n  b: \"fcde\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -372,13 +372,13 @@ mod insert {
                 assert_eq!(
                     rsass(
                         "a {b: str-insert(\"cde\", \"f\", 2)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cfde\";\
-                     \n}\
-                     \n"
+        \n  b: \"cfde\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -386,13 +386,13 @@ mod insert {
                 assert_eq!(
                     rsass(
                         "a {b: str-insert(\"cde\", \"f\", 100)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cdef\";\
-                     \n}\
-                     \n"
+        \n  b: \"cdef\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -400,13 +400,13 @@ mod insert {
                 assert_eq!(
                     rsass(
                         "a {b: str-insert(\"cde\", \"f\", 4)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cdef\";\
-                     \n}\
-                     \n"
+        \n  b: \"cdef\";\
+        \n}\
+        \n"
                 );
             }
         }
@@ -469,13 +469,13 @@ mod length {
         assert_eq!(
             rsass(
                 "a {b: str-length(\"\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0;\
-             \n}\
-             \n"
+        \n  b: 0;\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -493,13 +493,13 @@ mod length {
         assert_eq!(
             rsass(
                 "a {b: str-length(\"fblthp abatement\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 16;\
-             \n}\
-             \n"
+        \n  b: 16;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -507,13 +507,13 @@ mod length {
         assert_eq!(
             rsass(
                 "a {b: str-length($string: \"c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -521,13 +521,13 @@ mod length {
         assert_eq!(
             rsass(
                 "a {b: str-length(\"c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 1;\
-             \n}\
-             \n"
+        \n  b: 1;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -535,13 +535,13 @@ mod length {
         assert_eq!(
             rsass(
                 "a {b: str-length(loofamonster)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 12;\
-             \n}\
-             \n"
+        \n  b: 12;\
+        \n}\
+        \n"
         );
     }
 }
@@ -566,13 +566,13 @@ mod quote {
         assert_eq!(
             rsass(
                 "a {b: quote(\\0)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"\\\\0\";\
-             \n}\
-             \n"
+        \n  b: \"\\\\0\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -580,13 +580,13 @@ mod quote {
         assert_eq!(
             rsass(
                 "a {b: quote($string: c)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"c\";\
-             \n}\
-             \n"
+        \n  b: \"c\";\
+        \n}\
+        \n"
         );
     }
     mod quote_unquoted_quote {
@@ -597,14 +597,14 @@ mod quote {
             assert_eq!(
                 rsass(
                     "// See sass/libsass#2873\
-                     \na {b: quote(unquote(\'\"\') + unquote(\"\'\"))}\
-                     \n"
+            \na {b: quote(unquote(\'\"\') + unquote(\"\'\"))}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: \"\\\"\'\";\
-                 \n}\
-                 \n"
+        \n  b: \"\\\"\'\";\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -612,14 +612,14 @@ mod quote {
             assert_eq!(
                 rsass(
                     "// See sass/libsass#2873\
-                     \na {b: quote(unquote(\'\"\'))}\
-                     \n"
+            \na {b: quote(unquote(\'\"\'))}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: \'\"\';\
-                 \n}\
-                 \n"
+        \n  b: \'\"\';\
+        \n}\
+        \n"
             );
         }
     }
@@ -628,13 +628,13 @@ mod quote {
         assert_eq!(
             rsass(
                 "a {b: quote(\"c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"c\";\
-             \n}\
-             \n"
+        \n  b: \"c\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -642,13 +642,13 @@ mod quote {
         assert_eq!(
             rsass(
                 "a {b: quote(\'c\')}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"c\";\
-             \n}\
-             \n"
+        \n  b: \"c\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -656,13 +656,13 @@ mod quote {
         assert_eq!(
             rsass(
                 "a {b: quote(c)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"c\";\
-             \n}\
-             \n"
+        \n  b: \"c\";\
+        \n}\
+        \n"
         );
     }
 }
@@ -718,13 +718,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"\", 1, 0)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -732,13 +732,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"\", 1, 1)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -746,13 +746,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"\", 1, 2)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
         }
@@ -764,13 +764,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"\", 0)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -778,13 +778,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"\", 1)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -792,13 +792,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"\", 2)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -806,13 +806,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"\", -1)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
         }
@@ -828,13 +828,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 1, -1)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cde\";\
-                     \n}\
-                     \n"
+        \n  b: \"cde\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -842,13 +842,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 1, -2)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cd\";\
-                     \n}\
-                     \n"
+        \n  b: \"cd\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -856,13 +856,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 1, -100)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -870,13 +870,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 1, -4)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
         }
@@ -888,13 +888,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 1, 0)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -902,13 +902,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 1, 1)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"c\";\
-                     \n}\
-                     \n"
+        \n  b: \"c\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -916,13 +916,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 1, 2)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cd\";\
-                     \n}\
-                     \n"
+        \n  b: \"cd\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -930,13 +930,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 1, 100)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cde\";\
-                     \n}\
-                     \n"
+        \n  b: \"cde\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -944,13 +944,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cdef\", 2, 3)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"de\";\
-                     \n}\
-                     \n"
+        \n  b: \"de\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -958,13 +958,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 1, 3)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cde\";\
-                     \n}\
-                     \n"
+        \n  b: \"cde\";\
+        \n}\
+        \n"
                 );
             }
         }
@@ -1020,13 +1020,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", -1)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"e\";\
-                     \n}\
-                     \n"
+        \n  b: \"e\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1034,13 +1034,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", -2)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"de\";\
-                     \n}\
-                     \n"
+        \n  b: \"de\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1048,13 +1048,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", -100)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cde\";\
-                     \n}\
-                     \n"
+        \n  b: \"cde\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1062,13 +1062,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", -3)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cde\";\
-                     \n}\
-                     \n"
+        \n  b: \"cde\";\
+        \n}\
+        \n"
                 );
             }
         }
@@ -1080,13 +1080,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 0)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cde\";\
-                     \n}\
-                     \n"
+        \n  b: \"cde\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1094,13 +1094,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 1)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"cde\";\
-                     \n}\
-                     \n"
+        \n  b: \"cde\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1108,13 +1108,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 2)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"de\";\
-                     \n}\
-                     \n"
+        \n  b: \"de\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1122,13 +1122,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cdef\", 3, 2)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1136,13 +1136,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 100)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1150,13 +1150,13 @@ mod slice {
                 assert_eq!(
                     rsass(
                         "a {b: str-slice(\"cde\", 4)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: \"\";\
-                     \n}\
-                     \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
                 );
             }
         }
@@ -1166,13 +1166,13 @@ mod slice {
         assert_eq!(
             rsass(
                 "a {b: str-slice(cdefgh, 3, 5)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: efg;\
-             \n}\
-             \n"
+        \n  b: efg;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1186,13 +1186,13 @@ mod to_lower_case {
         assert_eq!(
             rsass(
                 "a {b: to-lower-case(\"ABCDEFGHIJKLMNOPQRSTUVQXYZ\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"abcdefghijklmnopqrstuvqxyz\";\
-             \n}\
-             \n"
+        \n  b: \"abcdefghijklmnopqrstuvqxyz\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1200,13 +1200,13 @@ mod to_lower_case {
         assert_eq!(
             rsass(
                 "a {b: to-lower-case(\"\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"\";\
-             \n}\
-             \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -1224,13 +1224,13 @@ mod to_lower_case {
         assert_eq!(
             rsass(
                 "a {b: to-lower-case($string: abcDEF)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: abcdef;\
-             \n}\
-             \n"
+        \n  b: abcdef;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1239,15 +1239,15 @@ mod to_lower_case {
         assert_eq!(
             rsass(
                 "// Only ASCII characters have their case changed.\
-                 \na {b: to-lower-case(\"ÄÇÐØÞ\")}\
-                 \n"
+            \na {b: to-lower-case(\"ÄÇÐØÞ\")}\
+            \n"
             )
             .unwrap(),
             "@charset \"UTF-8\";\
-             \na {\
-             \n  b: \"ÄÇÐØÞ\";\
-             \n}\
-             \n"
+        \na {\
+        \n  b: \"ÄÇÐØÞ\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1255,13 +1255,13 @@ mod to_lower_case {
         assert_eq!(
             rsass(
                 "a {b: to-lower-case(\"1234567890\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"1234567890\";\
-             \n}\
-             \n"
+        \n  b: \"1234567890\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1269,13 +1269,13 @@ mod to_lower_case {
         assert_eq!(
             rsass(
                 "a {b: to-lower-case(aBcDeF)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: abcdef;\
-             \n}\
-             \n"
+        \n  b: abcdef;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1289,13 +1289,13 @@ mod to_upper_case {
         assert_eq!(
             rsass(
                 "a {b: to-upper-case(\"abcdefghijklmnopqrstuvqxyz\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"ABCDEFGHIJKLMNOPQRSTUVQXYZ\";\
-             \n}\
-             \n"
+        \n  b: \"ABCDEFGHIJKLMNOPQRSTUVQXYZ\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1303,13 +1303,13 @@ mod to_upper_case {
         assert_eq!(
             rsass(
                 "a {b: to-upper-case(\"\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"\";\
-             \n}\
-             \n"
+        \n  b: \"\";\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -1327,13 +1327,13 @@ mod to_upper_case {
         assert_eq!(
             rsass(
                 "a {b: to-upper-case($string: abcDEF)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: ABCDEF;\
-             \n}\
-             \n"
+        \n  b: ABCDEF;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1342,15 +1342,15 @@ mod to_upper_case {
         assert_eq!(
             rsass(
                 "// Only ASCII characters have their case changed.\
-                 \na {b: to-upper-case(\"äçðøþ\")}\
-                 \n"
+            \na {b: to-upper-case(\"äçðøþ\")}\
+            \n"
             )
             .unwrap(),
             "@charset \"UTF-8\";\
-             \na {\
-             \n  b: \"äçðøþ\";\
-             \n}\
-             \n"
+        \na {\
+        \n  b: \"äçðøþ\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1358,13 +1358,13 @@ mod to_upper_case {
         assert_eq!(
             rsass(
                 "a {b: to-upper-case(\"1234567890\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: \"1234567890\";\
-             \n}\
-             \n"
+        \n  b: \"1234567890\";\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1372,13 +1372,13 @@ mod to_upper_case {
         assert_eq!(
             rsass(
                 "a {b: to-upper-case(aBcDeF)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: ABCDEF;\
-             \n}\
-             \n"
+        \n  b: ABCDEF;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1472,22 +1472,22 @@ mod unquote {
         assert_eq!(
             rsass(
                 "$result: unquote(\"\\\\0 \");\
-                 \na {\
-                 \n  result: $result;\
-                 \n  length: str-length($result);\
-                 \n  same-as-argument: $result == \"\\\\0 \";\
-                 \n  same-as-literal: $result == \\0 ;\
-                 \n}\
-                 \n"
+            \na {\
+            \n  result: $result;\
+            \n  length: str-length($result);\
+            \n  same-as-argument: $result == \"\\\\0 \";\
+            \n  same-as-literal: $result == \\0 ;\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  result: \\0 ;\
-             \n  length: 3;\
-             \n  same-as-argument: true;\
-             \n  same-as-literal: true;\
-             \n}\
-             \n"
+        \n  result: \\0 ;\
+        \n  length: 3;\
+        \n  same-as-argument: true;\
+        \n  same-as-literal: true;\
+        \n}\
+        \n"
         );
     }
     mod escaped_quotes {
@@ -1571,13 +1571,13 @@ mod unquote {
         assert_eq!(
             rsass(
                 "a {b: unquote($string: c)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c;\
-             \n}\
-             \n"
+        \n  b: c;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1585,13 +1585,13 @@ mod unquote {
         assert_eq!(
             rsass(
                 "a {b: unquote(\"c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c;\
-             \n}\
-             \n"
+        \n  b: c;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1599,13 +1599,13 @@ mod unquote {
         assert_eq!(
             rsass(
                 "a {b: unquote(c)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: c;\
-             \n}\
-             \n"
+        \n  b: c;\
+        \n}\
+        \n"
         );
     }
 }

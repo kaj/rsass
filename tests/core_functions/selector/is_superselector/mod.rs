@@ -20,13 +20,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"d + c\", \"d + e + c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -35,13 +35,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"d + e + c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -50,13 +50,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"f + c\", \"d + e + c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -65,13 +65,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"e + c\", \"d + e + c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -87,13 +87,13 @@ mod complex {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c + d\", \"c + d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -133,13 +133,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"d + c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -148,13 +148,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c + d\", \"d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -171,13 +171,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"d > c\", \"d > e > c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -186,13 +186,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"d > e > c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -201,13 +201,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"f > c\", \"d > e > c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -216,13 +216,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"e > c\", \"d > e > c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -238,13 +238,13 @@ mod complex {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c > d\", \"c > d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -284,13 +284,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"d > c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -299,13 +299,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c > d\", \"d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -325,13 +325,13 @@ mod complex {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"d c\", \"d > e > c\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -340,13 +340,13 @@ mod complex {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"f c\", \"d > e > c\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -355,13 +355,13 @@ mod complex {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"e c\", \"d > e > c\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
             }
@@ -371,13 +371,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"d > c\", \"d c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -386,13 +386,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"d c\", \"d > c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -405,13 +405,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"d e c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -420,13 +420,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"d c\", \"d e c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -435,13 +435,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"f c\", \"d e c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -450,13 +450,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"e c\", \"d e c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -472,13 +472,13 @@ mod complex {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c d\", \"c d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -487,13 +487,13 @@ mod complex {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c d\", \"c.e d.f\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -502,13 +502,13 @@ mod complex {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c.e d.f\", \"c d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: false;\
-                         \n}\
-                         \n"
+        \n  b: false;\
+        \n}\
+        \n"
                     );
                 }
             }
@@ -518,13 +518,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"d c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -533,13 +533,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c d\", \"d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -605,13 +605,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"d + c\", \"d ~ c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -620,13 +620,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"d ~ c\", \"d + c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -639,13 +639,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"d ~ c\", \"d ~ e ~ c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -654,13 +654,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"d ~ e ~ c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -669,13 +669,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"f ~ c\", \"d ~ e ~ c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -684,13 +684,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"e ~ c\", \"d ~ e ~ c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -706,13 +706,13 @@ mod complex {
                     assert_eq!(
                         rsass(
                             "a {b: is-superselector(\"c ~ d\", \"c ~ d\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: true;\
-                         \n}\
-                         \n"
+        \n  b: true;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -752,13 +752,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"d ~ c\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -767,13 +767,13 @@ mod complex {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c ~ d\", \"d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -790,13 +790,13 @@ mod compound {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"c.e\", \"c:d.e\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     mod pseudo_element {
@@ -808,13 +808,13 @@ mod compound {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"c\", \"c::d\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         mod class_syntax {
@@ -826,13 +826,13 @@ mod compound {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"c:after\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -841,13 +841,13 @@ mod compound {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"c:before\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -856,13 +856,13 @@ mod compound {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"c:first-letter\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -871,13 +871,13 @@ mod compound {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c\", \"c:first-line\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -887,13 +887,13 @@ mod compound {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\":e::d\", \"::d:e\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -902,13 +902,13 @@ mod compound {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"::d\", \"c::d\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -917,13 +917,13 @@ mod compound {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"::d:e\", \"::d:e\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -933,13 +933,13 @@ mod compound {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"c\", \"c.d\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -948,13 +948,13 @@ mod compound {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"c.d\", \"c\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1021,13 +1021,13 @@ mod list {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"c, d, e\", \"d\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1036,13 +1036,13 @@ mod list {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"c, d, e\", \"d, c, e\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1051,13 +1051,13 @@ mod list {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"c, d, e\", \"e, c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1066,13 +1066,13 @@ mod list {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"c, d, e\", \"c, f\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1085,13 +1085,13 @@ mod list {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\".c\", \"d.c, e.c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         mod in_both {
@@ -1103,13 +1103,13 @@ mod list {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c, d\", \"c, d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1118,13 +1118,13 @@ mod list {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c, d\", \"c.e, d.f\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: true;\
-                     \n}\
-                     \n"
+        \n  b: true;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1133,13 +1133,13 @@ mod list {
                 assert_eq!(
                     rsass(
                         "a {b: is-superselector(\"c.e, d.f\", \"c, d\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: false;\
-                     \n}\
-                     \n"
+        \n  b: false;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -1149,13 +1149,13 @@ mod list {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"c\", \"c, d\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1164,13 +1164,13 @@ mod list {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\"c, d\", \"c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1183,13 +1183,13 @@ fn named() {
     assert_eq!(
         rsass(
             "a {b: is-superselector($super: \"c\", $sub: \"c.d\")}\
-             \n"
+            \n"
         )
         .unwrap(),
         "a {\
-         \n  b: true;\
-         \n}\
-         \n"
+        \n  b: true;\
+        \n}\
+        \n"
     );
 }
 

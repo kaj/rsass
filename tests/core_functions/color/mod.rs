@@ -15,13 +15,13 @@ mod adjust_hue {
         assert_eq!(
             rsass(
                 "a {b: adjust-hue(red, 540)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: cyan;\
-             \n}\
-             \n"
+        \n  b: cyan;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -29,13 +29,13 @@ mod adjust_hue {
         assert_eq!(
             rsass(
                 "a {b: adjust-hue(rgba(red, 0.1), 359)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(255, 0, 4, 0.1);\
-             \n}\
-             \n"
+        \n  b: rgba(255, 0, 4, 0.1);\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -59,13 +59,13 @@ mod adjust_hue {
         assert_eq!(
             rsass(
                 "a {b: adjust-hue(red, 0.5)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #ff0200;\
-             \n}\
-             \n"
+        \n  b: #ff0200;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -73,13 +73,13 @@ mod adjust_hue {
         assert_eq!(
             rsass(
                 "a {b: adjust-hue(red, 359)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #ff0004;\
-             \n}\
-             \n"
+        \n  b: #ff0004;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -87,13 +87,13 @@ mod adjust_hue {
         assert_eq!(
             rsass(
                 "a {b: adjust-hue(red, 123)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #00ff0d;\
-             \n}\
-             \n"
+        \n  b: #00ff0d;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -101,13 +101,13 @@ mod adjust_hue {
         assert_eq!(
             rsass(
                 "a {b: adjust-hue(blue, 0)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: blue;\
-             \n}\
-             \n"
+        \n  b: blue;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -115,13 +115,13 @@ mod adjust_hue {
         assert_eq!(
             rsass(
                 "a {b: adjust-hue($color: red, $degrees: 123)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #00ff0d;\
-             \n}\
-             \n"
+        \n  b: #00ff0d;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -129,13 +129,13 @@ mod adjust_hue {
         assert_eq!(
             rsass(
                 "a {b: adjust-hue(red, -180)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: cyan;\
-             \n}\
-             \n"
+        \n  b: cyan;\
+        \n}\
+        \n"
         );
     }
 }
@@ -152,13 +152,13 @@ mod alpha {
             assert_eq!(
                 rsass(
                     "a {b: alpha(red)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 1;\
-                 \n}\
-                 \n"
+        \n  b: 1;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -166,13 +166,13 @@ mod alpha {
             assert_eq!(
                 rsass(
                     "a {b: alpha(rgba(red, 0.42))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 0.42;\
-                 \n}\
-                 \n"
+        \n  b: 0.42;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -180,13 +180,13 @@ mod alpha {
             assert_eq!(
                 rsass(
                     "a {b: alpha(rgba(red, 0))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 0;\
-                 \n}\
-                 \n"
+        \n  b: 0;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -194,13 +194,13 @@ mod alpha {
             assert_eq!(
                 rsass(
                     "a {b: alpha($color: rgba(red, 0.73))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 0.73;\
-                 \n}\
-                 \n"
+        \n  b: 0.73;\
+        \n}\
+        \n"
             );
         }
     }
@@ -232,13 +232,13 @@ mod alpha {
             assert_eq!(
                 rsass(
                     "a {b: alpha(c=d, e=f, g=h)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: alpha(c=d, e=f, g=h);\
-                 \n}\
-                 \n"
+        \n  b: alpha(c=d, e=f, g=h);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -246,13 +246,13 @@ mod alpha {
             assert_eq!(
                 rsass(
                     "a {b: alpha(c=d)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: alpha(c=d);\
-                 \n}\
-                 \n"
+        \n  b: alpha(c=d);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -260,13 +260,13 @@ mod alpha {
             assert_eq!(
                 rsass(
                     "a {b: alpha(unquote(\"c = d\"))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: alpha(c = d);\
-                 \n}\
-                 \n"
+        \n  b: alpha(c = d);\
+        \n}\
+        \n"
             );
         }
     }
@@ -278,13 +278,13 @@ mod alpha {
             assert_eq!(
                 rsass(
                     "a {b: opacity(10%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: opacity(10%);\
-                 \n}\
-                 \n"
+        \n  b: opacity(10%);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -292,13 +292,13 @@ mod alpha {
             assert_eq!(
                 rsass(
                     "a {b: opacity($color: rgba(red, 0.2))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 0.2;\
-                 \n}\
-                 \n"
+        \n  b: 0.2;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -306,13 +306,13 @@ mod alpha {
             assert_eq!(
                 rsass(
                     "a {b: opacity(rgba(red, 0.2))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: 0.2;\
-                 \n}\
-                 \n"
+        \n  b: 0.2;\
+        \n}\
+        \n"
             );
         }
     }
@@ -337,13 +337,13 @@ mod blue {
         assert_eq!(
             rsass(
                 "a {b: blue(rgb(0, 0, 255))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 255;\
-             \n}\
-             \n"
+        \n  b: 255;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -351,13 +351,13 @@ mod blue {
         assert_eq!(
             rsass(
                 "a {b: blue(rgb(0, 0, 123))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 123;\
-             \n}\
-             \n"
+        \n  b: 123;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -365,13 +365,13 @@ mod blue {
         assert_eq!(
             rsass(
                 "a {b: blue(rgb(0, 0, 0))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0;\
-             \n}\
-             \n"
+        \n  b: 0;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -379,13 +379,13 @@ mod blue {
         assert_eq!(
             rsass(
                 "a {b: blue($color: rgb(0, 0, 234))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 234;\
-             \n}\
-             \n"
+        \n  b: 234;\
+        \n}\
+        \n"
         );
     }
 }
@@ -401,13 +401,13 @@ mod complement {
         assert_eq!(
             rsass(
                 "a {b: complement(rgba(turquoise, 0.7))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(224, 64, 80, 0.7);\
-             \n}\
-             \n"
+        \n  b: rgba(224, 64, 80, 0.7);\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -428,13 +428,13 @@ mod complement {
             assert_eq!(
                 rsass(
                     "a {b: complement(black)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: black;\
-                 \n}\
-                 \n"
+        \n  b: black;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -442,13 +442,13 @@ mod complement {
             assert_eq!(
                 rsass(
                     "a {b: complement(gray)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: gray;\
-                 \n}\
-                 \n"
+        \n  b: gray;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -456,13 +456,13 @@ mod complement {
             assert_eq!(
                 rsass(
                     "a {b: complement(white)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: white;\
-                 \n}\
-                 \n"
+        \n  b: white;\
+        \n}\
+        \n"
             );
         }
     }
@@ -471,13 +471,13 @@ mod complement {
         assert_eq!(
             rsass(
                 "a {b: complement($color: red)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: cyan;\
-             \n}\
-             \n"
+        \n  b: cyan;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -485,13 +485,13 @@ mod complement {
         assert_eq!(
             rsass(
                 "a {b: complement(red)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: cyan;\
-             \n}\
-             \n"
+        \n  b: cyan;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -499,13 +499,13 @@ mod complement {
         assert_eq!(
             rsass(
                 "a {b: complement(turquoise)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #e04050;\
-             \n}\
-             \n"
+        \n  b: #e04050;\
+        \n}\
+        \n"
         );
     }
 }
@@ -519,13 +519,13 @@ mod darken {
         assert_eq!(
             rsass(
                 "a {b: darken(rgba(red, 0.2), 100%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(0, 0, 0, 0.2);\
-             \n}\
-             \n"
+        \n  b: rgba(0, 0, 0, 0.2);\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -557,13 +557,13 @@ mod darken {
         assert_eq!(
             rsass(
                 "a {b: darken(red, 0.5%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #fc0000;\
-             \n}\
-             \n"
+        \n  b: #fc0000;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -571,13 +571,13 @@ mod darken {
         assert_eq!(
             rsass(
                 "a {b: darken(red, 100%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: black;\
-             \n}\
-             \n"
+        \n  b: black;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -585,13 +585,13 @@ mod darken {
         assert_eq!(
             rsass(
                 "a {b: darken(red, 50%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: black;\
-             \n}\
-             \n"
+        \n  b: black;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -599,13 +599,13 @@ mod darken {
         assert_eq!(
             rsass(
                 "a {b: darken(red, 14%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #b80000;\
-             \n}\
-             \n"
+        \n  b: #b80000;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -613,13 +613,13 @@ mod darken {
         assert_eq!(
             rsass(
                 "a {b: darken(red, 0%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: red;\
-             \n}\
-             \n"
+        \n  b: red;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -627,13 +627,13 @@ mod darken {
         assert_eq!(
             rsass(
                 "a {b: darken($color: red, $amount: 14%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #b80000;\
-             \n}\
-             \n"
+        \n  b: #b80000;\
+        \n}\
+        \n"
         );
     }
 }
@@ -647,13 +647,13 @@ mod desaturate {
         assert_eq!(
             rsass(
                 "a {b: desaturate(rgba(plum, 0.3), 100%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(191, 191, 191, 0.3);\
-             \n}\
-             \n"
+        \n  b: rgba(191, 191, 191, 0.3);\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -691,13 +691,13 @@ mod desaturate {
         assert_eq!(
             rsass(
                 "a {b: desaturate(plum, 100%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #bfbfbf;\
-             \n}\
-             \n"
+        \n  b: #bfbfbf;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -705,13 +705,13 @@ mod desaturate {
         assert_eq!(
             rsass(
                 "a {b: desaturate(plum, 48%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #bfbfbf;\
-             \n}\
-             \n"
+        \n  b: #bfbfbf;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -719,13 +719,13 @@ mod desaturate {
         assert_eq!(
             rsass(
                 "a {b: desaturate(plum, 14%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #d4a9d4;\
-             \n}\
-             \n"
+        \n  b: #d4a9d4;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -733,13 +733,13 @@ mod desaturate {
         assert_eq!(
             rsass(
                 "a {b: desaturate(plum, 0%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: plum;\
-             \n}\
-             \n"
+        \n  b: plum;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -747,13 +747,13 @@ mod desaturate {
         assert_eq!(
             rsass(
                 "a {b: desaturate($color: plum, $amount: 14%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #d4a9d4;\
-             \n}\
-             \n"
+        \n  b: #d4a9d4;\
+        \n}\
+        \n"
         );
     }
 }
@@ -791,13 +791,13 @@ mod fade_in {
         assert_eq!(
             rsass(
                 "a {b: fade-in(rgba(red, 0.5), 1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: red;\
-             \n}\
-             \n"
+        \n  b: red;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -805,13 +805,13 @@ mod fade_in {
         assert_eq!(
             rsass(
                 "a {b: fade-in(rgba(red, 0.5), 0.5)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: red;\
-             \n}\
-             \n"
+        \n  b: red;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -819,13 +819,13 @@ mod fade_in {
         assert_eq!(
             rsass(
                 "a {b: fade-in(rgba(red, 0.5), 0.14)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(255, 0, 0, 0.64);\
-             \n}\
-             \n"
+        \n  b: rgba(255, 0, 0, 0.64);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -833,13 +833,13 @@ mod fade_in {
         assert_eq!(
             rsass(
                 "a {b: fade-in(rgba(red, 0.5), 0)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(255, 0, 0, 0.5);\
-             \n}\
-             \n"
+        \n  b: rgba(255, 0, 0, 0.5);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -847,13 +847,13 @@ mod fade_in {
         assert_eq!(
             rsass(
                 "a {b: fade-in($color: rgba(red, 0.5), $amount: 0.14)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(255, 0, 0, 0.64);\
-             \n}\
-             \n"
+        \n  b: rgba(255, 0, 0, 0.64);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -861,13 +861,13 @@ mod fade_in {
         assert_eq!(
             rsass(
                 "a {b: opacify($color: rgba(red, 0.5), $amount: 0.14)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(255, 0, 0, 0.64);\
-             \n}\
-             \n"
+        \n  b: rgba(255, 0, 0, 0.64);\
+        \n}\
+        \n"
         );
     }
 }
@@ -905,13 +905,13 @@ mod fade_out {
         assert_eq!(
             rsass(
                 "a {b: fade-out(rgba(red, 0.5), 1)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(255, 0, 0, 0);\
-             \n}\
-             \n"
+        \n  b: rgba(255, 0, 0, 0);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -919,13 +919,13 @@ mod fade_out {
         assert_eq!(
             rsass(
                 "a {b: fade-out(rgba(red, 0.5), 0.5)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(255, 0, 0, 0);\
-             \n}\
-             \n"
+        \n  b: rgba(255, 0, 0, 0);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -933,13 +933,13 @@ mod fade_out {
         assert_eq!(
             rsass(
                 "a {b: fade-out(rgba(red, 0.5), 0.14)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(255, 0, 0, 0.36);\
-             \n}\
-             \n"
+        \n  b: rgba(255, 0, 0, 0.36);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -947,13 +947,13 @@ mod fade_out {
         assert_eq!(
             rsass(
                 "a {b: fade-out(rgba(red, 0.5), 0)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(255, 0, 0, 0.5);\
-             \n}\
-             \n"
+        \n  b: rgba(255, 0, 0, 0.5);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -961,13 +961,13 @@ mod fade_out {
         assert_eq!(
             rsass(
                 "a {b: fade-out($color: rgba(red, 0.5), $amount: 0.14)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(255, 0, 0, 0.36);\
-             \n}\
-             \n"
+        \n  b: rgba(255, 0, 0, 0.36);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -995,13 +995,13 @@ mod grayscale {
         assert_eq!(
             rsass(
                 "a {b: grayscale(rgba(#633736, 0.3))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(77, 77, 77, 0.3);\
-             \n}\
-             \n"
+        \n  b: rgba(77, 77, 77, 0.3);\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -1019,13 +1019,13 @@ mod grayscale {
         assert_eq!(
             rsass(
                 "a {b: grayscale(red)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: gray;\
-             \n}\
-             \n"
+        \n  b: gray;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1033,13 +1033,13 @@ mod grayscale {
         assert_eq!(
             rsass(
                 "a {b: grayscale(#633736)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #4d4d4d;\
-             \n}\
-             \n"
+        \n  b: #4d4d4d;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1047,13 +1047,13 @@ mod grayscale {
         assert_eq!(
             rsass(
                 "a {b: grayscale($color: white)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: white;\
-             \n}\
-             \n"
+        \n  b: white;\
+        \n}\
+        \n"
         );
     }
     mod no_saturation {
@@ -1064,13 +1064,13 @@ mod grayscale {
             assert_eq!(
                 rsass(
                     "a {b: grayscale(black)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: black;\
-                 \n}\
-                 \n"
+        \n  b: black;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1078,13 +1078,13 @@ mod grayscale {
             assert_eq!(
                 rsass(
                     "a {b: grayscale(#494949)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #494949;\
-                 \n}\
-                 \n"
+        \n  b: #494949;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1092,13 +1092,13 @@ mod grayscale {
             assert_eq!(
                 rsass(
                     "a {b: grayscale(white)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: white;\
-                 \n}\
-                 \n"
+        \n  b: white;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1138,13 +1138,13 @@ mod green {
         assert_eq!(
             rsass(
                 "a {b: green(rgb(0, 255, 0))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 255;\
-             \n}\
-             \n"
+        \n  b: 255;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1152,13 +1152,13 @@ mod green {
         assert_eq!(
             rsass(
                 "a {b: green(rgb(0, 123, 0))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 123;\
-             \n}\
-             \n"
+        \n  b: 123;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1166,13 +1166,13 @@ mod green {
         assert_eq!(
             rsass(
                 "a {b: green(rgb(0, 0, 0))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0;\
-             \n}\
-             \n"
+        \n  b: 0;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1180,13 +1180,13 @@ mod green {
         assert_eq!(
             rsass(
                 "a {b: green($color: rgb(0, 234, 0))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 234;\
-             \n}\
-             \n"
+        \n  b: 234;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1205,13 +1205,13 @@ mod hue {
         assert_eq!(
             rsass(
                 "a {b: hue(hsl(540, 100%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 180deg;\
-             \n}\
-             \n"
+        \n  b: 180deg;\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -1230,13 +1230,13 @@ mod hue {
         assert_eq!(
             rsass(
                 "a {b: hue(hsl(0.5, 100%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0.5deg;\
-             \n}\
-             \n"
+        \n  b: 0.5deg;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1245,13 +1245,13 @@ mod hue {
         assert_eq!(
             rsass(
                 "a {b: hue(hsl(359, 100%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 359deg;\
-             \n}\
-             \n"
+        \n  b: 359deg;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1260,13 +1260,13 @@ mod hue {
         assert_eq!(
             rsass(
                 "a {b: hue(hsl(123, 100%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 123deg;\
-             \n}\
-             \n"
+        \n  b: 123deg;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1274,13 +1274,13 @@ mod hue {
         assert_eq!(
             rsass(
                 "a {b: hue(hsl(0, 100%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0deg;\
-             \n}\
-             \n"
+        \n  b: 0deg;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1289,13 +1289,13 @@ mod hue {
         assert_eq!(
             rsass(
                 "a {b: hue($color: hsl(234, 100%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 234deg;\
-             \n}\
-             \n"
+        \n  b: 234deg;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1304,13 +1304,13 @@ mod hue {
         assert_eq!(
             rsass(
                 "a {b: hue(hsl(-180, 100%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 180deg;\
-             \n}\
-             \n"
+        \n  b: 180deg;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1334,13 +1334,13 @@ mod ie_hex_str {
         assert_eq!(
             rsass(
                 "a {b: ie-hex-str(rgba(#020304, 0.003))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #01020304;\
-             \n}\
-             \n"
+        \n  b: #01020304;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1348,13 +1348,13 @@ mod ie_hex_str {
         assert_eq!(
             rsass(
                 "a {b: ie-hex-str($color: #daddee)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #FFDADDEE;\
-             \n}\
-             \n"
+        \n  b: #FFDADDEE;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1362,13 +1362,13 @@ mod ie_hex_str {
         assert_eq!(
             rsass(
                 "a {b: ie-hex-str(#daddee)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #FFDADDEE;\
-             \n}\
-             \n"
+        \n  b: #FFDADDEE;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1376,13 +1376,13 @@ mod ie_hex_str {
         assert_eq!(
             rsass(
                 "a {b: ie-hex-str(rgba(#daddee, 0.3))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #4DDADDEE;\
-             \n}\
-             \n"
+        \n  b: #4DDADDEE;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1390,13 +1390,13 @@ mod ie_hex_str {
         assert_eq!(
             rsass(
                 "a {b: ie-hex-str(rgba(turquoise, 0))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #0040E0D0;\
-             \n}\
-             \n"
+        \n  b: #0040E0D0;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1404,13 +1404,13 @@ mod ie_hex_str {
         assert_eq!(
             rsass(
                 "a {b: type-of(ie-hex-str(#daddee))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: string;\
-             \n}\
-             \n"
+        \n  b: string;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1424,13 +1424,13 @@ mod invert {
         assert_eq!(
             rsass(
                 "a {b: invert(rgba(turquoise, 0.4))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(191, 31, 47, 0.4);\
-             \n}\
-             \n"
+        \n  b: rgba(191, 31, 47, 0.4);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1438,13 +1438,13 @@ mod invert {
         assert_eq!(
             rsass(
                 "a {b: invert(black)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: white;\
-             \n}\
-             \n"
+        \n  b: white;\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -1478,13 +1478,13 @@ mod invert {
         assert_eq!(
             rsass(
                 "a {b: invert(gray)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #7f7f7f;\
-             \n}\
-             \n"
+        \n  b: #7f7f7f;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1492,13 +1492,13 @@ mod invert {
         assert_eq!(
             rsass(
                 "a {b: invert($color: turquoise, $weight: 0%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: turquoise;\
-             \n}\
-             \n"
+        \n  b: turquoise;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1506,13 +1506,13 @@ mod invert {
         assert_eq!(
             rsass(
                 "a {b: invert(10%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: invert(10%);\
-             \n}\
-             \n"
+        \n  b: invert(10%);\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1520,13 +1520,13 @@ mod invert {
         assert_eq!(
             rsass(
                 "a {b: invert(turquoise)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #bf1f2f;\
-             \n}\
-             \n"
+        \n  b: #bf1f2f;\
+        \n}\
+        \n"
         );
     }
     mod weighted {
@@ -1537,13 +1537,13 @@ mod invert {
             assert_eq!(
                 rsass(
                     "a {b: invert(turquoise, 92%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #b52e3c;\
-                 \n}\
-                 \n"
+        \n  b: #b52e3c;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1551,13 +1551,13 @@ mod invert {
             assert_eq!(
                 rsass(
                     "a {b: invert(turquoise, 23%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #5db4ab;\
-                 \n}\
-                 \n"
+        \n  b: #5db4ab;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1565,13 +1565,13 @@ mod invert {
             assert_eq!(
                 rsass(
                     "a {b: invert(turquoise, 100%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #bf1f2f;\
-                 \n}\
-                 \n"
+        \n  b: #bf1f2f;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1579,13 +1579,13 @@ mod invert {
             assert_eq!(
                 rsass(
                     "a {b: invert(turquoise, 50%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: gray;\
-                 \n}\
-                 \n"
+        \n  b: gray;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1593,13 +1593,13 @@ mod invert {
             assert_eq!(
                 rsass(
                     "a {b: invert(turquoise, 0%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: turquoise;\
-                 \n}\
-                 \n"
+        \n  b: turquoise;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1608,13 +1608,13 @@ mod invert {
         assert_eq!(
             rsass(
                 "a {b: invert(white)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: black;\
-             \n}\
-             \n"
+        \n  b: black;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1628,13 +1628,13 @@ mod lighten {
         assert_eq!(
             rsass(
                 "a {b: lighten(rgba(red, 0.4), 100%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: rgba(255, 255, 255, 0.4);\
-             \n}\
-             \n"
+        \n  b: rgba(255, 255, 255, 0.4);\
+        \n}\
+        \n"
         );
     }
     mod error {
@@ -1666,13 +1666,13 @@ mod lighten {
         assert_eq!(
             rsass(
                 "a {b: lighten(red, 0.5%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #ff0303;\
-             \n}\
-             \n"
+        \n  b: #ff0303;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1680,13 +1680,13 @@ mod lighten {
         assert_eq!(
             rsass(
                 "a {b: lighten(red, 100%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: white;\
-             \n}\
-             \n"
+        \n  b: white;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1694,13 +1694,13 @@ mod lighten {
         assert_eq!(
             rsass(
                 "a {b: lighten(red, 50%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: white;\
-             \n}\
-             \n"
+        \n  b: white;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1708,13 +1708,13 @@ mod lighten {
         assert_eq!(
             rsass(
                 "a {b: lighten(red, 14%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #ff4747;\
-             \n}\
-             \n"
+        \n  b: #ff4747;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1722,13 +1722,13 @@ mod lighten {
         assert_eq!(
             rsass(
                 "a {b: lighten(red, 0%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: red;\
-             \n}\
-             \n"
+        \n  b: red;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1736,13 +1736,13 @@ mod lighten {
         assert_eq!(
             rsass(
                 "a {b: lighten($color: red, $amount: 14%)}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: #ff4747;\
-             \n}\
-             \n"
+        \n  b: #ff4747;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1766,13 +1766,13 @@ mod lightness {
         assert_eq!(
             rsass(
                 "a {b: lightness(hsl(0, 100%, 0.5%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0.5%;\
-             \n}\
-             \n"
+        \n  b: 0.5%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1780,13 +1780,13 @@ mod lightness {
         assert_eq!(
             rsass(
                 "a {b: lightness(hsl(0, 100%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 100%;\
-             \n}\
-             \n"
+        \n  b: 100%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1794,13 +1794,13 @@ mod lightness {
         assert_eq!(
             rsass(
                 "a {b: lightness(hsl(0, 100%, 50%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 50%;\
-             \n}\
-             \n"
+        \n  b: 50%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1808,13 +1808,13 @@ mod lightness {
         assert_eq!(
             rsass(
                 "a {b: lightness(hsl(0, 100%, 0%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0%;\
-             \n}\
-             \n"
+        \n  b: 0%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1822,13 +1822,13 @@ mod lightness {
         assert_eq!(
             rsass(
                 "a {b: lightness($color: hsl(0, 100%, 42%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 42%;\
-             \n}\
-             \n"
+        \n  b: 42%;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1845,13 +1845,13 @@ mod mix {
             assert_eq!(
                 rsass(
                     "a {b: mix(rgba(#91e16f, 0.3), rgba(#0144bf, 0.3))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(73, 147, 151, 0.3);\
-                 \n}\
-                 \n"
+        \n  b: rgba(73, 147, 151, 0.3);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1859,13 +1859,13 @@ mod mix {
             assert_eq!(
                 rsass(
                     "a {b: mix(#91e16f, transparent)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(145, 225, 111, 0.5);\
-                 \n}\
-                 \n"
+        \n  b: rgba(145, 225, 111, 0.5);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1873,13 +1873,13 @@ mod mix {
             assert_eq!(
                 rsass(
                     "a {b: mix(rgba(#91e16f, 0.8), rgba(#0144bf, 0.3))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(109, 186, 131, 0.55);\
-                 \n}\
-                 \n"
+        \n  b: rgba(109, 186, 131, 0.55);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1887,13 +1887,13 @@ mod mix {
             assert_eq!(
                 rsass(
                     "a {b: mix(transparent, #0144bf)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(1, 68, 191, 0.5);\
-                 \n}\
-                 \n"
+        \n  b: rgba(1, 68, 191, 0.5);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1901,13 +1901,13 @@ mod mix {
             assert_eq!(
                 rsass(
                     "a {b: mix(rgba(#91e16f, 0.4), rgba(#0144bf, 0.9))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(37, 107, 171, 0.65);\
-                 \n}\
-                 \n"
+        \n  b: rgba(37, 107, 171, 0.65);\
+        \n}\
+        \n"
             );
         }
     }
@@ -1971,13 +1971,13 @@ mod mix {
                 assert_eq!(
                     rsass(
                         "a {b: mix(transparent, #0144bf, 70%)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: rgba(1, 68, 191, 0.3);\
-                     \n}\
-                     \n"
+        \n  b: rgba(1, 68, 191, 0.3);\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -1985,13 +1985,13 @@ mod mix {
                 assert_eq!(
                     rsass(
                         "a {b: mix(#91e16f, transparent, 70%)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: rgba(145, 225, 111, 0.7);\
-                     \n}\
-                     \n"
+        \n  b: rgba(145, 225, 111, 0.7);\
+        \n}\
+        \n"
                 );
             }
         }
@@ -2062,13 +2062,13 @@ mod mix {
             assert_eq!(
                 rsass(
                     "a {b: mix(#91e16f, #0144bf, 50%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #499397;\
-                 \n}\
-                 \n"
+        \n  b: #499397;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -2076,13 +2076,13 @@ mod mix {
             assert_eq!(
                 rsass(
                     "a {b: mix(#91e16f, #0144bf, 100%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #91e16f;\
-                 \n}\
-                 \n"
+        \n  b: #91e16f;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -2090,13 +2090,13 @@ mod mix {
             assert_eq!(
                 rsass(
                     "a {b: mix(#91e16f, #0144bf, 92%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #85d475;\
-                 \n}\
-                 \n"
+        \n  b: #85d475;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -2104,13 +2104,13 @@ mod mix {
             assert_eq!(
                 rsass(
                     "a {b: mix(#91e16f, #0144bf, 0%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #0144bf;\
-                 \n}\
-                 \n"
+        \n  b: #0144bf;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -2118,13 +2118,13 @@ mod mix {
             assert_eq!(
                 rsass(
                     "a {b: mix(#91e16f, #0144bf, 43%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #3f889d;\
-                 \n}\
-                 \n"
+        \n  b: #3f889d;\
+        \n}\
+        \n"
             );
         }
     }
@@ -2212,13 +2212,13 @@ mod red {
         assert_eq!(
             rsass(
                 "a {b: red(rgb(255, 0, 0))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 255;\
-             \n}\
-             \n"
+        \n  b: 255;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -2226,13 +2226,13 @@ mod red {
         assert_eq!(
             rsass(
                 "a {b: red(rgb(123, 0, 0))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 123;\
-             \n}\
-             \n"
+        \n  b: 123;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -2240,13 +2240,13 @@ mod red {
         assert_eq!(
             rsass(
                 "a {b: red(rgb(0, 0, 0))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0;\
-             \n}\
-             \n"
+        \n  b: 0;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -2254,13 +2254,13 @@ mod red {
         assert_eq!(
             rsass(
                 "a {b: red($color: rgb(234, 0, 0))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 234;\
-             \n}\
-             \n"
+        \n  b: 234;\
+        \n}\
+        \n"
         );
     }
 }
@@ -2315,13 +2315,13 @@ mod saturate {
             assert_eq!(
                 rsass(
                     "a {b: saturate($amount: 50%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: saturate(50%);\
-                 \n}\
-                 \n"
+        \n  b: saturate(50%);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -2329,13 +2329,13 @@ mod saturate {
             assert_eq!(
                 rsass(
                     "a {b: saturate(50%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: saturate(50%);\
-                 \n}\
-                 \n"
+        \n  b: saturate(50%);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -2343,13 +2343,13 @@ mod saturate {
             assert_eq!(
                 rsass(
                     "a {b: saturate(1)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: saturate(1);\
-                 \n}\
-                 \n"
+        \n  b: saturate(1);\
+        \n}\
+        \n"
             );
         }
     }
@@ -2361,13 +2361,13 @@ mod saturate {
             assert_eq!(
                 rsass(
                     "a {b: saturate(rgba(plum, 0.5), 100%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: rgba(255, 126, 255, 0.5);\
-                 \n}\
-                 \n"
+        \n  b: rgba(255, 126, 255, 0.5);\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -2375,13 +2375,13 @@ mod saturate {
             assert_eq!(
                 rsass(
                     "a {b: saturate(plum, 100%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #ff7eff;\
-                 \n}\
-                 \n"
+        \n  b: #ff7eff;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -2389,13 +2389,13 @@ mod saturate {
             assert_eq!(
                 rsass(
                     "a {b: saturate(plum, 53%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #ff7eff;\
-                 \n}\
-                 \n"
+        \n  b: #ff7eff;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -2403,13 +2403,13 @@ mod saturate {
             assert_eq!(
                 rsass(
                     "a {b: saturate(plum, 14%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #e697e6;\
-                 \n}\
-                 \n"
+        \n  b: #e697e6;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -2417,13 +2417,13 @@ mod saturate {
             assert_eq!(
                 rsass(
                     "a {b: saturate(plum, 0%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: plum;\
-                 \n}\
-                 \n"
+        \n  b: plum;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -2431,13 +2431,13 @@ mod saturate {
             assert_eq!(
                 rsass(
                     "a {b: saturate($color: plum, $amount: 14%)}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #e697e6;\
-                 \n}\
-                 \n"
+        \n  b: #e697e6;\
+        \n}\
+        \n"
             );
         }
     }
@@ -2463,13 +2463,13 @@ mod saturation {
         assert_eq!(
             rsass(
                 "a {b: saturation(hsl(0, 0.5%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0.5%;\
-             \n}\
-             \n"
+        \n  b: 0.5%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -2478,13 +2478,13 @@ mod saturation {
         assert_eq!(
             rsass(
                 "a {b: saturation(hsl(0, 100%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 100%;\
-             \n}\
-             \n"
+        \n  b: 100%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -2493,13 +2493,13 @@ mod saturation {
         assert_eq!(
             rsass(
                 "a {b: saturation(hsl(0, 50%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 50%;\
-             \n}\
-             \n"
+        \n  b: 50%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -2507,13 +2507,13 @@ mod saturation {
         assert_eq!(
             rsass(
                 "a {b: saturation(hsl(0, 0%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 0%;\
-             \n}\
-             \n"
+        \n  b: 0%;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -2522,13 +2522,13 @@ mod saturation {
         assert_eq!(
             rsass(
                 "a {b: saturation($color: hsl(0, 42%, 100%))}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: 42%;\
-             \n}\
-             \n"
+        \n  b: 42%;\
+        \n}\
+        \n"
         );
     }
 }

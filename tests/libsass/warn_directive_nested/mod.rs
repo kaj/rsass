@@ -16,21 +16,21 @@ fn mixin() {
     assert_eq!(
         rsass(
             "@mixin c() {\
-             \n  @warn test;\
-             \n  c: d;\
-             \n}\
-             \n\
-             \na {\
-             \n  b: {\
-             \n    @include c();\
-             \n  }\
-             \n}\
-             \n"
+            \n  @warn test;\
+            \n  c: d;\
+            \n}\
+            \n\
+            \na {\
+            \n  b: {\
+            \n    @include c();\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         "a {\
-         \n  b-c: d;\
-         \n}\
-         \n"
+        \n  b-c: d;\
+        \n}\
+        \n"
     );
 }

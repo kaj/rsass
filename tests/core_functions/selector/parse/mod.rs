@@ -38,13 +38,13 @@ fn named() {
     assert_eq!(
         rsass(
             "a {b: selector-parse($selector: \"c\")}\
-             \n"
+            \n"
         )
         .unwrap(),
         "a {\
-         \n  b: c;\
-         \n}\
-         \n"
+        \n  b: c;\
+        \n}\
+        \n"
     );
 }
 
@@ -61,18 +61,18 @@ mod selector {
             assert_eq!(
                 rsass(
                     "$result: selector-parse(\"b + c + d\");\
-                     \na {\
-                     \n  result: $result;\
-                     \n  structure: $result == (b \"+\" c \"+\" d,);\
-                     \n}\
-                     \n"
+            \na {\
+            \n  result: $result;\
+            \n  structure: $result == (b \"+\" c \"+\" d,);\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  result: b + c + d;\
-                 \n  structure: true;\
-                 \n}\
-                 \n"
+        \n  result: b + c + d;\
+        \n  structure: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -81,18 +81,18 @@ mod selector {
             assert_eq!(
                 rsass(
                     "$result: selector-parse(\"b > c > d\");\
-                     \na {\
-                     \n  result: $result;\
-                     \n  structure: $result == (b \">\" c \">\" d,);\
-                     \n}\
-                     \n"
+            \na {\
+            \n  result: $result;\
+            \n  structure: $result == (b \">\" c \">\" d,);\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  result: b > c > d;\
-                 \n  structure: true;\
-                 \n}\
-                 \n"
+        \n  result: b > c > d;\
+        \n  structure: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -101,18 +101,18 @@ mod selector {
             assert_eq!(
                 rsass(
                     "$result: selector-parse(\"b c d\");\
-                     \na {\
-                     \n  result: $result;\
-                     \n  structure: $result == (b c d,);\
-                     \n}\
-                     \n"
+            \na {\
+            \n  result: $result;\
+            \n  structure: $result == (b c d,);\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  result: b c d;\
-                 \n  structure: true;\
-                 \n}\
-                 \n"
+        \n  result: b c d;\
+        \n  structure: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -121,18 +121,18 @@ mod selector {
             assert_eq!(
                 rsass(
                     "$result: selector-parse(\"b ~ c ~ d\");\
-                     \na {\
-                     \n  result: $result;\
-                     \n  structure: $result == (b \"~\" c \"~\" d,);\
-                     \n}\
-                     \n"
+            \na {\
+            \n  result: $result;\
+            \n  structure: $result == (b \"~\" c \"~\" d,);\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  result: b ~ c ~ d;\
-                 \n  structure: true;\
-                 \n}\
-                 \n"
+        \n  result: b ~ c ~ d;\
+        \n  structure: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -142,18 +142,18 @@ mod selector {
         assert_eq!(
             rsass(
                 "$result: selector-parse(\"b.c:d\");\
-                 \na {\
-                 \n  result: $result;\
-                 \n  structure: $result == (append((), \"b.c:d\"),);\
-                 \n}\
-                 \n"
+            \na {\
+            \n  result: $result;\
+            \n  structure: $result == (append((), \"b.c:d\"),);\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  result: b.c:d;\
-             \n  structure: true;\
-             \n}\
-             \n"
+        \n  result: b.c:d;\
+        \n  structure: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -161,18 +161,18 @@ mod selector {
         assert_eq!(
             rsass(
                 "$result: selector-parse(\"b c, d e, f g\");\
-                 \na {\
-                 \n  result: $result;\
-                 \n  structure: $result == (b c, d e, f g);\
-                 \n}\
-                 \n"
+            \na {\
+            \n  result: $result;\
+            \n  structure: $result == (b c, d e, f g);\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  result: b c, d e, f g;\
-             \n  structure: true;\
-             \n}\
-             \n"
+        \n  result: b c, d e, f g;\
+        \n  structure: true;\
+        \n}\
+        \n"
         );
     }
     mod simple {
@@ -183,13 +183,13 @@ mod selector {
             assert_eq!(
                 rsass(
                     "a {b: selector-parse(\"[c^=d]\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: [c^=d];\
-                 \n}\
-                 \n"
+        \n  b: [c^=d];\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -197,13 +197,13 @@ mod selector {
             assert_eq!(
                 rsass(
                     "a {b: selector-parse(\".c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: .c;\
-                 \n}\
-                 \n"
+        \n  b: .c;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -211,13 +211,13 @@ mod selector {
             assert_eq!(
                 rsass(
                     "a {b: selector-parse(\"#c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: #c;\
-                 \n}\
-                 \n"
+        \n  b: #c;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -225,13 +225,13 @@ mod selector {
             assert_eq!(
                 rsass(
                     "a {b: selector-parse(\"%c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: %c;\
-                 \n}\
-                 \n"
+        \n  b: %c;\
+        \n}\
+        \n"
             );
         }
         mod pseudo {
@@ -246,13 +246,13 @@ mod selector {
                     assert_eq!(
                         rsass(
                             "a {b: selector-parse(\":c(@#$)\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: :c(@#$);\
-                         \n}\
-                         \n"
+        \n  b: :c(@#$);\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -280,34 +280,34 @@ mod selector {
                     assert_eq!(
                         rsass(
                             "a {b: selector-parse(\":c\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: :c;\
-                         \n}\
-                         \n"
+        \n  b: :c;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
                 #[ignore] // wrong result
                 fn selector_arg() {
                     assert_eq!(
-        rsass(
-            "$result: selector-parse(\":matches(b, c)\");\
+                        rsass(
+                            "$result: selector-parse(\":matches(b, c)\");\
             \na {\
             \n  result: $result;\
             \n  structure: $result == (append((), \":matches(b, c)\"),);\
             \n}\
             \n"
-        )
-        .unwrap(),
-        "a {\
+                        )
+                        .unwrap(),
+                        "a {\
         \n  result: :matches(b, c);\
         \n  structure: true;\
         \n}\
         \n"
-    );
+                    );
                 }
             }
             mod element {
@@ -319,13 +319,13 @@ mod selector {
                     assert_eq!(
                         rsass(
                             "a {b: selector-parse(\"::c(@#$)\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: ::c(@#$);\
-                         \n}\
-                         \n"
+        \n  b: ::c(@#$);\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
@@ -333,34 +333,34 @@ mod selector {
                     assert_eq!(
                         rsass(
                             "a {b: selector-parse(\"::c\")}\
-                             \n"
+            \n"
                         )
                         .unwrap(),
                         "a {\
-                         \n  b: ::c;\
-                         \n}\
-                         \n"
+        \n  b: ::c;\
+        \n}\
+        \n"
                     );
                 }
                 #[test]
                 #[ignore] // wrong result
                 fn selector_arg() {
                     assert_eq!(
-        rsass(
-            "$result: selector-parse(\"::slotted(b, c)\");\
+                        rsass(
+                            "$result: selector-parse(\"::slotted(b, c)\");\
             \na {\
             \n  result: $result;\
             \n  structure: $result == (append((), \"::slotted(b, c)\"),);\
             \n}\
             \n"
-        )
-        .unwrap(),
-        "a {\
+                        )
+                        .unwrap(),
+                        "a {\
         \n  result: ::slotted(b, c);\
         \n  structure: true;\
         \n}\
         \n"
-    );
+                    );
                 }
             }
         }
@@ -369,13 +369,13 @@ mod selector {
             assert_eq!(
                 rsass(
                     "a {b: selector-parse(\"c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c;\
-                 \n}\
-                 \n"
+        \n  b: c;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -383,13 +383,13 @@ mod selector {
             assert_eq!(
                 rsass(
                     "a {b: selector-parse(\"*\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: *;\
-                 \n}\
-                 \n"
+        \n  b: *;\
+        \n}\
+        \n"
             );
         }
     }
@@ -410,13 +410,13 @@ mod structure {
                 assert_eq!(
                     rsass(
                         "a {b: selector-parse(c \"d\" e)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d e;\
-                     \n}\
-                     \n"
+        \n  b: c d e;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -424,13 +424,13 @@ mod structure {
                 assert_eq!(
                     rsass(
                         "a {b: selector-parse(\"c\" \"d\" \"e\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d e;\
-                     \n}\
-                     \n"
+        \n  b: c d e;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -438,13 +438,13 @@ mod structure {
                 assert_eq!(
                     rsass(
                         "a {b: selector-parse(c d e)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d e;\
-                     \n}\
-                     \n"
+        \n  b: c d e;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -456,13 +456,13 @@ mod structure {
                 assert_eq!(
                     rsass(
                         "a {b: selector-parse((c \"d\", e \"f\"))}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d, e f;\
-                     \n}\
-                     \n"
+        \n  b: c d, e f;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -470,13 +470,13 @@ mod structure {
                 assert_eq!(
                     rsass(
                         "a {b: selector-parse((\"c\" \"d\", \"e\" \"f\"))}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d, e f;\
-                     \n}\
-                     \n"
+        \n  b: c d, e f;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -484,13 +484,13 @@ mod structure {
                 assert_eq!(
                     rsass(
                         "a {b: selector-parse((c d, e f))}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d, e f;\
-                     \n}\
-                     \n"
+        \n  b: c d, e f;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -502,13 +502,13 @@ mod structure {
                 assert_eq!(
                     rsass(
                         "a {b: selector-parse(c \"d, e\" f)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d, e f;\
-                     \n}\
-                     \n"
+        \n  b: c d, e f;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -516,13 +516,13 @@ mod structure {
                 assert_eq!(
                     rsass(
                         "a {b: selector-parse(\"c\" \"d, e\" \"f\")}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d, e f;\
-                     \n}\
-                     \n"
+        \n  b: c d, e f;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -530,13 +530,13 @@ mod structure {
                 assert_eq!(
                     rsass(
                         "a {b: selector-parse(c unquote(\"d, e\") f)}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d, e f;\
-                     \n}\
-                     \n"
+        \n  b: c d, e f;\
+        \n}\
+        \n"
                 );
             }
         }
@@ -548,13 +548,13 @@ mod structure {
                 assert_eq!(
                     rsass(
                         "a {b: selector-parse((c d, unquote(\"e f\")))}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d, e f;\
-                     \n}\
-                     \n"
+        \n  b: c d, e f;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -562,13 +562,13 @@ mod structure {
                 assert_eq!(
                     rsass(
                         "a {b: selector-parse((\"c d\", \"e f\"))}\
-                         \n"
+            \n"
                     )
                     .unwrap(),
                     "a {\
-                     \n  b: c d, e f;\
-                     \n}\
-                     \n"
+        \n  b: c d, e f;\
+        \n}\
+        \n"
                 );
             }
             #[test]
@@ -595,13 +595,13 @@ mod structure {
             assert_eq!(
                 rsass(
                     "a {b: selector-parse(\"c d, e f\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c d, e f;\
-                 \n}\
-                 \n"
+        \n  b: c d, e f;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -609,13 +609,13 @@ mod structure {
             assert_eq!(
                 rsass(
                     "a {b: selector-parse(unquote(\"c d, e f\"))}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: c d, e f;\
-                 \n}\
-                 \n"
+        \n  b: c d, e f;\
+        \n}\
+        \n"
             );
         }
     }

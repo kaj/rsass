@@ -11,14 +11,14 @@ fn t12_double_escaped_interpolated_value_todo() {
     assert_eq!(
         rsass(
             "$key: \'bar\';\
-             \n.test12#{\'\\\\@#{$key}\'} { content: \'1.2\'; }\
-             \n"
+            \n.test12#{\'\\\\@#{$key}\'} { content: \'1.2\'; }\
+            \n"
         )
         .unwrap(),
         ".test12\\@bar {\
-         \n  content: \'1.2\';\
-         \n}\
-         \n"
+        \n  content: \'1.2\';\
+        \n}\
+        \n"
     );
 }
 
@@ -29,15 +29,15 @@ fn t22_double_escaped_interpolated_variable() {
     assert_eq!(
         rsass(
             "$key: \'bar\';\
-             \n$suffix2: \'\\\\@#{$key}\';\
-             \n.test22#{$suffix2} { content: \'2.2\'; }\
-             \n"
+            \n$suffix2: \'\\\\@#{$key}\';\
+            \n.test22#{$suffix2} { content: \'2.2\'; }\
+            \n"
         )
         .unwrap(),
         ".test22\\@bar {\
-         \n  content: \'2.2\';\
-         \n}\
-         \n"
+        \n  content: \'2.2\';\
+        \n}\
+        \n"
     );
 }
 
@@ -48,12 +48,12 @@ fn t32_double_escaped_literal() {
     assert_eq!(
         rsass(
             ".test32#{\'\\\\@baz\'} { content: \'3.2\'; }\
-             \n"
+            \n"
         )
         .unwrap(),
         ".test32\\@baz {\
-         \n  content: \'3.2\';\
-         \n}\
-         \n"
+        \n  content: \'3.2\';\
+        \n}\
+        \n"
     );
 }

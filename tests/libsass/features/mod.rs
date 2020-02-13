@@ -10,15 +10,15 @@ fn at_error() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  foo: feature-exists(\'at-error\');\
-             \n}\
-             \n"
+            \n  foo: feature-exists(\'at-error\');\
+            \n}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  foo: true;\
-         \n}\
-         \n"
+        \n  foo: true;\
+        \n}\
+        \n"
     );
 }
 
@@ -29,15 +29,15 @@ fn extend_selector_pseudoclass() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  foo: feature-exists(\'extend-selector-pseudoclass\');\
-             \n}\
-             \n"
+            \n  foo: feature-exists(\'extend-selector-pseudoclass\');\
+            \n}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  foo: true;\
-         \n}\
-         \n"
+        \n  foo: true;\
+        \n}\
+        \n"
     );
 }
 
@@ -47,15 +47,15 @@ fn global_variable_shadowing() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  foo: feature-exists(\'global-variable-shadowing\');\
-             \n}\
-             \n"
+            \n  foo: feature-exists(\'global-variable-shadowing\');\
+            \n}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  foo: true;\
-         \n}\
-         \n"
+        \n  foo: true;\
+        \n}\
+        \n"
     );
 }
 
@@ -65,14 +65,14 @@ fn units_level_3() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  foo: feature-exists(\'units-level-3\');\
-             \n}\
-             \n"
+            \n  foo: feature-exists(\'units-level-3\');\
+            \n}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  foo: true;\
-         \n}\
-         \n"
+        \n  foo: true;\
+        \n}\
+        \n"
     );
 }

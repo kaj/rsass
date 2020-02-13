@@ -19,19 +19,19 @@ fn at_root_postfix_itpl() {
     assert_eq!(
         rsass(
             "@at-root {\r\
-             \n  #{&}post {\r\
-             \n    foo {\r\
-             \n      bar: baz;\r\
-             \n    }\r\
-             \n  }\r\
-             \n}\r\
-             \n"
+            \n  #{&}post {\r\
+            \n    foo {\r\
+            \n      bar: baz;\r\
+            \n    }\r\
+            \n  }\r\
+            \n}\r\
+            \n"
         )
         .unwrap(),
         "post foo {\
-         \n  bar: baz;\
-         \n}\
-         \n"
+        \n  bar: baz;\
+        \n}\
+        \n"
     );
 }
 
@@ -46,19 +46,19 @@ fn at_root_prefix_itpl() {
     assert_eq!(
         rsass(
             "@at-root {\r\
-             \n  pre#{&} {\r\
-             \n    foo {\r\
-             \n      bar: baz;\r\
-             \n    }\r\
-             \n  }\r\
-             \n}\r\
-             \n"
+            \n  pre#{&} {\r\
+            \n    foo {\r\
+            \n      bar: baz;\r\
+            \n    }\r\
+            \n  }\r\
+            \n}\r\
+            \n"
         )
         .unwrap(),
         "pre foo {\
-         \n  bar: baz;\
-         \n}\
-         \n"
+        \n  bar: baz;\
+        \n}\
+        \n"
     );
 }
 
@@ -80,17 +80,17 @@ fn basic_postfix_itpl() {
     assert_eq!(
         rsass(
             "#{&}post {\r\
-             \n  foo {\r\
-             \n    bar: baz;\r\
-             \n  }\r\
-             \n}\r\
-             \n"
+            \n  foo {\r\
+            \n    bar: baz;\r\
+            \n  }\r\
+            \n}\r\
+            \n"
         )
         .unwrap(),
         "post foo {\
-         \n  bar: baz;\
-         \n}\
-         \n"
+        \n  bar: baz;\
+        \n}\
+        \n"
     );
 }
 
@@ -104,17 +104,17 @@ fn basic_prefix_itpl() {
     assert_eq!(
         rsass(
             "pre#{&} {\r\
-             \n  foo {\r\
-             \n    bar: baz;\r\
-             \n  }\r\
-             \n}\r\
-             \n"
+            \n  foo {\r\
+            \n    bar: baz;\r\
+            \n  }\r\
+            \n}\r\
+            \n"
         )
         .unwrap(),
         "pre foo {\
-         \n  bar: baz;\
-         \n}\
-         \n"
+        \n  bar: baz;\
+        \n}\
+        \n"
     );
 }
 

@@ -132,17 +132,17 @@ mod current {
             assert_eq!(
                 rsass(
                     "a {\
-                     \n  b: is-superselector(\
-                     \n      \":-pfx-current(c d.i, e j f)\",\
-                     \n      \":-pfx-current(c d, e f, g h)\");\
-                     \n}\
-                     \n"
+            \n  b: is-superselector(\
+            \n      \":-pfx-current(c d.i, e j f)\",\
+            \n      \":-pfx-current(c d, e f, g h)\");\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -151,17 +151,17 @@ mod current {
             assert_eq!(
                 rsass(
                     "a {\
-                     \n  b: is-superselector(\
-                     \n      \":-pfx-current(c d, e f, g h)\",\
-                     \n      \":-pfx-current(c d.i, e j f)\");\
-                     \n}\
-                     \n"
+            \n  b: is-superselector(\
+            \n      \":-pfx-current(c d, e f, g h)\",\
+            \n      \":-pfx-current(c d.i, e j f)\");\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
     }
@@ -499,13 +499,13 @@ mod matches {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\":matches(c d e)\", \"c e\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -514,13 +514,13 @@ mod matches {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\":matches(c e)\", \"c d e\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -533,13 +533,13 @@ mod matches {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\":matches(c.d.e)\", \"c e\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -548,13 +548,13 @@ mod matches {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\":matches(c.e)\", \"c.d.e\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -669,13 +669,13 @@ mod matches {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\":matches(c)\", \"c\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -684,13 +684,13 @@ mod matches {
             assert_eq!(
                 rsass(
                     "a {b: is-superselector(\":matches(c)\", \"d\")}\
-                     \n"
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
     }
@@ -792,13 +792,13 @@ mod not {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\":not(#c.d)\", \"#e\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     mod prefix {
@@ -871,13 +871,13 @@ mod not {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\":not(c.d)\", \"e\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
 }
@@ -907,13 +907,13 @@ mod nth_child {
         assert_eq!(
             rsass(
                 "a {b: is-superselector(\"c\", \":nth-child(n+1 of c)\")}\
-                 \n"
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -940,17 +940,17 @@ mod nth_child {
             assert_eq!(
                 rsass(
                     "a {\
-                     \n  b: is-superselector(\
-                     \n      \":-pfx-nth-child(n+1 of c d.i, e j f)\",\
-                     \n      \":-pfx-nth-child(n+1 of c d, e f, g h)\");\
-                     \n}\
-                     \n"
+            \n  b: is-superselector(\
+            \n      \":-pfx-nth-child(n+1 of c d.i, e j f)\",\
+            \n      \":-pfx-nth-child(n+1 of c d, e f, g h)\");\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -959,17 +959,17 @@ mod nth_child {
             assert_eq!(
                 rsass(
                     "a {\
-                     \n  b: is-superselector(\
-                     \n      \":-pfx-nth-child(n+1 of c d, e f, g h)\",\
-                     \n      \":-pfx-nth-child(n+1 of c d.i, e j f)\");\
-                     \n}\
-                     \n"
+            \n  b: is-superselector(\
+            \n      \":-pfx-nth-child(n+1 of c d, e f, g h)\",\
+            \n      \":-pfx-nth-child(n+1 of c d.i, e j f)\");\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -979,17 +979,17 @@ mod nth_child {
         assert_eq!(
             rsass(
                 "a {\
-                 \n  b: is-superselector(\
-                 \n      \":nth-child(n+1 of c d.i, e j f)\",\
-                 \n      \":nth-child(n+1 of c d, e f, g h)\");\
-                 \n}\
-                 \n"
+            \n  b: is-superselector(\
+            \n      \":nth-child(n+1 of c d.i, e j f)\",\
+            \n      \":nth-child(n+1 of c d, e f, g h)\");\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -998,17 +998,17 @@ mod nth_child {
         assert_eq!(
             rsass(
                 "a {\
-                 \n  b: is-superselector(\
-                 \n    \":nth-child(n+1 of c d, e f, g h)\",\
-                 \n    \":nth-child(n+1 of c d.i, e j f)\");\
-                 \n}\
-                 \n"
+            \n  b: is-superselector(\
+            \n    \":nth-child(n+1 of c d, e f, g h)\",\
+            \n    \":nth-child(n+1 of c d.i, e j f)\");\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
 }
@@ -1053,17 +1053,17 @@ mod nth_last_child {
         assert_eq!(
             rsass(
                 "a {\
-                 \n  b: is-superselector(\
-                 \n      \":nth-last-child(n+1 of c)\",\
-                 \n      \":nth-last-child(n+2 of c)\");\
-                 \n}\
-                 \n"
+            \n  b: is-superselector(\
+            \n      \":nth-last-child(n+1 of c)\",\
+            \n      \":nth-last-child(n+2 of c)\");\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     mod prefix {
@@ -1075,17 +1075,17 @@ mod nth_last_child {
             assert_eq!(
                 rsass(
                     "a {\
-                     \n  b: is-superselector(\
-                     \n      \":-pfx-nth-last-child(n+1 of c d.i, e j f)\",\
-                     \n      \":-pfx-nth-last-child(n+1 of c d, e f, g h)\");\
-                     \n}\
-                     \n"
+            \n  b: is-superselector(\
+            \n      \":-pfx-nth-last-child(n+1 of c d.i, e j f)\",\
+            \n      \":-pfx-nth-last-child(n+1 of c d, e f, g h)\");\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: false;\
-                 \n}\
-                 \n"
+        \n  b: false;\
+        \n}\
+        \n"
             );
         }
         #[test]
@@ -1094,17 +1094,17 @@ mod nth_last_child {
             assert_eq!(
                 rsass(
                     "a {\
-                     \n  b: is-superselector(\
-                     \n      \":-pfx-nth-last-child(n+1 of c d, e f, g h)\",\
-                     \n      \":-pfx-nth-last-child(n+1 of c d.i, e j f)\");\
-                     \n}\
-                     \n"
+            \n  b: is-superselector(\
+            \n      \":-pfx-nth-last-child(n+1 of c d, e f, g h)\",\
+            \n      \":-pfx-nth-last-child(n+1 of c d.i, e j f)\");\
+            \n}\
+            \n"
                 )
                 .unwrap(),
                 "a {\
-                 \n  b: true;\
-                 \n}\
-                 \n"
+        \n  b: true;\
+        \n}\
+        \n"
             );
         }
     }
@@ -1114,17 +1114,17 @@ mod nth_last_child {
         assert_eq!(
             rsass(
                 "a {\
-                 \n  b: is-superselector(\
-                 \n      \":nth-last-child(n+1 of c d.i, e j f)\",\
-                 \n      \":nth-last-child(n+1 of c d, e f, g h)\");\
-                 \n}\
-                 \n"
+            \n  b: is-superselector(\
+            \n      \":nth-last-child(n+1 of c d.i, e j f)\",\
+            \n      \":nth-last-child(n+1 of c d, e f, g h)\");\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: false;\
-             \n}\
-             \n"
+        \n  b: false;\
+        \n}\
+        \n"
         );
     }
     #[test]
@@ -1133,17 +1133,17 @@ mod nth_last_child {
         assert_eq!(
             rsass(
                 "a {\
-                 \n  b: is-superselector(\
-                 \n      \":nth-last-child(n+1 of c d, e f, g h)\",\
-                 \n      \":nth-last-child(n+1 of c d.i, e j f)\");\
-                 \n}\
-                 \n"
+            \n  b: is-superselector(\
+            \n      \":nth-last-child(n+1 of c d, e f, g h)\",\
+            \n      \":nth-last-child(n+1 of c d.i, e j f)\");\
+            \n}\
+            \n"
             )
             .unwrap(),
             "a {\
-             \n  b: true;\
-             \n}\
-             \n"
+        \n  b: true;\
+        \n}\
+        \n"
         );
     }
 }

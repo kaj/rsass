@@ -9,15 +9,15 @@ fn t001_test_one_line_comments() {
     assert_eq!(
         rsass(
             ".foo {// bar: baz;}\
-             \n  baz: bang; //}\
-             \n}\
-             \n"
+            \n  baz: bang; //}\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  baz: bang;\
-         \n}\
-         \n"
+        \n  baz: bang;\
+        \n}\
+        \n"
     );
 }
 
@@ -27,15 +27,15 @@ fn t002_test_one_line_comments() {
     assert_eq!(
         rsass(
             ".foo bar[val=\"//\"] {\
-             \n  baz: bang; //}\
-             \n}\
-             \n"
+            \n  baz: bang; //}\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".foo bar[val=\"//\"] {\
-         \n  baz: bang;\
-         \n}\
-         \n"
+        \n  baz: bang;\
+        \n}\
+        \n"
     );
 }
 
@@ -45,15 +45,15 @@ fn t003_test_variables() {
     assert_eq!(
         rsass(
             "$var: foo;\
-             \n\
-             \nblat {a: $var}\
-             \n"
+            \n\
+            \nblat {a: $var}\
+            \n"
         )
         .unwrap(),
         "blat {\
-         \n  a: foo;\
-         \n}\
-         \n"
+        \n  a: foo;\
+        \n}\
+        \n"
     );
 }
 
@@ -63,18 +63,18 @@ fn t004_test_variables() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  $var: 2;\
-             \n  $another-var: 4;\
-             \n  a: $var;\
-             \n  b: $var + $another-var;}\
-             \n"
+            \n  $var: 2;\
+            \n  $another-var: 4;\
+            \n  a: $var;\
+            \n  b: $var + $another-var;}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: 2;\
-         \n  b: 6;\
-         \n}\
-         \n"
+        \n  a: 2;\
+        \n  b: 6;\
+        \n}\
+        \n"
     );
 }
 
@@ -84,15 +84,15 @@ fn t005_test_unicode_variables() {
     assert_eq!(
         rsass(
             "$vär: foo;\
-             \n\
-             \nblat {a: $vär}\
-             \n"
+            \n\
+            \nblat {a: $vär}\
+            \n"
         )
         .unwrap(),
         "blat {\
-         \n  a: foo;\
-         \n}\
-         \n"
+        \n  a: foo;\
+        \n}\
+        \n"
     );
 }
 
@@ -102,16 +102,16 @@ fn t006_test_guard_assign() {
     assert_eq!(
         rsass(
             "$var: 1;\
-             \n$var: 2 !default;\
-             \n\
-             \nfoo {a: $var}\
-             \n"
+            \n$var: 2 !default;\
+            \n\
+            \nfoo {a: $var}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: 1;\
-         \n}\
-         \n"
+        \n  a: 1;\
+        \n}\
+        \n"
     );
 }
 
@@ -121,15 +121,15 @@ fn t007_test_guard_assign() {
     assert_eq!(
         rsass(
             "$var: 2 !default;\
-             \n\
-             \nfoo {a: $var}\
-             \n"
+            \n\
+            \nfoo {a: $var}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: 2;\
-         \n}\
-         \n"
+        \n  a: 2;\
+        \n}\
+        \n"
     );
 }
 
@@ -139,20 +139,20 @@ fn t008_test_sass_script() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  a: 1 + 2;\
-             \n  b: 1 - 2;\
-             \n  c: foo + bar;\
-             \n  d: floor(12.3px); }\
-             \n"
+            \n  a: 1 + 2;\
+            \n  b: 1 - 2;\
+            \n  c: foo + bar;\
+            \n  d: floor(12.3px); }\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: 3;\
-         \n  b: -1;\
-         \n  c: foobar;\
-         \n  d: 12px;\
-         \n}\
-         \n"
+        \n  a: 3;\
+        \n  b: -1;\
+        \n  c: foobar;\
+        \n  d: 12px;\
+        \n}\
+        \n"
     );
 }
 
@@ -162,18 +162,18 @@ fn t009_test_for_directive() {
     assert_eq!(
         rsass(
             ".foo {\
-             \n  @for $var from 1 to 5 {a: $var;}\
-             \n}\
-             \n"
+            \n  @for $var from 1 to 5 {a: $var;}\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: 1;\
-         \n  a: 2;\
-         \n  a: 3;\
-         \n  a: 4;\
-         \n}\
-         \n"
+        \n  a: 1;\
+        \n  a: 2;\
+        \n  a: 3;\
+        \n  a: 4;\
+        \n}\
+        \n"
     );
 }
 
@@ -183,19 +183,19 @@ fn t010_test_for_directive() {
     assert_eq!(
         rsass(
             ".foo {\
-             \n  @for $var from 1 through 5 {a: $var;}\
-             \n}\
-             \n"
+            \n  @for $var from 1 through 5 {a: $var;}\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: 1;\
-         \n  a: 2;\
-         \n  a: 3;\
-         \n  a: 4;\
-         \n  a: 5;\
-         \n}\
-         \n"
+        \n  a: 1;\
+        \n  a: 2;\
+        \n  a: 3;\
+        \n  a: 4;\
+        \n  a: 5;\
+        \n}\
+        \n"
     );
 }
 
@@ -205,14 +205,14 @@ fn t011_test_if_directive() {
     assert_eq!(
         rsass(
             "@if \"foo\" == \"foo\" {foo {a: b}}\
-             \n@if \"foo\" != \"foo\" {bar {a: b}}\
-             \n"
+            \n@if \"foo\" != \"foo\" {bar {a: b}}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -222,15 +222,15 @@ fn t012_test_if_directive() {
     assert_eq!(
         rsass(
             "@if \"foo\" != \"foo\" {foo {a: b}}\
-             \n@else if \"foo\" == \"foo\" {bar {a: b}}\
-             \n@else if true {baz {a: b}}\
-             \n"
+            \n@else if \"foo\" == \"foo\" {bar {a: b}}\
+            \n@else if true {baz {a: b}}\
+            \n"
         )
         .unwrap(),
         "bar {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -240,14 +240,14 @@ fn t013_test_if_directive() {
     assert_eq!(
         rsass(
             "@if \"foo\" != \"foo\" {foo {a: b}}\
-             \n@else {bar {a: b}}\
-             \n"
+            \n@else {bar {a: b}}\
+            \n"
         )
         .unwrap(),
         "bar {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -257,18 +257,18 @@ fn t014_test_comment_after_if_directive() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  @if true {a: b}\
-             \n  /* This is a comment */\
-             \n  c: d }\
-             \n"
+            \n  @if true {a: b}\
+            \n  /* This is a comment */\
+            \n  c: d }\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: b;\
-         \n  /* This is a comment */\
-         \n  c: d;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n  /* This is a comment */\
+        \n  c: d;\
+        \n}\
+        \n"
     );
 }
 
@@ -278,19 +278,19 @@ fn t015_test_comment_after_if_directive() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  @if true {a: b}\
-             \n  @else {x: y}\
-             \n  /* This is a comment */\
-             \n  c: d }\
-             \n"
+            \n  @if true {a: b}\
+            \n  @else {x: y}\
+            \n  /* This is a comment */\
+            \n  c: d }\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: b;\
-         \n  /* This is a comment */\
-         \n  c: d;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n  /* This is a comment */\
+        \n  c: d;\
+        \n}\
+        \n"
     );
 }
 
@@ -300,31 +300,31 @@ fn t017_test_each_directive() {
     assert_eq!(
         rsass(
             "a {\
-             \n  @each $number in 1px 2px 3px 4px {\
-             \n    b: $number;\
-             \n  }\
-             \n}\
-             \nc {\
-             \n  @each $str in foo, bar, baz, bang {\
-             \n    d: $str;\
-             \n  }\
-             \n}\
-             \n"
+            \n  @each $number in 1px 2px 3px 4px {\
+            \n    b: $number;\
+            \n  }\
+            \n}\
+            \nc {\
+            \n  @each $str in foo, bar, baz, bang {\
+            \n    d: $str;\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         "a {\
-         \n  b: 1px;\
-         \n  b: 2px;\
-         \n  b: 3px;\
-         \n  b: 4px;\
-         \n}\
-         \nc {\
-         \n  d: foo;\
-         \n  d: bar;\
-         \n  d: baz;\
-         \n  d: bang;\
-         \n}\
-         \n"
+        \n  b: 1px;\
+        \n  b: 2px;\
+        \n  b: 3px;\
+        \n  b: 4px;\
+        \n}\
+        \nc {\
+        \n  d: foo;\
+        \n  d: bar;\
+        \n  d: baz;\
+        \n  d: bang;\
+        \n}\
+        \n"
     );
 }
 
@@ -334,7 +334,7 @@ fn t019_test_css_import_directive() {
     assert_eq!(
         rsass("@import \"foo.css\";").unwrap(),
         "@import url(foo.css);\
-         \n"
+        \n"
     );
 }
 
@@ -344,7 +344,7 @@ fn t020_test_css_import_directive() {
     assert_eq!(
         rsass("@import \'foo.css\';").unwrap(),
         "@import url(foo.css);\
-         \n"
+        \n"
     );
 }
 
@@ -354,7 +354,7 @@ fn t021_test_css_import_directive() {
     assert_eq!(
         rsass("@import url(\"foo.css\");").unwrap(),
         "@import url(\"foo.css\");\
-         \n"
+        \n"
     );
 }
 
@@ -364,7 +364,7 @@ fn t022_test_css_import_directive() {
     assert_eq!(
         rsass("@import url(\"foo.css\");").unwrap(),
         "@import url(\"foo.css\");\
-         \n"
+        \n"
     );
 }
 
@@ -374,7 +374,7 @@ fn t023_test_css_import_directive() {
     assert_eq!(
         rsass("@import url(foo.css);").unwrap(),
         "@import url(foo.css);\
-         \n"
+        \n"
     );
 }
 
@@ -384,7 +384,7 @@ fn t024_test_media_import() {
     assert_eq!(
         rsass("@import \"./fonts.sass\" all;").unwrap(),
         "@import \"./fonts.sass\" all;\
-         \n"
+        \n"
     );
 }
 
@@ -394,14 +394,14 @@ fn t025_test_dynamic_media_import() {
     assert_eq!(
         rsass(
             "$media: print;\
-             \n$key: -webkit-min-device-pixel-ratio;\
-             \n$value: 20;\
-             \n@import \"foo\" #{$media} and ($key + \"-foo\": $value + 5);\
-             \n"
+            \n$key: -webkit-min-device-pixel-ratio;\
+            \n$value: 20;\
+            \n@import \"foo\" #{$media} and ($key + \"-foo\": $value + 5);\
+            \n"
         )
         .unwrap(),
         "@import \"foo\" print and (-webkit-min-device-pixel-ratio-foo: 25);\
-         \n"
+        \n"
     );
 }
 
@@ -412,7 +412,7 @@ fn t027_test_protocol_relative_import() {
         rsass("@import \"//fonts.googleapis.com/css?family=Droid+Sans\";")
             .unwrap(),
         "@import \"//fonts.googleapis.com/css?family=Droid+Sans\";\
-         \n"
+        \n"
     );
 }
 
@@ -437,7 +437,7 @@ fn t029_test_url_import() {
     assert_eq!(
         rsass("@import url(fonts.sass);").unwrap(),
         "@import url(fonts.sass);\
-         \n"
+        \n"
     );
 }
 
@@ -447,13 +447,13 @@ fn t030_test_block_comment_in_script() {
     assert_eq!(
         rsass(
             "foo {a: 1 + /* flang */ bar}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: 1bar;\
-         \n}\
-         \n"
+        \n  a: 1bar;\
+        \n}\
+        \n"
     );
 }
 
@@ -463,14 +463,14 @@ fn t031_test_line_comment_in_script() {
     assert_eq!(
         rsass(
             "foo {a: 1 + // flang }\
-             \n  blang }\
-             \n"
+            \n  blang }\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: 1blang;\
-         \n}\
-         \n"
+        \n  a: 1blang;\
+        \n}\
+        \n"
     );
 }
 
@@ -480,13 +480,13 @@ fn t032_test_nested_rules() {
     assert_eq!(
         rsass(
             "foo {bar {a: b}}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo bar {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -496,18 +496,18 @@ fn t033_test_nested_rules() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  bar {a: b}\
-             \n  baz {b: c}}\
-             \n"
+            \n  bar {a: b}\
+            \n  baz {b: c}}\
+            \n"
         )
         .unwrap(),
         "foo bar {\
-         \n  a: b;\
-         \n}\
-         \nfoo baz {\
-         \n  b: c;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \nfoo baz {\
+        \n  b: c;\
+        \n}\
+        \n"
     );
 }
 
@@ -517,18 +517,18 @@ fn t034_test_nested_rules() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  bar {baz {a: b}}\
-             \n  bang {bip {a: b}}}\
-             \n"
+            \n  bar {baz {a: b}}\
+            \n  bang {bip {a: b}}}\
+            \n"
         )
         .unwrap(),
         "foo bar baz {\
-         \n  a: b;\
-         \n}\
-         \nfoo bang bip {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \nfoo bang bip {\
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -538,18 +538,18 @@ fn t035_test_nested_rules_with_declarations() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  a: b;\
-             \n  bar {c: d}}\
-             \n"
+            \n  a: b;\
+            \n  bar {c: d}}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: b;\
-         \n}\
-         \nfoo bar {\
-         \n  c: d;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \nfoo bar {\
+        \n  c: d;\
+        \n}\
+        \n"
     );
 }
 
@@ -559,18 +559,18 @@ fn t036_test_nested_rules_with_declarations() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  bar {c: d}\
-             \n  a: b}\
-             \n"
+            \n  bar {c: d}\
+            \n  a: b}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: b;\
-         \n}\
-         \nfoo bar {\
-         \n  c: d;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \nfoo bar {\
+        \n  c: d;\
+        \n}\
+        \n"
     );
 }
 
@@ -580,36 +580,36 @@ fn t037_test_nested_rules_with_declarations() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  ump: nump;\
-             \n  grump: clump;\
-             \n  bar {\
-             \n    blat: bang;\
-             \n    habit: rabbit;\
-             \n    baz {a: b}\
-             \n    bip {c: d}}\
-             \n  bibble {\
-             \n    bap {e: f}}}\
-             \n"
+            \n  ump: nump;\
+            \n  grump: clump;\
+            \n  bar {\
+            \n    blat: bang;\
+            \n    habit: rabbit;\
+            \n    baz {a: b}\
+            \n    bip {c: d}}\
+            \n  bibble {\
+            \n    bap {e: f}}}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  ump: nump;\
-         \n  grump: clump;\
-         \n}\
-         \nfoo bar {\
-         \n  blat: bang;\
-         \n  habit: rabbit;\
-         \n}\
-         \nfoo bar baz {\
-         \n  a: b;\
-         \n}\
-         \nfoo bar bip {\
-         \n  c: d;\
-         \n}\
-         \nfoo bibble bap {\
-         \n  e: f;\
-         \n}\
-         \n"
+        \n  ump: nump;\
+        \n  grump: clump;\
+        \n}\
+        \nfoo bar {\
+        \n  blat: bang;\
+        \n  habit: rabbit;\
+        \n}\
+        \nfoo bar baz {\
+        \n  a: b;\
+        \n}\
+        \nfoo bar bip {\
+        \n  c: d;\
+        \n}\
+        \nfoo bibble bap {\
+        \n  e: f;\
+        \n}\
+        \n"
     );
 }
 
@@ -619,22 +619,22 @@ fn t038_test_nested_rules_with_fancy_selectors() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  .bar {a: b}\
-             \n  :baz {c: d}\
-             \n  bang:bop {e: f}}\
-             \n"
+            \n  .bar {a: b}\
+            \n  :baz {c: d}\
+            \n  bang:bop {e: f}}\
+            \n"
         )
         .unwrap(),
         "foo .bar {\
-         \n  a: b;\
-         \n}\
-         \nfoo :baz {\
-         \n  c: d;\
-         \n}\
-         \nfoo bang:bop {\
-         \n  e: f;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \nfoo :baz {\
+        \n  c: d;\
+        \n}\
+        \nfoo bang:bop {\
+        \n  e: f;\
+        \n}\
+        \n"
     );
 }
 
@@ -670,15 +670,15 @@ fn t040_test_newlines_in_selectors() {
     assert_eq!(
         rsass(
             "foo\
-             \nbar {a: b}\
-             \n"
+            \nbar {a: b}\
+            \n"
         )
         .unwrap(),
         "foo\
-         \nbar {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \nbar {\
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -689,19 +689,19 @@ fn t041_test_newlines_in_selectors() {
     assert_eq!(
         rsass(
             "foo,\
-             \nbar {\
-             \n  baz,\
-             \n  bang {a: b}}\
-             \n"
+            \nbar {\
+            \n  baz,\
+            \n  bang {a: b}}\
+            \n"
         )
         .unwrap(),
         "foo baz,\
-         \nfoo bang,\
-         \nbar baz,\
-         \nbar bang {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \nfoo bang,\
+        \nbar baz,\
+        \nbar bang {\
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -712,24 +712,24 @@ fn t042_test_newlines_in_selectors() {
     assert_eq!(
         rsass(
             "foo\
-             \nbar {\
-             \n  baz\
-             \n  bang {a: b}\
-             \n\
-             \n  bip bop {c: d}}\
-             \n"
+            \nbar {\
+            \n  baz\
+            \n  bang {a: b}\
+            \n\
+            \n  bip bop {c: d}}\
+            \n"
         )
         .unwrap(),
         "foo\
-         \nbar baz\
-         \nbang {\
-         \n  a: b;\
-         \n}\
-         \nfoo\
-         \nbar bip bop {\
-         \n  c: d;\
-         \n}\
-         \n"
+        \nbar baz\
+        \nbang {\
+        \n  a: b;\
+        \n}\
+        \nfoo\
+        \nbar bip bop {\
+        \n  c: d;\
+        \n}\
+        \n"
     );
 }
 
@@ -740,20 +740,20 @@ fn t043_test_newlines_in_selectors() {
     assert_eq!(
         rsass(
             "foo, bar\
-             \nbaz {\
-             \n  bang, bip\
-             \n  bop {a: b}}\
-             \n"
+            \nbaz {\
+            \n  bang, bip\
+            \n  bop {a: b}}\
+            \n"
         )
         .unwrap(),
         "foo bang, foo bip\
-         \nbop, bar\
-         \nbaz bang, bar\
-         \nbaz bip\
-         \nbop {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \nbop, bar\
+        \nbaz bang, bar\
+        \nbaz bip\
+        \nbop {\
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -764,20 +764,20 @@ fn t044_test_trailing_comma_in_selector() {
     assert_eq!(
         rsass(
             "#foo #bar,,\
-             \n,#baz #boom, {a: b}\
-             \n\
-             \n#bip #bop, ,, {c: d}\
-             \n"
+            \n,#baz #boom, {a: b}\
+            \n\
+            \n#bip #bop, ,, {c: d}\
+            \n"
         )
         .unwrap(),
         "#foo #bar,\
-         \n#baz #boom {\
-         \n  a: b;\
-         \n}\
-         \n#bip #bop {\
-         \n  c: d;\
-         \n}\
-         \n"
+        \n#baz #boom {\
+        \n  a: b;\
+        \n}\
+        \n#bip #bop {\
+        \n  c: d;\
+        \n}\
+        \n"
     );
 }
 
@@ -787,18 +787,18 @@ fn t045_test_parent_selectors() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  &:hover {a: b}\
-             \n  bar &.baz {c: d}}\
-             \n"
+            \n  &:hover {a: b}\
+            \n  bar &.baz {c: d}}\
+            \n"
         )
         .unwrap(),
         "foo:hover {\
-         \n  a: b;\
-         \n}\
-         \nbar foo.baz {\
-         \n  c: d;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \nbar foo.baz {\
+        \n  c: d;\
+        \n}\
+        \n"
     );
 }
 
@@ -809,20 +809,20 @@ fn t046_test_parent_selector_with_subject() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  bar &.baz! .bip {a: b}}\
-             \n\
-             \nfoo bar {\
-             \n  bar &.baz! .bip {c: d}}\
-             \n"
+            \n  bar &.baz! .bip {a: b}}\
+            \n\
+            \nfoo bar {\
+            \n  bar &.baz! .bip {c: d}}\
+            \n"
         )
         .unwrap(),
         "bar foo.baz! .bip {\
-         \n  a: b;\
-         \n}\
-         \nbar foo bar.baz! .bip {\
-         \n  c: d;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \nbar foo bar.baz! .bip {\
+        \n  c: d;\
+        \n}\
+        \n"
     );
 }
 
@@ -832,19 +832,19 @@ fn t047_test_unknown_directive_bubbling() {
     assert_eq!(
         rsass(
             ".foo {\
-             \n  @fblthp {\
-             \n    .bar {a: b}\
-             \n  }\
-             \n}\
-             \n"
+            \n  @fblthp {\
+            \n    .bar {a: b}\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         "@fblthp {\
-         \n  .foo .bar {\
-         \n    a: b;\
-         \n  }\
-         \n}\
-         \n"
+        \n  .foo .bar {\
+        \n    a: b;\
+        \n  }\
+        \n}\
+        \n"
     );
 }
 
@@ -854,19 +854,19 @@ fn t048_test_namespace_properties() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  bar: baz;\
-             \n  bang: {\
-             \n    bip: 1px;\
-             \n    bop: bar;}}\
-             \n"
+            \n  bar: baz;\
+            \n  bang: {\
+            \n    bip: 1px;\
+            \n    bop: bar;}}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  bar: baz;\
-         \n  bang-bip: 1px;\
-         \n  bang-bop: bar;\
-         \n}\
-         \n"
+        \n  bar: baz;\
+        \n  bang-bip: 1px;\
+        \n  bang-bop: bar;\
+        \n}\
+        \n"
     );
 }
 
@@ -876,26 +876,26 @@ fn t049_test_several_namespace_properties() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  bar: baz;\
-             \n  bang: {\
-             \n    bip: 1px;\
-             \n    bop: bar;}\
-             \n  buzz: {\
-             \n    fram: \"foo\";\
-             \n    frum: moo;\
-             \n  }\
-             \n}\
-             \n"
+            \n  bar: baz;\
+            \n  bang: {\
+            \n    bip: 1px;\
+            \n    bop: bar;}\
+            \n  buzz: {\
+            \n    fram: \"foo\";\
+            \n    frum: moo;\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  bar: baz;\
-         \n  bang-bip: 1px;\
-         \n  bang-bop: bar;\
-         \n  buzz-fram: \"foo\";\
-         \n  buzz-frum: moo;\
-         \n}\
-         \n"
+        \n  bar: baz;\
+        \n  bang-bip: 1px;\
+        \n  bang-bop: bar;\
+        \n  buzz-fram: \"foo\";\
+        \n  buzz-frum: moo;\
+        \n}\
+        \n"
     );
 }
 
@@ -905,21 +905,21 @@ fn t050_test_nested_namespace_properties() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  bar: baz;\
-             \n  bang: {\
-             \n    bip: 1px;\
-             \n    bop: bar;\
-             \n    blat:{baf:bort}}}\
-             \n"
+            \n  bar: baz;\
+            \n  bang: {\
+            \n    bip: 1px;\
+            \n    bop: bar;\
+            \n    blat:{baf:bort}}}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  bar: baz;\
-         \n  bang-bip: 1px;\
-         \n  bang-bop: bar;\
-         \n  bang-blat-baf: bort;\
-         \n}\
-         \n"
+        \n  bar: baz;\
+        \n  bang-bip: 1px;\
+        \n  bang-bop: bar;\
+        \n  bang-blat-baf: bort;\
+        \n}\
+        \n"
     );
 }
 
@@ -929,18 +929,18 @@ fn t051_test_namespace_properties_with_value() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  bar: baz {\
-             \n    bip: bop;\
-             \n    bing: bop; }}\
-             \n"
+            \n  bar: baz {\
+            \n    bip: bop;\
+            \n    bing: bop; }}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  bar: baz;\
-         \n  bar-bip: bop;\
-         \n  bar-bing: bop;\
-         \n}\
-         \n"
+        \n  bar: baz;\
+        \n  bar-bip: bop;\
+        \n  bar-bing: bop;\
+        \n}\
+        \n"
     );
 }
 
@@ -950,18 +950,18 @@ fn t052_test_namespace_properties_with_script_value() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  bar: baz + bang {\
-             \n    bip: bop;\
-             \n    bing: bop; }}\
-             \n"
+            \n  bar: baz + bang {\
+            \n    bip: bop;\
+            \n    bing: bop; }}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  bar: bazbang;\
-         \n  bar-bip: bop;\
-         \n  bar-bing: bop;\
-         \n}\
-         \n"
+        \n  bar: bazbang;\
+        \n  bar-bip: bop;\
+        \n  bar-bing: bop;\
+        \n}\
+        \n"
     );
 }
 
@@ -971,15 +971,15 @@ fn t053_test_no_namespace_properties_without_space() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  bar:baz {\
-             \n    bip: bop }}\
-             \n"
+            \n  bar:baz {\
+            \n    bip: bop }}\
+            \n"
         )
         .unwrap(),
         "foo bar:baz {\
-         \n  bip: bop;\
-         \n}\
-         \n"
+        \n  bip: bop;\
+        \n}\
+        \n"
     );
 }
 
@@ -989,16 +989,16 @@ fn t054_test_basic_mixins() {
     assert_eq!(
         rsass(
             "@mixin foo {\
-             \n  .foo {a: b}}\
-             \n\
-             \n@include foo;\
-             \n"
+            \n  .foo {a: b}}\
+            \n\
+            \n@include foo;\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1008,21 +1008,21 @@ fn t055_test_basic_mixins() {
     assert_eq!(
         rsass(
             "@mixin foo {\
-             \n  .foo {a: b}}\
-             \n\
-             \nbar {\
-             \n  @include foo;\
-             \n  c: d; }\
-             \n"
+            \n  .foo {a: b}}\
+            \n\
+            \nbar {\
+            \n  @include foo;\
+            \n  c: d; }\
+            \n"
         )
         .unwrap(),
         "bar {\
-         \n  c: d;\
-         \n}\
-         \nbar .foo {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  c: d;\
+        \n}\
+        \nbar .foo {\
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1032,18 +1032,18 @@ fn t056_test_basic_mixins() {
     assert_eq!(
         rsass(
             "@mixin foo {a: b}\
-             \n\
-             \nbar {\
-             \n  @include foo;\
-             \n  c: d; }\
-             \n"
+            \n\
+            \nbar {\
+            \n  @include foo;\
+            \n  c: d; }\
+            \n"
         )
         .unwrap(),
         "bar {\
-         \n  a: b;\
-         \n  c: d;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n  c: d;\
+        \n}\
+        \n"
     );
 }
 
@@ -1053,15 +1053,15 @@ fn t057_test_mixins_with_empty_args() {
     assert_eq!(
         rsass(
             "@mixin foo() {a: b}\
-             \n\
-             \n.foo {@include foo();}\
-             \n"
+            \n\
+            \n.foo {@include foo();}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1071,15 +1071,15 @@ fn t058_test_mixins_with_empty_args() {
     assert_eq!(
         rsass(
             "@mixin foo() {a: b}\
-             \n\
-             \n.foo {@include foo;}\
-             \n"
+            \n\
+            \n.foo {@include foo;}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1089,15 +1089,15 @@ fn t059_test_mixins_with_empty_args() {
     assert_eq!(
         rsass(
             "@mixin foo {a: b}\
-             \n\
-             \n.foo {@include foo();}\
-             \n"
+            \n\
+            \n.foo {@include foo();}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1107,15 +1107,15 @@ fn t060_test_mixins_with_args() {
     assert_eq!(
         rsass(
             "@mixin foo($a) {a: $a}\
-             \n\
-             \n.foo {@include foo(bar)}\
-             \n"
+            \n\
+            \n.foo {@include foo(bar)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: bar;\
-         \n}\
-         \n"
+        \n  a: bar;\
+        \n}\
+        \n"
     );
 }
 
@@ -1125,18 +1125,18 @@ fn t061_test_mixins_with_args() {
     assert_eq!(
         rsass(
             "@mixin foo($a, $b) {\
-             \n  a: $a;\
-             \n  b: $b; }\
-             \n\
-             \n.foo {@include foo(bar, 12px)}\
-             \n"
+            \n  a: $a;\
+            \n  b: $b; }\
+            \n\
+            \n.foo {@include foo(bar, 12px)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: bar;\
-         \n  b: 12px;\
-         \n}\
-         \n"
+        \n  a: bar;\
+        \n  b: 12px;\
+        \n}\
+        \n"
     );
 }
 
@@ -1146,19 +1146,19 @@ fn t062_test_basic_function() {
     assert_eq!(
         rsass(
             "@function foo() {\
-             \n  @return 1 + 2;\
-             \n}\
-             \n\
-             \nbar {\
-             \n  a: foo();\
-             \n}\
-             \n"
+            \n  @return 1 + 2;\
+            \n}\
+            \n\
+            \nbar {\
+            \n  a: foo();\
+            \n}\
+            \n"
         )
         .unwrap(),
         "bar {\
-         \n  a: 3;\
-         \n}\
-         \n"
+        \n  a: 3;\
+        \n}\
+        \n"
     );
 }
 
@@ -1168,19 +1168,19 @@ fn t063_test_function_args() {
     assert_eq!(
         rsass(
             "@function plus($var1, $var2) {\
-             \n  @return $var1 + $var2;\
-             \n}\
-             \n\
-             \nbar {\
-             \n  a: plus(1, 2);\
-             \n}\
-             \n"
+            \n  @return $var1 + $var2;\
+            \n}\
+            \n\
+            \nbar {\
+            \n  a: plus(1, 2);\
+            \n}\
+            \n"
         )
         .unwrap(),
         "bar {\
-         \n  a: 3;\
-         \n}\
-         \n"
+        \n  a: 3;\
+        \n}\
+        \n"
     );
 }
 
@@ -1190,19 +1190,19 @@ fn t064_test_mixin_var_args() {
     assert_eq!(
         rsass(
             "@mixin foo($a, $b...) {\
-             \n  a: $a;\
-             \n  b: $b;\
-             \n}\
-             \n\
-             \n.foo {@include foo(1, 2, 3, 4)}\
-             \n"
+            \n  a: $a;\
+            \n  b: $b;\
+            \n}\
+            \n\
+            \n.foo {@include foo(1, 2, 3, 4)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: 1;\
-         \n  b: 2, 3, 4;\
-         \n}\
-         \n"
+        \n  a: 1;\
+        \n  b: 2, 3, 4;\
+        \n}\
+        \n"
     );
 }
 
@@ -1212,19 +1212,19 @@ fn t065_test_mixin_empty_var_args() {
     assert_eq!(
         rsass(
             "@mixin foo($a, $b...) {\
-             \n  a: $a;\
-             \n  b: length($b);\
-             \n}\
-             \n\
-             \n.foo {@include foo(1)}\
-             \n"
+            \n  a: $a;\
+            \n  b: length($b);\
+            \n}\
+            \n\
+            \n.foo {@include foo(1)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: 1;\
-         \n  b: 0;\
-         \n}\
-         \n"
+        \n  a: 1;\
+        \n  b: 0;\
+        \n}\
+        \n"
     );
 }
 
@@ -1234,19 +1234,19 @@ fn t066_test_mixin_var_args_act_like_list() {
     assert_eq!(
         rsass(
             "@mixin foo($a, $b...) {\
-             \n  a: length($b);\
-             \n  b: nth($b, 2);\
-             \n}\
-             \n\
-             \n.foo {@include foo(1, 2, 3, 4)}\
-             \n"
+            \n  a: length($b);\
+            \n  b: nth($b, 2);\
+            \n}\
+            \n\
+            \n.foo {@include foo(1, 2, 3, 4)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: 3;\
-         \n  b: 3;\
-         \n}\
-         \n"
+        \n  a: 3;\
+        \n  b: 3;\
+        \n}\
+        \n"
     );
 }
 
@@ -1257,24 +1257,24 @@ fn t067_test_mixin_splat_args() {
     assert_eq!(
         rsass(
             "@mixin foo($a, $b, $c, $d) {\
-             \n  a: $a;\
-             \n  b: $b;\
-             \n  c: $c;\
-             \n  d: $d;\
-             \n}\
-             \n\
-             \n$list: 2, 3, 4;\
-             \n.foo {@include foo(1, $list...)}\
-             \n"
+            \n  a: $a;\
+            \n  b: $b;\
+            \n  c: $c;\
+            \n  d: $d;\
+            \n}\
+            \n\
+            \n$list: 2, 3, 4;\
+            \n.foo {@include foo(1, $list...)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: 1;\
-         \n  b: 2;\
-         \n  c: 3;\
-         \n  d: 4;\
-         \n}\
-         \n"
+        \n  a: 1;\
+        \n  b: 2;\
+        \n  c: 3;\
+        \n  d: 4;\
+        \n}\
+        \n"
     );
 }
 
@@ -1285,23 +1285,23 @@ fn t068_test_mixin_splat_expression() {
     assert_eq!(
         rsass(
             "@mixin foo($a, $b, $c, $d) {\
-             \n  a: $a;\
-             \n  b: $b;\
-             \n  c: $c;\
-             \n  d: $d;\
-             \n}\
-             \n\
-             \n.foo {@include foo(1, (2, 3, 4)...)}\
-             \n"
+            \n  a: $a;\
+            \n  b: $b;\
+            \n  c: $c;\
+            \n  d: $d;\
+            \n}\
+            \n\
+            \n.foo {@include foo(1, (2, 3, 4)...)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: 1;\
-         \n  b: 2;\
-         \n  c: 3;\
-         \n  d: 4;\
-         \n}\
-         \n"
+        \n  a: 1;\
+        \n  b: 2;\
+        \n  c: 3;\
+        \n  d: 4;\
+        \n}\
+        \n"
     );
 }
 
@@ -1312,20 +1312,20 @@ fn t069_test_mixin_splat_args_with_var_args() {
     assert_eq!(
         rsass(
             "@mixin foo($a, $b...) {\
-             \n  a: $a;\
-             \n  b: $b;\
-             \n}\
-             \n\
-             \n$list: 2, 3, 4;\
-             \n.foo {@include foo(1, $list...)}\
-             \n"
+            \n  a: $a;\
+            \n  b: $b;\
+            \n}\
+            \n\
+            \n$list: 2, 3, 4;\
+            \n.foo {@include foo(1, $list...)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: 1;\
-         \n  b: 2, 3, 4;\
-         \n}\
-         \n"
+        \n  a: 1;\
+        \n  b: 2, 3, 4;\
+        \n}\
+        \n"
     );
 }
 
@@ -1336,22 +1336,22 @@ fn t070_test_mixin_splat_args_with_var_args_and_normal_args() {
     assert_eq!(
         rsass(
             "@mixin foo($a, $b, $c...) {\
-             \n  a: $a;\
-             \n  b: $b;\
-             \n  c: $c;\
-             \n}\
-             \n\
-             \n$list: 2, 3, 4;\
-             \n.foo {@include foo(1, $list...)}\
-             \n"
+            \n  a: $a;\
+            \n  b: $b;\
+            \n  c: $c;\
+            \n}\
+            \n\
+            \n$list: 2, 3, 4;\
+            \n.foo {@include foo(1, $list...)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: 1;\
-         \n  b: 2;\
-         \n  c: 3, 4;\
-         \n}\
-         \n"
+        \n  a: 1;\
+        \n  b: 2;\
+        \n  c: 3, 4;\
+        \n}\
+        \n"
     );
 }
 
@@ -1362,20 +1362,20 @@ fn t071_test_mixin_splat_args_with_var_args_preserves_separator() {
     assert_eq!(
         rsass(
             "@mixin foo($a, $b...) {\
-             \n  a: $a;\
-             \n  b: $b;\
-             \n}\
-             \n\
-             \n$list: 3 4 5;\
-             \n.foo {@include foo(1, 2, $list...)}\
-             \n"
+            \n  a: $a;\
+            \n  b: $b;\
+            \n}\
+            \n\
+            \n$list: 3 4 5;\
+            \n.foo {@include foo(1, 2, $list...)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: 1;\
-         \n  b: 2 3 4 5;\
-         \n}\
-         \n"
+        \n  a: 1;\
+        \n  b: 2 3 4 5;\
+        \n}\
+        \n"
     );
 }
 
@@ -1386,25 +1386,25 @@ fn t072_test_mixin_var_and_splat_args_pass_through_keywords() {
     assert_eq!(
         rsass(
             "@mixin foo($a...) {\
-             \n  @include bar($a...);\
-             \n}\
-             \n\
-             \n@mixin bar($b, $c, $a) {\
-             \n  a: $a;\
-             \n  b: $b;\
-             \n  c: $c;\
-             \n}\
-             \n\
-             \n.foo {@include foo(1, $c: 2, $a: 3)}\
-             \n"
+            \n  @include bar($a...);\
+            \n}\
+            \n\
+            \n@mixin bar($b, $c, $a) {\
+            \n  a: $a;\
+            \n  b: $b;\
+            \n  c: $c;\
+            \n}\
+            \n\
+            \n.foo {@include foo(1, $c: 2, $a: 3)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: 3;\
-         \n  b: 1;\
-         \n  c: 2;\
-         \n}\
-         \n"
+        \n  a: 3;\
+        \n  b: 1;\
+        \n  c: 2;\
+        \n}\
+        \n"
     );
 }
 
@@ -1415,23 +1415,23 @@ fn t078_test_mixin_list_of_pairs_splat_treated_as_list() {
     assert_eq!(
         rsass(
             "@mixin foo($a, $b, $c) {\
-             \n  a: $a;\
-             \n  b: $b;\
-             \n  c: $c;\
-             \n}\
-             \n\
-             \n.foo {\
-             \n  @include foo((a 1, b 2, c 3)...);\
-             \n}\
-             \n"
+            \n  a: $a;\
+            \n  b: $b;\
+            \n  c: $c;\
+            \n}\
+            \n\
+            \n.foo {\
+            \n  @include foo((a 1, b 2, c 3)...);\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  a: a 1;\
-         \n  b: b 2;\
-         \n  c: c 3;\
-         \n}\
-         \n"
+        \n  a: a 1;\
+        \n  b: b 2;\
+        \n  c: c 3;\
+        \n}\
+        \n"
     );
 }
 
@@ -1441,17 +1441,17 @@ fn t083_test_function_var_args() {
     assert_eq!(
         rsass(
             "@function foo($a, $b...) {\
-             \n  @return \"a: #{$a}, b: #{$b}\";\
-             \n}\
-             \n\
-             \n.foo {val: foo(1, 2, 3, 4)}\
-             \n"
+            \n  @return \"a: #{$a}, b: #{$b}\";\
+            \n}\
+            \n\
+            \n.foo {val: foo(1, 2, 3, 4)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  val: \"a: 1, b: 2, 3, 4\";\
-         \n}\
-         \n"
+        \n  val: \"a: 1, b: 2, 3, 4\";\
+        \n}\
+        \n"
     );
 }
 
@@ -1461,17 +1461,17 @@ fn t084_test_function_empty_var_args() {
     assert_eq!(
         rsass(
             "@function foo($a, $b...) {\
-             \n  @return \"a: #{$a}, b: #{length($b)}\";\
-             \n}\
-             \n\
-             \n.foo {val: foo(1)}\
-             \n"
+            \n  @return \"a: #{$a}, b: #{length($b)}\";\
+            \n}\
+            \n\
+            \n.foo {val: foo(1)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  val: \"a: 1, b: 0\";\
-         \n}\
-         \n"
+        \n  val: \"a: 1, b: 0\";\
+        \n}\
+        \n"
     );
 }
 
@@ -1481,17 +1481,17 @@ fn t085_test_function_var_args_act_like_list() {
     assert_eq!(
         rsass(
             "@function foo($a, $b...) {\
-             \n  @return \"a: #{length($b)}, b: #{nth($b, 2)}\";\
-             \n}\
-             \n\
-             \n.foo {val: foo(1, 2, 3, 4)}\
-             \n"
+            \n  @return \"a: #{length($b)}, b: #{nth($b, 2)}\";\
+            \n}\
+            \n\
+            \n.foo {val: foo(1, 2, 3, 4)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  val: \"a: 3, b: 3\";\
-         \n}\
-         \n"
+        \n  val: \"a: 3, b: 3\";\
+        \n}\
+        \n"
     );
 }
 
@@ -1502,18 +1502,18 @@ fn t086_test_function_splat_args() {
     assert_eq!(
         rsass(
             "@function foo($a, $b, $c, $d) {\
-             \n  @return \"a: #{$a}, b: #{$b}, c: #{$c}, d: #{$d}\";\
-             \n}\
-             \n\
-             \n$list: 2, 3, 4;\
-             \n.foo {val: foo(1, $list...)}\
-             \n"
+            \n  @return \"a: #{$a}, b: #{$b}, c: #{$c}, d: #{$d}\";\
+            \n}\
+            \n\
+            \n$list: 2, 3, 4;\
+            \n.foo {val: foo(1, $list...)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  val: \"a: 1, b: 2, c: 3, d: 4\";\
-         \n}\
-         \n"
+        \n  val: \"a: 1, b: 2, c: 3, d: 4\";\
+        \n}\
+        \n"
     );
 }
 
@@ -1524,17 +1524,17 @@ fn t087_test_function_splat_expression() {
     assert_eq!(
         rsass(
             "@function foo($a, $b, $c, $d) {\
-             \n  @return \"a: #{$a}, b: #{$b}, c: #{$c}, d: #{$d}\";\
-             \n}\
-             \n\
-             \n.foo {val: foo(1, (2, 3, 4)...)}\
-             \n"
+            \n  @return \"a: #{$a}, b: #{$b}, c: #{$c}, d: #{$d}\";\
+            \n}\
+            \n\
+            \n.foo {val: foo(1, (2, 3, 4)...)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  val: \"a: 1, b: 2, c: 3, d: 4\";\
-         \n}\
-         \n"
+        \n  val: \"a: 1, b: 2, c: 3, d: 4\";\
+        \n}\
+        \n"
     );
 }
 
@@ -1545,18 +1545,18 @@ fn t088_test_function_splat_args_with_var_args() {
     assert_eq!(
         rsass(
             "@function foo($a, $b...) {\
-             \n  @return \"a: #{$a}, b: #{$b}\";\
-             \n}\
-             \n\
-             \n$list: 2, 3, 4;\
-             \n.foo {val: foo(1, $list...)}\
-             \n"
+            \n  @return \"a: #{$a}, b: #{$b}\";\
+            \n}\
+            \n\
+            \n$list: 2, 3, 4;\
+            \n.foo {val: foo(1, $list...)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  val: \"a: 1, b: 2, 3, 4\";\
-         \n}\
-         \n"
+        \n  val: \"a: 1, b: 2, 3, 4\";\
+        \n}\
+        \n"
     );
 }
 
@@ -1567,18 +1567,18 @@ fn t089_test_function_splat_args_with_var_args_and_normal_args() {
     assert_eq!(
         rsass(
             "@function foo($a, $b, $c...) {\
-             \n  @return \"a: #{$a}, b: #{$b}, c: #{$c}\";\
-             \n}\
-             \n\
-             \n$list: 2, 3, 4;\
-             \n.foo {val: foo(1, $list...)}\
-             \n"
+            \n  @return \"a: #{$a}, b: #{$b}, c: #{$c}\";\
+            \n}\
+            \n\
+            \n$list: 2, 3, 4;\
+            \n.foo {val: foo(1, $list...)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  val: \"a: 1, b: 2, c: 3, 4\";\
-         \n}\
-         \n"
+        \n  val: \"a: 1, b: 2, c: 3, 4\";\
+        \n}\
+        \n"
     );
 }
 
@@ -1589,18 +1589,18 @@ fn t090_test_function_splat_args_with_var_args_preserves_separator() {
     assert_eq!(
         rsass(
             "@function foo($a, $b...) {\
-             \n  @return \"a: #{$a}, b: #{$b}\";\
-             \n}\
-             \n\
-             \n$list: 3 4 5;\
-             \n.foo {val: foo(1, 2, $list...)}\
-             \n"
+            \n  @return \"a: #{$a}, b: #{$b}\";\
+            \n}\
+            \n\
+            \n$list: 3 4 5;\
+            \n.foo {val: foo(1, 2, $list...)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  val: \"a: 1, b: 2 3 4 5\";\
-         \n}\
-         \n"
+        \n  val: \"a: 1, b: 2 3 4 5\";\
+        \n}\
+        \n"
     );
 }
 
@@ -1611,21 +1611,21 @@ fn t091_test_function_var_and_splat_args_pass_through_keywords() {
     assert_eq!(
         rsass(
             "@function foo($a...) {\
-             \n  @return bar($a...);\
-             \n}\
-             \n\
-             \n@function bar($b, $c, $a) {\
-             \n  @return \"a: #{$a}, b: #{$b}, c: #{$c}\";\
-             \n}\
-             \n\
-             \n.foo {val: foo(1, $c: 2, $a: 3)}\
-             \n"
+            \n  @return bar($a...);\
+            \n}\
+            \n\
+            \n@function bar($b, $c, $a) {\
+            \n  @return \"a: #{$a}, b: #{$b}, c: #{$c}\";\
+            \n}\
+            \n\
+            \n.foo {val: foo(1, $c: 2, $a: 3)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  val: \"a: 3, b: 1, c: 2\";\
-         \n}\
-         \n"
+        \n  val: \"a: 3, b: 1, c: 2\";\
+        \n}\
+        \n"
     );
 }
 
@@ -1636,19 +1636,19 @@ fn t098_test_function_list_of_pairs_splat_treated_as_list() {
     assert_eq!(
         rsass(
             "@function foo($a, $b, $c) {\
-             \n  @return \"a: #{$a}, b: #{$b}, c: #{$c}\";\
-             \n}\
-             \n\
-             \n.foo {\
-             \n  val: foo((a 1, b 2, c 3)...);\
-             \n}\
-             \n"
+            \n  @return \"a: #{$a}, b: #{$b}, c: #{$c}\";\
+            \n}\
+            \n\
+            \n.foo {\
+            \n  val: foo((a 1, b 2, c 3)...);\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  val: \"a: a 1, b: b 2, c: c 3\";\
-         \n}\
-         \n"
+        \n  val: \"a: a 1, b: b 2, c: c 3\";\
+        \n}\
+        \n"
     );
 }
 
@@ -1659,17 +1659,17 @@ fn t103_test_function_var_args_passed_to_native() {
     assert_eq!(
         rsass(
             "@function foo($args...) {\
-             \n  @return adjust-color($args...);\
-             \n}\
-             \n\
-             \n.foo {val: foo(#102030, $blue: 5)}\
-             \n"
+            \n  @return adjust-color($args...);\
+            \n}\
+            \n\
+            \n.foo {val: foo(#102030, $blue: 5)}\
+            \n"
         )
         .unwrap(),
         ".foo {\
-         \n  val: #102035;\
-         \n}\
-         \n"
+        \n  val: #102035;\
+        \n}\
+        \n"
     );
 }
 
@@ -1679,13 +1679,13 @@ fn t104_test_basic_selector_interpolation() {
     assert_eq!(
         rsass(
             "foo#{1 + 2} baz {a: b}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo3 baz {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1695,13 +1695,13 @@ fn t105_test_basic_selector_interpolation() {
     assert_eq!(
         rsass(
             "foo#{\".bar\"} baz {a: b}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo.bar baz {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1711,13 +1711,13 @@ fn t106_test_basic_selector_interpolation() {
     assert_eq!(
         rsass(
             "#{\"foo\"}.bar baz {a: b}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo.bar baz {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1727,13 +1727,13 @@ fn t107_test_selector_only_interpolation() {
     assert_eq!(
         rsass(
             "#{\"foo\" + \" bar\"} {a: b}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo bar {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1743,13 +1743,13 @@ fn t108_test_selector_interpolation_before_element_name() {
     assert_eq!(
         rsass(
             "#{\"foo\" + \" bar\"}baz {a: b}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo barbaz {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1759,13 +1759,13 @@ fn t109_test_selector_interpolation_in_string() {
     assert_eq!(
         rsass(
             "foo[val=\"bar #{\"foo\" + \" bar\"} baz\"] {a: b}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo[val=\"bar foo bar baz\"] {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1775,13 +1775,13 @@ fn t110_test_selector_interpolation_in_pseudoclass() {
     assert_eq!(
         rsass(
             "foo:nth-child(#{5 + \"n\"}) {a: b}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo:nth-child(5n) {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1791,14 +1791,14 @@ fn t111_test_selector_interpolation_at_class_begininng() {
     assert_eq!(
         rsass(
             "$zzz: zzz;\
-             \n.#{$zzz} { a: b; }\
-             \n"
+            \n.#{$zzz} { a: b; }\
+            \n"
         )
         .unwrap(),
         ".zzz {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1808,14 +1808,14 @@ fn t112_test_selector_interpolation_at_id_begininng() {
     assert_eq!(
         rsass(
             "$zzz: zzz;\
-             \n##{$zzz} { a: b; }\
-             \n"
+            \n##{$zzz} { a: b; }\
+            \n"
         )
         .unwrap(),
         "#zzz {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1825,14 +1825,14 @@ fn t113_test_selector_interpolation_at_pseudo_begininng() {
     assert_eq!(
         rsass(
             "$zzz: zzz;\
-             \n:#{$zzz}::#{$zzz} { a: b; }\
-             \n"
+            \n:#{$zzz}::#{$zzz} { a: b; }\
+            \n"
         )
         .unwrap(),
         ":zzz::zzz {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1842,14 +1842,14 @@ fn t114_test_selector_interpolation_at_attr_beginning() {
     assert_eq!(
         rsass(
             "$zzz: zzz;\
-             \n[#{$zzz}=foo] { a: b; }\
-             \n"
+            \n[#{$zzz}=foo] { a: b; }\
+            \n"
         )
         .unwrap(),
         "[zzz=foo] {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1859,14 +1859,14 @@ fn t115_test_selector_interpolation_at_attr_end() {
     assert_eq!(
         rsass(
             "$zzz: zzz;\
-             \n[foo=#{$zzz}] { a: b; }\
-             \n"
+            \n[foo=#{$zzz}] { a: b; }\
+            \n"
         )
         .unwrap(),
         "[foo=zzz] {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -1876,15 +1876,15 @@ fn t116_test_selector_interpolation_at_dashes() {
     assert_eq!(
         rsass(
             "$a : a;\
-             \n$b : b;\
-             \ndiv { -foo-#{$a}-#{$b}-foo: foo }\
-             \n"
+            \n$b : b;\
+            \ndiv { -foo-#{$a}-#{$b}-foo: foo }\
+            \n"
         )
         .unwrap(),
         "div {\
-         \n  -foo-a-b-foo: foo;\
-         \n}\
-         \n"
+        \n  -foo-a-b-foo: foo;\
+        \n}\
+        \n"
     );
 }
 
@@ -1895,15 +1895,15 @@ fn t118_test_parent_selector_with_parent_and_subject() {
     assert_eq!(
         rsass(
             "$subject: \"!\";\
-             \nfoo {\
-             \n  bar &.baz#{$subject} .bip {c: d}}\
-             \n"
+            \nfoo {\
+            \n  bar &.baz#{$subject} .bip {c: d}}\
+            \n"
         )
         .unwrap(),
         "bar foo.baz! .bip {\
-         \n  c: d;\
-         \n}\
-         \n"
+        \n  c: d;\
+        \n}\
+        \n"
     );
 }
 
@@ -1913,13 +1913,13 @@ fn t119_test_basic_prop_name_interpolation() {
     assert_eq!(
         rsass(
             "foo {bar#{\"baz\" + \"bang\"}: blip}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  barbazbang: blip;\
-         \n}\
-         \n"
+        \n  barbazbang: blip;\
+        \n}\
+        \n"
     );
 }
 
@@ -1929,13 +1929,13 @@ fn t120_test_basic_prop_name_interpolation() {
     assert_eq!(
         rsass(
             "foo {bar#{1 + 2}: blip}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  bar3: blip;\
-         \n}\
-         \n"
+        \n  bar3: blip;\
+        \n}\
+        \n"
     );
 }
 
@@ -1945,13 +1945,13 @@ fn t121_test_prop_name_only_interpolation() {
     assert_eq!(
         rsass(
             "foo {#{\"baz\" + \"bang\"}: blip}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  bazbang: blip;\
-         \n}\
-         \n"
+        \n  bazbang: blip;\
+        \n}\
+        \n"
     );
 }
 
@@ -1961,14 +1961,14 @@ fn t122_test_directive_interpolation() {
     assert_eq!(
         rsass(
             "$baz: 12;\
-             \n@foo bar#{$baz} qux {a: b}\
-             \n"
+            \n@foo bar#{$baz} qux {a: b}\
+            \n"
         )
         .unwrap(),
         "@foo bar12 qux {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -2002,27 +2002,27 @@ fn t129_test_supports_bubbling() {
     assert_eq!(
         rsass(
             "a {\
-             \n  @supports (foo: bar) {\
-             \n    b: c;\
-             \n    @supports (baz: bang) {\
-             \n      d: e;\
-             \n    }\
-             \n  }\
-             \n}\
-             \n"
+            \n  @supports (foo: bar) {\
+            \n    b: c;\
+            \n    @supports (baz: bang) {\
+            \n      d: e;\
+            \n    }\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         "@supports (foo: bar) {\
-         \n  a {\
-         \n    b: c;\
-         \n  }\
-         \n  @supports (baz: bang) {\
-         \n    a {\
-         \n      d: e;\
-         \n    }\
-         \n  }\
-         \n}\
-         \n"
+        \n  a {\
+        \n    b: c;\
+        \n  }\
+        \n  @supports (baz: bang) {\
+        \n    a {\
+        \n      d: e;\
+        \n    }\
+        \n  }\
+        \n}\
+        \n"
     );
 }
 
@@ -2033,24 +2033,24 @@ fn t130_test_random_directive_interpolation() {
     assert_eq!(
         rsass(
             "$domain: \"sass-lang.com\";\
-             \n@foo url(https://#{$domain}/),\
-             \n     #{domain($domain)},\
-             \n     \"foo#{\'ba\' + \'r\'}baz\",\
-             \n     foo#{\'ba\' + \'r\'}baz {\
-             \n  .foo {a: b}\
-             \n}\
-             \n"
+            \n@foo url(https://#{$domain}/),\
+            \n     #{domain($domain)},\
+            \n     \"foo#{\'ba\' + \'r\'}baz\",\
+            \n     foo#{\'ba\' + \'r\'}baz {\
+            \n  .foo {a: b}\
+            \n}\
+            \n"
         )
         .unwrap(),
         "@foo url(https://sass-lang.com/),\
-         \n     domain(\"sass-lang.com\"),\
-         \n     \"foobarbaz\",\
-         \n     foobarbaz {\
-         \n  .foo {\
-         \n    a: b;\
-         \n  }\
-         \n}\
-         \n"
+        \n     domain(\"sass-lang.com\"),\
+        \n     \"foobarbaz\",\
+        \n     foobarbaz {\
+        \n  .foo {\
+        \n    a: b;\
+        \n  }\
+        \n}\
+        \n"
     );
 }
 
@@ -2060,15 +2060,15 @@ fn t131_test_nested_mixin_def() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  @mixin bar {a: b}\
-             \n  @include bar; }\
-             \n"
+            \n  @mixin bar {a: b}\
+            \n  @include bar; }\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -2078,23 +2078,23 @@ fn t132_test_nested_mixin_shadow() {
     assert_eq!(
         rsass(
             "@mixin bar {a: b}\
-             \n\
-             \nfoo {\
-             \n  @mixin bar {c: d}\
-             \n  @include bar;\
-             \n}\
-             \n\
-             \nbaz {@include bar}\
-             \n"
+            \n\
+            \nfoo {\
+            \n  @mixin bar {c: d}\
+            \n  @include bar;\
+            \n}\
+            \n\
+            \nbaz {@include bar}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  c: d;\
-         \n}\
-         \nbaz {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  c: d;\
+        \n}\
+        \nbaz {\
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -2104,20 +2104,20 @@ fn t133_test_nested_function_def() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  @function foo() {@return 1}\
-             \n  a: foo(); }\
-             \n\
-             \nbar {b: foo()}\
-             \n"
+            \n  @function foo() {@return 1}\
+            \n  a: foo(); }\
+            \n\
+            \nbar {b: foo()}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: 1;\
-         \n}\
-         \nbar {\
-         \n  b: foo();\
-         \n}\
-         \n"
+        \n  a: 1;\
+        \n}\
+        \nbar {\
+        \n  b: foo();\
+        \n}\
+        \n"
     );
 }
 
@@ -2127,23 +2127,23 @@ fn t134_test_nested_function_shadow() {
     assert_eq!(
         rsass(
             "@function foo() {@return 1}\
-             \n\
-             \nfoo {\
-             \n  @function foo() {@return 2}\
-             \n  a: foo();\
-             \n}\
-             \n\
-             \nbaz {b: foo()}\
-             \n"
+            \n\
+            \nfoo {\
+            \n  @function foo() {@return 2}\
+            \n  a: foo();\
+            \n}\
+            \n\
+            \nbaz {b: foo()}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: 2;\
-         \n}\
-         \nbaz {\
-         \n  b: 1;\
-         \n}\
-         \n"
+        \n  a: 2;\
+        \n}\
+        \nbaz {\
+        \n  b: 1;\
+        \n}\
+        \n"
     );
 }
 
@@ -2153,11 +2153,11 @@ fn t171_test_loud_comment_in_compressed_mode() {
     assert_eq!(
         rsass(
             "/*! foo */\
-             \n"
+            \n"
         )
         .unwrap(),
         "/*! foo */\
-         \n"
+        \n"
     );
 }
 
@@ -2204,15 +2204,15 @@ fn t174_test_import_comments_in_imports() {
     assert_eq!(
         rsass(
             "@import \"foo.css\", // this is a comment\
-             \n        \"bar.css\", /* this is another comment */\
-             \n        \"baz.css\"; // this is a third comment\
-             \n"
+            \n        \"bar.css\", /* this is another comment */\
+            \n        \"baz.css\"; // this is a third comment\
+            \n"
         )
         .unwrap(),
         "@import url(foo.css);\
-         \n@import url(bar.css);\
-         \n@import url(baz.css);\
-         \n"
+        \n@import url(bar.css);\
+        \n@import url(baz.css);\
+        \n"
     );
 }
 
@@ -2223,25 +2223,25 @@ fn t176_test_newline_selector_rendered_multiple_times() {
     assert_eq!(
         rsass(
             "@for $i from 1 through 2 {\
-             \n  form {\
-             \n    input,\
-             \n    select {\
-             \n      color: white;\
-             \n    }\
-             \n  }\
-             \n}\
-             \n"
+            \n  form {\
+            \n    input,\
+            \n    select {\
+            \n      color: white;\
+            \n    }\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         "form input,\
-         \nform select {\
-         \n  color: white;\
-         \n}\
-         \nform input,\
-         \nform select {\
-         \n  color: white;\
-         \n}\
-         \n"
+        \nform select {\
+        \n  color: white;\
+        \n}\
+        \nform input,\
+        \nform select {\
+        \n  color: white;\
+        \n}\
+        \n"
     );
 }
 
@@ -2251,13 +2251,13 @@ fn t177_test_prop_name_interpolation_after_hyphen() {
     assert_eq!(
         rsass(
             "a { -#{\"foo\"}-bar: b; }\
-             \n"
+            \n"
         )
         .unwrap(),
         "a {\
-         \n  -foo-bar: b;\
-         \n}\
-         \n"
+        \n  -foo-bar: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -2267,13 +2267,13 @@ fn t178_test_star_plus_and_parent() {
     assert_eq!(
         rsass(
             "foo {*+html & {a: b}}\
-             \n"
+            \n"
         )
         .unwrap(),
         "* + html foo {\
-         \n  a: b;\
-         \n}\
-         \n"
+        \n  a: b;\
+        \n}\
+        \n"
     );
 }
 
@@ -2283,17 +2283,17 @@ fn t179_test_weird_added_space() {
     assert_eq!(
         rsass(
             "$value : bip;\
-             \n\
-             \nfoo {\
-             \n  bar: -moz-#{$value};\
-             \n}\
-             \n"
+            \n\
+            \nfoo {\
+            \n  bar: -moz-#{$value};\
+            \n}\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  bar: -moz-bip;\
-         \n}\
-         \n"
+        \n  bar: -moz-bip;\
+        \n}\
+        \n"
     );
 }
 
@@ -2303,14 +2303,14 @@ fn t180_test_interpolation_with_bracket_on_next_line() {
     assert_eq!(
         rsass(
             "a.#{\"foo\"} b\
-             \n{color: red}\
-             \n"
+            \n{color: red}\
+            \n"
         )
         .unwrap(),
         "a.foo b {\
-         \n  color: red;\
-         \n}\
-         \n"
+        \n  color: red;\
+        \n}\
+        \n"
     );
 }
 
@@ -2320,14 +2320,14 @@ fn t181_test_interpolation() {
     assert_eq!(
         rsass(
             "$bar : \"#foo\";\
-             \nul li#{$bar} a span.label { foo: bar; }\
-             \n"
+            \nul li#{$bar} a span.label { foo: bar; }\
+            \n"
         )
         .unwrap(),
         "ul li#foo a span.label {\
-         \n  foo: bar;\
-         \n}\
-         \n"
+        \n  foo: bar;\
+        \n}\
+        \n"
     );
 }
 
@@ -2404,13 +2404,13 @@ fn t185_test_keyword_args_in_functions() {
     assert_eq!(
         rsass(
             ".keyed { color: rgba($color: #a7c, $alpha: 0.4) }\
-             \n"
+            \n"
         )
         .unwrap(),
         ".keyed {\
-         \n  color: rgba(170, 119, 204, 0.4);\
-         \n}\
-         \n"
+        \n  color: rgba(170, 119, 204, 0.4);\
+        \n}\
+        \n"
     );
 }
 
@@ -2421,19 +2421,19 @@ fn t186_test_newlines_removed_from_selectors_when_compressed() {
     assert_eq!(
         rsass(
             "a\
-             \n, b {\
-             \n  z & {\
-             \n    display: block;\
-             \n  }\
-             \n}\
-             \n"
+            \n, b {\
+            \n  z & {\
+            \n    display: block;\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         "z a\
-         \n, z b {\
-         \n  display: block;\
-         \n}\
-         \n"
+        \n, z b {\
+        \n  display: block;\
+        \n}\
+        \n"
     );
 }
 
@@ -2443,24 +2443,24 @@ fn t187_test_multiline_var() {
     assert_eq!(
         rsass(
             "foo {\
-             \n  $var1: 1 +\
-             \n    2;\
-             \n  $var2: true and\
-             \n    false;\
-             \n  $var3: a b\
-             \n    c;\
-             \n  a: $var1;\
-             \n  b: $var2;\
-             \n  c: $var3; }\
-             \n"
+            \n  $var1: 1 +\
+            \n    2;\
+            \n  $var2: true and\
+            \n    false;\
+            \n  $var3: a b\
+            \n    c;\
+            \n  a: $var1;\
+            \n  b: $var2;\
+            \n  c: $var3; }\
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  a: 3;\
-         \n  b: false;\
-         \n  c: a b c;\
-         \n}\
-         \n"
+        \n  a: 3;\
+        \n  b: false;\
+        \n  c: a b c;\
+        \n}\
+        \n"
     );
 }
 
@@ -2471,31 +2471,31 @@ fn t188_test_mixin_content() {
     assert_eq!(
         rsass(
             "$color: blue;\
-             \n@mixin context($class, $color: red) {\
-             \n  .#{$class} {\
-             \n    background-color: $color;\
-             \n    @content;\
-             \n    border-color: $color;\
-             \n  }\
-             \n}\
-             \n@include context(parent) {\
-             \n  @include context(child, $color: yellow) {\
-             \n    color: $color;\
-             \n  }\
-             \n}\
-             \n"
+            \n@mixin context($class, $color: red) {\
+            \n  .#{$class} {\
+            \n    background-color: $color;\
+            \n    @content;\
+            \n    border-color: $color;\
+            \n  }\
+            \n}\
+            \n@include context(parent) {\
+            \n  @include context(child, $color: yellow) {\
+            \n    color: $color;\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         ".parent {\
-         \n  background-color: red;\
-         \n  border-color: red;\
-         \n}\
-         \n.parent .child {\
-         \n  background-color: yellow;\
-         \n  color: blue;\
-         \n  border-color: yellow;\
-         \n}\
-         \n"
+        \n  background-color: red;\
+        \n  border-color: red;\
+        \n}\
+        \n.parent .child {\
+        \n  background-color: yellow;\
+        \n  color: blue;\
+        \n  border-color: yellow;\
+        \n}\
+        \n"
     );
 }
 
@@ -2505,14 +2505,14 @@ fn t189_test_empty_content() {
     assert_eq!(
         rsass(
             "@mixin foo { @content }\
-             \na { b: c; @include foo {} }\
-             \n"
+            \na { b: c; @include foo {} }\
+            \n"
         )
         .unwrap(),
         "a {\
-         \n  b: c;\
-         \n}\
-         \n"
+        \n  b: c;\
+        \n}\
+        \n"
     );
 }
 
@@ -2522,13 +2522,13 @@ fn t190_test_options_passed_to_script() {
     assert_eq!(
         rsass(
             "foo {color: darken(black, 10%)}\
-             \n"
+            \n"
         )
         .unwrap(),
         "foo {\
-         \n  color: black;\
-         \n}\
-         \n"
+        \n  color: black;\
+        \n}\
+        \n"
     );
 }
 
@@ -2539,25 +2539,25 @@ fn t191_test_extend_in_media_in_rule() {
     assert_eq!(
         rsass(
             ".foo {\
-             \n  @media screen {\
-             \n    @extend %bar;\
-             \n  }\
-             \n}\
-             \n\
-             \n@media screen {\
-             \n  %bar {\
-             \n    a: b;\
-             \n  }\
-             \n}\
-             \n"
+            \n  @media screen {\
+            \n    @extend %bar;\
+            \n  }\
+            \n}\
+            \n\
+            \n@media screen {\
+            \n  %bar {\
+            \n    a: b;\
+            \n  }\
+            \n}\
+            \n"
         )
         .unwrap(),
         "@media screen {\
-         \n  .foo {\
-         \n    a: b;\
-         \n  }\
-         \n}\
-         \n"
+        \n  .foo {\
+        \n    a: b;\
+        \n  }\
+        \n}\
+        \n"
     );
 }
 
