@@ -19,7 +19,7 @@ fi
 
 IMPL=libsass
 check() {
-    cargo build --release --features=commandline >&2
+    cargo build --release --features=commandline >&2 || exit 1
     echo "About to test $1"
     (cd sass-spec && \
 	 bundle install && \
