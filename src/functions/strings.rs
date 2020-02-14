@@ -3,7 +3,6 @@ use crate::css::Value;
 use crate::value::{Number, Quotes, Unit};
 use lazy_static::lazy_static;
 use num_rational::Rational;
-use num_traits::Signed;
 use std::cmp::max;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
