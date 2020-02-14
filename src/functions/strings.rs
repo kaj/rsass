@@ -72,8 +72,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Numeric(start_at, Unit::None, ..),
             Value::Numeric(end_at, Unit::None, ..),
         ) => {
-            let start_at = index_to_rust(start_at.value, &s);
-            let end_at = index_to_rust_end(end_at.value, &s);
+            let start_at = index_to_rust(start_at.value, &s)?;
+            let end_at = index_to_rust_end(end_at.value, &s)?;
             let c = s.chars();
             if start_at <= end_at {
                 Ok(Value::Literal(
@@ -149,17 +149,18 @@ fn intvalue(n: usize) -> Value {
 /// Convert index from sass (rational number, first is one) to rust
 /// (usize, first is zero).  Sass values might be negative, then -1 is
 /// the last char in the string.
-fn index_to_rust(index: Rational, s: &str) -> usize {
+fn index_to_rust(index: Rational, s: &str) -> Result<usize, Error> {
+    let index = require_integer(index)?;
     let len = s.chars().count();
-    if index.is_negative() {
-        let i = index.to_integer().abs() as usize;
+    Ok(if index.is_negative() {
+        let i = index.abs() as usize;
         if i <= len {
             len - i
         } else {
             0
         }
     } else if index.is_positive() {
-        let i = index.to_integer() as usize - 1;
+        let i = index as usize - 1;
         if i <= len {
             i
         } else {
@@ -167,23 +168,33 @@ fn index_to_rust(index: Rational, s: &str) -> usize {
         }
     } else {
         0
-    }
+    })
 }
+
 /// Convert index from sass (rational number, first is one) to rust
 /// (usize, first is zero).  Sass values might be negative, then -1 is
 /// the last char in the string.
-fn index_to_rust_end(index: Rational, s: &str) -> usize {
-    if index.is_negative() {
+fn index_to_rust_end(index: Rational, s: &str) -> Result<usize, Error> {
+    let index = require_integer(index)?;
+    Ok(if index.is_negative() {
         let len = s.chars().count();
-        let i = index.to_integer().abs() as usize - 1;
+        let i = index.abs() as usize - 1;
         if i <= len {
             len - i
         } else {
             0
         }
     } else if index.is_positive() {
-        index.to_integer() as usize
+        index as usize
     } else {
         0
+    })
+}
+
+fn require_integer(value: Rational) -> Result<isize, Error> {
+    if value.is_integer() {
+        Ok(value.to_integer())
+    } else {
+        Err(Error::S(format!("{} is not an int", value)))
     }
 }
