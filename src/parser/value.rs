@@ -327,10 +327,7 @@ fn hex_color(input: &[u8]) -> IResult<&[u8], Value> {
                 )
             },
         ),
-        peek(alt((
-            map(super::my_eof, |_| ()),
-            map(not(alphanumeric1), |_| ()),
-        ))),
+        peek(map(not(alphanumeric1), |_| ())),
     )(input)?;
     let length = input.len() - rest.len();
     // Unwrap should be ok as only ascii is matched.
@@ -450,6 +447,7 @@ mod test {
     use crate::sass::Value::*;
     use crate::value::Unit;
     use crate::variablescope::GlobalScope;
+    use nom::combinator::all_consuming;
     use num_rational::Rational;
 
     #[test]
@@ -804,6 +802,6 @@ mod test {
     }
 
     fn value_expression_eof(input: &[u8]) -> IResult<&[u8], Value> {
-        terminated(value_expression, super::super::my_eof)(input)
+        all_consuming(value_expression)(input)
     }
 }

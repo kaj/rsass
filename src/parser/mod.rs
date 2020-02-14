@@ -26,11 +26,11 @@ use crate::value::{Number, Rgba, Unit};
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
 use nom::character::complete::one_of;
-use nom::combinator::{map, map_res, opt, peek, value};
+use nom::combinator::{all_consuming, map, map_res, opt, peek, value};
 use nom::error::ErrorKind;
 use nom::multi::{many0, many_till, separated_list, separated_nonempty_list};
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::{eof, named, Err, IResult};
+use nom::{Err, IResult};
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -85,14 +85,12 @@ fn sassfile(input: &[u8]) -> IResult<&[u8], Vec<Item>> {
         map(
             many_till(
                 preceded(opt_spacelike, top_level_item),
-                preceded(opt_spacelike, my_eof),
+                all_consuming(opt_spacelike),
             ),
             |(v, _eof)| v,
         ),
     )(input)
 }
-
-named!(my_eof<&[u8]>, eof!());
 
 fn top_level_item(input: &[u8]) -> IResult<&[u8], Item> {
     let (input, tag) = alt((
@@ -264,7 +262,7 @@ fn at_rule2(input: &[u8]) -> IResult<&[u8], Item> {
         opt(ignore_space),
         alt((
             map(body_block, Some),
-            value(None, my_eof),
+            value(None, all_consuming(tag(""))),
             value(None, tag(";")),
         )),
     )(input)?;
