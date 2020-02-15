@@ -49,7 +49,7 @@ impl FileContext {
             path.push(PathBuf::from(dir));
         }
         path.extend_from_slice(&self.path);
-        (FileContext { path }, t.clone())
+        (FileContext { path }, t)
     }
 
     pub fn find_file(&self, name: &Path) -> Option<(Self, PathBuf)> {

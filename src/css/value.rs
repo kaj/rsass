@@ -286,7 +286,7 @@ impl Value {
                 }
             }
             Value::List(ref list, ref s, ref b) => Value::List(
-                list.into_iter().map(|v| v.unrequote()).collect(),
+                list.iter().map(|v| v.unrequote()).collect(),
                 s.clone(),
                 *b,
             ),

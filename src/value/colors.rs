@@ -86,7 +86,7 @@ impl Rgba {
             // Note: nicer but not yet supported code:
             // let c = u32::from_be(u32::from_bytes(0, r, g, b))
             let c = (u32::from(r) << 16) + (u32::from(g) << 8) + u32::from(b);
-            LOOKUP.v2n.get(&c).map(|n| *n)
+            LOOKUP.v2n.get(&c).copied()
         } else {
             None
         }

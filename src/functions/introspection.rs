@@ -162,7 +162,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         if let Some(function) = function {
             function.call(s, &args)
         } else {
-            Ok(Value::Call(name.clone(), args))
+            Ok(Value::Call(name, args))
         }
     });
 }

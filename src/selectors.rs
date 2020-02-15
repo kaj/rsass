@@ -195,7 +195,7 @@ impl SelectorPart {
                 name: name.evaluate2(scope)?,
                 op: op.clone(),
                 val: val.evaluate2(scope)?,
-                modifier: modifier.clone(),
+                modifier: *modifier,
             }),
             SelectorPart::Simple(ref v) => {
                 Ok(SelectorPart::Simple(v.evaluate2(scope)?))
