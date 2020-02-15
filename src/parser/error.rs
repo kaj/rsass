@@ -1,4 +1,4 @@
-use super::{SourceName, SourcePos};
+use super::{SourceName, SourcePos, Span};
 use nom::error::ErrorKind;
 use nom::{Err, IResult};
 use std::fmt;
@@ -23,18 +23,20 @@ impl ParseError {
     /// This is not a `From` implementation for two reasons:
     /// 1. It needs a reference to the original data to find the position.
     /// 2. An `Ok` result with remaining unparsed data is also considered an error.
-    pub fn check<T>(res: IResult<&[u8], T>, data: &[u8]) -> Result<T, Self> {
+    pub fn check<T>(res: IResult<Span, T>, data: &[u8]) -> Result<T, Self> {
         match res {
-            Ok((b"", items)) => Ok(items),
-            Ok((rest, _styles)) => Err(ParseError::remaining(rest, data)),
+            Ok((rest, items)) if rest.fragment().is_empty() => Ok(items),
+            Ok((rest, _styles)) => {
+                Err(ParseError::remaining(rest.fragment(), data))
+            }
             Err(Err::Error((rest, err))) => {
-                Err(ParseError::err(err, rest, data))
+                Err(ParseError::err(err, rest.fragment(), data))
             }
             Err(Err::Incomplete(_needed)) => {
                 Err(ParseError::incomplete(data))
             }
             Err(Err::Failure((rest, err))) => {
-                Err(ParseError::err(err, rest, data))
+                Err(ParseError::err(err, rest.fragment(), data))
             }
         }
     }

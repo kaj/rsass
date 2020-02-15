@@ -380,7 +380,7 @@ impl Scope for GlobalScope {
 
 #[cfg(test)]
 pub mod test {
-    use crate::parser::value::value_expression;
+    use crate::parser::{value::value_expression, Span};
     use crate::variablescope::*;
     use crate::{Error, ParseError};
 
@@ -729,14 +729,14 @@ pub mod test {
             let val = val.as_bytes();
             scope.define(
                 name,
-                &ParseError::check(value_expression(val), val)?
+                &ParseError::check(value_expression(Span::new(val)), val)?
                     .evaluate(&scope)?,
             );
         }
         use nom::bytes::complete::tag;
         use nom::sequence::terminated;
         let foo = ParseError::check(
-            terminated(value_expression, tag(";"))(expression),
+            terminated(value_expression, tag(";"))(Span::new(expression)),
             expression,
         )?;
         Ok(foo

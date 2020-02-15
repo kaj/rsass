@@ -1,3 +1,4 @@
+use super::Span;
 use crate::sass::{SassString, StringPart};
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
@@ -8,19 +9,19 @@ use nom::sequence::{preceded, terminated};
 use nom::IResult;
 use std::str::from_utf8;
 
-pub fn spacelike(input: &[u8]) -> IResult<&[u8], ()> {
+pub fn spacelike(input: Span) -> IResult<Span, ()> {
     fold_many1(alt((ignore_space, ignore_lcomment)), (), |(), ()| ())(input)
 }
 
-pub fn spacelike2(input: &[u8]) -> IResult<&[u8], ()> {
+pub fn spacelike2(input: Span) -> IResult<Span, ()> {
     terminated(spacelike, ignore_comments)(input)
 }
 
-pub fn opt_spacelike(input: &[u8]) -> IResult<&[u8], ()> {
+pub fn opt_spacelike(input: Span) -> IResult<Span, ()> {
     fold_many0(alt((ignore_space, ignore_lcomment)), (), |(), ()| ())(input)
 }
 
-pub fn ignore_comments(input: &[u8]) -> IResult<&[u8], ()> {
+pub fn ignore_comments(input: Span) -> IResult<Span, ()> {
     fold_many0(
         alt((ignore_space, ignore_lcomment, map(comment, |_| ()))),
         (),
@@ -28,11 +29,11 @@ pub fn ignore_comments(input: &[u8]) -> IResult<&[u8], ()> {
     )(input)
 }
 
-pub fn comment(input: &[u8]) -> IResult<&[u8], SassString> {
+pub fn comment(input: Span) -> IResult<Span, SassString> {
     preceded(tag("/*"), comment2)(input)
 }
 
-pub fn comment2(input: &[u8]) -> IResult<&[u8], SassString> {
+pub fn comment2(input: Span) -> IResult<Span, SassString> {
     use super::strings::string_part_interpolation;
     use crate::value::Quotes;
     use nom::combinator::peek;
@@ -40,22 +41,23 @@ pub fn comment2(input: &[u8]) -> IResult<&[u8], SassString> {
         terminated(
             many0(alt((
                 map(
-                    map_res(is_not("*#\r\n\u{c}"), from_utf8),
+                    map_res(is_not("*#\r\n\u{c}"), |s: Span| {
+                        from_utf8(s.fragment())
+                    }),
                     StringPart::from,
                 ),
                 map(
                     alt((tag("\r\n"), tag("\n"), tag("\r"), tag("\u{c}"))),
                     |_| "\n".into(),
                 ),
+                map(terminated(tag("*"), peek(not(tag("/")))), |_| {
+                    StringPart::from("*")
+                }),
+                string_part_interpolation,
                 map(
-                    terminated(
-                        map_res(tag("*"), from_utf8),
-                        peek(not(tag("/"))),
-                    ),
+                    map_res(tag("#"), |s: Span| from_utf8(s.fragment())),
                     StringPart::from,
                 ),
-                string_part_interpolation,
-                map(map_res(tag("#"), from_utf8), StringPart::from),
             ))),
             tag("*/"),
         ),
@@ -63,39 +65,41 @@ pub fn comment2(input: &[u8]) -> IResult<&[u8], SassString> {
     )(input)
 }
 
-pub fn ignore_space(input: &[u8]) -> IResult<&[u8], ()> {
+pub fn ignore_space(input: Span) -> IResult<Span, ()> {
     map(multispace1, |_| ())(input)
 }
 
-fn ignore_lcomment(input: &[u8]) -> IResult<&[u8], ()> {
+fn ignore_lcomment(input: Span) -> IResult<Span, ()> {
     map(terminated(tag("//"), opt(is_not("\n"))), |_| ())(input)
 }
 
 #[cfg(test)]
 mod test {
-    use super::comment;
+    use super::{comment, Span};
 
     #[test]
     fn comment_simple() {
-        assert_eq!(
-            comment(b"/* hello */\n"),
-            Ok((&b"\n"[..], " hello ".into())),
-        )
+        do_test(b"/* hello */\n", " hello ", b"\n")
     }
 
     #[test]
     fn comment_with_stars() {
-        assert_eq!(
-            comment(b"/**** hello ****/\n"),
-            Ok((&b"\n"[..], "*** hello ***".into())),
-        )
+        do_test(b"/**** hello ****/\n", "*** hello ***", b"\n")
     }
 
     #[test]
     fn comment_with_stars2() {
+        do_test(
+            b"/* / * / * / * hello * \\ * \\ * \\ */\n",
+            " / * / * / * hello * \\ * \\ * \\ ",
+            b"\n",
+        )
+    }
+
+    fn do_test(src: &[u8], content: &str, trail: &[u8]) {
         assert_eq!(
-            comment(b"/* / * / * / * hello * \\ * \\ * \\ */\n"),
-            Ok((&b"\n"[..], " / * / * / * hello * \\ * \\ * \\ ".into())),
+            comment(Span::new(src)).map(|(t, c)| (*t.fragment(), c)),
+            Ok((trail, content.into())),
         )
     }
 }

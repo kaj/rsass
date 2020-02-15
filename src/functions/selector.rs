@@ -1,6 +1,7 @@
 use super::SassFunction;
 use crate::css::Value;
 use crate::parser::selectors::{selector, selectors};
+use crate::parser::Span;
 use crate::selectors::{Selector, Selectors};
 use crate::value::Quotes;
 use crate::{Error, ParseError};
@@ -64,11 +65,11 @@ fn parse_selectors(v: Value) -> Result<Selectors, Error> {
         Ok(Selectors::root())
     } else {
         let bytes = s.as_bytes();
-        Ok(ParseError::check(selectors(bytes), bytes)?)
+        Ok(ParseError::check(selectors(Span::new(bytes)), bytes)?)
     }
 }
 
 fn parse_selector(s: &str) -> Result<Selector, Error> {
     let bytes = s.as_bytes();
-    Ok(ParseError::check(selector(bytes), bytes)?)
+    Ok(ParseError::check(selector(Span::new(bytes)), bytes)?)
 }

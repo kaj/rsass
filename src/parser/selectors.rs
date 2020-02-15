@@ -1,6 +1,6 @@
-use super::input_to_string;
 use super::strings::{sass_string, sass_string_dq, sass_string_sq};
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
+use super::{input_to_string, Span};
 use crate::selectors::{Selector, SelectorPart, Selectors};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
@@ -10,7 +10,7 @@ use nom::multi::{many1, separated_nonempty_list};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use nom::IResult;
 
-pub fn selectors(input: &[u8]) -> IResult<&[u8], Selectors> {
+pub fn selectors(input: Span) -> IResult<Span, Selectors> {
     let (input, v) = separated_nonempty_list(
         terminated(tag(","), ignore_comments),
         opt(selector),
@@ -21,7 +21,7 @@ pub fn selectors(input: &[u8]) -> IResult<&[u8], Selectors> {
     ))
 }
 
-pub fn selector(input: &[u8]) -> IResult<&[u8], Selector> {
+pub fn selector(input: Span) -> IResult<Span, Selector> {
     let (input, mut s) = many1(selector_part)(input)?;
     if s.last() == Some(&SelectorPart::Descendant) {
         s.pop();
@@ -29,7 +29,7 @@ pub fn selector(input: &[u8]) -> IResult<&[u8], Selector> {
     Ok((input, Selector(s)))
 }
 
-fn selector_part(input: &[u8]) -> IResult<&[u8], SelectorPart> {
+fn selector_part(input: Span) -> IResult<Span, SelectorPart> {
     alt((
         map(sass_string, SelectorPart::Simple),
         value(SelectorPart::Simple("*".into()), tag("*")),
@@ -122,112 +122,101 @@ mod test {
 
     #[test]
     fn simple_selector() {
-        assert_eq!(
-            selector(b"foo "),
-            Ok((
-                &b""[..],
-                Selector(vec![SelectorPart::Simple("foo".into())])
-            ))
+        assert_value(
+            selector(Span::new(b"foo ")),
+            Selector(vec![SelectorPart::Simple("foo".into())]),
         )
     }
     #[test]
     fn escaped_simple_selector() {
-        assert_eq!(
-            selector(b"\\E9m "),
-            Ok((&b""[..], Selector(vec![SelectorPart::Simple("ém".into())])))
+        assert_value(
+            selector(Span::new(b"\\E9m ")),
+            Selector(vec![SelectorPart::Simple("ém".into())]),
         )
     }
 
     #[test]
     fn selector2() {
-        assert_eq!(
-            selector(b"foo bar "),
-            Ok((
-                &b""[..],
-                Selector(vec![
-                    SelectorPart::Simple("foo".into()),
-                    SelectorPart::Descendant,
-                    SelectorPart::Simple("bar".into()),
-                ])
-            ))
+        assert_value(
+            selector(Span::new(b"foo bar ")),
+            Selector(vec![
+                SelectorPart::Simple("foo".into()),
+                SelectorPart::Descendant,
+                SelectorPart::Simple("bar".into()),
+            ]),
         )
     }
 
     #[test]
     fn child_selector() {
-        assert_eq!(
-            selector(b"foo > bar "),
-            Ok((
-                &b""[..],
-                Selector(vec![
-                    SelectorPart::Simple("foo".into()),
-                    SelectorPart::RelOp(b'>'),
-                    SelectorPart::Simple("bar".into()),
-                ])
-            ))
+        assert_value(
+            selector(Span::new(b"foo > bar ")),
+            Selector(vec![
+                SelectorPart::Simple("foo".into()),
+                SelectorPart::RelOp(b'>'),
+                SelectorPart::Simple("bar".into()),
+            ]),
         )
     }
 
     #[test]
     fn foo1_selector() {
-        assert_eq!(
-            selector(b"[data-icon='test-1'] "),
-            Ok((
-                &b""[..],
-                Selector(vec![SelectorPart::Attribute {
-                    name: "data-icon".into(),
-                    op: "=".into(),
-                    val: SassString::new(
-                        vec![StringPart::Raw("test-1".into())],
-                        Quotes::Single,
-                    ),
-                    modifier: None,
-                }])
-            ))
+        assert_value(
+            selector(Span::new(b"[data-icon='test-1'] ")),
+            Selector(vec![SelectorPart::Attribute {
+                name: "data-icon".into(),
+                op: "=".into(),
+                val: SassString::new(
+                    vec![StringPart::Raw("test-1".into())],
+                    Quotes::Single,
+                ),
+                modifier: None,
+            }]),
         )
     }
 
     #[test]
     fn pseudo_selector() {
-        assert_eq!(
-            selector(b":before "),
-            Ok((
-                &b""[..],
-                Selector(vec![SelectorPart::Pseudo {
-                    name: "before".into(),
-                    arg: None,
-                }])
-            ))
+        assert_value(
+            selector(Span::new(b":before ")),
+            Selector(vec![SelectorPart::Pseudo {
+                name: "before".into(),
+                arg: None,
+            }]),
         )
     }
     #[test]
     fn pseudo_on_simple_selector() {
-        assert_eq!(
-            selector(b"figure:before "),
-            Ok((
-                &b""[..],
-                Selector(vec![
-                    SelectorPart::Simple("figure".into()),
-                    SelectorPart::Pseudo {
-                        name: "before".into(),
-                        arg: None,
-                    },
-                ])
-            ))
+        assert_value(
+            selector(Span::new(b"figure:before ")),
+            Selector(vec![
+                SelectorPart::Simple("figure".into()),
+                SelectorPart::Pseudo {
+                    name: "before".into(),
+                    arg: None,
+                },
+            ]),
         )
     }
 
     #[test]
     fn selectors_simple() {
+        assert_value(
+            selectors(Span::new(b"foo, bar ")),
+            Selectors::new(vec![
+                Selector(vec![SelectorPart::Simple("foo".into())]),
+                Selector(vec![SelectorPart::Simple("bar".into())]),
+            ]),
+        )
+    }
+
+    fn assert_value<T: PartialEq + std::fmt::Debug>(
+        result: IResult<Span, T>,
+        value: T,
+    ) {
         assert_eq!(
-            selectors(b"foo, bar "),
-            Ok((
-                &b""[..],
-                Selectors::new(vec![
-                    Selector(vec![SelectorPart::Simple("foo".into())]),
-                    Selector(vec![SelectorPart::Simple("bar".into())]),
-                ])
-            ))
+            result.map(|(r, v)| (*r.fragment(), v)),
+            Ok((&b""[..], value))
         )
     }
 }

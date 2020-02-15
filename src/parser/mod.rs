@@ -39,17 +39,20 @@ use nom::multi::{
 };
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::IResult;
+use nom_locate::LocatedSpan;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::str::{from_utf8, Utf8Error};
+
+pub type Span<'a> = LocatedSpan<&'a [u8]>;
 
 /// Parse a scss value.
 ///
 /// Returns a single value (or an error).
 pub fn parse_value_data(data: &[u8]) -> Result<Value, Error> {
     Ok(ParseError::check(
-        all_consuming(value_expression)(data),
+        all_consuming(value_expression)(Span::new(data)),
         data,
     )?)
 }
@@ -83,10 +86,10 @@ pub fn parse_scss_file(file: &Path) -> Result<Vec<Item>, Error> {
 ///
 /// Returns a vec of the top level items of the file (or an error message).
 pub fn parse_scss_data(data: &[u8]) -> Result<Vec<Item>, ParseError> {
-    ParseError::check(sassfile(data), data)
+    ParseError::check(sassfile(Span::new(data)), data)
 }
 
-fn sassfile(input: &[u8]) -> IResult<&[u8], Vec<Item>> {
+fn sassfile(input: Span) -> IResult<Span, Vec<Item>> {
     preceded(
         opt(tag("\u{feff}".as_bytes())),
         map(
@@ -99,9 +102,9 @@ fn sassfile(input: &[u8]) -> IResult<&[u8], Vec<Item>> {
     )(input)
 }
 
-fn top_level_item(input: &[u8]) -> IResult<&[u8], Item> {
+fn top_level_item(input: Span) -> IResult<Span, Item> {
     let (input, tag) = alt((tag("$"), tag("/*"), tag("@"), tag("")))(input)?;
-    match tag {
+    match *tag.fragment() {
         b"$" => variable_declaration2(input),
         b"/*" => comment_item(input),
         b"@" => at_rule2(input),
@@ -110,21 +113,21 @@ fn top_level_item(input: &[u8]) -> IResult<&[u8], Item> {
     }
 }
 
-fn comment_item(input: &[u8]) -> IResult<&[u8], Item> {
+fn comment_item(input: Span) -> IResult<Span, Item> {
     map(comment2, Item::Comment)(input)
 }
 
-fn rule(input: &[u8]) -> IResult<&[u8], Item> {
+fn rule(input: Span) -> IResult<Span, Item> {
     map(pair(rule_start, body_block2), |(selectors, body)| {
         Item::Rule(selectors, body)
     })(input)
 }
 
-fn rule_start(input: &[u8]) -> IResult<&[u8], Selectors> {
+fn rule_start(input: Span) -> IResult<Span, Selectors> {
     terminated(selectors, terminated(opt(is_a(", \t\r\n")), tag("{")))(input)
 }
 
-fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
+fn body_item(input: Span) -> IResult<Span, Item> {
     let (input, tag) = alt((
         tag("$"),
         tag("/*"),
@@ -135,7 +138,7 @@ fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
         tag("@"),
         tag(""),
     ))(input)?;
-    match tag {
+    match *tag.fragment() {
         b"$" => variable_declaration2(input),
         b"/*" => comment_item(input),
         b";" => Ok((input, Item::None)),
@@ -157,7 +160,7 @@ fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
 }
 
 /// What follows the `@import` tag.
-fn import2(input: &[u8]) -> IResult<&[u8], Item> {
+fn import2(input: Span) -> IResult<Span, Item> {
     map(
         terminated(
             pair(
@@ -182,7 +185,7 @@ fn import2(input: &[u8]) -> IResult<&[u8], Item> {
 }
 
 /// What follows the `@at-root` tag.
-fn at_root2(input: &[u8]) -> IResult<&[u8], Item> {
+fn at_root2(input: Span) -> IResult<Span, Item> {
     preceded(
         opt_spacelike,
         map(
@@ -196,12 +199,12 @@ fn at_root2(input: &[u8]) -> IResult<&[u8], Item> {
 }
 
 #[cfg(test)] // TODO: Or remove this?
-fn mixin_call(input: &[u8]) -> IResult<&[u8], Item> {
+fn mixin_call(input: Span) -> IResult<Span, Item> {
     preceded(tag("@include "), mixin_call2)(input)
 }
 
 /// What follows the `@include` tag.
-fn mixin_call2(input: &[u8]) -> IResult<&[u8], Item> {
+fn mixin_call2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(opt(call_args), opt_spacelike)(input)?;
     let (input, body) = terminated(
@@ -219,7 +222,7 @@ fn mixin_call2(input: &[u8]) -> IResult<&[u8], Item> {
 }
 
 /// What follows an `@` sign
-fn at_rule2(input: &[u8]) -> IResult<&[u8], Item> {
+fn at_rule2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     match name.as_ref() {
         "debug" => map(expression_argument, Item::Debug)(input),
@@ -256,11 +259,11 @@ fn at_rule2(input: &[u8]) -> IResult<&[u8], Item> {
     }
 }
 
-fn expression_argument(input: &[u8]) -> IResult<&[u8], Value> {
+fn expression_argument(input: Span) -> IResult<Span, Value> {
     terminated(value_expression, opt(tag(";")))(input)
 }
 
-fn charset2(input: &[u8]) -> IResult<&[u8], Item> {
+fn charset2(input: Span) -> IResult<Span, Item> {
     use nom::combinator::map_opt;
     map_opt(
         terminated(
@@ -282,7 +285,7 @@ fn charset2(input: &[u8]) -> IResult<&[u8], Item> {
     )(input)
 }
 
-fn media_args(input: &[u8]) -> IResult<&[u8], Value> {
+fn media_args(input: Span) -> IResult<Span, Value> {
     let (input, args) = separated_list(
         preceded(tag(","), opt_spacelike),
         map(
@@ -329,29 +332,30 @@ fn media_args(input: &[u8]) -> IResult<&[u8], Value> {
 
 #[test]
 fn test_media_args_1() {
-    let (rest, _) =
-        media_args(b"#{$media} and ($key + \"-foo\": $value + 5);").unwrap();
-    assert_eq!(from_utf8(rest).unwrap(), ";");
+    check_media_args(b"#{$media} and ($key + \"-foo\": $value + 5);")
 }
 #[test]
 fn test_media_args_2() {
-    let (rest, _) = media_args(
+    check_media_args(
         b"print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen;",
     )
-    .unwrap();
-    assert_eq!(from_utf8(rest).unwrap(), ";");
+}
+#[cfg(test)]
+fn check_media_args(args: &[u8]) {
+    let (rest, _) = media_args(Span::new(args)).unwrap();
+    assert_eq!(from_utf8(rest.fragment()).unwrap(), ";");
 }
 
 #[cfg(test)] // TODO: Or remove this?
-fn if_statement(input: &[u8]) -> IResult<&[u8], Item> {
+fn if_statement(input: Span) -> IResult<Span, Item> {
     preceded(tag("@if "), if_statement2)(input)
 }
 
-fn if_statement_inner(input: &[u8]) -> IResult<&[u8], Item> {
+fn if_statement_inner(input: Span) -> IResult<Span, Item> {
     preceded(terminated(tag("if"), spacelike), if_statement2)(input)
 }
 
-fn if_statement2(input: &[u8]) -> IResult<&[u8], Item> {
+fn if_statement2(input: Span) -> IResult<Span, Item> {
     let (input, cond) = terminated(value_expression, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
     let (input, else_body) = opt(preceded(
@@ -365,7 +369,7 @@ fn if_statement2(input: &[u8]) -> IResult<&[u8], Item> {
 }
 
 /// The part of an each look that follows the `@each`.
-fn each_loop2(input: &[u8]) -> IResult<&[u8], Item> {
+fn each_loop2(input: Span) -> IResult<Span, Item> {
     let (input, names) = separated_nonempty_list(
         delimited(opt_spacelike, tag(","), opt_spacelike),
         preceded(tag("$"), name),
@@ -380,7 +384,7 @@ fn each_loop2(input: &[u8]) -> IResult<&[u8], Item> {
 }
 
 /// A for loop after the initial `@for`.
-fn for_loop2(input: &[u8]) -> IResult<&[u8], Item> {
+fn for_loop2(input: Span) -> IResult<Span, Item> {
     let (input, name) = delimited(tag("$"), name, spacelike)(input)?;
     let (input, from) = delimited(
         terminated(tag("from"), spacelike),
@@ -405,18 +409,18 @@ fn for_loop2(input: &[u8]) -> IResult<&[u8], Item> {
     ))
 }
 
-fn while_loop2(input: &[u8]) -> IResult<&[u8], Item> {
+fn while_loop2(input: Span) -> IResult<Span, Item> {
     let (input, cond) = terminated(value_expression, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
     Ok((input, Item::While(cond, body)))
 }
 
 #[cfg(test)] // TODO: Or remove this?
-fn mixin_declaration(input: &[u8]) -> IResult<&[u8], Item> {
+fn mixin_declaration(input: Span) -> IResult<Span, Item> {
     preceded(tag("@mixin "), mixin_declaration2)(input)
 }
 
-fn mixin_declaration2(input: &[u8]) -> IResult<&[u8], Item> {
+fn mixin_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(opt(formal_args), opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
@@ -430,7 +434,7 @@ fn mixin_declaration2(input: &[u8]) -> IResult<&[u8], Item> {
     ))
 }
 
-fn function_declaration2(input: &[u8]) -> IResult<&[u8], Item> {
+fn function_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(formal_args, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
@@ -443,7 +447,7 @@ fn function_declaration2(input: &[u8]) -> IResult<&[u8], Item> {
     ))
 }
 
-fn return_stmt2(input: &[u8]) -> IResult<&[u8], Item> {
+fn return_stmt2(input: Span) -> IResult<Span, Item> {
     let (input, v) =
         delimited(opt_spacelike, value_expression, opt_spacelike)(input)?;
     let (input, _) = opt(tag(";"))(input)?;
@@ -451,13 +455,13 @@ fn return_stmt2(input: &[u8]) -> IResult<&[u8], Item> {
 }
 
 /// The "rest" of an `@content` statement is just an optional terminator
-fn content_stmt2(input: &[u8]) -> IResult<&[u8], Item> {
+fn content_stmt2(input: Span) -> IResult<Span, Item> {
     let (input, _) = opt_spacelike(input)?;
     let (input, _) = opt(tag(";"))(input)?;
     Ok((input, Item::Content))
 }
 
-fn property_or_namespace_rule(input: &[u8]) -> IResult<&[u8], Item> {
+fn property_or_namespace_rule(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(
         sass_string,
         delimited(ignore_comments, tag(":"), ignore_comments),
@@ -472,7 +476,7 @@ fn property_or_namespace_rule(input: &[u8]) -> IResult<&[u8], Item> {
         tag("{")(input)?
     };
 
-    let (input, body) = match next {
+    let (input, body) = match *next.fragment() {
         b"{" => map(body_block2, Some)(input)?,
         b";" => (input, None),
         b"" => (input, None),
@@ -498,11 +502,11 @@ fn ns_or_prop_item(
     }
 }
 
-fn body_block(input: &[u8]) -> IResult<&[u8], Vec<Item>> {
+fn body_block(input: Span) -> IResult<Span, Vec<Item>> {
     preceded(tag("{"), body_block2)(input)
 }
 
-fn body_block2(input: &[u8]) -> IResult<&[u8], Vec<Item>> {
+fn body_block2(input: Span) -> IResult<Span, Vec<Item>> {
     let (input, (v, _end)) = preceded(
         opt_spacelike,
         many_till(
@@ -514,11 +518,11 @@ fn body_block2(input: &[u8]) -> IResult<&[u8], Vec<Item>> {
 }
 
 #[cfg(test)] // TODO: Or remove this?
-fn variable_declaration(input: &[u8]) -> IResult<&[u8], Item> {
+fn variable_declaration(input: Span) -> IResult<Span, Item> {
     preceded(tag("$"), variable_declaration2)(input)
 }
 
-fn variable_declaration2(input: &[u8]) -> IResult<&[u8], Item> {
+fn variable_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(
         name,
         delimited(opt_spacelike, tag(":"), opt_spacelike),
@@ -551,12 +555,12 @@ fn variable_declaration2(input: &[u8]) -> IResult<&[u8], Item> {
     ))
 }
 
-fn input_to_str(s: &[u8]) -> Result<&str, Utf8Error> {
-    from_utf8(&s)
+fn input_to_str(s: Span) -> Result<&str, Utf8Error> {
+    from_utf8(s.fragment())
 }
 
-fn input_to_string(s: &[u8]) -> Result<String, Utf8Error> {
-    from_utf8(&s).map(String::from)
+fn input_to_string(s: Span) -> Result<String, Utf8Error> {
+    from_utf8(s.fragment()).map(String::from)
 }
 
 #[cfg(test)]
@@ -571,231 +575,217 @@ fn string(v: &str) -> Value {
 
 #[test]
 fn if_with_no_else() {
-    assert_eq!(
-        if_statement(b"@if true { p { color: black; } }\n"),
-        Ok((
-            &b"\n"[..],
-            Item::IfStatement(
-                Value::True,
-                vec![Item::Rule(
-                    selectors(b"p").unwrap().1,
-                    vec![Item::Property("color".into(), Value::black())],
-                )],
-                vec![]
-            )
-        ))
+    assert_value(
+        if_statement(Span::new(b"@if true { p { color: black; } }\n")),
+        Item::IfStatement(
+            Value::True,
+            vec![Item::Rule(
+                selectors(Span::new(b"p")).unwrap().1,
+                vec![Item::Property("color".into(), Value::black())],
+            )],
+            vec![],
+        ),
+        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_call_noargs() {
-    assert_eq!(
-        mixin_call(b"@include foo;\n"),
-        Ok((
-            &b"\n"[..],
-            Item::MixinCall {
-                name: "foo".to_string(),
-                args: CallArgs::new(vec![]),
-                body: vec![],
-            }
-        ))
+    assert_value(
+        mixin_call(Span::new(b"@include foo;\n")),
+        Item::MixinCall {
+            name: "foo".to_string(),
+            args: CallArgs::new(vec![]),
+            body: vec![],
+        },
+        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_call_pos_args() {
-    assert_eq!(
-        mixin_call(b"@include foo(bar, baz);\n"),
-        Ok((
-            &b"\n"[..],
-            Item::MixinCall {
-                name: "foo".to_string(),
-                args: CallArgs::new(vec![
-                    (None, string("bar")),
-                    (None, string("baz")),
-                ]),
-                body: vec![],
-            }
-        ))
+    assert_value(
+        mixin_call(Span::new(b"@include foo(bar, baz);\n")),
+        Item::MixinCall {
+            name: "foo".to_string(),
+            args: CallArgs::new(vec![
+                (None, string("bar")),
+                (None, string("baz")),
+            ]),
+            body: vec![],
+        },
+        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_call_named_args() {
-    assert_eq!(
-        mixin_call(b"@include foo($x: bar, $y: baz);\n"),
-        Ok((
-            &b"\n"[..],
-            Item::MixinCall {
-                name: "foo".to_string(),
-                args: CallArgs::new(vec![
-                    (Some("x".into()), string("bar")),
-                    (Some("y".into()), string("baz")),
-                ]),
-                body: vec![],
-            }
-        ))
+    assert_value(
+        mixin_call(Span::new(b"@include foo($x: bar, $y: baz);\n")),
+        Item::MixinCall {
+            name: "foo".to_string(),
+            args: CallArgs::new(vec![
+                (Some("x".into()), string("bar")),
+                (Some("y".into()), string("baz")),
+            ]),
+            body: vec![],
+        },
+        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_declaration_empty() {
-    assert_eq!(
-        mixin_declaration(b"@mixin foo() {}\n"),
-        Ok((
-            &b"\n"[..],
-            Item::MixinDeclaration {
-                name: "foo".into(),
-                args: FormalArgs::default(),
-                body: vec![],
-            }
-        ))
+    assert_value(
+        mixin_declaration(Span::new(b"@mixin foo() {}\n")),
+        Item::MixinDeclaration {
+            name: "foo".into(),
+            args: FormalArgs::default(),
+            body: vec![],
+        },
+        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_declaration() {
-    assert_eq!(
-        mixin_declaration(b"@mixin foo($x) {\n  foo-bar: baz $x;\n}\n"),
-        Ok((
-            &b"\n"[..],
-            Item::MixinDeclaration {
-                name: "foo".into(),
-                args: FormalArgs::new(vec![("x".into(), Value::Null)], false),
-                body: vec![Item::Property(
-                    "foo-bar".into(),
-                    Value::List(
-                        vec![string("baz"), Value::Variable("x".into())],
-                        ListSeparator::Space,
-                        false,
-                    ),
-                )],
-            }
-        ))
+    assert_value(
+        mixin_declaration(Span::new(
+            b"@mixin foo($x) {\n  foo-bar: baz $x;\n}\n",
+        )),
+        Item::MixinDeclaration {
+            name: "foo".into(),
+            args: FormalArgs::new(vec![("x".into(), Value::Null)], false),
+            body: vec![Item::Property(
+                "foo-bar".into(),
+                Value::List(
+                    vec![string("baz"), Value::Variable("x".into())],
+                    ListSeparator::Space,
+                    false,
+                ),
+            )],
+        },
+        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_declaration_default_and_subrules() {
-    assert_eq!(
-        mixin_declaration(
-            b"@mixin bar($a, $b: flug) {\n  \
-                                   foo-bar: baz;\n  \
-                                   foo, bar {\n    \
-                                   property: $b;\n  \
-                                   }\n\
-                                   }\n"
-        ),
-        Ok((
-            &b"\n"[..],
-            Item::MixinDeclaration {
-                name: "bar".into(),
-                args: FormalArgs::new(
-                    vec![
-                        ("a".into(), Value::Null),
-                        ("b".into(), string("flug")),
-                    ],
-                    false
+    assert_value(
+        mixin_declaration(Span::new(
+            b"@mixin bar($a, $b: flug) {\
+              \n  foo-bar: baz;\
+              \n  foo, bar {\
+              \n    property: $b;\
+              \n  }\
+              \n}\n",
+        )),
+        Item::MixinDeclaration {
+            name: "bar".into(),
+            args: FormalArgs::new(
+                vec![("a".into(), Value::Null), ("b".into(), string("flug"))],
+                false,
+            ),
+            body: vec![
+                Item::Property("foo-bar".into(), string("baz")),
+                Item::Rule(
+                    selectors(Span::new(b"foo, bar")).unwrap().1,
+                    vec![Item::Property(
+                        "property".into(),
+                        Value::Variable("b".into()),
+                    )],
                 ),
-                body: vec![
-                    Item::Property("foo-bar".into(), string("baz")),
-                    Item::Rule(
-                        selectors(b"foo, bar").unwrap().1,
-                        vec![Item::Property(
-                            "property".into(),
-                            Value::Variable("b".into()),
-                        )],
-                    ),
-                ],
-            }
-        ))
+            ],
+        },
+        b"\n",
     )
 }
 
 #[test]
 fn test_simple_property() {
-    assert_eq!(
-        property_or_namespace_rule(b"color: red;\n"),
-        Ok((
-            &b""[..],
-            Item::Property(
-                "color".into(),
-                Value::Color(Rgba::from_rgb(255, 0, 0), Some("red".into())),
-            )
-        ))
+    assert_value(
+        property_or_namespace_rule(Span::new(b"color: red;\n")),
+        Item::Property(
+            "color".into(),
+            Value::Color(Rgba::from_rgb(255, 0, 0), Some("red".into())),
+        ),
+        b"",
     )
 }
 
 #[test]
 fn test_property_2() {
-    assert_eq!(
-        property_or_namespace_rule(b"background-position: 90% 50%;\n"),
-        Ok((
-            &b""[..],
-            Item::Property(
-                "background-position".into(),
-                Value::List(
-                    vec![percentage(90), percentage(50)],
-                    ListSeparator::Space,
-                    false,
-                ),
-            )
-        ))
+    assert_value(
+        property_or_namespace_rule(Span::new(
+            b"background-position: 90% 50%;\n",
+        )),
+        Item::Property(
+            "background-position".into(),
+            Value::List(
+                vec![percentage(90), percentage(50)],
+                ListSeparator::Space,
+                false,
+            ),
+        ),
+        b"",
     )
 }
 
 #[test]
 fn test_variable_declaration_simple() {
-    assert_eq!(
-        variable_declaration(b"$foo: bar;\n"),
-        Ok((
-            &b""[..],
-            Item::VariableDeclaration {
-                name: "foo".into(),
-                val: string("bar"),
-                default: false,
-                global: false,
-            }
-        ))
+    assert_value(
+        variable_declaration(Span::new(b"$foo: bar;\n")),
+        Item::VariableDeclaration {
+            name: "foo".into(),
+            val: string("bar"),
+            default: false,
+            global: false,
+        },
+        b"",
     )
 }
 
 #[test]
 fn test_variable_declaration_global() {
-    assert_eq!(
-        variable_declaration(b"$y: some value !global;\n"),
-        Ok((
-            &b""[..],
-            Item::VariableDeclaration {
-                name: "y".into(),
-                val: Value::List(
-                    vec![string("some"), string("value")],
-                    ListSeparator::Space,
-                    false,
-                ),
-                default: false,
-                global: true,
-            }
-        ))
+    assert_value(
+        variable_declaration(Span::new(b"$y: some value !global;\n")),
+        Item::VariableDeclaration {
+            name: "y".into(),
+            val: Value::List(
+                vec![string("some"), string("value")],
+                ListSeparator::Space,
+                false,
+            ),
+            default: false,
+            global: true,
+        },
+        b"",
     )
 }
 
 #[test]
 fn test_variable_declaration_default() {
-    assert_eq!(
-        variable_declaration(b"$y: some value !default;\n"),
-        Ok((
-            &b""[..],
-            Item::VariableDeclaration {
-                name: "y".into(),
-                val: Value::List(
-                    vec![string("some"), string("value")],
-                    ListSeparator::Space,
-                    false,
-                ),
-                default: true,
-                global: false,
-            }
-        ))
+    assert_value(
+        variable_declaration(Span::new(b"$y: some value !default;\n")),
+        Item::VariableDeclaration {
+            name: "y".into(),
+            val: Value::List(
+                vec![string("some"), string("value")],
+                ListSeparator::Space,
+                false,
+            ),
+            default: true,
+            global: false,
+        },
+        b"",
     )
+}
+
+#[cfg(test)]
+fn assert_value<T: PartialEq + std::fmt::Debug>(
+    result: IResult<Span, T>,
+    value: T,
+    rest: &[u8],
+) {
+    assert_eq!(result.map(|(r, v)| (*r.fragment(), v)), Ok((rest, value)))
 }
