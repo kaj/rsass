@@ -83,9 +83,7 @@ impl Rgba {
     pub fn name(&self) -> Option<&'static str> {
         if self.alpha >= Rational::one() {
             let (r, g, b, _a) = self.to_bytes();
-            // Note: nicer but not yet supported code:
-            // let c = u32::from_be(u32::from_bytes(0, r, g, b))
-            let c = (u32::from(r) << 16) + (u32::from(g) << 8) + u32::from(b);
+            let c = u32::from_be_bytes([0, r, g, b]);
             LOOKUP.v2n.get(&c).copied()
         } else {
             None
@@ -98,9 +96,8 @@ impl Rgba {
             return Some(Self::from_rgba(0, 0, 0, 0));
         }
         LOOKUP.n2v.get(name).map(|n| {
-            // Note: nicer but not yet supported code:
-            // let [_, r, g, b] = n.to_be().to_bytes()
-            Self::from_rgb((*n >> 16) as u8, (*n >> 8) as u8, *n as u8)
+            let [_, r, g, b] = n.to_be_bytes();
+            Self::from_rgb(r, g, b)
         })
     }
 
