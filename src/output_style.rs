@@ -20,8 +20,8 @@ pub enum OutputStyle {
 impl fmt::Display for OutputStyle {
     fn fmt(&self, out: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         out.write_str(match self {
-            Self::Compressed => "compressed",
-            Self::Expanded => "expanded",
+            OutputStyle::Compressed => "compressed",
+            OutputStyle::Expanded => "expanded",
         })
     }
 }
