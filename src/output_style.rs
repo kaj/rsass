@@ -17,6 +17,15 @@ pub enum OutputStyle {
     Compressed,
 }
 
+impl fmt::Display for OutputStyle {
+    fn fmt(&self, out: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        out.write_str(match self {
+            Self::Compressed => "compressed",
+            Self::Expanded => "expanded",
+        })
+    }
+}
+
 /// Get an output style from its name.
 impl FromStr for OutputStyle {
     type Err = String;
