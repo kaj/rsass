@@ -1,6 +1,4 @@
 use crate::css::Value;
-#[cfg(feature = "clap")]
-use clap;
 use nom;
 use std::convert::From;
 use std::path::PathBuf;
@@ -106,13 +104,6 @@ impl From<FromUtf8Error> for Error {
 impl<'a> From<nom::Err<(&[u8], nom::error::ErrorKind)>> for Error {
     fn from(e: nom::Err<(&[u8], nom::error::ErrorKind)>) -> Self {
         Error::S(format!("Parse error: {:?}", e))
-    }
-}
-
-#[cfg(feature = "clap")]
-impl<'a> From<clap::Error> for Error {
-    fn from(e: clap::Error) -> Self {
-        Error::S(format!("{}", e))
     }
 }
 
