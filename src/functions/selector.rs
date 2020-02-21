@@ -64,12 +64,11 @@ fn parse_selectors(v: Value) -> Result<Selectors, Error> {
     if s.is_empty() {
         Ok(Selectors::root())
     } else {
-        let bytes = s.as_bytes();
-        Ok(ParseError::check(selectors(Span::new(bytes)), bytes)?)
+        // FIXME: Old code allowd a trailing comma here.  Add back or remove?
+        Ok(ParseError::check(selectors(Span::new(s.as_bytes())))?)
     }
 }
 
 fn parse_selector(s: &str) -> Result<Selector, Error> {
-    let bytes = s.as_bytes();
-    Ok(ParseError::check(selector(Span::new(bytes)), bytes)?)
+    Ok(ParseError::check(selector(Span::new(s.as_bytes())))?)
 }

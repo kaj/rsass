@@ -23,40 +23,32 @@ impl ParseError {
     /// This is not a `From` implementation for two reasons:
     /// 1. It needs a reference to the original data to find the position.
     /// 2. An `Ok` result with remaining unparsed data is also considered an error.
-    pub fn check<T>(res: IResult<Span, T>, data: &[u8]) -> Result<T, Self> {
+    pub fn check<T>(res: IResult<Span, T>) -> Result<T, Self> {
         match res {
             Ok((rest, items)) if rest.fragment().is_empty() => Ok(items),
-            Ok((rest, _styles)) => {
-                Err(ParseError::remaining(rest.fragment(), data))
-            }
-            Err(Err::Error((rest, err))) => {
-                Err(ParseError::err(err, rest.fragment(), data))
-            }
-            Err(Err::Incomplete(_needed)) => {
-                Err(ParseError::incomplete(data))
-            }
-            Err(Err::Failure((rest, err))) => {
-                Err(ParseError::err(err, rest.fragment(), data))
-            }
+            Ok((rest, _styles)) => Err(ParseError::remaining(rest)),
+            Err(Err::Error((rest, err))) => Err(ParseError::err(err, rest)),
+            Err(Err::Incomplete(_needed)) => Err(ParseError::incomplete()),
+            Err(Err::Failure((rest, err))) => Err(ParseError::err(err, rest)),
         }
     }
 
-    fn remaining(span: &[u8], data: &[u8]) -> ParseError {
+    fn remaining(span: Span) -> ParseError {
         ParseError {
             msg: "Expected end of file.".into(),
-            pos: SourcePos::pos_of(span, data),
+            pos: span.into(),
         }
     }
-    fn incomplete(data: &[u8]) -> ParseError {
+    fn incomplete() -> ParseError {
         ParseError {
             msg: "Unexpected end of file.".into(),
-            pos: SourcePos::pos_of(&data[data.len()..], data),
+            pos: Span::new(b"").into(), // TODO: What to do?
         }
     }
-    fn err(kind: ErrorKind, span: &[u8], data: &[u8]) -> ParseError {
+    fn err(kind: ErrorKind, span: Span) -> ParseError {
         ParseError {
             msg: format!("Parse error: {:?}", kind),
-            pos: SourcePos::pos_of(span, data),
+            pos: span.into(),
         }
     }
 

@@ -93,7 +93,7 @@ impl Selectors {
         use crate::parser::{selectors::selectors, Span};
         let data = format!("{} ", s);
         let bytes = data.as_bytes();
-        Ok(ParseError::check(selectors(Span::new(bytes)), bytes)?)
+        Ok(ParseError::check(selectors(Span::new(bytes)))?)
     }
 }
 

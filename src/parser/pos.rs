@@ -1,3 +1,4 @@
+use super::Span;
 use std::str::from_utf8;
 
 /// A position in sass input.
@@ -9,21 +10,15 @@ pub struct SourcePos {
     pub file: SourceName,
 }
 
-impl SourcePos {
-    pub fn pos_of(part: &[u8], whole: &[u8]) -> SourcePos {
-        let index = whole.len() - part.len();
-        let before = &whole[0..index];
-        let line_start = before.rsplit(|c| *c == b'\n').next().unwrap();
-        let line_end = part.split(|c| *c == b'\n').next().unwrap();
-        let line_bytes =
-            &whole[index - line_start.len()..index + line_end.len()];
+impl From<Span<'_>> for SourcePos {
+    fn from(span: Span) -> Self {
         SourcePos {
-            line: from_utf8(line_bytes)
+            line: from_utf8(span.get_line_beginning())
                 .unwrap_or("<<failed to display line>>")
                 .to_string(),
-            line_no: 1 + bytecount::count(before, b'\n') as u32,
-            line_pos: bytecount::num_chars(line_start),
-            file: SourceName::root("-"),
+            line_no: span.location_line(),
+            line_pos: span.get_utf8_column(),
+            file: SourceName::root("-"), // span.extra.clone(),
         }
     }
 }

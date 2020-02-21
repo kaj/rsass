@@ -51,10 +51,8 @@ pub type Span<'a> = LocatedSpan<&'a [u8]>;
 ///
 /// Returns a single value (or an error).
 pub fn parse_value_data(data: &[u8]) -> Result<Value, Error> {
-    Ok(ParseError::check(
-        all_consuming(value_expression)(Span::new(data)),
-        data,
-    )?)
+    let data = Span::new(data);
+    Ok(ParseError::check(all_consuming(value_expression)(data))?)
 }
 
 #[test]
@@ -79,14 +77,19 @@ pub fn parse_scss_file(file: &Path) -> Result<Vec<Item>, Error> {
     let mut data = vec![];
     f.read_to_end(&mut data)
         .map_err(|e| Error::Input(file.into(), e))?;
+    /*
     parse_scss_data(&data).map_err(|err| err.in_file(file).into())
+    */
+    // TODO: Include the file info in the Span!
+    let data = Span::new(&data);
+    Ok(ParseError::check(sassfile(data))?)
 }
 
 /// Parse scss data from a buffer.
 ///
 /// Returns a vec of the top level items of the file (or an error message).
 pub fn parse_scss_data(data: &[u8]) -> Result<Vec<Item>, ParseError> {
-    ParseError::check(sassfile(Span::new(data)), data)
+    ParseError::check(sassfile(Span::new(data)))
 }
 
 fn sassfile(input: Span) -> IResult<Span, Vec<Item>> {

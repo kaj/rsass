@@ -380,7 +380,6 @@ impl Scope for GlobalScope {
 
 #[cfg(test)]
 pub mod test {
-    use crate::parser::{value::value_expression, Span};
     use crate::variablescope::*;
     use crate::{Error, ParseError};
 
@@ -724,21 +723,23 @@ pub mod test {
         s: &[(&str, &str)],
         expression: &[u8],
     ) -> Result<String, Error> {
-        let mut scope = GlobalScope::new(Default::default());
-        for &(name, ref val) in s {
-            let val = val.as_bytes();
-            scope.define(
-                name,
-                &ParseError::check(value_expression(Span::new(val)), val)?
-                    .evaluate(&scope)?,
-            );
-        }
+        use crate::parser::value::value_expression;
+        use crate::parser::Span;
         use nom::bytes::complete::tag;
         use nom::sequence::terminated;
-        let foo = ParseError::check(
-            terminated(value_expression, tag(";"))(Span::new(expression)),
-            expression,
-        )?;
+        let mut scope = GlobalScope::new(Default::default());
+        for &(name, ref val) in s {
+            scope.define(
+                name,
+                &ParseError::check(value_expression(Span::new(
+                    val.as_bytes(),
+                )))?
+                .evaluate(&scope)?,
+            );
+        }
+        let foo = ParseError::check(terminated(value_expression, tag(";"))(
+            Span::new(expression),
+        ))?;
         Ok(foo
             .evaluate(&mut scope)?
             .format(scope.get_format())
