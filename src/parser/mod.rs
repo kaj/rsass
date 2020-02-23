@@ -144,7 +144,7 @@ fn rule(input: &[u8]) -> IResult<&[u8], Item> {
 }
 
 fn rule_start(input: &[u8]) -> IResult<&[u8], Selectors> {
-    terminated(selectors, terminated(opt(is_a(", \t\n")), tag("{")))(input)
+    terminated(selectors, terminated(opt(is_a(", \t\r\n")), tag("{")))(input)
 }
 
 fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
@@ -295,7 +295,7 @@ fn media_args(input: &[u8]) -> IResult<&[u8], Value> {
                             map(sass_string_dq, Value::Literal),
                             map(sass_string_sq, Value::Literal),
                         )),
-                        peek(one_of(") \n\t{,;")),
+                        peek(one_of(") \r\n\t{,;")),
                     ),
                     map(map_res(is_not("#()\"'{};, "), input_to_str), |s| {
                         Value::Literal(s.trim_end().into())

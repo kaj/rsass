@@ -134,7 +134,7 @@ pub fn selector_string(input: &[u8]) -> IResult<&[u8], String> {
 }
 
 fn selector_plain_part(input: &[u8]) -> IResult<&[u8], &str> {
-    map_res(is_not("\n\t >$\"'\\#+*/()[]{}:;,=!&@"), input_to_str)(input)
+    map_res(is_not("\r\n\t >$\"'\\#+*/()[]{}:;,=!&@"), input_to_str)(input)
 }
 
 fn hash_no_interpolation(input: &[u8]) -> IResult<&[u8], &str> {
