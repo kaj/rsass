@@ -46,7 +46,7 @@ case "$1" in
     "stats")
 	check \
             | rg --no-line-number '^([0-9]+) runs, ([0-9]+) assertions.*' \
-                 --replace 'Progress: ![$2](http://progressed.io/bar/$2?scale=$1&suffix=+) of $1 tests passed' -
+                 --replace 'Progress: $2 of $1 tests passed' -
         ;;
     "update-tests")
 	cargo run --features=spectest --bin=spectest
