@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/is_superselector/simple"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/core_functions/selector/is_superselector/simple/attribute.hrx"
 mod attribute {

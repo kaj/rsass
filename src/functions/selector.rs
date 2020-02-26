@@ -59,7 +59,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
 }
 
 fn parse_selectors(v: Value) -> Result<Selectors, Error> {
-    let s = format!("{}", v.unquote());
+    let s = format!("{}", v.unquote().format(Default::default()));
     if s.is_empty() {
         Ok(Selectors::root())
     } else {

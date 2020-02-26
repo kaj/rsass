@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/parser/interpolate/24_escapes_double_quoted_specials/01_inline"
 #[test]

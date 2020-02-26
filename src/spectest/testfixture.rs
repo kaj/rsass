@@ -3,7 +3,7 @@ use super::options::Options;
 use super::Error;
 use lazy_static::lazy_static;
 use regex::Regex;
-use rsass::{compile_scss, OutputStyle};
+use rsass::{compile_scss, OutputFormat, OutputStyle};
 use std::io::Write;
 
 pub struct TestFixture {
@@ -75,7 +75,12 @@ impl TestFixture {
                 writeln!(rs, "fn {}() {{", self.fn_name)?;
                 let precision = self.options.precision.or(precision);
                 if let Some(precision) = precision {
-                    writeln!(rs, "    set_precision({});", precision)?;
+                    writeln!(
+                        rs,
+                        "    let format = rsass::OutputFormat {{ \
+                         style: rsass::OutputStyle::Expanded, precision: {} }};",
+                        precision,
+                    )?;
                 }
                 let input = format!("{:?}", self.input)
                     .replace(escaped_newline(), "\n            \\n");
@@ -84,13 +89,19 @@ impl TestFixture {
                 writeln!(
                     rs,
                     "    assert_eq!(\
-                     \n        rsass(\
+                     \n        {}\
                      \n            {}\
                      \n        )\
                      \n        .unwrap(),\
                      \n        {}\
                      \n    );",
-                    input, expected,
+                    if precision.is_none() {
+                        "rsass("
+                    } else {
+                        "crate::rsass_fmt(format,"
+                    },
+                    input,
+                    expected,
                 )?;
                 rs.write_all(b"}\n")?;
             }
@@ -103,16 +114,26 @@ impl TestFixture {
     fn is_failure(&self) -> Option<&'static str> {
         match &self.expectation {
             ExpectedError(_) => Some("Error tests not supported yet"),
-            ExpectedCSS(ref expected) => match rsass(&self.input) {
-                Ok(ref actual) => {
-                    if expected == actual {
-                        None // Yes!
-                    } else {
-                        Some("wrong result")
+            ExpectedCSS(ref expected) => {
+                let format = OutputFormat {
+                    style: OutputStyle::Expanded,
+                    precision: self
+                        .options
+                        .precision
+                        //.or(precision)
+                        .unwrap_or(5) as usize,
+                };
+                match rsass(&self.input, format) {
+                    Ok(ref actual) => {
+                        if expected == actual {
+                            None // Yes!
+                        } else {
+                            Some("wrong result")
+                        }
                     }
+                    Err(_) => Some("unexepected error"),
                 }
-                Err(_) => Some("unexepected error"),
-            },
+            }
         }
     }
 }
@@ -129,8 +150,8 @@ fn escaped_newline() -> impl FnMut(char) -> bool {
     }
 }
 
-fn rsass(input: &str) -> Result<String, String> {
-    compile_scss(input.as_bytes(), OutputStyle::Expanded)
+fn rsass(input: &str, format: OutputFormat) -> Result<String, String> {
+    compile_scss(input.as_bytes(), format)
         .map_err(|e| format!("rsass failed: {}", e))
         .and_then(|s| {
             String::from_utf8(s)

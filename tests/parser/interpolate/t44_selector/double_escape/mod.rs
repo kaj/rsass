@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/parser/interpolate/44_selector/double_escape"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/parser/interpolate/44_selector/double_escape/12_double_escaped_interpolated_value_todo.hrx"
 #[test]

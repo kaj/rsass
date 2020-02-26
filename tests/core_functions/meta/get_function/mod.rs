@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/get_function"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/core_functions/meta/get_function/different_module.hrx"
 mod different_module {

@@ -7,10 +7,11 @@
 //! # Example
 //!
 //! ```
-//! use rsass::{OutputStyle, compile_scss_file};
+//! use rsass::{compile_scss_file, OutputFormat, OutputStyle};
 //!
 //! let file = "tests/basic/14_imports/a.scss".as_ref();
-//! let css = compile_scss_file(file, OutputStyle::Compressed).unwrap();
+//! let format = OutputFormat { style: OutputStyle::Compressed, precision: 5 };
+//! let css = compile_scss_file(file, format).unwrap();
 //!
 //! assert_eq!(css, b"div span{moo:goo}\n")
 //! ```
@@ -40,6 +41,7 @@ mod error;
 mod file_context;
 mod functions;
 mod ordermap;
+mod output_format;
 mod output_style;
 mod parser;
 pub mod sass;
@@ -50,9 +52,11 @@ mod variablescope;
 pub use crate::error::{ErrPos, Error};
 pub use crate::file_context::FileContext;
 pub use crate::functions::SassFunction;
+pub use crate::output_format::OutputFormat;
 pub use crate::output_style::OutputStyle;
 pub use crate::parser::{parse_scss_data, parse_scss_file, parse_value_data};
 pub use crate::sass::Item;
+#[allow(deprecated)]
 pub use crate::value::{set_precision, ListSeparator, Number, Quotes, Unit};
 pub use crate::variablescope::{GlobalScope, Scope};
 pub use num_rational::Rational;
@@ -67,10 +71,10 @@ pub use num_rational::Rational;
 /// assert_eq!(compile_value(b"10px + 4px").unwrap(), b"14px");
 /// ```
 pub fn compile_value(input: &[u8]) -> Result<Vec<u8>, Error> {
-    let scope = GlobalScope::new();
-    let value = parse_value_data(input)?;
-    let buffer = format!("{}", value.evaluate(&scope)?).into_bytes();
-    Ok(buffer)
+    let format = Default::default();
+    let scope = GlobalScope::new(format);
+    let value = parse_value_data(input)?.evaluate(&scope)?;
+    Ok(value.format(format).to_string().into_bytes())
 }
 
 /// Parse scss data from a buffer and write css in the given style.
@@ -78,7 +82,7 @@ pub fn compile_value(input: &[u8]) -> Result<Vec<u8>, Error> {
 /// # Example
 ///
 /// ```
-/// use rsass::{OutputStyle, compile_scss};
+/// use rsass::compile_scss;
 ///
 /// assert_eq!(
 ///     compile_scss(
@@ -87,14 +91,16 @@ pub fn compile_value(input: &[u8]) -> Result<Vec<u8>, Error> {
 ///         \n        baz:value;\
 ///         \n    }\
 ///         \n}",
-///         OutputStyle::Compressed
+///         Default::default(),
 ///     ).unwrap(),
-///     b"foo bar{baz:value}\n"
+///     b"foo bar {\
+///     \n  baz: value;\
+///     \n}\n"
 /// )
 /// ```
 pub fn compile_scss(
     input: &[u8],
-    style: OutputStyle,
+    format: OutputFormat,
 ) -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
     let items =
@@ -103,7 +109,7 @@ pub fn compile_scss(
             pos: ErrPos::pos_of(pos, input),
             kind,
         })?;
-    style.write_root(&items, &mut GlobalScope::new(), &file_context)
+    format.write_root(&items, &mut GlobalScope::new(format), &file_context)
 }
 
 /// Parse a file of scss data and write css in the given style.
@@ -114,22 +120,22 @@ pub fn compile_scss(
 /// # Example
 ///
 /// ```
-/// use rsass::{OutputStyle, compile_scss_file};
+/// use rsass::{compile_scss_file, OutputFormat, OutputStyle};
 ///
 /// assert_eq!(
 ///     compile_scss_file(
 ///         "tests/basic/14_imports/a.scss".as_ref(),
-///         OutputStyle::Compressed
+///         OutputFormat { style: OutputStyle::Compressed, precision: 5 },
 ///     ).unwrap(),
 ///     b"div span{moo:goo}\n"
 /// )
 /// ```
 pub fn compile_scss_file(
     file: &Path,
-    style: OutputStyle,
+    format: OutputFormat,
 ) -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
     let (sub_context, file) = file_context.file(file);
     let items = parse_scss_file(&file)?;
-    style.write_root(&items, &mut GlobalScope::new(), &sub_context)
+    format.write_root(&items, &mut GlobalScope::new(format), &sub_context)
 }

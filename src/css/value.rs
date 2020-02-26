@@ -2,10 +2,11 @@ use crate::css::CallArgs;
 use crate::error::Error;
 use crate::functions::SassFunction;
 use crate::ordermap::OrderMap;
+use crate::output_format::Formatted;
 use crate::value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
+use crate::OutputFormat;
 use num_rational::Rational;
 use std::convert::TryFrom;
-use std::fmt::{self, Write};
 
 /// A css value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -312,141 +313,11 @@ impl Value {
             v => vec![v],
         }
     }
-}
 
-impl fmt::Display for Value {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Value::Bang(ref s) => write!(out, "!{}", s),
-            Value::Literal(ref s, ref q) => match *q {
-                Quotes::Double => write!(
-                    out,
-                    "\"{}\"",
-                    s.chars()
-                        .flat_map(|c| match c {
-                            '"' => vec!['\\', '"'],
-                            c => vec![c],
-                        })
-                        .collect::<String>()
-                ),
-                Quotes::Single => write!(
-                    out,
-                    "'{}'",
-                    s.chars()
-                        .flat_map(|c| match c {
-                            '\'' => vec!['\\', '\''],
-                            c => vec![c],
-                        })
-                        .collect::<String>()
-                ),
-                Quotes::None => write!(out, "{}", s),
-            },
-            Value::Function(ref n, ref _f) => {
-                let name = n
-                    .chars()
-                    .flat_map(|c| match c {
-                        '"' => vec!['\\', '"'],
-                        c => vec![c],
-                    })
-                    .collect::<String>();
-                write!(out, "get-function(\"{}\")", name)
-            }
-            Value::Numeric(ref num, ref unit, _) => {
-                num.fmt(out)?;
-                unit.fmt(out)
-            }
-            Value::Color(ref rgba, ref name) => {
-                if let Some(ref name) = *name {
-                    name.fmt(out)
-                } else {
-                    rgba.fmt(out)
-                }
-            }
-            Value::List(ref v, ref sep, brackets) => {
-                let t = v
-                    .iter()
-                    .filter(|v| !v.is_null())
-                    .map(|v| {
-                        let needs_paren = match *v {
-                            Value::List(_, _, false) => {
-                                brackets && *sep == ListSeparator::Space
-                            }
-                            _ => false,
-                        };
-                        match (out.alternate(), needs_paren) {
-                            (true, true) => format!("({:#})", v),
-                            (true, false) => format!("{:#}", v),
-                            (false, true) => format!("({})", v),
-                            (false, false) => format!("{}", v),
-                        }
-                    })
-                    .collect::<Vec<_>>();
-                let t = if *sep == ListSeparator::Comma && t.len() == 1 {
-                    format!("{},", t[0])
-                } else {
-                    t.join(match *sep {
-                        ListSeparator::Comma => {
-                            if out.alternate() {
-                                ","
-                            } else {
-                                ", "
-                            }
-                        }
-                        ListSeparator::Space => " ",
-                    })
-                };
-                if brackets {
-                    out.write_str("[")?;
-                }
-                write!(out, "{}", t)?;
-                if brackets {
-                    out.write_str("]")?;
-                }
-                Ok(())
-            }
-            Value::Call(ref name, ref arg) => {
-                write!(out, "{}({})", name, arg)
-            }
-            Value::BinOp(ref a, _, Operator::Plus, _, ref b) => {
-                // The plus operator is also a concat operator
-                a.fmt(out)?;
-                b.fmt(out)
-            }
-            Value::BinOp(ref a, ref s1, ref op, ref s2, ref b) => {
-                a.fmt(out)?;
-                if *s1 {
-                    out.write_char(' ')?;
-                }
-                op.fmt(out)?;
-                if *s2 {
-                    out.write_char(' ')?;
-                }
-                b.fmt(out)
-            }
-            Value::UnaryOp(ref op, ref v) => {
-                op.fmt(out)?;
-                if *op == Operator::Not {
-                    out.write_char(' ')?;
-                }
-                v.fmt(out)
-            }
-            Value::True => write!(out, "true"),
-            Value::False => write!(out, "false"),
-            Value::Null => Ok(()),
-            Value::Map(ref map) => write!(
-                out,
-                "({})",
-                map.iter()
-                    .map(|&(ref k, ref v)| format!("{}: {}", k, v))
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            ),
-            Value::UnicodeRange(ref s) => write!(out, "{}", s),
-            Value::Paren(ref v) => {
-                out.write_char('(')?;
-                v.fmt(out)?;
-                out.write_char(')')
-            }
+    pub fn format(&self, format: OutputFormat) -> Formatted<Value> {
+        Formatted {
+            value: self,
+            format,
         }
     }
 }

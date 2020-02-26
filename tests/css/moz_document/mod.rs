@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/css/moz_document"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/css/moz_document/empty_prefix.hrx"
 #[test]

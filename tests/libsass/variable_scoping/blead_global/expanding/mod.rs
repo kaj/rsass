@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/variable-scoping/blead-global/expanding"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/at-root.hrx"
 #[test]

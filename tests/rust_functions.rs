@@ -3,13 +3,16 @@ use std::sync::Arc;
 
 #[test]
 fn simple_value() {
-    let mut scope = GlobalScope::new();
-    scope.define("color", &css::Value::black());
     let parsed = parse_scss_data(b"p { color: $color }").unwrap();
-    let style = OutputStyle::Compressed;
+    let format = OutputFormat {
+        style: OutputStyle::Compressed,
+        precision: 5,
+    };
+    let mut scope = GlobalScope::new(format);
+    scope.define("color", &css::Value::black());
     let file_context = FileContext::new();
     assert_eq!(
-        style
+        format
             .write_root(&parsed, &mut scope, &file_context)
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
@@ -19,7 +22,11 @@ fn simple_value() {
 
 #[test]
 fn simple_function() {
-    let mut scope = GlobalScope::new();
+    let format = OutputFormat {
+        style: OutputStyle::Compressed,
+        precision: 5,
+    };
+    let mut scope = GlobalScope::new(format);
     scope.define_function(
         "get_answer",
         SassFunction::builtin(
@@ -29,10 +36,9 @@ fn simple_function() {
         ),
     );
     let parsed = parse_scss_data(b"p { x: get_answer(); }").unwrap();
-    let style = OutputStyle::Compressed;
     let file_context = FileContext::new();
     assert_eq!(
-        style
+        format
             .write_root(&parsed, &mut scope, &file_context)
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
@@ -47,7 +53,7 @@ fn avg(a: Number, b: Number) -> Number {
 
 #[test]
 fn function_with_args() {
-    let mut scope = GlobalScope::new();
+    let mut scope = GlobalScope::new(Default::default());
     scope.define_function(
         "halfway",
         SassFunction::builtin(
@@ -76,10 +82,13 @@ fn function_with_args() {
         ),
     );
     let parsed = parse_scss_data(b"p { x: halfway(10, 18); }").unwrap();
-    let style = OutputStyle::Compressed;
+    let format = OutputFormat {
+        style: OutputStyle::Compressed,
+        precision: 5,
+    };
     let file_context = FileContext::new();
     assert_eq!(
-        style
+        format
             .write_root(&parsed, &mut scope, &file_context)
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),

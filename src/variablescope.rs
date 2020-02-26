@@ -1,12 +1,12 @@
 //! A scope is something that contains variable values.
 
-use crate::css;
-use crate::css::Value;
+use crate::css::{self, Value};
 use crate::error::Error;
 use crate::functions::{get_builtin_function, SassFunction};
 use crate::sass;
 use crate::sass::Item;
 use crate::selectors::Selectors;
+use crate::OutputFormat;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
@@ -46,10 +46,13 @@ pub trait Scope {
         } else {
             panic!(
                 "Got multiple bindings {:?}, but non-list value {}",
-                names, value
+                names,
+                value.format(self.get_format())
             )
         }
     }
+
+    fn get_format(&self) -> OutputFormat;
 
     /// Get the Value for a variable.
     fn get_or_none(&self, name: &str) -> Option<Value>;
@@ -151,13 +154,16 @@ pub trait Scope {
                     None
                 }
                 Item::Warn(ref value) => {
-                    eprintln!("WARNING: {}", value.evaluate(self)?);
+                    eprintln!(
+                        "WARNING: {}",
+                        value.evaluate(self)?.format(self.get_format())
+                    );
                     None
                 }
                 Item::Error(ref value) => {
                     return Err(Error::S(format!(
                         "Error: {}",
-                        value.evaluate(self)?
+                        value.evaluate(self)?.format(self.get_format()),
                     )));
                 }
                 Item::None => None,
@@ -181,6 +187,10 @@ pub struct ScopeImpl<'a> {
 }
 
 impl<'a> Scope for ScopeImpl<'a> {
+    fn get_format(&self) -> OutputFormat {
+        self.parent.get_format()
+    }
+
     fn define(&mut self, name: &str, val: &Value) {
         self.variables
             .insert(name.replace('-', "_"), val.unrequote());
@@ -283,6 +293,7 @@ impl<'a> ScopeImpl<'a> {
 /// There can be multiple "global" scopes in the same process, they
 /// are global to the handling of a scss document.
 pub struct GlobalScope {
+    format: OutputFormat,
     variables: Mutex<BTreeMap<String, Value>>,
     mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
     functions: BTreeMap<String, SassFunction>,
@@ -291,8 +302,9 @@ pub struct GlobalScope {
 
 impl GlobalScope {
     /// Create a new global scope.
-    pub fn new() -> Self {
+    pub fn new(format: OutputFormat) -> Self {
         GlobalScope {
+            format: format,
             variables: Mutex::new(BTreeMap::new()),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
@@ -302,6 +314,10 @@ impl GlobalScope {
 }
 
 impl Scope for GlobalScope {
+    fn get_format(&self) -> OutputFormat {
+        self.format
+    }
+
     fn define(&mut self, name: &str, val: &Value) {
         self.define_global(name, val)
     }
@@ -708,7 +724,7 @@ pub mod test {
         s: &[(&str, &str)],
         expression: &[u8],
     ) -> Result<String, Error> {
-        let mut scope = GlobalScope::new();
+        let mut scope = GlobalScope::new(Default::default());
         for &(name, ref val) in s {
             let (end, value) = value_expression(val.as_bytes())?;
             let value = value.evaluate(&scope)?;
@@ -717,6 +733,9 @@ pub mod test {
         }
         let (end, foo) = value_expression(expression)?;
         assert_eq!(Ok(";"), from_utf8(&end));
-        Ok(format!("{}", foo.evaluate(&mut scope)?))
+        Ok(foo
+            .evaluate(&mut scope)?
+            .format(scope.get_format())
+            .to_string())
     }
 }

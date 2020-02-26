@@ -30,7 +30,7 @@ impl Error {
             "expected {}, got {} = {}",
             expected,
             actual.type_name(),
-            actual
+            actual.format(Default::default())
         ))
     }
 
@@ -42,7 +42,7 @@ impl Error {
             "expected {}, got {} = {}",
             expected,
             actual.type_name(),
-            actual
+            actual.format(Default::default())
         ))
     }
 

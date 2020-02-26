@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/parser/arglists/can-end-with-comma"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/parser/arglists/can-end-with-comma/error-call-1.hrx"
 

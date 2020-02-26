@@ -2,7 +2,7 @@
 //! See <https://github.com/sass/sass-spec> for source material.
 //! See `tests/basic/main.rs` for semi-autoimported tests.
 //! This file contains old tests that need special handling.
-use rsass::{compile_scss, compile_scss_file, OutputStyle};
+use rsass::{compile_scss, compile_scss_file};
 
 #[test]
 fn txx_empty_rule() {
@@ -13,7 +13,7 @@ fn txx_empty_rule() {
 fn t14_imports() {
     let path = "tests/basic/14_imports/input.scss";
     assert_eq!(
-        compile_scss_file(path.as_ref(), OutputStyle::Expanded)
+        compile_scss_file(path.as_ref(), Default::default())
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
         "div span {\n  moo: goo;\n}\n\n\
@@ -125,7 +125,7 @@ fn t15_arithmetic_and_lists() {
 fn t33_ambigous_imports() {
     let path = "tests/basic/33_ambiguous_imports/input.scss";
     assert_eq!(
-        compile_scss_file(path.as_ref(), OutputStyle::Expanded)
+        compile_scss_file(path.as_ref(), Default::default())
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
         "main {\n  color: red;\n}\n\n\
@@ -217,7 +217,7 @@ fn each_binds_multiple() {
 
 fn check(input: &[u8], expected: &str) {
     assert_eq!(
-        compile_scss(input, OutputStyle::Expanded)
+        compile_scss(input, Default::default())
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
         expected

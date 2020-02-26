@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/precision"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/precision/default.hrx"
 #[test]
@@ -31,11 +29,14 @@ fn default() {
 
 // From "sass-spec/spec/libsass/precision/higher.hrx"
 #[test]
-#[ignore] // wrong result
 fn higher() {
-    set_precision(6);
+    let format = rsass::OutputFormat {
+        style: rsass::OutputStyle::Expanded,
+        precision: 6,
+    };
     assert_eq!(
-        rsass(
+        crate::rsass_fmt(
+            format,
             "test {\r\
             \n  foo: 0.4999 round(0.4999);\r\
             \n  bar: 0.49999 round(0.49999);\r\
@@ -56,9 +57,13 @@ fn higher() {
 #[test]
 #[ignore] // wrong result
 fn lower() {
-    set_precision(4);
+    let format = rsass::OutputFormat {
+        style: rsass::OutputStyle::Expanded,
+        precision: 4,
+    };
     assert_eq!(
-        rsass(
+        crate::rsass_fmt(
+            format,
             "test {\r\
             \n  foo: 0.4999 round(0.4999);\r\
             \n  bar: 0.49999 round(0.49999);\r\

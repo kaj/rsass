@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/scss/feature-queries"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/scss/feature-queries/basic.hrx"
 #[test]

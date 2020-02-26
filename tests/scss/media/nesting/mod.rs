@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/scss/media/nesting"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/scss/media/nesting/merged.hrx"
 #[test]

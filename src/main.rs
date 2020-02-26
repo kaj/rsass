@@ -1,5 +1,5 @@
 use rsass::{
-    parse_scss_file, set_precision, Error, FileContext, GlobalScope,
+    parse_scss_file, Error, FileContext, GlobalScope, OutputFormat,
     OutputStyle,
 };
 use std::io::{stdout, Write};
@@ -49,8 +49,10 @@ struct Args {
 
 impl Args {
     fn run(self) -> Result<(), Error> {
-        let style = self.style;
-        set_precision(self.precision);
+        let format = OutputFormat {
+            style: self.style,
+            precision: self.precision,
+        };
         for name in &self.input {
             let mut file_context = FileContext::new();
             if let Some(include_path) = &self.include_path {
@@ -58,9 +60,9 @@ impl Args {
             }
             let (sub_context, file) = file_context.file(name.as_ref());
             let items = parse_scss_file(&file)?;
-            let result = style.write_root(
+            let result = format.write_root(
                 &items,
-                &mut GlobalScope::new(),
+                &mut GlobalScope::new(format),
                 &sub_context,
             )?;
             let out = stdout();

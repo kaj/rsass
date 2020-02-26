@@ -82,13 +82,13 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     if brackets && *sep == ListSeparator::Space {
                         &|v| {
                             if let Value::List(_, _, false) = &v {
-                                format!("({})", v)
+                                format!("({})", v.format(Default::default()))
                             } else {
-                                format!("{}", v)
+                                format!("{}", v.format(Default::default()))
                             }
                         }
                     } else {
-                        &|v| format!("{}", v)
+                        &|v| format!("{}", v.format(Default::default()))
                     };
                 let t = v
                     .iter()
@@ -111,7 +111,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     t
                 }
             }
-            v => format!("{}", v),
+            v => format!("{}", v.format(Default::default())),
         },
         Quotes::None
     )));

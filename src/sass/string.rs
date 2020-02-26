@@ -55,7 +55,11 @@ impl SassString {
         // becomes double-quoted.
         if self.quotes != Quotes::None && self.parts.len() == 1 {
             if let StringPart::Interpolation(ref v) = self.parts[0] {
-                let s = format!("{}", v.evaluate(scope)?.unquote())
+                let s = v
+                    .evaluate(scope)?
+                    .unquote()
+                    .format(scope.get_format())
+                    .to_string()
                     .replace('\\', "\\\\")
                     .replace('\n', "\\a");
                 if s.contains('"') && !s.contains('\'') {
@@ -71,7 +75,11 @@ impl SassString {
             match *part {
                 StringPart::Interpolation(ref v) => {
                     interpolated = true;
-                    let mut v = format!("{}", v.evaluate(scope)?.unquote());
+                    let mut v = v
+                        .evaluate(scope)?
+                        .unquote()
+                        .format(scope.get_format())
+                        .to_string();
                     if self.quotes == Quotes::None {
                         v = v.replace('\n', " ");
                     } else {
@@ -107,6 +115,7 @@ impl SassString {
             quotes,
         })
     }
+
     pub fn evaluate_opt_unquote(
         &self,
         scope: &dyn Scope,

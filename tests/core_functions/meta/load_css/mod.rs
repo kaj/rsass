@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/load_css"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/core_functions/meta/load_css/error.hrx"
 mod error {

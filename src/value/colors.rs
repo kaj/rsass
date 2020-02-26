@@ -1,6 +1,7 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
 #![allow(clippy::unreadable_literal)]
 
+use crate::output_format::{Formatted, OutputFormat};
 use crate::value::Number;
 use lazy_static::lazy_static;
 use num_rational::Rational;
@@ -135,6 +136,12 @@ impl Rgba {
             (h, s, mm / 2, self.alpha)
         }
     }
+    pub fn format(&self, format: OutputFormat) -> Formatted<Rgba> {
+        Formatted {
+            value: self,
+            format,
+        }
+    }
 }
 
 fn cap(n: Rational, ff: &Rational) -> Rational {
@@ -213,34 +220,42 @@ impl<'a> Sub<&'a Rgba> for &'a Rgba {
     }
 }
 
-impl Display for Rgba {
+impl<'a> Display for Formatted<'a, Rgba> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         // The byte-version of alpha is not used here.
-        let (r, g, b, _a) = self.to_bytes();
-        let a = self.alpha;
+        let (r, g, b, _a) = self.value.to_bytes();
+        let a = self.value.alpha;
         if a >= Rational::one() {
             // E.g. #ff00cc can be written #f0c in css.
             // 0xff / 0x11 = 0xf.
             let short = r % 0x11 == 0 && g % 0x11 == 0 && b % 0x11 == 0;
             let hex_len = if short { 4 } else { 7 };
-            if let Some(name) = self.name() {
-                if !(out.alternate() && name.len() > hex_len) {
+            if let Some(name) = self.value.name() {
+                if !(self.format.is_compressed() && name.len() > hex_len) {
                     return name.fmt(out);
                 }
             }
-            if out.alternate() && short {
+            if self.format.is_compressed() && short {
                 write!(out, "#{:x}{:x}{:x}", r / 0x11, g / 0x11, b / 0x11)
             } else {
                 write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
             }
-        } else if out.alternate() && self.all_zero() {
+        } else if self.format.is_compressed() && self.value.all_zero() {
             write!(out, "transparent")
-        } else if out.alternate() {
-            // I think the last {} should be {:#} here,
-            // but the test suite says otherwise.
-            write!(out, "rgba({},{},{},{})", r, g, b, Number::from(a))
+        } else if self.format.is_compressed() {
+            // Note: libsass does not use the format for the alpha like this.
+            let a = Number::from(a);
+            write!(out, "rgba({},{},{},{})", r, g, b, a.format(self.format))
         } else {
-            write!(out, "rgba({}, {}, {}, {})", r, g, b, Number::from(a))
+            let a = Number::from(a);
+            write!(
+                out,
+                "rgba({}, {}, {}, {})",
+                r,
+                g,
+                b,
+                a.format(self.format)
+            )
         }
     }
 }

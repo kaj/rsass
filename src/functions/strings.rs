@@ -11,7 +11,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, quote(string), |s| {
         let v = match s.get("string")? {
             Value::Literal(v, _) => v,
-            v => format!("{}", v),
+            v => format!("{}", v.format(Default::default())),
         };
         if v.contains('"') && !v.contains('\'') {
             Ok(Value::Literal(v, Quotes::Single))
@@ -22,7 +22,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, unquote(string), |s| match s.get("string")? {
         Value::Literal(v, _) => Ok(Value::Literal(v, Quotes::None)),
         v => {
-            dep_warn!("Passing {}, a non-string value, to unquote()", v);
+            dep_warn!(
+                "Passing {}, a non-string value, to unquote()",
+                v.format(Default::default())
+            );
             Ok(v)
         }
     });
@@ -135,7 +138,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def!(f, url(string), |s| {
         Ok(Value::Literal(
-            format!("url({})", s.get("string")?),
+            format!("url({})", s.get("string")?.format(Default::default())),
             Quotes::None,
         ))
     });

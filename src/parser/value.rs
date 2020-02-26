@@ -752,10 +752,11 @@ mod test {
         if let &Ok((rest, ref result)) = &t {
             assert_eq!(
                 (
-                    format!(
-                        "{}",
-                        result.evaluate(&GlobalScope::new()).unwrap()
-                    ),
+                    result
+                        .evaluate(&GlobalScope::new(Default::default()))
+                        .unwrap()
+                        .format(Default::default())
+                        .to_string(),
                     rest
                 ),
                 ("http://).com/".to_string(), &b""[..])
@@ -770,10 +771,11 @@ mod test {
         if let &Ok((rest, ref result)) = &t {
             assert_eq!(
                 (
-                    format!(
-                        "{}",
-                        result.evaluate(&GlobalScope::new()).unwrap()
-                    ),
+                    result
+                        .evaluate(&GlobalScope::new(Default::default()))
+                        .unwrap()
+                        .format(Default::default())
+                        .to_string(),
                     rest
                 ),
                 ("url(http://).com/)".to_string(), &b""[..])
@@ -788,10 +790,11 @@ mod test {
         if let &Ok((rest, ref result)) = &t {
             assert_eq!(
                 (
-                    format!(
-                        "{}",
-                        result.evaluate(&GlobalScope::new()).unwrap()
-                    ),
+                    result
+                        .evaluate(&GlobalScope::new(Default::default()))
+                        .unwrap()
+                        .format(Default::default())
+                        .to_string(),
                     rest
                 ),
                 ("url(//).com/)".to_string(), &b""[..])

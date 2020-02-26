@@ -1,6 +1,6 @@
 //! These are from the `output_styles/compressed/basic` directory in the
 //! sass specification.
-use rsass::{compile_scss, OutputStyle};
+use rsass::{compile_scss, OutputFormat, OutputStyle};
 
 #[test]
 fn t01_simple_css() {
@@ -229,6 +229,7 @@ fn t19_full_mixin_craziness() {
 
 #[test]
 fn t22_colors_with_alpha() {
+    // Note: Expected output differs from libsass in that rass skipps initial zero in alpha, e.g. `rgba(1,22,3,.5)` rather than `rgba(1,22,3,0.5)`
     check(
         b"$x: rgb(0, 255, 255);\n\n\
             div {\n  color: rgb(255, $blue: 0, $green: 255);\n  \
@@ -240,9 +241,9 @@ fn t22_colors_with_alpha() {
             goo: mix(rgba(255, 0, 0, 0.5), #00f);\n  \n  \
             boo: invert(#123456);\n}\n",
         "div{color:#ff0;background:#7b2d06;flah:#111;\
-           grah:rgba(255,0,238,0.5);blah:rgba(1,2,3,0.6);floo:cyan;\
-           bloo:rgba(0,255,255,0.7);groo:cyan;hoo:123;moo:45;poo:6;\
-           goo:rgba(64,0,191,0.75);boo:#edcba9}
+           grah:rgba(255,0,238,.5);blah:rgba(1,2,3,.6);floo:cyan;\
+           bloo:rgba(0,255,255,.7);groo:cyan;hoo:123;moo:45;poo:6;\
+           goo:rgba(64,0,191,.75);boo:#edcba9}
 ",
     )
 }
@@ -258,7 +259,7 @@ fn t27_media_queries() {
             k l m {\n        hee: fee;\n      }\n    }\n  }\n\
             blah: blah;\n}\n",
         "a b c{blee:blee;blah:blah}a b c d e f{blah:blah;bloo:bloo}\
-         @media print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen{\
+         @media print and (foo: 1 2 3),(bar: 3px hux(muz)),not screen{\
          a b c g h,a b c i j{hey:ho}a b c g h k l m,a b c i j k l m{hee:fee}\
          }\n",
     )
@@ -297,8 +298,12 @@ fn t50_wrapped_pseudo_selectors() {
 }
 
 fn check(input: &[u8], expected: &str) {
+    let format = OutputFormat {
+        style: OutputStyle::Compressed,
+        precision: 5,
+    };
     assert_eq!(
-        compile_scss(input, OutputStyle::Compressed)
+        compile_scss(input, format)
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
         expected

@@ -1,5 +1,5 @@
 //! These are from the `selector-functions` directory in the sass specification.
-use rsass::{compile_scss, OutputStyle};
+use rsass::compile_scss;
 
 // Manual variant, slight todo from real test.
 #[test]
@@ -28,7 +28,7 @@ fn parse() {
 
 fn check(input: &str, expected: &str) {
     assert_eq!(
-        compile_scss(input.as_bytes(), OutputStyle::Expanded)
+        compile_scss(input.as_bytes(), Default::default())
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
         expected

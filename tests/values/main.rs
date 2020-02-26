@@ -1,7 +1,7 @@
 //! Tests auto-converted from "sass-spec/spec/values"
 //! version e9e219bdf, 2019-12-19 17:12:28 -0800.
 //! See <https://github.com/sass/sass-spec> for source material.\n
-use rsass::{compile_scss, OutputStyle};
+use rsass::{compile_scss, OutputFormat};
 
 mod colors;
 
@@ -52,7 +52,17 @@ mod maps;
 mod numbers;
 
 fn rsass(input: &str) -> Result<String, String> {
-    compile_scss(input.as_bytes(), OutputStyle::Expanded)
+    compile_scss(input.as_bytes(), OutputFormat::default())
+        .map_err(|e| format!("rsass failed: {}", e))
+        .and_then(|s| {
+            String::from_utf8(s)
+                .map(|s| s.replace("\n\n", "\n"))
+                .map_err(|e| format!("{:?}", e))
+        })
+}
+#[allow(unused)]
+fn rsass_fmt(format: OutputFormat, input: &str) -> Result<String, String> {
+    compile_scss(input.as_bytes(), format)
         .map_err(|e| format!("rsass failed: {}", e))
         .and_then(|s| {
             String::from_utf8(s)

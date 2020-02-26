@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hsla/error"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/core_functions/color/hsla/error/five_args.hrx"
 

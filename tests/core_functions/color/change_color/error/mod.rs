@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/change_color/error"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/core_functions/color/change_color/error/args.hrx"
 mod args {

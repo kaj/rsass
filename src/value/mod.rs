@@ -7,7 +7,8 @@ mod unit;
 
 pub use self::colors::Rgba;
 pub use self::list_separator::ListSeparator;
-pub use self::number::{set_precision, Number};
+#[allow(deprecated)]
+pub use self::number::{get_precision, set_precision, Number};
 pub use self::operator::Operator;
 pub use self::quotes::Quotes;
 pub use self::unit::Unit;

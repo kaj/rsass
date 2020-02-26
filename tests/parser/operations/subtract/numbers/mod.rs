@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/parser/operations/subtract/numbers"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/parser/operations/subtract/numbers/pairs.hrx"
 #[test]

@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/selectors/variables/single"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/libsass/selectors/variables/single/bare.hrx"
 #[test]

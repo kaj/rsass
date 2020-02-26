@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/parser/interpolate/30_base_test"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/parser/interpolate/30_base_test/01_inline.hrx"
 #[test]

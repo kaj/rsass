@@ -1,3 +1,5 @@
+use crate::output_format::Formatted;
+use crate::OutputFormat;
 use num_rational::Rational;
 use num_traits::{Signed, Zero};
 use std::fmt::{self, Write};
@@ -13,8 +15,16 @@ static PRECISION: AtomicUsize = AtomicUsize::new(5);
 ///
 /// This modifies a global singleton and should probably be called only once,
 /// at program start.
+#[deprecated]
 pub fn set_precision(precision: usize) {
     PRECISION.store(precision, Ordering::Relaxed);
+}
+
+/// Set how many digits of precision to use when outputting decimal numbers.
+///
+/// This gets the value from a global singleton and should be avoided.
+pub fn get_precision() -> usize {
+    PRECISION.load(Ordering::Relaxed)
 }
 
 /// The actual number part of a numeric sass or css value.
@@ -45,6 +55,12 @@ impl Number {
     /// Converts to an integer, rounding towards zero.
     pub fn to_integer(&self) -> isize {
         self.value.to_integer()
+    }
+    pub fn format(&self, format: OutputFormat) -> Formatted<Self> {
+        Formatted {
+            value: self,
+            format,
+        }
     }
 }
 
@@ -107,32 +123,32 @@ impl Zero for Number {
     }
 }
 
-impl fmt::Display for Number {
+impl<'a> fmt::Display for Formatted<'a, Number> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        let t = self.value.to_integer();
-        let skip_zero = out.alternate() || !self.lead_zero;
+        let t = self.value.value.to_integer();
+        let skip_zero = self.format.is_compressed() || !self.value.lead_zero;
         if t == 0 {
-            if self.value.is_negative() {
+            if self.value.value.is_negative() {
                 out.write_str("-")?;
                 if !skip_zero {
                     out.write_str("0")?;
                 }
-            } else if self.plus_sign {
+            } else if self.value.plus_sign {
                 out.write_str("+0")?;
-            } else if self.value.is_zero() || !skip_zero {
+            } else if self.value.value.is_zero() || !skip_zero {
                 out.write_char('0')?;
             }
         } else {
-            if self.plus_sign && !t.is_negative() {
+            if self.value.plus_sign && !t.is_negative() {
                 out.write_char('+')?;
             }
             write!(out, "{}", t)?;
         }
-        let mut f = self.value.fract().abs();
+        let mut f = self.value.value.fract().abs();
         if !f.is_zero() {
             out.write_char('.')?;
-            for _ in 0..(PRECISION.load(Ordering::Relaxed) - 1) {
-                f *= 10;
+            for _ in 1..self.format.precision {
+                f = f * 10;
                 write!(out, "{}", f.to_integer())?;
                 f = f.fract();
                 if f.is_zero() {

@@ -5,6 +5,7 @@ use crate::parser::parse_scss_file;
 use crate::sass::{FormalArgs, Item};
 use crate::selectors::Selectors;
 use crate::variablescope::{Scope, ScopeImpl};
+use crate::OutputFormat;
 use std::fmt;
 use std::io::Write;
 use std::str::FromStr;
@@ -45,6 +46,22 @@ impl OutputStyle {
     pub fn variants() -> &'static [&'static str] {
         &FORMAT_NAMES
     }
+    #[deprecated]
+    pub fn write_root(
+        &self,
+        items: &[Item],
+        globals: &mut dyn Scope,
+        file_context: &FileContext,
+    ) -> Result<Vec<u8>, Error> {
+        let format = OutputFormat {
+            style: *self,
+            precision: crate::value::get_precision(),
+        };
+        format.write_root(items, globals, file_context)
+    }
+}
+
+impl OutputFormat {
     /// Write a slice of sass items in this format.
     /// The `file_context` is needed if there are `@import` statements
     /// in the sass file.
@@ -93,7 +110,7 @@ impl OutputStyle {
                                     write!(
                                         result.to_imports(),
                                         "@import {};{}",
-                                        name,
+                                        name.format(*self),
                                         if self.is_compressed() {
                                             ""
                                         } else {
@@ -117,7 +134,7 @@ impl OutputStyle {
                             write!(
                                 result.to_imports(),
                                 "@import {};{}",
-                                name,
+                                name.format(*self),
                                 if self.is_compressed() { "" } else { "\n" }
                             )?;
                         }
@@ -127,8 +144,8 @@ impl OutputStyle {
                         write!(
                             result.to_imports(),
                             "@import {} {};{}",
-                            name.evaluate(scope)?,
-                            args.evaluate(scope)?,
+                            name.evaluate(scope)?.format(*self),
+                            args.evaluate(scope)?.format(*self),
                             if self.is_compressed() { "" } else { "\n" }
                         )?;
                     }
@@ -190,7 +207,7 @@ impl OutputStyle {
                 let args = args.evaluate(scope)?;
                 write!(result.to_content(), "@{}", name)?;
                 if !args.is_null() {
-                    write!(result.to_content(), " {}", args)?;
+                    write!(result.to_content(), " {}", args.format(*self))?;
                 }
                 if let Some(ref body) = *body {
                     if self.is_compressed() {
@@ -314,12 +331,15 @@ impl OutputStyle {
                 }
             }
             Item::Warn(ref value) => {
-                eprintln!("WARNING: {}", value.evaluate(scope)?);
+                eprintln!(
+                    "WARNING: {}",
+                    value.evaluate(scope)?.format(*self)
+                );
             }
             Item::Error(ref value) => {
                 return Err(Error::S(format!(
                     "Error: {}",
-                    value.evaluate(scope)?
+                    value.evaluate(scope)?.format(*self)
                 )));
             }
             Item::While(ref cond, ref body) => {
@@ -429,7 +449,7 @@ impl OutputStyle {
                                 write!(
                                     sub, // TODO:  Should be topmost!
                                     "@import {};{}",
-                                    name,
+                                    name.format(*self),
                                     if self.is_compressed() {
                                         ""
                                     } else {
@@ -443,8 +463,8 @@ impl OutputStyle {
                             write!(
                                 sub, // TODO:  Should be topmost!
                                 "@import {} {};{}",
-                                name.evaluate(scope)?,
-                                args.evaluate(scope)?,
+                                name.evaluate(scope)?.format(*self),
+                                args.evaluate(scope)?.format(*self),
                                 if self.is_compressed() { "" } else { "\n" }
                             )?;
                         }
@@ -511,7 +531,7 @@ impl OutputStyle {
                     write!(sub, "@{}", name)?;
                     let args = args.evaluate(scope)?;
                     if !args.is_null() {
-                        write!(sub, " {}", args)?;
+                        write!(sub, " {}", args.format(*self))?;
                     }
                     if let Some(ref body) = *body {
                         if self.is_compressed() {
@@ -658,12 +678,15 @@ impl OutputStyle {
                     }
                 }
                 Item::Warn(ref value) => {
-                    eprintln!("WARNING: {}", value.evaluate(scope)?);
+                    eprintln!(
+                        "WARNING: {}",
+                        value.evaluate(scope)?.format(*self)
+                    );
                 }
                 Item::Error(ref value) => {
                     return Err(Error::S(format!(
                         "Error: {}",
-                        value.evaluate(scope)?
+                        value.evaluate(scope)?.format(*self),
                     )));
                 }
                 Item::While(ref cond, ref body) => {
@@ -739,11 +762,13 @@ impl OutputStyle {
             let mut buf = Vec::new();
             for item in items {
                 self.do_indent(&mut buf, indent)?;
+                item.write(&mut buf, *self)?;
+                /*
                 if self.is_compressed() {
                     write!(buf, "{:#}", item)?;
                 } else {
                     write!(buf, "{}", item)?;
-                }
+                }*/
             }
             if self.is_compressed() && buf.last() == Some(&b';') {
                 buf.pop();
@@ -779,31 +804,27 @@ impl OutputStyle {
         }
         Ok(())
     }
-
-    fn is_compressed(&self) -> bool {
-        self == &OutputStyle::Compressed
-    }
 }
 
 struct CssWriter {
     imports: Vec<u8>,
     contents: Vec<u8>,
-    style: OutputStyle,
+    format: OutputFormat,
     separate: bool,
 }
 
 impl CssWriter {
-    fn new(style: OutputStyle) -> Self {
+    fn new(format: OutputFormat) -> Self {
         CssWriter {
             imports: Vec::new(),
             contents: Vec::new(),
-            style,
+            format,
             separate: false,
         }
     }
     fn get_result(self) -> Result<Vec<u8>, Error> {
         let mut result = vec![];
-        let compressed = self.is_compressed();
+        let compressed = self.format.is_compressed();
         if !self.imports.is_ascii() || !self.contents.is_ascii() {
             if compressed {
                 // U+FEFF is byte order mark, used to show encoding.
@@ -838,7 +859,7 @@ impl CssWriter {
         Ok(())
     }
     fn do_indent(&mut self, steps: usize) -> Result<(), Error> {
-        if !self.is_compressed() {
+        if !self.format.is_compressed() {
             if !self.contents.is_empty() {
                 writeln!(self.contents)?;
             }
@@ -848,9 +869,6 @@ impl CssWriter {
         }
         Ok(())
     }
-    fn is_compressed(&self) -> bool {
-        self.style == OutputStyle::Compressed
-    }
 }
 
 enum CssBodyItem {
@@ -858,16 +876,20 @@ enum CssBodyItem {
     Comment(String),
 }
 
-impl fmt::Display for CssBodyItem {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+impl CssBodyItem {
+    fn write(
+        &self,
+        out: &mut dyn Write,
+        format: OutputFormat,
+    ) -> std::io::Result<()> {
         match *self {
-            CssBodyItem::Property(ref name, ref val) => {
-                if out.alternate() {
-                    write!(out, "{}:{:#};", name, val)
-                } else {
-                    write!(out, "{}: {};", name, val)
-                }
-            }
+            CssBodyItem::Property(ref name, ref val) => write!(
+                out,
+                "{}:{}{};",
+                name,
+                if format.is_compressed() { "" } else { " " },
+                val.format(format),
+            ),
             CssBodyItem::Comment(ref c) => write!(out, "/*{}*/", c),
         }
     }

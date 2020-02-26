@@ -93,7 +93,7 @@ fn handle_suite(
             ignored,
         )?;
     }
-    writeln!(rs, "use rsass::{{compile_scss, OutputStyle}};",)?;
+    writeln!(rs, "use rsass::{{compile_scss, OutputFormat}};",)?;
 
     handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)
         .map_err(|e| {
@@ -103,7 +103,17 @@ fn handle_suite(
     writeln!(
         rs,
         "\nfn rsass(input: &str) -> Result<String, String> {{\
-         \n    compile_scss(input.as_bytes(), OutputStyle::Expanded)\
+         \n    compile_scss(input.as_bytes(), OutputFormat::default())\
+         \n        .map_err(|e| format!(\"rsass failed: {{}}\", e))\
+         \n        .and_then(|s| {{\
+         \n            String::from_utf8(s)\
+         \n                .map(|s| s.replace(\"\\n\\n\", \"\\n\"))\
+         \n                .map_err(|e| format!(\"{{:?}}\", e))\
+         \n        }})\
+         \n}}\
+         \n#[allow(unused)]\
+         \nfn rsass_fmt(format: OutputFormat, input: &str) -> Result<String, String> {{\
+         \n    compile_scss(input.as_bytes(), format)\
          \n        .map_err(|e| format!(\"rsass failed: {{}}\", e))\
          \n        .and_then(|s| {{\
          \n            String::from_utf8(s)\
@@ -177,9 +187,7 @@ fn handle_entries(
                             rs,
                             "//! Tests auto-converted from {:?}\
                              \n#[allow(unused)]\
-                             \nuse super::rsass;\
-                             \n#[allow(unused)]\
-                             \nuse rsass::set_precision;",
+                             \nuse super::rsass;",
                             suitedir.join(entry.file_name()),
                         )?;
                         let tt = format!(

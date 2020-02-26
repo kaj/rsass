@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/parser/interpolate/19_escapes_single_quoted_lowercase"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/parser/interpolate/19_escapes_single_quoted_lowercase/01_inline.hrx"
 #[test]

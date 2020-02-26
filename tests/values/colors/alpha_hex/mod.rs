@@ -1,16 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/values/colors/alpha_hex"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // From "sass-spec/spec/values/colors/alpha_hex/initial_digit.hrx"
 #[test]
 #[ignore] // wrong result
 fn initial_digit() {
-    set_precision(10);
+    let format = rsass::OutputFormat {
+        style: rsass::OutputStyle::Expanded,
+        precision: 10,
+    };
     assert_eq!(
-        rsass(
+        crate::rsass_fmt(
+            format,
             "a {\
             \n  four-digit: #0123;\
             \n  eight-digit: #98765432;\
@@ -49,9 +51,13 @@ fn initial_digit() {
 #[test]
 #[ignore] // wrong result
 fn initial_letter() {
-    set_precision(10);
+    let format = rsass::OutputFormat {
+        style: rsass::OutputStyle::Expanded,
+        precision: 10,
+    };
     assert_eq!(
-        rsass(
+        crate::rsass_fmt(
+            format,
             "a {\
             \n  four-digit: #AbCd;\
             \n  eight-digit: #aBcDeF12;\

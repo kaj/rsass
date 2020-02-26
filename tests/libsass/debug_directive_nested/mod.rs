@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/debug-directive-nested"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 // Ignoring "function.hrx", not expected to work yet.
 

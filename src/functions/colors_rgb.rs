@@ -39,7 +39,9 @@ fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
                 CallArgs::new(vec![(
                     None,
                     Value::Literal(
-                        format!("{}", Value::List(vec, sep, bracketed)),
+                        Value::List(vec, sep, bracketed)
+                            .format(Default::default())
+                            .to_string(),
                         Quotes::None,
                     ),
                 )])

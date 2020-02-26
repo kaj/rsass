@@ -1,7 +1,6 @@
-use crate::css;
 use crate::error::Error;
-use crate::sass;
 use crate::variablescope::Scope;
+use crate::{css, sass};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -175,7 +174,7 @@ fn test_rgb() {
     use crate::parser::formalargs::call_args;
     use crate::value::Rgba;
     use crate::variablescope::GlobalScope;
-    let scope = GlobalScope::new();
+    let scope = GlobalScope::new(Default::default());
     assert_eq!(
         FUNCTIONS
             .get("rgb")

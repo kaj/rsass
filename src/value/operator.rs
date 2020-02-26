@@ -54,10 +54,7 @@ impl Operator {
                     } else if au == Unit::None {
                         Some(Value::Numeric(a + b, bu, true))
                     } else {
-                        Some(Value::Literal(
-                            format!("{}{}", a, b),
-                            Quotes::None,
-                        ))
+                        None
                     }
                 }
                 (Value::Literal(a, Quotes::None), Value::Literal(b, _)) => {
@@ -66,12 +63,14 @@ impl Operator {
                 (Value::Literal(a, _), Value::Literal(b, _)) => Some(
                     Value::Literal(format!("{}{}", a, b), Quotes::Double),
                 ),
-                (Value::Literal(a, q), b) => {
-                    Some(Value::Literal(format!("{}{}", a, b), q))
-                }
-                (a, Value::Literal(b, q)) => {
-                    Some(Value::Literal(format!("{}{}", a, b), q))
-                }
+                (Value::Literal(a, q), b) => Some(Value::Literal(
+                    format!("{}{}", a, b.format(Default::default())),
+                    q,
+                )),
+                (a, Value::Literal(b, q)) => Some(Value::Literal(
+                    format!("{}{}", a.format(Default::default()), b),
+                    q,
+                )),
                 _ => None,
             },
             Operator::Minus => match (&a, &b) {
@@ -125,15 +124,10 @@ impl Operator {
                     } else if au == &Unit::None {
                         Some(Value::Numeric(a * b, bu.clone(), true))
                     } else {
-                        // TODO None?
-                        Some(Value::Literal(
-                            format!("{}*{}", a, b),
-                            Quotes::None,
-                        ))
+                        None
                     }
                 } else {
-                    // TODO None?
-                    Some(Value::Literal(format!("{}*{}", a, b), Quotes::None))
+                    None
                 }
             }
             Operator::Div => {

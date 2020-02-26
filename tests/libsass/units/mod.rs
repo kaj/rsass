@@ -1,8 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/units"
 #[allow(unused)]
 use super::rsass;
-#[allow(unused)]
-use rsass::set_precision;
 
 mod conversion;
 
