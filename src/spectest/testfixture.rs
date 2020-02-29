@@ -113,11 +113,7 @@ impl TestFixture {
             ExpectedCSS(ref expected) => {
                 let format = OutputFormat {
                     style: OutputStyle::Expanded,
-                    precision: self
-                        .options
-                        .precision
-                        //.or(precision)
-                        .unwrap_or(5) as usize,
+                    precision: self.options.precision.unwrap_or(6) as usize,
                 };
                 match rsass(&self.input, format) {
                     Ok(ref actual) => {

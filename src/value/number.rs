@@ -1,7 +1,7 @@
 use crate::output_format::Formatted;
 use crate::OutputFormat;
 use num_rational::Rational;
-use num_traits::{Signed, Zero};
+use num_traits::{One, Signed, Zero};
 use std::fmt::{self, Write};
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 // TODO Using a global static setting like this makes the API unusable
 // for some applications, and it makes testing a problem, since rust
 // test are typically executed in parallel.
-static PRECISION: AtomicUsize = AtomicUsize::new(5);
+static PRECISION: AtomicUsize = AtomicUsize::new(6);
 
 /// Set how many digits of precision to use when outputting decimal numbers.
 ///
@@ -147,12 +147,22 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
         let mut f = self.value.value.fract().abs();
         if !f.is_zero() {
             out.write_char('.')?;
-            for _ in 1..self.format.precision {
+            for i in 0..(self.format.precision - 1) {
                 f = f * 10;
-                write!(out, "{}", f.to_integer())?;
+                let digit = f.to_integer();
                 f = f.fract();
+                if (f + Rational::new(1, 10)
+                    .pow((self.format.precision - i) as i32))
+                    >= Rational::one()
+                {
+                    assert!(digit < 9);
+                    write!(out, "{}", digit + 1)?;
+                    return Ok(());
+                } else {
+                    write!(out, "{}", digit)?;
+                }
                 if f.is_zero() {
-                    break;
+                    return Ok(());
                 }
             }
             if !f.is_zero() {

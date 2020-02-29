@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass/precision/default.hrx"
 #[test]
-#[ignore] // wrong result
 fn default() {
     assert_eq!(
         rsass(
