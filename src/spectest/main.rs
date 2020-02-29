@@ -236,9 +236,9 @@ fn spec_dir_to_test(
     precision: Option<i64>,
 ) -> Result<(), Error> {
     let specdir = suite.join(test);
-    let fixture = load_test_fixture_dir(&specdir)?;
+    let fixture = load_test_fixture_dir(&specdir, precision)?;
     writeln!(rs, "\n// From {:?}", specdir)?;
-    fixture.write_test(rs, precision)
+    fixture.write_test(rs)
 }
 
 fn spec_hrx_to_test(
@@ -295,8 +295,9 @@ fn handle_hrx_part(
     };
 
     if archive.get(&format!("{}input.scss", prefix)).is_some() {
-        let fixture = load_test_fixture_hrx(name, &archive, prefix)?;
-        fixture.write_test(rs, precision)
+        let fixture =
+            load_test_fixture_hrx(name, &archive, prefix, precision)?;
+        fixture.write_test(rs)
     } else {
         let options = archive
             .get(&format!("{}options.yml", prefix))
@@ -359,13 +360,17 @@ fn fn_name(name: &str) -> String {
     }
 }
 
-fn load_test_fixture_dir(specdir: &Path) -> Result<TestFixture, Error> {
+fn load_test_fixture_dir(
+    specdir: &Path,
+    precision: Option<i64>,
+) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAME: &str = "output.css";
     static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
 
     let name = fn_name_os(specdir.file_name().unwrap_or_default());
-    let options = load_options(&specdir)?;
+    let mut options = load_options(&specdir)?;
+    options.precision = options.precision.or(precision);
     let input = content(&specdir.join(INPUT_FILENAME))?;
 
     {
@@ -400,18 +405,20 @@ fn load_test_fixture_hrx(
     name: String,
     archive: &Archive,
     prefix: &str,
+    precision: Option<i64>,
 ) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAMES: &[&str] =
         &["output-libsass.css", "output.css"];
     static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-libsass", "error"];
 
-    let options =
+    let mut options =
         if let Some(yml) = archive.get(&format!("{}options.yml", prefix)) {
             Options::parse(yml)?
         } else {
             Options::default()
         };
+    options.precision = options.precision.or(precision);
 
     if let Some(input) = archive.get(&format!("{}{}", prefix, INPUT_FILENAME))
     {

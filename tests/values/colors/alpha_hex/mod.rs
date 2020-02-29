@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/values/colors/alpha_hex/initial_digit.hrx"
 #[test]
-#[ignore] // wrong result
 fn initial_digit() {
     let format = rsass::OutputFormat {
         style: rsass::OutputStyle::Expanded,
@@ -49,7 +48,6 @@ fn initial_digit() {
 
 // From "sass-spec/spec/values/colors/alpha_hex/initial_letter.hrx"
 #[test]
-#[ignore] // wrong result
 fn initial_letter() {
     let format = rsass::OutputFormat {
         style: rsass::OutputStyle::Expanded,

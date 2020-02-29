@@ -49,11 +49,7 @@ impl TestFixture {
         }
     }
 
-    pub fn write_test(
-        &self,
-        rs: &mut dyn Write,
-        precision: Option<i64>,
-    ) -> Result<(), Error> {
+    pub fn write_test(&self, rs: &mut dyn Write) -> Result<(), Error> {
         if let Some(ref reason) = self.options.should_skip {
             ignore(rs, &self.fn_name, reason)?;
             return Ok(());
@@ -73,7 +69,7 @@ impl TestFixture {
                     writeln!(rs, "#[ignore] // {}", reason)?;
                 }
                 writeln!(rs, "fn {}() {{", self.fn_name)?;
-                let precision = self.options.precision.or(precision);
+                let precision = self.options.precision;
                 if let Some(precision) = precision {
                     writeln!(
                         rs,
