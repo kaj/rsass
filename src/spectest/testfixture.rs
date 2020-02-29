@@ -3,6 +3,7 @@ use super::options::Options;
 use super::Error;
 use lazy_static::lazy_static;
 use regex::Regex;
+use rsass::{compile_scss, OutputStyle};
 use std::io::Write;
 
 pub struct TestFixture {
@@ -76,7 +77,21 @@ impl TestFixture {
                 if let Some(precision) = precision {
                     writeln!(rs, "    set_precision({});", precision)?;
                 }
-                write_test_input_expected(rs, &self.input, expected)?;
+                let input = format!("{:?}", self.input)
+                    .replace(escaped_newline(), "\n            \\n");
+                let expected = format!("{:?}", expected)
+                    .replace(escaped_newline(), "\n        \\n");
+                writeln!(
+                    rs,
+                    "    assert_eq!(\
+                     \n        rsass(\
+                     \n            {}\
+                     \n        )\
+                     \n        .unwrap(),\
+                     \n        {}\
+                     \n    );",
+                    input, expected,
+                )?;
                 rs.write_all(b"}\n")?;
             }
         }
@@ -113,57 +128,6 @@ fn escaped_newline() -> impl FnMut(char) -> bool {
         result
     }
 }
-
-fn write_test_input_expected(
-    rs: &mut dyn Write,
-    input: &str,
-    expected: &str,
-) -> Result<(), std::io::Error> {
-    let input = format!("{:?}", input)
-        .replace(escaped_newline(), "\n            \\n");
-    let expected =
-        format!("{:?}", expected).replace(escaped_newline(), "\n        \\n");
-    if input.len() + expected.len() < 45 {
-        writeln!(
-            rs,
-            "    assert_eq!(rsass({}).unwrap(), {});",
-            input, expected
-        )
-    } else if input.len() < 54 {
-        writeln!(
-            rs,
-            "    assert_eq!(\
-             \n        rsass({}).unwrap(),\
-             \n        {}\
-             \n    );",
-            input, expected
-        )
-    } else if input.len() < 63 {
-        writeln!(
-            rs,
-            "    assert_eq!(\
-             \n        rsass({})\
-             \n            .unwrap(),\
-             \n        {}\
-             \n    );",
-            input, expected
-        )
-    } else {
-        writeln!(
-            rs,
-            "    assert_eq!(\
-             \n        rsass(\
-             \n            {}\
-             \n        )\
-             \n        .unwrap(),\
-             \n        {}\
-             \n    );",
-            input, expected
-        )
-    }
-}
-
-use rsass::{compile_scss, OutputStyle};
 
 fn rsass(input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), OutputStyle::Expanded)
