@@ -16,7 +16,7 @@ impl Default for OutputFormat {
     fn default() -> OutputFormat {
         OutputFormat {
             style: OutputStyle::Expanded,
-            precision: crate::value::get_precision(),
+            precision: 6,
         }
     }
 }

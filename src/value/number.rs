@@ -4,28 +4,6 @@ use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::fmt::{self, Write};
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
-use std::sync::atomic::{AtomicUsize, Ordering};
-
-// TODO Using a global static setting like this makes the API unusable
-// for some applications, and it makes testing a problem, since rust
-// test are typically executed in parallel.
-static PRECISION: AtomicUsize = AtomicUsize::new(6);
-
-/// Set how many digits of precision to use when outputting decimal numbers.
-///
-/// This modifies a global singleton and should probably be called only once,
-/// at program start.
-#[deprecated]
-pub fn set_precision(precision: usize) {
-    PRECISION.store(precision, Ordering::Relaxed);
-}
-
-/// Set how many digits of precision to use when outputting decimal numbers.
-///
-/// This gets the value from a global singleton and should be avoided.
-pub fn get_precision() -> usize {
-    PRECISION.load(Ordering::Relaxed)
-}
 
 /// The actual number part of a numeric sass or css value.
 ///

@@ -56,8 +56,7 @@ pub use crate::output_format::OutputFormat;
 pub use crate::output_style::OutputStyle;
 pub use crate::parser::{parse_scss_data, parse_scss_file, parse_value_data};
 pub use crate::sass::Item;
-#[allow(deprecated)]
-pub use crate::value::{set_precision, ListSeparator, Number, Quotes, Unit};
+pub use crate::value::{ListSeparator, Number, Quotes, Unit};
 pub use crate::variablescope::{GlobalScope, Scope};
 pub use num_rational::Rational;
 

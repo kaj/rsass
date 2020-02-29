@@ -46,19 +46,6 @@ impl OutputStyle {
     pub fn variants() -> &'static [&'static str] {
         &FORMAT_NAMES
     }
-    #[deprecated]
-    pub fn write_root(
-        &self,
-        items: &[Item],
-        globals: &mut dyn Scope,
-        file_context: &FileContext,
-    ) -> Result<Vec<u8>, Error> {
-        let format = OutputFormat {
-            style: *self,
-            precision: crate::value::get_precision(),
-        };
-        format.write_root(items, globals, file_context)
-    }
 }
 
 impl OutputFormat {
