@@ -3,7 +3,7 @@
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["Sa\u{301}ss-UT\u{327}F8.hrx", "bourbon.hrx", "base-level-parent/imported", "unicode-bom/utf-16-big", "unicode-bom/utf-16-little", "debug-directive-nested/function.hrx", "warn-directive-nested/function.hrx"]
-use rsass::{compile_scss, OutputFormat};
+use rsass::{compile_scss, output::Format};
 
 // Ignoring "Sa\u{301}ss-UT\u{327}F8.hrx", not expected to work yet.
 
@@ -2061,7 +2061,7 @@ fn wrapped_selector_whitespace() {
 }
 
 fn rsass(input: &str) -> Result<String, String> {
-    compile_scss(input.as_bytes(), OutputFormat::default())
+    compile_scss(input.as_bytes(), Default::default())
         .map_err(|e| format!("rsass failed: {}", e))
         .and_then(|s| {
             String::from_utf8(s)
@@ -2070,7 +2070,7 @@ fn rsass(input: &str) -> Result<String, String> {
         })
 }
 #[allow(unused)]
-fn rsass_fmt(format: OutputFormat, input: &str) -> Result<String, String> {
+fn rsass_fmt(format: Format, input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), format)
         .map_err(|e| format!("rsass failed: {}", e))
         .and_then(|s| {

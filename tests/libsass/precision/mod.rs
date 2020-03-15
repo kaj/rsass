@@ -29,8 +29,8 @@ fn default() {
 // From "sass-spec/spec/libsass/precision/higher.hrx"
 #[test]
 fn higher() {
-    let format = rsass::OutputFormat {
-        style: rsass::OutputStyle::Expanded,
+    let format = rsass::output::Format {
+        style: rsass::output::Style::Expanded,
         precision: 6,
     };
     assert_eq!(
@@ -56,8 +56,8 @@ fn higher() {
 #[test]
 #[ignore] // wrong result
 fn lower() {
-    let format = rsass::OutputFormat {
-        style: rsass::OutputStyle::Expanded,
+    let format = rsass::output::Format {
+        style: rsass::output::Style::Expanded,
         precision: 4,
     };
     assert_eq!(

@@ -93,7 +93,7 @@ fn handle_suite(
             ignored,
         )?;
     }
-    writeln!(rs, "use rsass::{{compile_scss, OutputFormat}};",)?;
+    writeln!(rs, "use rsass::{{compile_scss, output::Format}};",)?;
 
     handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)
         .map_err(|e| {
@@ -103,7 +103,7 @@ fn handle_suite(
     writeln!(
         rs,
         "\nfn rsass(input: &str) -> Result<String, String> {{\
-         \n    compile_scss(input.as_bytes(), OutputFormat::default())\
+         \n    compile_scss(input.as_bytes(), Default::default())\
          \n        .map_err(|e| format!(\"rsass failed: {{}}\", e))\
          \n        .and_then(|s| {{\
          \n            String::from_utf8(s)\
@@ -112,7 +112,8 @@ fn handle_suite(
          \n        }})\
          \n}}\
          \n#[allow(unused)]\
-         \nfn rsass_fmt(format: OutputFormat, input: &str) -> Result<String, String> {{\
+         \nfn rsass_fmt(format: Format, input: &str)\
+         \n-> Result<String, String> {{\
          \n    compile_scss(input.as_bytes(), format)\
          \n        .map_err(|e| format!(\"rsass failed: {{}}\", e))\
          \n        .and_then(|s| {{\

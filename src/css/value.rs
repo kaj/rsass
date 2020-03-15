@@ -2,9 +2,8 @@ use crate::css::CallArgs;
 use crate::error::Error;
 use crate::functions::SassFunction;
 use crate::ordermap::OrderMap;
-use crate::output_format::Formatted;
+use crate::output::{Format, Formatted};
 use crate::value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
-use crate::OutputFormat;
 use num_rational::Rational;
 use std::convert::TryFrom;
 
@@ -314,7 +313,22 @@ impl Value {
         }
     }
 
-    pub fn format(&self, format: OutputFormat) -> Formatted<Value> {
+    /// Get a reference to this `Value` bound to an output format.
+    ///
+    /// The bound referene implements `Display`, so it can be written
+    /// with the rust `format!(...) macros or coverted with the
+    /// `to_string()` method.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use rsass::css::Value;
+    /// assert_eq!(
+    ///     Value::scalar(42).format(Default::default()).to_string(),
+    ///     "42",
+    /// );
+    /// ```
+    pub fn format(&self, format: Format) -> Formatted<Value> {
         Formatted {
             value: self,
             format,

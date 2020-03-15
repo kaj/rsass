@@ -3,10 +3,9 @@
 use crate::css::{self, Value};
 use crate::error::Error;
 use crate::functions::{get_builtin_function, SassFunction};
-use crate::sass;
-use crate::sass::Item;
+use crate::output::Format;
+use crate::sass::{self, Item};
 use crate::selectors::Selectors;
-use crate::OutputFormat;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
@@ -52,7 +51,7 @@ pub trait Scope {
         }
     }
 
-    fn get_format(&self) -> OutputFormat;
+    fn get_format(&self) -> Format;
 
     /// Get the Value for a variable.
     fn get_or_none(&self, name: &str) -> Option<Value>;
@@ -187,7 +186,7 @@ pub struct ScopeImpl<'a> {
 }
 
 impl<'a> Scope for ScopeImpl<'a> {
-    fn get_format(&self) -> OutputFormat {
+    fn get_format(&self) -> Format {
         self.parent.get_format()
     }
 
@@ -293,7 +292,7 @@ impl<'a> ScopeImpl<'a> {
 /// There can be multiple "global" scopes in the same process, they
 /// are global to the handling of a scss document.
 pub struct GlobalScope {
-    format: OutputFormat,
+    format: Format,
     variables: Mutex<BTreeMap<String, Value>>,
     mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
     functions: BTreeMap<String, SassFunction>,
@@ -302,9 +301,9 @@ pub struct GlobalScope {
 
 impl GlobalScope {
     /// Create a new global scope.
-    pub fn new(format: OutputFormat) -> Self {
+    pub fn new(format: Format) -> Self {
         GlobalScope {
-            format: format,
+            format,
             variables: Mutex::new(BTreeMap::new()),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
@@ -314,7 +313,7 @@ impl GlobalScope {
 }
 
 impl Scope for GlobalScope {
-    fn get_format(&self) -> OutputFormat {
+    fn get_format(&self) -> Format {
         self.format
     }
 

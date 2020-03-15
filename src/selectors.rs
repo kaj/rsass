@@ -225,6 +225,7 @@ impl SelectorPart {
     }
 }
 
+// TODO:  This shoule probably be on Formatted<Selectors> instead.
 impl fmt::Display for Selectors {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         if let Some((first, rest)) = self.s.split_first() {

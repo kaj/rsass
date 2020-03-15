@@ -3,7 +3,7 @@
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["14_imports.hrx", "33_ambiguous_imports.hrx"]
-use rsass::{compile_scss, OutputFormat};
+use rsass::{compile_scss, output::Format};
 
 // From "sass-spec/spec/basic/00_empty.hrx"
 #[test]
@@ -2347,7 +2347,7 @@ fn t59_if_expression() {
 }
 
 fn rsass(input: &str) -> Result<String, String> {
-    compile_scss(input.as_bytes(), OutputFormat::default())
+    compile_scss(input.as_bytes(), Default::default())
         .map_err(|e| format!("rsass failed: {}", e))
         .and_then(|s| {
             String::from_utf8(s)
@@ -2356,7 +2356,7 @@ fn rsass(input: &str) -> Result<String, String> {
         })
 }
 #[allow(unused)]
-fn rsass_fmt(format: OutputFormat, input: &str) -> Result<String, String> {
+fn rsass_fmt(format: Format, input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), format)
         .map_err(|e| format!("rsass failed: {}", e))
         .and_then(|s| {

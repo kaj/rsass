@@ -1,7 +1,7 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
 #![allow(clippy::unreadable_literal)]
 
-use crate::output_format::{Formatted, OutputFormat};
+use crate::output::{Format, Formatted};
 use crate::value::Number;
 use lazy_static::lazy_static;
 use num_rational::Rational;
@@ -136,7 +136,7 @@ impl Rgba {
             (h, s, mm / 2, self.alpha)
         }
     }
-    pub fn format(&self, format: OutputFormat) -> Formatted<Rgba> {
+    pub fn format(&self, format: Format) -> Formatted<Rgba> {
         Formatted {
             value: self,
             format,

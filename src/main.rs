@@ -1,6 +1,6 @@
 use rsass::{
-    parse_scss_file, Error, FileContext, GlobalScope, OutputFormat,
-    OutputStyle,
+    output::{Format, Style},
+    parse_scss_file, Error, FileContext, GlobalScope,
 };
 use std::io::{stdout, Write};
 use std::path::PathBuf;
@@ -34,9 +34,10 @@ struct Args {
     precision: usize,
 
     /// How to format output.
-    #[structopt(long, short = "t", case_insensitive = true, default_value = "expanded",
-                possible_values = OutputStyle::variants())]
-    style: OutputStyle,
+    #[structopt(long, short = "t", case_insensitive = true,
+                default_value = "expanded",
+                possible_values = Style::variants())]
+    style: Style,
 
     /// Where to search for included resources.
     #[structopt(long, short = "I")]
@@ -49,7 +50,7 @@ struct Args {
 
 impl Args {
     fn run(self) -> Result<(), Error> {
-        let format = OutputFormat {
+        let format = Format {
             style: self.style,
             precision: self.precision,
         };

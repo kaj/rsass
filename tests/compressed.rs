@@ -1,6 +1,7 @@
 //! These are from the `output_styles/compressed/basic` directory in the
 //! sass specification.
-use rsass::{compile_scss, OutputFormat, OutputStyle};
+use rsass::compile_scss;
+use rsass::output::{Format, Style};
 
 #[test]
 fn t01_simple_css() {
@@ -298,8 +299,8 @@ fn t50_wrapped_pseudo_selectors() {
 }
 
 fn check(input: &[u8], expected: &str) {
-    let format = OutputFormat {
-        style: OutputStyle::Compressed,
+    let format = Format {
+        style: Style::Compressed,
         precision: 5,
     };
     assert_eq!(

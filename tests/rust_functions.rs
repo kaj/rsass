@@ -4,8 +4,8 @@ use std::sync::Arc;
 #[test]
 fn simple_value() {
     let parsed = parse_scss_data(b"p { color: $color }").unwrap();
-    let format = OutputFormat {
-        style: OutputStyle::Compressed,
+    let format = output::Format {
+        style: output::Style::Compressed,
         precision: 5,
     };
     let mut scope = GlobalScope::new(format);
@@ -22,8 +22,8 @@ fn simple_value() {
 
 #[test]
 fn simple_function() {
-    let format = OutputFormat {
-        style: OutputStyle::Compressed,
+    let format = output::Format {
+        style: output::Style::Compressed,
         precision: 5,
     };
     let mut scope = GlobalScope::new(format);
@@ -82,8 +82,8 @@ fn function_with_args() {
         ),
     );
     let parsed = parse_scss_data(b"p { x: halfway(10, 18); }").unwrap();
-    let format = OutputFormat {
-        style: OutputStyle::Compressed,
+    let format = output::Format {
+        style: output::Style::Compressed,
         precision: 5,
     };
     let file_context = FileContext::new();

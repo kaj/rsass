@@ -1,5 +1,4 @@
-use crate::output_format::Formatted;
-use crate::OutputFormat;
+use crate::output::{Format, Formatted};
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::fmt::{self, Write};
@@ -34,7 +33,7 @@ impl Number {
     pub fn to_integer(&self) -> isize {
         self.value.to_integer()
     }
-    pub fn format(&self, format: OutputFormat) -> Formatted<Self> {
+    pub fn format(&self, format: Format) -> Formatted<Self> {
         Formatted {
             value: self,
             format,

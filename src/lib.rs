@@ -7,10 +7,13 @@
 //! # Example
 //!
 //! ```
-//! use rsass::{compile_scss_file, OutputFormat, OutputStyle};
+//! use rsass::{compile_scss_file, output};
 //!
 //! let file = "tests/basic/14_imports/a.scss".as_ref();
-//! let format = OutputFormat { style: OutputStyle::Compressed, precision: 5 };
+//! let format = output::Format {
+//!     style: output::Style::Compressed,
+//!     precision: 5,
+//! };
 //! let css = compile_scss_file(file, format).unwrap();
 //!
 //! assert_eq!(css, b"div span{moo:goo}\n")
@@ -41,8 +44,7 @@ mod error;
 mod file_context;
 mod functions;
 mod ordermap;
-mod output_format;
-mod output_style;
+pub mod output;
 mod parser;
 pub mod sass;
 pub mod selectors;
@@ -52,8 +54,7 @@ mod variablescope;
 pub use crate::error::{ErrPos, Error};
 pub use crate::file_context::FileContext;
 pub use crate::functions::SassFunction;
-pub use crate::output_format::OutputFormat;
-pub use crate::output_style::OutputStyle;
+use crate::output::Format;
 pub use crate::parser::{parse_scss_data, parse_scss_file, parse_value_data};
 pub use crate::sass::Item;
 pub use crate::value::{ListSeparator, Number, Quotes, Unit};
@@ -97,10 +98,7 @@ pub fn compile_value(input: &[u8]) -> Result<Vec<u8>, Error> {
 ///     \n}\n"
 /// )
 /// ```
-pub fn compile_scss(
-    input: &[u8],
-    format: OutputFormat,
-) -> Result<Vec<u8>, Error> {
+pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
     let items =
         parse_scss_data(input).map_err(|(pos, kind)| Error::ParseError {
@@ -119,19 +117,19 @@ pub fn compile_scss(
 /// # Example
 ///
 /// ```
-/// use rsass::{compile_scss_file, OutputFormat, OutputStyle};
+/// use rsass::{compile_scss_file, output::{Format, Style}};
 ///
 /// assert_eq!(
 ///     compile_scss_file(
 ///         "tests/basic/14_imports/a.scss".as_ref(),
-///         OutputFormat { style: OutputStyle::Compressed, precision: 5 },
+///         Format { style: Style::Compressed, precision: 5 },
 ///     ).unwrap(),
 ///     b"div span{moo:goo}\n"
 /// )
 /// ```
 pub fn compile_scss_file(
     file: &Path,
-    format: OutputFormat,
+    format: Format,
 ) -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
     let (sub_context, file) = file_context.file(file);

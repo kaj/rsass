@@ -1,5 +1,5 @@
 use super::Value;
-use crate::output_format::Formatted;
+use crate::output::Formatted;
 use crate::value::{ListSeparator, Operator, Quotes};
 use std::fmt::{self, Display, Write};
 

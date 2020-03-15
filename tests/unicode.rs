@@ -1,4 +1,4 @@
-use rsass::{compile_scss, OutputFormat, OutputStyle};
+use rsass::{compile_scss, output};
 
 #[test]
 fn unicode_in_expanded() {
@@ -15,8 +15,8 @@ fn unicode_in_expanded() {
 
 #[test]
 fn unicode_in_compressed() {
-    let format = OutputFormat {
-        style: OutputStyle::Compressed,
+    let format = output::Format {
+        style: output::Style::Compressed,
         precision: 5,
     };
     // Blåbärsöl is a proper swedish word.  Translates to blueberry beer.
@@ -30,7 +30,7 @@ fn unicode_in_compressed() {
     )
 }
 
-fn check(input: &str, expected: &str, style: OutputFormat) {
+fn check(input: &str, expected: &str, style: output::Format) {
     assert_eq!(
         compile_scss(input.as_bytes(), style)
             .and_then(|s| Ok(String::from_utf8(s)?))

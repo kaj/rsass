@@ -3,7 +3,10 @@ use super::options::Options;
 use super::Error;
 use lazy_static::lazy_static;
 use regex::Regex;
-use rsass::{compile_scss, OutputFormat, OutputStyle};
+use rsass::{
+    compile_scss,
+    output::{Format, Style},
+};
 use std::io::Write;
 
 pub struct TestFixture {
@@ -73,8 +76,10 @@ impl TestFixture {
                 if let Some(precision) = precision {
                     writeln!(
                         rs,
-                        "    let format = rsass::OutputFormat {{ \
-                         style: rsass::OutputStyle::Expanded, precision: {} }};",
+                        "    let format = rsass::output::Format {{ \
+                         style: rsass::output::Style::Expanded, \
+                         precision: {} \
+                         }};",
                         precision,
                     )?;
                 }
@@ -111,8 +116,8 @@ impl TestFixture {
         match &self.expectation {
             ExpectedError(_) => Some("Error tests not supported yet"),
             ExpectedCSS(ref expected) => {
-                let format = OutputFormat {
-                    style: OutputStyle::Expanded,
+                let format = Format {
+                    style: Style::Expanded,
                     precision: self.options.precision.unwrap_or(6) as usize,
                 };
                 match rsass(&self.input, format) {
@@ -142,7 +147,7 @@ fn escaped_newline() -> impl FnMut(char) -> bool {
     }
 }
 
-fn rsass(input: &str, format: OutputFormat) -> Result<String, String> {
+fn rsass(input: &str, format: Format) -> Result<String, String> {
     compile_scss(input.as_bytes(), format)
         .map_err(|e| format!("rsass failed: {}", e))
         .and_then(|s| {

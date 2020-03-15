@@ -1,3 +1,4 @@
+use super::Format;
 use crate::css::Value;
 use crate::error::Error;
 use crate::file_context::FileContext;
@@ -5,7 +6,6 @@ use crate::parser::parse_scss_file;
 use crate::sass::{FormalArgs, Item};
 use crate::selectors::Selectors;
 use crate::variablescope::{Scope, ScopeImpl};
-use crate::OutputFormat;
 use std::fmt;
 use std::io::Write;
 use std::str::FromStr;
@@ -13,27 +13,27 @@ use std::str::FromStr;
 /// Selected target format.
 /// Only formats that are variants of this type are supported by rsass.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum OutputStyle {
+pub enum Style {
     Expanded,
     Compressed,
 }
 
-impl fmt::Display for OutputStyle {
+impl fmt::Display for Style {
     fn fmt(&self, out: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         out.write_str(match self {
-            OutputStyle::Compressed => "compressed",
-            OutputStyle::Expanded => "expanded",
+            Style::Compressed => "compressed",
+            Style::Expanded => "expanded",
         })
     }
 }
 
 /// Get an output style from its name.
-impl FromStr for OutputStyle {
+impl FromStr for Style {
     type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_ascii_lowercase().as_ref() {
-            "compressed" => Ok(OutputStyle::Compressed),
-            "expanded" => Ok(OutputStyle::Expanded),
+            "compressed" => Ok(Style::Compressed),
+            "expanded" => Ok(Style::Expanded),
             s => Err(format!("Output style {:?} not supported", s)),
         }
     }
@@ -41,14 +41,14 @@ impl FromStr for OutputStyle {
 
 static FORMAT_NAMES: [&str; 2] = ["Compressed", "Expanded"];
 
-impl OutputStyle {
+impl Style {
     /// Get the names of the supported output styles.
     pub fn variants() -> &'static [&'static str] {
         &FORMAT_NAMES
     }
 }
 
-impl OutputFormat {
+impl Format {
     /// Write a slice of sass items in this format.
     /// The `file_context` is needed if there are `@import` statements
     /// in the sass file.
@@ -750,12 +750,6 @@ impl OutputFormat {
             for item in items {
                 self.do_indent(&mut buf, indent)?;
                 item.write(&mut buf, *self)?;
-                /*
-                if self.is_compressed() {
-                    write!(buf, "{:#}", item)?;
-                } else {
-                    write!(buf, "{}", item)?;
-                }*/
             }
             if self.is_compressed() && buf.last() == Some(&b';') {
                 buf.pop();
@@ -796,12 +790,12 @@ impl OutputFormat {
 struct CssWriter {
     imports: Vec<u8>,
     contents: Vec<u8>,
-    format: OutputFormat,
+    format: Format,
     separate: bool,
 }
 
 impl CssWriter {
-    fn new(format: OutputFormat) -> Self {
+    fn new(format: Format) -> Self {
         CssWriter {
             imports: Vec::new(),
             contents: Vec::new(),
@@ -867,7 +861,7 @@ impl CssBodyItem {
     fn write(
         &self,
         out: &mut dyn Write,
-        format: OutputFormat,
+        format: Format,
     ) -> std::io::Result<()> {
         match *self {
             CssBodyItem::Property(ref name, ref val) => write!(

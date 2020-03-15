@@ -5,8 +5,8 @@ use super::rsass;
 // From "sass-spec/spec/values/colors/alpha_hex/initial_digit.hrx"
 #[test]
 fn initial_digit() {
-    let format = rsass::OutputFormat {
-        style: rsass::OutputStyle::Expanded,
+    let format = rsass::output::Format {
+        style: rsass::output::Style::Expanded,
         precision: 10,
     };
     assert_eq!(
@@ -49,8 +49,8 @@ fn initial_digit() {
 // From "sass-spec/spec/values/colors/alpha_hex/initial_letter.hrx"
 #[test]
 fn initial_letter() {
-    let format = rsass::OutputFormat {
-        style: rsass::OutputStyle::Expanded,
+    let format = rsass::output::Format {
+        style: rsass::output::Style::Expanded,
         precision: 10,
     };
     assert_eq!(
