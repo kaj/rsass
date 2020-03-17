@@ -102,50 +102,58 @@ impl Zero for Number {
 
 impl<'a> fmt::Display for Formatted<'a, Number> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        let t = self.value.value.to_integer();
-        let skip_zero = self.format.is_compressed() || !self.value.lead_zero;
-        if t == 0 {
-            if self.value.value.is_negative() {
-                out.write_str("-")?;
-                if !skip_zero {
-                    out.write_str("0")?;
-                }
-            } else if self.value.plus_sign {
-                out.write_str("+0")?;
-            } else if self.value.value.is_zero() || !skip_zero {
-                out.write_char('0')?;
-            }
-        } else {
-            if self.value.plus_sign && !t.is_negative() {
-                out.write_char('+')?;
-            }
-            write!(out, "{}", t)?;
+        if self.value.value.is_negative() {
+            out.write_char('-')?;
         }
-        let mut f = self.value.value.fract().abs();
-        if !f.is_zero() {
-            out.write_char('.')?;
-            for i in 0..(self.format.precision - 1) {
-                f = f * 10;
-                let digit = f.to_integer();
-                f = f.fract();
-                if (f + Rational::new(1, 10)
-                    .pow((self.format.precision - i) as i32))
-                    >= Rational::one()
-                {
-                    assert!(digit < 9);
-                    write!(out, "{}", digit + 1)?;
-                    return Ok(());
+
+        let mut whole = self.value.value.to_integer().abs();
+        let mut dec = String::new();
+
+        let mut frac = self.value.value.fract();
+        if frac != Rational::from_integer(0) {
+            dec.write_char('.')?;
+            for _ in 0..(self.format.precision - 1) {
+                frac *= Rational::from_integer(10);
+                write!(dec, "{}", frac.to_integer().abs())?;
+                frac = frac.fract();
+                if frac == Rational::from_integer(0) {
+                    break;
+                }
+            }
+            if frac != Rational::from_integer(0) {
+                let f = (frac * Rational::from_integer(10))
+                    .round()
+                    .abs()
+                    .to_integer();
+                if f == 10 {
+                    loop {
+                        match dec.pop().unwrap() {
+                            '9' => continue,
+                            '.' => {
+                                whole += 1;
+                                break;
+                            }
+                            c => {
+                                dec.push_str(
+                                    &(c.to_digit(10).unwrap() + 1)
+                                        .to_string(),
+                                );
+                                break;
+                            }
+                        }
+                    }
                 } else {
-                    write!(out, "{}", digit)?;
+                    write!(dec, "{}", f)?;
                 }
-                if f.is_zero() {
-                    return Ok(());
-                }
-            }
-            if !f.is_zero() {
-                write!(out, "{}", (f * 10).round().to_integer())?;
             }
         }
+
+        let skip_zero = self.format.is_compressed() || !self.value.lead_zero;
+        if (whole != 0) ^ skip_zero {
+            write!(out, "{}", whole)?;
+        }
+
+        write!(out, "{}", dec)?;
         Ok(())
     }
 }
