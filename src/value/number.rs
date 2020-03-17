@@ -1,6 +1,6 @@
 use crate::output::{Format, Formatted};
 use num_rational::Rational;
-use num_traits::{One, Signed, Zero};
+use num_traits::{Signed, Zero};
 use std::fmt::{self, Write};
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 
@@ -149,7 +149,7 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
         }
 
         let skip_zero = self.format.is_compressed() || !self.value.lead_zero;
-        if (whole != 0) ^ skip_zero {
+        if !(whole == 0 && skip_zero && !dec.is_empty()) {
             write!(out, "{}", whole)?;
         }
 
