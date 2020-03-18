@@ -121,11 +121,11 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                 }
             }
             if frac != Rational::from_integer(0) {
-                let f = (frac * Rational::from_integer(10))
+                let end = (frac * Rational::from_integer(10))
                     .round()
                     .abs()
                     .to_integer();
-                if f == 10 {
+                if end == 10 {
                     loop {
                         match dec.pop().unwrap() {
                             '9' => continue,
@@ -142,8 +142,19 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                             }
                         }
                     }
+                } else if end == 0 {
+                    loop {
+                        match dec.pop().unwrap() {
+                            '0' => continue,
+                            '.' => break,
+                            c => {
+                                dec.push(c);
+                                break;
+                            }
+                        }
+                    }
                 } else {
-                    write!(dec, "{}", f)?;
+                    write!(dec, "{}", end)?;
                 }
             }
         }
