@@ -11,8 +11,17 @@
 #
 cd `dirname $0`
 
+case "$" in
+    "-u"|"--update")
+	update="yes"
+	shift
+    ;;
+esac
+
 if [ -d sass-spec ]; then
-   (cd sass-spec && git fetch >&2 && git rebase origin/master --autostash >&2)
+    if [ "$update" == "yes" ]; then
+	(cd sass-spec && git fetch >&2 && git rebase origin/master --autostash >&2)
+    fi
 else
    git clone https://github.com/sass/sass-spec.git >&2
 fi
