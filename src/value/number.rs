@@ -107,10 +107,17 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
         }
 
         let mut whole = self.value.value.to_integer().abs();
-        let mut dec = String::new();
+        let mut dec = String::with_capacity(
+            self.value
+                .value
+                .denom()
+                .to_string()
+                .len()
+                .min(self.format.precision),
+        );
 
         let mut frac = self.value.value.fract();
-        if frac != Rational::from_integer(0) {
+        if !frac.is_zero() {
             dec.write_char('.')?;
             for _ in 0..(self.format.precision - 1) {
                 frac *= Rational::from_integer(10);
@@ -120,20 +127,20 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                     break;
                 }
             }
-            if frac != Rational::from_integer(0) {
+            if !frac.is_zero() {
                 let end = (frac * Rational::from_integer(10))
                     .round()
                     .abs()
                     .to_integer();
                 if end == 10 {
                     loop {
-                        match dec.pop().unwrap() {
-                            '9' => continue,
-                            '.' => {
+                        match dec.pop() {
+                            Some('9') => continue,
+                            Some('.') | None => {
                                 whole += 1;
                                 break;
                             }
-                            c => {
+                            Some(c) => {
                                 dec.push_str(
                                     &(c.to_digit(10).unwrap() + 1)
                                         .to_string(),
@@ -144,10 +151,10 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                     }
                 } else if end == 0 {
                     loop {
-                        match dec.pop().unwrap() {
-                            '0' => continue,
-                            '.' => break,
-                            c => {
+                        match dec.pop() {
+                            Some('0') => continue,
+                            Some('.') | None => break,
+                            Some(c) => {
                                 dec.push(c);
                                 break;
                             }
