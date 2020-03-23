@@ -248,17 +248,14 @@ fn test_number_nines_d() {
     check_value("-.999", "-.999");
 }
 #[test]
-#[ignore = "Should be fixed by #67"]
 fn test_number_nines_e() {
-    check_value("0.9999999", "0.9999999");
+    check_value("0.9999999", "1");
 }
 #[test]
-#[ignore = "Should be fixed by #67"]
 fn test_number_nines_f() {
-    check_value("-0.9999999", "-0.9999999");
+    check_value("-0.9999999", "-1");
 }
 #[test]
-#[ignore = "Should be fixed by #67"]
 fn test_number_zeroes_a() {
     check_value("0.000000000000000001", "0");
 }
