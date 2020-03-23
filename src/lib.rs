@@ -61,17 +61,20 @@ pub use crate::value::{ListSeparator, Number, Quotes, Unit};
 pub use crate::variablescope::{GlobalScope, Scope};
 pub use num_rational::Rational;
 
-/// Parse scss data from a buffer and write css in the given style.
+/// Parse a scss value from a buffer and write its css representation
+/// in the given format.
 ///
 /// # Example
 ///
 /// ```
-/// use rsass::compile_value;
-///
-/// assert_eq!(compile_value(b"10px + 4px").unwrap(), b"14px");
+/// # use rsass::{compile_value, Error};
+/// # fn main() -> Result<(), Error> {
+/// assert_eq!(compile_value(b"10px + 4px", Default::default())?, b"14px");
+/// assert_eq!(compile_value(b"10px 4px", Default::default())?, b"10px 4px");
+/// # Ok(())
+/// # }
 /// ```
-pub fn compile_value(input: &[u8]) -> Result<Vec<u8>, Error> {
-    let format = Default::default();
+pub fn compile_value(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
     let scope = GlobalScope::new(format);
     let value = parse_value_data(input)?.evaluate(&scope)?;
     Ok(value.format(format).to_string().into_bytes())
