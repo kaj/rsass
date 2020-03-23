@@ -106,17 +106,15 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
             out.write_char('-')?;
         }
 
-        let mut whole = self.value.value.to_integer().abs();
-        let mut dec = String::with_capacity(
-            self.value
-                .value
-                .denom()
-                .to_string()
-                .len()
-                .min(self.format.precision),
-        );
-
         let mut frac = self.value.value.fract();
+
+        let mut whole = self.value.value.to_integer().abs();
+        let mut dec = String::with_capacity(if frac.is_zero() {
+            0
+        } else {
+            self.format.precision + 1
+        });
+
         if !frac.is_zero() {
             dec.write_char('.')?;
             for _ in 0..(self.format.precision - 1) {
