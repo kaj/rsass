@@ -1,6 +1,6 @@
 use crate::output::{Format, Formatted};
 use num_rational::Rational;
-use num_traits::{One, Signed, Zero};
+use num_traits::{Signed, Zero};
 use std::fmt::{self, Write};
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 
@@ -102,50 +102,74 @@ impl Zero for Number {
 
 impl<'a> fmt::Display for Formatted<'a, Number> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        let t = self.value.value.to_integer();
-        let skip_zero = self.format.is_compressed() || !self.value.lead_zero;
-        if t == 0 {
-            if self.value.value.is_negative() {
-                out.write_str("-")?;
-                if !skip_zero {
-                    out.write_str("0")?;
-                }
-            } else if self.value.plus_sign {
-                out.write_str("+0")?;
-            } else if self.value.value.is_zero() || !skip_zero {
-                out.write_char('0')?;
-            }
+        if self.value.value.is_negative() {
+            out.write_char('-')?;
+        }
+
+        let mut frac = self.value.value.fract();
+
+        let mut whole = self.value.value.to_integer().abs();
+        let mut dec = String::with_capacity(if frac.is_zero() {
+            0
         } else {
-            if self.value.plus_sign && !t.is_negative() {
-                out.write_char('+')?;
+            self.format.precision + 1
+        });
+
+        if !frac.is_zero() {
+            dec.write_char('.')?;
+            for _ in 0..(self.format.precision - 1) {
+                frac *= Rational::from_integer(10);
+                write!(dec, "{}", frac.to_integer().abs())?;
+                frac = frac.fract();
+                if frac == Rational::from_integer(0) {
+                    break;
+                }
             }
-            write!(out, "{}", t)?;
-        }
-        let mut f = self.value.value.fract().abs();
-        if !f.is_zero() {
-            out.write_char('.')?;
-            for i in 0..(self.format.precision - 1) {
-                f = f * 10;
-                let digit = f.to_integer();
-                f = f.fract();
-                if (f + Rational::new(1, 10)
-                    .pow((self.format.precision - i) as i32))
-                    >= Rational::one()
-                {
-                    assert!(digit < 9);
-                    write!(out, "{}", digit + 1)?;
-                    return Ok(());
+            if !frac.is_zero() {
+                let end = (frac * Rational::from_integer(10))
+                    .round()
+                    .abs()
+                    .to_integer();
+                if end == 10 {
+                    loop {
+                        match dec.pop() {
+                            Some('9') => continue,
+                            Some('.') | None => {
+                                whole += 1;
+                                break;
+                            }
+                            Some(c) => {
+                                dec.push_str(
+                                    &(c.to_digit(10).unwrap() + 1)
+                                        .to_string(),
+                                );
+                                break;
+                            }
+                        }
+                    }
+                } else if end == 0 {
+                    loop {
+                        match dec.pop() {
+                            Some('0') => continue,
+                            Some('.') | None => break,
+                            Some(c) => {
+                                dec.push(c);
+                                break;
+                            }
+                        }
+                    }
                 } else {
-                    write!(out, "{}", digit)?;
+                    write!(dec, "{}", end)?;
                 }
-                if f.is_zero() {
-                    return Ok(());
-                }
-            }
-            if !f.is_zero() {
-                write!(out, "{}", (f * 10).round().to_integer())?;
             }
         }
+
+        let skip_zero = self.format.is_compressed() || !self.value.lead_zero;
+        if !(whole == 0 && skip_zero && !dec.is_empty()) {
+            write!(out, "{}", whole)?;
+        }
+
+        write!(out, "{}", dec)?;
         Ok(())
     }
 }
