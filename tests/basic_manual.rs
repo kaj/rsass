@@ -2,7 +2,7 @@
 //! See <https://github.com/sass/sass-spec> for source material.
 //! See `tests/basic/main.rs` for semi-autoimported tests.
 //! This file contains old tests that need special handling.
-use rsass::{compile_scss, compile_scss_file};
+use rsass::{compile_scss, compile_scss_file, compile_value};
 
 #[test]
 fn txx_empty_rule() {
@@ -213,6 +213,63 @@ fn each_binds_multiple() {
         "a {\n  this: is;\n  my: map;\n}\n\n\
          b {\n  this: is;\n  my: map;\n}\n",
     )
+}
+
+#[test]
+fn test_number_0() {
+    check_value("0", "0");
+}
+#[test]
+fn test_number_neg0() {
+    check_value("-0", "0");
+}
+#[test]
+fn test_number_1() {
+    check_value("1", "1");
+}
+#[test]
+fn test_number_neg1() {
+    check_value("-1", "-1");
+}
+#[test]
+fn test_number_nines_a() {
+    check_value("0.999", "0.999");
+}
+#[test]
+fn test_number_nines_b() {
+    check_value("-0.999", "-0.999");
+}
+#[test]
+fn test_number_nines_c() {
+    check_value(".999", ".999");
+}
+#[test]
+fn test_number_nines_d() {
+    check_value("-.999", "-.999");
+}
+#[test]
+#[ignore = "Should be fixed by #67"]
+fn test_number_nines_e() {
+    check_value("0.9999999", "0.9999999");
+}
+#[test]
+#[ignore = "Should be fixed by #67"]
+fn test_number_nines_f() {
+    check_value("-0.9999999", "-0.9999999");
+}
+#[test]
+#[ignore = "Should be fixed by #67"]
+fn test_number_zeroes_a() {
+    check_value("0.000000000000000001", "0");
+}
+
+fn check_value(input: &str, expected: &str) {
+    assert_eq!(
+        compile_value(input.as_ref(), Default::default())
+            .and_then(|s| Ok(String::from_utf8(s)?))
+            .unwrap(),
+        expected,
+    );
 }
 
 fn check(input: &[u8], expected: &str) {
