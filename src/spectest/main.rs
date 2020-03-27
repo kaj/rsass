@@ -12,52 +12,28 @@ mod testfixture;
 use testfixture::TestFixture;
 
 fn main() -> Result<(), Error> {
-    let base = PathBuf::from("sass-spec/spec");
+    let base = PathBuf::from("sass-spec");
     handle_suite(
         &base,
-        "basic",
+        "spec",
         &[
-            "14_imports.hrx", // Need to handle separate files in tests
-            "33_ambiguous_imports.hrx", // Need to handle separate files in tests
+            "directives/use",     // `@use` is not supported at all
+            "directives/forward", // `@forward is not supported at all
+            "core_functions/selector/extend", // not supported
+            "core_functions/selector/is_superselector", // not supported
+            "core_functions/selector/unify", // not supported
+            "libsass/unicode-bom/utf-16-big", // rsass only handles utf8
+            "libsass/unicode-bom/utf-16-little", // rsass only handles utf8
+            "libsass/Sa\u{301}ss-UT\u{327}F8.hrx", // duplicate rust name
+            "libsass-closed-issues/issue_185/mixin.hrx", // stack overflow
+            "libsass-closed-issues/issue_492.hrx", // panic
+            "libsass-closed-issues/issue_646.hrx", // panic
+            "libsass-todo-issues/issue_221262.hrx", // stack overflow
+            "libsass-todo-issues/issue_221292.hrx", // stack overflow
+            "non_conformant/scss/mixin-content.hrx", // stack overflow
+            "non_conformant/scss/multiline_var.hrx", // duplicate rust name
         ],
     )?;
-    handle_suite(&base, "core_functions", &[])?;
-    handle_suite(&base, "colors", &[])?;
-    handle_suite(
-        &base,
-        "css",
-        &[
-            "plain", // Need to access separate files in tests
-        ],
-    )?;
-    handle_suite(
-        &base,
-        "libsass",
-        &[
-            "Sa\u{301}ss-UT\u{327}F8.hrx", // resolves to duplicate name
-            "bourbon.hrx", // Need to handle separate files in tests
-            "base-level-parent/imported", // multiple input files
-            "unicode-bom/utf-16-big", // rsass only handles utf8
-            "unicode-bom/utf-16-little", // rsass only handles utf8
-            "debug-directive-nested/function.hrx", // panic
-            "warn-directive-nested/function.hrx", // panic
-        ],
-    )?;
-    handle_suite(&base, "misc", &[])?;
-    handle_suite(&base, "mixin", &[])?;
-    handle_suite(&base, "parser", &[])?;
-    handle_suite(&base, "scope", &[])?;
-    handle_suite(
-        &base,
-        "scss",
-        &[
-            "multiline-var.hrx", // name conflict with other test.
-            "mixin-content.hrx", // stack overflow?!?
-            "huge.hrx", // actually works, but almost 3MB of test code ...
-        ],
-    )?;
-    handle_suite(&base, "scss-tests", &[])?;
-    handle_suite(&base, "values", &[])?;
     Ok(())
 }
 
@@ -251,6 +227,7 @@ fn spec_hrx_to_test(
         .map_err(|e| Error(format!("Failed to load hrx: {}", e)))?;
 
     writeln!(rs, "\n// From {:?}", suite)?;
+    eprintln!("Handle {}", suite.display());
     handle_hrx_part(rs, suite, &archive, "", precision)
 }
 
@@ -346,8 +323,12 @@ fn fn_name(name: &str) -> String {
     } else if t == "as"
         || t == "else"
         || t == "false"
+        || t == "final"
         || t == "for"
         || t == "if"
+        || t == "loop"
+        || t == "match"
+        || t == "override"
         || t == "static"
         || t == "super"
         || t == "true"
@@ -411,7 +392,8 @@ fn load_test_fixture_hrx(
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAMES: &[&str] =
         &["output-libsass.css", "output.css"];
-    static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-libsass", "error"];
+    static EXPECTED_ERROR_FILENAMES: &[&str] =
+        &["error-libsass", "error", "error-dart-sass"];
 
     let mut options =
         if let Some(yml) = archive.get(&format!("{}options.yml", prefix)) {

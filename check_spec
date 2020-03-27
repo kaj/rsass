@@ -58,8 +58,7 @@ case "$1" in
                  --replace 'Progress: $2 of $1 tests passed' -
         ;;
     "update-tests")
-	cargo run --features=spectest --bin=spectest
-	cargo fmt
+	cargo run --release --features=spectest --bin=spectest && cargo fmt
 	;;
     *)
         check $1 | list_fails
