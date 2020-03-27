@@ -9,9 +9,9 @@
 # Generate stats to update lib.rs docs and readme:
 #     ./check-spec stats
 #
-cd `dirname $0`
+cd `dirname "$prog"`
 
-case "$" in
+case "$1" in
     "-u"|"--update")
 	update="yes"
 	shift
@@ -42,7 +42,7 @@ list_fails() {
 
 case "$1" in
     "")
-        check | list_fails
+        check
         ;;
     "-h"|"--help"|"help")
 	echo "$0 stats ;: Give stats for passes / fails suitable for docs."
