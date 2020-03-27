@@ -9998,7 +9998,44 @@ fn issue_487() {
     );
 }
 
-// Ignoring "issue_492.hrx", not expected to work yet.
+// From "sass-spec/spec/libsass-closed-issues/issue_492.hrx"
+#[test]
+fn issue_492() {
+    assert_eq!(
+        rsass(
+            "$map: (\
+            \n  foo: bar,\
+            \n  baz: monkey,\
+            \n);\
+            \n\
+            \n.css {\
+            \n  @each $key, $value in $map {\
+            \n    #{$key}: $value;\
+            \n  }\
+            \n}\
+            \n\
+            \n$list: one two, three four five, six seven;\
+            \n\
+            \n.list {\
+            \n  @each $foo, $bar, $baz in $list {\
+            \n    #{$foo}: $bar $baz;\
+            \n  }\
+            \n}\
+            \n"
+        )
+        .unwrap(),
+        ".css {\
+        \n  foo: bar;\
+        \n  baz: monkey;\
+        \n}\
+        \n.list {\
+        \n  one: two;\
+        \n  three: four five;\
+        \n  six: seven;\
+        \n}\
+        \n"
+    );
+}
 
 // From "sass-spec/spec/libsass-closed-issues/issue_495.hrx"
 #[test]

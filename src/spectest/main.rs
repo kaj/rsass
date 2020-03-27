@@ -26,7 +26,6 @@ fn main() -> Result<(), Error> {
             "libsass/unicode-bom/utf-16-little", // rsass only handles utf8
             "libsass/Sa\u{301}ss-UT\u{327}F8.hrx", // duplicate rust name
             "libsass-closed-issues/issue_185/mixin.hrx", // stack overflow
-            "libsass-closed-issues/issue_492.hrx", // panic
             "libsass-closed-issues/issue_646.hrx", // panic
             "libsass-todo-issues/issue_221262.hrx", // stack overflow
             "libsass-todo-issues/issue_221292.hrx", // stack overflow

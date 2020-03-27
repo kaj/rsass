@@ -31,15 +31,16 @@ pub trait Scope {
         if names.len() == 1 {
             self.define(&names[0], &value);
         } else if let Value::List(ref values, ..) = *value {
-            if values.len() != names.len() {
+            if values.len() > names.len() {
                 panic!(
                     "Expected {} values, but got {}",
                     names.len(),
                     values.len(),
                 )
             } else {
-                for (name, value) in names.iter().zip(values) {
-                    self.define(name, &value);
+                let mut values = values.iter();
+                for name in names {
+                    self.define(name, &values.next().unwrap_or(&Value::Null))
                 }
             }
         } else {
