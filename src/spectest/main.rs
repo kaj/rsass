@@ -17,18 +17,19 @@ fn main() -> Result<(), Error> {
         &base,
         "spec",
         &[
-            "directives/use",     // `@use` is not supported at all
-            "directives/forward", // `@forward is not supported at all
             "core_functions/selector/extend", // not supported
             "core_functions/selector/is_superselector", // not supported
-            "core_functions/selector/unify", // not supported
-            "libsass/unicode-bom/utf-16-big", // rsass only handles utf8
-            "libsass/unicode-bom/utf-16-little", // rsass only handles utf8
-            "libsass/Sa\u{301}ss-UT\u{327}F8.hrx", // duplicate rust name
+            "core_functions/selector/unify",  // not supported
+            "directives/forward", // `@forward` is not supported at all
+            "directives/use",     // `@use` is not supported at all
             "libsass-closed-issues/issue_185/mixin.hrx", // stack overflow
             "libsass-closed-issues/issue_646.hrx", // panic
             "libsass-todo-issues/issue_221262.hrx", // stack overflow
             "libsass-todo-issues/issue_221292.hrx", // stack overflow
+            "libsass/Sa\u{301}ss-UT\u{327}F8.hrx", // duplicate rust name
+            "libsass/unicode-bom/utf-16-big", // rsass only handles utf8
+            "libsass/unicode-bom/utf-16-little", // rsass only handles utf8
+            "non_conformant/scss/huge.hrx", // stack overflow in debug mode
             "non_conformant/scss/mixin-content.hrx", // stack overflow
             "non_conformant/scss/multiline_var.hrx", // duplicate rust name
         ],
