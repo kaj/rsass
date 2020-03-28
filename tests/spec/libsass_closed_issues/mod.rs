@@ -11245,7 +11245,28 @@ fn issue_644() {
     );
 }
 
-// Ignoring "issue_646.hrx", not expected to work yet.
+// From "sass-spec/spec/libsass-closed-issues/issue_646.hrx"
+#[test]
+fn issue_646() {
+    assert_eq!(
+        rsass(
+            "@function foo() {\
+            \n  /* $bar: 1; */\
+            \n @return true;\
+            \n}\
+            \n\
+            \nfoo {\
+            \n  foo: foo();\
+            \n}\
+            \n"
+        )
+        .unwrap(),
+        "foo {\
+        \n  foo: true;\
+        \n}\
+        \n"
+    );
+}
 
 // From "sass-spec/spec/libsass-closed-issues/issue_652.hrx"
 #[test]

@@ -167,6 +167,7 @@ pub trait Scope {
                     )));
                 }
                 Item::None => None,
+                Item::Comment(..) => None,
                 ref x => panic!("Not implemented in fuction: {:?}", x),
             };
             if let Some(result) = result {
