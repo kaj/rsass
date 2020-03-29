@@ -355,10 +355,12 @@ impl Format {
                 )?;
             }
             Item::NamespaceRule(..) => {
-                panic!("Global namespaced property not allowed");
+                return Err(Error::S(
+                    "Global namespaced property not allowed".into(),
+                ));
             }
             Item::Property(..) => {
-                panic!("Global property not allowed");
+                return Err(Error::S("Global property not allowed".into()));
             }
             Item::Comment(ref c) => {
                 if !self.is_compressed() {
@@ -612,7 +614,9 @@ impl Format {
                     scope.define_function(name, func.clone());
                 }
                 Item::Return(_) => {
-                    panic!("Return not allowed in plain context");
+                    return Err(Error::S(
+                        "Return not allowed in plain context".into(),
+                    ));
                 }
 
                 Item::IfStatement(ref cond, ref do_if, ref do_else) => {

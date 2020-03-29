@@ -30,7 +30,8 @@ pub trait Scope {
     fn define_multi(&mut self, names: &[String], value: &Value) {
         if names.len() == 1 {
             self.define(&names[0], &value);
-        } else if let Value::List(ref values, ..) = *value {
+        } else {
+            let values = value.clone().iter_items();
             if values.len() > names.len() {
                 panic!(
                     "Expected {} values, but got {}",
@@ -43,12 +44,6 @@ pub trait Scope {
                     self.define(name, &values.next().unwrap_or(&Value::Null))
                 }
             }
-        } else {
-            panic!(
-                "Got multiple bindings {:?}, but non-list value {}",
-                names,
-                value.format(self.get_format())
-            )
         }
     }
 
@@ -116,8 +111,8 @@ pub trait Scope {
                     inclusive,
                     ref body,
                 } => {
-                    let from = from.evaluate(self)?.integer_value().unwrap();
-                    let to = to.evaluate(self)?.integer_value().unwrap();
+                    let from = from.evaluate(self)?.integer_value()?;
+                    let to = to.evaluate(self)?.integer_value()?;
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
                         self.define(name, &Value::scalar(value));
@@ -168,7 +163,12 @@ pub trait Scope {
                 }
                 Item::None => None,
                 Item::Comment(..) => None,
-                ref x => panic!("Not implemented in fuction: {:?}", x),
+                ref x => {
+                    return Err(Error::S(format!(
+                        "Not implemented in fuction: {:?}",
+                        x
+                    )))
+                }
             };
             if let Some(result) = result {
                 return Ok(Some(result));

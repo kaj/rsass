@@ -170,26 +170,19 @@ fn make_call(name: &str, args: Vec<css::Value>) -> css::Value {
 }
 
 #[test]
-fn test_rgb() {
+fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     use crate::parser::formalargs::call_args;
     use crate::value::Rgba;
     use crate::variablescope::GlobalScope;
     let scope = GlobalScope::new(Default::default());
     assert_eq!(
-        FUNCTIONS
-            .get("rgb")
-            .unwrap()
-            .call(
-                &scope,
-                &call_args(b"(17, 0, 225)")
-                    .unwrap()
-                    .1
-                    .evaluate(&scope, true)
-                    .unwrap()
-            )
-            .unwrap(),
+        FUNCTIONS.get("rgb").unwrap().call(
+            &scope,
+            &call_args(b"(17, 0, 225)")?.1.evaluate(&scope, true)?
+        )?,
         css::Value::Color(Rgba::from_rgb(17, 0, 225), None)
-    )
+    );
+    Ok(())
 }
 
 #[test]
