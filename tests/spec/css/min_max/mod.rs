@@ -14,7 +14,6 @@ mod error {
 
 // From "sass-spec/spec/css/min_max/plain_css.hrx"
 #[test]
-#[ignore] // wrong result
 fn plain_css() {
     assert_eq!(
         rsass(

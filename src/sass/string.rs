@@ -145,8 +145,18 @@ impl SassString {
             self.parts.insert(0, data.into());
         }
     }
+    pub fn append_str(&mut self, data: &str) {
+        if let Some(StringPart::Raw(ref mut last)) = self.parts.last_mut() {
+            last.push_str(data);
+        } else {
+            self.parts.push(data.into());
+        }
+    }
     pub fn append(&mut self, other: &Self) {
         self.parts.extend_from_slice(&other.parts);
+    }
+    pub fn into_parts(self) -> Vec<StringPart> {
+        self.parts
     }
 }
 

@@ -1,7 +1,7 @@
 use super::formalargs::call_args;
 use super::strings::{
-    name, sass_string_dq, sass_string_ext, sass_string_sq, selector_string,
-    special_args, special_url,
+    name, sass_string_dq, sass_string_ext, sass_string_sq,
+    special_function_minmax, special_function_misc, special_url,
 };
 use super::unit::unit;
 use super::util::{opt_spacelike, spacelike2};
@@ -353,35 +353,10 @@ pub fn unary_op(input: &[u8]) -> IResult<&[u8], Value> {
 }
 
 fn special_function(input: &[u8]) -> IResult<&[u8], Value> {
-    let (input, start) = recognize(terminated(
-        alt((
-            map(
-                tuple((
-                    opt(delimited(
-                        tag("-"),
-                        alt((tag("moz"), tag("webkit"), tag("ms"))),
-                        tag("-"),
-                    )),
-                    alt((
-                        tag("calc"),
-                        tag("element"),
-                        tag("env"),
-                        tag("expression"),
-                        tag("var"),
-                    )),
-                )),
-                |_| (),
-            ),
-            map(preceded(tag("progid:"), selector_string), |_| ()),
-        )),
-        tag("("),
-    ))(input)?;
-    let (input, mut args) = special_args(input)?;
-    let (input, end) = tag(")")(input)?;
-
-    args.prepend(from_utf8(start).unwrap());
-    args.append(&from_utf8(end).unwrap().into());
-    Ok((input, Value::Literal(args)))
+    map(
+        alt((special_function_misc, special_function_minmax)),
+        |data| Value::Literal(data),
+    )(input)
 }
 
 pub fn function_call(input: &[u8]) -> IResult<&[u8], Value> {

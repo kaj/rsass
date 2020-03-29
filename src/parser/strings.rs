@@ -3,14 +3,15 @@ use super::{input_to_str, input_to_string};
 use crate::sass::{SassString, StringPart};
 use crate::value::Quotes;
 use nom::branch::alt;
-use nom::bytes::complete::{is_a, is_not, tag, take};
+use nom::bytes::complete::{is_a, is_not, tag, tag_no_case, take};
 use nom::character::complete::{alphanumeric1, one_of};
 use nom::combinator::{
     map, map_opt, map_res, not, opt, peek, recognize, value, verify,
 };
 use nom::multi::{fold_many0, fold_many1, many0, many1, many_m_n};
-use nom::sequence::{delimited, pair, preceded, terminated};
+use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use nom::IResult;
+use std::str::from_utf8;
 
 pub fn sass_string(input: &[u8]) -> IResult<&[u8], SassString> {
     let (input, parts) = many1(alt((
@@ -26,11 +27,55 @@ pub fn sass_string_ext(input: &[u8]) -> IResult<&[u8], SassString> {
     Ok((input, SassString::new(parts, Quotes::None)))
 }
 
-pub fn special_args(input: &[u8]) -> IResult<&[u8], SassString> {
+pub fn special_function_misc(input: &[u8]) -> IResult<&[u8], SassString> {
+    let (input, start) = recognize(terminated(
+        alt((
+            map(
+                tuple((
+                    opt(delimited(
+                        tag("-"),
+                        alt((tag("moz"), tag("webkit"), tag("ms"))),
+                        tag("-"),
+                    )),
+                    alt((
+                        tag("calc"),
+                        tag("element"),
+                        tag("env"),
+                        tag("expression"),
+                        tag("var"),
+                    )),
+                )),
+                |_| (),
+            ),
+            map(preceded(tag("progid:"), selector_string), |_| ()),
+        )),
+        tag("("),
+    ))(input)?;
+    let (input, mut args) = special_args(input)?;
+    let (input, end) = tag(")")(input)?;
+
+    args.prepend(from_utf8(start).unwrap());
+    args.append_str(from_utf8(end).unwrap());
+    Ok((input, args))
+}
+
+pub fn special_function_minmax(input: &[u8]) -> IResult<&[u8], SassString> {
+    let (input, start) = recognize(terminated(
+        alt((tag_no_case("max"), tag_no_case("min"))),
+        tag("("),
+    ))(input)?;
+    let (input, mut args) = special_args_minmax(input)?;
+    let (input, end) = tag(")")(input)?;
+
+    args.prepend(&from_utf8(start).unwrap().to_lowercase());
+    args.append_str(from_utf8(end).unwrap());
+    Ok((input, args))
+}
+
+fn special_args(input: &[u8]) -> IResult<&[u8], SassString> {
     let (input, parts) = special_arg_parts(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
 }
-
 pub fn special_arg_parts(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
     let (input, parts) = many0(alt((
         map(string_part_interpolation, |part| vec![part]),
@@ -50,6 +95,59 @@ pub fn special_arg_parts(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
         }),
     )))(input)?;
     Ok((input, parts.into_iter().flatten().collect()))
+}
+
+fn special_args_minmax(input: &[u8]) -> IResult<&[u8], SassString> {
+    let (input, parts) = special_arg_parts_minmax(input)?;
+    Ok((input, SassString::new(parts, Quotes::None)))
+}
+
+fn special_arg_parts_minmax(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
+    let (input, parts) = many0(alt((
+        map(special_function_misc, |s| s.into_parts()),
+        map(special_function_minmax, |s| s.into_parts()),
+        map(
+            terminated(
+                map_res(
+                    is_not("\r\n\t >$%\"'\\#+*/()[]{}:;,=!&@"),
+                    input_to_str,
+                ),
+                peek(is_not("(")),
+            ),
+            |s| vec![StringPart::from(s)],
+        ),
+        map(string_part_interpolation, |part| vec![part]),
+        map(hash_no_interpolation, |s| vec![StringPart::from(s)]),
+        map(dq_parts, |mut v| {
+            v.insert(0, StringPart::from("\""));
+            v.push(StringPart::from("\""));
+            v
+        }),
+        map(delimited(tag("("), special_arg_parts, tag(")")), |mut v| {
+            v.insert(0, StringPart::from("("));
+            v.push(StringPart::from(")"));
+            v
+        }),
+        map(map_res(is_a("0123456789,.+-*/ "), input_to_str), |s| {
+            vec![StringPart::from(s)]
+        }),
+        // '% is allowed as percentage unit, but not as modulo operator
+        map(
+            terminated(map_res(is_a("% "), input_to_str), peek(is_a(",)"))),
+            |s| vec![StringPart::from(s)],
+        ),
+    )))(input)?;
+    let parts = parts.into_iter().flatten().collect::<Vec<_>>();
+    // Disallow trailing comma
+    if let Some(StringPart::Raw(ref s)) = parts.last() {
+        if s.trim().ends_with(',') {
+            return Err(nom::Err::Error((
+                input,
+                nom::error::ErrorKind::SeparatedList,
+            )));
+        }
+    }
+    Ok((input, parts))
 }
 
 pub fn special_url(input: &[u8]) -> IResult<&[u8], SassString> {
@@ -112,7 +210,7 @@ fn simple_qstring_part(input: &[u8]) -> IResult<&[u8], StringPart> {
     Ok((input, StringPart::Raw(part)))
 }
 
-pub fn selector_string(input: &[u8]) -> IResult<&[u8], String> {
+fn selector_string(input: &[u8]) -> IResult<&[u8], String> {
     fold_many1(
         // Note: This could probably be a whole lot more efficient,
         // but try to get stuff correct before caring too much about that.
@@ -250,7 +348,6 @@ fn take_char(input: &[u8]) -> IResult<&[u8], char> {
 }
 
 fn single_char(data: &[u8]) -> Option<char> {
-    use std::str::from_utf8;
     from_utf8(&data).ok().and_then(|s| s.chars().next())
 }
 
