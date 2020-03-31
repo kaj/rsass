@@ -54,8 +54,9 @@ case "$1" in
 	;;
     "stats")
 	check \
-            | rg --no-line-number '^([0-9]+) runs, ([0-9]+) assertions.*' \
-                 --replace 'Progress: $2 of $1 tests passed' -
+            | rg --no-line-number '^(\d+) runs, (\d+) assertions, (\d+) failures, (\d+) errors, (\d+) skips' \
+                 --replace 'echo "$0"; echo "Progress: $[$1-$3-$4-$5] of $[$1-$5] tests passed"' - \
+            | bash
         ;;
     "update-tests")
 	cargo run --release --features=spectest --bin=spectest && cargo fmt
