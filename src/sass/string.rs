@@ -46,7 +46,7 @@ impl SassString {
         }
         SassString { parts: p2, quotes }
     }
-    pub fn evaluate(
+    fn evaluate_inner(
         &self,
         scope: &dyn Scope,
     ) -> Result<(String, Quotes), Error> {
@@ -60,7 +60,6 @@ impl SassString {
                     .unquote()
                     .format(scope.get_format())
                     .to_string()
-                    .replace('\\', "\\\\")
                     .replace('\n', "\\a");
                 if s.contains('"') && !s.contains('\'') {
                     return Ok((s, Quotes::Single));
@@ -83,7 +82,7 @@ impl SassString {
                     if self.quotes == Quotes::None {
                         v = v.replace('\n', " ");
                     } else {
-                        v = v.replace('\\', "\\\\").replace('\n', "\\a");
+                        v = v.replace('\n', "\\a");
                     }
                     result.push_str(&v)
                 }
@@ -108,8 +107,21 @@ impl SassString {
             Ok((result, self.quotes))
         }
     }
+
+    pub fn evaluate(
+        &self,
+        scope: &dyn Scope,
+    ) -> Result<(String, Quotes), Error> {
+        let (result, quotes) = self.evaluate_inner(scope)?;
+        if self.quotes == Quotes::Single && !result.contains('"') {
+            Ok((result, Quotes::Double))
+        } else {
+            Ok((result, quotes))
+        }
+    }
+
     pub fn evaluate2(&self, scope: &dyn Scope) -> Result<SassString, Error> {
-        let (result, quotes) = self.evaluate(scope)?;
+        let (result, quotes) = self.evaluate_inner(scope)?;
         Ok(SassString {
             parts: vec![StringPart::Raw(result)],
             quotes,
@@ -132,6 +144,25 @@ impl SassString {
             quotes: if t { Quotes::None } else { quotes },
         })
     }
+
+    pub fn opt_unquote(&self) -> SassString {
+        let t = self
+            .single_raw()
+            .map(|s| {
+                let mut bytes = s.bytes();
+                bytes
+                    .next()
+                    .map(|c| c.is_ascii_alphabetic())
+                    .unwrap_or(false)
+                    && bytes.all(|c| c.is_ascii_alphanumeric())
+            })
+            .unwrap_or(false);
+        SassString {
+            parts: self.parts.clone(),
+            quotes: if t { Quotes::None } else { self.quotes },
+        }
+    }
+
     pub fn is_unquoted(&self) -> bool {
         self.quotes == Quotes::None
     }

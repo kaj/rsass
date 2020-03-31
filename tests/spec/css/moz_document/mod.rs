@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/css/moz_document/empty_prefix.hrx"
 #[test]
-#[ignore] // wrong result
 fn empty_prefix() {
     assert_eq!(
         rsass(

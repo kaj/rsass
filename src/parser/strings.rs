@@ -149,14 +149,19 @@ fn special_arg_parts_minmax(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
 pub fn special_url(input: &[u8]) -> IResult<&[u8], SassString> {
     let (input, _start) = tag("url(")(input)?;
     let (input, _trim) = many0(is_a(" "))(input)?;
+    let (input, (start, end, endq)) = alt((
+        value(("url(\"", "\")", "')"), tag("'")),
+        value(("url(\"", "\")", "\")"), tag("\"")),
+        value(("url(", ")", ")"), tag("")),
+    ))(input)?;
     let (input, mut parts) = many1(alt((
         string_part_interpolation,
         map(selector_string, StringPart::Raw),
-        map(map_res(is_a("\":.,!+/="), input_to_string), StringPart::Raw),
+        map(map_res(is_a(":.,!?=+/"), input_to_string), StringPart::Raw),
     )))(input)?;
-    let (input, _end) = tag(")")(input)?;
-    parts.insert(0, "url(".into());
-    parts.push(")".into());
+    let (input, _end) = tag(endq)(input)?;
+    parts.insert(0, start.into());
+    parts.push(end.into());
     Ok((input, SassString::new(parts, Quotes::None)))
 }
 
@@ -174,6 +179,7 @@ fn dq_parts(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
             map(hash_no_interpolation, StringPart::from),
             value(StringPart::Raw("\"".to_string()), tag("\\\"")),
             value(StringPart::Raw("'".to_string()), tag("'")),
+            map(escaped_char, |c| StringPart::Raw(format!("{}", c))),
             extra_escape,
         ))),
         tag("\""),
@@ -189,6 +195,7 @@ pub fn sass_string_sq(input: &[u8]) -> IResult<&[u8], SassString> {
             map(hash_no_interpolation, StringPart::from),
             value(StringPart::from("'"), tag("\\'")),
             value(StringPart::from("\""), tag("\"")),
+            map(escaped_char, |c| StringPart::Raw(format!("{}", c))),
             extra_escape,
         ))),
         tag("'"),
@@ -237,21 +244,22 @@ fn hash_no_interpolation(input: &[u8]) -> IResult<&[u8], &str> {
 }
 
 fn extra_escape(input: &[u8]) -> IResult<&[u8], StringPart> {
-    let (input, s) = map_res(
+    map(
         preceded(
             tag("\\"),
             alt((
-                alphanumeric1,
-                tag(b" "),
-                tag("'"),
-                tag("\""),
-                tag("\\"),
-                tag("#"),
+                map(
+                    map_res(
+                        alt((tag(b" "), tag("'"), tag("\""), tag("\\"))),
+                        input_to_string,
+                    ),
+                    |s| format!("\\{}", s),
+                ),
+                map_res(alt((tag("#"), alphanumeric1)), input_to_string),
             )),
         ),
-        input_to_string,
-    )(input)?;
-    Ok((input, StringPart::Raw(format!("\\{}", s))))
+        StringPart::Raw,
+    )(input)
 }
 
 pub fn extended_part(input: &[u8]) -> IResult<&[u8], StringPart> {

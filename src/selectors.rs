@@ -285,7 +285,7 @@ impl fmt::Display for SelectorPart {
                 "[{}{}{}{}]",
                 name,
                 op,
-                val,
+                val.opt_unquote(),
                 modifier.map(|m| format!(" {}", m)).unwrap_or_default()
             ),
             SelectorPart::PseudoElement { ref name, ref arg } => {

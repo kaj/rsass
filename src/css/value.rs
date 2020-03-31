@@ -129,71 +129,7 @@ impl Value {
 
     pub fn unquote(self) -> Value {
         match self {
-            Value::Literal(s, Quotes::None) => {
-                Value::Literal(s, Quotes::None)
-            }
-            Value::Literal(s, _) => {
-                let mut result = String::new();
-                let mut iter = s.chars().peekable();
-                while let Some(c) = iter.next() {
-                    if c == '\\' {
-                        let mut val: u32 = 0;
-                        let mut got_num = false;
-                        let nextchar = loop {
-                            match iter.peek() {
-                                Some(&c) if (c >= '0' && c <= '9') => {
-                                    val =
-                                        val * 10 + u32::from(c as u8 - b'0');
-                                    got_num = true;
-                                    iter.next();
-                                }
-                                Some(&c) if (c >= 'a' && c <= 'f') => {
-                                    val = val * 10
-                                        + u32::from(c as u8 - b'a' + 10);
-                                    got_num = true;
-                                    iter.next();
-                                }
-                                Some(&c) if (c >= 'A' && c <= 'F') => {
-                                    val = val * 10
-                                        + u32::from(c as u8 - b'A' + 10);
-                                    got_num = true;
-                                    iter.next();
-                                }
-                                Some(' ') if got_num => {
-                                    iter.next();
-                                    break (None);
-                                }
-                                Some(_) if !got_num => break (iter.next()),
-                                _ => break (None),
-                            }
-                        };
-                        if got_num {
-                            if val == 0 {
-                                result.push('\u{fffd}');
-                            } else {
-                                if let Ok(c) = char::try_from(val) {
-                                    result.push(c);
-                                } else {
-                                    result.push('\u{fffd}');
-                                }
-                            }
-                        }
-                        match nextchar {
-                            Some('\n') => {
-                                result.push('\\');
-                                result.push('a');
-                            }
-                            Some(c) => {
-                                result.push(c);
-                            }
-                            None => (),
-                        }
-                    } else {
-                        result.push(c)
-                    }
-                }
-                Value::Literal(result, Quotes::None)
-            }
+            Value::Literal(s, _quotes) => Value::Literal(s, Quotes::None),
             Value::List(list, s, b) => Value::List(
                 list.into_iter().map(|v| v.unquote()).collect(),
                 s,

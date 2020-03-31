@@ -13,6 +13,7 @@ impl<'a> Display for Formatted<'a, Value> {
                     "\"{}\"",
                     s.chars()
                         .flat_map(|c| match c {
+                            '\\' => vec!['\\', '\\'],
                             '"' => vec!['\\', '"'],
                             c => vec![c],
                         })
@@ -23,6 +24,7 @@ impl<'a> Display for Formatted<'a, Value> {
                     "'{}'",
                     s.chars()
                         .flat_map(|c| match c {
+                            '\\' => vec!['\\', '\\'],
                             '\'' => vec!['\\', '\''],
                             c => vec![c],
                         })

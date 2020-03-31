@@ -63,6 +63,7 @@ fn t02_variable() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/19_escapes_single_quoted_lowercase/03_inline_double.hrx"
 #[test]
+#[ignore] // wrong result
 fn t03_inline_double() {
     assert_eq!(
         rsass(
@@ -89,6 +90,7 @@ fn t03_inline_double() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/19_escapes_single_quoted_lowercase/04_variable_double.hrx"
 #[test]
+#[ignore] // wrong result
 fn t04_variable_double() {
     assert_eq!(
         rsass(

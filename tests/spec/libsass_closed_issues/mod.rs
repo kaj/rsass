@@ -1788,7 +1788,6 @@ fn issue_1214() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1215.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_1215() {
     assert_eq!(
         rsass(
@@ -2244,7 +2243,6 @@ fn issue_1269() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1271.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_1271() {
     assert_eq!(
         rsass(
@@ -2776,7 +2774,6 @@ fn issue_1332() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1333.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_1333() {
     assert_eq!(
         rsass(
@@ -7555,7 +7552,6 @@ fn issue_231() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2320"
 #[test]
-#[ignore] // wrong result
 fn issue_2320() {
     assert_eq!(
         rsass(
@@ -10476,7 +10472,6 @@ fn issue_557() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_558.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_558() {
     assert_eq!(
         rsass(
@@ -12323,7 +12318,6 @@ fn issue_815() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_817.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_817() {
     assert_eq!(
         rsass(
@@ -12900,7 +12894,6 @@ fn issue_893() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_894.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_894() {
     assert_eq!(
         rsass(
@@ -13049,7 +13042,7 @@ fn issue_941() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_942.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn issue_942() {
     assert_eq!(
         rsass(

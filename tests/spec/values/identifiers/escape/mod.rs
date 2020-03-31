@@ -75,7 +75,6 @@ fn normalize() {
 
 // From "sass-spec/spec/values/identifiers/escape/script.hrx"
 #[test]
-#[ignore] // wrong result
 fn script() {
     assert_eq!(
         rsass(

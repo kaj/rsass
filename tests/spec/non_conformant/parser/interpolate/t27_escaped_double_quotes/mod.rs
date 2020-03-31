@@ -33,6 +33,7 @@ fn t01_inline() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/27_escaped_double_quotes/02_variable.hrx"
 #[test]
+#[ignore] // wrong result
 fn t02_variable() {
     assert_eq!(
         rsass(
@@ -152,7 +153,6 @@ fn t05_variable_quoted_double() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/27_escaped_double_quotes/06_escape_interpolation.hrx"
 #[test]
-#[ignore] // wrong result
 fn t06_escape_interpolation() {
     assert_eq!(
         rsass(

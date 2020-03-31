@@ -35,7 +35,7 @@ fn issue_1026() {
 
 // From "sass-spec/spec/libsass-todo-issues/issue_1096.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn issue_1096() {
     assert_eq!(
         rsass(
