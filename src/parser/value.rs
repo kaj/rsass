@@ -6,6 +6,7 @@ use super::strings::{
 use super::unit::unit;
 use super::util::{opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string};
+use crate::ordermap::OrderMap;
 use crate::sass::{SassString, Value};
 use crate::value::{ListSeparator, Number, Operator, Rgba};
 use nom::branch::alt;
@@ -169,21 +170,56 @@ fn term_value(input: &[u8]) -> IResult<&[u8], Value> {
 }
 
 pub fn single_value(input: &[u8]) -> IResult<&[u8], Value> {
+    if let Ok((input0, _p)) = preceded(tag("("), opt_spacelike)(input) {
+        if let Ok((input, first_key)) = sum_expression(input0) {
+            let (input, value) = if let Ok((mut input, first_val)) =
+                preceded(colon, space_list)(input)
+            {
+                let mut items = OrderMap::new();
+                items.insert(first_key, first_val);
+                while let Ok((rest, (key, val))) = pair(
+                    preceded(comma, sum_expression),
+                    preceded(colon, space_list),
+                )(input)
+                {
+                    items.insert(key, val);
+                    input = rest;
+                }
+                let (input, _) = opt(comma)(input)?;
+                (input, Value::Map(items))
+            } else {
+                (input, Value::Paren(Box::new(first_key), false))
+            };
+            if let Ok((input, _)) = end_paren(input) {
+                return Ok((input, value));
+            }
+        }
+        terminated(fallback_in_paren, end_paren)(input0)
+    } else {
+        simple_value(input)
+    }
+}
+
+fn comma(input: &[u8]) -> IResult<&[u8], &[u8]> {
+    delimited(opt_spacelike, tag(","), opt_spacelike)(input)
+}
+
+fn colon(input: &[u8]) -> IResult<&[u8], &[u8]> {
+    delimited(opt_spacelike, tag(":"), opt_spacelike)(input)
+}
+
+fn fallback_in_paren(input: &[u8]) -> IResult<&[u8], Value> {
     alt((
-        simple_value,
-        delimited(
-            preceded(tag("("), opt_spacelike),
-            alt((
-                dictionary_inner,
-                map(value_expression, |v| Value::Paren(Box::new(v), false)),
-                value(
-                    Value::List(vec![], ListSeparator::Space, false, false),
-                    tag(""),
-                ),
-            )),
-            terminated(opt_spacelike, tag(")")),
+        map(value_expression, |v| Value::Paren(Box::new(v), false)),
+        value(
+            Value::List(vec![], ListSeparator::Space, false, false),
+            tag(""),
         ),
     ))(input)
+}
+
+fn end_paren(input: &[u8]) -> IResult<&[u8], &[u8]> {
+    preceded(opt_spacelike, tag(")"))(input)
 }
 
 fn simple_value(input: &[u8]) -> IResult<&[u8], Value> {
