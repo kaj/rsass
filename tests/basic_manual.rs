@@ -259,6 +259,10 @@ fn test_number_nines_f() {
 fn test_number_zeroes_a() {
     check_value("0.000000000000000001", "0");
 }
+#[test]
+fn test_number_zeroes_b() {
+    check_value("-0.000000000000000001", "0");
+}
 
 fn check_value(input: &str, expected: &str) {
     assert_eq!(

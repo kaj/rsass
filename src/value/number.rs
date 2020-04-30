@@ -102,47 +102,36 @@ impl Zero for Number {
 
 impl<'a> fmt::Display for Formatted<'a, Number> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        if self.value.value.is_negative() {
-            out.write_char('-')?;
-        }
-
         let mut frac = self.value.value.fract();
 
         let mut whole = self.value.value.to_integer().abs();
         let mut dec = String::with_capacity(if frac.is_zero() {
             0
         } else {
-            self.format.precision + 1
+            self.format.precision
         });
 
         if !frac.is_zero() {
-            dec.write_char('.')?;
             for _ in 0..(self.format.precision - 1) {
-                frac *= Rational::from_integer(10);
+                frac *= 10;
                 write!(dec, "{}", frac.to_integer().abs())?;
                 frac = frac.fract();
-                if frac == Rational::from_integer(0) {
+                if frac.is_zero() {
                     break;
                 }
             }
             if !frac.is_zero() {
-                let end = (frac * Rational::from_integer(10))
-                    .round()
-                    .abs()
-                    .to_integer();
+                let end = (frac * 10).round().abs().to_integer();
                 if end == 10 {
                     loop {
                         match dec.pop() {
                             Some('9') => continue,
-                            Some('.') | None => {
+                            None => {
                                 whole += 1;
                                 break;
                             }
                             Some(c) => {
-                                dec.push_str(
-                                    &(c.to_digit(10).unwrap() + 1)
-                                        .to_string(),
-                                );
+                                dec.push(char::from(c as u8 + 1));
                                 break;
                             }
                         }
@@ -151,7 +140,7 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                     loop {
                         match dec.pop() {
                             Some('0') => continue,
-                            Some('.') | None => break,
+                            None => break,
                             Some(c) => {
                                 dec.push(c);
                                 break;
@@ -164,12 +153,20 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
             }
         }
 
+        if self.value.value.is_negative()
+            && (!whole.is_zero() || !dec.is_empty())
+        {
+            out.write_char('-')?;
+        }
+
         let skip_zero = self.format.is_compressed() || !self.value.lead_zero;
         if !(whole == 0 && skip_zero && !dec.is_empty()) {
             write!(out, "{}", whole)?;
         }
 
-        write!(out, "{}", dec)?;
+        if !dec.is_empty() {
+            write!(out, ".{}", dec)?;
+        }
         Ok(())
     }
 }

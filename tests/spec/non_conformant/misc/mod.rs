@@ -197,7 +197,6 @@ fn namespace_properties_with_script_value() {
 
 // From "sass-spec/spec/non_conformant/misc/negative_numbers.hrx"
 #[test]
-#[ignore] // wrong result
 fn negative_numbers() {
     assert_eq!(
         rsass(
