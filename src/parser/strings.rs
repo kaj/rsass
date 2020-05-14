@@ -315,22 +315,22 @@ fn escaped_char(input: &[u8]) -> IResult<&[u8], char> {
         tag("\\"),
         alt((
             value('\\', tag("\\")),
-            map(
-                terminated(
-                    recognize(many_m_n(
-                        1,
-                        6,
-                        one_of("0123456789ABCDEFabcdef"),
-                    )),
-                    opt(tag(" ")),
+            map_opt(
+                map_res(
+                    map_res(
+                        terminated(
+                            recognize(many_m_n(
+                                1,
+                                6,
+                                one_of("0123456789ABCDEFabcdef"),
+                            )),
+                            opt(tag(" ")),
+                        ),
+                        input_to_str,
+                    ),
+                    |s| u32::from_str_radix(s, 16),
                 ),
-                |hp| {
-                    std::char::from_u32(
-                        u32::from_str_radix(input_to_str(hp).unwrap(), 16)
-                            .unwrap(),
-                    )
-                    .unwrap()
-                },
+                std::char::from_u32
             ),
             take_char,
         )),
