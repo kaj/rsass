@@ -8,7 +8,7 @@ use super::util::{opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string};
 use crate::ordermap::OrderMap;
 use crate::sass::{SassString, Value};
-use crate::value::{ListSeparator, Number, Operator, Rgba, Unit};
+use crate::value::{ListSeparator, Number, Operator, Rgba};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
@@ -300,85 +300,48 @@ fn sign_prefix(input: &[u8]) -> IResult<&[u8], Option<&[u8]>> {
     opt(alt((tag("-"), tag("+"))))(input)
 }
 
+enum AnyRatio {
+    Machine(Ratio<isize>),
+    Big(Ratio<BigInt>),
+}
+
 fn number(input: &[u8]) -> IResult<&[u8], Value> {
-    fn make_numeric(tuple: (Option<&[u8]>, (bool, Ratio<isize>), Unit)) -> Value {
-        let (sign, (lead_zero, num), unit) = tuple;
-        Value::Numeric(
-            Number {
-                value: if sign == Some(b"-") { -num } else { num },
-                plus_sign: sign == Some(b"+"),
-                lead_zero,
-            },
-            unit,
-        )
-    };
-
-    fn make_numeric_big(tuple: (Option<&[u8]>, (bool, Ratio<BigInt>), Unit)) -> Value {
-        let (sign, (lead_zero, num), unit) = tuple;
-        Value::NumericBig(
-            Number {
-                value: if sign == Some(b"-") { -num } else { num },
-                plus_sign: sign == Some(b"+"),
-                lead_zero,
-            },
-            unit,
-        )
-    };
-
-    alt((
-        map(
-            tuple((
-                sign_prefix,
+    map(
+        tuple((
+            sign_prefix,
+            alt((
                 map(pair(decimal_integer, decimal_decimals), |(n, d)| {
-                    (true, n + d)
+                    (true, AnyRatio::Machine(n + d))
                 }),
-                unit,
-            )),
-            make_numeric,
-        ),
-        map(
-            tuple((
-                sign_prefix,
                 map(pair(decimal_integer_big, decimal_decimals_big), |(n, d)| {
-                    (true, n + d)
+                    (true, AnyRatio::Big(n + d))
                 }),
-                unit,
+                map(decimal_decimals, |dec| (false, AnyRatio::Machine(dec))),
+                map(decimal_decimals_big, |dec| (false, AnyRatio::Big(dec))),
+                map(decimal_integer, |int| (true, AnyRatio::Machine(int))),
+                map(decimal_integer_big, |int| (true, AnyRatio::Big(int))),
             )),
-            make_numeric_big,
-        ),
-        map(
-            tuple((
-                sign_prefix,
-                map(decimal_decimals, |dec| (false, dec)),
+            unit,
+        )),
+        |(sign, (lead_zero, num), unit)| match num {
+            AnyRatio::Machine(num) => Value::Numeric(
+                Number {
+                    value: if sign == Some(b"-") { -num } else { num },
+                    plus_sign: sign == Some(b"+"),
+                    lead_zero,
+                },
                 unit,
-            )),
-            make_numeric,
-        ),
-        map(
-            tuple((
-                sign_prefix,
-                map(decimal_decimals_big, |dec| (false, dec)),
+            ),
+            AnyRatio::Big(num) => Value::NumericBig(
+                Number {
+                    value: if sign == Some(b"-") { -num } else { num },
+                    plus_sign: sign == Some(b"+"),
+                    lead_zero,
+                },
                 unit,
-            )),
-            make_numeric_big,
-        ),
-        map(
-            tuple((
-                sign_prefix,
-                map(decimal_integer, |int| (true, int)),
-                unit,
-            )),
-            make_numeric,
-        ),
-        map(
-            tuple((
-                sign_prefix,
-                map(decimal_integer_big, |int| (true, int)),
-                unit,
-            )),
-            make_numeric_big,
-        ),
-    ))(input)
+            ),
+        },
+    )(input)
 }
 
 pub fn decimal_integer(input: &[u8]) -> IResult<&[u8], Rational> {
