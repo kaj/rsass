@@ -40,8 +40,6 @@ mod scss;
 
 mod scss_tests;
 
-mod selectors;
-
 // From "sass-spec/spec/non_conformant/variables.hrx"
 mod variables {
     #[allow(unused)]

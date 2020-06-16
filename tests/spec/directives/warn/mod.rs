@@ -2,6 +2,24 @@
 #[allow(unused)]
 use super::rsass;
 
+// From "sass-spec/spec/directives/warn/escaped.hrx"
+#[test]
+#[ignore] // wrong result
+fn escaped() {
+    assert_eq!(
+        rsass(
+            "@w\\61rn warning;\
+            \na {b: c}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b: c;\
+        \n}\
+        \n"
+    );
+}
+
 // From "sass-spec/spec/directives/warn/functions_in_stack.hrx"
 #[test]
 fn functions_in_stack() {

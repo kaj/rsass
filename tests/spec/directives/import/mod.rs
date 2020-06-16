@@ -242,6 +242,23 @@ mod css {
 
 mod error;
 
+// From "sass-spec/spec/directives/import/escaped.hrx"
+#[test]
+#[ignore] // wrong result
+fn escaped() {
+    assert_eq!(
+        rsass(
+            "@impor\\74 \"other\"\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b: c;\
+        \n}\
+        \n"
+    );
+}
+
 // From "sass-spec/spec/directives/import/load.hrx"
 mod load {
     #[allow(unused)]
