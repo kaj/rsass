@@ -64,7 +64,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             &[&s, &i, &v],
         )),
     });
-    def!(f, str_slice(string, start_at, end_at = b"-1;"), |s| match (
+    def!(f, str_slice(string, start_at, end_at = b"-1"), |s| match (
         s.get("string")?,
         s.get("start_at")?,
         s.get("end_at")?
