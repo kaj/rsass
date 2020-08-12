@@ -2,6 +2,8 @@
 #[allow(unused)]
 use super::rsass;
 
+mod error;
+
 // From "sass-spec/spec/directives/if/escaped.hrx"
 mod escaped {
     #[allow(unused)]

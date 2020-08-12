@@ -218,6 +218,38 @@ fn empty_block_directive() {
     );
 }
 
+// From "sass-spec/spec/css/escape.hrx"
+mod escape {
+    #[allow(unused)]
+    use super::rsass;
+    mod error {
+        #[allow(unused)]
+        use super::rsass;
+        mod syntax {
+            #[allow(unused)]
+            use super::rsass;
+
+            // Ignoring "too_high", error tests are not supported yet.
+        }
+    }
+    #[test]
+    fn zero() {
+        assert_eq!(
+        rsass(
+            "// Although zero is not a valid code point per spec, we pass it through because\
+            \n// it can be used for browser hacks.\
+            \na {b: \\0}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b: \\0 ;\
+        \n}\
+        \n"
+    );
+    }
+}
+
 // From "sass-spec/spec/css/function_name_identifiers.hrx"
 #[test]
 fn function_name_identifiers() {
@@ -242,6 +274,22 @@ fn function_name_identifiers() {
         \n}\
         \n"
     );
+}
+
+// From "sass-spec/spec/css/important.hrx"
+mod important {
+    #[allow(unused)]
+    use super::rsass;
+    mod error {
+        #[allow(unused)]
+        use super::rsass;
+        mod syntax {
+            #[allow(unused)]
+            use super::rsass;
+
+            // Ignoring "eof_after_bang", error tests are not supported yet.
+        }
+    }
 }
 
 // From "sass-spec/spec/css/keyframes.hrx"
@@ -414,6 +462,18 @@ mod selector {
             }
         }
     }
+    mod inline_comments {
+        #[allow(unused)]
+        use super::rsass;
+        mod loud {
+            #[allow(unused)]
+            use super::rsass;
+        }
+        mod silent {
+            #[allow(unused)]
+            use super::rsass;
+        }
+    }
     mod placeholder {
         #[allow(unused)]
         use super::rsass;
@@ -505,6 +565,31 @@ mod selector {
         \n"
     );
                 }
+            }
+        }
+    }
+    mod pseudoselector {
+        #[allow(unused)]
+        use super::rsass;
+        mod nested {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            fn adjacent_combinators() {
+                assert_eq!(
+                    rsass(
+                        "// Regression test for sass/dart-sass#1038\
+            \na {\
+            \n  b:c, > d {x: y}\
+            \n}\
+            \n"
+                    )
+                    .unwrap(),
+                    "a b:c, a > d {\
+        \n  x: y;\
+        \n}\
+        \n"
+                );
             }
         }
     }
