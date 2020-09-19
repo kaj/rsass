@@ -1,5 +1,6 @@
 use crate::output::{Format, Formatted};
-use num_rational::Rational;
+use num_integer::Integer;
+use num_rational::Ratio;
 use num_traits::{Signed, Zero};
 use std::fmt::{self, Write};
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
@@ -10,13 +11,19 @@ use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 /// to show a leading plus sign and/or leading zero (for values
 /// between -1 and 1) is included.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Number {
-    pub value: Rational,
+pub struct Number<N>
+where
+    N: Clone + Integer + Signed,
+{
+    pub value: Ratio<N>,
     pub plus_sign: bool,
     pub lead_zero: bool,
 }
 
-impl Number {
+impl<N> Number<N>
+where
+    N: Clone + Integer + Signed,
+{
     /// Computes the absolute value of the number, retaining the flags.
     pub fn abs(self) -> Self {
         Number {
@@ -25,14 +32,17 @@ impl Number {
             lead_zero: self.lead_zero,
         }
     }
+
     /// Returns true if the number is an integer.
     pub fn is_integer(&self) -> bool {
         self.value.is_integer()
     }
+
     /// Converts to an integer, rounding towards zero.
-    pub fn to_integer(&self) -> isize {
+    pub fn to_integer(&self) -> N {
         self.value.to_integer()
     }
+
     pub fn format(&self, format: Format) -> Formatted<Self> {
         Formatted {
             value: self,
@@ -41,11 +51,12 @@ impl Number {
     }
 }
 
-impl<T> From<T> for Number
+impl<N, T> From<T> for Number<N>
 where
-    T: Into<Rational>,
+    T: Into<Ratio<N>>,
+    N: Clone + Integer + Signed,
 {
-    fn from(value: T) -> Number {
+    fn from(value: T) -> Number<N> {
         Number {
             value: value.into(),
             plus_sign: false,
@@ -54,44 +65,67 @@ where
     }
 }
 
-impl Add for Number {
-    type Output = Number;
+impl<N> Add for Number<N>
+where
+    N: Clone + Integer + Signed,
+{
+    type Output = Number<N>;
     fn add(self, rhs: Self) -> Self::Output {
         Number::from(self.value + rhs.value)
     }
 }
-impl<'a> Div for &'a Number {
-    type Output = Number;
+
+impl<'a, N> Div for &'a Number<N>
+where
+    N: Clone + Integer + Signed,
+{
+    type Output = Number<N>;
     fn div(self, rhs: Self) -> Self::Output {
-        Number::from(self.value / rhs.value)
-    }
-}
-impl<'a> Mul for &'a Number {
-    type Output = Number;
-    fn mul(self, rhs: Self) -> Self::Output {
-        Number::from(self.value * rhs.value)
-    }
-}
-impl<'a> Rem for &'a Number {
-    type Output = Number;
-    fn rem(self, rhs: Self) -> Self::Output {
-        Number::from(self.value % rhs.value)
-    }
-}
-impl<'a> Neg for &'a Number {
-    type Output = Number;
-    fn neg(self) -> Number {
-        Number::from(-self.value)
+        Number::from(&self.value / &rhs.value)
     }
 }
 
-impl<'a> Sub for &'a Number {
-    type Output = Number;
-    fn sub(self, rhs: Self) -> Self::Output {
-        Number::from(self.value - rhs.value)
+impl<'a, N> Mul for &'a Number<N>
+where
+    N: Clone + Integer + Signed,
+{
+    type Output = Number<N>;
+    fn mul(self, rhs: Self) -> Self::Output {
+        Number::from(&self.value * &rhs.value)
     }
 }
-impl Zero for Number {
+
+impl<'a, N> Rem for &'a Number<N>
+where
+    N: Clone + Integer + Signed,
+{
+    type Output = Number<N>;
+    fn rem(self, rhs: Self) -> Self::Output {
+        Number::from(&self.value % &rhs.value)
+    }
+}
+
+impl<'a, N> Neg for &'a Number<N>
+where
+    N: Clone + Integer + Signed,
+{
+    type Output = Number<N>;
+    fn neg(self) -> Number<N> {
+        Number::from(-&self.value)
+    }
+}
+
+impl<'a, N> Sub for &'a Number<N>
+where
+    N: Clone + Integer + Signed,
+{
+    type Output = Number<N>;
+    fn sub(self, rhs: Self) -> Self::Output {
+        Number::from(&self.value - &rhs.value)
+    }
+}
+
+impl Zero for Number<isize> {
     fn zero() -> Self {
         Number::from(0)
     }
@@ -100,8 +134,12 @@ impl Zero for Number {
     }
 }
 
-impl<'a> fmt::Display for Formatted<'a, Number> {
+impl<'a, N> fmt::Display for Formatted<'a, Number<N>>
+where
+    N: Clone + fmt::Display + Integer + Signed + From<i8>,
+{
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        let ten: N = 10i8.into();
         let mut frac = self.value.value.fract();
 
         let mut whole = self.value.value.to_integer().abs();
@@ -113,7 +151,7 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
 
         if !frac.is_zero() {
             for _ in 0..(self.format.precision - 1) {
-                frac *= 10;
+                frac = frac * &ten;
                 write!(dec, "{}", frac.to_integer().abs())?;
                 frac = frac.fract();
                 if frac.is_zero() {
@@ -121,13 +159,13 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                 }
             }
             if !frac.is_zero() {
-                let end = (frac * 10).round().abs().to_integer();
-                if end == 10 {
+                let end = (frac * &ten).round().abs().to_integer();
+                if end == ten {
                     loop {
                         match dec.pop() {
                             Some('9') => continue,
                             None => {
-                                whole += 1;
+                                whole = whole + N::one();
                                 break;
                             }
                             Some(c) => {
@@ -136,7 +174,7 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                             }
                         }
                     }
-                } else if end == 0 {
+                } else if end.is_zero() {
                     loop {
                         match dec.pop() {
                             Some('0') => continue,
@@ -160,7 +198,7 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
         }
 
         let skip_zero = self.format.is_compressed() || !self.value.lead_zero;
-        if !(whole == 0 && skip_zero && !dec.is_empty()) {
+        if !(whole.is_zero() && skip_zero && !dec.is_empty()) {
             write!(out, "{}", whole)?;
         }
 

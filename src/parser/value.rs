@@ -14,13 +14,17 @@ use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
     alphanumeric1, multispace0, multispace1, one_of,
 };
-use nom::combinator::{map, map_res, not, opt, peek, recognize, value};
+use nom::combinator::{
+    map, map_opt, map_res, not, opt, peek, recognize, value,
+};
 use nom::multi::{
     fold_many0, fold_many1, many0, many_m_n, separated_nonempty_list,
 };
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use nom::IResult;
-use num_rational::Rational;
+use num_bigint::BigInt;
+use num_rational::{Ratio, Rational};
+use num_traits::{One, Zero};
 use std::str::from_utf8;
 
 pub fn value_expression(input: &[u8]) -> IResult<&[u8], Value> {
@@ -294,51 +298,115 @@ fn bracket_list(input: &[u8]) -> IResult<&[u8], Value> {
     ))
 }
 
+fn sign_prefix(input: &[u8]) -> IResult<&[u8], Option<&[u8]>> {
+    opt(alt((tag("-"), tag("+"))))(input)
+}
+
+enum AnyRatio {
+    Machine(Ratio<isize>),
+    Big(Ratio<BigInt>),
+}
+
 fn number(input: &[u8]) -> IResult<&[u8], Value> {
-    let (input, (sign, (lead_zero, num), unit)) = tuple((
-        opt(alt((tag("-"), tag("+")))),
-        alt((
-            map(pair(decimal_integer, opt(decimal_decimals)), |(n, d)| {
-                (true, if let Some(d) = d { n + d } else { n })
-            }),
-            map(decimal_decimals, |dec| (false, dec)),
-        )),
-        unit,
-    ))(input)?;
-    Ok((
-        input,
-        Value::Numeric(
-            Number {
-                value: if sign == Some(b"-") { -num } else { num },
-                plus_sign: sign == Some(b"+"),
-                lead_zero,
-            },
+    map(
+        tuple((
+            sign_prefix,
+            alt((
+                map(pair(decimal_integer, decimal_decimals), |(n, d)| {
+                    (true, AnyRatio::Machine(n + d))
+                }),
+                map(
+                    pair(decimal_integer_big, decimal_decimals_big),
+                    |(n, d)| (true, AnyRatio::Big(n + d)),
+                ),
+                map(decimal_decimals, |dec| (false, AnyRatio::Machine(dec))),
+                map(decimal_decimals_big, |dec| (false, AnyRatio::Big(dec))),
+                map(decimal_integer, |int| (true, AnyRatio::Machine(int))),
+                map(decimal_integer_big, |int| (true, AnyRatio::Big(int))),
+            )),
             unit,
-        ),
-    ))
+        )),
+        |(sign, (lead_zero, num), unit)| match num {
+            AnyRatio::Machine(num) => Value::Numeric(
+                Number {
+                    value: if sign == Some(b"-") { -num } else { num },
+                    plus_sign: sign == Some(b"+"),
+                    lead_zero,
+                },
+                unit,
+            ),
+            AnyRatio::Big(num) => Value::NumericBig(
+                Number {
+                    value: if sign == Some(b"-") { -num } else { num },
+                    plus_sign: sign == Some(b"+"),
+                    lead_zero,
+                },
+                unit,
+            ),
+        },
+    )(input)
 }
 
 pub fn decimal_integer(input: &[u8]) -> IResult<&[u8], Rational> {
+    map_opt(
+        fold_many1(
+            // Note: We should use bytes directly, one_of returns a char.
+            one_of("0123456789"),
+            Some(0isize),
+            |r, d| {
+                r?.checked_mul(10)?.checked_add(isize::from(d as u8 - b'0'))
+            },
+        ),
+        |opt_int| opt_int.map(Rational::from_integer),
+    )(input)
+}
+
+pub fn decimal_integer_big(input: &[u8]) -> IResult<&[u8], Ratio<BigInt>> {
     map(
         fold_many1(
             // Note: We should use bytes directly, one_of returns a char.
             one_of("0123456789"),
-            0,
-            |r, d| r * 10 + isize::from(d as u8 - b'0'),
+            BigInt::zero(),
+            |r, d| r * 10 + BigInt::from(d as u8 - b'0'),
         ),
-        Rational::from_integer,
+        Ratio::from_integer,
     )(input)
 }
 
 pub fn decimal_decimals(input: &[u8]) -> IResult<&[u8], Rational> {
+    map_opt(
+        preceded(
+            tag("."),
+            fold_many1(
+                one_of("0123456789"),
+                Some((0isize, 1isize)),
+                |opt_pair, d| {
+                    let (r, n) = opt_pair?;
+                    Some((
+                        r.checked_mul(10)?
+                            .checked_add(isize::from(d as i8 - b'0' as i8))?,
+                        n.checked_mul(10)?,
+                    ))
+                },
+            ),
+        ),
+        |opt_pair| opt_pair.map(|(r, d)| Rational::new(r, d)),
+    )(input)
+}
+
+pub fn decimal_decimals_big(input: &[u8]) -> IResult<&[u8], Ratio<BigInt>> {
     map(
         preceded(
             tag("."),
-            fold_many1(one_of("0123456789"), (0, 1), |(r, n), d| {
-                (r * 10 + isize::from(d as i8 - b'0' as i8), n * 10)
-            }),
+            fold_many1(
+                one_of("0123456789"),
+                (BigInt::zero(), BigInt::one()),
+                |(r, n), d| {
+                    (r * 10 + BigInt::from(d as i8 - b'0' as i8), n * 10)
+                },
+            ),
         ),
-        |(r, d)| Rational::new(r, d),
+        |(r, d)| Ratio::new(r, d),
     )(input)
 }
 

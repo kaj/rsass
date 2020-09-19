@@ -43,6 +43,9 @@ impl<'a> Display for Formatted<'a, Value> {
             Value::Numeric(ref num, ref unit, _) => {
                 write!(out, "{}{}", num.format(self.format), unit)
             }
+            Value::NumericBig(ref num, ref unit, _) => {
+                write!(out, "{}{}", num.format(self.format), unit)
+            }
             Value::Color(ref rgba, ref name) => {
                 if let Some(ref name) = *name {
                     name.fmt(out)
