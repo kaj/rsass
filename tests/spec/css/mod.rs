@@ -218,6 +218,38 @@ fn empty_block_directive() {
     );
 }
 
+// From "sass-spec/spec/css/escape.hrx"
+mod escape {
+    #[allow(unused)]
+    use super::rsass;
+    mod error {
+        #[allow(unused)]
+        use super::rsass;
+        mod syntax {
+            #[allow(unused)]
+            use super::rsass;
+
+            // Ignoring "too_high", error tests are not supported yet.
+        }
+    }
+    #[test]
+    fn zero() {
+        assert_eq!(
+        rsass(
+            "// Although zero is not a valid code point per spec, we pass it through because\
+            \n// it can be used for browser hacks.\
+            \na {b: \\0}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b: \\0 ;\
+        \n}\
+        \n"
+    );
+    }
+}
+
 // From "sass-spec/spec/css/function_name_identifiers.hrx"
 #[test]
 fn function_name_identifiers() {
@@ -242,6 +274,22 @@ fn function_name_identifiers() {
         \n}\
         \n"
     );
+}
+
+// From "sass-spec/spec/css/important.hrx"
+mod important {
+    #[allow(unused)]
+    use super::rsass;
+    mod error {
+        #[allow(unused)]
+        use super::rsass;
+        mod syntax {
+            #[allow(unused)]
+            use super::rsass;
+
+            // Ignoring "eof_after_bang", error tests are not supported yet.
+        }
+    }
 }
 
 // From "sass-spec/spec/css/keyframes.hrx"
@@ -375,6 +423,22 @@ mod selector {
     );
             }
         }
+        #[test]
+        fn quoted_non_identifier() {
+            assert_eq!(
+        rsass(
+            "// Quotes should be preserved when the string they contain is not an identifier.\
+            \n// See https://github.com/sass/dart-sass/issues/598.\
+            \n[a=\"b.\"] {c: d}\
+            \n"
+        )
+        .unwrap(),
+        "[a=\"b.\"] {\
+        \n  c: d;\
+        \n}\
+        \n"
+    );
+        }
     }
     mod error {
         #[allow(unused)]
@@ -395,6 +459,137 @@ mod selector {
                 // Ignoring "underscore", error tests are not supported yet.
 
                 // Ignoring "unicode", error tests are not supported yet.
+            }
+        }
+    }
+    mod inline_comments {
+        #[allow(unused)]
+        use super::rsass;
+        mod loud {
+            #[allow(unused)]
+            use super::rsass;
+        }
+        mod silent {
+            #[allow(unused)]
+            use super::rsass;
+        }
+    }
+    mod placeholder {
+        #[allow(unused)]
+        use super::rsass;
+        mod pseudoselectors {
+            #[allow(unused)]
+            use super::rsass;
+            mod matches {
+                #[allow(unused)]
+                use super::rsass;
+                #[test]
+                #[ignore] // wrong result
+                fn solo() {
+                    assert_eq!(
+        rsass(
+            "// Since `%b` doesn\'t exist, no selectors can match it, so this rule should be\
+            \n// removed.\
+            \na:matches(%b) {x: y}\
+            \n"
+        )
+        .unwrap(),
+        ""
+    );
+                }
+                #[test]
+                #[ignore] // wrong result
+                fn with_real() {
+                    assert_eq!(
+        rsass(
+            "// Since `%b` doesn\'t exist, an element matches `%b` or `c` iff it matches `c`.\
+            \na:matches(%b, c) {x: y}\
+            \n"
+        )
+        .unwrap(),
+        "a:matches(c) {\
+        \n  x: y;\
+        \n}\
+        \n"
+    );
+                }
+            }
+            mod not {
+                #[allow(unused)]
+                use super::rsass;
+                #[test]
+                #[ignore] // wrong result
+                fn solo() {
+                    assert_eq!(
+        rsass(
+            "// Since `%b` doesn\'t exist, all `a` elements match `a:not(%b)`.\
+            \na:not(%b) {x: y}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  x: y;\
+        \n}\
+        \n"
+    );
+                }
+                #[test]
+                #[ignore] // wrong result
+                fn universal() {
+                    assert_eq!(
+        rsass(
+            "// Since `%b` doesn\'t exist, all elements match `:not(%b)`.\
+            \n:not(%b) {x: y}\
+            \n"
+        )
+        .unwrap(),
+        "* {\
+        \n  x: y;\
+        \n}\
+        \n"
+    );
+                }
+                #[test]
+                #[ignore] // wrong result
+                fn with_real() {
+                    assert_eq!(
+        rsass(
+            "// Since `%b` doesn\'t exist, it can be removed from the `:not` pseudoselector.\
+            \na:not(%b, c) {x: y}\
+            \n"
+        )
+        .unwrap(),
+        "a:not(c) {\
+        \n  x: y;\
+        \n}\
+        \n"
+    );
+                }
+            }
+        }
+    }
+    mod pseudoselector {
+        #[allow(unused)]
+        use super::rsass;
+        mod nested {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            fn adjacent_combinators() {
+                assert_eq!(
+                    rsass(
+                        "// Regression test for sass/dart-sass#1038\
+            \na {\
+            \n  b:c, > d {x: y}\
+            \n}\
+            \n"
+                    )
+                    .unwrap(),
+                    "a b:c, a > d {\
+        \n  x: y;\
+        \n}\
+        \n"
+                );
             }
         }
     }

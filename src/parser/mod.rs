@@ -40,9 +40,23 @@ use std::str::{from_utf8, Utf8Error};
 ///
 /// Returns a single value (or an error).
 pub fn parse_value_data(data: &[u8]) -> Result<Value, Error> {
-    let (rest, result) = value_expression(data)?;
+    let (rest, result) = all_consuming(value_expression)(data)?;
     assert!(rest.is_empty());
     Ok(result)
+}
+
+#[test]
+fn test_parse_value_data_1() -> Result<(), Error> {
+    let v = parse_value_data(b"17em")?;
+    assert_eq!(Value::Numeric(17.into(), Unit::Em), v);
+    Ok(())
+}
+
+#[test]
+fn test_parse_value_data_2() -> Result<(), Error> {
+    let v = parse_value_data(b"17em;");
+    assert!(v.is_err());
+    Ok(())
 }
 
 /// Parse a scss file.

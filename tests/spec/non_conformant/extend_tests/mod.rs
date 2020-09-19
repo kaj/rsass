@@ -4545,7 +4545,7 @@ fn extend_loop() {
 fn extend_result_of_extend() {
     assert_eq!(
         rsass(
-            "// The result of :not(.c) being extended should itself be extenable.\
+            "// The result of :not(.c) being extended should itself be extendable.\
             \n.a {@extend :not(.b)}\
             \n.b {@extend .c}\
             \n:not(.c) {x: y}\

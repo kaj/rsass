@@ -330,7 +330,7 @@ fn escaped_char(input: &[u8]) -> IResult<&[u8], char> {
                     ),
                     |s| u32::from_str_radix(s, 16),
                 ),
-                std::char::from_u32
+                std::char::from_u32,
             ),
             take_char,
         )),
