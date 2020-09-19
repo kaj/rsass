@@ -13,7 +13,8 @@ fn bad_escape() {
 #[test]
 fn decimal_integer_overflow() {
     assert_eq!(
-        compile_value(b"2000000000000000000000000000000000000", FORMAT).unwrap(),
+        compile_value(b"2000000000000000000000000000000000000", FORMAT)
+            .unwrap(),
         b"2000000000000000000000000000000000000".to_vec(),
     );
 }
@@ -21,7 +22,8 @@ fn decimal_integer_overflow() {
 #[test]
 fn decimal_fraction_overflow() {
     assert_eq!(
-        compile_value(b"0.2000000000000000000000000000000000000", FORMAT).unwrap(),
+        compile_value(b"0.2000000000000000000000000000000000000", FORMAT)
+            .unwrap(),
         b".2",
     );
 }

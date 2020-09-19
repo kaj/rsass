@@ -14,7 +14,9 @@ use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
     alphanumeric1, multispace0, multispace1, one_of,
 };
-use nom::combinator::{map, map_opt, map_res, not, opt, peek, recognize, value};
+use nom::combinator::{
+    map, map_opt, map_res, not, opt, peek, recognize, value,
+};
 use nom::multi::{
     fold_many0, fold_many1, many0, many_m_n, separated_nonempty_list,
 };
@@ -313,9 +315,10 @@ fn number(input: &[u8]) -> IResult<&[u8], Value> {
                 map(pair(decimal_integer, decimal_decimals), |(n, d)| {
                     (true, AnyRatio::Machine(n + d))
                 }),
-                map(pair(decimal_integer_big, decimal_decimals_big), |(n, d)| {
-                    (true, AnyRatio::Big(n + d))
-                }),
+                map(
+                    pair(decimal_integer_big, decimal_decimals_big),
+                    |(n, d)| (true, AnyRatio::Big(n + d)),
+                ),
                 map(decimal_decimals, |dec| (false, AnyRatio::Machine(dec))),
                 map(decimal_decimals_big, |dec| (false, AnyRatio::Big(dec))),
                 map(decimal_integer, |int| (true, AnyRatio::Machine(int))),
@@ -350,7 +353,9 @@ pub fn decimal_integer(input: &[u8]) -> IResult<&[u8], Rational> {
             // Note: We should use bytes directly, one_of returns a char.
             one_of("0123456789"),
             Some(0isize),
-            |r, d| r?.checked_mul(10)?.checked_add(isize::from(d as u8 - b'0')),
+            |r, d| {
+                r?.checked_mul(10)?.checked_add(isize::from(d as u8 - b'0'))
+            },
         ),
         |opt_int| opt_int.map(Rational::from_integer),
     )(input)
@@ -377,8 +382,12 @@ pub fn decimal_decimals(input: &[u8]) -> IResult<&[u8], Rational> {
                 Some((0isize, 1isize)),
                 |opt_pair, d| {
                     let (r, n) = opt_pair?;
-                    Some((r.checked_mul(10)?.checked_add(isize::from(d as i8 - b'0' as i8))?, n.checked_mul(10)?))
-                }
+                    Some((
+                        r.checked_mul(10)?
+                            .checked_add(isize::from(d as i8 - b'0' as i8))?,
+                        n.checked_mul(10)?,
+                    ))
+                },
             ),
         ),
         |opt_pair| opt_pair.map(|(r, d)| Rational::new(r, d)),
@@ -392,7 +401,9 @@ pub fn decimal_decimals_big(input: &[u8]) -> IResult<&[u8], Ratio<BigInt>> {
             fold_many1(
                 one_of("0123456789"),
                 (BigInt::zero(), BigInt::one()),
-                |(r, n), d| (r * 10 + BigInt::from(d as i8 - b'0' as i8), n * 10)
+                |(r, n), d| {
+                    (r * 10 + BigInt::from(d as i8 - b'0' as i8), n * 10)
+                },
             ),
         ),
         |(r, d)| Ratio::new(r, d),
