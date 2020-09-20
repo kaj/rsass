@@ -17,7 +17,7 @@ mod adjust_hue {
             )
             .unwrap(),
             "a {\
-        \n  b: cyan;\
+        \n  b: aqua;\
         \n}\
         \n"
         );
@@ -131,7 +131,7 @@ mod adjust_hue {
             )
             .unwrap(),
             "a {\
-        \n  b: cyan;\
+        \n  b: aqua;\
         \n}\
         \n"
         );
@@ -473,7 +473,7 @@ mod complement {
             )
             .unwrap(),
             "a {\
-        \n  b: cyan;\
+        \n  b: aqua;\
         \n}\
         \n"
         );
@@ -487,7 +487,7 @@ mod complement {
             )
             .unwrap(),
             "a {\
-        \n  b: cyan;\
+        \n  b: aqua;\
         \n}\
         \n"
         );

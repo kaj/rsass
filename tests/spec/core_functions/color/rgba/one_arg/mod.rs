@@ -711,7 +711,6 @@ mod special_functions {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn t1_of_2() {
                 assert_eq!(
         rsass(
@@ -727,7 +726,6 @@ mod special_functions {
     );
             }
             #[test]
-            #[ignore] // wrong result
             fn t2_of_2() {
                 assert_eq!(
                     rsass(

@@ -4,7 +4,7 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass-todo-tests/errors/import/url/mixin/control-if/inside.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn inside() {
     assert_eq!(
         rsass(

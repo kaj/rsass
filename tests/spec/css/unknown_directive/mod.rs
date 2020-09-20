@@ -127,6 +127,7 @@ fn plain() {
 
 // From "sass-spec/spec/css/unknown_directive/value_interpolation.hrx"
 #[test]
+#[ignore] // wrong result
 fn value_interpolation() {
     assert_eq!(
         rsass(
@@ -149,7 +150,7 @@ fn value_interpolation() {
         "@asdf 3;\
         \n@asdf foobarbaz;\
         \n@asdf \"foo bar baz\";\
-        \n@asdf \'foo bar baz\';\
+        \n@asdf \"foo bar baz\";\
         \n@asdf url(http://).com/);\
         \n@asdf url(\"http://).com/\");\
         \n"

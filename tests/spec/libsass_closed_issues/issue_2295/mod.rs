@@ -4,7 +4,7 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2295/basic.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn basic() {
     assert_eq!(
         rsass(
@@ -22,7 +22,7 @@ fn basic() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2295/original.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn original() {
     assert_eq!(
         rsass(

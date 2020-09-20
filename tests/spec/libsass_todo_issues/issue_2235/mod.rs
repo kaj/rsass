@@ -4,7 +4,7 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass-todo-issues/issue_2235/empty.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn empty() {
     assert_eq!(
         rsass(
@@ -23,7 +23,7 @@ fn empty() {
 
 // From "sass-spec/spec/libsass-todo-issues/issue_2235/not-empty.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn not_empty() {
     assert_eq!(
         rsass(

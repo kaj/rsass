@@ -470,7 +470,7 @@ pub mod test {
 
     #[test]
     fn double_div_2() {
-        assert_eq!("15 / 3 / 5", do_evaluate(&[], b"15 / 3 / 5;"))
+        assert_eq!("15/3/5", do_evaluate(&[], b"15 / 3 / 5;"))
     }
 
     #[test]
@@ -641,7 +641,7 @@ pub mod test {
 
     #[test]
     fn color_arithemtic_by_name() {
-        assert_eq!("magenta", do_evaluate(&[], b"red + blue;"))
+        assert_eq!("fuchsia", do_evaluate(&[], b"red + blue;"))
     }
 
     #[test]

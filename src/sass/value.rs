@@ -189,7 +189,7 @@ impl Value {
             Value::Null => Ok(css::Value::Null),
             Value::True => Ok(css::Value::True),
             Value::False => Ok(css::Value::False),
-            Value::BinOp(ref a, s1, ref op, s2, ref b) => {
+            Value::BinOp(ref a, _, ref op, _, ref b) => {
                 let (a, b) = {
                     let arithmetic = arithmetic | (*op != Operator::Div);
                     let aa = a.do_evaluate(scope, arithmetic)?;
@@ -207,9 +207,9 @@ impl Value {
                 Ok(op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
                     css::Value::BinOp(
                         Box::new(a),
-                        s1,
+                        false,
                         op.clone(),
-                        s2,
+                        false,
                         Box::new(b),
                     )
                 }))

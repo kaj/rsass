@@ -121,7 +121,12 @@ impl SassString {
         scope: &dyn Scope,
     ) -> Result<SassString, Error> {
         let (result, quotes) = self.evaluate(scope)?;
-        let t = quotes == Quotes::Double;
+        let t = !result.is_empty()
+            && result.bytes().enumerate().all(|(i, c)| {
+                (c >= b'a' && c <= b'z')
+                    || (c >= b'A' && c <= b'Z')
+                    || (i > 0 && c == b'-')
+            });
         Ok(SassString {
             parts: vec![StringPart::Raw(result)],
             quotes: if t { Quotes::None } else { quotes },

@@ -41,7 +41,6 @@ mod division {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn slash_slash_string() {
                 assert_eq!(
                     rsass(

@@ -247,7 +247,7 @@ fn t013_test_dynamic_extendee() {
             \n"
         )
         .unwrap(),
-        "[baz^=\"blip12px\"], .bar {\
+        "[baz^=blip12px], .bar {\
         \n  a: b;\
         \n}\
         \n"
@@ -3148,8 +3148,7 @@ fn t178_test_combinator_unification_with_newlines() {
             \n"
         )
         .unwrap(),
-        ".a > .b\
-        \n+ x, .c.a > .d.b + y {\
+        ".a > .b + x, .c.a > .d.b + y {\
         \n  a: b;\
         \n}\
         \n"
@@ -3938,7 +3937,7 @@ fn t220_test_extend_in_double_nested_media_query() {
             \n"
         )
         .unwrap(),
-        "@media all and (orientation: landscape) {\
+        "@media (orientation: landscape) {\
         \n  .bar {\
         \n    color: blue;\
         \n  }\
@@ -3981,7 +3980,10 @@ fn t222_test_newline_near_combinator() {
             \n"
         )
         .unwrap(),
-        ".a + .b x, .a + .b .c y, .c .a + .b y {\
+        ".a +\
+        \n.b x, .a +\
+        \n.b .c y, .c .a +\
+        \n.b y {\
         \n  a: b;\
         \n}\
         \n"
@@ -4476,7 +4478,7 @@ fn extend_loop() {
         \n  .z1.b1, .z1.x1.y1.a1, .z1.x1.y1.c1, .z1.x1.y1.b1 {\
         \n    x: y;\
         \n  }\
-        \n  .c1, .z1.b1, .z1.x1.y1.a1, .z1.x1.y1.c1 {\
+        \n  .c1, .z1.b1, .z1.x1.y1.a1, .z1.x1.y1.c1, .z1.x1.y1.b1 {\
         \n    x: y;\
         \n  }\
         \n}\
@@ -4484,7 +4486,7 @@ fn extend_loop() {
         \n  .x2.y2.a2, .x2.y2.c2, .x2.y2.z2.b2 {\
         \n    x: y;\
         \n  }\
-        \n  .c2, .z2.b2, .z2.x2.y2.a2, .z2.x2.y2.c2 {\
+        \n  .c2, .z2.b2, .z2.x2.y2.a2, .z2.x2.y2.c2, .z2.x2.y2.b2 {\
         \n    x: y;\
         \n  }\
         \n  .z2.b2, .z2.x2.y2.a2, .z2.x2.y2.c2, .z2.x2.y2.b2 {\
@@ -4498,7 +4500,7 @@ fn extend_loop() {
         \n  .x3.y3.a3, .x3.y3.c3, .x3.y3.z3.b3 {\
         \n    x: y;\
         \n  }\
-        \n  .c3, .z3.b3, .z3.x3.y3.a3, .z3.x3.y3.c3 {\
+        \n  .c3, .z3.b3, .z3.x3.y3.a3, .z3.x3.y3.c3, .z3.x3.y3.b3 {\
         \n    x: y;\
         \n  }\
         \n}\
@@ -4506,7 +4508,7 @@ fn extend_loop() {
         \n  .z4.b4, .z4.x4.y4.a4, .z4.x4.y4.c4, .z4.x4.y4.b4 {\
         \n    x: y;\
         \n  }\
-        \n  .c4, .z4.b4, .z4.x4.y4.a4, .z4.x4.y4.c4 {\
+        \n  .c4, .z4.b4, .z4.x4.y4.a4, .z4.x4.y4.c4, .z4.x4.y4.b4 {\
         \n    x: y;\
         \n  }\
         \n  .x4.y4.a4, .x4.y4.c4, .x4.y4.z4.b4 {\
@@ -4514,7 +4516,7 @@ fn extend_loop() {
         \n  }\
         \n}\
         \n@media order5 {\
-        \n  .c5, .z5.b5, .z5.x5.y5.a5, .z5.x5.y5.c5 {\
+        \n  .c5, .z5.b5, .z5.x5.y5.a5, .z5.x5.y5.c5, .z5.x5.y5.b5 {\
         \n    x: y;\
         \n  }\
         \n  .z5.b5, .z5.x5.y5.a5, .z5.x5.y5.c5, .z5.x5.y5.b5 {\
@@ -4525,7 +4527,7 @@ fn extend_loop() {
         \n  }\
         \n}\
         \n@media order6 {\
-        \n  .c6, .z6.b6, .z6.x6.y6.a6, .z6.x6.y6.c6 {\
+        \n  .c6, .z6.b6, .z6.x6.y6.a6, .z6.x6.y6.c6, .z6.x6.y6.b6 {\
         \n    x: y;\
         \n  }\
         \n  .x6.y6.a6, .x6.y6.c6, .x6.y6.z6.b6 {\

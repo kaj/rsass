@@ -197,7 +197,7 @@ where
             out.write_char('-')?;
         }
 
-        let skip_zero = self.format.is_compressed() || !self.value.lead_zero;
+        let skip_zero = self.format.is_compressed();
         if !(whole.is_zero() && skip_zero && !dec.is_empty()) {
             write!(out, "{}", whole)?;
         }

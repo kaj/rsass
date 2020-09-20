@@ -97,17 +97,8 @@ fn test_static() {
             \n"
         )
         .unwrap(),
-        "bam {\
-        \n  bam: null;\
-        \n}\
-        \nfoo {\
-        \n  foo: null;\
-        \n}\
-        \nbar {\
-        \n  bar: null;\
-        \n}\
-        \nbaz {\
-        \n  baz: null !important;\
+        "baz {\
+        \n  baz: !important;\
         \n}\
         \n"
     );

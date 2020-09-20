@@ -4,6 +4,7 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/03_single_quoted/01_inline.hrx"
 #[test]
+#[ignore] // wrong result
 fn t01_inline() {
     assert_eq!(
         rsass(
@@ -19,7 +20,7 @@ fn t01_inline() {
         )
         .unwrap(),
         ".result {\
-        \n  output: \'squoted\';\
+        \n  output: \"squoted\";\
         \n  output: squoted;\
         \n  output: \"[squoted]\";\
         \n  output: \"squoted\";\
@@ -151,6 +152,7 @@ fn t05_variable_quoted_double() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/03_single_quoted/06_escape_interpolation.hrx"
 #[test]
+#[ignore] // wrong result
 fn t06_escape_interpolation() {
     assert_eq!(
         rsass(
@@ -165,10 +167,10 @@ fn t06_escape_interpolation() {
         )
         .unwrap(),
         ".result {\
-        \n  output: \"[\\#{\'squoted\'}]\";\
-        \n  output: \"\\#{\'squoted\'}\";\
+        \n  output: \"[#{\'squoted\'}]\";\
+        \n  output: \"#{\'squoted\'}\";\
         \n  output: \"#{\" squoted \"}\";\
-        \n  output: \"[\'\\#{\'squoted\'}\']\";\
+        \n  output: \"[\'#{\'squoted\'}\']\";\
         \n}\
         \n"
     );

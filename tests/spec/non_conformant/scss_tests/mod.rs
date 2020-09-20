@@ -332,7 +332,7 @@ fn t017_test_each_directive() {
 fn t019_test_css_import_directive() {
     assert_eq!(
         rsass("@import \"foo.css\";").unwrap(),
-        "@import url(foo.css);\
+        "@import \"foo.css\";\
         \n"
     );
 }
@@ -342,7 +342,7 @@ fn t019_test_css_import_directive() {
 fn t020_test_css_import_directive() {
     assert_eq!(
         rsass("@import \'foo.css\';").unwrap(),
-        "@import url(foo.css);\
+        "@import \'foo.css\';\
         \n"
     );
 }
@@ -706,7 +706,6 @@ fn t041_test_newlines_in_selectors() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/042_test_newlines_in_selectors.hrx"
 #[test]
-#[ignore] // wrong result
 fn t042_test_newlines_in_selectors() {
     assert_eq!(
         rsass(
@@ -719,13 +718,10 @@ fn t042_test_newlines_in_selectors() {
             \n"
         )
         .unwrap(),
-        "foo\
-        \nbar baz\
-        \nbang {\
+        "foo bar baz bang {\
         \n  a: b;\
         \n}\
-        \nfoo\
-        \nbar bip bop {\
+        \nfoo bar bip bop {\
         \n  c: d;\
         \n}\
         \n"
@@ -2208,9 +2204,9 @@ fn t174_test_import_comments_in_imports() {
             \n"
         )
         .unwrap(),
-        "@import url(foo.css);\
-        \n@import url(bar.css);\
-        \n@import url(baz.css);\
+        "@import \"foo.css\";\
+        \n@import \"bar.css\";\
+        \n@import \"baz.css\";\
         \n"
     );
 }
@@ -2428,8 +2424,8 @@ fn t186_test_newlines_removed_from_selectors_when_compressed() {
             \n"
         )
         .unwrap(),
-        "z a\
-        \n, z b {\
+        "z a,\
+        \nz b {\
         \n  display: block;\
         \n}\
         \n"

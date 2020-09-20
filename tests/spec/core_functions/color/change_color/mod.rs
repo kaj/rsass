@@ -62,7 +62,7 @@ mod hsl {
                 )
                 .unwrap(),
                 "a {\
-        \n  b: cyan;\
+        \n  b: aqua;\
         \n}\
         \n"
             );
@@ -132,7 +132,7 @@ mod hsl {
                 )
                 .unwrap(),
                 "a {\
-        \n  b: magenta;\
+        \n  b: fuchsia;\
         \n}\
         \n"
             );

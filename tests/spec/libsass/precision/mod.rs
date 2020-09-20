@@ -72,8 +72,8 @@ fn lower() {
         .unwrap(),
         "test {\
         \n  foo: 0.4999 0;\
-        \n  bar: 0.5 0;\
-        \n  baz: 0.5 1;\
+        \n  bar: 0.49999 0;\
+        \n  baz: 0.499999 0;\
         \n}\
         \n"
     );

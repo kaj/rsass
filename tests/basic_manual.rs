@@ -61,7 +61,7 @@ fn t15_arithmetic_and_lists_hijklmt_div_or_not() {
             m: 1/2, $stuff url(\"www.foo.com/blah.png\") blah blah;\n  \
             t: 1 + (2 + (3/4 + (4/5 6/7)));\n}",
         "div {\n  /* shouldn't perform the following division */\n  \
-         h: 15 / 3 / 5;\n  \
+         h: 15/3/5;\n  \
          /* should perform the following division now */\n  \
          i: 1;\n  /* this too */\n  j: 1;\n  /* and this */\n  k: 5;\n  \
          l: 1;\n  \
@@ -111,7 +111,7 @@ fn t15_arithmetic_and_lists() {
          arithmetic with lists */\n  \
          e: 15/10 2 3;\n  f: 123 4 5 6;\n  g: 1114/7 8 9 6;\n  \
          /* shouldn't perform the following division */\n  \
-         h: 15 / 3 / 5;\n  \
+         h: 15/3/5;\n  \
          /* should perform the following division now */\n  i: 1;\n  \
          /* this too */\n  j: 1;\n  /* and this */\n  k: 5;\n  l: 1;\n  \
          m: 1/2, 1 2 3 url(\"www.foo.com/blah.png\") blah blah;\n  \
@@ -241,11 +241,11 @@ fn test_number_nines_b() {
 }
 #[test]
 fn test_number_nines_c() {
-    check_value(".999", ".999");
+    check_value(".999", "0.999");
 }
 #[test]
 fn test_number_nines_d() {
-    check_value("-.999", "-.999");
+    check_value("-.999", "-0.999");
 }
 #[test]
 fn test_number_nines_e() {

@@ -126,7 +126,7 @@ fn media_wrapper_selector() {
         \n    content: baz;\
         \n  }\
         \n}\
-        \n@media all and (min-width: 1337px) {\
+        \n@media (min-width: 1337px) {\
         \n  .foo {\
         \n    content: bar;\
         \n  }\
@@ -136,12 +136,12 @@ fn media_wrapper_selector() {
         \n    content: baz;\
         \n  }\
         \n}\
-        \n@media all and (min-width: 1337px) {\
+        \n@media (min-width: 1337px) {\
         \n  .baz {\
         \n    content: foo;\
         \n  }\
         \n}\
-        \n@media all and (min-width: 1337px) and (max-width: 42em) {\
+        \n@media (min-width: 1337px) and (max-width: 42em) {\
         \n  .foo {\
         \n    content: bar;\
         \n  }\
@@ -226,7 +226,7 @@ fn selector_wrapper_media() {
         \n    content: baz;\
         \n  }\
         \n}\
-        \n@media all and (min-width: 1337px) {\
+        \n@media (min-width: 1337px) {\
         \n  .foo {\
         \n    content: bar;\
         \n  }\
@@ -236,12 +236,12 @@ fn selector_wrapper_media() {
         \n    content: baz;\
         \n  }\
         \n}\
-        \n@media all and (min-width: 1337px) {\
+        \n@media (min-width: 1337px) {\
         \n  .foo {\
         \n    content: foo;\
         \n  }\
         \n}\
-        \n@media all and (min-width: 1337px) and (max-width: 42em) {\
+        \n@media (min-width: 1337px) and (max-width: 42em) {\
         \n  .foo {\
         \n    content: bar;\
         \n  }\

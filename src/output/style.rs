@@ -75,53 +75,23 @@ impl Format {
             Item::Import(ref names, ref args) => {
                 if args.is_null() {
                     for name in names {
-                        let name = name.evaluate(scope)?;
-                        if let Value::Literal(ref x, _) =
-                            name.clone().unquote()
+                        let (x, _q) = name.evaluate(scope)?;
+                        if let Some((sub_context, file)) =
+                            file_context.find_file(x.as_ref())
                         {
-                            if let Some((sub_context, file)) =
-                                file_context.find_file(x.as_ref())
-                            {
-                                for item in parse_scss_file(&file)? {
-                                    self.handle_root_item(
-                                        &item,
-                                        scope,
-                                        &sub_context,
-                                        result,
-                                    )?;
-                                }
-                            } else {
-                                if (x.starts_with("url(") && x.ends_with(")"))
-                                    || x.starts_with('/')
-                                {
-                                    write!(
-                                        result.to_imports(),
-                                        "@import {};{}",
-                                        name.format(*self),
-                                        if self.is_compressed() {
-                                            ""
-                                        } else {
-                                            "\n"
-                                        }
-                                    )?;
-                                } else {
-                                    write!(
-                                        result.to_imports(),
-                                        "@import url({});{}",
-                                        x,
-                                        if self.is_compressed() {
-                                            ""
-                                        } else {
-                                            "\n"
-                                        }
-                                    )?;
-                                }
+                            for item in parse_scss_file(&file)? {
+                                self.handle_root_item(
+                                    &item,
+                                    scope,
+                                    &sub_context,
+                                    result,
+                                )?;
                             }
                         } else {
                             write!(
                                 result.to_imports(),
                                 "@import {};{}",
-                                name.format(*self),
+                                name.evaluate2(scope)?,
                                 if self.is_compressed() { "" } else { "\n" }
                             )?;
                         }
@@ -131,7 +101,7 @@ impl Format {
                         write!(
                             result.to_imports(),
                             "@import {} {};{}",
-                            name.evaluate(scope)?.format(*self),
+                            name.evaluate2(scope)?,
                             args.evaluate(scope)?.format(*self),
                             if self.is_compressed() { "" } else { "\n" }
                         )?;
@@ -421,10 +391,10 @@ impl Format {
                 Item::Import(ref names, ref args) => {
                     if args.is_null() {
                         for name in names {
-                            let name = name.evaluate(scope)?;
-                            if let Value::Literal(ref x, _) = name {
-                                let (sub_context, file) =
-                                    file_context.file(x.as_ref());
+                            let (x, _q) = name.evaluate(scope)?;
+                            if let Some((sub_context, file)) =
+                                file_context.find_file(x.as_ref())
+                            {
                                 let items = parse_scss_file(&file)?;
                                 self.handle_body(
                                     direct,
@@ -438,7 +408,7 @@ impl Format {
                                 write!(
                                     sub, // TODO:  Should be topmost!
                                     "@import {};{}",
-                                    name.format(*self),
+                                    name.evaluate2(scope)?,
                                     if self.is_compressed() {
                                         ""
                                     } else {
@@ -452,7 +422,7 @@ impl Format {
                             write!(
                                 sub, // TODO:  Should be topmost!
                                 "@import {} {};{}",
-                                name.evaluate(scope)?.format(*self),
+                                name.evaluate2(scope)?,
                                 args.evaluate(scope)?.format(*self),
                                 if self.is_compressed() { "" } else { "\n" }
                             )?;
@@ -734,7 +704,23 @@ impl Format {
                 }
                 Item::Comment(ref c) => {
                     if !self.is_compressed() {
-                        direct.push(CssBodyItem::Comment(c.clone()));
+                        let indent = indent + 2;
+                        let existing = c
+                            .lines()
+                            .skip(1)
+                            .map(|s| {
+                                s.bytes().take_while(|b| *b == b' ').count()
+                            })
+                            .min()
+                            .unwrap_or(0);
+                        let c = if existing < indent {
+                            let t = String::from("\n")
+                                + &" ".repeat(indent - existing);
+                            c.replace("\n", &t)
+                        } else {
+                            c.clone()
+                        };
+                        direct.push(CssBodyItem::Comment(c));
                     }
                 }
                 Item::None => (),

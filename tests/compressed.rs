@@ -171,7 +171,7 @@ fn t15_arithmetic_and_lists() {
             p: 4 + 1px;\n  q: (20pt / 10pt);\n  r: 16em * 4;\n  \
             s: (5em / 2);\n  t: 1 + (2 + (3/4 + (4/5 6/7)));\n}",
         "div{a:3;b:3.75;c:1;d:300;e:15/10 2 3;f:123 4 5 6;g:1114/7 8 9 6;\
-         h:15 / 3 / 5;i:1;j:1;k:5;l:1;\
+         h:15/3/5;i:1;j:1;k:5;l:1;\
          m:1/2,1 2 3 url(\"www.foo.com/blah.png\") blah blah;\
          n:1 2 3,1 2 3 4 5 6,7 8 9;o:9px;p:5px;q:2;r:64em;s:2.5em;\
          t:12.754/5 6/7}\n",
@@ -242,8 +242,8 @@ fn t22_colors_with_alpha() {
             goo: mix(rgba(255, 0, 0, 0.5), #00f);\n  \n  \
             boo: invert(#123456);\n}\n",
         "div{color:#ff0;background:#7b2d06;flah:#111;\
-           grah:rgba(255,0,238,.5);blah:rgba(1,2,3,.6);floo:cyan;\
-           bloo:rgba(0,255,255,.7);groo:cyan;hoo:123;moo:45;poo:6;\
+           grah:rgba(255,0,238,.5);blah:rgba(1,2,3,.6);floo:aqua;\
+           bloo:rgba(0,255,255,.7);groo:aqua;hoo:123;moo:45;poo:6;\
            goo:rgba(64,0,191,.75);boo:#edcba9}
 ",
     )

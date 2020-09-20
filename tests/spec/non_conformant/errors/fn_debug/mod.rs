@@ -3,8 +3,25 @@
 use super::rsass;
 
 // From "sass-spec/spec/non_conformant/errors/fn-debug/property.hrx"
-
-// Ignoring "property", error tests are not supported yet.
+#[test]
+#[ignore] // wrong result
+fn property() {
+    assert_eq!(
+        rsass(
+            "a {\r\
+            \n  b: {\r\
+            \n    @debug \"debug\";\r\
+            \n    foo: bar;\r\
+            \n  }\r\
+            \n}"
+        )
+        .unwrap(),
+        "a {\
+        \n  b-foo: bar;\
+        \n}\
+        \n"
+    );
+}
 
 // From "sass-spec/spec/non_conformant/errors/fn-debug/ruleset.hrx"
 #[test]

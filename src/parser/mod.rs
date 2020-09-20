@@ -7,7 +7,9 @@ pub mod value;
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
-use self::strings::{name, sass_string, sass_string_dq, sass_string_sq};
+use self::strings::{
+    name, sass_string, sass_string_dq, sass_string_sq, special_url,
+};
 use self::util::{
     comment2, ignore_comments, ignore_space, opt_spacelike, spacelike,
 };
@@ -221,7 +223,12 @@ fn import2(input: &[u8]) -> IResult<&[u8], Item> {
             pair(
                 separated_list(
                     preceded(tag(","), ignore_comments),
-                    single_value,
+                    alt((
+                        sass_string_dq,
+                        sass_string_sq,
+                        special_url,
+                        sass_string,
+                    )),
                 ),
                 opt(media_args),
             ),

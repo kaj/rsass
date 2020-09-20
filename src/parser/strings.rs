@@ -32,11 +32,7 @@ pub fn special_function_misc(input: &[u8]) -> IResult<&[u8], SassString> {
         alt((
             map(
                 tuple((
-                    opt(delimited(
-                        tag("-"),
-                        alt((tag("moz"), tag("webkit"), tag("ms"))),
-                        tag("-"),
-                    )),
+                    opt(delimited(tag("-"), alphanumeric1, tag("-"))),
                     alt((
                         tag("calc"),
                         tag("element"),
@@ -152,10 +148,11 @@ fn special_arg_parts_minmax(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
 
 pub fn special_url(input: &[u8]) -> IResult<&[u8], SassString> {
     let (input, _start) = tag("url(")(input)?;
+    let (input, _trim) = many0(is_a(" "))(input)?;
     let (input, mut parts) = many1(alt((
         string_part_interpolation,
         map(selector_string, StringPart::Raw),
-        map(map_res(is_a(":.!/"), input_to_string), StringPart::Raw),
+        map(map_res(is_a("\":.,!+/="), input_to_string), StringPart::Raw),
     )))(input)?;
     let (input, _end) = tag(")")(input)?;
     parts.insert(0, "url(".into());

@@ -14,7 +14,7 @@ fn t12_double_escaped_interpolated_value_todo() {
         )
         .unwrap(),
         ".test12\\@bar {\
-        \n  content: \'1.2\';\
+        \n  content: \"1.2\";\
         \n}\
         \n"
     );
@@ -33,7 +33,7 @@ fn t22_double_escaped_interpolated_variable() {
         )
         .unwrap(),
         ".test22\\@bar {\
-        \n  content: \'2.2\';\
+        \n  content: \"2.2\";\
         \n}\
         \n"
     );
@@ -50,7 +50,7 @@ fn t32_double_escaped_literal() {
         )
         .unwrap(),
         ".test32\\@baz {\
-        \n  content: \'3.2\';\
+        \n  content: \"3.2\";\
         \n}\
         \n"
     );

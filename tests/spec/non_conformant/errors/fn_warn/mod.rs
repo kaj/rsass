@@ -3,8 +3,24 @@
 use super::rsass;
 
 // From "sass-spec/spec/non_conformant/errors/fn-warn/property.hrx"
-
-// Ignoring "property", error tests are not supported yet.
+#[test]
+fn property() {
+    assert_eq!(
+        rsass(
+            "a {\r\
+            \n  b: {\r\
+            \n    @warn \"warn\";\r\
+            \n    foo: bar;\r\
+            \n  }\r\
+            \n}"
+        )
+        .unwrap(),
+        "a {\
+        \n  b-foo: bar;\
+        \n}\
+        \n"
+    );
+}
 
 // From "sass-spec/spec/non_conformant/errors/fn-warn/ruleset.hrx"
 #[test]

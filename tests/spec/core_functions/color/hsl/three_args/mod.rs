@@ -267,7 +267,7 @@ mod w3c {
         \n  step-3: #006666;\
         \n  step-4: #009999;\
         \n  step-5: #00cccc;\
-        \n  step-6: cyan;\
+        \n  step-6: aqua;\
         \n  step-7: #33ffff;\
         \n  step-8: #66ffff;\
         \n  step-9: #99ffff;\
@@ -339,7 +339,7 @@ mod w3c {
         \n  step-3: #660066;\
         \n  step-4: #990099;\
         \n  step-5: #cc00cc;\
-        \n  step-6: magenta;\
+        \n  step-6: fuchsia;\
         \n  step-7: #ff33ff;\
         \n  step-8: #ff66ff;\
         \n  step-9: #ff99ff;\
@@ -448,7 +448,7 @@ mod w3c {
         \n  step-3: #6600ff;\
         \n  step-4: #9900ff;\
         \n  step-5: #cc00ff;\
-        \n  step-6: magenta;\
+        \n  step-6: fuchsia;\
         \n  step-7: #ff00cc;\
         \n  step-8: #ff0099;\
         \n  step-9: #ff0066;\
@@ -496,7 +496,7 @@ mod w3c {
                 "a {\
         \n  step-1: #669999;\
         \n  step-2: #33cccc;\
-        \n  step-3: cyan;\
+        \n  step-3: aqua;\
         \n}\
         \n"
             );
@@ -536,7 +536,7 @@ mod w3c {
                 "a {\
         \n  step-1: #996699;\
         \n  step-2: #cc33cc;\
-        \n  step-3: magenta;\
+        \n  step-3: fuchsia;\
         \n}\
         \n"
             );
@@ -608,7 +608,7 @@ mod w3c {
         \n  step-3: #00ff66;\
         \n  step-4: #00ff99;\
         \n  step-5: #00ffcc;\
-        \n  step-6: cyan;\
+        \n  step-6: aqua;\
         \n  step-7: #00ccff;\
         \n  step-8: #0099ff;\
         \n  step-9: #0066ff;\
@@ -658,10 +658,10 @@ mod w3c {
         \n  hue-99840: lime;\
         \n}\
         \ncyan {\
-        \n  hue-180: cyan;\
-        \n  hue--180: cyan;\
-        \n  hue-540: cyan;\
-        \n  hue--900: cyan;\
+        \n  hue-180: aqua;\
+        \n  hue--180: aqua;\
+        \n  hue-540: aqua;\
+        \n  hue--900: aqua;\
         \n}\
         \nblue {\
         \n  hue-240: blue;\
@@ -670,10 +670,10 @@ mod w3c {
         \n  hue--104880: blue;\
         \n}\
         \npurple {\
-        \n  hue-300: magenta;\
-        \n  hue--60: magenta;\
-        \n  hue-660: magenta;\
-        \n  hue-2820: magenta;\
+        \n  hue-300: fuchsia;\
+        \n  hue--60: fuchsia;\
+        \n  hue-660: fuchsia;\
+        \n  hue-2820: fuchsia;\
         \n}\
         \n"
         );

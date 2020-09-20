@@ -1657,7 +1657,7 @@ fn h() {
         \n  c177: #00fff2;\
         \n  c178: #00fff7;\
         \n  c179: #00fffb;\
-        \n  c180: cyan;\
+        \n  c180: aqua;\
         \n  c181: #00fbff;\
         \n  c182: #00f7ff;\
         \n  c183: #00f2ff;\
@@ -1777,7 +1777,7 @@ fn h() {
         \n  c297: #f200ff;\
         \n  c298: #f700ff;\
         \n  c299: #fb00ff;\
-        \n  c300: magenta;\
+        \n  c300: fuchsia;\
         \n  c301: #ff00fb;\
         \n  c302: #ff00f7;\
         \n  c303: #ff00f2;\
