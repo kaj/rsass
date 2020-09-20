@@ -4,6 +4,7 @@ use super::rsass;
 
 // From "sass-spec/spec/css/moz_document/empty_prefix.hrx"
 #[test]
+#[ignore] // wrong result
 fn empty_prefix() {
     assert_eq!(
         rsass(
@@ -34,7 +35,7 @@ fn empty_prefix() {
         \n    b: c;\
         \n  }\
         \n}\
-        \n@-moz-document url-prefix(\'\') {\
+        \n@-moz-document url-prefix(\"\") {\
         \n  a {\
         \n    b: c;\
         \n  }\

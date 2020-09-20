@@ -6,7 +6,7 @@ use crate::selectors::Selectors;
 /// Scoping items contains further sequences of items.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Item {
-    Import(Vec<Value>, Value),
+    Import(Vec<SassString>, Value),
     VariableDeclaration {
         name: String,
         val: Value,

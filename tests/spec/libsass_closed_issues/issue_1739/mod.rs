@@ -46,20 +46,20 @@ fn basic() {
         .unwrap(),
         "div {\
         \n  baz: 2/3;\
-        \n  baz: 2/  3;\
-        \n  baz: 2  /3;\
-        \n  baz: 2  /  3;\
+        \n  baz: 2/3;\
+        \n  baz: 2/3;\
+        \n  baz: 2/3;\
         \n}\
         \nadd {\
         \n  baz: 5;\
         \n  baz: 5;\
-        \n  baz: 2  +3;\
+        \n  baz: 5;\
         \n  baz: 5;\
         \n}\
         \nsub {\
         \n  baz: -1;\
         \n  baz: -1;\
-        \n  baz: 2  -3;\
+        \n  baz: 2 -3;\
         \n  baz: -1;\
         \n}\
         \nmul {\
@@ -70,7 +70,7 @@ fn basic() {
         \n}\
         \nmod {\
         \n  baz: 2% 3;\
-        \n  baz: 2%  3;\
+        \n  baz: 2% 3;\
         \n  baz: 2;\
         \n  baz: 2;\
         \n}\

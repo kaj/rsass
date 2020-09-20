@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/parser/operations/division/strings/pairs.hrx"
 #[test]
-#[ignore] // wrong result
 fn pairs() {
     assert_eq!(
         rsass(
@@ -75,13 +74,13 @@ fn pairs() {
         .unwrap(),
         "foo {\
         \n  test-1: literal/literal;\
-        \n  test-2: literal /literal;\
-        \n  test-3: literal/ literal;\
-        \n  test-4: literal / literal;\
+        \n  test-2: literal/literal;\
+        \n  test-3: literal/literal;\
+        \n  test-4: literal/literal;\
         \n  test-5: literal/\"quoted\";\
-        \n  test-6: literal /\"quoted\";\
-        \n  test-7: literal/ \"quoted\";\
-        \n  test-8: literal / \"quoted\";\
+        \n  test-6: literal/\"quoted\";\
+        \n  test-7: literal/\"quoted\";\
+        \n  test-8: literal/\"quoted\";\
         \n  test-9: literal/interpolant;\
         \n  test-10: literal/interpolant;\
         \n  test-11: literal/interpolant;\
@@ -95,9 +94,9 @@ fn pairs() {
         \n  test-19: literal/litlp_rschema;\
         \n  test-20: literal/litlp_rschema;\
         \n  test-21: \"quoted\"/\"quoted\";\
-        \n  test-22: \"quoted\" /\"quoted\";\
-        \n  test-23: \"quoted\"/ \"quoted\";\
-        \n  test-24: \"quoted\" / \"quoted\";\
+        \n  test-22: \"quoted\"/\"quoted\";\
+        \n  test-23: \"quoted\"/\"quoted\";\
+        \n  test-24: \"quoted\"/\"quoted\";\
         \n  test-25: \"quoted\"/interpolant;\
         \n  test-26: \"quoted\"/interpolant;\
         \n  test-27: \"quoted\"/interpolant;\

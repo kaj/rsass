@@ -194,7 +194,7 @@ impl SelectorPart {
             } => Ok(SelectorPart::Attribute {
                 name: name.evaluate2(scope)?,
                 op: op.clone(),
-                val: val.evaluate2(scope)?,
+                val: val.evaluate_opt_unquote(scope)?,
                 modifier: *modifier,
             }),
             SelectorPart::Simple(ref v) => {

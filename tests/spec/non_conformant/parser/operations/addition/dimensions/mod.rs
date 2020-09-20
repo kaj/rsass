@@ -99,11 +99,11 @@ fn pairs() {
         .unwrap(),
         "foo {\
         \n  test-1: 20;\
-        \n  test-2: 10 +10;\
+        \n  test-2: 20;\
         \n  test-3: 20;\
         \n  test-4: 20;\
         \n  test-5: 20px;\
-        \n  test-6: 10 +10px;\
+        \n  test-6: 20px;\
         \n  test-7: 20px;\
         \n  test-8: 20px;\
         \n  test-9: 1010px;\
@@ -123,7 +123,7 @@ fn pairs() {
         \n  test-23: 20 px;\
         \n  test-24: 20 px;\
         \n  test-25: 20px;\
-        \n  test-26: 10px +10px;\
+        \n  test-26: 20px;\
         \n  test-27: 20px;\
         \n  test-28: 20px;\
         \n  test-29: 10px10px;\

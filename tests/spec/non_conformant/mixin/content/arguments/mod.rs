@@ -283,10 +283,11 @@ fn receiving() {
         \n  keywords: ();\
         \n}\
         \nwith-splat named-passed {\
+        \n  positional: ();\
         \n  keywords: (arg1: value1, arg2: value2);\
         \n}\
         \nwith-splat both-passed {\
-        \n  positional: value1;\
+        \n  positional: (value1,);\
         \n  keywords: (arg2: value2);\
         \n}\
         \n"

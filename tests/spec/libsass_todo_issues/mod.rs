@@ -71,7 +71,7 @@ fn issue_1763() {
             \n"
         )
         .unwrap(),
-        "@import url(first.css);\
+        "@import \"first.css\";\
         \n@import \"second.css\" (max-width: 400px);\
         \n@import \"second.scss\" (max-width: 400px);\
         \nfoo {\
@@ -95,7 +95,6 @@ mod issue_2023;
 
 // From "sass-spec/spec/libsass-todo-issues/issue_2096.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_2096() {
     assert_eq!(
         rsass(

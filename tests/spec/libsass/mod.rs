@@ -147,7 +147,7 @@ fn at_stuff() {
         \n    opacity: 0.5;\
         \n  }\
         \n  100% {\
-        \n    opacity: 1.0;\
+        \n    opacity: 1;\
         \n  }\
         \n}\
         \n@-webkit-keyframes BOUNCE {\
@@ -172,7 +172,7 @@ fn at_stuff() {
         \n  color: blue;\
         \n}\
         \n@mudge div span, a:visited;\
-        \n@fu dge foo {\
+        \n@fudge foo {\
         \n  color: red;\
         \n}\
         \n"
@@ -203,8 +203,8 @@ fn bool() {
         \n  a: false;\
         \n  b: \"ho\";\
         \n  b: \"hey\";\
-        \n  a: false and \"hey\";\
-        \n  b: \"hey\" and \"ho\";\
+        \n  a: false;\
+        \n  b: \"ho\";\
         \n  b: hey;\
         \n}\
         \n"
@@ -275,11 +275,11 @@ fn bourbon() {
         \n  /* boo boo boo */\
         \n  background-image: url(\"/images/a.png\"), url(\"images/b.png\");\
         \n  background-image: url(\"/images/a.png\"), url(\"images/b.png\");\
-        \n  background-image: url(\"/images/a.png\"), -webkit-linear-gradient( white 0, yellow 50%, transparent 50%);\
+        \n  background-image: url(\"/images/a.png\"), -webkit-linear-gradient(white 0, yellow 50%, transparent 50%);\
         \n  background-image: url(\"/images/a.png\"), linear-gradient( white 0, yellow 50%, transparent 50%);\
-        \n  background-image: -webkit-linear-gradient( rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 50%, transparent 50%), -webkit-linear-gradient( #4e7ba3, #3e6181);\
+        \n  background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 50%, transparent 50%), -webkit-linear-gradient(#4e7ba3, #3e6181);\
         \n  background-image: linear-gradient( rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 50%, transparent 50%), linear-gradient( #4e7ba3, #3e6181);\
-        \n  background-image: -webkit-url(\"/images/a.png\")-gradient( center), -webkit-url(\"images/b.png\")-gradient( left);\
+        \n  background-image: -webkit-url(\"/images/a.png\")-gradient(center), -webkit-url(\"images/b.png\")-gradient(left);\
         \n  background-image: url(\"/images/a.png\")-gradient( center), url(\"images/b.png\")-gradient( left);\
         \n}\
         \n"
@@ -369,8 +369,8 @@ fn css_import() {
             \n}"
         )
         .unwrap(),
-        "@import url(foo.css);\
-        \n@import url(bar.css);\
+        "@import \'foo.css\';\
+        \n@import \"bar.css\";\
         \ndiv {\
         \n  color: red;\
         \n}\
@@ -380,7 +380,6 @@ fn css_import() {
 
 // From "sass-spec/spec/libsass/css_nth_selectors.hrx"
 #[test]
-#[ignore] // wrong result
 fn css_nth_selectors() {
     assert_eq!(
         rsass(
@@ -395,10 +394,10 @@ fn css_nth_selectors() {
             \n"
         )
         .unwrap(),
-        ":nth-child(2n + 3) {\
+        ":nth-child(2n+3) {\
         \n  outer-whitespace: false;\
         \n}\
-        \n:nth-child(2n + 3) {\
+        \n:nth-child(2n+3) {\
         \n  outer-whitespace: true;\
         \n}\
         \n"
@@ -481,7 +480,7 @@ fn delayed() {
         \n  foo: 1;\
         \n  coo: 0.8888888889;\
         \n  bar: true;\
-        \n  bar: false and true;\
+        \n  bar: false;\
         \n  bar: false;\
         \n  blah: a;\
         \n  blah: 0.75;\
@@ -656,7 +655,6 @@ mod features;
 
 // From "sass-spec/spec/libsass/http_import.hrx"
 #[test]
-#[ignore] // wrong result
 fn http_import() {
     assert_eq!(
         rsass(
@@ -702,12 +700,12 @@ fn import() {
             \n@import \"bludge.css\";"
         )
         .unwrap(),
-        "@import url(hey1.css);\
-        \n@import url(cookie.css);\
+        "@import \"hey1.css\";\
+        \n@import \"cookie.css\";\
         \n@import url(\"hey2.css\");\
-        \n@import url(fudge.css);\
-        \n@import url(bludge.css);\
-        \ndiv[name=\"hello\"] {\
+        \n@import \"fudge.css\";\
+        \n@import \"bludge.css\";\
+        \ndiv[name=hello] {\
         \n  color: blue;\
         \n}\
         \n"
@@ -843,7 +841,7 @@ fn keyframes() {
         \n    opacity: 0;\
         \n  }\
         \n  50% {\
-        \n    opacity: .5;\
+        \n    opacity: 0.5;\
         \n  }\
         \n  100% {\
         \n    opacity: 1;\
@@ -1778,7 +1776,7 @@ fn rel() {
         \n  eq: false;\
         \n  eq: true;\
         \n  x: 1in, 1in;\
-        \n  y: 1cm;\
+        \n  y: 0.3937007874in;\
         \n  eq: true;\
         \n  blah: 0.3937007874;\
         \n  in: 2.54cm;\
@@ -1905,12 +1903,12 @@ fn test() {
         .unwrap(),
         "div {\
         \n  noo: false;\
-        \n  poo: not 3;\
+        \n  poo: false;\
         \n  doo: false;\
         \n  goo: false;\
         \n  zoo: false2;\
         \n  roo: false;\
-        \n  hoo: not not not 3;\
+        \n  hoo: false;\
         \n}\
         \nspan {\
         \n  a: #641400;\
@@ -1990,7 +1988,7 @@ fn unary_ops() {
         "div {\
         \n  a: -10;\
         \n  b: 0px;\
-        \n  c: +10;\
+        \n  c: 10;\
         \n  d: 0px;\
         \n  e: -20%;\
         \n  f: 20%;\

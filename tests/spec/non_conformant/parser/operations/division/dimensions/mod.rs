@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/parser/operations/division/dimensions/pairs.hrx"
 #[test]
-#[ignore] // wrong result
 fn pairs() {
     assert_eq!(
         rsass(
@@ -99,13 +98,13 @@ fn pairs() {
         .unwrap(),
         "foo {\
         \n  test-1: 10/10;\
-        \n  test-2: 10 /10;\
-        \n  test-3: 10/ 10;\
-        \n  test-4: 10 / 10;\
+        \n  test-2: 10/10;\
+        \n  test-3: 10/10;\
+        \n  test-4: 10/10;\
         \n  test-5: 10/10px;\
-        \n  test-6: 10 /10px;\
-        \n  test-7: 10/ 10px;\
-        \n  test-8: 10 / 10px;\
+        \n  test-6: 10/10px;\
+        \n  test-7: 10/10px;\
+        \n  test-8: 10/10px;\
         \n  test-9: 10/10px;\
         \n  test-10: 10/10px;\
         \n  test-11: 10/10px;\
@@ -123,9 +122,9 @@ fn pairs() {
         \n  test-23: 10/10 px;\
         \n  test-24: 10/10 px;\
         \n  test-25: 10px/10px;\
-        \n  test-26: 10px /10px;\
-        \n  test-27: 10px/ 10px;\
-        \n  test-28: 10px / 10px;\
+        \n  test-26: 10px/10px;\
+        \n  test-27: 10px/10px;\
+        \n  test-28: 10px/10px;\
         \n  test-29: 10px/10px;\
         \n  test-30: 10px/10px;\
         \n  test-31: 10px/10px;\

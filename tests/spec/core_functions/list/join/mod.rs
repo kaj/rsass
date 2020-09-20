@@ -1035,7 +1035,7 @@ mod single {
         )
         .unwrap(),
         "a {\
-        \n  value: (c,);\
+        \n  value: c;\
         \n  type: list;\
         \n  separator: space;\
         \n}\
@@ -1094,7 +1094,7 @@ mod single {
         )
         .unwrap(),
         "a {\
-        \n  value: (c,);\
+        \n  value: c;\
         \n  type: list;\
         \n  separator: space;\
         \n}\

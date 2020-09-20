@@ -483,10 +483,8 @@ fn trailing_whitespace() {
         ".trailing-whitespace {\
         \n  --space: value ;\
         \n  --tab: value\t;\
-        \n  --newline: value\
-        \n;\
-        \n  --before-closing-brace: value\
-        \n;\
+        \n  --newline: value ;\
+        \n  --before-closing-brace: value ;\
         \n}\
         \n"
     );
@@ -540,14 +538,12 @@ fn without_semicolon() {
         )
         .unwrap(),
         ".simple-value {\
-        \n  --without-semicolon: value\
-        \n;\
+        \n  --without-semicolon: value ;\
         \n}\
         \n.bracketed-value {\
         \n  --without-semicolon: {\
         \n    a: b\
-        \n  }\
-        \n;\
+        \n  } ;\
         \n}\
         \n"
     );

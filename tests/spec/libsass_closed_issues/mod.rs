@@ -54,10 +54,10 @@ fn issue_2681() {
             \n"
         )
         .unwrap(),
-        "[type=\"button\"] {\
+        "[type=button] {\
         \n  color: red;\
         \n}\
-        \n[type=\"button\"]:focus {\
+        \n[type=button]:focus {\
         \n  color: blue;\
         \n}\
         \n"
@@ -589,7 +589,7 @@ fn issue_1082() {
         )
         .unwrap(),
         "@font-face {\
-        \n  font-family: \'My Font\';\
+        \n  font-family: \"My Font\";\
         \n  font-style: normal;\
         \n  font-weight: 300;\
         \n  src: local(\"My Font\"), local(\"My-Font\"), url(\"my-font.eot?#iefix\") format(\"embedded-opentype\"), url(\"my-font.woff\") format(\"woff\"), url(\"my-font.ttf\") format(\"truetype\"), url(\"my-font.svg#MyFont\") format(\"svg\");\
@@ -655,7 +655,6 @@ fn issue_1091() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1092.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_1092() {
     assert_eq!(
         rsass(
@@ -669,13 +668,13 @@ fn issue_1092() {
         )
         .unwrap(),
         "a {\
-        \n  a: foo ;\
+        \n  a: foo;\
         \n}\
         \nb {\
         \n  b: foo  ;\
         \n}\
         \nc {\
-        \n  c: foo ;\
+        \n  c: foo;\
         \n}\
         \nd {\
         \n  d: foo  ;\
@@ -752,7 +751,7 @@ fn issue_1102() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1103.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn issue_1103() {
     assert_eq!(
         rsass(
@@ -855,7 +854,7 @@ fn issue_1107() {
         )
         .unwrap(),
         ".foo {\
-        \n  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src=\"foo\", sizingMethod=\'scale\');\
+        \n  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src=\"foo\", sizingMethod=\"scale\");\
         \n}\
         \n"
     );
@@ -877,7 +876,7 @@ fn issue_1115() {
         )
         .unwrap(),
         "foo {\
-        \n  bar: \"x\\79\";\
+        \n  bar: \"xy\";\
         \n  baz: \"xy\";\
         \n  bar: \"x\\a\";\
         \n  baz: \"x\\a\";\
@@ -1638,7 +1637,7 @@ fn issue_1188() {
         )
         .unwrap(),
         "foo {\
-        \n  *width: expression((this.parentNode.clientWidth/120px*2 - parseInt(this.currentStyle[\'paddingLeft\']) - parseInt(this.currentStyle[\'paddingRight\'])) + \'px\');\
+        \n  *width: expression((this.parentNode.clientWidth/120px*2 - parseInt(this.currentStyle[\"paddingLeft\"]) - parseInt(this.currentStyle[\"paddingRight\"])) + \"px\");\
         \n}\
         \n"
     );
@@ -1789,6 +1788,7 @@ fn issue_1214() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1215.hrx"
 #[test]
+#[ignore] // wrong result
 fn issue_1215() {
     assert_eq!(
         rsass(
@@ -1814,7 +1814,7 @@ fn issue_1215() {
         \n  -quotes: false;\
         \n  -quotes: false;\
         \n  foo: this-string;\
-        \n  foo: \'this-string\';\
+        \n  foo: \"this-string\";\
         \n  foo: \"this-string\";\
         \n  foo: \'\"this-string\"\';\
         \n  foo: \"\'this-string\'\";\
@@ -1825,7 +1825,6 @@ fn issue_1215() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1216.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_1216() {
     assert_eq!(
         rsass(
@@ -1838,9 +1837,9 @@ fn issue_1216() {
         )
         .unwrap(),
         "a {\
-        \n  width: 4.0px;\
-        \n  height: 3.00px;\
-        \n  opacity: 1.0;\
+        \n  width: 4px;\
+        \n  height: 3px;\
+        \n  opacity: 1;\
         \n}\
         \n"
     );
@@ -2118,7 +2117,7 @@ fn issue_1257() {
         )
         .unwrap(),
         ".foo {\
-        \n  color: cyan;\
+        \n  color: aqua;\
         \n}\
         \n"
     );
@@ -2717,8 +2716,8 @@ fn issue_1328() {
         )
         .unwrap(),
         "bar,\
-        \n[foo=\"bar\"],\
-        \n[foo=\"bar\"] {\
+        \n[foo=bar],\
+        \n[foo=bar] {\
         \n  content: \"foo\";\
         \n}\
         \n"
@@ -3000,7 +2999,7 @@ fn issue_1399() {
         "foo {\
         \n  foo: 3-\"bar\";\
         \n  foo: 3-\"bar\";\
-        \n  foo: 3 / \"bar\";\
+        \n  foo: 3/\"bar\";\
         \n  foo: 3/\"bar\";\
         \n}\
         \n"
@@ -3227,7 +3226,7 @@ fn issue_1417() {
         )
         .unwrap(),
         "foo {\
-        \n  foo: 1px / 2px;\
+        \n  foo: 1px/2px;\
         \n  foo: 0.5px;\
         \n  foo: 0.5 0.5px;\
         \n  foo: missing(1px/2px, 0.5px);\
@@ -3377,7 +3376,6 @@ fn issue_1437() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1438.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_1438() {
     assert_eq!(
         rsass(
@@ -3984,15 +3982,15 @@ fn issue_1574() {
             \n"
         )
         .unwrap(),
-        ".foo, input[type=\"text\"],\
-        \ninput[type=\"search\"],\
-        \ninput[type=\"url\"],\
-        \ninput[type=\"email\"],\
-        \ninput[type=\"password\"],\
-        \ninput[type=\"number\"],\
-        \ninput[type=\"tel\"],\
-        \ninput[type=\"date\"],\
-        \ninput[type=\"range\"],\
+        ".foo, input[type=text],\
+        \ninput[type=search],\
+        \ninput[type=url],\
+        \ninput[type=email],\
+        \ninput[type=password],\
+        \ninput[type=number],\
+        \ninput[type=tel],\
+        \ninput[type=date],\
+        \ninput[type=range],\
         \ntextarea {\
         \n  bar: baz;\
         \n}\
@@ -4361,7 +4359,6 @@ fn issue_1624() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1629.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_1629() {
     assert_eq!(
         rsass(
@@ -4686,7 +4683,6 @@ fn issue_167() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1671.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_1671() {
     assert_eq!(
         rsass(
@@ -5273,8 +5269,8 @@ fn issue_1792() {
         )
         .unwrap(),
         "test {\
-        \n  test1: 12px;\
-        \n  test2: 14px;\
+        \n  test1: 0.125in;\
+        \n  test2: 0.1458333333in;\
         \n}\
         \n"
     );
@@ -6061,7 +6057,7 @@ fn issue_1994() {
         )
         .unwrap(),
         ".productportal-link:hover, .productportal-link:focus {\
-        \n  opacity: .8;\
+        \n  opacity: 0.8;\
         \n}\
         \n@supports (filter: brightness(120%)) {\
         \n  .productportal-link:hover, .productportal-link:focus {\
@@ -6631,10 +6627,10 @@ fn issue_2124() {
         \n  test: parent;\
         \n}\
         \n.js:root .bou {\
-        \n  content: \'bar\';\
+        \n  content: \"bar\";\
         \n}\
         \n.js:root .bou .bar {\
-        \n  content: \'baz\';\
+        \n  content: \"baz\";\
         \n}\
         \n"
     );
@@ -6666,7 +6662,7 @@ fn issue_2139() {
         \n  color: #FFF;\
         \n}\
         \n.bar .baz {\
-        \n  border: \'1px\';\
+        \n  border: \"1px\";\
         \n}\
         \n*:not(.foo) {\
         \n  display: none;\
@@ -7292,7 +7288,7 @@ fn issue_2246() {
         )
         .unwrap(),
         ".bar {\
-        \n  content: \'foo\';\
+        \n  content: \"foo\";\
         \n}\
         \n"
     );
@@ -7441,7 +7437,7 @@ fn issue_2291() {
         ".m__exhibit-header--medium--plain, .m__exhibit-header--medium {\
         \n  font-size: 1em;\
         \n}\
-        \nfoo bar[baz=\"foo\"][str=\"&\"] {\
+        \nfoo bar[baz=foo][str=\"&\"] {\
         \n  asd: qwe;\
         \n}\
         \nA A, A B, A C-fooA, A B, A C-bar, B A, B B, B C-fooA, B B, B C-bar, C A, C B, C C-fooA, C B, C C-bar {\
@@ -7466,7 +7462,7 @@ mod issue_2295;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2303.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn issue_2303() {
     assert_eq!(
         rsass(
@@ -7697,6 +7693,7 @@ fn issue_2341() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2346.hrx"
 #[test]
+#[ignore] // wrong result
 fn issue_2346() {
     assert_eq!(
         rsass(
@@ -7708,7 +7705,7 @@ fn issue_2346() {
             \n}"
         )
         .unwrap(),
-        "li:nth-child(3n - 3) {\
+        "li:nth-child(3n-3) {\
         \n  color: red;\
         \n}\
         \n"
@@ -8332,8 +8329,8 @@ fn issue_2465() {
         )
         .unwrap(),
         "foo {\
-        \n  a: 4e2px;\
-        \n  b: 5e-2px;\
+        \n  a: 400px;\
+        \n  b: 0.05px;\
         \n  c: 603px;\
         \n  d: 3.07px;\
         \n}\
@@ -8343,7 +8340,6 @@ fn issue_2465() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2467.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_2467() {
     assert_eq!(
         rsass(
@@ -9089,7 +9085,7 @@ fn issue_274() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_279.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn issue_279() {
     assert_eq!(
         rsass(
@@ -9159,25 +9155,25 @@ fn issue_2884() {
             \n"
         )
         .unwrap(),
-        "p[title=\"BaZ\"], p[title=\"BaZ\" i], p[title=\"bar\"], p[title=\"bar\" i], p[title=\"foo\"], p[title=\"foo\" i] {\
+        "p[title=BaZ], p[title=BaZ i], p[title=bar], p[title=bar i], p[title=foo], p[title=foo i] {\
         \n  border: 1px solid;\
         \n}\
-        \np[title=\"foo\" i] {\
+        \np[title=foo i] {\
         \n  border-color: red;\
         \n}\
-        \np[title=\"foo\"] {\
+        \np[title=foo] {\
         \n  border-color: blue;\
         \n}\
-        \np[title=\"bar\" i] {\
+        \np[title=bar i] {\
         \n  border-color: red;\
         \n}\
-        \np[title=\"bar\"] {\
+        \np[title=bar] {\
         \n  border-color: blue;\
         \n}\
-        \np[title=\"BaZ\" i] {\
+        \np[title=BaZ i] {\
         \n  border-color: red;\
         \n}\
-        \np[title=\"BaZ\"] {\
+        \np[title=BaZ] {\
         \n  border-color: blue;\
         \n}\
         \n"
@@ -9415,7 +9411,7 @@ fn issue_309() {
             \na[data-foo=\"#{$zzz}\"] { a: b; }"
         )
         .unwrap(),
-        "a[data-foo=\"zzz\"] {\
+        "a[data-foo=zzz] {\
         \n  a: b;\
         \n}\
         \n"
@@ -9546,7 +9542,6 @@ fn issue_346() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_349.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_349() {
     assert_eq!(
         rsass(
@@ -9557,7 +9552,7 @@ fn issue_349() {
         )
         .unwrap(),
         "div {\
-        \n  blah: not true;\
+        \n  blah: false;\
         \n}\
         \n"
     );
@@ -10809,7 +10804,7 @@ fn issue_6() {
             \n    }"
         )
         .unwrap(),
-        "*[class|=\"has-background\"] {\
+        "*[class|=has-background] {\
         \n  background: #efefef;\
         \n  padding: 7px;\
         \n  border: 1px solid #888;\
@@ -11653,7 +11648,6 @@ fn issue_700() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_701.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_701() {
     assert_eq!(
         rsass(
@@ -11675,7 +11669,6 @@ fn issue_701() {
         )
         .unwrap(),
         ".test-1 {\
-        \n  content: null;\
         \n  content: null;\
         \n  content: false;\
         \n  content: true;\
@@ -11803,6 +11796,7 @@ mod issue_713;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_72.hrx"
 #[test]
+#[ignore] // wrong result
 fn issue_72() {
     assert_eq!(
         rsass(
@@ -11817,7 +11811,7 @@ fn issue_72() {
         )
         .unwrap(),
         "test {\
-        \n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#223344\', endColorstr=\'#112233\',GradientType=0 );\
+        \n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=\"#223344\", endColorstr=\"#112233\",GradientType=0 );\
         \n}\
         \n"
     );
@@ -12906,6 +12900,7 @@ fn issue_893() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_894.hrx"
 #[test]
+#[ignore] // wrong result
 fn issue_894() {
     assert_eq!(
         rsass(
@@ -12917,7 +12912,7 @@ fn issue_894() {
         \n  /**/\
         \n}\
         \nb {\
-        \n  content: \'something so I have a non-empty expected output\';\
+        \n  content: \"something so I have a non-empty expected output\";\
         \n}\
         \n"
     );

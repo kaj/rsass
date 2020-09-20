@@ -10,7 +10,6 @@ mod append {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn double() {
             assert_eq!(
                 rsass(
@@ -19,7 +18,7 @@ mod append {
                 )
                 .unwrap(),
                 "a {\
-        \n  b: .c.e, .d.e, .c.f, .d.f;\
+        \n  b: .c.e, .c.f, .d.e, .d.f;\
         \n}\
         \n"
             );
@@ -159,7 +158,6 @@ mod append {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn multiple() {
             assert_eq!(
                 rsass(
@@ -168,7 +166,7 @@ mod append {
                 )
                 .unwrap(),
                 "a {\
-        \n  b: .ce, .de, .cf, .df;\
+        \n  b: .ce, .cf, .de, .df;\
         \n}\
         \n"
             );
@@ -298,7 +296,6 @@ mod nest {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn many() {
             assert_eq!(
                 rsass(
@@ -307,7 +304,7 @@ mod nest {
                 )
                 .unwrap(),
                 "a {\
-        \n  b: c e g, d e g, c f g, d f g, c e h, d e h, c f h, d f h;\
+        \n  b: c e g, c e h, c f g, c f h, d e g, d e h, d f g, d f h;\
         \n}\
         \n"
             );
@@ -358,7 +355,6 @@ mod nest {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn in_one_complex() {
                 assert_eq!(
                     rsass(
@@ -367,7 +363,7 @@ mod nest {
                     )
                     .unwrap(),
                     "a {\
-        \n  b: c.e, d.e, c f, d f;\
+        \n  b: c.e, c f, d.e, d f;\
         \n}\
         \n"
                 );

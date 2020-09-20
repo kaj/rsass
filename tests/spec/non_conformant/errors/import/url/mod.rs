@@ -54,12 +54,12 @@ fn simple() {
             \n@import \"bludge.css\";"
         )
         .unwrap(),
-        "@import url(hey1.css);\
-        \n@import url(cookie.css);\
+        "@import \"hey1.css\";\
+        \n@import \"cookie.css\";\
         \n@import url(\"hey2.css\");\
-        \n@import url(fudge.css);\
-        \n@import url(bludge.css);\
-        \ndiv[name=\"hello\"] {\
+        \n@import \"fudge.css\";\
+        \n@import \"bludge.css\";\
+        \ndiv[name=hello] {\
         \n  color: blue;\
         \n}\
         \n"

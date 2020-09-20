@@ -1907,7 +1907,6 @@ mod inspect {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn space() {
                     assert_eq!(
                         rsass(
@@ -1920,7 +1919,7 @@ mod inspect {
                         )
                         .unwrap(),
                         "a {\
-        \n  value: (1: (2 3), 4: (5 6));\
+        \n  value: (1: 2 3, 4: 5 6);\
         \n  type: string;\
         \n}\
         \n"

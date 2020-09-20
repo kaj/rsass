@@ -242,7 +242,6 @@ mod w3c {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn cyan() {
             assert_eq!(
                 rsass(
@@ -315,7 +314,6 @@ mod w3c {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn purple() {
             assert_eq!(
                 rsass(
@@ -425,7 +423,6 @@ mod w3c {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn blue_to_red() {
         assert_eq!(
             rsass(
@@ -485,7 +482,6 @@ mod w3c {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn cyan() {
             assert_eq!(
                 rsass(
@@ -526,7 +522,6 @@ mod w3c {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn purple() {
             assert_eq!(
                 rsass(
@@ -588,7 +583,6 @@ mod w3c {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn green_to_blue() {
         assert_eq!(
             rsass(
@@ -625,7 +619,6 @@ mod w3c {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn hue() {
         assert_eq!(
             rsass(

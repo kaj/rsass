@@ -179,8 +179,8 @@ mod comment {
             .unwrap(),
             ".foo {\
         \n  /* Foo\
-        \n Bar\
-        \nBaz */\
+        \n   Bar\
+        \n  Baz */\
         \n  a: b;\
         \n}\
         \n"
@@ -385,7 +385,7 @@ mod selector {
             \n"
                     )
                     .unwrap(),
-                    "[a=\"b\" i] {\
+                    "[a=b i] {\
         \n  c: d;\
         \n}\
         \n"

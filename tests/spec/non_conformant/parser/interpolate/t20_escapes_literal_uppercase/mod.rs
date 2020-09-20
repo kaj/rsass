@@ -151,6 +151,7 @@ fn t05_variable_quoted_double() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/20_escapes_literal_uppercase/06_escape_interpolation.hrx"
 #[test]
+#[ignore] // wrong result
 fn t06_escape_interpolation() {
     assert_eq!(
         rsass(
@@ -165,10 +166,10 @@ fn t06_escape_interpolation() {
         )
         .unwrap(),
         ".result {\
-        \n  output: \"[\\#{\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z}]\";\
-        \n  output: \"\\#{\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z}\";\
-        \n  output: \'\\#{\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z}\';\
-        \n  output: \"[\'\\#{\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z}\']\";\
+        \n  output: \"[#{\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ}]\";\
+        \n  output: \"#{\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ}\";\
+        \n  output: \"#{\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ}\";\
+        \n  output: \"[\'#{\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ}\']\";\
         \n}\
         \n"
     );

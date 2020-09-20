@@ -303,7 +303,7 @@ impl Lookup {
         let mut v2n: BTreeMap<u32, &'static str> = BTreeMap::new();
         for &(n, v) in data {
             n2v.insert(n, v);
-            v2n.insert(v, n);
+            v2n.entry(v).or_insert(n);
         }
         Lookup { n2v, v2n }
     }
@@ -364,10 +364,10 @@ lazy_static! {
         ("ghostwhite", 0xf8f8ff),
         ("gold", 0xffd700),
         ("goldenrod", 0xdaa520),
-        ("grey", 0x808080),
         ("gray", 0x808080),
         ("green", 0x008000),
         ("greenyellow", 0xadff2f),
+        ("grey", 0x808080),
         ("honeydew", 0xf0fff0),
         ("hotpink", 0xff69b4),
         ("indianred", 0xcd5c5c),

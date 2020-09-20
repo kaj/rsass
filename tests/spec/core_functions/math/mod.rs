@@ -2959,7 +2959,7 @@ mod unit {
             )
             .unwrap(),
             "a {\
-        \n  b: \"/em*px*rad\";\
+        \n  b: \"(px*em*rad)^-1\";\
         \n}\
         \n"
         );
@@ -2974,7 +2974,7 @@ mod unit {
             )
             .unwrap(),
             "a {\
-        \n  b: \"em*px*rad\";\
+        \n  b: \"px*em*rad\";\
         \n}\
         \n"
         );
@@ -3020,7 +3020,7 @@ mod unit {
                 )
                 .unwrap(),
                 "a {\
-        \n  b: \"em*px/rad*s\";\
+        \n  b: \"px*em/rad*s\";\
         \n}\
         \n"
             );
@@ -3051,7 +3051,7 @@ mod unit {
             )
             .unwrap(),
             "a {\
-        \n  b: \"/px\";\
+        \n  b: \"px^-1\";\
         \n}\
         \n"
         );

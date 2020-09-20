@@ -24,7 +24,7 @@ fn test_02() {
         )
         .unwrap(),
         "@font-face {\
-        \n  font-family: \'foo\';\
+        \n  font-family: \"foo\";\
         \n  src: url(//foo.bar) format(\"woff2\");\
         \n}\
         \n"

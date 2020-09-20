@@ -28,8 +28,25 @@ fn function() {
 }
 
 // From "sass-spec/spec/libsass/warn-directive-nested/inline.hrx"
-
-// Ignoring "inline", error tests are not supported yet.
+#[test]
+fn inline() {
+    assert_eq!(
+        rsass(
+            "a {\
+            \n  b: {\
+            \n    @warn test;\
+            \n    c: d;\
+            \n  }\
+            \n}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b-c: d;\
+        \n}\
+        \n"
+    );
+}
 
 // From "sass-spec/spec/libsass/warn-directive-nested/mixin.hrx"
 #[test]

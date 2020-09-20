@@ -28,8 +28,26 @@ fn function() {
 }
 
 // From "sass-spec/spec/libsass/debug-directive-nested/inline.hrx"
-
-// Ignoring "inline", error tests are not supported yet.
+#[test]
+#[ignore] // wrong result
+fn inline() {
+    assert_eq!(
+        rsass(
+            "a {\
+            \n  b: {\
+            \n    @debug test;\
+            \n    c: d;\
+            \n  }\
+            \n}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b-c: d;\
+        \n}\
+        \n"
+    );
+}
 
 // From "sass-spec/spec/libsass/debug-directive-nested/mixin.hrx"
 #[test]

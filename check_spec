@@ -26,7 +26,7 @@ else
    git clone https://github.com/sass/sass-spec.git >&2
 fi
 
-IMPL=libsass
+IMPL=dart-sass
 check() {
     cargo build --release --features=commandline >&2 || exit 1
     echo "About to test $1"

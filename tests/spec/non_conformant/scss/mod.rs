@@ -62,8 +62,8 @@ fn alpha() {
         \n  color: yellow;\
         \n  background: #7b2d06;\
         \n  grah: rgba(255, 0, 238, 0.5);\
-        \n  floo: cyan;\
-        \n  groo: cyan;\
+        \n  floo: aqua;\
+        \n  groo: aqua;\
         \n  hoo: 123;\
         \n  moo: 45;\
         \n  poo: 6;\
@@ -1537,7 +1537,7 @@ fn ie_functions() {
         \n  left: expression(document.body.clientWidth/2-oDiv.offsetWidth/2);\
         \n  flop: expression(document.body.clientHeight/2-oDiv.offsetHeight/2);\
         \n  left: expression(document.body.clientWidth/4);\
-        \n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=\'#FFFF0000\', endColorstr=\'#FF008000\', GradientType=1);\
+        \n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=\"#FFFF0000\", endColorstr=\"#FF008000\", GradientType=1);\
         \n}\
         \n.parser {\
         \n  filter: progid:DXImageTransform.Microsoft.Alpha(opacity=20);\
@@ -1545,9 +1545,9 @@ fn ie_functions() {
         \n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#550000FF, endColorstr=#55FFFF00);\
         \n  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1) progid:DXImageTransform.Microsoft.Alpha(opacity=50) progid:DXImageTransform.Microsoft.Blur(strength=10);\
         \n  filter: progid:DXImageTransform.Microsoft.Wave(strength=100) progid:DXImageTransform.Microsoft.CheckerBoard(duration=4);\
-        \n  filter: progid:DXImageTransform.Microsoft.Wave(strength=100) progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1) progid:DXImageTransform.Microsoft.Iris(irisstyle=\'STAR\', duration=4);\
+        \n  filter: progid:DXImageTransform.Microsoft.Wave(strength=100) progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1) progid:DXImageTransform.Microsoft.Iris(irisstyle=\"STAR\", duration=4);\
         \n  filter: progid:DXImageTransform.Microsoft.MotionBlur(strength=13, direction=310) progid:DXImageTransform.Microsoft.Blur(pixelradius=2) progid:DXImageTransform.Microsoft.Wheel(duration=3);\
-        \n  filter: progid:DXImageTransform.Microsoft.gradient(enabled=\'false\', startColorstr=#550000FF, endColorstr=#55FFFF00);\
+        \n  filter: progid:DXImageTransform.Microsoft.gradient(enabled=\"false\", startColorstr=#550000FF, endColorstr=#55FFFF00);\
         \n}\
         \n"
     );
@@ -2219,10 +2219,10 @@ fn nested_extend() {
             \n"
         )
         .unwrap(),
-        ".sprites-nav, .mw_nav_button[data-ur-state=\"disabled\"] {\
+        ".sprites-nav, .mw_nav_button[data-ur-state=disabled] {\
         \n  color: red;\
         \n}\
-        \n.sprites-nav_up, .mw_nav_button[data-ur-state=\"enabled\"] {\
+        \n.sprites-nav_up, .mw_nav_button[data-ur-state=enabled] {\
         \n  color: green;\
         \n}\
         \n.mw_nav_button {\

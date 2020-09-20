@@ -390,9 +390,8 @@ fn load_test_fixture_hrx(
 ) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAMES: &[&str] =
-        &["output-libsass.css", "output.css"];
-    static EXPECTED_ERROR_FILENAMES: &[&str] =
-        &["error-libsass", "error", "error-dart-sass"];
+        &["output-dart-sass.css", "output.css"];
+    static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
 
     let mut options =
         if let Some(yml) = archive.get(&format!("{}options.yml", prefix)) {

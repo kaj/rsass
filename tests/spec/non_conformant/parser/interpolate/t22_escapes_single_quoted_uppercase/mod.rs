@@ -4,6 +4,7 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/22_escapes_single_quoted_uppercase/01_inline.hrx"
 #[test]
+#[ignore] // wrong result
 fn t01_inline() {
     assert_eq!(
         rsass(
@@ -19,12 +20,12 @@ fn t01_inline() {
         )
         .unwrap(),
         ".result {\
-        \n  output: \'\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\';\
+        \n  output: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
         \n  output: \u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ;\
-        \n  output: \"[\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ]\";\
-        \n  output: \"\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\";\
-        \n  output: \"\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\";\
-        \n  output: \"[\'\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\']\";\
+        \n  output: \"[\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ]\";\
+        \n  output: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
+        \n  output: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
+        \n  output: \"[\'\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\']\";\
         \n}\
         \n"
     );
@@ -32,6 +33,7 @@ fn t01_inline() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/22_escapes_single_quoted_uppercase/02_variable.hrx"
 #[test]
+#[ignore] // wrong result
 fn t02_variable() {
     assert_eq!(
         rsass(
@@ -48,12 +50,12 @@ fn t02_variable() {
         )
         .unwrap(),
         ".result {\
-        \n  output: \"\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\";\
+        \n  output: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
         \n  output: \u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ;\
-        \n  output: \"[\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ]\";\
-        \n  output: \"\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\";\
-        \n  output: \"\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\";\
-        \n  output: \"[\'\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\']\";\
+        \n  output: \"[\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ]\";\
+        \n  output: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
+        \n  output: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
+        \n  output: \"[\'\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\']\";\
         \n}\
         \n"
     );
@@ -114,6 +116,7 @@ fn t04_variable_double() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/22_escapes_single_quoted_uppercase/05_variable_quoted_double.hrx"
 #[test]
+#[ignore] // wrong result
 fn t05_variable_quoted_double() {
     assert_eq!(
         rsass(
@@ -134,16 +137,16 @@ fn t05_variable_quoted_double() {
         )
         .unwrap(),
         ".result {\
-        \n  dquoted: \"\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\";\
-        \n  dquoted: \"[\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ]\";\
-        \n  dquoted: \"\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\";\
-        \n  dquoted: \"\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\";\
-        \n  dquoted: \"[\'\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\']\";\
-        \n  squoted: \"\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\";\
-        \n  squoted: \"[\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ]\";\
-        \n  squoted: \"\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\";\
-        \n  squoted: \"\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\";\
-        \n  squoted: \"[\'\u{b}\u{c}\r\u{e}\u{f}GHIJKLMNOPQRSTUVWXYZ\']\";\
+        \n  dquoted: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
+        \n  dquoted: \"[\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ]\";\
+        \n  dquoted: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
+        \n  dquoted: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
+        \n  dquoted: \"[\'\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\']\";\
+        \n  squoted: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
+        \n  squoted: \"[\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ]\";\
+        \n  squoted: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
+        \n  squoted: \"\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\";\
+        \n  squoted: \"[\'\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\']\";\
         \n}\
         \n"
     );
@@ -151,6 +154,7 @@ fn t05_variable_quoted_double() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/22_escapes_single_quoted_uppercase/06_escape_interpolation.hrx"
 #[test]
+#[ignore] // wrong result
 fn t06_escape_interpolation() {
     assert_eq!(
         rsass(
@@ -165,10 +169,10 @@ fn t06_escape_interpolation() {
         )
         .unwrap(),
         ".result {\
-        \n  output: \"[\\#{\'\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\'}]\";\
-        \n  output: \"\\#{\'\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\'}\";\
+        \n  output: \"[#{\'\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\'}]\";\
+        \n  output: \"#{\'\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\'}\";\
         \n  output: \"#{\" \\b \\c \\d \\e \\f GHIJKLMNOPQRSTUVWXYZ \"}\";\
-        \n  output: \"[\'\\#{\'\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\'}\']\";\
+        \n  output: \"[\'#{\'\\b\\c\\d\\e\\fGHIJKLMNOPQRSTUVWXYZ\'}\']\";\
         \n}\
         \n"
     );

@@ -448,10 +448,10 @@ fn t11_attribute_selectors() {
             \n}"
         )
         .unwrap(),
-        "[hey=\'ho\'], a > b {\
+        "[hey=ho], a > b {\
         \n  blah: blah;\
         \n}\
-        \n[hey=\'ho\'] c, [hey=\'ho\'] [hoo*=\"ha\"], a > b c, a > b [hoo*=\"ha\"] {\
+        \n[hey=ho] c, [hey=ho] [hoo*=ha], a > b c, a > b [hoo*=ha] {\
         \n  bloo: bloo;\
         \n}\
         \n"
@@ -530,7 +530,7 @@ fn t13_back_references() {
 
 // From "sass-spec/spec/non_conformant/basic/14_imports.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn t14_imports() {
     assert_eq!(
         rsass(
@@ -631,7 +631,7 @@ fn t15_arithmetic_and_lists() {
         \n  f: 123 4 5 6;\
         \n  g: 1114/7 8 9 6;\
         \n  /* shouldn\'t perform the following division */\
-        \n  h: 15 / 3 / 5;\
+        \n  h: 15/3/5;\
         \n  /* should perform the following division now */\
         \n  i: 1;\
         \n  /* this too */\
@@ -1060,9 +1060,9 @@ fn t22_colors_with_alpha() {
         \n  background: #7b2d06;\
         \n  grah: rgba(255, 0, 238, 0.5);\
         \n  blah: rgba(1, 2, 3, 0.6);\
-        \n  floo: cyan;\
+        \n  floo: aqua;\
         \n  bloo: rgba(0, 255, 255, 0.7);\
-        \n  groo: cyan;\
+        \n  groo: aqua;\
         \n  hoo: 123;\
         \n  moo: 45;\
         \n  poo: 6;\
@@ -1606,7 +1606,7 @@ fn t39_dash_match_attribute_selector() {
             \n}"
         )
         .unwrap(),
-        "div[class|=\"blah\"] {\
+        "div[class|=blah] {\
         \n  color: blue;\
         \n}\
         \n"
@@ -1668,9 +1668,9 @@ fn t42_css_imports() {
             \n@import \"bar.css\";"
         )
         .unwrap(),
-        "@import url(hux bux.css);\
-        \n@import url(foo.css);\
-        \n@import url(bar.css);\
+        "@import \"hux\\ bux.css\";\
+        \n@import \"foo.css\";\
+        \n@import \"bar.css\";\
         \ndiv {\
         \n  color: red;\
         \n}\

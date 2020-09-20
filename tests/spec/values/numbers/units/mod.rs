@@ -43,22 +43,22 @@ fn multiple() {
         .unwrap(),
         ".multiple {\
         \n  multiple-numerators: 1px*rad;\
-        \n  multiple-denominators: 1/px*rad;\
-        \n  divide-by-multiple-numerators: 1/px*rad;\
+        \n  multiple-denominators: 1(px*rad)^-1;\
+        \n  divide-by-multiple-numerators: 1(px*rad)^-1;\
         \n  divide-by-multiple-denominators: 1px*rad;\
         \n  multiplication-cancels-denominator: 1px*rad/Hz;\
         \n  multiplication-cancels-denominator-twice: 1px*rad;\
-        \n  multiplication-cancels-numerator: 1rad/Hz*ms;\
-        \n  multiplication-cancels-numerator-twice: 1/Hz*ms;\
+        \n  multiplication-cancels-numerator: 1rad/ms*Hz;\
+        \n  multiplication-cancels-numerator-twice: 1(ms*Hz)^-1;\
         \n  multiplication-cancels-both: 1rad/Hz;\
-        \n  division-cancels-numerator: 1px/Hz*ms;\
-        \n  division-cancels-numerator-twice: 1/Hz*ms;\
+        \n  division-cancels-numerator: 1px/ms*Hz;\
+        \n  division-cancels-numerator-twice: 1(ms*Hz)^-1;\
         \n  division-cancels-denominator: 1px*rad/Hz;\
         \n  division-cancels-denominator-twice: 1px*rad;\
         \n  division-cancels-both: 1rad/Hz;\
         \n  multiplication-cancels-compatible: 1000px*rad/Hz;\
-        \n  division-cancels-compatible: 0.0104166667rad/Hz*ms;\
-        \n  multiplication-cancels-unknown: 1bar*foo/qux;\
+        \n  division-cancels-compatible: 0.0104166667rad/ms*Hz;\
+        \n  multiplication-cancels-unknown: 1foo*bar/qux;\
         \n  division-cancels-unknown: 1bar/baz*qux;\
         \n}\
         \n"
