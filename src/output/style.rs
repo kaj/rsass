@@ -405,6 +405,7 @@ impl Format {
                                     0,
                                 )?;
                             } else {
+                                self.do_indent(sub, indent)?;
                                 write!(
                                     sub, // TODO:  Should be topmost!
                                     "@import {};{}",
@@ -419,6 +420,7 @@ impl Format {
                         }
                     } else {
                         for name in names {
+                            self.do_indent(sub, indent)?;
                             write!(
                                 sub, // TODO:  Should be topmost!
                                 "@import {} {};{}",
