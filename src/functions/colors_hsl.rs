@@ -1,3 +1,4 @@
+use super::colors_rgb::{preserve_call, values_from_list};
 use super::{make_call, Error, SassFunction};
 use crate::css::Value;
 use crate::value::{Number, Unit};
@@ -6,40 +7,51 @@ use num_rational::Rational;
 use num_traits::{One, Zero};
 use std::collections::BTreeMap;
 
+fn do_hsla(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
+    let a = s.get("alpha")?;
+    let hue = s.get("hue")?;
+    if let Value::List(vec, sep, bracketed) = if hue.is_null() {
+        s.get("channels")?
+    } else {
+        hue.clone()
+    } {
+        if let Some((h, s, v, a)) = values_from_list(&vec) {
+            Ok(hsla_from_values(&h, &s, &v, &a)
+                .unwrap_or_else(|| make_call(fn_name, vec![h, s, v, a])))
+        } else {
+            Ok(preserve_call(fn_name, vec, sep, bracketed))
+        }
+    } else {
+        let sat = s.get("saturation")?;
+        let lig = s.get("lightness")?;
+        Ok(hsla_from_values(&hue, &sat, &lig, &a)
+            .unwrap_or_else(|| make_call(fn_name, vec![hue, sat, lig, a])))
+    }
+}
+
+fn hsla_from_values(
+    h: &Value,
+    s: &Value,
+    l: &Value,
+    a: &Value,
+) -> Option<Value> {
+    let h = to_rational(h).ok()?;
+    let s = to_rational_percent(s).ok()?;
+    let l = to_rational_percent(l).ok()?;
+    let a = if a.is_null() {
+        Rational::one()
+    } else {
+        to_rational2(a).ok()?
+    };
+    Some(Value::hsla(h, s, l, a))
+}
+
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, hsl(hue, saturation, lightness), |s| {
-        let hue = s.get("hue")?;
-        let sat = s.get("saturation")?;
-        let lig = s.get("lightness")?;
-        if let (Ok(hue), Ok(sat), Ok(lig)) = (
-            to_rational(&hue),
-            to_rational_percent(&sat),
-            to_rational_percent(&lig),
-        ) {
-            Ok(Value::hsla(hue, sat, lig, Rational::one()))
-        } else {
-            Ok(make_call("hsl", vec![hue, sat, lig]))
-        }
+    def!(f, hsl(hue, saturation, lightness, alpha, channels), |s| {
+        do_hsla("hsl", s)
     });
-    def!(f, hsla(hue, saturation, lightness, alpha), |s| {
-        let hue = s.get("hue")?;
-        let sat = s.get("saturation")?;
-        let lig = s.get("lightness")?;
-        let a = s.get("alpha")?;
-        if let (Ok(hue), Ok(sat), Ok(lig), Ok(a)) = (
-            to_rational(&hue),
-            to_rational_percent(&sat),
-            to_rational_percent(&lig),
-            if a.is_null() {
-                Ok(Rational::one())
-            } else {
-                to_rational(&a)
-            },
-        ) {
-            Ok(Value::hsla(hue, sat, lig, a))
-        } else {
-            Ok(make_call("hsla", vec![hue, sat, lig, a]))
-        }
+    def!(f, hsla(hue, saturation, lightness, alpha, channels), |s| {
+        do_hsla("hsla", s)
     });
     def!(f, adjust_hue(color, degrees), |s: &dyn Scope| match (
         s.get("color")?,
@@ -161,6 +173,16 @@ fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
             let v = v.value;
             Ok(if v <= Rational::one() { v } else { v / 100 })
         }
+        v => Err(Error::badarg("number", &v)),
+    }
+}
+/// Gets a percentage as a fraction 0 .. 1.
+/// If v is not a percentage, keep it as it is.
+fn to_rational2(v: &Value) -> Result<Rational, Error> {
+    match v {
+        Value::Null => Ok(Rational::zero()),
+        Value::Numeric(v, Unit::Percent, _) => Ok(v.value / 100),
+        Value::Numeric(v, ..) => Ok(v.value),
         v => Err(Error::badarg("number", &v)),
     }
 }

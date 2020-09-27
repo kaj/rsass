@@ -1,6 +1,6 @@
 use super::{make_call, Error, SassFunction};
 use crate::css::{CallArgs, Value};
-use crate::value::{Number, Quotes, Unit};
+use crate::value::{ListSeparator, Number, Quotes, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Zero};
@@ -26,58 +26,94 @@ fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
                 ],
             )),
         }
-    } else if let Value::List(vec, sep, bracketed) = red {
-        if vec.len() > 3 {
-            Err(Error::badarg(
-                "3 elements",
-                &Value::List(vec, sep, bracketed),
-            ))
+    } else if let Value::List(vec, sep, bracketed) = if red.is_null() {
+        s.get("channels")?
+    } else {
+        red.clone()
+    } {
+        if let Some((r, g, b, a)) = values_from_list(&vec) {
+            Ok(rgba_from_values(&r, &g, &b, &a)
+                .unwrap_or_else(|| make_call(fn_name, vec![r, g, b, a])))
         } else {
-            // If less than 3 arguments are passed, one of the arguments could be a variable containing
-            // multiple values, so we want to preserve the original separator.
-            let call_args = if vec.len() < 3 {
-                CallArgs::new(vec![(
-                    None,
-                    Value::Literal(
-                        Value::List(vec, sep, bracketed)
-                            .format(Default::default())
-                            .to_string(),
-                        Quotes::None,
-                    ),
-                )])
-            } else {
-                CallArgs::new(vec.into_iter().map(|v| (None, v)).collect())
-            };
-
-            Ok(Value::Call(fn_name.into(), call_args))
+            Ok(preserve_call(fn_name, vec, sep, bracketed))
         }
     } else {
         let green = s.get("green")?;
         let blue = s.get("blue")?;
-        if let (Ok(red), Ok(green), Ok(blue), Ok(alpha)) = (
-            to_int(&red),
-            to_int(&green),
-            to_int(&blue),
-            if a.is_null() {
-                Ok(Rational::one())
-            } else {
-                to_rational(&a)
-            },
-        ) {
-            Ok(Value::rgba(red, green, blue, alpha))
-        } else {
-            Ok(make_call(fn_name, vec![red, green, blue, a]))
-        }
+        Ok(rgba_from_values(&red, &green, &blue, &a)
+            .unwrap_or_else(|| make_call(fn_name, vec![red, green, blue, a])))
     }
 }
 
+pub fn values_from_list(
+    vec: &[Value],
+) -> Option<(Value, Value, Value, Value)> {
+    use crate::value::Operator::Div;
+
+    if vec.len() == 3 {
+        if let Value::BinOp(a, _, Div, _, b) = &vec[2] {
+            if let (Value::Numeric(..), Value::Numeric(..)) = (&**a, &**b) {
+                Some((vec[0].clone(), vec[1].clone(), *a.clone(), *b.clone()))
+            } else {
+                None
+            }
+        } else {
+            Some((
+                vec[0].clone(),
+                vec[1].clone(),
+                vec[2].clone(),
+                Value::Null,
+            ))
+        }
+    } else {
+        None
+    }
+}
+
+fn rgba_from_values(
+    r: &Value,
+    g: &Value,
+    b: &Value,
+    a: &Value,
+) -> Option<Value> {
+    let r = to_int(r).ok()?;
+    let g = to_int(g).ok()?;
+    let b = to_int(b).ok()?;
+    let a = if a.is_null() {
+        Rational::one()
+    } else {
+        to_rational(a).ok()?
+    };
+    Some(Value::rgba(r, g, b, a))
+}
+
+pub fn preserve_call(
+    fn_name: &str,
+    vec: Vec<Value>,
+    sep: ListSeparator,
+    bracketed: bool,
+) -> Value {
+    Value::Call(
+        fn_name.into(),
+        CallArgs::new(vec![(
+            None,
+            Value::Literal(
+                Value::List(vec, sep, bracketed)
+                    .format(Default::default())
+                    .to_string(),
+                Quotes::None,
+            ),
+        )]),
+    )
+}
+
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, rgb(red, green, blue, alpha, color), |s| do_rgba(
-        "rgb", s
-    ));
-    def!(f, rgba(red, green, blue, alpha, color), |s| do_rgba(
-        "rgba", s
-    ));
+    def!(f, rgb(red, green, blue, alpha, color, channels), |s| {
+        do_rgba("rgb", s)
+    });
+    def!(f, rgba(red, green, blue, alpha, color, channels), |s| {
+        do_rgba("rgba", s)
+    });
     fn num(v: &Rational) -> Result<Value, Error> {
         Ok(Value::Numeric(Number::from(*v), Unit::None, true))
     }

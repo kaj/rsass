@@ -90,7 +90,6 @@ mod call {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn positional() {
                 assert_eq!(
                     rsass(

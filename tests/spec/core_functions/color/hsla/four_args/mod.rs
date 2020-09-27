@@ -66,7 +66,6 @@ mod alpha {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn positive() {
             assert_eq!(
                 rsass(
