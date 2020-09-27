@@ -45,7 +45,9 @@ fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
     }
 }
 
-fn values_from_list(vec: &[Value]) -> Option<(Value, Value, Value, Value)> {
+pub fn values_from_list(
+    vec: &[Value],
+) -> Option<(Value, Value, Value, Value)> {
     use crate::value::Operator::Div;
 
     if vec.len() == 3 {
@@ -85,7 +87,7 @@ fn rgba_from_values(
     Some(Value::rgba(r, g, b, a))
 }
 
-fn preserve_call(
+pub fn preserve_call(
     fn_name: &str,
     vec: Vec<Value>,
     sep: ListSeparator,
