@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/44_selector/double_escape/12_double_escaped_interpolated_value_todo.hrx"
 #[test]
-#[ignore] // wrong result
 fn t12_double_escaped_interpolated_value_todo() {
     assert_eq!(
         rsass(
@@ -22,7 +21,6 @@ fn t12_double_escaped_interpolated_value_todo() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/44_selector/double_escape/22_double_escaped_interpolated_variable.hrx"
 #[test]
-#[ignore] // wrong result
 fn t22_double_escaped_interpolated_variable() {
     assert_eq!(
         rsass(
@@ -41,7 +39,6 @@ fn t22_double_escaped_interpolated_variable() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/44_selector/double_escape/32_double_escaped_literal.hrx"
 #[test]
-#[ignore] // wrong result
 fn t32_double_escaped_literal() {
     assert_eq!(
         rsass(

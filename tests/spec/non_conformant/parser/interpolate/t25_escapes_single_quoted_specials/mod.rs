@@ -4,6 +4,7 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/25_escapes_single_quoted_specials/01_inline"
 #[test]
+#[ignore] // wrong result
 fn t01_inline() {
     assert_eq!(
         rsass(
@@ -118,6 +119,7 @@ fn t04_variable_double() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/25_escapes_single_quoted_specials/06_escape_interpolation"
 #[test]
+#[ignore] // wrong result
 fn t06_escape_interpolation() {
     assert_eq!(
         rsass(

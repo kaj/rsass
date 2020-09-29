@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/28_escaped_single_quotes/01_inline.hrx"
 #[test]
-#[ignore] // wrong result
 fn t01_inline() {
     assert_eq!(
         rsass(

@@ -77,7 +77,6 @@ fn interpolated() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1169/simple.hrx"
 #[test]
-#[ignore] // wrong result
 fn simple() {
     assert_eq!(
         rsass(

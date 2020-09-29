@@ -88,13 +88,7 @@ impl SassString {
                     result.push_str(&v)
                 }
                 StringPart::Raw(ref s) => {
-                    for c in s.chars() {
-                        if c.is_control() {
-                            result.push_str(&format!("\\{:x} ", c as usize))
-                        } else {
-                            result.push(c)
-                        }
-                    }
+                    result.push_str(s);
                 }
             }
         }
