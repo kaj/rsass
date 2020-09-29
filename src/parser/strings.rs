@@ -205,7 +205,6 @@ fn dq_parts(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
             value(StringPart::Raw("\"".to_string()), tag("\\\"")),
             value(StringPart::Raw("'".to_string()), tag("'")),
             map(normalized_escaped_char_q, StringPart::Raw),
-            extra_escape,
         ))),
         tag("\""),
     )(input)
@@ -221,7 +220,6 @@ pub fn sass_string_sq(input: &[u8]) -> IResult<&[u8], SassString> {
             value(StringPart::from("'"), tag("\\'")),
             value(StringPart::from("\""), tag("\"")),
             map(normalized_escaped_char_q, StringPart::Raw),
-            extra_escape,
         ))),
         tag("'"),
     )(input)?;
@@ -304,24 +302,6 @@ fn selector_plain_part(input: &[u8]) -> IResult<&[u8], &str> {
 
 fn hash_no_interpolation(input: &[u8]) -> IResult<&[u8], &str> {
     map_res(terminated(tag("#"), peek(not(tag("{")))), input_to_str)(input)
-}
-
-fn extra_escape(input: &[u8]) -> IResult<&[u8], StringPart> {
-    let (input, s) = map_res(
-        preceded(
-            tag("\\"),
-            alt((
-                alphanumeric1,
-                tag(b" "),
-                tag("'"),
-                tag("\""),
-                tag("\\"),
-                tag("#"),
-            )),
-        ),
-        input_to_string,
-    )(input)?;
-    Ok((input, StringPart::Raw(format!("\\{}", s))))
 }
 
 pub fn extended_part(input: &[u8]) -> IResult<&[u8], StringPart> {
