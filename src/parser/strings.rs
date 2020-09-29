@@ -46,7 +46,7 @@ fn unquoted_part(input: &[u8]) -> IResult<&[u8], String> {
 
 fn normalized_escaped_char(input: &[u8]) -> IResult<&[u8], String> {
     let (rest, c) = escaped_char(input)?;
-    let result = if is_valid_identifier_character(c) {
+    let result = if c.is_alphanumeric() {
         format!("{}", c)
     } else if !c.is_control() && c != '\n' && c != '\t' {
         format!("\\{}", c)
@@ -54,10 +54,6 @@ fn normalized_escaped_char(input: &[u8]) -> IResult<&[u8], String> {
         format!("\\{:x} ", u32::from(c))
     };
     Ok((rest, result))
-}
-
-fn is_valid_identifier_character(c: char) -> bool {
-    c.is_alphanumeric() // TODO: This is not enought
 }
 
 pub fn special_function_misc(input: &[u8]) -> IResult<&[u8], SassString> {
@@ -238,12 +234,18 @@ fn cleanup_escape_ws(parts: &mut [StringPart]) {
     while let Some(ref mut item) = t_iter.next() {
         if let StringPart::Raw(ref mut s) = item {
             if s.starts_with("\\") && s.ends_with(" ") {
-                if let Some(StringPart::Raw(next)) = t_iter.peek() {
-                    if let Some(next) = next.chars().next() {
-                        if !next.is_ascii_hexdigit() && next != '\t' {
-                            s.pop();
+                match t_iter.peek() {
+                    None => {
+                        s.pop();
+                    }
+                    Some(StringPart::Raw(next)) => {
+                        if let Some(next) = next.chars().next() {
+                            if !next.is_ascii_hexdigit() && next != '\t' {
+                                s.pop();
+                            }
                         }
                     }
+                    _ => (),
                 }
             }
         }
@@ -252,13 +254,14 @@ fn cleanup_escape_ws(parts: &mut [StringPart]) {
 
 fn normalized_escaped_char_q(input: &[u8]) -> IResult<&[u8], String> {
     let (rest, c) = escaped_char(input)?;
-    let result = if is_valid_identifier_character(c) || c == '\t' || c == '#'
-    {
-        format!("{}", c)
-    } else if !c.is_control() && c != '\n' && c != '\t' {
+    let result = if c == '\0' {
+        "\u{fffd}".to_string()
+    } else if c.is_control() && c != '\t' {
+        format!("\\{:x} ", u32::from(c))
+    } else if c == '-' || c == '\\' || c == ' ' {
         format!("\\{}", c)
     } else {
-        format!("\\{:x} ", u32::from(c))
+        c.to_string()
     };
     Ok((rest, result))
 }

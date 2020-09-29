@@ -9,9 +9,15 @@ impl<'a> Display for Formatted<'a, Value> {
             Value::Bang(ref s) => write!(out, "!{}", s),
             Value::Literal(ref s, ref q) => match *q {
                 Quotes::None => write!(out, "{}", s),
-                Quotes::Double => write_dq(out, s),
+                Quotes::Double => {
+                    if s.contains('"') && !s.contains('\'') {
+                        write_sq(out, s)
+                    } else {
+                        write_dq(out, s)
+                    }
+                }
                 Quotes::Single => {
-                    if !s.contains('"') {
+                    if !s.contains('"') || s.contains('\'') {
                         write_dq(out, s)
                     } else {
                         write_sq(out, s)

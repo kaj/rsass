@@ -151,7 +151,6 @@ fn t05_variable_quoted_double() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/23_escapes_literal_specials/06_escape_interpolation"
 #[test]
-#[ignore] // wrong result
 fn t06_escape_interpolation() {
     assert_eq!(
         rsass(
@@ -165,11 +164,12 @@ fn t06_escape_interpolation() {
             \n"
         )
         .unwrap(),
-        ".result {\
-        \n  output: \"[\\#{\\0_\\a_\\A}]\";\
-        \n  output: \"\\#{\\0_\\a_\\A}\";\
-        \n  output: \'\\#{\\0_\\a_\\A}\';\
-        \n  output: \"[\'\\#{\\0_\\a_\\A}\']\";\
+        "@charset \"UTF-8\";\
+        \n.result {\
+        \n  output: \"[#{�_\\a_\\a}]\";\
+        \n  output: \"#{�_\\a_\\a}\";\
+        \n  output: \"#{�_\\a_\\a}\";\
+        \n  output: \"[\'#{�_\\a_\\a}\']\";\
         \n}\
         \n"
     );

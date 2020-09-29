@@ -1938,23 +1938,23 @@ fn t53_escaped_quotes() {
         )
         .unwrap(),
         "@charset \"UTF-8\";\
-        \n[data-icon=\'test-1\']:before {\
-        \n  content: \'\\\\\';\
+        \n[data-icon=test-1]:before {\
+        \n  content: \"\\\\\";\
         \n}\
-        \n[data-icon=\'test-2\']:before {\
-        \n  content: \'\\\'\';\
+        \n[data-icon=test-2]:before {\
+        \n  content: \"\'\";\
         \n}\
-        \n[data-icon=\'test-3\']:before {\
-        \n  content: \"\\\"\";\
+        \n[data-icon=test-3]:before {\
+        \n  content: \'\"\';\
         \n}\
-        \n[data-icon=\'test-4\']:before {\
-        \n  content: \'\\\\\';\
+        \n[data-icon=test-4]:before {\
+        \n  content: \"\\\\\";\
         \n}\
-        \n[data-icon=\'test-5\']:before {\
-        \n  content: \'\\\'\';\
+        \n[data-icon=test-5]:before {\
+        \n  content: \"\'\";\
         \n}\
-        \n[data-icon=\'test-6\']:before {\
-        \n  content: \"\\\"\";\
+        \n[data-icon=test-6]:before {\
+        \n  content: \'\"\';\
         \n}\
         \n.émotion {\
         \n  blah: hi;\

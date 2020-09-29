@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/21_escapes_double_quoted_uppercase/01_inline.hrx"
 #[test]
-#[ignore] // wrong result
 fn t01_inline() {
     assert_eq!(
         rsass(
@@ -33,7 +32,6 @@ fn t01_inline() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/21_escapes_double_quoted_uppercase/02_variable.hrx"
 #[test]
-#[ignore] // wrong result
 fn t02_variable() {
     assert_eq!(
         rsass(
@@ -116,7 +114,6 @@ fn t04_variable_double() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/21_escapes_double_quoted_uppercase/05_variable_quoted_double.hrx"
 #[test]
-#[ignore] // wrong result
 fn t05_variable_quoted_double() {
     assert_eq!(
         rsass(

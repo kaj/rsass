@@ -50,42 +50,51 @@ impl SassString {
         &self,
         scope: &dyn Scope,
     ) -> Result<(String, Quotes), Error> {
-        // Note This is an extremely peculiar special case;
-        // A single-quoted string consisting only of an interpolation
-        // becomes double-quoted.
-        if self.quotes != Quotes::None && self.parts.len() == 1 {
-            if let StringPart::Interpolation(ref v) = self.parts[0] {
-                let s = v
-                    .evaluate(scope)?
-                    .unquote()
-                    .format(scope.get_format())
-                    .to_string()
-                    .replace('\\', "\\\\")
-                    .replace('\n', "\\a");
-                if s.contains('"') && !s.contains('\'') {
-                    return Ok((s, Quotes::Single));
-                } else {
-                    return Ok((s, Quotes::Double));
-                }
-            }
-        }
         let mut result = String::new();
         let mut interpolated = false;
         for part in &self.parts {
             match *part {
                 StringPart::Interpolation(ref v) => {
                     interpolated = true;
-                    let mut v = v
+                    let v = v
                         .evaluate(scope)?
                         .unquote()
                         .format(scope.get_format())
                         .to_string();
                     if self.quotes == Quotes::None {
-                        v = v.replace('\n', " ");
+                        result.push_str(&v);
                     } else {
-                        v = v.replace('\\', "\\\\").replace('\n', "\\a");
+                        let mut carry_space = false;
+                        for c in v.chars() {
+                            if carry_space {
+                                if c.is_ascii_hexdigit() || c == '\t' {
+                                    result.push(' ');
+                                }
+                                carry_space = false;
+                            }
+                            if c == '\\' {
+                                result.push_str(&format!("\\{}", c));
+                            } else if c.is_alphanumeric()
+                                || c.is_ascii_graphic()
+                                || c == ' '
+                                || c == '\t'
+                                || c == '\u{fffd}'
+                            {
+                                result.push(c);
+                            } else if !c.is_control()
+                                && c != '\n'
+                                && c != '\t'
+                            {
+                                result.push_str(&format!("\\{}", c));
+                            } else {
+                                result.push_str(&format!(
+                                    "\\{:x}",
+                                    u32::from(c)
+                                ));
+                                carry_space = true;
+                            }
+                        }
                     }
-                    result.push_str(&v)
                 }
                 StringPart::Raw(ref s) => {
                     result.push_str(s);

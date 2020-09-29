@@ -131,16 +131,16 @@ impl Value {
             Value::Variable(ref name) => {
                 Ok(scope.get(name)?.into_calculated())
             }
-            Value::List(ref v, ref s, b, needs_requote) => {
+            Value::List(ref v, ref s, b, _needs_requote) => {
                 let items = v
                     .iter()
                     .map(|v| -> Result<css::Value, Error> {
                         let v = v.do_evaluate(scope, false)?;
-                        if needs_requote {
-                            Ok(v.unrequote())
-                        } else {
-                            Ok(v)
-                        }
+                        // if needs_requote {
+                        //    Ok(v.unrequote())
+                        // } else {
+                        Ok(v)
+                        // }
                     })
                     .collect::<Result<Vec<_>, Error>>()?;
                 Ok(css::Value::List(items, s.clone(), b))
