@@ -127,7 +127,6 @@ fn plain() {
 
 // From "sass-spec/spec/css/unknown_directive/value_interpolation.hrx"
 #[test]
-#[ignore] // wrong result
 fn value_interpolation() {
     assert_eq!(
         rsass(

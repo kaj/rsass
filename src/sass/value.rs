@@ -18,7 +18,7 @@ pub enum Value {
     Call(SassString, CallArgs),
     Literal(SassString),
     /// A comma- or space separated list of values, with or without brackets.
-    List(Vec<Value>, ListSeparator, bool, bool),
+    List(Vec<Value>, ListSeparator, bool),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
     Numeric(Number<isize>, Unit),
@@ -91,7 +91,7 @@ impl Value {
     pub fn is_null(&self) -> bool {
         match *self {
             Value::Null => true,
-            Value::List(ref list, _, false, _) => {
+            Value::List(ref list, _, false) => {
                 list.iter().all(|v| v.is_null())
             }
             _ => false,
@@ -131,17 +131,10 @@ impl Value {
             Value::Variable(ref name) => {
                 Ok(scope.get(name)?.into_calculated())
             }
-            Value::List(ref v, ref s, b, needs_requote) => {
+            Value::List(ref v, ref s, b) => {
                 let items = v
                     .iter()
-                    .map(|v| -> Result<css::Value, Error> {
-                        let v = v.do_evaluate(scope, false)?;
-                        if needs_requote {
-                            Ok(v.unrequote())
-                        } else {
-                            Ok(v)
-                        }
-                    })
+                    .map(|v| v.do_evaluate(scope, false))
                     .collect::<Result<Vec<_>, Error>>()?;
                 Ok(css::Value::List(items, s.clone(), b))
             }

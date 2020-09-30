@@ -8,27 +8,21 @@ impl<'a> Display for Formatted<'a, Value> {
         match *self.value {
             Value::Bang(ref s) => write!(out, "!{}", s),
             Value::Literal(ref s, ref q) => match *q {
-                Quotes::Double => write!(
-                    out,
-                    "\"{}\"",
-                    s.chars()
-                        .flat_map(|c| match c {
-                            '"' => vec!['\\', '"'],
-                            c => vec![c],
-                        })
-                        .collect::<String>()
-                ),
-                Quotes::Single => write!(
-                    out,
-                    "'{}'",
-                    s.chars()
-                        .flat_map(|c| match c {
-                            '\'' => vec!['\\', '\''],
-                            c => vec![c],
-                        })
-                        .collect::<String>()
-                ),
                 Quotes::None => write!(out, "{}", s),
+                Quotes::Double => {
+                    if s.contains('"') && !s.contains('\'') {
+                        write_sq(out, s)
+                    } else {
+                        write_dq(out, s)
+                    }
+                }
+                Quotes::Single => {
+                    if !s.contains('"') || s.contains('\'') {
+                        write_dq(out, s)
+                    } else {
+                        write_sq(out, s)
+                    }
+                }
             },
             Value::Function(ref n, ref _f) => {
                 let name = n
@@ -143,4 +137,25 @@ impl<'a> Display for Formatted<'a, Value> {
             }
         }
     }
+}
+
+fn write_dq(out: &mut fmt::Formatter, s: &str) -> fmt::Result {
+    out.write_char('"')?;
+    for c in s.chars() {
+        if c == '"' {
+            out.write_char('\\')?;
+        }
+        out.write_char(c)?;
+    }
+    out.write_char('"')
+}
+fn write_sq(out: &mut fmt::Formatter, s: &str) -> fmt::Result {
+    out.write_char('\'')?;
+    for c in s.chars() {
+        if c == '\'' {
+            out.write_char('\\')?;
+        }
+        out.write_char(c)?;
+    }
+    out.write_char('\'')
 }

@@ -861,7 +861,7 @@ impl CssBodyItem {
                 "{}:{}{};",
                 name,
                 if format.is_compressed() { "" } else { " " },
-                val.format(format),
+                val.format(format).to_string().replace('\n', " "),
             ),
             CssBodyItem::Comment(ref c) => write!(out, "/*{}*/", c),
         }

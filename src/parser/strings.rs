@@ -16,7 +16,7 @@ use std::str::from_utf8;
 pub fn sass_string(input: &[u8]) -> IResult<&[u8], SassString> {
     let (input, parts) = many1(alt((
         string_part_interpolation,
-        map(selector_string, StringPart::Raw),
+        map(unquoted_part, StringPart::Raw),
     )))(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
 }
@@ -25,6 +25,35 @@ pub fn sass_string_ext(input: &[u8]) -> IResult<&[u8], SassString> {
     let (input, parts) =
         many1(alt((string_part_interpolation, extended_part)))(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
+}
+
+fn unquoted_part(input: &[u8]) -> IResult<&[u8], String> {
+    fold_many1(
+        // Note: This could probably be a whole lot more efficient,
+        // but try to get stuff correct before caring too much about that.
+        alt((
+            map(selector_plain_part, String::from),
+            normalized_escaped_char,
+            map(hash_no_interpolation, String::from),
+        )),
+        String::new(),
+        |mut acc: String, item: String| {
+            acc.push_str(&item);
+            acc
+        },
+    )(input)
+}
+
+fn normalized_escaped_char(input: &[u8]) -> IResult<&[u8], String> {
+    let (rest, c) = escaped_char(input)?;
+    let result = if c.is_alphanumeric() {
+        format!("{}", c)
+    } else if !c.is_control() && c != '\n' && c != '\t' {
+        format!("\\{}", c)
+    } else {
+        format!("\\{:x} ", u32::from(c))
+    };
+    Ok((rest, result))
 }
 
 pub fn special_function_misc(input: &[u8]) -> IResult<&[u8], SassString> {
@@ -161,7 +190,8 @@ pub fn special_url(input: &[u8]) -> IResult<&[u8], SassString> {
 }
 
 pub fn sass_string_dq(input: &[u8]) -> IResult<&[u8], SassString> {
-    let (input, parts) = dq_parts(input)?;
+    let (input, mut parts) = dq_parts(input)?;
+    cleanup_escape_ws(&mut parts);
     Ok((input, SassString::new(parts, Quotes::Double)))
 }
 
@@ -174,14 +204,14 @@ fn dq_parts(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
             map(hash_no_interpolation, StringPart::from),
             value(StringPart::Raw("\"".to_string()), tag("\\\"")),
             value(StringPart::Raw("'".to_string()), tag("'")),
-            extra_escape,
+            map(normalized_escaped_char_q, StringPart::Raw),
         ))),
         tag("\""),
     )(input)
 }
 
 pub fn sass_string_sq(input: &[u8]) -> IResult<&[u8], SassString> {
-    let (input, parts) = delimited(
+    let (input, mut parts) = delimited(
         tag("'"),
         many0(alt((
             simple_qstring_part,
@@ -189,11 +219,49 @@ pub fn sass_string_sq(input: &[u8]) -> IResult<&[u8], SassString> {
             map(hash_no_interpolation, StringPart::from),
             value(StringPart::from("'"), tag("\\'")),
             value(StringPart::from("\""), tag("\"")),
-            extra_escape,
+            map(normalized_escaped_char_q, StringPart::Raw),
         ))),
         tag("'"),
     )(input)?;
+    cleanup_escape_ws(&mut parts);
     Ok((input, SassString::new(parts, Quotes::Single)))
+}
+
+fn cleanup_escape_ws(parts: &mut [StringPart]) {
+    let mut t_iter = parts.iter_mut().peekable();
+    while let Some(ref mut item) = t_iter.next() {
+        if let StringPart::Raw(ref mut s) = item {
+            if s.starts_with("\\") && s.ends_with(" ") {
+                match t_iter.peek() {
+                    None => {
+                        s.pop();
+                    }
+                    Some(StringPart::Raw(next)) => {
+                        if let Some(next) = next.chars().next() {
+                            if !next.is_ascii_hexdigit() && next != '\t' {
+                                s.pop();
+                            }
+                        }
+                    }
+                    _ => (),
+                }
+            }
+        }
+    }
+}
+
+fn normalized_escaped_char_q(input: &[u8]) -> IResult<&[u8], String> {
+    let (rest, c) = escaped_char(input)?;
+    let result = if c == '\0' {
+        "\u{fffd}".to_string()
+    } else if c.is_control() && c != '\t' {
+        format!("\\{:x} ", u32::from(c))
+    } else if c == '-' || c == '\\' || c == ' ' {
+        format!("\\{}", c)
+    } else {
+        c.to_string()
+    };
+    Ok((rest, result))
 }
 
 fn string_part_interpolation(input: &[u8]) -> IResult<&[u8], StringPart> {
@@ -234,24 +302,6 @@ fn selector_plain_part(input: &[u8]) -> IResult<&[u8], &str> {
 
 fn hash_no_interpolation(input: &[u8]) -> IResult<&[u8], &str> {
     map_res(terminated(tag("#"), peek(not(tag("{")))), input_to_str)(input)
-}
-
-fn extra_escape(input: &[u8]) -> IResult<&[u8], StringPart> {
-    let (input, s) = map_res(
-        preceded(
-            tag("\\"),
-            alt((
-                alphanumeric1,
-                tag(b" "),
-                tag("'"),
-                tag("\""),
-                tag("\\"),
-                tag("#"),
-            )),
-        ),
-        input_to_string,
-    )(input)?;
-    Ok((input, StringPart::Raw(format!("\\{}", s))))
 }
 
 pub fn extended_part(input: &[u8]) -> IResult<&[u8], StringPart> {

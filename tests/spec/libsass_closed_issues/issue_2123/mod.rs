@@ -16,7 +16,6 @@ fn test_01() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2123/test-02.hrx"
 #[test]
-#[ignore] // wrong result
 fn test_02() {
     assert_eq!(
         rsass(

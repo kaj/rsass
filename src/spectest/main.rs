@@ -346,7 +346,8 @@ fn load_test_fixture_dir(
     precision: Option<i64>,
 ) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
-    static EXPECTED_OUTPUT_FILENAME: &str = "output.css";
+    static EXPECTED_OUTPUT_FILENAMES: &[&str] =
+        &["output-dart-sass.css", "output.css"];
     static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
 
     let name = fn_name_os(specdir.file_name().unwrap_or_default());
@@ -354,8 +355,8 @@ fn load_test_fixture_dir(
     options.precision = options.precision.or(precision);
     let input = content(&specdir.join(INPUT_FILENAME))?;
 
-    {
-        let path = specdir.join(EXPECTED_OUTPUT_FILENAME);
+    for filename in EXPECTED_OUTPUT_FILENAMES {
+        let path = specdir.join(filename);
         if path.exists() {
             return Ok(TestFixture::new_ok(
                 name,

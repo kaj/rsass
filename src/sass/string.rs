@@ -50,51 +50,54 @@ impl SassString {
         &self,
         scope: &dyn Scope,
     ) -> Result<(String, Quotes), Error> {
-        // Note This is an extremely peculiar special case;
-        // A single-quoted string consisting only of an interpolation
-        // becomes double-quoted.
-        if self.quotes != Quotes::None && self.parts.len() == 1 {
-            if let StringPart::Interpolation(ref v) = self.parts[0] {
-                let s = v
-                    .evaluate(scope)?
-                    .unquote()
-                    .format(scope.get_format())
-                    .to_string()
-                    .replace('\\', "\\\\")
-                    .replace('\n', "\\a");
-                if s.contains('"') && !s.contains('\'') {
-                    return Ok((s, Quotes::Single));
-                } else {
-                    return Ok((s, Quotes::Double));
-                }
-            }
-        }
         let mut result = String::new();
         let mut interpolated = false;
         for part in &self.parts {
             match *part {
                 StringPart::Interpolation(ref v) => {
                     interpolated = true;
-                    let mut v = v
+                    let v = v
                         .evaluate(scope)?
                         .unquote()
                         .format(scope.get_format())
                         .to_string();
                     if self.quotes == Quotes::None {
-                        v = v.replace('\n', " ");
+                        result.push_str(&v);
                     } else {
-                        v = v.replace('\\', "\\\\").replace('\n', "\\a");
-                    }
-                    result.push_str(&v)
-                }
-                StringPart::Raw(ref s) => {
-                    for c in s.chars() {
-                        if c.is_control() {
-                            result.push_str(&format!("\\{:x} ", c as usize))
-                        } else {
-                            result.push(c)
+                        let mut carry_space = false;
+                        for c in v.chars() {
+                            if carry_space {
+                                if c.is_ascii_hexdigit() || c == '\t' {
+                                    result.push(' ');
+                                }
+                                carry_space = false;
+                            }
+                            if c == '\\' {
+                                result.push_str(&format!("\\{}", c));
+                            } else if c.is_alphanumeric()
+                                || c.is_ascii_graphic()
+                                || c == ' '
+                                || c == '\t'
+                                || c == '\u{fffd}'
+                            {
+                                result.push(c);
+                            } else if !c.is_control()
+                                && c != '\n'
+                                && c != '\t'
+                            {
+                                result.push_str(&format!("\\{}", c));
+                            } else {
+                                result.push_str(&format!(
+                                    "\\{:x}",
+                                    u32::from(c)
+                                ));
+                                carry_space = true;
+                            }
                         }
                     }
+                }
+                StringPart::Raw(ref s) => {
+                    result.push_str(s);
                 }
             }
         }
@@ -121,12 +124,11 @@ impl SassString {
         scope: &dyn Scope,
     ) -> Result<SassString, Error> {
         let (result, quotes) = self.evaluate(scope)?;
-        let t = !result.is_empty()
-            && result.bytes().enumerate().all(|(i, c)| {
-                (c >= b'a' && c <= b'z')
-                    || (c >= b'A' && c <= b'Z')
-                    || (i > 0 && c == b'-')
-            });
+        let mut chars = result.chars();
+        let t = chars.next()
+            .map(|c| c.is_alphabetic()) // first letter
+            .unwrap_or(false) // not empty
+            && chars.all(|c| c.is_alphanumeric() || c == '-');
         Ok(SassString {
             parts: vec![StringPart::Raw(result)],
             quotes: if t { Quotes::None } else { quotes },

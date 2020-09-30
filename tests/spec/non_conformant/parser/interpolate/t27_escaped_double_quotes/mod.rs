@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/27_escaped_double_quotes/01_inline.hrx"
 #[test]
-#[ignore] // wrong result
 fn t01_inline() {
     assert_eq!(
         rsass(
@@ -152,7 +151,6 @@ fn t05_variable_quoted_double() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/27_escaped_double_quotes/06_escape_interpolation.hrx"
 #[test]
-#[ignore] // wrong result
 fn t06_escape_interpolation() {
     assert_eq!(
         rsass(

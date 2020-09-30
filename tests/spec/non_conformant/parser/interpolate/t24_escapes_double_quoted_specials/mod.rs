@@ -20,7 +20,7 @@ fn t01_inline() {
         .unwrap(),
         "@charset \"UTF-8\";\
         \n.result {\
-        \n  output: \"\\0_\\a_\\A\";\
+        \n  output: \"�_\\a_\\a\";\
         \n  output: �_ _ ;\
         \n  output: \"[�_\\a_\\a]\";\
         \n  output: \"�_\\a_\\a\";\
@@ -131,10 +131,11 @@ fn t06_escape_interpolation() {
             \n"
         )
         .unwrap(),
-        ".result {\
+        "@charset \"UTF-8\";\
+        \n.result {\
         \n  output: \"[#{\" \\0 _\\a _\\a  \"}]\";\
         \n  output: \"#{\" \\0 _\\a _\\a  \"}\";\
-        \n  output: \'\\#{\"\\0_\\a_\\A\"}\';\
+        \n  output: \'#{\"�_\\a_\\a\"}\';\
         \n  output: \"[\'#{\" \\0 _\\a _\\a  \"}\']\";\
         \n}\
         \n"
@@ -143,7 +144,6 @@ fn t06_escape_interpolation() {
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/24_escapes_double_quoted_specials/todo_05_variable_quoted_double"
 #[test]
-#[ignore] // wrong result
 fn todo_05_variable_quoted_double() {
     assert_eq!(
         rsass(

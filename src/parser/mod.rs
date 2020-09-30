@@ -327,7 +327,7 @@ fn media_args(input: &[u8]) -> IResult<&[u8], Value> {
                 if args.len() == 1 {
                     args.into_iter().next().unwrap()
                 } else {
-                    Value::List(args, ListSeparator::Space, false, false)
+                    Value::List(args, ListSeparator::Space, false)
                 }
             },
         ),
@@ -337,7 +337,7 @@ fn media_args(input: &[u8]) -> IResult<&[u8], Value> {
         if args.len() == 1 {
             args.into_iter().next().unwrap()
         } else {
-            Value::List(args, ListSeparator::Comma, false, false)
+            Value::List(args, ListSeparator::Comma, false)
         },
     ))
 }
@@ -694,7 +694,6 @@ fn test_mixin_declaration() {
                         vec![string("baz"), Value::Variable("x".into())],
                         ListSeparator::Space,
                         false,
-                        false,
                     ),
                 )],
             }
@@ -765,7 +764,6 @@ fn test_property_2() {
                     vec![percentage(90), percentage(50)],
                     ListSeparator::Space,
                     false,
-                    false
                 ),
             )
         ))
@@ -800,7 +798,6 @@ fn test_variable_declaration_global() {
                     vec![string("some"), string("value")],
                     ListSeparator::Space,
                     false,
-                    false
                 ),
                 default: false,
                 global: true,
@@ -821,7 +818,6 @@ fn test_variable_declaration_default() {
                     vec![string("some"), string("value")],
                     ListSeparator::Space,
                     false,
-                    false
                 ),
                 default: true,
                 global: false,
