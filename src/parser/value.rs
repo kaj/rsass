@@ -50,19 +50,17 @@ pub fn space_list(input: &[u8]) -> IResult<&[u8], Value> {
         pair(multispace0, se_or_ext_string),
         vec![first],
         |mut list: Vec<Value>, (s, item)| {
-            // TODO Check if this entire pecularity can be removed?
-            let mut appended = false;
-            if let (b"", &Value::Literal(ref s2)) = (s, &item) {
-                if let Some(&mut Value::Literal(ref mut s1)) = list.last_mut()
-                {
-                    if s1.is_unquoted() && s2.is_unquoted() {
-                        s1.append(s2);
-                        appended = true;
-                    }
+            match (list.last_mut(), s, &item) {
+                (
+                    Some(Value::Literal(ref mut s1)),
+                    b"",
+                    Value::Literal(ref s2),
+                ) if s1.is_unquoted() && s2.is_unquoted() => {
+                    s1.append(s2);
                 }
-            }
-            if !appended {
-                list.push(item);
+                _ => {
+                    list.push(item);
+                }
             }
             list
         },
