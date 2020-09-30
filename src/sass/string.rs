@@ -124,12 +124,11 @@ impl SassString {
         scope: &dyn Scope,
     ) -> Result<SassString, Error> {
         let (result, quotes) = self.evaluate(scope)?;
-        let t = !result.is_empty()
-            && result.bytes().enumerate().all(|(i, c)| {
-                (c >= b'a' && c <= b'z')
-                    || (c >= b'A' && c <= b'Z')
-                    || (i > 0 && c == b'-')
-            });
+        let mut chars = result.chars();
+        let t = chars.next()
+            .map(|c| c.is_alphabetic()) // first letter
+            .unwrap_or(false) // not empty
+            && chars.all(|c| c.is_alphanumeric() || c == '-');
         Ok(SassString {
             parts: vec![StringPart::Raw(result)],
             quotes: if t { Quotes::None } else { quotes },

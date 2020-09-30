@@ -134,10 +134,7 @@ impl Value {
             Value::List(ref v, ref s, b) => {
                 let items = v
                     .iter()
-                    .map(|v| -> Result<css::Value, Error> {
-                        let v = v.do_evaluate(scope, false)?;
-                        Ok(v)
-                    })
+                    .map(|v| v.do_evaluate(scope, false))
                     .collect::<Result<Vec<_>, Error>>()?;
                 Ok(css::Value::List(items, s.clone(), b))
             }

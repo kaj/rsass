@@ -1895,7 +1895,6 @@ fn t52_interchangeable_hyphens_underscores() {
 
 // From "sass-spec/spec/non_conformant/basic/53_escaped_quotes"
 #[test]
-#[ignore] // wrong result
 fn t53_escaped_quotes() {
     assert_eq!(
         rsass(
