@@ -74,7 +74,6 @@ mod call {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn named() {
                 assert_eq!(
                     rsass(

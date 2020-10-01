@@ -19,6 +19,7 @@ project adheres to
 * Fix `@import` indention.
 * Improve function default argument parsing and dont panic in
   `parse_value_data`.
+* Handle dictionary-ellipsis style call-by-varargs for functions.
 * PR #73 from @divergentdave: Remove three unwraps from escaped_char
 * PR #71 from @connorskees: Further optimize number printing
 * Update travis url in README.

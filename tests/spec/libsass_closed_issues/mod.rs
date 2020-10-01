@@ -448,7 +448,6 @@ fn issue_1074() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1075.hrx"
 #[test]
-#[ignore] // unexepected error
 fn issue_1075() {
     assert_eq!(
         rsass(

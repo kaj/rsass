@@ -1,4 +1,5 @@
-use crate::css::Value;
+use super::Value;
+use crate::value::Quotes;
 use std::default::Default;
 use std::fmt;
 
@@ -17,6 +18,28 @@ impl CallArgs {
     pub fn from_value(v: Value) -> Self {
         match v {
             Value::List(v, _, false) => {
+                if let [Value::Map(map), Value::Literal(mark, Quotes::None)] =
+                    &v[..]
+                {
+                    if mark == "..." {
+                        return CallArgs(
+                            map.iter()
+                                .map(|(k, v)| {
+                                    (
+                                        match k {
+                                            Value::Null => None,
+                                            Value::Literal(s, _) => {
+                                                Some(s.clone())
+                                            }
+                                            _x => None, // TODO return Err(Error::bad_value("string", &x)),
+                                        },
+                                        v.clone(),
+                                    )
+                                })
+                                .collect(),
+                        );
+                    }
+                }
                 CallArgs(v.into_iter().map(|v| (None, v)).collect())
             }
             v => CallArgs(vec![(None, v)]),

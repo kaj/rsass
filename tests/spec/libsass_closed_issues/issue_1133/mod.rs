@@ -41,7 +41,6 @@ fn normal() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1133/vararg.hrx"
 #[test]
-#[ignore] // wrong result
 fn vararg() {
     assert_eq!(
         rsass(

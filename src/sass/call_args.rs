@@ -46,6 +46,30 @@ impl CallArgs {
         scope: &dyn Scope,
         arithmetic: bool,
     ) -> Result<css::CallArgs, Error> {
+        if let [(None, Value::List(list, _, false))] = &self.0[..] {
+            if let [Value::Map(map), Value::Literal(mark)] = &list[..] {
+                if mark.is_unquoted() && mark.single_raw() == Some("...") {
+                    return Ok(css::CallArgs(
+                        map.iter()
+                            .map(|(k, v)| {
+                                Ok((
+                                    match k.do_evaluate(scope, arithmetic)? {
+                                        css::Value::Null => None,
+                                        css::Value::Literal(s, _) => Some(s),
+                                        x => {
+                                            return Err(Error::bad_value(
+                                                "string", &x,
+                                            ))
+                                        }
+                                    },
+                                    v.do_evaluate(scope, arithmetic)?,
+                                ))
+                            })
+                            .collect::<Result<Vec<_>, Error>>()?,
+                    ));
+                }
+            }
+        }
         let args = self.0
                 .iter()
                 .map(|&(ref n, ref v)| -> Result<(Option<String>, css::Value), Error> {
