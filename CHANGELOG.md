@@ -9,24 +9,23 @@ project adheres to
 
 ## Unreleased
 
-* Support `rgba(r g b / a)` and `hsla(h s l / a)` functions, i.e. the
-  `channels` parameter with div-separated alpha channel.
-* Add a CHANGELOG.md
-* Fix `@import` indention.
-* PR #76: Target dart-sass rather than libsass compatibilty.
-  This sets the target when testing and fixes some rather simple
-  issues, while not (yet) attempting to fix the differeces in string
-  parsing, to avoid making the PR way too big.
+* PR #76 and #78: Target dart-sass rather than libsass compatibilty.
+  This sets the target when testing and changes some different
+  behaviour, including how strings are parsed and handled.
 * PR #75 from @divergentdave: Parse and add `Value` variants for
   BigInt numbers
+* PR #77: Support `rgba(r g b / a)` and `hsla(h s l / a)` functions,
+  i.e. the `channels` parameter with div-separated alpha channel.
+* Fix `@import` indention.
 * Improve function default argument parsing and dont panic in
-  parse_value_data.
+  `parse_value_data`.
 * PR #73 from @divergentdave: Remove three unwraps from escaped_char
 * PR #71 from @connorskees: Further optimize number printing
 * Update travis url in README.
 * PR #70 from @svenstaro: Mention grass rather than sassers, as
   sassers appears to be dead while grass is in rather active
   development.
+* Add a CHANGELOG.md
 * Update spec to 2020-09-17.
 * Update num-rational to 0.3.0.
 
