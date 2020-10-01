@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1739/basic.hrx"
 #[test]
-#[ignore] // wrong result
 fn basic() {
     assert_eq!(
         rsass(

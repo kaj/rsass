@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/parser/operations/addition/numbers/pairs.hrx"
 #[test]
-#[ignore] // wrong result
 fn pairs() {
     assert_eq!(
         rsass(

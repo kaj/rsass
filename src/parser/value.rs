@@ -136,10 +136,10 @@ fn sum_expression(input: &[u8]) -> IResult<&[u8], Value> {
                 spacelike2,
                 alt((
                     value(Operator::Plus, tag("+")),
-                    value(Operator::Minus, tag("-")),
+                    value(Operator::Minus, terminated(tag("-"), spacelike2)),
                 )),
             ),
-            preceded(spacelike2, term_value),
+            preceded(opt(spacelike2), term_value),
         ),
     ))(rest)
     {
@@ -155,7 +155,7 @@ fn term_value(input: &[u8]) -> IResult<&[u8], Value> {
         map(multispace0, |s: &[u8]| !s.is_empty()),
         alt((
             value(Operator::Multiply, tag(b"*")),
-            value(Operator::Div, tag(b"/")),
+            value(Operator::Div, terminated(tag(b"/"), peek(not(tag(b"/"))))),
             value(Operator::Modulo, tag(b"%")),
         )),
         map(multispace0, |s: &[u8]| !s.is_empty()),
@@ -438,6 +438,7 @@ pub fn unary_op(input: &[u8]) -> IResult<&[u8], Value> {
                 alt((
                     value(Operator::Plus, tag("+")),
                     value(Operator::Minus, tag("-")),
+                    value(Operator::Div, terminated(tag("/"), spacelike2)),
                     value(Operator::Not, terminated(tag("not"), spacelike2)),
                 )),
                 opt_spacelike,

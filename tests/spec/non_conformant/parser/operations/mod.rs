@@ -6,7 +6,6 @@ mod addition;
 
 // From "sass-spec/spec/non_conformant/parser/operations/binary-and-unary.hrx"
 #[test]
-#[ignore] // wrong result
 fn binary_and_unary() {
     assert_eq!(
         rsass(
