@@ -9,6 +9,8 @@ project adheres to
 
 ## Unreleased
 
+Progress: 2234 of 5510 tests passed in dart-sass compatiblilty mode.
+
 * PR #76 and #78: Target dart-sass rather than libsass compatibilty.
   This sets the target when testing and changes some different
   behaviour, including how strings are parsed and handled.

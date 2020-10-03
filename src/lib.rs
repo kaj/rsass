@@ -25,13 +25,13 @@
 //! doc](http://sass-lang.com/documentation/file.SASS_REFERENCE.html).
 //! This implementation is incomplete but getting there, if slowly.
 //!
-//! Progress: 1634 of 3502 tests passed in libsass compatiblilty mode.
+//! Progress: 2234 of 5510 tests passed in dart-sass compatiblilty mode.
 //!
 //! If you want a working rust library for sass right now, you may
 //! be better of with [sass-rs](https://crates.io/crates/sass-rs)
 //! or [sass-alt](https://crates.io/crates/sass-alt),
 //! which are rust wrappers around libsass.
-//! Another alternative is [sassers](https://crates.io/crates/sassers)
+//! Another alternative is [grass](https://crates.io/crates/grass)
 //! which is another early stage pure rust implementation.
 //! That said, this implementation has reached a version where I find it
 //! usable for my personal projects, and the number of working tests are
