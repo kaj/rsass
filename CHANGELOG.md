@@ -7,7 +7,7 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.14.0 - 2020-10-03
 
 Progress: 2234 of 5510 tests passed in dart-sass compatiblilty mode.
 
@@ -31,6 +31,12 @@ Progress: 2234 of 5510 tests passed in dart-sass compatiblilty mode.
 * Add a CHANGELOG.md
 * Update spec to 2020-09-17.
 * Update num-rational to 0.3.0.
+
+Tested with rustc 1.46.0 (04488afe3 2020-08-24),
+1.44.1 (c7087fe00 2020-06-17), 1.42.0 (b8cedc004 2020-03-09),
+1.40.0 (73528e339 2019-12-16), 1.38.0 (625451e37 2019-09-23),
+1.47.0-beta.7 (e28d2bd09 2020-10-01), and
+1.48.0-nightly (8876ffc92 2020-10-02)
 
 
 ## Release 0.13.0 - 2020-04-19
