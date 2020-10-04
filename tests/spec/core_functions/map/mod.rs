@@ -336,7 +336,6 @@ mod keys {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn single() {
         assert_eq!(
             rsass(
@@ -737,7 +736,6 @@ mod values {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn single() {
         assert_eq!(
             rsass(

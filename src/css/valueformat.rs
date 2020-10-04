@@ -64,11 +64,8 @@ impl<'a> Display for Formatted<'a, Value> {
                             format!("{}", v.format(self.format))
                         }
                     })
-                    .collect::<Vec<_>>();
-                let t = if *sep == ListSeparator::Comma && t.len() == 1 {
-                    format!("{},", t[0])
-                } else {
-                    t.join(match *sep {
+                    .collect::<Vec<_>>()
+                    .join(match *sep {
                         ListSeparator::Comma => {
                             if self.format.is_compressed() {
                                 ","
@@ -77,8 +74,7 @@ impl<'a> Display for Formatted<'a, Value> {
                             }
                         }
                         ListSeparator::Space => " ",
-                    })
-                };
+                    });
                 if brackets {
                     out.write_str("[")?;
                 }

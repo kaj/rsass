@@ -70,7 +70,6 @@ mod append {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn comma() {
             assert_eq!(
                 rsass(
@@ -1636,7 +1635,6 @@ mod zip {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn non_list() {
         assert_eq!(
             rsass(
