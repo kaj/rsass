@@ -70,7 +70,7 @@ mod append {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn comma() {
             assert_eq!(
                 rsass(
@@ -94,7 +94,6 @@ mod append {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn space() {
             assert_eq!(
                 rsass(
@@ -118,7 +117,6 @@ mod append {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn undecided() {
             assert_eq!(
                 rsass(
@@ -162,7 +160,7 @@ mod append {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn empty() {
             assert_eq!(
                 rsass(
@@ -246,7 +244,6 @@ mod append {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn space() {
             assert_eq!(
                 rsass(
@@ -460,7 +457,6 @@ mod index {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // unexepected error
             fn empty() {
                 assert_eq!(
                     rsass(
@@ -729,7 +725,6 @@ mod length {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // unexepected error
         fn empty() {
             assert_eq!(
                 rsass(
@@ -1011,7 +1006,7 @@ mod separator {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn map() {
             assert_eq!(
                 rsass(
@@ -1367,7 +1362,7 @@ mod utils {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn same_as_empty_list() {
             assert_eq!(
                 rsass(
@@ -1390,7 +1385,6 @@ mod utils {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // unexepected error
             fn comma() {
                 assert_eq!(
                     rsass(
@@ -1406,7 +1400,7 @@ mod utils {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
+            #[ignore] // wrong result
             fn space() {
                 assert_eq!(
                     rsass(
@@ -1422,7 +1416,6 @@ mod utils {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn undecided() {
                 assert_eq!(
                     rsass(
@@ -1442,7 +1435,6 @@ mod utils {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn comma() {
                 assert_eq!(
                     rsass(
@@ -1458,7 +1450,6 @@ mod utils {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn space() {
                 assert_eq!(
                     rsass(
@@ -1478,7 +1469,6 @@ mod utils {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn comma() {
                 assert_eq!(
                     rsass(
@@ -1518,7 +1508,6 @@ mod utils {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn comma() {
                 assert_eq!(
                     rsass(
@@ -1534,7 +1523,6 @@ mod utils {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn space() {
                 assert_eq!(
                     rsass(
@@ -1554,7 +1542,6 @@ mod utils {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn comma() {
                 assert_eq!(
                     rsass(
@@ -1570,7 +1557,6 @@ mod utils {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn space() {
                 assert_eq!(
                     rsass(
@@ -1726,7 +1712,6 @@ mod zip {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn empty() {
             assert_eq!(
                 rsass(

@@ -68,7 +68,11 @@ fn handle_suite(
             ignored,
         )?;
     }
-    writeln!(rs, "use rsass::{{compile_scss, output::Format}};",)?;
+    writeln!(
+        rs,
+        "use rsass::output::Format;\
+         \nuse rsass::{{parse_scss_data, ErrPos, Error, FileContext, GlobalScope}};",
+    )?;
 
     handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)
         .map_err(|e| {
@@ -78,13 +82,7 @@ fn handle_suite(
     writeln!(
         rs,
         "\nfn rsass(input: &str) -> Result<String, String> {{\
-         \n    compile_scss(input.as_bytes(), Default::default())\
-         \n        .map_err(|e| format!(\"rsass failed: {{}}\", e))\
-         \n        .and_then(|s| {{\
-         \n            String::from_utf8(s)\
-         \n                .map(|s| s.replace(\"\\n\\n\", \"\\n\"))\
-         \n                .map_err(|e| format!(\"{{:?}}\", e))\
-         \n        }})\
+         \n    rsass_fmt(Default::default(), input)\
          \n}}\
          \n#[allow(unused)]\
          \nfn rsass_fmt(format: Format, input: &str)\
@@ -96,6 +94,17 @@ fn handle_suite(
          \n                .map(|s| s.replace(\"\\n\\n\", \"\\n\"))\
          \n                .map_err(|e| format!(\"{{:?}}\", e))\
          \n        }})\
+         \n}}\
+         \npub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {{\
+         \n    let mut file_context = FileContext::new();\
+         \n    file_context.push_path(\"tests/spec\".as_ref());\
+         \n    let items =\
+         \n        parse_scss_data(input).map_err(|(pos, kind)| Error::ParseError {{\
+         \n            file: \"input.scss\".into(),\
+         \n            pos: ErrPos::pos_of(pos, input),\
+         \n            kind,\
+         \n        }})?;\
+         \n    format.write_root(&items, &mut GlobalScope::new(format), &file_context)\
          \n}}"
     )?;
     Ok(())

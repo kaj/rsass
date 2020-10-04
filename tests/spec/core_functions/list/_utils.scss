@@ -1,0 +1,40 @@
+// This library provides useful functions and variables for testing list
+// behavior. Lists can have strange internal representations that aren't readily
+// accessable to SassScript for two reasons:
+//
+// 1. The empty map is considered by the language to be identical to the empty
+//    list returned by `()`, but it may have a different internal represenation.
+//
+// 2. Internally, a Sass list can have an "undecided" separator, indicating that
+//    it will take on the separator of whatever list it's combined with. For
+//    simplicity, the `list-separator()` function returns `space` for undecided
+//    lists, but in order to thoroughly test their behavior we want to be able
+//    to distinguish lists that are internally space-separated from those that
+//    are internally undecided.
+
+/// Like `list-separator()` but returns `undecided` for lists with undecided
+/// separators.
+@function real-separator($list) {
+  @if list-separator(join($list, 1 2)) != list-separator(join($list, (1, 2))) {
+    @return undecided;
+  } @else {
+    @return list-separator($list);
+  }
+}
+
+/// Returns a copy of `$list` with the given `$separator`.
+@function with-separator($list, $separator) {
+  @return join($list, (), $separator);
+}
+
+/// An empty map, created by removing a value from a map. This *should* be
+/// treated as identical to the literal `()`.
+$empty-map: map-remove((a: b), a);
+
+/// The value `()` has an undefined separator, but we can construct an empty
+/// list with a defined space separator.
+$empty-space-list: with-separator((), space);
+
+/// The value `()` has an undefined separator, but we can construct an empty
+/// list with a defined comma separator.
+$empty-comma-list: with-separator((), comma);

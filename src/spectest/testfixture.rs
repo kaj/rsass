@@ -3,10 +3,8 @@ use super::options::Options;
 use super::Error;
 use lazy_static::lazy_static;
 use regex::Regex;
-use rsass::{
-    compile_scss,
-    output::{Format, Style},
-};
+use rsass::output::{Format, Style};
+use rsass::{parse_scss_data, ErrPos, FileContext, GlobalScope};
 use std::io::Write;
 
 pub struct TestFixture {
@@ -155,6 +153,22 @@ fn rsass(input: &str, format: Format) -> Result<String, String> {
                 .map(|s| normalize_output_css(s.as_str()))
                 .map_err(|e| format!("{:?}", e))
         })
+}
+
+pub fn compile_scss(
+    input: &[u8],
+    format: Format,
+) -> Result<Vec<u8>, rsass::Error> {
+    let mut file_context = FileContext::new();
+    file_context.push_path("tests/spec".as_ref());
+    let items = parse_scss_data(input).map_err(|(pos, kind)| {
+        rsass::Error::ParseError {
+            file: "input.scss".into(),
+            pos: ErrPos::pos_of(pos, input),
+            kind,
+        }
+    })?;
+    format.write_root(&items, &mut GlobalScope::new(format), &file_context)
 }
 
 fn normalize_output_css(css: &str) -> String {
