@@ -559,7 +559,6 @@ mod quote {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn escape() {
         assert_eq!(
             rsass(

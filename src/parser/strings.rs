@@ -14,10 +14,21 @@ use nom::IResult;
 use std::str::from_utf8;
 
 pub fn sass_string(input: &[u8]) -> IResult<&[u8], SassString> {
-    let (input, parts) = many1(alt((
+    let (input, first) = alt((
         string_part_interpolation,
-        map(unquoted_part, StringPart::Raw),
-    )))(input)?;
+        map(unquoted_first_part, StringPart::Raw),
+    ))(input)?;
+    let (input, parts) = fold_many0(
+        alt((
+            string_part_interpolation,
+            map(unquoted_part, StringPart::Raw),
+        )),
+        vec![first],
+        |mut acc, item| {
+            acc.push(item);
+            acc
+        },
+    )(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
 }
 
@@ -27,6 +38,27 @@ pub fn sass_string_ext(input: &[u8]) -> IResult<&[u8], SassString> {
     Ok((input, SassString::new(parts, Quotes::None)))
 }
 
+fn unquoted_first_part(input: &[u8]) -> IResult<&[u8], String> {
+    let (input, first) = alt((
+        map(selector_plain_part, String::from),
+        normalized_first_escaped_char,
+        map(hash_no_interpolation, String::from),
+    ))(input)?;
+    fold_many0(
+        // Note: This could probably be a whole lot more efficient,
+        // but try to get stuff correct before caring too much about that.
+        alt((
+            map(selector_plain_part, String::from),
+            normalized_escaped_char,
+            map(hash_no_interpolation, String::from),
+        )),
+        first,
+        |mut acc: String, item: String| {
+            acc.push_str(&item);
+            acc
+        },
+    )(input)
+}
 fn unquoted_part(input: &[u8]) -> IResult<&[u8], String> {
     fold_many1(
         // Note: This could probably be a whole lot more efficient,
@@ -44,9 +76,20 @@ fn unquoted_part(input: &[u8]) -> IResult<&[u8], String> {
     )(input)
 }
 
+fn normalized_first_escaped_char(input: &[u8]) -> IResult<&[u8], String> {
+    let (rest, c) = escaped_char(input)?;
+    let result = if c.is_alphabetic() || u32::from(c) >= 0xa1 {
+        format!("{}", c)
+    } else if !c.is_control() && !c.is_numeric() && c != '\n' && c != '\t' {
+        format!("\\{}", c)
+    } else {
+        format!("\\{:x} ", u32::from(c))
+    };
+    Ok((rest, result))
+}
 fn normalized_escaped_char(input: &[u8]) -> IResult<&[u8], String> {
     let (rest, c) = escaped_char(input)?;
-    let result = if c.is_alphanumeric() {
+    let result = if c.is_alphanumeric() || c == '-' || u32::from(c) >= 0xa1 {
         format!("{}", c)
     } else if !c.is_control() && c != '\n' && c != '\t' {
         format!("\\{}", c)

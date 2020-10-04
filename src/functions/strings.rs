@@ -10,6 +10,7 @@ use std::sync::Mutex;
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, quote(string), |s| {
         let v = match s.get("string")? {
+            Value::Literal(v, Quotes::None) => v.replace('\\', "\\\\"),
             Value::Literal(v, _) => v,
             v => format!("{}", v.format(Default::default())),
         };

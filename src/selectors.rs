@@ -252,7 +252,7 @@ impl fmt::Display for Selector {
                 write!(&mut buf, "{}", p).map_err(|_| fmt::Error)?;
             }
         }
-        while buf.last() == Some(&b' ') {
+        if buf.ends_with(b"> ") {
             buf.pop();
         }
         while buf.first() == Some(&b' ') {
