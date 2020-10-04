@@ -138,7 +138,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, list_separator(list), |s| Ok(Value::Literal(
         match s.get("list")? {
             Value::List(_, ListSeparator::Comma, _) => "comma",
-            Value::Map(map) if map.len() == 0 => "space",
+            Value::Map(ref map) if map.len() == 0 => "space",
             Value::Map(_) => "comma",
             _ => "space",
         }
