@@ -218,7 +218,6 @@ mod empty {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn space() {
                 assert_eq!(
                     rsass(

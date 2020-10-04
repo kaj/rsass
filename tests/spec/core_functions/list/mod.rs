@@ -159,7 +159,6 @@ mod append {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn empty() {
             assert_eq!(
                 rsass(
@@ -1005,7 +1004,6 @@ mod separator {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn map() {
             assert_eq!(
                 rsass(

@@ -138,6 +138,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, list_separator(list), |s| Ok(Value::Literal(
         match s.get("list")? {
             Value::List(_, ListSeparator::Comma, _) => "comma",
+            Value::Map(map) if map.len() == 0 => "space",
             Value::Map(_) => "comma",
             _ => "space",
         }
@@ -160,19 +161,25 @@ fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
             };
             (v, sep, bra)
         }
-        Value::Map(map) => (
-            map.iter()
-                .map(|&(ref k, ref v)| {
-                    Value::List(
-                        vec![k.clone(), v.clone()],
-                        ListSeparator::Space,
-                        false,
-                    )
-                })
-                .collect(),
-            Some(ListSeparator::Comma),
-            false,
-        ),
+        Value::Map(map) => {
+            if map.len() == 0 {
+                (vec![], None, false)
+            } else {
+                (
+                    map.iter()
+                        .map(|&(ref k, ref v)| {
+                            Value::List(
+                                vec![k.clone(), v.clone()],
+                                ListSeparator::Space,
+                                false,
+                            )
+                        })
+                        .collect(),
+                    Some(ListSeparator::Comma),
+                    false,
+                )
+            }
+        }
         v => (vec![v], None, false),
     }
 }
