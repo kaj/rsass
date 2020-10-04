@@ -1,7 +1,8 @@
 use super::{Error, SassFunction};
 use crate::css::{CallArgs, Value};
-use crate::value::{ListSeparator, Quotes, Unit};
+use crate::value::{Quotes, Unit};
 use crate::variablescope::Scope;
+use crate::Format;
 use std::collections::BTreeMap;
 
 static IMPLEMENTED_FEATURES: &[&str] = &[
@@ -76,42 +77,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, inspect(value), |s| Ok(Value::Literal(
         match s.get("value")? {
             Value::Null => "null".to_string(),
-            Value::List(ref v, ref sep, brackets) => {
-                // TODO Try to unify this with the Display formatting?
-                let do_fmt: &dyn Fn(&Value) -> String =
-                    if brackets && *sep == ListSeparator::Space {
-                        &|v| {
-                            if let Value::List(_, _, false) = &v {
-                                format!("({})", v.format(Default::default()))
-                            } else {
-                                format!("{}", v.format(Default::default()))
-                            }
-                        }
-                    } else {
-                        &|v| format!("{}", v.format(Default::default()))
-                    };
-                let t = v
-                    .iter()
-                    .filter(|v| !v.is_null())
-                    .map(do_fmt)
-                    .collect::<Vec<_>>();
-                let t = if t.is_empty() && !brackets {
-                    "()".to_string()
-                } else if *sep == ListSeparator::Comma && t.len() == 1 {
-                    format!("{},", t[0])
-                } else {
-                    t.join(match *sep {
-                        ListSeparator::Comma => ", ",
-                        ListSeparator::Space => " ",
-                    })
-                };
-                if brackets {
-                    format!("[{}]", t)
-                } else {
-                    t
-                }
-            }
-            v => format!("{}", v.format(Default::default())),
+            Value::List(ref v, _, false) if v.is_empty() => "()".to_string(),
+            v => format!("{}", v.format(Format::introspect())),
         },
         Quotes::None
     )));

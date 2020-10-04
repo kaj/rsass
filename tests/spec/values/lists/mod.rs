@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/values/lists/brackets.hrx"
 #[test]
-#[ignore] // wrong result
 fn brackets() {
     assert_eq!(
         rsass(

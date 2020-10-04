@@ -1523,7 +1523,6 @@ mod inspect {
                         );
                     }
                     #[test]
-                    #[ignore] // wrong result
                     fn unbracketed() {
                         assert_eq!(
                             rsass(
@@ -1704,7 +1703,6 @@ mod inspect {
                         );
                     }
                     #[test]
-                    #[ignore] // wrong result
                     fn unbracketed() {
                         assert_eq!(
                             rsass(

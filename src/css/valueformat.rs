@@ -54,7 +54,8 @@ impl<'a> Display for Formatted<'a, Value> {
                     .map(|v| {
                         let needs_paren = match *v {
                             Value::List(_, _, false) => {
-                                brackets && *sep == ListSeparator::Space
+                                (brackets || self.format.is_introspection())
+                                    && *sep == ListSeparator::Space
                             }
                             _ => false,
                         };
@@ -64,8 +65,14 @@ impl<'a> Display for Formatted<'a, Value> {
                             format!("{}", v.format(self.format))
                         }
                     })
-                    .collect::<Vec<_>>()
-                    .join(match *sep {
+                    .collect::<Vec<_>>();
+                let t = if self.format.is_introspection()
+                    && t.len() == 1
+                    && *sep == ListSeparator::Comma
+                {
+                    format!("{},", t[0])
+                } else {
+                    t.join(match *sep {
                         ListSeparator::Comma => {
                             if self.format.is_compressed() {
                                 ","
@@ -74,7 +81,8 @@ impl<'a> Display for Formatted<'a, Value> {
                             }
                         }
                         ListSeparator::Space => " ",
-                    });
+                    })
+                };
                 if brackets {
                     out.write_str("[")?;
                 }

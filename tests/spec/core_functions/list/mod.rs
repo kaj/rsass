@@ -1594,7 +1594,6 @@ mod zip {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn non_empty() {
             assert_eq!(
                 rsass(

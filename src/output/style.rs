@@ -16,6 +16,8 @@ use std::str::FromStr;
 pub enum Style {
     Expanded,
     Compressed,
+    // Special format used by the inspect(value) sass function
+    Introspection,
 }
 
 impl fmt::Display for Style {
@@ -23,6 +25,7 @@ impl fmt::Display for Style {
         out.write_str(match self {
             Style::Compressed => "compressed",
             Style::Expanded => "expanded",
+            Style::Introspection => "introspection",
         })
     }
 }
