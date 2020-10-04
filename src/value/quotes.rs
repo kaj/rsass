@@ -8,6 +8,12 @@ pub enum Quotes {
     None,
 }
 
+impl Quotes {
+    pub fn is_none(&self) -> bool {
+        *self == Quotes::None
+    }
+}
+
 impl fmt::Display for Quotes {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self {

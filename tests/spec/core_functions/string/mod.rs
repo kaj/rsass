@@ -1464,7 +1464,6 @@ mod unquote {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn escaped_backslash() {
         assert_eq!(
             rsass(

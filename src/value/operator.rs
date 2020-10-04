@@ -229,7 +229,24 @@ impl fmt::Display for Operator {
 /// the strict derived version, for unit tests etc.
 fn equal_values(a: &Value, b: &Value) -> bool {
     match (a, b) {
-        (&Value::Literal(ref a, _), &Value::Literal(ref b, _)) => a == b,
+        (&Value::Literal(ref a, aq), &Value::Literal(ref b, bq)) => {
+            if aq == bq {
+                a == b
+            } else {
+                let a = if aq.is_none() {
+                    a.replace('\\', "\\\\")
+                } else {
+                    a.clone()
+                };
+                let b = if bq.is_none() {
+                    b.replace('\\', "\\\\")
+                } else {
+                    b.clone()
+                };
+
+                a == b
+            }
+        }
         (Value::List(a, ..), Value::Map(b)) => a.is_empty() && b.len() == 0,
         (Value::Map(a), Value::List(b, ..)) => a.len() == 0 && b.is_empty(),
         (a, b) => a == b,

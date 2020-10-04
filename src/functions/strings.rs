@@ -21,7 +21,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
     });
     def!(f, unquote(string), |s| match s.get("string")? {
-        Value::Literal(v, _) => Ok(Value::Literal(v, Quotes::None)),
+        Value::Literal(v, Quotes::None) =>
+            Ok(Value::Literal(v, Quotes::None)),
+        Value::Literal(v, _) =>
+            Ok(Value::Literal(v.replace("\\\\", "\\"), Quotes::None)),
         v => {
             dep_warn!(
                 "Passing {}, a non-string value, to unquote()",
