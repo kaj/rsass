@@ -1359,7 +1359,6 @@ mod utils {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn same_as_empty_list() {
             assert_eq!(
                 rsass(

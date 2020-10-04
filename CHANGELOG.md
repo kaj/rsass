@@ -9,6 +9,8 @@ project adheres to
 
 ## Unreleased
 
+* Some improvements in list handling, formatting and introspection.
+
 
 ## Release 0.14.0 - 2020-10-03
 

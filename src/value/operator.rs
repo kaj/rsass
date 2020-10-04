@@ -230,6 +230,8 @@ impl fmt::Display for Operator {
 fn equal_values(a: &Value, b: &Value) -> bool {
     match (a, b) {
         (&Value::Literal(ref a, _), &Value::Literal(ref b, _)) => a == b,
+        (Value::List(a, ..), Value::Map(b)) => a.is_empty() && b.len() == 0,
+        (Value::Map(a), Value::List(b, ..)) => a.len() == 0 && b.is_empty(),
         (a, b) => a == b,
     }
 }
