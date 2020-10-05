@@ -95,9 +95,10 @@ impl Unit {
             Unit::Pc => Rational::new(254, 60),
             Unit::Px => Rational::new(254, 960),
 
-            Unit::Deg => Rational::new(360, 1),
-            Unit::Grad => Rational::new(400, 1),
-            Unit::Rad => Rational::new(62_832, 10_000), // approximate
+            Unit::Deg => Rational::new(1, 360),
+            Unit::Grad => Rational::new(1, 400),
+            // 1/(2*pi), rational approximation correct to 15 decimals.
+            Unit::Rad => Rational::new(25510582 / 2, 80143857),
             Unit::Turn => Rational::one(),
 
             Unit::S => Rational::one(),

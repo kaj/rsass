@@ -1510,7 +1510,6 @@ fn issue_1163() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1167.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_1167() {
     assert_eq!(
         rsass(
@@ -11442,7 +11441,6 @@ fn issue_683() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_688.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_688() {
     assert_eq!(
         rsass(

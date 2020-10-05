@@ -54,7 +54,16 @@ impl Operator {
                     } else if au == Unit::None {
                         Some(Value::Numeric(a + b, bu, true))
                     } else {
-                        None
+                        if au.dimension() == bu.dimension() {
+                            let scale = bu.scale_factor() / au.scale_factor();
+                            Some(Value::Numeric(
+                                (a.value + b.value * scale).into(),
+                                au,
+                                true,
+                            ))
+                        } else {
+                            None
+                        }
                     }
                 }
                 (Value::Literal(a, Quotes::None), Value::Literal(b, _)) => {
@@ -93,7 +102,16 @@ impl Operator {
                     } else if au == &Unit::None {
                         Some(Value::Numeric(av - bv, bu.clone(), true))
                     } else {
-                        None
+                        if au.dimension() == bu.dimension() {
+                            let scale = bu.scale_factor() / au.scale_factor();
+                            Some(Value::Numeric(
+                                (av.value - bv.value * scale).into(),
+                                au.clone(),
+                                true,
+                            ))
+                        } else {
+                            None
+                        }
                     }
                 }
                 // Note: This very special case should probably be much

@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_666/angle.hrx"
 #[test]
-#[ignore] // wrong result
 fn angle() {
     assert_eq!(
         rsass(
@@ -52,7 +51,6 @@ fn angle() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_666/length.hrx"
 #[test]
-#[ignore] // wrong result
 fn length() {
     assert_eq!(
         rsass(
