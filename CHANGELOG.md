@@ -10,6 +10,7 @@ project adheres to
 ## Unreleased
 
 * Some improvements in list handling, formatting and introspection.
+* Change default precision to 10, matching dart-sass.
 
 
 ## Release 0.14.0 - 2020-10-03

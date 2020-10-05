@@ -3,7 +3,7 @@ use super::options::Options;
 use super::Error;
 use lazy_static::lazy_static;
 use regex::Regex;
-use rsass::output::{Format, Style};
+use rsass::output::Format;
 use rsass::{parse_scss_data, ErrPos, FileContext, GlobalScope};
 use std::io::Write;
 
@@ -114,10 +114,10 @@ impl TestFixture {
         match &self.expectation {
             ExpectedError(_) => Some("Error tests not supported yet"),
             ExpectedCSS(ref expected) => {
-                let format = Format {
-                    style: Style::Expanded,
-                    precision: self.options.precision.unwrap_or(6) as usize,
-                };
+                let mut format = Format::default();
+                if let Some(precision) = self.options.precision {
+                    format.precision = precision as usize;
+                }
                 match rsass(&self.input, format) {
                     Ok(ref actual) => {
                         if expected == actual {

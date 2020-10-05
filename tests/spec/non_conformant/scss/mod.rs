@@ -2166,7 +2166,6 @@ fn namespace_properties_with_value() {
 
 // From "sass-spec/spec/non_conformant/scss/negation.hrx"
 #[test]
-#[ignore] // wrong result
 fn negation() {
     assert_eq!(
         rsass(
@@ -2643,7 +2642,6 @@ fn placeholder() {
 
 // From "sass-spec/spec/non_conformant/scss/precision.hrx"
 #[test]
-#[ignore] // wrong result
 fn precision() {
     assert_eq!(
         rsass(

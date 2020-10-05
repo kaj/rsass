@@ -28,7 +28,7 @@ impl Default for Format {
     fn default() -> Format {
         Format {
             style: Style::Expanded,
-            precision: 6,
+            precision: 10,
         }
     }
 }
