@@ -17,16 +17,28 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         Ok(Value::Map(map1))
     });
-    def_va!(f, map_remove(map, keys), |s| {
+    // It's really map_remove(map, keys), but "key" is supported as an
+    // alias for "keys", which makes a mess when using more than one
+    // positional argument.
+    def_va!(f, map_remove(map, key, keys), |s| {
         let mut map = get_map(s.get("map")?)?;
-        match s.get("keys")? {
-            Value::List(keys, ..) => {
+        let key = s.get("key")?;
+        let keys = s.get("keys")?;
+        match (key, keys) {
+            (first, Value::List(rest, ..)) => {
+                map.remove(&first);
+                for key in rest {
+                    map.remove(&key);
+                }
+            }
+            (Value::List(keys, ..), Value::Null) => {
                 for key in keys {
                     map.remove(&key);
                 }
             }
-            key => {
-                map.remove(&key);
+            (first, second) => {
+                map.remove(&first);
+                map.remove(&second);
             }
         }
         Ok(Value::Map(map))
