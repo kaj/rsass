@@ -9670,7 +9670,6 @@ fn issue_424() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_435.hrx"
 #[test]
-#[ignore] // unexepected error
 fn issue_435() {
     assert_eq!(
         rsass(

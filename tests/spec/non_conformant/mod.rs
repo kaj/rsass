@@ -51,7 +51,6 @@ mod variables {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // unexepected error
             fn nested() {
                 assert_eq!(
                     rsass(

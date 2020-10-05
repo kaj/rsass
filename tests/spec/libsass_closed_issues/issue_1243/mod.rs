@@ -18,7 +18,6 @@ fn at_rule() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1243/comma-list.hrx"
 #[test]
-#[ignore] // unexepected error
 fn comma_list() {
     assert_eq!(
         rsass(
@@ -80,7 +79,6 @@ fn include() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1243/space-list.hrx"
 #[test]
-#[ignore] // unexepected error
 fn space_list() {
     assert_eq!(
         rsass(

@@ -565,7 +565,11 @@ fn variable_declaration2(input: &[u8]) -> IResult<&[u8], Item> {
         map(opt(tag("!global")), |g| g.is_some()),
         opt_spacelike,
     )(input)?;
-    let (input, _) = terminated(tag(";"), opt_spacelike)(input)?;
+    let (input, _) = alt((
+        terminated(tag(";"), opt_spacelike),
+        peek(tag("}")), // semicolon optional for last thing in block
+        all_consuming(tag("")), // ... or last thing in file
+    ))(input)?;
     Ok((
         input,
         Item::VariableDeclaration {
