@@ -34,8 +34,8 @@ impl Operator {
                     Some(b)
                 }
             }
-            Operator::Equal => Some(Value::bool(equal_values(&a, &b))),
-            Operator::NotEqual => Some(Value::bool(!equal_values(&a, &b))),
+            Operator::Equal => Some(Value::bool(a == b)), // equal_values(&a, &b))),
+            Operator::NotEqual => Some(Value::bool(a != b)), // !equal_values(&a, &b))),
             Operator::Greater => Some(Value::bool(a > b)),
             Operator::GreaterE => Some(Value::bool(a >= b)),
             Operator::Lesser => Some(Value::bool(a < b)),
@@ -235,38 +235,5 @@ impl fmt::Display for Operator {
                 Operator::Not => "not",
             }
         )
-    }
-}
-
-/// A more relaxed equality checker for the sass == operator.
-///
-/// Strings with equal content are considered equal, even if they have
-/// different quoting.
-///
-/// Make this a separate function, so the rust == operator is still
-/// the strict derived version, for unit tests etc.
-fn equal_values(a: &Value, b: &Value) -> bool {
-    match (a, b) {
-        (&Value::Literal(ref a, aq), &Value::Literal(ref b, bq)) => {
-            if aq == bq {
-                a == b
-            } else {
-                let a = if aq.is_none() {
-                    a.replace('\\', "\\\\")
-                } else {
-                    a.clone()
-                };
-                let b = if bq.is_none() {
-                    b.replace('\\', "\\\\")
-                } else {
-                    b.clone()
-                };
-
-                a == b
-            }
-        }
-        (Value::List(a, ..), Value::Map(b)) => a.is_empty() && b.len() == 0,
-        (Value::Map(a), Value::List(b, ..)) => a.len() == 0 && b.is_empty(),
-        (a, b) => a == b,
     }
 }

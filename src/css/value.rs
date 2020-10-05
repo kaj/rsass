@@ -9,7 +9,7 @@ use num_rational::Rational;
 use std::convert::TryFrom;
 
 /// A css value.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, Eq, PartialOrd, Ord)]
 pub enum Value {
     /// A special kind of escape.  Only really used for !important.
     Bang(String),
@@ -241,6 +241,69 @@ impl Value {
         Formatted {
             value: self,
             format,
+        }
+    }
+}
+
+/// Some Values are equal according to spec even with some
+/// implementation differences.
+impl PartialEq for Value {
+    fn eq(&self, other: &Value) -> bool {
+        match (&self, other) {
+            (Value::Bang(a), Value::Bang(b)) => a == b,
+            (Value::Numeric(a, au, _), Value::Numeric(b, bu, _)) => {
+                a == b && au == bu
+            }
+            (Value::NumericBig(a, au, _), Value::NumericBig(b, bu, _)) => {
+                a == b && au == bu
+            }
+            (Value::Literal(a, aq), Value::Literal(b, bq)) => {
+                if aq == bq {
+                    a == b
+                } else {
+                    let a = if aq.is_none() {
+                        a.replace('\\', "\\\\")
+                    } else {
+                        a.clone()
+                    };
+                    let b = if bq.is_none() {
+                        b.replace('\\', "\\\\")
+                    } else {
+                        b.clone()
+                    };
+                    a == b
+                }
+            }
+            (Value::Null, Value::Null) => true,
+            (Value::True, Value::True) => true,
+            (Value::False, Value::False) => true,
+            (Value::Color(a, _), Value::Color(b, _)) => a == b,
+            (Value::Call(af, aa), Value::Call(bf, ba)) => {
+                af == bf && aa == ba
+            }
+            (Value::Function(a, abody), Value::Function(b, bbody)) => {
+                a == b && abody == bbody
+            }
+            (Value::List(av, asep, ab), Value::List(bv, bsep, bb)) => {
+                av == bv && asep == bsep && ab == bb
+            }
+            (Value::Map(a), Value::Map(b)) => a == b,
+            (Value::UnaryOp(a, av), Value::UnaryOp(b, bv)) => {
+                a == b && av == bv
+            }
+            (
+                Value::BinOp(aa, _, ao, _, ab),
+                Value::BinOp(ba, _, bo, _, bb),
+            ) => ao == bo && aa == ba && ab == bb,
+            (Value::UnicodeRange(a), Value::UnicodeRange(b)) => a == b,
+            (Value::Paren(a), Value::Paren(b)) => a == b,
+            (Value::List(a, ..), Value::Map(b)) => {
+                a.is_empty() && b.len() == 0
+            }
+            (Value::Map(a), Value::List(b, ..)) => {
+                a.len() == 0 && b.is_empty()
+            }
+            _ => false,
         }
     }
 }

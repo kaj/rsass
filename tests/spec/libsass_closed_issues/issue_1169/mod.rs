@@ -36,7 +36,6 @@ fn functioncall() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1169/interpolated.hrx"
 #[test]
-#[ignore] // wrong result
 fn interpolated() {
     assert_eq!(
         rsass(
