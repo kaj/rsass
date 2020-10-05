@@ -252,7 +252,13 @@ impl PartialEq for Value {
         match (&self, other) {
             (Value::Bang(a), Value::Bang(b)) => a == b,
             (Value::Numeric(a, au, _), Value::Numeric(b, bu, _)) => {
-                a == b && au == bu
+                if au == bu {
+                    a == b
+                } else if au.dimension() == bu.dimension() {
+                    a.value * au.scale_factor() == b.value * bu.scale_factor()
+                } else {
+                    false
+                }
             }
             (Value::NumericBig(a, au, _), Value::NumericBig(b, bu, _)) => {
                 a == b && au == bu

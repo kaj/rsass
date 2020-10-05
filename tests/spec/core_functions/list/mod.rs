@@ -391,7 +391,6 @@ mod index {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn sass_equality() {
             assert_eq!(
                 rsass(
