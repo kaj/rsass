@@ -91,20 +91,29 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         list.push(s.get("val")?);
         Ok(Value::List(list, sep, bra))
     });
-    def_va!(f, zip(lists), |s| match s.get("lists")? {
-        Value::List(v, _, _) => {
-            let lists =
-                v.into_iter().map(|v| v.iter_items()).collect::<Vec<_>>();
-            let len = lists.iter().map(|v| v.len()).min().unwrap_or(0);
-            let result = (0..len)
-                .map(|i| {
-                    let items = lists.iter().map(|v| v[i].clone()).collect();
-                    Value::List(items, ListSeparator::Space, false)
-                })
-                .collect();
-            Ok(Value::List(result, ListSeparator::Comma, false))
-        }
-        v => Err(Error::badarg("list", &v)),
+    def_va!(f, zip(lists), |s| {
+        // TODO: A single argument is just the first list, unless its
+        // names "lists".
+        // A possible implementation may be a zip(first, lists) style, so I
+        // the first unnamed argument in a separate variable.
+        // But that would leed to problems with to unnamed arguments.
+        // We probably need to actually make a difference between
+        // named an positional arguments!
+        let (v, s, b) = get_list(s.get("lists")?);
+        let v = if b {
+            vec![Value::List(v, s.unwrap_or(ListSeparator::Space), b)]
+        } else {
+            v
+        };
+        let lists = v.into_iter().map(|v| v.iter_items()).collect::<Vec<_>>();
+        let len = lists.iter().map(|v| v.len()).min().unwrap_or(0);
+        let result = (0..len)
+            .map(|i| {
+                let items = lists.iter().map(|v| v[i].clone()).collect();
+                Value::List(items, ListSeparator::Space, false)
+            })
+            .collect();
+        Ok(Value::List(result, ListSeparator::Comma, false))
     });
     def!(f, index(list, value), |s| match s.get("list")? {
         Value::List(v, _, _) => {

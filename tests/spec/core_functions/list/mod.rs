@@ -1578,7 +1578,6 @@ mod zip {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // unexepected error
         fn empty() {
             assert_eq!(
                 rsass(
@@ -1608,7 +1607,7 @@ mod zip {
         }
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn no_lists() {
         assert_eq!(
             rsass(
@@ -1647,7 +1646,6 @@ mod zip {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // unexepected error
         fn bracketed() {
             assert_eq!(
                 rsass(
