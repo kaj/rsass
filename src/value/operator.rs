@@ -53,17 +53,15 @@ impl Operator {
                         Some(Value::Numeric(a + b, au, true))
                     } else if au == Unit::None {
                         Some(Value::Numeric(a + b, bu, true))
+                    } else if au.dimension() == bu.dimension() {
+                        let scale = bu.scale_factor() / au.scale_factor();
+                        Some(Value::Numeric(
+                            (a.value + b.value * scale).into(),
+                            au,
+                            true,
+                        ))
                     } else {
-                        if au.dimension() == bu.dimension() {
-                            let scale = bu.scale_factor() / au.scale_factor();
-                            Some(Value::Numeric(
-                                (a.value + b.value * scale).into(),
-                                au,
-                                true,
-                            ))
-                        } else {
-                            None
-                        }
+                        None
                     }
                 }
                 (Value::Literal(a, Quotes::None), Value::Literal(b, _)) => {
@@ -101,17 +99,15 @@ impl Operator {
                         Some(Value::Numeric(av - bv, au.clone(), true))
                     } else if au == &Unit::None {
                         Some(Value::Numeric(av - bv, bu.clone(), true))
+                    } else if au.dimension() == bu.dimension() {
+                        let scale = bu.scale_factor() / au.scale_factor();
+                        Some(Value::Numeric(
+                            (av.value - bv.value * scale).into(),
+                            au.clone(),
+                            true,
+                        ))
                     } else {
-                        if au.dimension() == bu.dimension() {
-                            let scale = bu.scale_factor() / au.scale_factor();
-                            Some(Value::Numeric(
-                                (av.value - bv.value * scale).into(),
-                                au.clone(),
-                                true,
-                            ))
-                        } else {
-                            None
-                        }
+                        None
                     }
                 }
                 // Note: This very special case should probably be much

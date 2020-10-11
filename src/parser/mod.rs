@@ -506,7 +506,7 @@ fn property_or_namespace_rule(input: &[u8]) -> IResult<&[u8], Item> {
     };
 
     let (input, body) = match next {
-        b"{" => map(body_block2, |b| Some(b))(input)?,
+        b"{" => map(body_block2, Some)(input)?,
         b";" => (input, None),
         b"" => (input, None),
         _ => (input, None), // error?

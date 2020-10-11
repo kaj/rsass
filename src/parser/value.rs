@@ -452,7 +452,7 @@ pub fn unary_op(input: &[u8]) -> IResult<&[u8], Value> {
 fn special_function(input: &[u8]) -> IResult<&[u8], Value> {
     map(
         alt((special_function_misc, special_function_minmax)),
-        |data| Value::Literal(data),
+        Value::Literal,
     )(input)
 }
 

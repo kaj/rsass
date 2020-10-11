@@ -168,14 +168,10 @@ impl Value {
                             }
                         };
                         if got_num {
-                            if val == 0 {
-                                result.push('\u{fffd}');
+                            if let Ok(c) = char::try_from(val) {
+                                result.push(c);
                             } else {
-                                if let Ok(c) = char::try_from(val) {
-                                    result.push(c);
-                                } else {
-                                    result.push('\u{fffd}');
-                                }
+                                result.push('\u{fffd}');
                             }
                         }
                         match nextchar {

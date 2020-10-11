@@ -274,7 +274,7 @@ fn cleanup_escape_ws(parts: &mut [StringPart]) {
     let mut t_iter = parts.iter_mut().peekable();
     while let Some(ref mut item) = t_iter.next() {
         if let StringPart::Raw(ref mut s) = item {
-            if s.starts_with("\\") && s.ends_with(" ") {
+            if s.starts_with('\\') && s.ends_with(' ') {
                 match t_iter.peek() {
                     None => {
                         s.pop();
