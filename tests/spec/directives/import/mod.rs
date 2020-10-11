@@ -267,7 +267,7 @@ mod load {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn sass() {
             assert_eq!(
                 rsass(
@@ -282,7 +282,7 @@ mod load {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn scss() {
             assert_eq!(
                 rsass(

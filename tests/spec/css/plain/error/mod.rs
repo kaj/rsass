@@ -111,7 +111,7 @@ mod statement {
 
             // Ignoring "multi", error tests are not supported yet.
             #[test]
-            #[ignore] // unexepected error
+            #[ignore] // wrong result
             fn nested() {
                 assert_eq!(
                     rsass("@import \'plain\'").unwrap(),

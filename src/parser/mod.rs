@@ -109,35 +109,10 @@ fn sassfile(input: &[u8]) -> IResult<&[u8], Vec<Item>> {
 }
 
 fn top_level_item(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, tag) = alt((
-        tag("$"),
-        tag("/*"),
-        tag("@each"),
-        tag("@error"),
-        tag("@for"),
-        tag("@function"),
-        tag("@if"),
-        tag("@import"),
-        tag("@include"),
-        tag("@mixin"),
-        tag("@warn"),
-        tag("@while"),
-        tag("@"),
-        tag(""),
-    ))(input)?;
+    let (input, tag) = alt((tag("$"), tag("/*"), tag("@"), tag("")))(input)?;
     match tag {
         b"$" => variable_declaration2(input),
         b"/*" => comment_item(input),
-        b"@each" => each_loop2(input),
-        b"@error" => error2(input),
-        b"@for" => for_loop2(input),
-        b"@function" => function_declaration2(input),
-        b"@if" => if_statement2(input),
-        b"@import" => import2(input),
-        b"@include" => mixin_call2(input),
-        b"@mixin" => mixin_declaration2(input),
-        b"@warn" => warn2(input),
-        b"@while" => while_loop2(input),
         b"@" => at_rule2(input),
         b"" => rule(input),
         _ => unreachable!(),
@@ -170,17 +145,7 @@ fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
         tag(";"),
         tag("@at-root"),
         tag("@content"),
-        tag("@each"),
-        tag("@error"),
-        tag("@for"),
-        tag("@function"),
-        tag("@if"),
-        tag("@import"),
-        tag("@include"),
-        tag("@mixin"),
         tag("@return"),
-        tag("@warn"),
-        tag("@while"),
         tag("@"),
         tag(""),
     ))(input)?;
@@ -190,17 +155,7 @@ fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
         b";" => Ok((input, Item::None)),
         b"@at-root" => at_root2(input),
         b"@content" => content_stmt2(input),
-        b"@error" => error2(input),
-        b"@each" => each_loop2(input),
-        b"@for" => for_loop2(input),
-        b"@function" => function_declaration2(input),
-        b"@if" => if_statement2(input),
-        b"@import" => import2(input),
-        b"@include" => mixin_call2(input),
-        b"@mixin" => mixin_declaration2(input),
         b"@return" => return_stmt2(input),
-        b"@warn" => warn2(input),
-        b"@while" => while_loop2(input),
         b"@" => at_rule2(input),
         b"" => {
             let (input, selectors) = opt(rule_start)(input)?;
@@ -218,8 +173,7 @@ fn body_item(input: &[u8]) -> IResult<&[u8], Item> {
 /// What follows the `@import` tag.
 fn import2(input: &[u8]) -> IResult<&[u8], Item> {
     map(
-        delimited(
-            tag(" "),
+        terminated(
             pair(
                 separated_list(
                     preceded(tag(","), ignore_comments),
@@ -232,7 +186,10 @@ fn import2(input: &[u8]) -> IResult<&[u8], Item> {
                 ),
                 opt(media_args),
             ),
-            preceded(opt(ignore_space), tag(";")),
+            preceded(
+                opt(ignore_space),
+                alt((tag(";"), all_consuming(tag("")))),
+            ),
         ),
         |(import, args)| Item::Import(import, args.unwrap_or(Value::Null)),
     )(input)
@@ -254,12 +211,12 @@ fn at_root2(input: &[u8]) -> IResult<&[u8], Item> {
 
 #[cfg(test)] // TODO: Or remove this?
 fn mixin_call(input: &[u8]) -> IResult<&[u8], Item> {
-    preceded(tag("@include"), mixin_call2)(input)
+    preceded(tag("@include "), mixin_call2)(input)
 }
 
 /// What follows the `@include` tag.
 fn mixin_call2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, name) = delimited(spacelike, name, opt_spacelike)(input)?;
+    let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(opt(call_args), opt_spacelike)(input)?;
     let (input, body) = terminated(
         opt(body_block),
@@ -277,24 +234,38 @@ fn mixin_call2(input: &[u8]) -> IResult<&[u8], Item> {
 
 /// What follows an `@` sign (unless specifically handled).
 fn at_rule2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, name) = name(input)?;
-    let (input, args) = opt(media_args)(input)?;
-    let (input, body) = preceded(
-        opt(ignore_space),
-        alt((
-            map(body_block, Some),
-            value(None, all_consuming(tag(""))),
-            value(None, tag(";")),
-        )),
-    )(input)?;
-    Ok((
-        input,
-        Item::AtRule {
-            name,
-            args: args.unwrap_or(Value::Null),
-            body,
-        },
-    ))
+    let (input, name) = terminated(name, opt_spacelike)(input)?;
+    match name.as_ref() {
+        "each" => each_loop2(input),
+        "error" => error2(input),
+        "for" => for_loop2(input),
+        "function" => function_declaration2(input),
+        "import" => import2(input),
+        "include" => mixin_call2(input),
+        "mixin" => mixin_declaration2(input),
+        "if" => if_statement2(input),
+        "warn" => warn2(input),
+        "while" => while_loop2(input),
+        _ => {
+            let (input, args) = opt(media_args)(input)?;
+            let (input, body) = preceded(
+                opt(ignore_space),
+                alt((
+                    map(body_block, Some),
+                    value(None, all_consuming(tag(""))),
+                    value(None, tag(";")),
+                )),
+            )(input)?;
+            Ok((
+                input,
+                Item::AtRule {
+                    name,
+                    args: args.unwrap_or(Value::Null),
+                    body,
+                },
+            ))
+        }
+    }
 }
 
 fn media_args(input: &[u8]) -> IResult<&[u8], Value> {
@@ -359,16 +330,15 @@ fn test_media_args_2() {
 
 #[cfg(test)] // TODO: Or remove this?
 fn if_statement(input: &[u8]) -> IResult<&[u8], Item> {
-    preceded(tag("@if"), if_statement2)(input)
+    preceded(tag("@if "), if_statement2)(input)
 }
 
 fn if_statement_inner(input: &[u8]) -> IResult<&[u8], Item> {
-    preceded(tag("if"), if_statement2)(input)
+    preceded(terminated(tag("if"), spacelike), if_statement2)(input)
 }
 
 fn if_statement2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, cond) =
-        delimited(spacelike, value_expression, opt_spacelike)(input)?;
+    let (input, cond) = terminated(value_expression, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
     let (input, else_body) = opt(preceded(
         delimited(opt_spacelike, tag("@else"), opt_spacelike),
@@ -382,12 +352,9 @@ fn if_statement2(input: &[u8]) -> IResult<&[u8], Item> {
 
 /// The part of an each look that follows the `@each`.
 fn each_loop2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, names) = preceded(
-        spacelike,
-        separated_nonempty_list(
-            delimited(opt_spacelike, tag(","), opt_spacelike),
-            preceded(tag("$"), name),
-        ),
+    let (input, names) = separated_nonempty_list(
+        delimited(opt_spacelike, tag(","), opt_spacelike),
+        preceded(tag("$"), name),
     )(input)?;
     let (input, values) = delimited(
         delimited(spacelike, tag("in"), spacelike),
@@ -400,8 +367,7 @@ fn each_loop2(input: &[u8]) -> IResult<&[u8], Item> {
 
 /// A for loop after the initial `@for`.
 fn for_loop2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, name) =
-        delimited(preceded(spacelike, tag("$")), name, spacelike)(input)?;
+    let (input, name) = delimited(tag("$"), name, spacelike)(input)?;
     let (input, from) = delimited(
         terminated(tag("from"), spacelike),
         single_value,
@@ -426,31 +392,28 @@ fn for_loop2(input: &[u8]) -> IResult<&[u8], Item> {
 }
 
 fn warn2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, arg) =
-        delimited(spacelike, value_expression, opt(tag(";")))(input)?;
+    let (input, arg) = terminated(value_expression, opt(tag(";")))(input)?;
     Ok((input, Item::Warn(arg)))
 }
 
 fn error2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, arg) =
-        delimited(spacelike, value_expression, opt(tag(";")))(input)?;
+    let (input, arg) = terminated(value_expression, opt(tag(";")))(input)?;
     Ok((input, Item::Error(arg)))
 }
 
 fn while_loop2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, cond) =
-        delimited(spacelike, value_expression, spacelike)(input)?;
+    let (input, cond) = terminated(value_expression, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
     Ok((input, Item::While(cond, body)))
 }
 
 #[cfg(test)] // TODO: Or remove this?
 fn mixin_declaration(input: &[u8]) -> IResult<&[u8], Item> {
-    preceded(tag("@mixin"), mixin_declaration2)(input)
+    preceded(tag("@mixin "), mixin_declaration2)(input)
 }
 
 fn mixin_declaration2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, name) = delimited(spacelike, name, opt_spacelike)(input)?;
+    let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(opt(formal_args), opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
     Ok((
@@ -464,7 +427,7 @@ fn mixin_declaration2(input: &[u8]) -> IResult<&[u8], Item> {
 }
 
 fn function_declaration2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, name) = delimited(spacelike, name, opt_spacelike)(input)?;
+    let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(formal_args, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
     Ok((

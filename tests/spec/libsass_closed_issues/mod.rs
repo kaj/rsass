@@ -4476,7 +4476,7 @@ mod issue_1647;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1648.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn issue_1648() {
     assert_eq!(
         rsass(
@@ -6547,7 +6547,6 @@ fn issue_2116() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2120"
 #[test]
-#[ignore] // unexepected error
 fn issue_2120() {
     assert_eq!(
         rsass("@import url(//xyz.cöm/ürl)").unwrap(),

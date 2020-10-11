@@ -9,7 +9,6 @@ mod escaped {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn if_only() {
         assert_eq!(
         rsass(

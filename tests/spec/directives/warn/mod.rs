@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/directives/warn/escaped.hrx"
 #[test]
-#[ignore] // wrong result
 fn escaped() {
     assert_eq!(
         rsass(

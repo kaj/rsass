@@ -45,7 +45,6 @@ fn debug() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1243/import.hrx"
 #[test]
-#[ignore] // unexepected error
 fn import() {
     assert_eq!(
         rsass(
@@ -92,7 +91,6 @@ fn space_list() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1243/warning.hrx"
 #[test]
-#[ignore] // unexepected error
 fn warning() {
     assert_eq!(
         rsass(
