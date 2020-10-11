@@ -14,9 +14,7 @@ use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
     alphanumeric1, multispace0, multispace1, one_of,
 };
-use nom::combinator::{
-    map, map_opt, map_res, not, opt, peek, recognize, value,
-};
+use nom::combinator::{map, map_opt, map_res, not, opt, peek, value};
 use nom::multi::{
     fold_many0, fold_many1, many0, many_m_n, separated_nonempty_list,
 };
@@ -25,7 +23,6 @@ use nom::IResult;
 use num_bigint::BigInt;
 use num_rational::{Ratio, Rational};
 use num_traits::{One, Zero};
-use std::str::from_utf8;
 
 pub fn value_expression(input: &[u8]) -> IResult<&[u8], Value> {
     let (input, result) = separated_nonempty_list(
@@ -412,15 +409,10 @@ fn hex_color(input: &[u8]) -> IResult<&[u8], Value> {
         map(
             alt((
                 tuple((hexchar2, hexchar2, hexchar2, opt(hexchar2))),
-                tuple((hexchar, hexchar, hexchar, opt(hexchar))),
+                tuple((hexchar1, hexchar1, hexchar1, opt(hexchar1))),
             )),
-            |(r, g, b, a): (&[u8], &[u8], &[u8], Option<&[u8]>)| {
-                Rgba::from_rgba(
-                    from_hex(&r),
-                    from_hex(&g),
-                    from_hex(&b),
-                    a.map(|a| from_hex(&a)).unwrap_or(255),
-                )
+            |(r, g, b, a): (u8, u8, u8, Option<u8>)| {
+                Rgba::from_rgba(r, g, b, a.unwrap_or(255))
             },
         ),
         peek(map(not(alphanumeric1), |_| ())),
@@ -471,20 +463,16 @@ fn literal_or_color(s: SassString) -> Value {
     Value::Literal(s)
 }
 
-pub fn hexchar(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    recognize(one_of("0123456789ABCDEFabcdef"))(input)
+fn hexchar1(input: &[u8]) -> IResult<&[u8], u8> {
+    map(hexchar_raw, |one| one * 0x11)(input)
 }
-pub fn hexchar2(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    recognize(pair(hexchar, hexchar))(input)
+fn hexchar2(input: &[u8]) -> IResult<&[u8], u8> {
+    map(pair(hexchar_raw, hexchar_raw), |(hi, lo)| hi * 0x10 + lo)(input)
 }
-
-fn from_hex(v: &[u8]) -> u8 {
-    let i = u8::from_str_radix(from_utf8(v).unwrap(), 16).unwrap();
-    if v.len() > 1 {
-        i
-    } else {
-        i * 0x11
-    }
+fn hexchar_raw(input: &[u8]) -> IResult<&[u8], u8> {
+    map(one_of("0123456789ABCDEFabcdef"), |ch| {
+        ch.to_digit(16).unwrap() as u8
+    })(input)
 }
 
 pub fn dictionary(input: &[u8]) -> IResult<&[u8], Value> {
