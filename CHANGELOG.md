@@ -14,6 +14,8 @@ project adheres to
 * Semicolon is optional after variable, if last in block or file.
 * Fix addition (and subtraction) of values with comparable units.
 * Fix css value equality for map keys and other "special" places.
+* Some internal refactor and cleanup.
+* Update spec to 2020-10-07.
 
 
 ## Release 0.14.0 - 2020-10-03

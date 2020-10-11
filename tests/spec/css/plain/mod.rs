@@ -21,6 +21,72 @@ fn boolean_operations() {
     );
 }
 
+// From "sass-spec/spec/css/plain/custom_properties.hrx"
+mod custom_properties {
+    #[allow(unused)]
+    use super::rsass;
+    #[test]
+    #[ignore] // wrong result
+    fn arbitrary_tokens() {
+        assert_eq!(
+            rsass(
+                "@import \"plain\";\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  --b: `~@#$%^&*()_-+={[]}|?/><;\
+        \n}\
+        \n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn color() {
+        assert_eq!(
+            rsass(
+                "@import \"plain\";\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  --b: #ff0000;\
+        \n}\
+        \n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn identifier() {
+        assert_eq!(
+            rsass(
+                "@import \"plain\";\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  --b: c;\
+        \n}\
+        \n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn nested() {
+        assert_eq!(
+            rsass(
+                "@import \"plain\";\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  --b: {c: d};\
+        \n}\
+        \n"
+        );
+    }
+}
+
 mod error;
 
 // From "sass-spec/spec/css/plain/extend.hrx"

@@ -138,12 +138,34 @@ fn indentation() {
 }
 
 // From "sass-spec/spec/css/custom_properties/name_interpolation.hrx"
-#[test]
-#[ignore] // wrong result
-fn name_interpolation() {
-    assert_eq!(
+mod name_interpolation {
+    #[allow(unused)]
+    use super::rsass;
+    #[test]
+    fn nested_properties() {
+        assert_eq!(
+            rsass(
+                "// Regression test for sass/dart-sass#1095\
+            \na {\
+            \n  #{--b}: {c: d}\
+            \n}\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  --b-c: d;\
+        \n}\
+        \n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn non_conformant() {
+        assert_eq!(
         rsass(
-            ".name-interpolation {\
+            "// TODO: rewrite these test cases to follow the style guide.\
+            \n\
+            \n.name-interpolation {\
             \n  // If the entire name is interpolated, SassScript is allowed on the\
             \n  // right-hand side because we don\'t know it\'s a custom property at parse time.\
             \n  #{--entire}: 1 + 2;\
@@ -177,6 +199,7 @@ fn name_interpolation() {
         \n}\
         \n"
     );
+    }
 }
 
 // From "sass-spec/spec/css/custom_properties/nesting_characters.hrx"

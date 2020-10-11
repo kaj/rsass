@@ -144,6 +144,8 @@ mod statement {
             #[allow(unused)]
             use super::rsass;
 
+            // Ignoring "custom_property", error tests are not supported yet.
+
             // Ignoring "declaration", error tests are not supported yet.
 
             // Ignoring "selector", error tests are not supported yet.
