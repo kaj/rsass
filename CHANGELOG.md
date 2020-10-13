@@ -7,7 +7,9 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.14.2 - 2010-10-13
+
+Progress: 2294 of 5577 tests passed in dart-sass compatiblilty mode.
 
 * Some improvements in list handling, formatting and introspection.
 * Change default precision to 10, matching dart-sass.
@@ -19,6 +21,12 @@ project adheres to
   needed).
 * Some internal refactor and cleanup.
 * Update spec to 2020-10-07.
+
+Tested with rustc 1.47.0 (18bf6b4f0 2020-10-07),
+1.44.1 (c7087fe00 2020-06-17), 1.42.0 (b8cedc004 2020-03-09),
+1.40.0 (73528e339 2019-12-16), 1.38.0 (625451e37 2019-09-23),
+1.48.0-beta.2 (212e76c31 2020-10-08), and
+1.49.0-nightly (8dae8cdcc 2020-10-12)
 
 
 ## Release 0.14.0 - 2020-10-03
