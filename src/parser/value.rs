@@ -502,12 +502,12 @@ pub fn dictionary_inner(input: &[u8]) -> IResult<&[u8], Value> {
 
 #[cfg(test)]
 mod test {
+    use super::super::parse_value_data;
     use super::*;
     use crate::sass::CallArgs;
     use crate::sass::Value::*;
     use crate::value::Unit;
     use crate::variablescope::GlobalScope;
-    use nom::combinator::all_consuming;
     use num_rational::Rational;
 
     #[test]
@@ -799,64 +799,36 @@ mod test {
     }
 
     #[test]
-    fn parse_extended_literal() {
-        let t = value_expression_eof(b"http://#{\")\"}.com/");
-        if let &Ok((rest, ref result)) = &t {
-            assert_eq!(
-                (
-                    result
-                        .evaluate(&GlobalScope::new(Default::default()))
-                        .unwrap()
-                        .format(Default::default())
-                        .to_string(),
-                    rest
-                ),
-                ("http://).com/".to_string(), &b""[..])
-            );
-        } else {
-            assert_eq!(format!("{:?}", t), "Done")
-        }
+    fn parse_extended_literal() -> Result<(), crate::Error> {
+        assert_eq!(
+            parse_value_data(b"http://#{\")\"}.com/")?
+                .evaluate(&GlobalScope::new(Default::default()))?
+                .format(Default::default())
+                .to_string(),
+            "http://).com/".to_string(),
+        );
+        Ok(())
     }
     #[test]
-    fn parse_extended_literal_in_arg() {
-        let t = value_expression_eof(b"url(http://#{\")\"}.com/)");
-        if let &Ok((rest, ref result)) = &t {
-            assert_eq!(
-                (
-                    result
-                        .evaluate(&GlobalScope::new(Default::default()))
-                        .unwrap()
-                        .format(Default::default())
-                        .to_string(),
-                    rest
-                ),
-                ("url(http://).com/)".to_string(), &b""[..])
-            );
-        } else {
-            assert_eq!(format!("{:?}", t), "Done")
-        }
+    fn parse_extended_literal_in_arg() -> Result<(), crate::Error> {
+        assert_eq!(
+            parse_value_data(b"url(http://#{\")\"}.com/)")?
+                .evaluate(&GlobalScope::new(Default::default()))?
+                .format(Default::default())
+                .to_string(),
+            "url(http://).com/)".to_string(),
+        );
+        Ok(())
     }
     #[test]
-    fn parse_extended_literal_in_arg_2() {
-        let t = value_expression_eof(b"url(//#{\")\"}.com/)");
-        if let &Ok((rest, ref result)) = &t {
-            assert_eq!(
-                (
-                    result
-                        .evaluate(&GlobalScope::new(Default::default()))
-                        .unwrap()
-                        .format(Default::default())
-                        .to_string(),
-                    rest
-                ),
-                ("url(//).com/)".to_string(), &b""[..])
-            );
-        } else {
-            assert_eq!(format!("{:?}", t), "Done")
-        }
-    }
-
-    fn value_expression_eof(input: &[u8]) -> IResult<&[u8], Value> {
-        all_consuming(value_expression)(input)
+    fn parse_extended_literal_in_arg_2() -> Result<(), crate::Error> {
+        assert_eq!(
+            parse_value_data(b"url(//#{\")\"}.com/)")?
+                .evaluate(&GlobalScope::new(Default::default()))?
+                .format(Default::default())
+                .to_string(),
+            "url(//).com/)".to_string(),
+        );
+        Ok(())
     }
 }
