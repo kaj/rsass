@@ -120,7 +120,7 @@ pub fn special_function_misc(input: &[u8]) -> IResult<&[u8], SassString> {
         tag("("),
     ))(input)?;
     let (input, mut args) = special_args(input)?;
-    let (input, end) = tag(")")(input)?;
+    let (input, end) = alt((tag(")"), tag("")))(input)?;
 
     args.prepend(from_utf8(start).unwrap());
     args.append_str(from_utf8(end).unwrap());
@@ -158,7 +158,8 @@ pub fn special_arg_parts(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
             v.push(StringPart::from(")"));
             v
         }),
-        map(map_res(is_not("#()\""), input_to_str), |s| {
+        map(tag("\\)"), |_| vec![StringPart::from("\\)")]),
+        map(map_res(is_not("#()\"\\;"), input_to_str), |s| {
             vec![StringPart::from(s)]
         }),
     )))(input)?;
