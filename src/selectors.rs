@@ -90,10 +90,12 @@ impl Selectors {
         // The "simple" parts we get from evaluating interpolations may
         // contain high-level selector separators (i.e. ","), so we need to
         // parse the selectors again, from a string representation.
-        use crate::parser::{selectors::selectors, Span};
-        let data = format!("{} ", s);
-        let bytes = data.as_bytes();
-        Ok(ParseError::check(selectors(Span::new(bytes)))?)
+        use crate::parser::code_span;
+        use crate::parser::selectors::selectors;
+        // TODO: Get the span from the source of self!
+        Ok(ParseError::check(selectors(code_span(
+            format!("{} ", s).as_bytes(),
+        )))?)
     }
 }
 

@@ -1,7 +1,7 @@
 use super::SassFunction;
 use crate::css::Value;
+use crate::parser::code_span;
 use crate::parser::selectors::{selector, selectors};
-use crate::parser::Span;
 use crate::selectors::{Selector, Selectors};
 use crate::value::Quotes;
 use crate::{Error, ParseError};
@@ -65,10 +65,11 @@ fn parse_selectors(v: Value) -> Result<Selectors, Error> {
         Ok(Selectors::root())
     } else {
         // FIXME: Old code allowd a trailing comma here.  Add back or remove?
-        Ok(ParseError::check(selectors(Span::new(s.as_bytes())))?)
+        Ok(ParseError::check(selectors(code_span(s.as_bytes())))?)
     }
 }
 
 fn parse_selector(s: &str) -> Result<Selector, Error> {
-    Ok(ParseError::check(selector(Span::new(s.as_bytes())))?)
+    // TODO: Use a span from the value rather than claiming its hardcoded.
+    Ok(ParseError::check(selector(code_span(s.as_bytes())))?)
 }

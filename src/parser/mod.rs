@@ -37,21 +37,42 @@ use nom::combinator::{all_consuming, map, map_res, opt, peek, value};
 use nom::multi::{
     fold_many0, many0, many_till, separated_list, separated_nonempty_list,
 };
-use nom::sequence::{delimited, pair, preceded, terminated};
+use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use nom::IResult;
-use nom_locate::LocatedSpan;
+use nom_locate::{position, LocatedSpan};
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::str::{from_utf8, Utf8Error};
 
-pub type Span<'a> = LocatedSpan<&'a [u8]>;
+pub type Span<'a> = LocatedSpan<&'a [u8], &'a SourceName>;
+
+pub fn code_span(value: &[u8]) -> Span {
+    use lazy_static::lazy_static;
+    lazy_static! {
+        static ref SOURCE: SourceName = SourceName::root("(rsass)");
+    }
+    Span::new_extra(value, &SOURCE)
+}
+
+#[cfg(test)]
+#[macro_export]
+macro_rules! test_span {
+    ($value:expr) => {{
+        use crate::parser::{SourceName, Span};
+        use lazy_static::lazy_static;
+        lazy_static! {
+            static ref SOURCE: SourceName = SourceName::root(file!());
+        }
+        Span::new_extra($value, &SOURCE)
+    }};
+}
 
 /// Parse a scss value.
 ///
 /// Returns a single value (or an error).
 pub fn parse_value_data(data: &[u8]) -> Result<Value, Error> {
-    let data = Span::new(data);
+    let data = code_span(data);
     Ok(ParseError::check(all_consuming(value_expression)(data))?)
 }
 
@@ -73,15 +94,26 @@ fn test_parse_value_data_2() -> Result<(), Error> {
 ///
 /// Returns a vec of the top level items of the file (or an error message).
 pub fn parse_scss_file(file: &Path) -> Result<Vec<Item>, Error> {
+    do_parse_scss_file(file, &SourceName::root(file.display()))
+}
+
+pub fn parse_imported_scss_file(
+    file: &Path,
+    from: SourcePos,
+) -> Result<Vec<Item>, Error> {
+    let source = SourceName::imported(file.display(), from);
+    do_parse_scss_file(file, &source)
+}
+
+fn do_parse_scss_file(
+    file: &Path,
+    source: &SourceName,
+) -> Result<Vec<Item>, Error> {
     let mut f = File::open(file).map_err(|e| Error::Input(file.into(), e))?;
     let mut data = vec![];
     f.read_to_end(&mut data)
         .map_err(|e| Error::Input(file.into(), e))?;
-    /*
-    parse_scss_data(&data).map_err(|err| err.in_file(file).into())
-    */
-    // TODO: Include the file info in the Span!
-    let data = Span::new(&data);
+    let data = Span::new_extra(&data, &source);
     Ok(ParseError::check(sassfile(data))?)
 }
 
@@ -89,7 +121,7 @@ pub fn parse_scss_file(file: &Path) -> Result<Vec<Item>, Error> {
 ///
 /// Returns a vec of the top level items of the file (or an error message).
 pub fn parse_scss_data(data: &[u8]) -> Result<Vec<Item>, ParseError> {
-    ParseError::check(sassfile(Span::new(data)))
+    ParseError::check(sassfile(code_span(data)))
 }
 
 fn sassfile(input: Span) -> IResult<Span, Vec<Item>> {
@@ -166,7 +198,8 @@ fn body_item(input: Span) -> IResult<Span, Item> {
 fn import2(input: Span) -> IResult<Span, Item> {
     map(
         terminated(
-            pair(
+            tuple((
+                position,
                 separated_list(
                     preceded(tag(","), ignore_comments),
                     alt((
@@ -177,13 +210,15 @@ fn import2(input: Span) -> IResult<Span, Item> {
                     )),
                 ),
                 opt(media_args),
-            ),
+            )),
             preceded(
                 opt(ignore_space),
                 alt((tag(";"), all_consuming(tag("")))),
             ),
         ),
-        |(import, args)| Item::Import(import, args.unwrap_or(Value::Null)),
+        |(position, import, args)| {
+            Item::Import(import, args.unwrap_or(Value::Null), position.into())
+        },
     )(input)
 }
 
@@ -345,7 +380,7 @@ fn test_media_args_2() {
 }
 #[cfg(test)]
 fn check_media_args(args: &[u8]) {
-    let (rest, _) = media_args(Span::new(args)).unwrap();
+    let (rest, _) = media_args(crate::test_span!(args)).unwrap();
     assert_eq!(from_utf8(rest.fragment()).unwrap(), ";");
 }
 
@@ -579,11 +614,11 @@ fn string(v: &str) -> Value {
 #[test]
 fn if_with_no_else() {
     assert_value(
-        if_statement(Span::new(b"@if true { p { color: black; } }\n")),
+        if_statement(test_span!(b"@if true { p { color: black; } }\n")),
         Item::IfStatement(
             Value::True,
             vec![Item::Rule(
-                selectors(Span::new(b"p")).unwrap().1,
+                selectors(test_span!(b"p")).unwrap().1,
                 vec![Item::Property("color".into(), Value::black())],
             )],
             vec![],
@@ -595,7 +630,7 @@ fn if_with_no_else() {
 #[test]
 fn test_mixin_call_noargs() {
     assert_value(
-        mixin_call(Span::new(b"@include foo;\n")),
+        mixin_call(test_span!(b"@include foo;\n")),
         Item::MixinCall {
             name: "foo".to_string(),
             args: CallArgs::new(vec![]),
@@ -608,7 +643,7 @@ fn test_mixin_call_noargs() {
 #[test]
 fn test_mixin_call_pos_args() {
     assert_value(
-        mixin_call(Span::new(b"@include foo(bar, baz);\n")),
+        mixin_call(test_span!(b"@include foo(bar, baz);\n")),
         Item::MixinCall {
             name: "foo".to_string(),
             args: CallArgs::new(vec![
@@ -624,7 +659,7 @@ fn test_mixin_call_pos_args() {
 #[test]
 fn test_mixin_call_named_args() {
     assert_value(
-        mixin_call(Span::new(b"@include foo($x: bar, $y: baz);\n")),
+        mixin_call(test_span!(b"@include foo($x: bar, $y: baz);\n")),
         Item::MixinCall {
             name: "foo".to_string(),
             args: CallArgs::new(vec![
@@ -640,7 +675,7 @@ fn test_mixin_call_named_args() {
 #[test]
 fn test_mixin_declaration_empty() {
     assert_value(
-        mixin_declaration(Span::new(b"@mixin foo() {}\n")),
+        mixin_declaration(test_span!(b"@mixin foo() {}\n")),
         Item::MixinDeclaration {
             name: "foo".into(),
             args: FormalArgs::default(),
@@ -653,8 +688,8 @@ fn test_mixin_declaration_empty() {
 #[test]
 fn test_mixin_declaration() {
     assert_value(
-        mixin_declaration(Span::new(
-            b"@mixin foo($x) {\n  foo-bar: baz $x;\n}\n",
+        mixin_declaration(test_span!(
+            b"@mixin foo($x) {\n  foo-bar: baz $x;\n}\n"
         )),
         Item::MixinDeclaration {
             name: "foo".into(),
@@ -675,13 +710,13 @@ fn test_mixin_declaration() {
 #[test]
 fn test_mixin_declaration_default_and_subrules() {
     assert_value(
-        mixin_declaration(Span::new(
+        mixin_declaration(test_span!(
             b"@mixin bar($a, $b: flug) {\
               \n  foo-bar: baz;\
               \n  foo, bar {\
               \n    property: $b;\
               \n  }\
-              \n}\n",
+              \n}\n"
         )),
         Item::MixinDeclaration {
             name: "bar".into(),
@@ -692,7 +727,7 @@ fn test_mixin_declaration_default_and_subrules() {
             body: vec![
                 Item::Property("foo-bar".into(), string("baz")),
                 Item::Rule(
-                    selectors(Span::new(b"foo, bar")).unwrap().1,
+                    selectors(test_span!(b"foo, bar")).unwrap().1,
                     vec![Item::Property(
                         "property".into(),
                         Value::Variable("b".into()),
@@ -707,7 +742,7 @@ fn test_mixin_declaration_default_and_subrules() {
 #[test]
 fn test_simple_property() {
     assert_value(
-        property_or_namespace_rule(Span::new(b"color: red;\n")),
+        property_or_namespace_rule(test_span!(b"color: red;\n")),
         Item::Property(
             "color".into(),
             Value::Color(Rgba::from_rgb(255, 0, 0), Some("red".into())),
@@ -719,8 +754,8 @@ fn test_simple_property() {
 #[test]
 fn test_property_2() {
     assert_value(
-        property_or_namespace_rule(Span::new(
-            b"background-position: 90% 50%;\n",
+        property_or_namespace_rule(test_span!(
+            b"background-position: 90% 50%;\n"
         )),
         Item::Property(
             "background-position".into(),
@@ -737,7 +772,7 @@ fn test_property_2() {
 #[test]
 fn test_variable_declaration_simple() {
     assert_value(
-        variable_declaration(Span::new(b"$foo: bar;\n")),
+        variable_declaration(test_span!(b"$foo: bar;\n")),
         Item::VariableDeclaration {
             name: "foo".into(),
             val: string("bar"),
@@ -751,7 +786,7 @@ fn test_variable_declaration_simple() {
 #[test]
 fn test_variable_declaration_global() {
     assert_value(
-        variable_declaration(Span::new(b"$y: some value !global;\n")),
+        variable_declaration(test_span!(b"$y: some value !global;\n")),
         Item::VariableDeclaration {
             name: "y".into(),
             val: Value::List(
@@ -769,7 +804,7 @@ fn test_variable_declaration_global() {
 #[test]
 fn test_variable_declaration_default() {
     assert_value(
-        variable_declaration(Span::new(b"$y: some value !default;\n")),
+        variable_declaration(test_span!(b"$y: some value !default;\n")),
         Item::VariableDeclaration {
             name: "y".into(),
             val: Value::List(

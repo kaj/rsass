@@ -75,7 +75,7 @@ fn ignore_lcomment(input: Span) -> IResult<Span, ()> {
 
 #[cfg(test)]
 mod test {
-    use super::{comment, Span};
+    use super::comment;
 
     #[test]
     fn comment_simple() {
@@ -97,8 +97,9 @@ mod test {
     }
 
     fn do_test(src: &[u8], content: &str, trail: &[u8]) {
+        use crate::test_span;
         assert_eq!(
-            comment(Span::new(src)).map(|(t, c)| (*t.fragment(), c)),
+            comment(test_span!(src)).map(|(t, c)| (*t.fragment(), c)),
             Ok((trail, content.into())),
         )
     }

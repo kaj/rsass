@@ -1,4 +1,4 @@
-use super::{SourceName, SourcePos, Span};
+use super::{code_span, SourceName, SourcePos, Span};
 use nom::error::ErrorKind;
 use nom::{Err, IResult};
 use std::fmt;
@@ -42,7 +42,7 @@ impl ParseError {
     fn incomplete() -> ParseError {
         ParseError {
             msg: "Unexpected end of file.".into(),
-            pos: Span::new(b"").into(), // TODO: What to do?
+            pos: code_span(b"").into(), // TODO: What to do?
         }
     }
     fn err(kind: ErrorKind, span: Span) -> ParseError {
@@ -68,17 +68,32 @@ impl fmt::Display for ParseError {
              \n{0:lnw$} ,\
              \n{ln} | {line}\
              \n{0:lnw$} | {0:>lpos$}^\
-             \n{0:lnw$} '\
-             \n{0:lnw$} {file} {ln}:{lpos}  {cause}",
+             \n{0:lnw$} '",
             "",
             line = self.pos.line,
             msg = self.msg,
             ln = line_no,
             lnw = line_no.len(),
             lpos = self.pos.line_pos,
-            file = self.pos.file.name(),
-            cause = "root stylesheet", // TODO: Handle imports
         )?;
+        let mut nextpos = Some(&self.pos);
+        while let Some(pos) = nextpos {
+            write!(
+                out,
+                "\n{0:lnw$} {file} {row}:{col}  {cause}",
+                "",
+                lnw = line_no.len(),
+                file = pos.file.name(),
+                row = pos.line_no,
+                col = pos.line_pos,
+                cause = if pos.file.imported_from().is_some() {
+                    "import"
+                } else {
+                    "root stylesheet"
+                },
+            )?;
+            nextpos = pos.file.imported_from();
+        }
         Ok(())
     }
 }

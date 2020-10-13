@@ -172,14 +172,14 @@ fn make_call(name: &str, args: Vec<css::Value>) -> css::Value {
 #[test]
 fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     use crate::parser::formalargs::call_args;
-    use crate::parser::Span;
+    use crate::test_span;
     use crate::value::Rgba;
     use crate::variablescope::GlobalScope;
     let scope = GlobalScope::new(Default::default());
     assert_eq!(
         FUNCTIONS.get("rgb").unwrap().call(
             &scope,
-            &call_args(Span::new(b"(17, 0, 225)"))?
+            &call_args(test_span!(b"(17, 0, 225)"))?
                 .1
                 .evaluate(&scope, true)?
         )?,

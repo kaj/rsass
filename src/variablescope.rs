@@ -724,21 +724,21 @@ pub mod test {
         expression: &[u8],
     ) -> Result<String, Error> {
         use crate::parser::value::value_expression;
-        use crate::parser::Span;
+        use crate::test_span;
         use nom::bytes::complete::tag;
         use nom::sequence::terminated;
         let mut scope = GlobalScope::new(Default::default());
         for &(name, ref val) in s {
             scope.define(
                 name,
-                &ParseError::check(value_expression(Span::new(
-                    val.as_bytes(),
+                &ParseError::check(value_expression(test_span!(
+                    val.as_bytes()
                 )))?
                 .evaluate(&scope)?,
             );
         }
         let foo = ParseError::check(terminated(value_expression, tag(";"))(
-            Span::new(expression),
+            test_span!(expression),
         ))?;
         Ok(foo
             .evaluate(&mut scope)?
