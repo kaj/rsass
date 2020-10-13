@@ -382,7 +382,7 @@ fn each_loop2(input: &[u8]) -> IResult<&[u8], Item> {
     let (input, values) = delimited(
         delimited(spacelike, tag("in"), spacelike),
         value_expression,
-        spacelike,
+        opt_spacelike,
     )(input)?;
     let (input, body) = body_block(input)?;
     Ok((input, Item::Each(names, values, body)))
