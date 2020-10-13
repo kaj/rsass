@@ -232,12 +232,13 @@ fn mixin_call2(input: &[u8]) -> IResult<&[u8], Item> {
     ))
 }
 
-/// What follows an `@` sign (unless specifically handled).
+/// What follows an `@` sign
 fn at_rule2(input: &[u8]) -> IResult<&[u8], Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     match name.as_ref() {
         "each" => each_loop2(input),
         "error" => error2(input),
+        "charset" => charset2(input),
         "for" => for_loop2(input),
         "function" => function_declaration2(input),
         "import" => import2(input),
@@ -266,6 +267,28 @@ fn at_rule2(input: &[u8]) -> IResult<&[u8], Item> {
             ))
         }
     }
+}
+
+fn charset2(input: &[u8]) -> IResult<&[u8], Item> {
+    use nom::combinator::map_opt;
+    map_opt(
+        terminated(
+            alt((sass_string_dq, sass_string_sq, sass_string)),
+            preceded(
+                opt(ignore_space),
+                alt((tag(";"), all_consuming(tag("")))),
+            ),
+        ),
+        |s| {
+            s.single_raw().and_then(|s| {
+                if s.eq_ignore_ascii_case("UTF-8") {
+                    Some(Item::None)
+                } else {
+                    None
+                }
+            })
+        },
+    )(input)
 }
 
 fn media_args(input: &[u8]) -> IResult<&[u8], Value> {

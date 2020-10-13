@@ -406,7 +406,6 @@ fn css_nth_selectors() {
 
 // From "sass-spec/spec/libsass/css_unicode"
 #[test]
-#[ignore] // wrong result
 fn css_unicode() {
     assert_eq!(
         rsass(

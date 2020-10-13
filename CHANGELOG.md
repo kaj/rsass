@@ -15,6 +15,8 @@ project adheres to
 * Fix addition (and subtraction) of values with comparable units.
 * Fix css value equality for map keys and other "special" places.
 * Recognize known `@`-rules with escaped characters.
+* Don't copy extra `@charset` rules to output (one is included if
+  needed).
 * Some internal refactor and cleanup.
 * Update spec to 2020-10-07.
 
