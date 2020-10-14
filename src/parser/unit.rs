@@ -1,48 +1,55 @@
+use super::strings::name;
 use crate::value::Unit;
+use nom::combinator::{map_opt, value};
 use nom::IResult;
+use nom::{branch::alt, bytes::complete::tag};
 
 pub fn unit(input: &[u8]) -> IResult<&[u8], Unit> {
-    Ok(match input {
-        // Distance units, <length> type
-        v if v.starts_with(b"em") => (&v[2..], Unit::Em),
-        v if v.starts_with(b"ex") => (&v[2..], Unit::Ex),
-        v if v.starts_with(b"ch") => (&v[2..], Unit::Ch),
-        v if v.starts_with(b"rem") => (&v[3..], Unit::Rem),
-        v if v.starts_with(b"vw") => (&v[2..], Unit::Vw),
-        v if v.starts_with(b"vh") => (&v[2..], Unit::Vh),
-        v if v.starts_with(b"vmin") => (&v[4..], Unit::Vmin),
-        v if v.starts_with(b"vmax") => (&v[4..], Unit::Vmax),
-        v if v.starts_with(b"cm") => (&v[2..], Unit::Cm),
-        v if v.starts_with(b"mm") => (&v[2..], Unit::Mm),
-        v if v.starts_with(b"q") => (&v[1..], Unit::Q),
-        v if v.starts_with(b"in") => (&v[2..], Unit::In),
-        v if v.starts_with(b"pt") => (&v[2..], Unit::Pt),
-        v if v.starts_with(b"pc") => (&v[2..], Unit::Pc),
-        v if v.starts_with(b"px") => (&v[2..], Unit::Px),
+    alt((
+        value(Unit::Percent, tag("%")),
+        map_opt(name, |name| match name.as_ref() {
+            // Distance units, <length> type
+            "em" => Some(Unit::Em),
+            "ex" => Some(Unit::Ex),
+            "ch" => Some(Unit::Ch),
+            "rem" => Some(Unit::Rem),
+            "vw" => Some(Unit::Vw),
+            "vh" => Some(Unit::Vh),
+            "vmin" => Some(Unit::Vmin),
+            "vmax" => Some(Unit::Vmax),
+            "cm" => Some(Unit::Cm),
+            "mm" => Some(Unit::Mm),
+            "q" => Some(Unit::Q),
+            "in" => Some(Unit::In),
+            "pt" => Some(Unit::Pt),
+            "pc" => Some(Unit::Pc),
+            "px" => Some(Unit::Px),
 
-        // <angle> type
-        v if v.starts_with(b"deg") => (&v[3..], Unit::Deg),
-        v if v.starts_with(b"grad") => (&v[4..], Unit::Grad),
-        v if v.starts_with(b"rad") => (&v[3..], Unit::Rad),
-        v if v.starts_with(b"turn") => (&v[4..], Unit::Turn),
+            // <angle> type
+            "deg" => Some(Unit::Deg),
+            "grad" => Some(Unit::Grad),
+            "rad" => Some(Unit::Rad),
+            "turn" => Some(Unit::Turn),
 
-        // <time> type
-        v if v.starts_with(b"s") => (&v[1..], Unit::S),
-        v if v.starts_with(b"ms") => (&v[2..], Unit::Ms),
+            // <time> type
+            "s" => Some(Unit::S),
+            "ms" => Some(Unit::Ms),
 
-        // <frequency> type
-        v if v.starts_with(b"Hz") => (&v[2..], Unit::Hz),
-        v if v.starts_with(b"kHz") => (&v[3..], Unit::Khz),
+            // <frequency> type
+            "Hz" => Some(Unit::Hz),
+            "kHz" => Some(Unit::Khz),
 
-        // <resolution>
-        v if v.starts_with(b"dpi") => (&v[3..], Unit::Dpi),
-        v if v.starts_with(b"dpcm") => (&v[4..], Unit::Dpcm),
-        v if v.starts_with(b"dppx") => (&v[4..], Unit::Dppx),
+            // <resolution>
+            "dpi" => Some(Unit::Dpi),
+            "dpcm" => Some(Unit::Dpcm),
+            "dppx" => Some(Unit::Dppx),
 
-        // Special units
-        v if v.starts_with(b"fr") => (&v[2..], Unit::Fr),
-        v if v.starts_with(b"%") => (&v[1..], Unit::Percent),
+            // Special units
+            "fr" => Some(Unit::Fr),
+            "%" => Some(Unit::Percent),
 
-        v => (v, Unit::None),
-    })
+            _ => None,
+        }),
+        value(Unit::None, tag("")),
+    ))(input)
 }
