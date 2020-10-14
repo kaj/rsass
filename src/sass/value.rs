@@ -42,7 +42,9 @@ pub enum Value {
     /// The boolean represents possible whitespace.
     BinOp(Box<Value>, bool, Operator, bool, Box<Value>),
     UnaryOp(Operator, Box<Value>),
-    Map(OrderMap<Value, Value>),
+    /// A map in sass source is just a list of key/value parirs.
+    /// Actual map behaviour comes after evaluating it.
+    Map(Vec<(Value, Value)>),
     /// The magic value "&", exanding to the current selectors.
     HereSelector,
     /// A unicode range for font selections. U+NN, U+N?, U+NN-MM.

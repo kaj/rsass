@@ -6,7 +6,6 @@ use super::strings::{
 use super::unit::unit;
 use super::util::{opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string};
-use crate::ordermap::OrderMap;
 use crate::sass::{SassString, Value};
 use crate::value::{ListSeparator, Number, Operator, Rgba};
 use nom::branch::alt;
@@ -171,14 +170,13 @@ pub fn single_value(input: &[u8]) -> IResult<&[u8], Value> {
             let (input, value) = if let Ok((mut input, first_val)) =
                 preceded(colon, space_list)(input)
             {
-                let mut items = OrderMap::new();
-                items.insert(first_key, first_val);
+                let mut items = vec![(first_key, first_val)];
                 while let Ok((rest, (key, val))) = pair(
                     preceded(comma, sum_expression),
                     preceded(colon, space_list),
                 )(input)
                 {
-                    items.insert(key, val);
+                    items.push((key, val));
                     input = rest;
                 }
                 let (input, _) = opt(comma)(input)?;

@@ -6,7 +6,6 @@ mod error;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1169/functioncall.hrx"
 #[test]
-#[ignore] // wrong result
 fn functioncall() {
     assert_eq!(
         rsass(
