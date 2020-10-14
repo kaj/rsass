@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1415/direct.hrx"
 #[test]
-#[ignore] // wrong result
 fn direct() {
     assert_eq!(
         rsass(
@@ -67,7 +66,6 @@ fn mixin() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1415/variable.hrx"
 #[test]
-#[ignore] // wrong result
 fn variable() {
     assert_eq!(
         rsass(

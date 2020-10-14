@@ -56,12 +56,15 @@ impl Selectors {
     }
     /// Create a sass `Value` representing this set of selectors.
     pub fn to_value(&self) -> Value {
+        if self.s.len() == 1 && self.s[0].0.is_empty() {
+            return Value::Null;
+        }
         let content = self
             .s
             .iter()
             .map(|s: &Selector| {
                 Value::List(
-                    format!("{}", s)
+                    s.to_string()
                         .split_whitespace()
                         .map(|p| Value::Literal(p.to_string(), Quotes::None))
                         .collect(),
