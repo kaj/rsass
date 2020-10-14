@@ -7,6 +7,13 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+* Improve map parsing (a map is parsed as a plain vec of key/value
+  pairs, filterig duplicates happens only when it is evaluated).
+* Some refactoring
+
+
 ## Release 0.14.2 - 2010-10-13
 
 Progress: 2294 of 5577 tests passed in dart-sass compatiblilty mode.
