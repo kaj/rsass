@@ -520,7 +520,6 @@ mod nest {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn multiple() {
             assert_eq!(
                 rsass(

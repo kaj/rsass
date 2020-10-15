@@ -108,16 +108,19 @@ impl Selector {
     }
 
     fn join(&self, other: &Selector, alt_context: &Selector) -> Selector {
-        let mut split = other.0.splitn(2, |p| p == &SelectorPart::BackRef);
-        let o1 = split.next().unwrap();
-        if let Some(o2) = split.next() {
-            let mut result = o1.to_vec();
-            if self.0.is_empty() {
-                result.extend(alt_context.0.iter().cloned());
-            } else {
-                result.extend(self.0.iter().cloned());
+        if other.0.iter().any(|p| p == &SelectorPart::BackRef) {
+            let mut result = Vec::new();
+            for p in &other.0 {
+                if p == &SelectorPart::BackRef {
+                    if self.0.is_empty() {
+                        result.extend(alt_context.0.iter().cloned());
+                    } else {
+                        result.extend(self.0.iter().cloned());
+                    }
+                } else {
+                    result.push(p.clone())
+                }
             }
-            result.extend(o2.iter().cloned());
             Selector(result)
         } else {
             let mut result = self.0.clone();

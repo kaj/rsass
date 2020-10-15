@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1441/adjacent.hrx"
 #[test]
-#[ignore] // wrong result
 fn adjacent() {
     assert_eq!(
         rsass(
@@ -25,7 +24,6 @@ fn adjacent() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1441/child.hrx"
 #[test]
-#[ignore] // wrong result
 fn child() {
     assert_eq!(
         rsass(
@@ -46,7 +44,6 @@ fn child() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1441/sibling.hrx"
 #[test]
-#[ignore] // wrong result
 fn sibling() {
     assert_eq!(
         rsass(
