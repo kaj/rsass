@@ -236,8 +236,9 @@ fn mixin_call2(input: &[u8]) -> IResult<&[u8], Item> {
 fn at_rule2(input: &[u8]) -> IResult<&[u8], Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     match name.as_ref() {
+        "debug" => map(expression_argument, Item::Debug)(input),
         "each" => each_loop2(input),
-        "error" => error2(input),
+        "error" => map(expression_argument, Item::Error)(input),
         "charset" => charset2(input),
         "for" => for_loop2(input),
         "function" => function_declaration2(input),
@@ -245,7 +246,7 @@ fn at_rule2(input: &[u8]) -> IResult<&[u8], Item> {
         "include" => mixin_call2(input),
         "mixin" => mixin_declaration2(input),
         "if" => if_statement2(input),
-        "warn" => warn2(input),
+        "warn" => map(expression_argument, Item::Warn)(input),
         "while" => while_loop2(input),
         _ => {
             let (input, args) = opt(media_args)(input)?;
@@ -267,6 +268,10 @@ fn at_rule2(input: &[u8]) -> IResult<&[u8], Item> {
             ))
         }
     }
+}
+
+fn expression_argument(input: &[u8]) -> IResult<&[u8], Value> {
+    terminated(value_expression, opt(tag(";")))(input)
 }
 
 fn charset2(input: &[u8]) -> IResult<&[u8], Item> {
@@ -412,16 +417,6 @@ fn for_loop2(input: &[u8]) -> IResult<&[u8], Item> {
             body,
         },
     ))
-}
-
-fn warn2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, arg) = terminated(value_expression, opt(tag(";")))(input)?;
-    Ok((input, Item::Warn(arg)))
-}
-
-fn error2(input: &[u8]) -> IResult<&[u8], Item> {
-    let (input, arg) = terminated(value_expression, opt(tag(";")))(input)?;
-    Ok((input, Item::Error(arg)))
 }
 
 fn while_loop2(input: &[u8]) -> IResult<&[u8], Item> {

@@ -290,6 +290,9 @@ impl Format {
                     }
                 }
             }
+            Item::Debug(ref value) => {
+                eprintln!("DEBUG: {}", value.evaluate(scope)?.format(*self));
+            }
             Item::Warn(ref value) => {
                 eprintln!(
                     "WARNING: {}",
@@ -642,6 +645,12 @@ impl Format {
                             0,
                         )?;
                     }
+                }
+                Item::Debug(ref value) => {
+                    eprintln!(
+                        "DEBUG: {}",
+                        value.evaluate(scope)?.format(*self)
+                    );
                 }
                 Item::Warn(ref value) => {
                     eprintln!(

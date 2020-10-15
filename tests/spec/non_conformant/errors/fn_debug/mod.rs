@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/errors/fn-debug/property.hrx"
 #[test]
-#[ignore] // wrong result
 fn property() {
     assert_eq!(
         rsass(
@@ -25,7 +24,6 @@ fn property() {
 
 // From "sass-spec/spec/non_conformant/errors/fn-debug/ruleset.hrx"
 #[test]
-#[ignore] // wrong result
 fn ruleset() {
     assert_eq!(
         rsass(
@@ -44,7 +42,6 @@ fn ruleset() {
 
 // From "sass-spec/spec/non_conformant/errors/fn-debug/simple.hrx"
 #[test]
-#[ignore] // wrong result
 fn simple() {
     assert_eq!(rsass("@debug \"debug\";").unwrap(), "");
 }

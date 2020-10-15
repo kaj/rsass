@@ -12,6 +12,7 @@ project adheres to
 * Improve map parsing (a map is parsed as a plain vec of key/value
   pairs, filterig duplicates happens only when it is evaluated).
 * `&` evaluates to null when used as a value without enclosing selector.
+* Implement the `@debug` directive.
 * Some refactoring
 
 

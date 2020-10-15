@@ -29,7 +29,6 @@ fn function() {
 
 // From "sass-spec/spec/libsass/debug-directive-nested/inline.hrx"
 #[test]
-#[ignore] // wrong result
 fn inline() {
     assert_eq!(
         rsass(

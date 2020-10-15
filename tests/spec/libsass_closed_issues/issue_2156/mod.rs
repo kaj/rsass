@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2156/debug.hrx"
 #[test]
-#[ignore] // wrong result
 fn debug() {
     assert_eq!(
         rsass(

@@ -31,7 +31,6 @@ fn comma_list() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1243/debug.hrx"
 #[test]
-#[ignore] // wrong result
 fn debug() {
     assert_eq!(
         rsass(
