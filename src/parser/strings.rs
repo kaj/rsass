@@ -159,7 +159,8 @@ pub fn special_arg_parts(input: &[u8]) -> IResult<&[u8], Vec<StringPart>> {
             v
         }),
         map(tag("\\)"), |_| vec![StringPart::from("\\)")]),
-        map(map_res(is_not("#()\"\\;"), input_to_str), |s| {
+        value(vec![StringPart::from(" ")], is_a("\n ")),
+        map(map_res(is_not("#()\"\\;\n "), input_to_str), |s| {
             vec![StringPart::from(s)]
         }),
     )))(input)?;
