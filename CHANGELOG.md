@@ -14,6 +14,7 @@ project adheres to
 * Allow multiple `&` items in the same selector.
 * `&` evaluates to null when used as a value without enclosing selector.
 * Implement the `@debug` directive.
+* Fix `a % b` evaluation for negative values.
 * Some refactoring
 
 

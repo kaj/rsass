@@ -101,7 +101,17 @@ where
 {
     type Output = Number<N>;
     fn rem(self, rhs: Self) -> Self::Output {
-        Number::from(&self.value % &rhs.value)
+        // The modulo operator in rust handles negative values different from
+        // num-rational.
+        let a = &self.value;
+        let b = &rhs.value;
+        let result = a % b;
+        let result = if !a.is_zero() && (b.is_negative() != a.is_negative()) {
+            result + b
+        } else {
+            result
+        };
+        Number::from(result)
     }
 }
 

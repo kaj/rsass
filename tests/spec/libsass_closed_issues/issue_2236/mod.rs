@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2236/floats.hrx"
 #[test]
-#[ignore] // wrong result
 fn floats() {
     assert_eq!(
         rsass(
@@ -28,7 +27,6 @@ fn floats() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2236/ints.hrx"
 #[test]
-#[ignore] // wrong result
 fn ints() {
     assert_eq!(
         rsass(
