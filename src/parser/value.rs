@@ -27,7 +27,7 @@ use num_traits::{One, Zero};
 
 pub fn value_expression(input: &[u8]) -> IResult<&[u8], Value> {
     let (input, result) = separated_nonempty_list(
-        preceded(tag(","), opt_spacelike),
+        preceded(tag(","), ignore_comments),
         terminated(space_list, ignore_comments),
     )(input)?;
     let (input, trail) =
