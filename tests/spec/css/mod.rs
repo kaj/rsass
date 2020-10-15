@@ -83,7 +83,6 @@ mod comment {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn scss() {
                 assert_eq!(
                     rsass(
@@ -104,7 +103,6 @@ mod comment {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn scss() {
                 assert_eq!(
                     rsass(

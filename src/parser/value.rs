@@ -4,7 +4,7 @@ use super::strings::{
     special_function_minmax, special_function_misc, special_url,
 };
 use super::unit::unit;
-use super::util::{opt_spacelike, spacelike2};
+use super::util::{ignore_comments, opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string};
 use crate::sass::{SassString, Value};
 use crate::value::{ListSeparator, Number, Operator, Rgba};
@@ -13,7 +13,9 @@ use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
     alphanumeric1, multispace0, multispace1, one_of,
 };
-use nom::combinator::{map, map_opt, map_res, not, opt, peek, value};
+use nom::combinator::{
+    map, map_opt, map_res, not, opt, peek, recognize, value,
+};
 use nom::multi::{
     fold_many0, fold_many1, many0, many_m_n, separated_nonempty_list,
 };
@@ -26,7 +28,7 @@ use num_traits::{One, Zero};
 pub fn value_expression(input: &[u8]) -> IResult<&[u8], Value> {
     let (input, result) = separated_nonempty_list(
         preceded(tag(","), opt_spacelike),
-        space_list,
+        terminated(space_list, ignore_comments),
     )(input)?;
     let (input, trail) =
         many0(delimited(opt_spacelike, tag(","), opt_spacelike))(input)?;
@@ -43,7 +45,7 @@ pub fn value_expression(input: &[u8]) -> IResult<&[u8], Value> {
 pub fn space_list(input: &[u8]) -> IResult<&[u8], Value> {
     let (input, first) = se_or_ext_string(input)?;
     let (input, list) = fold_many0(
-        pair(multispace0, se_or_ext_string),
+        pair(recognize(ignore_comments), se_or_ext_string),
         vec![first],
         |mut list: Vec<Value>, (s, item)| {
             match (list.last_mut(), s, &item) {

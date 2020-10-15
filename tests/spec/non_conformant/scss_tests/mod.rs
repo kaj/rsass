@@ -2158,7 +2158,6 @@ fn t171_test_loud_comment_in_compressed_mode() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/172_test_parsing_decimals_followed_by_comments_doesnt_take_forever.hrx"
 #[test]
-#[ignore] // wrong result
 fn t172_test_parsing_decimals_followed_by_comments_doesnt_take_forever() {
     assert_eq!(
         rsass(

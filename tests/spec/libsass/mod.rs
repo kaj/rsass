@@ -427,7 +427,7 @@ mod debug_directive_nested;
 
 // From "sass-spec/spec/libsass/delayed.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn delayed() {
     assert_eq!(
         rsass(

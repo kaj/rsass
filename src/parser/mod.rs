@@ -474,7 +474,7 @@ fn content_stmt2(input: &[u8]) -> IResult<&[u8], Item> {
 fn property_or_namespace_rule(input: &[u8]) -> IResult<&[u8], Item> {
     let (input, name) = terminated(
         sass_string,
-        delimited(opt_spacelike, tag(":"), opt_spacelike),
+        delimited(ignore_comments, tag(":"), ignore_comments),
     )(input)?;
 
     let (input, val) =
