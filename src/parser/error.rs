@@ -20,13 +20,18 @@ impl std::error::Error for ParseError {}
 impl ParseError {
     /// Check a nom result for errors.
     ///
-    /// This is not a `From` implementation for two reasons:
-    /// 1. It needs a reference to the original data to find the position.
-    /// 2. An `Ok` result with remaining unparsed data is also considered an error.
+    /// This differs from a `From<nom::Err>` implementation in that an
+    /// `Ok` result with remaining unparsed data is also considered an
+    /// error.
     pub fn check<T>(res: IResult<Span, T>) -> Result<T, Self> {
         match res {
-            Ok((rest, items)) if rest.fragment().is_empty() => Ok(items),
-            Ok((rest, _styles)) => Err(ParseError::remaining(rest)),
+            Ok((rest, items)) => {
+                if rest.fragment().is_empty() {
+                    Ok(items)
+                } else {
+                    Err(ParseError::remaining(rest))
+                }
+            }
             Err(Err::Error((rest, err))) => Err(ParseError::err(err, rest)),
             Err(Err::Incomplete(_needed)) => Err(ParseError::incomplete()),
             Err(Err::Failure((rest, err))) => Err(ParseError::err(err, rest)),
@@ -42,7 +47,7 @@ impl ParseError {
     fn incomplete() -> ParseError {
         ParseError {
             msg: "Unexpected end of file.".into(),
-            pos: code_span(b"").into(), // TODO: What to do?
+            pos: code_span(b"").into(), // This should not happen?
         }
     }
     fn err(kind: ErrorKind, span: Span) -> ParseError {
@@ -67,7 +72,7 @@ impl fmt::Display for ParseError {
             "{msg}\
              \n{0:lnw$} ,\
              \n{ln} | {line}\
-             \n{0:lnw$} | {0:>lpos$}^\
+             \n{0:lnw$} |{0:>lpos$}^\
              \n{0:lnw$} '",
             "",
             line = self.pos.line,
