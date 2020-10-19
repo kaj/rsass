@@ -16,6 +16,7 @@ project adheres to
 * Implement the `@debug` directive.
 * Fix `a % b` evaluation for negative values.
 * Allow / ignore comments in properties and values.
+* Allow `!default` and `!global` in any order on variable declarations.
 * Some refactoring
 
 

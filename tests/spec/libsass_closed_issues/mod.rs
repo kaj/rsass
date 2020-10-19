@@ -527,7 +527,7 @@ fn issue_1080() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1081.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn issue_1081() {
     assert_eq!(
         rsass(
@@ -11949,7 +11949,6 @@ fn issue_748() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_759.hrx"
 #[test]
-#[ignore] // unexepected error
 fn issue_759() {
     assert_eq!(
         rsass(

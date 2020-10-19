@@ -30,7 +30,9 @@ use nom::bytes::complete::{is_a, is_not, tag};
 use nom::character::complete::one_of;
 use nom::combinator::{all_consuming, map, map_res, opt, peek, value};
 use nom::error::ErrorKind;
-use nom::multi::{many0, many_till, separated_list, separated_nonempty_list};
+use nom::multi::{
+    fold_many0, many0, many_till, separated_list, separated_nonempty_list,
+};
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::{Err, IResult};
 use std::fs::File;
@@ -538,18 +540,21 @@ fn variable_declaration2(input: &[u8]) -> IResult<&[u8], Item> {
         delimited(opt_spacelike, tag(":"), opt_spacelike),
     )(input)?;
     let (input, val) = terminated(value_expression, opt_spacelike)(input)?;
-    let (input, default) = terminated(
-        map(opt(tag("!default")), |d| d.is_some()),
-        opt_spacelike,
-    )(input)?;
-    let (input, global) = terminated(
-        map(opt(tag("!global")), |g| g.is_some()),
-        opt_spacelike,
+    let (input, (default, global)) = fold_many0(
+        terminated(
+            alt((
+                map(tag("!default"), |_| (true, false)),
+                map(tag("!global"), |_| (false, true)),
+            )),
+            opt_spacelike,
+        ),
+        (false, false),
+        |(default, global), (d, g)| (default || d, global || g),
     )(input)?;
     let (input, _) = alt((
-        terminated(tag(";"), opt_spacelike),
         peek(tag("}")), // semicolon optional for last thing in block
         all_consuming(tag("")), // ... or last thing in file
+        terminated(tag(";"), opt_spacelike), // or end with semicolon
     ))(input)?;
     Ok((
         input,
