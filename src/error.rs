@@ -1,4 +1,5 @@
 use crate::css::Value;
+use crate::parser::ParseError;
 use std::convert::From;
 use std::path::PathBuf;
 use std::string::FromUtf8Error;
@@ -12,11 +13,7 @@ pub enum Error {
     Encoding(FromUtf8Error),
     BadValue(String),
     BadArguments(String),
-    ParseError {
-        file: String,
-        pos: ErrPos,
-        kind: Option<nom::error::ErrorKind>,
-    },
+    ParseError(ParseError),
     S(String),
     UndefinedVariable(String),
 }
@@ -69,19 +66,7 @@ impl fmt::Display for Error {
             Error::UndefinedVariable(ref name) => {
                 write!(out, "Undefined variable: \"${}\"", name)
             }
-            Error::ParseError {
-                ref file,
-                ref pos,
-                ref kind,
-            } => write!(
-                out,
-                "{}:{}: Parse error, expected {}",
-                file,
-                pos,
-                kind.as_ref()
-                    .map(|k| k.description())
-                    .unwrap_or("something else"),
-            ),
+            Error::ParseError(ref err) => err.fmt(out),
             // fallback
             ref x => write!(out, "{:?}", x),
         }
@@ -100,41 +85,8 @@ impl From<FromUtf8Error> for Error {
     }
 }
 
-impl<'a> From<nom::Err<(&[u8], nom::error::ErrorKind)>> for Error {
-    fn from(e: nom::Err<(&[u8], nom::error::ErrorKind)>) -> Self {
-        Error::S(format!("Parse error: {:?}", e))
-    }
-}
-
-/// Position data for a parse error.
-///
-/// To be usefull for reporting the error to an end user, this
-/// contains the position in two forms, both the byte index (an
-/// index of the parsed byte slice) and the line number and character
-/// position in that line.
-#[derive(Debug)]
-pub struct ErrPos {
-    pub index: usize,
-    pub line: usize,
-    pub pos: usize,
-}
-
-impl ErrPos {
-    pub fn pos_of(index: usize, buffer: &[u8]) -> Self {
-        let before = &buffer[0..index];
-        ErrPos {
-            index,
-            line: 1 + bytecount::count(before, b'\n'),
-            pos: bytecount::num_chars(
-                before.rsplit(|c| *c == b'\n').next().unwrap(),
-            ),
-        }
-    }
-}
-impl fmt::Display for ErrPos {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        self.line.fmt(out)?;
-        out.write_str(":")?;
-        self.pos.fmt(out)
+impl From<ParseError> for Error {
+    fn from(e: ParseError) -> Self {
+        Error::ParseError(e)
     }
 }

@@ -1885,7 +1885,7 @@ fn t116_test_selector_interpolation_at_dashes() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/118_test_parent_selector_with_parent_and_subject.hrx"
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn t118_test_parent_selector_with_parent_and_subject() {
     assert_eq!(
         rsass(

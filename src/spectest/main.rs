@@ -71,7 +71,7 @@ fn handle_suite(
     writeln!(
         rs,
         "use rsass::output::Format;\
-         \nuse rsass::{{parse_scss_data, ErrPos, Error, FileContext, GlobalScope}};",
+         \nuse rsass::{{parse_scss_data, Error, FileContext, GlobalScope}};",
     )?;
 
     handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)
@@ -98,12 +98,8 @@ fn handle_suite(
          \npub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {{\
          \n    let mut file_context = FileContext::new();\
          \n    file_context.push_path(\"tests/spec\".as_ref());\
-         \n    let items =\
-         \n        parse_scss_data(input).map_err(|(pos, kind)| Error::ParseError {{\
-         \n            file: \"input.scss\".into(),\
-         \n            pos: ErrPos::pos_of(pos, input),\
-         \n            kind,\
-         \n        }})?;\
+         \n    let items = parse_scss_data(input)\
+         \n        .map_err(|err| err.in_file(\"input.scss\".as_ref()))?;\
          \n    format.write_root(&items, &mut GlobalScope::new(format), &file_context)\
          \n}}"
     )?;
