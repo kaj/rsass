@@ -341,6 +341,7 @@ impl Format {
             Item::Comment(ref c) => {
                 if !self.is_compressed() {
                     result.do_separate()?;
+                    let (c, _q) = c.evaluate(scope)?;
                     write!(result.to_content(), "/*{}*/", c)?;
                 }
             }
@@ -719,6 +720,7 @@ impl Format {
                 Item::Comment(ref c) => {
                     if !self.is_compressed() {
                         let indent = indent + 2;
+                        let (c, _q) = c.evaluate(scope)?;
                         let existing = c
                             .lines()
                             .skip(1)

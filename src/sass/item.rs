@@ -58,7 +58,7 @@ pub enum Item {
     Rule(Selectors, Vec<Item>),
     NamespaceRule(SassString, Value, Vec<Item>),
     Property(SassString, Value),
-    Comment(String),
+    Comment(SassString),
     Warn(Value),
     None,
 }

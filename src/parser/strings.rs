@@ -309,7 +309,7 @@ fn normalized_escaped_char_q(input: &[u8]) -> IResult<&[u8], String> {
     Ok((rest, result))
 }
 
-fn string_part_interpolation(input: &[u8]) -> IResult<&[u8], StringPart> {
+pub fn string_part_interpolation(input: &[u8]) -> IResult<&[u8], StringPart> {
     let (input, expr) =
         delimited(tag("#{"), value_expression, tag("}"))(input)?;
     Ok((input, StringPart::Interpolation(expr)))

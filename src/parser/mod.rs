@@ -122,12 +122,7 @@ fn top_level_item(input: &[u8]) -> IResult<&[u8], Item> {
 }
 
 fn comment_item(input: &[u8]) -> IResult<&[u8], Item> {
-    let (rest, comment) = map_res(comment2, input_to_string)(input)?;
-    let comment = comment
-        .replace("\r\n", "\n")
-        .replace('\r', "\n")
-        .replace('\u{c}', "\n");
-    Ok((rest, Item::Comment(comment)))
+    map(comment2, Item::Comment)(input)
 }
 
 fn rule(input: &[u8]) -> IResult<&[u8], Item> {
