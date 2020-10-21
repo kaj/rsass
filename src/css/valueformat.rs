@@ -47,15 +47,16 @@ impl<'a> Display for Formatted<'a, Value> {
                     rgba.format(self.format).fmt(out)
                 }
             }
-            Value::List(ref v, ref sep, brackets) => {
+            Value::List(ref v, sep, brackets) => {
                 let t = v
                     .iter()
                     .filter(|v| !v.is_null())
                     .map(|v| {
                         let needs_paren = match *v {
-                            Value::List(_, _, false) => {
+                            Value::List(_, inner, false) => {
                                 (brackets || self.format.is_introspection())
-                                    && *sep == ListSeparator::Space
+                                    && (sep == ListSeparator::Space
+                                        || inner == ListSeparator::Comma)
                             }
                             _ => false,
                         };
@@ -68,11 +69,11 @@ impl<'a> Display for Formatted<'a, Value> {
                     .collect::<Vec<_>>();
                 let t = if self.format.is_introspection()
                     && t.len() == 1
-                    && *sep == ListSeparator::Comma
+                    && sep == ListSeparator::Comma
                 {
                     format!("{},", t[0])
                 } else {
-                    t.join(match *sep {
+                    t.join(match sep {
                         ListSeparator::Comma => {
                             if self.format.is_compressed() {
                                 ","

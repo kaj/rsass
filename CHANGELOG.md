@@ -28,6 +28,8 @@ project adheres to
 * Fix `a % b` evaluation for negative values.
 * Allow / ignore comments in properties and values.
 * Allow `!default` and `!global` in any order on variable declarations.
+* Improve `inspect(...)` formatting of list values.
+* `ListSeparator` is now `Copy`.
 * Allow interpolation in comments.
 * Some refactoring
 

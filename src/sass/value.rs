@@ -133,12 +133,12 @@ impl Value {
             Value::Variable(ref name) => {
                 Ok(scope.get(name)?.into_calculated())
             }
-            Value::List(ref v, ref s, b) => {
+            Value::List(ref v, s, b) => {
                 let items = v
                     .iter()
                     .map(|v| v.do_evaluate(scope, false))
                     .collect::<Result<Vec<_>, Error>>()?;
-                Ok(css::Value::List(items, s.clone(), b))
+                Ok(css::Value::List(items, s, b))
             }
             Value::Call(ref name, ref args) => {
                 let args = args.evaluate(scope, true)?;

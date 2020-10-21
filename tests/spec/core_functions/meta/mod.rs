@@ -1390,7 +1390,6 @@ mod inspect {
                         );
                     }
                     #[test]
-                    #[ignore] // wrong result
                     fn unbracketed() {
                         assert_eq!(
                             rsass(
@@ -1460,7 +1459,6 @@ mod inspect {
                     #[allow(unused)]
                     use super::rsass;
                     #[test]
-                    #[ignore] // wrong result
                     fn bracketed() {
                         assert_eq!(
                             rsass(
@@ -1480,7 +1478,6 @@ mod inspect {
                         );
                     }
                     #[test]
-                    #[ignore] // wrong result
                     fn unbracketed() {
                         assert_eq!(
                             rsass(
