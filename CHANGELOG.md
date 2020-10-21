@@ -9,6 +9,17 @@ project adheres to
 
 ## Unreleased
 
+### Breaking changes
+
+* The `Item::Comment` enum value now contains a `SassString` rather
+  than a `String`.
+* The `Error::ParseError` enum value changed, and `ErrPos` is replaced
+  with `SourcePos` and `SourceName`.
+* The error type of `parse_scss_data` changed to `ParseError`.
+
+### Improvements
+
+* PR #79: Refactor some error handling.  Relates to #46.
 * Improve map parsing (a map is parsed as a plain vec of key/value
   pairs, filterig duplicates happens only when it is evaluated).
 * Allow multiple `&` items in the same selector.
