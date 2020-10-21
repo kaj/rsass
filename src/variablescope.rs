@@ -1,11 +1,11 @@
 //! A scope is something that contains variable values.
 
 use crate::css::{self, Value};
-use crate::error::Error;
 use crate::functions::{get_builtin_function, SassFunction};
 use crate::output::Format;
 use crate::sass::{self, Item};
 use crate::selectors::Selectors;
+use crate::Error;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
@@ -382,7 +382,7 @@ impl Scope for GlobalScope {
 pub mod test {
     use crate::parser::value::value_expression;
     use crate::variablescope::*;
-    use std::str::from_utf8;
+    use crate::{Error, ParseError};
 
     #[test]
     fn variable_value() {
@@ -726,13 +726,19 @@ pub mod test {
     ) -> Result<String, Error> {
         let mut scope = GlobalScope::new(Default::default());
         for &(name, ref val) in s {
-            let (end, value) = value_expression(val.as_bytes())?;
-            let value = value.evaluate(&scope)?;
-            assert_eq!(Ok(""), from_utf8(&end));
-            scope.define(name, &value);
+            let val = val.as_bytes();
+            scope.define(
+                name,
+                &ParseError::check(value_expression(val), val)?
+                    .evaluate(&scope)?,
+            );
         }
-        let (end, foo) = value_expression(expression)?;
-        assert_eq!(Ok(";"), from_utf8(&end));
+        use nom::bytes::complete::tag;
+        use nom::sequence::terminated;
+        let foo = ParseError::check(
+            terminated(value_expression, tag(";"))(expression),
+            expression,
+        )?;
         Ok(foo
             .evaluate(&mut scope)?
             .format(scope.get_format())

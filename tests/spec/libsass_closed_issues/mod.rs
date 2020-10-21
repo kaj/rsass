@@ -8930,7 +8930,7 @@ fn issue_2625() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2633.hrx"
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn issue_2633() {
     assert_eq!(
         rsass(

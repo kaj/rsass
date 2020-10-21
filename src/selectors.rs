@@ -7,10 +7,10 @@
 //! This _may_ change to a something like a tree of operators with
 //! leafs of simple selectors in some future release.
 use crate::css::Value;
-use crate::error::Error;
 use crate::sass::SassString;
 use crate::value::{ListSeparator, Quotes};
 use crate::variablescope::Scope;
+use crate::{Error, ParseError};
 use std::fmt;
 use std::io::Write;
 
@@ -91,7 +91,8 @@ impl Selectors {
         // contain high-level selector separators (i.e. ","), so we need to
         // parse the selectors again, from a string representation.
         use crate::parser::selectors::selectors;
-        Ok(selectors(format!("{} ", s).as_bytes())?.1)
+        let s = format!("{} ", s);
+        Ok(ParseError::check(selectors(s.as_bytes()), s.as_bytes())?)
     }
 }
 

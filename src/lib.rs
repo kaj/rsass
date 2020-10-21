@@ -51,11 +51,13 @@ pub mod selectors;
 mod value;
 mod variablescope;
 
-pub use crate::error::{ErrPos, Error};
+pub use crate::error::Error;
 pub use crate::file_context::FileContext;
 pub use crate::functions::SassFunction;
 use crate::output::Format;
-pub use crate::parser::{parse_scss_data, parse_scss_file, parse_value_data};
+pub use crate::parser::{
+    parse_scss_data, parse_scss_file, parse_value_data, ParseError,
+};
 pub use crate::sass::Item;
 pub use crate::value::{ListSeparator, Number, Quotes, Unit};
 pub use crate::variablescope::{GlobalScope, Scope};
@@ -103,12 +105,7 @@ pub fn compile_value(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
 /// ```
 pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
     let file_context = FileContext::new();
-    let items =
-        parse_scss_data(input).map_err(|(pos, kind)| Error::ParseError {
-            file: "-".into(),
-            pos: ErrPos::pos_of(pos, input),
-            kind,
-        })?;
+    let items = parse_scss_data(input)?;
     format.write_root(&items, &mut GlobalScope::new(format), &file_context)
 }
 

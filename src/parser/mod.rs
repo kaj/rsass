@@ -1,9 +1,14 @@
+mod error;
 pub mod formalargs;
+mod pos;
 pub mod selectors;
 mod strings;
 mod unit;
 mod util;
 pub mod value;
+
+pub use error::ParseError;
+pub use pos::{SourceName, SourcePos};
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
@@ -16,7 +21,6 @@ use self::util::{
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
-use crate::error::{ErrPos, Error};
 use crate::functions::SassFunction;
 #[cfg(test)]
 use crate::sass::{CallArgs, FormalArgs};
@@ -25,16 +29,16 @@ use crate::selectors::Selectors;
 use crate::value::ListSeparator;
 #[cfg(test)]
 use crate::value::{Number, Rgba, Unit};
+use crate::Error;
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
 use nom::character::complete::one_of;
 use nom::combinator::{all_consuming, map, map_res, opt, peek, value};
-use nom::error::ErrorKind;
 use nom::multi::{
     fold_many0, many0, many_till, separated_list, separated_nonempty_list,
 };
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::{Err, IResult};
+use nom::IResult;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -44,9 +48,10 @@ use std::str::{from_utf8, Utf8Error};
 ///
 /// Returns a single value (or an error).
 pub fn parse_value_data(data: &[u8]) -> Result<Value, Error> {
-    let (rest, result) = all_consuming(value_expression)(data)?;
-    assert!(rest.is_empty());
-    Ok(result)
+    Ok(ParseError::check(
+        all_consuming(value_expression)(data),
+        data,
+    )?)
 }
 
 #[test]
@@ -71,30 +76,14 @@ pub fn parse_scss_file(file: &Path) -> Result<Vec<Item>, Error> {
     let mut data = vec![];
     f.read_to_end(&mut data)
         .map_err(|e| Error::Input(file.into(), e))?;
-    parse_scss_data(&data).map_err(|(pos, kind)| Error::ParseError {
-        file: file.to_string_lossy().into(),
-        pos: ErrPos::pos_of(pos, &data),
-        kind,
-    })
+    parse_scss_data(&data).map_err(|err| err.in_file(file).into())
 }
 
 /// Parse scss data from a buffer.
 ///
 /// Returns a vec of the top level items of the file (or an error message).
-pub fn parse_scss_data(
-    data: &[u8],
-) -> Result<Vec<Item>, (usize, Option<ErrorKind>)> {
-    match sassfile(data) {
-        Ok((b"", items)) => Ok(items),
-        Ok((rest, _styles)) => Err((data.len() - rest.len(), None)),
-        Err(Err::Error((rest, err))) => {
-            Err((data.len() - rest.len(), Some(err)))
-        }
-        Err(Err::Incomplete(_needed)) => Err((data.len(), None)),
-        Err(Err::Failure((rest, err))) => {
-            Err((data.len() - rest.len(), Some(err)))
-        }
-    }
+pub fn parse_scss_data(data: &[u8]) -> Result<Vec<Item>, ParseError> {
+    ParseError::check(sassfile(data), data)
 }
 
 fn sassfile(input: &[u8]) -> IResult<&[u8], Vec<Item>> {
