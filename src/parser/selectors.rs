@@ -1,9 +1,9 @@
 use super::input_to_string;
 use super::strings::{sass_string, sass_string_dq, sass_string_sq};
-use super::util::{opt_spacelike, spacelike2};
+use super::util::{ignore_comments, opt_spacelike, spacelike2};
 use crate::selectors::{Selector, SelectorPart, Selectors};
 use nom::branch::alt;
-use nom::bytes::complete::{is_a, tag};
+use nom::bytes::complete::tag;
 use nom::character::complete::one_of;
 use nom::combinator::{map, map_res, opt, value};
 use nom::multi::{many1, separated_nonempty_list};
@@ -12,10 +12,13 @@ use nom::IResult;
 
 pub fn selectors(input: &[u8]) -> IResult<&[u8], Selectors> {
     let (input, v) = separated_nonempty_list(
-        terminated(tag(","), opt(is_a(", \t\n"))),
-        selector,
+        terminated(tag(","), ignore_comments),
+        opt(selector),
     )(input)?;
-    Ok((input, Selectors::new(v)))
+    Ok((
+        input,
+        Selectors::new(v.into_iter().filter_map(|i| i).collect()),
+    ))
 }
 
 pub fn selector(input: &[u8]) -> IResult<&[u8], Selector> {
