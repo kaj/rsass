@@ -88,7 +88,10 @@ fn handle_suite(
          \nfn rsass_fmt(format: Format, input: &str)\
          \n-> Result<String, String> {{\
          \n    compile_scss(input.as_bytes(), format)\
-         \n        .map_err(|e| format!(\"rsass failed: {{}}\", e))\
+         \n        .map_err(|e| {{\
+         \n            eprintln!(\"{{}}\", e);\
+         \n            \"rsass failed\".into()\
+         \n        }})\
          \n        .and_then(|s| {{\
          \n            String::from_utf8(s)\
          \n                .map(|s| s.replace(\"\\n\\n\", \"\\n\"))\
