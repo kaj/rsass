@@ -10,4 +10,4 @@ pub use self::list_separator::ListSeparator;
 pub use self::number::Number;
 pub use self::operator::Operator;
 pub use self::quotes::Quotes;
-pub use self::unit::Unit;
+pub use self::unit::{Dimension, Unit};

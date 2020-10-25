@@ -250,8 +250,8 @@ impl PartialEq for Value {
             (Value::Numeric(a, au, _), Value::Numeric(b, bu, _)) => {
                 if au == bu {
                     a == b
-                } else if au.dimension() == bu.dimension() {
-                    a.value * au.scale_factor() == b.value * bu.scale_factor()
+                } else if let Some(scale) = bu.scale_to(au) {
+                    a.value == b.value * scale
                 } else {
                     false
                 }

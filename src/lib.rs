@@ -59,7 +59,7 @@ pub use crate::parser::{
     parse_scss_data, parse_scss_file, parse_value_data, ParseError,
 };
 pub use crate::sass::Item;
-pub use crate::value::{ListSeparator, Number, Quotes, Unit};
+pub use crate::value::{Dimension, ListSeparator, Number, Quotes, Unit};
 pub use crate::variablescope::{GlobalScope, Scope};
 pub use num_rational::Rational;
 

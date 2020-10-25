@@ -216,6 +216,18 @@ fn each_binds_multiple() {
 }
 
 #[test]
+fn div_simliar_unit() {
+    check(
+        b"p { a: (1cm / 1mm); b: (200grad / 360deg); c: (1in / 1pt); }",
+        "p {\
+         \n  a: 10;\
+         \n  b: 0.5;\
+         \n  c: 72;\
+         \n}\n",
+    )
+}
+
+#[test]
 fn test_number_0() {
     check_value("0", "0");
 }

@@ -102,12 +102,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             (
                 &Value::Numeric(_, ref u1, ..),
                 &Value::Numeric(_, ref u2, ..),
-            ) => {
-                // TODO e.g. cm and mm are comparable too!
-                // Simply comparig the dimension is not enough, though,
-                // as e.g em and vh is not comparable.
-                Ok(Value::bool(u1 == u2))
-            }
+            ) => Ok(Value::bool(
+                (u1 == u2)
+                    || (*u1 == Unit::None || *u2 == Unit::None)
+                    || u2.scale_to(u1).is_some(),
+            )),
             (v1, v2) => Err(Error::badargs(&["number", "number"], &[v1, v2])),
         }
     });

@@ -47,41 +47,66 @@ pub enum Unit {
     None,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Dimension {
+    LengthAbs,
+    LengthVw,
+    LengthVh,
+    LengthVx,
+    LengthRem,
+    LenghtEm,
+    Angle,
+    Time,
+    Frequency,
+    Resolution,
+    None,
+}
+
 impl Unit {
-    pub fn dimension(&self) -> &'static str {
+    pub fn dimension(&self) -> Dimension {
         match *self {
-            Unit::Em
-            | Unit::Ex
-            | Unit::Ch
-            | Unit::Rem
-            | Unit::Vw
-            | Unit::Vh
-            | Unit::Vmin
-            | Unit::Vmax
-            | Unit::Cm
+            Unit::Cm
             | Unit::Mm
             | Unit::Q
             | Unit::In
-            | Unit::Pt
             | Unit::Pc
-            | Unit::Px => "length",
+            | Unit::Pt
+            | Unit::Px => Dimension::LengthAbs,
 
-            Unit::Deg | Unit::Grad | Unit::Rad | Unit::Turn => "angle",
+            Unit::Vw => Dimension::LengthVw,
+            Unit::Vh => Dimension::LengthVh,
+            Unit::Vmin | Unit::Vmax => Dimension::LengthVx,
+            Unit::Ch | Unit::Em | Unit::Ex => Dimension::LenghtEm,
+            Unit::Rem => Dimension::LengthRem,
 
-            Unit::S | Unit::Ms => "time",
+            Unit::Deg | Unit::Grad | Unit::Rad | Unit::Turn => {
+                Dimension::Angle
+            }
 
-            Unit::Hz | Unit::Khz => "frequency",
+            Unit::S | Unit::Ms => Dimension::Time,
 
-            Unit::Dpi | Unit::Dpcm | Unit::Dppx => "resolution",
+            Unit::Hz | Unit::Khz => Dimension::Frequency,
 
-            Unit::Percent | Unit::Fr | Unit::None => "none",
+            Unit::Dpi | Unit::Dpcm | Unit::Dppx => Dimension::Resolution,
+
+            Unit::Percent | Unit::Fr | Unit::None => Dimension::None,
+        }
+    }
+
+    pub fn scale_to(&self, other: &Self) -> Option<Rational> {
+        if self == other {
+            Some(Rational::one())
+        } else if self.dimension() == other.dimension() {
+            Some(self.scale_factor() / other.scale_factor())
+        } else {
+            None
         }
     }
 
     /// Some of these are exact and correct, others are more arbitrary.
     /// When comparing 10cm to 4in, these factors will give correct results.
     /// When comparing rems to vw, who can say?
-    pub fn scale_factor(&self) -> Rational {
+    fn scale_factor(&self) -> Rational {
         match *self {
             Unit::Em | Unit::Rem => Rational::new(10, 2),
             Unit::Ex => Rational::new(10, 3),

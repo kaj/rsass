@@ -79,10 +79,8 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
                         } else {
                             second
                         }
-                    } else if ua.dimension() == ub.dimension() {
-                        let sa = va.value * ua.scale_factor();
-                        let sb = vb.value * ub.scale_factor();
-                        if sa.cmp(&sb) == pref {
+                    } else if let Some(scale) = ub.scale_to(ua) {
+                        if va.value.cmp(&(vb.value * scale)) == pref {
                             first
                         } else {
                             second

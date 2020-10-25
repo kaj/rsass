@@ -912,7 +912,6 @@ mod comparable {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn to_compatible() {
             assert_eq!(
                 rsass(
@@ -974,7 +973,6 @@ mod comparable {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn to_unit() {
             assert_eq!(
                 rsass(

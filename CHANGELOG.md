@@ -16,6 +16,7 @@ project adheres to
 * The `Error::ParseError` enum value changed, and `ErrPos` is replaced
   with `SourcePos` and `SourceName`.
 * The error type of `parse_scss_data` changed to `ParseError`.
+* `Unit::dimension()` now returns a `Dimension` rather than a `&str`.
 
 ### Improvements
 
@@ -29,6 +30,7 @@ project adheres to
 * Allow / ignore comments in properties and values.
 * Allow `!default` and `!global` in any order on variable declarations.
 * Improve `inspect(...)` formatting of list values.
+* Refactor and improve arithmetic on different units.
 * `ListSeparator` is now `Copy`.
 * Allow interpolation in comments.
 * Some refactoring

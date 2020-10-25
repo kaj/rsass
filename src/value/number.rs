@@ -95,6 +95,16 @@ where
     }
 }
 
+impl<'a, N> Mul<Ratio<N>> for Number<N>
+where
+    N: Clone + Integer + Signed,
+{
+    type Output = Number<N>;
+    fn mul(self, rhs: Ratio<N>) -> Self::Output {
+        Number::from(&self.value * rhs)
+    }
+}
+
 impl<'a, N> Rem for &'a Number<N>
 where
     N: Clone + Integer + Signed,

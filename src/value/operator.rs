@@ -1,5 +1,6 @@
 use crate::css::Value;
 use crate::value::{ListSeparator, Quotes, Unit};
+use crate::Rational;
 use num_traits::Zero;
 use std::fmt;
 
@@ -53,8 +54,7 @@ impl Operator {
                         Some(Value::Numeric(a + b, au, true))
                     } else if au == Unit::None {
                         Some(Value::Numeric(a + b, bu, true))
-                    } else if au.dimension() == bu.dimension() {
-                        let scale = bu.scale_factor() / au.scale_factor();
+                    } else if let Some(scale) = bu.scale_to(&au) {
                         Some(Value::Numeric(
                             (a.value + b.value * scale).into(),
                             au,
@@ -99,8 +99,7 @@ impl Operator {
                         Some(Value::Numeric(av - bv, au.clone(), true))
                     } else if au == &Unit::None {
                         Some(Value::Numeric(av - bv, bu.clone(), true))
-                    } else if au.dimension() == bu.dimension() {
-                        let scale = bu.scale_factor() / au.scale_factor();
+                    } else if let Some(scale) = bu.scale_to(au) {
                         Some(Value::Numeric(
                             (av.value - bv.value * scale).into(),
                             au.clone(),
@@ -137,6 +136,18 @@ impl Operator {
                         Some(Value::Numeric(a * b, au.clone(), true))
                     } else if au == &Unit::None {
                         Some(Value::Numeric(a * b, bu.clone(), true))
+                    } else if bu == &Unit::Percent {
+                        Some(Value::Numeric(
+                            a * b * Rational::new(1, 100),
+                            au.clone(),
+                            true,
+                        ))
+                    } else if au == &Unit::Percent {
+                        Some(Value::Numeric(
+                            a * b * Rational::new(1, 100),
+                            bu.clone(),
+                            true,
+                        ))
                     } else {
                         None
                     }
@@ -169,6 +180,12 @@ impl Operator {
                             } else if au == bu {
                                 Some(Value::Numeric(
                                     av / bv,
+                                    Unit::None,
+                                    true,
+                                ))
+                            } else if let Some(scale) = bu.scale_to(&au) {
+                                Some(Value::Numeric(
+                                    av / &(bv * &scale.into()),
                                     Unit::None,
                                     true,
                                 ))
