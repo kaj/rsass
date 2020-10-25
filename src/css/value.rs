@@ -48,6 +48,7 @@ impl Value {
     pub fn scalar<T: Into<Number<isize>>>(v: T) -> Self {
         Value::Numeric(v.into(), Unit::None, false)
     }
+    #[deprecated(since = "0.15.1", note = "please use From<bool> instead.")]
     pub fn bool(v: bool) -> Self {
         if v {
             Value::True
@@ -306,6 +307,15 @@ impl PartialEq for Value {
                 a.len() == 0 && b.is_empty()
             }
             _ => false,
+        }
+    }
+}
+
+impl From<bool> for Value {
+    fn from(v: bool) -> Value {
+        match v {
+            true => Value::True,
+            false => Value::False,
         }
     }
 }

@@ -9,6 +9,8 @@ project adheres to
 
 ## Unreleased
 
+* Provide `From<bool>` for `css::Value` (and deprecate `Value::bool(v)`).
+
 ## Release 0.15.0 - 2010-10-25
 
 Progress: 2320 of 5577 tests passed in dart-sass compatiblilty mode.

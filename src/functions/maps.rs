@@ -53,7 +53,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
     def!(f, map_has_key(map, key), |s| {
         let map = get_map(s.get("map")?)?;
-        Ok(Value::bool(map.contains_key(&s.get("key")?)))
+        Ok(map.contains_key(&s.get("key")?).into())
     });
 }
 

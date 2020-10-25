@@ -27,7 +27,7 @@ pub enum Operator {
 impl Operator {
     pub fn eval(&self, a: Value, b: Value) -> Option<Value> {
         match *self {
-            Operator::And => Some(Value::bool(a.is_true() && b.is_true())),
+            Operator::And => Some((a.is_true() && b.is_true()).into()),
             Operator::Or => {
                 if a.is_true() {
                     Some(a)
@@ -35,12 +35,12 @@ impl Operator {
                     Some(b)
                 }
             }
-            Operator::Equal => Some(Value::bool(a == b)), // equal_values(&a, &b))),
-            Operator::NotEqual => Some(Value::bool(a != b)), // !equal_values(&a, &b))),
-            Operator::Greater => Some(Value::bool(a > b)),
-            Operator::GreaterE => Some(Value::bool(a >= b)),
-            Operator::Lesser => Some(Value::bool(a < b)),
-            Operator::LesserE => Some(Value::bool(a <= b)),
+            Operator::Equal => Some(Value::from(a == b)),
+            Operator::NotEqual => Some(Value::from(a != b)),
+            Operator::Greater => Some(Value::from(a > b)),
+            Operator::GreaterE => Some(Value::from(a >= b)),
+            Operator::Lesser => Some(Value::from(a < b)),
+            Operator::LesserE => Some(Value::from(a <= b)),
             Operator::Plus => match (a, b) {
                 (Value::Color(a, _), Value::Numeric(bn, Unit::None, _)) => {
                     let bn = bn.value;

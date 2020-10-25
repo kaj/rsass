@@ -24,25 +24,25 @@ static IMPLEMENTED_FEATURES: &[&str] = &[
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, feature_exists(feature), |s| match &s.get("feature")? {
         &Value::Literal(ref v, _) => {
-            Ok(Value::bool(IMPLEMENTED_FEATURES.iter().any(|s| s == v)))
+            Ok(IMPLEMENTED_FEATURES.iter().any(|s| s == v).into())
         }
         v => Err(Error::badarg("string", v)),
     });
     def!(f, variable_exists(name), |s| match &s.get("name")? {
         &Value::Literal(ref v, _) => {
-            Ok(Value::bool(s.get_or_none(v).is_some()))
+            Ok(s.get_or_none(v).is_some().into())
         }
         v => Err(Error::badarg("string", v)),
     });
     def!(f, global_variable_exists(name), |s| match &s.get("name")? {
         &Value::Literal(ref v, _) => {
-            Ok(Value::bool(s.get_global_or_none(v).is_some()))
+            Ok(s.get_global_or_none(v).is_some().into())
         }
         v => Err(Error::badarg("string", v)),
     });
     def!(f, function_exists(name), |s| match &s.get("name")? {
         &Value::Literal(ref v, _) => {
-            Ok(Value::bool(s.get_function(v).is_some()))
+            Ok(s.get_function(v).is_some().into())
         }
         v => Err(Error::badarg("string", v)),
     });
@@ -64,15 +64,13 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     );
     def!(f, mixin_exists(name), |s| match &s.get("name")? {
         &Value::Literal(ref v, _) => {
-            Ok(Value::bool(s.get_mixin(&v.replace('-', "_")).is_some()))
+            Ok(s.get_mixin(&v.replace('-', "_")).is_some().into())
         }
         v => Err(Error::badarg("string", v)),
     });
     def!(f, content_exists(), |s| {
         let content = s.get_mixin("%%BODY%%");
-        Ok(Value::bool(
-            content.map(|(_, b)| !b.is_empty()).unwrap_or(false),
-        ))
+        Ok(content.map(|(_, b)| !b.is_empty()).unwrap_or(false).into())
     });
     def!(f, inspect(value), |s| Ok(Value::Literal(
         match s.get("value")? {
@@ -94,7 +92,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         Ok(Value::Literal(v, Quotes::Double))
     });
     def!(f, unitless(number), |s| match s.get("number")? {
-        Value::Numeric(_, unit, ..) => Ok(Value::bool(unit == Unit::None)),
+        Value::Numeric(_, unit, ..) => Ok((unit == Unit::None).into()),
         v => Err(Error::badarg("number", &v)),
     });
     def!(f, comparable(number1, number2), |s| {
@@ -102,11 +100,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             (
                 &Value::Numeric(_, ref u1, ..),
                 &Value::Numeric(_, ref u2, ..),
-            ) => Ok(Value::bool(
-                (u1 == u2)
-                    || (*u1 == Unit::None || *u2 == Unit::None)
-                    || u2.scale_to(u1).is_some(),
-            )),
+            ) => Ok(((u1 == u2)
+                || (*u1 == Unit::None || *u2 == Unit::None)
+                || u2.scale_to(u1).is_some())
+            .into()),
             (v1, v2) => Err(Error::badargs(&["number", "number"], &[v1, v2])),
         }
     });

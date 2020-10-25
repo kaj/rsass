@@ -213,7 +213,7 @@ impl Value {
                 let value = v.do_evaluate(scope, true)?;
                 match (op.clone(), value) {
                     (Operator::Not, css::Value::Numeric(v, ..)) => {
-                        Ok(css::Value::bool(v.is_zero()))
+                        Ok(v.is_zero().into())
                     }
                     (Operator::Not, css::Value::True) => {
                         Ok(css::Value::False)
