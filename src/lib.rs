@@ -25,7 +25,7 @@
 //! doc](http://sass-lang.com/documentation/file.SASS_REFERENCE.html).
 //! This implementation is incomplete but getting there, if slowly.
 //!
-//! Progress: 2294 of 5577 tests passed in dart-sass compatiblilty mode.
+//! Progress: 2320 of 5577 tests passed in dart-sass compatiblilty mode.
 //!
 //! If you want a working rust library for sass right now, you may
 //! be better of with [sass-rs](https://crates.io/crates/sass-rs)
