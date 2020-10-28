@@ -1,8 +1,7 @@
-use super::{code_span, SourceName, SourcePos, Span};
+use super::{code_span, SourcePos, Span};
 use nom::error::ErrorKind;
 use nom::{Err, IResult};
 use std::fmt;
-use std::path::Path;
 
 /// An error encountered when parsing sass.
 ///
@@ -24,17 +23,11 @@ impl ParseError {
     /// `Ok` result with remaining unparsed data is also considered an
     /// error.
     pub fn check<T>(res: IResult<Span, T>) -> Result<T, Self> {
-        match res {
-            Ok((rest, items)) => {
-                if rest.fragment().is_empty() {
-                    Ok(items)
-                } else {
-                    Err(ParseError::remaining(rest))
-                }
-            }
-            Err(Err::Error((rest, err))) => Err(ParseError::err(err, rest)),
-            Err(Err::Incomplete(_needed)) => Err(ParseError::incomplete()),
-            Err(Err::Failure((rest, err))) => Err(ParseError::err(err, rest)),
+        let (rest, value) = res?;
+        if rest.fragment().is_empty() {
+            Ok(value)
+        } else {
+            Err(ParseError::remaining(rest))
         }
     }
 
@@ -56,11 +49,15 @@ impl ParseError {
             pos: span.into(),
         }
     }
+}
 
-    /// Add information about in what file an error occurred to self.
-    pub fn in_file(mut self, file: &Path) -> Self {
-        self.pos.file = SourceName::root(file.to_string_lossy());
-        self
+impl From<Err<(Span<'_>, nom::error::ErrorKind)>> for ParseError {
+    fn from(err: Err<(Span, nom::error::ErrorKind)>) -> Self {
+        match err {
+            Err::Error((rest, err)) => ParseError::err(err, rest),
+            Err::Incomplete(_needed) => ParseError::incomplete(),
+            Err::Failure((rest, err)) => ParseError::err(err, rest),
+        }
     }
 }
 

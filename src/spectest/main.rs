@@ -101,8 +101,7 @@ fn handle_suite(
          \npub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {{\
          \n    let mut file_context = FileContext::new();\
          \n    file_context.push_path(\"tests/spec\".as_ref());\
-         \n    let items = parse_scss_data(input)\
-         \n        .map_err(|err| err.in_file(\"input.scss\".as_ref()))?;\
+         \n    let items = parse_scss_data(input)?;\
          \n    format.write_root(&items, &mut GlobalScope::new(format), &file_context)\
          \n}}"
     )?;

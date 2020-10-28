@@ -45,7 +45,6 @@ fn rsass_fmt(format: Format, input: &str) -> Result<String, String> {
 pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
     let mut file_context = FileContext::new();
     file_context.push_path("tests/spec".as_ref());
-    let items = parse_scss_data(input)
-        .map_err(|err| err.in_file("input.scss".as_ref()))?;
+    let items = parse_scss_data(input)?;
     format.write_root(&items, &mut GlobalScope::new(format), &file_context)
 }
