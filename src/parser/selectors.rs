@@ -118,28 +118,27 @@ fn selector_part(input: Span) -> IResult<Span, SelectorPart> {
 mod test {
     use super::*;
     use crate::sass::{SassString, StringPart};
-    use crate::test_span;
     use crate::value::Quotes;
 
     #[test]
     fn simple_selector() {
-        assert_value(
-            selector(test_span!(b"foo ")),
+        assert_eq!(
+            check_parse!(selector, b"foo "),
             Selector(vec![SelectorPart::Simple("foo".into())]),
         )
     }
     #[test]
     fn escaped_simple_selector() {
-        assert_value(
-            selector(test_span!(b"\\E9m ")),
+        assert_eq!(
+            check_parse!(selector, b"\\E9m "),
             Selector(vec![SelectorPart::Simple("ém".into())]),
         )
     }
 
     #[test]
     fn selector2() {
-        assert_value(
-            selector(test_span!(b"foo bar ")),
+        assert_eq!(
+            check_parse!(selector, b"foo bar "),
             Selector(vec![
                 SelectorPart::Simple("foo".into()),
                 SelectorPart::Descendant,
@@ -150,8 +149,8 @@ mod test {
 
     #[test]
     fn child_selector() {
-        assert_value(
-            selector(test_span!(b"foo > bar ")),
+        assert_eq!(
+            check_parse!(selector, b"foo > bar "),
             Selector(vec![
                 SelectorPart::Simple("foo".into()),
                 SelectorPart::RelOp(b'>'),
@@ -162,8 +161,8 @@ mod test {
 
     #[test]
     fn foo1_selector() {
-        assert_value(
-            selector(test_span!(b"[data-icon='test-1'] ")),
+        assert_eq!(
+            check_parse!(selector, b"[data-icon='test-1'] "),
             Selector(vec![SelectorPart::Attribute {
                 name: "data-icon".into(),
                 op: "=".into(),
@@ -178,8 +177,8 @@ mod test {
 
     #[test]
     fn pseudo_selector() {
-        assert_value(
-            selector(test_span!(b":before ")),
+        assert_eq!(
+            check_parse!(selector, b":before "),
             Selector(vec![SelectorPart::Pseudo {
                 name: "before".into(),
                 arg: None,
@@ -188,8 +187,8 @@ mod test {
     }
     #[test]
     fn pseudo_on_simple_selector() {
-        assert_value(
-            selector(test_span!(b"figure:before ")),
+        assert_eq!(
+            check_parse!(selector, b"figure:before "),
             Selector(vec![
                 SelectorPart::Simple("figure".into()),
                 SelectorPart::Pseudo {
@@ -202,22 +201,12 @@ mod test {
 
     #[test]
     fn selectors_simple() {
-        assert_value(
-            selectors(test_span!(b"foo, bar ")),
+        assert_eq!(
+            check_parse!(selectors, b"foo, bar "),
             Selectors::new(vec![
                 Selector(vec![SelectorPart::Simple("foo".into())]),
                 Selector(vec![SelectorPart::Simple("bar".into())]),
             ]),
-        )
-    }
-
-    fn assert_value<T: PartialEq + std::fmt::Debug>(
-        result: IResult<Span, T>,
-        value: T,
-    ) {
-        assert_eq!(
-            result.map(|(r, v)| (*r.fragment(), v)),
-            Ok((&b""[..], value))
         )
     }
 }

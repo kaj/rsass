@@ -1,3 +1,12 @@
+#[cfg(test)]
+macro_rules! check_parse {
+    ($parser:ident, $value:expr) => {{
+        use crate::parser::{code_span, ParseError};
+        ParseError::check($parser(code_span($value)))
+            .unwrap_or_else(|e| panic!("{}", e))
+    }};
+}
+
 mod error;
 pub mod formalargs;
 mod pos;
@@ -342,7 +351,10 @@ fn media_args(input: Span) -> IResult<Span, Value> {
                             map(sass_string_dq, Value::Literal),
                             map(sass_string_sq, Value::Literal),
                         )),
-                        peek(one_of(") \r\n\t{,;")),
+                        alt((
+                            value((), all_consuming(tag(""))),
+                            value((), peek(one_of(") \r\n\t{,;"))),
+                        )),
                     ),
                     map(map_res(is_not("#()\"'{};, "), input_to_str), |s| {
                         Value::Literal(s.trim_end().into())
@@ -370,18 +382,14 @@ fn media_args(input: Span) -> IResult<Span, Value> {
 
 #[test]
 fn test_media_args_1() {
-    check_media_args(b"#{$media} and ($key + \"-foo\": $value + 5);")
+    check_parse!(media_args, b"#{$media} and ($key + \"-foo\": $value + 5)");
 }
 #[test]
 fn test_media_args_2() {
-    check_media_args(
-        b"print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen;",
-    )
-}
-#[cfg(test)]
-fn check_media_args(args: &[u8]) {
-    let (rest, _) = media_args(crate::test_span!(args)).unwrap();
-    assert_eq!(from_utf8(rest.fragment()).unwrap(), ";");
+    check_parse!(
+        media_args,
+        b"print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen"
+    );
 }
 
 #[cfg(test)] // TODO: Or remove this?
@@ -549,7 +557,7 @@ fn body_block2(input: Span) -> IResult<Span, Vec<Item>> {
         opt_spacelike,
         many_till(
             terminated(body_item, opt_spacelike),
-            terminated(tag("}"), opt(tag(";"))),
+            terminated(terminated(tag("}"), opt_spacelike), opt(tag(";"))),
         ),
     )(input)?;
     Ok((input, v))
@@ -613,37 +621,35 @@ fn string(v: &str) -> Value {
 
 #[test]
 fn if_with_no_else() {
-    assert_value(
-        if_statement(test_span!(b"@if true { p { color: black; } }\n")),
+    assert_eq!(
+        check_parse!(if_statement, b"@if true { p { color: black; } }\n"),
         Item::IfStatement(
             Value::True,
             vec![Item::Rule(
-                selectors(test_span!(b"p")).unwrap().1,
+                selectors(code_span(b"p")).unwrap().1,
                 vec![Item::Property("color".into(), Value::black())],
             )],
             vec![],
         ),
-        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_call_noargs() {
-    assert_value(
-        mixin_call(test_span!(b"@include foo;\n")),
+    assert_eq!(
+        check_parse!(mixin_call, b"@include foo;"),
         Item::MixinCall {
             name: "foo".to_string(),
             args: CallArgs::new(vec![]),
             body: vec![],
         },
-        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_call_pos_args() {
-    assert_value(
-        mixin_call(test_span!(b"@include foo(bar, baz);\n")),
+    assert_eq!(
+        check_parse!(mixin_call, b"@include foo(bar, baz);"),
         Item::MixinCall {
             name: "foo".to_string(),
             args: CallArgs::new(vec![
@@ -652,14 +658,13 @@ fn test_mixin_call_pos_args() {
             ]),
             body: vec![],
         },
-        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_call_named_args() {
-    assert_value(
-        mixin_call(test_span!(b"@include foo($x: bar, $y: baz);\n")),
+    assert_eq!(
+        check_parse!(mixin_call, b"@include foo($x: bar, $y: baz);"),
         Item::MixinCall {
             name: "foo".to_string(),
             args: CallArgs::new(vec![
@@ -668,29 +673,28 @@ fn test_mixin_call_named_args() {
             ]),
             body: vec![],
         },
-        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_declaration_empty() {
-    assert_value(
-        mixin_declaration(test_span!(b"@mixin foo() {}\n")),
+    assert_eq!(
+        check_parse!(mixin_declaration, b"@mixin foo() {}\n"),
         Item::MixinDeclaration {
             name: "foo".into(),
             args: FormalArgs::default(),
             body: vec![],
         },
-        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_declaration() {
-    assert_value(
-        mixin_declaration(test_span!(
+    assert_eq!(
+        check_parse!(
+            mixin_declaration,
             b"@mixin foo($x) {\n  foo-bar: baz $x;\n}\n"
-        )),
+        ),
         Item::MixinDeclaration {
             name: "foo".into(),
             args: FormalArgs::new(vec![("x".into(), Value::Null)], false),
@@ -703,21 +707,21 @@ fn test_mixin_declaration() {
                 ),
             )],
         },
-        b"\n",
     )
 }
 
 #[test]
 fn test_mixin_declaration_default_and_subrules() {
-    assert_value(
-        mixin_declaration(test_span!(
+    assert_eq!(
+        check_parse!(
+            mixin_declaration,
             b"@mixin bar($a, $b: flug) {\
               \n  foo-bar: baz;\
               \n  foo, bar {\
               \n    property: $b;\
               \n  }\
               \n}\n"
-        )),
+        ),
         Item::MixinDeclaration {
             name: "bar".into(),
             args: FormalArgs::new(
@@ -727,7 +731,7 @@ fn test_mixin_declaration_default_and_subrules() {
             body: vec![
                 Item::Property("foo-bar".into(), string("baz")),
                 Item::Rule(
-                    selectors(test_span!(b"foo, bar")).unwrap().1,
+                    selectors(code_span(b"foo, bar")).unwrap().1,
                     vec![Item::Property(
                         "property".into(),
                         Value::Variable("b".into()),
@@ -735,28 +739,27 @@ fn test_mixin_declaration_default_and_subrules() {
                 ),
             ],
         },
-        b"\n",
     )
 }
 
 #[test]
 fn test_simple_property() {
-    assert_value(
-        property_or_namespace_rule(test_span!(b"color: red;\n")),
+    assert_eq!(
+        check_parse!(property_or_namespace_rule, b"color: red;\n"),
         Item::Property(
             "color".into(),
             Value::Color(Rgba::from_rgb(255, 0, 0), Some("red".into())),
         ),
-        b"",
     )
 }
 
 #[test]
 fn test_property_2() {
-    assert_value(
-        property_or_namespace_rule(test_span!(
+    assert_eq!(
+        check_parse!(
+            property_or_namespace_rule,
             b"background-position: 90% 50%;\n"
-        )),
+        ),
         Item::Property(
             "background-position".into(),
             Value::List(
@@ -765,28 +768,26 @@ fn test_property_2() {
                 false,
             ),
         ),
-        b"",
     )
 }
 
 #[test]
 fn test_variable_declaration_simple() {
-    assert_value(
-        variable_declaration(test_span!(b"$foo: bar;\n")),
+    assert_eq!(
+        check_parse!(variable_declaration, b"$foo: bar;\n"),
         Item::VariableDeclaration {
             name: "foo".into(),
             val: string("bar"),
             default: false,
             global: false,
         },
-        b"",
     )
 }
 
 #[test]
 fn test_variable_declaration_global() {
-    assert_value(
-        variable_declaration(test_span!(b"$y: some value !global;\n")),
+    assert_eq!(
+        check_parse!(variable_declaration, b"$y: some value !global;\n"),
         Item::VariableDeclaration {
             name: "y".into(),
             val: Value::List(
@@ -797,14 +798,13 @@ fn test_variable_declaration_global() {
             default: false,
             global: true,
         },
-        b"",
     )
 }
 
 #[test]
 fn test_variable_declaration_default() {
-    assert_value(
-        variable_declaration(test_span!(b"$y: some value !default;\n")),
+    assert_eq!(
+        check_parse!(variable_declaration, b"$y: some value !default;\n"),
         Item::VariableDeclaration {
             name: "y".into(),
             val: Value::List(
@@ -815,15 +815,5 @@ fn test_variable_declaration_default() {
             default: true,
             global: false,
         },
-        b"",
     )
-}
-
-#[cfg(test)]
-fn assert_value<T: PartialEq + std::fmt::Debug>(
-    result: IResult<Span, T>,
-    value: T,
-    rest: &[u8],
-) {
-    assert_eq!(result.map(|(r, v)| (*r.fragment(), v)), Ok((rest, value)))
 }

@@ -79,28 +79,22 @@ mod test {
 
     #[test]
     fn comment_simple() {
-        do_test(b"/* hello */\n", " hello ", b"\n")
+        assert_eq!(check_parse!(comment, b"/* hello */"), " hello ".into());
     }
 
     #[test]
     fn comment_with_stars() {
-        do_test(b"/**** hello ****/\n", "*** hello ***", b"\n")
+        assert_eq!(
+            check_parse!(comment, b"/**** hello ****/"),
+            "*** hello ***".into()
+        )
     }
 
     #[test]
     fn comment_with_stars2() {
-        do_test(
-            b"/* / * / * / * hello * \\ * \\ * \\ */\n",
-            " / * / * / * hello * \\ * \\ * \\ ",
-            b"\n",
-        )
-    }
-
-    fn do_test(src: &[u8], content: &str, trail: &[u8]) {
-        use crate::test_span;
         assert_eq!(
-            comment(test_span!(src)).map(|(t, c)| (*t.fragment(), c)),
-            Ok((trail, content.into())),
+            check_parse!(comment, b"/* / * / * / * hello * \\ * \\ * \\ */"),
+            " / * / * / * hello * \\ * \\ * \\ ".into()
         )
     }
 }
