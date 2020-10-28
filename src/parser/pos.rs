@@ -18,7 +18,7 @@ impl From<Span<'_>> for SourcePos {
                 .to_string(),
             line_no: span.location_line(),
             line_pos: span.get_utf8_column(),
-            file: SourceName::root("-"), // span.extra.clone(),
+            file: span.extra.clone(),
         }
     }
 }

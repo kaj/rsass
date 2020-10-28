@@ -8,7 +8,7 @@ use std::fmt;
 /// This contains an error message (currently just a String, and often
 /// not very descriptive) and informaion on where in the parsed data
 /// the error occured.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct ParseError {
     pub msg: String,
     pub pos: SourcePos,
