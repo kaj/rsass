@@ -29,7 +29,7 @@ spectest = ["yaml-rust", "deunicode", "hrx-get", "regex"]
 [dependencies]
 lazy_static = "1.0"
 nom = "5.0.0"
-nom_locate = { git = "https://github.com/fflorent/nom_locate" }
+nom_locate = "2.1.0"
 num-bigint = { version = "0.3.0", default-features = false, features = ["std"] }
 num-integer = "0.1.42"
 num-rational = { version = "0.3.0", default-features = false }
