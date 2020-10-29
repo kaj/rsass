@@ -719,18 +719,11 @@ pub mod test {
         use nom::sequence::terminated;
         let mut scope = GlobalScope::new(Default::default());
         for &(name, val) in s {
-            scope.define(
-                name,
-                &ParseError::check(value_expression(code_span(
-                    val.as_bytes(),
-                )))?
-                .evaluate(&scope)?,
-            );
+            let val = value_expression(code_span(val.as_bytes()));
+            scope.define(name, &ParseError::check(val)?.evaluate(&scope)?);
         }
-        let foo = ParseError::check(terminated(value_expression, tag(";"))(
-            code_span(expression),
-        ))?;
-        Ok(foo
+        let expr = terminated(value_expression, tag(";"));
+        Ok(ParseError::check(expr(code_span(expression)))?
             .evaluate(&mut scope)?
             .format(scope.get_format())
             .to_string())
