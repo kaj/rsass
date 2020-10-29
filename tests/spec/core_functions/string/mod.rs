@@ -35,6 +35,39 @@ mod index {
         );
     }
     #[test]
+    fn combining_character() {
+        assert_eq!(
+        rsass(
+            "// Sass does *not* treat strings as sequences of glyphs, so this string which\
+            \n// contains \"c\" followed by a combining umlaut should be considered two separate\
+            \n// characters even though it\'s rendered as only one.\
+            \na {b: str-index(\"c\\0308 a\", \"a\")}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b: 3;\
+        \n}\
+        \n"
+    );
+    }
+    #[test]
+    fn double_width_character() {
+        assert_eq!(
+        rsass(
+            "// Sass treats strings as sequences of Unicode codepoint; it doesn\'t care if a\
+            \n// character is represented as two UTF-16 code units.\
+            \na {b: str-index(\"👭a\", \"a\")}\
+            \n"
+        )
+        .unwrap(),
+        "a {\
+        \n  b: 2;\
+        \n}\
+        \n"
+    );
+    }
+    #[test]
     fn empty_substring() {
         assert_eq!(
             rsass(

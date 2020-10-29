@@ -20,6 +20,7 @@ project adheres to
   located spans by [nom_locate](https://lib.rs/crates/nom_locate) in
   the parser.  A `sass::Item::Import` now handles where each file is
   imported from, to improve error reporting.
+* Update spec to 2020-10-29.
 
 
 ## Release 0.15.0 - 2010-10-25

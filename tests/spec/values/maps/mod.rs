@@ -14,6 +14,61 @@ use super::rsass;
 
 // Ignoring "invalid_key", error tests are not supported yet.
 
+// From "sass-spec/spec/values/maps/key_equality.hrx"
+mod key_equality {
+    #[allow(unused)]
+    use super::rsass;
+    mod infinity {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // wrong result
+        fn negative() {
+            assert_eq!(
+                rsass(
+                    "a {b: inspect(map-get(((-1/0): b), -1/0))}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: null;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn positive() {
+            assert_eq!(
+                rsass(
+                    "a {b: inspect(map-get(((1/0): b), 1/0))}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: null;\
+        \n}\
+        \n"
+            );
+        }
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn nan() {
+        assert_eq!(
+            rsass(
+                "a {b: inspect(map-get(((0/0): b), 0/0))}\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  b: null;\
+        \n}\
+        \n"
+        );
+    }
+}
+
 // From "sass-spec/spec/values/maps/length.hrx"
 #[test]
 fn length() {

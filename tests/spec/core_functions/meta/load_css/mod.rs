@@ -258,7 +258,7 @@ mod plain_css {
         assert_eq!(
             rsass(
                 "@use \"sass:meta\";\
-            \n@include meta.load-css($module: \"other\");\
+            \n@include meta.load-css($url: \"other\");\
             \n"
             )
             .unwrap(),

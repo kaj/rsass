@@ -650,8 +650,6 @@ fn eq() {
 
 mod error_directive_nested;
 
-mod features;
-
 // From "sass-spec/spec/libsass/http_import.hrx"
 #[test]
 fn http_import() {

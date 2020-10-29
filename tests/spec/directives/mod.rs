@@ -2,6 +2,8 @@
 #[allow(unused)]
 use super::rsass;
 
+// Ignoring "extend", not expected to work yet.
+
 // Ignoring "forward", not expected to work yet.
 
 mod function;

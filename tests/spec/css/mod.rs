@@ -274,6 +274,26 @@ fn function_name_identifiers() {
     );
 }
 
+// From "sass-spec/spec/css/functions.hrx"
+mod functions {
+    #[allow(unused)]
+    use super::rsass;
+    mod error {
+        #[allow(unused)]
+        use super::rsass;
+        mod single_equals {
+            #[allow(unused)]
+            use super::rsass;
+
+            // Ignoring "no_lhs", error tests are not supported yet.
+
+            // Ignoring "no_lhs_or_rhs", error tests are not supported yet.
+
+            // Ignoring "no_rhs", error tests are not supported yet.
+        }
+    }
+}
+
 // From "sass-spec/spec/css/important.hrx"
 mod important {
     #[allow(unused)]
