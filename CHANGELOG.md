@@ -9,7 +9,18 @@ project adheres to
 
 ## Unreleased
 
+### Breaking changes
+
+* `SourceName` and `sass::Item::Import` was changed by #62.
+
+### Improvements
+
 * Provide `From<bool>` for `css::Value` (and deprecate `Value::bool(v)`).
+* PR #62: Improve `ParseError`, `SourcePos`, and `SourceName` by using
+  located spans by [nom_locate](https://lib.rs/crates/nom_locate) in
+  the parser.  A `sass::Item::Import` now handles where each file is
+  imported from, to improve error reporting.
+
 
 ## Release 0.15.0 - 2010-10-25
 
