@@ -42,7 +42,9 @@ use crate::Error;
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
 use nom::character::complete::one_of;
-use nom::combinator::{all_consuming, map, map_res, opt, peek, value};
+use nom::combinator::{
+    all_consuming, map, map_res, opt, peek, value, verify,
+};
 use nom::multi::{
     fold_many0, many0, many_till, separated_list, separated_nonempty_list,
 };
@@ -385,20 +387,34 @@ fn if_statement(input: Span) -> IResult<Span, Item> {
 }
 
 fn if_statement_inner(input: Span) -> IResult<Span, Item> {
-    preceded(terminated(tag("if"), spacelike), if_statement2)(input)
+    preceded(
+        terminated(verify(name, |n: &String| n == "if"), opt_spacelike),
+        if_statement2,
+    )(input)
 }
 
 fn if_statement2(input: Span) -> IResult<Span, Item> {
     let (input, cond) = terminated(value_expression, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
-    let (input, else_body) = opt(preceded(
-        delimited(opt_spacelike, tag("@else"), opt_spacelike),
-        alt((body_block, map(if_statement_inner, |s| vec![s]))),
+    let (input2, word) = opt(delimited(
+        preceded(opt_spacelike, tag("@")),
+        name,
+        opt_spacelike,
     ))(input)?;
-    Ok((
-        input,
-        Item::IfStatement(cond, body, else_body.unwrap_or_default()),
-    ))
+    match word.as_deref() {
+        Some("else") => {
+            let (input2, else_body) = alt((
+                body_block,
+                map(if_statement_inner, |s| vec![s]),
+            ))(input2)?;
+            Ok((input2, Item::IfStatement(cond, body, else_body)))
+        }
+        Some("elseif") => {
+            let (input2, else_body) = if_statement2(input2)?;
+            Ok((input2, Item::IfStatement(cond, body, vec![else_body])))
+        }
+        _ => Ok((input, Item::IfStatement(cond, body, vec![]))),
+    }
 }
 
 /// The part of an each look that follows the `@each`.

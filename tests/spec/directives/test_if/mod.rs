@@ -24,7 +24,6 @@ mod escaped {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn with_else() {
         assert_eq!(
             rsass(
