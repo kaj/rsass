@@ -504,11 +504,10 @@ pub fn dictionary_inner(input: Span) -> IResult<Span, Value> {
 
 #[cfg(test)]
 mod test {
-    use super::super::parse_value_data;
+    use super::super::{code_span, parse_value_data};
     use super::*;
     use crate::sass::CallArgs;
     use crate::sass::Value::*;
-    use crate::test_span;
     use crate::value::Unit;
     use crate::variablescope::GlobalScope;
     use num_rational::Rational;
@@ -799,7 +798,7 @@ mod test {
 
     fn check_expr(expr: &str, value: Value) {
         assert_eq!(
-            value_expression(test_span!(expr.as_bytes()))
+            value_expression(code_span(expr.as_bytes()))
                 .map(|(rest, value)| (*rest.fragment(), value)),
             Ok((&b";"[..], value)),
         )

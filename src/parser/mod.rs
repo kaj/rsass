@@ -64,19 +64,6 @@ pub fn code_span(value: &[u8]) -> Span {
     Span::new_extra(value, &SOURCE)
 }
 
-#[cfg(test)]
-#[macro_export]
-macro_rules! test_span {
-    ($value:expr) => {{
-        use crate::parser::{SourceName, Span};
-        use lazy_static::lazy_static;
-        lazy_static! {
-            static ref SOURCE: SourceName = SourceName::root(file!());
-        }
-        Span::new_extra($value, &SOURCE)
-    }};
-}
-
 /// Parse a scss value.
 ///
 /// Returns a single value (or an error).
