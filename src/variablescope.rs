@@ -380,12 +380,22 @@ impl Scope for GlobalScope {
 
 #[cfg(test)]
 pub mod test {
-    use crate::variablescope::*;
-    use crate::{Error, ParseError};
+    macro_rules! assert_expr {
+        ($context:expr, $input:expr, $expected:expr) => {{
+            assert_eq!(
+                do_evaluate_or_error($context, $input)
+                    .unwrap_or_else(|e| panic!("{}", e)),
+                $expected
+            )
+        }};
+        ($input:expr, $expected:expr) => {{
+            assert_expr!(&[], $input, $expected)
+        }};
+    }
 
     #[test]
     fn variable_value() {
-        assert_eq!("#f02a42", do_evaluate(&[("red", "#f02a42")], b"$red;"))
+        assert_expr!(&[("red", "#f02a42")], b"$red;", "#f02a42")
     }
 
     #[test]
@@ -398,26 +408,26 @@ pub mod test {
 
     #[test]
     fn partial_variable_value() {
-        let scope = [("red", "#f02a42")];
-        assert_eq!(
-            "solid 1px #f02a42",
-            do_evaluate(&scope, b"solid 1px $red;")
+        assert_expr!(
+            &[("red", "#f02a42")],
+            b"solid 1px $red;",
+            "solid 1px #f02a42"
         )
     }
 
     #[test]
     fn simple_arithmetic() {
-        assert_eq!("6", do_evaluate(&[], b"3 + 3;"))
+        assert_expr!(b"3 + 3;", "6")
     }
 
     #[test]
     fn simple_arithmetic_2() {
-        assert_eq!("14", do_evaluate(&[], b"2 + 3 * 4;"))
+        assert_expr!(b"2 + 3 * 4;", "14")
     }
 
     #[test]
     fn simple_arithmetic_3() {
-        assert_eq!("14", do_evaluate(&[("four", "4")], b"2 + 3 * $four;"))
+        assert_expr!(&[("four", "4")], b"2 + 3 * $four;", "14")
     }
 
     // The following tests are from aboud division are from
@@ -425,294 +435,273 @@ pub mod test {
     // Section "Divison and /"
     #[test]
     fn div_slash_1() {
-        assert_eq!("10px/8px", do_evaluate(&[], b"10px/8px;"))
+        assert_expr!(b"10px/8px;", "10px/8px")
     }
 
     #[test]
     fn div_slash_2() {
-        assert_eq!("500px", do_evaluate(&[("width", "1000px")], b"$width/2;"))
+        assert_expr!(&[("width", "1000px")], b"$width/2;", "500px")
     }
 
     #[test]
     fn div_slash_4() {
-        assert_eq!("250px", do_evaluate(&[], b"(500px/2);"))
+        assert_expr!(b"(500px/2);", "250px")
     }
 
     #[test]
     fn div_slash_5() {
-        assert_eq!("9px", do_evaluate(&[], b"5px + 8px/2px;"))
+        assert_expr!(b"5px + 8px/2px;", "9px")
     }
 
     #[test]
     fn div_slash_6() {
-        assert_eq!(
-            "italic bold 10px/8px",
-            do_evaluate(&[], b"(italic bold 10px/8px);")
-        )
+        assert_expr!(b"(italic bold 10px/8px);", "italic bold 10px/8px")
     }
     #[test]
     fn negative_in_arithmetic() {
-        assert_eq!("960px", do_evaluate(&[("m", "20")], b"1000px + $m * -2;"))
+        assert_expr!(&[("m", "20")], b"1000px + $m * -2;", "960px")
     }
 
     // ...
     #[test]
     fn div_by_zero() {
-        assert_eq!("500px/0", do_evaluate(&[], b"(500px/0);"))
+        assert_expr!(b"(500px/0);", "500px/0")
     }
 
     #[test]
     fn double_div_1() {
-        assert_eq!("15/3/5", do_evaluate(&[], b"15/3/5;"))
+        assert_expr!(b"15/3/5;", "15/3/5")
     }
 
     #[test]
     fn double_div_2() {
-        assert_eq!("15/3/5", do_evaluate(&[], b"15 / 3 / 5;"))
+        assert_expr!(b"15 / 3 / 5;", "15/3/5")
     }
 
     #[test]
     fn double_div_3() {
-        assert_eq!("1", do_evaluate(&[], b"(15 / 3 / 5);"))
+        assert_expr!(b"(15 / 3 / 5);", "1")
     }
 
     #[test]
     fn long_div_and_mul_sequence() {
-        assert_eq!("3", do_evaluate(&[], b"(3 / 2 / 2 / 2 * 32 / 2 / 2);"))
+        assert_expr!(b"(3 / 2 / 2 / 2 * 32 / 2 / 2);", "3")
     }
 
     #[test]
     fn double_div_4() {
-        assert_eq!("1", do_evaluate(&[], b"(15 / 3) / 5;"));
+        assert_expr!(b"(15 / 3) / 5;", "1");
     }
 
     #[test]
     fn double_div_5() {
-        assert_eq!("1", do_evaluate(&[("five", "5")], b"15 / 3 / $five;"))
+        assert_expr!(&[("five", "5")], b"15 / 3 / $five;", "1")
     }
 
     #[test]
     fn sum_w_unit() {
-        assert_eq!("9px", do_evaluate(&[], b"3px + 3px + 3px;"))
+        assert_expr!(b"3px + 3px + 3px;", "9px")
     }
     #[test]
     fn multi_multi() {
-        let scope = [("stuff", "1 2 3")];
-        assert_eq!(
-            "1 2 3, 1 2 3 4 5 6, 7 8 9",
-            do_evaluate(&scope, b"1 2 3, $stuff 4 5 (6, 7 8 9);")
+        assert_expr!(
+            &[("stuff", "1 2 3")],
+            b"1 2 3, $stuff 4 5 (6, 7 8 9);",
+            "1 2 3, 1 2 3 4 5 6, 7 8 9"
         )
     }
 
     #[test]
     fn url_keeps_parens() {
-        assert_eq!(
-            "black url(starfield.png) repeat",
-            do_evaluate(&[], b"black url(starfield.png) repeat;")
+        assert_expr!(
+            b"black url(starfield.png) repeat;",
+            "black url(starfield.png) repeat"
         )
     }
 
     #[test]
     fn color_unchanged_1() {
-        assert_eq!("#AbC", do_evaluate(&[], b"#AbC;"))
+        assert_expr!(b"#AbC;", "#AbC")
     }
 
     #[test]
     fn color_unchanged_2() {
-        assert_eq!("#AAbbCC", do_evaluate(&[], b"#AAbbCC;"))
+        assert_expr!(b"#AAbbCC;", "#AAbbCC")
     }
 
     #[test]
     fn color_add_each_component() {
-        assert_eq!("#abbccd", do_evaluate(&[], b"#AbC + 1;"))
+        assert_expr!(b"#AbC + 1;", "#abbccd")
     }
     #[test]
     fn color_add_each_component_overflow() {
-        assert_eq!("#0101ff", do_evaluate(&[], b"#00f + 1;"))
+        assert_expr!(b"#00f + 1;", "#0101ff")
     }
 
     #[test]
     fn color_add_components() {
-        assert_eq!("#aabbdd", do_evaluate(&[], b"#AbC + #001;"))
+        assert_expr!(b"#AbC + #001;", "#aabbdd")
     }
 
     #[test]
     fn color_add_components_overflow() {
-        assert_eq!("#1000ff", do_evaluate(&[], b"#1000ff + #001;"))
+        assert_expr!(b"#1000ff + #001;", "#1000ff")
     }
 
     #[test]
     fn color_add_components_to_named_overflow() {
-        assert_eq!("blue", do_evaluate(&[], b"#0000ff + #001;"))
+        assert_expr!(b"#0000ff + #001;", "blue")
     }
     #[test]
     fn color_add_components_to_named() {
-        assert_eq!("white", do_evaluate(&[], b"#00f + #0f0 + #f00;"))
+        assert_expr!(b"#00f + #0f0 + #f00;", "white")
     }
 
     #[test]
     fn color_simple_rgba() {
-        assert_eq!("rgba(1, 2, 3, 0.6)", do_evaluate(&[], b"rgba(1,2,3,.6);"))
+        assert_expr!(b"rgba(1,2,3,.6);", "rgba(1, 2, 3, 0.6)")
     }
 
     #[test]
     fn color_add_to_rgba() {
-        assert_eq!("#111111", do_evaluate(&[], b"rgba(0, 0, 0, 1) + #111;"))
+        assert_expr!(b"rgba(0, 0, 0, 1) + #111;", "#111111")
     }
 
     #[test]
     fn color_subtract() {
-        assert_eq!("#fefefe", do_evaluate(&[], b"#fff - 1;"))
+        assert_expr!(b"#fff - 1;", "#fefefe")
     }
 
     #[test]
     fn color_subtract_underflow() {
-        assert_eq!("black", do_evaluate(&[], b"#000 - 1;"))
+        assert_expr!(b"#000 - 1;", "black")
     }
 
     #[test]
     fn color_subtract_components() {
-        assert_eq!(
-            "#000077", // Or should it be #007?
-            do_evaluate(&[], b"#fff - #ff8;")
-        )
+        assert_expr!(b"#fff - #ff8;", "#000077") // Or should it be #007?
     }
 
     #[test]
     fn color_subtract_components_underflow() {
-        assert_eq!("black", do_evaluate(&[], b"#000001 - #001;"))
+        assert_expr!(b"#000001 - #001;", "black")
     }
 
     #[test]
     fn color_division() {
-        assert_eq!("#020202", do_evaluate(&[], b"(#101010 / 7);"))
+        assert_expr!(b"(#101010 / 7);", "#020202")
     }
 
     #[test]
     fn color_add_rgb_1() {
-        assert_eq!("#0b0a0b", do_evaluate(&[], b"rgb(10,10,10) + #010001;"))
+        assert_expr!(b"rgb(10,10,10) + #010001;", "#0b0a0b")
     }
     #[test]
     fn color_add_rgb_2() {
-        assert_eq!(
-            "white",
-            do_evaluate(&[], b"#010000 + rgb(255, 255, 255);")
-        )
+        assert_expr!(b"#010000 + rgb(255, 255, 255);", "white")
     }
 
     #[test]
     fn color_named_args() {
-        assert_eq!(
-            "#010203",
-            do_evaluate(&[], b"rgb($blue: 3, $red: 1, $green: 2);")
-        )
+        assert_expr!(b"rgb($blue: 3, $red: 1, $green: 2);", "#010203")
     }
 
     #[test]
     fn color_mixed_args() {
-        assert_eq!(
-            "#010203",
-            do_evaluate(&[], b"rgb(1, $blue: 3, $green: 2);")
-        )
+        assert_expr!(b"rgb(1, $blue: 3, $green: 2);", "#010203")
     }
 
     #[test]
     fn color_mixed_with_alpha_1() {
-        assert_eq!(
-            "rgba(64, 0, 191, 0.75)",
-            do_evaluate(&[], b"mix(rgba(255, 0, 0, 0.5), #00f);")
+        assert_expr!(
+            b"mix(rgba(255, 0, 0, 0.5), #00f);",
+            "rgba(64, 0, 191, 0.75)"
         )
     }
 
     #[test]
     fn color_mixed_with_alpha_2() {
-        assert_eq!(
-            "rgba(64, 0, 191, 0.75)",
-            do_evaluate(&[], b"mix(#00f, rgba(255, 0, 0, 0.5));")
+        assert_expr!(
+            b"mix(#00f, rgba(255, 0, 0, 0.5));",
+            "rgba(64, 0, 191, 0.75)"
         )
     }
 
     #[test]
     fn value_multiple_dashes() {
-        assert_eq!("foo-bar-baz 17%", do_evaluate(&[], b"foo-bar-baz 17%;"))
+        assert_expr!(b"foo-bar-baz 17%;", "foo-bar-baz 17%")
     }
 
     #[test]
     fn color_arithemtic_by_name() {
-        assert_eq!("fuchsia", do_evaluate(&[], b"red + blue;"))
+        assert_expr!(b"red + blue;", "fuchsia")
     }
 
     #[test]
     fn function_if() {
-        assert_eq!("foo", do_evaluate(&[], b"if(true, foo, bar);"))
+        assert_expr!(b"if(true, foo, bar);", "foo")
     }
     #[test]
     fn function_if_false() {
-        assert_eq!("bar", do_evaluate(&[], b"if(false, foo, bar);"))
+        assert_expr!(b"if(false, foo, bar);", "bar")
     }
     #[test]
     fn function_if_named() {
-        assert_eq!(
-            "hey",
-            do_evaluate(
-                &[],
-                b"if($if_true: hey, $if_false: ho, $condition: true);"
-            )
+        assert_expr!(
+            b"if($if_true: hey, $if_false: ho, $condition: true);",
+            "hey"
         )
     }
     #[test]
     fn function_if_named_dash() {
-        assert_eq!(
-            "hey",
-            do_evaluate(
-                &[],
-                b"if($if-true: hey, $if-false: ho, $condition: true);"
-            )
+        assert_expr!(
+            b"if($if-true: hey, $if-false: ho, $condition: true);",
+            "hey"
         )
     }
 
     #[test]
     fn quote_keywords() {
-        assert_eq!("\"foo bar\"", do_evaluate(&[], b"quote(foo bar);"))
+        assert_expr!(b"quote(foo bar);", "\"foo bar\"")
     }
     #[test]
     fn quote_expr() {
         let vars = [("s", "foo"), ("n", "5")];
-        assert_eq!("\"foo 17\"", do_evaluate(&vars, b"quote($s $n * 3 + 2);"))
+        assert_expr!(&vars, b"quote($s $n * 3 + 2);", "\"foo 17\"")
     }
     #[test]
     fn quoted_string() {
-        assert_eq!("\"foobar\"", do_evaluate(&[], b"\"foobar\";"))
+        assert_expr!(b"\"foobar\";", "\"foobar\"")
     }
     #[test]
     fn unquote_string() {
-        assert_eq!("foo bar", do_evaluate(&[], b"unquote(\"foo bar\");"))
+        assert_expr!(b"unquote(\"foo bar\");", "foo bar")
     }
     #[test]
     fn unquote_quote() {
-        assert_eq!("foo bar", do_evaluate(&[], b"unquote(quote(foo bar));"))
+        assert_expr!(b"unquote(quote(foo bar));", "foo bar")
     }
 
     #[test]
     fn equal_true() {
-        assert_eq!("true", do_evaluate(&[], b"17 == 10 + 7;"))
+        assert_expr!(b"17 == 10 + 7;", "true")
     }
     #[test]
     fn equal_false() {
-        assert_eq!("false", do_evaluate(&[], b"17 == 10 + 8;"))
+        assert_expr!(b"17 == 10 + 8;", "false")
     }
     #[test]
     fn not_equal_true() {
-        assert_eq!("true", do_evaluate(&[], b"17 != 10 + 8;"))
+        assert_expr!(b"17 != 10 + 8;", "true")
     }
     #[test]
     fn not_equal_false() {
-        assert_eq!("false", do_evaluate(&[], b"18 != 10 + 8;"))
+        assert_expr!(b"18 != 10 + 8;", "false")
     }
 
     #[test]
     fn simple_boolean() {
-        assert_eq!("true", do_evaluate(&[], b"3 >= 2 and 1 < 10;"))
+        assert_expr!(b"3 >= 2 and 1 < 10;", "true")
     }
 
     pub fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
@@ -722,23 +711,24 @@ pub mod test {
     pub fn do_evaluate_or_error(
         s: &[(&str, &str)],
         expression: &[u8],
-    ) -> Result<String, Error> {
+    ) -> Result<String, crate::Error> {
+        use super::{GlobalScope, Scope};
         use crate::parser::value::value_expression;
-        use crate::test_span;
+        use crate::parser::{code_span, ParseError};
         use nom::bytes::complete::tag;
         use nom::sequence::terminated;
         let mut scope = GlobalScope::new(Default::default());
-        for &(name, ref val) in s {
+        for &(name, val) in s {
             scope.define(
                 name,
-                &ParseError::check(value_expression(test_span!(
-                    val.as_bytes()
+                &ParseError::check(value_expression(code_span(
+                    val.as_bytes(),
                 )))?
                 .evaluate(&scope)?,
             );
         }
         let foo = ParseError::check(terminated(value_expression, tag(";"))(
-            test_span!(expression),
+            code_span(expression),
         ))?;
         Ok(foo
             .evaluate(&mut scope)?
