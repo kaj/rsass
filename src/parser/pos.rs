@@ -1,3 +1,4 @@
+use super::Span;
 use std::str::from_utf8;
 
 /// A position in sass input.
@@ -9,43 +10,47 @@ pub struct SourcePos {
     pub file: SourceName,
 }
 
-impl SourcePos {
-    pub fn pos_of(part: &[u8], whole: &[u8]) -> SourcePos {
-        let index = whole.len() - part.len();
-        let before = &whole[0..index];
-        let line_start = before.rsplit(|c| *c == b'\n').next().unwrap();
-        let line_end = part.split(|c| *c == b'\n').next().unwrap();
-        let line_bytes =
-            &whole[index - line_start.len()..index + line_end.len()];
+impl From<Span<'_>> for SourcePos {
+    fn from(span: Span) -> Self {
         SourcePos {
-            line: from_utf8(line_bytes)
+            line: from_utf8(span.get_line_beginning())
                 .unwrap_or("<<failed to display line>>")
                 .to_string(),
-            line_no: 1 + bytecount::count(before, b'\n') as u32,
-            line_pos: bytecount::num_chars(line_start),
-            file: SourceName::root("-"),
+            line_no: span.location_line(),
+            line_pos: span.get_utf8_column(),
+            file: span.extra.clone(),
         }
     }
 }
 
 /// The name of a scss source file.
 ///
-/// Currently this is just a String.
-/// In a future version it should also contain the information if this
-/// was the root stylesheet or where it was imported from.
+/// This also contains the information if this was the root stylesheet
+/// or where it was imported from.
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct SourceName {
     name: String,
+    imported: Option<Box<SourcePos>>,
 }
 
 impl SourceName {
     pub fn root<T: ToString>(name: T) -> Self {
         SourceName {
             name: name.to_string(),
+            imported: None,
+        }
+    }
+    pub fn imported<T: ToString>(name: T, from: SourcePos) -> Self {
+        SourceName {
+            name: name.to_string(),
+            imported: Some(Box::new(from)),
         }
     }
 
     pub fn name(&self) -> &str {
         &self.name
+    }
+    pub fn imported_from(&self) -> Option<&SourcePos> {
+        self.imported.as_ref().map(|b| b.as_ref())
     }
 }

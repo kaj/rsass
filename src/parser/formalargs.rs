@@ -1,6 +1,7 @@
 use super::strings::name;
 use super::util::{ignore_comments, opt_spacelike};
 use super::value::space_list;
+use super::Span;
 use crate::sass::{CallArgs, FormalArgs, Value};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
@@ -9,7 +10,7 @@ use nom::multi::separated_list;
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::IResult;
 
-pub fn formal_args(input: &[u8]) -> IResult<&[u8], FormalArgs> {
+pub fn formal_args(input: Span) -> IResult<Span, FormalArgs> {
     let (input, _) = terminated(tag("("), opt_spacelike)(input)?;
     let (input, v) = separated_list(
         preceded(tag(","), opt_spacelike),
@@ -31,7 +32,7 @@ pub fn formal_args(input: &[u8]) -> IResult<&[u8], FormalArgs> {
     Ok((input, FormalArgs::new(v, va.is_some())))
 }
 
-pub fn call_args(input: &[u8]) -> IResult<&[u8], CallArgs> {
+pub fn call_args(input: Span) -> IResult<Span, CallArgs> {
     let (input, _) = tag("(")(input)?;
     let (input, v) = separated_list(
         delimited(opt_spacelike, tag(","), opt_spacelike),

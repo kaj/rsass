@@ -1,15 +1,14 @@
-use super::{SourceName, SourcePos};
+use super::{code_span, SourcePos, Span};
 use nom::error::ErrorKind;
 use nom::{Err, IResult};
 use std::fmt;
-use std::path::Path;
 
 /// An error encountered when parsing sass.
 ///
 /// This contains an error message (currently just a String, and often
 /// not very descriptive) and informaion on where in the parsed data
 /// the error occured.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct ParseError {
     pub msg: String,
     pub pos: SourcePos,
@@ -20,48 +19,45 @@ impl std::error::Error for ParseError {}
 impl ParseError {
     /// Check a nom result for errors.
     ///
-    /// This is not a `From` implementation for two reasons:
-    /// 1. It needs a reference to the original data to find the position.
-    /// 2. An `Ok` result with remaining unparsed data is also considered an error.
-    pub fn check<T>(res: IResult<&[u8], T>, data: &[u8]) -> Result<T, Self> {
-        match res {
-            Ok((b"", items)) => Ok(items),
-            Ok((rest, _styles)) => Err(ParseError::remaining(rest, data)),
-            Err(Err::Error((rest, err))) => {
-                Err(ParseError::err(err, rest, data))
-            }
-            Err(Err::Incomplete(_needed)) => {
-                Err(ParseError::incomplete(data))
-            }
-            Err(Err::Failure((rest, err))) => {
-                Err(ParseError::err(err, rest, data))
-            }
+    /// This differs from a `From<nom::Err>` implementation in that an
+    /// `Ok` result with remaining unparsed data is also considered an
+    /// error.
+    pub fn check<T>(res: IResult<Span, T>) -> Result<T, Self> {
+        let (rest, value) = res?;
+        if rest.fragment().is_empty() {
+            Ok(value)
+        } else {
+            Err(ParseError::remaining(rest))
         }
     }
 
-    fn remaining(span: &[u8], data: &[u8]) -> ParseError {
+    fn remaining(span: Span) -> ParseError {
         ParseError {
             msg: "Expected end of file.".into(),
-            pos: SourcePos::pos_of(span, data),
+            pos: span.into(),
         }
     }
-    fn incomplete(data: &[u8]) -> ParseError {
+    fn incomplete() -> ParseError {
         ParseError {
             msg: "Unexpected end of file.".into(),
-            pos: SourcePos::pos_of(&data[data.len()..], data),
+            pos: code_span(b"").into(), // This should not happen?
         }
     }
-    fn err(kind: ErrorKind, span: &[u8], data: &[u8]) -> ParseError {
+    fn err(kind: ErrorKind, span: Span) -> ParseError {
         ParseError {
             msg: format!("Parse error: {:?}", kind),
-            pos: SourcePos::pos_of(span, data),
+            pos: span.into(),
         }
     }
+}
 
-    /// Add information about in what file an error occurred to self.
-    pub fn in_file(mut self, file: &Path) -> Self {
-        self.pos.file = SourceName::root(file.to_string_lossy());
-        self
+impl From<Err<(Span<'_>, nom::error::ErrorKind)>> for ParseError {
+    fn from(err: Err<(Span, nom::error::ErrorKind)>) -> Self {
+        match err {
+            Err::Error((rest, err)) => ParseError::err(err, rest),
+            Err::Incomplete(_needed) => ParseError::incomplete(),
+            Err::Failure((rest, err)) => ParseError::err(err, rest),
+        }
     }
 }
 
@@ -73,18 +69,33 @@ impl fmt::Display for ParseError {
             "{msg}\
              \n{0:lnw$} ,\
              \n{ln} | {line}\
-             \n{0:lnw$} | {0:>lpos$}^\
-             \n{0:lnw$} '\
-             \n{0:lnw$} {file} {ln}:{lpos}  {cause}",
+             \n{0:lnw$} |{0:>lpos$}^\
+             \n{0:lnw$} '",
             "",
             line = self.pos.line,
             msg = self.msg,
             ln = line_no,
             lnw = line_no.len(),
             lpos = self.pos.line_pos,
-            file = self.pos.file.name(),
-            cause = "root stylesheet", // TODO: Handle imports
         )?;
+        let mut nextpos = Some(&self.pos);
+        while let Some(pos) = nextpos {
+            write!(
+                out,
+                "\n{0:lnw$} {file} {row}:{col}  {cause}",
+                "",
+                lnw = line_no.len(),
+                file = pos.file.name(),
+                row = pos.line_no,
+                col = pos.line_pos,
+                cause = if pos.file.imported_from().is_some() {
+                    "import"
+                } else {
+                    "root stylesheet"
+                },
+            )?;
+            nextpos = pos.file.imported_from();
+        }
         Ok(())
     }
 }
