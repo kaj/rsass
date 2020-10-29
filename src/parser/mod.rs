@@ -401,7 +401,7 @@ fn if_statement2(input: Span) -> IResult<Span, Item> {
         name,
         opt_spacelike,
     ))(input)?;
-    match word.as_deref() {
+    match word.as_ref().map(|w| w.as_ref()) {
         Some("else") => {
             let (input2, else_body) = alt((
                 body_block,
