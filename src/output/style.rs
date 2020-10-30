@@ -3,7 +3,7 @@ use crate::css::Value;
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
-use crate::sass::{FormalArgs, Item};
+use crate::sass::{FormalArgs, Item, SassString};
 use crate::selectors::Selectors;
 use crate::variablescope::{Scope, ScopeImpl};
 use std::fmt;
@@ -75,6 +75,7 @@ impl Format {
         result: &mut CssWriter,
     ) -> Result<(), Error> {
         match *item {
+            Item::Use(ref name, ref as_n) => do_use(scope, name, as_n)?,
             Item::Import(ref names, ref args, ref pos) => {
                 if args.is_null() {
                     for name in names {
@@ -397,6 +398,7 @@ impl Format {
     ) -> Result<(), Error> {
         for b in body {
             match *b {
+                Item::Use(ref name, ref as_n) => do_use(scope, name, as_n)?,
                 Item::Import(ref names, ref args, ref pos) => {
                     if args.is_null() {
                         for name in names {
@@ -796,6 +798,21 @@ impl Format {
         }
         Ok(())
     }
+}
+
+fn do_use(
+    scope: &mut dyn Scope,
+    name: &SassString,
+    as_name: &Option<SassString>,
+) -> Result<(), Error> {
+    let (name, _q) = name.evaluate(scope)?;
+    let as_name = if let Some(as_name) = as_name {
+        Some(as_name.evaluate(scope)?.0)
+    } else {
+        None
+    };
+    scope.do_use(&name, as_name.as_ref().map(|n| n.as_ref()));
+    Ok(())
 }
 
 struct CssWriter {

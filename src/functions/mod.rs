@@ -134,6 +134,24 @@ impl SassFunction {
     }
 }
 
+pub type Module = BTreeMap<&'static str, SassFunction>;
+
+lazy_static! {
+    static ref MODULES: BTreeMap<&'static str, Module> = {
+        let mut modules = BTreeMap::new();
+        let mut color = Module::new();
+        colors_hsl::register(&mut color);
+        colors_rgb::register(&mut color);
+        colors_other::register(&mut color);
+        modules.insert("sass:color", color);
+        modules
+    };
+}
+
+pub fn get_global_module(name: &str) -> Option<&'static Module> {
+    MODULES.get(name)
+}
+
 lazy_static! {
     static ref FUNCTIONS: BTreeMap<&'static str, SassFunction> = {
         let mut f = BTreeMap::new();

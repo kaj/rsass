@@ -23,7 +23,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn alpha() {
         assert_eq!(
             rsass(
@@ -39,7 +38,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn blue() {
         assert_eq!(
             rsass(
@@ -71,7 +69,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn complement() {
         assert_eq!(
             rsass(
@@ -93,7 +90,6 @@ mod color {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn multi_arg() {
                 assert_eq!(
                     rsass(
@@ -109,7 +105,6 @@ mod color {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn one_arg() {
                 assert_eq!(
                     rsass(
@@ -126,7 +121,6 @@ mod color {
             }
         }
         #[test]
-        #[ignore] // wrong result
         fn grayscale() {
             assert_eq!(
                 rsass(
@@ -142,7 +136,6 @@ mod color {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn invert() {
             assert_eq!(
                 rsass(
@@ -158,7 +151,6 @@ mod color {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn opacity() {
             assert_eq!(
                 rsass(
@@ -203,7 +195,6 @@ mod color {
         // Ignoring "transparentize", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn green() {
         assert_eq!(
             rsass(
@@ -219,7 +210,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn hue() {
         assert_eq!(
             rsass(
@@ -235,7 +225,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn ie_hex_str() {
         assert_eq!(
             rsass(
@@ -251,7 +240,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn invert() {
         assert_eq!(
             rsass(
@@ -267,7 +255,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn lightness() {
         assert_eq!(
             rsass(
@@ -283,7 +270,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn mix() {
         assert_eq!(
             rsass(
@@ -299,7 +285,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn red() {
         assert_eq!(
             rsass(
@@ -315,7 +300,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn saturation() {
         assert_eq!(
             rsass(
@@ -451,7 +435,7 @@ mod general {
         }
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn global() {
         assert_eq!(
             rsass(
@@ -729,7 +713,6 @@ mod math {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn random() {
         assert_eq!(
             rsass(

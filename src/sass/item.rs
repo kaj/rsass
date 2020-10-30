@@ -56,6 +56,7 @@ pub enum Item {
     },
     While(Value, Vec<Item>),
 
+    Use(SassString, Option<SassString>),
     Rule(Selectors, Vec<Item>),
     NamespaceRule(SassString, Value, Vec<Item>),
     Property(SassString, Value),
