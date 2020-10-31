@@ -162,15 +162,19 @@ pub fn create_module() -> Module {
 }
 
 pub fn expose(list: &Module, global: &mut Module) {
-    global.insert("append", list.get("append").unwrap().clone());
-    global.insert("index", list.get("index").unwrap().clone());
-    global.insert("is_bracketed", list.get("is_bracketed").unwrap().clone());
-    global.insert("join", list.get("join").unwrap().clone());
-    global.insert("length", list.get("length").unwrap().clone());
-    global.insert("list_separator", list.get("separator").unwrap().clone());
-    global.insert("nth", list.get("nth").unwrap().clone());
-    global.insert("set_nth", list.get("set_nth").unwrap().clone());
-    global.insert("zip", list.get("zip").unwrap().clone());
+    for (gname, lname) in &[
+        ("append", "append"),
+        ("index", "index"),
+        ("is_bracketed", "is_bracketed"),
+        ("join", "join"),
+        ("length", "length"),
+        ("list_separator", "separator"),
+        ("nth", "nth"),
+        ("set_nth", "set_nth"),
+        ("zip", "zip"),
+    ] {
+        global.insert(gname, list.get(lname).unwrap().clone());
+    }
 }
 
 fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {

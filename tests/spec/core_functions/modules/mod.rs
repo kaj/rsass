@@ -931,7 +931,6 @@ mod selector {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn append() {
         assert_eq!(
             rsass(
@@ -995,7 +994,6 @@ mod selector {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn nest() {
         assert_eq!(
             rsass(
@@ -1011,7 +1009,6 @@ mod selector {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn parse() {
         assert_eq!(
             rsass(

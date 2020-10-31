@@ -99,6 +99,31 @@ pub fn create_module() -> Module {
     f
 }
 
+pub fn expose(math: &Module, global: &mut Module) {
+    for (gname, lname) in &[
+        // - - - Boundig Functions - - -
+        ("ceil", "ceil"),
+        // ("clamp", "clamp"),
+        ("floor", "floor"),
+        ("max", "max"),
+        ("min", "min"),
+        ("round", "round"),
+        // - - - Distance Functions - - -
+        ("abs", "abs"),
+        // Exponential and trigonometric functions are not exposed
+
+        // - - - Unit Functions - - -
+        ("comparable", "compatible"),
+        ("unitless", "is_unitless"),
+        ("unit", "unit"),
+        // - - - Other Functions - - -
+        ("percentage", "percentage"),
+        ("random", "random"),
+    ] {
+        global.insert(gname, math.get(lname).unwrap().clone());
+    }
+}
+
 fn number(v: Rational, unit: Unit) -> Value {
     Value::Numeric(Number::from(v), unit, true)
 }

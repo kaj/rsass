@@ -62,13 +62,17 @@ pub fn create_module() -> Module {
 }
 
 pub fn expose(map: &Module, global: &mut Module) {
-    global.insert("map_get", map.get("get").unwrap().clone());
-    global.insert("map_has_key", map.get("has_key").unwrap().clone());
-    global.insert("map_keys", map.get("keys").unwrap().clone());
-    global.insert("map_merge", map.get("merge").unwrap().clone());
-    global.insert("map_remove", map.get("remove").unwrap().clone());
-    // TODO global.insert("map_set", map.get("set").unwrap().clone());
-    global.insert("map_values", map.get("values").unwrap().clone());
+    for (gname, lname) in &[
+        ("map_get", "get"),
+        ("map_has_key", "has_key"),
+        ("map_keys", "keys"),
+        ("map_merge", "merge"),
+        ("map_remove", "remove"),
+        // TODO ("map_set", "set"),
+        ("map_values", "values"),
+    ] {
+        global.insert(gname, map.get(lname).unwrap().clone());
+    }
 }
 
 fn get_map(v: Value) -> Result<OrderMap<Value, Value>, Error> {

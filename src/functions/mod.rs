@@ -16,7 +16,6 @@ mod list;
 mod map;
 mod math;
 mod meta;
-mod numbers;
 mod selector;
 mod string;
 
@@ -169,17 +168,15 @@ lazy_static! {
                 Ok(s.get("if_false")?)
             }
         });
-        // TODO: Get rid of all of these!
-        // expose selected functions from modules instead
         colors_hsl::register(&mut f);
         colors_rgb::register(&mut f);
         colors_other::register(&mut f);
-        selector::register(&mut f);
-        numbers::register(&mut f);
         list::expose(MODULES.get("sass:list").unwrap(), &mut f);
         map::expose(MODULES.get("sass:map").unwrap(), &mut f);
+        math::expose(MODULES.get("sass:math").unwrap(), &mut f);
+        meta::expose(MODULES.get("sass:meta").unwrap(), &mut f);
+        selector::expose(MODULES.get("sass:selector").unwrap(), &mut f);
         string::expose(MODULES.get("sass:string").unwrap(), &mut f);
-        meta::register(&mut f);
         f
     };
 }

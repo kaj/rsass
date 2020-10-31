@@ -1,48 +1,43 @@
 use super::{Error, Module, SassFunction};
 use crate::css::{CallArgs, Value};
-use crate::value::{Quotes, Unit};
+use crate::value::Quotes;
 use crate::variablescope::Scope;
 use crate::Format;
-use std::collections::BTreeMap;
 
 pub fn create_module() -> Module {
     let mut f = Module::new();
-    register(&mut f);
-    f
-}
+    // - - - Mixins - - -
+    // TODO: load_css
 
-static IMPLEMENTED_FEATURES: &[&str] = &[
-    // A local variable will shadow a global variable unless
-    // `!global` is used.
-    "global-variable-shadowing",
-    // "extend-selector-pseudoclass" - nothing with `@extend` is implemented
-    // Full support for unit arithmetic using units defined in the
-    // [Values and Units Level 3][] spec.
-    "units-level-3",
-    // The Sass `@error` directive is supported.
-    "at-error",
-    // The "Custom Properties Level 1" spec is supported. This means
-    // that custom properties are parsed statically, with only
-    // interpolation treated as SassScript.
-    // "custom-property",
-];
-
-pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
+    // - - - Functions - - -
+    def_va!(f, call(name, args), |s: &dyn Scope| {
+        let (function, name) = match s.get("name")? {
+            Value::Function(ref name, ref func) => {
+                (func.clone(), name.clone())
+            }
+            Value::Literal(ref name, _) => {
+                dep_warn!(
+                    "Passing a string to call() is deprecated and \
+                     will be illegal"
+                );
+                (s.get_function(name).cloned(), name.clone())
+            }
+            ref v => return Err(Error::badarg("string", v)),
+        };
+        let args = CallArgs::from_value(s.get("args")?);
+        if let Some(function) = function {
+            function.call(s, &args)
+        } else {
+            Ok(Value::Call(name, args))
+        }
+    });
+    def!(f, content_exists(), |s| {
+        let content = s.get_mixin("%%BODY%%");
+        Ok(content.map(|(_, b)| !b.is_empty()).unwrap_or(false).into())
+    });
     def!(f, feature_exists(feature), |s| match &s.get("feature")? {
         &Value::Literal(ref v, _) => {
             Ok(IMPLEMENTED_FEATURES.iter().any(|s| s == v).into())
-        }
-        v => Err(Error::badarg("string", v)),
-    });
-    def!(f, variable_exists(name), |s| match &s.get("name")? {
-        &Value::Literal(ref v, _) => {
-            Ok(s.get_or_none(v).is_some().into())
-        }
-        v => Err(Error::badarg("string", v)),
-    });
-    def!(f, global_variable_exists(name), |s| match &s.get("name")? {
-        &Value::Literal(ref v, _) => {
-            Ok(s.get_global_or_none(v).is_some().into())
         }
         v => Err(Error::badarg("string", v)),
     });
@@ -68,15 +63,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             ref v => Err(Error::badarg("string", v)),
         }
     );
-    def!(f, mixin_exists(name), |s| match &s.get("name")? {
+    def!(f, global_variable_exists(name), |s| match &s.get("name")? {
         &Value::Literal(ref v, _) => {
-            Ok(s.get_mixin(&v.replace('-', "_")).is_some().into())
+            Ok(s.get_global_or_none(v).is_some().into())
         }
         v => Err(Error::badarg("string", v)),
-    });
-    def!(f, content_exists(), |s| {
-        let content = s.get_mixin("%%BODY%%");
-        Ok(content.map(|(_, b)| !b.is_empty()).unwrap_or(false).into())
     });
     def!(f, inspect(value), |s| Ok(Value::Literal(
         match s.get("value")? {
@@ -86,55 +77,61 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         },
         Quotes::None
     )));
+    // TODO: keywords
+    def!(f, mixin_exists(name), |s| match &s.get("name")? {
+        &Value::Literal(ref v, _) => {
+            Ok(s.get_mixin(&v.replace('-', "_")).is_some().into())
+        }
+        v => Err(Error::badarg("string", v)),
+    });
+    // TODO: module_functions, module_variables
     def!(f, type_of(value), |s| Ok(Value::Literal(
         s.get("value")?.type_name().into(),
         Quotes::None
     )));
-    def!(f, unit(number), |s| {
-        let v = match s.get("number")? {
-            Value::Numeric(_, ref unit, ..) => format!("{}", unit),
-            _ => "".into(),
-        };
-        Ok(Value::Literal(v, Quotes::Double))
-    });
-    def!(f, unitless(number), |s| match s.get("number")? {
-        Value::Numeric(_, unit, ..) => Ok((unit == Unit::None).into()),
-        v => Err(Error::badarg("number", &v)),
-    });
-    def!(f, comparable(number1, number2), |s| {
-        match (&s.get("number1")?, &s.get("number2")?) {
-            (
-                &Value::Numeric(_, ref u1, ..),
-                &Value::Numeric(_, ref u2, ..),
-            ) => Ok(((u1 == u2)
-                || (*u1 == Unit::None || *u2 == Unit::None)
-                || u2.scale_to(u1).is_some())
-            .into()),
-            (v1, v2) => Err(Error::badargs(&["number", "number"], &[v1, v2])),
+    def!(f, variable_exists(name), |s| match &s.get("name")? {
+        &Value::Literal(ref v, _) => {
+            Ok(s.get_or_none(v).is_some().into())
         }
+        v => Err(Error::badarg("string", v)),
     });
-    def_va!(f, call(name, args), |s: &dyn Scope| {
-        let (function, name) = match s.get("name")? {
-            Value::Function(ref name, ref func) => {
-                (func.clone(), name.clone())
-            }
-            Value::Literal(ref name, _) => {
-                dep_warn!(
-                    "Passing a string to call() is deprecated and \
-                     will be illegal"
-                );
-                (s.get_function(name).cloned(), name.clone())
-            }
-            ref v => return Err(Error::badarg("string", v)),
-        };
-        let args = CallArgs::from_value(s.get("args")?);
-        if let Some(function) = function {
-            function.call(s, &args)
-        } else {
-            Ok(Value::Call(name, args))
-        }
-    });
+    f
 }
+
+pub fn expose(meta: &Module, global: &mut Module) {
+    for (gname, lname) in &[
+        // - - - Mixins - - -
+        ("call", "call"),
+        ("content_exists", "content_exists"),
+        ("feature_exists", "feature_exists"),
+        ("function_exists", "function_exists"),
+        ("get_function", "get_function"),
+        ("global_variable_exists", "global_variable_exists"),
+        ("inspect", "inspect"),
+        // TODO: ("keywords", "keywords"),
+        ("mixin_exists", "mixin_exists"),
+        ("type_of", "type_of"),
+        ("variable_exists", "variable_exists"),
+    ] {
+        global.insert(gname, meta.get(lname).unwrap().clone());
+    }
+}
+
+static IMPLEMENTED_FEATURES: &[&str] = &[
+    // A local variable will shadow a global variable unless
+    // `!global` is used.
+    "global-variable-shadowing",
+    // "extend-selector-pseudoclass" - nothing with `@extend` is implemented
+    // Full support for unit arithmetic using units defined in the
+    // [Values and Units Level 3][] spec.
+    "units-level-3",
+    // The Sass `@error` directive is supported.
+    "at-error",
+    // The "Custom Properties Level 1" spec is supported. This means
+    // that custom properties are parsed statically, with only
+    // interpolation treated as SassScript.
+    // "custom-property",
+];
 
 #[cfg(test)]
 mod test {

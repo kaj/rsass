@@ -5,16 +5,37 @@ use crate::parser::selectors::{selector, selectors};
 use crate::selectors::{Selector, Selectors};
 use crate::value::Quotes;
 use crate::ParseError;
-use std::collections::BTreeMap;
 
 pub fn create_module() -> Module {
     let mut f = Module::new();
-    register(&mut f);
-    f
-}
-
-pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def_va!(f, selector_nest(selectors), |s| match s.get("selectors")? {
+    // TODO: is_superselector
+    def_va!(f, append(selectors), |s| match s.get("selectors")? {
+        Value::List(v, _, _) => Ok(Value::Literal(
+            format!(
+                "{}",
+                v.into_iter().map(parse_selectors).try_fold(
+                    Selectors::root(),
+                    |base, ext| ext.and_then(|ext| Ok(Selectors::new(
+                        base.s
+                            .into_iter()
+                            .flat_map(|b| {
+                                ext.s.iter().map(move |e| {
+                                    parse_selector(&format!("{}{}", b, e))
+                                })
+                            })
+                            .collect::<Result<_, _>>()?
+                    ))),
+                )?,
+            ),
+            Quotes::None,
+        )),
+        v => Ok(Value::Literal(
+            format!("{}", parse_selectors(v)?),
+            Quotes::None,
+        )),
+    });
+    // TODO: extend
+    def_va!(f, nest(selectors), |s| match s.get("selectors")? {
         Value::List(v, _, _) => Ok(Value::Literal(
             format!(
                 "{}",
@@ -30,39 +51,27 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Quotes::None,
         )),
     });
-    def_va!(
-        f,
-        selector_append(selectors),
-        |s| match s.get("selectors")? {
-            Value::List(v, _, _) => Ok(Value::Literal(
-                format!(
-                    "{}",
-                    v.into_iter().map(parse_selectors).try_fold(
-                        Selectors::root(),
-                        |base, ext| ext.and_then(|ext| Ok(Selectors::new(
-                            base.s
-                                .into_iter()
-                                .flat_map(|b| {
-                                    ext.s.iter().map(move |e| {
-                                        parse_selector(&format!("{}{}", b, e))
-                                    })
-                                })
-                                .collect::<Result<_, _>>()?
-                        ))),
-                    )?,
-                ),
-                Quotes::None,
-            )),
-            v => Ok(Value::Literal(
-                format!("{}", parse_selectors(v)?),
-                Quotes::None,
-            )),
-        }
-    );
-    def!(f, selector_parse(selector), |s| Ok(parse_selectors(
-        s.get("selector")?
-    )?
-    .to_value()));
+    def!(f, parse(selector), |s| {
+        Ok(parse_selectors(s.get("selector")?)?.to_value())
+    });
+    // TODO: replace, unify, simple_selectors
+    f
+}
+
+pub fn expose(meta: &Module, global: &mut Module) {
+    for (gname, lname) in &[
+        // - - - Mixins - - -
+        //("is_superselector", "is_superselector"),
+        ("selector_append", "append"),
+        //("selector_extend", "extend"),
+        ("selector_nest", "nest"),
+        ("selector_parse", "parse"),
+        //("selector_replace", "replace"),
+        //("selector_unify", "unify"),
+        //("simple_selectors", "simple_selectors"),
+    ] {
+        global.insert(gname, meta.get(lname).unwrap().clone());
+    }
 }
 
 fn parse_selectors(v: Value) -> Result<Selectors, Error> {
