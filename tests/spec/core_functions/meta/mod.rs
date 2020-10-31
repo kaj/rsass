@@ -116,7 +116,6 @@ mod call {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // unexepected error
     fn named() {
         assert_eq!(
         rsass(

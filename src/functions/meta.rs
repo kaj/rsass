@@ -10,8 +10,8 @@ pub fn create_module() -> Module {
     // TODO: load_css
 
     // - - - Functions - - -
-    def_va!(f, call(name, args), |s: &dyn Scope| {
-        let (function, name) = match s.get("name")? {
+    def_va!(f, call(function, args), |s: &dyn Scope| {
+        let (function, name) = match s.get("function")? {
             Value::Function(ref name, ref func) => {
                 (func.clone(), name.clone())
             }
