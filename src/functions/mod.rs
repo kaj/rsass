@@ -175,10 +175,10 @@ lazy_static! {
         colors_rgb::register(&mut f);
         colors_other::register(&mut f);
         selector::register(&mut f);
-        string::register(&mut f);
         numbers::register(&mut f);
         list::expose(MODULES.get("sass:list").unwrap(), &mut f);
         map::expose(MODULES.get("sass:map").unwrap(), &mut f);
+        string::expose(MODULES.get("sass:string").unwrap(), &mut f);
         meta::register(&mut f);
         f
     };

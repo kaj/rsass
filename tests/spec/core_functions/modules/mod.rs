@@ -1093,7 +1093,6 @@ mod string {
         // Ignoring "str_slice", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn index() {
         assert_eq!(
             rsass(
@@ -1109,7 +1108,6 @@ mod string {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn insert() {
         assert_eq!(
             rsass(
@@ -1125,7 +1123,6 @@ mod string {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn length() {
         assert_eq!(
             rsass(
@@ -1156,7 +1153,6 @@ mod string {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn slice() {
         assert_eq!(
             rsass(
