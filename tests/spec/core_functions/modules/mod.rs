@@ -472,7 +472,6 @@ mod map {
         // Ignoring "map_values", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn get() {
         assert_eq!(
             rsass(
@@ -488,7 +487,6 @@ mod map {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn has_key() {
         assert_eq!(
             rsass(
@@ -504,7 +502,6 @@ mod map {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn keys() {
         assert_eq!(
             rsass(
@@ -520,7 +517,6 @@ mod map {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn merge() {
         assert_eq!(
             rsass(
@@ -537,7 +533,6 @@ mod map {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn remove() {
         assert_eq!(
             rsass(
@@ -554,7 +549,6 @@ mod map {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn values() {
         assert_eq!(
             rsass(

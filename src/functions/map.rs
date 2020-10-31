@@ -2,20 +2,24 @@ use super::{Error, Module, SassFunction};
 use crate::css::Value;
 use crate::ordermap::OrderMap;
 use crate::value::ListSeparator;
-use std::collections::BTreeMap;
 
 pub fn create_module() -> Module {
     let mut f = Module::new();
-    register(&mut f);
-    f
-}
-
-pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, map_get(map, key), |s| Ok(get_map(s.get("map")?)?
+    // TODO deep_merge and deep_remove
+    def!(f, get(map, key), |s| Ok(get_map(s.get("map")?)?
         .get(&s.get("key")?)
         .cloned()
         .unwrap_or(Value::Null)));
-    def!(f, map_merge(map1, map2), |s| {
+    def!(f, has_key(map, key), |s| {
+        let map = get_map(s.get("map")?)?;
+        Ok(map.contains_key(&s.get("key")?).into())
+    });
+    def!(f, keys(map), |s| {
+        let map = get_map(s.get("map")?)?;
+        Ok(Value::List(map.keys(), ListSeparator::Comma, false))
+    });
+    // TODO: Merge should be varargs
+    def!(f, merge(map1, map2), |s| {
         let mut map1 = get_map(s.get("map1")?)?;
         let map2 = get_map(s.get("map2")?)?;
         for (key, value) in map2 {
@@ -26,7 +30,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     // It's really map_remove(map, keys), but "key" is supported as an
     // alias for "keys", which makes a mess when using more than one
     // positional argument.
-    def_va!(f, map_remove(map, key, keys), |s| {
+    def_va!(f, remove(map, key, keys), |s| {
         let mut map = get_map(s.get("map")?)?;
         let key = s.get("key")?;
         let keys = s.get("keys")?;
@@ -49,18 +53,22 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         Ok(Value::Map(map))
     });
-    def!(f, map_keys(map), |s| {
-        let map = get_map(s.get("map")?)?;
-        Ok(Value::List(map.keys(), ListSeparator::Comma, false))
-    });
-    def!(f, map_values(map), |s| {
+    // TODO set
+    def!(f, values(map), |s| {
         let map = get_map(s.get("map")?)?;
         Ok(Value::List(map.values(), ListSeparator::Comma, false))
     });
-    def!(f, map_has_key(map, key), |s| {
-        let map = get_map(s.get("map")?)?;
-        Ok(map.contains_key(&s.get("key")?).into())
-    });
+    f
+}
+
+pub fn expose(map: &Module, global: &mut Module) {
+    global.insert("map_get", map.get("get").unwrap().clone());
+    global.insert("map_has_key", map.get("has_key").unwrap().clone());
+    global.insert("map_keys", map.get("keys").unwrap().clone());
+    global.insert("map_merge", map.get("merge").unwrap().clone());
+    global.insert("map_remove", map.get("remove").unwrap().clone());
+    // TODO global.insert("map_set", map.get("set").unwrap().clone());
+    global.insert("map_values", map.get("values").unwrap().clone());
 }
 
 fn get_map(v: Value) -> Result<OrderMap<Value, Value>, Error> {

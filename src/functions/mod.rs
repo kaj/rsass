@@ -178,7 +178,7 @@ lazy_static! {
         string::register(&mut f);
         numbers::register(&mut f);
         list::expose(MODULES.get("sass:list").unwrap(), &mut f);
-        map::register(&mut f);
+        map::expose(MODULES.get("sass:map").unwrap(), &mut f);
         meta::register(&mut f);
         f
     };
