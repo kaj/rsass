@@ -48,15 +48,17 @@ impl<'a> Display for Formatted<'a, Value> {
                 }
             }
             Value::List(ref v, sep, brackets) => {
+                let introspect = self.format.is_introspection();
                 let t = v
                     .iter()
-                    .filter(|v| !v.is_null())
+                    .filter(|v| !v.is_null() || introspect)
                     .map(|v| {
                         let needs_paren = match *v {
-                            Value::List(_, inner, false) => {
-                                (brackets || self.format.is_introspection())
+                            Value::List(ref v, inner, false) => {
+                                ((brackets || introspect)
                                     && (sep == ListSeparator::Space
-                                        || inner == ListSeparator::Comma)
+                                        || inner == ListSeparator::Comma))
+                                    || (v.is_empty() && introspect)
                             }
                             _ => false,
                         };
