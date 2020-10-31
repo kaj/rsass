@@ -1,51 +1,56 @@
 use super::{Error, Module, SassFunction};
 use crate::css::Value;
 use crate::value::{ListSeparator, Quotes};
-use std::collections::BTreeMap;
 
 pub fn create_module() -> Module {
     let mut f = Module::new();
-    register(&mut f);
-    f
-}
-
-pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, length(list), |s| match s.get("list")? {
-        Value::List(v, _, _) => Ok(Value::scalar(v.len() as isize)),
-        Value::Map(m) => Ok(Value::scalar(m.len() as isize)),
-        // A null value is considered eqivalent to an empty list
-        Value::Null => Ok(Value::scalar(0)),
-        // Any other value is a singleton list of that value
-        _ => Ok(Value::scalar(1)),
-    });
-    def!(f, nth(list, n), |s| {
-        let n = s.get("n")?.integer_value()?;
-        match s.get("list")? {
-            Value::List(list, _, _) => {
-                Ok(list[list_index(n, &list)?].clone())
+    def!(f, append(list, val, separator), |s| {
+        let (mut list, sep, bra) = get_list(s.get("list")?);
+        let sep = match (s.get("separator")?, sep) {
+            (Value::Literal(ref s, _), _) if s == "comma" => {
+                ListSeparator::Comma
             }
-            Value::Map(map) => {
-                let n = rust_index(n, map.len())?;
-                if let Some(&(ref k, ref v)) = map.get_item(n) {
-                    Ok(Value::List(
-                        vec![k.clone(), v.clone()],
-                        ListSeparator::Space,
-                        false,
-                    ))
-                } else {
-                    Ok(Value::Null)
+            (Value::Literal(ref s, _), _) if s == "space" => {
+                ListSeparator::Space
+            }
+            (_, s) => s.unwrap_or(ListSeparator::Space),
+        };
+        list.push(s.get("val")?);
+        Ok(Value::List(list, sep, bra))
+    });
+    def!(f, index(list, value), |s| match s.get("list")? {
+        Value::List(v, _, _) => {
+            let value = s.get("value")?;
+            for (i, v) in v.iter().enumerate() {
+                if v == &value {
+                    return Ok(Value::scalar(i as isize + 1));
                 }
             }
-            v => Ok(if n == 1 { v } else { Value::Null }),
+            Ok(Value::Null)
+        }
+        Value::Map(map) => match s.get("value")? {
+            Value::List(ref l, ListSeparator::Space, _) if l.len() == 2 => {
+                for (i, &(ref k, ref v)) in map.iter().enumerate() {
+                    if *k == l[0] && *v == l[1] {
+                        return Ok(Value::scalar(i as isize + 1));
+                    }
+                }
+                Ok(Value::Null)
+            }
+            _ => Ok(Value::Null),
+        },
+        v => {
+            if v == s.get("value")? {
+                Ok(Value::scalar(1))
+            } else {
+                Ok(Value::Null)
+            }
         }
     });
-    def!(f, set_nth(list, n, value), |s| {
-        let n = s.get("n")?.integer_value()?;
-        let (mut list, sep, bra) = get_list(s.get("list")?);
-        let i = list_index(n, &list)?;
-        list[i] = s.get("value")?;
-        Ok(Value::List(list, sep.unwrap_or(ListSeparator::Space), bra))
-    });
+    def!(f, is_bracketed(list), |s| Ok(match s.get("list")? {
+        Value::List(_, _, true) => Value::True,
+        _ => Value::False,
+    }));
     def!(
         f,
         join(list1, list2, separator = b"auto", bracketed = b"auto"),
@@ -83,19 +88,51 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Ok(Value::List(list1, separator, bra))
         }
     );
-    def!(f, append(list, val, separator), |s| {
+    def!(f, length(list), |s| match s.get("list")? {
+        Value::List(v, _, _) => Ok(Value::scalar(v.len() as isize)),
+        Value::Map(m) => Ok(Value::scalar(m.len() as isize)),
+        // A null value is considered eqivalent to an empty list
+        Value::Null => Ok(Value::scalar(0)),
+        // Any other value is a singleton list of that value
+        _ => Ok(Value::scalar(1)),
+    });
+    def!(f, separator(list), |s| Ok(Value::Literal(
+        match s.get("list")? {
+            Value::List(_, ListSeparator::Comma, _) => "comma",
+            Value::Map(ref map) if map.len() == 0 => "space",
+            Value::Map(_) => "comma",
+            _ => "space",
+        }
+        .into(),
+        Quotes::None
+    )));
+    def!(f, nth(list, n), |s| {
+        let n = s.get("n")?.integer_value()?;
+        match s.get("list")? {
+            Value::List(list, _, _) => {
+                Ok(list[list_index(n, &list)?].clone())
+            }
+            Value::Map(map) => {
+                let n = rust_index(n, map.len())?;
+                if let Some(&(ref k, ref v)) = map.get_item(n) {
+                    Ok(Value::List(
+                        vec![k.clone(), v.clone()],
+                        ListSeparator::Space,
+                        false,
+                    ))
+                } else {
+                    Ok(Value::Null)
+                }
+            }
+            v => Ok(if n == 1 { v } else { Value::Null }),
+        }
+    });
+    def!(f, set_nth(list, n, value), |s| {
+        let n = s.get("n")?.integer_value()?;
         let (mut list, sep, bra) = get_list(s.get("list")?);
-        let sep = match (s.get("separator")?, sep) {
-            (Value::Literal(ref s, _), _) if s == "comma" => {
-                ListSeparator::Comma
-            }
-            (Value::Literal(ref s, _), _) if s == "space" => {
-                ListSeparator::Space
-            }
-            (_, s) => s.unwrap_or(ListSeparator::Space),
-        };
-        list.push(s.get("val")?);
-        Ok(Value::List(list, sep, bra))
+        let i = list_index(n, &list)?;
+        list[i] = s.get("value")?;
+        Ok(Value::List(list, sep.unwrap_or(ListSeparator::Space), bra))
     });
     def_va!(f, zip(lists), |s| {
         // TODO: A single argument is just the first list, unless its
@@ -121,49 +158,19 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             .collect();
         Ok(Value::List(result, ListSeparator::Comma, false))
     });
-    def!(f, index(list, value), |s| match s.get("list")? {
-        Value::List(v, _, _) => {
-            let value = s.get("value")?;
-            for (i, v) in v.iter().enumerate() {
-                if v == &value {
-                    return Ok(Value::scalar(i as isize + 1));
-                }
-            }
-            Ok(Value::Null)
-        }
-        Value::Map(map) => match s.get("value")? {
-            Value::List(ref l, ListSeparator::Space, _) if l.len() == 2 => {
-                for (i, &(ref k, ref v)) in map.iter().enumerate() {
-                    if *k == l[0] && *v == l[1] {
-                        return Ok(Value::scalar(i as isize + 1));
-                    }
-                }
-                Ok(Value::Null)
-            }
-            _ => Ok(Value::Null),
-        },
-        v => {
-            if v == s.get("value")? {
-                Ok(Value::scalar(1))
-            } else {
-                Ok(Value::Null)
-            }
-        }
-    });
-    def!(f, list_separator(list), |s| Ok(Value::Literal(
-        match s.get("list")? {
-            Value::List(_, ListSeparator::Comma, _) => "comma",
-            Value::Map(ref map) if map.len() == 0 => "space",
-            Value::Map(_) => "comma",
-            _ => "space",
-        }
-        .into(),
-        Quotes::None
-    )));
-    def!(f, is_bracketed(list), |s| Ok(match s.get("list")? {
-        Value::List(_, _, true) => Value::True,
-        _ => Value::False,
-    }));
+    f
+}
+
+pub fn expose(list: &Module, global: &mut Module) {
+    global.insert("append", list.get("append").unwrap().clone());
+    global.insert("index", list.get("index").unwrap().clone());
+    global.insert("is_bracketed", list.get("is_bracketed").unwrap().clone());
+    global.insert("join", list.get("join").unwrap().clone());
+    global.insert("length", list.get("length").unwrap().clone());
+    global.insert("list_separator", list.get("separator").unwrap().clone());
+    global.insert("nth", list.get("nth").unwrap().clone());
+    global.insert("set_nth", list.get("set_nth").unwrap().clone());
+    global.insert("zip", list.get("zip").unwrap().clone());
 }
 
 fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
