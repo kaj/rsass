@@ -12,12 +12,13 @@ mod macros;
 mod colors_hsl;
 mod colors_other;
 mod colors_rgb;
-mod introspection;
-mod lists;
-mod maps;
+mod list;
+mod map;
+mod math;
+mod meta;
 mod numbers;
 mod selector;
-mod strings;
+mod string;
 
 pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
     let name = name.replace("-", "_");
@@ -144,6 +145,12 @@ lazy_static! {
         colors_rgb::register(&mut color);
         colors_other::register(&mut color);
         modules.insert("sass:color", color);
+        modules.insert("sass:list", list::create_module());
+        modules.insert("sass:map", map::create_module());
+        modules.insert("sass:math", math::create_module());
+        modules.insert("sass:meta", meta::create_module());
+        modules.insert("sass:selector", selector::create_module());
+        modules.insert("sass:string", string::create_module());
         modules
     };
 }
@@ -162,15 +169,17 @@ lazy_static! {
                 Ok(s.get("if_false")?)
             }
         });
+        // TODO: Get rid of all of these!
+        // expose selected functions from modules instead
         colors_hsl::register(&mut f);
         colors_rgb::register(&mut f);
         colors_other::register(&mut f);
-        introspection::register(&mut f);
         selector::register(&mut f);
-        strings::register(&mut f);
+        string::register(&mut f);
         numbers::register(&mut f);
-        lists::register(&mut f);
-        maps::register(&mut f);
+        list::register(&mut f);
+        map::register(&mut f);
+        meta::register(&mut f);
         f
     };
 }

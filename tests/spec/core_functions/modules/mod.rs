@@ -337,7 +337,6 @@ mod general {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn test_as() {
         assert_eq!(
             rsass(
@@ -577,7 +576,6 @@ mod math {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn abs() {
         assert_eq!(
             rsass(
@@ -593,7 +591,6 @@ mod math {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn ceil() {
         assert_eq!(
             rsass(
@@ -609,7 +606,6 @@ mod math {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn compatible() {
         assert_eq!(
             rsass(
@@ -633,7 +629,6 @@ mod math {
         // Ignoring "unitless", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn floor() {
         assert_eq!(
             rsass(
@@ -649,7 +644,6 @@ mod math {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn is_unitless() {
         assert_eq!(
             rsass(
@@ -665,7 +659,6 @@ mod math {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             rsass(
@@ -681,7 +674,6 @@ mod math {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn min() {
         assert_eq!(
             rsass(
@@ -697,7 +689,6 @@ mod math {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn percentage() {
         assert_eq!(
             rsass(
@@ -728,7 +719,6 @@ mod math {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn round() {
         assert_eq!(
             rsass(
@@ -744,7 +734,6 @@ mod math {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unit() {
         assert_eq!(
             rsass(
@@ -766,7 +755,6 @@ mod meta {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn call() {
         assert_eq!(
             rsass(
@@ -782,7 +770,6 @@ mod meta {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn content_exists() {
         assert_eq!(
             rsass(
@@ -803,7 +790,6 @@ mod meta {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn feature_exists() {
         assert_eq!(
             rsass(
@@ -819,7 +805,6 @@ mod meta {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn function_exists() {
         assert_eq!(
             rsass(
@@ -835,7 +820,6 @@ mod meta {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn get_function() {
         assert_eq!(
             rsass(
@@ -851,7 +835,6 @@ mod meta {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn global_variable_exists() {
         assert_eq!(
             rsass(
@@ -867,7 +850,6 @@ mod meta {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn inspect() {
         assert_eq!(
             rsass(
@@ -904,7 +886,6 @@ mod meta {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn mixin_exists() {
         assert_eq!(
             rsass(
@@ -920,7 +901,6 @@ mod meta {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn type_of() {
         assert_eq!(
             rsass(
@@ -936,7 +916,6 @@ mod meta {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn variable_exists() {
         assert_eq!(
             rsass(
@@ -1168,7 +1147,6 @@ mod string {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn quote() {
         assert_eq!(
             rsass(
@@ -1200,7 +1178,6 @@ mod string {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn to_upper_case() {
         assert_eq!(
             rsass(
@@ -1216,7 +1193,6 @@ mod string {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unique_id() {
         assert_eq!(
             rsass(
@@ -1233,7 +1209,6 @@ mod string {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unquote() {
         assert_eq!(
             rsass(

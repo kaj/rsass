@@ -1,11 +1,17 @@
-use super::SassFunction;
+use super::{Error, Module, SassFunction};
 use crate::css::Value;
 use crate::parser::code_span;
 use crate::parser::selectors::{selector, selectors};
 use crate::selectors::{Selector, Selectors};
 use crate::value::Quotes;
-use crate::{Error, ParseError};
+use crate::ParseError;
 use std::collections::BTreeMap;
+
+pub fn create_module() -> Module {
+    let mut f = Module::new();
+    register(&mut f);
+    f
+}
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def_va!(f, selector_nest(selectors), |s| match s.get("selectors")? {

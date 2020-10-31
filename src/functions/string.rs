@@ -1,4 +1,4 @@
-use super::{Error, SassFunction};
+use super::{Error, Module, SassFunction};
 use crate::css::Value;
 use crate::value::{Number, Quotes, Unit};
 use lazy_static::lazy_static;
@@ -6,6 +6,12 @@ use num_rational::Rational;
 use std::cmp::max;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
+
+pub fn create_module() -> Module {
+    let mut f = Module::new();
+    register(&mut f);
+    f
+}
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, quote(string), |s| {

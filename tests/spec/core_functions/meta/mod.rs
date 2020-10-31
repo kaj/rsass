@@ -2558,7 +2558,7 @@ mod module_functions {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn core_module() {
         assert_eq!(
         rsass(

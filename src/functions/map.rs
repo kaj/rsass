@@ -1,8 +1,14 @@
-use super::{Error, SassFunction};
+use super::{Error, Module, SassFunction};
 use crate::css::Value;
 use crate::ordermap::OrderMap;
 use crate::value::ListSeparator;
 use std::collections::BTreeMap;
+
+pub fn create_module() -> Module {
+    let mut f = Module::new();
+    register(&mut f);
+    f
+}
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, map_get(map, key), |s| Ok(get_map(s.get("map")?)?

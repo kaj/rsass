@@ -1,9 +1,15 @@
-use super::{Error, SassFunction};
+use super::{Error, Module, SassFunction};
 use crate::css::{CallArgs, Value};
 use crate::value::{Quotes, Unit};
 use crate::variablescope::Scope;
 use crate::Format;
 use std::collections::BTreeMap;
+
+pub fn create_module() -> Module {
+    let mut f = Module::new();
+    register(&mut f);
+    f
+}
 
 static IMPLEMENTED_FEATURES: &[&str] = &[
     // A local variable will shadow a global variable unless
