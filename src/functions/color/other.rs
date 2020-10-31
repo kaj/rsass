@@ -1,4 +1,4 @@
-use super::{make_call, Error, SassFunction};
+use super::{make_call, Error, Module, SassFunction};
 use crate::css::Value;
 use crate::value::{Quotes, Unit};
 use crate::variablescope::Scope;
@@ -9,9 +9,7 @@ use std::collections::BTreeMap;
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(
         f,
-        adjust_color(
-            color, red, green, blue, hue, saturation, lightness, alpha
-        ),
+        adjust(color, red, green, blue, hue, saturation, lightness, alpha),
         |s: &dyn Scope| match &s.get("color")? {
             &Value::Color(ref rgba, _) => {
                 let c_add = |orig: Rational, name: &str| match s.get(name)? {
@@ -47,9 +45,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     );
     def!(
         f,
-        scale_color(
-            color, red, green, blue, hue, saturation, lightness, alpha
-        ),
+        scale(color, red, green, blue, hue, saturation, lightness, alpha),
         |s: &dyn Scope| match &s.get("color")? {
             &Value::Color(ref rgba, _) => {
                 let h_adj = s.get("hue")?;
@@ -108,8 +104,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
     }
-    f.insert("fade_in", func2!(fade_in(color, amount)));
-    f.insert("opacify", func2!(fade_in(color, amount)));
+    f.insert("_opacify", func2!(fade_in(color, amount)));
 
     fn fade_out(color: Value, amount: Value) -> Result<Value, Error> {
         match (color, amount) {
@@ -120,14 +115,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
     }
-    f.insert("fade_out", func2!(fade_out(color, amount)));
-    f.insert("transparentize", func2!(fade_out(color, amount)));
+    f.insert("_fade_out", func2!(fade_out(color, amount)));
 
     def!(
         f,
-        change_color(
-            color, red, green, blue, hue, saturation, lightness, alpha
-        ),
+        change(color, red, green, blue, hue, saturation, lightness, alpha),
         |s: &dyn Scope| match s.get("color")? {
             Value::Color(rgba, _) => {
                 let h_adj = s.get("hue")?;
@@ -176,6 +168,23 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("color", &v)),
     });
+}
+
+pub fn expose(meta: &Module, global: &mut Module) {
+    for (gname, lname) in &[
+        ("adjust_color", "adjust"),
+        ("alpha", "alpha"),
+        ("opacity", "opacity"),
+        ("change_color", "change"),
+        ("ie_hex_str", "ie_hex_str"),
+        ("opacify", "_opacify"),
+        ("fade_in", "_opacify"),
+        ("scale_color", "scale"),
+        ("transparentize", "_fade_out"),
+        ("fade_out", "_fade_out"),
+    ] {
+        global.insert(gname, meta.get(lname).unwrap().clone());
+    }
 }
 
 fn to_rational(v: Value) -> Result<Rational, Error> {

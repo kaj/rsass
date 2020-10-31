@@ -9,9 +9,7 @@ use std::{cmp, fmt};
 #[macro_use]
 mod macros;
 
-mod colors_hsl;
-mod colors_other;
-mod colors_rgb;
+mod color;
 mod list;
 mod map;
 mod math;
@@ -139,11 +137,7 @@ pub type Module = BTreeMap<&'static str, SassFunction>;
 lazy_static! {
     static ref MODULES: BTreeMap<&'static str, Module> = {
         let mut modules = BTreeMap::new();
-        let mut color = Module::new();
-        colors_hsl::register(&mut color);
-        colors_rgb::register(&mut color);
-        colors_other::register(&mut color);
-        modules.insert("sass:color", color);
+        modules.insert("sass:color", color::create_module());
         modules.insert("sass:list", list::create_module());
         modules.insert("sass:map", map::create_module());
         modules.insert("sass:math", math::create_module());
@@ -168,9 +162,7 @@ lazy_static! {
                 Ok(s.get("if_false")?)
             }
         });
-        colors_hsl::register(&mut f);
-        colors_rgb::register(&mut f);
-        colors_other::register(&mut f);
+        color::expose(MODULES.get("sass:color").unwrap(), &mut f);
         list::expose(MODULES.get("sass:list").unwrap(), &mut f);
         map::expose(MODULES.get("sass:map").unwrap(), &mut f);
         math::expose(MODULES.get("sass:math").unwrap(), &mut f);

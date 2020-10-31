@@ -7,7 +7,6 @@ mod color {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn adjust() {
         assert_eq!(
             rsass(
@@ -53,7 +52,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn change() {
         assert_eq!(
             rsass(
@@ -315,7 +313,6 @@ mod color {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn scale() {
         assert_eq!(
             rsass(
