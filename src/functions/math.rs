@@ -117,7 +117,20 @@ pub fn create_module() -> Module {
     });
 
     // - - - Trigonometric Functions - - -
-    // TODO: cos, sin, tan, acos, asin, atan, atan2
+    def!(f, cos(number), |s| {
+        let val = as_radians(&s.get("number")?)?;
+        Ok(float_value(val.cos(), Unit::None))
+    });
+    def!(f, sin(number), |s| {
+        let val = as_radians(&s.get("number")?)?;
+        Ok(float_value(val.sin(), Unit::None))
+    });
+    def!(f, tan(number), |s| {
+        let val = as_radians(&s.get("number")?)?;
+        Ok(float_value(val.tan(), Unit::None))
+    });
+
+    // TODO: acos, asin, atan, atan2
 
     // - - - Unit Functions - - -
     def!(f, compatible(number1, number2), |s| {
@@ -203,6 +216,21 @@ fn get_numeric(
         v => Err(Error::badarg("number", &v)),
     }
 }
+fn as_radians(v: &Value) -> Result<f64, Error> {
+    match v {
+        Value::Numeric(vv, u, ..) => {
+            if u == &Unit::None {
+                Ok(f64::from(vv.clone()))
+            } else if let Some(scale) = u.scale_to(&Unit::Rad) {
+                Ok(f64::from(vv.clone() * scale))
+            } else {
+                Err(Error::badarg("angle", &v))
+            }
+        }
+        v => Err(Error::badarg("angle", &v)),
+    }
+}
+
 fn as_numeric(v: &Value) -> Result<(Number<isize>, Unit), Error> {
     match v {
         Value::Numeric(v, u, ..) => Ok((v.clone(), u.clone())),
