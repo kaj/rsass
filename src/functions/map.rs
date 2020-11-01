@@ -3,16 +3,73 @@ use crate::css::Value;
 use crate::ordermap::OrderMap;
 use crate::value::ListSeparator;
 
+/// Create the `sass:map` standard module.
+///
+/// Should conform to
+/// [the specification](https://sass-lang.com/documentation/modules/map).
 pub fn create_module() -> Module {
     let mut f = Module::new();
     // TODO deep_merge and deep_remove
-    def!(f, get(map, key), |s| Ok(get_map(s.get("map")?)?
-        .get(&s.get("key")?)
-        .cloned()
-        .unwrap_or(Value::Null)));
-    def!(f, has_key(map, key), |s| {
+    def_va!(f, get(map, key, keys), |s| {
         let map = get_map(s.get("map")?)?;
-        Ok(map.contains_key(&s.get("key")?).into())
+        let mut val = map.get(&s.get("key")?).cloned();
+        match s.get("keys")? {
+            Value::List(keys, ..) => {
+                for k in keys {
+                    match val {
+                        Some(Value::Map(m)) => {
+                            val = m.get(&k).cloned();
+                        }
+                        _ => return Ok(Value::Null),
+                    }
+                }
+            }
+            Value::Null => (),
+            key => {
+                // Single key
+                match val {
+                    Some(Value::Map(m)) => {
+                        val = m.get(&key).cloned();
+                    }
+                    _ => return Ok(Value::Null),
+                }
+            } //_ => (),
+        };
+        Ok(val.unwrap_or(Value::Null))
+    });
+    def_va!(f, has_key(map, key, keys), |s| {
+        let map = get_map(s.get("map")?)?;
+        match s.get("keys")? {
+            Value::List(keys, ..) => {
+                if let Some((last, keys)) = keys.split_last() {
+                    let mut val = map.get(&s.get("key")?).cloned();
+                    for k in keys {
+                        match val {
+                            Some(Value::Map(m)) => {
+                                val = m.get(&k).cloned();
+                            }
+                            _ => return Ok(Value::False),
+                        }
+                    }
+                    if let Some(Value::Map(val)) = val {
+                        Ok(val.contains_key(last).into())
+                    } else {
+                        Ok(Value::False)
+                    }
+                } else {
+                    Ok(map.contains_key(&s.get("key")?).into())
+                }
+            }
+            Value::Null => Ok(map.contains_key(&s.get("key")?).into()),
+            key => {
+                // Single key
+                let val = map.get(&s.get("key")?).cloned();
+                match val {
+                    Some(Value::Map(m)) => Ok(m.contains_key(&key).into()),
+                    _ => return Ok(Value::Null),
+                }
+            } //_ => (),
+        }
     });
     def!(f, keys(map), |s| {
         let map = get_map(s.get("map")?)?;
@@ -53,7 +110,14 @@ pub fn create_module() -> Module {
         }
         Ok(Value::Map(map))
     });
-    // TODO set
+    def!(f, set(map, key, value), |s| {
+        // TODO: handle keys... arguments before key for nested maps
+        let mut map = get_map(s.get("map")?)?;
+        let key = s.get("key")?;
+        let value = s.get("value")?;
+        map.insert(key, value);
+        Ok(Value::Map(map))
+    });
     def!(f, values(map), |s| {
         let map = get_map(s.get("map")?)?;
         Ok(Value::List(map.values(), ListSeparator::Comma, false))
@@ -68,7 +132,6 @@ pub fn expose(map: &Module, global: &mut Module) {
         ("map_keys", "keys"),
         ("map_merge", "merge"),
         ("map_remove", "remove"),
-        // TODO ("map_set", "set"),
         ("map_values", "values"),
     ] {
         global.insert(gname, map.get(lname).unwrap().clone());
