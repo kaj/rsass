@@ -75,6 +75,23 @@ where
     }
 }
 
+impl From<Number<isize>> for f64 {
+    fn from(val: Number<isize>) -> f64 {
+        let mut numer = val.value.numer().clone();
+        let mut denom = val.value.denom().clone();
+        use std::convert::TryFrom;
+        loop {
+            let tn = i32::try_from(numer);
+            let td = i32::try_from(denom);
+            if let (Ok(n), Ok(d)) = (tn, td) {
+                return f64::from(n) / f64::from(d);
+            }
+            numer = numer / 32;
+            denom = denom / 32;
+        }
+    }
+}
+
 impl<'a, N> Div for &'a Number<N>
 where
     N: Clone + Integer + Signed,

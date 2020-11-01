@@ -1,4 +1,4 @@
-use super::{Error, Module, SassFunction};
+use super::{Error, Module, SassFunction, Scope};
 use crate::css::Value;
 use crate::value::{Number, Quotes, Unit};
 use num_rational::Rational;
@@ -6,19 +6,40 @@ use num_traits::Signed;
 use rand::{thread_rng, Rng};
 use std::cmp::Ordering;
 
+/// Create the `sass:math` standard module.
+///
+/// Should conform to
+/// [the specification](https://sass-lang.com/documentation/modules/math).
 pub fn create_module() -> Module {
     let mut f = Module::new();
     // TODO: Variable $pi and $e.
 
     // - - - Boundig Functions - - -
-    def!(f, ceil(number), |s| match s.get("number")? {
-        Value::Numeric(v, u, ..) => Ok(number(v.value.ceil(), u)),
-        v => Err(Error::badarg("number", &v)),
+    def!(f, ceil(number), |s| {
+        let (val, unit) = get_numeric(s, "number")?;
+        Ok(number(val.value.ceil(), unit))
     });
-    // TODO: clamp
-    def!(f, floor(number), |s| match s.get("number")? {
-        Value::Numeric(v, u, ..) => Ok(number(v.value.floor(), u)),
-        v => Err(Error::badarg("number", &v)),
+    def!(f, clamp(min, number, max), |s| {
+        let (min_v, min_u) = get_numeric(s, "min")?;
+        let (mut num, mut u) = get_numeric(s, "number")?;
+        let (max_v, max_u) = get_numeric(s, "max")?;
+        if let Some(scale) = max_u.scale_to(&u) {
+            if num.value >= &max_v.value * scale {
+                num = max_v;
+                u = max_u;
+            }
+        }
+        if let Some(scale) = min_u.scale_to(&u) {
+            if num.value <= &min_v.value * scale {
+                num = min_v;
+                u = min_u;
+            }
+        }
+        Ok(number(num.value, u))
+    });
+    def!(f, floor(number), |s| {
+        let (val, unit) = get_numeric(s, "number")?;
+        Ok(number(val.value.floor(), unit))
     });
     def_va!(f, max(numbers), |s| match s.get("numbers")? {
         Value::List(v, _, _) => {
@@ -30,9 +51,9 @@ pub fn create_module() -> Module {
         Value::List(v, _, _) => Ok(find_extreme(&v, Ordering::Less).clone()),
         single_value => Ok(single_value),
     });
-    def!(f, round(number), |s| match s.get("number")? {
-        Value::Numeric(val, unit, _) => Ok(number(val.value.round(), unit)),
-        v => Err(Error::badarg("number", &v)),
+    def!(f, round(number), |s| {
+        let (val, unit) = get_numeric(s, "number")?;
+        Ok(number(val.value.round(), unit))
     });
 
     // - - - Distance Functions - - -
@@ -43,9 +64,39 @@ pub fn create_module() -> Module {
     // TODO: hypot
 
     // - - - Exponential Functions - - -
-    // TODO: log, pow, sqrt
+    def!(f, log(number, base), |s| {
+        let num = match s.get("number")? {
+            Value::Numeric(v, Unit::None, ..) => f64::from(v),
+            v => return Err(Error::badarg("number", &v)),
+        };
+        let base = match s.get("base")? {
+            Value::Numeric(v, Unit::None, ..) => f64::from(v),
+            Value::Null => std::f64::consts::E,
+            v => return Err(Error::badarg("number", &v)),
+        };
+        let result = num.log(base);
+        Ok(float_value(result))
+    });
+    def!(f, pow(base, exponent), |s| {
+        let base = match s.get("base")? {
+            Value::Numeric(v, Unit::None, ..) => f64::from(v),
+            v => return Err(Error::badarg("number", &v)),
+        };
+        let exponent = match s.get("exponent")? {
+            Value::Numeric(v, Unit::None, ..) => f64::from(v),
+            v => return Err(Error::badarg("number", &v)),
+        };
+        Ok(float_value(base.powf(exponent)))
+    });
+    def!(f, sqrt(number), |s| {
+        let number = match s.get("number")? {
+            Value::Numeric(v, Unit::None, ..) => f64::from(v),
+            v => return Err(Error::badarg("number", &v)),
+        };
+        Ok(float_value(number.sqrt()))
+    });
 
-    // - - - Exponential Functions - - -
+    // - - - Trigonometric Functions - - -
     // TODO: cos, sin, tan, acos, asin, atan, atan2
 
     // - - - Unit Functions - - -
@@ -103,7 +154,6 @@ pub fn expose(math: &Module, global: &mut Module) {
     for (gname, lname) in &[
         // - - - Boundig Functions - - -
         ("ceil", "ceil"),
-        // ("clamp", "clamp"),
         ("floor", "floor"),
         ("max", "max"),
         ("min", "min"),
@@ -124,8 +174,34 @@ pub fn expose(math: &Module, global: &mut Module) {
     }
 }
 
+fn get_numeric(
+    s: &dyn Scope,
+    name: &str,
+) -> Result<(Number<isize>, Unit), Error> {
+    match s.get(name)? {
+        Value::Numeric(v, u, ..) => Ok((v, u)),
+        v => Err(Error::badarg("number", &v)),
+    }
+}
+
 fn number(v: Rational, unit: Unit) -> Value {
     Value::Numeric(Number::from(v), unit, true)
+}
+
+fn float_value(val: f64) -> Value {
+    if let Some(result) = Rational::approximate_float(val) {
+        number(result, Unit::None)
+    } else {
+        if val.is_infinite() {
+            if val.is_sign_negative() {
+                "-Infinity".into()
+            } else {
+                "Infinity".into()
+            }
+        } else {
+            val.to_string().into()
+        }
+    }
 }
 
 fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
