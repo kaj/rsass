@@ -1246,7 +1246,6 @@ mod hypot {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn compatible_units() {
         assert_eq!(
         rsass(
@@ -1309,7 +1308,7 @@ mod hypot {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn first() {
             assert_eq!(
                 rsass(
@@ -1325,7 +1324,7 @@ mod hypot {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn second() {
             assert_eq!(
                 rsass(
@@ -1341,7 +1340,7 @@ mod hypot {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn third() {
             assert_eq!(
                 rsass(
@@ -1358,7 +1357,6 @@ mod hypot {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn unitless() {
         assert_eq!(
             rsass(

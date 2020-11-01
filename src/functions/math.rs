@@ -61,7 +61,27 @@ pub fn create_module() -> Module {
         Value::Numeric(v, u, ..) => Ok(number(v.value.abs(), u)),
         v => Err(Error::badarg("number", &v)),
     });
-    // TODO: hypot
+    def_va!(f, hypot(number), |s| match s.get("number")? {
+        Value::List(v, _, _) => {
+            if let Some((first, rest)) = v.split_first() {
+                let (first, unit) = as_numeric(first)?;
+                let mut sum = f64::from(first).powi(2);
+                for v in rest {
+                    let (vv, vu) = as_numeric(v)?;
+                    if let Some(scale) = vu.scale_to(&unit) {
+                        sum += f64::from(vv * scale).powi(2);
+                    } else {
+                        return Err(Error::badarg(&unit.to_string(), v));
+                    }
+                }
+                Ok(float_value(sum.sqrt(), unit))
+            } else {
+                Err(Error::badarg("number", &Value::Null))
+            }
+        }
+        Value::Numeric(v, u, ..) => Ok(number(v.value.abs(), u)),
+        v => Err(Error::badarg("number", &v)),
+    });
 
     // - - - Exponential Functions - - -
     def!(f, log(number, base), |s| {
@@ -75,7 +95,7 @@ pub fn create_module() -> Module {
             v => return Err(Error::badarg("number", &v)),
         };
         let result = num.log(base);
-        Ok(float_value(result))
+        Ok(float_value(result, Unit::None))
     });
     def!(f, pow(base, exponent), |s| {
         let base = match s.get("base")? {
@@ -86,14 +106,14 @@ pub fn create_module() -> Module {
             Value::Numeric(v, Unit::None, ..) => f64::from(v),
             v => return Err(Error::badarg("number", &v)),
         };
-        Ok(float_value(base.powf(exponent)))
+        Ok(float_value(base.powf(exponent), Unit::None))
     });
     def!(f, sqrt(number), |s| {
         let number = match s.get("number")? {
             Value::Numeric(v, Unit::None, ..) => f64::from(v),
             v => return Err(Error::badarg("number", &v)),
         };
-        Ok(float_value(number.sqrt()))
+        Ok(float_value(number.sqrt(), Unit::None))
     });
 
     // - - - Trigonometric Functions - - -
@@ -183,14 +203,20 @@ fn get_numeric(
         v => Err(Error::badarg("number", &v)),
     }
 }
+fn as_numeric(v: &Value) -> Result<(Number<isize>, Unit), Error> {
+    match v {
+        Value::Numeric(v, u, ..) => Ok((v.clone(), u.clone())),
+        v => Err(Error::badarg("number", &v)),
+    }
+}
 
 fn number(v: Rational, unit: Unit) -> Value {
     Value::Numeric(Number::from(v), unit, true)
 }
 
-fn float_value(val: f64) -> Value {
+fn float_value(val: f64, unit: Unit) -> Value {
     if let Some(result) = Rational::approximate_float(val) {
-        number(result, Unit::None)
+        number(result, unit)
     } else {
         if val.is_infinite() {
             if val.is_sign_negative() {
