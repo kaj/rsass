@@ -271,7 +271,7 @@ fn number(v: Rational, unit: Unit) -> Value {
 /// convert f64 in radians (used by rust) to numeric Value in degrees
 /// (used by sass).
 fn deg_value(rad: f64) -> Value {
-    float_value(rad * 180. / std::f64::consts::PI, Unit::Deg)
+    float_value(rad.to_degrees(), Unit::Deg)
 }
 
 fn float_value(val: f64, unit: Unit) -> Value {
