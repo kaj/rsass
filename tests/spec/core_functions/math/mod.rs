@@ -130,7 +130,6 @@ mod acos {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn decimal() {
         assert_eq!(
             rsass(
@@ -190,7 +189,6 @@ mod acos {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_decimal() {
         assert_eq!(
             rsass(
@@ -206,7 +204,6 @@ mod acos {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn one() {
         assert_eq!(
             rsass(
@@ -222,7 +219,6 @@ mod acos {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn one_fuzzy() {
         assert_eq!(
             rsass(
@@ -244,7 +240,6 @@ mod asin {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn decimal() {
         assert_eq!(
             rsass(
@@ -304,7 +299,6 @@ mod asin {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_decimal() {
         assert_eq!(
             rsass(
@@ -320,7 +314,6 @@ mod asin {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_zero() {
         assert_eq!(
             rsass(
@@ -336,7 +329,6 @@ mod asin {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_zero_fuzzy() {
         assert_eq!(
             rsass(
@@ -352,7 +344,6 @@ mod asin {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn one() {
         assert_eq!(
             rsass(
@@ -368,7 +359,6 @@ mod asin {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn one_fuzzy() {
         assert_eq!(
             rsass(
@@ -384,7 +374,6 @@ mod asin {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn zero() {
         assert_eq!(
             rsass(
@@ -400,7 +389,6 @@ mod asin {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn zero_fuzzy() {
         assert_eq!(
             rsass(
@@ -434,7 +422,7 @@ mod atan {
         // Ignoring "zero_args", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn infinity() {
         assert_eq!(
             rsass(
@@ -450,7 +438,6 @@ mod atan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative() {
         assert_eq!(
             rsass(
@@ -466,7 +453,7 @@ mod atan {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn negative_infinity() {
         assert_eq!(
             rsass(
@@ -482,7 +469,6 @@ mod atan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_zero() {
         assert_eq!(
             rsass(
@@ -498,7 +484,6 @@ mod atan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn negative_zero_fuzzy() {
         assert_eq!(
             rsass(
@@ -514,7 +499,6 @@ mod atan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positive() {
         assert_eq!(
             rsass(
@@ -530,7 +514,6 @@ mod atan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn zero() {
         assert_eq!(
             rsass(
@@ -546,7 +529,6 @@ mod atan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn zero_fuzzy() {
         assert_eq!(
             rsass(

@@ -7,7 +7,6 @@ mod arguments {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn compatible_units() {
         assert_eq!(
             rsass(
@@ -43,7 +42,6 @@ mod arguments {
         // Ignoring "zero_args", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn named_args() {
         assert_eq!(
             rsass(
@@ -71,7 +69,7 @@ mod y_infinite {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn finite() {
                 assert_eq!(
                     rsass(
@@ -87,7 +85,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn infinity() {
                 assert_eq!(
                     rsass(
@@ -103,7 +101,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_finite() {
                 assert_eq!(
                     rsass(
@@ -119,7 +117,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -135,7 +133,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_zero() {
                 assert_eq!(
                     rsass(
@@ -151,7 +149,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn zero() {
                 assert_eq!(
                     rsass(
@@ -175,7 +173,7 @@ mod y_infinite {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn finite() {
                 assert_eq!(
                     rsass(
@@ -191,7 +189,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn infinity() {
                 assert_eq!(
                     rsass(
@@ -207,7 +205,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_finite() {
                 assert_eq!(
                     rsass(
@@ -223,7 +221,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -239,7 +237,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_zero() {
                 assert_eq!(
                     rsass(
@@ -255,7 +253,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_zero_fuzzy() {
                 assert_eq!(
                     rsass(
@@ -271,7 +269,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn zero() {
                 assert_eq!(
                     rsass(
@@ -287,7 +285,7 @@ mod y_infinite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn zero_fuzzy() {
                 assert_eq!(
                     rsass(
@@ -317,7 +315,6 @@ mod y_non_zero_finite {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn finite() {
                 assert_eq!(
                     rsass(
@@ -333,7 +330,7 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn infinity() {
                 assert_eq!(
                     rsass(
@@ -349,7 +346,6 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_finite() {
                 assert_eq!(
                     rsass(
@@ -365,7 +361,7 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -381,7 +377,6 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_zero() {
                 assert_eq!(
                     rsass(
@@ -397,7 +392,6 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_zero_fuzzy() {
                 assert_eq!(
                     rsass(
@@ -413,7 +407,6 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero() {
                 assert_eq!(
                     rsass(
@@ -429,7 +422,6 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero_fuzzy() {
                 assert_eq!(
                     rsass(
@@ -453,7 +445,6 @@ mod y_non_zero_finite {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn finite() {
                 assert_eq!(
                     rsass(
@@ -469,7 +460,7 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn infinity() {
                 assert_eq!(
                     rsass(
@@ -485,7 +476,6 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_finite() {
                 assert_eq!(
                     rsass(
@@ -501,7 +491,7 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -517,7 +507,6 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_zero() {
                 assert_eq!(
                     rsass(
@@ -533,7 +522,6 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_zero_fuzzy() {
                 assert_eq!(
                     rsass(
@@ -549,7 +537,6 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero() {
                 assert_eq!(
                     rsass(
@@ -565,7 +552,6 @@ mod y_non_zero_finite {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero_fuzzy() {
                 assert_eq!(
                     rsass(
@@ -595,7 +581,6 @@ mod y_zero {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn finite() {
                 assert_eq!(
                     rsass(
@@ -611,7 +596,7 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn infinity() {
                 assert_eq!(
                     rsass(
@@ -643,7 +628,7 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -691,7 +676,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero() {
                 assert_eq!(
                     rsass(
@@ -707,7 +691,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero_fuzzy() {
                 assert_eq!(
                     rsass(
@@ -731,7 +714,6 @@ mod y_zero {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn finite() {
                 assert_eq!(
                     rsass(
@@ -747,7 +729,7 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn infinity() {
                 assert_eq!(
                     rsass(
@@ -779,7 +761,7 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -811,7 +793,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero() {
                 assert_eq!(
                     rsass(
@@ -835,7 +816,6 @@ mod y_zero {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn finite() {
                 assert_eq!(
                     rsass(
@@ -851,7 +831,7 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn infinity() {
                 assert_eq!(
                     rsass(
@@ -867,7 +847,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_finite() {
                 assert_eq!(
                     rsass(
@@ -883,7 +862,7 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -931,7 +910,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero() {
                 assert_eq!(
                     rsass(
@@ -947,7 +925,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero_fuzzy() {
                 assert_eq!(
                     rsass(
@@ -971,7 +948,6 @@ mod y_zero {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn finite() {
                 assert_eq!(
                     rsass(
@@ -987,7 +963,7 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn infinity() {
                 assert_eq!(
                     rsass(
@@ -1003,7 +979,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_finite() {
                 assert_eq!(
                     rsass(
@@ -1019,7 +994,7 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -1051,7 +1026,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero() {
                 assert_eq!(
                     rsass(

@@ -85,34 +85,18 @@ pub fn create_module() -> Module {
 
     // - - - Exponential Functions - - -
     def!(f, log(number, base), |s| {
-        let num = match s.get("number")? {
-            Value::Numeric(v, Unit::None, ..) => f64::from(v),
-            v => return Err(Error::badarg("number", &v)),
-        };
-        let base = match s.get("base")? {
-            Value::Numeric(v, Unit::None, ..) => f64::from(v),
-            Value::Null => std::f64::consts::E,
-            v => return Err(Error::badarg("number", &v)),
-        };
+        let num = as_unitless(&s.get("number")?)?;
+        let base = as_unitless_or(&s.get("base")?, std::f64::consts::E)?;
         let result = num.log(base);
         Ok(float_value(result, Unit::None))
     });
     def!(f, pow(base, exponent), |s| {
-        let base = match s.get("base")? {
-            Value::Numeric(v, Unit::None, ..) => f64::from(v),
-            v => return Err(Error::badarg("number", &v)),
-        };
-        let exponent = match s.get("exponent")? {
-            Value::Numeric(v, Unit::None, ..) => f64::from(v),
-            v => return Err(Error::badarg("number", &v)),
-        };
+        let base = as_unitless(&s.get("base")?)?;
+        let exponent = as_unitless(&s.get("exponent")?)?;
         Ok(float_value(base.powf(exponent), Unit::None))
     });
     def!(f, sqrt(number), |s| {
-        let number = match s.get("number")? {
-            Value::Numeric(v, Unit::None, ..) => f64::from(v),
-            v => return Err(Error::badarg("number", &v)),
-        };
+        let number = as_unitless(&s.get("number")?)?;
         Ok(float_value(number.sqrt(), Unit::None))
     });
 
@@ -130,7 +114,23 @@ pub fn create_module() -> Module {
         Ok(float_value(val.tan(), Unit::None))
     });
 
-    // TODO: acos, asin, atan, atan2
+    def!(f, acos(number), |s| {
+        Ok(deg_value(as_unitless(&s.get("number")?)?.acos()))
+    });
+    def!(f, asin(number), |s| {
+        Ok(deg_value(as_unitless(&s.get("number")?)?.asin()))
+    });
+    def!(f, atan(number), |s| {
+        Ok(deg_value(as_unitless(&s.get("number")?)?.atan()))
+    });
+    def!(f, atan2(y, x), |s| {
+        let (y, y_unit) = as_numeric(&s.get("y")?)?;
+        let (mut x, x_unit) = as_numeric(&s.get("x")?)?;
+        if let Some(scale) = x_unit.scale_to(&y_unit) {
+            x = x * scale;
+        }
+        Ok(deg_value(f64::from(y).atan2(f64::from(x))))
+    });
 
     // - - - Unit Functions - - -
     def!(f, compatible(number1, number2), |s| {
@@ -216,6 +216,7 @@ fn get_numeric(
         v => Err(Error::badarg("number", &v)),
     }
 }
+
 fn as_radians(v: &Value) -> Result<f64, Error> {
     match v {
         Value::Numeric(vv, u, ..) => {
@@ -230,6 +231,31 @@ fn as_radians(v: &Value) -> Result<f64, Error> {
         v => Err(Error::badarg("angle", &v)),
     }
 }
+fn as_unitless(v: &Value) -> Result<f64, Error> {
+    match v {
+        Value::Numeric(vv, u, ..) => {
+            if u == &Unit::None {
+                Ok(f64::from(vv.clone()))
+            } else {
+                Err(Error::badarg("unitless", &v))
+            }
+        }
+        v => Err(Error::badarg("number", &v)),
+    }
+}
+fn as_unitless_or(v: &Value, default: f64) -> Result<f64, Error> {
+    match v {
+        Value::Numeric(vv, u, ..) => {
+            if u == &Unit::None {
+                Ok(f64::from(vv.clone()))
+            } else {
+                Err(Error::badarg("unitless", &v))
+            }
+        }
+        Value::Null => Ok(default),
+        v => Err(Error::badarg("number", &v)),
+    }
+}
 
 fn as_numeric(v: &Value) -> Result<(Number<isize>, Unit), Error> {
     match v {
@@ -240,6 +266,12 @@ fn as_numeric(v: &Value) -> Result<(Number<isize>, Unit), Error> {
 
 fn number(v: Rational, unit: Unit) -> Value {
     Value::Numeric(Number::from(v), unit, true)
+}
+
+/// convert f64 in radians (used by rust) to numeric Value in degrees
+/// (used by sass).
+fn deg_value(rad: f64) -> Value {
+    float_value(rad * 180. / std::f64::consts::PI, Unit::Deg)
 }
 
 fn float_value(val: f64, unit: Unit) -> Value {
