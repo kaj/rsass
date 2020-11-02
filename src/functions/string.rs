@@ -106,13 +106,29 @@ pub fn create_module() -> Module {
         )),
     });
     def!(f, to_upper_case(string), |s| match s.get("string")? {
-        Value::Literal(v, q) => Ok(Value::Literal(v.to_uppercase(), q)),
+        Value::Literal(v, q) => Ok(Value::Literal(v.to_ascii_uppercase(), q)),
         v => Ok(v),
     });
+    def!(
+        f,
+        to_upper_case_unicode(string),
+        |s| match s.get("string")? {
+            Value::Literal(v, q) => Ok(Value::Literal(v.to_uppercase(), q)),
+            v => Ok(v),
+        }
+    );
     def!(f, to_lower_case(string), |s| match s.get("string")? {
-        Value::Literal(v, q) => Ok(Value::Literal(v.to_lowercase(), q)),
+        Value::Literal(v, q) => Ok(Value::Literal(v.to_ascii_lowercase(), q)),
         v => Ok(v),
     });
+    def!(
+        f,
+        to_lower_case_unicode(string),
+        |s| match s.get("string")? {
+            Value::Literal(v, q) => Ok(Value::Literal(v.to_lowercase(), q)),
+            v => Ok(v),
+        }
+    );
     def!(f, unique_id(), |_s| {
         lazy_static! {
             static ref CALL_ID: Mutex<u64> =
