@@ -25,7 +25,6 @@ mod arguments {
         // Ignoring "zero_args", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn named_args() {
         assert_eq!(
             rsass(
@@ -56,7 +55,6 @@ mod base_greater_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
                 fn decimal() {
                     assert_eq!(
                         rsass(
@@ -72,7 +70,7 @@ mod base_greater_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -88,7 +86,6 @@ mod base_greater_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn integer() {
                     assert_eq!(
                         rsass(
@@ -104,7 +101,6 @@ mod base_greater_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn integer_fuzzy() {
                     assert_eq!(
                         rsass(
@@ -120,7 +116,7 @@ mod base_greater_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
@@ -136,7 +132,6 @@ mod base_greater_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn zero() {
                     assert_eq!(
                         rsass(
@@ -152,7 +147,6 @@ mod base_greater_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn zero_fuzzy() {
                     assert_eq!(
                         rsass(
@@ -176,7 +170,7 @@ mod base_greater_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -192,7 +186,7 @@ mod base_greater_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
@@ -216,7 +210,7 @@ mod base_greater_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -232,7 +226,7 @@ mod base_greater_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
@@ -256,7 +250,7 @@ mod base_greater_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -272,7 +266,7 @@ mod base_greater_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
@@ -306,7 +300,7 @@ mod base_less_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -322,7 +316,7 @@ mod base_less_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
@@ -346,7 +340,6 @@ mod base_less_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
                 fn decimal() {
                     assert_eq!(
                         rsass(
@@ -362,7 +355,7 @@ mod base_less_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -378,7 +371,6 @@ mod base_less_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn integer() {
                     assert_eq!(
                         rsass(
@@ -394,7 +386,6 @@ mod base_less_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn integer_fuzzy() {
                     assert_eq!(
                         rsass(
@@ -410,7 +401,7 @@ mod base_less_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
@@ -426,7 +417,6 @@ mod base_less_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn zero() {
                     assert_eq!(
                         rsass(
@@ -442,7 +432,6 @@ mod base_less_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn zero_fuzzy() {
                     assert_eq!(
                         rsass(
@@ -466,7 +455,7 @@ mod base_less_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -482,7 +471,7 @@ mod base_less_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
@@ -506,7 +495,7 @@ mod base_less_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -522,7 +511,7 @@ mod base_less_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
+                #[ignore] // unexepected error
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
@@ -550,7 +539,7 @@ mod base_negative_infinity {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn decimal() {
             assert_eq!(
                 rsass(
@@ -566,7 +555,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn even_integer() {
             assert_eq!(
                 rsass(
@@ -582,7 +571,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn even_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -598,7 +587,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn infinity() {
             assert_eq!(
                 rsass(
@@ -614,7 +603,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_decimal() {
             assert_eq!(
                 rsass(
@@ -630,7 +619,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_even_integer() {
             assert_eq!(
                 rsass(
@@ -646,7 +635,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_even_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -662,7 +651,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 rsass(
@@ -678,7 +667,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_odd_integer() {
             assert_eq!(
                 rsass(
@@ -694,7 +683,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_odd_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -710,7 +699,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn odd_integer() {
             assert_eq!(
                 rsass(
@@ -726,7 +715,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn odd_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -742,7 +731,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn zero() {
             assert_eq!(
                 rsass(
@@ -758,7 +747,7 @@ mod base_negative_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn zero_fuzzy() {
             assert_eq!(
                 rsass(
@@ -787,7 +776,6 @@ mod base_negative_zero {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn decimal() {
                 assert_eq!(
                     rsass(
@@ -803,7 +791,6 @@ mod base_negative_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn even_integer() {
                 assert_eq!(
                     rsass(
@@ -819,7 +806,7 @@ mod base_negative_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn infinity() {
                 assert_eq!(
                     rsass(
@@ -835,7 +822,6 @@ mod base_negative_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_decimal() {
                 assert_eq!(
                     rsass(
@@ -851,7 +837,6 @@ mod base_negative_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_even_integer() {
                 assert_eq!(
                     rsass(
@@ -867,7 +852,7 @@ mod base_negative_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -899,7 +884,6 @@ mod base_negative_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn odd_integer() {
                 assert_eq!(
                     rsass(
@@ -915,7 +899,6 @@ mod base_negative_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero() {
                 assert_eq!(
                     rsass(
@@ -936,7 +919,6 @@ mod base_negative_zero {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn decimal() {
             assert_eq!(
                 rsass(
@@ -952,7 +934,6 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn even_integer() {
             assert_eq!(
                 rsass(
@@ -968,7 +949,6 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn even_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -984,7 +964,7 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn infinity() {
             assert_eq!(
                 rsass(
@@ -1000,7 +980,6 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative_decimal() {
             assert_eq!(
                 rsass(
@@ -1016,7 +995,6 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative_even_integer() {
             assert_eq!(
                 rsass(
@@ -1032,7 +1010,6 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative_even_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1048,7 +1025,7 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 rsass(
@@ -1096,7 +1073,6 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn odd_integer() {
             assert_eq!(
                 rsass(
@@ -1112,7 +1088,6 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn odd_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1128,7 +1103,6 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn zero() {
             assert_eq!(
                 rsass(
@@ -1144,7 +1118,6 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn zero_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1170,7 +1143,7 @@ mod base_positive_infinity {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn decimal() {
             assert_eq!(
                 rsass(
@@ -1186,7 +1159,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn even_integer() {
             assert_eq!(
                 rsass(
@@ -1202,7 +1175,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn even_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1218,7 +1191,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn infinity() {
             assert_eq!(
                 rsass(
@@ -1234,7 +1207,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_decimal() {
             assert_eq!(
                 rsass(
@@ -1250,7 +1223,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_even_integer() {
             assert_eq!(
                 rsass(
@@ -1266,7 +1239,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_even_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1282,7 +1255,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 rsass(
@@ -1298,7 +1271,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_odd_integer() {
             assert_eq!(
                 rsass(
@@ -1314,7 +1287,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_odd_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1330,7 +1303,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn odd_integer() {
             assert_eq!(
                 rsass(
@@ -1346,7 +1319,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn odd_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1362,7 +1335,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn zero() {
             assert_eq!(
                 rsass(
@@ -1378,7 +1351,7 @@ mod base_positive_infinity {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn zero_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1407,7 +1380,6 @@ mod base_positive_zero {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn decimal() {
                 assert_eq!(
                     rsass(
@@ -1423,7 +1395,6 @@ mod base_positive_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn even_integer() {
                 assert_eq!(
                     rsass(
@@ -1439,7 +1410,7 @@ mod base_positive_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn infinity() {
                 assert_eq!(
                     rsass(
@@ -1455,7 +1426,6 @@ mod base_positive_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_decimal() {
                 assert_eq!(
                     rsass(
@@ -1471,7 +1441,6 @@ mod base_positive_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_even_integer() {
                 assert_eq!(
                     rsass(
@@ -1487,7 +1456,7 @@ mod base_positive_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -1503,7 +1472,6 @@ mod base_positive_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_odd_integer() {
                 assert_eq!(
                     rsass(
@@ -1519,7 +1487,6 @@ mod base_positive_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn odd_integer() {
                 assert_eq!(
                     rsass(
@@ -1535,7 +1502,6 @@ mod base_positive_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn zero() {
                 assert_eq!(
                     rsass(
@@ -1556,7 +1522,6 @@ mod base_positive_zero {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn decimal() {
             assert_eq!(
                 rsass(
@@ -1572,7 +1537,6 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn even_integer() {
             assert_eq!(
                 rsass(
@@ -1588,7 +1552,6 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn even_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1604,7 +1567,7 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn infinity() {
             assert_eq!(
                 rsass(
@@ -1620,7 +1583,6 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative_decimal() {
             assert_eq!(
                 rsass(
@@ -1636,7 +1598,6 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative_even_integer() {
             assert_eq!(
                 rsass(
@@ -1652,7 +1613,6 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative_even_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1668,7 +1628,7 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 rsass(
@@ -1684,7 +1644,6 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative_odd_integer() {
             assert_eq!(
                 rsass(
@@ -1700,7 +1659,6 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative_odd_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1716,7 +1674,6 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn odd_integer() {
             assert_eq!(
                 rsass(
@@ -1732,7 +1689,6 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn odd_integer_fuzzy() {
             assert_eq!(
                 rsass(
@@ -1748,7 +1704,6 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn zero() {
             assert_eq!(
                 rsass(
@@ -1764,7 +1719,6 @@ mod base_positive_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn zero_fuzzy() {
             assert_eq!(
                 rsass(

@@ -1,5 +1,5 @@
-use super::colors_rgb::{preserve_call, values_from_list};
-use super::{make_call, Error, SassFunction};
+use super::rgb::{preserve_call, values_from_list};
+use super::{make_call, Error, Module, SassFunction};
 use crate::css::Value;
 use crate::value::{Number, Unit};
 use crate::variablescope::Scope;
@@ -47,13 +47,14 @@ fn hsla_from_values(
 }
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, hsl(hue, saturation, lightness, alpha, channels), |s| {
+    def!(f, _hsl(hue, saturation, lightness, alpha, channels), |s| {
         do_hsla("hsl", s)
     });
-    def!(f, hsla(hue, saturation, lightness, alpha, channels), |s| {
+    def!(f, _hsla(hue, saturation, lightness, alpha, channels), |s| {
         do_hsla("hsla", s)
     });
-    def!(f, adjust_hue(color, degrees), |s: &dyn Scope| match (
+    // TODO: _hwb
+    def!(f, _adjust_hue(color, degrees), |s: &dyn Scope| match (
         s.get("color")?,
         s.get("degrees")?,
     ) {
@@ -75,7 +76,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             v => Err(Error::badarg("color", v)),
         }
     );
-    def!(f, saturate(color, amount), |s: &dyn Scope| match (
+    def!(f, _saturate(color, amount), |s: &dyn Scope| match (
         s.get("color")?,
         s.get("amount")?
     ) {
@@ -88,7 +89,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         (c, v) => Ok(make_call("saturate", vec![c, v])),
     });
-    def!(f, lighten(color, amount), |args: &dyn Scope| match &args
+    def!(f, _lighten(color, amount), |args: &dyn Scope| match &args
         .get("color")?
     {
         &Value::Color(ref rgba, _) => {
@@ -98,7 +99,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("color", v)),
     });
-    def!(f, darken(color, amount), |args: &dyn Scope| match &args
+    def!(f, _darken(color, amount), |args: &dyn Scope| match &args
         .get("color")?
     {
         &Value::Color(ref rgba, _) => {
@@ -126,6 +127,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("color", v)),
     });
+    // TODO: blackness
     def!(f, lightness(color), |args| match &args.get("color")? {
         &Value::Color(ref rgba, _) => {
             let (_h, _s, l, _a) = rgba.to_hsla();
@@ -133,16 +135,18 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("color", v)),
     });
-    def!(f, desaturate(color, amount), |args: &dyn Scope| match &args
-        .get("color")?
-    {
-        &Value::Color(ref rgba, _) => {
-            let (h, s, l, alpha) = rgba.to_hsla();
-            let amount = to_rational_percent(&args.get("amount")?)?;
-            Ok(Value::hsla(h, s - amount, l, alpha))
+    def!(
+        f,
+        _desaturate(color, amount),
+        |args: &dyn Scope| match &args.get("color")? {
+            &Value::Color(ref rgba, _) => {
+                let (h, s, l, alpha) = rgba.to_hsla();
+                let amount = to_rational_percent(&args.get("amount")?)?;
+                Ok(Value::hsla(h, s - amount, l, alpha))
+            }
+            v => Err(Error::badarg("color", v)),
         }
-        v => Err(Error::badarg("color", v)),
-    });
+    );
     def!(f, grayscale(color), |args| match args.get("color")? {
         Value::Color(ref rgba, _) => {
             let (h, _s, l, alpha) = rgba.to_hsla();
@@ -150,6 +154,27 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Ok(make_call("grayscale", vec![v])),
     });
+    // TODO: whiteness
+}
+
+pub fn expose(meta: &Module, global: &mut Module) {
+    for (gname, lname) in &[
+        ("hsl", "_hsl"),
+        ("hsla", "_hsla"),
+        ("adjust_hue", "_adjust_hue"),
+        ("complement", "complement"),
+        ("darken", "_darken"),
+        ("desaturate", "_desaturate"),
+        ("grayscale", "grayscale"),
+        ("hue", "hue"),
+        // TODO ("hwb", "_hwb"),
+        ("lighten", "_lighten"),
+        ("lightness", "lightness"),
+        ("saturate", "_saturate"),
+        ("saturation", "saturation"),
+    ] {
+        global.insert(gname, meta.get(lname).unwrap().clone());
+    }
 }
 
 fn percentage(v: Rational) -> Value {
@@ -213,4 +238,4 @@ fn test_hsl_blue_magenta() {
 }
 
 #[cfg(test)]
-use super::super::variablescope::test::do_evaluate;
+use super::super::super::variablescope::test::do_evaluate;

@@ -271,6 +271,7 @@ fn at_rule2(input: Span) -> IResult<Span, Item> {
         "include" => mixin_call2(input),
         "mixin" => mixin_declaration2(input),
         "if" => if_statement2(input),
+        "use" => use2(input),
         "warn" => map(expression_argument, Item::Warn)(input),
         "while" => while_loop2(input),
         _ => {
@@ -293,6 +294,26 @@ fn at_rule2(input: Span) -> IResult<Span, Item> {
             ))
         }
     }
+}
+
+fn use2(input: Span) -> IResult<Span, Item> {
+    map(
+        terminated(
+            pair(
+                terminated(
+                    alt((sass_string_dq, sass_string_sq, sass_string)),
+                    opt_spacelike,
+                ),
+                opt(delimited(
+                    terminated(tag("as"), opt_spacelike),
+                    sass_string,
+                    opt_spacelike,
+                )),
+            ),
+            tag(";"),
+        ),
+        |(s, n)| Item::Use(s, n),
+    )(input)
 }
 
 fn expression_argument(input: Span) -> IResult<Span, Value> {

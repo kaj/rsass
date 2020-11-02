@@ -315,7 +315,6 @@ fn calc() {
 
 // From "sass-spec/spec/libsass/charset"
 #[test]
-#[ignore] // wrong result
 fn charset() {
     assert_eq!(
         rsass(

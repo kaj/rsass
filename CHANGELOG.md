@@ -12,9 +12,13 @@ project adheres to
 ### Breaking changes
 
 * `SourceName` and `sass::Item::Import` was changed by #62.
+* `Use` was added to the `sass::Item` enum by #80.
 
 ### Improvements
 
+* PR #80: Implement `@use` for standard sass modules.  All standard
+  modules are at least partially supported, only `sass:string` is
+  fully supported.  See issue #60 for for module support status.
 * Provide `From<bool>` for `css::Value` (and deprecate `Value::bool(v)`).
 * PR #62: Improve `ParseError`, `SourcePos`, and `SourceName` by using
   located spans by [nom_locate](https://lib.rs/crates/nom_locate) in

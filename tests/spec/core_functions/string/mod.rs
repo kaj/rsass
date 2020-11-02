@@ -1264,7 +1264,6 @@ mod to_lower_case {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn non_ascii() {
         assert_eq!(
             rsass(
@@ -1367,7 +1366,6 @@ mod to_upper_case {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn non_ascii() {
         assert_eq!(
             rsass(

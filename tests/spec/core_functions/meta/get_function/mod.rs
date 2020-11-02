@@ -7,7 +7,6 @@ mod different_module {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn chosen_prefix() {
         assert_eq!(
             rsass(
@@ -23,7 +22,6 @@ mod different_module {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn defined() {
         assert_eq!(
             rsass(
@@ -39,7 +37,6 @@ mod different_module {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn named() {
         assert_eq!(
         rsass(

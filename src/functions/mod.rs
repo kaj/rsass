@@ -9,15 +9,13 @@ use std::{cmp, fmt};
 #[macro_use]
 mod macros;
 
-mod colors_hsl;
-mod colors_other;
-mod colors_rgb;
-mod introspection;
-mod lists;
-mod maps;
-mod numbers;
+mod color;
+mod list;
+mod map;
+mod math;
+mod meta;
 mod selector;
-mod strings;
+mod string;
 
 pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
     let name = name.replace("-", "_");
@@ -134,6 +132,26 @@ impl SassFunction {
     }
 }
 
+pub type Module = BTreeMap<&'static str, SassFunction>;
+
+lazy_static! {
+    static ref MODULES: BTreeMap<&'static str, Module> = {
+        let mut modules = BTreeMap::new();
+        modules.insert("sass:color", color::create_module());
+        modules.insert("sass:list", list::create_module());
+        modules.insert("sass:map", map::create_module());
+        modules.insert("sass:math", math::create_module());
+        modules.insert("sass:meta", meta::create_module());
+        modules.insert("sass:selector", selector::create_module());
+        modules.insert("sass:string", string::create_module());
+        modules
+    };
+}
+
+pub fn get_global_module(name: &str) -> Option<&'static Module> {
+    MODULES.get(name)
+}
+
 lazy_static! {
     static ref FUNCTIONS: BTreeMap<&'static str, SassFunction> = {
         let mut f = BTreeMap::new();
@@ -144,15 +162,13 @@ lazy_static! {
                 Ok(s.get("if_false")?)
             }
         });
-        colors_hsl::register(&mut f);
-        colors_rgb::register(&mut f);
-        colors_other::register(&mut f);
-        introspection::register(&mut f);
-        selector::register(&mut f);
-        strings::register(&mut f);
-        numbers::register(&mut f);
-        lists::register(&mut f);
-        maps::register(&mut f);
+        color::expose(MODULES.get("sass:color").unwrap(), &mut f);
+        list::expose(MODULES.get("sass:list").unwrap(), &mut f);
+        map::expose(MODULES.get("sass:map").unwrap(), &mut f);
+        math::expose(MODULES.get("sass:math").unwrap(), &mut f);
+        meta::expose(MODULES.get("sass:meta").unwrap(), &mut f);
+        selector::expose(MODULES.get("sass:selector").unwrap(), &mut f);
+        string::expose(MODULES.get("sass:string").unwrap(), &mut f);
         f
     };
 }

@@ -1,4 +1,4 @@
-use super::{make_call, Error, SassFunction};
+use super::{make_call, Error, Module, SassFunction};
 use crate::css::{CallArgs, Value};
 use crate::value::{ListSeparator, Number, Quotes, Unit};
 use crate::variablescope::Scope;
@@ -108,10 +108,10 @@ pub fn preserve_call(
 }
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, rgb(red, green, blue, alpha, color, channels), |s| {
+    def!(f, _rgb(red, green, blue, alpha, color, channels), |s| {
         do_rgba("rgb", s)
     });
-    def!(f, rgba(red, green, blue, alpha, color, channels), |s| {
+    def!(f, _rgba(red, green, blue, alpha, color, channels), |s| {
         do_rgba("rgba", s)
     });
     fn num(v: &Rational) -> Result<Value, Error> {
@@ -192,6 +192,20 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         (value, weight) => Ok(make_call("invert", vec![value, weight])),
     });
+}
+
+pub fn expose(meta: &Module, global: &mut Module) {
+    for (gname, lname) in &[
+        ("rgb", "_rgb"),
+        ("rgba", "_rgba"),
+        ("blue", "blue"),
+        ("green", "green"),
+        ("invert", "invert"),
+        ("mix", "mix"),
+        ("red", "red"),
+    ] {
+        global.insert(gname, meta.get(lname).unwrap().clone());
+    }
 }
 
 fn int_value(v: Rational) -> Value {

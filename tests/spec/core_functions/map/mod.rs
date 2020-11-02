@@ -531,7 +531,6 @@ mod get {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn full_path() {
                 assert_eq!(
                     rsass(
@@ -546,7 +545,6 @@ mod get {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn partial_path() {
                 assert_eq!(
                     rsass(
@@ -565,7 +563,6 @@ mod get {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn deep() {
                 assert_eq!(
                     rsass(
@@ -580,7 +577,6 @@ mod get {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn too_many_keys() {
                 assert_eq!(
         rsass(
@@ -787,7 +783,6 @@ mod has_key {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn deep() {
                 assert_eq!(
                     rsass(
@@ -802,7 +797,6 @@ mod has_key {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn too_many_keys() {
                 assert_eq!(
                     rsass(
@@ -1416,7 +1410,6 @@ mod set {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn empty() {
         assert_eq!(
             rsass(
@@ -1444,7 +1437,6 @@ mod set {
         // Ignoring "zero_args", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn named() {
         assert_eq!(
             rsass(
@@ -1544,7 +1536,6 @@ mod set {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn new_key() {
         assert_eq!(
             rsass(
@@ -1560,7 +1551,6 @@ mod set {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn update_existing_key() {
         assert_eq!(
             rsass(

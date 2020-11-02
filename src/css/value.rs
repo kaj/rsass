@@ -319,3 +319,13 @@ impl From<bool> for Value {
         }
     }
 }
+impl From<&str> for Value {
+    fn from(s: &str) -> Value {
+        Value::Literal(s.into(), Quotes::None)
+    }
+}
+impl From<String> for Value {
+    fn from(s: String) -> Value {
+        Value::Literal(s, Quotes::None)
+    }
+}

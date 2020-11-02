@@ -1,7 +1,7 @@
 //! A scope is something that contains variable values.
 
 use crate::css::{self, Value};
-use crate::functions::{get_builtin_function, SassFunction};
+use crate::functions::{get_builtin_function, Module, SassFunction};
 use crate::output::Format;
 use crate::sass::{self, Item};
 use crate::selectors::Selectors;
@@ -176,6 +176,19 @@ pub trait Scope {
         }
         Ok(None)
     }
+    fn do_use(&mut self, name: &str, as_name: Option<&str>) {
+        use crate::functions::get_global_module;
+        let as_name = as_name
+            .or_else(|| name.rfind(':').map(|i| &name[i + 1..]))
+            .unwrap_or(name);
+        if let Some(module) = get_global_module(name) {
+            self.define_module(as_name, module);
+        } else {
+            eprintln!("WARNING: module {:?} not found", name);
+        }
+    }
+    fn define_module(&self, name: &str, module: &'static Module);
+    fn get_module(&self, name: &str) -> Option<&Module>;
     fn get_selectors(&self) -> &Selectors;
 }
 
@@ -187,7 +200,10 @@ pub struct ScopeImpl<'a> {
     selectors: Option<Selectors>,
 }
 
-impl<'a> Scope for ScopeImpl<'a> {
+impl Scope for ScopeImpl<'_> {
+    fn define_module(&self, name: &str, module: &'static Module) {
+        self.parent.define_module(name, module);
+    }
     fn get_format(&self) -> Format {
         self.parent.get_format()
     }
@@ -245,16 +261,29 @@ impl<'a> Scope for ScopeImpl<'a> {
         }
         self.parent.get_function(&name)
     }
+    fn get_module(&self, name: &str) -> Option<&Module> {
+        self.parent.get_module(name)
+    }
     fn call_function(
         &self,
         name: &str,
         args: &css::CallArgs,
     ) -> Option<Result<Value, Error>> {
         let name = name.replace('-', "_");
-        if let Some(f) = self.functions.get(&name).cloned() {
-            return Some(f.call(self, args));
+        let mut t = name.splitn(2, '.');
+        if let (Some(modulename), Some(name)) = (t.next(), t.next()) {
+            if let Some(module) = self.get_module(modulename) {
+                if let Some(f) = module.get(&name).cloned() {
+                    return Some(f.call(self, args));
+                }
+            }
+            None
+        } else {
+            if let Some(f) = self.functions.get(&name).cloned() {
+                return Some(f.call(self, args));
+            }
+            self.parent.call_function(&name, args)
         }
-        self.parent.call_function(&name, args)
     }
     fn get_selectors(&self) -> &Selectors {
         self.selectors
@@ -298,6 +327,7 @@ pub struct GlobalScope {
     mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
     functions: BTreeMap<String, SassFunction>,
     selectors: Selectors,
+    modules: Mutex<BTreeMap<String, &'static Module>>,
 }
 
 impl GlobalScope {
@@ -309,11 +339,18 @@ impl GlobalScope {
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
             selectors: Selectors::root(),
+            modules: Mutex::new(BTreeMap::new()),
         }
     }
 }
 
 impl Scope for GlobalScope {
+    fn define_module(&self, name: &str, module: &'static Module) {
+        self.modules.lock().unwrap().insert(name.into(), module);
+    }
+    fn get_module(&self, name: &str) -> Option<&Module> {
+        self.modules.lock().unwrap().get(name).map(|m| *m)
+    }
     fn get_format(&self) -> Format {
         self.format
     }
