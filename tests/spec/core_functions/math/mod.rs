@@ -157,7 +157,6 @@ mod acos {
         // Ignoring "zero_args", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn greater_than_one() {
         assert_eq!(
             rsass(
@@ -173,7 +172,6 @@ mod acos {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn less_than_negative_one() {
         assert_eq!(
             rsass(
@@ -267,7 +265,6 @@ mod asin {
         // Ignoring "zero_args", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn greater_than_one() {
         assert_eq!(
             rsass(
@@ -283,7 +280,6 @@ mod asin {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn less_than_negative_one() {
         assert_eq!(
             rsass(
@@ -422,7 +418,6 @@ mod atan {
         // Ignoring "zero_args", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // unexepected error
     fn infinity() {
         assert_eq!(
             rsass(
@@ -453,7 +448,6 @@ mod atan {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn negative_infinity() {
         assert_eq!(
             rsass(
@@ -1023,7 +1017,6 @@ mod cos {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn infinity() {
         assert_eq!(
             rsass(
@@ -1054,7 +1047,6 @@ mod cos {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn negative_infinity() {
         assert_eq!(
             rsass(
@@ -1284,7 +1276,6 @@ mod hypot {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // unexepected error
         fn first() {
             assert_eq!(
                 rsass(
@@ -1300,7 +1291,6 @@ mod hypot {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn second() {
             assert_eq!(
                 rsass(
@@ -1316,7 +1306,6 @@ mod hypot {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn third() {
             assert_eq!(
                 rsass(
@@ -1492,7 +1481,6 @@ mod log {
         // Ignoring "zero_args", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // unexepected error
     fn infinity() {
         assert_eq!(
             rsass(
@@ -2326,7 +2314,6 @@ mod sin {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn infinity() {
         assert_eq!(
             rsass(
@@ -2357,7 +2344,6 @@ mod sin {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn negative_infinity() {
         assert_eq!(
             rsass(
@@ -2496,7 +2482,6 @@ mod sqrt {
         // Ignoring "zero_args", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // unexepected error
     fn infinity() {
         assert_eq!(
             rsass(
@@ -2686,7 +2671,6 @@ mod tan {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn infinity() {
         assert_eq!(
             rsass(
@@ -2737,7 +2721,6 @@ mod tan {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn negative_infinity() {
         assert_eq!(
             rsass(

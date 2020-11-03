@@ -14,7 +14,7 @@ fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
         let a = if a.is_null() { s.get("green")? } else { a };
         match a {
             Value::Numeric(a, ..) => {
-                Ok(Value::rgba(rgba.red, rgba.green, rgba.blue, a.value))
+                Ok(Value::rgba(rgba.red, rgba.green, rgba.blue, a.as_ratio()))
             }
             _ => Ok(make_call(
                 fn_name,
@@ -140,9 +140,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             Value::Numeric(w, wu, ..),
         ) => {
             let p = if wu == Unit::Percent {
-                w.value / 100
+                w.as_ratio() / 100
             } else {
-                w.value
+                w.as_ratio()
             };
             let one = Rational::one();
             let w = p * 2 - one;
@@ -172,9 +172,9 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     ) {
         (Value::Color(rgba, _), Value::Numeric(w, wu, ..)) => {
             let w = if wu == Unit::Percent {
-                w.value / 100
+                w.as_ratio() / 100
             } else {
-                w.value
+                w.as_ratio()
             };
             let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
             Ok(Value::rgba(
@@ -184,8 +184,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 rgba.alpha,
             ))
         }
-        (ref by, Value::Numeric(Number { ref value, .. }, ref wu, ..))
-            if value == &Rational::from_integer(100)
+        (ref by, Value::Numeric(ref value, ref wu, ..))
+            if value.as_ratio() == Rational::from_integer(100)
                 && wu == &Unit::Percent =>
         {
             Ok(make_call("invert", vec![by.clone()]))
@@ -214,16 +214,16 @@ fn int_value(v: Rational) -> Value {
 
 fn to_int(v: &Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, Unit::Percent, _) => Ok(v.value * 255 / 100),
-        Value::Numeric(v, ..) => Ok(v.value),
+        Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio() * 255 / 100),
+        Value::Numeric(v, ..) => Ok(v.as_ratio()),
         v => Err(Error::badarg("number", &v)),
     }
 }
 
 fn to_rational(v: &Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(num, Unit::Percent, _) => Ok(num.value / 100),
-        Value::Numeric(num, ..) => Ok(num.value),
+        Value::Numeric(num, Unit::Percent, _) => Ok(num.as_ratio() / 100),
+        Value::Numeric(num, ..) => Ok(num.as_ratio()),
         v => Err(Error::badarg("number", &v)),
     }
 }

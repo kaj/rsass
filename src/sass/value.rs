@@ -5,7 +5,6 @@ use crate::ordermap::OrderMap;
 use crate::sass::{CallArgs, SassString};
 use crate::value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
-use num_bigint::BigInt;
 use num_rational::Rational;
 use num_traits::Zero;
 
@@ -21,11 +20,7 @@ pub enum Value {
     List(Vec<Value>, ListSeparator, bool),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
-    Numeric(Number<isize>, Unit),
-    /// A NumericBig value is a rational value with a Unit (which may be
-    /// Unit::None) and flags. The numerator and denominator of the value
-    /// may be arbitrarily large.
-    NumericBig(Number<BigInt>, Unit),
+    Numeric(Number, Unit),
     /// "(a/b) and a/b differs semantically.  Parens means the value
     /// should be evaluated numerically if possible, without parens /
     /// is not allways division.
@@ -162,13 +157,6 @@ impl Value {
                     num.lead_zero = true;
                 }
                 Ok(css::Value::Numeric(num, unit.clone(), arithmetic))
-            }
-            Value::NumericBig(ref num, ref unit) => {
-                let mut num = num.clone();
-                if arithmetic {
-                    num.lead_zero = true;
-                }
-                Ok(css::Value::NumericBig(num, unit.clone(), arithmetic))
             }
             Value::Map(ref m) => {
                 let items = m.iter()

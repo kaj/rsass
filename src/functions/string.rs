@@ -2,7 +2,6 @@ use super::{Error, Module, SassFunction};
 use crate::css::Value;
 use crate::value::{Number, Quotes, Unit};
 use lazy_static::lazy_static;
-use num_rational::Rational;
 use std::cmp::max;
 use std::sync::Mutex;
 
@@ -42,9 +41,9 @@ pub fn create_module() -> Module {
         (
             Value::Literal(s, q),
             Value::Literal(insert, _),
-            Value::Numeric(index, Unit::None, ..),
+            index @ Value::Numeric(_, Unit::None, ..),
         ) => {
-            let index = index.value.to_integer();
+            let index = index.integer_value()?;
             let i = if index.is_negative() {
                 let len = s.chars().count() as isize;
                 max(len + 1 + index, 0) as usize
@@ -83,8 +82,8 @@ pub fn create_module() -> Module {
             Value::Numeric(start_at, Unit::None, ..),
             Value::Numeric(end_at, Unit::None, ..),
         ) => {
-            let start_at = index_to_rust(start_at.value, &s)?;
-            let end_at = index_to_rust_end(end_at.value, &s)?;
+            let start_at = index_to_rust(start_at, &s)?;
+            let end_at = index_to_rust_end(end_at, &s)?;
             let c = s.chars();
             if start_at <= end_at {
                 Ok(Value::Literal(
@@ -193,7 +192,7 @@ fn intvalue(n: usize) -> Value {
 /// Convert index from sass (rational number, first is one) to rust
 /// (usize, first is zero).  Sass values might be negative, then -1 is
 /// the last char in the string.
-fn index_to_rust(index: Rational, s: &str) -> Result<usize, Error> {
+fn index_to_rust(index: Number, s: &str) -> Result<usize, Error> {
     let index = require_integer(index)?;
     let len = s.chars().count();
     Ok(if index.is_negative() {
@@ -218,7 +217,7 @@ fn index_to_rust(index: Rational, s: &str) -> Result<usize, Error> {
 /// Convert index from sass (rational number, first is one) to rust
 /// (usize, first is zero).  Sass values might be negative, then -1 is
 /// the last char in the string.
-fn index_to_rust_end(index: Rational, s: &str) -> Result<usize, Error> {
+fn index_to_rust_end(index: Number, s: &str) -> Result<usize, Error> {
     let index = require_integer(index)?;
     Ok(if index.is_negative() {
         let len = s.chars().count();
@@ -235,10 +234,8 @@ fn index_to_rust_end(index: Rational, s: &str) -> Result<usize, Error> {
     })
 }
 
-fn require_integer(value: Rational) -> Result<isize, Error> {
-    if value.is_integer() {
-        Ok(value.to_integer())
-    } else {
-        Err(Error::S(format!("{} is not an int", value)))
-    }
+fn require_integer(value: Number) -> Result<isize, Error> {
+    value
+        .to_integer()
+        .ok_or_else(|| Error::S(format!("{:?} is not an int", value)))
 }

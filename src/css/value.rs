@@ -4,7 +4,6 @@ use crate::functions::SassFunction;
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
 use crate::value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
-use num_bigint::BigInt;
 use num_rational::Rational;
 use std::convert::TryFrom;
 
@@ -25,10 +24,7 @@ pub enum Value {
     ///
     /// The boolean flag is true for calculated values and false for
     /// literal values.
-    Numeric(Number<isize>, Unit, bool),
-    /// A rational value with a Unit and flags, similar to Numeric, but with
-    /// support for arbitrarily large numbers.
-    NumericBig(Number<BigInt>, Unit, bool),
+    Numeric(Number, Unit, bool),
     Color(Rgba, Option<String>),
     Null,
     True,
@@ -45,7 +41,7 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn scalar<T: Into<Number<isize>>>(v: T) -> Self {
+    pub fn scalar<T: Into<Number>>(v: T) -> Self {
         Value::Numeric(v.into(), Unit::None, false)
     }
     #[deprecated(since = "0.15.1", note = "please use From<bool> instead.")]
@@ -121,9 +117,9 @@ impl Value {
 
     pub fn integer_value(&self) -> Result<isize, Error> {
         match self {
-            &Value::Numeric(ref num, ..) if num.is_integer() => {
-                Ok(num.to_integer())
-            }
+            &Value::Numeric(ref num, ..) if num.is_integer() => num
+                .to_integer()
+                .ok_or_else(|| Error::bad_value("integer", self)),
             v => Err(Error::bad_value("integer", v)),
         }
     }
@@ -252,13 +248,10 @@ impl PartialEq for Value {
                 if au == bu {
                     a == b
                 } else if let Some(scale) = bu.scale_to(au) {
-                    a.value == b.value * scale
+                    a.value == &b.value * &scale
                 } else {
                     false
                 }
-            }
-            (Value::NumericBig(a, au, _), Value::NumericBig(b, bu, _)) => {
-                a == b && au == bu
             }
             (Value::Literal(a, aq), Value::Literal(b, bq)) => {
                 if aq == bq {

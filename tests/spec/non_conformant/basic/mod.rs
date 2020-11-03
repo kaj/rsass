@@ -574,7 +574,6 @@ fn t14_imports() {
 
 // From "sass-spec/spec/non_conformant/basic/15_arithmetic_and_lists.hrx"
 #[test]
-#[ignore] // wrong result
 fn t15_arithmetic_and_lists() {
     assert_eq!(
         rsass(

@@ -320,15 +320,17 @@ fn number(input: Span) -> IResult<Span, Value> {
         |(sign, (lead_zero, num), unit)| match num {
             AnyRatio::Machine(num) => Value::Numeric(
                 Number {
-                    value: if sign == Some(b"-") { -num } else { num },
+                    value: (if sign == Some(b"-") { -num } else { num })
+                        .into(),
                     plus_sign: sign == Some(b"+"),
                     lead_zero,
                 },
                 unit,
             ),
-            AnyRatio::Big(num) => Value::NumericBig(
+            AnyRatio::Big(num) => Value::Numeric(
                 Number {
-                    value: if sign == Some(b"-") { -num } else { num },
+                    value: (if sign == Some(b"-") { -num } else { num })
+                        .into(),
                     plus_sign: sign == Some(b"+"),
                     lead_zero,
                 },
@@ -528,7 +530,7 @@ mod test {
             "+4;",
             Numeric(
                 Number {
-                    value: Rational::new(4, 1),
+                    value: 4.into(),
                     plus_sign: true,
                     lead_zero: true,
                 },
@@ -547,7 +549,7 @@ mod test {
             ".34;",
             Numeric(
                 Number {
-                    value: Rational::new(34, 100),
+                    value: Rational::new(34, 100).into(),
                     plus_sign: false,
                     lead_zero: false,
                 },
@@ -561,7 +563,7 @@ mod test {
             "-.34;",
             Numeric(
                 Number {
-                    value: Rational::new(-34, 100),
+                    value: Rational::new(-34, 100).into(),
                     plus_sign: false,
                     lead_zero: false,
                 },
@@ -575,7 +577,7 @@ mod test {
             "+.34;",
             Numeric(
                 Number {
-                    value: Rational::new(34, 100), // actually 17/50
+                    value: Rational::new(34, 100).into(),
                     plus_sign: true,
                     lead_zero: false,
                 },
