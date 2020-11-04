@@ -394,6 +394,24 @@ impl Add for Number {
         Number::from(self.value + rhs.value)
     }
 }
+impl Mul<Ratio<isize>> for Number {
+    type Output = Self;
+    fn mul(self, rhs: Ratio<isize>) -> Self {
+        Number::from(self.value * rhs)
+    }
+}
+impl Mul<isize> for Number {
+    type Output = Self;
+    fn mul(self, rhs: isize) -> Self {
+        Number::from(self.value * rhs)
+    }
+}
+impl Div<isize> for Number {
+    type Output = Self;
+    fn div(self, rhs: isize) -> Self {
+        Number::from(self.value / rhs)
+    }
+}
 
 impl From<Number> for f64 {
     fn from(val: Number) -> f64 {
@@ -439,10 +457,16 @@ impl<'a> Div for &'a Number {
     }
 }
 
-impl<'a> Mul for &'a Number {
+impl Mul for &Number {
     type Output = Number;
     fn mul(self, rhs: Self) -> Self::Output {
         Number::from(&self.value * &rhs.value)
+    }
+}
+impl Mul<&Ratio<isize>> for &Number {
+    type Output = Number;
+    fn mul(self, rhs: &Ratio<isize>) -> Self::Output {
+        Number::from(&self.value * rhs)
     }
 }
 

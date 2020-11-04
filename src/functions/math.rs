@@ -23,18 +23,18 @@ pub fn create_module() -> Module {
         let (mut num, mut u) = get_numeric(s, "number")?;
         let (max_v, max_u) = get_numeric(s, "max")?;
         if let Some(scale) = max_u.scale_to(&u) {
-            if num.value >= &max_v.value * &scale {
+            if num >= &max_v * &scale {
                 num = max_v;
                 u = max_u;
             }
         }
         if let Some(scale) = min_u.scale_to(&u) {
-            if num.value <= &min_v.value * &scale {
+            if num <= &min_v * &scale {
                 num = min_v;
                 u = min_u;
             }
         }
-        Ok(number(num.value, u))
+        Ok(number(num, u))
     });
     def!(f, floor(number), |s| {
         let (val, unit) = get_numeric(s, "number")?;
@@ -68,7 +68,7 @@ pub fn create_module() -> Module {
                 for v in rest {
                     let (vv, vu) = as_numeric(v)?;
                     if let Some(scale) = vu.scale_to(&unit) {
-                        sum += f64::from(vv.value * scale).powi(2);
+                        sum += f64::from(vv * scale).powi(2);
                     } else {
                         return Err(Error::badarg(&unit.to_string(), v));
                     }
@@ -157,7 +157,7 @@ pub fn create_module() -> Module {
     // - - - Other Functions - - -
     def!(f, percentage(number), |s| match s.get("number")? {
         Value::Numeric(val, Unit::None, _) => {
-            Ok(number(val.value * 100, Unit::Percent))
+            Ok(number(val * 100, Unit::Percent))
         }
         v => Err(Error::badarg("number", &v)),
     });
@@ -219,7 +219,7 @@ fn as_radians(v: &Value) -> Result<f64, Error> {
             if u == &Unit::None {
                 Ok(f64::from(vv.clone()))
             } else if let Some(scale) = u.scale_to(&Unit::Rad) {
-                Ok(f64::from(&vv.value * &scale))
+                Ok(f64::from(vv * &scale))
             } else {
                 Err(Error::badarg("angle", &v))
             }
@@ -288,9 +288,7 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
                             second
                         }
                     } else if let Some(scale) = ub.scale_to(ua) {
-                        if va.value.partial_cmp(&(&vb.value * &scale))
-                            == Some(pref)
-                        {
+                        if va.partial_cmp(&(vb * &scale)) == Some(pref) {
                             first
                         } else {
                             second

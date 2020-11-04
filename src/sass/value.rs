@@ -152,11 +152,7 @@ impl Value {
                 }
             }
             Value::Numeric(ref num, ref unit) => {
-                let mut num = num.clone();
-                if arithmetic {
-                    num.lead_zero = true;
-                }
-                Ok(css::Value::Numeric(num, unit.clone(), arithmetic))
+                Ok(css::Value::Numeric(num.clone(), unit.clone(), arithmetic))
             }
             Value::Map(ref m) => {
                 let items = m.iter()
@@ -213,15 +209,9 @@ impl Value {
                         Ok(css::Value::Numeric(-&v, u, true))
                     }
                     (Operator::Plus, css::Value::Numeric(v, u, _)) => {
-                        Ok(css::Value::Numeric(
-                            Number {
-                                value: v.value,
-                                plus_sign: true,
-                                lead_zero: v.lead_zero,
-                            },
-                            u,
-                            true,
-                        ))
+                        let mut num = v.clone();
+                        num.plus_sign = true;
+                        Ok(css::Value::Numeric(num, u, true))
                     }
                     (
                         Operator::Minus,

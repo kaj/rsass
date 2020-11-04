@@ -53,11 +53,7 @@ impl Operator {
                     } else if au == Unit::None {
                         Some(Value::Numeric(a + b, bu, true))
                     } else if let Some(scale) = bu.scale_to(&au) {
-                        Some(Value::Numeric(
-                            (a.value + b.value * scale).into(),
-                            au,
-                            true,
-                        ))
+                        Some(Value::Numeric(a + b * scale, au, true))
                     } else {
                         None
                     }
@@ -99,7 +95,7 @@ impl Operator {
                         Some(Value::Numeric(av - bv, bu.clone(), true))
                     } else if let Some(scale) = bu.scale_to(au) {
                         Some(Value::Numeric(
-                            (&av.value - &(&bv.value * &scale)).into(),
+                            av - &(bv * &scale),
                             au.clone(),
                             true,
                         ))
@@ -135,17 +131,9 @@ impl Operator {
                     } else if au == &Unit::None {
                         Some(Value::Numeric(a * b, bu.clone(), true))
                     } else if bu == &Unit::Percent {
-                        Some(Value::Numeric(
-                            (&a.value * &b.value / 100).into(),
-                            au.clone(),
-                            true,
-                        ))
+                        Some(Value::Numeric(a * b / 100, au.clone(), true))
                     } else if au == &Unit::Percent {
-                        Some(Value::Numeric(
-                            (&a.value * &b.value / 100).into(),
-                            bu.clone(),
-                            true,
-                        ))
+                        Some(Value::Numeric(a * b / 100, bu.clone(), true))
                     } else {
                         None
                     }
@@ -181,7 +169,7 @@ impl Operator {
                                 ))
                             } else if let Some(scale) = bu.scale_to(&au) {
                                 Some(Value::Numeric(
-                                    av / &(bv * &scale.into()),
+                                    av / &(bv * &scale),
                                     Unit::None,
                                     true,
                                 ))
