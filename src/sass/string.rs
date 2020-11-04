@@ -4,13 +4,13 @@ use crate::value::Quotes;
 use crate::variablescope::Scope;
 use std::fmt;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct SassString {
     parts: Vec<StringPart>,
     quotes: Quotes,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub enum StringPart {
     Raw(String),
     Interpolation(Value),

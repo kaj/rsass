@@ -9,7 +9,7 @@ use num_rational::Rational;
 use num_traits::Zero;
 
 /// A sass value.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub enum Value {
     /// A special kind of escape.  Only really used for !important.
     Bang(String),

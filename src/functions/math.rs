@@ -282,13 +282,15 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
                     &Value::Numeric(ref vb, ref ub, _),
                 ) => {
                     if ua == &Unit::None || ua == ub || ub == &Unit::None {
-                        if va.cmp(vb) == pref {
+                        if va.partial_cmp(vb) == Some(pref) {
                             first
                         } else {
                             second
                         }
                     } else if let Some(scale) = ub.scale_to(ua) {
-                        if va.value.cmp(&(&vb.value * &scale)) == pref {
+                        if va.value.partial_cmp(&(&vb.value * &scale))
+                            == Some(pref)
+                        {
                             first
                         } else {
                             second

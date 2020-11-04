@@ -8,7 +8,7 @@ use num_rational::Rational;
 use std::convert::TryFrom;
 
 /// A css value.
-#[derive(Clone, Debug, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, Eq, PartialOrd)]
 pub enum Value {
     /// A special kind of escape.  Only really used for !important.
     Bang(String),

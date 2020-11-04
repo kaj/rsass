@@ -12,7 +12,7 @@ use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 /// Only the actual numeric value is included, not any unit, but flags
 /// to show a leading plus sign and/or leading zero (for values
 /// between -1 and 1) is included.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Number {
     pub value: NumValue,
     pub plus_sign: bool,
@@ -23,47 +23,7 @@ pub struct Number {
 pub enum NumValue {
     Rational(Ratio<isize>),
     BigRational(Ratio<BigInt>),
-    Float(WrapFloat),
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct WrapFloat(f64);
-
-impl Eq for WrapFloat {}
-impl PartialOrd for WrapFloat {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-impl Ord for WrapFloat {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.0.partial_cmp(&other.0).unwrap_or_else(|| {
-            let (a, b) = (self.0, other.0);
-            match (a.is_nan(), b.is_nan()) {
-                (true, true) => Ordering::Equal,
-                (true, false) => Ordering::Greater,
-                (false, true) => Ordering::Less,
-                (false, false) => {
-                    match (
-                        a.is_infinite(),
-                        a.is_sign_positive(),
-                        b.is_infinite(),
-                        b.is_sign_positive(),
-                    ) {
-                        (true, true, true, true)
-                        | (true, false, true, false) => Ordering::Equal,
-                        (_, _, true, true) => Ordering::Less,
-                        (_, _, true, false) => Ordering::Greater,
-                        (true, false, _, _) => Ordering::Less,
-                        (true, true, _, _) => Ordering::Greater,
-                        // None of the values is nan or infinite?
-                        // Then we should not be here.
-                        _ => Ordering::Equal,
-                    }
-                }
-            }
-        })
-    }
+    Float(f64),
 }
 
 impl From<Ratio<isize>> for NumValue {
@@ -83,7 +43,7 @@ impl From<Ratio<BigInt>> for NumValue {
 }
 impl From<f64> for NumValue {
     fn from(value: f64) -> NumValue {
-        NumValue::Float(WrapFloat(value))
+        NumValue::Float(value)
     }
 }
 
@@ -92,21 +52,21 @@ impl NumValue {
         match self {
             NumValue::Rational(s) => s.abs().into(),
             NumValue::BigRational(s) => s.abs().into(),
-            NumValue::Float(s) => s.0.abs().into(),
+            NumValue::Float(s) => s.abs().into(),
         }
     }
     pub fn is_positive(&self) -> bool {
         match self {
             NumValue::Rational(s) => s.is_positive(),
             NumValue::BigRational(s) => s.is_positive(),
-            NumValue::Float(s) => s.0.is_sign_positive(),
+            NumValue::Float(s) => s.is_sign_positive(),
         }
     }
     pub fn is_negative(&self) -> bool {
         match self {
             NumValue::Rational(s) => s.is_negative(),
             NumValue::BigRational(s) => s.is_negative(),
-            NumValue::Float(s) => s.0.is_sign_negative(),
+            NumValue::Float(s) => s.is_sign_negative(),
         }
     }
 }
@@ -123,7 +83,7 @@ impl Neg for &NumValue {
         match self {
             NumValue::Rational(s) => (-s).into(),
             NumValue::BigRational(s) => (-s).into(),
-            NumValue::Float(s) => (-s.0).into(),
+            NumValue::Float(s) => (-s).into(),
         }
     }
 }
@@ -131,28 +91,27 @@ impl Neg for &NumValue {
 impl Eq for NumValue {}
 impl PartialEq for NumValue {
     fn eq(&self, rhs: &NumValue) -> bool {
-        self.cmp(rhs) == Ordering::Equal
-    }
-}
-impl Ord for NumValue {
-    fn cmp(&self, rhs: &NumValue) -> Ordering {
-        match (self, rhs) {
-            (NumValue::Rational(s), NumValue::Rational(r)) => s.cmp(r),
-            (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                biggen(s).cmp(r)
-            }
-            (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                s.cmp(&biggen(r))
-            }
-            (NumValue::BigRational(s), NumValue::BigRational(r)) => s.cmp(r),
-            (NumValue::Float(s), r) => s.cmp(&WrapFloat(f64::from(r))),
-            (s, NumValue::Float(r)) => WrapFloat(f64::from(s)).cmp(r),
-        }
+        self.partial_cmp(rhs) == Some(Ordering::Equal)
     }
 }
 impl PartialOrd for NumValue {
     fn partial_cmp(&self, rhs: &NumValue) -> Option<Ordering> {
-        Some(self.cmp(rhs))
+        match (self, rhs) {
+            (NumValue::Rational(s), NumValue::Rational(r)) => {
+                s.partial_cmp(r)
+            }
+            (NumValue::Rational(s), NumValue::BigRational(r)) => {
+                biggen(s).partial_cmp(r)
+            }
+            (NumValue::BigRational(s), NumValue::Rational(r)) => {
+                s.partial_cmp(&biggen(r))
+            }
+            (NumValue::BigRational(s), NumValue::BigRational(r)) => {
+                s.partial_cmp(r)
+            }
+            (NumValue::Float(s), r) => s.partial_cmp(&f64::from(r)),
+            (s, NumValue::Float(r)) => f64::from(s).partial_cmp(r),
+        }
     }
 }
 
@@ -176,8 +135,8 @@ impl Mul for &NumValue {
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 (s * r).into()
             }
-            (NumValue::Float(s), r) => (s.0 * f64::from(r)).into(),
-            (s, NumValue::Float(r)) => (f64::from(s) * r.0).into(),
+            (NumValue::Float(s), r) => (s * f64::from(r)).into(),
+            (s, NumValue::Float(r)) => (f64::from(s) * r).into(),
         }
     }
 }
@@ -194,7 +153,7 @@ impl Mul<&Ratio<isize>> for &NumValue {
         match self {
             NumValue::Rational(s) => (s * rhs).into(),
             NumValue::BigRational(s) => (s * biggen(&rhs)).into(),
-            NumValue::Float(s) => (s.0 * ratio_to_float(rhs)).into(),
+            NumValue::Float(s) => (s * ratio_to_float(rhs)).into(),
         }
     }
 }
@@ -204,7 +163,7 @@ impl Mul<isize> for NumValue {
         match self {
             NumValue::Rational(s) => (s * rhs).into(),
             NumValue::BigRational(s) => (s * BigInt::from(rhs)).into(),
-            NumValue::Float(s) => (s.0 * (rhs as f64)).into(),
+            NumValue::Float(s) => (s * (rhs as f64)).into(),
         }
     }
 }
@@ -232,8 +191,8 @@ impl Rem for &NumValue {
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 (s % r).into()
             }
-            (NumValue::Float(s), r) => (s.0 % f64::from(r)).into(),
-            (s, NumValue::Float(r)) => (f64::from(s) % r.0).into(),
+            (NumValue::Float(s), r) => (s % f64::from(r)).into(),
+            (s, NumValue::Float(r)) => (f64::from(s) % r).into(),
         }
     }
 }
@@ -260,8 +219,8 @@ impl Div for &NumValue {
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 (s / r).into()
             }
-            (NumValue::Float(s), r) => (s.0 / f64::from(r)).into(),
-            (s, NumValue::Float(r)) => (f64::from(s) / r.0).into(),
+            (NumValue::Float(s), r) => (s / f64::from(r)).into(),
+            (s, NumValue::Float(r)) => (f64::from(s) / r).into(),
         }
     }
 }
@@ -272,7 +231,7 @@ impl Div<isize> for NumValue {
         match self {
             NumValue::Rational(s) => (s / rhs).into(),
             NumValue::BigRational(s) => (s / BigInt::from(rhs)).into(),
-            NumValue::Float(s) => (s.0 / (rhs as f64)).into(),
+            NumValue::Float(s) => (s / (rhs as f64)).into(),
         }
     }
 }
@@ -291,8 +250,8 @@ impl Add for NumValue {
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 (s + r).into()
             }
-            (NumValue::Float(s), r) => (s.0 + f64::from(r)).into(),
-            (s, NumValue::Float(r)) => (f64::from(s) + r.0).into(),
+            (NumValue::Float(s), r) => (s + f64::from(r)).into(),
+            (s, NumValue::Float(r)) => (f64::from(s) + r).into(),
         }
     }
 }
@@ -316,8 +275,8 @@ impl Sub for &NumValue {
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 (s - r).into()
             }
-            (NumValue::Float(s), r) => (s.0 + f64::from(r)).into(),
-            (s, NumValue::Float(r)) => (f64::from(s) + r.0).into(),
+            (NumValue::Float(s), r) => (s + f64::from(r)).into(),
+            (s, NumValue::Float(r)) => (f64::from(s) + r).into(),
         }
     }
 }
@@ -339,7 +298,7 @@ impl Zero for NumValue {
         match self {
             NumValue::Rational(r) => r.is_zero(),
             NumValue::BigRational(r) => r.is_zero(),
-            NumValue::Float(r) => r.0.is_zero(),
+            NumValue::Float(r) => r.is_zero(),
         }
     }
 }
@@ -349,21 +308,21 @@ impl NumValue {
         match self {
             NumValue::Rational(r) => r.ceil().into(),
             NumValue::BigRational(r) => r.ceil().into(),
-            NumValue::Float(r) => r.0.ceil().into(),
+            NumValue::Float(r) => r.ceil().into(),
         }
     }
     pub fn floor(&self) -> NumValue {
         match self {
             NumValue::Rational(r) => r.floor().into(),
             NumValue::BigRational(r) => r.floor().into(),
-            NumValue::Float(r) => r.0.floor().into(),
+            NumValue::Float(r) => r.floor().into(),
         }
     }
     pub fn round(&self) -> NumValue {
         match self {
             NumValue::Rational(r) => r.round().into(),
             NumValue::BigRational(r) => r.round().into(),
-            NumValue::Float(r) => r.0.round().into(),
+            NumValue::Float(r) => r.round().into(),
         }
     }
 }
@@ -376,7 +335,7 @@ impl Number {
             NumValue::BigRational(_r) => {
                 panic!("FIXME: Should round down to rational")
             }
-            NumValue::Float(r) => Ratio::approximate_float(r.0).unwrap(),
+            NumValue::Float(r) => Ratio::approximate_float(*r).unwrap(),
         }
     }
 
@@ -396,7 +355,7 @@ impl Number {
             NumValue::BigRational(s) => s.is_integer(),
             NumValue::Float(s) => {
                 // TODO: A bigger epsilon might be needed?
-                (s.0.round() - s.0).abs() <= std::f64::EPSILON
+                (s.round() - s).abs() <= std::f64::EPSILON
             }
         }
     }
@@ -407,7 +366,7 @@ impl Number {
             NumValue::Rational(s) => Some(s.to_integer()),
             // TODO: Check if s is small enough
             NumValue::BigRational(_s) => None, // s.is_integer(),
-            NumValue::Float(s) => Some(s.0.ceil() as isize),
+            NumValue::Float(s) => Some(s.ceil() as isize),
         }
     }
 
@@ -451,7 +410,7 @@ impl From<&NumValue> for f64 {
         match val {
             NumValue::Rational(s) => ratio_to_float(s),
             NumValue::BigRational(s) => ratio_to_float(s),
-            NumValue::Float(s) => s.0,
+            NumValue::Float(s) => *s,
         }
     }
 }
@@ -533,20 +492,17 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
             NumValue::Rational(ref s) => do_fmt(out, s, self.format),
             NumValue::BigRational(ref s) => do_fmt(out, s, self.format),
             NumValue::Float(ref s) => {
-                if s.0.is_nan() {
+                if s.is_nan() {
                     write!(out, "NaN")
-                } else if s.0.is_infinite() {
+                } else if s.is_infinite() {
                     write!(
                         out,
                         "{}Infinity",
-                        if s.0.is_sign_negative() { "-" } else { "" }
+                        if s.is_sign_negative() { "-" } else { "" }
                     )
                 } else {
-                    let value = s.0;
-                    //let ten = 10.;
-                    let mut frac = value.fract();
-
-                    let mut whole = value.trunc().abs();
+                    let mut frac = s.fract();
+                    let mut whole = s.trunc().abs();
                     let mut dec = String::with_capacity(if frac.is_zero() {
                         0
                     } else {
@@ -595,7 +551,7 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                         }
                     }
 
-                    if value.is_sign_negative()
+                    if s.is_sign_negative()
                         && (!whole.is_zero() || !dec.is_empty())
                     {
                         out.write_char('-')?;
