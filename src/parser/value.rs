@@ -7,7 +7,7 @@ use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string, Span};
 use crate::sass::{SassString, Value};
-use crate::value::{ListSeparator, Number, Operator, Rgba};
+use crate::value::{ListSeparator, NumValue, Number, Operator, Rgba};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
@@ -293,54 +293,39 @@ fn sign_prefix(input: Span) -> IResult<Span, Option<&[u8]>> {
         .map(|(r, s)| (r, s.map(|s| *s.fragment())))
 }
 
-enum AnyRatio {
-    Machine(Ratio<isize>),
-    Big(Ratio<BigInt>),
-}
-
 fn number(input: Span) -> IResult<Span, Value> {
     map(
         tuple((
             sign_prefix,
             alt((
                 map(pair(decimal_integer, decimal_decimals), |(n, d)| {
-                    (true, AnyRatio::Machine(n + d))
+                    (true, n + d)
                 }),
                 map(
                     pair(decimal_integer_big, decimal_decimals_big),
-                    |(n, d)| (true, AnyRatio::Big(n + d)),
+                    |(n, d)| (true, n + d),
                 ),
-                map(decimal_decimals, |dec| (false, AnyRatio::Machine(dec))),
-                map(decimal_decimals_big, |dec| (false, AnyRatio::Big(dec))),
-                map(decimal_integer, |int| (true, AnyRatio::Machine(int))),
-                map(decimal_integer_big, |int| (true, AnyRatio::Big(int))),
+                map(decimal_decimals, |dec| (false, dec)),
+                map(decimal_decimals_big, |dec| (false, dec)),
+                map(decimal_integer, |int| (true, int)),
+                map(decimal_integer_big, |int| (true, int)),
             )),
             unit,
         )),
-        |(sign, (lead_zero, num), unit)| match num {
-            AnyRatio::Machine(num) => Value::Numeric(
+        |(sign, (lead_zero, num), unit)| {
+            Value::Numeric(
                 Number {
-                    value: (if sign == Some(b"-") { -num } else { num })
-                        .into(),
+                    value: if sign == Some(b"-") { -num } else { num },
                     plus_sign: sign == Some(b"+"),
                     lead_zero,
                 },
                 unit,
-            ),
-            AnyRatio::Big(num) => Value::Numeric(
-                Number {
-                    value: (if sign == Some(b"-") { -num } else { num })
-                        .into(),
-                    plus_sign: sign == Some(b"+"),
-                    lead_zero,
-                },
-                unit,
-            ),
+            )
         },
     )(input)
 }
 
-pub fn decimal_integer(input: Span) -> IResult<Span, Rational> {
+pub fn decimal_integer(input: Span) -> IResult<Span, NumValue> {
     map_opt(
         fold_many1(
             // Note: We should use bytes directly, one_of returns a char.
@@ -350,11 +335,11 @@ pub fn decimal_integer(input: Span) -> IResult<Span, Rational> {
                 r?.checked_mul(10)?.checked_add(isize::from(d as u8 - b'0'))
             },
         ),
-        |opt_int| opt_int.map(Rational::from_integer),
+        |opt_int| opt_int.map(NumValue::from),
     )(input)
 }
 
-pub fn decimal_integer_big(input: Span) -> IResult<Span, Ratio<BigInt>> {
+pub fn decimal_integer_big(input: Span) -> IResult<Span, NumValue> {
     map(
         fold_many1(
             // Note: We should use bytes directly, one_of returns a char.
@@ -362,11 +347,11 @@ pub fn decimal_integer_big(input: Span) -> IResult<Span, Ratio<BigInt>> {
             BigInt::zero(),
             |r, d| r * 10 + BigInt::from(d as u8 - b'0'),
         ),
-        Ratio::from_integer,
+        |i| Ratio::from_integer(i).into(),
     )(input)
 }
 
-pub fn decimal_decimals(input: Span) -> IResult<Span, Rational> {
+pub fn decimal_decimals(input: Span) -> IResult<Span, NumValue> {
     map_opt(
         preceded(
             tag("."),
@@ -383,11 +368,11 @@ pub fn decimal_decimals(input: Span) -> IResult<Span, Rational> {
                 },
             ),
         ),
-        |opt_pair| opt_pair.map(|(r, d)| Rational::new(r, d)),
+        |opt_pair| opt_pair.map(|(r, d)| Rational::new(r, d).into()),
     )(input)
 }
 
-pub fn decimal_decimals_big(input: Span) -> IResult<Span, Ratio<BigInt>> {
+pub fn decimal_decimals_big(input: Span) -> IResult<Span, NumValue> {
     map(
         preceded(
             tag("."),
@@ -399,7 +384,7 @@ pub fn decimal_decimals_big(input: Span) -> IResult<Span, Ratio<BigInt>> {
                 },
             ),
         ),
-        |(r, d)| Ratio::new(r, d),
+        |(r, d)| Ratio::new(r, d).into(),
     )(input)
 }
 
