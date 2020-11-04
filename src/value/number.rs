@@ -19,7 +19,7 @@ pub struct Number {
     pub lead_zero: bool,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug)]
 pub enum NumValue {
     Rational(Ratio<isize>),
     BigRational(Ratio<BigInt>),
@@ -125,6 +125,34 @@ impl Neg for &NumValue {
             NumValue::BigRational(s) => (-s).into(),
             NumValue::Float(s) => (-s.0).into(),
         }
+    }
+}
+
+impl Eq for NumValue {}
+impl PartialEq for NumValue {
+    fn eq(&self, rhs: &NumValue) -> bool {
+        self.cmp(rhs) == Ordering::Equal
+    }
+}
+impl Ord for NumValue {
+    fn cmp(&self, rhs: &NumValue) -> Ordering {
+        match (self, rhs) {
+            (NumValue::Rational(s), NumValue::Rational(r)) => s.cmp(r),
+            (NumValue::Rational(s), NumValue::BigRational(r)) => {
+                biggen(s).cmp(r)
+            }
+            (NumValue::BigRational(s), NumValue::Rational(r)) => {
+                s.cmp(&biggen(r))
+            }
+            (NumValue::BigRational(s), NumValue::BigRational(r)) => s.cmp(r),
+            (NumValue::Float(s), r) => s.cmp(&WrapFloat(f64::from(r))),
+            (s, NumValue::Float(r)) => WrapFloat(f64::from(s)).cmp(r),
+        }
+    }
+}
+impl PartialOrd for NumValue {
+    fn partial_cmp(&self, rhs: &NumValue) -> Option<Ordering> {
+        Some(self.cmp(rhs))
     }
 }
 
