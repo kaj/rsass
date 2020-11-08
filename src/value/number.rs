@@ -331,8 +331,24 @@ impl Number {
     pub fn as_ratio(&self) -> Result<Ratio<isize>, crate::Error> {
         match &self.value {
             NumValue::Rational(r) => Ok(*r),
-            NumValue::BigRational(_r) => {
-                panic!("FIXME: Should round down to rational")
+            NumValue::BigRational(r) => {
+                let mut numer = r.numer().clone();
+                let mut denom = r.denom().clone();
+                use std::convert::TryFrom;
+                loop {
+                    let tn = isize::try_from(&numer);
+                    let td = isize::try_from(&denom);
+                    if let (Ok(n), Ok(d)) = (tn, td) {
+                        return Ok(Ratio::new(n, d));
+                    }
+                    numer = numer / 32;
+                    denom = denom / 32;
+                    if denom.is_zero() {
+                        return Err(crate::Error::BadValue(
+                            "Number too large".into(),
+                        ));
+                    }
+                }
             }
             NumValue::Float(r) => Ratio::approximate_float(*r)
                 .ok_or_else(|| crate::Error::BadValue(r.to_string())),
