@@ -5,7 +5,7 @@ use crate::selectors::Selectors;
 
 /// Every sass file is a sequence of sass items.
 /// Scoping items contains further sequences of items.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub enum Item {
     Import(Vec<SassString>, Value, SourcePos),
     VariableDeclaration {

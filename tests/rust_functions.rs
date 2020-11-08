@@ -47,12 +47,8 @@ fn simple_function() {
 }
 
 #[cfg(test)]
-fn avg<N>(a: Number<N>, b: Number<N>) -> Number<N>
-where
-    N: Clone + num_integer::Integer + num_traits::Signed + From<i8>,
-{
-    let two: N = 2i8.into();
-    Number::from((a.value + b.value) / two)
+fn avg(a: Number, b: Number) -> Number {
+    (a + b) / 2
 }
 
 #[test]

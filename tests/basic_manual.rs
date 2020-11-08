@@ -228,6 +228,26 @@ fn div_simliar_unit() {
 }
 
 #[test]
+fn different_numbers_should_compare_as_same() {
+    check(
+        b"@use 'sass:math' as m;\
+          \np {\
+          \n  $t: 0.2;
+          \n  a: max(1, m.sin(30deg));\
+          \n  b: max(0.2, m.sin(30deg));\
+          \n  c: max($t, 0.23233234232231232312312323231223323);\
+          \n  d: max($t+0.1, 0.23233234232231232312312323231223323);\
+          \n}",
+        "p {\
+         \n  a: 1;\
+         \n  b: 0.5;\
+         \n  c: 0.2323323423;\
+         \n  d: 0.3;\
+         \n}\n",
+    )
+}
+
+#[test]
 fn test_number_0() {
     check_value("0", "0");
 }
@@ -289,6 +309,10 @@ fn check(input: &[u8], expected: &str) {
     assert_eq!(
         compile_scss(input, Default::default())
             .and_then(|s| Ok(String::from_utf8(s)?))
+            .map_err(|e| {
+                eprintln!("{}", e);
+                "rsass failed"
+            })
             .unwrap(),
         expected
     );

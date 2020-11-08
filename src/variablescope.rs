@@ -499,12 +499,6 @@ pub mod test {
         assert_expr!(&[("m", "20")], b"1000px + $m * -2;", "960px")
     }
 
-    // ...
-    #[test]
-    fn div_by_zero() {
-        assert_expr!(b"(500px/0);", "500px/0")
-    }
-
     #[test]
     fn double_div_1() {
         assert_expr!(b"15/3/5;", "15/3/5")

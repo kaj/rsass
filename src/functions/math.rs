@@ -2,7 +2,6 @@ use super::{Error, Module, SassFunction, Scope};
 use crate::css::Value;
 use crate::value::{Number, Quotes, Unit};
 use num_rational::Rational;
-use num_traits::Signed;
 use rand::{thread_rng, Rng};
 use std::cmp::Ordering;
 
@@ -24,18 +23,18 @@ pub fn create_module() -> Module {
         let (mut num, mut u) = get_numeric(s, "number")?;
         let (max_v, max_u) = get_numeric(s, "max")?;
         if let Some(scale) = max_u.scale_to(&u) {
-            if num.value >= &max_v.value * scale {
+            if num >= &max_v * &scale {
                 num = max_v;
                 u = max_u;
             }
         }
         if let Some(scale) = min_u.scale_to(&u) {
-            if num.value <= &min_v.value * scale {
+            if num <= &min_v * &scale {
                 num = min_v;
                 u = min_u;
             }
         }
-        Ok(number(num.value, u))
+        Ok(number(num, u))
     });
     def!(f, floor(number), |s| {
         let (val, unit) = get_numeric(s, "number")?;
@@ -74,7 +73,7 @@ pub fn create_module() -> Module {
                         return Err(Error::badarg(&unit.to_string(), v));
                     }
                 }
-                Ok(float_value(sum.sqrt(), unit))
+                Ok(number(sum.sqrt(), unit))
             } else {
                 Err(Error::badarg("number", &Value::Null))
             }
@@ -88,30 +87,26 @@ pub fn create_module() -> Module {
         let num = as_unitless(&s.get("number")?)?;
         let base = as_unitless_or(&s.get("base")?, std::f64::consts::E)?;
         let result = num.log(base);
-        Ok(float_value(result, Unit::None))
+        Ok(number(result, Unit::None))
     });
     def!(f, pow(base, exponent), |s| {
         let base = as_unitless(&s.get("base")?)?;
         let exponent = as_unitless(&s.get("exponent")?)?;
-        Ok(float_value(base.powf(exponent), Unit::None))
+        Ok(number(base.powf(exponent), Unit::None))
     });
     def!(f, sqrt(number), |s| {
-        let number = as_unitless(&s.get("number")?)?;
-        Ok(float_value(number.sqrt(), Unit::None))
+        Ok(number(as_unitless(&s.get("number")?)?.sqrt(), Unit::None))
     });
 
     // - - - Trigonometric Functions - - -
     def!(f, cos(number), |s| {
-        let val = as_radians(&s.get("number")?)?;
-        Ok(float_value(val.cos(), Unit::None))
+        Ok(number(as_radians(&s.get("number")?)?.cos(), Unit::None))
     });
     def!(f, sin(number), |s| {
-        let val = as_radians(&s.get("number")?)?;
-        Ok(float_value(val.sin(), Unit::None))
+        Ok(number(as_radians(&s.get("number")?)?.sin(), Unit::None))
     });
     def!(f, tan(number), |s| {
-        let val = as_radians(&s.get("number")?)?;
-        Ok(float_value(val.tan(), Unit::None))
+        Ok(number(as_radians(&s.get("number")?)?.tan(), Unit::None))
     });
 
     def!(f, acos(number), |s| {
@@ -125,7 +120,9 @@ pub fn create_module() -> Module {
     });
     def!(f, atan2(y, x), |s| {
         let (y, y_unit) = as_numeric(&s.get("y")?)?;
-        let (mut x, x_unit) = as_numeric(&s.get("x")?)?;
+        let (x, x_unit) = as_numeric(&s.get("x")?)?;
+        let y = y.value;
+        let mut x = x.value;
         if let Some(scale) = x_unit.scale_to(&y_unit) {
             x = x * scale;
         }
@@ -160,7 +157,7 @@ pub fn create_module() -> Module {
     // - - - Other Functions - - -
     def!(f, percentage(number), |s| match s.get("number")? {
         Value::Numeric(val, Unit::None, _) => {
-            Ok(number(val.value * 100, Unit::Percent))
+            Ok(number(val * 100, Unit::Percent))
         }
         v => Err(Error::badarg("number", &v)),
     });
@@ -170,7 +167,9 @@ pub fn create_module() -> Module {
             Ok(number(Rational::new(intrand(rez), rez), Unit::None))
         }
         Value::Numeric(val, ..) => {
-            let bound = val.to_integer();
+            let bound = val
+                .to_integer()
+                .ok_or_else(|| Error::S("bound must be > 0".into()))?;
             if bound > 0 {
                 let res = 1 + intrand(bound);
                 Ok(number(Rational::from_integer(res), Unit::None))
@@ -207,10 +206,7 @@ pub fn expose(math: &Module, global: &mut Module) {
     }
 }
 
-fn get_numeric(
-    s: &dyn Scope,
-    name: &str,
-) -> Result<(Number<isize>, Unit), Error> {
+fn get_numeric(s: &dyn Scope, name: &str) -> Result<(Number, Unit), Error> {
     match s.get(name)? {
         Value::Numeric(v, u, ..) => Ok((v, u)),
         v => Err(Error::badarg("number", &v)),
@@ -223,7 +219,7 @@ fn as_radians(v: &Value) -> Result<f64, Error> {
             if u == &Unit::None {
                 Ok(f64::from(vv.clone()))
             } else if let Some(scale) = u.scale_to(&Unit::Rad) {
-                Ok(f64::from(vv.clone() * scale))
+                Ok(f64::from(vv * &scale))
             } else {
                 Err(Error::badarg("angle", &v))
             }
@@ -257,37 +253,21 @@ fn as_unitless_or(v: &Value, default: f64) -> Result<f64, Error> {
     }
 }
 
-fn as_numeric(v: &Value) -> Result<(Number<isize>, Unit), Error> {
+fn as_numeric(v: &Value) -> Result<(Number, Unit), Error> {
     match v {
         Value::Numeric(v, u, ..) => Ok((v.clone(), u.clone())),
         v => Err(Error::badarg("number", &v)),
     }
 }
 
-fn number(v: Rational, unit: Unit) -> Value {
-    Value::Numeric(Number::from(v), unit, true)
+fn number<T: Into<Number>>(v: T, unit: Unit) -> Value {
+    Value::Numeric(v.into(), unit, true)
 }
 
 /// convert f64 in radians (used by rust) to numeric Value in degrees
 /// (used by sass).
 fn deg_value(rad: f64) -> Value {
-    float_value(rad.to_degrees(), Unit::Deg)
-}
-
-fn float_value(val: f64, unit: Unit) -> Value {
-    if let Some(result) = Rational::approximate_float(val) {
-        number(result, unit)
-    } else {
-        if val.is_infinite() {
-            if val.is_sign_negative() {
-                "-Infinity".into()
-            } else {
-                "Infinity".into()
-            }
-        } else {
-            val.to_string().into()
-        }
-    }
+    number(rad.to_degrees(), Unit::Deg)
 }
 
 fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
@@ -302,13 +282,13 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
                     &Value::Numeric(ref vb, ref ub, _),
                 ) => {
                     if ua == &Unit::None || ua == ub || ub == &Unit::None {
-                        if va.cmp(vb) == pref {
+                        if va.partial_cmp(vb) == Some(pref) {
                             first
                         } else {
                             second
                         }
                     } else if let Some(scale) = ub.scale_to(ua) {
-                        if va.value.cmp(&(vb.value * scale)) == pref {
+                        if va.partial_cmp(&(vb * &scale)) == Some(pref) {
                             first
                         } else {
                             second

@@ -15,7 +15,7 @@ use std::fmt;
 use std::io::Write;
 
 /// A full set of selectors
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Selectors {
     pub s: Vec<Selector>,
     backref: Selector,
@@ -103,7 +103,7 @@ impl Selectors {
 ///
 /// A selector does not contain `,`.  If it does, it is a `Selectors`,
 /// where each of the parts separated by the comma is a `Selector`.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Selector(pub Vec<SelectorPart>);
 
 impl Selector {
@@ -148,7 +148,7 @@ impl Selector {
 }
 
 /// A selector consist of a sequence of these parts.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub enum SelectorPart {
     /// A simple selector, eg a class, id or element name.
     ///

@@ -98,7 +98,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     fn fade_in(color: Value, amount: Value) -> Result<Value, Error> {
         match (color, amount) {
             (Value::Color(rgba, _), Value::Numeric(v, ..)) => {
-                let a = rgba.alpha + v.value;
+                let a = rgba.alpha + v.as_ratio()?;
                 Ok(Value::rgba(rgba.red, rgba.green, rgba.blue, a))
             }
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
@@ -109,7 +109,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     fn fade_out(color: Value, amount: Value) -> Result<Value, Error> {
         match (color, amount) {
             (Value::Color(rgba, _), Value::Numeric(v, ..)) => {
-                let a = rgba.alpha - v.value;
+                let a = rgba.alpha - v.as_ratio()?;
                 Ok(Value::rgba(rgba.red, rgba.green, rgba.blue, a))
             }
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
@@ -189,7 +189,7 @@ pub fn expose(meta: &Module, global: &mut Module) {
 
 fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, ..) => Ok(v.value),
+        Value::Numeric(v, ..) => v.as_ratio(),
         v => Err(Error::badarg("number", &v)),
     }
 }
@@ -202,12 +202,15 @@ fn to_rational(v: Value) -> Result<Rational, Error> {
 fn to_rational_percent(v: Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
-        Value::Numeric(v, Unit::Percent, _) => Ok(v.value / 100),
-        Value::Numeric(v, ..) => Ok(if v.value.abs() < Rational::one() {
-            v.value
-        } else {
-            v.value / 100
-        }),
+        Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio()? / 100),
+        Value::Numeric(v, ..) => {
+            let v = v.as_ratio()?;
+            Ok(if v.abs() < Rational::one() {
+                v
+            } else {
+                v / 100
+            })
+        }
         v => Err(Error::badarg("number", &v)),
     }
 }

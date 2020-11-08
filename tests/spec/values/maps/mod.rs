@@ -53,7 +53,6 @@ mod key_equality {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn nan() {
         assert_eq!(
             rsass(
