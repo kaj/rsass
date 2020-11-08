@@ -13,6 +13,7 @@ project adheres to
 
 * `SourceName` and `sass::Item::Import` was changed by #62.
 * `Use` was added to the `sass::Item` enum by #80.
+* Changes to `sass::Value` and `css::Vaue` by #81.
 
 ### Improvements
 
@@ -24,6 +25,11 @@ project adheres to
   located spans by [nom_locate](https://lib.rs/crates/nom_locate) in
   the parser.  A `sass::Item::Import` now handles where each file is
   imported from, to improve error reporting.
+* PR #81: Improved number handlig.  Now `Value::Number` handles both
+  machine-sized rationals, bignum rationals and floats internally and
+  `Value::NumberBig` is removed.  Also, `Value` no longer implemnts
+  `Ord` but only `PartialOrd`, to handle f64 NaN an infinite values
+  correctly.
 * Improve parsing of `@else` clauses.
 * Update spec to 2020-10-29.
 
