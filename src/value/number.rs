@@ -4,6 +4,7 @@ use num_integer::Integer;
 use num_rational::Ratio;
 use num_traits::{One, Signed, Zero};
 use std::cmp::Ordering;
+use std::convert::TryFrom;
 use std::fmt::{self, Write};
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 
@@ -334,7 +335,6 @@ impl Number {
             NumValue::BigRational(r) => {
                 let mut numer = r.numer().clone();
                 let mut denom = r.denom().clone();
-                use std::convert::TryFrom;
                 loop {
                     let tn = isize::try_from(&numer);
                     let td = isize::try_from(&denom);
@@ -377,11 +377,12 @@ impl Number {
     }
 
     /// Converts to an integer, rounding towards zero.
+    ///
+    /// An integer that is too big to fit in an isize returns `None`.
     pub fn to_integer(&self) -> Option<isize> {
         match &self.value {
             NumValue::Rational(s) => Some(s.to_integer()),
-            // TODO: Check if s is small enough
-            NumValue::BigRational(_s) => None, // s.is_integer(),
+            NumValue::BigRational(s) => isize::try_from(s.to_integer()).ok(),
             NumValue::Float(s) => Some(s.ceil() as isize),
         }
     }
