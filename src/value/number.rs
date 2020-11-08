@@ -328,14 +328,14 @@ impl NumValue {
 }
 
 impl Number {
-    // FIXME this probably needs to return a Result.
-    pub fn as_ratio(&self) -> Ratio<isize> {
+    pub fn as_ratio(&self) -> Result<Ratio<isize>, crate::Error> {
         match &self.value {
-            NumValue::Rational(r) => *r,
+            NumValue::Rational(r) => Ok(*r),
             NumValue::BigRational(_r) => {
                 panic!("FIXME: Should round down to rational")
             }
-            NumValue::Float(r) => Ratio::approximate_float(*r).unwrap(),
+            NumValue::Float(r) => Ratio::approximate_float(*r)
+                .ok_or_else(|| crate::Error::BadValue(r.to_string())),
         }
     }
 

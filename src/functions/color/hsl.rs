@@ -61,7 +61,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         (c @ Value::Color(..), Value::Null) => Ok(c),
         (Value::Color(rgba, _), Value::Numeric(v, ..)) => {
             let (h, s, l, alpha) = rgba.to_hsla();
-            Ok(Value::hsla(h + v.as_ratio(), s, l, alpha))
+            Ok(Value::hsla(h + v.as_ratio()?, s, l, alpha))
         }
         (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
     });
@@ -83,7 +83,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         (Value::Color(c, _), Value::Null) => Ok(Value::Color(c, None)),
         (Value::Color(rgba, _), Value::Numeric(v, u, _)) => {
             let (h, s, l, alpha) = rgba.to_hsla();
-            let v = v.as_ratio();
+            let v = v.as_ratio()?;
             let v = if u == Unit::Percent { v / 100 } else { v };
             Ok(Value::hsla(h, s + v, l, alpha))
         }
@@ -183,7 +183,7 @@ fn percentage(v: Rational) -> Value {
 
 fn to_rational(v: &Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, ..) => Ok(v.as_ratio()),
+        Value::Numeric(v, ..) => v.as_ratio(),
         v => Err(Error::badarg("number", v)),
     }
 }
@@ -193,9 +193,9 @@ fn to_rational(v: &Value) -> Result<Rational, Error> {
 fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
-        Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio() / 100),
+        Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio()? / 100),
         Value::Numeric(v, ..) => {
-            let v = v.as_ratio();
+            let v = v.as_ratio()?;
             Ok(if v <= Rational::one() { v } else { v / 100 })
         }
         v => Err(Error::badarg("number", &v)),
@@ -206,8 +206,8 @@ fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
 fn to_rational2(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
-        Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio() / 100),
-        Value::Numeric(v, ..) => Ok(v.as_ratio()),
+        Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio()? / 100),
+        Value::Numeric(v, ..) => Ok(v.as_ratio()?),
         v => Err(Error::badarg("number", &v)),
     }
 }

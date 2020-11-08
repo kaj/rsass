@@ -41,7 +41,7 @@ impl Operator {
             Operator::LesserE => Some(Value::from(a <= b)),
             Operator::Plus => match (a, b) {
                 (Value::Color(a, _), Value::Numeric(bn, Unit::None, _)) => {
-                    let bn = bn.as_ratio();
+                    let bn = bn.as_ratio().ok()?;
                     Some(Value::Color(a + bn, None))
                 }
                 (Value::Color(a, _), Value::Color(b, _)) => {
@@ -79,7 +79,7 @@ impl Operator {
                     &Value::Color(ref a, _),
                     &Value::Numeric(ref bn, Unit::None, _),
                 ) => {
-                    let bn = bn.as_ratio();
+                    let bn = bn.as_ratio().ok()?;
                     Some(Value::Color(a - bn, None))
                 }
                 (&Value::Color(ref a, _), &Value::Color(ref b, _)) => {
@@ -148,7 +148,7 @@ impl Operator {
                             &Value::Color(ref a, _),
                             &Value::Numeric(ref bn, Unit::None, ..),
                         ) => {
-                            let bn = bn.as_ratio();
+                            let bn = bn.as_ratio().ok()?;
                             Some(Value::Color(a / bn, None))
                         }
                         (
