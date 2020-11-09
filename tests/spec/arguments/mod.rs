@@ -2,8 +2,8 @@
 #[allow(unused)]
 use super::rsass;
 
-// From "sass-spec/spec/arguments/inovcation.hrx"
-mod inovcation {
+// From "sass-spec/spec/arguments/invocation.hrx"
+mod invocation {
     #[allow(unused)]
     use super::rsass;
     mod function {

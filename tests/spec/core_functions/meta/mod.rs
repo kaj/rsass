@@ -109,6 +109,8 @@ mod call {
         #[allow(unused)]
         use super::rsass;
 
+        // Ignoring "if_args", error tests are not supported yet.
+
         // Ignoring "invalid_args", error tests are not supported yet.
 
         // Ignoring "too_few_args", error tests are not supported yet.

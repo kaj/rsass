@@ -1165,8 +1165,6 @@ fn each_in_functions() {
     );
 }
 
-mod feature_queries;
-
 // From "sass-spec/spec/non_conformant/scss/for.hrx"
 #[test]
 fn test_for() {

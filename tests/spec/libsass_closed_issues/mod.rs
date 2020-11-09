@@ -170,55 +170,6 @@ fn issue_1025() {
     );
 }
 
-// From "sass-spec/spec/libsass-closed-issues/issue_1029.hrx"
-#[test]
-#[ignore] // wrong result
-fn issue_1029() {
-    assert_eq!(
-        rsass(
-            "@for $i from 1 through 2 {\
-            \n  %shift-#{$i - 1} {\
-            \n    margin-left: $i * 1px;\
-            \n  }\
-            \n  .week-start-#{$i} {\
-            \n    @for $j from 1 through 2 {\
-            \n      .month-start-#{$j} {\
-            \n        @extend %shift-#{($j - $i - 1) % 2};\
-            \n      }\
-            \n    }\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        ".week-start-2 .month-start-1, .week-start-1 .month-start-2 {\
-        \n  margin-left: 1px;\
-        \n}\
-        \n.week-start-2 .month-start-2, .week-start-1 .month-start-1 {\
-        \n  margin-left: 2px;\
-        \n}\
-        \n"
-    );
-}
-
-// From "sass-spec/spec/libsass-closed-issues/issue_103.hrx"
-#[test]
-fn issue_103() {
-    assert_eq!(
-        rsass(
-            "// Checks if a number is even\r\
-            \n@function is-even($int) {\r\
-            \n  @if $int % 2 == 0   {\r\
-            \n    @return true;\r\
-            \n  }\r\
-            \n  @return false;\r\
-            \n}"
-        )
-        .unwrap(),
-        ""
-    );
-}
-
 // From "sass-spec/spec/libsass-closed-issues/issue_1030.hrx"
 #[test]
 fn issue_1030() {
@@ -3237,28 +3188,6 @@ fn issue_1422() {
         \n  foo/*foo*/: bar;\
         \n  /*foo*/\
         \n  foo: bar;\
-        \n}\
-        \n"
-    );
-}
-
-// From "sass-spec/spec/libsass-closed-issues/issue_1425.hrx"
-#[test]
-#[ignore] // wrong result
-fn issue_1425() {
-    assert_eq!(
-        rsass(
-            "$query: \"(feature1: val)\";\
-            \n@supports (#{$query}) {\
-            \n  foo { a: b }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        "@supports (feature1: val) {\
-        \n  foo {\
-        \n    a: b;\
-        \n  }\
         \n}\
         \n"
     );
@@ -6841,32 +6770,6 @@ fn issue_2154() {
 
 mod issue_2156;
 
-// From "sass-spec/spec/libsass-closed-issues/issue_2158.hrx"
-#[test]
-#[ignore] // wrong result
-fn issue_2158() {
-    assert_eq!(
-        rsass(
-            "@supports ( box-shadow: none ) {\r\
-            \n    /* Shadow on first body column */\r\
-            \n    .sizechart {\r\
-            \n        position: relative;\r\
-            \n    }\r\
-            \n   /* Comment at the end */\r\
-            \n}"
-        )
-        .unwrap(),
-        "@supports (box-shadow: none) {\
-        \n  /* Shadow on first body column */\
-        \n  .sizechart {\
-        \n    position: relative;\
-        \n  }\
-        \n  /* Comment at the end */\
-        \n}\
-        \n"
-    );
-}
-
 // From "sass-spec/spec/libsass-closed-issues/issue_2169.hrx"
 #[test]
 fn issue_2169() {
@@ -7194,8 +7097,6 @@ fn issue_2233() {
         \n"
     );
 }
-
-mod issue_2236;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_224.hrx"
 #[test]
@@ -8169,42 +8070,6 @@ fn issue_2444() {
 
 // Ignoring "issue_2446", tests with expected error not implemented yet.
 
-// From "sass-spec/spec/libsass-closed-issues/issue_2452.hrx"
-#[test]
-#[ignore] // wrong result
-fn issue_2452() {
-    assert_eq!(
-        rsass(
-            "$prop: display;\r\
-            \n$val: flow-root;\r\
-            \n\r\
-            \n@mixin supports($prop, $val) {\r\
-            \n  @supports ($prop: $val) {\r\
-            \n    $prop: $val;\r\
-            \n  }\r\
-            \n}\r\
-            \n\r\
-            \ndiv {\r\
-            \n  @include supports($prop, $val);\r\
-            \n}\r\
-            \n\r\
-            \ndiv {\r\
-            \n  @supports ($prop: $val) {\r\
-            \n    #{$prop}: $val;\r\
-            \n  }\r\
-            \n}\r\
-            \n"
-        )
-        .unwrap(),
-        "@supports (display: flow-root) {\
-        \n  div {\
-        \n    display: flow-root;\
-        \n  }\
-        \n}\
-        \n"
-    );
-}
-
 // Ignoring "issue_245443", tests with expected error not implemented yet.
 
 // From "sass-spec/spec/libsass-closed-issues/issue_246.hrx"
@@ -8472,23 +8337,6 @@ fn issue_2480() {
 // From "sass-spec/spec/libsass-closed-issues/issue_2482.hrx"
 
 // Ignoring "issue_2482", error tests are not supported yet.
-
-// From "sass-spec/spec/libsass-closed-issues/issue_2488.hrx"
-#[test]
-#[ignore] // wrong result
-fn issue_2488() {
-    assert_eq!(
-        rsass(
-            "%foo {\r\
-            \n    @supports (mask-repeat: repeat-x) {\r\
-            \n       mask-image: url(foo.svg);\r\
-            \n    }\r\
-            \n  }"
-        )
-        .unwrap(),
-        ""
-    );
-}
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2509.hrx"
 #[test]
@@ -10968,28 +10816,6 @@ fn issue_613() {
         \n}\
         \n.other-selector {\
         \n  content: 1;\
-        \n}\
-        \n"
-    );
-}
-
-// From "sass-spec/spec/libsass-closed-issues/issue_614.hrx"
-#[test]
-fn issue_614() {
-    assert_eq!(
-        rsass(
-            "@supports ((foo: bar) or (foo: bar) or (foo: bar)) and (foo: bar) {\
-            \n  div {\
-            \n    bar: baz;\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        "@supports ((foo: bar) or (foo: bar) or (foo: bar)) and (foo: bar) {\
-        \n  div {\
-        \n    bar: baz;\
-        \n  }\
         \n}\
         \n"
     );

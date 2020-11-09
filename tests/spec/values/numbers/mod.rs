@@ -2,4 +2,6 @@
 #[allow(unused)]
 use super::rsass;
 
+mod modulo;
+
 mod units;

@@ -316,6 +316,138 @@ mod alpha {
     }
 }
 
+// From "sass-spec/spec/core_functions/color/blackness.hrx"
+mod blackness {
+    #[allow(unused)]
+    use super::rsass;
+    mod error {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "too_few_args", error tests are not supported yet.
+
+        // Ignoring "too_many_args", error tests are not supported yet.
+
+        // Ignoring "test_type", error tests are not supported yet.
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn fraction() {
+        assert_eq!(
+            rsass(
+                "@use \'sass:color\';\
+            \na {b: color.blackness(color.hwb(0, 0%, 0.5%))}\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  b: 0.3921568627%;\
+        \n}\
+        \n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn max() {
+        assert_eq!(
+            rsass(
+                "@use \'sass:color\';\
+            \na {b: color.blackness(black)}\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  b: 100%;\
+        \n}\
+        \n"
+        );
+    }
+    mod middle {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // wrong result
+        fn half_whiteness() {
+            assert_eq!(
+                rsass(
+                    "@use \'sass:color\';\
+            \na {b: color.blackness(color.hwb(0, 50%, 50%))}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: 49.8039215686%;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn high_whiteness() {
+            assert_eq!(
+                rsass(
+                    "@use \'sass:color\';\
+            \na {b: color.blackness(color.hwb(0, 70%, 70%))}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: 49.8039215686%;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn zero_whiteness() {
+            assert_eq!(
+                rsass(
+                    "@use \'sass:color\';\
+            \na {b: color.blackness(color.hwb(0, 0%, 50%))}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: 49.8039215686%;\
+        \n}\
+        \n"
+            );
+        }
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn min() {
+        assert_eq!(
+            rsass(
+                "@use \'sass:color\';\
+            \na {b: color.blackness(white)}\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  b: 0%;\
+        \n}\
+        \n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn named() {
+        assert_eq!(
+            rsass(
+                "@use \'sass:color\';\
+            \na {b: color.blackness($color: color.hwb(0, 0%, 42%))}\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  b: 41.9607843137%;\
+        \n}\
+        \n"
+        );
+    }
+}
+
 // From "sass-spec/spec/core_functions/color/blue.hrx"
 mod blue {
     #[allow(unused)]
@@ -1312,6 +1444,8 @@ mod hue {
         );
     }
 }
+
+mod hwb;
 
 // From "sass-spec/spec/core_functions/color/ie_hex_str.hrx"
 mod ie_hex_str {
@@ -2532,3 +2666,135 @@ mod saturation {
 }
 
 mod scale_color;
+
+// From "sass-spec/spec/core_functions/color/whiteness.hrx"
+mod whiteness {
+    #[allow(unused)]
+    use super::rsass;
+    mod error {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "too_few_args", error tests are not supported yet.
+
+        // Ignoring "too_many_args", error tests are not supported yet.
+
+        // Ignoring "test_type", error tests are not supported yet.
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn fraction() {
+        assert_eq!(
+            rsass(
+                "@use \'sass:color\';\
+            \na {b: color.whiteness(color.hwb(0, 0.5%, 0%))}\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  b: 0.3921568627%;\
+        \n}\
+        \n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn max() {
+        assert_eq!(
+            rsass(
+                "@use \'sass:color\';\
+            \na {b: color.whiteness(white)}\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  b: 100%;\
+        \n}\
+        \n"
+        );
+    }
+    mod middle {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // wrong result
+        fn half_blackness() {
+            assert_eq!(
+                rsass(
+                    "@use \'sass:color\';\
+            \na {b: color.whiteness(color.hwb(0, 50%, 50%))}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: 50.1960784314%;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn high_blackness() {
+            assert_eq!(
+                rsass(
+                    "@use \'sass:color\';\
+            \na {b: color.whiteness(color.hwb(0, 70%, 70%))}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: 50.1960784314%;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn zero_blackness() {
+            assert_eq!(
+                rsass(
+                    "@use \'sass:color\';\
+            \na {b: color.whiteness(color.hwb(0, 50%, 0%))}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: 50.1960784314%;\
+        \n}\
+        \n"
+            );
+        }
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn min() {
+        assert_eq!(
+            rsass(
+                "@use \'sass:color\';\
+            \na {b: color.whiteness(black)}\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  b: 0%;\
+        \n}\
+        \n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn named() {
+        assert_eq!(
+            rsass(
+                "@use \'sass:color\';\
+            \na {b: color.whiteness($color: color.hwb(0, 42%, 0%))}\
+            \n"
+            )
+            .unwrap(),
+            "a {\
+        \n  b: 41.9607843137%;\
+        \n}\
+        \n"
+        );
+    }
+}

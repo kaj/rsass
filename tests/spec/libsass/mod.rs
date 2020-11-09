@@ -2,8 +2,6 @@
 #[allow(unused)]
 use super::rsass;
 
-// Ignoring "Sa\u{301}ss-UT\u{327}F8.hrx", not expected to work yet.
-
 // From "sass-spec/spec/libsass/Sáss-UŢF8.hrx"
 #[test]
 fn sass_utf8() {

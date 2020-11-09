@@ -2,6 +2,36 @@
 #[allow(unused)]
 use super::rsass;
 
+// From "sass-spec/spec/directives/at_root.hrx"
+mod at_root {
+    #[allow(unused)]
+    use super::rsass;
+    mod keyframes {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // unexepected error
+        fn all() {
+            assert_eq!(
+                rsass(
+                    "@keyframes a {\
+            \n  @at-root (without: all) {\
+            \n    b {c: d}\
+            \n  }\
+            \n}\
+            \n"
+                )
+                .unwrap(),
+                "@keyframes a {}\
+        \nb {\
+        \n  c: d;\
+        \n}\
+        \n"
+            );
+        }
+    }
+}
+
 // Ignoring "extend", not expected to work yet.
 
 // Ignoring "forward", not expected to work yet.
@@ -11,22 +41,6 @@ mod function;
 mod test_if;
 
 mod import;
-
-// From "sass-spec/spec/directives/supports.hrx"
-mod supports {
-    #[allow(unused)]
-    use super::rsass;
-    mod error {
-        #[allow(unused)]
-        use super::rsass;
-        mod syntax {
-            #[allow(unused)]
-            use super::rsass;
-
-            // Ignoring "trailing_or", error tests are not supported yet.
-        }
-    }
-}
 
 // Ignoring "use", not expected to work yet.
 

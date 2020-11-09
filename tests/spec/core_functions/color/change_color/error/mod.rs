@@ -26,6 +26,14 @@ mod bounds {
 
         // Ignoring "too_low", error tests are not supported yet.
     }
+    mod blackness {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "too_high", error tests are not supported yet.
+
+        // Ignoring "too_low", error tests are not supported yet.
+    }
     mod blue {
         #[allow(unused)]
         use super::rsass;
@@ -66,10 +74,18 @@ mod bounds {
 
         // Ignoring "too_low", error tests are not supported yet.
     }
+    mod whiteness {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "too_high", error tests are not supported yet.
+
+        // Ignoring "too_low", error tests are not supported yet.
+    }
 }
 
-// From "sass-spec/spec/core_functions/color/change_color/error/hsl_and_rgb.hrx"
-mod hsl_and_rgb {
+// From "sass-spec/spec/core_functions/color/change_color/error/mixed_formats.hrx"
+mod mixed_formats {
     #[allow(unused)]
     use super::rsass;
 
@@ -77,7 +93,15 @@ mod hsl_and_rgb {
 
     // Ignoring "green_and_saturation", error tests are not supported yet.
 
+    // Ignoring "green_and_whiteness", error tests are not supported yet.
+
+    // Ignoring "lightness_and_whiteness", error tests are not supported yet.
+
+    // Ignoring "red_and_blackness", error tests are not supported yet.
+
     // Ignoring "red_and_hue", error tests are not supported yet.
+
+    // Ignoring "saturation_and_blackness", error tests are not supported yet.
 }
 
 // From "sass-spec/spec/core_functions/color/change_color/error/type.hrx"
@@ -86,6 +110,8 @@ mod test_type {
     use super::rsass;
 
     // Ignoring "alpha", error tests are not supported yet.
+
+    // Ignoring "blackness", error tests are not supported yet.
 
     // Ignoring "blue", error tests are not supported yet.
 
@@ -100,4 +126,28 @@ mod test_type {
     // Ignoring "red", error tests are not supported yet.
 
     // Ignoring "saturation", error tests are not supported yet.
+
+    // Ignoring "whiteness", error tests are not supported yet.
+}
+
+// From "sass-spec/spec/core_functions/color/change_color/error/units.hrx"
+mod units {
+    #[allow(unused)]
+    use super::rsass;
+    mod none {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "blackness", error tests are not supported yet.
+
+        // Ignoring "whiteness", error tests are not supported yet.
+    }
+    mod wrong {
+        #[allow(unused)]
+        use super::rsass;
+
+        // Ignoring "blackness", error tests are not supported yet.
+
+        // Ignoring "whiteness", error tests are not supported yet.
+    }
 }

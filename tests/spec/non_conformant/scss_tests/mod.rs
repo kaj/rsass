@@ -1967,60 +1967,6 @@ fn t122_test_directive_interpolation() {
     );
 }
 
-// From "sass-spec/spec/non_conformant/scss-tests/128_test_supports_with_expressions.hrx"
-#[test]
-fn t128_test_supports_with_expressions() {
-    assert_eq!(
-        rsass(
-            "$query: \"(feature1: val)\";\
-            \n$feature: feature2;\
-            \n$val: val;\
-            \n@supports (#{$query} and ($feature: $val)) or (not ($feature + 3: $val + 4)) {\
-            \n  foo {a: b}\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        "@supports ((feature1: val) and (feature2: val)) or (not (feature23: val4)) {\
-        \n  foo {\
-        \n    a: b;\
-        \n  }\
-        \n}\
-        \n"
-    );
-}
-
-// From "sass-spec/spec/non_conformant/scss-tests/129_test_supports_bubbling.hrx"
-#[test]
-#[ignore] // wrong result
-fn t129_test_supports_bubbling() {
-    assert_eq!(
-        rsass(
-            "a {\
-            \n  @supports (foo: bar) {\
-            \n    b: c;\
-            \n    @supports (baz: bang) {\
-            \n      d: e;\
-            \n    }\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        "@supports (foo: bar) {\
-        \n  a {\
-        \n    b: c;\
-        \n  }\
-        \n  @supports (baz: bang) {\
-        \n    a {\
-        \n      d: e;\
-        \n    }\
-        \n  }\
-        \n}\
-        \n"
-    );
-}
-
 // From "sass-spec/spec/non_conformant/scss-tests/130_test_random_directive_interpolation.hrx"
 #[test]
 #[ignore] // wrong result

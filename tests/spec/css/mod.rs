@@ -642,6 +642,8 @@ mod selector {
     }
 }
 
+mod supports;
+
 mod unicode_range;
 
 mod unknown_directive;
