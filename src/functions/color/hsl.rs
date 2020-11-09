@@ -200,7 +200,7 @@ pub fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
 }
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-fn to_rational2(v: &Value) -> Result<Rational, Error> {
+pub fn to_rational2(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio()? / 100),

@@ -1,5 +1,5 @@
-//use super::rgb::{preserve_call, values_from_list};
-use super::hsl::{percentage, to_rational_percent};
+use super::hsl::{percentage, to_rational2, to_rational_percent};
+use super::rgb::values_from_list;
 use super::{Error, SassFunction};
 use crate::css::Value;
 use crate::value::{Number, Unit};
@@ -8,11 +8,38 @@ use num_traits::{One, Zero};
 use std::collections::BTreeMap;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
-    def!(f, hwb(hue, whiteness, blackness, alpha), |s| {
-        let hue = s.get("hue")?;
-        let w = s.get("whiteness")?;
-        let b = s.get("blackness")?;
-        let a = s.get("alpha")?;
+    def!(f, hwb(hue, whiteness, blackness, alpha, channels), |s| {
+        let (hue, w, b, a) = match s.get("hue")? {
+            Value::List(vec, s, p) => {
+                values_from_list(&vec).ok_or_else(|| {
+                    Error::badarg(
+                        "Expected channels list",
+                        &Value::List(vec, s, p),
+                    )
+                })?
+            }
+            Value::Null => {
+                if let Value::List(vec, s, p) = s.get("channels")? {
+                    values_from_list(&vec).ok_or_else(|| {
+                        Error::badarg(
+                            "Expected channels list",
+                            &Value::List(vec, s, p),
+                        )
+                    })?
+                } else {
+                    return Err(Error::badarg(
+                        "Expected channels list",
+                        &Value::Null,
+                    ));
+                }
+            }
+            hue => (
+                hue,
+                s.get("whiteness")?,
+                s.get("blackness")?,
+                s.get("alpha")?,
+            ),
+        };
 
         let hue = as_deg(&hue)?;
         let w = to_rational_percent(&w)?;
@@ -20,7 +47,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         let a = if a.is_null() {
             Rational::one()
         } else {
-            to_rational_percent(&a)?
+            to_rational2(&a)?
         };
 
         let wbsum = w + b;
