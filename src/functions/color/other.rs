@@ -1,6 +1,6 @@
 use super::{make_call, Error, Module, SassFunction};
 use crate::css::Value;
-use crate::value::{Quotes, Unit};
+use crate::value::{Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
@@ -20,24 +20,26 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let s_adj = s.get("saturation")?;
                 let l_adj = s.get("lightness")?;
                 if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
-                    Ok(Value::rgba(
+                    Ok(Rgba::new(
                         c_add(rgba.red, "red")?,
                         c_add(rgba.green, "green")?,
                         c_add(rgba.blue, "blue")?,
                         c_add(rgba.alpha, "alpha")?,
-                    ))
+                    )
+                    .into())
                 } else {
                     let (h, s, l, alpha) = rgba.to_hsla();
                     let sl_add = |orig: Rational, x: Value| match x {
                         Value::Null => Ok(orig),
                         x => to_rational_percent(x).map(|x| orig + x),
                     };
-                    Ok(Value::hsla(
+                    Ok(Rgba::from_hsla(
                         c_add(h, "hue")?,
                         sl_add(s, s_adj)?,
                         sl_add(l, l_adj)?,
                         c_add(alpha, "alpha")?,
-                    ))
+                    )
+                    .into())
                 }
             }
             v => Err(Error::badarg("color", v)),
@@ -66,20 +68,22 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 let one = Rational::one();
                 let ff = Rational::from_integer(255);
                 if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
-                    Ok(Value::rgba(
+                    Ok(Rgba::new(
                         comb(rgba.red, s.get("red")?, ff)?,
                         comb(rgba.green, s.get("green")?, ff)?,
                         comb(rgba.blue, s.get("blue")?, ff)?,
                         comb(rgba.alpha, a_adj, one)?,
-                    ))
+                    )
+                    .into())
                 } else {
                     let (h, s, l, alpha) = rgba.to_hsla();
-                    Ok(Value::hsla(
+                    Ok(Rgba::from_hsla(
                         comb(h, h_adj, one)?,
                         comb(s, s_adj, one)?,
                         comb(l, l_adj, one)?,
                         comb(alpha, a_adj, one)?,
-                    ))
+                    )
+                    .into())
                 }
             }
             v => Err(Error::badarg("color", v)),
@@ -99,7 +103,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         match (color, amount) {
             (Value::Color(rgba, _), Value::Numeric(v, ..)) => {
                 let a = rgba.alpha + v.as_ratio()?;
-                Ok(Value::rgba(rgba.red, rgba.green, rgba.blue, a))
+                Ok(Rgba::new(rgba.red, rgba.green, rgba.blue, a).into())
             }
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
@@ -110,7 +114,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         match (color, amount) {
             (Value::Color(rgba, _), Value::Numeric(v, ..)) => {
                 let a = rgba.alpha - v.as_ratio()?;
-                Ok(Value::rgba(rgba.red, rgba.green, rgba.blue, a))
+                Ok(Rgba::new(rgba.red, rgba.green, rgba.blue, a).into())
             }
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
@@ -139,20 +143,22 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                     x => to_rational_percent(x),
                 };
                 if h_adj.is_null() && s_adj.is_null() && l_adj.is_null() {
-                    Ok(Value::rgba(
+                    Ok(Rgba::new(
                         c_or("red", rgba.red)?,
                         c_or("green", rgba.green)?,
                         c_or("blue", rgba.blue)?,
                         a_or("alpha", rgba.alpha)?,
-                    ))
+                    )
+                    .into())
                 } else {
                     let (h, s, l, alpha) = rgba.to_hsla();
-                    Ok(Value::hsla(
+                    Ok(Rgba::from_hsla(
                         a_or("hue", h)?,
                         sl_or(s_adj, s)?,
                         sl_or(l_adj, l)?,
                         a_or("alpha", alpha)?,
-                    ))
+                    )
+                    .into())
                 }
             }
             v => Err(Error::badarg("color", &v)),

@@ -55,11 +55,13 @@ impl Value {
     pub fn black() -> Self {
         Value::Color(Rgba::from_rgb(0, 0, 0), Some("black".into()))
     }
+    #[deprecated]
     pub fn rgba(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
         Value::Color(Rgba::new(r, g, b, a), None)
     }
+    #[deprecated]
     pub fn hsla(h: Rational, s: Rational, l: Rational, a: Rational) -> Self {
-        Value::Color(Rgba::from_hsla(h / 360, s, l, a), None)
+        Value::Color(Rgba::from_hsla(h, s, l, a), None)
     }
 
     pub fn type_name(&self) -> &'static str {
@@ -320,5 +322,10 @@ impl From<&str> for Value {
 impl From<String> for Value {
     fn from(s: String) -> Value {
         Value::Literal(s, Quotes::None)
+    }
+}
+impl From<Rgba> for Value {
+    fn from(c: Rgba) -> Value {
+        Value::Color(c, None)
     }
 }

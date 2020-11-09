@@ -2,9 +2,9 @@ use super::hsl::{percentage, to_rational2, to_rational_percent};
 use super::rgb::values_from_list;
 use super::{Error, SassFunction};
 use crate::css::Value;
-use crate::value::{Number, Unit};
+use crate::value::{Rgba, Unit};
 use num_rational::Rational;
-use num_traits::{One, Zero};
+use num_traits::One;
 use std::collections::BTreeMap;
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
@@ -24,7 +24,6 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 s.get("alpha")?,
             ),
         };
-
         let hue = as_deg(&hue)?;
         let w = to_rational_percent(&w)?;
         let b = to_rational_percent(&b)?;
@@ -33,21 +32,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         } else {
             to_rational2(&a)?
         };
-
-        let wbsum = w + b;
-        let (w, b) = if wbsum > Rational::one() {
-            (w / wbsum, b / wbsum)
-        } else {
-            (w, b)
-        };
-
-        let l = (Rational::one() - b + w) / 2;
-        let s = if l.is_zero() || l.is_one() {
-            Rational::zero()
-        } else {
-            (Rational::one() - b - l) / std::cmp::min(l, Rational::one() - l)
-        };
-        Ok(Value::hsla(hue.as_ratio()?, s, l, a))
+        Ok(Rgba::from_hwba(hue, w, b, a).into())
     });
     def!(f, blackness(color), |args| match &args.get("color")? {
         &Value::Color(ref rgba, _) => {
@@ -71,13 +56,13 @@ fn badchannels(v: &Value) -> Error {
     Error::badarg("Expected channels list", v)
 }
 
-fn as_deg(v: &Value) -> Result<Number, Error> {
+fn as_deg(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(vv, u, ..) => {
             if u == &Unit::None {
-                Ok(vv.clone())
+                vv.as_ratio()
             } else if let Some(scale) = u.scale_to(&Unit::Deg) {
-                Ok(vv * &scale)
+                (vv * &scale).as_ratio()
             } else {
                 Err(Error::badarg("angle", &v))
             }

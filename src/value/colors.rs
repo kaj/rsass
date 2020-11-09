@@ -51,6 +51,7 @@ impl Rgba {
         lig: Rational,
         a: Rational,
     ) -> Self {
+        let hue = hue / 360;
         let sat = cap(sat, &Rational::one());
         let lig = cap(lig, &Rational::one());
         if sat.is_zero() {
@@ -80,6 +81,27 @@ impl Rgba {
                 a,
             )
         }
+    }
+    pub fn from_hwba(
+        hue: Rational,
+        w: Rational,
+        b: Rational,
+        a: Rational,
+    ) -> Self {
+        let wbsum = w + b;
+        let (w, b) = if wbsum > Rational::one() {
+            (w / wbsum, b / wbsum)
+        } else {
+            (w, b)
+        };
+
+        let l = (Rational::one() - b + w) / 2;
+        let s = if l.is_zero() || l.is_one() {
+            Rational::zero()
+        } else {
+            (Rational::one() - b - l) / std::cmp::min(l, Rational::one() - l)
+        };
+        Rgba::from_hsla(hue, s, l, a)
     }
     pub fn name(&self) -> Option<&'static str> {
         if self.alpha >= Rational::one() {
