@@ -10,29 +10,13 @@ use std::collections::BTreeMap;
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, hwb(hue, whiteness, blackness, alpha, channels), |s| {
         let (hue, w, b, a) = match s.get("hue")? {
-            Value::List(vec, s, p) => {
-                values_from_list(&vec).ok_or_else(|| {
-                    Error::badarg(
-                        "Expected channels list",
-                        &Value::List(vec, s, p),
-                    )
-                })?
-            }
-            Value::Null => {
-                if let Value::List(vec, s, p) = s.get("channels")? {
-                    values_from_list(&vec).ok_or_else(|| {
-                        Error::badarg(
-                            "Expected channels list",
-                            &Value::List(vec, s, p),
-                        )
-                    })?
-                } else {
-                    return Err(Error::badarg(
-                        "Expected channels list",
-                        &Value::Null,
-                    ));
-                }
-            }
+            Value::List(vec, s, p) => values_from_list(&vec)
+                .ok_or_else(|| badchannels(&Value::List(vec, s, p)))?,
+            Value::Null => match s.get("channels")? {
+                Value::List(vec, s, p) => values_from_list(&vec)
+                    .ok_or_else(|| badchannels(&Value::List(vec, s, p)))?,
+                v => return Err(badchannels(&v)),
+            },
             hue => (
                 hue,
                 s.get("whiteness")?,
@@ -81,6 +65,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("color", v)),
     });
+}
+
+fn badchannels(v: &Value) -> Error {
+    Error::badarg("Expected channels list", v)
 }
 
 fn as_deg(v: &Value) -> Result<Number, Error> {
