@@ -53,7 +53,6 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, _hsla(hue, saturation, lightness, alpha, channels), |s| {
         do_hsla("hsla", s)
     });
-    // TODO: _hwb
     def!(f, _adjust_hue(color, degrees), |s: &dyn Scope| match (
         s.get("color")?,
         s.get("degrees")?,
@@ -127,7 +126,6 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("color", v)),
     });
-    // TODO: blackness
     def!(f, lightness(color), |args| match &args.get("color")? {
         &Value::Color(ref rgba, _) => {
             let (_h, _s, l, _a) = rgba.to_hsla();
@@ -154,7 +152,6 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Ok(make_call("grayscale", vec![v])),
     });
-    // TODO: whiteness
 }
 
 pub fn expose(meta: &Module, global: &mut Module) {
@@ -177,7 +174,7 @@ pub fn expose(meta: &Module, global: &mut Module) {
     }
 }
 
-fn percentage(v: Rational) -> Value {
+pub fn percentage(v: Rational) -> Value {
     Value::Numeric(Number::from(v * 100), Unit::Percent, true)
 }
 
@@ -190,7 +187,7 @@ fn to_rational(v: &Value) -> Result<Rational, Error> {
 
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
+pub fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio()? / 100),

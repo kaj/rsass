@@ -15,7 +15,6 @@ mod four_args {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn above_max() {
                 assert_eq!(
                     rsass(
@@ -31,7 +30,6 @@ mod four_args {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn max() {
                 assert_eq!(
                     rsass(
@@ -47,7 +45,6 @@ mod four_args {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn min() {
                 assert_eq!(
                     rsass(
@@ -63,7 +60,6 @@ mod four_args {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative() {
                 assert_eq!(
                     rsass(
@@ -79,7 +75,6 @@ mod four_args {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn positive() {
                 assert_eq!(
                     rsass(
@@ -99,7 +94,6 @@ mod four_args {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn above_max() {
                 assert_eq!(
                     rsass(
@@ -115,7 +109,6 @@ mod four_args {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn max() {
                 assert_eq!(
                     rsass(
@@ -131,7 +124,6 @@ mod four_args {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn min() {
                 assert_eq!(
                     rsass(
@@ -147,7 +139,6 @@ mod four_args {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative() {
                 assert_eq!(
                     rsass(
@@ -163,7 +154,6 @@ mod four_args {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn positive() {
                 assert_eq!(
                     rsass(
@@ -181,7 +171,6 @@ mod four_args {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn named() {
         assert_eq!(
         rsass(
@@ -209,7 +198,7 @@ mod one_arg {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn above() {
                 assert_eq!(
                     rsass(
@@ -225,7 +214,7 @@ mod one_arg {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn below() {
                 assert_eq!(
                     rsass(
@@ -245,7 +234,7 @@ mod one_arg {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn named() {
                 assert_eq!(
                     rsass(
@@ -261,7 +250,7 @@ mod one_arg {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn opaque() {
                 assert_eq!(
                     rsass(
@@ -277,7 +266,7 @@ mod one_arg {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn parenthesized() {
                 assert_eq!(
         rsass(
@@ -295,7 +284,7 @@ mod one_arg {
     );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn partial() {
                 assert_eq!(
                     rsass(
@@ -311,7 +300,7 @@ mod one_arg {
                 );
             }
             #[test]
-            #[ignore] // wrong result
+            #[ignore] // unexepected error
             fn transparent() {
                 assert_eq!(
                     rsass(
@@ -329,7 +318,7 @@ mod one_arg {
         }
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn named() {
         assert_eq!(
             rsass(
@@ -345,7 +334,7 @@ mod one_arg {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn no_alpha() {
         assert_eq!(
             rsass(
