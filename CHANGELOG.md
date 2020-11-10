@@ -20,6 +20,9 @@ project adheres to
 * PR #80: Implement `@use` for standard sass modules.  All standard
   modules are at least partially supported, only `sass:string` is
   fully supported.  See issue #60 for for module support status.
+* PR 82: Implement hwb support in `sass:color`.
+  Also, provide `From<Rgba>` for `css::Value` and deprecate color
+  value constructors.
 * Provide `From<bool>` for `css::Value` (and deprecate `Value::bool(v)`).
 * PR #62: Improve `ParseError`, `SourcePos`, and `SourceName` by using
   located spans by [nom_locate](https://lib.rs/crates/nom_locate) in
