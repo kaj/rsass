@@ -158,6 +158,18 @@ impl Rgba {
             (h, s, mm / 2, self.alpha)
         }
     }
+    /// Get the hwb blackness of this color, a number between 0 an 1.
+    pub fn get_blackness(&self) -> Rational {
+        let arr = [&self.red, &self.blue, &self.green];
+        let w = arr.iter().max().unwrap();
+        Rational::one() - *w / 255
+    }
+    /// Get the hwb whiteness of this color, a number between 0 an 1.
+    pub fn get_whiteness(&self) -> Rational {
+        let arr = [&self.red, &self.blue, &self.green];
+        let w = arr.iter().min().unwrap();
+        *w / 255
+    }
     pub fn format(&self, format: Format) -> Formatted<Rgba> {
         Formatted {
             value: self,

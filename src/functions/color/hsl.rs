@@ -164,7 +164,6 @@ pub fn expose(meta: &Module, global: &mut Module) {
         ("desaturate", "_desaturate"),
         ("grayscale", "grayscale"),
         ("hue", "hue"),
-        // TODO ("hwb", "_hwb"),
         ("lighten", "_lighten"),
         ("lightness", "lightness"),
         ("saturate", "_saturate"),

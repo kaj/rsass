@@ -35,19 +35,11 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         Ok(Rgba::from_hwba(hue, w, b, a).into())
     });
     def!(f, blackness(color), |args| match &args.get("color")? {
-        &Value::Color(ref rgba, _) => {
-            let arr = [&rgba.red, &rgba.blue, &rgba.green];
-            let w = arr.iter().max().unwrap();
-            Ok(percentage(Rational::one() - *w / 255))
-        }
+        &Value::Color(ref col, _) => Ok(percentage(col.get_blackness())),
         v => Err(Error::badarg("color", v)),
     });
     def!(f, whiteness(color), |args| match &args.get("color")? {
-        &Value::Color(ref rgba, _) => {
-            let arr = [&rgba.red, &rgba.blue, &rgba.green];
-            let w = arr.iter().min().unwrap();
-            Ok(percentage(*w / 255))
-        }
+        &Value::Color(ref col, _) => Ok(percentage(col.get_whiteness())),
         v => Err(Error::badarg("color", v)),
     });
 }
