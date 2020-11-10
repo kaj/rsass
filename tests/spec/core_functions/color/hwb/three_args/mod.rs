@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/named.hrx"
 #[test]
-#[ignore] // wrong result
 fn named() {
     assert_eq!(
         rsass(
@@ -28,7 +27,6 @@ mod units {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn deg() {
             assert_eq!(
                 rsass(

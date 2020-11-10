@@ -392,7 +392,6 @@ mod hwb {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
     fn all() {
         assert_eq!(
         rsass(
@@ -407,7 +406,6 @@ mod hwb {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn alpha_arg() {
         assert_eq!(
         rsass(
@@ -422,7 +420,6 @@ mod hwb {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn alpha_arg_above_max() {
         assert_eq!(
         rsass(
@@ -437,7 +434,6 @@ mod hwb {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn alpha_input() {
         assert_eq!(
         rsass(
@@ -455,7 +451,6 @@ mod hwb {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn high() {
             assert_eq!(
                 rsass(
@@ -470,7 +465,6 @@ mod hwb {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn low() {
             assert_eq!(
                 rsass(
@@ -485,7 +479,6 @@ mod hwb {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn max() {
             assert_eq!(
                 rsass(
@@ -500,7 +493,6 @@ mod hwb {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn max_remaining() {
             assert_eq!(
                 rsass(
@@ -515,7 +507,6 @@ mod hwb {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn min() {
             assert_eq!(
                 rsass(
@@ -530,7 +521,6 @@ mod hwb {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn min_remaining() {
             assert_eq!(
                 rsass(
@@ -560,7 +550,6 @@ mod hwb {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn named() {
         assert_eq!(
         rsass(
@@ -578,7 +567,6 @@ mod hwb {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn high() {
             assert_eq!(
                 rsass(
@@ -593,7 +581,6 @@ mod hwb {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn low() {
             assert_eq!(
                 rsass(
@@ -608,7 +595,6 @@ mod hwb {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn max() {
             assert_eq!(
                 rsass(
@@ -623,7 +609,6 @@ mod hwb {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn max_remaining() {
             assert_eq!(
                 rsass(
@@ -638,7 +623,6 @@ mod hwb {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn min() {
             assert_eq!(
                 rsass(
@@ -653,7 +637,6 @@ mod hwb {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn min_remaining() {
             assert_eq!(
                 rsass(

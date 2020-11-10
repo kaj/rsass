@@ -347,7 +347,6 @@ mod blackness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             rsass(
@@ -415,7 +414,6 @@ mod blackness {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn min() {
         assert_eq!(
             rsass(
@@ -2698,7 +2696,6 @@ mod whiteness {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             rsass(
@@ -2766,7 +2763,6 @@ mod whiteness {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn min() {
         assert_eq!(
             rsass(

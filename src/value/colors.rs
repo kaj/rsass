@@ -51,6 +51,7 @@ impl Rgba {
         lig: Rational,
         a: Rational,
     ) -> Self {
+        let hue = hue / 360;
         let sat = cap(sat, &Rational::one());
         let lig = cap(lig, &Rational::one());
         if sat.is_zero() {
@@ -80,6 +81,27 @@ impl Rgba {
                 a,
             )
         }
+    }
+    pub fn from_hwba(
+        hue: Rational,
+        w: Rational,
+        b: Rational,
+        a: Rational,
+    ) -> Self {
+        let wbsum = w + b;
+        let (w, b) = if wbsum > Rational::one() {
+            (w / wbsum, b / wbsum)
+        } else {
+            (w, b)
+        };
+
+        let l = (Rational::one() - b + w) / 2;
+        let s = if l.is_zero() || l.is_one() {
+            Rational::zero()
+        } else {
+            (Rational::one() - b - l) / std::cmp::min(l, Rational::one() - l)
+        };
+        Rgba::from_hsla(hue, s, l, a)
     }
     pub fn name(&self) -> Option<&'static str> {
         if self.alpha >= Rational::one() {
@@ -135,6 +157,18 @@ impl Rgba {
             let s = d / if mm > Rational::one() { -mm + 2 } else { mm };
             (h, s, mm / 2, self.alpha)
         }
+    }
+    /// Get the hwb blackness of this color, a number between 0 an 1.
+    pub fn get_blackness(&self) -> Rational {
+        let arr = [&self.red, &self.blue, &self.green];
+        let w = arr.iter().max().unwrap();
+        Rational::one() - *w / 255
+    }
+    /// Get the hwb whiteness of this color, a number between 0 an 1.
+    pub fn get_whiteness(&self) -> Rational {
+        let arr = [&self.red, &self.blue, &self.green];
+        let w = arr.iter().min().unwrap();
+        *w / 255
     }
     pub fn format(&self, format: Format) -> Formatted<Rgba> {
         Formatted {

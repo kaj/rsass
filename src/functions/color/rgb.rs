@@ -1,6 +1,6 @@
 use super::{make_call, Error, Module, SassFunction};
 use crate::css::{CallArgs, Value};
-use crate::value::{ListSeparator, Number, Quotes, Unit};
+use crate::value::{ListSeparator, Number, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Zero};
@@ -13,12 +13,10 @@ fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
     if let Value::Color(rgba, _) = red {
         let a = if a.is_null() { s.get("green")? } else { a };
         match a {
-            Value::Numeric(a, ..) => Ok(Value::rgba(
-                rgba.red,
-                rgba.green,
-                rgba.blue,
-                a.as_ratio()?,
-            )),
+            Value::Numeric(a, ..) => {
+                Ok(Rgba::new(rgba.red, rgba.green, rgba.blue, a.as_ratio()?)
+                    .into())
+            }
             _ => Ok(make_call(
                 fn_name,
                 vec![
@@ -87,7 +85,7 @@ fn rgba_from_values(
     } else {
         to_rational(a).ok()?
     };
-    Some(Value::rgba(r, g, b, a))
+    Some(Rgba::new(r, g, b, a).into())
 }
 
 pub fn preserve_call(
@@ -157,12 +155,13 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             let w2 = one - w1;
 
             let m_c = |c1, c2| w1 * c1 + w2 * c2;
-            Ok(Value::rgba(
+            Ok(Rgba::new(
                 m_c(a.red, b.red),
                 m_c(a.green, b.green),
                 m_c(a.blue, b.blue),
                 a.alpha * p + b.alpha * (one - p),
-            ))
+            )
+            .into())
         }
         (color1, color2, weight) => Err(Error::badargs(
             &["color", "color", "number"],
@@ -180,12 +179,13 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
                 w.as_ratio()?
             };
             let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
-            Ok(Value::rgba(
+            Ok(Rgba::new(
                 inv(rgba.red),
                 inv(rgba.green),
                 inv(rgba.blue),
                 rgba.alpha,
-            ))
+            )
+            .into())
         }
         (ref by, Value::Numeric(ref value, ref wu, ..))
             if value.as_ratio()? == Rational::from_integer(100)

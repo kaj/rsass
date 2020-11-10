@@ -1,7 +1,7 @@
 use super::rgb::{preserve_call, values_from_list};
 use super::{make_call, Error, Module, SassFunction};
 use crate::css::Value;
-use crate::value::{Number, Unit};
+use crate::value::{Number, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Zero};
@@ -43,7 +43,7 @@ fn hsla_from_values(
     } else {
         to_rational2(a).ok()?
     };
-    Some(Value::hsla(h, s, l, a))
+    Some(Rgba::from_hsla(h, s, l, a).into())
 }
 
 pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
@@ -53,7 +53,6 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, _hsla(hue, saturation, lightness, alpha, channels), |s| {
         do_hsla("hsla", s)
     });
-    // TODO: _hwb
     def!(f, _adjust_hue(color, degrees), |s: &dyn Scope| match (
         s.get("color")?,
         s.get("degrees")?,
@@ -61,7 +60,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         (c @ Value::Color(..), Value::Null) => Ok(c),
         (Value::Color(rgba, _), Value::Numeric(v, ..)) => {
             let (h, s, l, alpha) = rgba.to_hsla();
-            Ok(Value::hsla(h + v.as_ratio()?, s, l, alpha))
+            Ok(Rgba::from_hsla(h + v.as_ratio()?, s, l, alpha).into())
         }
         (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
     });
@@ -71,7 +70,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         |s: &dyn Scope| match &s.get("color")? {
             &Value::Color(ref rgba, _) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
-                Ok(Value::hsla(h + 180, s, l, alpha))
+                Ok(Rgba::from_hsla(h + 180, s, l, alpha).into())
             }
             v => Err(Error::badarg("color", v)),
         }
@@ -85,7 +84,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             let (h, s, l, alpha) = rgba.to_hsla();
             let v = v.as_ratio()?;
             let v = if u == Unit::Percent { v / 100 } else { v };
-            Ok(Value::hsla(h, s + v, l, alpha))
+            Ok(Rgba::from_hsla(h, s + v, l, alpha).into())
         }
         (c, v) => Ok(make_call("saturate", vec![c, v])),
     });
@@ -95,7 +94,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         &Value::Color(ref rgba, _) => {
             let (h, s, l, alpha) = rgba.to_hsla();
             let amount = to_rational_percent(&args.get("amount")?)?;
-            Ok(Value::hsla(h, s, l + amount, alpha))
+            Ok(Rgba::from_hsla(h, s, l + amount, alpha).into())
         }
         v => Err(Error::badarg("color", v)),
     });
@@ -105,7 +104,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         &Value::Color(ref rgba, _) => {
             let (h, s, l, alpha) = rgba.to_hsla();
             let amount = to_rational_percent(&args.get("amount")?)?;
-            Ok(Value::hsla(h, s, l - amount, alpha))
+            Ok(Rgba::from_hsla(h, s, l - amount, alpha).into())
         }
         v => Err(Error::badarg("color", v)),
     });
@@ -127,7 +126,6 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
         }
         v => Err(Error::badarg("color", v)),
     });
-    // TODO: blackness
     def!(f, lightness(color), |args| match &args.get("color")? {
         &Value::Color(ref rgba, _) => {
             let (_h, _s, l, _a) = rgba.to_hsla();
@@ -142,7 +140,7 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
             &Value::Color(ref rgba, _) => {
                 let (h, s, l, alpha) = rgba.to_hsla();
                 let amount = to_rational_percent(&args.get("amount")?)?;
-                Ok(Value::hsla(h, s - amount, l, alpha))
+                Ok(Rgba::from_hsla(h, s - amount, l, alpha).into())
             }
             v => Err(Error::badarg("color", v)),
         }
@@ -150,11 +148,10 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     def!(f, grayscale(color), |args| match args.get("color")? {
         Value::Color(ref rgba, _) => {
             let (h, _s, l, alpha) = rgba.to_hsla();
-            Ok(Value::hsla(h, Zero::zero(), l, alpha))
+            Ok(Rgba::from_hsla(h, Zero::zero(), l, alpha).into())
         }
         v => Ok(make_call("grayscale", vec![v])),
     });
-    // TODO: whiteness
 }
 
 pub fn expose(meta: &Module, global: &mut Module) {
@@ -167,7 +164,6 @@ pub fn expose(meta: &Module, global: &mut Module) {
         ("desaturate", "_desaturate"),
         ("grayscale", "grayscale"),
         ("hue", "hue"),
-        // TODO ("hwb", "_hwb"),
         ("lighten", "_lighten"),
         ("lightness", "lightness"),
         ("saturate", "_saturate"),
@@ -177,7 +173,7 @@ pub fn expose(meta: &Module, global: &mut Module) {
     }
 }
 
-fn percentage(v: Rational) -> Value {
+pub fn percentage(v: Rational) -> Value {
     Value::Numeric(Number::from(v * 100), Unit::Percent, true)
 }
 
@@ -190,7 +186,7 @@ fn to_rational(v: &Value) -> Result<Rational, Error> {
 
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
+pub fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio()? / 100),
@@ -203,7 +199,7 @@ fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
 }
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-fn to_rational2(v: &Value) -> Result<Rational, Error> {
+pub fn to_rational2(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio()? / 100),
