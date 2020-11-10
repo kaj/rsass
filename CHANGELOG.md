@@ -7,7 +7,9 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.16.0 - 2010-11-10
+
+Progress: 2718 of 5840 tests passed in dart-sass compatiblilty mode.
 
 ### Breaking changes
 
@@ -35,6 +37,12 @@ project adheres to
   correctly.
 * Improve parsing of `@else` clauses.
 * Update spec to 2020-10-29.
+
+Tested with rustc 1.47.0 (18bf6b4f0 2020-10-07),
+1.44.1 (c7087fe00 2020-06-17), 1.42.0 (b8cedc004 2020-03-09),
+1.40.0 (73528e339 2019-12-16), 1.38.0 (625451e37 2019-09-23),
+1.48.0-beta.8 (121901459 2020-11-08), and
+1.49.0-nightly (25f6938da 2020-11-09),
 
 
 ## Release 0.15.0 - 2010-10-25
