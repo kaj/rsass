@@ -49,7 +49,7 @@ Tested with rustc 1.47.0 (18bf6b4f0 2020-10-07),
 1.49.0-nightly (25f6938da 2020-11-09),
 
 
-## Release 0.15.0 - 2010-10-25
+## Release 0.15.0 - 2020-10-25
 
 Progress: 2320 of 5577 tests passed in dart-sass compatiblilty mode.
 
@@ -85,7 +85,7 @@ Tested with rustc 1.47.0 (18bf6b4f0 2020-10-07),
 1.48.0-beta.5 (4c78178b1 2020-10-21), and
 1.49.0-nightly (ffa2e7ae8 2020-10-24).
 
-## Release 0.14.2 - 2010-10-13
+## Release 0.14.2 - 2020-10-13
 
 Progress: 2294 of 5577 tests passed in dart-sass compatiblilty mode.
 
