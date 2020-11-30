@@ -1,6 +1,6 @@
-use super::{code_span, SourcePos, Span};
+use super::{SourcePos, Span};
 use nom::error::ErrorKind;
-use nom::{Err, IResult};
+use nom::{Finish, IResult};
 use std::fmt;
 
 /// An error encountered when parsing sass.
@@ -23,7 +23,7 @@ impl ParseError {
     /// `Ok` result with remaining unparsed data is also considered an
     /// error.
     pub fn check<T>(res: IResult<Span, T>) -> Result<T, Self> {
-        let (rest, value) = res?;
+        let (rest, value) = res.finish()?;
         if rest.fragment().is_empty() {
             Ok(value)
         } else {
@@ -37,12 +37,6 @@ impl ParseError {
             pos: span.into(),
         }
     }
-    fn incomplete() -> ParseError {
-        ParseError {
-            msg: "Unexpected end of file.".into(),
-            pos: code_span(b"").into(), // This should not happen?
-        }
-    }
     fn err(kind: ErrorKind, span: Span) -> ParseError {
         ParseError {
             msg: format!("Parse error: {:?}", kind),
@@ -51,13 +45,9 @@ impl ParseError {
     }
 }
 
-impl From<Err<(Span<'_>, nom::error::ErrorKind)>> for ParseError {
-    fn from(err: Err<(Span, nom::error::ErrorKind)>) -> Self {
-        match err {
-            Err::Error((rest, err)) => ParseError::err(err, rest),
-            Err::Incomplete(_needed) => ParseError::incomplete(),
-            Err::Failure((rest, err)) => ParseError::err(err, rest),
-        }
+impl From<nom::error::Error<Span<'_>>> for ParseError {
+    fn from(err: nom::error::Error<Span>) -> Self {
+        ParseError::err(err.code, err.input)
     }
 }
 
