@@ -9,7 +9,15 @@ project adheres to
 
 ## Unreleased
 
-*
+### Breaking changes
+
+* Update nom to 6.0 rasises the minimally supported compiler version
+  to 1.44.0.  Also, the dependency is technically exposed.
+
+### Improvements
+
+* Update nom to 6.0, PR #83.
+
 
 ## Release 0.16.0 - 2020-11-10
 
