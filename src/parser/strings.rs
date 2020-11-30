@@ -211,7 +211,7 @@ fn special_arg_parts_minmax(input: Span) -> IResult<Span, Vec<StringPart>> {
     // Disallow trailing comma
     if let Some(StringPart::Raw(ref s)) = parts.last() {
         if s.trim().ends_with(',') {
-            return Err(nom::Err::Error((
+            return Err(nom::Err::Error(nom::error::Error::new(
                 input,
                 nom::error::ErrorKind::SeparatedList,
             )));

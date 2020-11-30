@@ -6,13 +6,13 @@ use crate::sass::{CallArgs, FormalArgs, Value};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{map, opt};
-use nom::multi::separated_list;
+use nom::multi::separated_list0;
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::IResult;
 
 pub fn formal_args(input: Span) -> IResult<Span, FormalArgs> {
     let (input, _) = terminated(tag("("), opt_spacelike)(input)?;
-    let (input, v) = separated_list(
+    let (input, v) = separated_list0(
         preceded(tag(","), opt_spacelike),
         map(
             pair(
@@ -34,7 +34,7 @@ pub fn formal_args(input: Span) -> IResult<Span, FormalArgs> {
 
 pub fn call_args(input: Span) -> IResult<Span, CallArgs> {
     let (input, _) = tag("(")(input)?;
-    let (input, v) = separated_list(
+    let (input, v) = separated_list0(
         delimited(opt_spacelike, tag(","), opt_spacelike),
         pair(
             opt(delimited(

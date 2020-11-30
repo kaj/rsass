@@ -16,9 +16,7 @@ use nom::character::complete::{
 use nom::combinator::{
     map, map_opt, map_res, not, opt, peek, recognize, value,
 };
-use nom::multi::{
-    fold_many0, fold_many1, many0, many_m_n, separated_nonempty_list,
-};
+use nom::multi::{fold_many0, fold_many1, many0, many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use nom::IResult;
 use num_bigint::BigInt;
@@ -27,7 +25,7 @@ use num_traits::{One, Zero};
 use std::str::from_utf8;
 
 pub fn value_expression(input: Span) -> IResult<Span, Value> {
-    let (input, result) = separated_nonempty_list(
+    let (input, result) = separated_list1(
         preceded(tag(","), ignore_comments),
         terminated(space_list, ignore_comments),
     )(input)?;
@@ -217,7 +215,7 @@ fn end_paren(input: Span) -> IResult<Span, Span> {
 }
 
 fn simple_value(input: Span) -> IResult<Span, Value> {
-    let s_v = alt((
+    alt((
         bang,
         value(Value::True, tag("true")),
         value(Value::False, tag("false")),
@@ -238,8 +236,7 @@ fn simple_value(input: Span) -> IResult<Span, Value> {
         map(sass_string, literal_or_color),
         map(sass_string_dq, Value::Literal),
         map(sass_string_sq, Value::Literal),
-    ));
-    Ok(s_v(input)?)
+    ))(input)
 }
 
 fn bang(input: Span) -> IResult<Span, Value> {
@@ -474,7 +471,7 @@ pub fn dictionary(input: Span) -> IResult<Span, Value> {
 
 pub fn dictionary_inner(input: Span) -> IResult<Span, Value> {
     let (input, items) = terminated(
-        separated_nonempty_list(
+        separated_list1(
             delimited(opt_spacelike, tag(","), opt_spacelike),
             pair(
                 sum_expression,

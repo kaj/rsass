@@ -46,7 +46,7 @@ use nom::combinator::{
     all_consuming, map, map_res, opt, peek, value, verify,
 };
 use nom::multi::{
-    fold_many0, many0, many_till, separated_list, separated_nonempty_list,
+    fold_many0, many0, many_till, separated_list0, separated_list1,
 };
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use nom::IResult;
@@ -198,7 +198,7 @@ fn import2(input: Span) -> IResult<Span, Item> {
         terminated(
             tuple((
                 position,
-                separated_list(
+                separated_list0(
                     preceded(tag(","), ignore_comments),
                     alt((
                         sass_string_dq,
@@ -343,7 +343,7 @@ fn charset2(input: Span) -> IResult<Span, Item> {
 }
 
 fn media_args(input: Span) -> IResult<Span, Value> {
-    let (input, args) = separated_list(
+    let (input, args) = separated_list0(
         preceded(tag(","), opt_spacelike),
         map(
             many0(preceded(
@@ -440,7 +440,7 @@ fn if_statement2(input: Span) -> IResult<Span, Item> {
 
 /// The part of an each look that follows the `@each`.
 fn each_loop2(input: Span) -> IResult<Span, Item> {
-    let (input, names) = separated_nonempty_list(
+    let (input, names) = separated_list1(
         delimited(opt_spacelike, tag(","), opt_spacelike),
         preceded(tag("$"), name),
     )(input)?;

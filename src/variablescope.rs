@@ -753,8 +753,9 @@ pub mod test {
             let val = value_expression(code_span(val.as_bytes()));
             scope.define(name, &ParseError::check(val)?.evaluate(&scope)?);
         }
-        let expr = terminated(value_expression, tag(";"));
-        Ok(ParseError::check(expr(code_span(expression)))?
+        let expr =
+            terminated(value_expression, tag(";"))(code_span(expression));
+        Ok(ParseError::check(expr)?
             .evaluate(&mut scope)?
             .format(scope.get_format())
             .to_string())

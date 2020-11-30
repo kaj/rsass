@@ -6,12 +6,12 @@ use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::one_of;
 use nom::combinator::{map, map_res, opt, value};
-use nom::multi::{many1, separated_nonempty_list};
+use nom::multi::{many1, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use nom::IResult;
 
 pub fn selectors(input: Span) -> IResult<Span, Selectors> {
-    let (input, v) = separated_nonempty_list(
+    let (input, v) = separated_list1(
         terminated(tag(","), ignore_comments),
         opt(selector),
     )(input)?;
