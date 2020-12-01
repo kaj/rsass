@@ -16,6 +16,7 @@ project adheres to
 
 ### Improvements
 
+* Make `Error::BadValue` a little closer to whats expected.
 * Update nom to 6.0, PR #83.
 
 

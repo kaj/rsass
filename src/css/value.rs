@@ -121,8 +121,8 @@ impl Value {
         match self {
             &Value::Numeric(ref num, ..) if num.is_integer() => num
                 .to_integer()
-                .ok_or_else(|| Error::bad_value("integer", self)),
-            v => Err(Error::bad_value("integer", v)),
+                .ok_or_else(|| Error::bad_value("an integer", self)),
+            v => Err(Error::bad_value("a number", v)),
         }
     }
 

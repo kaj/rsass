@@ -23,10 +23,9 @@ impl std::error::Error for Error {}
 impl Error {
     pub fn bad_value(expected: &str, actual: &Value) -> Self {
         Error::BadValue(format!(
-            "expected {}, got {} = {}",
+            "Error: {} is not {}.",
+            actual.format(Default::default()),
             expected,
-            actual.type_name(),
-            actual.format(Default::default())
         ))
     }
 
@@ -67,6 +66,7 @@ impl fmt::Display for Error {
                 write!(out, "Undefined variable: \"${}\"", name)
             }
             Error::ParseError(ref err) => err.fmt(out),
+            Error::BadValue(ref err) => err.fmt(out),
             // fallback
             ref x => write!(out, "{:?}", x),
         }
