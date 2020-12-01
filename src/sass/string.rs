@@ -188,8 +188,8 @@ impl From<&str> for StringPart {
     }
 }
 
-impl<'a> From<&'a str> for SassString {
-    fn from(s: &'a str) -> Self {
+impl From<&str> for SassString {
+    fn from(s: &str) -> Self {
         SassString {
             parts: vec![StringPart::from(s)],
             quotes: Quotes::None,

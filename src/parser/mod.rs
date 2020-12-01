@@ -33,7 +33,7 @@ use self::value::{
 use crate::functions::SassFunction;
 #[cfg(test)]
 use crate::sass::{CallArgs, FormalArgs};
-use crate::sass::{Item, Value};
+use crate::sass::{Item, UseAs, Value};
 use crate::selectors::Selectors;
 use crate::value::ListSeparator;
 #[cfg(test)]
@@ -306,13 +306,16 @@ fn use2(input: Span) -> IResult<Span, Item> {
                 ),
                 opt(delimited(
                     terminated(tag("as"), opt_spacelike),
-                    sass_string,
+                    alt((
+                        map(sass_string, UseAs::Name),
+                        value(UseAs::Star, tag("*")),
+                    )),
                     opt_spacelike,
                 )),
             ),
             tag(";"),
         ),
-        |(s, n)| Item::Use(s, n),
+        |(s, n)| Item::Use(s, n.unwrap_or(UseAs::KeepName)),
     )(input)
 }
 

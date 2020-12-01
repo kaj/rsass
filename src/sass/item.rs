@@ -56,11 +56,18 @@ pub enum Item {
     },
     While(Value, Vec<Item>),
 
-    Use(SassString, Option<SassString>),
+    Use(SassString, UseAs),
     Rule(Selectors, Vec<Item>),
     NamespaceRule(SassString, Value, Vec<Item>),
     Property(SassString, Value),
     Comment(SassString),
     Warn(Value),
     None,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
+pub enum UseAs {
+    KeepName,
+    Star,
+    Name(SassString),
 }

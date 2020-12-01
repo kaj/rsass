@@ -389,7 +389,7 @@ mod twice {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn different_extend() {
             assert_eq!(
                 rsass(
