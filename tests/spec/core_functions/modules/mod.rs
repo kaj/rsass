@@ -358,7 +358,7 @@ mod general {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn test_as() {
             assert_eq!(
                 rsass(
@@ -374,7 +374,7 @@ mod general {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn bare() {
             assert_eq!(
                 rsass(
@@ -398,7 +398,7 @@ mod general {
             // Ignoring "show", error tests are not supported yet.
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn hide() {
             assert_eq!(
                 rsass(
@@ -414,7 +414,7 @@ mod general {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn show() {
             assert_eq!(
                 rsass(
@@ -431,7 +431,6 @@ mod general {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn global() {
         assert_eq!(
             rsass(

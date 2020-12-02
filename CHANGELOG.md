@@ -13,9 +13,11 @@ project adheres to
 
 * Update nom to 6.0 rasises the minimally supported compiler version
   to 1.44.0.  Also, the dependency is technically exposed.
+* `sass::Item::Use` was modified by #84.
 
 ### Improvements
 
+* Support the `@use name as *` syntax, PR #84.
 * Make `Error::BadValue` a little closer to whats expected.
 * Update nom to 6.0, PR #83.
 

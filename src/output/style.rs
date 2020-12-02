@@ -800,19 +800,35 @@ impl Format {
     }
 }
 
+use crate::sass::UseAs;
 fn do_use(
     scope: &mut dyn Scope,
     name: &SassString,
-    as_name: &Option<SassString>,
+    as_name: &UseAs,
 ) -> Result<(), Error> {
-    let (name, _q) = name.evaluate(scope)?;
-    let as_name = if let Some(as_name) = as_name {
-        Some(as_name.evaluate(scope)?.0)
+    use crate::functions::get_global_module;
+    let name = name.evaluate(scope)?.0;
+    if let Some(module) = get_global_module(&name) {
+        match as_name {
+            UseAs::KeepName => {
+                let name =
+                    name.rfind(':').map(|i| &name[i + 1..]).unwrap_or(&name);
+                scope.define_module(name, module);
+            }
+            UseAs::Star => {
+                for (name, function) in module {
+                    scope.define_function(name, function.clone());
+                }
+            }
+            UseAs::Name(name) => {
+                let name = name.evaluate(scope)?.0;
+                scope.define_module(&name, module);
+            }
+        }
+        Ok(())
     } else {
-        None
-    };
-    scope.do_use(&name, as_name.as_ref().map(|n| n.as_ref()));
-    Ok(())
+        Err(Error::S(format!("Module {:?} not found", name).into()))
+    }
 }
 
 struct CssWriter {

@@ -176,17 +176,6 @@ pub trait Scope {
         }
         Ok(None)
     }
-    fn do_use(&mut self, name: &str, as_name: Option<&str>) {
-        use crate::functions::get_global_module;
-        let as_name = as_name
-            .or_else(|| name.rfind(':').map(|i| &name[i + 1..]))
-            .unwrap_or(name);
-        if let Some(module) = get_global_module(name) {
-            self.define_module(as_name, module);
-        } else {
-            eprintln!("WARNING: module {:?} not found", name);
-        }
-    }
     fn define_module(&self, name: &str, module: &'static Module);
     fn get_module(&self, name: &str) -> Option<&Module>;
     fn get_selectors(&self) -> &Selectors;

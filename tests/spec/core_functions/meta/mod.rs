@@ -771,7 +771,7 @@ mod global_variable_exists {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn chosen_prefix() {
             assert_eq!(
                 rsass(
@@ -787,7 +787,7 @@ mod global_variable_exists {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn defined() {
             assert_eq!(
                 rsass(
@@ -947,7 +947,7 @@ mod global_variable_exists {
         }
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn named() {
         assert_eq!(
             rsass(
@@ -2271,7 +2271,7 @@ mod mixin_exists {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn chosen_prefix() {
             assert_eq!(
                 rsass(
@@ -2287,7 +2287,7 @@ mod mixin_exists {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn defined() {
             assert_eq!(
                 rsass(
@@ -2447,7 +2447,7 @@ mod mixin_exists {
         }
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn named() {
         assert_eq!(
             rsass(
@@ -2606,7 +2606,7 @@ mod module_functions {
     );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn empty() {
         assert_eq!(
             rsass(
@@ -2796,7 +2796,7 @@ mod module_variables {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn test_as() {
         assert_eq!(
             rsass(
@@ -2831,7 +2831,7 @@ mod module_variables {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn dash_sensitive() {
         assert_eq!(
             rsass(
@@ -2849,7 +2849,7 @@ mod module_variables {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn empty() {
         assert_eq!(
             rsass(
@@ -2885,7 +2885,7 @@ mod module_variables {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn multiple() {
         assert_eq!(
             rsass(
@@ -2903,7 +2903,7 @@ mod module_variables {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn named() {
         assert_eq!(
             rsass(
@@ -2924,7 +2924,7 @@ mod module_variables {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn test_as() {
             assert_eq!(
                 rsass(
@@ -2942,7 +2942,7 @@ mod module_variables {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn bare() {
             assert_eq!(
                 rsass(
@@ -2960,7 +2960,7 @@ mod module_variables {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn hide() {
             assert_eq!(
                 rsass(
@@ -2978,7 +2978,7 @@ mod module_variables {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn show() {
             assert_eq!(
                 rsass(
@@ -2997,7 +2997,7 @@ mod module_variables {
         }
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn through_import() {
         assert_eq!(
             rsass(
