@@ -20,6 +20,8 @@ project adheres to
 * Support the `@use name as *` syntax, PR #84.
 * Make `Error::BadValue` a little closer to whats expected.
 * Update nom to 6.0, PR #83.
+* Testing is now done with github actions rather than travis
+  (Appveyor remains for window builds).
 
 
 ## Release 0.16.0 - 2020-11-10
