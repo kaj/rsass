@@ -1,4 +1,45 @@
+use crate::error::Error;
 use std::path::{Path, PathBuf};
+
+
+/// A context manages finding and loading files.
+///
+/// # Example
+/// ```
+/// use std::collections::HashMap;
+/// use rsass::{Context, Error};
+///
+/// #[derive(Clone, Debug)]
+/// struct StaticContext<'a> {
+///     files: HashMap<String, &'a[u8]>,
+/// }
+///
+/// impl<'a> Context for StaticContext<'a> {
+///     type File = &'a [u8];
+///
+///     fn find_file(
+///         &self, name: &str
+///     ) -> Result<Option<(Self, String, Self::File)>, Error> {
+///         if let Some(file) = self.files.get(name).map(|data| *data) {
+///             Ok(Some((self.clone(), name.to_string(), file)))
+///         } else {
+///             Ok(None)
+///         }
+///     }
+/// }
+/// ```
+pub trait Context: Clone + std::fmt::Debug {
+    type File: std::io::Read;
+
+    /// Find a file.
+    ///
+    /// If the file is imported from another file,
+    /// the argument is the exact string specified in the import declaration.
+    fn find_file(
+        &self, name: &str
+    ) -> Result<Option<(Self, String, Self::File)>, Error>;
+}
+
 
 /// A file context specifies where to find files to load.
 ///
@@ -51,10 +92,17 @@ impl FileContext {
         path.extend_from_slice(&self.path);
         (FileContext { path }, t)
     }
+}
 
-    pub fn find_file(&self, name: &Path) -> Option<(Self, PathBuf)> {
+impl Context for FileContext {
+    type File = std::fs::File;
+
+    fn find_file(
+        &self, name: &str
+    ) -> Result<Option<(Self, String, Self::File)>, crate::Error> {
         // TODO Check docs what expansions should be tried!
         // Files with .sass extension needs another parser.
+        let name = Path::new(name);
         let parent = name.parent();
         if let Some(name) = name.file_name().and_then(|n| n.to_str()) {
             for base in &self.path {
@@ -79,11 +127,13 @@ impl FileContext {
                         } else {
                             self.clone()
                         };
-                        return Some((c, full));
+                        let path = full.display().to_string();
+                        let file = std::fs::File::open(full.clone())?;
+                        return Ok(Some((c, path, file)));
                     }
                 }
             }
         }
-        None
+        Ok(None)
     }
 }

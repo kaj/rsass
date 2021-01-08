@@ -88,29 +88,56 @@ fn test_parse_value_data_2() -> Result<(), Error> {
     Ok(())
 }
 
-/// Parse a scss file.
+/// Parse a scss file by path.
 ///
 /// Returns a vec of the top level items of the file (or an error message).
-pub fn parse_scss_file(file: &Path) -> Result<Vec<Item>, Error> {
-    do_parse_scss_file(file, &SourceName::root(file.display()))
+pub fn parse_scss_file(path: &Path) -> Result<Vec<Item>, Error> {
+    do_parse_scss_file(path, &SourceName::root(path.display()))
 }
 
 pub fn parse_imported_scss_file(
-    file: &Path,
+    path: &Path,
     from: SourcePos,
 ) -> Result<Vec<Item>, Error> {
-    let source = SourceName::imported(file.display(), from);
-    do_parse_scss_file(file, &source)
+    let source = SourceName::imported(path.display(), from);
+    do_parse_scss_file(path, &source)
 }
 
 fn do_parse_scss_file(
-    file: &Path,
+    path: &Path,
     source: &SourceName,
 ) -> Result<Vec<Item>, Error> {
-    let mut f = File::open(file).map_err(|e| Error::Input(file.into(), e))?;
+    let mut f = File::open(path)
+        .map_err(|e| Error::Input(source.name().to_string(), e))?;
+    do_parse_scss_readable(&mut f, source)
+}
+
+/// Parse a scss file.
+///
+/// Returns a vec of the top level items of the file (or an error message).
+pub fn parse_scss_readable(
+    file: &mut dyn Read,
+    path: &str,
+) -> Result<Vec<Item>, Error> {
+    do_parse_scss_readable(file, &SourceName::root(path))
+}
+
+pub fn parse_imported_scss_readable(
+    file: &mut dyn Read,
+    path: &str,
+    from: SourcePos,
+) -> Result<Vec<Item>, Error> {
+    let source = SourceName::imported(path, from);
+    do_parse_scss_readable(file, &source)
+}
+
+fn do_parse_scss_readable(
+    file: &mut dyn Read,
+    source: &SourceName,
+) -> Result<Vec<Item>, Error> {
     let mut data = vec![];
-    f.read_to_end(&mut data)
-        .map_err(|e| Error::Input(file.into(), e))?;
+    file.read_to_end(&mut data)
+        .map_err(|e| Error::Input(source.name().to_string(), e))?;
     let data = Span::new_extra(&data, &source);
     Ok(ParseError::check(sassfile(data))?)
 }

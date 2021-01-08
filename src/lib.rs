@@ -52,11 +52,11 @@ mod value;
 mod variablescope;
 
 pub use crate::error::Error;
-pub use crate::file_context::FileContext;
+pub use crate::file_context::{Context, FileContext};
 pub use crate::functions::SassFunction;
 use crate::output::Format;
 pub use crate::parser::{
-    parse_scss_data, parse_scss_file, parse_value_data, ParseError, SourcePos,
+    parse_scss_data, parse_scss_file, parse_scss_readable, parse_value_data, ParseError, SourcePos,
 };
 pub use crate::sass::Item;
 pub use crate::value::{Dimension, ListSeparator, Number, Quotes, Unit};

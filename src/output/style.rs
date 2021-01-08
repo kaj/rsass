@@ -1,8 +1,8 @@
 use super::Format;
 use crate::css::Value;
 use crate::error::Error;
-use crate::file_context::FileContext;
-use crate::parser::parse_imported_scss_file;
+use crate::file_context::{Context, FileContext};
+use crate::parser::parse_imported_scss_readable;
 use crate::sass::{FormalArgs, Item, SassString};
 use crate::selectors::Selectors;
 use crate::variablescope::{Scope, ScopeImpl};
@@ -80,11 +80,15 @@ impl Format {
                 if args.is_null() {
                     for name in names {
                         let (x, _q) = name.evaluate(scope)?;
-                        if let Some((sub_context, file)) =
-                            file_context.find_file(x.as_ref())
+                        if let Some((sub_context, path, mut file)) =
+                            file_context.find_file(x.as_ref())?
                         {
                             for item in
-                                parse_imported_scss_file(&file, pos.clone())?
+                                parse_imported_scss_readable(
+                                    &mut file,
+                                    &path,
+                                    pos.clone(),
+                                )?
                             {
                                 self.handle_root_item(
                                     &item,
@@ -403,11 +407,12 @@ impl Format {
                     if args.is_null() {
                         for name in names {
                             let (x, _q) = name.evaluate(scope)?;
-                            if let Some((sub_context, file)) =
-                                file_context.find_file(x.as_ref())
+                            if let Some((sub_context, path, mut file)) =
+                                file_context.find_file(x.as_ref())?
                             {
-                                let items = parse_imported_scss_file(
-                                    &file,
+                                let items = parse_imported_scss_readable(
+                                    &mut file,
+                                    &path,
                                     pos.clone(),
                                 )?;
                                 self.handle_body(
