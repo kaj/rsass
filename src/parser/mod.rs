@@ -115,15 +115,15 @@ fn do_parse_scss_file(
 /// Parse a scss file.
 ///
 /// Returns a vec of the top level items of the file (or an error message).
-pub fn parse_scss_readable(
-    file: &mut dyn Read,
+pub fn parse_scss_readable<T: Read>(
+    file: &mut T,
     path: &str,
 ) -> Result<Vec<Item>, Error> {
     do_parse_scss_readable(file, &SourceName::root(path))
 }
 
-pub fn parse_imported_scss_readable(
-    file: &mut dyn Read,
+pub fn parse_imported_scss_readable<T: Read>(
+    file: &mut T,
     path: &str,
     from: SourcePos,
 ) -> Result<Vec<Item>, Error> {
@@ -131,8 +131,8 @@ pub fn parse_imported_scss_readable(
     do_parse_scss_readable(file, &source)
 }
 
-fn do_parse_scss_readable(
-    file: &mut dyn Read,
+fn do_parse_scss_readable<T: Read>(
+    file: &mut T,
     source: &SourceName,
 ) -> Result<Vec<Item>, Error> {
     let mut data = vec![];
