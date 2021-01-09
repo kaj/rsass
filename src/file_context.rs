@@ -28,7 +28,7 @@ use std::path::{Path, PathBuf};
 ///     }
 /// }
 /// ```
-pub trait Context: Clone + std::fmt::Debug {
+pub trait Context: Sized + std::fmt::Debug {
     type File: std::io::Read;
 
     /// Find a file.
