@@ -307,5 +307,5 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
 static NULL_VALUE: Value = Value::Null;
 
 fn intrand(lim: isize) -> isize {
-    thread_rng().gen_range(0, lim)
+    thread_rng().gen_range(0..lim)
 }
