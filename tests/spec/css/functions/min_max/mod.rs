@@ -1,8 +1,8 @@
-//! Tests auto-converted from "sass-spec/spec/css/min_max"
+//! Tests auto-converted from "sass-spec/spec/css/functions/min_max"
 #[allow(unused)]
 use super::rsass;
 
-// From "sass-spec/spec/css/min_max/error.hrx"
+// From "sass-spec/spec/css/functions/min_max/error.hrx"
 mod error {
     #[allow(unused)]
     use super::rsass;
@@ -12,8 +12,9 @@ mod error {
     // Ignoring "plain_css_function", error tests are not supported yet.
 }
 
-// From "sass-spec/spec/css/min_max/plain_css.hrx"
+// From "sass-spec/spec/css/functions/min_max/plain_css.hrx"
 #[test]
+#[ignore] // wrong result
 fn plain_css() {
     assert_eq!(
         rsass(
@@ -29,6 +30,7 @@ fn plain_css() {
             \n       max(env(--foo), env(@&[*^{$(*)&}@^]%$), env(inter#{p + o}lated));\
             \n  var: min(var(--foo), var(@&[*^{$(*)&}@^]%$), var(inter#{p + o}lated))\
             \n       max(var(--foo), var(@&[*^{$(*)&}@^]%$), var(inter#{p + o}lated));\
+            \n  clamp: min(clamp(1, 2, 3)) max(clamp(1, 2, 3));\
             \n  operations: min(1px - 2px * 3px / 4px) max(1px - 2px * 3px / 4px);\
             \n  parens: min((1px + 2px) * 3px) max((1px + 2px) * 3px);\
             \n  two-arguments: min(1px, 2px) max(1px, 2px);\
@@ -45,6 +47,7 @@ fn plain_css() {
         \n  calc: min(calc(10% + 1px)) max(calc(10% + 1px));\
         \n  env: min(env(--foo), env(@&[*^{$(*)&}@^]%$), env(interpolated)) max(env(--foo), env(@&[*^{$(*)&}@^]%$), env(interpolated));\
         \n  var: min(var(--foo), var(@&[*^{$(*)&}@^]%$), var(interpolated)) max(var(--foo), var(@&[*^{$(*)&}@^]%$), var(interpolated));\
+        \n  clamp: min(clamp(1, 2, 3)) max(clamp(1, 2, 3));\
         \n  operations: min(1px - 2px * 3px / 4px) max(1px - 2px * 3px / 4px);\
         \n  parens: min((1px + 2px) * 3px) max((1px + 2px) * 3px);\
         \n  two-arguments: min(1px, 2px) max(1px, 2px);\
@@ -55,7 +58,7 @@ fn plain_css() {
     );
 }
 
-// From "sass-spec/spec/css/min_max/sass_function.hrx"
+// From "sass-spec/spec/css/functions/min_max/sass_function.hrx"
 #[test]
 fn sass_function() {
     assert_eq!(

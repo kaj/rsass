@@ -472,6 +472,66 @@ mod special_functions {
                 );
             }
         }
+        mod clamp {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            fn arg_1() {
+                assert_eq!(
+                    rsass(
+                        "a {b: rgba(clamp(1, 2, 3) 2 3 / 0.4)}\
+            \n"
+                    )
+                    .unwrap(),
+                    "a {\
+        \n  b: rgba(clamp(1, 2, 3), 2, 3, 0.4);\
+        \n}\
+        \n"
+                );
+            }
+            #[test]
+            fn arg_2() {
+                assert_eq!(
+                    rsass(
+                        "a {b: rgba(1 clamp(2, 3, 4) 3 / 0.4)}\
+            \n"
+                    )
+                    .unwrap(),
+                    "a {\
+        \n  b: rgba(1, clamp(2, 3, 4), 3, 0.4);\
+        \n}\
+        \n"
+                );
+            }
+            #[test]
+            fn arg_3() {
+                assert_eq!(
+                    rsass(
+                        "a {b: rgba(1 2 clamp(3, 4, 5) / 0.4)}\
+            \n"
+                    )
+                    .unwrap(),
+                    "a {\
+        \n  b: rgba(1 2 clamp(3, 4, 5)/0.4);\
+        \n}\
+        \n"
+                );
+            }
+            #[test]
+            fn arg_4() {
+                assert_eq!(
+                    rsass(
+                        "a {b: rgba(1 2 3 / clamp(0.4, 0.5, 0.6))}\
+            \n"
+                    )
+                    .unwrap(),
+                    "a {\
+        \n  b: rgba(1 2 3/clamp(0.4, 0.5, 0.6));\
+        \n}\
+        \n"
+                );
+            }
+        }
         mod env {
             #[allow(unused)]
             use super::rsass;
@@ -804,6 +864,52 @@ mod special_functions {
                     .unwrap(),
                     "a {\
         \n  b: rgba(1, 2, calc(3));\
+        \n}\
+        \n"
+                );
+            }
+        }
+        mod clamp {
+            #[allow(unused)]
+            use super::rsass;
+            #[test]
+            fn arg_1() {
+                assert_eq!(
+                    rsass(
+                        "a {b: rgba(clamp(1, 2, 3) 2 3)}\
+            \n"
+                    )
+                    .unwrap(),
+                    "a {\
+        \n  b: rgba(clamp(1, 2, 3), 2, 3);\
+        \n}\
+        \n"
+                );
+            }
+            #[test]
+            fn arg_2() {
+                assert_eq!(
+                    rsass(
+                        "a {b: rgba(1 clamp(2, 3, 4) 3)}\
+            \n"
+                    )
+                    .unwrap(),
+                    "a {\
+        \n  b: rgba(1, clamp(2, 3, 4), 3);\
+        \n}\
+        \n"
+                );
+            }
+            #[test]
+            fn arg_3() {
+                assert_eq!(
+                    rsass(
+                        "a {b: rgba(1 2 clamp(3, 4, 5))}\
+            \n"
+                    )
+                    .unwrap(),
+                    "a {\
+        \n  b: rgba(1, 2, clamp(3, 4, 5));\
         \n}\
         \n"
                 );

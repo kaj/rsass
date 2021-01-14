@@ -155,49 +155,6 @@ fn t008_test_sass_script() {
     );
 }
 
-// From "sass-spec/spec/non_conformant/scss-tests/009_test_for_directive.hrx"
-#[test]
-fn t009_test_for_directive() {
-    assert_eq!(
-        rsass(
-            ".foo {\
-            \n  @for $var from 1 to 5 {a: $var;}\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        ".foo {\
-        \n  a: 1;\
-        \n  a: 2;\
-        \n  a: 3;\
-        \n  a: 4;\
-        \n}\
-        \n"
-    );
-}
-
-// From "sass-spec/spec/non_conformant/scss-tests/010_test_for_directive.hrx"
-#[test]
-fn t010_test_for_directive() {
-    assert_eq!(
-        rsass(
-            ".foo {\
-            \n  @for $var from 1 through 5 {a: $var;}\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        ".foo {\
-        \n  a: 1;\
-        \n  a: 2;\
-        \n  a: 3;\
-        \n  a: 4;\
-        \n  a: 5;\
-        \n}\
-        \n"
-    );
-}
-
 // From "sass-spec/spec/non_conformant/scss-tests/011_test_if_directive.hrx"
 #[test]
 fn t011_test_if_directive() {

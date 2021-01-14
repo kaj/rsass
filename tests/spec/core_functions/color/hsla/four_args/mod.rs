@@ -13,7 +13,7 @@ mod alpha {
         fn above_max() {
             assert_eq!(
                 rsass(
-                    "a {b: hsla(0, 0, 0, 250%)}\
+                    "a {b: hsla(0, 0%, 0%, 250%)}\
             \n"
                 )
                 .unwrap(),
@@ -27,7 +27,7 @@ mod alpha {
         fn max() {
             assert_eq!(
                 rsass(
-                    "a {b: hsla(0, 0, 0, 100%)}\
+                    "a {b: hsla(0, 0%, 0%, 100%)}\
             \n"
                 )
                 .unwrap(),
@@ -41,7 +41,7 @@ mod alpha {
         fn min() {
             assert_eq!(
                 rsass(
-                    "a {b: hsla(0, 0, 0, 0%)}\
+                    "a {b: hsla(0, 0%, 0%, 0%)}\
             \n"
                 )
                 .unwrap(),
@@ -55,7 +55,7 @@ mod alpha {
         fn negative() {
             assert_eq!(
                 rsass(
-                    "a {b: hsla(0, 0, 0, -10%)}\
+                    "a {b: hsla(0, 0%, 0%, -10%)}\
             \n"
                 )
                 .unwrap(),
@@ -69,7 +69,7 @@ mod alpha {
         fn positive() {
             assert_eq!(
                 rsass(
-                    "a {b: hsla(0, 0, 0, 45.6%)}\
+                    "a {b: hsla(0, 0%, 0%, 45.6%)}\
             \n"
                 )
                 .unwrap(),
@@ -87,7 +87,7 @@ mod alpha {
         fn above_max() {
             assert_eq!(
                 rsass(
-                    "a {b: hsla(0, 0, 0, 250)}\
+                    "a {b: hsla(0, 0%, 0%, 250)}\
             \n"
                 )
                 .unwrap(),
@@ -101,7 +101,7 @@ mod alpha {
         fn max() {
             assert_eq!(
                 rsass(
-                    "a {b: hsla(0, 0, 0, 1)}\
+                    "a {b: hsla(0, 0%, 0%, 1)}\
             \n"
                 )
                 .unwrap(),
@@ -115,7 +115,7 @@ mod alpha {
         fn min() {
             assert_eq!(
                 rsass(
-                    "a {b: hsla(0, 0, 0, 0)}\
+                    "a {b: hsla(0, 0%, 0%, 0)}\
             \n"
                 )
                 .unwrap(),
@@ -129,7 +129,7 @@ mod alpha {
         fn negative() {
             assert_eq!(
                 rsass(
-                    "a {b: hsla(0, 0, 0, -10)}\
+                    "a {b: hsla(0, 0%, 0%, -10)}\
             \n"
                 )
                 .unwrap(),
@@ -143,7 +143,7 @@ mod alpha {
         fn positive() {
             assert_eq!(
                 rsass(
-                    "a {b: hsla(0, 0, 0, 0.456)}\
+                    "a {b: hsla(0, 0%, 0%, 0.456)}\
             \n"
                 )
                 .unwrap(),
@@ -343,6 +343,66 @@ mod special_functions {
                 .unwrap(),
                 "a {\
         \n  b: hsla(1, 2%, 3%, calc(0.4));\
+        \n}\
+        \n"
+            );
+        }
+    }
+    mod clamp {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        fn arg_1() {
+            assert_eq!(
+                rsass(
+                    "a {b: hsla(clamp(1, 2, 3), 2%, 3%, 0.4)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: hsla(clamp(1, 2, 3), 2%, 3%, 0.4);\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn arg_2() {
+            assert_eq!(
+                rsass(
+                    "a {b: hsla(1, clamp(2%, 3%, 4%), 3%, 0.4)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: hsla(1, clamp(2%, 3%, 4%), 3%, 0.4);\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn arg_3() {
+            assert_eq!(
+                rsass(
+                    "a {b: hsla(1, 2%, clamp(3%, 4%, 5%), 0.4)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: hsla(1, 2%, clamp(3%, 4%, 5%), 0.4);\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn arg_4() {
+            assert_eq!(
+                rsass(
+                    "a {b: hsla(1, 2%, 3%, clamp(0.4, 0.5, 0.6))}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: hsla(1, 2%, 3%, clamp(0.4, 0.5, 0.6));\
         \n}\
         \n"
             );

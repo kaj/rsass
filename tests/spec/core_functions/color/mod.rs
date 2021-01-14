@@ -136,6 +136,66 @@ mod adjust_hue {
         \n"
         );
     }
+    mod units {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        fn angle() {
+            assert_eq!(
+                rsass(
+                    "a {b: adjust-hue(red, 60rad)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: yellow;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn deg() {
+            assert_eq!(
+                rsass(
+                    "a {b: adjust-hue(red, 60deg)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: yellow;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn unitless() {
+            assert_eq!(
+                rsass(
+                    "a {b: adjust-hue(red, 60)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: yellow;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn unknown() {
+            assert_eq!(
+                rsass(
+                    "a {b: adjust-hue(red, 60in)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: yellow;\
+        \n}\
+        \n"
+            );
+        }
+    }
 }
 
 // From "sass-spec/spec/core_functions/color/alpha.hrx"

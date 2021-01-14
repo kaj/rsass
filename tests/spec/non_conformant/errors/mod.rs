@@ -20,14 +20,6 @@ mod fn_varargs;
 
 mod fn_warn;
 
-// From "sass-spec/spec/non_conformant/errors/for-incompatible-units-fn.hrx"
-
-// Ignoring "for_incompatible_units_fn", error tests are not supported yet.
-
-// From "sass-spec/spec/non_conformant/errors/for-incompatible-units.hrx"
-
-// Ignoring "for_incompatible_units", error tests are not supported yet.
-
 mod import;
 
 mod interpolation;
@@ -35,7 +27,5 @@ mod interpolation;
 mod invalid_operation;
 
 mod invalid_parent;
-
-mod loop_for;
 
 mod unicode;

@@ -113,6 +113,10 @@ fn special_functions() {
             \n  max-1: hsla(max(1), 2%, 3%);\
             \n  max-2: hsla(1, max(2%), 3%);\
             \n  max-3: hsla(1, 2%, max(3%));\
+            \n\
+            \n  clamp-1: hsla(clamp(1, 2, 3), 2%, 3%);\
+            \n  clamp-2: hsla(1, clamp(2%, 3%, 4%), 3%);\
+            \n  clamp-3: hsla(1, 2%, clamp(3%, 4%, 5%));\
             \n}\
             \n"
         )
@@ -133,6 +137,9 @@ fn special_functions() {
         \n  max-1: hsla(max(1), 2%, 3%);\
         \n  max-2: hsla(1, max(2%), 3%);\
         \n  max-3: hsla(1, 2%, max(3%));\
+        \n  clamp-1: hsla(clamp(1, 2, 3), 2%, 3%);\
+        \n  clamp-2: hsla(1, clamp(2%, 3%, 4%), 3%);\
+        \n  clamp-3: hsla(1, 2%, clamp(3%, 4%, 5%));\
         \n}\
         \n"
     );
@@ -146,6 +153,20 @@ mod units {
         #[allow(unused)]
         use super::rsass;
         #[test]
+        fn angle() {
+            assert_eq!(
+                rsass(
+                    "a {b: hsla(60rad, 100%, 50%)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: yellow;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
         fn deg() {
             assert_eq!(
                 rsass(
@@ -155,6 +176,34 @@ mod units {
                 .unwrap(),
                 "a {\
         \n  b: red;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn unitless() {
+            assert_eq!(
+                rsass(
+                    "a {b: hsla(60, 100%, 50%)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: yellow;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn unknown() {
+            assert_eq!(
+                rsass(
+                    "a {b: hsla(60in, 100%, 50%)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: yellow;\
         \n}\
         \n"
             );
@@ -177,6 +226,20 @@ mod units {
         \n"
             );
         }
+        #[test]
+        fn unknown() {
+            assert_eq!(
+                rsass(
+                    "a {b: hsla(0, 100%, 50in)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: red;\
+        \n}\
+        \n"
+            );
+        }
     }
     mod saturation {
         #[allow(unused)]
@@ -186,6 +249,20 @@ mod units {
             assert_eq!(
                 rsass(
                     "a {b: hsla(0, 50, 50%)}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: #bf4040;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn unknown() {
+            assert_eq!(
+                rsass(
+                    "a {b: hsla(0, 50in, 50%)}\
             \n"
                 )
                 .unwrap(),

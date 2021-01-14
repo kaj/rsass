@@ -274,25 +274,7 @@ fn function_name_identifiers() {
     );
 }
 
-// From "sass-spec/spec/css/functions.hrx"
-mod functions {
-    #[allow(unused)]
-    use super::rsass;
-    mod error {
-        #[allow(unused)]
-        use super::rsass;
-        mod single_equals {
-            #[allow(unused)]
-            use super::rsass;
-
-            // Ignoring "no_lhs", error tests are not supported yet.
-
-            // Ignoring "no_lhs_or_rhs", error tests are not supported yet.
-
-            // Ignoring "no_rhs", error tests are not supported yet.
-        }
-    }
-}
+mod functions;
 
 // From "sass-spec/spec/css/important.hrx"
 mod important {
@@ -339,8 +321,6 @@ mod keyframes {
 }
 
 mod media;
-
-mod min_max;
 
 mod moz_document;
 
@@ -647,41 +627,3 @@ mod supports;
 mod unicode_range;
 
 mod unknown_directive;
-
-// From "sass-spec/spec/css/url.hrx"
-mod url {
-    #[allow(unused)]
-    use super::rsass;
-    mod exclam {
-        #[allow(unused)]
-        use super::rsass;
-        #[test]
-        fn middle() {
-            assert_eq!(
-                rsass(
-                    "a {b: url(http://c.d/e!f)}\
-            \n"
-                )
-                .unwrap(),
-                "a {\
-        \n  b: url(http://c.d/e!f);\
-        \n}\
-        \n"
-            );
-        }
-        #[test]
-        fn only() {
-            assert_eq!(
-                rsass(
-                    "a {b: url(!)}\
-            \n"
-                )
-                .unwrap(),
-                "a {\
-        \n  b: url(!);\
-        \n}\
-        \n"
-            );
-        }
-    }
-}

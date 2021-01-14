@@ -664,7 +664,7 @@ fn issue_1101() {
         rsass(
             "$foo: white;\r\
             \nfoo {\r\
-            \n  bar: adjust-color($foo, $hue: -6deg, $lightness: -16, $saturation: -7);\r\
+            \n  bar: adjust-color($foo, $hue: -6deg, $lightness: -16%, $saturation: -7%);\r\
             \n}"
         )
         .unwrap(),
