@@ -81,7 +81,7 @@ impl Format {
                     for name in names {
                         let (x, _q) = name.evaluate(scope)?;
                         if let Some((sub_context, path, mut file)) =
-                            context.find_file(x.as_ref())?
+                            context.find_file(&x)?
                         {
                             for item in
                                 parse_imported_scss_readable(
