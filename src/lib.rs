@@ -56,7 +56,7 @@ pub use crate::file_context::{FileContext, FsFileContext};
 pub use crate::functions::SassFunction;
 use crate::output::Format;
 pub use crate::parser::{
-    parse_scss_data, parse_scss_path, parse_scss_readable, parse_value_data, ParseError, SourcePos,
+    parse_scss_data, parse_scss_path, parse_scss_file, parse_value_data, ParseError, SourcePos,
 };
 pub use crate::sass::Item;
 pub use crate::value::{Dimension, ListSeparator, Number, Quotes, Unit};

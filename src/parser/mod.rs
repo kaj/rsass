@@ -109,29 +109,29 @@ fn do_parse_scss_path(
 ) -> Result<Vec<Item>, Error> {
     let mut f = File::open(path)
         .map_err(|e| Error::Input(source.name().to_string(), e))?;
-    do_parse_scss_readable(&mut f, source)
+    do_parse_scss_file(&mut f, source)
 }
 
 /// Parse a scss file.
 ///
 /// Returns a vec of the top level items of the file (or an error message).
-pub fn parse_scss_readable<T: Read>(
+pub fn parse_scss_file<T: Read>(
     file: &mut T,
     path: &str,
 ) -> Result<Vec<Item>, Error> {
-    do_parse_scss_readable(file, &SourceName::root(path))
+    do_parse_scss_file(file, &SourceName::root(path))
 }
 
-pub fn parse_imported_scss_readable<T: Read>(
+pub fn parse_imported_scss_file<T: Read>(
     file: &mut T,
     path: &str,
     from: SourcePos,
 ) -> Result<Vec<Item>, Error> {
     let source = SourceName::imported(path, from);
-    do_parse_scss_readable(file, &source)
+    do_parse_scss_file(file, &source)
 }
 
-fn do_parse_scss_readable<T: Read>(
+fn do_parse_scss_file<T: Read>(
     file: &mut T,
     source: &SourceName,
 ) -> Result<Vec<Item>, Error> {

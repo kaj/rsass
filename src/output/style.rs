@@ -2,7 +2,7 @@ use super::Format;
 use crate::css::Value;
 use crate::error::Error;
 use crate::file_context::FileContext;
-use crate::parser::parse_imported_scss_readable;
+use crate::parser::parse_imported_scss_file;
 use crate::sass::{FormalArgs, Item, SassString};
 use crate::selectors::Selectors;
 use crate::variablescope::{Scope, ScopeImpl};
@@ -84,7 +84,7 @@ impl Format {
                             context.find_file(&x)?
                         {
                             for item in
-                                parse_imported_scss_readable(
+                                parse_imported_scss_file(
                                     &mut file,
                                     &path,
                                     pos.clone(),
@@ -410,7 +410,7 @@ impl Format {
                             if let Some((sub_context, path, mut file)) =
                                 context.find_file(x.as_ref())?
                             {
-                                let items = parse_imported_scss_readable(
+                                let items = parse_imported_scss_file(
                                     &mut file,
                                     &path,
                                     pos.clone(),
