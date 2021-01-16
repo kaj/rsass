@@ -35,8 +35,12 @@ pub trait FileContext: Sized + std::fmt::Debug {
     ///
     /// If the file is imported from another file,
     /// the argument is the exact string specified in the import declaration.
+    ///
+    /// The official Sass spec prescribes that files are loaded by
+    /// url instead of by path to ensure universal compatibility of style sheets.
+    /// This effectively mandates the use of forward slashes on all platforms.
     fn find_file(
-        &self, name: &str
+        &self, url: &str
     ) -> Result<Option<(Self, String, Self::File)>, Error>;
 }
 
