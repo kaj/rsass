@@ -1,7 +1,7 @@
 use super::Format;
 use crate::css::Value;
 use crate::error::Error;
-use crate::file_context::Context;
+use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_readable;
 use crate::sass::{FormalArgs, Item, SassString};
 use crate::selectors::Selectors;
@@ -59,7 +59,7 @@ impl Format {
         &self,
         items: &[Item],
         globals: &mut dyn Scope,
-        context: &impl Context,
+        context: &impl FileContext,
     ) -> Result<Vec<u8>, Error> {
         let mut result = CssWriter::new(*self);
         for item in items {
@@ -71,7 +71,7 @@ impl Format {
         &self,
         item: &Item,
         scope: &mut dyn Scope,
-        context: &impl Context,
+        context: &impl FileContext,
         result: &mut CssWriter,
     ) -> Result<(), Error> {
         match *item {
@@ -362,7 +362,7 @@ impl Format {
         body: &[Item],
         out: &mut dyn Write,
         scope: &mut dyn Scope,
-        context: &impl Context,
+        context: &impl FileContext,
         indent: usize,
     ) -> Result<(), Error> {
         let selectors = selectors.eval(scope)?.inside(scope.get_selectors());
@@ -397,7 +397,7 @@ impl Format {
         sub: &mut dyn Write,
         scope: &mut dyn Scope,
         body: &[Item],
-        context: &impl Context,
+        context: &impl FileContext,
         indent: usize,
     ) -> Result<(), Error> {
         for b in body {

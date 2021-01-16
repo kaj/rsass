@@ -10,7 +10,7 @@ fn simple_value() {
     };
     let mut scope = GlobalScope::new(format);
     scope.define("color", &css::Value::black());
-    let file_context = FileContext::new();
+    let file_context = FsFileContext::new();
     assert_eq!(
         format
             .write_root(&parsed, &mut scope, &file_context)
@@ -36,7 +36,7 @@ fn simple_function() {
         ),
     );
     let parsed = parse_scss_data(b"p { x: get_answer(); }").unwrap();
-    let file_context = FileContext::new();
+    let file_context = FsFileContext::new();
     assert_eq!(
         format
             .write_root(&parsed, &mut scope, &file_context)
@@ -86,7 +86,7 @@ fn function_with_args() {
         style: output::Style::Compressed,
         precision: 5,
     };
-    let file_context = FileContext::new();
+    let file_context = FsFileContext::new();
     assert_eq!(
         format
             .write_root(&parsed, &mut scope, &file_context)

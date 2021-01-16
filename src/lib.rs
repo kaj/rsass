@@ -52,7 +52,7 @@ mod value;
 mod variablescope;
 
 pub use crate::error::Error;
-pub use crate::file_context::{Context, FileContext};
+pub use crate::file_context::{FileContext, FsFileContext};
 pub use crate::functions::SassFunction;
 use crate::output::Format;
 pub use crate::parser::{
@@ -104,7 +104,7 @@ pub fn compile_value(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
 /// )
 /// ```
 pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
-    let file_context = FileContext::new();
+    let file_context = FsFileContext::new();
     let items = parse_scss_data(input)?;
     format.write_root(&items, &mut GlobalScope::new(format), &file_context)
 }
@@ -131,7 +131,7 @@ pub fn compile_scss_file(
     file: &Path,
     format: Format,
 ) -> Result<Vec<u8>, Error> {
-    let file_context = FileContext::new();
+    let file_context = FsFileContext::new();
     let (sub_context, file) = file_context.file(file);
     let items = parse_scss_file(&file)?;
     format.write_root(&items, &mut GlobalScope::new(format), &sub_context)

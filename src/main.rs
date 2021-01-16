@@ -1,6 +1,6 @@
 use rsass::{
     output::{Format, Style},
-    parse_scss_file, Error, FileContext, GlobalScope,
+    parse_scss_file, Error, FsFileContext, GlobalScope,
 };
 use std::io::{stdout, Write};
 use std::path::PathBuf;
@@ -55,7 +55,7 @@ impl Args {
             precision: self.precision,
         };
         for name in &self.input {
-            let mut file_context = FileContext::new();
+            let mut file_context = FsFileContext::new();
             if let Some(include_path) = &self.include_path {
                 file_context.push_path(include_path.as_ref());
             }

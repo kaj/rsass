@@ -2,19 +2,19 @@ use crate::error::Error;
 use std::path::{Path, PathBuf};
 
 
-/// A context manages finding and loading files.
+/// A file context manages finding and loading files.
 ///
 /// # Example
 /// ```
 /// use std::collections::HashMap;
-/// use rsass::{Context, Error};
+/// use rsass::{FileContext, Error};
 ///
 /// #[derive(Clone, Debug)]
-/// struct StaticContext<'a> {
+/// struct StaticFileContext<'a> {
 ///     files: HashMap<String, &'a[u8]>,
 /// }
 ///
-/// impl<'a> Context for StaticContext<'a> {
+/// impl<'a> FileContext for StaticFileContext<'a> {
 ///     type File = &'a [u8];
 ///
 ///     fn find_file(
@@ -28,7 +28,7 @@ use std::path::{Path, PathBuf};
 ///     }
 /// }
 /// ```
-pub trait Context: Sized + std::fmt::Debug {
+pub trait FileContext: Sized + std::fmt::Debug {
     type File: std::io::Read;
 
     /// Find a file.
@@ -41,7 +41,7 @@ pub trait Context: Sized + std::fmt::Debug {
 }
 
 
-/// A file context specifies where to find files to load.
+/// A filesystem file context specifies where to find local files.
 ///
 /// When opening an included file, an extended file context is
 /// created, to find further included files relative to the file they
@@ -49,10 +49,10 @@ pub trait Context: Sized + std::fmt::Debug {
 ///
 /// # Example
 /// ```
-/// use rsass::FileContext;
+/// use rsass::FsFileContext;
 /// use std::path::PathBuf;
 ///
-/// let base = FileContext::new();
+/// let base = FsFileContext::new();
 /// let (base, file1) =
 ///     base.file(&PathBuf::from("some").join("dir").join("file.scss"));
 /// // base is now a relative to file1, usefull to open files
@@ -62,16 +62,16 @@ pub trait Context: Sized + std::fmt::Debug {
 /// assert_eq!(file2, PathBuf::from("some").join("dir").join("some/other.scss"));
 /// ```
 #[derive(Clone, Debug)]
-pub struct FileContext {
+pub struct FsFileContext {
     path: Vec<PathBuf>,
 }
 
-impl FileContext {
-    /// Create a new FileContext.
+impl FsFileContext {
+    /// Create a new FsFileContext.
     ///
     /// Files will be resolved from the current working directory.
     pub fn new() -> Self {
-        FileContext {
+        Self {
             path: vec![PathBuf::new()],
         }
     }
@@ -82,7 +82,7 @@ impl FileContext {
 
     /// Get a file from this context.
     ///
-    /// Get a path and a FileContext from this FileContext and a path.
+    /// Get a path and a FsFileContext from this FsFileContext and a path.
     pub fn file(&self, file: &Path) -> (Self, PathBuf) {
         let t = self.path[0].join(file);
         let mut path = vec![];
@@ -90,11 +90,11 @@ impl FileContext {
             path.push(PathBuf::from(dir));
         }
         path.extend_from_slice(&self.path);
-        (FileContext { path }, t)
+        (Self { path }, t)
     }
 }
 
-impl Context for FileContext {
+impl FileContext for FsFileContext {
     type File = std::fs::File;
 
     fn find_file(
@@ -123,12 +123,12 @@ impl Context for FileContext {
                             let mut path = vec![];
                             path.push(PathBuf::from(parent));
                             path.extend_from_slice(&self.path);
-                            FileContext { path }
+                            Self { path }
                         } else {
                             self.clone()
                         };
                         let path = full.display().to_string();
-                        let file = std::fs::File::open(full.clone())?;
+                        let file = Self::File::open(full.clone())?;
                         return Ok(Some((c, path, file)));
                     }
                 }
