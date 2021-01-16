@@ -7,14 +7,14 @@
 //! # Example
 //!
 //! ```
-//! use rsass::{compile_scss_file, output};
+//! use rsass::{compile_scss_path, output};
 //!
-//! let file = "tests/basic/14_imports/a.scss".as_ref();
+//! let path = "tests/basic/14_imports/a.scss".as_ref();
 //! let format = output::Format {
 //!     style: output::Style::Compressed,
 //!     precision: 5,
 //! };
-//! let css = compile_scss_file(file, format).unwrap();
+//! let css = compile_scss_path(path, format).unwrap();
 //!
 //! assert_eq!(css, b"div span{moo:goo}\n")
 //! ```
@@ -56,7 +56,7 @@ pub use crate::file_context::{FileContext, FsFileContext};
 pub use crate::functions::SassFunction;
 use crate::output::Format;
 pub use crate::parser::{
-    parse_scss_data, parse_scss_file, parse_scss_readable, parse_value_data, ParseError, SourcePos,
+    parse_scss_data, parse_scss_path, parse_scss_readable, parse_value_data, ParseError, SourcePos,
 };
 pub use crate::sass::Item;
 pub use crate::value::{Dimension, ListSeparator, Number, Quotes, Unit};
@@ -117,22 +117,22 @@ pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
 /// # Example
 ///
 /// ```
-/// use rsass::{compile_scss_file, output::{Format, Style}};
+/// use rsass::{compile_scss_path, output::{Format, Style}};
 ///
 /// assert_eq!(
-///     compile_scss_file(
+///     compile_scss_path(
 ///         "tests/basic/14_imports/a.scss".as_ref(),
 ///         Format { style: Style::Compressed, precision: 5 },
 ///     ).unwrap(),
 ///     b"div span{moo:goo}\n"
 /// )
 /// ```
-pub fn compile_scss_file(
-    file: &Path,
+pub fn compile_scss_path(
+    path: &Path,
     format: Format,
 ) -> Result<Vec<u8>, Error> {
     let file_context = FsFileContext::new();
-    let (sub_context, file) = file_context.file(file);
-    let items = parse_scss_file(&file)?;
+    let (sub_context, path) = file_context.file(path);
+    let items = parse_scss_path(&path)?;
     format.write_root(&items, &mut GlobalScope::new(format), &sub_context)
 }

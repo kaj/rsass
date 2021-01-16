@@ -1,6 +1,6 @@
 use rsass::{
     output::{Format, Style},
-    parse_scss_file, Error, FsFileContext, GlobalScope,
+    parse_scss_path, Error, FsFileContext, GlobalScope,
 };
 use std::io::{stdout, Write};
 use std::path::PathBuf;
@@ -59,8 +59,8 @@ impl Args {
             if let Some(include_path) = &self.include_path {
                 file_context.push_path(include_path.as_ref());
             }
-            let (sub_context, file) = file_context.file(name.as_ref());
-            let items = parse_scss_file(&file)?;
+            let (sub_context, path) = file_context.file(name.as_ref());
+            let items = parse_scss_path(&path)?;
             let result = format.write_root(
                 &items,
                 &mut GlobalScope::new(format),

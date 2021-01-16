@@ -91,19 +91,19 @@ fn test_parse_value_data_2() -> Result<(), Error> {
 /// Parse a scss file by path.
 ///
 /// Returns a vec of the top level items of the file (or an error message).
-pub fn parse_scss_file(path: &Path) -> Result<Vec<Item>, Error> {
-    do_parse_scss_file(path, &SourceName::root(path.display()))
+pub fn parse_scss_path(path: &Path) -> Result<Vec<Item>, Error> {
+    do_parse_scss_path(path, &SourceName::root(path.display()))
 }
 
-pub fn parse_imported_scss_file(
+pub fn parse_imported_scss_path(
     path: &Path,
     from: SourcePos,
 ) -> Result<Vec<Item>, Error> {
     let source = SourceName::imported(path.display(), from);
-    do_parse_scss_file(path, &source)
+    do_parse_scss_path(path, &source)
 }
 
-fn do_parse_scss_file(
+fn do_parse_scss_path(
     path: &Path,
     source: &SourceName,
 ) -> Result<Vec<Item>, Error> {
