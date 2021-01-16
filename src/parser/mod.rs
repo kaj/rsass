@@ -115,6 +115,9 @@ fn do_parse_scss_path(
 /// Parse a scss file.
 ///
 /// Returns a vec of the top level items of the file (or an error message).
+///
+/// **Attention**: Previously, this function took a path to the file
+/// instead of a file itself. That function has been renamed to [`parse_scss_path()`].
 pub fn parse_scss_file<T: Read>(
     file: &mut T,
     path: &str,

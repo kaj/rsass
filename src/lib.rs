@@ -127,6 +127,8 @@ pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
 ///     b"div span{moo:goo}\n"
 /// )
 /// ```
+///
+/// **Attention**: Previously, this function was named `compile_scss_file()`.
 pub fn compile_scss_path(
     path: &Path,
     format: Format,
