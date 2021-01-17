@@ -59,7 +59,7 @@ impl Format {
         &self,
         items: &[Item],
         globals: &mut dyn Scope,
-        file_context: &FileContext,
+        file_context: &impl FileContext,
     ) -> Result<Vec<u8>, Error> {
         let mut result = CssWriter::new(*self);
         for item in items {
@@ -71,7 +71,7 @@ impl Format {
         &self,
         item: &Item,
         scope: &mut dyn Scope,
-        file_context: &FileContext,
+        file_context: &impl FileContext,
         result: &mut CssWriter,
     ) -> Result<(), Error> {
         match *item {
@@ -80,12 +80,14 @@ impl Format {
                 if args.is_null() {
                     for name in names {
                         let (x, _q) = name.evaluate(scope)?;
-                        if let Some((sub_context, file)) =
-                            file_context.find_file(x.as_ref())
+                        if let Some((sub_context, path, mut file)) =
+                            file_context.find_file(&x)?
                         {
-                            for item in
-                                parse_imported_scss_file(&file, pos.clone())?
-                            {
+                            for item in parse_imported_scss_file(
+                                &mut file,
+                                &path,
+                                pos.clone(),
+                            )? {
                                 self.handle_root_item(
                                     &item,
                                     scope,
@@ -358,7 +360,7 @@ impl Format {
         body: &[Item],
         out: &mut dyn Write,
         scope: &mut dyn Scope,
-        file_context: &FileContext,
+        file_context: &impl FileContext,
         indent: usize,
     ) -> Result<(), Error> {
         let selectors = selectors.eval(scope)?.inside(scope.get_selectors());
@@ -393,7 +395,7 @@ impl Format {
         sub: &mut dyn Write,
         scope: &mut dyn Scope,
         body: &[Item],
-        file_context: &FileContext,
+        file_context: &impl FileContext,
         indent: usize,
     ) -> Result<(), Error> {
         for b in body {
@@ -403,11 +405,12 @@ impl Format {
                     if args.is_null() {
                         for name in names {
                             let (x, _q) = name.evaluate(scope)?;
-                            if let Some((sub_context, file)) =
-                                file_context.find_file(x.as_ref())
+                            if let Some((sub_context, path, mut file)) =
+                                file_context.find_file(x.as_ref())?
                             {
                                 let items = parse_imported_scss_file(
-                                    &file,
+                                    &mut file,
+                                    &path,
                                     pos.clone(),
                                 )?;
                                 self.handle_body(

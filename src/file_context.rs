@@ -1,6 +1,50 @@
+use crate::error::Error;
 use std::path::{Path, PathBuf};
 
-/// A file context specifies where to find files to load.
+/// A file context manages finding and loading files.
+///
+/// # Example
+/// ```
+/// use std::collections::HashMap;
+/// use rsass::{FileContext, Error};
+///
+/// #[derive(Clone, Debug)]
+/// struct StaticFileContext<'a> {
+///     files: HashMap<String, &'a[u8]>,
+/// }
+///
+/// impl<'a> FileContext for StaticFileContext<'a> {
+///     type File = &'a [u8];
+///
+///     fn find_file(
+///         &self, name: &str
+///     ) -> Result<Option<(Self, String, Self::File)>, Error> {
+///         if let Some(file) = self.files.get(name).map(|data| *data) {
+///             Ok(Some((self.clone(), name.to_string(), file)))
+///         } else {
+///             Ok(None)
+///         }
+///     }
+/// }
+/// ```
+pub trait FileContext: Sized + std::fmt::Debug {
+    type File: std::io::Read;
+
+    /// Find a file.
+    ///
+    /// If the file is imported from another file,
+    /// the argument is the exact string specified in the import declaration.
+    ///
+    /// The official Sass spec prescribes that files are loaded by
+    /// url instead of by path to ensure universal compatibility of style sheets.
+    /// This effectively mandates the use of forward slashes on all platforms.
+    fn find_file(
+        &self,
+        url: &str,
+    ) -> Result<Option<(Self, String, Self::File)>, Error>;
+}
+
+/// A filesystem file context specifies where to find local files.
 ///
 /// When opening an included file, an extended file context is
 /// created, to find further included files relative to the file they
@@ -8,10 +52,10 @@ use std::path::{Path, PathBuf};
 ///
 /// # Example
 /// ```
-/// use rsass::FileContext;
+/// use rsass::FsFileContext;
 /// use std::path::PathBuf;
 ///
-/// let base = FileContext::new();
+/// let base = FsFileContext::new();
 /// let (base, file1) =
 ///     base.file(&PathBuf::from("some").join("dir").join("file.scss"));
 /// // base is now a relative to file1, usefull to open files
@@ -21,16 +65,16 @@ use std::path::{Path, PathBuf};
 /// assert_eq!(file2, PathBuf::from("some").join("dir").join("some/other.scss"));
 /// ```
 #[derive(Clone, Debug)]
-pub struct FileContext {
+pub struct FsFileContext {
     path: Vec<PathBuf>,
 }
 
-impl FileContext {
-    /// Create a new FileContext.
+impl FsFileContext {
+    /// Create a new FsFileContext.
     ///
     /// Files will be resolved from the current working directory.
     pub fn new() -> Self {
-        FileContext {
+        Self {
             path: vec![PathBuf::new()],
         }
     }
@@ -41,7 +85,7 @@ impl FileContext {
 
     /// Get a file from this context.
     ///
-    /// Get a path and a FileContext from this FileContext and a path.
+    /// Get a path and a FsFileContext from this FsFileContext and a path.
     pub fn file(&self, file: &Path) -> (Self, PathBuf) {
         let t = self.path[0].join(file);
         let mut path = vec![];
@@ -49,12 +93,20 @@ impl FileContext {
             path.push(PathBuf::from(dir));
         }
         path.extend_from_slice(&self.path);
-        (FileContext { path }, t)
+        (Self { path }, t)
     }
+}
 
-    pub fn find_file(&self, name: &Path) -> Option<(Self, PathBuf)> {
+impl FileContext for FsFileContext {
+    type File = std::fs::File;
+
+    fn find_file(
+        &self,
+        name: &str,
+    ) -> Result<Option<(Self, String, Self::File)>, crate::Error> {
         // TODO Check docs what expansions should be tried!
         // Files with .sass extension needs another parser.
+        let name = Path::new(name);
         let parent = name.parent();
         if let Some(name) = name.file_name().and_then(|n| n.to_str()) {
             for base in &self.path {
@@ -75,15 +127,17 @@ impl FileContext {
                             let mut path = vec![];
                             path.push(PathBuf::from(parent));
                             path.extend_from_slice(&self.path);
-                            FileContext { path }
+                            Self { path }
                         } else {
                             self.clone()
                         };
-                        return Some((c, full));
+                        let path = full.display().to_string();
+                        let file = Self::File::open(full)?;
+                        return Ok(Some((c, path, file)));
                     }
                 }
             }
         }
-        None
+        Ok(None)
     }
 }

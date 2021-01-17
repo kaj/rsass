@@ -88,29 +88,45 @@ fn test_parse_value_data_2() -> Result<(), Error> {
     Ok(())
 }
 
+/// Parse a scss file by path.
+///
+/// Returns a vec of the top level items of the file (or an error message).
+pub fn parse_scss_path(path: &Path) -> Result<Vec<Item>, Error> {
+    let source = SourceName::root(path.display());
+    let mut f = File::open(path)
+        .map_err(|e| Error::Input(source.name().to_string(), e))?;
+    do_parse_scss_file(&mut f, &source)
+}
+
 /// Parse a scss file.
 ///
 /// Returns a vec of the top level items of the file (or an error message).
-pub fn parse_scss_file(file: &Path) -> Result<Vec<Item>, Error> {
-    do_parse_scss_file(file, &SourceName::root(file.display()))
+///
+/// **Attention**: Previously, this function took a path to the file
+/// instead of a file itself. That function has been renamed to [`parse_scss_path()`].
+pub fn parse_scss_file<T: Read>(
+    file: &mut T,
+    path: &str,
+) -> Result<Vec<Item>, Error> {
+    do_parse_scss_file(file, &SourceName::root(path))
 }
 
-pub fn parse_imported_scss_file(
-    file: &Path,
+pub fn parse_imported_scss_file<T: Read>(
+    file: &mut T,
+    path: &str,
     from: SourcePos,
 ) -> Result<Vec<Item>, Error> {
-    let source = SourceName::imported(file.display(), from);
+    let source = SourceName::imported(path, from);
     do_parse_scss_file(file, &source)
 }
 
-fn do_parse_scss_file(
-    file: &Path,
+fn do_parse_scss_file<T: Read>(
+    file: &mut T,
     source: &SourceName,
 ) -> Result<Vec<Item>, Error> {
-    let mut f = File::open(file).map_err(|e| Error::Input(file.into(), e))?;
     let mut data = vec![];
-    f.read_to_end(&mut data)
-        .map_err(|e| Error::Input(file.into(), e))?;
+    file.read_to_end(&mut data)
+        .map_err(|e| Error::Input(source.name().to_string(), e))?;
     let data = Span::new_extra(&data, &source);
     Ok(ParseError::check(sassfile(data))?)
 }

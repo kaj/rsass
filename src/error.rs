@@ -1,14 +1,13 @@
 use crate::css::Value;
 use crate::parser::ParseError;
 use std::convert::From;
-use std::path::PathBuf;
 use std::string::FromUtf8Error;
 use std::{fmt, io};
 
 /// Most functions in rsass that returns a Result uses this Error type.
 #[derive(Debug)]
 pub enum Error {
-    Input(PathBuf, io::Error),
+    Input(String, io::Error),
     IoError(io::Error),
     Encoding(FromUtf8Error),
     BadValue(String),

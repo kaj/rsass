@@ -4,7 +4,7 @@ use super::Error;
 use lazy_static::lazy_static;
 use regex::Regex;
 use rsass::output::Format;
-use rsass::{parse_scss_data, FileContext, GlobalScope};
+use rsass::{parse_scss_data, FsFileContext, GlobalScope};
 use std::io::Write;
 
 pub struct TestFixture {
@@ -159,7 +159,7 @@ pub fn compile_scss(
     input: &[u8],
     format: Format,
 ) -> Result<Vec<u8>, rsass::Error> {
-    let mut file_context = FileContext::new();
+    let mut file_context = FsFileContext::new();
     file_context.push_path("tests/spec".as_ref());
     let items = parse_scss_data(input)?;
     format.write_root(&items, &mut GlobalScope::new(format), &file_context)
