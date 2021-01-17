@@ -1,7 +1,6 @@
 use crate::error::Error;
 use std::path::{Path, PathBuf};
 
-
 /// A file context manages finding and loading files.
 ///
 /// # Example
@@ -40,10 +39,10 @@ pub trait FileContext: Sized + std::fmt::Debug {
     /// url instead of by path to ensure universal compatibility of style sheets.
     /// This effectively mandates the use of forward slashes on all platforms.
     fn find_file(
-        &self, url: &str
+        &self,
+        url: &str,
     ) -> Result<Option<(Self, String, Self::File)>, Error>;
 }
-
 
 /// A filesystem file context specifies where to find local files.
 ///
@@ -102,7 +101,8 @@ impl FileContext for FsFileContext {
     type File = std::fs::File;
 
     fn find_file(
-        &self, name: &str
+        &self,
+        name: &str,
     ) -> Result<Option<(Self, String, Self::File)>, crate::Error> {
         // TODO Check docs what expansions should be tried!
         // Files with .sass extension needs another parser.

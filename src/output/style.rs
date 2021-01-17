@@ -83,13 +83,11 @@ impl Format {
                         if let Some((sub_context, path, mut file)) =
                             file_context.find_file(&x)?
                         {
-                            for item in
-                                parse_imported_scss_file(
-                                    &mut file,
-                                    &path,
-                                    pos.clone(),
-                                )?
-                            {
+                            for item in parse_imported_scss_file(
+                                &mut file,
+                                &path,
+                                pos.clone(),
+                            )? {
                                 self.handle_root_item(
                                     &item,
                                     scope,
