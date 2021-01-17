@@ -95,14 +95,6 @@ pub fn parse_scss_path(path: &Path) -> Result<Vec<Item>, Error> {
     do_parse_scss_path(path, &SourceName::root(path.display()))
 }
 
-pub fn parse_imported_scss_path(
-    path: &Path,
-    from: SourcePos,
-) -> Result<Vec<Item>, Error> {
-    let source = SourceName::imported(path.display(), from);
-    do_parse_scss_path(path, &source)
-}
-
 fn do_parse_scss_path(
     path: &Path,
     source: &SourceName,
