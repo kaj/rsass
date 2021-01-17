@@ -59,11 +59,11 @@ impl Format {
         &self,
         items: &[Item],
         globals: &mut dyn Scope,
-        context: &impl FileContext,
+        file_context: &impl FileContext,
     ) -> Result<Vec<u8>, Error> {
         let mut result = CssWriter::new(*self);
         for item in items {
-            self.handle_root_item(item, globals, context, &mut result)?;
+            self.handle_root_item(item, globals, file_context, &mut result)?;
         }
         result.get_result()
     }
@@ -71,7 +71,7 @@ impl Format {
         &self,
         item: &Item,
         scope: &mut dyn Scope,
-        context: &impl FileContext,
+        file_context: &impl FileContext,
         result: &mut CssWriter,
     ) -> Result<(), Error> {
         match *item {
@@ -81,7 +81,7 @@ impl Format {
                     for name in names {
                         let (x, _q) = name.evaluate(scope)?;
                         if let Some((sub_context, path, mut file)) =
-                            context.find_file(&x)?
+                            file_context.find_file(&x)?
                         {
                             for item in
                                 parse_imported_scss_file(
@@ -147,7 +147,7 @@ impl Format {
                     &mut s2,
                     &mut ScopeImpl::sub_selectors(scope, selectors.clone()),
                     body,
-                    context,
+                    file_context,
                     0,
                 )?;
 
@@ -189,7 +189,7 @@ impl Format {
                         &mut sub,
                         &mut ScopeImpl::sub(scope),
                         body,
-                        context,
+                        file_context,
                         2,
                     )?;
                     self.write_items(result.to_content(), &direct, 2)?;
@@ -227,7 +227,7 @@ impl Format {
                         self.handle_root_item(
                             &item,
                             &mut scope,
-                            context,
+                            file_context,
                             result,
                         )?;
                     }
@@ -257,7 +257,7 @@ impl Format {
                 let cond = cond.evaluate(scope)?.is_true();
                 let items = if cond { do_if } else { do_else };
                 for item in items {
-                    self.handle_root_item(item, scope, context, result)?;
+                    self.handle_root_item(item, scope, file_context, result)?;
                 }
             }
             Item::Each(ref names, ref values, ref body) => {
@@ -268,7 +268,7 @@ impl Format {
                         self.handle_root_item(
                             item,
                             scope,
-                            context,
+                            file_context,
                             result,
                         )?;
                     }
@@ -291,7 +291,7 @@ impl Format {
                         self.handle_root_item(
                             item,
                             &mut scope,
-                            context,
+                            file_context,
                             result,
                         )?;
                     }
@@ -319,7 +319,7 @@ impl Format {
                         self.handle_root_item(
                             item,
                             &mut scope,
-                            context,
+                            file_context,
                             result,
                         )?;
                     }
@@ -333,7 +333,7 @@ impl Format {
                     b,
                     result.to_content(),
                     scope,
-                    context,
+                    file_context,
                     0,
                 )?;
             }
@@ -362,7 +362,7 @@ impl Format {
         body: &[Item],
         out: &mut dyn Write,
         scope: &mut dyn Scope,
-        context: &impl FileContext,
+        file_context: &impl FileContext,
         indent: usize,
     ) -> Result<(), Error> {
         let selectors = selectors.eval(scope)?.inside(scope.get_selectors());
@@ -373,7 +373,7 @@ impl Format {
             &mut sub,
             &mut ScopeImpl::sub_selectors(scope, selectors.clone()),
             body,
-            context,
+            file_context,
             indent,
         )?;
         if !direct.is_empty() {
@@ -397,7 +397,7 @@ impl Format {
         sub: &mut dyn Write,
         scope: &mut dyn Scope,
         body: &[Item],
-        context: &impl FileContext,
+        file_context: &impl FileContext,
         indent: usize,
     ) -> Result<(), Error> {
         for b in body {
@@ -408,7 +408,7 @@ impl Format {
                         for name in names {
                             let (x, _q) = name.evaluate(scope)?;
                             if let Some((sub_context, path, mut file)) =
-                                context.find_file(x.as_ref())?
+                                file_context.find_file(x.as_ref())?
                             {
                                 let items = parse_imported_scss_file(
                                     &mut file,
@@ -482,7 +482,7 @@ impl Format {
                             selectors.clone(),
                         ),
                         body,
-                        context,
+                        file_context,
                         indent,
                     )?;
 
@@ -527,7 +527,7 @@ impl Format {
                             &mut s2,
                             &mut ScopeImpl::sub(scope),
                             body,
-                            context,
+                            file_context,
                             2,
                         )?;
 
@@ -577,7 +577,7 @@ impl Format {
                             sub,
                             &mut argscope,
                             &m_body,
-                            context,
+                            file_context,
                             indent,
                         )?;
                     } else {
@@ -595,7 +595,7 @@ impl Format {
                             sub,
                             scope,
                             &m_body,
-                            context,
+                            file_context,
                             indent,
                         )?;
                     }
@@ -618,7 +618,7 @@ impl Format {
                         sub,
                         &mut ScopeImpl::sub(scope),
                         items,
-                        context,
+                        file_context,
                         0,
                     )?;
                 }
@@ -631,7 +631,7 @@ impl Format {
                             sub,
                             &mut scope,
                             body,
-                            context,
+                            file_context,
                             0,
                         )?;
                     }
@@ -654,7 +654,7 @@ impl Format {
                             sub,
                             &mut scope,
                             body,
-                            context,
+                            file_context,
                             0,
                         )?;
                     }
@@ -685,14 +685,14 @@ impl Format {
                             sub,
                             &mut scope,
                             body,
-                            context,
+                            file_context,
                             0,
                         )?;
                     }
                 }
 
                 Item::Rule(ref s, ref b) => {
-                    self.write_rule(s, b, sub, scope, context, indent)?;
+                    self.write_rule(s, b, sub, scope, file_context, indent)?;
                 }
                 Item::NamespaceRule(ref name, ref value, ref body) => {
                     let value = value.evaluate(scope)?;
@@ -707,7 +707,7 @@ impl Format {
                         sub,
                         scope,
                         body,
-                        context,
+                        file_context,
                         indent,
                     )?;
                     for item in t {
