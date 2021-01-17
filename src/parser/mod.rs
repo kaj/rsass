@@ -92,16 +92,10 @@ fn test_parse_value_data_2() -> Result<(), Error> {
 ///
 /// Returns a vec of the top level items of the file (or an error message).
 pub fn parse_scss_path(path: &Path) -> Result<Vec<Item>, Error> {
-    do_parse_scss_path(path, &SourceName::root(path.display()))
-}
-
-fn do_parse_scss_path(
-    path: &Path,
-    source: &SourceName,
-) -> Result<Vec<Item>, Error> {
+    let source = SourceName::root(path.display());
     let mut f = File::open(path)
         .map_err(|e| Error::Input(source.name().to_string(), e))?;
-    do_parse_scss_file(&mut f, source)
+    do_parse_scss_file(&mut f, &source)
 }
 
 /// Parse a scss file.
