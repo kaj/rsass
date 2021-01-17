@@ -132,7 +132,7 @@ impl FileContext for FsFileContext {
                             self.clone()
                         };
                         let path = full.display().to_string();
-                        let file = Self::File::open(full.clone())?;
+                        let file = Self::File::open(full)?;
                         return Ok(Some((c, path, file)));
                     }
                 }
