@@ -14,14 +14,23 @@ project adheres to
 * Update nom to 6.0 rasises the minimally supported compiler version
   to 1.44.0.  Also, the dependency is technically exposed.
 * `sass::Item::Use` was modified by #84.
+* `compile_scss_file` is renamed to `compile_scss_path`, and
+  `FileContext` is now a trait, the default inmplementation is renamed
+  to `FsFileContext` by #85.
 
 ### Improvements
 
+* Allow customizing file loading by providing a custom impl of a
+  `FileContext`, PR #85.
 * Support the `@use name as *` syntax, PR #84.
 * Make `Error::BadValue` a little closer to whats expected.
-* Update nom to 6.0, PR #83.
+* Update `nom` to 6.0, PR #83.
+* Update `rand` to 0.8, PR #86.
 * Testing is now done with github actions rather than travis
   (Appveyor remains for window builds).
+* sass-spec test suite updated to 2021-01-13.
+
+Thanks to @paolobarbolini and @alvra for code contributions.
 
 
 ## Release 0.16.0 - 2020-11-10
