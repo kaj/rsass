@@ -25,7 +25,7 @@ The sass language [is defined in its reference
 doc](http://sass-lang.com/documentation/file.SASS_REFERENCE.html).
 This implementation is incomplete but getting there, if slowly.
 
-Progress: 2718 of 5840 tests passed in dart-sass compatiblilty mode.
+Progress: 2784 of 5936 tests passed in dart-sass compatiblilty mode.
 
 If you want a working rust library for sass right now, you may
 be better of with [sass-rs](https://crates.io/crates/sass-rs)
