@@ -5,6 +5,7 @@ use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
 use crate::sass::{FormalArgs, Item, SassString};
 use crate::selectors::Selectors;
+use crate::value::{Number, Unit};
 use crate::variablescope::{Scope, ScopeImpl};
 use std::fmt;
 use std::io::Write;
@@ -279,12 +280,14 @@ impl Format {
                 inclusive,
                 ref body,
             } => {
-                let from = from.evaluate(scope)?.integer_value()?;
-                let to = to.evaluate(scope)?.integer_value()?;
-                let to = if inclusive { to + 1 } else { to };
-                for value in from..to {
+                let range = ValueRange::new(
+                    from.evaluate(scope)?,
+                    to.evaluate(scope)?,
+                    inclusive,
+                )?;
+                for value in range {
                     let mut scope = ScopeImpl::sub(scope);
-                    scope.define(name, &Value::scalar(value));
+                    scope.define(name, &value);
                     for item in body {
                         self.handle_root_item(
                             item,
@@ -641,12 +644,14 @@ impl Format {
                     inclusive,
                     ref body,
                 } => {
-                    let from = from.evaluate(scope)?.integer_value()?;
-                    let to = to.evaluate(scope)?.integer_value()?;
-                    let to = if inclusive { to + 1 } else { to };
-                    for value in from..to {
+                    let range = ValueRange::new(
+                        from.evaluate(scope)?,
+                        to.evaluate(scope)?,
+                        inclusive,
+                    )?;
+                    for value in range {
                         let mut scope = ScopeImpl::sub(scope);
-                        scope.define(name, &Value::scalar(value));
+                        scope.define(name, &value);
                         self.handle_body(
                             direct,
                             sub,
@@ -919,6 +924,67 @@ impl CssBodyItem {
                 val.format(format).to_string().replace('\n', " "),
             ),
             CssBodyItem::Comment(ref c) => write!(out, "/*{}*/", c),
+        }
+    }
+}
+
+struct ValueRange {
+    from: Number,
+    to: Number,
+    step: Number,
+    unit: Unit,
+}
+
+impl ValueRange {
+    fn new(
+        from: Value,
+        to: Value,
+        inclusive: bool,
+    ) -> Result<ValueRange, Error> {
+        let (from, unit) = from
+            .numeric_value()
+            .ok_or(Error::S("from needs to be numeric".into()))?;
+        let (to, to_unit) = to
+            .numeric_value()
+            .ok_or(Error::S("from needs to be numeric".into()))?;
+
+        let to = if unit == Unit::None || to_unit == Unit::None {
+            to
+        } else if let Some(scale) = to_unit.scale_to(&unit) {
+            to * scale
+        } else {
+            return Err(Error::S(format!(
+                "for loop needs compatible units, got {}..{}",
+                unit, to_unit
+            )));
+        };
+        let step = if to >= from {
+            Number::from(1)
+        } else {
+            Number::from(-1)
+        };
+        let to = if inclusive { to + step.clone() } else { to };
+        Ok(ValueRange {
+            from,
+            to,
+            step,
+            unit,
+        })
+    }
+}
+
+impl Iterator for ValueRange {
+    type Item = Value;
+    fn next(&mut self) -> Option<Value> {
+        if self.from.partial_cmp(&self.to)
+            == Number::from(0).partial_cmp(&self.step)
+        {
+            let result =
+                Value::Numeric(self.from.clone(), self.unit.clone(), false);
+            self.from = self.from.clone() + self.step.clone();
+            Some(result)
+        } else {
+            None
         }
     }
 }

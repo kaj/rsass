@@ -169,6 +169,14 @@ impl Mul<isize> for NumValue {
     }
 }
 
+impl Mul for Number {
+    type Output = Number;
+    fn mul(mut self, rhs: Self) -> Self {
+        self.value = self.value * rhs.value;
+        self
+    }
+}
+
 impl Rem for NumValue {
     type Output = NumValue;
     fn rem(self, rhs: Self) -> NumValue {
@@ -291,6 +299,16 @@ impl One for NumValue {
         NumValue::Rational(One::one())
     }
 }
+impl One for Number {
+    fn one() -> Number {
+        Number {
+            value: NumValue::one(),
+            plus_sign: false,
+            lead_zero: false,
+        }
+    }
+}
+
 impl Zero for NumValue {
     fn zero() -> NumValue {
         NumValue::Rational(Zero::zero())

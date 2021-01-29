@@ -117,6 +117,14 @@ impl Value {
         }
     }
 
+    pub fn numeric_value(self) -> Option<(Number, Unit)> {
+        if let Value::Numeric(num, unit, ..) = self {
+            Some((num, unit))
+        } else {
+            None
+        }
+    }
+
     pub fn integer_value(&self) -> Result<isize, Error> {
         match self {
             &Value::Numeric(ref num, ..) if num.is_integer() => num

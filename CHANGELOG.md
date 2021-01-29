@@ -24,6 +24,7 @@ project adheres to
   `FileContext`, PR #85.
 * Support the `@use name as *` syntax, PR #84.
 * Make `Error::BadValue` a little closer to whats expected.
+* Handle units in `@for` loops.
 * Update `nom` to 6.0, PR #83.
 * Update `rand` to 0.8, PR #86.
 * Testing is now done with github actions rather than travis

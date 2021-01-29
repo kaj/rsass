@@ -68,7 +68,6 @@ mod test_for {
         // Ignoring "unit_coersion_to_float", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn exclusive_backward() {
         assert_eq!(
             rsass(
@@ -107,7 +106,6 @@ mod test_for {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn inclusive_backward() {
         assert_eq!(
             rsass(
@@ -188,7 +186,6 @@ mod test_for {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positive_to_negative() {
         assert_eq!(
             rsass(
@@ -247,7 +244,6 @@ mod test_for {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn compatible() {
             assert_eq!(
                 rsass(
@@ -289,7 +285,6 @@ mod test_for {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn same() {
             assert_eq!(
                 rsass(
@@ -310,7 +305,6 @@ mod test_for {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn to_unitless() {
             assert_eq!(
                 rsass(
