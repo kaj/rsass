@@ -15,7 +15,7 @@ project adheres to
   to 1.44.0.  Also, the dependency is technically exposed.
 * `sass::Item::Use` was modified by #84.
 * `compile_scss_file` is renamed to `compile_scss_path`, and
-  `FileContext` is now a trait, the default inmplementation is renamed
+  `FileContext` is now a trait, the default implementation is renamed
   to `FsFileContext` by #85.
 
 ### Improvements
@@ -28,7 +28,7 @@ project adheres to
 * Update `rand` to 0.8, PR #86.
 * Testing is now done with github actions rather than travis
   (Appveyor remains for window builds).
-* sass-spec test suite updated to 2021-01-13.
+* sass-spec test suite updated to 2021-01-20.
 
 Thanks to @paolobarbolini and @alvra for code contributions.
 

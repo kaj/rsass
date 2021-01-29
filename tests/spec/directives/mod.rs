@@ -64,6 +64,8 @@ mod test_for {
         // Ignoring "to_float", error tests are not supported yet.
 
         // Ignoring "to_type", error tests are not supported yet.
+
+        // Ignoring "unit_coersion_to_float", error tests are not supported yet.
     }
     #[test]
     #[ignore] // wrong result
@@ -240,6 +242,94 @@ mod test_for {
         \n}\
         \n"
     );
+    }
+    mod unit {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        #[ignore] // wrong result
+        fn compatible() {
+            assert_eq!(
+                rsass(
+                    "a {\
+            \n  @for $i from 5mm through 1cm {b: $i;}\
+            \n}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: 5mm;\
+        \n  b: 6mm;\
+        \n  b: 7mm;\
+        \n  b: 8mm;\
+        \n  b: 9mm;\
+        \n  b: 10mm;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn from_unitless() {
+            assert_eq!(
+                rsass(
+                    "a {\
+            \n  @for $i from 1 through 5px {b: $i;}\
+            \n}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: 1;\
+        \n  b: 2;\
+        \n  b: 3;\
+        \n  b: 4;\
+        \n  b: 5;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn same() {
+            assert_eq!(
+                rsass(
+                    "a {\
+            \n  @for $i from 1px through 5px {b: $i;}\
+            \n}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: 1px;\
+        \n  b: 2px;\
+        \n  b: 3px;\
+        \n  b: 4px;\
+        \n  b: 5px;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn to_unitless() {
+            assert_eq!(
+                rsass(
+                    "a {\
+            \n  @for $i from 1px through 5 {b: $i;}\
+            \n}\
+            \n"
+                )
+                .unwrap(),
+                "a {\
+        \n  b: 1px;\
+        \n  b: 2px;\
+        \n  b: 3px;\
+        \n  b: 4px;\
+        \n  b: 5px;\
+        \n}\
+        \n"
+            );
+        }
     }
 }
 

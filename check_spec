@@ -62,6 +62,6 @@ case "$1" in
 	cargo run --release --features=spectest --bin=spectest && cargo fmt
 	;;
     *)
-        check $1 | list_fails
+        check $1
 	;;
 esac
