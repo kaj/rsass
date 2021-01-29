@@ -2298,7 +2298,6 @@ mod sin {
         // Ignoring "zero_args", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn grad() {
         assert_eq!(
             rsass(
@@ -2655,7 +2654,6 @@ mod tan {
         // Ignoring "zero_args", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn grad() {
         assert_eq!(
             rsass(

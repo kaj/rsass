@@ -7,6 +7,11 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+* Improve trigonomeric precision by using f64 π rather than rational.
+
+
 ## Release 0.17.0 - 2021-01-29
 
 Progress: 2784 of 5936 tests passed in dart-sass compatiblilty mode.

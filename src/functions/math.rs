@@ -23,13 +23,13 @@ pub fn create_module() -> Module {
         let (mut num, mut u) = get_numeric(s, "number")?;
         let (max_v, max_u) = get_numeric(s, "max")?;
         if let Some(scale) = max_u.scale_to(&u) {
-            if num >= &max_v * &scale {
+            if num.value >= &max_v.value * &scale {
                 num = max_v;
                 u = max_u;
             }
         }
         if let Some(scale) = min_u.scale_to(&u) {
-            if num <= &min_v * &scale {
+            if num.value <= &min_v.value * &scale {
                 num = min_v;
                 u = min_u;
             }

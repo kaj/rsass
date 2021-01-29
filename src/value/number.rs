@@ -1,8 +1,9 @@
 use crate::output::{Format, Formatted};
 use num_bigint::BigInt;
 use num_integer::Integer;
-use num_rational::Ratio;
+use num_rational::{Ratio, Rational};
 use num_traits::{One, Signed, Zero};
+use std::borrow::Borrow;
 use std::cmp::Ordering;
 use std::convert::TryFrom;
 use std::fmt::{self, Write};
@@ -49,6 +50,9 @@ impl From<f64> for NumValue {
 }
 
 impl NumValue {
+    pub fn rational(nom: isize, denom: isize) -> Self {
+        NumValue::Rational(Rational::new(nom, denom))
+    }
     pub fn abs(&self) -> Self {
         match self {
             NumValue::Rational(s) => s.abs().into(),
@@ -122,10 +126,10 @@ impl Mul for NumValue {
         &self * &rhs
     }
 }
-impl Mul for &NumValue {
+impl<RHS: Borrow<NumValue>> Mul<RHS> for &NumValue {
     type Output = NumValue;
-    fn mul(self, rhs: Self) -> NumValue {
-        match (self, rhs) {
+    fn mul(self, rhs: RHS) -> NumValue {
+        match (self, rhs.borrow()) {
             (NumValue::Rational(s), NumValue::Rational(r)) => (s * r).into(),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
                 (biggen(s) * r).into()
@@ -174,6 +178,21 @@ impl Mul for Number {
     fn mul(mut self, rhs: Self) -> Self {
         self.value = self.value * rhs.value;
         self
+    }
+}
+impl<RHS: Borrow<NumValue>> Mul<RHS> for Number {
+    type Output = Number;
+    fn mul(mut self, rhs: RHS) -> Self {
+        self.value = &self.value * rhs.borrow();
+        self
+    }
+}
+impl<RHS: Borrow<NumValue>> Mul<RHS> for &Number {
+    type Output = Number;
+    fn mul(self, rhs: RHS) -> Number {
+        let mut result = self.to_owned();
+        result.value = &result.value * rhs.borrow();
+        result
     }
 }
 
@@ -344,11 +363,8 @@ impl NumValue {
             NumValue::Float(r) => r.round().into(),
         }
     }
-}
-
-impl Number {
-    pub fn as_ratio(&self) -> Result<Ratio<isize>, crate::Error> {
-        match &self.value {
+    pub fn as_ratio(&self) -> Result<Rational, crate::Error> {
+        match self {
             NumValue::Rational(r) => Ok(*r),
             NumValue::BigRational(r) => {
                 let mut numer = r.numer().clone();
@@ -371,6 +387,12 @@ impl Number {
             NumValue::Float(r) => Ratio::approximate_float(*r)
                 .ok_or_else(|| crate::Error::BadValue(r.to_string())),
         }
+    }
+}
+
+impl Number {
+    pub fn as_ratio(&self) -> Result<Rational, crate::Error> {
+        self.value.as_ratio()
     }
 
     /// Computes the absolute value of the number, retaining the flags.
