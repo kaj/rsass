@@ -206,7 +206,6 @@ mod base_greater_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -222,7 +221,6 @@ mod base_greater_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
@@ -246,7 +244,6 @@ mod base_greater_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -262,7 +259,6 @@ mod base_greater_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
