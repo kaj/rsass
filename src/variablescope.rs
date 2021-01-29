@@ -338,7 +338,7 @@ impl Scope for GlobalScope {
         self.modules.lock().unwrap().insert(name.into(), module);
     }
     fn get_module(&self, name: &str) -> Option<&Module> {
-        self.modules.lock().unwrap().get(name).map(|m| *m)
+        self.modules.lock().unwrap().get(name).copied()
     }
     fn get_format(&self) -> Format {
         self.format

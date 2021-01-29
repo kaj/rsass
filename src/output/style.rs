@@ -835,7 +835,7 @@ fn do_use(
         }
         Ok(())
     } else {
-        Err(Error::S(format!("Module {:?} not found", name).into()))
+        Err(Error::S(format!("Module {:?} not found", name)))
     }
 }
 

@@ -99,10 +99,7 @@ impl Value {
 
     /// All values other than `False` and `Null` should be considered true.
     pub fn is_true(&self) -> bool {
-        match *self {
-            Value::False | Value::Null => false,
-            _ => true,
-        }
+        !matches!(self, Value::False | Value::Null)
     }
 
     pub fn is_null(&self) -> bool {
@@ -148,21 +145,8 @@ impl Value {
                         let mut got_num = false;
                         let nextchar = loop {
                             match iter.peek() {
-                                Some(&c) if (c >= '0' && c <= '9') => {
-                                    val =
-                                        val * 10 + u32::from(c as u8 - b'0');
-                                    got_num = true;
-                                    iter.next();
-                                }
-                                Some(&c) if (c >= 'a' && c <= 'f') => {
-                                    val = val * 10
-                                        + u32::from(c as u8 - b'a' + 10);
-                                    got_num = true;
-                                    iter.next();
-                                }
-                                Some(&c) if (c >= 'A' && c <= 'F') => {
-                                    val = val * 10
-                                        + u32::from(c as u8 - b'A' + 10);
+                                Some(&c) if c.is_ascii_hexdigit() => {
+                                    val = val * 10 + u32::from(hexvalue(c));
                                     got_num = true;
                                     iter.next();
                                 }
@@ -245,6 +229,18 @@ impl Value {
             value: self,
             format,
         }
+    }
+}
+
+fn hexvalue(c: char) -> u8 {
+    if ('0'..='9').contains(&c) {
+        c as u8 - b'0'
+    } else if ('a'..='f').contains(&c) {
+        c as u8 - b'a' + 10
+    } else if ('A'..='F').contains(&c) {
+        c as u8 - b'A' + 10
+    } else {
+        0
     }
 }
 

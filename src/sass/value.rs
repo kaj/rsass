@@ -79,10 +79,7 @@ impl Value {
 
     /// All values other than `False` and `Null` should be considered true.
     pub fn is_true(&self) -> bool {
-        match *self {
-            Value::False | Value::Null => false,
-            _ => true,
-        }
+        !matches!(self, Value::False | Value::Null)
     }
 
     pub fn is_null(&self) -> bool {
@@ -208,10 +205,9 @@ impl Value {
                     (Operator::Minus, css::Value::Numeric(v, u, _)) => {
                         Ok(css::Value::Numeric(-&v, u, true))
                     }
-                    (Operator::Plus, css::Value::Numeric(v, u, _)) => {
-                        let mut num = v.clone();
-                        num.plus_sign = true;
-                        Ok(css::Value::Numeric(num, u, true))
+                    (Operator::Plus, css::Value::Numeric(mut v, u, _)) => {
+                        v.plus_sign = true;
+                        Ok(css::Value::Numeric(v, u, true))
                     }
                     (
                         Operator::Minus,

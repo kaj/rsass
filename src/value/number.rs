@@ -375,8 +375,8 @@ impl NumValue {
                     if let (Ok(n), Ok(d)) = (tn, td) {
                         return Ok(Ratio::new(n, d));
                     }
-                    numer = numer / 32;
-                    denom = denom / 32;
+                    numer /= 32;
+                    denom /= 32;
                     if denom.is_zero() {
                         return Err(crate::Error::BadValue(
                             "Number too large".into(),

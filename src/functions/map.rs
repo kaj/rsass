@@ -63,12 +63,11 @@ pub fn create_module() -> Module {
             Value::Null => Ok(map.contains_key(&s.get("key")?).into()),
             key => {
                 // Single key
-                let val = map.get(&s.get("key")?).cloned();
-                match val {
+                match map.get(&s.get("key")?) {
                     Some(Value::Map(m)) => Ok(m.contains_key(&key).into()),
-                    _ => return Ok(Value::Null),
+                    _ => Ok(Value::Null),
                 }
-            } //_ => (),
+            }
         }
     });
     def!(f, keys(map), |s| {

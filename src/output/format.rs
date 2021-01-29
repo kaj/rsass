@@ -12,9 +12,10 @@ pub struct Format {
 
 impl Format {
     pub fn introspect() -> Self {
-        let mut t = Self::default();
-        t.style = Style::Introspection;
-        t
+        Self {
+            style: Style::Introspection,
+            ..Default::default()
+        }
     }
     pub fn is_compressed(&self) -> bool {
         self.style == Style::Compressed

@@ -385,7 +385,7 @@ fn is_ext_str_char(c: &char) -> bool {
 }
 
 pub fn name(input: Span) -> IResult<Span, String> {
-    map_opt(
+    verify(
         fold_many0(
             alt((escaped_char, name_char)),
             String::new(),
@@ -394,7 +394,7 @@ pub fn name(input: Span) -> IResult<Span, String> {
                 s
             },
         ),
-        |s: String| if s != "" && s != "-" { Some(s) } else { None },
+        |s: &str| !s.is_empty() && s != "-",
     )(input)
 }
 
