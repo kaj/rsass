@@ -827,7 +827,9 @@ fn do_use(
                 for (name, function) in module.functions() {
                     scope.define_function(name, function.clone());
                 }
-                // FIXME: Also expose variables
+                for (name, value) in module.variables() {
+                    scope.define(name, value);
+                }
             }
             UseAs::Name(name) => {
                 let name = name.evaluate(scope)?.0;
