@@ -443,7 +443,6 @@ mod base_less_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -459,7 +458,6 @@ mod base_less_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
@@ -483,7 +481,6 @@ mod base_less_than_zero {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
                 fn infinity() {
                     assert_eq!(
                         rsass(
@@ -499,7 +496,6 @@ mod base_less_than_zero {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn negative_infinity() {
                     assert_eq!(
                         rsass(
@@ -840,7 +836,6 @@ mod base_negative_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_odd_integer() {
                 assert_eq!(
                     rsass(
@@ -1011,7 +1006,6 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative_odd_integer() {
             assert_eq!(
                 rsass(
@@ -1027,7 +1021,6 @@ mod base_negative_zero {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn negative_odd_integer_fuzzy() {
             assert_eq!(
                 rsass(

@@ -92,7 +92,7 @@ pub fn create_module() -> Module {
     def!(f, pow(base, exponent), |s| {
         let base = as_unitless(&s.get("base")?)?;
         let exponent = as_unitless(&s.get("exponent")?)?;
-        let result = if exponent.is_infinite() && base == 1.0 {
+        let result = if exponent.is_infinite() && base.abs() == 1.0 {
             f64::NAN
         } else {
             base.powf(exponent)

@@ -491,16 +491,20 @@ impl From<&NumValue> for f64 {
 }
 
 use std::convert::TryInto;
-fn ratio_to_float<T: TryInto<i32> + Div<isize, Output = T> + Clone>(
+fn ratio_to_float<
+    T: TryInto<i32> + Div<isize, Output = T> + Signed + Clone,
+>(
     val: &Ratio<T>,
 ) -> f64 {
-    let mut numer: T = val.numer().clone();
+    let numer: T = val.numer().clone();
+    let sign = f64::from(numer.signum().try_into().unwrap_or(1));
+    let mut numer = numer.abs();
     let mut denom: T = val.denom().clone();
     loop {
         let tn = numer.clone().try_into();
         let td = denom.clone().try_into();
         if let (Ok(n), Ok(d)) = (tn, td) {
-            return f64::from(n) / f64::from(d);
+            return sign * (f64::from(n) / f64::from(d));
         }
         numer = numer / 32;
         denom = denom / 32;

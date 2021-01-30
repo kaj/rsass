@@ -9,16 +9,17 @@ project adheres to
 
 ## Unreleased
 
-* Improve trigonomeric precision by using f64 π rather than rational.
+* Improve trigonometric precision by using f64 π rather than rational.
+* Handle more peculiarities with atan2, powf, infinities and negative zero.
 
 
 ## Release 0.17.0 - 2021-01-29
 
-Progress: 2784 of 5936 tests passed in dart-sass compatiblilty mode.
+Progress: 2784 of 5936 tests passed in dart-sass compatibility mode.
 
 ### Breaking changes
 
-* Update nom to 6.0 rasises the minimally supported compiler version
+* Update nom to 6.0 raises the minimally supported compiler version
   to 1.44.0.  Also, the dependency is technically exposed.
 * `sass::Item::Use` was modified by #84.
 * `compile_scss_file` is renamed to `compile_scss_path`, and
@@ -47,7 +48,7 @@ and 1.51.0-nightly (c0b64d97b 2021-01-28).
 
 ## Release 0.16.0 - 2020-11-10
 
-Progress: 2718 of 5840 tests passed in dart-sass compatiblilty mode.
+Progress: 2718 of 5840 tests passed in dart-sass compatibility mode.
 
 ### Breaking changes
 
@@ -68,9 +69,9 @@ Progress: 2718 of 5840 tests passed in dart-sass compatiblilty mode.
   located spans by [nom_locate](https://lib.rs/crates/nom_locate) in
   the parser.  A `sass::Item::Import` now handles where each file is
   imported from, to improve error reporting.
-* PR #81: Improved number handlig.  Now `Value::Number` handles both
+* PR #81: Improved number handling.  Now `Value::Number` handles both
   machine-sized rationals, bignum rationals and floats internally and
-  `Value::NumberBig` is removed.  Also, `Value` no longer implemnts
+  `Value::NumberBig` is removed.  Also, `Value` no longer implements
   `Ord` but only `PartialOrd`, to handle f64 NaN an infinite values
   correctly.
 * Improve parsing of `@else` clauses.
@@ -85,7 +86,7 @@ Tested with rustc 1.47.0 (18bf6b4f0 2020-10-07),
 
 ## Release 0.15.0 - 2020-10-25
 
-Progress: 2320 of 5577 tests passed in dart-sass compatiblilty mode.
+Progress: 2320 of 5577 tests passed in dart-sass compatibility mode.
 
 ### Breaking changes
 
@@ -100,7 +101,7 @@ Progress: 2320 of 5577 tests passed in dart-sass compatiblilty mode.
 
 * PR #79: Refactor some error handling.  Relates to #46.
 * Improve map parsing (a map is parsed as a plain vec of key/value
-  pairs, filterig duplicates happens only when it is evaluated).
+  pairs, filtering duplicates happens only when it is evaluated).
 * Allow multiple `&` items in the same selector.
 * `&` evaluates to null when used as a value without enclosing selector.
 * Implement the `@debug` directive.
@@ -121,7 +122,7 @@ Tested with rustc 1.47.0 (18bf6b4f0 2020-10-07),
 
 ## Release 0.14.2 - 2020-10-13
 
-Progress: 2294 of 5577 tests passed in dart-sass compatiblilty mode.
+Progress: 2294 of 5577 tests passed in dart-sass compatibility mode.
 
 * Some improvements in list handling, formatting and introspection.
 * Change default precision to 10, matching dart-sass.
@@ -143,17 +144,17 @@ Tested with rustc 1.47.0 (18bf6b4f0 2020-10-07),
 
 ## Release 0.14.0 - 2020-10-03
 
-Progress: 2234 of 5510 tests passed in dart-sass compatiblilty mode.
+Progress: 2234 of 5510 tests passed in dart-sass compatibility mode.
 
-* PR #76 and #78: Target dart-sass rather than libsass compatibilty.
+* PR #76 and #78: Target dart-sass rather than libsass compatibility.
   This sets the target when testing and changes some different
-  behaviour, including how strings are parsed and handled.
+  behavior, including how strings are parsed and handled.
 * PR #75 from @divergentdave: Parse and add `Value` variants for
   BigInt numbers
 * PR #77: Support `rgba(r g b / a)` and `hsla(h s l / a)` functions,
   i.e. the `channels` parameter with div-separated alpha channel.
 * Fix `@import` indention.
-* Improve function default argument parsing and dont panic in
+* Improve function default argument parsing and don't panic in
   `parse_value_data`.
 * Handle dictionary-ellipsis style call-by-varargs for functions.
 * PR #73 from @divergentdave: Remove three unwraps from escaped_char
@@ -175,7 +176,7 @@ Tested with rustc 1.46.0 (04488afe3 2020-08-24),
 
 ## Release 0.13.0 - 2020-04-19
 
-Progress: 1634 of 3502 tests passed in libsass compatiblilty mode.
+Progress: 1634 of 3502 tests passed in libsass compatibility mode.
 
 * output::Format wraps an output::Style and a precision.  The global
   precision setting is removed.

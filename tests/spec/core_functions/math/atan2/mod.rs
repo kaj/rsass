@@ -593,7 +593,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_finite() {
                 assert_eq!(
                     rsass(
@@ -609,7 +608,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -625,7 +623,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_zero() {
                 assert_eq!(
                     rsass(
@@ -641,7 +638,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_zero_fuzzy() {
                 assert_eq!(
                     rsass(
@@ -725,7 +721,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_finite() {
                 assert_eq!(
                     rsass(
@@ -741,7 +736,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_infinity() {
                 assert_eq!(
                     rsass(
@@ -757,7 +751,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_zero() {
                 assert_eq!(
                     rsass(
@@ -856,7 +849,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_zero() {
                 assert_eq!(
                     rsass(
@@ -872,7 +864,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_zero_fuzzy() {
                 assert_eq!(
                     rsass(
@@ -986,7 +977,6 @@ mod y_zero {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn negative_zero() {
                 assert_eq!(
                     rsass(

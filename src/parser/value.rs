@@ -312,7 +312,16 @@ fn number(input: Span) -> IResult<Span, Value> {
         |(sign, (lead_zero, num), unit)| {
             Value::Numeric(
                 Number {
-                    value: if sign == Some(b"-") { -num } else { num },
+                    value: if sign == Some(b"-") {
+                        if num.is_zero() {
+                            // Only f64-based NumValue can represent negative zero.
+                            (-0.0).into()
+                        } else {
+                            -num
+                        }
+                    } else {
+                        num
+                    },
                     plus_sign: sign == Some(b"+"),
                     lead_zero,
                 },
