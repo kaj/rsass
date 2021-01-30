@@ -112,7 +112,13 @@ pub fn create_module() -> Module {
         Ok(number(as_radians(&s.get("number")?)?.sin(), Unit::None))
     });
     def!(f, tan(number), |s| {
-        Ok(number(as_radians(&s.get("number")?)?.tan(), Unit::None))
+        let ans = as_radians(&s.get("number")?)?.tan();
+        let ans = if ans.abs() > 1e15 {
+            ans.signum() * f64::INFINITY
+        } else {
+            ans
+        };
+        Ok(number(ans, Unit::None))
     });
 
     def!(f, acos(number), |s| {

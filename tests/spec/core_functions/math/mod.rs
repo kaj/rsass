@@ -2610,7 +2610,6 @@ mod tan {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn radian() {
             assert_eq!(
                 rsass(
@@ -2702,7 +2701,6 @@ mod tan {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn radian() {
             assert_eq!(
                 rsass(
