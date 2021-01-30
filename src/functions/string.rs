@@ -159,8 +159,8 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(string: &Module, global: &mut Module) {
-    for (gname, lname) in &[
+pub fn expose(m: &Module, global: &mut Module) {
+    for &(gname, lname) in &[
         ("quote", "quote"),
         ("str_index", "index"),
         ("str_insert", "insert"),
@@ -171,7 +171,7 @@ pub fn expose(string: &Module, global: &mut Module) {
         ("unique_id", "unique_id"),
         ("unquote", "unquote"),
     ] {
-        global.insert_function(gname, string.get_function(lname).unwrap().clone());
+        global.insert_function(gname, m.get_function(lname).unwrap().clone());
     }
     // And special one that isn't part of the string module
     def!(global, url(string), |s| {

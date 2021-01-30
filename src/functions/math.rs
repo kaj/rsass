@@ -191,8 +191,8 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(math: &Module, global: &mut Module) {
-    for (gname, lname) in &[
+pub fn expose(m: &Module, global: &mut Module) {
+    for &(gname, lname) in &[
         // - - - Boundig Functions - - -
         ("ceil", "ceil"),
         ("floor", "floor"),
@@ -211,7 +211,7 @@ pub fn expose(math: &Module, global: &mut Module) {
         ("percentage", "percentage"),
         ("random", "random"),
     ] {
-        global.insert_function(gname, math.get_function(lname).unwrap().clone());
+        global.insert_function(gname, m.get_function(lname).unwrap().clone());
     }
 }
 

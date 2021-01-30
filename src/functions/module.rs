@@ -15,13 +15,17 @@ impl Module {
     pub fn new() -> Module {
         Default::default()
     }
+
     pub fn get_function(&self, name: &str) -> Option<&SassFunction> {
         self.functions.get(name)
     }
-    pub fn insert_function(&mut self, name: &'static str, function: SassFunction) {
+    pub fn insert_function<T>(&mut self, name: T, function: SassFunction)
+    where
+        T: Into<Key>,
+    {
         self.functions.insert(name.into(), function);
     }
-    pub fn functions(&self) -> impl Iterator<Item=(&str, &SassFunction)> {
+    pub fn functions(&self) -> impl Iterator<Item = (&str, &SassFunction)> {
         self.functions.iter().map(|(n, v)| (n.as_ref(), v))
     }
 
@@ -31,7 +35,7 @@ impl Module {
     pub fn set_variable<T: Into<Key>>(&mut self, name: T, value: Value) {
         self.variables.insert(name.into(), value);
     }
-    pub fn variables(&self) -> impl Iterator<Item=(&str, &Value)> {
+    pub fn variables(&self) -> impl Iterator<Item = (&str, &Value)> {
         self.variables.iter().map(|(n, v)| (n.as_ref(), v))
     }
 }

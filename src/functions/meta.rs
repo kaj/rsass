@@ -98,8 +98,8 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(meta: &Module, global: &mut Module) {
-    for (gname, lname) in &[
+pub fn expose(m: &Module, global: &mut Module) {
+    for &(gname, lname) in &[
         // - - - Mixins - - -
         ("call", "call"),
         ("content_exists", "content_exists"),
@@ -113,7 +113,7 @@ pub fn expose(meta: &Module, global: &mut Module) {
         ("type_of", "type_of"),
         ("variable_exists", "variable_exists"),
     ] {
-        global.insert_function(gname, meta.get_function(lname).unwrap().clone());
+        global.insert_function(gname, m.get_function(lname).unwrap().clone());
     }
 }
 

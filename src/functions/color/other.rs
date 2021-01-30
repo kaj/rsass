@@ -238,8 +238,8 @@ pub fn register(f: &mut Module) {
     });
 }
 
-pub fn expose(meta: &Module, global: &mut Module) {
-    for (gname, lname) in &[
+pub fn expose(m: &Module, global: &mut Module) {
+    for &(gname, lname) in &[
         ("adjust_color", "adjust"),
         ("alpha", "alpha"),
         ("opacity", "opacity"),
@@ -251,7 +251,7 @@ pub fn expose(meta: &Module, global: &mut Module) {
         ("transparentize", "_fade_out"),
         ("fade_out", "_fade_out"),
     ] {
-        global.insert_function(gname, meta.get_function(lname).unwrap().clone());
+        global.insert_function(gname, m.get_function(lname).unwrap().clone());
     }
 }
 
