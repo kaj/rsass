@@ -395,7 +395,16 @@ pub fn decimal_decimals_big(input: Span) -> IResult<Span, NumValue> {
 }
 
 pub fn variable(input: Span) -> IResult<Span, Value> {
-    map(preceded(tag("$"), name), Value::Variable)(input)
+    map(
+        pair(many0(terminated(name, tag("."))), preceded(tag("$"), name)),
+        |(modules, name)| {
+            if modules.is_empty() {
+                Value::Variable(name)
+            } else {
+                Value::Variable(format!("{}.{}", modules.join("."), name))
+            }
+        },
+    )(input)
 }
 
 fn hex_color(input: Span) -> IResult<Span, Value> {

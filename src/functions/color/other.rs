@@ -4,9 +4,8 @@ use crate::value::{Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
-use std::collections::BTreeMap;
 
-pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
+pub fn register(f: &mut Module) {
     def!(
         f,
         adjust(

@@ -824,9 +824,10 @@ fn do_use(
                 scope.define_module(name, module);
             }
             UseAs::Star => {
-                for (name, function) in module {
+                for (name, function) in module.functions() {
                     scope.define_function(name, function.clone());
                 }
+                // FIXME: Also expose variables
             }
             UseAs::Name(name) => {
                 let name = name.evaluate(scope)?.0;

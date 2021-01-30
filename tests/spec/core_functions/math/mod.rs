@@ -2610,7 +2610,7 @@ mod tan {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn radian() {
             assert_eq!(
                 rsass(
@@ -2702,7 +2702,7 @@ mod tan {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn radian() {
             assert_eq!(
                 rsass(
@@ -3070,7 +3070,6 @@ mod variables {
     #[allow(unused)]
     use super::rsass;
     #[test]
-    #[ignore] // unexepected error
     fn e() {
         assert_eq!(
             rsass(
@@ -3098,7 +3097,6 @@ mod variables {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn pi() {
         assert_eq!(
             rsass(

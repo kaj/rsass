@@ -223,6 +223,12 @@ impl Scope for ScopeImpl<'_> {
     }
     fn get_or_none(&self, name: &str) -> Option<Value> {
         let name = name.replace('-', "_");
+        let mut t = name.splitn(2, '.');
+        if let (Some(modulename), Some(name)) = (t.next(), t.next()) {
+            if let Some(module) = self.get_module(modulename) {
+                return module.get_variable(&name).cloned();
+            }
+        }
         self.variables
             .get(&name)
             .cloned()

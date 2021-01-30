@@ -8,6 +8,7 @@ use std::{cmp, fmt};
 
 #[macro_use]
 mod macros;
+mod module;
 
 mod color;
 mod list;
@@ -16,6 +17,8 @@ mod math;
 mod meta;
 mod selector;
 mod string;
+
+pub use module::Module;
 
 pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
     let name = name.replace("-", "_");
@@ -125,8 +128,6 @@ impl SassFunction {
     }
 }
 
-pub type Module = BTreeMap<&'static str, SassFunction>;
-
 lazy_static! {
     static ref MODULES: BTreeMap<&'static str, Module> = {
         let mut modules = BTreeMap::new();
@@ -146,8 +147,8 @@ pub fn get_global_module(name: &str) -> Option<&'static Module> {
 }
 
 lazy_static! {
-    static ref FUNCTIONS: BTreeMap<&'static str, SassFunction> = {
-        let mut f = BTreeMap::new();
+    static ref FUNCTIONS: Module = {
+        let mut f = Module::new();
         def!(f, if(condition, if_true, if_false), |s| {
             if s.get("condition")?.is_true() {
                 Ok(s.get("if_true")?)

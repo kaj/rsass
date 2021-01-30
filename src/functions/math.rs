@@ -4,6 +4,7 @@ use crate::value::{Number, Quotes, Unit};
 use num_rational::Rational;
 use rand::{thread_rng, Rng};
 use std::cmp::Ordering;
+use std::f64::consts::{E, PI};
 
 /// Create the `sass:math` standard module.
 ///
@@ -184,6 +185,9 @@ pub fn create_module() -> Module {
         }
         v => Err(Error::badarg("number or null", &v)),
     });
+
+    f.set_variable("pi", number(PI, Unit::None));
+    f.set_variable("e", number(E, Unit::None));
     f
 }
 
