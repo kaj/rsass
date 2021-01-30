@@ -29,7 +29,7 @@ macro_rules! func_va {
 }
 macro_rules! def {
     ($f:expr, $name:ident( $($arg:ident$(=$val:expr)* ),* ), $body:expr) => {
-        $f.insert(
+        $f.insert_function(
             stringify!($name),
             func!(($($arg $( = $val )* ),*), $body),
         )
@@ -37,7 +37,7 @@ macro_rules! def {
 }
 macro_rules! def_va {
     ($f:expr, $name:ident( $($arg:ident$(=$value:expr)* ),*), $body:expr) => {
-        $f.insert(stringify!($name),
+        $f.insert_function(stringify!($name),
                   func_va!(($($arg $( = $value )* ),*), $body))
     }
 }

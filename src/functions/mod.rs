@@ -22,8 +22,7 @@ pub use module::Module;
 
 pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
     let name = name.replace("-", "_");
-    let name: &str = &name;
-    FUNCTIONS.get(name)
+    FUNCTIONS.get_function(name.as_ref())
 }
 
 type BuiltinFn =
@@ -187,7 +186,7 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     use crate::variablescope::GlobalScope;
     let scope = GlobalScope::new(Default::default());
     assert_eq!(
-        FUNCTIONS.get("rgb").unwrap().call(
+        FUNCTIONS.get_function("rgb").unwrap().call(
             &scope,
             &call_args(code_span(b"(17, 0, 225)"))?
                 .1

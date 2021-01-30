@@ -168,7 +168,7 @@ pub fn expose(meta: &Module, global: &mut Module) {
         ("saturate", "_saturate"),
         ("saturation", "saturation"),
     ] {
-        global.insert(gname, meta.get(lname).unwrap().clone());
+        global.insert_function(gname, meta.get_function(lname).unwrap().clone());
     }
 }
 

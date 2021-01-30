@@ -133,7 +133,7 @@ pub fn expose(map: &Module, global: &mut Module) {
         ("map_remove", "remove"),
         ("map_values", "values"),
     ] {
-        global.insert(gname, map.get(lname).unwrap().clone());
+        global.insert_function(gname, map.get_function(lname).unwrap().clone());
     }
 }
 

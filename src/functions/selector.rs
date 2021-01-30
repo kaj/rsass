@@ -70,7 +70,7 @@ pub fn expose(meta: &Module, global: &mut Module) {
         //("selector_unify", "unify"),
         //("simple_selectors", "simple_selectors"),
     ] {
-        global.insert(gname, meta.get(lname).unwrap().clone());
+        global.insert_function(gname, meta.get_function(lname).unwrap().clone());
     }
 }
 

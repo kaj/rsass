@@ -151,7 +151,7 @@ pub fn register(f: &mut Module) {
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
     }
-    f.insert("_opacify", func2!(fade_in(color, amount)));
+    f.insert_function("_opacify", func2!(fade_in(color, amount)));
 
     fn fade_out(color: Value, amount: Value) -> Result<Value, Error> {
         match (color, amount) {
@@ -162,7 +162,7 @@ pub fn register(f: &mut Module) {
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
     }
-    f.insert("_fade_out", func2!(fade_out(color, amount)));
+    f.insert_function("_fade_out", func2!(fade_out(color, amount)));
 
     def!(
         f,
@@ -251,7 +251,7 @@ pub fn expose(meta: &Module, global: &mut Module) {
         ("transparentize", "_fade_out"),
         ("fade_out", "_fade_out"),
     ] {
-        global.insert(gname, meta.get(lname).unwrap().clone());
+        global.insert_function(gname, meta.get_function(lname).unwrap().clone());
     }
 }
 

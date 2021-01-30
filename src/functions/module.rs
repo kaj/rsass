@@ -15,12 +15,10 @@ impl Module {
     pub fn new() -> Module {
         Default::default()
     }
-    // FIXME: Rename to get_function
-    pub fn get(&self, name: &str) -> Option<&SassFunction> {
+    pub fn get_function(&self, name: &str) -> Option<&SassFunction> {
         self.functions.get(name)
     }
-    // FIXME: Rename to insert_function
-    pub fn insert(&mut self, name: &'static str, function: SassFunction) {
+    pub fn insert_function(&mut self, name: &'static str, function: SassFunction) {
         self.functions.insert(name.into(), function);
     }
     pub fn functions(&self) -> impl Iterator<Item=(&str, &SassFunction)> {

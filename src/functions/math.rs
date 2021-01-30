@@ -211,7 +211,7 @@ pub fn expose(math: &Module, global: &mut Module) {
         ("percentage", "percentage"),
         ("random", "random"),
     ] {
-        global.insert(gname, math.get(lname).unwrap().clone());
+        global.insert_function(gname, math.get_function(lname).unwrap().clone());
     }
 }
 

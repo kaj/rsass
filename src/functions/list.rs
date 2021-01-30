@@ -173,7 +173,7 @@ pub fn expose(list: &Module, global: &mut Module) {
         ("set_nth", "set_nth"),
         ("zip", "zip"),
     ] {
-        global.insert(gname, list.get(lname).unwrap().clone());
+        global.insert_function(gname, list.get_function(lname).unwrap().clone());
     }
 }
 

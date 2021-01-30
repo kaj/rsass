@@ -160,22 +160,19 @@ pub fn create_module() -> Module {
 }
 
 pub fn expose(string: &Module, global: &mut Module) {
-    global.insert("quote", string.get("quote").unwrap().clone());
-    global.insert("str_index", string.get("index").unwrap().clone());
-    global.insert("str_insert", string.get("insert").unwrap().clone());
-    global.insert("str_length", string.get("length").unwrap().clone());
-    global.insert("str_slice", string.get("slice").unwrap().clone());
-    global.insert(
-        "to_upper_case",
-        string.get("to_upper_case").unwrap().clone(),
-    );
-    global.insert(
-        "to_lower_case",
-        string.get("to_lower_case").unwrap().clone(),
-    );
-    global.insert("unique_id", string.get("unique_id").unwrap().clone());
-    global.insert("unquote", string.get("unquote").unwrap().clone());
-
+    for (gname, lname) in &[
+        ("quote", "quote"),
+        ("str_index", "index"),
+        ("str_insert", "insert"),
+        ("str_length", "length"),
+        ("str_slice", "slice"),
+        ("to_upper_case", "to_upper_case"),
+        ("to_lower_case", "to_lower_case"),
+        ("unique_id", "unique_id"),
+        ("unquote", "unquote"),
+    ] {
+        global.insert_function(gname, string.get_function(lname).unwrap().clone());
+    }
     // And special one that isn't part of the string module
     def!(global, url(string), |s| {
         Ok(Value::Literal(

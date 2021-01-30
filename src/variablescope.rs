@@ -268,7 +268,7 @@ impl Scope for ScopeImpl<'_> {
         let mut t = name.splitn(2, '.');
         if let (Some(modulename), Some(name)) = (t.next(), t.next()) {
             if let Some(module) = self.get_module(modulename) {
-                if let Some(f) = module.get(&name).cloned() {
+                if let Some(f) = module.get_function(&name).cloned() {
                     return Some(f.call(self, args));
                 }
             }
