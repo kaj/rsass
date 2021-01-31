@@ -1,4 +1,5 @@
 use crate::error::Error;
+use crate::sass::Name;
 use crate::variablescope::Scope;
 use crate::{css, sass};
 use lazy_static::lazy_static;
@@ -8,6 +9,7 @@ use std::{cmp, fmt};
 
 #[macro_use]
 mod macros;
+mod module;
 
 mod color;
 mod list;
@@ -17,10 +19,10 @@ mod meta;
 mod selector;
 mod string;
 
-pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
-    let name = name.replace("-", "_");
-    let name: &str = &name;
-    FUNCTIONS.get(name)
+pub use module::Module;
+
+pub fn get_builtin_function(name: &Name) -> Option<&'static SassFunction> {
+    FUNCTIONS.get_function(name)
 }
 
 type BuiltinFn =
@@ -90,7 +92,7 @@ impl fmt::Debug for FuncImpl {
 impl SassFunction {
     /// Create a new `SassFunction` from a rust implementation.
     pub fn builtin(
-        args: Vec<(String, sass::Value)>,
+        args: Vec<(Name, sass::Value)>,
         is_varargs: bool,
         body: Arc<BuiltinFn>,
     ) -> Self {
@@ -125,8 +127,6 @@ impl SassFunction {
     }
 }
 
-pub type Module = BTreeMap<&'static str, SassFunction>;
-
 lazy_static! {
     static ref MODULES: BTreeMap<&'static str, Module> = {
         let mut modules = BTreeMap::new();
@@ -146,8 +146,8 @@ pub fn get_global_module(name: &str) -> Option<&'static Module> {
 }
 
 lazy_static! {
-    static ref FUNCTIONS: BTreeMap<&'static str, SassFunction> = {
-        let mut f = BTreeMap::new();
+    static ref FUNCTIONS: Module = {
+        let mut f = Module::new();
         def!(f, if(condition, if_true, if_false), |s| {
             if s.get("condition")?.is_true() {
                 Ok(s.get("if_true")?)
@@ -186,7 +186,7 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     use crate::variablescope::GlobalScope;
     let scope = GlobalScope::new(Default::default());
     assert_eq!(
-        FUNCTIONS.get("rgb").unwrap().call(
+        FUNCTIONS.get_function(&name!(rgb)).unwrap().call(
             &scope,
             &call_args(code_span(b"(17, 0, 225)"))?
                 .1

@@ -4,6 +4,7 @@ use crate::value::{Number, Quotes, Unit};
 use num_rational::Rational;
 use rand::{thread_rng, Rng};
 use std::cmp::Ordering;
+use std::f64::consts::{E, PI};
 
 /// Create the `sass:math` standard module.
 ///
@@ -111,7 +112,13 @@ pub fn create_module() -> Module {
         Ok(number(as_radians(&s.get("number")?)?.sin(), Unit::None))
     });
     def!(f, tan(number), |s| {
-        Ok(number(as_radians(&s.get("number")?)?.tan(), Unit::None))
+        let ans = as_radians(&s.get("number")?)?.tan();
+        let ans = if ans.abs() > 1e15 {
+            ans.signum() * f64::INFINITY
+        } else {
+            ans
+        };
+        Ok(number(ans, Unit::None))
     });
 
     def!(f, acos(number), |s| {
@@ -184,11 +191,14 @@ pub fn create_module() -> Module {
         }
         v => Err(Error::badarg("number or null", &v)),
     });
+
+    f.set_variable(name!(pi), number(PI, Unit::None));
+    f.set_variable(name!(e), number(E, Unit::None));
     f
 }
 
-pub fn expose(math: &Module, global: &mut Module) {
-    for (gname, lname) in &[
+pub fn expose(m: &Module, global: &mut Module) {
+    for &(gname, lname) in &[
         // - - - Boundig Functions - - -
         ("ceil", "ceil"),
         ("floor", "floor"),
@@ -207,7 +217,7 @@ pub fn expose(math: &Module, global: &mut Module) {
         ("percentage", "percentage"),
         ("random", "random"),
     ] {
-        global.insert(gname, math.get(lname).unwrap().clone());
+        global.expose(gname, m, lname);
     }
 }
 

@@ -1,3 +1,4 @@
+use rsass::sass::Name;
 use rsass::*;
 use std::sync::Arc;
 
@@ -9,7 +10,7 @@ fn simple_value() {
         precision: 5,
     };
     let mut scope = GlobalScope::new(format);
-    scope.define("color", &css::Value::black());
+    scope.define(Name::from_static("color"), &css::Value::black());
     let file_context = FsFileContext::new();
     assert_eq!(
         format
@@ -28,7 +29,7 @@ fn simple_function() {
     };
     let mut scope = GlobalScope::new(format);
     scope.define_function(
-        "get_answer",
+        Name::from_static("get_answer"),
         SassFunction::builtin(
             vec![],
             false,
@@ -55,7 +56,7 @@ fn avg(a: Number, b: Number) -> Number {
 fn function_with_args() {
     let mut scope = GlobalScope::new(Default::default());
     scope.define_function(
-        "halfway",
+        Name::from_static("halfway"),
         SassFunction::builtin(
             vec![
                 ("a".into(), sass::Value::Null),

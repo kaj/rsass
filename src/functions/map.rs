@@ -124,8 +124,8 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(map: &Module, global: &mut Module) {
-    for (gname, lname) in &[
+pub fn expose(m: &Module, global: &mut Module) {
+    for &(gname, lname) in &[
         ("map_get", "get"),
         ("map_has_key", "has_key"),
         ("map_keys", "keys"),
@@ -133,7 +133,7 @@ pub fn expose(map: &Module, global: &mut Module) {
         ("map_remove", "remove"),
         ("map_values", "values"),
     ] {
-        global.insert(gname, map.get(lname).unwrap().clone());
+        global.expose(gname, m, lname);
     }
 }
 

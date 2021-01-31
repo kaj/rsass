@@ -1,13 +1,12 @@
 use super::hsl::{percentage, to_rational2, to_rational_percent};
 use super::rgb::values_from_list;
-use super::{Error, SassFunction};
+use super::{Error, Module, SassFunction};
 use crate::css::Value;
 use crate::value::{NumValue, Rgba, Unit};
 use num_rational::Rational;
 use num_traits::One;
-use std::collections::BTreeMap;
 
-pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
+pub fn register(f: &mut Module) {
     def!(f, hwb(hue, whiteness, blackness, alpha, channels), |s| {
         let (hue, w, b, a) = match s.get("hue")? {
             Value::List(vec, s, p) => values_from_list(&vec)

@@ -5,7 +5,6 @@ use crate::value::{Number, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Zero};
-use std::collections::BTreeMap;
 
 fn do_hsla(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
@@ -46,7 +45,7 @@ fn hsla_from_values(
     Some(Rgba::from_hsla(h, s, l, a).into())
 }
 
-pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
+pub fn register(f: &mut Module) {
     def!(f, _hsl(hue, saturation, lightness, alpha, channels), |s| {
         do_hsla("hsl", s)
     });
@@ -154,8 +153,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
 }
 
-pub fn expose(meta: &Module, global: &mut Module) {
-    for (gname, lname) in &[
+pub fn expose(m: &Module, global: &mut Module) {
+    for &(gname, lname) in &[
         ("hsl", "_hsl"),
         ("hsla", "_hsla"),
         ("adjust_hue", "_adjust_hue"),
@@ -169,7 +168,7 @@ pub fn expose(meta: &Module, global: &mut Module) {
         ("saturate", "_saturate"),
         ("saturation", "saturation"),
     ] {
-        global.insert(gname, meta.get(lname).unwrap().clone());
+        global.expose(gname, m, lname);
     }
 }
 

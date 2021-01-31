@@ -4,7 +4,6 @@ use crate::value::{ListSeparator, Number, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Zero};
-use std::collections::BTreeMap;
 
 fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
@@ -108,7 +107,7 @@ pub fn preserve_call(
     )
 }
 
-pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
+pub fn register(f: &mut Module) {
     def!(f, _rgb(red, green, blue, alpha, color, channels), |s| {
         do_rgba("rgb", s)
     });
@@ -197,8 +196,8 @@ pub fn register(f: &mut BTreeMap<&'static str, SassFunction>) {
     });
 }
 
-pub fn expose(meta: &Module, global: &mut Module) {
-    for (gname, lname) in &[
+pub fn expose(m: &Module, global: &mut Module) {
+    for &(gname, lname) in &[
         ("rgb", "_rgb"),
         ("rgba", "_rgba"),
         ("blue", "blue"),
@@ -207,7 +206,7 @@ pub fn expose(meta: &Module, global: &mut Module) {
         ("mix", "mix"),
         ("red", "red"),
     ] {
-        global.insert(gname, meta.get(lname).unwrap().clone());
+        global.expose(gname, m, lname);
     }
 }
 

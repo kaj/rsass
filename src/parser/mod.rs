@@ -33,7 +33,7 @@ use self::value::{
 use crate::functions::SassFunction;
 #[cfg(test)]
 use crate::sass::{CallArgs, FormalArgs};
-use crate::sass::{Item, UseAs, Value};
+use crate::sass::{Item, Name, UseAs, Value};
 use crate::selectors::Selectors;
 use crate::value::ListSeparator;
 #[cfg(test)]
@@ -461,7 +461,7 @@ fn if_statement2(input: Span) -> IResult<Span, Item> {
 fn each_loop2(input: Span) -> IResult<Span, Item> {
     let (input, names) = separated_list1(
         delimited(opt_spacelike, tag(","), opt_spacelike),
-        preceded(tag("$"), name),
+        map(preceded(tag("$"), name), Name::from),
     )(input)?;
     let (input, values) = delimited(
         delimited(spacelike, tag("in"), spacelike),
@@ -489,7 +489,7 @@ fn for_loop2(input: Span) -> IResult<Span, Item> {
     Ok((
         input,
         Item::For {
-            name,
+            name: name.into(),
             from: Box::new(from),
             to: Box::new(to),
             inclusive,

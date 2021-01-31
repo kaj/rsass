@@ -3,7 +3,7 @@
 use crate::css::{self, Value};
 use crate::functions::{get_builtin_function, Module, SassFunction};
 use crate::output::Format;
-use crate::sass::{self, Item};
+use crate::sass::{self, Item, Name};
 use crate::selectors::Selectors;
 use crate::Error;
 use std::collections::BTreeMap;
@@ -19,17 +19,25 @@ pub trait Scope {
     /// Define a variable with a value.
     ///
     /// The `$` sign is not included in `name`.
-    fn define(&mut self, name: &str, val: &Value);
-    fn define_default(&mut self, name: &str, val: &Value, global: bool);
+    fn set_variable(
+        &mut self,
+        name: Name,
+        val: Value,
+        default: bool,
+        global: bool,
+    );
+    fn define(&mut self, name: Name, val: &Value) {
+        self.set_variable(name, val.clone(), false, false)
+    }
     /// Define a variable in the global scope that is an ultimate
     /// parent of this scope.
-    fn define_global(&self, name: &str, val: &Value);
+    fn define_global(&self, name: Name, val: Value);
 
     /// Define multiple names from a value that is a list.
     /// Special case: in names is a single name, value is used directly.
-    fn define_multi(&mut self, names: &[String], value: &Value) {
+    fn define_multi(&mut self, names: &[Name], value: &Value) {
         if names.len() == 1 {
-            self.define(&names[0], &value);
+            self.define(names[0].clone(), &value);
         } else {
             let values = value.clone().iter_items();
             if values.len() > names.len() {
@@ -41,7 +49,10 @@ pub trait Scope {
             } else {
                 let mut values = values.iter();
                 for name in names {
-                    self.define(name, &values.next().unwrap_or(&Value::Null))
+                    self.define(
+                        name.clone(),
+                        &values.next().unwrap_or(&Value::Null),
+                    )
                 }
             }
         }
@@ -50,21 +61,15 @@ pub trait Scope {
     fn get_format(&self) -> Format;
 
     /// Get the Value for a variable.
-    fn get_or_none(&self, name: &str) -> Option<Value>;
+    fn get_or_none(&self, name: &Name) -> Option<Value>;
     fn get(&self, name: &str) -> Result<Value, Error> {
-        match self.get_or_none(name) {
+        match self.get_or_none(&name.into()) {
             Some(value) => Ok(value),
             None => Err(Error::undefined_variable(name)),
         }
     }
 
-    fn get_global_or_none(&self, name: &str) -> Option<Value>;
-    fn get_global(&self, name: &str) -> Result<Value, Error> {
-        match self.get_global_or_none(name) {
-            Some(value) => Ok(value),
-            None => Err(Error::undefined_variable(name)),
-        }
-    }
+    fn get_global_or_none(&self, name: &Name) -> Option<Value>;
 
     fn define_mixin(
         &mut self,
@@ -74,11 +79,11 @@ pub trait Scope {
     );
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)>;
 
-    fn define_function(&mut self, name: &str, func: SassFunction);
-    fn get_function(&self, name: &str) -> Option<&SassFunction>;
+    fn define_function(&mut self, name: Name, func: SassFunction);
+    fn get_function(&self, name: &Name) -> Option<&SassFunction>;
     fn call_function(
         &self,
-        name: &str,
+        name: &Name,
         args: &css::CallArgs,
     ) -> Option<Result<Value, Error>>;
 
@@ -115,7 +120,7 @@ pub trait Scope {
                     let to = to.evaluate(self)?.integer_value()?;
                     let to = if inclusive { to + 1 } else { to };
                     for value in from..to {
-                        self.define(name, &Value::scalar(value));
+                        self.define(name.clone(), &Value::scalar(value));
                         if let Some(r) = self.eval_body(body)? {
                             return Ok(Some(r));
                         }
@@ -129,13 +134,7 @@ pub trait Scope {
                     global,
                 } => {
                     let val = val.evaluate(self)?;
-                    if default {
-                        self.define_default(name, &val, global);
-                    } else if global {
-                        self.define_global(name, &val);
-                    } else {
-                        self.define(name, &val);
-                    }
+                    self.set_variable(name.into(), val, default, global);
                     None
                 }
                 Item::Return(ref v) => Some(v.evaluate(self)?),
@@ -176,43 +175,46 @@ pub trait Scope {
         }
         Ok(None)
     }
-    fn define_module(&self, name: &str, module: &'static Module);
-    fn get_module(&self, name: &str) -> Option<&Module>;
+    fn define_module(&self, name: Name, module: &'static Module);
+    fn get_module(&self, name: &Name) -> Option<&Module>;
     fn get_selectors(&self) -> &Selectors;
 }
 
 pub struct ScopeImpl<'a> {
     parent: &'a dyn Scope,
-    variables: BTreeMap<String, Value>,
+    variables: BTreeMap<Name, Value>,
     mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
-    functions: BTreeMap<String, SassFunction>,
+    functions: BTreeMap<Name, SassFunction>,
     selectors: Option<Selectors>,
 }
 
 impl Scope for ScopeImpl<'_> {
-    fn define_module(&self, name: &str, module: &'static Module) {
+    fn define_module(&self, name: Name, module: &'static Module) {
         self.parent.define_module(name, module);
     }
     fn get_format(&self) -> Format {
         self.parent.get_format()
     }
 
-    fn define(&mut self, name: &str, val: &Value) {
-        self.variables.insert(name.replace('-', "_"), val.clone());
-    }
-    fn define_default(&mut self, name: &str, val: &Value, global: bool) {
-        match self.get_or_none(name) {
-            Some(Value::Null) | None => {
-                if global {
-                    self.define_global(name, val)
-                } else {
-                    self.define(name, val)
-                }
-            }
-            _ => {}
+    fn set_variable(
+        &mut self,
+        name: Name,
+        val: Value,
+        default: bool,
+        global: bool,
+    ) {
+        if default
+            && !matches!(self.get_or_none(&name), Some(Value::Null) | None)
+        {
+            return;
+        }
+        if global {
+            self.parent.define_global(name, val);
+        } else {
+            self.variables.insert(name, val);
         }
     }
-    fn define_global(&self, name: &str, val: &Value) {
+    fn define_global(&self, name: Name, val: Value) {
         self.parent.define_global(name, val);
     }
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
@@ -221,14 +223,18 @@ impl Scope for ScopeImpl<'_> {
             .cloned()
             .or_else(|| self.parent.get_mixin(name))
     }
-    fn get_or_none(&self, name: &str) -> Option<Value> {
-        let name = name.replace('-', "_");
+    fn get_or_none(&self, name: &Name) -> Option<Value> {
+        if let Some((modulename, name)) = name.split_module() {
+            if let Some(module) = self.get_module(&modulename) {
+                return module.get_variable(&name).cloned();
+            }
+        }
         self.variables
-            .get(&name)
+            .get(name)
             .cloned()
-            .or_else(|| self.parent.get_or_none(&name))
+            .or_else(|| self.parent.get_or_none(name))
     }
-    fn get_global_or_none(&self, name: &str) -> Option<Value> {
+    fn get_global_or_none(&self, name: &Name) -> Option<Value> {
         self.parent.get_global_or_none(name)
     }
     fn define_mixin(
@@ -240,29 +246,26 @@ impl Scope for ScopeImpl<'_> {
         let name = name.replace('-', "_");
         self.mixins.insert(name, (args.clone(), body.into()));
     }
-    fn define_function(&mut self, name: &str, func: SassFunction) {
-        self.functions.insert(name.replace('-', "_"), func);
+    fn define_function(&mut self, name: Name, func: SassFunction) {
+        self.functions.insert(name, func);
     }
-    fn get_function(&self, name: &str) -> Option<&SassFunction> {
-        let name = name.replace('-', "_");
-        if let Some(f) = self.functions.get(&name) {
+    fn get_function(&self, name: &Name) -> Option<&SassFunction> {
+        if let Some(f) = self.functions.get(name) {
             return Some(f);
         }
-        self.parent.get_function(&name)
+        self.parent.get_function(name)
     }
-    fn get_module(&self, name: &str) -> Option<&Module> {
+    fn get_module(&self, name: &Name) -> Option<&Module> {
         self.parent.get_module(name)
     }
     fn call_function(
         &self,
-        name: &str,
+        name: &Name,
         args: &css::CallArgs,
     ) -> Option<Result<Value, Error>> {
-        let name = name.replace('-', "_");
-        let mut t = name.splitn(2, '.');
-        if let (Some(modulename), Some(name)) = (t.next(), t.next()) {
-            if let Some(module) = self.get_module(modulename) {
-                if let Some(f) = module.get(&name).cloned() {
+        if let Some((modulename, name)) = name.split_module() {
+            if let Some(module) = self.get_module(&modulename) {
+                if let Some(f) = module.get_function(&name).cloned() {
                     return Some(f.call(self, args));
                 }
             }
@@ -271,7 +274,7 @@ impl Scope for ScopeImpl<'_> {
             if let Some(f) = self.functions.get(&name).cloned() {
                 return Some(f.call(self, args));
             }
-            self.parent.call_function(&name, args)
+            self.parent.call_function(name, args)
         }
     }
     fn get_selectors(&self) -> &Selectors {
@@ -312,11 +315,11 @@ impl<'a> ScopeImpl<'a> {
 /// are global to the handling of a scss document.
 pub struct GlobalScope {
     format: Format,
-    variables: Mutex<BTreeMap<String, Value>>,
+    variables: Mutex<BTreeMap<Name, Value>>,
     mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
-    functions: BTreeMap<String, SassFunction>,
+    functions: BTreeMap<Name, SassFunction>,
     selectors: Selectors,
-    modules: Mutex<BTreeMap<String, &'static Module>>,
+    modules: Mutex<BTreeMap<Name, &'static Module>>,
 }
 
 impl GlobalScope {
@@ -334,40 +337,42 @@ impl GlobalScope {
 }
 
 impl Scope for GlobalScope {
-    fn define_module(&self, name: &str, module: &'static Module) {
-        self.modules.lock().unwrap().insert(name.into(), module);
+    fn define_module(&self, name: Name, module: &'static Module) {
+        self.modules.lock().unwrap().insert(name, module);
     }
-    fn get_module(&self, name: &str) -> Option<&Module> {
-        self.modules.lock().unwrap().get(name).copied()
+    fn get_module(&self, name: &Name) -> Option<&Module> {
+        self.modules.lock().unwrap().get(&name).copied()
     }
     fn get_format(&self) -> Format {
         self.format
     }
 
-    fn define(&mut self, name: &str, val: &Value) {
-        self.define_global(name, val)
-    }
-    fn define_default(&mut self, name: &str, val: &Value, _global: bool) {
-        match self.get_or_none(name) {
-            Some(Value::Null) | None => self.define(name, val),
-            _ => {}
+    fn set_variable(
+        &mut self,
+        name: Name,
+        val: Value,
+        default: bool,
+        _global: bool,
+    ) {
+        if default
+            && !matches!(self.get_or_none(&name), Some(Value::Null) | None)
+        {
+            return;
         }
+        self.define_global(name, val);
     }
-    fn define_global(&self, name: &str, val: &Value) {
-        self.variables
-            .lock()
-            .unwrap()
-            .insert(name.replace('-', "_"), val.clone());
+    fn define_global(&self, name: Name, val: Value) {
+        self.variables.lock().unwrap().insert(name, val.clone());
     }
+
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
         self.mixins.get(&name.replace('-', "_")).cloned()
     }
-    fn get_or_none(&self, name: &str) -> Option<Value> {
+    fn get_or_none(&self, name: &Name) -> Option<Value> {
         self.get_global_or_none(name)
     }
-    fn get_global_or_none(&self, name: &str) -> Option<Value> {
-        let name = name.replace('-', "_");
-        self.variables.lock().unwrap().get(&name).cloned()
+    fn get_global_or_none(&self, name: &Name) -> Option<Value> {
+        self.variables.lock().unwrap().get(name).cloned()
     }
     fn define_mixin(
         &mut self,
@@ -378,22 +383,20 @@ impl Scope for GlobalScope {
         let name = name.replace('-', "_");
         self.mixins.insert(name, (args.clone(), body.into()));
     }
-    fn define_function(&mut self, name: &str, func: SassFunction) {
-        self.functions.insert(name.replace('-', "_"), func);
+    fn define_function(&mut self, name: Name, func: SassFunction) {
+        self.functions.insert(name, func);
     }
-    fn get_function(&self, name: &str) -> Option<&SassFunction> {
-        let name = name.replace('-', "_");
-        if let Some(f) = self.functions.get(&name) {
+    fn get_function(&self, name: &Name) -> Option<&SassFunction> {
+        if let Some(f) = self.functions.get(name) {
             return Some(f);
         }
-        get_builtin_function(&name)
+        get_builtin_function(name)
     }
     fn call_function(
         &self,
-        name: &str,
+        name: &Name,
         args: &css::CallArgs,
     ) -> Option<Result<Value, Error>> {
-        let name = name.replace('-', "_");
         if let Some(f) = self.functions.get(&name).cloned() {
             return Some(f.call(self, args));
         }
@@ -724,23 +727,30 @@ pub mod test {
         assert_expr!(b"3 >= 2 and 1 < 10;", "true")
     }
 
-    pub fn do_evaluate(s: &[(&str, &str)], expression: &[u8]) -> String {
+    pub fn do_evaluate(
+        s: &[(&'static str, &str)],
+        expression: &[u8],
+    ) -> String {
         do_evaluate_or_error(s, expression).unwrap()
     }
 
     pub fn do_evaluate_or_error(
-        s: &[(&str, &str)],
+        s: &[(&'static str, &str)],
         expression: &[u8],
     ) -> Result<String, crate::Error> {
         use super::{GlobalScope, Scope};
         use crate::parser::value::value_expression;
         use crate::parser::{code_span, ParseError};
+        use crate::sass::Name;
         use nom::bytes::complete::tag;
         use nom::sequence::terminated;
         let mut scope = GlobalScope::new(Default::default());
         for &(name, val) in s {
             let val = value_expression(code_span(val.as_bytes()));
-            scope.define(name, &ParseError::check(val)?.evaluate(&scope)?);
+            scope.define(
+                Name::from_static(name),
+                &ParseError::check(val)?.evaluate(&scope)?,
+            );
         }
         let expr =
             terminated(value_expression, tag(";"))(code_span(expression));

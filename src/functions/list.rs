@@ -161,8 +161,8 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(list: &Module, global: &mut Module) {
-    for (gname, lname) in &[
+pub fn expose(m: &Module, global: &mut Module) {
+    for &(gname, lname) in &[
         ("append", "append"),
         ("index", "index"),
         ("is_bracketed", "is_bracketed"),
@@ -173,7 +173,7 @@ pub fn expose(list: &Module, global: &mut Module) {
         ("set_nth", "set_nth"),
         ("zip", "zip"),
     ] {
-        global.insert(gname, list.get(lname).unwrap().clone());
+        global.expose(gname, m, lname);
     }
 }
 

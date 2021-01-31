@@ -23,7 +23,7 @@ pub fn formal_args(input: Span) -> IResult<Span, FormalArgs> {
                     opt_spacelike,
                 )),
             ),
-            |(name, d)| (name.replace('-', "_"), d.unwrap_or(Value::Null)),
+            |(name, d)| (name.into(), d.unwrap_or(Value::Null)),
         ),
     )(input)?;
     let (input, _) = terminated(opt(tag(",")), opt_spacelike)(input)?;

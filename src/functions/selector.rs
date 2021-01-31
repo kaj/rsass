@@ -58,8 +58,8 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(meta: &Module, global: &mut Module) {
-    for (gname, lname) in &[
+pub fn expose(m: &Module, global: &mut Module) {
+    for &(gname, lname) in &[
         // - - - Mixins - - -
         //("is_superselector", "is_superselector"),
         ("selector_append", "append"),
@@ -70,7 +70,7 @@ pub fn expose(meta: &Module, global: &mut Module) {
         //("selector_unify", "unify"),
         //("simple_selectors", "simple_selectors"),
     ] {
-        global.insert(gname, meta.get(lname).unwrap().clone());
+        global.expose(gname, m, lname);
     }
 }
 
