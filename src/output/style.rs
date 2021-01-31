@@ -120,17 +120,11 @@ impl Format {
             Item::VariableDeclaration {
                 ref name,
                 ref val,
-                ref default,
-                ref global,
+                default,
+                global,
             } => {
                 let val = val.do_evaluate(scope, true)?;
-                if *default {
-                    scope.define_default(name.into(), &val, *global);
-                } else if *global {
-                    scope.define_global(name.into(), &val);
-                } else {
-                    scope.define(name.into(), &val);
-                }
+                scope.set_variable(name.into(), val, default, global);
             }
             Item::AtRoot {
                 ref selectors,
@@ -459,13 +453,7 @@ impl Format {
                     global,
                 } => {
                     let val = val.do_evaluate(scope, true)?;
-                    if default {
-                        scope.define_default(name.into(), &val, global);
-                    } else if global {
-                        scope.define_global(name.into(), &val);
-                    } else {
-                        scope.define(name.into(), &val);
-                    }
+                    scope.set_variable(name.into(), val, default, global);
                 }
                 Item::AtRoot {
                     ref selectors,

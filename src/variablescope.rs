@@ -19,11 +19,19 @@ pub trait Scope {
     /// Define a variable with a value.
     ///
     /// The `$` sign is not included in `name`.
-    fn define(&mut self, name: Name, val: &Value);
-    fn define_default(&mut self, name: Name, val: &Value, global: bool);
+    fn set_variable(
+        &mut self,
+        name: Name,
+        val: Value,
+        default: bool,
+        global: bool,
+    );
+    fn define(&mut self, name: Name, val: &Value) {
+        self.set_variable(name, val.clone(), false, false)
+    }
     /// Define a variable in the global scope that is an ultimate
     /// parent of this scope.
-    fn define_global(&self, name: Name, val: &Value);
+    fn define_global(&self, name: Name, val: Value);
 
     /// Define multiple names from a value that is a list.
     /// Special case: in names is a single name, value is used directly.
@@ -127,13 +135,7 @@ pub trait Scope {
                     global,
                 } => {
                     let val = val.evaluate(self)?;
-                    if default {
-                        self.define_default(name.into(), &val, global);
-                    } else if global {
-                        self.define_global(name.into(), &val);
-                    } else {
-                        self.define(name.into(), &val);
-                    }
+                    self.set_variable(name.into(), val, default, global);
                     None
                 }
                 Item::Return(ref v) => Some(v.evaluate(self)?),
@@ -195,22 +197,25 @@ impl Scope for ScopeImpl<'_> {
         self.parent.get_format()
     }
 
-    fn define(&mut self, name: Name, val: &Value) {
-        self.variables.insert(name, val.clone());
-    }
-    fn define_default(&mut self, name: Name, val: &Value, global: bool) {
-        match self.get_or_none(&name) {
-            Some(Value::Null) | None => {
-                if global {
-                    self.define_global(name, val)
-                } else {
-                    self.define(name, val)
-                }
-            }
-            _ => {}
+    fn set_variable(
+        &mut self,
+        name: Name,
+        val: Value,
+        default: bool,
+        global: bool,
+    ) {
+        if default
+            && !matches!(self.get_or_none(&name), Some(Value::Null) | None)
+        {
+            return;
+        }
+        if global {
+            self.parent.define_global(name, val);
+        } else {
+            self.variables.insert(name, val);
         }
     }
-    fn define_global(&self, name: Name, val: &Value) {
+    fn define_global(&self, name: Name, val: Value) {
         self.parent.define_global(name, val);
     }
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
@@ -343,18 +348,24 @@ impl Scope for GlobalScope {
         self.format
     }
 
-    fn define(&mut self, name: Name, val: &Value) {
-        self.define_global(name, val)
-    }
-    fn define_default(&mut self, name: Name, val: &Value, _global: bool) {
-        match self.get_or_none(&name) {
-            Some(Value::Null) | None => self.define(name, val),
-            _ => {}
+    fn set_variable(
+        &mut self,
+        name: Name,
+        val: Value,
+        default: bool,
+        _global: bool,
+    ) {
+        if default
+            && !matches!(self.get_or_none(&name), Some(Value::Null) | None)
+        {
+            return;
         }
+        self.define_global(name, val);
     }
-    fn define_global(&self, name: Name, val: &Value) {
+    fn define_global(&self, name: Name, val: Value) {
         self.variables.lock().unwrap().insert(name, val.clone());
     }
+
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
         self.mixins.get(&name.replace('-', "_")).cloned()
     }
