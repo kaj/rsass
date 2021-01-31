@@ -48,7 +48,7 @@ pub enum Item {
     /// The value may be or evaluate to a list.
     Each(Vec<Name>, Value, Vec<Item>),
     For {
-        name: String,
+        name: Name,
         from: Box<Value>,
         to: Box<Value>,
         inclusive: bool,

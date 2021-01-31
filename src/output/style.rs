@@ -3,7 +3,7 @@ use crate::css::Value;
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
-use crate::sass::{FormalArgs, Item, Name, SassString};
+use crate::sass::{FormalArgs, Item, SassString};
 use crate::selectors::Selectors;
 use crate::value::{Number, Unit};
 use crate::variablescope::{Scope, ScopeImpl};
@@ -274,7 +274,6 @@ impl Format {
                 inclusive,
                 ref body,
             } => {
-                let name: Name = name.into();
                 let range = ValueRange::new(
                     from.evaluate(scope)?,
                     to.evaluate(scope)?,
@@ -633,7 +632,6 @@ impl Format {
                     inclusive,
                     ref body,
                 } => {
-                    let name: Name = name.into();
                     let range = ValueRange::new(
                         from.evaluate(scope)?,
                         to.evaluate(scope)?,

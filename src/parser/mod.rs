@@ -489,7 +489,7 @@ fn for_loop2(input: Span) -> IResult<Span, Item> {
     Ok((
         input,
         Item::For {
-            name,
+            name: name.into(),
             from: Box::new(from),
             to: Box::new(to),
             inclusive,

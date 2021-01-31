@@ -116,7 +116,6 @@ pub trait Scope {
                     inclusive,
                     ref body,
                 } => {
-                    let name: Name = name.into();
                     let from = from.evaluate(self)?.integer_value()?;
                     let to = to.evaluate(self)?.integer_value()?;
                     let to = if inclusive { to + 1 } else { to };
