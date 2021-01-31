@@ -171,7 +171,7 @@ pub fn expose(m: &Module, global: &mut Module) {
         ("unique_id", "unique_id"),
         ("unquote", "unquote"),
     ] {
-        global.insert_function(gname, m.get_function(lname).unwrap().clone());
+        global.expose(gname, m, lname);
     }
     // And special one that isn't part of the string module
     def!(global, url(string), |s| {

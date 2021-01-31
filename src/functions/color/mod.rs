@@ -13,8 +13,8 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(meta: &Module, global: &mut Module) {
-    rgb::expose(meta, global);
-    hsl::expose(meta, global);
-    other::expose(meta, global);
+pub fn expose(m: &Module, global: &mut Module) {
+    rgb::expose(m, global);
+    hsl::expose(m, global);
+    other::expose(m, global);
 }

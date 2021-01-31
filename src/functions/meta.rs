@@ -15,12 +15,12 @@ pub fn create_module() -> Module {
             Value::Function(ref name, ref func) => {
                 (func.clone(), name.clone())
             }
-            Value::Literal(ref name, _) => {
+            Value::Literal(name, _) => {
                 dep_warn!(
                     "Passing a string to call() is deprecated and \
                      will be illegal"
                 );
-                (s.get_function(name).cloned(), name.clone())
+                (s.get_function(&(&name).into()).cloned(), name)
             }
             ref v => return Err(Error::badarg("string", v)),
         };
@@ -41,21 +41,21 @@ pub fn create_module() -> Module {
         }
         v => Err(Error::badarg("string", v)),
     });
-    def!(f, function_exists(name), |s| match &s.get("name")? {
-        &Value::Literal(ref v, _) => {
-            Ok(s.get_function(v).is_some().into())
+    def!(f, function_exists(name), |s| match s.get("name")? {
+        Value::Literal(v, _) => {
+            Ok(s.get_function(&v.into()).is_some().into())
         }
-        v => Err(Error::badarg("string", v)),
+        v => Err(Error::badarg("string", &v)),
     });
     def!(
         f,
         get_function(name, css = b"false"),
         |s| match s.get("name")? {
-            Value::Literal(ref v, _) => {
+            Value::Literal(v, _) => {
                 if s.get("css")?.is_true() {
-                    Ok(Value::Function(v.to_string(), None))
-                } else if let Some(f) = s.get_function(v) {
-                    Ok(Value::Function(v.to_string(), Some(f.clone())))
+                    Ok(Value::Function(v, None))
+                } else if let Some(f) = s.get_function(&(&v).into()) {
+                    Ok(Value::Function(v, Some(f.clone())))
                 } else {
                     Err(Error::S(format!("Function {} does not exist", v)))
                 }
@@ -63,11 +63,11 @@ pub fn create_module() -> Module {
             ref v => Err(Error::badarg("string", v)),
         }
     );
-    def!(f, global_variable_exists(name), |s| match &s.get("name")? {
-        &Value::Literal(ref v, _) => {
-            Ok(s.get_global_or_none(v).is_some().into())
+    def!(f, global_variable_exists(name), |s| match s.get("name")? {
+        Value::Literal(v, _) => {
+            Ok(s.get_global_or_none(&v.into()).is_some().into())
         }
-        v => Err(Error::badarg("string", v)),
+        v => Err(Error::badarg("string", &v)),
     });
     def!(f, inspect(value), |s| Ok(Value::Literal(
         match s.get("value")? {
@@ -89,11 +89,11 @@ pub fn create_module() -> Module {
         s.get("value")?.type_name().into(),
         Quotes::None
     )));
-    def!(f, variable_exists(name), |s| match &s.get("name")? {
-        &Value::Literal(ref v, _) => {
-            Ok(s.get_or_none(v).is_some().into())
+    def!(f, variable_exists(name), |s| match s.get("name")? {
+        Value::Literal(v, _) => {
+            Ok(s.get_or_none(&v.into()).is_some().into())
         }
-        v => Err(Error::badarg("string", v)),
+        v => Err(Error::badarg("string", &v)),
     });
     f
 }
@@ -113,7 +113,7 @@ pub fn expose(m: &Module, global: &mut Module) {
         ("type_of", "type_of"),
         ("variable_exists", "variable_exists"),
     ] {
-        global.insert_function(gname, m.get_function(lname).unwrap().clone());
+        global.expose(gname, m, lname);
     }
 }
 

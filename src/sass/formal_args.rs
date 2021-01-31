@@ -1,6 +1,6 @@
 use crate::css;
 use crate::error::Error;
-use crate::sass::Value;
+use crate::sass::{Name, Value};
 use crate::value::ListSeparator;
 use crate::variablescope::{Scope, ScopeImpl};
 use std::default::Default;
@@ -10,10 +10,10 @@ use std::default::Default;
 /// The arguments are ordered (so they have a position).
 /// Each argument also has a name and may have a default value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct FormalArgs(Vec<(String, Value)>, bool);
+pub struct FormalArgs(Vec<(Name, Value)>, bool);
 
 impl FormalArgs {
-    pub fn new(a: Vec<(String, Value)>, is_varargs: bool) -> Self {
+    pub fn new(a: Vec<(Name, Value)>, is_varargs: bool) -> Self {
         FormalArgs(a, is_varargs)
     }
 
@@ -27,10 +27,10 @@ impl FormalArgs {
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
             if let Some(value) = args
                 .iter()
-                .find(|&&(ref k, ref _v)| k.as_ref() == Some(name))
+                .find(|&&(ref k, ref _v)| k.as_deref() == Some(name.as_ref()))
                 .map(|&(ref _k, ref v)| v)
             {
-                argscope.define(name, value);
+                argscope.define(name.clone(), value);
             } else if self.1 && i + 1 == n && args.len() > n {
                 let args = args
                     .iter()
@@ -38,15 +38,15 @@ impl FormalArgs {
                     .map(|&(_, ref v)| v.clone())
                     .collect();
                 argscope.define(
-                    name,
+                    name.clone(),
                     &css::Value::List(args, ListSeparator::Comma, false),
                 );
             } else {
                 match args.get(i) {
-                    Some(&(None, ref v)) => argscope.define(name, v),
+                    Some(&(None, ref v)) => argscope.define(name.clone(), v),
                     _ => {
                         let v = default.do_evaluate(&argscope, true)?;
-                        argscope.define(name, &v)
+                        argscope.define(name.clone(), &v)
                     }
                 };
             }

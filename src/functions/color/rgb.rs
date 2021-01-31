@@ -206,7 +206,7 @@ pub fn expose(m: &Module, global: &mut Module) {
         ("mix", "mix"),
         ("red", "red"),
     ] {
-        global.insert_function(gname, m.get_function(lname).unwrap().clone());
+        global.expose(gname, m, lname);
     }
 }
 

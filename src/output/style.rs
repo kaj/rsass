@@ -3,7 +3,7 @@ use crate::css::Value;
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
-use crate::sass::{FormalArgs, Item, SassString};
+use crate::sass::{FormalArgs, Item, Name, SassString};
 use crate::selectors::Selectors;
 use crate::value::{Number, Unit};
 use crate::variablescope::{Scope, ScopeImpl};
@@ -125,11 +125,11 @@ impl Format {
             } => {
                 let val = val.do_evaluate(scope, true)?;
                 if *default {
-                    scope.define_default(name, &val, *global);
+                    scope.define_default(name.into(), &val, *global);
                 } else if *global {
-                    scope.define_global(name, &val);
+                    scope.define_global(name.into(), &val);
                 } else {
-                    scope.define(name, &val);
+                    scope.define(name.into(), &val);
                 }
             }
             Item::AtRoot {
@@ -244,7 +244,7 @@ impl Format {
             }
 
             Item::FunctionDeclaration { ref name, ref func } => {
-                scope.define_function(name, func.clone());
+                scope.define_function(name.into(), func.clone());
             }
             Item::Return(_) => {
                 return Err(Error::S(
@@ -280,6 +280,7 @@ impl Format {
                 inclusive,
                 ref body,
             } => {
+                let name: Name = name.into();
                 let range = ValueRange::new(
                     from.evaluate(scope)?,
                     to.evaluate(scope)?,
@@ -287,7 +288,7 @@ impl Format {
                 )?;
                 for value in range {
                     let mut scope = ScopeImpl::sub(scope);
-                    scope.define(name, &value);
+                    scope.define(name.clone(), &value);
                     for item in body {
                         self.handle_root_item(
                             item,
@@ -459,11 +460,11 @@ impl Format {
                 } => {
                     let val = val.do_evaluate(scope, true)?;
                     if default {
-                        scope.define_default(name, &val, global);
+                        scope.define_default(name.into(), &val, global);
                     } else if global {
-                        scope.define_global(name, &val);
+                        scope.define_global(name.into(), &val);
                     } else {
-                        scope.define(name, &val);
+                        scope.define(name.into(), &val);
                     }
                 }
                 Item::AtRoot {
@@ -603,7 +604,7 @@ impl Format {
                 }
 
                 Item::FunctionDeclaration { ref name, ref func } => {
-                    scope.define_function(name, func.clone());
+                    scope.define_function(name.into(), func.clone());
                 }
                 Item::Return(_) => {
                     return Err(Error::S(
@@ -644,6 +645,7 @@ impl Format {
                     inclusive,
                     ref body,
                 } => {
+                    let name: Name = name.into();
                     let range = ValueRange::new(
                         from.evaluate(scope)?,
                         to.evaluate(scope)?,
@@ -651,7 +653,7 @@ impl Format {
                     )?;
                     for value in range {
                         let mut scope = ScopeImpl::sub(scope);
-                        scope.define(name, &value);
+                        scope.define(name.clone(), &value);
                         self.handle_body(
                             direct,
                             sub,
@@ -821,19 +823,19 @@ fn do_use(
             UseAs::KeepName => {
                 let name =
                     name.rfind(':').map(|i| &name[i + 1..]).unwrap_or(&name);
-                scope.define_module(name, module);
+                scope.define_module(name.into(), module);
             }
             UseAs::Star => {
                 for (name, function) in module.functions() {
-                    scope.define_function(name, function.clone());
+                    scope.define_function(name.clone(), function.clone());
                 }
                 for (name, value) in module.variables() {
-                    scope.define(name, value);
+                    scope.define(name.clone(), value);
                 }
             }
             UseAs::Name(name) => {
                 let name = name.evaluate(scope)?.0;
-                scope.define_module(&name, module);
+                scope.define_module(name.into(), module);
             }
         }
         Ok(())

@@ -1,6 +1,6 @@
+use super::{CallArgs, FormalArgs, Name, SassString, Value};
 use crate::functions::SassFunction;
 use crate::parser::SourcePos;
-use crate::sass::{CallArgs, FormalArgs, SassString, Value};
 use crate::selectors::Selectors;
 
 /// Every sass file is a sequence of sass items.
@@ -46,7 +46,7 @@ pub enum Item {
 
     IfStatement(Value, Vec<Item>, Vec<Item>),
     /// The value may be or evaluate to a list.
-    Each(Vec<String>, Value, Vec<Item>),
+    Each(Vec<Name>, Value, Vec<Item>),
     For {
         name: String,
         from: Box<Value>,

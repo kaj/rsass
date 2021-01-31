@@ -1,14 +1,12 @@
 use super::SassFunction;
 use crate::css::Value;
-use std::borrow::Cow;
+use crate::sass::Name;
 use std::collections::BTreeMap;
-
-pub type Key = Cow<'static, str>;
 
 #[derive(Debug, Default)]
 pub struct Module {
-    functions: BTreeMap<Key, SassFunction>,
-    variables: BTreeMap<Key, Value>,
+    functions: BTreeMap<Name, SassFunction>,
+    variables: BTreeMap<Name, Value>,
 }
 
 impl Module {
@@ -16,26 +14,37 @@ impl Module {
         Default::default()
     }
 
-    pub fn get_function(&self, name: &str) -> Option<&SassFunction> {
+    pub fn get_function(&self, name: &Name) -> Option<&SassFunction> {
         self.functions.get(name)
     }
-    pub fn insert_function<T>(&mut self, name: T, function: SassFunction)
-    where
-        T: Into<Key>,
-    {
+    pub fn insert_function(&mut self, name: Name, function: SassFunction) {
         self.functions.insert(name.into(), function);
     }
-    pub fn functions(&self) -> impl Iterator<Item = (&str, &SassFunction)> {
-        self.functions.iter().map(|(n, v)| (n.as_ref(), v))
+    pub fn functions(&self) -> impl Iterator<Item = (&Name, &SassFunction)> {
+        self.functions.iter()
     }
 
-    pub fn get_variable(&self, name: &str) -> Option<&Value> {
+    pub fn get_variable(&self, name: &Name) -> Option<&Value> {
         self.variables.get(name)
     }
-    pub fn set_variable<T: Into<Key>>(&mut self, name: T, value: Value) {
+    pub fn set_variable(&mut self, name: Name, value: Value) {
         self.variables.insert(name.into(), value);
     }
-    pub fn variables(&self) -> impl Iterator<Item = (&str, &Value)> {
-        self.variables.iter().map(|(n, v)| (n.as_ref(), v))
+    pub fn variables(&self) -> impl Iterator<Item = (&Name, &Value)> {
+        self.variables.iter()
+    }
+
+    pub(super) fn expose(
+        &mut self,
+        name: &'static str,
+        from: &Module,
+        from_name: &'static str,
+    ) {
+        self.insert_function(
+            Name::from_static(name),
+            from.get_function(&Name::from_static(from_name))
+                .unwrap()
+                .clone(),
+        );
     }
 }

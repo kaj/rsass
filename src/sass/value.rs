@@ -2,7 +2,7 @@ use crate::css;
 use crate::error::Error;
 use crate::functions::get_builtin_function;
 use crate::ordermap::OrderMap;
-use crate::sass::{CallArgs, SassString};
+use crate::sass::{CallArgs, Name, SassString};
 use crate::value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
@@ -135,9 +135,10 @@ impl Value {
             Value::Call(ref name, ref args) => {
                 let args = args.evaluate(scope, true)?;
                 if let Some(name) = name.single_raw() {
-                    match scope.call_function(name, &args) {
+                    let nname: Name = name.into();
+                    match scope.call_function(&nname, &args) {
                         Some(value) => Ok(value?),
-                        None => get_builtin_function(name)
+                        None => get_builtin_function(&nname)
                             .map(|f| f.call(scope, &args))
                             .unwrap_or_else(|| {
                                 Ok(css::Value::Call(name.to_string(), args))

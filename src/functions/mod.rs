@@ -1,4 +1,5 @@
 use crate::error::Error;
+use crate::sass::Name;
 use crate::variablescope::Scope;
 use crate::{css, sass};
 use lazy_static::lazy_static;
@@ -20,9 +21,8 @@ mod string;
 
 pub use module::Module;
 
-pub fn get_builtin_function(name: &str) -> Option<&'static SassFunction> {
-    let name = name.replace("-", "_");
-    FUNCTIONS.get_function(name.as_ref())
+pub fn get_builtin_function(name: &Name) -> Option<&'static SassFunction> {
+    FUNCTIONS.get_function(name)
 }
 
 type BuiltinFn =
@@ -92,7 +92,7 @@ impl fmt::Debug for FuncImpl {
 impl SassFunction {
     /// Create a new `SassFunction` from a rust implementation.
     pub fn builtin(
-        args: Vec<(String, sass::Value)>,
+        args: Vec<(Name, sass::Value)>,
         is_varargs: bool,
         body: Arc<BuiltinFn>,
     ) -> Self {
@@ -186,7 +186,7 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     use crate::variablescope::GlobalScope;
     let scope = GlobalScope::new(Default::default());
     assert_eq!(
-        FUNCTIONS.get_function("rgb").unwrap().call(
+        FUNCTIONS.get_function(&name!(rgb)).unwrap().call(
             &scope,
             &call_args(code_span(b"(17, 0, 225)"))?
                 .1

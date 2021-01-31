@@ -192,8 +192,8 @@ pub fn create_module() -> Module {
         v => Err(Error::badarg("number or null", &v)),
     });
 
-    f.set_variable("pi", number(PI, Unit::None));
-    f.set_variable("e", number(E, Unit::None));
+    f.set_variable(name!(pi), number(PI, Unit::None));
+    f.set_variable(name!(e), number(E, Unit::None));
     f
 }
 
@@ -217,7 +217,7 @@ pub fn expose(m: &Module, global: &mut Module) {
         ("percentage", "percentage"),
         ("random", "random"),
     ] {
-        global.insert_function(gname, m.get_function(lname).unwrap().clone());
+        global.expose(gname, m, lname);
     }
 }
 
