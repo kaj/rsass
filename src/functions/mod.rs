@@ -195,7 +195,7 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
                 .1
                 .evaluate(&scope, true)?
         )?,
-        css::Value::Color(Rgba::from_rgb(17, 0, 225), None)
+        css::Value::Color(Rgba::from_rgb(17, 0, 225).into(), None)
     );
     Ok(())
 }

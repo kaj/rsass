@@ -1,13 +1,10 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
 #![allow(clippy::unreadable_literal)]
 
-use crate::output::{Format, Formatted};
-use crate::value::Number;
 use lazy_static::lazy_static;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
-use std::fmt::{self, Display};
 use std::ops::{Add, Div, Sub};
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -45,6 +42,7 @@ impl Rgba {
             alpha: Rational::from_integer(a as isize) / 255,
         }
     }
+
     pub fn from_hsla(
         hue: Rational,
         sat: Rational,
@@ -81,27 +79,6 @@ impl Rgba {
                 a,
             )
         }
-    }
-    pub fn from_hwba(
-        hue: Rational,
-        w: Rational,
-        b: Rational,
-        a: Rational,
-    ) -> Self {
-        let wbsum = w + b;
-        let (w, b) = if wbsum > Rational::one() {
-            (w / wbsum, b / wbsum)
-        } else {
-            (w, b)
-        };
-
-        let l = (Rational::one() - b + w) / 2;
-        let s = if l.is_zero() || l.is_one() {
-            Rational::zero()
-        } else {
-            (Rational::one() - b - l) / std::cmp::min(l, Rational::one() - l)
-        };
-        Rgba::from_hsla(hue, s, l, a)
     }
     pub fn name(&self) -> Option<&'static str> {
         if self.alpha >= Rational::one() {
@@ -151,8 +128,7 @@ impl Rgba {
                 0 => (green - blue) / d + if green < blue { 6 } else { 0 },
                 1 => (blue - red) / d + 2,
                 _ => (red - green) / d + 4,
-            } * 360
-                / 6;
+            } * (360 / 6);
             let mm = max + min;
             let s = d / if mm > Rational::one() { -mm + 2 } else { mm };
             (h, s, mm / 2, self.alpha)
@@ -170,12 +146,6 @@ impl Rgba {
         let w = arr.iter().min().unwrap();
         *w / 255
     }
-    pub fn format(&self, format: Format) -> Formatted<Rgba> {
-        Formatted {
-            value: self,
-            format,
-        }
-    }
 }
 
 fn cap(n: Rational, ff: &Rational) -> Rational {
@@ -188,7 +158,7 @@ fn cap(n: Rational, ff: &Rational) -> Rational {
     }
 }
 
-impl Add<Rational> for Rgba {
+impl Add<Rational> for &Rgba {
     type Output = Rgba;
 
     fn add(self, rhs: Rational) -> Rgba {
@@ -201,10 +171,10 @@ impl Add<Rational> for Rgba {
     }
 }
 
-impl Add<Rgba> for Rgba {
+impl Add<&Rgba> for &Rgba {
     type Output = Rgba;
 
-    fn add(self, rhs: Rgba) -> Rgba {
+    fn add(self, rhs: &Rgba) -> Rgba {
         Rgba::new(
             self.red + rhs.red,
             self.green + rhs.green,
@@ -251,46 +221,6 @@ impl<'a> Sub<&'a Rgba> for &'a Rgba {
             self.blue - rhs.blue,
             (self.alpha + rhs.alpha) / 2,
         )
-    }
-}
-
-impl<'a> Display for Formatted<'a, Rgba> {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        // The byte-version of alpha is not used here.
-        let (r, g, b, _a) = self.value.to_bytes();
-        let a = self.value.alpha;
-        if a >= Rational::one() {
-            // E.g. #ff00cc can be written #f0c in css.
-            // 0xff / 0x11 = 0xf.
-            let short = r % 0x11 == 0 && g % 0x11 == 0 && b % 0x11 == 0;
-            let hex_len = if short { 4 } else { 7 };
-            if let Some(name) = self.value.name() {
-                if !(self.format.is_compressed() && name.len() > hex_len) {
-                    return name.fmt(out);
-                }
-            }
-            if self.format.is_compressed() && short {
-                write!(out, "#{:x}{:x}{:x}", r / 0x11, g / 0x11, b / 0x11)
-            } else {
-                write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
-            }
-        } else if self.format.is_compressed() && self.value.all_zero() {
-            write!(out, "transparent")
-        } else if self.format.is_compressed() {
-            // Note: libsass does not use the format for the alpha like this.
-            let a = Number::from(a);
-            write!(out, "rgba({},{},{},{})", r, g, b, a.format(self.format))
-        } else {
-            let a = Number::from(a);
-            write!(
-                out,
-                "rgba({}, {}, {}, {})",
-                r,
-                g,
-                b,
-                a.format(self.format)
-            )
-        }
     }
 }
 

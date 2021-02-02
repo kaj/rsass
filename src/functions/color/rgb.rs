@@ -10,6 +10,7 @@ fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
     let red = s.get("red")?;
     let red = if red.is_null() { s.get("color")? } else { red };
     if let Value::Color(rgba, _) = red {
+        let rgba = rgba.to_rgba();
         let a = if a.is_null() { s.get("green")? } else { a };
         match a {
             Value::Numeric(a, ..) => {
@@ -117,17 +118,17 @@ pub fn register(f: &mut Module) {
     fn num(v: &Rational) -> Result<Value, Error> {
         Ok(Value::Numeric(Number::from(*v), Unit::None, true))
     }
-    def!(f, red(color), |s| match &s.get("color")? {
-        &Value::Color(ref rgba, _) => num(&rgba.red),
-        value => Err(Error::badarg("color", value)),
+    def!(f, red(color), |s| match s.get("color")? {
+        Value::Color(rgba, _) => num(&rgba.to_rgba().red),
+        value => Err(Error::badarg("color", &value)),
     });
-    def!(f, green(color), |s| match &s.get("color")? {
-        &Value::Color(ref rgba, _) => num(&rgba.green),
-        value => Err(Error::badarg("color", value)),
+    def!(f, green(color), |s| match s.get("color")? {
+        Value::Color(rgba, _) => num(&rgba.to_rgba().green),
+        value => Err(Error::badarg("color", &value)),
     });
-    def!(f, blue(color), |s| match &s.get("color")? {
-        &Value::Color(ref rgba, _) => num(&rgba.blue),
-        value => Err(Error::badarg("color", value)),
+    def!(f, blue(color), |s| match s.get("color")? {
+        Value::Color(rgba, _) => num(&rgba.to_rgba().blue),
+        value => Err(Error::badarg("color", &value)),
     });
     def!(f, mix(color1, color2, weight = b"50%"), |s| match (
         s.get("color1")?,
@@ -139,6 +140,8 @@ pub fn register(f: &mut Module) {
             Value::Color(b, _),
             Value::Numeric(w, wu, ..),
         ) => {
+            let a = a.to_rgba();
+            let b = b.to_rgba();
             let p = if wu == Unit::Percent {
                 w.as_ratio()? / 100
             } else {
@@ -172,6 +175,7 @@ pub fn register(f: &mut Module) {
         s.get("weight")?,
     ) {
         (Value::Color(rgba, _), Value::Numeric(w, wu, ..)) => {
+            let rgba = rgba.to_rgba();
             let w = if wu == Unit::Percent {
                 w.as_ratio()? / 100
             } else {
