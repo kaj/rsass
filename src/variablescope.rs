@@ -362,7 +362,7 @@ impl Scope for GlobalScope {
         self.define_global(name, val);
     }
     fn define_global(&self, name: Name, val: Value) {
-        self.variables.lock().unwrap().insert(name, val.clone());
+        self.variables.lock().unwrap().insert(name, val);
     }
 
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {

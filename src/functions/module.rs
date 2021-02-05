@@ -18,7 +18,7 @@ impl Module {
         self.functions.get(name)
     }
     pub fn insert_function(&mut self, name: Name, function: SassFunction) {
-        self.functions.insert(name.into(), function);
+        self.functions.insert(name, function);
     }
     pub fn functions(&self) -> impl Iterator<Item = (&Name, &SassFunction)> {
         self.functions.iter()
@@ -28,7 +28,7 @@ impl Module {
         self.variables.get(name)
     }
     pub fn set_variable(&mut self, name: Name, value: Value) {
-        self.variables.insert(name.into(), value);
+        self.variables.insert(name, value);
     }
     pub fn variables(&self) -> impl Iterator<Item = (&Name, &Value)> {
         self.variables.iter()
