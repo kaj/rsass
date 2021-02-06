@@ -93,11 +93,12 @@ pub fn create_module() -> Module {
     def!(f, pow(base, exponent), |s| {
         let base = as_unitless(&s.get("base")?)?;
         let exponent = as_unitless(&s.get("exponent")?)?;
-        let result = if exponent.is_infinite() && base.abs() == 1.0 {
-            f64::NAN
-        } else {
-            base.powf(exponent)
-        };
+        let result =
+            if exponent.is_infinite() && (base.abs() - 1.0).abs() < 1e-7 {
+                f64::NAN
+            } else {
+                base.powf(exponent)
+            };
         Ok(number(result, Unit::None))
     });
     def!(f, sqrt(number), |s| {
