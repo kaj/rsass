@@ -70,6 +70,9 @@ impl cmp::PartialEq for FuncImpl {
                 &FuncImpl::UserDefined(ref b),
             ) => a == b,
             (&FuncImpl::Builtin(ref a), &FuncImpl::Builtin(ref b)) => {
+                // Each builtin function is only created once, so this
+                // should be ok.
+                #[allow(clippy::vtable_address_comparisons)]
                 Arc::ptr_eq(a, b)
             }
             _ => false,
