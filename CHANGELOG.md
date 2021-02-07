@@ -10,7 +10,9 @@ project adheres to
 ## Unreleased
 
 * Improve trigonometric precision by using f64 π rather than rational.
-* Handle more peculiarities with atan2, powf, infinities and negative zero.
+* Handle more peculiarities with atan2, pow, infinities and negative zero.
+* Improve name lookups in scopes and modules, PR #87.
+* Some cleanups.
 
 
 ## Release 0.17.0 - 2021-01-29
