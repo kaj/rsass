@@ -229,9 +229,9 @@ pub fn register(f: &mut Module) {
     );
     def!(f, ie_hex_str(color), |s| match s.get("color")? {
         Value::Color(col, _) => {
-            let (r, g, b, a) = col.to_rgba().to_bytes();
+            let (r, g, b, alpha) = col.to_rgba().to_bytes();
             Ok(Value::Literal(
-                format!("#{:02X}{:02X}{:02X}{:02X}", a, r, g, b),
+                format!("#{:02X}{:02X}{:02X}{:02X}", alpha, r, g, b),
                 Quotes::None,
             ))
         }

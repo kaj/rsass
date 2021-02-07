@@ -135,33 +135,30 @@ pub fn register(f: &mut Module) {
         s.get("color2")?,
         s.get("weight")?,
     ) {
-        (
-            Value::Color(a, _),
-            Value::Color(b, _),
-            Value::Numeric(w, wu, ..),
-        ) => {
+        (Value::Color(a, _), Value::Color(b, _), w @ Value::Numeric(..)) => {
             let a = a.to_rgba();
             let b = b.to_rgba();
-            let p = if wu == Unit::Percent {
-                w.as_ratio()? / 100
-            } else {
-                w.as_ratio()?
-            };
+            let w = to_rational(&w)?;
             let one = Rational::one();
-            let w = p * 2 - one;
-            let wa = a.alpha - b.alpha;
 
-            let divis = w * wa + 1;
-            let w1 =
-                (if divis.is_zero() { w } else { (w + wa) / divis } + 1) / 2;
-            let w2 = one - w1;
+            let w_a = {
+                let wa = a.alpha - b.alpha;
+                let w2 = w * 2 - 1;
+                let divis = w2 * wa + 1;
+                if divis.is_zero() {
+                    w
+                } else {
+                    (((w2 + wa) / divis) + 1) / 2
+                }
+            };
+            let w_b = one - w_a;
 
-            let m_c = |c1, c2| w1 * c1 + w2 * c2;
+            let m_c = |c_a, c_b| w_a * c_a + w_b * c_b;
             Ok(Rgba::new(
                 m_c(a.red, b.red),
                 m_c(a.green, b.green),
                 m_c(a.blue, b.blue),
-                a.alpha * p + b.alpha * (one - p),
+                a.alpha * w + b.alpha * (one - w),
             )
             .into())
         }
@@ -229,7 +226,7 @@ fn to_int(v: &Value) -> Result<Rational, Error> {
 fn to_rational(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(num, Unit::Percent, _) => Ok(num.as_ratio()? / 100),
-        Value::Numeric(num, ..) => num.as_ratio(),
+        Value::Numeric(num, Unit::None, _) => num.as_ratio(),
         v => Err(Error::badarg("number", &v)),
     }
 }
