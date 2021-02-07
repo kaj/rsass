@@ -1,4 +1,5 @@
 //! Types for color values.
+mod convert;
 mod hsla;
 mod rgba;
 
@@ -26,9 +27,7 @@ impl Color {
     pub fn to_rgba(&self) -> Cow<Rgba> {
         match self {
             Color::Rgba(ref rgba) => Cow::Borrowed(rgba),
-            Color::Hsla(hsla) => Cow::Owned(Rgba::from_hsla(
-                hsla.hue, hsla.sat, hsla.lum, hsla.alpha,
-            )),
+            Color::Hsla(hsla) => Cow::Owned(Rgba::from(hsla)),
         }
     }
     /// Get this color as a hsla value.
@@ -37,21 +36,20 @@ impl Color {
     /// Otherwise, do the conversion and return an owned value.
     pub fn to_hsla(&self) -> Cow<Hsla> {
         match self {
-            Color::Rgba(rgba) => Cow::Owned(Hsla::from_rgba(rgba)),
+            Color::Rgba(rgba) => Cow::Owned(Hsla::from(rgba)),
             Color::Hsla(ref hsla) => Cow::Borrowed(hsla),
         }
     }
     pub fn to_hwba(&self) -> (Rational, Rational, Rational, Rational) {
         match self {
             Color::Rgba(rgba) => {
-                let hsla = Hsla::from_rgba(rgba);
+                let hsla = Hsla::from(rgba);
                 let white = rgba.get_whiteness();
                 let black = rgba.get_blackness();
                 (hsla.hue, white, black, hsla.alpha)
             }
             Color::Hsla(hsla) => {
-                let rgba =
-                    Rgba::from_hsla(hsla.hue, hsla.sat, hsla.lum, hsla.alpha);
+                let rgba = Rgba::from(hsla);
                 let white = rgba.get_whiteness();
                 let black = rgba.get_blackness();
                 (hsla.hue, white, black, hsla.alpha)

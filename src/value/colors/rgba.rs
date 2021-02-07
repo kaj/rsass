@@ -43,43 +43,6 @@ impl Rgba {
         }
     }
 
-    pub fn from_hsla(
-        hue: Rational,
-        sat: Rational,
-        lig: Rational,
-        a: Rational,
-    ) -> Self {
-        let hue = hue / 360;
-        let sat = cap(sat, &Rational::one());
-        let lig = cap(lig, &Rational::one());
-        if sat.is_zero() {
-            let gray = lig * 255;
-            Rgba::new(gray, gray, gray, a)
-        } else {
-            fn hue2rgb(p: Rational, q: Rational, t: Rational) -> Rational {
-                let t = (t - t.floor()) * 6;
-                match t.to_integer() {
-                    0 => p + (q - p) * t,
-                    1 | 2 => q,
-                    3 => p + (p - q) * (t - 4),
-                    _ => p,
-                }
-            }
-            let q = if lig < Rational::new(1, 2) {
-                lig * (sat + 1)
-            } else {
-                lig + sat - lig * sat
-            };
-            let p = lig * 2 - q;
-
-            Rgba::new(
-                hue2rgb(p, q, hue + Rational::new(1, 3)) * 255,
-                hue2rgb(p, q, hue) * 255,
-                hue2rgb(p, q, hue - Rational::new(1, 3)) * 255,
-                a,
-            )
-        }
-    }
     pub fn name(&self) -> Option<&'static str> {
         if self.alpha >= Rational::one() {
             let (r, g, b, _a) = self.to_bytes();
