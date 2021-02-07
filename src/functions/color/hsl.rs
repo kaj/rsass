@@ -72,8 +72,6 @@ pub fn register(f: &mut Module) {
                 let mut hsla = col.to_hsla().into_owned();
                 hsla.hue += 180;
                 Ok(hsla.into())
-                //let (h, s, l, alpha) = rgba.to_hsla();
-                //Ok(Rgba::from_hsla(h + 180, s, l, alpha).into())
             }
             v => Err(Error::badarg("color", &v)),
         }

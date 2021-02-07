@@ -2,6 +2,7 @@ use super::clamp;
 use num_rational::Rational;
 use num_traits::{one, zero, Signed};
 
+/// A color defined by hue, saturation, luminance, and alpha.
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Hsla {
     pub hue: Rational,
@@ -11,6 +12,7 @@ pub struct Hsla {
 }
 
 impl Hsla {
+    /// Create a new hsla color.
     pub fn new(
         hue: Rational,
         sat: Rational,

@@ -14,7 +14,7 @@ use num_traits::{one, zero, One, Zero};
 use std::borrow::Cow;
 use std::fmt::{self, Display};
 
-/// A color in sass/css, may be a Rgba or a Hsla value.
+/// A color in sass/css. May be a Rgba, Hsla, or Hwba value.
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Color {
     Rgba(Rgba),
@@ -57,6 +57,9 @@ impl Color {
         }
     }
 
+    /// Get the alpha channel of this color.
+    ///
+    /// The alpha channel is a rational value between 0 and 1.
     pub fn get_alpha(&self) -> Rational {
         match self {
             Color::Rgba(rgba) => rgba.alpha,
@@ -64,6 +67,9 @@ impl Color {
             Color::Hwba(hwba) => hwba.alpha,
         }
     }
+    /// Set the alpha channel of this color.
+    ///
+    /// The alpha channel is a rational value between 0 and 1.
     pub fn set_alpha(&mut self, alpha: Rational) {
         let alpha = clamp(alpha, zero(), one());
         match self {

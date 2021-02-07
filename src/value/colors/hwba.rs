@@ -2,6 +2,7 @@ use super::clamp;
 use num_rational::Rational;
 use num_traits::{one, zero};
 
+/// A color defined by hue, whiteness, blackness, and alpha.
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Hwba {
     pub hue: Rational,

@@ -7,6 +7,7 @@ use num_traits::{One, Signed, Zero};
 use std::collections::BTreeMap;
 use std::ops::{Add, Div, Sub};
 
+/// A color defined by red, green, blue, and alpha components.
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Rgba {
     pub red: Rational,
@@ -43,6 +44,9 @@ impl Rgba {
         }
     }
 
+    /// If this color is equal to a named color, get the name.
+    ///
+    /// Each component is rounded to its byte value before lookup.
     pub fn name(&self) -> Option<&'static str> {
         if self.alpha >= Rational::one() {
             let (r, g, b, _a) = self.to_bytes();
@@ -52,6 +56,7 @@ impl Rgba {
             None
         }
     }
+    /// If `name` is a known color name, get the corresponding rgba value.
     pub fn from_name(name: &str) -> Option<Self> {
         let name = name.to_lowercase();
         let name: &str = &name;
@@ -76,19 +81,6 @@ impl Rgba {
         }
         let a = self.alpha * 255;
         (byte(self.red), byte(self.green), byte(self.blue), byte(a))
-    }
-
-    /// Get the hwb blackness of this color, a number between 0 an 1.
-    pub fn get_blackness(&self) -> Rational {
-        let arr = [&self.red, &self.blue, &self.green];
-        let w = arr.iter().max().unwrap();
-        Rational::one() - *w / 255
-    }
-    /// Get the hwb whiteness of this color, a number between 0 an 1.
-    pub fn get_whiteness(&self) -> Rational {
-        let arr = [&self.red, &self.blue, &self.green];
-        let w = arr.iter().min().unwrap();
-        *w / 255
     }
 }
 

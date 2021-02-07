@@ -95,12 +95,11 @@ impl From<&Rgba> for Hsla {
 impl From<&Rgba> for Hwba {
     fn from(rgba: &Rgba) -> Hwba {
         let hsla = Hsla::from(rgba);
-        let w = rgba.get_whiteness();
-        let b = rgba.get_blackness();
+        let arr = [&rgba.red, &rgba.blue, &rgba.green];
         Hwba {
             hue: hsla.hue,
-            w,
-            b,
+            w: *arr.iter().min().unwrap() / 255,
+            b: Rational::one() - *arr.iter().max().unwrap() / 255,
             alpha: hsla.alpha,
         }
     }
@@ -108,12 +107,11 @@ impl From<&Rgba> for Hwba {
 impl From<&Hsla> for Hwba {
     fn from(hsla: &Hsla) -> Hwba {
         let rgba = Rgba::from(hsla);
-        let w = rgba.get_whiteness();
-        let b = rgba.get_blackness();
+        let arr = [&rgba.red, &rgba.blue, &rgba.green];
         Hwba {
             hue: hsla.hue,
-            w,
-            b,
+            w: Rational::one() - *arr.iter().max().unwrap() / 255,
+            b: *arr.iter().min().unwrap() / 255,
             alpha: hsla.alpha,
         }
     }
