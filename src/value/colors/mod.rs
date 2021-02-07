@@ -1,9 +1,11 @@
 //! Types for color values.
 mod convert;
 mod hsla;
+mod hwba;
 mod rgba;
 
 pub use self::hsla::Hsla;
+pub use self::hwba::Hwba;
 pub use self::rgba::Rgba;
 use crate::output::{Format, Formatted};
 use crate::value::Number;
@@ -17,70 +19,49 @@ use std::fmt::{self, Display};
 pub enum Color {
     Rgba(Rgba),
     Hsla(Hsla),
+    Hwba(Hwba),
 }
 
 impl Color {
     /// Get this color as a rgba value.
     ///
-    /// If this color is a rgba value, return a borrow if it.
+    /// If this color is a rgba value, return a borrow of it.
     /// Otherwise, do the conversion and return an owned value.
     pub fn to_rgba(&self) -> Cow<Rgba> {
         match self {
-            Color::Rgba(ref rgba) => Cow::Borrowed(rgba),
+            Color::Rgba(rgba) => Cow::Borrowed(rgba),
             Color::Hsla(hsla) => Cow::Owned(Rgba::from(hsla)),
+            Color::Hwba(hwba) => Cow::Owned(Rgba::from(hwba)),
         }
     }
     /// Get this color as a hsla value.
     ///
-    /// If this color is a hsla value, return a borrow if it.
+    /// If this color is a hsla value, return a borrow of it.
     /// Otherwise, do the conversion and return an owned value.
     pub fn to_hsla(&self) -> Cow<Hsla> {
         match self {
             Color::Rgba(rgba) => Cow::Owned(Hsla::from(rgba)),
             Color::Hsla(ref hsla) => Cow::Borrowed(hsla),
+            Color::Hwba(hwba) => Cow::Owned(Hsla::from(hwba)),
         }
     }
-    pub fn to_hwba(&self) -> (Rational, Rational, Rational, Rational) {
+    /// Get this color as a hwba value.
+    ///
+    /// If this color is a hwba value, return a borrow of it.
+    /// Otherwise, do the conversion and return an owned value.
+    pub fn to_hwba(&self) -> Cow<Hwba> {
         match self {
-            Color::Rgba(rgba) => {
-                let hsla = Hsla::from(rgba);
-                let white = rgba.get_whiteness();
-                let black = rgba.get_blackness();
-                (hsla.hue, white, black, hsla.alpha)
-            }
-            Color::Hsla(hsla) => {
-                let rgba = Rgba::from(hsla);
-                let white = rgba.get_whiteness();
-                let black = rgba.get_blackness();
-                (hsla.hue, white, black, hsla.alpha)
-            }
+            Color::Rgba(rgba) => Cow::Owned(Hwba::from(rgba)),
+            Color::Hsla(hsla) => Cow::Owned(Hwba::from(hsla)),
+            Color::Hwba(hwba) => Cow::Borrowed(hwba),
         }
     }
-    pub fn from_hwba(
-        hue: Rational,
-        w: Rational,
-        b: Rational,
-        a: Rational,
-    ) -> Self {
-        let wbsum = w + b;
-        let (w, b) = if wbsum > Rational::one() {
-            (w / wbsum, b / wbsum)
-        } else {
-            (w, b)
-        };
 
-        let l = (Rational::one() - b + w) / 2;
-        let s = if l.is_zero() || l.is_one() {
-            Rational::zero()
-        } else {
-            (Rational::one() - b - l) / std::cmp::min(l, Rational::one() - l)
-        };
-        Hsla::new(hue, s, l, a).into()
-    }
     pub fn get_alpha(&self) -> Rational {
         match self {
             Color::Rgba(rgba) => rgba.alpha,
             Color::Hsla(hsla) => hsla.alpha,
+            Color::Hwba(hwba) => hwba.alpha,
         }
     }
     pub fn set_alpha(&mut self, alpha: Rational) {
@@ -88,6 +69,7 @@ impl Color {
         match self {
             Color::Rgba(ref mut rgba) => rgba.alpha = alpha,
             Color::Hsla(ref mut hsla) => hsla.alpha = alpha,
+            Color::Hwba(ref mut hwba) => hwba.alpha = alpha,
         }
     }
     pub fn format(&self, format: Format) -> Formatted<Self> {
@@ -106,6 +88,11 @@ impl From<Rgba> for Color {
 impl From<Hsla> for Color {
     fn from(hsla: Hsla) -> Color {
         Color::Hsla(hsla)
+    }
+}
+impl From<Hwba> for Color {
+    fn from(hwba: Hwba) -> Color {
+        Color::Hwba(hwba)
     }
 }
 

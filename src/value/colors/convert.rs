@@ -35,6 +35,31 @@ impl From<&Hsla> for Rgba {
     }
 }
 
+impl From<&Hwba> for Rgba {
+    fn from(hwba: &Hwba) -> Rgba {
+        (&Hsla::from(hwba)).into() // TODO: Implement a direct conversion!
+    }
+}
+
+impl From<&Hwba> for Hsla {
+    fn from(hwba: &Hwba) -> Hsla {
+        let wbsum = hwba.w + hwba.b;
+        let (w, b) = if wbsum > one() {
+            (hwba.w / wbsum, hwba.b / wbsum)
+        } else {
+            (hwba.w, hwba.b)
+        };
+
+        let l = (Rational::one() - b + w) / 2;
+        let s = if l.is_zero() || l.is_one() {
+            zero()
+        } else {
+            (Rational::one() - b - l) / std::cmp::min(l, Rational::one() - l)
+        };
+        Hsla::new(hwba.hue, s, l, hwba.alpha)
+    }
+}
+
 impl From<&Rgba> for Hsla {
     fn from(rgba: &Rgba) -> Hsla {
         let (red, green, blue) =
@@ -63,6 +88,33 @@ impl From<&Rgba> for Hsla {
                 lum: mm / 2,
                 alpha: rgba.alpha,
             }
+        }
+    }
+}
+
+impl From<&Rgba> for Hwba {
+    fn from(rgba: &Rgba) -> Hwba {
+        let hsla = Hsla::from(rgba);
+        let w = rgba.get_whiteness();
+        let b = rgba.get_blackness();
+        Hwba {
+            hue: hsla.hue,
+            w,
+            b,
+            alpha: hsla.alpha,
+        }
+    }
+}
+impl From<&Hsla> for Hwba {
+    fn from(hsla: &Hsla) -> Hwba {
+        let rgba = Rgba::from(hsla);
+        let w = rgba.get_whiteness();
+        let b = rgba.get_blackness();
+        Hwba {
+            hue: hsla.hue,
+            w,
+            b,
+            alpha: hsla.alpha,
         }
     }
 }

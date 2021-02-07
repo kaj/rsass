@@ -1,6 +1,6 @@
 use super::{make_call, Error, Module, SassFunction};
 use crate::css::Value;
-use crate::value::{Color, Hsla, Quotes, Rgba, Unit};
+use crate::value::{Hsla, Hwba, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
@@ -51,18 +51,18 @@ pub fn register(f: &mut Module) {
                     )
                     .into())
                 } else {
-                    let (h, w, b, a) = rgba.to_hwba();
+                    let hwba = rgba.to_hwba();
                     let sl_add = |orig: Rational, x: Value| match x {
                         Value::Null => Ok(orig),
                         x => {
                             to_rational_percent(x).map(|x| clamp_z1(orig + x))
                         }
                     };
-                    Ok(Color::from_hwba(
-                        c_add(h, "hue")?,
-                        sl_add(w, w_adj)?,
-                        sl_add(b, b_adj)?,
-                        c_add(a, "alpha")?,
+                    Ok(Hwba::new(
+                        c_add(hwba.hue, "hue")?,
+                        sl_add(hwba.w, w_adj)?,
+                        sl_add(hwba.b, b_adj)?,
+                        c_add(hwba.alpha, "alpha")?,
                     )
                     .into())
                 }
@@ -119,12 +119,12 @@ pub fn register(f: &mut Module) {
                     hsla.alpha = comb(hsla.alpha, a_adj, one)?;
                     Ok(hsla.into())
                 } else {
-                    let (h, w, b, alpha) = rgba.to_hwba();
-                    Ok(Color::from_hwba(
-                        comb(h, h_adj, one)?,
-                        comb(w, w_adj, one)?,
-                        comb(b, b_adj, one)?,
-                        comb(alpha, a_adj, one)?,
+                    let hwba = rgba.to_hwba();
+                    Ok(Hwba::new(
+                        comb(hwba.hue, h_adj, one)?,
+                        comb(hwba.w, w_adj, one)?,
+                        comb(hwba.b, b_adj, one)?,
+                        comb(hwba.alpha, a_adj, one)?,
                     )
                     .into())
                 }
@@ -214,12 +214,12 @@ pub fn register(f: &mut Module) {
                     )
                     .into())
                 } else {
-                    let (h, w, b, alpha) = rgba.to_hwba();
-                    Ok(Color::from_hwba(
-                        a_or("hue", h)?,
-                        sl_or(w_adj, w)?,
-                        sl_or(b_adj, b)?,
-                        a_or("alpha", alpha)?,
+                    let hwba = rgba.to_hwba();
+                    Ok(Hwba::new(
+                        a_or("hue", hwba.hue)?,
+                        sl_or(w_adj, hwba.w)?,
+                        sl_or(b_adj, hwba.b)?,
+                        a_or("alpha", hwba.alpha)?,
                     )
                     .into())
                 }
