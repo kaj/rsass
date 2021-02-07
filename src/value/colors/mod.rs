@@ -1,3 +1,4 @@
+//! Types for color values.
 mod hsla;
 mod rgba;
 
@@ -10,6 +11,7 @@ use num_traits::{one, zero, One, Zero};
 use std::borrow::Cow;
 use std::fmt::{self, Display};
 
+/// A color in sass/css, may be a Rgba or a Hsla value.
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Color {
     Rgba(Rgba),
@@ -17,6 +19,10 @@ pub enum Color {
 }
 
 impl Color {
+    /// Get this color as a rgba value.
+    ///
+    /// If this color is a rgba value, return a borrow if it.
+    /// Otherwise, do the conversion and return an owned value.
     pub fn to_rgba(&self) -> Cow<Rgba> {
         match self {
             Color::Rgba(ref rgba) => Cow::Borrowed(rgba),
@@ -25,6 +31,10 @@ impl Color {
             )),
         }
     }
+    /// Get this color as a hsla value.
+    ///
+    /// If this color is a hsla value, return a borrow if it.
+    /// Otherwise, do the conversion and return an owned value.
     pub fn to_hsla(&self) -> Cow<Hsla> {
         match self {
             Color::Rgba(rgba) => Cow::Owned(Hsla::from_rgba(rgba)),
