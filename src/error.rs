@@ -1,5 +1,6 @@
 use crate::css::Value;
 use crate::parser::ParseError;
+use crate::value::RangeError;
 use std::convert::From;
 use std::string::FromUtf8Error;
 use std::{fmt, io};
@@ -12,6 +13,7 @@ pub enum Error {
     Encoding(FromUtf8Error),
     BadValue(String),
     BadArguments(String),
+    BadRange(RangeError),
     ParseError(ParseError),
     S(String),
     UndefinedVariable(String),
@@ -65,6 +67,7 @@ impl fmt::Display for Error {
                 write!(out, "Undefined variable: \"${}\"", name)
             }
             Error::ParseError(ref err) => err.fmt(out),
+            Error::BadRange(ref err) => err.fmt(out),
             Error::BadValue(ref err) => err.fmt(out),
             // fallback
             ref x => write!(out, "{:?}", x),
@@ -87,5 +90,10 @@ impl From<FromUtf8Error> for Error {
 impl From<ParseError> for Error {
     fn from(e: ParseError) -> Self {
         Error::ParseError(e)
+    }
+}
+impl From<RangeError> for Error {
+    fn from(e: RangeError) -> Self {
+        Error::BadRange(e)
     }
 }

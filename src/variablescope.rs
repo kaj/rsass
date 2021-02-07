@@ -116,11 +116,13 @@ pub trait Scope {
                     inclusive,
                     ref body,
                 } => {
-                    let from = from.evaluate(self)?.integer_value()?;
-                    let to = to.evaluate(self)?.integer_value()?;
-                    let to = if inclusive { to + 1 } else { to };
-                    for value in from..to {
-                        self.define(name.clone(), &Value::scalar(value));
+                    let range = crate::value::ValueRange::new(
+                        from.evaluate(self)?,
+                        to.evaluate(self)?,
+                        inclusive,
+                    )?;
+                    for value in range {
+                        self.define(name.clone(), &value);
                         if let Some(r) = self.eval_body(body)? {
                             return Ok(Some(r));
                         }

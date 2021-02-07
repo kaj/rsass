@@ -3,6 +3,7 @@ mod list_separator;
 mod number;
 mod operator;
 mod quotes;
+mod range;
 mod unit;
 
 pub use self::colors::{Color, Hsla, Hwba, Rgba};
@@ -11,3 +12,4 @@ pub use self::number::{NumValue, Number};
 pub use self::operator::Operator;
 pub use self::quotes::Quotes;
 pub use self::unit::{Dimension, Unit};
+pub(crate) use range::{RangeError, ValueRange};

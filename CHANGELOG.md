@@ -13,6 +13,7 @@ project adheres to
 * Handle more peculiarities with atan2, pow, infinities and negative zero.
 * Improve name lookups in scopes and modules, PR #87.
 * A color can be Hsla or Hwba as well as Rgba. PR #88.
+* Handle units in `@for` loops inside sass functions.
 * Test suite sass-spec updated to 2021-02-04.
 * Some cleanups.
 

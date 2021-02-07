@@ -102,11 +102,10 @@ impl Value {
         }
     }
 
-    pub fn numeric_value(self) -> Option<(Number, Unit)> {
-        if let Value::Numeric(num, unit, ..) = self {
-            Some((num, unit))
-        } else {
-            None
+    pub fn numeric_value(self) -> Result<(Number, Unit), Self> {
+        match self {
+            Value::Numeric(num, unit, ..) => Ok((num, unit)),
+            v => Err(v),
         }
     }
 
