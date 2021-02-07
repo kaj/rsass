@@ -60,7 +60,9 @@ pub use crate::parser::{
     ParseError, SourcePos,
 };
 pub use crate::sass::Item;
-pub use crate::value::{Dimension, ListSeparator, Number, Quotes, Unit};
+pub use crate::value::{
+    colors, Dimension, ListSeparator, Number, Quotes, Unit,
+};
 pub use crate::variablescope::{GlobalScope, Scope};
 pub use num_rational::Rational;
 

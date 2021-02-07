@@ -3,9 +3,7 @@ use crate::error::Error;
 use crate::functions::SassFunction;
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
-use crate::value::{
-    Color, ListSeparator, Number, Operator, Quotes, Rgba, Unit,
-};
+use crate::value::{Color, ListSeparator, Number, Operator, Quotes, Unit};
 use std::convert::TryFrom;
 
 /// A css value.
@@ -52,9 +50,6 @@ impl Value {
         } else {
             Value::False
         }
-    }
-    pub fn black() -> Self {
-        Value::Color(Rgba::from_rgb(0, 0, 0).into(), Some("black".into()))
     }
 
     pub fn type_name(&self) -> &'static str {

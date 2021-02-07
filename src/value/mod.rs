@@ -1,4 +1,4 @@
-mod colors;
+pub mod colors;
 mod list_separator;
 mod number;
 mod operator;
