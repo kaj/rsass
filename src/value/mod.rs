@@ -1,11 +1,11 @@
-mod colors;
+pub mod colors;
 mod list_separator;
 mod number;
 mod operator;
 mod quotes;
 mod unit;
 
-pub use self::colors::Rgba;
+pub use self::colors::{Color, Hsla, Hwba, Rgba};
 pub use self::list_separator::ListSeparator;
 pub use self::number::{NumValue, Number};
 pub use self::operator::Operator;

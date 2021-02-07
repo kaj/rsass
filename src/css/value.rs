@@ -3,8 +3,7 @@ use crate::error::Error;
 use crate::functions::SassFunction;
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
-use crate::value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
-use num_rational::Rational;
+use crate::value::{Color, ListSeparator, Number, Operator, Quotes, Unit};
 use std::convert::TryFrom;
 
 /// A css value.
@@ -25,7 +24,7 @@ pub enum Value {
     /// The boolean flag is true for calculated values and false for
     /// literal values.
     Numeric(Number, Unit, bool),
-    Color(Rgba, Option<String>),
+    Color(Color, Option<String>),
     Null,
     True,
     False,
@@ -51,17 +50,6 @@ impl Value {
         } else {
             Value::False
         }
-    }
-    pub fn black() -> Self {
-        Value::Color(Rgba::from_rgb(0, 0, 0), Some("black".into()))
-    }
-    #[deprecated]
-    pub fn rgba(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
-        Value::Color(Rgba::new(r, g, b, a), None)
-    }
-    #[deprecated]
-    pub fn hsla(h: Rational, s: Rational, l: Rational, a: Rational) -> Self {
-        Value::Color(Rgba::from_hsla(h, s, l, a), None)
     }
 
     pub fn type_name(&self) -> &'static str {
@@ -328,8 +316,8 @@ impl From<String> for Value {
         Value::Literal(s, Quotes::None)
     }
 }
-impl From<Rgba> for Value {
-    fn from(c: Rgba) -> Value {
-        Value::Color(c, None)
+impl<C: Into<Color>> From<C> for Value {
+    fn from(c: C) -> Value {
+        Value::Color(c.into(), None)
     }
 }

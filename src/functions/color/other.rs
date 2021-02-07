@@ -1,6 +1,6 @@
 use super::{make_call, Error, Module, SassFunction};
 use crate::css::Value;
-use crate::value::{Quotes, Rgba, Unit};
+use crate::value::{Hsla, Hwba, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
@@ -12,8 +12,8 @@ pub fn register(f: &mut Module) {
             color, red, green, blue, hue, saturation, lightness, whiteness,
             blackness, alpha
         ),
-        |s: &dyn Scope| match &s.get("color")? {
-            &Value::Color(ref rgba, _) => {
+        |s: &dyn Scope| match s.get("color")? {
+            Value::Color(rgba, _) => {
                 let c_add = |orig: Rational, name: &str| match s.get(name)? {
                     Value::Null => Ok(orig),
                     x => to_rational(x).map(|x| orig + x),
@@ -29,6 +29,7 @@ pub fn register(f: &mut Module) {
                     && b_adj.is_null()
                     && w_adj.is_null()
                 {
+                    let rgba = rgba.to_rgba();
                     Ok(Rgba::new(
                         c_add(rgba.red, "red")?,
                         c_add(rgba.green, "green")?,
@@ -37,36 +38,36 @@ pub fn register(f: &mut Module) {
                     )
                     .into())
                 } else if b_adj.is_null() && w_adj.is_null() {
-                    let (h, s, l, alpha) = rgba.to_hsla();
+                    let hsla = rgba.to_hsla();
                     let sl_add = |orig: Rational, x: Value| match x {
                         Value::Null => Ok(orig),
                         x => to_rational_percent(x).map(|x| orig + x),
                     };
-                    Ok(Rgba::from_hsla(
-                        c_add(h, "hue")?,
-                        sl_add(s, s_adj)?,
-                        sl_add(l, l_adj)?,
-                        c_add(alpha, "alpha")?,
+                    Ok(Hsla::new(
+                        c_add(hsla.hue, "hue")?,
+                        sl_add(hsla.sat, s_adj)?,
+                        sl_add(hsla.lum, l_adj)?,
+                        c_add(hsla.alpha, "alpha")?,
                     )
                     .into())
                 } else {
-                    let (h, _s, _l, _alpha) = rgba.to_hsla();
+                    let hwba = rgba.to_hwba();
                     let sl_add = |orig: Rational, x: Value| match x {
                         Value::Null => Ok(orig),
                         x => {
                             to_rational_percent(x).map(|x| clamp_z1(orig + x))
                         }
                     };
-                    Ok(Rgba::from_hwba(
-                        c_add(h, "hue")?,
-                        sl_add(rgba.get_whiteness(), w_adj)?,
-                        sl_add(rgba.get_blackness(), b_adj)?,
-                        c_add(rgba.alpha, "alpha")?,
+                    Ok(Hwba::new(
+                        c_add(hwba.hue, "hue")?,
+                        sl_add(hwba.w, w_adj)?,
+                        sl_add(hwba.b, b_adj)?,
+                        c_add(hwba.alpha, "alpha")?,
                     )
                     .into())
                 }
             }
-            v => Err(Error::badarg("color", v)),
+            v => Err(Error::badarg("color", &v)),
         }
     );
     def!(
@@ -75,8 +76,8 @@ pub fn register(f: &mut Module) {
             color, red, green, blue, hue, saturation, lightness, whiteness,
             blackness, alpha
         ),
-        |s: &dyn Scope| match &s.get("color")? {
-            &Value::Color(ref rgba, _) => {
+        |s: &dyn Scope| match s.get("color")? {
+            Value::Color(rgba, _) => {
                 let h_adj = s.get("hue")?;
                 let s_adj = s.get("saturation")?;
                 let l_adj = s.get("lightness")?;
@@ -102,6 +103,7 @@ pub fn register(f: &mut Module) {
                     && b_adj.is_null()
                     && w_adj.is_null()
                 {
+                    let rgba = rgba.to_rgba();
                     Ok(Rgba::new(
                         comb(rgba.red, s.get("red")?, ff)?,
                         comb(rgba.green, s.get("green")?, ff)?,
@@ -110,43 +112,41 @@ pub fn register(f: &mut Module) {
                     )
                     .into())
                 } else if b_adj.is_null() && w_adj.is_null() {
-                    let (h, s, l, alpha) = rgba.to_hsla();
-                    Ok(Rgba::from_hsla(
-                        comb(h, h_adj, one)?,
-                        comb(s, s_adj, one)?,
-                        comb(l, l_adj, one)?,
-                        comb(alpha, a_adj, one)?,
-                    )
-                    .into())
+                    let mut hsla = rgba.to_hsla().into_owned();
+                    hsla.hue = comb(hsla.hue, h_adj, one)?;
+                    hsla.sat = comb(hsla.sat, s_adj, one)?;
+                    hsla.lum = comb(hsla.lum, l_adj, one)?;
+                    hsla.alpha = comb(hsla.alpha, a_adj, one)?;
+                    Ok(hsla.into())
                 } else {
-                    let (h, _s, _l, alpha) = rgba.to_hsla();
-                    Ok(Rgba::from_hwba(
-                        comb(h, h_adj, one)?,
-                        comb(rgba.get_whiteness(), w_adj, one)?,
-                        comb(rgba.get_blackness(), b_adj, one)?,
-                        comb(alpha, a_adj, one)?,
+                    let hwba = rgba.to_hwba();
+                    Ok(Hwba::new(
+                        comb(hwba.hue, h_adj, one)?,
+                        comb(hwba.w, w_adj, one)?,
+                        comb(hwba.b, b_adj, one)?,
+                        comb(hwba.alpha, a_adj, one)?,
                     )
                     .into())
                 }
             }
-            v => Err(Error::badarg("color", v)),
+            v => Err(Error::badarg("color", &v)),
         }
     );
 
     def!(f, opacity(color), |args| match args.get("color")? {
-        Value::Color(ref rgba, _) => Ok(Value::scalar(rgba.alpha)),
+        Value::Color(ref col, _) => Ok(Value::scalar(col.get_alpha())),
         v => Ok(make_call("opacity", vec![v])),
     });
     def!(f, alpha(color), |args| match args.get("color")? {
-        Value::Color(ref rgba, _) => Ok(Value::scalar(rgba.alpha)),
+        Value::Color(ref col, _) => Ok(Value::scalar(col.get_alpha())),
         v => Ok(make_call("alpha", vec![v])),
     });
 
     fn fade_in(color: Value, amount: Value) -> Result<Value, Error> {
         match (color, amount) {
-            (Value::Color(rgba, _), Value::Numeric(v, ..)) => {
-                let a = rgba.alpha + v.as_ratio()?;
-                Ok(Rgba::new(rgba.red, rgba.green, rgba.blue, a).into())
+            (Value::Color(mut col, _), Value::Numeric(v, ..)) => {
+                col.set_alpha(col.get_alpha() + v.as_ratio()?);
+                Ok(col.into())
             }
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
@@ -155,9 +155,9 @@ pub fn register(f: &mut Module) {
 
     fn fade_out(color: Value, amount: Value) -> Result<Value, Error> {
         match (color, amount) {
-            (Value::Color(rgba, _), Value::Numeric(v, ..)) => {
-                let a = rgba.alpha - v.as_ratio()?;
-                Ok(Rgba::new(rgba.red, rgba.green, rgba.blue, a).into())
+            (Value::Color(mut col, _), Value::Numeric(v, ..)) => {
+                col.set_alpha(col.get_alpha() - v.as_ratio()?);
+                Ok(col.into())
             }
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
@@ -196,6 +196,7 @@ pub fn register(f: &mut Module) {
                     && b_adj.is_null()
                     && w_adj.is_null()
                 {
+                    let rgba = rgba.to_rgba();
                     Ok(Rgba::new(
                         c_or("red", rgba.red)?,
                         c_or("green", rgba.green)?,
@@ -204,21 +205,21 @@ pub fn register(f: &mut Module) {
                     )
                     .into())
                 } else if b_adj.is_null() && w_adj.is_null() {
-                    let (h, s, l, alpha) = rgba.to_hsla();
-                    Ok(Rgba::from_hsla(
-                        a_or("hue", h)?,
-                        sl_or(s_adj, s)?,
-                        sl_or(l_adj, l)?,
-                        a_or("alpha", alpha)?,
+                    let hsla = rgba.to_hsla();
+                    Ok(Hsla::new(
+                        a_or("hue", hsla.hue)?,
+                        sl_or(s_adj, hsla.sat)?,
+                        sl_or(l_adj, hsla.lum)?,
+                        a_or("alpha", hsla.alpha)?,
                     )
                     .into())
                 } else {
-                    let (h, _s, _l, alpha) = rgba.to_hsla();
-                    Ok(Rgba::from_hwba(
-                        a_or("hue", h)?,
-                        sl_or(w_adj, rgba.get_whiteness())?,
-                        sl_or(b_adj, rgba.get_blackness())?,
-                        a_or("alpha", alpha)?,
+                    let hwba = rgba.to_hwba();
+                    Ok(Hwba::new(
+                        a_or("hue", hwba.hue)?,
+                        sl_or(w_adj, hwba.w)?,
+                        sl_or(b_adj, hwba.b)?,
+                        a_or("alpha", hwba.alpha)?,
                     )
                     .into())
                 }
@@ -227,10 +228,10 @@ pub fn register(f: &mut Module) {
         }
     );
     def!(f, ie_hex_str(color), |s| match s.get("color")? {
-        Value::Color(rgba, _) => {
-            let (r, g, b, a) = rgba.to_bytes();
+        Value::Color(col, _) => {
+            let (r, g, b, alpha) = col.to_rgba().to_bytes();
             Ok(Value::Literal(
-                format!("#{:02X}{:02X}{:02X}{:02X}", a, r, g, b),
+                format!("#{:02X}{:02X}{:02X}{:02X}", alpha, r, g, b),
                 Quotes::None,
             ))
         }

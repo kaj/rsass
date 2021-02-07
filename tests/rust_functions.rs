@@ -1,3 +1,4 @@
+use rsass::colors::Rgba;
 use rsass::sass::Name;
 use rsass::*;
 use std::sync::Arc;
@@ -10,14 +11,14 @@ fn simple_value() {
         precision: 5,
     };
     let mut scope = GlobalScope::new(format);
-    scope.define(Name::from_static("color"), &css::Value::black());
+    scope.define(Name::from_static("color"), &Rgba::from_rgb(0, 0, 0).into());
     let file_context = FsFileContext::new();
     assert_eq!(
         format
             .write_root(&parsed, &mut scope, &file_context)
             .and_then(|s| Ok(String::from_utf8(s)?))
             .unwrap(),
-        "p{color:black}\n"
+        "p{color:#000}\n"
     );
 }
 

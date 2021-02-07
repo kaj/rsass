@@ -2,7 +2,7 @@ use super::hsl::{percentage, to_rational2, to_rational_percent};
 use super::rgb::values_from_list;
 use super::{Error, Module, SassFunction};
 use crate::css::Value;
-use crate::value::{NumValue, Rgba, Unit};
+use crate::value::{Hwba, NumValue, Unit};
 use num_rational::Rational;
 use num_traits::One;
 
@@ -31,15 +31,15 @@ pub fn register(f: &mut Module) {
         } else {
             to_rational2(&a)?
         };
-        Ok(Rgba::from_hwba(hue.as_ratio()?, w, b, a).into())
+        Ok(Hwba::new(hue.as_ratio()?, w, b, a).into())
     });
-    def!(f, blackness(color), |args| match &args.get("color")? {
-        &Value::Color(ref col, _) => Ok(percentage(col.get_blackness())),
-        v => Err(Error::badarg("color", v)),
+    def!(f, blackness(color), |args| match args.get("color")? {
+        Value::Color(col, _) => Ok(percentage(col.to_hwba().b)),
+        v => Err(Error::badarg("color", &v)),
     });
-    def!(f, whiteness(color), |args| match &args.get("color")? {
-        &Value::Color(ref col, _) => Ok(percentage(col.get_whiteness())),
-        v => Err(Error::badarg("color", v)),
+    def!(f, whiteness(color), |args| match args.get("color")? {
+        Value::Color(col, _) => Ok(percentage(col.to_hwba().w)),
+        v => Err(Error::badarg("color", &v)),
     });
 }
 

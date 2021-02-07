@@ -42,10 +42,10 @@ impl Operator {
             Operator::Plus => match (a, b) {
                 (Value::Color(a, _), Value::Numeric(bn, Unit::None, _)) => {
                     let bn = bn.as_ratio().ok()?;
-                    Some(Value::Color(a + bn, None))
+                    Some((a.to_rgba().as_ref() + bn).into())
                 }
                 (Value::Color(a, _), Value::Color(b, _)) => {
-                    Some(Value::Color(a + b, None))
+                    Some((a.to_rgba().as_ref() + b.to_rgba().as_ref()).into())
                 }
                 (Value::Numeric(a, au, ..), Value::Numeric(b, bu, ..)) => {
                     if au == bu || bu == Unit::None {
@@ -74,28 +74,22 @@ impl Operator {
                 )),
                 _ => None,
             },
-            Operator::Minus => match (&a, &b) {
-                (
-                    &Value::Color(ref a, _),
-                    &Value::Numeric(ref bn, Unit::None, _),
-                ) => {
+            Operator::Minus => match (a, b) {
+                (Value::Color(a, _), Value::Numeric(bn, Unit::None, _)) => {
                     let bn = bn.as_ratio().ok()?;
-                    Some(Value::Color(a - bn, None))
+                    Some((a.to_rgba().as_ref() - bn).into())
                 }
-                (&Value::Color(ref a, _), &Value::Color(ref b, _)) => {
-                    Some(Value::Color(a - b, None))
+                (Value::Color(a, _), Value::Color(b, _)) => {
+                    Some((a.to_rgba().as_ref() - b.to_rgba().as_ref()).into())
                 }
-                (
-                    &Value::Numeric(ref av, ref au, ..),
-                    &Value::Numeric(ref bv, ref bu, ..),
-                ) => {
-                    if au == bu || bu == &Unit::None {
-                        Some(Value::Numeric(av - bv, au.clone(), true))
-                    } else if au == &Unit::None {
-                        Some(Value::Numeric(av - bv, bu.clone(), true))
-                    } else if let Some(scale) = bu.scale_to(au) {
+                (Value::Numeric(av, au, ..), Value::Numeric(bv, bu, ..)) => {
+                    if au == bu || bu == Unit::None {
+                        Some(Value::Numeric(&av - &bv, au, true))
+                    } else if au == Unit::None {
+                        Some(Value::Numeric(&av - &bv, bu, true))
+                    } else if let Some(scale) = bu.scale_to(&au) {
                         Some(Value::Numeric(
-                            av - &(bv * &scale),
+                            &av - &(bv * &scale),
                             au.clone(),
                             true,
                         ))
@@ -105,15 +99,9 @@ impl Operator {
                 }
                 // Note: This very special case should probably be much
                 // more general.
-                (&Value::UnicodeRange(..), &Value::Literal(..)) => {
+                (a @ Value::UnicodeRange(..), b @ Value::Literal(..)) => {
                     Some(Value::List(
-                        vec![
-                            a.clone(),
-                            Value::UnaryOp(
-                                Operator::Minus,
-                                Box::new(b.clone()),
-                            ),
-                        ],
+                        vec![a, Value::UnaryOp(Operator::Minus, Box::new(b))],
                         ListSeparator::Space,
                         false,
                     ))
@@ -143,33 +131,29 @@ impl Operator {
             }
             Operator::Div => {
                 if a.is_calculated() || b.is_calculated() {
-                    match (&a, &b) {
+                    match (a, b) {
                         (
-                            &Value::Color(ref a, _),
-                            &Value::Numeric(ref bn, Unit::None, ..),
+                            Value::Color(a, _),
+                            Value::Numeric(bn, Unit::None, ..),
                         ) => {
                             let bn = bn.as_ratio().ok()?;
-                            Some(Value::Color(a / bn, None))
+                            Some((a.to_rgba().as_ref() / bn).into())
                         }
                         (
-                            &Value::Numeric(ref av, ref au, ..),
-                            &Value::Numeric(ref bv, ref bu, ..),
+                            Value::Numeric(av, au, ..),
+                            Value::Numeric(bv, bu, ..),
                         ) => {
-                            if bu == &Unit::None {
-                                Some(Value::Numeric(
-                                    av / bv,
-                                    au.clone(),
-                                    true,
-                                ))
+                            if bu == Unit::None {
+                                Some(Value::Numeric(&av / &bv, au, true))
                             } else if au == bu {
                                 Some(Value::Numeric(
-                                    av / bv,
+                                    &av / &bv,
                                     Unit::None,
                                     true,
                                 ))
                             } else if let Some(scale) = bu.scale_to(&au) {
                                 Some(Value::Numeric(
-                                    av / &(bv * &scale),
+                                    &av / &(bv * &scale),
                                     Unit::None,
                                     true,
                                 ))
@@ -179,11 +163,11 @@ impl Operator {
                         }
                         //_ => None,
                         (a, b) => Some(Value::BinOp(
-                            Box::new(a.clone()),
-                            false, // *space1,
+                            Box::new(a),
+                            false,
                             Operator::Div,
-                            false, // *space2,
-                            Box::new(b.clone()),
+                            false,
+                            Box::new(b),
                         )),
                     }
                 } else {
