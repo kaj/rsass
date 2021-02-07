@@ -27,25 +27,17 @@ impl Color {
     }
     pub fn to_hsla(&self) -> Cow<Hsla> {
         match self {
-            Color::Rgba(rgba) => {
-                let (hue, sat, lum, alpha) = rgba.to_hsla();
-                Cow::Owned(Hsla {
-                    hue,
-                    sat,
-                    lum,
-                    alpha,
-                })
-            }
+            Color::Rgba(rgba) => Cow::Owned(Hsla::from_rgba(rgba)),
             Color::Hsla(ref hsla) => Cow::Borrowed(hsla),
         }
     }
     pub fn to_hwba(&self) -> (Rational, Rational, Rational, Rational) {
         match self {
             Color::Rgba(rgba) => {
-                let (hue, _sat, _lum, alpha) = rgba.to_hsla();
+                let hsla = Hsla::from_rgba(rgba);
                 let white = rgba.get_whiteness();
                 let black = rgba.get_blackness();
-                (hue, white, black, alpha)
+                (hsla.hue, white, black, hsla.alpha)
             }
             Color::Hsla(hsla) => {
                 let rgba =

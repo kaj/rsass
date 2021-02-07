@@ -114,26 +114,7 @@ impl Rgba {
         let a = self.alpha * 255;
         (byte(self.red), byte(self.green), byte(self.blue), byte(a))
     }
-    /// Convert rgb (0 .. 255) to hue (degrees) / sat (0 .. 1) / lighness (0 .. 1)
-    pub fn to_hsla(&self) -> (Rational, Rational, Rational, Rational) {
-        let (red, green, blue) =
-            (self.red / 255, self.green / 255, self.blue / 255);
-        let (max, min, largest) = max_min_largest(red, green, blue);
 
-        if max == min {
-            (Rational::zero(), Rational::zero(), max, self.alpha)
-        } else {
-            let d = max - min;
-            let h = match largest {
-                0 => (green - blue) / d + if green < blue { 6 } else { 0 },
-                1 => (blue - red) / d + 2,
-                _ => (red - green) / d + 4,
-            } * (360 / 6);
-            let mm = max + min;
-            let s = d / if mm > Rational::one() { -mm + 2 } else { mm };
-            (h, s, mm / 2, self.alpha)
-        }
-    }
     /// Get the hwb blackness of this color, a number between 0 an 1.
     pub fn get_blackness(&self) -> Rational {
         let arr = [&self.red, &self.blue, &self.green];
@@ -222,18 +203,6 @@ impl<'a> Sub<&'a Rgba> for &'a Rgba {
             (self.alpha + rhs.alpha) / 2,
         )
     }
-}
-
-// Find which of three numbers are largest and smallest
-fn max_min_largest(
-    a: Rational,
-    b: Rational,
-    c: Rational,
-) -> (Rational, Rational, u32) {
-    let v = [(a, 0), (b, 1), (c, 2)];
-    let max = v.iter().max().unwrap();
-    let min = v.iter().min().unwrap();
-    (max.0, min.0, max.1)
 }
 
 #[test]
