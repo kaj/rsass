@@ -169,18 +169,6 @@ lazy_static! {
     };
 }
 
-fn make_call(name: &str, args: Vec<css::Value>) -> css::Value {
-    css::Value::Call(
-        name.into(),
-        css::CallArgs::new(
-            args.into_iter()
-                .filter(|v| v != &css::Value::Null)
-                .map(|v| (None, v))
-                .collect(),
-        ),
-    )
-}
-
 #[test]
 fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     use crate::parser::code_span;

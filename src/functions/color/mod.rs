@@ -1,6 +1,6 @@
-use super::{make_call, Error, Module, SassFunction};
-use crate::{css::Value, value::Color, Scope};
-
+use super::{Error, Module, SassFunction};
+use crate::css::{CallArgs, Value};
+use crate::{value::Color, Scope};
 mod hsl;
 mod hwb;
 mod other;
@@ -26,4 +26,16 @@ fn get_color(s: &dyn Scope, name: &str) -> Result<Color, Error> {
         Value::Color(col, _) => Ok(col),
         value => Err(Error::badarg("color", &value)),
     }
+}
+
+fn make_call(name: &str, args: Vec<Value>) -> Value {
+    Value::Call(
+        name.into(),
+        CallArgs::new(
+            args.into_iter()
+                .filter(|v| v != &Value::Null)
+                .map(|v| (None, v))
+                .collect(),
+        ),
+    )
 }

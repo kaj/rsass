@@ -1,6 +1,6 @@
 use super::{get_color, make_call, Error, Module, SassFunction};
 use crate::css::Value;
-use crate::value::{Hsla, Hwba, Quotes, Rgba, Unit};
+use crate::value::{Hsla, Hwba, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
@@ -223,10 +223,7 @@ pub fn register(f: &mut Module) {
     );
     def!(f, ie_hex_str(color), |s| {
         let (r, g, b, alpha) = get_color(s, "color")?.to_rgba().to_bytes();
-        Ok(Value::Literal(
-            format!("#{:02X}{:02X}{:02X}{:02X}", alpha, r, g, b),
-            Quotes::None,
-        ))
+        Ok(format!("#{:02X}{:02X}{:02X}{:02X}", alpha, r, g, b).into())
     });
 }
 
