@@ -62,7 +62,7 @@ impl Color {
     /// The alpha channel is a rational value between 0 and 1.
     pub fn get_alpha(&self) -> Rational {
         match self {
-            Color::Rgba(rgba) => rgba.alpha,
+            Color::Rgba(rgba) => rgba.alpha(),
             Color::Hsla(hsla) => hsla.alpha(),
             Color::Hwba(hwba) => hwba.alpha(),
         }
@@ -73,7 +73,7 @@ impl Color {
     pub fn set_alpha(&mut self, alpha: Rational) {
         let alpha = clamp(alpha, zero(), one());
         match self {
-            Color::Rgba(ref mut rgba) => rgba.alpha = alpha,
+            Color::Rgba(ref mut rgba) => rgba.set_alpha(alpha),
             Color::Hsla(ref mut hsla) => hsla.set_alpha(alpha),
             Color::Hwba(ref mut hwba) => hwba.set_alpha(alpha),
         }

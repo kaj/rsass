@@ -31,10 +31,10 @@ pub fn register(f: &mut Module) {
                 {
                     let rgba = rgba.to_rgba();
                     Ok(Rgba::new(
-                        c_add(rgba.red, "red")?,
-                        c_add(rgba.green, "green")?,
-                        c_add(rgba.blue, "blue")?,
-                        c_add(rgba.alpha, "alpha")?,
+                        c_add(rgba.red(), "red")?,
+                        c_add(rgba.green(), "green")?,
+                        c_add(rgba.blue(), "blue")?,
+                        c_add(rgba.alpha(), "alpha")?,
                     )
                     .into())
                 } else if b_adj.is_null() && w_adj.is_null() {
@@ -105,10 +105,10 @@ pub fn register(f: &mut Module) {
                 {
                     let rgba = rgba.to_rgba();
                     Ok(Rgba::new(
-                        comb(rgba.red, s.get("red")?, ff)?,
-                        comb(rgba.green, s.get("green")?, ff)?,
-                        comb(rgba.blue, s.get("blue")?, ff)?,
-                        comb(rgba.alpha, a_adj, one)?,
+                        comb(rgba.red(), s.get("red")?, ff)?,
+                        comb(rgba.green(), s.get("green")?, ff)?,
+                        comb(rgba.blue(), s.get("blue")?, ff)?,
+                        comb(rgba.alpha(), a_adj, one)?,
                     )
                     .into())
                 } else if b_adj.is_null() && w_adj.is_null() {
@@ -200,10 +200,10 @@ pub fn register(f: &mut Module) {
                 {
                     let rgba = rgba.to_rgba();
                     Ok(Rgba::new(
-                        c_or("red", rgba.red)?,
-                        c_or("green", rgba.green)?,
-                        c_or("blue", rgba.blue)?,
-                        a_or("alpha", rgba.alpha)?,
+                        c_or("red", rgba.red())?,
+                        c_or("green", rgba.green())?,
+                        c_or("blue", rgba.blue())?,
+                        a_or("alpha", rgba.alpha())?,
                     )
                     .into())
                 } else if b_adj.is_null() && w_adj.is_null() {
