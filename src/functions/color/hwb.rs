@@ -1,6 +1,6 @@
 use super::hsl::{percentage, to_rational2, to_rational_percent};
 use super::rgb::values_from_list;
-use super::{Error, Module, SassFunction};
+use super::{get_color, Error, Module, SassFunction};
 use crate::css::Value;
 use crate::value::{Hwba, NumValue, Unit};
 use num_rational::Rational;
@@ -33,13 +33,11 @@ pub fn register(f: &mut Module) {
         };
         Ok(Hwba::new(hue.as_ratio()?, w, b, a).into())
     });
-    def!(f, blackness(color), |args| match args.get("color")? {
-        Value::Color(col, _) => Ok(percentage(col.to_hwba().blackness())),
-        v => Err(Error::badarg("color", &v)),
+    def!(f, blackness(color), |s| {
+        Ok(percentage(get_color(s, "color")?.to_hwba().blackness()))
     });
-    def!(f, whiteness(color), |args| match args.get("color")? {
-        Value::Color(col, _) => Ok(percentage(col.to_hwba().whiteness())),
-        v => Err(Error::badarg("color", &v)),
+    def!(f, whiteness(color), |s| {
+        Ok(percentage(get_color(s, "color")?.to_hwba().whiteness()))
     });
 }
 

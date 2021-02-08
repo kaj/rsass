@@ -1,5 +1,5 @@
 use super::rgb::{preserve_call, values_from_list};
-use super::{make_call, Error, Module, SassFunction};
+use super::{get_color, make_call, Error, Module, SassFunction};
 use crate::css::Value;
 use crate::value::{Hsla, Number, Unit};
 use crate::variablescope::Scope;
@@ -62,16 +62,9 @@ pub fn register(f: &mut Module) {
         }
         (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
     });
-    def!(
-        f,
-        complement(color),
-        |s: &dyn Scope| match s.get("color")? {
-            Value::Color(col, _) => {
-                Ok(col.rotate_hue(180.into()).into())
-            }
-            v => Err(Error::badarg("color", &v)),
-        }
-    );
+    def!(f, complement(color), |s| {
+        Ok(get_color(s, "color")?.rotate_hue(180.into()).into())
+    });
     def!(f, _saturate(color, amount), |s: &dyn Scope| match (
         s.get("color")?,
         s.get("amount")?
@@ -89,69 +82,34 @@ pub fn register(f: &mut Module) {
         }
         (c, v) => Ok(make_call("saturate", vec![c, v])),
     });
-    def!(f, _lighten(color, amount), |args: &dyn Scope| match args
-        .get("color")?
-    {
-        Value::Color(col, _) => {
-            let hsla = col.to_hsla();
-            Ok(Hsla::new(
-                hsla.hue(),
-                hsla.sat(),
-                hsla.lum() + to_rational_percent(&args.get("amount")?)?,
-                hsla.alpha(),
-            )
-            .into())
-        }
-        v => Err(Error::badarg("color", &v)),
+    def!(f, _lighten(color, amount), |s| {
+        let col = get_color(s, "color")?;
+        let hsla = col.to_hsla();
+        let lum = hsla.lum() + to_rational_percent(&s.get("amount")?)?;
+        Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
     });
-    def!(f, _darken(color, amount), |args: &dyn Scope| match args
-        .get("color")?
-    {
-        Value::Color(col, _) => {
-            let hsla = col.to_hsla();
-            Ok(Hsla::new(
-                hsla.hue(),
-                hsla.sat(),
-                hsla.lum() - to_rational_percent(&args.get("amount")?)?,
-                hsla.alpha(),
-            )
-            .into())
-        }
-        v => Err(Error::badarg("color", &v)),
+    def!(f, _darken(color, amount), |s| {
+        let col = get_color(s, "color")?;
+        let hsla = col.to_hsla();
+        let lum = hsla.lum() - to_rational_percent(&s.get("amount")?)?;
+        Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
     });
-    def!(f, hue(color), |args: &dyn Scope| match args.get("color")? {
-        Value::Color(col, _) => {
-            let hsla = col.to_hsla();
-            Ok(Value::Numeric(Number::from(hsla.hue()), Unit::Deg, true))
-        }
-        v => Err(Error::badarg("color", &v)),
+    def!(f, hue(color), |s| {
+        let col = get_color(s, "color")?;
+        let hsla = col.to_hsla();
+        Ok(Value::Numeric(Number::from(hsla.hue()), Unit::Deg, true))
     });
-    def!(f, saturation(color), |args| match args.get("color")? {
-        Value::Color(col, _) => {
-            Ok(percentage(col.to_hsla().sat()))
-        }
-        v => Err(Error::badarg("color", &v)),
+    def!(f, saturation(color), |s| {
+        Ok(percentage(get_color(s, "color")?.to_hsla().sat()))
     });
-    def!(f, lightness(color), |args| match args.get("color")? {
-        Value::Color(col, _) => {
-            Ok(percentage(col.to_hsla().lum()))
-        }
-        v => Err(Error::badarg("color", &v)),
+    def!(f, lightness(color), |s| {
+        Ok(percentage(get_color(s, "color")?.to_hsla().lum()))
     });
-    def!(f, _desaturate(color, amount), |args: &dyn Scope| match args
-        .get("color")?
-    {
-        Value::Color(col, _) => {
-            let hsla = col.to_hsla();
-            Ok(Hsla::new(
-                hsla.hue(),
-                hsla.sat() - to_rational_percent(&args.get("amount")?)?,
-                hsla.lum(),
-                hsla.alpha(),
-            )
-            .into())
-        }
-        v => Err(Error::badarg("color", &v)),
+    def!(f, _desaturate(color, amount), |s| {
+        let col = get_color(s, "color")?;
+        let hsla = col.to_hsla();
+        let sat = hsla.sat() - to_rational_percent(&s.get("amount")?)?;
+        Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha()).into())
     });
     def!(f, grayscale(color), |args| match args.get("color")? {
         Value::Color(col, _) => {

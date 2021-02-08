@@ -1,4 +1,4 @@
-use super::{make_call, Error, Module, SassFunction};
+use super::{get_color, make_call, Error, Module, SassFunction};
 use crate::css::{CallArgs, Value};
 use crate::value::{ListSeparator, Number, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
@@ -118,20 +118,17 @@ pub fn register(f: &mut Module) {
     def!(f, _rgba(red, green, blue, alpha, color, channels), |s| {
         do_rgba("rgba", s)
     });
-    fn num(v: &Rational) -> Result<Value, Error> {
-        Ok(Value::Numeric(Number::from(*v), Unit::None, true))
+    fn num(v: Rational) -> Result<Value, Error> {
+        Ok(Value::Numeric(Number::from(v), Unit::None, true))
     }
-    def!(f, red(color), |s| match s.get("color")? {
-        Value::Color(rgba, _) => num(&rgba.to_rgba().red()),
-        value => Err(Error::badarg("color", &value)),
+    def!(f, red(color), |s| {
+        num(get_color(s, "color")?.to_rgba().red())
     });
-    def!(f, green(color), |s| match s.get("color")? {
-        Value::Color(rgba, _) => num(&rgba.to_rgba().green()),
-        value => Err(Error::badarg("color", &value)),
+    def!(f, green(color), |s| {
+        num(get_color(s, "color")?.to_rgba().green())
     });
-    def!(f, blue(color), |s| match s.get("color")? {
-        Value::Color(rgba, _) => num(&rgba.to_rgba().blue()),
-        value => Err(Error::badarg("color", &value)),
+    def!(f, blue(color), |s| {
+        num(get_color(s, "color")?.to_rgba().blue())
     });
     def!(f, mix(color1, color2, weight = b"50%"), |s| match (
         s.get("color1")?,
@@ -190,11 +187,11 @@ pub fn register(f: &mut Module) {
             )
             .into())
         }
-        (ref by, Value::Numeric(ref value, ref wu, ..))
+        (col, Value::Numeric(ref value, ref wu, ..))
             if value.as_ratio()? == Rational::from_integer(100)
                 && wu == &Unit::Percent =>
         {
-            Ok(make_call("invert", vec![by.clone()]))
+            Ok(make_call("invert", vec![col]))
         }
         (value, weight) => Ok(make_call("invert", vec![value, weight])),
     });
