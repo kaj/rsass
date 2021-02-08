@@ -1,4 +1,4 @@
-use super::{make_call, Error, Module, SassFunction};
+use super::{get_color, make_call, Error, Module, SassFunction};
 use crate::css::{CallArgs, Value};
 use crate::value::{ListSeparator, Number, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
@@ -13,16 +13,19 @@ fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
         let rgba = rgba.to_rgba();
         let a = if a.is_null() { s.get("green")? } else { a };
         match a {
-            Value::Numeric(a, ..) => {
-                Ok(Rgba::new(rgba.red, rgba.green, rgba.blue, a.as_ratio()?)
-                    .into())
-            }
+            Value::Numeric(a, ..) => Ok(Rgba::new(
+                rgba.red(),
+                rgba.green(),
+                rgba.blue(),
+                a.as_ratio()?,
+            )
+            .into()),
             _ => Ok(make_call(
                 fn_name,
                 vec![
-                    int_value(rgba.red),
-                    int_value(rgba.green),
-                    int_value(rgba.blue),
+                    int_value(rgba.red()),
+                    int_value(rgba.green()),
+                    int_value(rgba.blue()),
                     a,
                 ],
             )),
@@ -115,20 +118,17 @@ pub fn register(f: &mut Module) {
     def!(f, _rgba(red, green, blue, alpha, color, channels), |s| {
         do_rgba("rgba", s)
     });
-    fn num(v: &Rational) -> Result<Value, Error> {
-        Ok(Value::Numeric(Number::from(*v), Unit::None, true))
+    fn num(v: Rational) -> Result<Value, Error> {
+        Ok(Value::Numeric(Number::from(v), Unit::None, true))
     }
-    def!(f, red(color), |s| match s.get("color")? {
-        Value::Color(rgba, _) => num(&rgba.to_rgba().red),
-        value => Err(Error::badarg("color", &value)),
+    def!(f, red(color), |s| {
+        num(get_color(s, "color")?.to_rgba().red())
     });
-    def!(f, green(color), |s| match s.get("color")? {
-        Value::Color(rgba, _) => num(&rgba.to_rgba().green),
-        value => Err(Error::badarg("color", &value)),
+    def!(f, green(color), |s| {
+        num(get_color(s, "color")?.to_rgba().green())
     });
-    def!(f, blue(color), |s| match s.get("color")? {
-        Value::Color(rgba, _) => num(&rgba.to_rgba().blue),
-        value => Err(Error::badarg("color", &value)),
+    def!(f, blue(color), |s| {
+        num(get_color(s, "color")?.to_rgba().blue())
     });
     def!(f, mix(color1, color2, weight = b"50%"), |s| match (
         s.get("color1")?,
@@ -142,7 +142,7 @@ pub fn register(f: &mut Module) {
             let one = Rational::one();
 
             let w_a = {
-                let wa = a.alpha - b.alpha;
+                let wa = a.alpha() - b.alpha();
                 let w2 = w * 2 - 1;
                 let divis = w2 * wa + 1;
                 if divis.is_zero() {
@@ -155,10 +155,10 @@ pub fn register(f: &mut Module) {
 
             let m_c = |c_a, c_b| w_a * c_a + w_b * c_b;
             Ok(Rgba::new(
-                m_c(a.red, b.red),
-                m_c(a.green, b.green),
-                m_c(a.blue, b.blue),
-                a.alpha * w + b.alpha * (one - w),
+                m_c(a.red(), b.red()),
+                m_c(a.green(), b.green()),
+                m_c(a.blue(), b.blue()),
+                a.alpha() * w + b.alpha() * (one - w),
             )
             .into())
         }
@@ -180,18 +180,18 @@ pub fn register(f: &mut Module) {
             };
             let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
             Ok(Rgba::new(
-                inv(rgba.red),
-                inv(rgba.green),
-                inv(rgba.blue),
-                rgba.alpha,
+                inv(rgba.red()),
+                inv(rgba.green()),
+                inv(rgba.blue()),
+                rgba.alpha(),
             )
             .into())
         }
-        (ref by, Value::Numeric(ref value, ref wu, ..))
+        (col, Value::Numeric(ref value, ref wu, ..))
             if value.as_ratio()? == Rational::from_integer(100)
                 && wu == &Unit::Percent =>
         {
-            Ok(make_call("invert", vec![by.clone()]))
+            Ok(make_call("invert", vec![col]))
         }
         (value, weight) => Ok(make_call("invert", vec![value, weight])),
     });

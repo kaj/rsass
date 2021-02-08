@@ -1,6 +1,6 @@
-use super::{make_call, Error, Module, SassFunction};
+use super::{get_color, make_call, Error, Module, SassFunction};
 use crate::css::Value;
-use crate::value::{Hsla, Hwba, Quotes, Rgba, Unit};
+use crate::value::{Hsla, Hwba, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
@@ -12,62 +12,58 @@ pub fn register(f: &mut Module) {
             color, red, green, blue, hue, saturation, lightness, whiteness,
             blackness, alpha
         ),
-        |s: &dyn Scope| match s.get("color")? {
-            Value::Color(rgba, _) => {
-                let c_add = |orig: Rational, name: &str| match s.get(name)? {
+        |s: &dyn Scope| {
+            let rgba = get_color(s, "color")?;
+            let c_add = |orig: Rational, name: &str| match s.get(name)? {
+                Value::Null => Ok(orig),
+                x => to_rational(x).map(|x| orig + x),
+            };
+            let h_adj = s.get("hue")?;
+            let s_adj = s.get("saturation")?;
+            let l_adj = s.get("lightness")?;
+            let b_adj = s.get("blackness")?;
+            let w_adj = s.get("whiteness")?;
+            if h_adj.is_null()
+                && s_adj.is_null()
+                && l_adj.is_null()
+                && b_adj.is_null()
+                && w_adj.is_null()
+            {
+                let rgba = rgba.to_rgba();
+                Ok(Rgba::new(
+                    c_add(rgba.red(), "red")?,
+                    c_add(rgba.green(), "green")?,
+                    c_add(rgba.blue(), "blue")?,
+                    c_add(rgba.alpha(), "alpha")?,
+                )
+                .into())
+            } else if b_adj.is_null() && w_adj.is_null() {
+                let hsla = rgba.to_hsla();
+                let sl_add = |orig: Rational, x: Value| match x {
                     Value::Null => Ok(orig),
-                    x => to_rational(x).map(|x| orig + x),
+                    x => to_rational_percent(x).map(|x| orig + x),
                 };
-                let h_adj = s.get("hue")?;
-                let s_adj = s.get("saturation")?;
-                let l_adj = s.get("lightness")?;
-                let b_adj = s.get("blackness")?;
-                let w_adj = s.get("whiteness")?;
-                if h_adj.is_null()
-                    && s_adj.is_null()
-                    && l_adj.is_null()
-                    && b_adj.is_null()
-                    && w_adj.is_null()
-                {
-                    let rgba = rgba.to_rgba();
-                    Ok(Rgba::new(
-                        c_add(rgba.red, "red")?,
-                        c_add(rgba.green, "green")?,
-                        c_add(rgba.blue, "blue")?,
-                        c_add(rgba.alpha, "alpha")?,
-                    )
-                    .into())
-                } else if b_adj.is_null() && w_adj.is_null() {
-                    let hsla = rgba.to_hsla();
-                    let sl_add = |orig: Rational, x: Value| match x {
-                        Value::Null => Ok(orig),
-                        x => to_rational_percent(x).map(|x| orig + x),
-                    };
-                    Ok(Hsla::new(
-                        c_add(hsla.hue, "hue")?,
-                        sl_add(hsla.sat, s_adj)?,
-                        sl_add(hsla.lum, l_adj)?,
-                        c_add(hsla.alpha, "alpha")?,
-                    )
-                    .into())
-                } else {
-                    let hwba = rgba.to_hwba();
-                    let sl_add = |orig: Rational, x: Value| match x {
-                        Value::Null => Ok(orig),
-                        x => {
-                            to_rational_percent(x).map(|x| clamp_z1(orig + x))
-                        }
-                    };
-                    Ok(Hwba::new(
-                        c_add(hwba.hue, "hue")?,
-                        sl_add(hwba.w, w_adj)?,
-                        sl_add(hwba.b, b_adj)?,
-                        c_add(hwba.alpha, "alpha")?,
-                    )
-                    .into())
-                }
+                Ok(Hsla::new(
+                    c_add(hsla.hue(), "hue")?,
+                    sl_add(hsla.sat(), s_adj)?,
+                    sl_add(hsla.lum(), l_adj)?,
+                    c_add(hsla.alpha(), "alpha")?,
+                )
+                .into())
+            } else {
+                let hwba = rgba.to_hwba();
+                let sl_add = |orig: Rational, x: Value| match x {
+                    Value::Null => Ok(orig),
+                    x => to_rational_percent(x).map(|x| clamp_z1(orig + x)),
+                };
+                Ok(Hwba::new(
+                    c_add(hwba.hue(), "hue")?,
+                    sl_add(hwba.whiteness(), w_adj)?,
+                    sl_add(hwba.blackness(), b_adj)?,
+                    c_add(hwba.alpha(), "alpha")?,
+                )
+                .into())
             }
-            v => Err(Error::badarg("color", &v)),
         }
     );
     def!(
@@ -76,60 +72,60 @@ pub fn register(f: &mut Module) {
             color, red, green, blue, hue, saturation, lightness, whiteness,
             blackness, alpha
         ),
-        |s: &dyn Scope| match s.get("color")? {
-            Value::Color(rgba, _) => {
-                let h_adj = s.get("hue")?;
-                let s_adj = s.get("saturation")?;
-                let l_adj = s.get("lightness")?;
-                let b_adj = s.get("blackness")?;
-                let w_adj = s.get("whiteness")?;
-                let a_adj = s.get("alpha")?;
+        |s: &dyn Scope| {
+            let rgba = get_color(s, "color")?;
+            let h_adj = s.get("hue")?;
+            let s_adj = s.get("saturation")?;
+            let l_adj = s.get("lightness")?;
+            let b_adj = s.get("blackness")?;
+            let w_adj = s.get("whiteness")?;
+            let a_adj = s.get("alpha")?;
 
-                let comb = |orig: Rational, x: Value, max: Rational| match x {
-                    Value::Null => Ok(orig),
-                    x => to_rational_percent(x).map(|x| {
-                        if x.is_positive() {
-                            orig + (max - orig) * x
-                        } else {
-                            orig + orig * x
-                        }
-                    }),
-                };
-                let one = Rational::one();
-                let ff = Rational::from_integer(255);
-                if h_adj.is_null()
-                    && s_adj.is_null()
-                    && l_adj.is_null()
-                    && b_adj.is_null()
-                    && w_adj.is_null()
-                {
-                    let rgba = rgba.to_rgba();
-                    Ok(Rgba::new(
-                        comb(rgba.red, s.get("red")?, ff)?,
-                        comb(rgba.green, s.get("green")?, ff)?,
-                        comb(rgba.blue, s.get("blue")?, ff)?,
-                        comb(rgba.alpha, a_adj, one)?,
-                    )
-                    .into())
-                } else if b_adj.is_null() && w_adj.is_null() {
-                    let mut hsla = rgba.to_hsla().into_owned();
-                    hsla.hue = comb(hsla.hue, h_adj, one)?;
-                    hsla.sat = comb(hsla.sat, s_adj, one)?;
-                    hsla.lum = comb(hsla.lum, l_adj, one)?;
-                    hsla.alpha = comb(hsla.alpha, a_adj, one)?;
-                    Ok(hsla.into())
-                } else {
-                    let hwba = rgba.to_hwba();
-                    Ok(Hwba::new(
-                        comb(hwba.hue, h_adj, one)?,
-                        comb(hwba.w, w_adj, one)?,
-                        comb(hwba.b, b_adj, one)?,
-                        comb(hwba.alpha, a_adj, one)?,
-                    )
-                    .into())
-                }
+            let comb = |orig: Rational, x: Value, max: Rational| match x {
+                Value::Null => Ok(orig),
+                x => to_rational_percent(x).map(|x| {
+                    if x.is_positive() {
+                        orig + (max - orig) * x
+                    } else {
+                        orig + orig * x
+                    }
+                }),
+            };
+            let one = Rational::one();
+            let ff = Rational::from_integer(255);
+            if h_adj.is_null()
+                && s_adj.is_null()
+                && l_adj.is_null()
+                && b_adj.is_null()
+                && w_adj.is_null()
+            {
+                let rgba = rgba.to_rgba();
+                Ok(Rgba::new(
+                    comb(rgba.red(), s.get("red")?, ff)?,
+                    comb(rgba.green(), s.get("green")?, ff)?,
+                    comb(rgba.blue(), s.get("blue")?, ff)?,
+                    comb(rgba.alpha(), a_adj, one)?,
+                )
+                .into())
+            } else if b_adj.is_null() && w_adj.is_null() {
+                let hsla = rgba.to_hsla();
+                Ok(Hsla::new(
+                    comb(hsla.hue(), h_adj, one)?,
+                    comb(hsla.sat(), s_adj, one)?,
+                    comb(hsla.lum(), l_adj, one)?,
+                    comb(hsla.alpha(), a_adj, one)?,
+                )
+                .into())
+            } else {
+                let hwba = rgba.to_hwba();
+                Ok(Hwba::new(
+                    comb(hwba.hue(), h_adj, one)?,
+                    comb(hwba.whiteness(), w_adj, one)?,
+                    comb(hwba.blackness(), b_adj, one)?,
+                    comb(hwba.alpha(), a_adj, one)?,
+                )
+                .into())
             }
-            v => Err(Error::badarg("color", &v)),
         }
     );
 
@@ -170,72 +166,64 @@ pub fn register(f: &mut Module) {
             color, red, green, blue, hue, saturation, lightness, blackness,
             whiteness, alpha
         ),
-        |s: &dyn Scope| match s.get("color")? {
-            Value::Color(rgba, _) => {
-                let h_adj = s.get("hue")?;
-                let s_adj = s.get("saturation")?;
-                let l_adj = s.get("lightness")?;
-                let b_adj = s.get("blackness")?;
-                let w_adj = s.get("whiteness")?;
+        |s: &dyn Scope| {
+            let rgba = get_color(s, "color")?;
+            let h_adj = s.get("hue")?;
+            let s_adj = s.get("saturation")?;
+            let l_adj = s.get("lightness")?;
+            let b_adj = s.get("blackness")?;
+            let w_adj = s.get("whiteness")?;
 
-                let c_or = |name: &str, orig: Rational| match s.get(name)? {
-                    Value::Null => Ok(orig),
-                    x => to_rational(x),
-                };
-                let a_or = |name: &str, orig: Rational| match s.get(name)? {
-                    Value::Null => Ok(orig),
-                    x => to_rational(x),
-                };
-                let sl_or = |x: Value, orig: Rational| match x {
-                    Value::Null => Ok(orig),
-                    x => to_rational_percent(x),
-                };
-                if h_adj.is_null()
-                    && s_adj.is_null()
-                    && l_adj.is_null()
-                    && b_adj.is_null()
-                    && w_adj.is_null()
-                {
-                    let rgba = rgba.to_rgba();
-                    Ok(Rgba::new(
-                        c_or("red", rgba.red)?,
-                        c_or("green", rgba.green)?,
-                        c_or("blue", rgba.blue)?,
-                        a_or("alpha", rgba.alpha)?,
-                    )
-                    .into())
-                } else if b_adj.is_null() && w_adj.is_null() {
-                    let hsla = rgba.to_hsla();
-                    Ok(Hsla::new(
-                        a_or("hue", hsla.hue)?,
-                        sl_or(s_adj, hsla.sat)?,
-                        sl_or(l_adj, hsla.lum)?,
-                        a_or("alpha", hsla.alpha)?,
-                    )
-                    .into())
-                } else {
-                    let hwba = rgba.to_hwba();
-                    Ok(Hwba::new(
-                        a_or("hue", hwba.hue)?,
-                        sl_or(w_adj, hwba.w)?,
-                        sl_or(b_adj, hwba.b)?,
-                        a_or("alpha", hwba.alpha)?,
-                    )
-                    .into())
-                }
+            let c_or = |name: &str, orig: Rational| match s.get(name)? {
+                Value::Null => Ok(orig),
+                x => to_rational(x),
+            };
+            let a_or = |name: &str, orig: Rational| match s.get(name)? {
+                Value::Null => Ok(orig),
+                x => to_rational(x),
+            };
+            let sl_or = |x: Value, orig: Rational| match x {
+                Value::Null => Ok(orig),
+                x => to_rational_percent(x),
+            };
+            if h_adj.is_null()
+                && s_adj.is_null()
+                && l_adj.is_null()
+                && b_adj.is_null()
+                && w_adj.is_null()
+            {
+                let rgba = rgba.to_rgba();
+                Ok(Rgba::new(
+                    c_or("red", rgba.red())?,
+                    c_or("green", rgba.green())?,
+                    c_or("blue", rgba.blue())?,
+                    a_or("alpha", rgba.alpha())?,
+                )
+                .into())
+            } else if b_adj.is_null() && w_adj.is_null() {
+                let hsla = rgba.to_hsla();
+                Ok(Hsla::new(
+                    a_or("hue", hsla.hue())?,
+                    sl_or(s_adj, hsla.sat())?,
+                    sl_or(l_adj, hsla.lum())?,
+                    a_or("alpha", hsla.alpha())?,
+                )
+                .into())
+            } else {
+                let hwba = rgba.to_hwba();
+                Ok(Hwba::new(
+                    a_or("hue", hwba.hue())?,
+                    sl_or(w_adj, hwba.whiteness())?,
+                    sl_or(b_adj, hwba.blackness())?,
+                    a_or("alpha", hwba.alpha())?,
+                )
+                .into())
             }
-            v => Err(Error::badarg("color", &v)),
         }
     );
-    def!(f, ie_hex_str(color), |s| match s.get("color")? {
-        Value::Color(col, _) => {
-            let (r, g, b, alpha) = col.to_rgba().to_bytes();
-            Ok(Value::Literal(
-                format!("#{:02X}{:02X}{:02X}{:02X}", alpha, r, g, b),
-                Quotes::None,
-            ))
-        }
-        v => Err(Error::badarg("color", &v)),
+    def!(f, ie_hex_str(color), |s| {
+        let (r, g, b, alpha) = get_color(s, "color")?.to_rgba().to_bytes();
+        Ok(format!("#{:02X}{:02X}{:02X}{:02X}", alpha, r, g, b).into())
     });
 }
 

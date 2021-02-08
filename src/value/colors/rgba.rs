@@ -1,19 +1,18 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
 #![allow(clippy::unreadable_literal)]
-
 use lazy_static::lazy_static;
 use num_rational::Rational;
-use num_traits::{One, Signed, Zero};
+use num_traits::{one, One, Signed, Zero};
 use std::collections::BTreeMap;
 use std::ops::{Add, Div, Sub};
 
 /// A color defined by red, green, blue, and alpha components.
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Rgba {
-    pub red: Rational,
-    pub green: Rational,
-    pub blue: Rational,
-    pub alpha: Rational,
+    red: Rational,
+    green: Rational,
+    blue: Rational,
+    alpha: Rational,
 }
 
 impl Rgba {
@@ -82,11 +81,35 @@ impl Rgba {
         let a = self.alpha * 255;
         (byte(self.red), byte(self.green), byte(self.blue), byte(a))
     }
+    /// Get the red component.
+    pub fn red(&self) -> Rational {
+        self.red
+    }
+    /// Get the green component.
+    pub fn green(&self) -> Rational {
+        self.green
+    }
+    /// Get the blue component.
+    pub fn blue(&self) -> Rational {
+        self.blue
+    }
+    /// Get the alpha value of this color.
+    ///
+    /// Zero is fully transparent, one is fully opaque.
+    pub fn alpha(&self) -> Rational {
+        self.alpha
+    }
+    /// Set the alpha value of this color.
+    ///
+    /// Zero is fully transparent, one is fully opaque.
+    pub fn set_alpha(&mut self, alpha: Rational) {
+        self.alpha = cap(alpha, &one())
+    }
 }
 
-fn cap(n: Rational, ff: &Rational) -> Rational {
-    if n > *ff {
-        *ff
+fn cap(n: Rational, max: &Rational) -> Rational {
+    if n > *max {
+        *max
     } else if n.is_negative() {
         Rational::zero()
     } else {

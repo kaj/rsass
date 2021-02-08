@@ -5,10 +5,10 @@ use num_traits::{one, zero, Signed};
 /// A color defined by hue, saturation, luminance, and alpha.
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Hsla {
-    pub hue: Rational,
-    pub sat: Rational,
-    pub lum: Rational,
-    pub alpha: Rational,
+    hue: Rational,
+    sat: Rational,
+    lum: Rational,
+    alpha: Rational,
 }
 
 impl Hsla {
@@ -21,10 +21,35 @@ impl Hsla {
     ) -> Hsla {
         Hsla {
             hue: deg_mod(hue),
-            sat,
-            lum,
+            sat: clamp(sat, zero(), one()),
+            lum: clamp(lum, zero(), one()),
             alpha: clamp(alpha, zero(), one()),
         }
+    }
+
+    /// Get the hue of this color.
+    pub fn hue(&self) -> Rational {
+        self.hue
+    }
+    /// Get the saturation of this color.
+    pub fn sat(&self) -> Rational {
+        self.sat
+    }
+    /// Get the lumination of this color.
+    pub fn lum(&self) -> Rational {
+        self.lum
+    }
+    /// Get the alpha value of this color.
+    ///
+    /// Zero is fully transparent, one is fully opaque.
+    pub fn alpha(&self) -> Rational {
+        self.alpha
+    }
+    /// Set the alpha value of this color.
+    ///
+    /// Zero is fully transparent, one is fully opaque.
+    pub fn set_alpha(&mut self, alpha: Rational) {
+        self.alpha = clamp(alpha, zero(), one())
     }
 }
 

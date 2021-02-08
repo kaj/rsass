@@ -62,9 +62,9 @@ impl Color {
     /// The alpha channel is a rational value between 0 and 1.
     pub fn get_alpha(&self) -> Rational {
         match self {
-            Color::Rgba(rgba) => rgba.alpha,
-            Color::Hsla(hsla) => hsla.alpha,
-            Color::Hwba(hwba) => hwba.alpha,
+            Color::Rgba(rgba) => rgba.alpha(),
+            Color::Hsla(hsla) => hsla.alpha(),
+            Color::Hwba(hwba) => hwba.alpha(),
         }
     }
     /// Set the alpha channel of this color.
@@ -73,9 +73,37 @@ impl Color {
     pub fn set_alpha(&mut self, alpha: Rational) {
         let alpha = clamp(alpha, zero(), one());
         match self {
-            Color::Rgba(ref mut rgba) => rgba.alpha = alpha,
-            Color::Hsla(ref mut hsla) => hsla.alpha = alpha,
-            Color::Hwba(ref mut hwba) => hwba.alpha = alpha,
+            Color::Rgba(ref mut rgba) => rgba.set_alpha(alpha),
+            Color::Hsla(ref mut hsla) => hsla.set_alpha(alpha),
+            Color::Hwba(ref mut hwba) => hwba.set_alpha(alpha),
+        }
+    }
+    pub fn rotate_hue(&self, val: Rational) -> Self {
+        match self {
+            Color::Rgba(rgba) => {
+                let hsla = Hsla::from(rgba);
+                Hsla::new(
+                    hsla.hue() + val,
+                    hsla.sat(),
+                    hsla.lum(),
+                    hsla.alpha(),
+                )
+                .into()
+            }
+            Color::Hsla(hsla) => Hsla::new(
+                hsla.hue() + val,
+                hsla.sat(),
+                hsla.lum(),
+                hsla.alpha(),
+            )
+            .into(),
+            Color::Hwba(hwba) => Hwba::new(
+                hwba.hue() + val,
+                hwba.whiteness(),
+                hwba.blackness(),
+                hwba.alpha(),
+            )
+            .into(),
         }
     }
     pub fn format(&self, format: Format) -> Formatted<Self> {
