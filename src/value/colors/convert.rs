@@ -43,20 +43,15 @@ impl From<&Hwba> for Rgba {
 
 impl From<&Hwba> for Hsla {
     fn from(hwba: &Hwba) -> Hsla {
-        let wbsum = hwba.w + hwba.b;
-        let (w, b) = if wbsum > one() {
-            (hwba.w / wbsum, hwba.b / wbsum)
-        } else {
-            (hwba.w, hwba.b)
-        };
-
+        let w = hwba.whiteness();
+        let b = hwba.blackness();
         let l = (Rational::one() - b + w) / 2;
         let s = if l.is_zero() || l.is_one() {
             zero()
         } else {
             (Rational::one() - b - l) / std::cmp::min(l, Rational::one() - l)
         };
-        Hsla::new(hwba.hue, s, l, hwba.alpha)
+        Hsla::new(hwba.hue(), s, l, hwba.alpha())
     }
 }
 
@@ -96,24 +91,24 @@ impl From<&Rgba> for Hwba {
     fn from(rgba: &Rgba) -> Hwba {
         let hsla = Hsla::from(rgba);
         let arr = [&rgba.red, &rgba.blue, &rgba.green];
-        Hwba {
-            hue: hsla.hue,
-            w: *arr.iter().min().unwrap() / 255,
-            b: Rational::one() - *arr.iter().max().unwrap() / 255,
-            alpha: hsla.alpha,
-        }
+        Hwba::new(
+            hsla.hue,
+            *arr.iter().min().unwrap() / 255,
+            Rational::one() - *arr.iter().max().unwrap() / 255,
+            hsla.alpha,
+        )
     }
 }
 impl From<&Hsla> for Hwba {
     fn from(hsla: &Hsla) -> Hwba {
         let rgba = Rgba::from(hsla);
         let arr = [&rgba.red, &rgba.blue, &rgba.green];
-        Hwba {
-            hue: hsla.hue,
-            w: Rational::one() - *arr.iter().max().unwrap() / 255,
-            b: *arr.iter().min().unwrap() / 255,
-            alpha: hsla.alpha,
-        }
+        Hwba::new(
+            hsla.hue,
+            Rational::one() - *arr.iter().max().unwrap() / 255,
+            *arr.iter().min().unwrap() / 255,
+            hsla.alpha,
+        )
     }
 }
 

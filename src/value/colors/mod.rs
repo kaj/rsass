@@ -64,7 +64,7 @@ impl Color {
         match self {
             Color::Rgba(rgba) => rgba.alpha,
             Color::Hsla(hsla) => hsla.alpha,
-            Color::Hwba(hwba) => hwba.alpha,
+            Color::Hwba(hwba) => hwba.alpha(),
         }
     }
     /// Set the alpha channel of this color.
@@ -75,7 +75,7 @@ impl Color {
         match self {
             Color::Rgba(ref mut rgba) => rgba.alpha = alpha,
             Color::Hsla(ref mut hsla) => hsla.alpha = alpha,
-            Color::Hwba(ref mut hwba) => hwba.alpha = alpha,
+            Color::Hwba(ref mut hwba) => hwba.set_alpha(alpha),
         }
     }
     pub fn format(&self, format: Format) -> Formatted<Self> {

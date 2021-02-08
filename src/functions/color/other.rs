@@ -59,10 +59,10 @@ pub fn register(f: &mut Module) {
                         }
                     };
                     Ok(Hwba::new(
-                        c_add(hwba.hue, "hue")?,
-                        sl_add(hwba.w, w_adj)?,
-                        sl_add(hwba.b, b_adj)?,
-                        c_add(hwba.alpha, "alpha")?,
+                        c_add(hwba.hue(), "hue")?,
+                        sl_add(hwba.whiteness(), w_adj)?,
+                        sl_add(hwba.blackness(), b_adj)?,
+                        c_add(hwba.alpha(), "alpha")?,
                     )
                     .into())
                 }
@@ -121,10 +121,10 @@ pub fn register(f: &mut Module) {
                 } else {
                     let hwba = rgba.to_hwba();
                     Ok(Hwba::new(
-                        comb(hwba.hue, h_adj, one)?,
-                        comb(hwba.w, w_adj, one)?,
-                        comb(hwba.b, b_adj, one)?,
-                        comb(hwba.alpha, a_adj, one)?,
+                        comb(hwba.hue(), h_adj, one)?,
+                        comb(hwba.whiteness(), w_adj, one)?,
+                        comb(hwba.blackness(), b_adj, one)?,
+                        comb(hwba.alpha(), a_adj, one)?,
                     )
                     .into())
                 }
@@ -216,10 +216,10 @@ pub fn register(f: &mut Module) {
                 } else {
                     let hwba = rgba.to_hwba();
                     Ok(Hwba::new(
-                        a_or("hue", hwba.hue)?,
-                        sl_or(w_adj, hwba.w)?,
-                        sl_or(b_adj, hwba.b)?,
-                        a_or("alpha", hwba.alpha)?,
+                        a_or("hue", hwba.hue())?,
+                        sl_or(w_adj, hwba.whiteness())?,
+                        sl_or(b_adj, hwba.blackness())?,
+                        a_or("alpha", hwba.alpha())?,
                     )
                     .into())
                 }

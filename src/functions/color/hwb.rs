@@ -34,11 +34,11 @@ pub fn register(f: &mut Module) {
         Ok(Hwba::new(hue.as_ratio()?, w, b, a).into())
     });
     def!(f, blackness(color), |args| match args.get("color")? {
-        Value::Color(col, _) => Ok(percentage(col.to_hwba().b)),
+        Value::Color(col, _) => Ok(percentage(col.to_hwba().blackness())),
         v => Err(Error::badarg("color", &v)),
     });
     def!(f, whiteness(color), |args| match args.get("color")? {
-        Value::Color(col, _) => Ok(percentage(col.to_hwba().w)),
+        Value::Color(col, _) => Ok(percentage(col.to_hwba().whiteness())),
         v => Err(Error::badarg("color", &v)),
     });
 }
