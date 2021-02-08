@@ -44,10 +44,10 @@ pub fn register(f: &mut Module) {
                         x => to_rational_percent(x).map(|x| orig + x),
                     };
                     Ok(Hsla::new(
-                        c_add(hsla.hue, "hue")?,
-                        sl_add(hsla.sat, s_adj)?,
-                        sl_add(hsla.lum, l_adj)?,
-                        c_add(hsla.alpha, "alpha")?,
+                        c_add(hsla.hue(), "hue")?,
+                        sl_add(hsla.sat(), s_adj)?,
+                        sl_add(hsla.lum(), l_adj)?,
+                        c_add(hsla.alpha(), "alpha")?,
                     )
                     .into())
                 } else {
@@ -112,12 +112,14 @@ pub fn register(f: &mut Module) {
                     )
                     .into())
                 } else if b_adj.is_null() && w_adj.is_null() {
-                    let mut hsla = rgba.to_hsla().into_owned();
-                    hsla.hue = comb(hsla.hue, h_adj, one)?;
-                    hsla.sat = comb(hsla.sat, s_adj, one)?;
-                    hsla.lum = comb(hsla.lum, l_adj, one)?;
-                    hsla.alpha = comb(hsla.alpha, a_adj, one)?;
-                    Ok(hsla.into())
+                    let hsla = rgba.to_hsla();
+                    Ok(Hsla::new(
+                        comb(hsla.hue(), h_adj, one)?,
+                        comb(hsla.sat(), s_adj, one)?,
+                        comb(hsla.lum(), l_adj, one)?,
+                        comb(hsla.alpha(), a_adj, one)?,
+                    )
+                    .into())
                 } else {
                     let hwba = rgba.to_hwba();
                     Ok(Hwba::new(
@@ -207,10 +209,10 @@ pub fn register(f: &mut Module) {
                 } else if b_adj.is_null() && w_adj.is_null() {
                     let hsla = rgba.to_hsla();
                     Ok(Hsla::new(
-                        a_or("hue", hsla.hue)?,
-                        sl_or(s_adj, hsla.sat)?,
-                        sl_or(l_adj, hsla.lum)?,
-                        a_or("alpha", hsla.alpha)?,
+                        a_or("hue", hsla.hue())?,
+                        sl_or(s_adj, hsla.sat())?,
+                        sl_or(l_adj, hsla.lum())?,
+                        a_or("alpha", hsla.alpha())?,
                     )
                     .into())
                 } else {

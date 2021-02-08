@@ -63,7 +63,7 @@ impl Color {
     pub fn get_alpha(&self) -> Rational {
         match self {
             Color::Rgba(rgba) => rgba.alpha,
-            Color::Hsla(hsla) => hsla.alpha,
+            Color::Hsla(hsla) => hsla.alpha(),
             Color::Hwba(hwba) => hwba.alpha(),
         }
     }
@@ -74,8 +74,36 @@ impl Color {
         let alpha = clamp(alpha, zero(), one());
         match self {
             Color::Rgba(ref mut rgba) => rgba.alpha = alpha,
-            Color::Hsla(ref mut hsla) => hsla.alpha = alpha,
+            Color::Hsla(ref mut hsla) => hsla.set_alpha(alpha),
             Color::Hwba(ref mut hwba) => hwba.set_alpha(alpha),
+        }
+    }
+    pub fn rotate_hue(&self, val: Rational) -> Self {
+        match self {
+            Color::Rgba(rgba) => {
+                let hsla = Hsla::from(rgba);
+                Hsla::new(
+                    hsla.hue() + val,
+                    hsla.sat(),
+                    hsla.lum(),
+                    hsla.alpha(),
+                )
+                .into()
+            }
+            Color::Hsla(hsla) => Hsla::new(
+                hsla.hue() + val,
+                hsla.sat(),
+                hsla.lum(),
+                hsla.alpha(),
+            )
+            .into(),
+            Color::Hwba(hwba) => Hwba::new(
+                hwba.hue() + val,
+                hwba.whiteness(),
+                hwba.blackness(),
+                hwba.alpha(),
+            )
+            .into(),
         }
     }
     pub fn format(&self, format: Format) -> Formatted<Self> {

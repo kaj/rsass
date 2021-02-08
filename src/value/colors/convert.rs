@@ -2,12 +2,12 @@ use super::*;
 
 impl From<&Hsla> for Rgba {
     fn from(hsla: &Hsla) -> Rgba {
-        let hue = hsla.hue / 360;
-        let sat = clamp(hsla.sat, zero(), one());
-        let lum = clamp(hsla.lum, zero(), one());
+        let hue = hsla.hue() / 360;
+        let sat = hsla.sat();
+        let lum = hsla.lum();
         if sat.is_zero() {
             let gray = lum * 255;
-            Rgba::new(gray, gray, gray, hsla.alpha)
+            Rgba::new(gray, gray, gray, hsla.alpha())
         } else {
             fn hue2rgb(p: Rational, q: Rational, t: Rational) -> Rational {
                 let t = (t - t.floor()) * 6;
@@ -29,7 +29,7 @@ impl From<&Hsla> for Rgba {
                 hue2rgb(p, q, hue + Rational::new(1, 3)) * 255,
                 hue2rgb(p, q, hue) * 255,
                 hue2rgb(p, q, hue - Rational::new(1, 3)) * 255,
-                hsla.alpha,
+                hsla.alpha(),
             )
         }
     }
@@ -62,12 +62,7 @@ impl From<&Rgba> for Hsla {
         let (max, min, largest) = max_min_largest(red, green, blue);
 
         if max == min {
-            Hsla {
-                hue: zero(),
-                sat: zero(),
-                lum: max,
-                alpha: rgba.alpha,
-            }
+            Hsla::new(zero(), zero(), max, rgba.alpha)
         } else {
             let d = max - min;
             let hue = match largest {
@@ -77,12 +72,7 @@ impl From<&Rgba> for Hsla {
             } * (360 / 6);
             let mm = max + min;
             let sat = d / if mm > one() { -mm + 2 } else { mm };
-            Hsla {
-                hue,
-                sat,
-                lum: mm / 2,
-                alpha: rgba.alpha,
-            }
+            Hsla::new(hue, sat, mm / 2, rgba.alpha)
         }
     }
 }
@@ -92,10 +82,10 @@ impl From<&Rgba> for Hwba {
         let hsla = Hsla::from(rgba);
         let arr = [&rgba.red, &rgba.blue, &rgba.green];
         Hwba::new(
-            hsla.hue,
+            hsla.hue(),
             *arr.iter().min().unwrap() / 255,
             Rational::one() - *arr.iter().max().unwrap() / 255,
-            hsla.alpha,
+            hsla.alpha(),
         )
     }
 }
@@ -104,10 +94,10 @@ impl From<&Hsla> for Hwba {
         let rgba = Rgba::from(hsla);
         let arr = [&rgba.red, &rgba.blue, &rgba.green];
         Hwba::new(
-            hsla.hue,
+            hsla.hue(),
             Rational::one() - *arr.iter().max().unwrap() / 255,
             *arr.iter().min().unwrap() / 255,
-            hsla.alpha,
+            hsla.alpha(),
         )
     }
 }

@@ -58,9 +58,7 @@ pub fn register(f: &mut Module) {
     ) {
         (c @ Value::Color(..), Value::Null) => Ok(c),
         (Value::Color(col, _), Value::Numeric(v, ..)) => {
-            let mut hsla = col.to_hsla().into_owned();
-            hsla.hue += v.as_ratio()?;
-            Ok(hsla.into())
+            Ok(col.rotate_hue(v.as_ratio()?).into())
         }
         (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
     });
@@ -69,9 +67,7 @@ pub fn register(f: &mut Module) {
         complement(color),
         |s: &dyn Scope| match s.get("color")? {
             Value::Color(col, _) => {
-                let mut hsla = col.to_hsla().into_owned();
-                hsla.hue += 180;
-                Ok(hsla.into())
+                Ok(col.rotate_hue(180.into()).into())
             }
             v => Err(Error::badarg("color", &v)),
         }
@@ -81,51 +77,64 @@ pub fn register(f: &mut Module) {
         s.get("amount")?
     ) {
         (Value::Color(c, _), Value::Null) => Ok(Value::Color(c, None)),
-        (Value::Color(rgba, _), Value::Numeric(v, u, _)) => {
-            let mut hsla = rgba.to_hsla().into_owned();
-            let v = v.as_ratio()?;
-            let v = if u == Unit::Percent { v / 100 } else { v };
-            hsla.sat += v;
-            Ok(hsla.into())
+        (Value::Color(col, _), v @ Value::Numeric(..)) => {
+            let hsla = col.to_hsla();
+            Ok(Hsla::new(
+                hsla.hue(),
+                hsla.sat() + to_rational2(&v)?,
+                hsla.lum(),
+                hsla.alpha(),
+            )
+            .into())
         }
         (c, v) => Ok(make_call("saturate", vec![c, v])),
     });
     def!(f, _lighten(color, amount), |args: &dyn Scope| match args
         .get("color")?
     {
-        Value::Color(rgba, _) => {
-            let mut hsla = rgba.to_hsla().into_owned();
-            hsla.lum += to_rational_percent(&args.get("amount")?)?;
-            Ok(hsla.into())
+        Value::Color(col, _) => {
+            let hsla = col.to_hsla();
+            Ok(Hsla::new(
+                hsla.hue(),
+                hsla.sat(),
+                hsla.lum() + to_rational_percent(&args.get("amount")?)?,
+                hsla.alpha(),
+            )
+            .into())
         }
         v => Err(Error::badarg("color", &v)),
     });
     def!(f, _darken(color, amount), |args: &dyn Scope| match args
         .get("color")?
     {
-        Value::Color(rgba, _) => {
-            let mut hsla = rgba.to_hsla().into_owned();
-            hsla.lum -= to_rational_percent(&args.get("amount")?)?;
-            Ok(hsla.into())
+        Value::Color(col, _) => {
+            let hsla = col.to_hsla();
+            Ok(Hsla::new(
+                hsla.hue(),
+                hsla.sat(),
+                hsla.lum() - to_rational_percent(&args.get("amount")?)?,
+                hsla.alpha(),
+            )
+            .into())
         }
         v => Err(Error::badarg("color", &v)),
     });
     def!(f, hue(color), |args: &dyn Scope| match args.get("color")? {
         Value::Color(col, _) => {
             let hsla = col.to_hsla();
-            Ok(Value::Numeric(Number::from(hsla.hue), Unit::Deg, true))
+            Ok(Value::Numeric(Number::from(hsla.hue()), Unit::Deg, true))
         }
         v => Err(Error::badarg("color", &v)),
     });
     def!(f, saturation(color), |args| match args.get("color")? {
         Value::Color(col, _) => {
-            Ok(percentage(col.to_hsla().sat))
+            Ok(percentage(col.to_hsla().sat()))
         }
         v => Err(Error::badarg("color", &v)),
     });
     def!(f, lightness(color), |args| match args.get("color")? {
         Value::Color(col, _) => {
-            Ok(percentage(col.to_hsla().lum))
+            Ok(percentage(col.to_hsla().lum()))
         }
         v => Err(Error::badarg("color", &v)),
     });
@@ -133,17 +142,24 @@ pub fn register(f: &mut Module) {
         .get("color")?
     {
         Value::Color(col, _) => {
-            let mut hsla = col.to_hsla().into_owned();
-            hsla.sat -= to_rational_percent(&args.get("amount")?)?;
-            Ok(hsla.into())
+            let hsla = col.to_hsla();
+            Ok(Hsla::new(
+                hsla.hue(),
+                hsla.sat() - to_rational_percent(&args.get("amount")?)?,
+                hsla.lum(),
+                hsla.alpha(),
+            )
+            .into())
         }
         v => Err(Error::badarg("color", &v)),
     });
     def!(f, grayscale(color), |args| match args.get("color")? {
         Value::Color(col, _) => {
-            let mut hsla = col.to_hsla().into_owned();
-            hsla.sat = Zero::zero();
-            Ok(hsla.into())
+            let hsla = col.to_hsla();
+            Ok(
+                Hsla::new(hsla.hue(), Zero::zero(), hsla.lum(), hsla.alpha())
+                    .into(),
+            )
         }
         v => Ok(make_call("grayscale", vec![v])),
     });
