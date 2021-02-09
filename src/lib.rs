@@ -48,7 +48,7 @@ pub mod output;
 mod parser;
 pub mod sass;
 pub mod selectors;
-mod value;
+pub mod value;
 mod variablescope;
 
 pub use crate::error::Error;
@@ -60,11 +60,7 @@ pub use crate::parser::{
     ParseError, SourcePos,
 };
 pub use crate::sass::Item;
-pub use crate::value::{
-    colors, Dimension, ListSeparator, Number, Quotes, Unit,
-};
 pub use crate::variablescope::{GlobalScope, Scope};
-pub use num_rational::Rational;
 
 /// Parse a scss value from a buffer and write its css representation
 /// in the given format.

@@ -1,4 +1,4 @@
-use rsass::colors::Rgba;
+use rsass::value::{Number, Rgba, Unit};
 use rsass::sass::Name;
 use rsass::*;
 use std::sync::Arc;

@@ -1,4 +1,5 @@
-pub mod colors;
+//! Types used in sass and css values.
+mod colors;
 mod list_separator;
 mod number;
 mod operator;
