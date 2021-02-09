@@ -15,6 +15,7 @@ pub enum Value {
     Bang(String),
     /// A call has a name and an argument (which may be multi).
     Call(SassString, CallArgs),
+    /// A literal string value (quoted or not).
     Literal(SassString),
     /// A comma- or space separated list of values, with or without brackets.
     List(Vec<Value>, ListSeparator, bool),
@@ -26,16 +27,21 @@ pub enum Value {
     /// is not allways division.
     /// The boolean tells if the paren itself should be kept for output.
     Paren(Box<Value>, bool),
+    /// A variable reference to be loaded when the value is evaluated.
     Variable(String),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
     Color(Rgba, Option<String>),
+    /// The null value.
     Null,
+    /// The true boolean value.
     True,
+    /// The false boolean value.
     False,
     /// A binary operation, two operands and an operator.
     /// The boolean represents possible whitespace.
     BinOp(Box<Value>, bool, Operator, bool, Box<Value>),
+    /// A unary operator and its operand.
     UnaryOp(Operator, Box<Value>),
     /// A map in sass source is just a list of key/value parirs.
     /// Actual map behaviour comes after evaluating it.
@@ -51,6 +57,7 @@ impl Value {
     pub fn scalar(v: isize) -> Self {
         Value::Numeric(Number::from(v), Unit::None)
     }
+    #[cfg(test)]
     pub fn bool(v: bool) -> Self {
         if v {
             Value::True
@@ -82,6 +89,10 @@ impl Value {
         !matches!(self, Value::False | Value::Null)
     }
 
+    /// Return true if this value is null.
+    ///
+    /// Note that an empty unquoted string and a list containing no
+    /// non-null values is also considered null.
     pub fn is_null(&self) -> bool {
         match *self {
             Value::Null => true,
@@ -92,6 +103,7 @@ impl Value {
         }
     }
 
+    /// Evaluate this value in a given scope.
     pub fn evaluate(&self, scope: &dyn Scope) -> Result<css::Value, Error> {
         self.do_evaluate(scope, false)
     }

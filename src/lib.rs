@@ -37,6 +37,7 @@
 //! usable for my personal projects, and the number of working tests are
 //! improving.
 #![forbid(unsafe_code)]
+// TODO: #![forbid(missing_docs)]
 use std::path::Path;
 
 pub mod css;

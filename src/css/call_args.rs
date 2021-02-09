@@ -11,10 +11,16 @@ use std::fmt;
 pub struct CallArgs(pub Vec<(Option<String>, Value)>);
 
 impl CallArgs {
+    /// Create args from a vec of values with optional names.
     pub fn new(v: Vec<(Option<String>, Value)>) -> Self {
         CallArgs(v)
     }
 
+    /// Create args from a Value.
+    ///
+    /// The value may be a list of arguments or a single argument.
+    /// There is also special recognition of a list ending in an
+    /// unquoted "..." string, makring a varargs argument list.
     pub fn from_value(v: Value) -> Self {
         match v {
             Value::List(v, _, false) => {
@@ -46,18 +52,22 @@ impl CallArgs {
         }
     }
 
+    /// Iterate over values (and their optional names).
     pub fn iter(&self) -> ::std::slice::Iter<(Option<String>, Value)> {
         self.0.iter()
     }
 
+    /// Get number of arguments.
     pub fn len(&self) -> usize {
         self.0.len()
     }
 
+    /// Return true if the argument list is empty.
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 
+    /// Get a specific argument by position.
     pub fn get(&self, index: usize) -> Option<&(Option<String>, Value)> {
         self.0.get(index)
     }

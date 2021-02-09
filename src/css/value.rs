@@ -15,6 +15,7 @@ pub enum Value {
     Call(String, CallArgs),
     /// A (callable?) function.
     Function(String, Option<SassFunction>),
+    /// A string literal.
     Literal(String, Quotes),
     /// A comma- or space separated list of values, with or without brackets.
     List(Vec<Value>, ListSeparator, bool),
@@ -24,26 +25,35 @@ pub enum Value {
     /// The boolean flag is true for calculated values and false for
     /// literal values.
     Numeric(Number, Unit, bool),
+    /// A color value (and optionally, its source string).
     Color(Color, Option<String>),
+    /// The null value.
     Null,
+    /// The true boolean value.
     True,
+    /// The false boolean value.
     False,
     /// A binary operation, two operands and an operator.
     /// The booleans represents possible whitespace.
     BinOp(Box<Value>, bool, Operator, bool, Box<Value>),
+    /// A unary operator and its operand.
     UnaryOp(Operator, Box<Value>),
+    /// A map of values.
     Map(OrderMap<Value, Value>),
     /// A unicode range for font selections. U+NN, U+N?, U+NN-MM.
     /// The string is the entire value, including the "U+" tag.
     UnicodeRange(String),
+    /// A value in parenthesis.
     Paren(Box<Value>),
 }
 
 impl Value {
+    /// Create a numeric value with no unit.
     pub fn scalar<T: Into<Number>>(v: T) -> Self {
         Value::Numeric(v.into(), Unit::None, false)
     }
 
+    /// Get the type name of this value.
     pub fn type_name(&self) -> &'static str {
         match *self {
             Value::Color(..) => "color",
@@ -57,6 +67,10 @@ impl Value {
         }
     }
 
+    /// Return true if this is a calculated value.
+    ///
+    /// The return of functions or operators are calculated, verbatim
+    /// values are not.
     pub fn is_calculated(&self) -> bool {
         match *self {
             Value::Numeric(.., calculated) => calculated,
@@ -65,6 +79,7 @@ impl Value {
         }
     }
 
+    /// Get a copy of this value, but marked as calculated.
     pub fn into_calculated(self) -> Self {
         match self {
             Value::Numeric(num, unit, _) => Value::Numeric(num, unit, true),
@@ -82,6 +97,10 @@ impl Value {
         !matches!(self, Value::False | Value::Null)
     }
 
+    /// Return true if this value is null.
+    ///
+    /// Note that an empty unquoted string and a list containing no
+    /// non-null values is also considered null.
     pub fn is_null(&self) -> bool {
         match *self {
             Value::Null => true,
@@ -94,6 +113,10 @@ impl Value {
         }
     }
 
+    /// Check if this value is numeric.
+    ///
+    /// If it is, get the number and unit, otherwise, get the value
+    /// itself as error.
     pub fn numeric_value(self) -> Result<(Number, Unit), Self> {
         match self {
             Value::Numeric(num, unit, ..) => Ok((num, unit)),
@@ -101,6 +124,7 @@ impl Value {
         }
     }
 
+    /// Check that this value is an integer.
     pub fn integer_value(&self) -> Result<isize, Error> {
         match self {
             &Value::Numeric(ref num, ..) if num.is_integer() => num
@@ -110,6 +134,9 @@ impl Value {
         }
     }
 
+    /// Unquote this value.
+    ///
+    /// If the value is a quoted string, the content is unquoted.
     pub fn unquote(self) -> Value {
         match self {
             Value::Literal(s, Quotes::None) => {
@@ -170,6 +197,11 @@ impl Value {
         }
     }
 
+    /// Get this value as iterable items.
+    ///
+    /// Lists and maps have iterable items, which are returned as a
+    /// vector of values.  Other values are returned as a vec
+    /// containing the value as a single item.
     pub fn iter_items(self) -> Vec<Value> {
         match self {
             Value::List(v, _, _) => v,

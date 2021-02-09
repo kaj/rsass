@@ -8,12 +8,15 @@ use std::{fmt, io};
 /// Most functions in rsass that returns a Result uses this Error type.
 #[derive(Debug)]
 pub enum Error {
+    /// An IO error encoundered on a specific path
     Input(String, io::Error),
     IoError(io::Error),
     Encoding(FromUtf8Error),
     BadValue(String),
     BadArguments(String),
+    /// A range error
     BadRange(RangeError),
+    /// Error parsing sass data.
     ParseError(ParseError),
     S(String),
     UndefinedVariable(String),

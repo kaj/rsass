@@ -1,5 +1,5 @@
-use rsass::value::{Number, Rgba, Unit};
 use rsass::sass::Name;
+use rsass::value::{Number, Rgba, Unit};
 use rsass::*;
 use std::sync::Arc;
 
@@ -64,21 +64,21 @@ fn function_with_args() {
                 ("b".into(), sass::Value::scalar(0)),
             ],
             false,
-            Arc::new(|s| match (s.get("a")?, s.get("b")?) {
-                (
-                    css::Value::Numeric(a, au, ..),
-                    css::Value::Numeric(b, bu, ..),
-                ) => {
-                    if au == bu || bu == Unit::None {
-                        Ok(css::Value::Numeric(avg(a, b), au, true))
-                    } else if au == Unit::None {
-                        Ok(css::Value::Numeric(avg(a, b), bu, true))
-                    } else {
-                        Err(Error::BadArguments("Incopatible args".into()))
-                    }
-                }
-                (a, b) => {
-                    Err(Error::badargs(&["number", "number"], &[&a, &b]))
+            Arc::new(|s| {
+                let (a, au) = s
+                    .get("a")?
+                    .numeric_value()
+                    .map_err(|v| Error::badarg("number", &v))?;
+                let (b, bu) = s
+                    .get("b")?
+                    .numeric_value()
+                    .map_err(|v| Error::badarg("number", &v))?;
+                if au == bu || bu == Unit::None {
+                    Ok(css::Value::Numeric(avg(a, b), au, true))
+                } else if au == Unit::None {
+                    Ok(css::Value::Numeric(avg(a, b), bu, true))
+                } else {
+                    Err(Error::BadArguments("Incopatible args".into()))
                 }
             }),
         ),
