@@ -43,14 +43,6 @@ impl Value {
     pub fn scalar<T: Into<Number>>(v: T) -> Self {
         Value::Numeric(v.into(), Unit::None, false)
     }
-    #[deprecated(since = "0.15.1", note = "please use From<bool> instead.")]
-    pub fn bool(v: bool) -> Self {
-        if v {
-            Value::True
-        } else {
-            Value::False
-        }
-    }
 
     pub fn type_name(&self) -> &'static str {
         match *self {
