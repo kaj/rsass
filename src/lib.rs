@@ -60,7 +60,6 @@ pub use crate::parser::{
     parse_scss_data, parse_scss_file, parse_scss_path, parse_value_data,
     ParseError, SourcePos,
 };
-pub use crate::sass::Item;
 pub use crate::variablescope::{GlobalScope, Scope};
 
 /// Parse a scss value from a buffer and write its css representation
