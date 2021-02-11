@@ -79,7 +79,7 @@ impl Value {
         }
     }
 
-    /// Get a copy of this value, but marked as calculated.
+    /// Get this value, but marked as calculated.
     pub fn into_calculated(self) -> Self {
         match self {
             Value::Numeric(num, unit, _) => Value::Numeric(num, unit, true),
