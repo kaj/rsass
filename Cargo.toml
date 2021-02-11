@@ -28,7 +28,7 @@ spectest = ["yaml-rust", "deunicode", "hrx-get", "regex"]
 
 [dependencies]
 lazy_static = "1.0"
-nom = "6.0"
+nom = { version = "6.0", default-features = false }
 nom_locate = "3.0"
 num-bigint = { version = "0.3.0", default-features = false, features = ["std"] }
 num-integer = "0.1.42"
