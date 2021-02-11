@@ -132,8 +132,10 @@ impl FileContext for FsFileContext {
                             self.clone()
                         };
                         let path = full.display().to_string();
-                        let file = Self::File::open(full)?;
-                        return Ok(Some((c, path, file)));
+                        return match Self::File::open(full) {
+                            Ok(file) => Ok(Some((c, path, file))),
+                            Err(e) => Err(Error::Input(path, e)),
+                        }
                     }
                 }
             }
