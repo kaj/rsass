@@ -135,7 +135,7 @@ impl FileContext for FsFileContext {
                         return match Self::File::open(full) {
                             Ok(file) => Ok(Some((c, path, file))),
                             Err(e) => Err(Error::Input(path, e)),
-                        }
+                        };
                     }
                 }
             }
