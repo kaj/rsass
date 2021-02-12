@@ -1,4 +1,5 @@
-pub mod colors;
+//! Types used in sass and css values.
+mod colors;
 mod list_separator;
 mod number;
 mod operator;
@@ -12,4 +13,5 @@ pub use self::number::{NumValue, Number};
 pub use self::operator::Operator;
 pub use self::quotes::Quotes;
 pub use self::unit::{Dimension, Unit};
+pub use num_rational::Rational;
 pub(crate) use range::{RangeError, ValueRange};
