@@ -60,7 +60,14 @@ fn selector_part(input: Span) -> IResult<Span, SelectorPart> {
                     terminated(sass_string, opt_spacelike),
                     terminated(
                         map_res(
-                            alt((tag("*="), tag("|="), tag("="), tag("$="), tag("~="), tag("^="))),
+                            alt((
+                                tag("*="),
+                                tag("|="),
+                                tag("="),
+                                tag("$="),
+                                tag("~="),
+                                tag("^="),
+                            )),
                             input_to_string,
                         ),
                         opt_spacelike,
