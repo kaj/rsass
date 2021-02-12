@@ -15,6 +15,7 @@ project adheres to
 * A color can be Hsla or Hwba as well as Rgba. PR #88, #89.
 * Handle units in `@for` loops inside sass functions.
 * Some types moved into `value` mod, imporoved docs. PR #90.
+* Add support for `$=`, `~=` and `^=` in css attribute selectors. PR #92.
 * Test suite sass-spec updated to 2021-02-04.
 * Some cleanups.
 
