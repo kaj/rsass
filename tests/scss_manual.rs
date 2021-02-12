@@ -70,6 +70,15 @@ fn media2() {
     )
 }
 
+#[test]
+fn additional_selectors() {
+    check("
+    [class$=\"--foo\"], [class~=\"--foo\"], , [class^=\"--foo\"] {\
+    \n  x: y;\
+    \n}\
+    \n", "[class$=\"--foo\"], [class~=\"--foo\"], [class^=\"--foo\"] {\n  x: y;\n}\n")
+}
+
 fn check(input: &str, expected: &str) {
     assert_eq!(
         compile_scss(input.as_bytes(), Default::default())
