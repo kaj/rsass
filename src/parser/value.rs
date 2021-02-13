@@ -7,7 +7,7 @@ use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string, Span};
 use crate::sass::{SassString, Value};
-use crate::value::{ListSeparator, Number, Operator, Rgba};
+use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
@@ -308,10 +308,11 @@ fn number(input: Span) -> IResult<Span, Value> {
             unit,
         )),
         |(sign, num, unit)| {
-            Value::Numeric(
-                if sign == Some(b"-") {
+            Value::Numeric(Numeric {
+                value: if sign == Some(b"-") {
                     if num.is_zero() {
-                        // Only f64-based Number can represent negative zero.
+                        // Only f64-based NumValue can represent
+                        // negative zero.
                         (-0.0).into()
                     } else {
                         -num
@@ -320,7 +321,7 @@ fn number(input: Span) -> IResult<Span, Value> {
                     num
                 },
                 unit,
-            )
+            })
         },
     )(input)
 }
@@ -504,7 +505,7 @@ mod test {
     use super::*;
     use crate::sass::CallArgs;
     use crate::sass::Value::*;
-    use crate::value::Unit;
+    use crate::value::{Numeric, Unit};
     use crate::variablescope::GlobalScope;
     use num_rational::Rational;
 
@@ -520,7 +521,7 @@ mod test {
 
     #[test]
     fn simple_number_pos() {
-        check_expr("+4;", Numeric(4.into(), Unit::None))
+        check_expr("+4;", Value::Numeric(Numeric::new(4, Unit::None)))
     }
 
     #[test]
@@ -529,13 +530,16 @@ mod test {
     }
     #[test]
     fn simple_number_onlydec() {
-        check_expr(".34;", Numeric(Rational::new(34, 100).into(), Unit::None))
+        check_expr(
+            ".34;",
+            Value::Numeric(Numeric::new(Rational::new(34, 100), Unit::None)),
+        )
     }
     #[test]
     fn simple_number_onlydec_neg() {
         check_expr(
             "-.34;",
-            Numeric(Rational::new(-34, 100).into(), Unit::None),
+            Value::Numeric(Numeric::new(Rational::new(-34, 100), Unit::None)),
         )
     }
     #[test]
@@ -544,7 +548,7 @@ mod test {
     }
 
     fn number(nom: isize, denom: isize) -> Value {
-        Numeric(Number::rational(nom, denom), Unit::None)
+        Value::Numeric(Numeric::new(Rational::new(nom, denom), Unit::None))
     }
 
     #[test]

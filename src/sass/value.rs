@@ -3,9 +3,7 @@ use crate::error::Error;
 use crate::functions::get_builtin_function;
 use crate::ordermap::OrderMap;
 use crate::sass::{CallArgs, Name, SassString};
-use crate::value::{
-    ListSeparator, Number, Numeric, Operator, Quotes, Rgba, Unit,
-};
+use crate::value::{ListSeparator, Numeric, Operator, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::Zero;
@@ -23,7 +21,7 @@ pub enum Value {
     List(Vec<Value>, ListSeparator, bool),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
-    Numeric(Number, Unit),
+    Numeric(Numeric),
     /// "(a/b) and a/b differs semantically.  Parens means the value
     /// should be evaluated numerically if possible, without parens /
     /// is not allways division.
@@ -57,7 +55,7 @@ pub enum Value {
 
 impl Value {
     pub fn scalar(v: isize) -> Self {
-        Value::Numeric(Number::from(v), Unit::None)
+        Value::Numeric(Numeric::new(v, Unit::None))
     }
     #[cfg(test)]
     pub fn bool(v: bool) -> Self {
@@ -78,7 +76,7 @@ impl Value {
         match *self {
             Value::Color(..) => "color",
             Value::Literal(..) => "string",
-            Value::Numeric(..) => "number",
+            Value::Numeric(_) => "number",
             Value::List(..) => "list",
             Value::True | Value::False => "bool",
             Value::Null => "null",
@@ -163,10 +161,9 @@ impl Value {
                     Ok(css::Value::Call(name, args))
                 }
             }
-            Value::Numeric(ref num, ref unit) => Ok(css::Value::Numeric(
-                Numeric::new(num.clone(), unit.clone()),
-                arithmetic,
-            )),
+            Value::Numeric(ref num) => {
+                Ok(css::Value::Numeric(num.clone(), arithmetic))
+            }
             Value::Map(ref m) => {
                 let items = m.iter()
                     .map(|&(ref k, ref v)| -> Result<(css::Value, css::Value), Error> {
@@ -209,7 +206,7 @@ impl Value {
             Value::UnaryOp(ref op, ref v) => {
                 let value = v.do_evaluate(scope, true)?;
                 match (op.clone(), value) {
-                    (Operator::Not, css::Value::Numeric(v, ..)) => {
+                    (Operator::Not, css::Value::Numeric(v, _)) => {
                         Ok(v.value.is_zero().into())
                     }
                     (Operator::Not, css::Value::True) => {

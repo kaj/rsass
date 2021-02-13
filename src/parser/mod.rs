@@ -37,7 +37,7 @@ use crate::sass::{Item, Name, UseAs, Value};
 use crate::selectors::Selectors;
 use crate::value::ListSeparator;
 #[cfg(test)]
-use crate::value::{Number, Rgba, Unit};
+use crate::value::{Numeric, Rgba, Unit};
 use crate::Error;
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
@@ -77,7 +77,7 @@ pub fn parse_value_data(data: &[u8]) -> Result<Value, Error> {
 #[test]
 fn test_parse_value_data_1() -> Result<(), Error> {
     let v = parse_value_data(b"17em")?;
-    assert_eq!(Value::Numeric(17.into(), Unit::Em), v);
+    assert_eq!(Value::Numeric(Numeric::new(17, Unit::Em)), v);
     Ok(())
 }
 
@@ -660,7 +660,7 @@ fn input_to_string(s: Span) -> Result<String, Utf8Error> {
 
 #[cfg(test)]
 fn percentage(v: isize) -> Value {
-    Value::Numeric(Number::from(v), Unit::Percent)
+    Value::Numeric(Numeric::new(v, Unit::Percent))
 }
 
 #[cfg(test)]
