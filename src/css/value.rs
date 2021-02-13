@@ -3,7 +3,9 @@ use crate::error::Error;
 use crate::functions::SassFunction;
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
-use crate::value::{Color, ListSeparator, Number, Operator, Quotes, Unit};
+use crate::value::{
+    Color, ListSeparator, Number, Numeric, Operator, Quotes, Unit,
+};
 use std::convert::TryFrom;
 
 /// A css value.
@@ -24,7 +26,7 @@ pub enum Value {
     ///
     /// The boolean flag is true for calculated values and false for
     /// literal values.
-    Numeric(Number, Unit, bool),
+    Numeric(Numeric, bool),
     /// A color value (and optionally, its source string).
     Color(Color, Option<String>),
     /// The null value.
@@ -50,7 +52,7 @@ pub enum Value {
 impl Value {
     /// Create a numeric value with no unit.
     pub fn scalar<T: Into<Number>>(v: T) -> Self {
-        Value::Numeric(v.into(), Unit::None, false)
+        Value::Numeric(Numeric::new(v, Unit::None), false)
     }
 
     /// Get the type name of this value.
@@ -82,7 +84,7 @@ impl Value {
     /// Get this value, but marked as calculated.
     pub fn into_calculated(self) -> Self {
         match self {
-            Value::Numeric(num, unit, _) => Value::Numeric(num, unit, true),
+            Value::Numeric(num, _) => Value::Numeric(num, true),
             Value::List(v, sep, bracketed) => Value::List(
                 v.into_iter().map(|i| i.into_calculated()).collect(),
                 sep,
@@ -117,9 +119,9 @@ impl Value {
     ///
     /// If it is, get the number and unit, otherwise, get the value
     /// itself as error.
-    pub fn numeric_value(self) -> Result<(Number, Unit), Self> {
+    pub fn numeric_value(self) -> Result<Numeric, Self> {
         match self {
-            Value::Numeric(num, unit, ..) => Ok((num, unit)),
+            Value::Numeric(num, ..) => Ok(num),
             v => Err(v),
         }
     }
@@ -127,7 +129,8 @@ impl Value {
     /// Check that this value is an integer.
     pub fn integer_value(&self) -> Result<isize, Error> {
         match self {
-            &Value::Numeric(ref num, ..) if num.is_integer() => num
+            &Value::Numeric(ref num, ..) if num.value.is_integer() => num
+                .value
                 .to_integer()
                 .ok_or_else(|| Error::bad_value("an integer", self)),
             v => Err(Error::bad_value("a number", v)),
@@ -261,15 +264,7 @@ impl PartialEq for Value {
     fn eq(&self, other: &Value) -> bool {
         match (&self, other) {
             (Value::Bang(a), Value::Bang(b)) => a == b,
-            (Value::Numeric(a, au, _), Value::Numeric(b, bu, _)) => {
-                if au == bu {
-                    a == b
-                } else if let Some(scale) = bu.scale_to(au) {
-                    a == &(b * &scale)
-                } else {
-                    false
-                }
-            }
+            (Value::Numeric(a, _), Value::Numeric(b, _)) => a == b,
             (Value::Literal(a, aq), Value::Literal(b, bq)) => {
                 if aq == bq {
                     a == b
@@ -339,6 +334,12 @@ impl From<String> for Value {
         Value::Literal(s, Quotes::None)
     }
 }
+impl From<Numeric> for Value {
+    fn from(v: Numeric) -> Value {
+        Value::Numeric(v, true)
+    }
+}
+
 impl<C: Into<Color>> From<C> for Value {
     fn from(c: C) -> Value {
         Value::Color(c.into(), None)

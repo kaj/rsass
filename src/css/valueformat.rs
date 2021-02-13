@@ -34,9 +34,7 @@ impl<'a> Display for Formatted<'a, Value> {
                     .collect::<String>();
                 write!(out, "get-function(\"{}\")", name)
             }
-            Value::Numeric(ref num, ref unit, _) => {
-                write!(out, "{}{}", num.format(self.format), unit)
-            }
+            Value::Numeric(ref num, _) => num.format(self.format).fmt(out),
             Value::Color(ref rgba, ref name) => {
                 if let Some(ref name) = *name {
                     name.fmt(out)

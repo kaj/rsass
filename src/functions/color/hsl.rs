@@ -1,7 +1,7 @@
 use super::rgb::{preserve_call, values_from_list};
 use super::{get_color, make_call, Error, Module, SassFunction};
 use crate::css::Value;
-use crate::value::{Hsla, Number, Unit};
+use crate::value::{Hsla, Numeric, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Zero};
@@ -58,7 +58,7 @@ pub fn register(f: &mut Module) {
     ) {
         (c @ Value::Color(..), Value::Null) => Ok(c),
         (Value::Color(col, _), Value::Numeric(v, ..)) => {
-            Ok(col.rotate_hue(v.as_ratio()?).into())
+            Ok(col.rotate_hue(v.value.as_ratio()?).into())
         }
         (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
     });
@@ -97,7 +97,7 @@ pub fn register(f: &mut Module) {
     def!(f, hue(color), |s| {
         let col = get_color(s, "color")?;
         let hsla = col.to_hsla();
-        Ok(Value::Numeric(Number::from(hsla.hue()), Unit::Deg, true))
+        Ok(Value::Numeric(Numeric::new(hsla.hue(), Unit::Deg), true))
     });
     def!(f, saturation(color), |s| {
         Ok(percentage(get_color(s, "color")?.to_hsla().sat()))
@@ -143,12 +143,12 @@ pub fn expose(m: &Module, global: &mut Module) {
 }
 
 pub fn percentage(v: Rational) -> Value {
-    Value::Numeric(Number::from(v * 100), Unit::Percent, true)
+    Value::Numeric(Numeric::new(v * 100, Unit::Percent), true)
 }
 
 fn to_rational(v: &Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, ..) => v.as_ratio(),
+        Value::Numeric(v, ..) => v.value.as_ratio(),
         v => Err(Error::badarg("number", v)),
     }
 }
@@ -158,10 +158,12 @@ fn to_rational(v: &Value) -> Result<Rational, Error> {
 pub fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
-        Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio()? / 100),
         Value::Numeric(v, ..) => {
-            let v = v.as_ratio()?;
-            Ok(if v <= Rational::one() { v } else { v / 100 })
+            if v.unit == Unit::Percent || v.value > Rational::one().into() {
+                Ok(v.value.as_ratio()? / 100)
+            } else {
+                Ok(v.value.as_ratio()?)
+            }
         }
         v => Err(Error::badarg("number", &v)),
     }
@@ -171,8 +173,13 @@ pub fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
 pub fn to_rational2(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
-        Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio()? / 100),
-        Value::Numeric(v, ..) => Ok(v.as_ratio()?),
+        Value::Numeric(v, ..) => {
+            if v.unit == Unit::Percent {
+                Ok(v.value.as_ratio()? / 100)
+            } else {
+                Ok(v.value.as_ratio()?)
+            }
+        }
         v => Err(Error::badarg("number", &v)),
     }
 }

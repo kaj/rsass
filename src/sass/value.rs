@@ -3,7 +3,9 @@ use crate::error::Error;
 use crate::functions::get_builtin_function;
 use crate::ordermap::OrderMap;
 use crate::sass::{CallArgs, Name, SassString};
-use crate::value::{ListSeparator, Number, Operator, Quotes, Rgba, Unit};
+use crate::value::{
+    ListSeparator, Number, Numeric, Operator, Quotes, Rgba, Unit,
+};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::Zero;
@@ -161,9 +163,10 @@ impl Value {
                     Ok(css::Value::Call(name, args))
                 }
             }
-            Value::Numeric(ref num, ref unit) => {
-                Ok(css::Value::Numeric(num.clone(), unit.clone(), arithmetic))
-            }
+            Value::Numeric(ref num, ref unit) => Ok(css::Value::Numeric(
+                Numeric::new(num.clone(), unit.clone()),
+                arithmetic,
+            )),
             Value::Map(ref m) => {
                 let items = m.iter()
                     .map(|&(ref k, ref v)| -> Result<(css::Value, css::Value), Error> {
@@ -207,7 +210,7 @@ impl Value {
                 let value = v.do_evaluate(scope, true)?;
                 match (op.clone(), value) {
                     (Operator::Not, css::Value::Numeric(v, ..)) => {
-                        Ok(v.is_zero().into())
+                        Ok(v.value.is_zero().into())
                     }
                     (Operator::Not, css::Value::True) => {
                         Ok(css::Value::False)
@@ -215,11 +218,11 @@ impl Value {
                     (Operator::Not, css::Value::False) => {
                         Ok(css::Value::True)
                     }
-                    (Operator::Minus, css::Value::Numeric(v, u, _)) => {
-                        Ok(css::Value::Numeric(-&v, u, true))
+                    (Operator::Minus, css::Value::Numeric(v, _)) => {
+                        Ok(css::Value::Numeric(-&v, true))
                     }
-                    (Operator::Plus, css::Value::Numeric(v, u, _)) => {
-                        Ok(css::Value::Numeric(v, u, true))
+                    (Operator::Plus, css::Value::Numeric(v, _)) => {
+                        Ok(css::Value::Numeric(v, true))
                     }
                     (
                         Operator::Minus,
