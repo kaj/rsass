@@ -114,9 +114,17 @@ impl PartialOrd for NumValue {
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 s.partial_cmp(r)
             }
-            (NumValue::Float(s), r) => s.partial_cmp(&f64::from(r)),
-            (s, NumValue::Float(r)) => f64::from(s).partial_cmp(r),
+            (NumValue::Float(s), r) => f64_cmp(s, &r.into()),
+            (s, NumValue::Float(r)) => f64_cmp(&s.into(), r),
         }
+    }
+}
+
+fn f64_cmp(a: &f64, b: &f64) -> Option<Ordering> {
+    match a.partial_cmp(b) {
+        // Rust considers inf == inf, and sass doesn't
+        Some(Ordering::Equal) if !a.is_normal() || !b.is_normal() => None,
+        result => result,
     }
 }
 

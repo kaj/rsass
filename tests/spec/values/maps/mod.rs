@@ -22,7 +22,6 @@ mod key_equality {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn negative() {
             assert_eq!(
                 rsass(
@@ -37,7 +36,6 @@ mod key_equality {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn positive() {
             assert_eq!(
                 rsass(
