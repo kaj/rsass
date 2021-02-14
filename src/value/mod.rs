@@ -1,7 +1,9 @@
 //! Types used in sass and css values.
 mod colors;
 mod list_separator;
+#[forbid(missing_docs)]
 mod number;
+#[forbid(missing_docs)]
 mod numeric;
 mod operator;
 mod quotes;

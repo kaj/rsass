@@ -4,20 +4,46 @@ use crate::Error;
 use std::fmt::{self, Display};
 use std::ops::Neg;
 
-/// A Numeric value is a rational value with a Unit (which may be
-/// Unit::None) and flags.
+/// A Numeric value is a [`Number`] with a [`Unit`] (which may be
+/// Unit::None).
 #[derive(Clone, Debug, Eq)]
 pub struct Numeric {
+    /// The number value of this numeric.
     pub value: Number,
+    /// The unit of this numeric.
     pub unit: Unit,
 }
 
 impl Numeric {
+    /// Create a new numeric value.
+    ///
+    /// The value can be given as anything that can be converted into
+    /// a [`Number`], e.g. an [`isize`], a [`Rational`], or a [`f64`].
     pub fn new(value: impl Into<Number>, unit: Unit) -> Numeric {
         Numeric {
             value: value.into(),
             unit,
         }
+    }
+    /// Convert this numeric value to a given unit, if possible.
+    ///
+    /// # Examples
+    /// ```
+    /// # use rsass::value::{Numeric, Unit};
+    /// let inch = Numeric::new(1, Unit::In);
+    /// assert_eq!(inch.as_unit(Unit::Mm).unwrap() * 5, 127.into());
+    /// assert_eq!(inch.as_unit(Unit::Deg), None);
+    /// ```
+    pub fn as_unit(&self, unit: Unit) -> Option<Number> {
+        self.unit.scale_to(&unit).map(|scale| &self.value * &scale)
+    }
+    /// Get this number as a rational number.
+    ///
+    /// The unit is ignored.  If the value is bignum rational or
+    /// floating point, it is approximated as long as it is withing
+    /// range, otherwises an error is returned.
+    pub fn as_ratio(&self) -> Result<Rational, Error> {
+        self.value.as_ratio()
     }
 
     /// Get a reference to this `Value` bound to an output format.
@@ -26,12 +52,6 @@ impl Numeric {
             value: self,
             format,
         }
-    }
-    pub fn as_unit(&self, unit: Unit) -> Option<Number> {
-        self.unit.scale_to(&unit).map(|scale| &self.value * &scale)
-    }
-    pub fn as_ratio(&self) -> Result<Rational, Error> {
-        self.value.as_ratio()
     }
 }
 
