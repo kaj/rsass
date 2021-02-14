@@ -25,14 +25,8 @@ pub enum Operator {
 impl Operator {
     pub fn eval(&self, a: Value, b: Value) -> Option<Value> {
         match *self {
-            Operator::And => Some((a.is_true() && b.is_true()).into()),
-            Operator::Or => {
-                if a.is_true() {
-                    Some(a)
-                } else {
-                    Some(b)
-                }
-            }
+            Operator::And => Some(if !a.is_true() { a } else { b }),
+            Operator::Or => Some(if a.is_true() { a } else { b }),
             Operator::Equal => Some(Value::from(a == b)),
             Operator::NotEqual => Some(Value::from(a != b)),
             Operator::Greater => Some(Value::from(a > b)),

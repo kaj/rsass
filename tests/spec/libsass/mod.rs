@@ -183,7 +183,6 @@ mod basic;
 
 // From "sass-spec/spec/libsass/bool.hrx"
 #[test]
-#[ignore] // wrong result
 fn bool() {
     assert_eq!(
         rsass(
