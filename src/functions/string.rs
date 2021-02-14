@@ -1,6 +1,6 @@
 use super::{Error, Module, SassFunction};
 use crate::css::Value;
-use crate::value::{Numeric, Quotes, Unit};
+use crate::value::{Quotes, Unit};
 use crate::Scope;
 use lazy_static::lazy_static;
 use std::cmp::max;
@@ -26,7 +26,7 @@ pub fn create_module() -> Module {
     ) {
         (Value::Literal(s, _), Value::Literal(sub, _)) => {
             Ok(match s.find(&sub) {
-                Some(o) => intvalue(1 + s[0..o].chars().count()),
+                Some(o) => Value::scalar(1 + s[0..o].chars().count()),
                 None => Value::Null,
             })
         }
@@ -65,7 +65,7 @@ pub fn create_module() -> Module {
         )),
     });
     def!(f, length(string), |s| match &s.get("string")? {
-        &Value::Literal(ref v, _) => Ok(intvalue(v.chars().count())),
+        &Value::Literal(ref v, _) => Ok(Value::scalar(v.chars().count())),
         v => Err(Error::badarg("string", v)),
     });
     def!(f, slice(string, start_at, end_at = b"-1"), |s| {
@@ -177,10 +177,6 @@ fn get_integer(s: &dyn Scope, name: &str) -> Result<isize, Error> {
     } else {
         Err(Error::badarg("integer", &v0))
     }
-}
-
-fn intvalue(n: usize) -> Value {
-    Value::Numeric(Numeric::new(n as isize, Unit::None), true)
 }
 
 /// Convert index from sass (rational number, first is one) to rust

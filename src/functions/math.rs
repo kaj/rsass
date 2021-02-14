@@ -80,8 +80,7 @@ pub fn create_module() -> Module {
     def!(f, log(number, base), |s| {
         let num = get_unitless(s, "number")?;
         let base = get_unitless_or(s, "base", std::f64::consts::E)?;
-        let result = num.log(base);
-        Ok(number(result, Unit::None))
+        Ok(Value::scalar(num.log(base)))
     });
     def!(f, pow(base, exponent), |s| {
         let base = get_unitless(s, "base")?;
@@ -92,18 +91,18 @@ pub fn create_module() -> Module {
             } else {
                 base.powf(exponent)
             };
-        Ok(number(result, Unit::None))
+        Ok(Value::scalar(result))
     });
     def!(f, sqrt(number), |s| {
-        Ok(number(get_unitless(s, "number")?.sqrt(), Unit::None))
+        Ok(Value::scalar(get_unitless(s, "number")?.sqrt()))
     });
 
     // - - - Trigonometric Functions - - -
     def!(f, cos(number), |s| {
-        Ok(number(get_radians(s, "number")?.cos(), Unit::None))
+        Ok(Value::scalar(get_radians(s, "number")?.cos()))
     });
     def!(f, sin(number), |s| {
-        Ok(number(get_radians(s, "number")?.sin(), Unit::None))
+        Ok(Value::scalar(get_radians(s, "number")?.sin()))
     });
     def!(f, tan(number), |s| {
         let ans = get_radians(s, "number")?.tan();
@@ -112,7 +111,7 @@ pub fn create_module() -> Module {
         } else {
             ans
         };
-        Ok(number(ans, Unit::None))
+        Ok(Value::scalar(ans))
     });
 
     def!(f, acos(number), |s| {
@@ -164,7 +163,7 @@ pub fn create_module() -> Module {
     def!(f, random(limit), |s| match s.get("limit")? {
         Value::Null => {
             let rez = 1_000_000;
-            Ok(number(Rational::new(intrand(rez), rez), Unit::None))
+            Ok(Value::scalar(Rational::new(intrand(rez), rez)))
         }
         Value::Numeric(val, _) => {
             let bound = val
@@ -172,8 +171,7 @@ pub fn create_module() -> Module {
                 .to_integer()
                 .ok_or_else(|| Error::S("bound must be > 0".into()))?;
             if bound > 0 {
-                let res = 1 + intrand(bound);
-                Ok(number(Rational::from_integer(res), Unit::None))
+                Ok(Value::scalar(intrand(bound) + 1))
             } else {
                 Err(Error::S("bound must be > 0".into()))
             }
@@ -181,8 +179,8 @@ pub fn create_module() -> Module {
         v => Err(Error::badarg("number or null", &v)),
     });
 
-    f.set_variable(name!(pi), number(PI, Unit::None));
-    f.set_variable(name!(e), number(E, Unit::None));
+    f.set_variable(name!(pi), Value::scalar(PI));
+    f.set_variable(name!(e), Value::scalar(E));
     f
 }
 
@@ -262,7 +260,7 @@ fn as_numeric(v: &Value) -> Result<Numeric, Error> {
 }
 
 fn number<T: Into<Number>>(v: T, unit: Unit) -> Value {
-    Value::Numeric(Numeric::new(v.into(), unit), true)
+    Numeric::new(v.into(), unit).into()
 }
 
 /// convert f64 in radians (used by rust) to numeric Value in degrees

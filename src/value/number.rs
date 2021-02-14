@@ -442,6 +442,20 @@ impl From<isize> for Number {
         }
     }
 }
+impl From<i32> for Number {
+    fn from(value: i32) -> Number {
+        // isize is be at least 32 bits.
+        (value as isize).into()
+    }
+}
+impl From<usize> for Number {
+    fn from(value: usize) -> Number {
+        match isize::try_from(value) {
+            Ok(v) => v.into(),
+            Err(_) => Ratio::from_integer(BigInt::from(value)).into(),
+        }
+    }
+}
 impl From<Rational> for Number {
     fn from(value: Rational) -> Number {
         Number {

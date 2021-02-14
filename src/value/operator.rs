@@ -157,21 +157,9 @@ impl Operator {
                                         .into(),
                                 )
                             } else if a.unit == b.unit {
-                                Some(
-                                    Numeric::new(
-                                        &a.value / &b.value,
-                                        Unit::None,
-                                    )
-                                    .into(),
-                                )
+                                Some(Value::scalar(&a.value / &b.value))
                             } else if let Some(scaled) = b.as_unit(a.unit) {
-                                Some(
-                                    Numeric::new(
-                                        &a.value / &scaled,
-                                        Unit::None,
-                                    )
-                                    .into(),
-                                )
+                                Some(Value::scalar(&a.value / &scaled))
                             } else {
                                 None
                             }
@@ -192,10 +180,7 @@ impl Operator {
             Operator::Modulo => match (&a, &b) {
                 (&Value::Numeric(ref a, _), &Value::Numeric(ref b, _)) => {
                     if a.unit == b.unit {
-                        Some(
-                            Numeric::new(&a.value % &b.value, Unit::None)
-                                .into(),
-                        )
+                        Some(Value::scalar(&a.value % &b.value))
                     } else if b.unit == Unit::None {
                         Some(
                             Numeric::new(&a.value % &b.value, a.unit.clone())

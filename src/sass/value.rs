@@ -3,7 +3,7 @@ use crate::error::Error;
 use crate::functions::get_builtin_function;
 use crate::ordermap::OrderMap;
 use crate::sass::{CallArgs, Name, SassString};
-use crate::value::{ListSeparator, Numeric, Operator, Quotes, Rgba, Unit};
+use crate::value::{ListSeparator, Number, Numeric, Operator, Quotes, Rgba};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::Zero;
@@ -54,8 +54,8 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn scalar(v: isize) -> Self {
-        Value::Numeric(Numeric::new(v, Unit::None))
+    pub fn scalar(v: impl Into<Number>) -> Self {
+        Value::Numeric(Numeric::scalar(v))
     }
     #[cfg(test)]
     pub fn bool(v: bool) -> Self {

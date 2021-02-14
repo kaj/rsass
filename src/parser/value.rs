@@ -504,7 +504,6 @@ mod test {
     use super::*;
     use crate::sass::CallArgs;
     use crate::sass::Value::*;
-    use crate::value::{Numeric, Unit};
     use crate::variablescope::GlobalScope;
     use num_rational::Rational;
 
@@ -520,7 +519,7 @@ mod test {
 
     #[test]
     fn simple_number_pos() {
-        check_expr("+4;", Value::Numeric(Numeric::new(4, Unit::None)))
+        check_expr("+4;", Value::scalar(4))
     }
 
     #[test]
@@ -529,17 +528,11 @@ mod test {
     }
     #[test]
     fn simple_number_onlydec() {
-        check_expr(
-            ".34;",
-            Value::Numeric(Numeric::new(Rational::new(34, 100), Unit::None)),
-        )
+        check_expr(".34;", number(34, 100))
     }
     #[test]
     fn simple_number_onlydec_neg() {
-        check_expr(
-            "-.34;",
-            Value::Numeric(Numeric::new(Rational::new(-34, 100), Unit::None)),
-        )
+        check_expr("-.34;", number(-34, 100))
     }
     #[test]
     fn simple_number_onlydec_pos() {
@@ -547,7 +540,7 @@ mod test {
     }
 
     fn number(nom: isize, denom: isize) -> Value {
-        Value::Numeric(Numeric::new(Rational::new(nom, denom), Unit::None))
+        Value::scalar(Rational::new(nom, denom))
     }
 
     #[test]

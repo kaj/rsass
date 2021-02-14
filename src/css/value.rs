@@ -3,9 +3,7 @@ use crate::error::Error;
 use crate::functions::SassFunction;
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
-use crate::value::{
-    Color, ListSeparator, Number, Numeric, Operator, Quotes, Unit,
-};
+use crate::value::{Color, ListSeparator, Number, Numeric, Operator, Quotes};
 use std::convert::TryFrom;
 
 /// A css value.
@@ -52,7 +50,7 @@ pub enum Value {
 impl Value {
     /// Create a numeric value with no unit.
     pub fn scalar<T: Into<Number>>(v: T) -> Self {
-        Value::Numeric(Numeric::new(v, Unit::None), true)
+        Value::Numeric(Numeric::scalar(v), true)
     }
 
     /// Get the type name of this value.

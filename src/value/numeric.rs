@@ -25,6 +25,14 @@ impl Numeric {
             unit,
         }
     }
+    /// Create a new numeric value with no unit.
+    pub fn scalar(value: impl Into<Number>) -> Numeric {
+        Numeric {
+            value: value.into(),
+            unit: Unit::None,
+        }
+    }
+
     /// Convert this numeric value to a given unit, if possible.
     ///
     /// # Examples

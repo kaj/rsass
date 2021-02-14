@@ -23,7 +23,7 @@ pub fn create_module() -> Module {
             let value = s.get("value")?;
             for (i, v) in v.iter().enumerate() {
                 if v == &value {
-                    return Ok(Value::scalar(i as isize + 1));
+                    return Ok(Value::scalar(i + 1));
                 }
             }
             Ok(Value::Null)
@@ -32,7 +32,7 @@ pub fn create_module() -> Module {
             Value::List(ref l, ListSeparator::Space, _) if l.len() == 2 => {
                 for (i, &(ref k, ref v)) in map.iter().enumerate() {
                     if *k == l[0] && *v == l[1] {
-                        return Ok(Value::scalar(i as isize + 1));
+                        return Ok(Value::scalar(i + 1));
                     }
                 }
                 Ok(Value::Null)
