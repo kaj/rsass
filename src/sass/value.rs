@@ -218,8 +218,7 @@ impl Value {
                     (Operator::Minus, css::Value::Numeric(v, u, _)) => {
                         Ok(css::Value::Numeric(-&v, u, true))
                     }
-                    (Operator::Plus, css::Value::Numeric(mut v, u, _)) => {
-                        v.plus_sign = true;
+                    (Operator::Plus, css::Value::Numeric(v, u, _)) => {
                         Ok(css::Value::Numeric(v, u, true))
                     }
                     (

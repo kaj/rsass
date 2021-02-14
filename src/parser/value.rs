@@ -295,21 +295,19 @@ fn number(input: Span) -> IResult<Span, Value> {
         tuple((
             sign_prefix,
             alt((
-                map(pair(decimal_integer, decimal_decimals), |(n, d)| {
-                    (true, n + d)
-                }),
+                map(pair(decimal_integer, decimal_decimals), |(n, d)| n + d),
                 map(
                     pair(decimal_integer_big, decimal_decimals_big),
-                    |(n, d)| (true, n + d),
+                    |(n, d)| n + d,
                 ),
-                map(decimal_decimals, |dec| (false, dec)),
-                map(decimal_decimals_big, |dec| (false, dec)),
-                map(decimal_integer, |int| (true, int)),
-                map(decimal_integer_big, |int| (true, int)),
+                decimal_decimals,
+                decimal_decimals_big,
+                decimal_integer,
+                decimal_integer_big,
             )),
             unit,
         )),
-        |(sign, (lead_zero, num), unit)| {
+        |(sign, num, unit)| {
             Value::Numeric(
                 Number {
                     value: if sign == Some(b"-") {
@@ -322,8 +320,6 @@ fn number(input: Span) -> IResult<Span, Value> {
                     } else {
                         num
                     },
-                    plus_sign: sign == Some(b"+"),
-                    lead_zero,
                 },
                 unit,
             )
@@ -526,17 +522,7 @@ mod test {
 
     #[test]
     fn simple_number_pos() {
-        check_expr(
-            "+4;",
-            Numeric(
-                Number {
-                    value: 4.into(),
-                    plus_sign: true,
-                    lead_zero: true,
-                },
-                Unit::None,
-            ),
-        )
+        check_expr("+4;", Numeric(4.into(), Unit::None))
     }
 
     #[test]
@@ -545,30 +531,13 @@ mod test {
     }
     #[test]
     fn simple_number_onlydec() {
-        check_expr(
-            ".34;",
-            Numeric(
-                Number {
-                    value: Rational::new(34, 100).into(),
-                    plus_sign: false,
-                    lead_zero: false,
-                },
-                Unit::None,
-            ),
-        )
+        check_expr(".34;", Numeric(Rational::new(34, 100).into(), Unit::None))
     }
     #[test]
     fn simple_number_onlydec_neg() {
         check_expr(
             "-.34;",
-            Numeric(
-                Number {
-                    value: Rational::new(-34, 100).into(),
-                    plus_sign: false,
-                    lead_zero: false,
-                },
-                Unit::None,
-            ),
+            Numeric(Rational::new(-34, 100).into(), Unit::None),
         )
     }
     #[test]
@@ -578,8 +547,6 @@ mod test {
             Numeric(
                 Number {
                     value: Rational::new(34, 100).into(),
-                    plus_sign: true,
-                    lead_zero: false,
                 },
                 Unit::None,
             ),

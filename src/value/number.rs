@@ -17,8 +17,6 @@ use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Number {
     pub value: NumValue,
-    pub plus_sign: bool,
-    pub lead_zero: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -330,8 +328,6 @@ impl One for Number {
     fn one() -> Number {
         Number {
             value: NumValue::one(),
-            plus_sign: false,
-            lead_zero: false,
         }
     }
 }
@@ -407,8 +403,6 @@ impl Number {
     pub fn abs(self) -> Self {
         Number {
             value: self.value.abs(),
-            plus_sign: self.plus_sign,
-            lead_zero: self.lead_zero,
         }
     }
 
@@ -447,8 +441,6 @@ impl<T: Into<NumValue>> From<T> for Number {
     fn from(value: T) -> Number {
         Number {
             value: value.into(),
-            plus_sign: false,
-            lead_zero: true,
         }
     }
 }
