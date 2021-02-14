@@ -363,23 +363,32 @@ impl NumValue {
 }
 
 impl Number {
+    /// Create a rational number.
     pub fn rational(num: isize, denom: isize) -> Self {
         Rational::new(num, denom).into()
     }
+    /// Get this number as a rational number.
+    ///
+    /// If the value is bignum rational or floating point, it is
+    /// approximated as long as it is withing range, otherwises an
+    /// error is returned.
     pub fn as_ratio(&self) -> Result<Rational, crate::Error> {
         self.value.as_ratio()
     }
 
+    /// Get a copy of this number, rounded away from zero.
     pub fn ceil(&self) -> Self {
         Number {
             value: self.value.ceil(),
         }
     }
+    /// Get a copy of this number, rounded towards zero.
     pub fn floor(&self) -> Self {
         Number {
             value: self.value.floor(),
         }
     }
+    /// Get a copy of this number, rounded to nearest integer.
     pub fn round(&self) -> Self {
         Number {
             value: self.value.round(),
@@ -417,6 +426,7 @@ impl Number {
         }
     }
 
+    /// Get a reference to this `Value` bound to an output format.
     pub fn format(&self, format: Format) -> Formatted<Self> {
         Formatted {
             value: self,
@@ -429,6 +439,20 @@ impl From<isize> for Number {
     fn from(value: isize) -> Number {
         Number {
             value: value.into(),
+        }
+    }
+}
+impl From<i32> for Number {
+    fn from(value: i32) -> Number {
+        // isize is be at least 32 bits.
+        (value as isize).into()
+    }
+}
+impl From<usize> for Number {
+    fn from(value: usize) -> Number {
+        match isize::try_from(value) {
+            Ok(v) => v.into(),
+            Err(_) => Ratio::from_integer(BigInt::from(value)).into(),
         }
     }
 }

@@ -1,5 +1,5 @@
 use crate::css::Value;
-use crate::value::{ListSeparator, Quotes, Unit};
+use crate::value::{ListSeparator, Numeric, Quotes, Unit};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -34,20 +34,22 @@ impl Operator {
             Operator::Lesser => Some(Value::from(a < b)),
             Operator::LesserE => Some(Value::from(a <= b)),
             Operator::Plus => match (a, b) {
-                (Value::Color(a, _), Value::Numeric(bn, Unit::None, _)) => {
-                    let bn = bn.as_ratio().ok()?;
-                    Some((a.to_rgba().as_ref() + bn).into())
+                (Value::Color(a, _), Value::Numeric(b, _))
+                    if b.unit == Unit::None =>
+                {
+                    let b = b.as_ratio().ok()?;
+                    Some((a.to_rgba().as_ref() + b).into())
                 }
                 (Value::Color(a, _), Value::Color(b, _)) => {
                     Some((a.to_rgba().as_ref() + b.to_rgba().as_ref()).into())
                 }
-                (Value::Numeric(a, au, ..), Value::Numeric(b, bu, ..)) => {
-                    if au == bu || bu == Unit::None {
-                        Some(Value::Numeric(a + b, au, true))
-                    } else if au == Unit::None {
-                        Some(Value::Numeric(a + b, bu, true))
-                    } else if let Some(scale) = bu.scale_to(&au) {
-                        Some(Value::Numeric(a + b * scale, au, true))
+                (Value::Numeric(a, _), Value::Numeric(b, _)) => {
+                    if a.unit == b.unit || b.unit == Unit::None {
+                        Some(Numeric::new(a.value + b.value, a.unit).into())
+                    } else if a.unit == Unit::None {
+                        Some(Numeric::new(a.value + b.value, b.unit).into())
+                    } else if let Some(scaled) = b.as_unit(a.unit.clone()) {
+                        Some(Numeric::new(a.value + scaled, a.unit).into())
                     } else {
                         None
                     }
@@ -69,24 +71,22 @@ impl Operator {
                 _ => None,
             },
             Operator::Minus => match (a, b) {
-                (Value::Color(a, _), Value::Numeric(bn, Unit::None, _)) => {
-                    let bn = bn.as_ratio().ok()?;
-                    Some((a.to_rgba().as_ref() - bn).into())
+                (Value::Color(a, _), Value::Numeric(b, _))
+                    if b.unit == Unit::None =>
+                {
+                    let b = b.as_ratio().ok()?;
+                    Some((a.to_rgba().as_ref() - b).into())
                 }
                 (Value::Color(a, _), Value::Color(b, _)) => {
                     Some((a.to_rgba().as_ref() - b.to_rgba().as_ref()).into())
                 }
-                (Value::Numeric(av, au, ..), Value::Numeric(bv, bu, ..)) => {
-                    if au == bu || bu == Unit::None {
-                        Some(Value::Numeric(&av - &bv, au, true))
-                    } else if au == Unit::None {
-                        Some(Value::Numeric(&av - &bv, bu, true))
-                    } else if let Some(scale) = bu.scale_to(&au) {
-                        Some(Value::Numeric(
-                            &av - &(bv * scale),
-                            au.clone(),
-                            true,
-                        ))
+                (Value::Numeric(a, _), Value::Numeric(b, _)) => {
+                    if a.unit == b.unit || b.unit == Unit::None {
+                        Some(Numeric::new(&a.value - &b.value, a.unit).into())
+                    } else if a.unit == Unit::None {
+                        Some(Numeric::new(&a.value - &b.value, b.unit).into())
+                    } else if let Some(scaled) = b.as_unit(a.unit.clone()) {
+                        Some(Numeric::new(&a.value - &scaled, a.unit).into())
                     } else {
                         None
                     }
@@ -104,18 +104,36 @@ impl Operator {
             },
             Operator::Multiply => {
                 if let (
-                    &Value::Numeric(ref a, ref au, ..),
-                    &Value::Numeric(ref b, ref bu, ..),
+                    &Value::Numeric(ref a, _),
+                    &Value::Numeric(ref b, _),
                 ) = (&a, &b)
                 {
-                    if bu == &Unit::None {
-                        Some(Value::Numeric(a * b, au.clone(), true))
-                    } else if au == &Unit::None {
-                        Some(Value::Numeric(a * b, bu.clone(), true))
-                    } else if bu == &Unit::Percent {
-                        Some(Value::Numeric(a * b / 100, au.clone(), true))
-                    } else if au == &Unit::Percent {
-                        Some(Value::Numeric(a * b / 100, bu.clone(), true))
+                    if b.unit == Unit::None {
+                        Some(
+                            Numeric::new(&a.value * &b.value, a.unit.clone())
+                                .into(),
+                        )
+                    } else if a.unit == Unit::None {
+                        Some(
+                            Numeric::new(&a.value * &b.value, b.unit.clone())
+                                .into(),
+                        )
+                    } else if b.unit == Unit::Percent {
+                        Some(
+                            Numeric::new(
+                                &a.value * &b.value / 100,
+                                a.unit.clone(),
+                            )
+                            .into(),
+                        )
+                    } else if a.unit == Unit::Percent {
+                        Some(
+                            Numeric::new(
+                                &a.value * &b.value / 100,
+                                b.unit.clone(),
+                            )
+                            .into(),
+                        )
                     } else {
                         None
                     }
@@ -126,31 +144,22 @@ impl Operator {
             Operator::Div => {
                 if a.is_calculated() || b.is_calculated() {
                     match (a, b) {
-                        (
-                            Value::Color(a, _),
-                            Value::Numeric(bn, Unit::None, ..),
-                        ) => {
-                            let bn = bn.as_ratio().ok()?;
+                        (Value::Color(a, _), Value::Numeric(b, _))
+                            if b.unit == Unit::None =>
+                        {
+                            let bn = b.as_ratio().ok()?;
                             Some((a.to_rgba().as_ref() / bn).into())
                         }
-                        (
-                            Value::Numeric(av, au, ..),
-                            Value::Numeric(bv, bu, ..),
-                        ) => {
-                            if bu == Unit::None {
-                                Some(Value::Numeric(&av / &bv, au, true))
-                            } else if au == bu {
-                                Some(Value::Numeric(
-                                    &av / &bv,
-                                    Unit::None,
-                                    true,
-                                ))
-                            } else if let Some(scale) = bu.scale_to(&au) {
-                                Some(Value::Numeric(
-                                    &av / &(bv * scale),
-                                    Unit::None,
-                                    true,
-                                ))
+                        (Value::Numeric(a, _), Value::Numeric(b, _)) => {
+                            if b.unit == Unit::None {
+                                Some(
+                                    Numeric::new(&a.value / &b.value, a.unit)
+                                        .into(),
+                                )
+                            } else if a.unit == b.unit {
+                                Some(Value::scalar(&a.value / &b.value))
+                            } else if let Some(scaled) = b.as_unit(a.unit) {
+                                Some(Value::scalar(&a.value / &scaled))
                             } else {
                                 None
                             }
@@ -169,14 +178,14 @@ impl Operator {
                 }
             }
             Operator::Modulo => match (&a, &b) {
-                (
-                    &Value::Numeric(ref av, ref au, ..),
-                    &Value::Numeric(ref bv, ref bu, ..),
-                ) => {
-                    if au == bu {
-                        Some(Value::Numeric(av % bv, Unit::None, true))
-                    } else if bu == &Unit::None {
-                        Some(Value::Numeric(av % bv, au.clone(), true))
+                (&Value::Numeric(ref a, _), &Value::Numeric(ref b, _)) => {
+                    if a.unit == b.unit {
+                        Some(Value::scalar(&a.value % &b.value))
+                    } else if b.unit == Unit::None {
+                        Some(
+                            Numeric::new(&a.value % &b.value, a.unit.clone())
+                                .into(),
+                        )
                     } else {
                         None
                     }

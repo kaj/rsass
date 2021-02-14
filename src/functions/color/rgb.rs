@@ -1,9 +1,9 @@
 use super::{get_color, make_call, Error, Module, SassFunction};
 use crate::css::{CallArgs, Value};
-use crate::value::{ListSeparator, Number, Quotes, Rgba, Unit};
+use crate::value::{ListSeparator, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
-use num_traits::{One, Zero};
+use num_traits::{one, One, Zero};
 
 fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
@@ -118,17 +118,14 @@ pub fn register(f: &mut Module) {
     def!(f, _rgba(red, green, blue, alpha, color, channels), |s| {
         do_rgba("rgba", s)
     });
-    fn num(v: Rational) -> Result<Value, Error> {
-        Ok(Value::Numeric(Number::from(v), Unit::None, true))
-    }
     def!(f, red(color), |s| {
-        num(get_color(s, "color")?.to_rgba().red())
+        Ok(Value::scalar(get_color(s, "color")?.to_rgba().red()))
     });
     def!(f, green(color), |s| {
-        num(get_color(s, "color")?.to_rgba().green())
+        Ok(Value::scalar(get_color(s, "color")?.to_rgba().green()))
     });
     def!(f, blue(color), |s| {
-        num(get_color(s, "color")?.to_rgba().blue())
+        Ok(Value::scalar(get_color(s, "color")?.to_rgba().blue()))
     });
     def!(f, mix(color1, color2, weight = b"50%"), |s| match (
         s.get("color1")?,
@@ -171,13 +168,14 @@ pub fn register(f: &mut Module) {
         s.get("color")?,
         s.get("weight")?,
     ) {
-        (Value::Color(rgba, _), Value::Numeric(w, wu, ..)) => {
+        (Value::Color(rgba, _), Value::Numeric(w, ..)) => {
             let rgba = rgba.to_rgba();
-            let w = if wu == Unit::Percent {
-                w.as_ratio()? / 100
-            } else {
-                w.as_ratio()?
-            };
+            let w = w
+                .as_unit(Unit::None)
+                .ok_or_else(|| {
+                    Error::badarg("unitless or percent", &w.into())
+                })?
+                .as_ratio()?;
             let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
             Ok(Rgba::new(
                 inv(rgba.red()),
@@ -187,9 +185,8 @@ pub fn register(f: &mut Module) {
             )
             .into())
         }
-        (col, Value::Numeric(ref value, ref wu, ..))
-            if value.as_ratio()? == Rational::from_integer(100)
-                && wu == &Unit::Percent =>
+        (col, Value::Numeric(w, ..))
+            if w.as_unit(Unit::None) == Some(one()) =>
         {
             Ok(make_call("invert", vec![col]))
         }
@@ -217,16 +214,23 @@ fn int_value(v: Rational) -> Value {
 
 fn to_int(v: &Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, Unit::Percent, _) => Ok(v.as_ratio()? * 255 / 100),
-        Value::Numeric(v, ..) => v.as_ratio(),
+        Value::Numeric(v, ..) => {
+            if v.unit == Unit::Percent {
+                Ok(v.as_ratio()? * 255 / 100)
+            } else {
+                v.as_ratio()
+            }
+        }
         v => Err(Error::badarg("number", &v)),
     }
 }
 
 fn to_rational(v: &Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(num, Unit::Percent, _) => Ok(num.as_ratio()? / 100),
-        Value::Numeric(num, Unit::None, _) => num.as_ratio(),
+        Value::Numeric(num, _) if num.unit == Unit::Percent => {
+            Ok(num.as_ratio()? / 100)
+        }
+        Value::Numeric(num, _) if num.unit == Unit::None => num.as_ratio(),
         v => Err(Error::badarg("number", &v)),
     }
 }

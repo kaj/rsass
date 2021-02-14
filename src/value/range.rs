@@ -1,4 +1,4 @@
-use super::{Number, Unit};
+use super::{Number, Numeric, Unit};
 use crate::css::Value;
 use std::fmt;
 
@@ -15,29 +15,28 @@ impl ValueRange {
         to: Value,
         inclusive: bool,
     ) -> Result<ValueRange, RangeError> {
-        let (from, unit) =
+        let from =
             from.numeric_value().map_err(RangeError::FromNotNumeric)?;
-        let (to, to_unit) =
-            to.numeric_value().map_err(RangeError::ToNotNumeric)?;
+        let to = to.numeric_value().map_err(RangeError::ToNotNumeric)?;
 
-        let to = if unit == Unit::None || to_unit == Unit::None {
-            to
-        } else if let Some(scale) = to_unit.scale_to(&unit) {
-            to * scale
+        let to = if from.unit == Unit::None || to.unit == Unit::None {
+            to.value
+        } else if let Some(scaled) = to.as_unit(from.unit.clone()) {
+            scaled
         } else {
-            return Err(RangeError::IncompatibleUnits(unit, to_unit));
+            return Err(RangeError::IncompatibleUnits(from.unit, to.unit));
         };
-        let step = if to >= from {
+        let step = if to >= from.value {
             Number::from(1)
         } else {
             Number::from(-1)
         };
         let to = if inclusive { to + step.clone() } else { to };
         Ok(ValueRange {
-            from,
+            from: from.value,
             to,
             step,
-            unit,
+            unit: from.unit,
         })
     }
 }
@@ -49,7 +48,7 @@ impl Iterator for ValueRange {
             == Number::from(0).partial_cmp(&self.step)
         {
             let result =
-                Value::Numeric(self.from.clone(), self.unit.clone(), true);
+                Numeric::new(self.from.clone(), self.unit.clone()).into();
             self.from = self.from.clone() + self.step.clone();
             Some(result)
         } else {

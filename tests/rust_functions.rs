@@ -1,5 +1,5 @@
 use rsass::sass::Name;
-use rsass::value::{Number, Rgba, Unit};
+use rsass::value::{Number, Numeric, Rgba, Unit};
 use rsass::*;
 use std::sync::Arc;
 
@@ -65,18 +65,18 @@ fn function_with_args() {
             ],
             false,
             Arc::new(|s| {
-                let (a, au) = s
+                let a = s
                     .get("a")?
                     .numeric_value()
                     .map_err(|v| Error::badarg("number", &v))?;
-                let (b, bu) = s
+                let b = s
                     .get("b")?
                     .numeric_value()
                     .map_err(|v| Error::badarg("number", &v))?;
-                if au == bu || bu == Unit::None {
-                    Ok(css::Value::Numeric(avg(a, b), au, true))
-                } else if au == Unit::None {
-                    Ok(css::Value::Numeric(avg(a, b), bu, true))
+                if a.unit == b.unit || b.unit == Unit::None {
+                    Ok(Numeric::new(avg(a.value, b.value), a.unit).into())
+                } else if a.unit == Unit::None {
+                    Ok(Numeric::new(avg(a.value, b.value), b.unit).into())
                 } else {
                     Err(Error::BadArguments("Incopatible args".into()))
                 }

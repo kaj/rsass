@@ -47,11 +47,11 @@ fn badchannels(v: &Value) -> Error {
 
 fn as_deg(v: &Value) -> Result<Number, Error> {
     match v {
-        Value::Numeric(vv, u, ..) => {
-            if u == &Unit::None {
-                Ok(vv.clone())
-            } else if let Some(scale) = u.scale_to(&Unit::Deg) {
-                Ok(vv * &scale)
+        Value::Numeric(vv, ..) => {
+            if vv.unit == Unit::None {
+                Ok(vv.value.clone())
+            } else if let Some(scaled) = vv.as_unit(Unit::Deg) {
+                Ok(scaled)
             } else {
                 Err(Error::badarg("angle", &v))
             }
