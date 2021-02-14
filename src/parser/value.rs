@@ -310,9 +310,8 @@ fn number(input: Span) -> IResult<Span, Value> {
         |(sign, num, unit)| {
             Value::Numeric(Numeric {
                 value: if sign == Some(b"-") {
+                    // Only f64-based Number can represent negative zero.
                     if num.is_zero() {
-                        // Only f64-based NumValue can represent
-                        // negative zero.
                         (-0.0).into()
                     } else {
                         -num

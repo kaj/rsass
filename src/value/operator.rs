@@ -37,7 +37,7 @@ impl Operator {
                 (Value::Color(a, _), Value::Numeric(b, _))
                     if b.unit == Unit::None =>
                 {
-                    let b = b.value.as_ratio().ok()?;
+                    let b = b.as_ratio().ok()?;
                     Some((a.to_rgba().as_ref() + b).into())
                 }
                 (Value::Color(a, _), Value::Color(b, _)) => {
@@ -74,7 +74,7 @@ impl Operator {
                 (Value::Color(a, _), Value::Numeric(b, _))
                     if b.unit == Unit::None =>
                 {
-                    let b = b.value.as_ratio().ok()?;
+                    let b = b.as_ratio().ok()?;
                     Some((a.to_rgba().as_ref() - b).into())
                 }
                 (Value::Color(a, _), Value::Color(b, _)) => {
@@ -147,7 +147,7 @@ impl Operator {
                         (Value::Color(a, _), Value::Numeric(b, _))
                             if b.unit == Unit::None =>
                         {
-                            let bn = b.value.as_ratio().ok()?;
+                            let bn = b.as_ratio().ok()?;
                             Some((a.to_rgba().as_ref() / bn).into())
                         }
                         (Value::Numeric(a, _), Value::Numeric(b, _)) => {

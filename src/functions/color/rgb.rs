@@ -1,7 +1,6 @@
 use super::{get_color, make_call, Error, Module, SassFunction};
 use crate::css::{CallArgs, Value};
-use crate::output::Format;
-use crate::value::{ListSeparator, Numeric, Quotes, Rgba, Unit};
+use crate::value::{ListSeparator, Quotes, Rgba, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{one, One, Zero};
@@ -18,7 +17,7 @@ fn do_rgba(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
                 rgba.red(),
                 rgba.green(),
                 rgba.blue(),
-                a.value.as_ratio()?,
+                a.as_ratio()?,
             )
             .into()),
             _ => Ok(make_call(
@@ -119,17 +118,14 @@ pub fn register(f: &mut Module) {
     def!(f, _rgba(red, green, blue, alpha, color, channels), |s| {
         do_rgba("rgba", s)
     });
-    fn num(v: Rational) -> Result<Value, Error> {
-        Ok(Numeric::new(v, Unit::None).into())
-    }
     def!(f, red(color), |s| {
-        num(get_color(s, "color")?.to_rgba().red())
+        Ok(Value::scalar(get_color(s, "color")?.to_rgba().red()))
     });
     def!(f, green(color), |s| {
-        num(get_color(s, "color")?.to_rgba().green())
+        Ok(Value::scalar(get_color(s, "color")?.to_rgba().green()))
     });
     def!(f, blue(color), |s| {
-        num(get_color(s, "color")?.to_rgba().blue())
+        Ok(Value::scalar(get_color(s, "color")?.to_rgba().blue()))
     });
     def!(f, mix(color1, color2, weight = b"50%"), |s| match (
         s.get("color1")?,
@@ -177,10 +173,7 @@ pub fn register(f: &mut Module) {
             let w = w
                 .as_unit(Unit::None)
                 .ok_or_else(|| {
-                    Error::S(format!(
-                        "Expected unitless or percent, got {}",
-                        w.format(Format::introspect())
-                    ))
+                    Error::badarg("unitless or percent", &w.into())
                 })?
                 .as_ratio()?;
             let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
@@ -223,9 +216,9 @@ fn to_int(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(v, ..) => {
             if v.unit == Unit::Percent {
-                Ok(v.value.as_ratio()? * 255 / 100)
+                Ok(v.as_ratio()? * 255 / 100)
             } else {
-                v.value.as_ratio()
+                v.as_ratio()
             }
         }
         v => Err(Error::badarg("number", &v)),
@@ -235,11 +228,9 @@ fn to_int(v: &Value) -> Result<Rational, Error> {
 fn to_rational(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(num, _) if num.unit == Unit::Percent => {
-            Ok(num.value.as_ratio()? / 100)
+            Ok(num.as_ratio()? / 100)
         }
-        Value::Numeric(num, _) if num.unit == Unit::None => {
-            num.value.as_ratio()
-        }
+        Value::Numeric(num, _) if num.unit == Unit::None => num.as_ratio(),
         v => Err(Error::badarg("number", &v)),
     }
 }

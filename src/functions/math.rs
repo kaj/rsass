@@ -23,15 +23,11 @@ pub fn create_module() -> Module {
         let min_v = get_numeric(s, "min")?;
         let mut num = get_numeric(s, "number")?;
         let max_v = get_numeric(s, "max")?;
-        if let Some(scaled) = max_v.as_unit(num.unit.clone()) {
-            if num.value >= scaled {
-                num = max_v;
-            }
+        if num >= max_v {
+            num = max_v;
         }
-        if let Some(scaled) = min_v.as_unit(num.unit.clone()) {
-            if num.value <= scaled {
-                num = min_v;
-            }
+        if num <= min_v {
+            num = min_v;
         }
         Ok(Value::Numeric(num, true))
     });
@@ -55,27 +51,23 @@ pub fn create_module() -> Module {
     });
 
     // - - - Distance Functions - - -
-    def!(f, abs(number), |s| match s.get("number")? {
-        Value::Numeric(v, _) => Ok(number(v.value.abs(), v.unit)),
-        v => Err(Error::badarg("number", &v)),
+    def!(f, abs(number), |s| {
+        let v = get_numeric(s, "number")?;
+        Ok(number(v.value.abs(), v.unit))
     });
     def_va!(f, hypot(number), |s| match s.get("number")? {
         Value::List(v, _, _) => {
             if let Some((first, rest)) = v.split_first() {
                 let first = as_numeric(first)?;
                 let mut sum = f64::from(first.value).powi(2);
+                let unit = first.unit;
                 for v in rest {
-                    let vv = as_numeric(v)?;
-                    if let Some(scaled) = vv.as_unit(first.unit.clone()) {
-                        sum += f64::from(scaled).powi(2);
-                    } else {
-                        return Err(Error::badarg(
-                            &first.unit.to_string(),
-                            v,
-                        ));
-                    }
+                    let scaled = as_numeric(v)?
+                        .as_unit(unit.clone())
+                        .ok_or_else(|| Error::badarg(&unit.to_string(), v))?;
+                    sum += f64::from(scaled).powi(2);
                 }
-                Ok(number(sum.sqrt(), first.unit))
+                Ok(number(sum.sqrt(), unit))
             } else {
                 Err(Error::badarg("number", &Value::Null))
             }
@@ -86,14 +78,14 @@ pub fn create_module() -> Module {
 
     // - - - Exponential Functions - - -
     def!(f, log(number, base), |s| {
-        let num = as_unitless(&s.get("number")?)?;
-        let base = as_unitless_or(&s.get("base")?, std::f64::consts::E)?;
+        let num = get_unitless(s, "number")?;
+        let base = get_unitless_or(s, "base", std::f64::consts::E)?;
         let result = num.log(base);
         Ok(number(result, Unit::None))
     });
     def!(f, pow(base, exponent), |s| {
-        let base = as_unitless(&s.get("base")?)?;
-        let exponent = as_unitless(&s.get("exponent")?)?;
+        let base = get_unitless(s, "base")?;
+        let exponent = get_unitless(s, "exponent")?;
         let result =
             if exponent.is_infinite() && (base.abs() - 1.0).abs() < 1e-7 {
                 f64::NAN
@@ -103,18 +95,18 @@ pub fn create_module() -> Module {
         Ok(number(result, Unit::None))
     });
     def!(f, sqrt(number), |s| {
-        Ok(number(as_unitless(&s.get("number")?)?.sqrt(), Unit::None))
+        Ok(number(get_unitless(s, "number")?.sqrt(), Unit::None))
     });
 
     // - - - Trigonometric Functions - - -
     def!(f, cos(number), |s| {
-        Ok(number(as_radians(&s.get("number")?)?.cos(), Unit::None))
+        Ok(number(get_radians(s, "number")?.cos(), Unit::None))
     });
     def!(f, sin(number), |s| {
-        Ok(number(as_radians(&s.get("number")?)?.sin(), Unit::None))
+        Ok(number(get_radians(s, "number")?.sin(), Unit::None))
     });
     def!(f, tan(number), |s| {
-        let ans = as_radians(&s.get("number")?)?.tan();
+        let ans = get_radians(s, "number")?.tan();
         let ans = if ans.abs() > 1e15 {
             ans.signum() * f64::INFINITY
         } else {
@@ -124,38 +116,32 @@ pub fn create_module() -> Module {
     });
 
     def!(f, acos(number), |s| {
-        Ok(deg_value(as_unitless(&s.get("number")?)?.acos()))
+        Ok(deg_value(get_unitless(s, "number")?.acos()))
     });
     def!(f, asin(number), |s| {
-        Ok(deg_value(as_unitless(&s.get("number")?)?.asin()))
+        Ok(deg_value(get_unitless(s, "number")?.asin()))
     });
     def!(f, atan(number), |s| {
-        Ok(deg_value(as_unitless(&s.get("number")?)?.atan()))
+        Ok(deg_value(get_unitless(s, "number")?.atan()))
     });
     def!(f, atan2(y, x), |s| {
-        let y = as_numeric(&s.get("y")?)?;
-        let x = as_numeric(&s.get("x")?)?;
+        let y = get_numeric(s, "y")?;
+        let x = get_numeric(s, "x")?;
         let x = x.as_unit(y.unit).unwrap_or(x.value);
         Ok(deg_value(f64::from(y.value).atan2(f64::from(x))))
     });
 
     // - - - Unit Functions - - -
     def!(f, compatible(number1, number2), |s| {
-        match (&s.get("number1")?, &s.get("number2")?) {
-            (&Value::Numeric(ref v1, _), &Value::Numeric(ref v2, _)) => {
-                let u1 = &v1.unit;
-                let u2 = &v2.unit;
-                Ok((u1 == &Unit::None
-                    || u2 == &Unit::None
-                    || u1.dimension() == u2.dimension())
-                .into())
-            }
-            (v1, v2) => Err(Error::badargs(&["number", "number"], &[v1, v2])),
-        }
+        let u1 = get_numeric(s, "number1")?.unit;
+        let u2 = get_numeric(s, "number2")?.unit;
+        let ans = u1 == Unit::None
+            || u2 == Unit::None
+            || u1.dimension() == u2.dimension();
+        Ok(ans.into())
     });
-    def!(f, is_unitless(number), |s| match s.get("number")? {
-        Value::Numeric(v, _) => Ok((v.unit == Unit::None).into()),
-        v => Err(Error::badarg("number", &v)),
+    def!(f, is_unitless(number), |s| {
+        Ok((get_numeric(s, "number")?.unit == Unit::None).into())
     });
     def!(f, unit(number), |s| {
         let v = match s.get("number")? {
@@ -173,7 +159,7 @@ pub fn create_module() -> Module {
             .numeric_value()
             .and_then(|v| v.as_unit(Unit::Percent).ok_or(val))
             .map_err(|v| Error::badarg("number", &v))?;
-        Ok(Value::Numeric(Numeric::new(val, Unit::Percent), true))
+        Ok(Numeric::new(val, Unit::Percent).into())
     });
     def!(f, random(limit), |s| match s.get("limit")? {
         Value::Null => {
@@ -225,45 +211,42 @@ pub fn expose(m: &Module, global: &mut Module) {
 }
 
 fn get_numeric(s: &dyn Scope, name: &str) -> Result<Numeric, Error> {
-    match s.get(name)? {
-        Value::Numeric(v, _) => Ok(v),
-        v => Err(Error::badarg("number", &v)),
+    s.get(name)?
+        .numeric_value()
+        .map_err(|v| Error::badarg("number", &v))
+}
+
+fn get_radians(s: &dyn Scope, name: &str) -> Result<f64, Error> {
+    let v = get_numeric(s, name)?;
+    if v.unit == Unit::None {
+        Ok(f64::from(v.value))
+    } else if let Some(scaled) = v.as_unit(Unit::Rad) {
+        Ok(f64::from(scaled))
+    } else {
+        Err(Error::badarg("angle", &v.into()))
     }
 }
 
-fn as_radians(v: &Value) -> Result<f64, Error> {
-    match v {
-        Value::Numeric(vv, _) => {
-            if vv.unit == Unit::None {
-                Ok(f64::from(vv.value.clone()))
-            } else if let Some(scaled) = vv.as_unit(Unit::Rad) {
-                Ok(f64::from(scaled))
-            } else {
-                Err(Error::badarg("angle", &v))
-            }
-        }
-        v => Err(Error::badarg("angle", &v)),
+fn get_unitless(s: &dyn Scope, name: &str) -> Result<f64, Error> {
+    let v = get_numeric(s, name)?;
+    if v.unit == Unit::None {
+        Ok(f64::from(v.value))
+    } else {
+        Err(Error::badarg("unitless", &v.into()))
     }
 }
-fn as_unitless(v: &Value) -> Result<f64, Error> {
-    match v {
-        Value::Numeric(vv, _) => {
-            if vv.unit == Unit::None {
-                Ok(f64::from(vv.value.clone()))
+
+fn get_unitless_or(
+    s: &dyn Scope,
+    name: &str,
+    default: f64,
+) -> Result<f64, Error> {
+    match s.get(name)? {
+        Value::Numeric(v, _) => {
+            if v.unit == Unit::None {
+                Ok(f64::from(v.value))
             } else {
-                Err(Error::badarg("unitless", &v))
-            }
-        }
-        v => Err(Error::badarg("number", &v)),
-    }
-}
-fn as_unitless_or(v: &Value, default: f64) -> Result<f64, Error> {
-    match v {
-        Value::Numeric(vv, _) => {
-            if vv.unit == Unit::None {
-                Ok(f64::from(vv.value.clone()))
-            } else {
-                Err(Error::badarg("unitless", &v))
+                Err(Error::badarg("unitless", &v.into()))
             }
         }
         Value::Null => Ok(default),

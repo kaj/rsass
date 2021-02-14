@@ -4,7 +4,7 @@ use crate::css::Value;
 use crate::value::{Hsla, Numeric, Unit};
 use crate::variablescope::Scope;
 use num_rational::Rational;
-use num_traits::{One, Zero};
+use num_traits::{one, One, Zero};
 
 fn do_hsla(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
@@ -58,7 +58,7 @@ pub fn register(f: &mut Module) {
     ) {
         (c @ Value::Color(..), Value::Null) => Ok(c),
         (Value::Color(col, _), Value::Numeric(v, ..)) => {
-            Ok(col.rotate_hue(v.value.as_ratio()?).into())
+            Ok(col.rotate_hue(v.as_ratio()?).into())
         }
         (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
     });
@@ -143,12 +143,12 @@ pub fn expose(m: &Module, global: &mut Module) {
 }
 
 pub fn percentage(v: Rational) -> Value {
-    Value::Numeric(Numeric::new(v * 100, Unit::Percent), true)
+    Numeric::new(v * 100, Unit::Percent).into()
 }
 
 fn to_rational(v: &Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(v, ..) => v.value.as_ratio(),
+        Value::Numeric(v, ..) => v.as_ratio(),
         v => Err(Error::badarg("number", v)),
     }
 }
@@ -159,10 +159,10 @@ pub fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, ..) => {
-            if v.unit == Unit::Percent || v.value > Rational::one().into() {
-                Ok(v.value.as_ratio()? / 100)
+            if v.unit == Unit::Percent || v.value > one() {
+                Ok(v.as_ratio()? / 100)
             } else {
-                Ok(v.value.as_ratio()?)
+                Ok(v.as_ratio()?)
             }
         }
         v => Err(Error::badarg("number", &v)),
@@ -175,9 +175,9 @@ pub fn to_rational2(v: &Value) -> Result<Rational, Error> {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, ..) => {
             if v.unit == Unit::Percent {
-                Ok(v.value.as_ratio()? / 100)
+                Ok(v.as_ratio()? / 100)
             } else {
-                Ok(v.value.as_ratio()?)
+                Ok(v.as_ratio()?)
             }
         }
         v => Err(Error::badarg("number", &v)),

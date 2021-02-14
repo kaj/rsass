@@ -52,7 +52,7 @@ pub enum Value {
 impl Value {
     /// Create a numeric value with no unit.
     pub fn scalar<T: Into<Number>>(v: T) -> Self {
-        Value::Numeric(Numeric::new(v, Unit::None), false)
+        Value::Numeric(Numeric::new(v, Unit::None), true)
     }
 
     /// Get the type name of this value.
