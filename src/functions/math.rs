@@ -17,20 +17,20 @@ pub fn create_module() -> Module {
     // - - - Boundig Functions - - -
     def!(f, ceil(number), |s| {
         let (val, unit) = get_numeric(s, "number")?;
-        Ok(number(val.value.ceil(), unit))
+        Ok(number(val.ceil(), unit))
     });
     def!(f, clamp(min, number, max), |s| {
         let (min_v, min_u) = get_numeric(s, "min")?;
         let (mut num, mut u) = get_numeric(s, "number")?;
         let (max_v, max_u) = get_numeric(s, "max")?;
         if let Some(scale) = max_u.scale_to(&u) {
-            if num.value >= &max_v.value * &scale {
+            if num >= &max_v * &scale {
                 num = max_v;
                 u = max_u;
             }
         }
         if let Some(scale) = min_u.scale_to(&u) {
-            if num.value <= &min_v.value * &scale {
+            if num <= &min_v * &scale {
                 num = min_v;
                 u = min_u;
             }
@@ -39,7 +39,7 @@ pub fn create_module() -> Module {
     });
     def!(f, floor(number), |s| {
         let (val, unit) = get_numeric(s, "number")?;
-        Ok(number(val.value.floor(), unit))
+        Ok(number(val.floor(), unit))
     });
     def_va!(f, max(numbers), |s| match s.get("numbers")? {
         Value::List(v, _, _) => {
@@ -53,12 +53,12 @@ pub fn create_module() -> Module {
     });
     def!(f, round(number), |s| {
         let (val, unit) = get_numeric(s, "number")?;
-        Ok(number(val.value.round(), unit))
+        Ok(number(val.round(), unit))
     });
 
     // - - - Distance Functions - - -
     def!(f, abs(number), |s| match s.get("number")? {
-        Value::Numeric(v, u, ..) => Ok(number(v.value.abs(), u)),
+        Value::Numeric(v, u, ..) => Ok(number(v.abs(), u)),
         v => Err(Error::badarg("number", &v)),
     });
     def_va!(f, hypot(number), |s| match s.get("number")? {
@@ -79,7 +79,7 @@ pub fn create_module() -> Module {
                 Err(Error::badarg("number", &Value::Null))
             }
         }
-        Value::Numeric(v, u, ..) => Ok(number(v.value.abs(), u)),
+        Value::Numeric(v, u, ..) => Ok(number(v.abs(), u)),
         v => Err(Error::badarg("number", &v)),
     });
 
@@ -133,9 +133,7 @@ pub fn create_module() -> Module {
     });
     def!(f, atan2(y, x), |s| {
         let (y, y_unit) = as_numeric(&s.get("y")?)?;
-        let (x, x_unit) = as_numeric(&s.get("x")?)?;
-        let y = y.value;
-        let mut x = x.value;
+        let (mut x, x_unit) = as_numeric(&s.get("x")?)?;
         if let Some(scale) = x_unit.scale_to(&y_unit) {
             x = x * scale;
         }

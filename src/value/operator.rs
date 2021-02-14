@@ -83,7 +83,7 @@ impl Operator {
                         Some(Value::Numeric(&av - &bv, bu, true))
                     } else if let Some(scale) = bu.scale_to(&au) {
                         Some(Value::Numeric(
-                            &av - &(bv * &scale),
+                            &av - &(bv * scale),
                             au.clone(),
                             true,
                         ))
@@ -147,7 +147,7 @@ impl Operator {
                                 ))
                             } else if let Some(scale) = bu.scale_to(&au) {
                                 Some(Value::Numeric(
-                                    &av / &(bv * &scale),
+                                    &av / &(bv * scale),
                                     Unit::None,
                                     true,
                                 ))

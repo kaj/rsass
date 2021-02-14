@@ -7,7 +7,7 @@ use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string, Span};
 use crate::sass::{SassString, Value};
-use crate::value::{ListSeparator, NumValue, Number, Operator, Rgba};
+use crate::value::{ListSeparator, Number, Operator, Rgba};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
@@ -309,17 +309,15 @@ fn number(input: Span) -> IResult<Span, Value> {
         )),
         |(sign, num, unit)| {
             Value::Numeric(
-                Number {
-                    value: if sign == Some(b"-") {
-                        if num.is_zero() {
-                            // Only f64-based NumValue can represent negative zero.
-                            (-0.0).into()
-                        } else {
-                            -num
-                        }
+                if sign == Some(b"-") {
+                    if num.is_zero() {
+                        // Only f64-based Number can represent negative zero.
+                        (-0.0).into()
                     } else {
-                        num
-                    },
+                        -num
+                    }
+                } else {
+                    num
                 },
                 unit,
             )
@@ -327,7 +325,7 @@ fn number(input: Span) -> IResult<Span, Value> {
     )(input)
 }
 
-pub fn decimal_integer(input: Span) -> IResult<Span, NumValue> {
+pub fn decimal_integer(input: Span) -> IResult<Span, Number> {
     map_opt(
         fold_many1(
             // Note: We should use bytes directly, one_of returns a char.
@@ -337,11 +335,11 @@ pub fn decimal_integer(input: Span) -> IResult<Span, NumValue> {
                 r?.checked_mul(10)?.checked_add(isize::from(d as u8 - b'0'))
             },
         ),
-        |opt_int| opt_int.map(NumValue::from),
+        |opt_int| opt_int.map(Number::from),
     )(input)
 }
 
-pub fn decimal_integer_big(input: Span) -> IResult<Span, NumValue> {
+pub fn decimal_integer_big(input: Span) -> IResult<Span, Number> {
     map(
         fold_many1(
             // Note: We should use bytes directly, one_of returns a char.
@@ -353,7 +351,7 @@ pub fn decimal_integer_big(input: Span) -> IResult<Span, NumValue> {
     )(input)
 }
 
-pub fn decimal_decimals(input: Span) -> IResult<Span, NumValue> {
+pub fn decimal_decimals(input: Span) -> IResult<Span, Number> {
     map_opt(
         preceded(
             tag("."),
@@ -374,7 +372,7 @@ pub fn decimal_decimals(input: Span) -> IResult<Span, NumValue> {
     )(input)
 }
 
-pub fn decimal_decimals_big(input: Span) -> IResult<Span, NumValue> {
+pub fn decimal_decimals_big(input: Span) -> IResult<Span, Number> {
     map(
         preceded(
             tag("."),
@@ -542,19 +540,11 @@ mod test {
     }
     #[test]
     fn simple_number_onlydec_pos() {
-        check_expr(
-            "+.34;",
-            Numeric(
-                Number {
-                    value: Rational::new(34, 100).into(),
-                },
-                Unit::None,
-            ),
-        )
+        check_expr("+.34;", number(34, 100))
     }
 
     fn number(nom: isize, denom: isize) -> Value {
-        Numeric(Number::from(Rational::new(nom, denom)), Unit::None)
+        Numeric(Number::rational(nom, denom), Unit::None)
     }
 
     #[test]

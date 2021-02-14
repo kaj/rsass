@@ -1,7 +1,7 @@
 //! The Unit enum defines css units
 
-use crate::value::NumValue;
-use num_traits::One;
+use crate::value::Number;
+use num_traits::one;
 use std::f64::consts::FRAC_1_PI;
 use std::fmt;
 
@@ -94,9 +94,9 @@ impl Unit {
         }
     }
 
-    pub fn scale_to(&self, other: &Self) -> Option<NumValue> {
+    pub fn scale_to(&self, other: &Self) -> Option<Number> {
         if self == other {
-            Some(NumValue::one())
+            Some(one())
         } else if self.dimension() == other.dimension() {
             Some(self.scale_factor() / other.scale_factor())
         } else {
@@ -107,38 +107,38 @@ impl Unit {
     /// Some of these are exact and correct, others are more arbitrary.
     /// When comparing 10cm to 4in, these factors will give correct results.
     /// When comparing rems to vw, who can say?
-    fn scale_factor(&self) -> NumValue {
+    fn scale_factor(&self) -> Number {
         match *self {
-            Unit::Em | Unit::Rem => NumValue::rational(10, 2),
-            Unit::Ex => NumValue::rational(10, 3),
-            Unit::Ch => NumValue::rational(10, 4),
-            Unit::Vw | Unit::Vh | Unit::Vmin | Unit::Vmax => NumValue::one(),
-            Unit::Cm => NumValue::rational(10, 1),
-            Unit::Mm => NumValue::one(),
-            Unit::Q => NumValue::rational(1, 4),
-            Unit::In => NumValue::rational(254, 10),
-            Unit::Pt => NumValue::rational(254, 720),
-            Unit::Pc => NumValue::rational(254, 60),
-            Unit::Px => NumValue::rational(254, 960),
+            Unit::Em | Unit::Rem => Number::rational(10, 2),
+            Unit::Ex => Number::rational(10, 3),
+            Unit::Ch => Number::rational(10, 4),
+            Unit::Vw | Unit::Vh | Unit::Vmin | Unit::Vmax => one(),
+            Unit::Cm => Number::rational(10, 1),
+            Unit::Mm => one(),
+            Unit::Q => Number::rational(1, 4),
+            Unit::In => Number::rational(254, 10),
+            Unit::Pt => Number::rational(254, 720),
+            Unit::Pc => Number::rational(254, 60),
+            Unit::Px => Number::rational(254, 960),
 
-            Unit::Deg => NumValue::rational(1, 360),
-            Unit::Grad => NumValue::rational(1, 400),
-            Unit::Rad => NumValue::Float(FRAC_1_PI / 2.0), // 1/(2 pi)
-            Unit::Turn => NumValue::one(),
+            Unit::Deg => Number::rational(1, 360),
+            Unit::Grad => Number::rational(1, 400),
+            Unit::Rad => (FRAC_1_PI / 2.0).into(), // 1/(2 pi)
+            Unit::Turn => one(),
 
-            Unit::S => NumValue::one(),
-            Unit::Ms => NumValue::rational(1, 1000),
+            Unit::S => one(),
+            Unit::Ms => Number::rational(1, 1000),
 
-            Unit::Hz => NumValue::one(),
-            Unit::Khz => NumValue::rational(1000, 1),
+            Unit::Hz => one(),
+            Unit::Khz => Number::rational(1000, 1),
 
-            Unit::Dpi => NumValue::rational(96, 1),
-            Unit::Dpcm => NumValue::rational(9600, 254),
-            Unit::Dppx => NumValue::one(),
+            Unit::Dpi => Number::rational(96, 1),
+            Unit::Dpcm => Number::rational(9600, 254),
+            Unit::Dppx => one(),
 
-            Unit::Percent => NumValue::rational(1, 100),
-            Unit::Fr => NumValue::one(),
-            Unit::None => NumValue::one(),
+            Unit::Percent => Number::rational(1, 100),
+            Unit::Fr => one(),
+            Unit::None => one(),
         }
     }
 }

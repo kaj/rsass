@@ -2,7 +2,7 @@ use super::hsl::{percentage, to_rational2, to_rational_percent};
 use super::rgb::values_from_list;
 use super::{get_color, Error, Module, SassFunction};
 use crate::css::Value;
-use crate::value::{Hwba, NumValue, Unit};
+use crate::value::{Hwba, Number, Unit};
 use num_rational::Rational;
 use num_traits::One;
 
@@ -45,13 +45,13 @@ fn badchannels(v: &Value) -> Error {
     Error::badarg("Expected channels list", v)
 }
 
-fn as_deg(v: &Value) -> Result<NumValue, Error> {
+fn as_deg(v: &Value) -> Result<Number, Error> {
     match v {
         Value::Numeric(vv, u, ..) => {
             if u == &Unit::None {
-                Ok(vv.value.clone())
+                Ok(vv.clone())
             } else if let Some(scale) = u.scale_to(&Unit::Deg) {
-                Ok(&vv.value * scale)
+                Ok(vv * &scale)
             } else {
                 Err(Error::badarg("angle", &v))
             }

@@ -3,7 +3,6 @@ use num_bigint::BigInt;
 use num_integer::Integer;
 use num_rational::{Ratio, Rational};
 use num_traits::{One, Signed, Zero};
-use std::borrow::Borrow;
 use std::cmp::Ordering;
 use std::convert::TryFrom;
 use std::fmt::{self, Write};
@@ -11,16 +10,16 @@ use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 
 /// The actual number part of a numeric sass or css value.
 ///
-/// Only the actual numeric value is included, not any unit, but flags
-/// to show a leading plus sign and/or leading zero (for values
-/// between -1 and 1) is included.
+/// Only the actual numeric value is included, not any unit.
+/// Internally, a number is represented as either a rational or a
+/// floating-point value as needed.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Number {
-    pub value: NumValue,
+    value: NumValue,
 }
 
 #[derive(Clone, Debug)]
-pub enum NumValue {
+enum NumValue {
     Rational(Ratio<isize>),
     BigRational(Ratio<BigInt>),
     Float(f64),
@@ -48,23 +47,6 @@ impl From<f64> for NumValue {
 }
 
 impl NumValue {
-    pub fn rational(nom: isize, denom: isize) -> Self {
-        NumValue::Rational(Rational::new(nom, denom))
-    }
-    pub fn abs(&self) -> Self {
-        match self {
-            NumValue::Rational(s) => s.abs().into(),
-            NumValue::BigRational(s) => s.abs().into(),
-            NumValue::Float(s) => s.abs().into(),
-        }
-    }
-    pub fn is_positive(&self) -> bool {
-        match self {
-            NumValue::Rational(s) => s.is_positive(),
-            NumValue::BigRational(s) => s.is_positive(),
-            NumValue::Float(s) => s.is_sign_positive(),
-        }
-    }
     pub fn is_negative(&self) -> bool {
         match self {
             NumValue::Rational(s) => s.is_negative(),
@@ -74,16 +56,16 @@ impl NumValue {
     }
 }
 
-impl Neg for NumValue {
+impl Neg for Number {
     type Output = Self;
     fn neg(self) -> Self {
         -&self
     }
 }
-impl Neg for &NumValue {
-    type Output = NumValue;
-    fn neg(self) -> NumValue {
-        match self {
+impl Neg for &Number {
+    type Output = Number;
+    fn neg(self) -> Number {
+        match &self.value {
             NumValue::Rational(s) => (-s).into(),
             NumValue::BigRational(s) => (-s).into(),
             NumValue::Float(s) => (-s).into(),
@@ -132,10 +114,10 @@ impl Mul for NumValue {
         &self * &rhs
     }
 }
-impl<RHS: Borrow<NumValue>> Mul<RHS> for &NumValue {
+impl Mul for &NumValue {
     type Output = NumValue;
-    fn mul(self, rhs: RHS) -> NumValue {
-        match (self, rhs.borrow()) {
+    fn mul(self, rhs: Self) -> NumValue {
+        match (self, rhs) {
             (NumValue::Rational(s), NumValue::Rational(r)) => (s * r).into(),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
                 (biggen(s) * r).into()
@@ -149,13 +131,6 @@ impl<RHS: Borrow<NumValue>> Mul<RHS> for &NumValue {
             (NumValue::Float(s), r) => (s * f64::from(r)).into(),
             (s, NumValue::Float(r)) => (f64::from(s) * r).into(),
         }
-    }
-}
-
-impl Mul<Ratio<isize>> for NumValue {
-    type Output = Self;
-    fn mul(self, rhs: Ratio<isize>) -> Self {
-        &self * &rhs
     }
 }
 impl Mul<&Ratio<isize>> for &NumValue {
@@ -186,19 +161,12 @@ impl Mul for Number {
         self
     }
 }
-impl<RHS: Borrow<NumValue>> Mul<RHS> for Number {
+impl Mul for &Number {
     type Output = Number;
-    fn mul(mut self, rhs: RHS) -> Self {
-        self.value = &self.value * rhs.borrow();
-        self
-    }
-}
-impl<RHS: Borrow<NumValue>> Mul<RHS> for &Number {
-    type Output = Number;
-    fn mul(self, rhs: RHS) -> Number {
-        let mut result = self.to_owned();
-        result.value = &result.value * rhs.borrow();
-        result
+    fn mul(self, rhs: Self) -> Self::Output {
+        Number {
+            value: &self.value * &rhs.value,
+        }
     }
 }
 
@@ -395,14 +363,34 @@ impl NumValue {
 }
 
 impl Number {
+    pub fn rational(num: isize, denom: isize) -> Self {
+        Rational::new(num, denom).into()
+    }
     pub fn as_ratio(&self) -> Result<Rational, crate::Error> {
         self.value.as_ratio()
     }
 
+    pub fn ceil(&self) -> Self {
+        Number {
+            value: self.value.ceil(),
+        }
+    }
+    pub fn floor(&self) -> Self {
+        Number {
+            value: self.value.floor(),
+        }
+    }
+    pub fn round(&self) -> Self {
+        Number {
+            value: self.value.round(),
+        }
+    }
     /// Computes the absolute value of the number, retaining the flags.
     pub fn abs(self) -> Self {
-        Number {
-            value: self.value.abs(),
+        match self.value {
+            NumValue::Rational(s) => s.abs().into(),
+            NumValue::BigRational(s) => s.abs().into(),
+            NumValue::Float(s) => s.abs().into(),
         }
     }
 
@@ -437,36 +425,72 @@ impl Number {
     }
 }
 
-impl<T: Into<NumValue>> From<T> for Number {
-    fn from(value: T) -> Number {
+impl From<isize> for Number {
+    fn from(value: isize) -> Number {
         Number {
             value: value.into(),
         }
     }
 }
-
+impl From<Rational> for Number {
+    fn from(value: Rational) -> Number {
+        Number {
+            value: value.into(),
+        }
+    }
+}
+impl From<f64> for Number {
+    fn from(value: f64) -> Number {
+        Number {
+            value: value.into(),
+        }
+    }
+}
+impl From<Ratio<BigInt>> for Number {
+    fn from(value: Ratio<BigInt>) -> Number {
+        Number {
+            value: value.into(),
+        }
+    }
+}
 impl Add for Number {
     type Output = Number;
     fn add(self, rhs: Self) -> Self::Output {
-        Number::from(self.value + rhs.value)
+        Number {
+            value: self.value + rhs.value,
+        }
     }
 }
 impl Mul<Ratio<isize>> for Number {
     type Output = Self;
     fn mul(self, rhs: Ratio<isize>) -> Self {
-        Number::from(self.value * rhs)
+        Number {
+            value: &self.value * &rhs,
+        }
     }
 }
 impl Mul<isize> for Number {
     type Output = Self;
     fn mul(self, rhs: isize) -> Self {
-        Number::from(self.value * rhs)
+        Number {
+            value: self.value * rhs,
+        }
+    }
+}
+impl Div for Number {
+    type Output = Self;
+    fn div(self, rhs: Self) -> Self {
+        Number {
+            value: self.value / rhs.value,
+        }
     }
 }
 impl Div<isize> for Number {
     type Output = Self;
     fn div(self, rhs: isize) -> Self {
-        Number::from(self.value / rhs)
+        Number {
+            value: self.value / rhs,
+        }
     }
 }
 
@@ -514,20 +538,18 @@ fn ratio_to_float<
 impl<'a> Div for &'a Number {
     type Output = Number;
     fn div(self, rhs: Self) -> Self::Output {
-        Number::from(&self.value / &rhs.value)
+        Number {
+            value: &self.value / &rhs.value,
+        }
     }
 }
 
-impl Mul for &Number {
-    type Output = Number;
-    fn mul(self, rhs: Self) -> Self::Output {
-        Number::from(&self.value * &rhs.value)
-    }
-}
 impl Mul<&Ratio<isize>> for &Number {
     type Output = Number;
     fn mul(self, rhs: &Ratio<isize>) -> Self::Output {
-        Number::from(&self.value * rhs)
+        Number {
+            value: &self.value * rhs,
+        }
     }
 }
 
@@ -544,21 +566,16 @@ impl Rem for &Number {
         } else {
             result
         };
-        Number::from(result)
-    }
-}
-
-impl Neg for &Number {
-    type Output = Number;
-    fn neg(self) -> Number {
-        Number::from(-&self.value)
+        Number { value: result }
     }
 }
 
 impl Sub for &Number {
     type Output = Number;
     fn sub(self, rhs: Self) -> Self::Output {
-        Number::from(&self.value - &rhs.value)
+        Number {
+            value: &self.value - &rhs.value,
+        }
     }
 }
 

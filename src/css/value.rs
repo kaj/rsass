@@ -265,7 +265,7 @@ impl PartialEq for Value {
                 if au == bu {
                     a == b
                 } else if let Some(scale) = bu.scale_to(au) {
-                    a.value == (&b.value * scale)
+                    a == &(b * &scale)
                 } else {
                     false
                 }
