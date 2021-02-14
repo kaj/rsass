@@ -16,6 +16,7 @@ project adheres to
 * Handle units in `@for` loops inside sass functions.
 * Some types moved into `value` mod, imporoved docs. PR #90.
 * Add support for `$=`, `~=` and `^=` in css attribute selectors. PR #92.
+* A `Numeric` is a Number with a Unit.  Also hide NumValue enum. PR #93.
 * Test suite sass-spec updated to 2021-02-04.
 * Some cleanups.
 

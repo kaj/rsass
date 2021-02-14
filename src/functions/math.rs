@@ -153,7 +153,8 @@ pub fn create_module() -> Module {
     // - - - Other Functions - - -
     def!(f, percentage(number), |s| {
         let val = get_numeric(s, "number")?;
-        let val = val.as_unit(Unit::Percent)
+        let val = val
+            .as_unit(Unit::Percent)
             .ok_or_else(|| Error::badarg("number", &val.into()))?;
         Ok(Numeric::new(val, Unit::Percent).into())
     });
