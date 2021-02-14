@@ -552,7 +552,13 @@ fn content_stmt2(input: Span) -> IResult<Span, Item> {
 
 fn property_or_namespace_rule(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(
-        sass_string,
+        alt((
+            map(preceded(tag("*"), sass_string), |mut s| {
+                s.prepend("*");
+                s
+            }),
+            sass_string,
+        )),
         delimited(ignore_comments, tag(":"), ignore_comments),
     )(input)?;
 
