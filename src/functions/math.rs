@@ -152,12 +152,9 @@ pub fn create_module() -> Module {
 
     // - - - Other Functions - - -
     def!(f, percentage(number), |s| {
-        let val = s.get("number")?;
-        let val = val
-            .clone()
-            .numeric_value()
-            .and_then(|v| v.as_unit(Unit::Percent).ok_or(val))
-            .map_err(|v| Error::badarg("number", &v))?;
+        let val = get_numeric(s, "number")?;
+        let val = val.as_unit(Unit::Percent)
+            .ok_or_else(|| Error::badarg("number", &val.into()))?;
         Ok(Numeric::new(val, Unit::Percent).into())
     });
     def!(f, random(limit), |s| match s.get("limit")? {
