@@ -200,16 +200,10 @@ impl Format {
                 }
             }
 
-            Item::MixinDeclaration {
-                ref name,
-                ref args,
-                ref body,
-            } => scope.define_mixin(name, args, body),
-            Item::MixinCall {
-                ref name,
-                ref args,
-                ref body,
-            } => {
+            Item::MixinDeclaration(ref name, ref args, ref body) => {
+                scope.define_mixin(name, args, body)
+            }
+            Item::MixinCall(ref name, ref args, ref body) => {
                 if let Some((m_args, m_body)) = scope.get_mixin(name) {
                     let mut scope =
                         m_args.eval(scope, &args.evaluate(scope, true)?)?;
@@ -239,7 +233,7 @@ impl Format {
                 ));
             }
 
-            Item::FunctionDeclaration { ref name, ref func } => {
+            Item::FunctionDeclaration(ref name, ref func) => {
                 scope.define_function(name.into(), func.clone());
             }
             Item::Return(_) => {
@@ -543,18 +537,10 @@ impl Format {
                     }
                 }
 
-                Item::MixinDeclaration {
-                    ref name,
-                    ref args,
-                    ref body,
-                } => {
+                Item::MixinDeclaration(ref name, ref args, ref body) => {
                     scope.define_mixin(name, args, body);
                 }
-                Item::MixinCall {
-                    ref name,
-                    ref args,
-                    ref body,
-                } => {
+                Item::MixinCall(ref name, ref args, ref body) => {
                     if let Some((m_args, m_body)) = scope.get_mixin(name) {
                         let mut argscope = m_args
                             .eval(scope, &args.evaluate(scope, true)?)?;
@@ -592,7 +578,7 @@ impl Format {
                     }
                 }
 
-                Item::FunctionDeclaration { ref name, ref func } => {
+                Item::FunctionDeclaration(ref name, ref func) => {
                     scope.define_function(name.into(), func.clone());
                 }
                 Item::Return(_) => {

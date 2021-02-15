@@ -265,11 +265,11 @@ fn mixin_call2(input: Span) -> IResult<Span, Item> {
     )(input)?;
     Ok((
         input,
-        Item::MixinCall {
+        Item::MixinCall(
             name,
-            args: args.unwrap_or_default(),
-            body: body.unwrap_or_default(),
-        },
+            args.unwrap_or_default(),
+            body.unwrap_or_default(),
+        ),
     ))
 }
 
@@ -515,11 +515,7 @@ fn mixin_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, body) = body_block(input)?;
     Ok((
         input,
-        Item::MixinDeclaration {
-            name,
-            args: args.unwrap_or_default(),
-            body,
-        },
+        Item::MixinDeclaration(name, args.unwrap_or_default(), body),
     ))
 }
 
@@ -529,10 +525,7 @@ fn function_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, body) = body_block(input)?;
     Ok((
         input,
-        Item::FunctionDeclaration {
-            name,
-            func: SassFunction::new(args, body),
-        },
+        Item::FunctionDeclaration(name, SassFunction::new(args, body)),
     ))
 }
 
@@ -687,11 +680,7 @@ fn if_with_no_else() {
 fn test_mixin_call_noargs() {
     assert_eq!(
         check_parse!(mixin_call, b"@include foo;"),
-        Item::MixinCall {
-            name: "foo".to_string(),
-            args: CallArgs::new(vec![]),
-            body: vec![],
-        },
+        Item::MixinCall("foo".to_string(), CallArgs::default(), vec![]),
     )
 }
 
@@ -699,14 +688,11 @@ fn test_mixin_call_noargs() {
 fn test_mixin_call_pos_args() {
     assert_eq!(
         check_parse!(mixin_call, b"@include foo(bar, baz);"),
-        Item::MixinCall {
-            name: "foo".to_string(),
-            args: CallArgs::new(vec![
-                (None, string("bar")),
-                (None, string("baz")),
-            ]),
-            body: vec![],
-        },
+        Item::MixinCall(
+            "foo".to_string(),
+            CallArgs::new(vec![(None, string("bar")), (None, string("baz"))]),
+            vec![],
+        ),
     )
 }
 
@@ -714,14 +700,14 @@ fn test_mixin_call_pos_args() {
 fn test_mixin_call_named_args() {
     assert_eq!(
         check_parse!(mixin_call, b"@include foo($x: bar, $y: baz);"),
-        Item::MixinCall {
-            name: "foo".to_string(),
-            args: CallArgs::new(vec![
+        Item::MixinCall(
+            "foo".to_string(),
+            CallArgs::new(vec![
                 (Some("x".into()), string("bar")),
                 (Some("y".into()), string("baz")),
             ]),
-            body: vec![],
-        },
+            vec![],
+        ),
     )
 }
 
@@ -729,11 +715,7 @@ fn test_mixin_call_named_args() {
 fn test_mixin_declaration_empty() {
     assert_eq!(
         check_parse!(mixin_declaration, b"@mixin foo() {}\n"),
-        Item::MixinDeclaration {
-            name: "foo".into(),
-            args: FormalArgs::default(),
-            body: vec![],
-        },
+        Item::MixinDeclaration("foo".into(), FormalArgs::default(), vec![]),
     )
 }
 
@@ -744,10 +726,10 @@ fn test_mixin_declaration() {
             mixin_declaration,
             b"@mixin foo($x) {\n  foo-bar: baz $x;\n}\n"
         ),
-        Item::MixinDeclaration {
-            name: "foo".into(),
-            args: FormalArgs::new(vec![("x".into(), Value::Null)], false),
-            body: vec![Item::Property(
+        Item::MixinDeclaration(
+            "foo".into(),
+            FormalArgs::new(vec![("x".into(), Value::Null)], false),
+            vec![Item::Property(
                 "foo-bar".into(),
                 Value::List(
                     vec![string("baz"), Value::Variable("x".into())],
@@ -755,7 +737,7 @@ fn test_mixin_declaration() {
                     false,
                 ),
             )],
-        },
+        ),
     )
 }
 
@@ -771,13 +753,13 @@ fn test_mixin_declaration_default_and_subrules() {
               \n  }\
               \n}\n"
         ),
-        Item::MixinDeclaration {
-            name: "bar".into(),
-            args: FormalArgs::new(
+        Item::MixinDeclaration(
+            "bar".into(),
+            FormalArgs::new(
                 vec![("a".into(), Value::Null), ("b".into(), string("flug"))],
                 false,
             ),
-            body: vec![
+            vec![
                 Item::Property("foo-bar".into(), string("baz")),
                 Item::Rule(
                     selectors(code_span(b"foo, bar")).unwrap().1,
@@ -787,7 +769,7 @@ fn test_mixin_declaration_default_and_subrules() {
                     )],
                 ),
             ],
-        },
+        ),
     )
 }
 

@@ -35,25 +35,14 @@ pub enum Item {
     Error(Value),
 
     /// A `@mixin` directive, declaring a mixin.
-    MixinDeclaration {
-        name: String,
-        args: FormalArgs,
-        body: Vec<Item>,
-    },
+    MixinDeclaration(String, FormalArgs, Vec<Item>),
     /// An `@include` directive, calling a mixin.
-    MixinCall {
-        name: String,
-        args: CallArgs,
-        body: Vec<Item>,
-    },
+    MixinCall(String, CallArgs, Vec<Item>),
     /// An `@content` directive (in a mixin declaration).
     Content,
 
     /// An `@function` declaration.
-    FunctionDeclaration {
-        name: String,
-        func: SassFunction,
-    },
+    FunctionDeclaration(String, SassFunction),
     /// An `@return` statement in a function declaration.
     Return(Value),
 
