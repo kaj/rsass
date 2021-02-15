@@ -13,10 +13,21 @@ use std::default::Default;
 pub struct FormalArgs(Vec<(Name, Value)>, bool);
 
 impl FormalArgs {
+    /// Create a new FormalArgs.
+    ///
+    /// The given arg-pairs each have a name and a default value.
+    /// It the default value is [`Null`](Value::Null), the argument
+    /// does not have a default.
+    ///
+    /// If `is_varargs` is true, all extra call arguments are bundled
+    /// as a List value for the last named argument.
     pub fn new(a: Vec<(Name, Value)>, is_varargs: bool) -> Self {
         FormalArgs(a, is_varargs)
     }
 
+    /// Evaluate a set of call arguments for these formal arguments.
+    ///
+    /// Returns a Scope that is a sub-scope to the given `scope`.
     pub fn eval<'a>(
         &self,
         scope: &'a dyn Scope,

@@ -17,8 +17,11 @@ use std::fmt::{self, Display};
 /// A color in sass/css. May be a Rgba, Hsla, or Hwba value.
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Color {
+    /// A rgba color, defined by red, green, blue and alpha components.
     Rgba(Rgba),
+    /// A hsla color, defined by its hue, saturation, lightness and alpha.
     Hsla(Hsla),
+    /// A hwba color, defined by its hue, whiteness, blackness and alpha.
     Hwba(Hwba),
 }
 
@@ -78,6 +81,7 @@ impl Color {
             Color::Hwba(ref mut hwba) => hwba.set_alpha(alpha),
         }
     }
+    /// Rotate the hue of this color by a specific number of degrees.
     pub fn rotate_hue(&self, val: Rational) -> Self {
         match self {
             Color::Rgba(rgba) => {
@@ -106,6 +110,7 @@ impl Color {
             .into(),
         }
     }
+    /// Get a reference to this `Value` bound to an output format.
     pub fn format(&self, format: Format) -> Formatted<Self> {
         Formatted {
             value: self,

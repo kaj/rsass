@@ -4,9 +4,13 @@ use std::str::from_utf8;
 /// A position in sass input.
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct SourcePos {
+    /// The text of the source line containing this pos.
     pub line: String,
+    /// The line number of this pos.
     pub line_no: u32,
+    /// The position on the line.
     pub line_pos: usize,
+    /// The source file name and from where it was loaded.
     pub file: SourceName,
 }
 

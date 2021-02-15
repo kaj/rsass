@@ -2,27 +2,46 @@ use crate::css::Value;
 use crate::value::{ListSeparator, Numeric, Quotes, Unit};
 use std::fmt;
 
+/// An operator that can be used in a sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Operator {
+    /// The boolean (value propagating) `and` operator.
     And,
+    /// The boolean (value propagating) `or` operator.
     Or,
+    /// The `==` operator.
     Equal,
+    /// The `!=` operator.
     NotEqual,
+    /// The `>` operator.
     Greater,
+    /// The `>=` operator.
     GreaterE,
+    /// The `<` operator.
     Lesser,
+    /// The `<=` operator.
     LesserE,
 
+    /// The `+` operator.  Also unary positive.
     Plus,
+    /// The `-` operator.  Also unary negative.
     Minus,
+    /// The `*` operator.
     Multiply,
+    /// The `/` operator.
     Div,
+    /// The `%` operator.
     Modulo,
 
+    /// The unary `not` operator.
     Not,
 }
 
 impl Operator {
+    /// Evaluate this operator with two operands.
+    ///
+    /// Some operations cannot be evaluated but should remain as is.
+    /// In that case, eval returns None.
     pub fn eval(&self, a: Value, b: Value) -> Option<Value> {
         match *self {
             Operator::And => Some(if !a.is_true() { a } else { b }),

@@ -10,60 +10,104 @@ use std::fmt;
 /// As defined in <https://www.w3.org/TR/css3-values/>
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Unit {
-    // Distance units, <length> type
+    /// `em` unit, lengths in em-like dimension.
     Em,
+    /// `ex` unit, lengths in em-like dimension.
     Ex,
+    /// `ch` unit, lengths in em-like dimension.
     Ch,
+    /// `ch` unit, lengths in rem-like dimension.
     Rem,
+    /// `vw` unit, length relative to viewport width.
     Vw,
+    /// `vh` unit, length relative to viewport height.
     Vh,
+    /// `vmin` unit, length relative to min viewport size.
     Vmin,
+    /// `vmax` unit, length relative to max viewport size.
     Vmax,
+    /// `cm` unit, absolute length.
     Cm,
+    /// `mm` unit, absolute length.
     Mm,
+    /// `q` unit, absolute length (4q == 1mm).
     Q,
+    /// `in` unit, absolute length in inch.
     In,
+    /// `pt` unit, absolute length (72pt == 1in).
     Pt,
+    /// `pc`unit, absolute length (1pc == 12pt, 6pc == 1in).
     Pc,
+    /// `px`unit, originally pixel size, but does not really mean anything now.
     Px,
-    // Other quantities
-    // <angle> type
+
+    /// `deg` unit, angle in degrees (360 to a turn).
     Deg,
+    /// `grad` unit, angle in grad (400 to a turn).
     Grad,
+    /// `rad` unit, angle in degrees (2pi to a turn).
     Rad,
+    /// `turn` unit, angle in turns.
     Turn,
-    // <time> type
+
+    /// `s` unit, time in seconds.
     S,
+    /// `ms` unit, time in milliseconds.
     Ms,
-    // <frequency> type
+    /// `hz` unit, frequency in Hz.
     Hz,
+    /// `khz` unit, frequency in kHz.
     Khz,
-    // <resolution>
+
+    /// `dpi` unit, resolution in dots per inch.
     Dpi,
+    /// `dpcm` unit, resolution in dots per cm.
     Dpcm,
+    /// `dppx` unit, resolution in dots per px unit.
     Dppx,
-    // Special units
+
+    /// `%` unit, a percentage of something.
     Percent,
+    /// `fr` unit, for grid-relative lengths.
     Fr,
+    /// No unit.
     None,
 }
 
+/// Dimension of a unit.
+///
+/// Units of the same dimension can be converted to each other.
+/// There are multiple "length" dimensions, since font-based,
+/// window-based and absolute lengths can't be converted to each
+/// other.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Dimension {
+    /// An absolute length, can be converted to metric.
     LengthAbs,
+    /// A length relative to viewport width.
     LengthVw,
+    /// A length relative to viewport height.
     LengthVh,
+    /// A length relative to viewport size (min or max).
     LengthVx,
+    /// A length relatvie to base font size.
     LengthRem,
+    /// A length relative to font size.
     LenghtEm,
+    /// An angle.
     Angle,
+    /// A duration.
     Time,
+    /// A frequency.
     Frequency,
+    /// A resolution (number of pixels per length).
     Resolution,
+    /// No dimension (no unit, percentage, or grid fraction).
     None,
 }
 
 impl Unit {
+    /// Get the dimension of this unit.
     pub fn dimension(&self) -> Dimension {
         match *self {
             Unit::Cm
@@ -94,6 +138,9 @@ impl Unit {
         }
     }
 
+    /// Get a scaling factor to convert this unit to another unit.
+    ///
+    /// Returns None if the units are of different dimension.
     pub fn scale_to(&self, other: &Self) -> Option<Number> {
         if self == other {
             Some(one())

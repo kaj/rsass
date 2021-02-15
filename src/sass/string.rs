@@ -4,19 +4,27 @@ use crate::value::Quotes;
 use crate::variablescope::Scope;
 use std::fmt;
 
+/// A string that may contain interpolations.
+///
+/// Used in all places in sass items and values where interpolations
+/// may occur.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct SassString {
     parts: Vec<StringPart>,
     quotes: Quotes,
 }
 
+/// A part of a string value, either a string or a value to interpolate from.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub enum StringPart {
+    /// A raw (literal) string.
     Raw(String),
+    /// A value to be evaluated.
     Interpolation(Value),
 }
 
 impl SassString {
+    /// Create a new sassstring from parts.
     pub fn new(parts: Vec<StringPart>, quotes: Quotes) -> Self {
         // Any sequence of Raw parts in `parts` shall be merged to a
         // single Raw part.  Interpolation parts are left as is.
@@ -46,6 +54,10 @@ impl SassString {
         }
         SassString { parts: p2, quotes }
     }
+
+    /// Evaluate this SassString to a literal String.
+    ///
+    /// All interpolated values are interpolated in the given `scope`.
     pub fn evaluate(
         &self,
         scope: &dyn Scope,
@@ -111,6 +123,9 @@ impl SassString {
             Ok((result, self.quotes))
         }
     }
+
+    /// Evaluate this SassString and wrap the result in a SassString
+    /// of a single raw value.
     pub fn evaluate2(&self, scope: &dyn Scope) -> Result<SassString, Error> {
         let (result, quotes) = self.evaluate(scope)?;
         Ok(SassString {
@@ -119,6 +134,10 @@ impl SassString {
         })
     }
 
+    /// Evaluate this SassString and wrap the result in a SassString
+    /// of a single raw value.
+    ///
+    /// If the value is name-like, unquote the resulting string.
     pub fn evaluate_opt_unquote(
         &self,
         scope: &dyn Scope,
@@ -134,9 +153,13 @@ impl SassString {
             quotes: if t { Quotes::None } else { quotes },
         })
     }
+    /// Return true if self represents an unquoted string.
     pub fn is_unquoted(&self) -> bool {
         self.quotes == Quotes::None
     }
+    /// Check if this SassString is a single raw value.
+    ///
+    /// If so, return a reference to it.
     pub fn single_raw(&self) -> Option<&str> {
         if self.parts.len() == 1 {
             if let StringPart::Raw(ref s) = self.parts[0] {
@@ -145,24 +168,24 @@ impl SassString {
         }
         None
     }
-    pub fn prepend(&mut self, data: &str) {
+    pub(crate) fn prepend(&mut self, data: &str) {
         if let Some(StringPart::Raw(ref mut first)) = self.parts.get_mut(0) {
             first.insert_str(0, data);
         } else {
             self.parts.insert(0, data.into());
         }
     }
-    pub fn append_str(&mut self, data: &str) {
+    pub(crate) fn append_str(&mut self, data: &str) {
         if let Some(StringPart::Raw(ref mut last)) = self.parts.last_mut() {
             last.push_str(data);
         } else {
             self.parts.push(data.into());
         }
     }
-    pub fn append(&mut self, other: &Self) {
+    pub(crate) fn append(&mut self, other: &Self) {
         self.parts.extend_from_slice(&other.parts);
     }
-    pub fn into_parts(self) -> Vec<StringPart> {
+    pub(crate) fn into_parts(self) -> Vec<StringPart> {
         self.parts
     }
 }

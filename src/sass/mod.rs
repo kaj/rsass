@@ -1,9 +1,14 @@
 //! Value and Item types (and some supporting) for sass.
+#[forbid(missing_docs)]
 mod call_args;
+#[forbid(missing_docs)]
 mod formal_args;
 mod item;
+#[forbid(missing_docs)]
 mod name;
+#[forbid(missing_docs)]
 mod string;
+#[allow(missing_docs)]
 mod value;
 
 pub use self::call_args::CallArgs;

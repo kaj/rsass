@@ -10,8 +10,8 @@ use std::fmt;
 /// the error occured.
 #[derive(Debug, PartialEq, Eq)]
 pub struct ParseError {
-    pub msg: String,
-    pub pos: SourcePos,
+    msg: String,
+    pos: SourcePos,
 }
 
 impl std::error::Error for ParseError {}

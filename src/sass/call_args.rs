@@ -12,10 +12,17 @@ use std::default::Default;
 pub struct CallArgs(Vec<(Option<String>, Value)>);
 
 impl CallArgs {
+    /// Create a new callargs from a vec of name-value pairs.
+    ///
+    /// The names is none for positional arguments.
     pub fn new(v: Vec<(Option<String>, Value)>) -> Self {
         CallArgs(v)
     }
 
+    /// Create a new callargs from a single value.
+    ///
+    /// If the value is a list, it used as a positional argument list.
+    /// Otherwise it is used as a single positional argument.
     pub fn from_value(v: Value) -> Self {
         match v {
             Value::List(v, _, false) => {
@@ -25,22 +32,7 @@ impl CallArgs {
         }
     }
 
-    pub fn iter(&self) -> ::std::slice::Iter<(Option<String>, Value)> {
-        self.0.iter()
-    }
-
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    pub fn get(&self, index: usize) -> Option<&(Option<String>, Value)> {
-        self.0.get(index)
-    }
-
+    /// Evaluate these sass CallArgs to css CallArgs.
     pub fn evaluate(
         &self,
         scope: &dyn Scope,

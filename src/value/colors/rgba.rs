@@ -16,6 +16,7 @@ pub struct Rgba {
 }
 
 impl Rgba {
+    /// Create a new rgba color.
     pub fn new(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
         let ff = Rational::new(255, 1);
         let one = Rational::one();
@@ -26,6 +27,7 @@ impl Rgba {
             alpha: cap(a, &one),
         }
     }
+    /// Create a color from rgb byte values.
     pub fn from_rgb(r: u8, g: u8, b: u8) -> Self {
         Rgba {
             red: Rational::from_integer(r as isize),
@@ -34,6 +36,7 @@ impl Rgba {
             alpha: Rational::one(),
         }
     }
+    /// Create a color from rgba byte values.
     pub fn from_rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
         Rgba {
             red: Rational::from_integer(r as isize),
@@ -68,12 +71,14 @@ impl Rgba {
         })
     }
 
+    /// Return true if all chanels are zero.
     pub fn all_zero(&self) -> bool {
         self.alpha.is_zero()
             && self.red.is_zero()
             && self.green.is_zero()
             && self.blue.is_zero()
     }
+    /// Get a (r, g, b, a) byte-value tuple for this color.
     pub fn to_bytes(&self) -> (u8, u8, u8, u8) {
         fn byte(v: Rational) -> u8 {
             v.round().to_integer() as u8

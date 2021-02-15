@@ -28,6 +28,7 @@ use std::path::{Path, PathBuf};
 /// }
 /// ```
 pub trait FileContext: Sized + std::fmt::Debug {
+    /// Anything that can be read can be a File in an implementation.
     type File: std::io::Read;
 
     /// Find a file.
@@ -79,6 +80,7 @@ impl FsFileContext {
         }
     }
 
+    /// Add a path to search for files.
     pub fn push_path(&mut self, path: &Path) {
         self.path.push(path.into());
     }

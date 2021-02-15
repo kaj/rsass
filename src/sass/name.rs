@@ -3,6 +3,13 @@ use std::borrow::Cow;
 /// A sass name, used to idenify functions, variables, mixins, etc.
 ///
 /// A `-` and a `_` is considered equal in a name, both represented by a `_`.
+///
+/// # Examples
+/// ```
+/// # use rsass::sass::Name;
+/// assert_eq!(Name::from("foo-bar"), Name::from("foo_bar"));
+/// assert_eq!(Name::from_static("foo_bar"), Name::from("foo-bar"));
+/// ```
 #[derive(Clone, Debug, Ord, PartialOrd, Eq, PartialEq)]
 pub struct Name {
     key: Cow<'static, str>,
@@ -10,11 +17,16 @@ pub struct Name {
 
 impl Name {
     /// Key must not contain `-`.
+    ///
+    /// This function panics in debug mode if the key contains `-`.
     pub fn from_static(key: &'static str) -> Name {
         debug_assert!(!key.contains('-'));
         Name { key: key.into() }
     }
 
+    /// Check if a name is "module.local".
+    ///
+    /// If so, return the module name and the local name as separate names.
     pub fn split_module(&self) -> Option<(Name, Name)> {
         let mut parts = self.key.splitn(2, '.');
         if let (Some(module), Some(local)) = (parts.next(), parts.next()) {

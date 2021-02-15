@@ -26,6 +26,7 @@ pub trait Scope {
         default: bool,
         global: bool,
     );
+    /// Define a none-default, non-global variable.
     fn define(&mut self, name: Name, val: &Value) {
         self.set_variable(name, val.clone(), false, false)
     }

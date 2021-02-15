@@ -40,15 +40,22 @@
 // TODO: #![forbid(missing_docs)]
 use std::path::Path;
 
+#[forbid(missing_docs)]
 pub mod css;
 mod error;
+#[forbid(missing_docs)]
 mod file_context;
+#[forbid(missing_docs)]
 mod functions;
+#[forbid(missing_docs)]
 mod ordermap;
+#[forbid(missing_docs)]
 pub mod output;
+#[forbid(missing_docs)]
 mod parser;
 pub mod sass;
 pub mod selectors;
+#[forbid(missing_docs)]
 pub mod value;
 mod variablescope;
 
