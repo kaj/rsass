@@ -27,7 +27,6 @@ commandline = ["structopt"]
 spectest = ["yaml-rust", "deunicode", "hrx-get", "regex"]
 
 [dependencies]
-funty = "=1.1.0" # 1.2.0 breaks bitvec 0.19.x
 lazy_static = "1.0"
 nom = { version = "6.0", default-features = false }
 nom_locate = "3.0"
