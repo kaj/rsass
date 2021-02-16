@@ -2,7 +2,6 @@ use crate::css::Value;
 use crate::parser::ParseError;
 use crate::value::RangeError;
 use std::convert::From;
-use std::string::FromUtf8Error;
 use std::{fmt, io};
 
 /// Most functions in rsass that returns a Result uses this Error type.
@@ -10,16 +9,21 @@ use std::{fmt, io};
 pub enum Error {
     /// An IO error encoundered on a specific path
     Input(String, io::Error),
+    /// An IO error without specifying a path.
+    ///
+    /// This is (probably) an error writing output.
     IoError(io::Error),
-    Encoding(FromUtf8Error),
     BadValue(String),
     BadArguments(String),
     /// A range error
     BadRange(RangeError),
     /// Error parsing sass data.
     ParseError(ParseError),
-    S(String),
     UndefinedVariable(String),
+    /// Fallback error type.
+    ///
+    /// This just contains a string with some message.
+    S(String),
 }
 
 impl std::error::Error for Error {}
@@ -81,12 +85,6 @@ impl fmt::Display for Error {
 impl From<io::Error> for Error {
     fn from(e: io::Error) -> Self {
         Error::IoError(e)
-    }
-}
-
-impl From<FromUtf8Error> for Error {
-    fn from(e: FromUtf8Error) -> Self {
-        Error::Encoding(e)
     }
 }
 

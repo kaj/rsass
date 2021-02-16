@@ -5,7 +5,6 @@ use crate::ordermap::OrderMap;
 use crate::sass::{CallArgs, Name, SassString};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Quotes, Rgba};
 use crate::variablescope::Scope;
-use num_rational::Rational;
 use num_traits::Zero;
 
 /// A sass value.
@@ -54,34 +53,14 @@ pub enum Value {
 }
 
 impl Value {
+    /// Create a new scalar value.
     pub fn scalar(v: impl Into<Number>) -> Self {
         Value::Numeric(Numeric::scalar(v))
     }
+
     #[cfg(test)]
-    pub fn bool(v: bool) -> Self {
-        if v {
-            Value::True
-        } else {
-            Value::False
-        }
-    }
     pub fn black() -> Self {
         Value::Color(Rgba::from_rgb(0, 0, 0), Some("black".into()))
-    }
-    pub fn rgba(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
-        Value::Color(Rgba::new(r, g, b, a), None)
-    }
-
-    pub fn type_name(&self) -> &'static str {
-        match *self {
-            Value::Color(..) => "color",
-            Value::Literal(..) => "string",
-            Value::Numeric(_) => "number",
-            Value::List(..) => "list",
-            Value::True | Value::False => "bool",
-            Value::Null => "null",
-            _ => "unknown",
-        }
     }
 
     /// All values other than `False` and `Null` should be considered true.
@@ -108,6 +87,7 @@ impl Value {
         self.do_evaluate(scope, false)
     }
 
+    /// Evaluate this value to a [`css::Value`].
     pub fn do_evaluate(
         &self,
         scope: &dyn Scope,
@@ -165,8 +145,9 @@ impl Value {
                 Ok(css::Value::Numeric(num.clone(), arithmetic))
             }
             Value::Map(ref m) => {
-                let items = m.iter()
-                    .map(|&(ref k, ref v)| -> Result<(css::Value, css::Value), Error> {
+                let items = m
+                    .iter()
+                    .map(|&(ref k, ref v)| {
                         Ok((
                             k.do_evaluate(scope, false)?,
                             v.do_evaluate(scope, false)?,

@@ -245,7 +245,7 @@ fn at_root2(input: Span) -> IResult<Span, Item> {
                 map(opt(selectors), |s| s.unwrap_or_else(Selectors::root)),
                 body_block,
             ),
-            |(selectors, body)| Item::AtRoot { selectors, body },
+            |(selectors, body)| Item::AtRoot(selectors, body),
         ),
     )(input)
 }

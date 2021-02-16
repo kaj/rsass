@@ -13,9 +13,10 @@ fn txx_empty_rule() {
 fn t14_imports() {
     let path = "tests/basic/14_imports/input.scss";
     assert_eq!(
-        compile_scss_path(path.as_ref(), Default::default())
-            .and_then(|s| Ok(String::from_utf8(s)?))
-            .unwrap(),
+        String::from_utf8(
+            compile_scss_path(path.as_ref(), Default::default()).unwrap()
+        )
+        .unwrap(),
         "div span {\n  moo: goo;\n}\n\n\
          foo {\n  blah: blah;\n}\n\
          foo goo {\n  blee: blee;\n  hello: world;\n}\n\
@@ -125,9 +126,10 @@ fn t15_arithmetic_and_lists() {
 fn t33_ambigous_imports() {
     let path = "tests/basic/33_ambiguous_imports/input.scss";
     assert_eq!(
-        compile_scss_path(path.as_ref(), Default::default())
-            .and_then(|s| Ok(String::from_utf8(s)?))
-            .unwrap(),
+        String::from_utf8(
+            compile_scss_path(path.as_ref(), Default::default()).unwrap()
+        )
+        .unwrap(),
         "main {\n  color: red;\n}\n\n\
          dir {\n  color: blue;\n}\n\n\
          fudge {\n  color: brown;\n}\n"
@@ -298,9 +300,10 @@ fn test_number_zeroes_b() {
 
 fn check_value(input: &str, expected: &str) {
     assert_eq!(
-        compile_value(input.as_ref(), Default::default())
-            .and_then(|s| Ok(String::from_utf8(s)?))
-            .unwrap(),
+        String::from_utf8(
+            compile_value(input.as_ref(), Default::default()).unwrap()
+        )
+        .unwrap(),
         expected,
     );
 }
@@ -308,7 +311,7 @@ fn check_value(input: &str, expected: &str) {
 fn check(input: &[u8], expected: &str) {
     assert_eq!(
         compile_scss(input, Default::default())
-            .and_then(|s| Ok(String::from_utf8(s)?))
+            .map(|s| String::from_utf8(s).unwrap())
             .map_err(|e| {
                 eprintln!("{}", e);
                 "rsass failed"

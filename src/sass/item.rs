@@ -11,20 +11,25 @@ pub enum Item {
     Import(Vec<SassString>, Value, SourcePos),
     /// A variable declaration.
     VariableDeclaration {
+        /// The variable name
         name: String,
+        /// The bound value
         val: Value,
+        /// true if this is a `!default` variable.
         default: bool,
+        /// true if this is a `!global` variable.
         global: bool,
     },
+
     /// An `@at-root` directive.
-    AtRoot {
-        selectors: Selectors,
-        body: Vec<Item>,
-    },
+    AtRoot(Selectors, Vec<Item>),
     /// A generic `@` directive.
     AtRule {
+        /// The name of this directive
         name: String,
+        /// Any arguments
         args: Value,
+        /// The directive may have a body.
         body: Option<Vec<Item>>,
     },
     /// An `@debug` directive.
@@ -54,10 +59,15 @@ pub enum Item {
     Each(Vec<Name>, Value, Vec<Item>),
     /// An `@for` loop directive.
     For {
+        /// The name of the iteration variable.
         name: Name,
+        /// The start value for the iteration.
         from: Box<Value>,
+        /// The end value for the iteration.
         to: Box<Value>,
+        /// True if the end should be included in the range.
         inclusive: bool,
+        /// The body of the loop.
         body: Vec<Item>,
     },
     /// An `@while` loop directive.
@@ -77,9 +87,13 @@ pub enum Item {
     None,
 }
 
+/// The `as` part of an `@use` directive.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub enum UseAs {
+    /// A plain `@use foo;`.
     KeepName,
+    /// Include the module contents directly in the scope, `@use foo as *;`.
     Star,
+    /// An explicit name, `@use foo as bar`.
     Name(SassString),
 }

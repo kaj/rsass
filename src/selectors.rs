@@ -17,6 +17,7 @@ use std::io::Write;
 /// A full set of selectors
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Selectors {
+    /// The actual selectors.
     pub s: Vec<Selector>,
     backref: Selector,
 }
@@ -26,12 +27,15 @@ impl Selectors {
     pub fn root() -> Self {
         Selectors::new(vec![Selector::root()])
     }
+
+    /// Create a new Selectors from a vec of selectors.
     pub fn new(s: Vec<Selector>) -> Self {
         Selectors {
             s,
             backref: Selector::root(),
         }
     }
+    /// Remove the first of these selectors (or the root selector if empty).
     pub fn one(&self) -> Selector {
         self.s.first().cloned().unwrap_or_else(Selector::root)
     }
@@ -48,6 +52,9 @@ impl Selectors {
             backref: parent.backref.clone(),
         }
     }
+    /// Get these selectors with a specific backref selector.
+    ///
+    /// Used to create `@at-root` contexts, to have `&` work in them.
     pub fn with_backref(self, context: Selector) -> Self {
         self.inside(&Selectors {
             s: vec![Selector::root()],
@@ -80,6 +87,7 @@ impl Selectors {
         };
         Value::List(content, sep, false)
     }
+    /// Evaluate any interpolation in these Selectors.
     pub fn eval(&self, scope: &dyn Scope) -> Result<Selectors, Error> {
         let s = Selectors::new(
             self.s
@@ -107,6 +115,7 @@ impl Selectors {
 pub struct Selector(pub Vec<SelectorPart>);
 
 impl Selector {
+    /// Get the root (empty) selector.
     pub fn root() -> Self {
         Selector(vec![])
     }
@@ -163,19 +172,27 @@ pub enum SelectorPart {
     RelOp(u8),
     /// An attribute selector
     Attribute {
+        /// The attribute name
         name: SassString,
+        /// An operator
         op: String,
+        /// A value to match.
         val: SassString,
+        /// Optional modifier.
         modifier: Option<char>,
     },
     /// A css3 pseudo-element (::foo)
     PseudoElement {
+        /// The name of the pseudo-element
         name: SassString,
+        /// Arguments to the pseudo-element
         arg: Option<Selectors>,
     },
     /// A pseudo-class or a css2 pseudo-element (:foo)
     Pseudo {
+        /// The name of the pseudo-class
         name: SassString,
+        /// Arguments to the pseudo-class
         arg: Option<Selectors>,
     },
     /// A sass backref (`&`), to be replaced with outer selector.

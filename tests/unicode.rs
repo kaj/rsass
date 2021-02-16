@@ -32,8 +32,7 @@ fn unicode_in_compressed() {
 
 fn check(input: &str, expected: &str, style: output::Format) {
     assert_eq!(
-        compile_scss(input.as_bytes(), style)
-            .and_then(|s| Ok(String::from_utf8(s)?))
+        String::from_utf8(compile_scss(input.as_bytes(), style).unwrap())
             .unwrap(),
         expected
     );

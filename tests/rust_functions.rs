@@ -14,10 +14,12 @@ fn simple_value() {
     scope.define(Name::from_static("color"), &Rgba::from_rgb(0, 0, 0).into());
     let file_context = FsFileContext::new();
     assert_eq!(
-        format
-            .write_root(&parsed, &mut scope, &file_context)
-            .and_then(|s| Ok(String::from_utf8(s)?))
-            .unwrap(),
+        String::from_utf8(
+            format
+                .write_root(&parsed, &mut scope, &file_context)
+                .unwrap()
+        )
+        .unwrap(),
         "p{color:#000}\n"
     );
 }
@@ -40,10 +42,12 @@ fn simple_function() {
     let parsed = parse_scss_data(b"p { x: get_answer(); }").unwrap();
     let file_context = FsFileContext::new();
     assert_eq!(
-        format
-            .write_root(&parsed, &mut scope, &file_context)
-            .and_then(|s| Ok(String::from_utf8(s)?))
-            .unwrap(),
+        String::from_utf8(
+            format
+                .write_root(&parsed, &mut scope, &file_context)
+                .unwrap()
+        )
+        .unwrap(),
         "p{x:42}\n"
     );
 }
@@ -90,10 +94,12 @@ fn function_with_args() {
     };
     let file_context = FsFileContext::new();
     assert_eq!(
-        format
-            .write_root(&parsed, &mut scope, &file_context)
-            .and_then(|s| Ok(String::from_utf8(s)?))
-            .unwrap(),
+        String::from_utf8(
+            format
+                .write_root(&parsed, &mut scope, &file_context)
+                .unwrap()
+        )
+        .unwrap(),
         "p{x:14}\n"
     );
 }

@@ -59,10 +59,13 @@ pub trait Scope {
         }
     }
 
+    /// Get the format used in this scope.
     fn get_format(&self) -> Format;
 
     /// Get the Value for a variable.
     fn get_or_none(&self, name: &Name) -> Option<Value>;
+
+    /// Get the value for a variable (or an error).
     fn get(&self, name: &str) -> Result<Value, Error> {
         match self.get_or_none(&name.into()) {
             Some(value) => Ok(value),
@@ -70,24 +73,35 @@ pub trait Scope {
         }
     }
 
+    /// Get the global Value for a variable.
     fn get_global_or_none(&self, name: &Name) -> Option<Value>;
 
+    /// Define a mixin.
     fn define_mixin(
         &mut self,
         name: &str,
         args: &sass::FormalArgs,
         body: &[Item],
     );
+
+    /// Get a mixin by name.
+    ///
+    /// Returns the formal args and the body of the mixin.
     fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)>;
 
+    /// Define a function.
     fn define_function(&mut self, name: Name, func: SassFunction);
+
+    /// Get a function by name.
     fn get_function(&self, name: &Name) -> Option<&SassFunction>;
+    /// Call a function.
     fn call_function(
         &self,
         name: &Name,
         args: &css::CallArgs,
     ) -> Option<Result<Value, Error>>;
 
+    /// Evaluate a body of items in this scope.
     fn eval_body(&mut self, body: &[Item]) -> Result<Option<Value>, Error>
     where
         Self: Sized,
@@ -178,8 +192,18 @@ pub trait Scope {
         }
         Ok(None)
     }
+
+    /// Define a module in the scope.
+    ///
+    /// This is used by the `@use` statement.
     fn define_module(&self, name: Name, module: &'static Module);
+    /// Get a module.
+    ///
+    /// This is used when refering to a function or variable with
+    /// namespace.name notation.
     fn get_module(&self, name: &Name) -> Option<&Module>;
+
+    /// Get the selectors active for this scope.
     fn get_selectors(&self) -> &Selectors;
 }
 

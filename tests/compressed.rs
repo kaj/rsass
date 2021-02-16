@@ -304,9 +304,7 @@ fn check(input: &[u8], expected: &str) {
         precision: 5,
     };
     assert_eq!(
-        compile_scss(input, format)
-            .and_then(|s| Ok(String::from_utf8(s)?))
-            .unwrap(),
+        String::from_utf8(compile_scss(input, format).unwrap()).unwrap(),
         expected
     );
 }

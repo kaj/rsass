@@ -53,10 +53,13 @@ mod ordermap;
 pub mod output;
 #[forbid(missing_docs)]
 mod parser;
+#[forbid(missing_docs)]
 pub mod sass;
+#[forbid(missing_docs)]
 pub mod selectors;
 #[forbid(missing_docs)]
 pub mod value;
+#[forbid(missing_docs)]
 mod variablescope;
 
 pub use crate::error::Error;

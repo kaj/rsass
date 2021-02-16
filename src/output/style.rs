@@ -128,10 +128,7 @@ impl Format {
                 let val = val.do_evaluate(scope, true)?;
                 scope.set_variable(name.into(), val, default, global);
             }
-            Item::AtRoot {
-                ref selectors,
-                ref body,
-            } => {
+            Item::AtRoot(ref selectors, ref body) => {
                 let selectors = selectors
                     .eval(scope)?
                     .with_backref(scope.get_selectors().one());
@@ -450,10 +447,7 @@ impl Format {
                     let val = val.do_evaluate(scope, true)?;
                     scope.set_variable(name.into(), val, default, global);
                 }
-                Item::AtRoot {
-                    ref selectors,
-                    ref body,
-                } => {
+                Item::AtRoot(ref selectors, ref body) => {
                     let selectors = selectors
                         .eval(scope)?
                         .with_backref(scope.get_selectors().one());
