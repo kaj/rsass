@@ -12,7 +12,6 @@ use std::f64::consts::{E, PI};
 /// [the specification](https://sass-lang.com/documentation/modules/math).
 pub fn create_module() -> Module {
     let mut f = Module::new();
-    // TODO: Variable $pi and $e.
 
     // - - - Boundig Functions - - -
     def!(f, ceil(number), |s| {
