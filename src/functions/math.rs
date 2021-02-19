@@ -139,7 +139,7 @@ pub fn create_module() -> Module {
         Ok(ans.into())
     });
     def!(f, is_unitless(number), |s| {
-        Ok((get_numeric(s, "number")?.unit == Unit::None).into())
+        Ok((get_numeric(s, "number")?.is_no_unit()).into())
     });
     def!(f, unit(number), |s| {
         let v = match s.get("number")? {
@@ -213,9 +213,7 @@ fn get_numeric(s: &dyn Scope, name: &str) -> Result<Numeric, Error> {
 
 fn get_radians(s: &dyn Scope, name: &str) -> Result<f64, Error> {
     let v = get_numeric(s, name)?;
-    if v.unit == Unit::None {
-        Ok(f64::from(v.value))
-    } else if let Some(scaled) = v.as_unit(Unit::Rad) {
+    if let Some(scaled) = v.as_unit_def(Unit::Rad) {
         Ok(f64::from(scaled))
     } else {
         Err(Error::badarg("angle", &v.into()))
@@ -224,7 +222,7 @@ fn get_radians(s: &dyn Scope, name: &str) -> Result<f64, Error> {
 
 fn get_unitless(s: &dyn Scope, name: &str) -> Result<f64, Error> {
     let v = get_numeric(s, name)?;
-    if v.unit == Unit::None {
+    if v.is_no_unit() {
         Ok(f64::from(v.value))
     } else {
         Err(Error::badarg("unitless", &v.into()))
@@ -238,7 +236,7 @@ fn get_unitless_or(
 ) -> Result<f64, Error> {
     match s.get(name)? {
         Value::Numeric(v, _) => {
-            if v.unit == Unit::None {
+            if v.is_no_unit() {
                 Ok(f64::from(v.value))
             } else {
                 Err(Error::badarg("unitless", &v.into()))
@@ -280,7 +278,7 @@ fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
                         } else {
                             second
                         }
-                    } else if va.unit == Unit::None || vb.unit == Unit::None {
+                    } else if va.is_no_unit() || vb.is_no_unit() {
                         if let Some(o) = va.value.partial_cmp(&vb.value) {
                             if o == pref {
                                 first

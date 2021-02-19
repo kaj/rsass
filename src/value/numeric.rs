@@ -45,6 +45,19 @@ impl Numeric {
     pub fn as_unit(&self, unit: Unit) -> Option<Number> {
         self.unit.scale_to(&unit).map(|scale| &self.value * &scale)
     }
+
+    /// Convert this numeric value to a given unit, if possible.
+    ///
+    /// Like [as_unit], except a unitless numeric is considered to be
+    /// the expected unit.
+    pub fn as_unit_def(&self, unit: Unit) -> Option<Number> {
+        if self.is_no_unit() {
+            Some(self.value.clone())
+        } else {
+            self.as_unit(unit)
+        }
+    }
+
     /// Get this number as a rational number.
     ///
     /// The unit is ignored.  If the value is bignum rational or
@@ -52,6 +65,11 @@ impl Numeric {
     /// range, otherwises an error is returned.
     pub fn as_ratio(&self) -> Result<Rational, Error> {
         self.value.as_ratio()
+    }
+
+    /// Return true if this value has no unit.
+    pub fn is_no_unit(&self) -> bool {
+        self.unit == Unit::None
     }
 
     /// Get a reference to this `Value` bound to an output format.

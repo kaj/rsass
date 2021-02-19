@@ -54,7 +54,7 @@ impl Operator {
             Operator::LesserE => Some(Value::from(a <= b)),
             Operator::Plus => match (a, b) {
                 (Value::Color(a, _), Value::Numeric(b, _))
-                    if b.unit == Unit::None =>
+                    if b.is_no_unit() =>
                 {
                     let b = b.as_ratio().ok()?;
                     Some((a.to_rgba().as_ref() + b).into())
@@ -63,9 +63,9 @@ impl Operator {
                     Some((a.to_rgba().as_ref() + b.to_rgba().as_ref()).into())
                 }
                 (Value::Numeric(a, _), Value::Numeric(b, _)) => {
-                    if a.unit == b.unit || b.unit == Unit::None {
+                    if a.unit == b.unit || b.is_no_unit() {
                         Some(Numeric::new(a.value + b.value, a.unit).into())
-                    } else if a.unit == Unit::None {
+                    } else if a.is_no_unit() {
                         Some(Numeric::new(a.value + b.value, b.unit).into())
                     } else if let Some(scaled) = b.as_unit(a.unit.clone()) {
                         Some(Numeric::new(a.value + scaled, a.unit).into())
@@ -91,7 +91,7 @@ impl Operator {
             },
             Operator::Minus => match (a, b) {
                 (Value::Color(a, _), Value::Numeric(b, _))
-                    if b.unit == Unit::None =>
+                    if b.is_no_unit() =>
                 {
                     let b = b.as_ratio().ok()?;
                     Some((a.to_rgba().as_ref() - b).into())
@@ -100,9 +100,9 @@ impl Operator {
                     Some((a.to_rgba().as_ref() - b.to_rgba().as_ref()).into())
                 }
                 (Value::Numeric(a, _), Value::Numeric(b, _)) => {
-                    if a.unit == b.unit || b.unit == Unit::None {
+                    if a.unit == b.unit || b.is_no_unit() {
                         Some(Numeric::new(&a.value - &b.value, a.unit).into())
-                    } else if a.unit == Unit::None {
+                    } else if a.is_no_unit() {
                         Some(Numeric::new(&a.value - &b.value, b.unit).into())
                     } else if let Some(scaled) = b.as_unit(a.unit.clone()) {
                         Some(Numeric::new(&a.value - &scaled, a.unit).into())
@@ -127,12 +127,12 @@ impl Operator {
                     &Value::Numeric(ref b, _),
                 ) = (&a, &b)
                 {
-                    if b.unit == Unit::None {
+                    if b.is_no_unit() {
                         Some(
                             Numeric::new(&a.value * &b.value, a.unit.clone())
                                 .into(),
                         )
-                    } else if a.unit == Unit::None {
+                    } else if a.is_no_unit() {
                         Some(
                             Numeric::new(&a.value * &b.value, b.unit.clone())
                                 .into(),
@@ -164,13 +164,13 @@ impl Operator {
                 if a.is_calculated() || b.is_calculated() {
                     match (a, b) {
                         (Value::Color(a, _), Value::Numeric(b, _))
-                            if b.unit == Unit::None =>
+                            if b.is_no_unit() =>
                         {
                             let bn = b.as_ratio().ok()?;
                             Some((a.to_rgba().as_ref() / bn).into())
                         }
                         (Value::Numeric(a, _), Value::Numeric(b, _)) => {
-                            if b.unit == Unit::None {
+                            if b.is_no_unit() {
                                 Some(
                                     Numeric::new(&a.value / &b.value, a.unit)
                                         .into(),
@@ -200,7 +200,7 @@ impl Operator {
                 (&Value::Numeric(ref a, _), &Value::Numeric(ref b, _)) => {
                     if a.unit == b.unit {
                         Some(Value::scalar(&a.value % &b.value))
-                    } else if b.unit == Unit::None {
+                    } else if b.is_no_unit() {
                         Some(
                             Numeric::new(&a.value % &b.value, a.unit.clone())
                                 .into(),

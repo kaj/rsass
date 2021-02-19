@@ -19,7 +19,7 @@ impl ValueRange {
             from.numeric_value().map_err(RangeError::FromNotNumeric)?;
         let to = to.numeric_value().map_err(RangeError::ToNotNumeric)?;
 
-        let to = if from.unit == Unit::None || to.unit == Unit::None {
+        let to = if from.is_no_unit() || to.is_no_unit() {
             to.value
         } else if let Some(scaled) = to.as_unit(from.unit.clone()) {
             scaled
