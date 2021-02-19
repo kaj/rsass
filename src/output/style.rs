@@ -1,5 +1,5 @@
 use super::Format;
-use crate::css::BodyItem;
+use crate::css::{BodyItem, Rule};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
@@ -132,27 +132,17 @@ impl Format {
                 let selectors = selectors
                     .eval(scope)?
                     .with_backref(scope.get_selectors().one());
-                let mut s1 = vec![];
+                let mut rule = Rule::new(selectors.clone());
                 let mut s2 = vec![];
                 self.handle_body(
-                    &mut s1,
+                    rule.mut_body(),
                     &mut s2,
-                    &mut ScopeImpl::sub_selectors(scope, selectors.clone()),
+                    &mut ScopeImpl::sub_selectors(scope, selectors),
                     body,
                     file_context,
                     0,
                 )?;
-
-                if !s1.is_empty() {
-                    if self.is_compressed() {
-                        write!(result.to_content(), "{:#}{{", selectors)?;
-                    } else {
-                        write!(result.to_content(), "{} {{", selectors)?;
-                    }
-                    self.write_items(result.to_content(), &s1, 2)?;
-                    write!(result.to_content(), "}}")?;
-                    self.do_indent(result.to_content(), 0)?;
-                }
+                rule.write(result.to_content(), *self, 0)?;
                 if !s2.is_empty() {
                     result.to_content().write_all(&s2)?;
                 }
@@ -184,7 +174,18 @@ impl Format {
                         file_context,
                         2,
                     )?;
-                    self.write_items(result.to_content(), &direct, 2)?;
+                    if !direct.is_empty() {
+                        let mut buf = Vec::new();
+                        for item in &direct {
+                            self.do_indent(&mut buf, 2)?;
+                            item.write(&mut buf, *self)?;
+                        }
+                        if self.is_compressed() && buf.last() == Some(&b';') {
+                            buf.pop();
+                        }
+                        result.to_content().write_all(&buf)?;
+                        self.do_indent(result.to_content(), 0)?;
+                    }
                     if !sub.is_empty() {
                         if direct.is_empty() {
                             result.do_indent(0)?;
@@ -354,27 +355,17 @@ impl Format {
         indent: usize,
     ) -> Result<(), Error> {
         let selectors = selectors.eval(scope)?.inside(scope.get_selectors());
-        let mut direct = Vec::new();
+        let mut rule = Rule::new(selectors.clone());
         let mut sub = Vec::new();
         self.handle_body(
-            &mut direct,
+            rule.mut_body(),
             &mut sub,
             &mut ScopeImpl::sub_selectors(scope, selectors.clone()),
             body,
             file_context,
             indent,
         )?;
-        if !direct.is_empty() {
-            self.do_indent_no_lf(out, indent)?;
-            if self.is_compressed() {
-                write!(out, "{:#}{{", selectors)?;
-            } else {
-                write!(out, "{} {{", selectors)?;
-            }
-            self.write_items(out, &direct, indent + 2)?;
-            write!(out, "}}")?;
-            self.do_indent(out, 0)?;
-        }
+        rule.write(out, *self, indent)?;
         out.write_all(&sub)?;
         Ok(())
     }
@@ -451,33 +442,17 @@ impl Format {
                     let selectors = selectors
                         .eval(scope)?
                         .with_backref(scope.get_selectors().one());
-                    let mut s1 = vec![];
+                    let mut rule = Rule::new(selectors.clone());
                     let mut s2 = vec![];
                     self.handle_body(
-                        &mut s1,
+                        rule.mut_body(),
                         &mut s2,
-                        &mut ScopeImpl::sub_selectors(
-                            scope,
-                            selectors.clone(),
-                        ),
+                        &mut ScopeImpl::sub_selectors(scope, selectors),
                         body,
                         file_context,
                         indent,
                     )?;
-
-                    if !s1.is_empty() {
-                        if indent > 0 {
-                            self.do_indent(sub, indent)?;
-                        }
-                        if self.is_compressed() {
-                            write!(sub, "{:#}{{", selectors)?;
-                        } else {
-                            write!(sub, "{} {{", selectors)?;
-                        }
-                        self.write_items(sub, &s1, indent + 2)?;
-                        write!(sub, "}}")?;
-                        self.do_indent(sub, 0)?;
-                    }
+                    rule.write(sub, *self, indent)?;
                     if !s2.is_empty() {
                         sub.write_all(&s2)?;
                     }
@@ -499,28 +474,19 @@ impl Format {
                             write!(sub, " {{")?;
                         }
 
-                        let mut s1 = vec![];
+                        let mut rule =
+                            Rule::new(scope.get_selectors().clone());
                         let mut s2 = vec![];
                         self.handle_body(
-                            &mut s1,
+                            rule.mut_body(),
                             &mut s2,
                             &mut ScopeImpl::sub(scope),
                             body,
                             file_context,
                             2,
                         )?;
-
-                        if !s1.is_empty() {
-                            self.do_indent(sub, 2)?;
-                            if self.is_compressed() {
-                                write!(sub, "{:#}{{", scope.get_selectors())?;
-                            } else {
-                                write!(sub, "{} {{", scope.get_selectors())?;
-                            }
-                            self.write_items(sub, &s1, 4)?;
-                            write!(sub, "}}")?;
-                        }
                         self.do_indent(sub, 0)?;
+                        rule.write(sub, *self, 2)?;
                         if !s2.is_empty() {
                             sub.write_all(&s2)?;
                         }
@@ -671,8 +637,7 @@ impl Format {
                     let value = value.evaluate(scope)?;
                     let (name, _quotes) = name.evaluate(scope)?;
                     if !value.is_null() {
-                        direct
-                            .push(BodyItem::Property(name.clone(), value));
+                        direct.push(BodyItem::Property(name.clone(), value));
                     }
                     let mut t = Vec::new();
                     self.handle_body(
@@ -685,12 +650,10 @@ impl Format {
                     )?;
                     for item in t {
                         direct.push(match item {
-                            BodyItem::Property(n, v) => {
-                                BodyItem::Property(
-                                    format!("{}-{}", name, n),
-                                    v,
-                                )
-                            }
+                            BodyItem::Property(n, v) => BodyItem::Property(
+                                format!("{}-{}", name, n),
+                                v,
+                            ),
                             c => c,
                         })
                     }
@@ -730,51 +693,21 @@ impl Format {
         Ok(())
     }
 
-    fn write_items(
-        &self,
-        out: &mut dyn Write,
-        items: &[BodyItem],
-        indent: usize,
-    ) -> Result<(), Error> {
-        if !items.is_empty() {
-            let mut buf = Vec::new();
-            for item in items {
-                self.do_indent(&mut buf, indent)?;
-                item.write(&mut buf, *self)?;
-            }
-            if self.is_compressed() && buf.last() == Some(&b';') {
-                buf.pop();
-            }
-            out.write_all(&buf)?;
-            self.do_indent(out, indent - 2)?;
-        }
-        Ok(())
-    }
-
     fn do_indent(
         &self,
         out: &mut dyn Write,
         steps: usize,
     ) -> Result<(), Error> {
-        if !self.is_compressed() {
-            writeln!(out)?;
-            for _i in 0..steps {
-                write!(out, " ")?;
-            }
-        }
-        Ok(())
+        Ok(out.write_all(self.get_indent(steps).as_ref())?)
     }
-    fn do_indent_no_lf(
-        &self,
-        out: &mut dyn Write,
-        steps: usize,
-    ) -> Result<(), Error> {
-        if !self.is_compressed() {
-            for _i in 0..steps {
-                write!(out, " ")?;
-            }
+    /// Get a newline followed by len spaces, unles self is compressed.
+    pub fn get_indent(&self, len: usize) -> &'static str {
+        static INDENT: &str = "\n                                                                                ";
+        if self.is_compressed() {
+            ""
+        } else {
+            &INDENT[..(len + 1)]
         }
-        Ok(())
     }
 }
 
