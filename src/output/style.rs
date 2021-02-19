@@ -1,5 +1,5 @@
 use super::Format;
-use crate::css::Value;
+use crate::css::BodyItem;
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
@@ -381,7 +381,7 @@ impl Format {
 
     fn handle_body(
         &self,
-        direct: &mut Vec<CssBodyItem>,
+        direct: &mut Vec<BodyItem>,
         sub: &mut dyn Write,
         scope: &mut dyn Scope,
         body: &[Item],
@@ -552,7 +552,7 @@ impl Format {
                             indent,
                         )?;
                     } else {
-                        direct.push(CssBodyItem::Comment(format!(
+                        direct.push(BodyItem::Comment(format!(
                             "Unknown mixin {}({:?})",
                             name, args
                         )));
@@ -672,7 +672,7 @@ impl Format {
                     let (name, _quotes) = name.evaluate(scope)?;
                     if !value.is_null() {
                         direct
-                            .push(CssBodyItem::Property(name.clone(), value));
+                            .push(BodyItem::Property(name.clone(), value));
                     }
                     let mut t = Vec::new();
                     self.handle_body(
@@ -685,8 +685,8 @@ impl Format {
                     )?;
                     for item in t {
                         direct.push(match item {
-                            CssBodyItem::Property(n, v) => {
-                                CssBodyItem::Property(
+                            BodyItem::Property(n, v) => {
+                                BodyItem::Property(
                                     format!("{}-{}", name, n),
                                     v,
                                 )
@@ -699,7 +699,7 @@ impl Format {
                     let v = value.evaluate(scope)?;
                     if !v.is_null() {
                         let (name, _q) = name.evaluate(scope)?;
-                        direct.push(CssBodyItem::Property(name, v));
+                        direct.push(BodyItem::Property(name, v));
                     }
                 }
                 Item::Comment(ref c) => {
@@ -721,7 +721,7 @@ impl Format {
                         } else {
                             c.clone()
                         };
-                        direct.push(CssBodyItem::Comment(c));
+                        direct.push(BodyItem::Comment(c));
                     }
                 }
                 Item::None => (),
@@ -733,7 +733,7 @@ impl Format {
     fn write_items(
         &self,
         out: &mut dyn Write,
-        items: &[CssBodyItem],
+        items: &[BodyItem],
         indent: usize,
     ) -> Result<(), Error> {
         if !items.is_empty() {
@@ -874,29 +874,5 @@ impl CssWriter {
             }
         }
         Ok(())
-    }
-}
-
-enum CssBodyItem {
-    Property(String, Value),
-    Comment(String),
-}
-
-impl CssBodyItem {
-    fn write(
-        &self,
-        out: &mut dyn Write,
-        format: Format,
-    ) -> std::io::Result<()> {
-        match *self {
-            CssBodyItem::Property(ref name, ref val) => write!(
-                out,
-                "{}:{}{};",
-                name,
-                if format.is_compressed() { "" } else { " " },
-                val.format(format).to_string().replace('\n', " "),
-            ),
-            CssBodyItem::Comment(ref c) => write!(out, "/*{}*/", c),
-        }
     }
 }
