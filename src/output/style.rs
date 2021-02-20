@@ -80,8 +80,8 @@ impl Format {
         match *item {
             Item::Use(ref name, ref as_n) => do_use(scope, name, as_n)?,
             Item::Import(ref names, ref args, ref pos) => {
-                if args.is_null() {
-                    for name in names {
+                'name: for name in names {
+                    if args.is_null() {
                         let (x, _q) = name.evaluate(scope)?;
                         if let Some((sub_context, path, mut file)) =
                             file_context.find_file(&x)?
@@ -98,25 +98,13 @@ impl Format {
                                     result,
                                 )?;
                             }
-                        } else {
-                            write!(
-                                result.to_imports(),
-                                "@import {};{}",
-                                name.evaluate2(scope)?,
-                                if self.is_compressed() { "" } else { "\n" }
-                            )?;
+                            continue 'name;
                         }
                     }
-                } else {
-                    for name in names {
-                        write!(
-                            result.to_imports(),
-                            "@import {} {};{}",
-                            name.evaluate2(scope)?,
-                            args.evaluate(scope)?.format(*self),
-                            if self.is_compressed() { "" } else { "\n" }
-                        )?;
-                    }
+                    result.add_import(
+                        name.evaluate2(scope)?,
+                        args.evaluate(scope)?,
+                    )?;
                 }
             }
             Item::VariableDeclaration {
@@ -360,7 +348,7 @@ impl Format {
         self.handle_body(
             rule.mut_body(),
             &mut sub,
-            &mut ScopeImpl::sub_selectors(scope, selectors.clone()),
+            &mut ScopeImpl::sub_selectors(scope, selectors),
             body,
             file_context,
             indent,
@@ -783,9 +771,23 @@ impl CssWriter {
         Ok(result)
     }
 
-    fn to_imports(&mut self) -> &mut impl Write {
-        &mut self.imports
+    pub fn add_import(
+        &mut self,
+        name: SassString,
+        args: crate::css::Value,
+    ) -> Result<(), Error> {
+        write!(&mut self.imports, "@import {}", name)?;
+        if !args.is_null() {
+            write!(&mut self.imports, " {}", args.format(self.format))?;
+        }
+        self.imports.write_all(if self.format.is_compressed() {
+            b";"
+        } else {
+            b";\n"
+        })?;
+        Ok(())
     }
+
     fn to_content(&mut self) -> &mut impl Write {
         &mut self.contents
     }
