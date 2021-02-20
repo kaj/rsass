@@ -95,13 +95,6 @@ impl Format {
         Ok(result)
     }
 
-    fn do_indent(
-        &self,
-        out: &mut dyn Write,
-        steps: usize,
-    ) -> Result<(), Error> {
-        Ok(out.write_all(self.get_indent(steps).as_ref())?)
-    }
     /// Get a newline followed by len spaces, unles self is compressed.
     pub fn get_indent(&self, len: usize) -> &'static str {
         static INDENT: &str = "\n                                                                                ";
@@ -138,7 +131,39 @@ fn handle_item(
 ) -> Result<(), Error> {
     let format = scope.get_format();
     match item {
-        Item::Use(ref name, ref as_n) => do_use(scope, name, as_n)?,
+        Item::Use(ref name, ref as_n) => {
+            use crate::functions::get_global_module;
+            use crate::sass::UseAs;
+            let name = name.evaluate(scope)?.0;
+            if let Some(module) = get_global_module(&name) {
+                match as_n {
+                    UseAs::KeepName => {
+                        let name = name
+                            .rfind(':')
+                            .map(|i| &name[i + 1..])
+                            .unwrap_or(&name);
+                        scope.define_module(name.into(), module);
+                    }
+                    UseAs::Star => {
+                        for (name, function) in module.functions() {
+                            scope.define_function(
+                                name.clone(),
+                                function.clone(),
+                            );
+                        }
+                        for (name, value) in module.variables() {
+                            scope.define(name.clone(), value);
+                        }
+                    }
+                    UseAs::Name(name) => {
+                        let name = name.evaluate(scope)?.0;
+                        scope.define_module(name.into(), module);
+                    }
+                }
+            } else {
+                return Err(Error::S(format!("Module {:?} not found", name)));
+            }
+        }
         Item::Import(ref names, ref args, ref pos) => {
             let mut rule = rule;
             'name: for name in names {
@@ -206,9 +231,9 @@ fn handle_item(
             }
             if let Some(ref body) = *body {
                 if format.is_compressed() {
-                    buf.get_mut_buf().push(b'{');
+                    buf.buf.push(b'{');
                 } else {
-                    buf.get_mut_buf().extend(b" {");
+                    buf.buf.extend(b" {");
                 }
                 let selectors = scope.get_selectors().clone();
                 let has_selectors = selectors != Selectors::root();
@@ -225,14 +250,14 @@ fn handle_item(
                 let b0 = buf.buf.len();
                 if has_selectors {
                     buf.do_indent();
-                    rule.write(buf.get_mut_buf(), format, 2)?;
+                    rule.write(&mut buf.buf, format, 2)?;
                     if !sub.is_empty() {
                         buf.do_indent();
                     }
                 } else {
                     let mut t = Vec::new();
                     for item in rule.mut_body() {
-                        format.do_indent(&mut t, 2)?;
+                        t.extend(format.get_indent(2).as_bytes());
                         item.write(&mut t, format)?;
                     }
                     if format.is_compressed() && t.last() == Some(&b';') {
@@ -249,10 +274,10 @@ fn handle_item(
                 if buf.buf.len() != b0 && buf.buf.last() != Some(&b'\n') {
                     buf.do_indent();
                 }
-                buf.get_mut_buf().push(b'}');
+                buf.buf.push(b'}');
                 buf.do_indent();
             } else {
-                buf.get_mut_buf().push(b';');
+                buf.buf.push(b';');
             }
         }
 
@@ -462,7 +487,7 @@ fn handle_item(
                 } else {
                     buf.do_separate();
                     let (c, _q) = c.evaluate(scope)?;
-                    write!(buf.get_mut_buf(), "/*{}*/", c)?;
+                    write!(buf.buf, "/*{}*/", c)?;
                 }
             }
         }
@@ -470,40 +495,6 @@ fn handle_item(
         Item::None => (),
     }
     Ok(())
-}
-
-use crate::sass::UseAs;
-fn do_use(
-    scope: &mut dyn Scope,
-    name: &SassString,
-    as_name: &UseAs,
-) -> Result<(), Error> {
-    use crate::functions::get_global_module;
-    let name = name.evaluate(scope)?.0;
-    if let Some(module) = get_global_module(&name) {
-        match as_name {
-            UseAs::KeepName => {
-                let name =
-                    name.rfind(':').map(|i| &name[i + 1..]).unwrap_or(&name);
-                scope.define_module(name.into(), module);
-            }
-            UseAs::Star => {
-                for (name, function) in module.functions() {
-                    scope.define_function(name.clone(), function.clone());
-                }
-                for (name, value) in module.variables() {
-                    scope.define(name.clone(), value);
-                }
-            }
-            UseAs::Name(name) => {
-                let name = name.evaluate(scope)?.0;
-                scope.define_module(name.into(), module);
-            }
-        }
-        Ok(())
-    } else {
-        Err(Error::S(format!("Module {:?} not found", name)))
-    }
 }
 
 struct CssBuf {
@@ -569,10 +560,6 @@ impl CssBuf {
     }
     fn is_ascii(&self) -> bool {
         self.buf.is_ascii()
-    }
-    // TODO: Should this exist?
-    fn get_mut_buf(&mut self) -> &mut Vec<u8> {
-        &mut self.buf
     }
 
     fn join(&mut self, sub: Self) {
