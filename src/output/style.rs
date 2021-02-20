@@ -64,581 +64,35 @@ impl Format {
         globals: &mut dyn Scope,
         file_context: &impl FileContext,
     ) -> Result<Vec<u8>, Error> {
-        let mut result = CssWriter::new(*self);
-        for item in items {
-            self.handle_root_item(item, globals, file_context, &mut result)?;
-        }
-        result.get_result()
-    }
-    fn handle_root_item(
-        &self,
-        item: &Item,
-        scope: &mut dyn Scope,
-        file_context: &impl FileContext,
-        result: &mut CssWriter,
-    ) -> Result<(), Error> {
-        match *item {
-            Item::Use(ref name, ref as_n) => do_use(scope, name, as_n)?,
-            Item::Import(ref names, ref args, ref pos) => {
-                'name: for name in names {
-                    if args.is_null() {
-                        let (x, _q) = name.evaluate(scope)?;
-                        if let Some((sub_context, path, mut file)) =
-                            file_context.find_file(&x)?
-                        {
-                            for item in parse_imported_scss_file(
-                                &mut file,
-                                &path,
-                                pos.clone(),
-                            )? {
-                                self.handle_root_item(
-                                    &item,
-                                    scope,
-                                    &sub_context,
-                                    result,
-                                )?;
-                            }
-                            continue 'name;
-                        }
-                    }
-                    result.add_import(
-                        name.evaluate2(scope)?,
-                        args.evaluate(scope)?,
-                    )?;
-                }
-            }
-            Item::VariableDeclaration {
-                ref name,
-                ref val,
-                default,
-                global,
-            } => {
-                let val = val.do_evaluate(scope, true)?;
-                scope.set_variable(name.into(), val, default, global);
-            }
-            Item::AtRoot(ref selectors, ref body) => {
-                let selectors = selectors
-                    .eval(scope)?
-                    .with_backref(scope.get_selectors().one());
-                let mut rule = Rule::new(selectors.clone());
-                let mut s2 = CssBuf::new(*self, 0);
-                self.handle_body(
-                    rule.mut_body(),
-                    &mut s2,
-                    &mut ScopeImpl::sub_selectors(scope, selectors),
-                    body,
-                    file_context,
-                )?;
-                result.to_content().write_rule(&rule)?;
-                result.to_content().join(s2);
-            }
-            Item::AtRule {
-                ref name,
-                ref args,
-                ref body,
-            } => {
-                result.do_separate();
-                let args = args.evaluate(scope)?;
-                write!(result.to_content().buf, "@{}", name)?;
-                if !args.is_null() {
-                    write!(
-                        result.to_content().buf,
-                        " {}",
-                        args.format(*self),
-                    )?;
-                }
-                if let Some(ref body) = *body {
-                    if self.is_compressed() {
-                        result.to_content().get_mut_buf().push(b'{');
-                    } else {
-                        result.to_content().get_mut_buf().extend(b" {");
-                    }
-                    let mut direct = vec![];
-                    let mut sub = CssBuf::new(scope.get_format(), 2);
-                    self.handle_body(
-                        &mut direct,
-                        &mut sub,
-                        &mut ScopeImpl::sub(scope),
-                        body,
-                        file_context,
-                    )?;
-                    if !direct.is_empty() {
-                        let mut buf = Vec::new();
-                        for item in &direct {
-                            self.do_indent(&mut buf, 2)?;
-                            item.write(&mut buf, *self)?;
-                        }
-                        if self.is_compressed() && buf.last() == Some(&b';') {
-                            buf.pop();
-                        }
-                        result.to_content().buf.write_all(&buf)?;
-                        result.to_content().do_indent();
-                    }
-                    if !sub.is_empty() {
-                        if direct.is_empty() {
-                            result.to_content().do_indent();
-                        }
-                        result.to_content().join(sub);
-                    }
-                    result.to_content().get_mut_buf().push(b'}');
-                } else {
-                    result.to_content().get_mut_buf().push(b';');
-                }
-            }
-
-            Item::MixinDeclaration(ref name, ref args, ref body) => {
-                scope.define_mixin(name, args, body)
-            }
-            Item::MixinCall(ref name, ref args, ref body) => {
-                if let Some((m_args, m_body)) = scope.get_mixin(name) {
-                    let mut scope =
-                        m_args.eval(scope, &args.evaluate(scope, true)?)?;
-                    scope.define_mixin(
-                        "%%BODY%%",
-                        &FormalArgs::default(),
-                        body,
-                    );
-                    for item in m_body {
-                        self.handle_root_item(
-                            &item,
-                            &mut scope,
-                            file_context,
-                            result,
-                        )?;
-                    }
-                } else {
-                    return Err(Error::S(format!(
-                        "Unknown mixin {}({:?})",
-                        name, args
-                    )));
-                }
-            }
-            Item::Content => {
-                return Err(Error::S(
-                    "@content not allowed in global context".into(),
-                ));
-            }
-
-            Item::FunctionDeclaration(ref name, ref func) => {
-                scope.define_function(name.into(), func.clone());
-            }
-            Item::Return(_) => {
-                return Err(Error::S(
-                    "Return not allowed in global context".into(),
-                ));
-            }
-
-            Item::IfStatement(ref cond, ref do_if, ref do_else) => {
-                let cond = cond.evaluate(scope)?.is_true();
-                let items = if cond { do_if } else { do_else };
-                for item in items {
-                    self.handle_root_item(item, scope, file_context, result)?;
-                }
-            }
-            Item::Each(ref names, ref values, ref body) => {
-                for value in values.evaluate(scope)?.iter_items() {
-                    // TODO: No local sub-scope here?!?
-                    scope.define_multi(names, &value);
-                    for item in body {
-                        self.handle_root_item(
-                            item,
-                            scope,
-                            file_context,
-                            result,
-                        )?;
-                    }
-                }
-            }
-            Item::For {
-                ref name,
-                ref from,
-                ref to,
-                inclusive,
-                ref body,
-            } => {
-                let range = ValueRange::new(
-                    from.evaluate(scope)?,
-                    to.evaluate(scope)?,
-                    inclusive,
-                )?;
-                for value in range {
-                    let mut scope = ScopeImpl::sub(scope);
-                    scope.define(name.clone(), &value);
-                    for item in body {
-                        self.handle_root_item(
-                            item,
-                            &mut scope,
-                            file_context,
-                            result,
-                        )?;
-                    }
-                }
-            }
-            Item::Debug(ref value) => {
-                eprintln!("DEBUG: {}", value.evaluate(scope)?.format(*self));
-            }
-            Item::Warn(ref value) => {
-                eprintln!(
-                    "WARNING: {}",
-                    value.evaluate(scope)?.format(*self)
-                );
-            }
-            Item::Error(ref value) => {
-                return Err(Error::S(format!(
-                    "Error: {}",
-                    value.evaluate(scope)?.format(*self)
-                )));
-            }
-            Item::While(ref cond, ref body) => {
-                let mut scope = ScopeImpl::sub(scope);
-                while cond.evaluate(&scope)?.is_true() {
-                    for item in body {
-                        self.handle_root_item(
-                            item,
-                            &mut scope,
-                            file_context,
-                            result,
-                        )?;
-                    }
-                }
-            }
-
-            Item::Rule(ref s, ref b) => {
-                result.do_separate();
-                self.write_rule(
-                    s,
-                    b,
-                    result.to_content(),
-                    scope,
-                    file_context,
-                )?;
-            }
-            Item::NamespaceRule(..) => {
-                return Err(Error::S(
-                    "Global namespaced property not allowed".into(),
-                ));
-            }
-            Item::Property(..) => {
-                return Err(Error::S("Global property not allowed".into()));
-            }
-            Item::Comment(ref c) => {
-                if !self.is_compressed() {
-                    result.do_separate();
-                    let (c, _q) = c.evaluate(scope)?;
-                    write!(result.to_content().get_mut_buf(), "/*{}*/", c)?;
-                }
-            }
-            Item::None => (),
-        }
-        Ok(())
-    }
-    fn write_rule(
-        &self,
-        selectors: &Selectors,
-        body: &[Item],
-        out: &mut CssBuf,
-        scope: &mut dyn Scope,
-        file_context: &impl FileContext,
-    ) -> Result<(), Error> {
-        let selectors = selectors.eval(scope)?.inside(scope.get_selectors());
-        let mut rule = Rule::new(selectors.clone());
-        let mut sub = CssBuf::new(*self, out.indent);
-        self.handle_body(
-            rule.mut_body(),
-            &mut sub,
-            &mut ScopeImpl::sub_selectors(scope, selectors),
-            body,
+        let mut head = CssBuf::new(*self, 0);
+        let mut body = CssBuf::new(*self, 0);
+        handle_body(
+            items,
+            &mut head,
+            None,
+            &mut body,
+            globals,
             file_context,
         )?;
-        out.write_rule(&rule)?;
-        out.join(sub);
-        Ok(())
-    }
-
-    fn handle_body(
-        &self,
-        direct: &mut Vec<BodyItem>,
-        sub: &mut CssBuf,
-        scope: &mut dyn Scope,
-        body: &[Item],
-        file_context: &impl FileContext,
-    ) -> Result<(), Error> {
-        for b in body {
-            match *b {
-                Item::Use(ref name, ref as_n) => do_use(scope, name, as_n)?,
-                Item::Import(ref names, ref args, ref pos) => {
-                    if args.is_null() {
-                        for name in names {
-                            let (x, _q) = name.evaluate(scope)?;
-                            if let Some((sub_context, path, mut file)) =
-                                file_context.find_file(x.as_ref())?
-                            {
-                                let items = parse_imported_scss_file(
-                                    &mut file,
-                                    &path,
-                                    pos.clone(),
-                                )?;
-                                self.handle_body(
-                                    direct,
-                                    sub,
-                                    scope,
-                                    &items,
-                                    &sub_context,
-                                )?;
-                            } else {
-                                sub.do_indent();
-                                write!(
-                                    sub.get_mut_buf(), // TODO:  Should be topmost!
-                                    "@import {};{}",
-                                    name.evaluate2(scope)?,
-                                    if self.is_compressed() {
-                                        ""
-                                    } else {
-                                        "\n"
-                                    }
-                                )?;
-                            }
-                        }
-                    } else {
-                        for name in names {
-                            sub.do_indent();
-                            write!(
-                                sub.get_mut_buf(), // TODO:  Should be topmost!
-                                "@import {} {};{}",
-                                name.evaluate2(scope)?,
-                                args.evaluate(scope)?.format(*self),
-                                if self.is_compressed() { "" } else { "\n" }
-                            )?;
-                        }
-                    }
-                }
-                Item::VariableDeclaration {
-                    ref name,
-                    ref val,
-                    default,
-                    global,
-                } => {
-                    let val = val.do_evaluate(scope, true)?;
-                    scope.set_variable(name.into(), val, default, global);
-                }
-                Item::AtRoot(ref selectors, ref body) => {
-                    let selectors = selectors
-                        .eval(scope)?
-                        .with_backref(scope.get_selectors().one());
-                    let mut rule = Rule::new(selectors.clone());
-                    let mut sub2 = CssBuf::new(*self, sub.indent);
-                    self.handle_body(
-                        rule.mut_body(),
-                        &mut sub2,
-                        &mut ScopeImpl::sub_selectors(scope, selectors),
-                        body,
-                        file_context,
-                    )?;
-                    sub.write_rule(&rule)?;
-                    sub.join(sub2);
-                }
-                Item::AtRule {
-                    ref name,
-                    ref args,
-                    ref body,
-                } => {
-                    write!(sub.get_mut_buf(), "@{}", name)?;
-                    let args = args.evaluate(scope)?;
-                    if !args.is_null() {
-                        write!(sub.get_mut_buf(), " {}", args.format(*self))?;
-                    }
-                    if let Some(ref body) = *body {
-                        if self.is_compressed() {
-                            sub.get_mut_buf().push(b'{');
-                        } else {
-                            sub.get_mut_buf().extend(b" {");
-                        }
-
-                        let mut rule =
-                            Rule::new(scope.get_selectors().clone());
-                        let mut sub2 = CssBuf::new(*self, 2);
-                        self.handle_body(
-                            rule.mut_body(),
-                            &mut sub2,
-                            &mut ScopeImpl::sub(scope),
-                            body,
-                            file_context,
-                        )?;
-                        sub.do_indent();
-                        rule.write(sub.get_mut_buf(), *self, 2)?;
-                        sub.join(sub2);
-                        sub.get_mut_buf().push(b'}');
-                        sub.do_indent();
-                    } else {
-                        sub.get_mut_buf().push(b';');
-                    }
-                }
-
-                Item::MixinDeclaration(ref name, ref args, ref body) => {
-                    scope.define_mixin(name, args, body);
-                }
-                Item::MixinCall(ref name, ref args, ref body) => {
-                    if let Some((m_args, m_body)) = scope.get_mixin(name) {
-                        let mut argscope = m_args
-                            .eval(scope, &args.evaluate(scope, true)?)?;
-                        argscope.define_mixin(
-                            "%%BODY%%",
-                            &FormalArgs::default(),
-                            body,
-                        );
-                        self.handle_body(
-                            direct,
-                            sub,
-                            &mut argscope,
-                            &m_body,
-                            file_context,
-                        )?;
-                    } else {
-                        direct.push(BodyItem::Comment(format!(
-                            "Unknown mixin {}({:?})",
-                            name, args
-                        )));
-                    }
-                }
-                Item::Content => {
-                    if let Some((_args, m_body)) = scope.get_mixin("%%BODY%%")
-                    {
-                        self.handle_body(
-                            direct,
-                            sub,
-                            scope,
-                            &m_body,
-                            file_context,
-                        )?;
-                    }
-                }
-
-                Item::FunctionDeclaration(ref name, ref func) => {
-                    scope.define_function(name.into(), func.clone());
-                }
-                Item::Return(_) => {
-                    return Err(Error::S(
-                        "Return not allowed in plain context".into(),
-                    ));
-                }
-
-                Item::IfStatement(ref cond, ref do_if, ref do_else) => {
-                    let cond = cond.evaluate(scope)?.is_true();
-                    let items = if cond { do_if } else { do_else };
-                    self.handle_body(
-                        direct,
-                        sub,
-                        &mut ScopeImpl::sub(scope),
-                        items,
-                        file_context,
-                    )?;
-                }
-                Item::Each(ref names, ref values, ref body) => {
-                    for value in values.evaluate(scope)?.iter_items() {
-                        let mut scope = ScopeImpl::sub(scope);
-                        scope.define_multi(&names, &value);
-                        self.handle_body(
-                            direct,
-                            sub,
-                            &mut scope,
-                            body,
-                            file_context,
-                        )?;
-                    }
-                }
-                Item::For {
-                    ref name,
-                    ref from,
-                    ref to,
-                    inclusive,
-                    ref body,
-                } => {
-                    let range = ValueRange::new(
-                        from.evaluate(scope)?,
-                        to.evaluate(scope)?,
-                        inclusive,
-                    )?;
-                    for value in range {
-                        let mut scope = ScopeImpl::sub(scope);
-                        scope.define(name.clone(), &value);
-                        self.handle_body(
-                            direct,
-                            sub,
-                            &mut scope,
-                            body,
-                            file_context,
-                        )?;
-                    }
-                }
-                Item::Debug(ref value) => {
-                    eprintln!(
-                        "DEBUG: {}",
-                        value.evaluate(scope)?.format(*self)
-                    );
-                }
-                Item::Warn(ref value) => {
-                    eprintln!(
-                        "WARNING: {}",
-                        value.evaluate(scope)?.format(*self)
-                    );
-                }
-                Item::Error(ref value) => {
-                    return Err(Error::S(format!(
-                        "Error: {}",
-                        value.evaluate(scope)?.format(*self),
-                    )));
-                }
-                Item::While(ref cond, ref body) => {
-                    let mut scope = ScopeImpl::sub(scope);
-                    while cond.evaluate(&scope)?.is_true() {
-                        self.handle_body(
-                            direct,
-                            sub,
-                            &mut scope,
-                            body,
-                            file_context,
-                        )?;
-                    }
-                }
-
-                Item::Rule(ref s, ref b) => {
-                    self.write_rule(s, b, sub, scope, file_context)?;
-                }
-                Item::NamespaceRule(ref name, ref value, ref body) => {
-                    let value = value.evaluate(scope)?;
-                    let (name, _quotes) = name.evaluate(scope)?;
-                    if !value.is_null() {
-                        direct.push(BodyItem::Property(name.clone(), value));
-                    }
-                    let mut t = Vec::new();
-                    self.handle_body(&mut t, sub, scope, body, file_context)?;
-                    for item in t {
-                        direct.push(match item {
-                            BodyItem::Property(n, v) => BodyItem::Property(
-                                format!("{}-{}", name, n),
-                                v,
-                            ),
-                            c => c,
-                        })
-                    }
-                }
-                Item::Property(ref name, ref value) => {
-                    let v = value.evaluate(scope)?;
-                    if !v.is_null() {
-                        let (name, _q) = name.evaluate(scope)?;
-                        direct.push(BodyItem::Property(name, v));
-                    }
-                }
-                Item::Comment(ref c) => {
-                    if !self.is_compressed() {
-                        let (c, _q) = c.evaluate(scope)?;
-                        direct.push(BodyItem::Comment(c));
-                    }
-                }
-                Item::None => (),
+        let mut result = vec![];
+        let compressed = self.is_compressed();
+        if !head.is_ascii() || !body.is_ascii() {
+            if compressed {
+                // U+FEFF is byte order mark, used to show encoding.
+                result.extend_from_slice("\u{feff}".as_bytes());
+            } else {
+                result.extend_from_slice(b"@charset \"UTF-8\";\n");
             }
         }
-        Ok(())
+        result.extend(head.buf);
+        result.extend(body.buf);
+        if compressed && result.last() == Some(&b';') {
+            result.pop();
+        }
+        if result.last().unwrap_or(&b'\n') != &b'\n' {
+            writeln!(&mut result)?;
+        }
+        Ok(result)
     }
 
     fn do_indent(
@@ -657,6 +111,365 @@ impl Format {
             &INDENT[..(len + 1)]
         }
     }
+}
+
+fn handle_body(
+    items: &[Item],
+    head: &mut CssBuf,
+    rule: Option<&mut Vec<BodyItem>>,
+    buf: &mut CssBuf,
+    scope: &mut dyn Scope,
+    file_context: &impl FileContext,
+) -> Result<(), Error> {
+    let mut rule = rule;
+    for b in items {
+        handle_item(b, head, rule.as_deref_mut(), buf, scope, file_context)?;
+    }
+    Ok(())
+}
+
+fn handle_item(
+    item: &Item,
+    head: &mut CssBuf,
+    rule: Option<&mut Vec<BodyItem>>,
+    buf: &mut CssBuf,
+    scope: &mut dyn Scope,
+    file_context: &impl FileContext,
+) -> Result<(), Error> {
+    let format = scope.get_format();
+    match item {
+        Item::Use(ref name, ref as_n) => do_use(scope, name, as_n)?,
+        Item::Import(ref names, ref args, ref pos) => {
+            let mut rule = rule;
+            'name: for name in names {
+                if args.is_null() {
+                    let (x, _q) = name.evaluate(scope)?;
+                    if let Some((sub_context, path, mut file)) =
+                        file_context.find_file(&x)?
+                    {
+                        let items = parse_imported_scss_file(
+                            &mut file,
+                            &path,
+                            pos.clone(),
+                        )?;
+                        handle_body(
+                            &items,
+                            head,
+                            rule.as_deref_mut(),
+                            buf,
+                            scope,
+                            &sub_context,
+                        )?;
+                        continue 'name;
+                    }
+                }
+                if buf.indent == 0 {
+                    head.add_import(
+                        name.evaluate2(scope)?,
+                        args.evaluate(scope)?,
+                    )?;
+                } else {
+                    buf.add_import(
+                        name.evaluate2(scope)?,
+                        args.evaluate(scope)?,
+                    )?;
+                }
+            }
+        }
+        Item::AtRoot(ref selectors, ref body) => {
+            let selectors = selectors
+                .eval(scope)?
+                .with_backref(scope.get_selectors().one());
+            let mut rule = Rule::new(selectors.clone());
+            let mut sub = CssBuf::new(format, buf.indent);
+            handle_body(
+                body,
+                head,
+                Some(rule.mut_body()),
+                &mut sub,
+                &mut ScopeImpl::sub_selectors(scope, selectors),
+                file_context,
+            )?;
+            buf.write_rule(&rule)?;
+            buf.join(sub);
+        }
+        Item::AtRule {
+            ref name,
+            ref args,
+            ref body,
+        } => {
+            buf.do_separate();
+            write!(buf.buf, "@{}", name)?;
+            let args = args.evaluate(scope)?;
+            if !args.is_null() {
+                write!(buf.buf, " {}", args.format(format))?;
+            }
+            if let Some(ref body) = *body {
+                if format.is_compressed() {
+                    buf.get_mut_buf().push(b'{');
+                } else {
+                    buf.get_mut_buf().extend(b" {");
+                }
+                let selectors = scope.get_selectors().clone();
+                let has_selectors = selectors != Selectors::root();
+                let mut rule = Rule::new(selectors);
+                let mut sub = CssBuf::new(scope.get_format(), 2);
+                handle_body(
+                    body,
+                    head,
+                    Some(rule.mut_body()),
+                    &mut sub,
+                    &mut ScopeImpl::sub(scope),
+                    file_context,
+                )?;
+                let b0 = buf.buf.len();
+                if has_selectors {
+                    buf.do_indent();
+                    rule.write(buf.get_mut_buf(), format, 2)?;
+                    if !sub.is_empty() {
+                        buf.do_indent();
+                    }
+                } else {
+                    let mut t = Vec::new();
+                    for item in rule.mut_body() {
+                        format.do_indent(&mut t, 2)?;
+                        item.write(&mut t, format)?;
+                    }
+                    if format.is_compressed() && t.last() == Some(&b';') {
+                        t.pop();
+                    }
+                    buf.buf.write_all(&t)?;
+                    if !sub.is_empty() {
+                        buf.do_indent();
+                    }
+                }
+                if !sub.is_empty() {
+                    buf.join(sub);
+                }
+                if buf.buf.len() != b0 && buf.buf.last() != Some(&b'\n') {
+                    buf.do_indent();
+                }
+                buf.get_mut_buf().push(b'}');
+                buf.do_indent();
+            } else {
+                buf.get_mut_buf().push(b';');
+            }
+        }
+
+        Item::VariableDeclaration {
+            ref name,
+            ref val,
+            default,
+            global,
+        } => {
+            let val = val.do_evaluate(scope, true)?;
+            scope.set_variable(name.into(), val, *default, *global);
+        }
+
+        Item::FunctionDeclaration(ref name, ref func) => {
+            scope.define_function(name.into(), func.clone());
+        }
+        Item::Return(_) => {
+            return Err(Error::S(
+                "Return not allowed in plain context".into(),
+            ));
+        }
+
+        Item::MixinDeclaration(ref name, ref args, ref body) => {
+            scope.define_mixin(name, args, body)
+        }
+        Item::MixinCall(ref name, ref args, ref body) => {
+            if let Some((m_args, m_body)) = scope.get_mixin(name) {
+                let mut scope =
+                    m_args.eval(scope, &args.evaluate(scope, true)?)?;
+                scope.define_mixin("%%BODY%%", &FormalArgs::default(), body);
+                handle_body(
+                    &m_body,
+                    head,
+                    rule,
+                    buf,
+                    &mut scope,
+                    file_context,
+                )?;
+            } else {
+                return Err(Error::S(format!(
+                    "Unknown mixin {}({:?})",
+                    name, args
+                )));
+            }
+        }
+        Item::Content => {
+            if let Some(rule) = rule {
+                if let Some((_args, m_body)) = scope.get_mixin("%%BODY%%") {
+                    handle_body(
+                        &m_body,
+                        head,
+                        Some(rule),
+                        buf,
+                        scope,
+                        file_context,
+                    )?;
+                }
+            } else {
+                return Err(Error::S(
+                    "@content not allowed in global context".into(),
+                ));
+            }
+        }
+
+        Item::IfStatement(ref cond, ref do_if, ref do_else) => {
+            let cond = cond.evaluate(scope)?.is_true();
+            let items = if cond { do_if } else { do_else };
+            handle_body(items, head, rule, buf, scope, file_context)?;
+        }
+        Item::Each(ref names, ref values, ref body) => {
+            let mut rule = rule;
+            let pushed = scope.store_local_values(names);
+            for value in values.evaluate(scope)?.iter_items() {
+                scope.define_multi(&names, &value);
+                handle_body(
+                    body,
+                    head,
+                    rule.as_deref_mut(),
+                    buf,
+                    scope,
+                    file_context,
+                )?;
+            }
+            scope.restore_local_values(pushed);
+        }
+        Item::For {
+            ref name,
+            ref from,
+            ref to,
+            inclusive,
+            ref body,
+        } => {
+            let range = ValueRange::new(
+                from.evaluate(scope)?,
+                to.evaluate(scope)?,
+                *inclusive,
+            )?;
+            let mut rule = rule;
+            for value in range {
+                let mut scope = ScopeImpl::sub(scope);
+                scope.define(name.clone(), &value);
+                handle_body(
+                    body,
+                    head,
+                    rule.as_deref_mut(),
+                    buf,
+                    &mut scope,
+                    file_context,
+                )?;
+            }
+        }
+        Item::While(ref cond, ref body) => {
+            let mut rule = rule;
+            let mut scope = ScopeImpl::sub(scope);
+            while cond.evaluate(&scope)?.is_true() {
+                handle_body(
+                    body,
+                    head,
+                    rule.as_deref_mut(),
+                    buf,
+                    &mut scope,
+                    file_context,
+                )?;
+            }
+        }
+
+        Item::Debug(ref value) => {
+            eprintln!("DEBUG: {}", value.evaluate(scope)?.format(format));
+        }
+        Item::Warn(ref value) => {
+            eprintln!("WARNING: {}", value.evaluate(scope)?.format(format));
+        }
+        Item::Error(ref value) => {
+            return Err(Error::S(format!(
+                "Error: {}",
+                value.evaluate(scope)?.format(format)
+            )));
+        }
+
+        Item::Rule(ref selectors, ref body) => {
+            if rule.is_none() {
+                buf.do_separate();
+            }
+            let selectors =
+                selectors.eval(scope)?.inside(scope.get_selectors());
+            let mut rule = Rule::new(selectors.clone());
+            let mut sub = CssBuf::new(format, buf.indent);
+            handle_body(
+                body,
+                head,
+                Some(rule.mut_body()),
+                &mut sub,
+                &mut ScopeImpl::sub_selectors(scope, selectors),
+                file_context,
+            )?;
+            buf.write_rule(&rule)?;
+            buf.join(sub);
+        }
+        Item::Property(ref name, ref value) => {
+            if let Some(rule) = rule {
+                let v = value.evaluate(scope)?;
+                if !v.is_null() {
+                    let (name, _q) = name.evaluate(scope)?;
+                    rule.push(BodyItem::Property(name, v));
+                }
+            } else {
+                return Err(Error::S("Global property not allowed".into()));
+            }
+        }
+        Item::NamespaceRule(ref name, ref value, ref body) => {
+            if let Some(rule) = rule {
+                let value = value.evaluate(scope)?;
+                let (name, _quotes) = name.evaluate(scope)?;
+                if !value.is_null() {
+                    rule.push(BodyItem::Property(name.clone(), value));
+                }
+                let mut t = Vec::new();
+                let mut sub = CssBuf::new(format, 0);
+                handle_body(
+                    body,
+                    head,
+                    Some(&mut t),
+                    &mut sub,
+                    scope,
+                    file_context,
+                )?;
+                for item in t {
+                    rule.push(match item {
+                        BodyItem::Property(n, v) => {
+                            BodyItem::Property(format!("{}-{}", name, n), v)
+                        }
+                        c => c,
+                    })
+                }
+                assert!(sub.is_empty());
+            } else {
+                return Err(Error::S(
+                    "Global namespaced property not allowed".into(),
+                ));
+            }
+        }
+        Item::Comment(ref c) => {
+            if !format.is_compressed() {
+                if let Some(rule) = rule {
+                    let (c, _q) = c.evaluate(scope)?;
+                    rule.push(BodyItem::Comment(c));
+                } else {
+                    buf.do_separate();
+                    let (c, _q) = c.evaluate(scope)?;
+                    write!(buf.get_mut_buf(), "/*{}*/", c)?;
+                }
+            }
+        }
+
+        Item::None => (),
+    }
+    Ok(())
 }
 
 use crate::sass::UseAs;
@@ -693,79 +506,11 @@ fn do_use(
     }
 }
 
-struct CssWriter {
-    imports: Vec<u8>,
-    contents: CssBuf,
-    format: Format,
-    separate: bool,
-}
-
-impl CssWriter {
-    fn new(format: Format) -> Self {
-        CssWriter {
-            imports: Vec::new(),
-            contents: CssBuf::new(format, 0),
-            format,
-            separate: false,
-        }
-    }
-    fn get_result(self) -> Result<Vec<u8>, Error> {
-        let mut result = vec![];
-        let compressed = self.format.is_compressed();
-        if !self.imports.is_ascii() || !self.contents.is_ascii() {
-            if compressed {
-                // U+FEFF is byte order mark, used to show encoding.
-                result.extend_from_slice("\u{feff}".as_bytes());
-            } else {
-                result.extend_from_slice(b"@charset \"UTF-8\";\n");
-            }
-        }
-        result.extend(self.imports);
-        result.extend(self.contents.buf);
-        if compressed && result.last() == Some(&b';') {
-            result.pop();
-        }
-        if result.last().unwrap_or(&b'\n') != &b'\n' {
-            writeln!(&mut result)?;
-        }
-        Ok(result)
-    }
-
-    pub fn add_import(
-        &mut self,
-        name: SassString,
-        args: crate::css::Value,
-    ) -> Result<(), Error> {
-        write!(&mut self.imports, "@import {}", name)?;
-        if !args.is_null() {
-            write!(&mut self.imports, " {}", args.format(self.format))?;
-        }
-        self.imports.extend(if self.format.is_compressed() {
-            &b";"[..]
-        } else {
-            &b";\n"[..]
-        });
-        Ok(())
-    }
-
-    fn to_content(&mut self) -> &mut CssBuf {
-        &mut self.contents
-    }
-    fn do_separate(&mut self) {
-        if self.separate {
-            if !self.format.is_compressed() && !self.contents.is_empty() {
-                self.contents.buf.push(b'\n');
-            }
-        } else {
-            self.separate = true;
-        }
-    }
-}
-
 struct CssBuf {
     buf: Vec<u8>,
     format: Format,
     indent: usize,
+    separate: bool,
 }
 
 impl CssBuf {
@@ -774,14 +519,49 @@ impl CssBuf {
             buf: Vec::new(),
             format,
             indent,
+            separate: false,
         }
     }
     fn write_rule(&mut self, rule: &Rule) -> std::io::Result<()> {
         rule.write(&mut self.buf, self.format, self.indent)
     }
+
+    pub fn add_import(
+        &mut self,
+        name: SassString,
+        args: crate::css::Value,
+    ) -> Result<(), Error> {
+        self.do_indent_no_nl();
+        write!(&mut self.buf, "@import {}", name)?;
+        if !args.is_null() {
+            write!(&mut self.buf, " {}", args.format(self.format))?;
+        }
+        self.buf.extend(if self.format.is_compressed() {
+            &b";"[..]
+        } else {
+            &b";\n"[..]
+        });
+        Ok(())
+    }
+
+    fn do_separate(&mut self) {
+        if self.separate {
+            if !self.format.is_compressed() && !self.buf.is_empty() {
+                self.buf.push(b'\n');
+            }
+        } else {
+            self.separate = true;
+        }
+    }
     fn do_indent(&mut self) {
         self.buf
             .extend(self.format.get_indent(self.indent).as_bytes())
+    }
+    fn do_indent_no_nl(&mut self) {
+        let stuff = self.format.get_indent(self.indent);
+        if stuff.len() > 1 {
+            self.buf.extend(stuff[1..].as_bytes())
+        }
     }
 
     fn is_empty(&self) -> bool {
