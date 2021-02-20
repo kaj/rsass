@@ -85,7 +85,21 @@ impl BodyItem {
                 if format.is_compressed() { "" } else { " " },
                 val.format(format).to_string().replace('\n', " "),
             ),
-            BodyItem::Comment(ref c) => write!(out, "/*{}*/", c),
+            BodyItem::Comment(ref c) => {
+                let indent = 2; // TODO: proper_base + 2;
+                let existing = c
+                    .lines()
+                    .skip(1)
+                    .map(|s| s.bytes().take_while(|b| *b == b' ').count())
+                    .min()
+                    .unwrap_or(0);
+                let c = if existing < indent {
+                    c.replace("\n", format.get_indent(indent - existing))
+                } else {
+                    c.clone()
+                };
+                write!(out, "/*{}*/", c)
+            }
         }
     }
 }

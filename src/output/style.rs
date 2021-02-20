@@ -121,46 +121,46 @@ impl Format {
                     .eval(scope)?
                     .with_backref(scope.get_selectors().one());
                 let mut rule = Rule::new(selectors.clone());
-                let mut s2 = vec![];
+                let mut s2 = CssBuf::new(*self, 0);
                 self.handle_body(
                     rule.mut_body(),
                     &mut s2,
                     &mut ScopeImpl::sub_selectors(scope, selectors),
                     body,
                     file_context,
-                    0,
                 )?;
-                rule.write(result.to_content(), *self, 0)?;
-                if !s2.is_empty() {
-                    result.to_content().write_all(&s2)?;
-                }
+                result.to_content().write_rule(&rule)?;
+                result.to_content().join(s2);
             }
             Item::AtRule {
                 ref name,
                 ref args,
                 ref body,
             } => {
-                result.do_separate()?;
+                result.do_separate();
                 let args = args.evaluate(scope)?;
-                write!(result.to_content(), "@{}", name)?;
+                write!(result.to_content().buf, "@{}", name)?;
                 if !args.is_null() {
-                    write!(result.to_content(), " {}", args.format(*self))?;
+                    write!(
+                        result.to_content().buf,
+                        " {}",
+                        args.format(*self),
+                    )?;
                 }
                 if let Some(ref body) = *body {
                     if self.is_compressed() {
-                        write!(result.to_content(), "{{")?;
+                        result.to_content().get_mut_buf().push(b'{');
                     } else {
-                        write!(result.to_content(), " {{")?;
+                        result.to_content().get_mut_buf().extend(b" {");
                     }
                     let mut direct = vec![];
-                    let mut sub = vec![];
+                    let mut sub = CssBuf::new(scope.get_format(), 2);
                     self.handle_body(
                         &mut direct,
                         &mut sub,
                         &mut ScopeImpl::sub(scope),
                         body,
                         file_context,
-                        2,
                     )?;
                     if !direct.is_empty() {
                         let mut buf = Vec::new();
@@ -171,18 +171,18 @@ impl Format {
                         if self.is_compressed() && buf.last() == Some(&b';') {
                             buf.pop();
                         }
-                        result.to_content().write_all(&buf)?;
-                        self.do_indent(result.to_content(), 0)?;
+                        result.to_content().buf.write_all(&buf)?;
+                        result.to_content().do_indent();
                     }
                     if !sub.is_empty() {
                         if direct.is_empty() {
-                            result.do_indent(0)?;
+                            result.to_content().do_indent();
                         }
-                        result.to_content().write_all(&sub)?;
+                        result.to_content().join(sub);
                     }
-                    write!(result.to_content(), "}}")?;
+                    result.to_content().get_mut_buf().push(b'}');
                 } else {
-                    write!(result.to_content(), ";")?;
+                    result.to_content().get_mut_buf().push(b';');
                 }
             }
 
@@ -304,14 +304,13 @@ impl Format {
             }
 
             Item::Rule(ref s, ref b) => {
-                result.do_separate()?;
+                result.do_separate();
                 self.write_rule(
                     s,
                     b,
                     result.to_content(),
                     scope,
                     file_context,
-                    0,
                 )?;
             }
             Item::NamespaceRule(..) => {
@@ -324,9 +323,9 @@ impl Format {
             }
             Item::Comment(ref c) => {
                 if !self.is_compressed() {
-                    result.do_separate()?;
+                    result.do_separate();
                     let (c, _q) = c.evaluate(scope)?;
-                    write!(result.to_content(), "/*{}*/", c)?;
+                    write!(result.to_content().get_mut_buf(), "/*{}*/", c)?;
                 }
             }
             Item::None => (),
@@ -337,35 +336,32 @@ impl Format {
         &self,
         selectors: &Selectors,
         body: &[Item],
-        out: &mut dyn Write,
+        out: &mut CssBuf,
         scope: &mut dyn Scope,
         file_context: &impl FileContext,
-        indent: usize,
     ) -> Result<(), Error> {
         let selectors = selectors.eval(scope)?.inside(scope.get_selectors());
         let mut rule = Rule::new(selectors.clone());
-        let mut sub = Vec::new();
+        let mut sub = CssBuf::new(*self, out.indent);
         self.handle_body(
             rule.mut_body(),
             &mut sub,
             &mut ScopeImpl::sub_selectors(scope, selectors),
             body,
             file_context,
-            indent,
         )?;
-        rule.write(out, *self, indent)?;
-        out.write_all(&sub)?;
+        out.write_rule(&rule)?;
+        out.join(sub);
         Ok(())
     }
 
     fn handle_body(
         &self,
         direct: &mut Vec<BodyItem>,
-        sub: &mut dyn Write,
+        sub: &mut CssBuf,
         scope: &mut dyn Scope,
         body: &[Item],
         file_context: &impl FileContext,
-        indent: usize,
     ) -> Result<(), Error> {
         for b in body {
             match *b {
@@ -388,12 +384,11 @@ impl Format {
                                     scope,
                                     &items,
                                     &sub_context,
-                                    0,
                                 )?;
                             } else {
-                                self.do_indent(sub, indent)?;
+                                sub.do_indent();
                                 write!(
-                                    sub, // TODO:  Should be topmost!
+                                    sub.get_mut_buf(), // TODO:  Should be topmost!
                                     "@import {};{}",
                                     name.evaluate2(scope)?,
                                     if self.is_compressed() {
@@ -406,9 +401,9 @@ impl Format {
                         }
                     } else {
                         for name in names {
-                            self.do_indent(sub, indent)?;
+                            sub.do_indent();
                             write!(
-                                sub, // TODO:  Should be topmost!
+                                sub.get_mut_buf(), // TODO:  Should be topmost!
                                 "@import {} {};{}",
                                 name.evaluate2(scope)?,
                                 args.evaluate(scope)?.format(*self),
@@ -431,57 +426,51 @@ impl Format {
                         .eval(scope)?
                         .with_backref(scope.get_selectors().one());
                     let mut rule = Rule::new(selectors.clone());
-                    let mut s2 = vec![];
+                    let mut sub2 = CssBuf::new(*self, sub.indent);
                     self.handle_body(
                         rule.mut_body(),
-                        &mut s2,
+                        &mut sub2,
                         &mut ScopeImpl::sub_selectors(scope, selectors),
                         body,
                         file_context,
-                        indent,
                     )?;
-                    rule.write(sub, *self, indent)?;
-                    if !s2.is_empty() {
-                        sub.write_all(&s2)?;
-                    }
+                    sub.write_rule(&rule)?;
+                    sub.join(sub2);
                 }
                 Item::AtRule {
                     ref name,
                     ref args,
                     ref body,
                 } => {
-                    write!(sub, "@{}", name)?;
+                    write!(sub.get_mut_buf(), "@{}", name)?;
                     let args = args.evaluate(scope)?;
                     if !args.is_null() {
-                        write!(sub, " {}", args.format(*self))?;
+                        write!(sub.get_mut_buf(), " {}", args.format(*self))?;
                     }
                     if let Some(ref body) = *body {
                         if self.is_compressed() {
-                            write!(sub, "{{")?;
+                            sub.get_mut_buf().push(b'{');
                         } else {
-                            write!(sub, " {{")?;
+                            sub.get_mut_buf().extend(b" {");
                         }
 
                         let mut rule =
                             Rule::new(scope.get_selectors().clone());
-                        let mut s2 = vec![];
+                        let mut sub2 = CssBuf::new(*self, 2);
                         self.handle_body(
                             rule.mut_body(),
-                            &mut s2,
+                            &mut sub2,
                             &mut ScopeImpl::sub(scope),
                             body,
                             file_context,
-                            2,
                         )?;
-                        self.do_indent(sub, 0)?;
-                        rule.write(sub, *self, 2)?;
-                        if !s2.is_empty() {
-                            sub.write_all(&s2)?;
-                        }
-                        write!(sub, "}}")?;
-                        self.do_indent(sub, 0)?;
+                        sub.do_indent();
+                        rule.write(sub.get_mut_buf(), *self, 2)?;
+                        sub.join(sub2);
+                        sub.get_mut_buf().push(b'}');
+                        sub.do_indent();
                     } else {
-                        write!(sub, ";")?;
+                        sub.get_mut_buf().push(b';');
                     }
                 }
 
@@ -503,7 +492,6 @@ impl Format {
                             &mut argscope,
                             &m_body,
                             file_context,
-                            indent,
                         )?;
                     } else {
                         direct.push(BodyItem::Comment(format!(
@@ -521,7 +509,6 @@ impl Format {
                             scope,
                             &m_body,
                             file_context,
-                            indent,
                         )?;
                     }
                 }
@@ -544,7 +531,6 @@ impl Format {
                         &mut ScopeImpl::sub(scope),
                         items,
                         file_context,
-                        0,
                     )?;
                 }
                 Item::Each(ref names, ref values, ref body) => {
@@ -557,7 +543,6 @@ impl Format {
                             &mut scope,
                             body,
                             file_context,
-                            0,
                         )?;
                     }
                 }
@@ -582,7 +567,6 @@ impl Format {
                             &mut scope,
                             body,
                             file_context,
-                            0,
                         )?;
                     }
                 }
@@ -613,13 +597,12 @@ impl Format {
                             &mut scope,
                             body,
                             file_context,
-                            0,
                         )?;
                     }
                 }
 
                 Item::Rule(ref s, ref b) => {
-                    self.write_rule(s, b, sub, scope, file_context, indent)?;
+                    self.write_rule(s, b, sub, scope, file_context)?;
                 }
                 Item::NamespaceRule(ref name, ref value, ref body) => {
                     let value = value.evaluate(scope)?;
@@ -628,14 +611,7 @@ impl Format {
                         direct.push(BodyItem::Property(name.clone(), value));
                     }
                     let mut t = Vec::new();
-                    self.handle_body(
-                        &mut t,
-                        sub,
-                        scope,
-                        body,
-                        file_context,
-                        indent,
-                    )?;
+                    self.handle_body(&mut t, sub, scope, body, file_context)?;
                     for item in t {
                         direct.push(match item {
                             BodyItem::Property(n, v) => BodyItem::Property(
@@ -655,23 +631,7 @@ impl Format {
                 }
                 Item::Comment(ref c) => {
                     if !self.is_compressed() {
-                        let indent = indent + 2;
                         let (c, _q) = c.evaluate(scope)?;
-                        let existing = c
-                            .lines()
-                            .skip(1)
-                            .map(|s| {
-                                s.bytes().take_while(|b| *b == b' ').count()
-                            })
-                            .min()
-                            .unwrap_or(0);
-                        let c = if existing < indent {
-                            let t = String::from("\n")
-                                + &" ".repeat(indent - existing);
-                            c.replace("\n", &t)
-                        } else {
-                            c.clone()
-                        };
                         direct.push(BodyItem::Comment(c));
                     }
                 }
@@ -735,7 +695,7 @@ fn do_use(
 
 struct CssWriter {
     imports: Vec<u8>,
-    contents: Vec<u8>,
+    contents: CssBuf,
     format: Format,
     separate: bool,
 }
@@ -744,7 +704,7 @@ impl CssWriter {
     fn new(format: Format) -> Self {
         CssWriter {
             imports: Vec::new(),
-            contents: Vec::new(),
+            contents: CssBuf::new(format, 0),
             format,
             separate: false,
         }
@@ -761,7 +721,7 @@ impl CssWriter {
             }
         }
         result.extend(self.imports);
-        result.extend(self.contents);
+        result.extend(self.contents.buf);
         if compressed && result.last() == Some(&b';') {
             result.pop();
         }
@@ -780,34 +740,62 @@ impl CssWriter {
         if !args.is_null() {
             write!(&mut self.imports, " {}", args.format(self.format))?;
         }
-        self.imports.write_all(if self.format.is_compressed() {
-            b";"
+        self.imports.extend(if self.format.is_compressed() {
+            &b";"[..]
         } else {
-            b";\n"
-        })?;
+            &b";\n"[..]
+        });
         Ok(())
     }
 
-    fn to_content(&mut self) -> &mut impl Write {
+    fn to_content(&mut self) -> &mut CssBuf {
         &mut self.contents
     }
-    fn do_separate(&mut self) -> Result<(), Error> {
+    fn do_separate(&mut self) {
         if self.separate {
-            self.do_indent(0)?;
+            if !self.format.is_compressed() && !self.contents.is_empty() {
+                self.contents.buf.push(b'\n');
+            }
         } else {
             self.separate = true;
         }
-        Ok(())
     }
-    fn do_indent(&mut self, steps: usize) -> Result<(), Error> {
-        if !self.format.is_compressed() {
-            if !self.contents.is_empty() {
-                writeln!(self.contents)?;
-            }
-            for _i in 0..steps {
-                write!(self.contents, " ")?;
-            }
+}
+
+struct CssBuf {
+    buf: Vec<u8>,
+    format: Format,
+    indent: usize,
+}
+
+impl CssBuf {
+    fn new(format: Format, indent: usize) -> CssBuf {
+        CssBuf {
+            buf: Vec::new(),
+            format,
+            indent,
         }
-        Ok(())
+    }
+    fn write_rule(&mut self, rule: &Rule) -> std::io::Result<()> {
+        rule.write(&mut self.buf, self.format, self.indent)
+    }
+    fn do_indent(&mut self) {
+        self.buf
+            .extend(self.format.get_indent(self.indent).as_bytes())
+    }
+
+    fn is_empty(&self) -> bool {
+        self.buf.is_empty()
+    }
+    fn is_ascii(&self) -> bool {
+        self.buf.is_ascii()
+    }
+    // TODO: Should this exist?
+    fn get_mut_buf(&mut self) -> &mut Vec<u8> {
+        &mut self.buf
+    }
+
+    fn join(&mut self, sub: Self) {
+        self.buf.extend(sub.buf);
     }
 }
