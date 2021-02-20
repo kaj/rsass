@@ -210,7 +210,7 @@ fn bool() {
 
 // From "sass-spec/spec/libsass/bourbon.hrx"
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn bourbon() {
     assert_eq!(
         rsass(
