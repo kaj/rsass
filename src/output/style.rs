@@ -238,7 +238,7 @@ fn handle_item(
                 let selectors = scope.get_selectors().clone();
                 let has_selectors = selectors != Selectors::root();
                 let mut rule = Rule::new(selectors);
-                let mut sub = CssBuf::new(scope.get_format(), 2);
+                let mut sub = CssBuf::new(format, buf.indent + 2);
                 handle_body(
                     body,
                     head,
@@ -250,20 +250,21 @@ fn handle_item(
                 let b0 = buf.buf.len();
                 if has_selectors {
                     buf.do_indent();
-                    rule.write(&mut buf.buf, format, 2)?;
+                    buf.indent += 2;
+                    buf.write_rule(&rule)?;
+                    buf.indent -= 2;
                     if !sub.is_empty() {
                         buf.do_indent();
                     }
                 } else {
-                    let mut t = Vec::new();
+                    let mut t = CssBuf::new(format, sub.indent);
                     for item in rule.mut_body() {
-                        t.extend(format.get_indent(2).as_bytes());
-                        item.write(&mut t, format)?;
+                        t.write_body_item(item)?;
                     }
-                    if format.is_compressed() && t.last() == Some(&b';') {
-                        t.pop();
+                    if format.is_compressed() && t.buf.last() == Some(&b';') {
+                        t.buf.pop();
                     }
-                    buf.buf.write_all(&t)?;
+                    buf.join(t);
                     if !sub.is_empty() {
                         buf.do_indent();
                     }
@@ -513,8 +514,63 @@ impl CssBuf {
             separate: false,
         }
     }
+
     fn write_rule(&mut self, rule: &Rule) -> std::io::Result<()> {
-        rule.write(&mut self.buf, self.format, self.indent)
+        if !rule.body.is_empty() {
+            self.do_indent_no_nl();
+            if self.format.is_compressed() {
+                write!(self.buf, "{:#}{{", rule.selectors)?;
+            } else {
+                write!(self.buf, "{} {{", rule.selectors)?;
+            }
+
+            self.indent += 2;
+            for item in &rule.body {
+                self.write_body_item(item)?;
+            }
+            self.indent -= 2;
+            if self.format.is_compressed() && self.buf.last() == Some(&b';') {
+                self.buf.pop();
+            }
+            self.do_indent();
+            self.buf.write_all(if !self.format.is_compressed() {
+                b"}\n"
+            } else {
+                b"}"
+            })?;
+        }
+        Ok(())
+    }
+
+    fn write_body_item(&mut self, item: &BodyItem) -> std::io::Result<()> {
+        self.do_indent();
+        match item {
+            BodyItem::Property(ref name, ref val) => write!(
+                self.buf,
+                "{}:{}{};",
+                name,
+                if self.format.is_compressed() { "" } else { " " },
+                val.format(self.format).to_string().replace('\n', " "),
+            ),
+            BodyItem::Comment(ref c) => {
+                let indent = self.indent;
+                let existing = c
+                    .lines()
+                    .skip(1)
+                    .map(|s| s.bytes().take_while(|b| *b == b' ').count())
+                    .min()
+                    .unwrap_or(0);
+                let c = if existing < indent {
+                    c.replace("\n", self.format.get_indent(indent - existing))
+                } else {
+                    c.clone()
+                };
+                self.buf.extend(b"/*");
+                self.buf.extend(c.as_bytes());
+                self.buf.extend(b"*/");
+                Ok(())
+            }
+        }
     }
 
     pub fn add_import(
