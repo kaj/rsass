@@ -19,10 +19,6 @@ impl Rule {
     pub fn push(&mut self, item: BodyItem) {
         self.body.push(item)
     }
-    /// ...
-    pub fn mut_body(&mut self) -> &mut Vec<BodyItem> {
-        &mut self.body
-    }
 }
 
 /// Something that may exist inside a rule.

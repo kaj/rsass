@@ -109,7 +109,7 @@ impl Format {
 fn handle_body(
     items: &[Item],
     head: &mut CssBuf,
-    rule: Option<&mut Vec<BodyItem>>,
+    rule: Option<&mut Rule>,
     buf: &mut CssBuf,
     scope: &mut dyn Scope,
     file_context: &impl FileContext,
@@ -124,7 +124,7 @@ fn handle_body(
 fn handle_item(
     item: &Item,
     head: &mut CssBuf,
-    rule: Option<&mut Vec<BodyItem>>,
+    rule: Option<&mut Rule>,
     buf: &mut CssBuf,
     scope: &mut dyn Scope,
     file_context: &impl FileContext,
@@ -210,7 +210,7 @@ fn handle_item(
             handle_body(
                 body,
                 head,
-                Some(rule.mut_body()),
+                Some(&mut rule),
                 &mut sub,
                 &mut ScopeImpl::sub_selectors(scope, selectors),
                 file_context,
@@ -242,7 +242,7 @@ fn handle_item(
                 handle_body(
                     body,
                     head,
-                    Some(rule.mut_body()),
+                    Some(&mut rule),
                     &mut sub,
                     &mut ScopeImpl::sub(scope),
                     file_context,
@@ -258,8 +258,8 @@ fn handle_item(
                     }
                 } else {
                     let mut t = CssBuf::new(format, sub.indent);
-                    for item in rule.mut_body() {
-                        t.write_body_item(item)?;
+                    for item in rule.body {
+                        t.write_body_item(&item)?;
                     }
                     if format.is_compressed() && t.buf.last() == Some(&b';') {
                         t.buf.pop();
@@ -429,7 +429,7 @@ fn handle_item(
             handle_body(
                 body,
                 head,
-                Some(rule.mut_body()),
+                Some(&mut rule),
                 &mut sub,
                 &mut ScopeImpl::sub_selectors(scope, selectors),
                 file_context,
@@ -455,7 +455,7 @@ fn handle_item(
                 if !value.is_null() {
                     rule.push(BodyItem::Property(name.clone(), value));
                 }
-                let mut t = Vec::new();
+                let mut t = Rule::new(Selectors::root());
                 let mut sub = CssBuf::new(format, 0);
                 handle_body(
                     body,
@@ -465,7 +465,7 @@ fn handle_item(
                     scope,
                     file_context,
                 )?;
-                for item in t {
+                for item in t.body {
                     rule.push(match item {
                         BodyItem::Property(n, v) => {
                             BodyItem::Property(format!("{}-{}", name, n), v)
