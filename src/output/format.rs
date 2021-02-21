@@ -44,8 +44,8 @@ impl Format {
         globals: &mut dyn Scope,
         file_context: &impl FileContext,
     ) -> Result<Vec<u8>, Error> {
-        let mut head = CssBuf::new(*self, 0);
-        let mut body = CssBuf::new(*self, 0);
+        let mut head = CssBuf::new(*self);
+        let mut body = CssBuf::new(*self);
         handle_body(
             items,
             &mut head,

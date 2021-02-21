@@ -91,7 +91,7 @@ fn handle_item(
                         continue 'name;
                     }
                 }
-                if buf.indent == 0 {
+                if buf.is_root_level() {
                     head.add_import(
                         name.evaluate2(scope)?,
                         args.evaluate(scope)?,
@@ -109,7 +109,7 @@ fn handle_item(
                 .eval(scope)?
                 .with_backref(scope.get_selectors().one());
             let mut rule = Rule::new(selectors.clone());
-            let mut sub = CssBuf::new(format, buf.indent);
+            let mut sub = CssBuf::new_as(buf);
             handle_body(
                 body,
                 head,
@@ -141,7 +141,7 @@ fn handle_item(
                 let selectors = scope.get_selectors().clone();
                 let has_selectors = selectors != Selectors::root();
                 let mut rule = Rule::new(selectors);
-                let mut sub = CssBuf::new(format, buf.indent + 2);
+                let mut sub = CssBuf::new_below(buf);
                 handle_body(
                     body,
                     head,
@@ -153,14 +153,14 @@ fn handle_item(
                 let b0 = buf.buf.len();
                 if has_selectors {
                     buf.do_indent();
-                    buf.indent += 2;
-                    buf.write_rule(&rule)?;
-                    buf.indent -= 2;
+                    let mut t = CssBuf::new_below(buf);
+                    t.write_rule(&rule)?;
+                    buf.join(t);
                     if !sub.is_empty() {
                         buf.do_indent();
                     }
                 } else {
-                    let mut t = CssBuf::new(format, sub.indent);
+                    let mut t = CssBuf::new_as(&sub);
                     for item in rule.body {
                         t.write_body_item(&item)?;
                     }
@@ -328,7 +328,7 @@ fn handle_item(
             let selectors =
                 selectors.eval(scope)?.inside(scope.get_selectors());
             let mut rule = Rule::new(selectors.clone());
-            let mut sub = CssBuf::new(format, buf.indent);
+            let mut sub = CssBuf::new_as(buf);
             handle_body(
                 body,
                 head,
@@ -359,7 +359,7 @@ fn handle_item(
                     rule.push(BodyItem::Property(name.clone(), value));
                 }
                 let mut t = Rule::new(Selectors::root());
-                let mut sub = CssBuf::new(format, 0);
+                let mut sub = CssBuf::new(format);
                 handle_body(
                     body,
                     head,

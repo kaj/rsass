@@ -7,12 +7,21 @@ use std::io::{self, Write};
 pub struct CssBuf {
     pub buf: Vec<u8>,
     format: Format,
-    pub indent: usize,
+    indent: usize,
     separate: bool,
 }
 
 impl CssBuf {
-    pub fn new(format: Format, indent: usize) -> CssBuf {
+    pub fn new(format: Format) -> CssBuf {
+        CssBuf::_new(format, 0)
+    }
+    pub fn new_as(orig: &Self) -> CssBuf {
+        CssBuf::_new(orig.format, orig.indent)
+    }
+    pub fn new_below(orig: &Self) -> CssBuf {
+        CssBuf::_new(orig.format, orig.indent + 2)
+    }
+    fn _new(format: Format, indent: usize) -> CssBuf {
         CssBuf {
             buf: Vec::new(),
             format,
@@ -117,6 +126,9 @@ impl CssBuf {
         }
     }
 
+    pub fn is_root_level(&self) -> bool {
+        self.indent == 0
+    }
     pub fn is_empty(&self) -> bool {
         self.buf.is_empty()
     }
