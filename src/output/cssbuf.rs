@@ -30,23 +30,25 @@ impl CssBuf {
         }
     }
 
-    pub fn write_rule(&mut self, rule: &Rule) -> io::Result<()> {
+    pub fn write_rule(
+        &mut self,
+        rule: &Rule,
+        skip_nl: bool,
+    ) -> io::Result<()> {
         if !rule.body.is_empty() {
-            self.do_indent_no_nl();
+            if skip_nl {
+                self.do_indent_no_nl();
+            } else {
+                self.do_indent();
+            }
             if self.format.is_compressed() {
                 write!(self.buf, "{:#}{{", rule.selectors)?;
             } else {
                 write!(self.buf, "{} {{", rule.selectors)?;
             }
-
             self.indent += 2;
-            for item in &rule.body {
-                self.write_body_item(item)?;
-            }
+            self.write_body_items(&rule.body)?;
             self.indent -= 2;
-            if self.format.is_compressed() && self.buf.last() == Some(&b';') {
-                self.buf.pop();
-            }
             self.do_indent();
             self.buf.write_all(if !self.format.is_compressed() {
                 b"}\n"
@@ -57,35 +59,43 @@ impl CssBuf {
         Ok(())
     }
 
-    pub fn write_body_item(&mut self, item: &BodyItem) -> io::Result<()> {
-        self.do_indent();
-        match item {
-            BodyItem::Property(ref name, ref val) => write!(
-                self.buf,
-                "{}:{}{};",
-                name,
-                if self.format.is_compressed() { "" } else { " " },
-                val.format(self.format).to_string().replace('\n', " "),
-            ),
-            BodyItem::Comment(ref c) => {
-                let indent = self.indent;
-                let existing = c
-                    .lines()
-                    .skip(1)
-                    .map(|s| s.bytes().take_while(|b| *b == b' ').count())
-                    .min()
-                    .unwrap_or(0);
-                let c = if existing < indent {
-                    c.replace("\n", self.format.get_indent(indent - existing))
-                } else {
-                    c.clone()
-                };
-                self.buf.extend(b"/*");
-                self.buf.extend(c.as_bytes());
-                self.buf.extend(b"*/");
-                Ok(())
+    pub fn write_body_items(&mut self, items: &[BodyItem]) -> io::Result<()> {
+        for item in items {
+            self.do_indent();
+            match item {
+                BodyItem::Property(ref name, ref val) => write!(
+                    self.buf,
+                    "{}:{}{};",
+                    name,
+                    if self.format.is_compressed() { "" } else { " " },
+                    val.format(self.format).to_string().replace('\n', " "),
+                )?,
+                BodyItem::Comment(ref c) => {
+                    let indent = self.indent;
+                    let existing = c
+                        .lines()
+                        .skip(1)
+                        .map(|s| s.bytes().take_while(|b| *b == b' ').count())
+                        .min()
+                        .unwrap_or(0);
+                    let c = if existing < indent {
+                        c.replace(
+                            "\n",
+                            self.format.get_indent(indent - existing),
+                        )
+                    } else {
+                        c.clone()
+                    };
+                    self.buf.extend(b"/*");
+                    self.buf.extend(c.as_bytes());
+                    self.buf.extend(b"*/");
+                }
             }
         }
+        if self.format.is_compressed() && self.buf.last() == Some(&b';') {
+            self.buf.pop();
+        }
+        Ok(())
     }
 
     pub fn add_import(

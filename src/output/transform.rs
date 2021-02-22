@@ -118,7 +118,7 @@ fn handle_item(
                 &mut ScopeImpl::sub_selectors(scope, selectors),
                 file_context,
             )?;
-            buf.write_rule(&rule)?;
+            buf.write_rule(&rule, true)?;
             buf.join(sub);
         }
         Item::AtRule {
@@ -150,33 +150,16 @@ fn handle_item(
                     &mut ScopeImpl::sub(scope),
                     file_context,
                 )?;
-                let b0 = buf.buf.len();
+                let mut t = CssBuf::new_as(&sub);
                 if has_selectors {
-                    buf.do_indent();
-                    let mut t = CssBuf::new_below(buf);
-                    t.write_rule(&rule)?;
-                    buf.join(t);
-                    if !sub.is_empty() {
-                        buf.do_indent();
-                    }
+                    t.write_rule(&rule, false)?;
                 } else {
-                    let mut t = CssBuf::new_as(&sub);
-                    for item in rule.body {
-                        t.write_body_item(&item)?;
-                    }
-                    if format.is_compressed() && t.buf.last() == Some(&b';') {
-                        t.buf.pop();
-                    }
+                    t.write_body_items(&rule.body)?;
+                };
+                if !t.is_empty() || !sub.is_empty() {
                     buf.join(t);
-                    if !sub.is_empty() {
-                        buf.do_indent();
-                    }
-                }
-                if !sub.is_empty() {
-                    buf.join(sub);
-                }
-                if buf.buf.len() != b0 && buf.buf.last() != Some(&b'\n') {
                     buf.do_indent();
+                    buf.join(sub);
                 }
                 buf.buf.push(b'}');
                 buf.do_indent();
@@ -337,7 +320,7 @@ fn handle_item(
                 &mut ScopeImpl::sub_selectors(scope, selectors),
                 file_context,
             )?;
-            buf.write_rule(&rule)?;
+            buf.write_rule(&rule, true)?;
             buf.join(sub);
         }
         Item::Property(ref name, ref value) => {
