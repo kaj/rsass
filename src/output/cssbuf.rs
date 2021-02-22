@@ -77,18 +77,18 @@ impl CssBuf {
                         .skip(1)
                         .map(|s| s.bytes().take_while(|b| *b == b' ').count())
                         .min()
-                        .unwrap_or(0);
-                    let c = if existing < indent {
-                        c.replace(
-                            "\n",
-                            self.format.get_indent(indent - existing),
-                        )
+                        .unwrap_or(indent);
+
+                    self.buf.extend_from_slice(b"/*");
+                    if indent > existing {
+                        let start = self.format.get_indent(indent - existing);
+                        self.buf.extend_from_slice(
+                            c.replace("\n", start).as_ref(),
+                        );
                     } else {
-                        c.clone()
-                    };
-                    self.buf.extend(b"/*");
-                    self.buf.extend(c.as_bytes());
-                    self.buf.extend(b"*/");
+                        self.buf.extend_from_slice(c.as_ref());
+                    }
+                    self.buf.extend_from_slice(b"*/");
                 }
             }
         }
