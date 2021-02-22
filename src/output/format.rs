@@ -1,4 +1,10 @@
+use super::cssbuf::CssBuf;
+use super::transform::handle_body;
 use super::Style;
+use crate::file_context::FileContext;
+use crate::sass::Item;
+use crate::variablescope::Scope;
+use crate::Error;
 
 /// Specifies the format for outputing css.
 ///
@@ -27,6 +33,37 @@ impl Format {
     /// Return true if this is an introspection format.
     pub fn is_introspection(&self) -> bool {
         self.style == Style::Introspection
+    }
+    /// Write a slice of sass items in this format.
+    /// The `file_context` is needed if there are `@import` statements
+    /// in the sass file.
+    pub fn write_root(
+        &self,
+        items: &[Item],
+        globals: &mut dyn Scope,
+        file_context: &impl FileContext,
+    ) -> Result<Vec<u8>, Error> {
+        let mut head = CssBuf::new(*self);
+        let mut body = CssBuf::new(*self);
+        handle_body(
+            items,
+            &mut head,
+            None,
+            &mut body,
+            globals,
+            file_context,
+        )?;
+        Ok(CssBuf::combine_final(head, body))
+    }
+
+    /// Get a newline followed by len spaces, unles self is compressed.
+    pub fn get_indent(&self, len: usize) -> &'static str {
+        static INDENT: &str = "\n                                                                                ";
+        if self.is_compressed() {
+            ""
+        } else {
+            &INDENT[..(len + 1)]
+        }
     }
 }
 

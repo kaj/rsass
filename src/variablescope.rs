@@ -73,6 +73,14 @@ pub trait Scope {
         }
     }
 
+    /// Copy a set of local variables to a temporary holder
+    fn store_local_values(
+        &self,
+        names: &[Name],
+    ) -> Vec<(Name, Option<Value>)>;
+    /// Restore a set of local variables from a temporary holder
+    fn restore_local_values(&mut self, data: Vec<(Name, Option<Value>)>);
+
     /// Get the global Value for a variable.
     fn get_global_or_none(&self, name: &Name) -> Option<Value>;
 
@@ -261,6 +269,24 @@ impl Scope for ScopeImpl<'_> {
             .cloned()
             .or_else(|| self.parent.get_or_none(name))
     }
+    fn store_local_values(
+        &self,
+        names: &[Name],
+    ) -> Vec<(Name, Option<Value>)> {
+        names
+            .iter()
+            .map(|name| (name.clone(), self.variables.get(name).cloned()))
+            .collect()
+    }
+    fn restore_local_values(&mut self, data: Vec<(Name, Option<Value>)>) {
+        for (name, value) in data {
+            if let Some(value) = value {
+                self.variables.insert(name, value);
+            } else {
+                self.variables.remove(&name);
+            }
+        }
+    }
     fn get_global_or_none(&self, name: &Name) -> Option<Value> {
         self.parent.get_global_or_none(name)
     }
@@ -397,6 +423,26 @@ impl Scope for GlobalScope {
     }
     fn get_or_none(&self, name: &Name) -> Option<Value> {
         self.get_global_or_none(name)
+    }
+    fn store_local_values(
+        &self,
+        names: &[Name],
+    ) -> Vec<(Name, Option<Value>)> {
+        let variables = self.variables.lock().unwrap();
+        names
+            .iter()
+            .map(|name| (name.clone(), variables.get(name).cloned()))
+            .collect()
+    }
+    fn restore_local_values(&mut self, data: Vec<(Name, Option<Value>)>) {
+        let mut variables = self.variables.lock().unwrap();
+        for (name, value) in data {
+            if let Some(value) = value {
+                variables.insert(name, value);
+            } else {
+                variables.remove(&name);
+            }
+        }
     }
     fn get_global_or_none(&self, name: &Name) -> Option<Value> {
         self.variables.lock().unwrap().get(name).cloned()
