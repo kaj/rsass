@@ -184,7 +184,7 @@ pub trait Scope {
                 Item::Comment(..) => None,
                 ref x => {
                     return Err(Error::S(format!(
-                        "Not implemented in fuction: {:?}",
+                        "Not implemented in function: {:?}",
                         x
                     )))
                 }

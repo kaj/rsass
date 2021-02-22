@@ -229,7 +229,7 @@ fn rust_index(n: isize, len: usize) -> Result<usize, Error> {
 
 #[cfg(test)]
 mod test {
-    // Append fuction tests from
+    // Append function tests from
     // http://sass-lang.com/documentation/Sass/Script/Functions.html
     #[test]
     fn append_a() {

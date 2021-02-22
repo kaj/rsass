@@ -453,7 +453,7 @@ Changes since version 0.8.0 includes:
 * Make the `rgba` function handle non-numeric inputs (e.g. calc(...)).
 * Implement the `feature-exists` function.
 * Make `!important` part of value rather than property, so it can be
-  used in fuction / mixin arguments etc.
+  used in function / mixin arguments etc.
 * A css3 pseudo-element selector may have arguments.
 * Add support for unicode ranges.
 * The `@each` construct can bind multipe values.
