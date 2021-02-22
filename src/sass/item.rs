@@ -40,7 +40,7 @@ pub enum Item {
     Error(Value),
 
     /// A `@mixin` directive, declaring a mixin.
-    MixinDeclaration(String, FormalArgs, Vec<Item>),
+    MixinDeclaration(String, Mixin),
     /// An `@include` directive, calling a mixin.
     MixinCall(String, CallArgs, Vec<Item>),
     /// An `@content` directive (in a mixin declaration).
@@ -97,3 +97,7 @@ pub enum UseAs {
     /// An explicit name, `@use foo as bar`.
     Name(SassString),
 }
+
+/// A mixin is a callable body of items.
+#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd)]
+pub struct Mixin(pub FormalArgs, pub Vec<Item>);

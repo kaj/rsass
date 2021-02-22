@@ -1,5 +1,6 @@
 use super::{Error, Module, SassFunction};
 use crate::css::{CallArgs, Value};
+use crate::sass::Name;
 use crate::value::Quotes;
 use crate::variablescope::Scope;
 use crate::Format;
@@ -32,8 +33,8 @@ pub fn create_module() -> Module {
         }
     });
     def!(f, content_exists(), |s| {
-        let content = s.get_mixin("%%BODY%%");
-        Ok(content.map(|(_, b)| !b.is_empty()).unwrap_or(false).into())
+        let content = s.get_mixin(&Name::from_static("%%BODY%%"));
+        Ok(content.map(|m| !m.1.is_empty()).unwrap_or(false).into())
     });
     def!(f, feature_exists(feature), |s| match &s.get("feature")? {
         &Value::Literal(ref v, _) => {
@@ -80,7 +81,7 @@ pub fn create_module() -> Module {
     // TODO: keywords
     def!(f, mixin_exists(name), |s| match &s.get("name")? {
         &Value::Literal(ref v, _) => {
-            Ok(s.get_mixin(&v.replace('-', "_")).is_some().into())
+            Ok(s.get_mixin(&v.into()).is_some().into())
         }
         v => Err(Error::badarg("string", v)),
     });

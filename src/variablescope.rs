@@ -3,7 +3,7 @@
 use crate::css::{self, Value};
 use crate::functions::{get_builtin_function, Module, SassFunction};
 use crate::output::Format;
-use crate::sass::{self, Item, Name};
+use crate::sass::{Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::Error;
 use std::collections::BTreeMap;
@@ -85,17 +85,12 @@ pub trait Scope {
     fn get_global_or_none(&self, name: &Name) -> Option<Value>;
 
     /// Define a mixin.
-    fn define_mixin(
-        &mut self,
-        name: &str,
-        args: &sass::FormalArgs,
-        body: &[Item],
-    );
+    fn define_mixin(&mut self, name: Name, mixin: Mixin);
 
     /// Get a mixin by name.
     ///
     /// Returns the formal args and the body of the mixin.
-    fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)>;
+    fn get_mixin(&self, name: &Name) -> Option<&Mixin>;
 
     /// Define a function.
     fn define_function(&mut self, name: Name, func: SassFunction);
@@ -218,7 +213,7 @@ pub trait Scope {
 pub struct ScopeImpl<'a> {
     parent: &'a dyn Scope,
     variables: BTreeMap<Name, Value>,
-    mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
+    mixins: BTreeMap<Name, Mixin>,
     functions: BTreeMap<Name, SassFunction>,
     selectors: Option<Selectors>,
 }
@@ -252,10 +247,9 @@ impl Scope for ScopeImpl<'_> {
     fn define_global(&self, name: Name, val: Value) {
         self.parent.define_global(name, val);
     }
-    fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
+    fn get_mixin(&self, name: &Name) -> Option<&Mixin> {
         self.mixins
-            .get(&name.replace('-', "_"))
-            .cloned()
+            .get(name)
             .or_else(|| self.parent.get_mixin(name))
     }
     fn get_or_none(&self, name: &Name) -> Option<Value> {
@@ -290,14 +284,8 @@ impl Scope for ScopeImpl<'_> {
     fn get_global_or_none(&self, name: &Name) -> Option<Value> {
         self.parent.get_global_or_none(name)
     }
-    fn define_mixin(
-        &mut self,
-        name: &str,
-        args: &sass::FormalArgs,
-        body: &[Item],
-    ) {
-        let name = name.replace('-', "_");
-        self.mixins.insert(name, (args.clone(), body.into()));
+    fn define_mixin(&mut self, name: Name, mixin: Mixin) {
+        self.mixins.insert(name, mixin);
     }
     fn define_function(&mut self, name: Name, func: SassFunction) {
         self.functions.insert(name, func);
@@ -369,7 +357,7 @@ impl<'a> ScopeImpl<'a> {
 pub struct GlobalScope {
     format: Format,
     variables: Mutex<BTreeMap<Name, Value>>,
-    mixins: BTreeMap<String, (sass::FormalArgs, Vec<Item>)>,
+    mixins: BTreeMap<Name, Mixin>,
     functions: BTreeMap<Name, SassFunction>,
     selectors: Selectors,
     modules: Mutex<BTreeMap<Name, &'static Module>>,
@@ -418,8 +406,8 @@ impl Scope for GlobalScope {
         self.variables.lock().unwrap().insert(name, val);
     }
 
-    fn get_mixin(&self, name: &str) -> Option<(sass::FormalArgs, Vec<Item>)> {
-        self.mixins.get(&name.replace('-', "_")).cloned()
+    fn get_mixin(&self, name: &Name) -> Option<&Mixin> {
+        self.mixins.get(name)
     }
     fn get_or_none(&self, name: &Name) -> Option<Value> {
         self.get_global_or_none(name)
@@ -447,14 +435,8 @@ impl Scope for GlobalScope {
     fn get_global_or_none(&self, name: &Name) -> Option<Value> {
         self.variables.lock().unwrap().get(name).cloned()
     }
-    fn define_mixin(
-        &mut self,
-        name: &str,
-        args: &sass::FormalArgs,
-        body: &[Item],
-    ) {
-        let name = name.replace('-', "_");
-        self.mixins.insert(name, (args.clone(), body.into()));
+    fn define_mixin(&mut self, name: Name, mixin: Mixin) {
+        self.mixins.insert(name, mixin);
     }
     fn define_function(&mut self, name: Name, func: SassFunction) {
         self.functions.insert(name, func);

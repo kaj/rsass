@@ -3,7 +3,7 @@ use crate::css::{BodyItem, Rule};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
-use crate::sass::{FormalArgs, Item};
+use crate::sass::{FormalArgs, Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
 use crate::variablescope::{Scope, ScopeImpl};
@@ -183,16 +183,19 @@ fn handle_item(
             ));
         }
 
-        Item::MixinDeclaration(ref name, ref args, ref body) => {
-            scope.define_mixin(name, args, body)
+        Item::MixinDeclaration(ref name, ref mixin) => {
+            scope.define_mixin(name.into(), mixin.clone())
         }
         Item::MixinCall(ref name, ref args, ref body) => {
-            if let Some((m_args, m_body)) = scope.get_mixin(name) {
+            if let Some(mixin) = scope.get_mixin(&name.into()) {
                 let mut scope =
-                    m_args.eval(scope, &args.evaluate(scope, true)?)?;
-                scope.define_mixin("%%BODY%%", &FormalArgs::default(), body);
+                    mixin.0.eval(scope, &args.evaluate(scope, true)?)?;
+                scope.define_mixin(
+                    Name::from_static("%%BODY%%"),
+                    Mixin(FormalArgs::default(), body.clone()),
+                );
                 handle_body(
-                    &m_body,
+                    &mixin.1,
                     head,
                     rule,
                     buf,
@@ -208,9 +211,11 @@ fn handle_item(
         }
         Item::Content => {
             if let Some(rule) = rule {
-                if let Some((_args, m_body)) = scope.get_mixin("%%BODY%%") {
+                if let Some(body) =
+                    scope.get_mixin(&Name::from_static("%%BODY%%")).cloned()
+                {
                     handle_body(
-                        &m_body,
+                        &body.1,
                         head,
                         Some(rule),
                         buf,
