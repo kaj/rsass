@@ -6,6 +6,7 @@ use crate::parser::parse_imported_scss_file;
 use crate::sass::{FormalArgs, Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
+use crate::variablescope::Module;
 use crate::Scope;
 use std::io::Write;
 
@@ -38,23 +39,47 @@ fn handle_item(
             use crate::functions::get_global_module;
             use crate::sass::UseAs;
             let name = name.evaluate(scope)?.0;
+            let mut do_use =
+                |module: Module| -> Result<(), Error> {
+                    match as_n {
+                        UseAs::KeepName => {
+                            let name = name
+                                .rfind(|c| c == ':' || c == '/')
+                                .map(|i| &name[i + 1..])
+                                .unwrap_or(&name);
+                            scope.define_module(name.into(), module);
+                        }
+                        UseAs::Star => {
+                            scope.expose_star(module.as_ref());
+                        }
+                        UseAs::Name(name) => {
+                            let name = name.evaluate(scope)?.0;
+                            scope.define_module(name.into(), module);
+                        }
+                    }
+                    Ok(())
+                };
             if let Some(module) = get_global_module(&name) {
-                match as_n {
-                    UseAs::KeepName => {
-                        let name = name
-                            .rfind(':')
-                            .map(|i| &name[i + 1..])
-                            .unwrap_or(&name);
-                        scope.define_module(name.into(), module);
-                    }
-                    UseAs::Star => {
-                        scope.expose_star(module);
-                    }
-                    UseAs::Name(name) => {
-                        let name = name.evaluate(scope)?.0;
-                        scope.define_module(name.into(), module);
-                    }
-                }
+                do_use(module)?
+            } else if let Some((sub_context, path, mut file)) =
+                file_context.find_file(&name)?
+            {
+                let mut module = Scope::new_global(format);
+                let items = parse_imported_scss_file(
+                    &mut file,
+                    &path,
+                    // TODO: Get a proper pos!
+                    crate::parser::code_span(b"").into(),
+                )?;
+                handle_body(
+                    &items,
+                    head,
+                    None,
+                    buf,
+                    &mut module,
+                    &sub_context,
+                )?;
+                do_use(Module::dynamic(module))?;
             } else {
                 return Err(Error::S(format!("Module {:?} not found", name)));
             }

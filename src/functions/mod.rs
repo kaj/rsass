@@ -1,5 +1,6 @@
 use crate::error::Error;
 use crate::sass::Name;
+use crate::variablescope::Module;
 use crate::{css, sass, Scope};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -139,8 +140,8 @@ lazy_static! {
     };
 }
 
-pub fn get_global_module(name: &str) -> Option<&'static Scope<'static>> {
-    MODULES.get(name)
+pub fn get_global_module(name: &str) -> Option<Module> {
+    MODULES.get(name).map(Module::Builtin)
 }
 
 type FunctionMap = BTreeMap<Name, SassFunction>;

@@ -1,0 +1,15 @@
+$color: purple;
+
+@function foo($v) {
+    @if $v > 0 {
+        @return purple;
+    } @else {
+        @return black;
+    }
+}
+
+@mixin myem {
+    em {
+        color: pink;
+    }
+}

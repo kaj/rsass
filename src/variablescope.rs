@@ -8,7 +8,28 @@ use crate::selectors::Selectors;
 use crate::Error;
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+
+#[derive(Clone)]
+pub enum Module {
+    Builtin(&'static Scope<'static>),
+    Dynamic(Arc<Scope<'static>>),
+}
+
+impl Module {
+    pub fn dynamic(scope: Scope<'static>) -> Self {
+        Module::Dynamic(Arc::new(scope))
+    }
+}
+
+impl AsRef<Scope<'static>> for Module {
+    fn as_ref(&self) -> &Scope<'static> {
+        match self {
+            Module::Builtin(m) => m,
+            Module::Dynamic(m) => m,
+        }
+    }
+}
 
 /// Variables, functions and mixins are defined in a `Scope`.
 ///
@@ -18,7 +39,7 @@ use std::sync::Mutex;
 /// global scopes may exists in the same rust-language process.
 pub struct Scope<'a> {
     parent: Option<&'a Scope<'a>>,
-    modules: BTreeMap<Name, &'static Scope<'static>>,
+    modules: BTreeMap<Name, Module>,
     variables: Mutex<BTreeMap<Name, Value>>,
     mixins: BTreeMap<Name, Mixin>,
     functions: BTreeMap<Name, SassFunction>,
@@ -77,7 +98,7 @@ impl<'a> Scope<'a> {
     pub fn define_module(
         &mut self,
         name: Name,
-        module: &'static Scope<'static>,
+        module: Module,
     ) {
         self.modules.insert(name, module);
     }
@@ -85,7 +106,7 @@ impl<'a> Scope<'a> {
     ///
     /// This is used when refering to a function or variable with
     /// namespace.name notation.
-    pub fn get_module(&self, name: &Name) -> Option<&'static Scope<'static>> {
+    pub fn get_module(&self, name: &Name) -> Option<Module> {
         self.modules
             .get(name)
             .cloned()
@@ -100,6 +121,7 @@ impl<'a> Scope<'a> {
     pub fn define(&mut self, name: Name, val: &Value) {
         self.set_variable(name, val.clone(), false, false)
     }
+
     /// Define a variable with a value.
     ///
     /// The `$` sign is not included in `name`.
@@ -159,7 +181,7 @@ impl<'a> Scope<'a> {
     pub fn get_or_none(&self, name: &Name) -> Option<Value> {
         if let Some((modulename, name)) = name.split_module() {
             if let Some(module) = self.get_module(&modulename) {
-                return module.get_or_none(&name);
+                return module.as_ref().get_or_none(&name);
             }
         }
         self.variables
@@ -169,6 +191,7 @@ impl<'a> Scope<'a> {
             .cloned()
             .or_else(|| self.parent.and_then(|p| p.get_or_none(name)))
     }
+
     /// Get the value for a variable (or an error).
     pub fn get(&self, name: &str) -> Result<Value, Error> {
         match self.get_or_none(&name.into()) {
@@ -242,7 +265,7 @@ impl<'a> Scope<'a> {
     ) -> Option<Result<Value, Error>> {
         if let Some((modulename, name)) = name.split_module() {
             if let Some(module) = self.get_module(&modulename) {
-                if let Some(f) = module.get_function(&name).cloned() {
+                if let Some(f) = module.as_ref().get_function(&name).cloned() {
                     return Some(f.call(self, args));
                 }
             }
@@ -275,6 +298,9 @@ impl<'a> Scope<'a> {
         }
         for (name, value) in &*other.variables.lock().unwrap() {
             self.define(name.clone(), value);
+        }
+        for (name, m) in &other.mixins {
+            self.define_mixin(name.clone(), m.clone());
         }
     }
 
