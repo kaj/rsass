@@ -127,17 +127,13 @@ fn handle_item(
             ref body,
         } => {
             buf.do_separate();
-            write!(buf.buf, "@{}", name)?;
+            write!(buf, "@{}", name)?;
             let args = args.evaluate(scope)?;
             if !args.is_null() {
-                write!(buf.buf, " {}", args.format(format))?;
+                write!(buf, " {}", args.format(format))?;
             }
             if let Some(ref body) = *body {
-                if format.is_compressed() {
-                    buf.buf.push(b'{');
-                } else {
-                    buf.buf.extend(b" {");
-                }
+                buf.add_one(" {", "{");
                 let selectors = scope.get_selectors().clone();
                 let has_selectors = selectors != Selectors::root();
                 let mut rule = Rule::new(selectors);
@@ -161,10 +157,10 @@ fn handle_item(
                     buf.do_indent();
                     buf.join(sub);
                 }
-                buf.buf.push(b'}');
+                buf.add_str("}");
                 buf.do_indent();
             } else {
-                buf.buf.push(b';');
+                buf.add_str(";");
             }
         }
 
@@ -374,7 +370,7 @@ fn handle_item(
                 } else {
                     buf.do_separate();
                     let (c, _q) = c.evaluate(scope)?;
-                    write!(buf.buf, "/*{}*/", c)?;
+                    write!(buf, "/*{}*/", c)?;
                 }
             }
         }

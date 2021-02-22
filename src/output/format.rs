@@ -5,7 +5,6 @@ use crate::file_context::FileContext;
 use crate::sass::Item;
 use crate::variablescope::Scope;
 use crate::Error;
-use std::io::Write;
 
 /// Specifies the format for outputing css.
 ///
@@ -54,25 +53,7 @@ impl Format {
             globals,
             file_context,
         )?;
-        let mut result = vec![];
-        let compressed = self.is_compressed();
-        if !head.is_ascii() || !body.is_ascii() {
-            if compressed {
-                // U+FEFF is byte order mark, used to show encoding.
-                result.extend_from_slice("\u{feff}".as_bytes());
-            } else {
-                result.extend_from_slice(b"@charset \"UTF-8\";\n");
-            }
-        }
-        result.extend(head.buf);
-        result.extend(body.buf);
-        if compressed && result.last() == Some(&b';') {
-            result.pop();
-        }
-        if result.last().unwrap_or(&b'\n') != &b'\n' {
-            writeln!(&mut result)?;
-        }
-        Ok(result)
+        Ok(CssBuf::combine_final(head, body))
     }
 
     /// Get a newline followed by len spaces, unles self is compressed.

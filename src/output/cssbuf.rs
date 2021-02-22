@@ -5,7 +5,7 @@ use crate::Error;
 use std::io::{self, Write};
 
 pub struct CssBuf {
-    pub buf: Vec<u8>,
+    buf: Vec<u8>,
     format: Format,
     indent: usize,
     separate: bool,
@@ -30,6 +30,28 @@ impl CssBuf {
         }
     }
 
+    pub fn combine_final(head: Self, body: Self) -> Vec<u8> {
+        let mut result = vec![];
+        let compressed = head.format.is_compressed();
+        if !head.is_ascii() || !body.is_ascii() {
+            if compressed {
+                // U+FEFF is byte order mark, used to show encoding.
+                result.extend_from_slice("\u{feff}".as_bytes());
+            } else {
+                result.extend_from_slice(b"@charset \"UTF-8\";\n");
+            }
+        }
+        result.extend_from_slice(&head.buf);
+        result.extend_from_slice(&body.buf);
+        if compressed && result.last() == Some(&b';') {
+            result.pop();
+        }
+        if result.last().unwrap_or(&b'\n') != &b'\n' {
+            result.push(b'\n');
+        }
+        result
+    }
+
     pub fn write_rule(
         &mut self,
         rule: &Rule,
@@ -50,11 +72,7 @@ impl CssBuf {
             self.write_body_items(&rule.body)?;
             self.indent -= 2;
             self.do_indent();
-            self.buf.write_all(if !self.format.is_compressed() {
-                b"}\n"
-            } else {
-                b"}"
-            })?;
+            self.add_one("}\n", "}");
         }
         Ok(())
     }
@@ -79,16 +97,14 @@ impl CssBuf {
                         .min()
                         .unwrap_or(indent);
 
-                    self.buf.extend_from_slice(b"/*");
+                    self.add_str("/*");
                     if indent > existing {
                         let start = self.format.get_indent(indent - existing);
-                        self.buf.extend_from_slice(
-                            c.replace("\n", start).as_ref(),
-                        );
+                        self.add_str(&c.replace("\n", start));
                     } else {
-                        self.buf.extend_from_slice(c.as_ref());
+                        self.add_str(c);
                     }
-                    self.buf.extend_from_slice(b"*/");
+                    self.add_str("*/");
                 }
             }
         }
@@ -108,11 +124,7 @@ impl CssBuf {
         if !args.is_null() {
             write!(&mut self.buf, " {}", args.format(self.format))?;
         }
-        self.buf.extend(if self.format.is_compressed() {
-            &b";"[..]
-        } else {
-            &b";\n"[..]
-        });
+        self.add_one(";\n", ";");
         Ok(())
     }
 
@@ -126,13 +138,12 @@ impl CssBuf {
         }
     }
     pub fn do_indent(&mut self) {
-        self.buf
-            .extend(self.format.get_indent(self.indent).as_bytes())
+        self.add_str(self.format.get_indent(self.indent))
     }
     fn do_indent_no_nl(&mut self) {
         let stuff = self.format.get_indent(self.indent);
         if stuff.len() > 1 {
-            self.buf.extend(stuff[1..].as_bytes())
+            self.add_str(&stuff[1..])
         }
     }
 
@@ -147,6 +158,26 @@ impl CssBuf {
     }
 
     pub fn join(&mut self, sub: Self) {
-        self.buf.extend(sub.buf);
+        self.buf.extend_from_slice(&sub.buf);
+    }
+    pub fn add_str(&mut self, sub: &str) {
+        self.buf.extend_from_slice(sub.as_bytes())
+    }
+    pub fn add_one(&mut self, normal: &str, compressed: &str) {
+        self.add_str(if self.format.is_compressed() {
+            compressed
+        } else {
+            normal
+        })
+    }
+}
+
+impl Write for CssBuf {
+    fn write(&mut self, data: &[u8]) -> io::Result<usize> {
+        self.buf.extend_from_slice(data);
+        Ok(data.len())
+    }
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
     }
 }
