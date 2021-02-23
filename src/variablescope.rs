@@ -216,7 +216,7 @@ pub trait Scope {
 }
 
 pub struct ScopeImpl<'a> {
-    parent: &'a dyn Scope,
+    parent: Option<&'a dyn Scope>,
     variables: BTreeMap<Name, Value>,
     mixins: BTreeMap<Name, Mixin>,
     functions: BTreeMap<Name, SassFunction>,
@@ -225,10 +225,13 @@ pub struct ScopeImpl<'a> {
 
 impl Scope for ScopeImpl<'_> {
     fn define_module(&self, name: Name, module: &'static Module) {
-        self.parent.define_module(name, module);
+        // Should this use parent at all?
+        if let Some(parent) = self.parent {
+            parent.define_module(name, module);
+        } // TODO: Else define here!
     }
     fn get_format(&self) -> Format {
-        self.parent.get_format()
+        self.parent.unwrap().get_format()
     }
 
     fn set_variable(
@@ -244,18 +247,22 @@ impl Scope for ScopeImpl<'_> {
             return;
         }
         if global {
-            self.parent.define_global(name, val);
+            self.define_global(name, val);
         } else {
             self.variables.insert(name, val);
         }
     }
     fn define_global(&self, name: Name, val: Value) {
-        self.parent.define_global(name, val);
+        // if let Some(parent) = self.parent {
+        self.parent.unwrap().define_global(name, val);
+        // } else {
+        //     self.variables.insert(name, val);
+        // }
     }
     fn get_mixin(&self, name: &Name) -> Option<&Mixin> {
         self.mixins
             .get(name)
-            .or_else(|| self.parent.get_mixin(name))
+            .or_else(|| self.parent.and_then(|p| p.get_mixin(name)))
     }
     fn get_or_none(&self, name: &Name) -> Option<Value> {
         if let Some((modulename, name)) = name.split_module() {
@@ -266,7 +273,7 @@ impl Scope for ScopeImpl<'_> {
         self.variables
             .get(name)
             .cloned()
-            .or_else(|| self.parent.get_or_none(name))
+            .or_else(|| self.parent.and_then(|p| p.get_or_none(name)))
     }
     fn store_local_values(
         &self,
@@ -287,7 +294,11 @@ impl Scope for ScopeImpl<'_> {
         }
     }
     fn get_global_or_none(&self, name: &Name) -> Option<Value> {
-        self.parent.get_global_or_none(name)
+        if let Some(parent) = self.parent {
+            parent.get_global_or_none(name)
+        } else {
+            self.get_or_none(name)
+        }
     }
     fn define_mixin(&mut self, name: Name, mixin: Mixin) {
         self.mixins.insert(name, mixin);
@@ -299,10 +310,10 @@ impl Scope for ScopeImpl<'_> {
         if let Some(f) = self.functions.get(name) {
             return Some(f);
         }
-        self.parent.get_function(name)
+        self.parent.and_then(|p| p.get_function(name))
     }
     fn get_module(&self, name: &Name) -> Option<&Module> {
-        self.parent.get_module(name)
+        self.parent.and_then(|p| p.get_module(name))
     }
     fn call_function(
         &self,
@@ -320,20 +331,20 @@ impl Scope for ScopeImpl<'_> {
             if let Some(f) = self.functions.get(&name).cloned() {
                 return Some(f.call(self, args));
             }
-            self.parent.call_function(name, args)
+            self.parent.and_then(|p| p.call_function(name, args))
         }
     }
     fn get_selectors(&self) -> &Selectors {
         self.selectors
             .as_ref()
-            .unwrap_or_else(|| self.parent.get_selectors())
+            .unwrap_or_else(|| self.parent.unwrap().get_selectors())
     }
 }
 
 impl<'a> ScopeImpl<'a> {
     pub fn sub(parent: &'a dyn Scope) -> Self {
         ScopeImpl {
-            parent,
+            parent: Some(parent),
             variables: BTreeMap::new(),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
@@ -345,7 +356,7 @@ impl<'a> ScopeImpl<'a> {
         selectors: Selectors,
     ) -> Self {
         ScopeImpl {
-            parent,
+            parent: Some(parent),
             variables: BTreeMap::new(),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
