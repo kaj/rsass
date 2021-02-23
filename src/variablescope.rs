@@ -10,11 +10,6 @@ use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
-/// Create a new global scope.
-pub fn new_global<'a>(format: Format) -> Scope<'a> {
-    Scope::new_global(format)
-}
-
 /// Variables, functions and mixins are defined in a `Scope`.
 ///
 /// A scope can be a local scope, e.g. in a function, or the global scope.

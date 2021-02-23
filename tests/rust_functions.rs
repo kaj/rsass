@@ -10,7 +10,7 @@ fn simple_value() {
         style: output::Style::Compressed,
         precision: 5,
     };
-    let mut scope = new_global(format);
+    let mut scope = Scope::new_global(format);
     scope.define(Name::from_static("color"), &Rgba::from_rgb(0, 0, 0).into());
     let file_context = FsFileContext::new();
     assert_eq!(
@@ -30,7 +30,7 @@ fn simple_function() {
         style: output::Style::Compressed,
         precision: 5,
     };
-    let mut scope = new_global(format);
+    let mut scope = Scope::new_global(format);
     scope.define_function(
         Name::from_static("get_answer"),
         SassFunction::builtin(
@@ -59,7 +59,7 @@ fn avg(a: Number, b: Number) -> Number {
 
 #[test]
 fn function_with_args() {
-    let mut scope = new_global(Default::default());
+    let mut scope = Scope::new_global(Default::default());
     scope.define_function(
         Name::from_static("halfway"),
         SassFunction::builtin(
