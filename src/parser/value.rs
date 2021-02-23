@@ -504,7 +504,7 @@ mod test {
     use super::*;
     use crate::sass::CallArgs;
     use crate::sass::Value::*;
-    use crate::variablescope::GlobalScope;
+    use crate::variablescope::new_global;
     use num_rational::Rational;
 
     #[test]
@@ -763,7 +763,7 @@ mod test {
     fn parse_extended_literal() -> Result<(), crate::Error> {
         assert_eq!(
             parse_value_data(b"http://#{\")\"}.com/")?
-                .evaluate(&GlobalScope::new(Default::default()))?
+                .evaluate(&new_global(Default::default()))?
                 .format(Default::default())
                 .to_string(),
             "http://).com/".to_string(),
@@ -774,7 +774,7 @@ mod test {
     fn parse_extended_literal_in_arg() -> Result<(), crate::Error> {
         assert_eq!(
             parse_value_data(b"url(http://#{\")\"}.com/)")?
-                .evaluate(&GlobalScope::new(Default::default()))?
+                .evaluate(&new_global(Default::default()))?
                 .format(Default::default())
                 .to_string(),
             "url(http://).com/)".to_string(),
@@ -785,7 +785,7 @@ mod test {
     fn parse_extended_literal_in_arg_2() -> Result<(), crate::Error> {
         assert_eq!(
             parse_value_data(b"url(//#{\")\"}.com/)")?
-                .evaluate(&GlobalScope::new(Default::default()))?
+                .evaluate(&new_global(Default::default()))?
                 .format(Default::default())
                 .to_string(),
             "url(//).com/)".to_string(),

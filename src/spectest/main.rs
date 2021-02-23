@@ -71,7 +71,7 @@ fn handle_suite(
     writeln!(
         rs,
         "use rsass::output::Format;\
-         \nuse rsass::{{parse_scss_data, Error, FsFileContext, GlobalScope}};",
+         \nuse rsass::{{parse_scss_data, Error, FsFileContext}};",
     )?;
 
     handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)
@@ -102,7 +102,7 @@ fn handle_suite(
          \n    let mut file_context = FsFileContext::new();\
          \n    file_context.push_path(\"tests/spec\".as_ref());\
          \n    let items = parse_scss_data(input)?;\
-         \n    format.write_root(&items, &mut GlobalScope::new(format), &file_context)\
+         \n    format.write_root(&items, &mut rsass::new_global(format), &file_context)\
          \n}}"
     )?;
     Ok(())

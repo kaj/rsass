@@ -9,6 +9,11 @@ use crate::Error;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
+/// Create a new global scope.
+pub fn new_global(format: Format) -> GlobalScope {
+    GlobalScope::new(format)
+}
+
 /// Variables, functions and mixins are defined in a `Scope`.
 ///
 /// A scope can be a local scope, e.g. in a function, or the global scope.
@@ -365,7 +370,7 @@ pub struct GlobalScope {
 
 impl GlobalScope {
     /// Create a new global scope.
-    pub fn new(format: Format) -> Self {
+    fn new(format: Format) -> Self {
         GlobalScope {
             format,
             variables: Mutex::new(BTreeMap::new()),

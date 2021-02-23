@@ -174,8 +174,8 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     use crate::parser::code_span;
     use crate::parser::formalargs::call_args;
     use crate::value::Rgba;
-    use crate::variablescope::GlobalScope;
-    let scope = GlobalScope::new(Default::default());
+    use crate::variablescope::new_global;
+    let scope = new_global(Default::default());
     assert_eq!(
         FUNCTIONS.get_function(&name!(rgb)).unwrap().call(
             &scope,
