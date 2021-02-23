@@ -8,25 +8,147 @@ use crate::selectors::Selectors;
 use crate::Error;
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
+use std::ops::Deref;
 use std::sync::{Arc, Mutex};
 
 #[derive(Clone)]
-pub enum Module {
-    Builtin(&'static Scope<'static>),
-    Dynamic(Arc<Scope<'static>>),
+pub enum ScopeRef {
+    Builtin(&'static Scope),
+    Dynamic(Arc<Scope>),
 }
 
-impl Module {
-    pub fn dynamic(scope: Scope<'static>) -> Self {
-        Module::Dynamic(Arc::new(scope))
+impl ScopeRef {
+    pub fn dynamic(scope: Scope) -> Self {
+        ScopeRef::Dynamic(Arc::new(scope))
+    }
+    /// Call a function.
+    pub fn call_function(
+        &self,
+        name: &Name,
+        args: &css::CallArgs,
+    ) -> Option<Result<Value, Error>> {
+        if let Some((modulename, name)) = name.split_module() {
+            if let Some(module) = self.get_module(&modulename) {
+                if let Some(f) = module.get_function(&name) {
+                    return Some(f.call(self.clone(), args));
+                }
+            }
+            None
+        } else {
+            let f = self.functions.lock().unwrap().get(&name).cloned();
+            if let Some(f) = f {
+                return Some(f.call(self.clone(), args));
+            }
+            self.parent
+                .as_ref()
+                .and_then(|p| p.call_function(name, args))
+        }
+    }
+    /// Evaluate a body of items in this scope.
+    pub fn eval_body(self, body: &[Item]) -> Result<Option<Value>, Error>
+    where
+        Self: Sized,
+    {
+        for b in body {
+            let result = match *b {
+                Item::IfStatement(ref cond, ref do_if, ref do_else) => {
+                    if cond.evaluate(self.clone())?.is_true() {
+                        self.clone().eval_body(do_if)?
+                    } else {
+                        self.clone().eval_body(do_else)?
+                    }
+                }
+                Item::Each(ref names, ref values, ref body) => {
+                    let s = self.clone();
+                    for value in values.evaluate(s.clone())?.iter_items() {
+                        s.define_multi(names, &value);
+                        if let Some(r) = s.clone().eval_body(body)? {
+                            return Ok(Some(r));
+                        }
+                    }
+                    None
+                }
+                Item::For {
+                    ref name,
+                    ref from,
+                    ref to,
+                    inclusive,
+                    ref body,
+                } => {
+                    let range = crate::value::ValueRange::new(
+                        from.evaluate(self.clone())?,
+                        to.evaluate(self.clone())?,
+                        inclusive,
+                    )?;
+                    let s = self.clone();
+                    for value in range {
+                        s.define(name.clone(), &value);
+                        if let Some(r) = s.clone().eval_body(body)? {
+                            return Ok(Some(r));
+                        }
+                    }
+                    None
+                }
+                Item::VariableDeclaration {
+                    ref name,
+                    ref val,
+                    default,
+                    global,
+                } => {
+                    let val = val.evaluate(self.clone())?;
+                    self.set_variable(name.into(), val, default, global);
+                    None
+                }
+                Item::Return(ref v) => Some(v.evaluate(self.clone())?),
+                Item::While(ref cond, ref body) => {
+                    let scope = Self::dynamic(Scope::sub(self.clone()));
+                    while cond.evaluate(scope.clone())?.is_true() {
+                        if let Some(r) = scope.clone().eval_body(body)? {
+                            return Ok(Some(r));
+                        }
+                    }
+                    None
+                }
+                Item::Warn(ref value) => {
+                    eprintln!(
+                        "WARNING: {}",
+                        value
+                            .evaluate(self.clone())?
+                            .format(self.get_format())
+                    );
+                    None
+                }
+                Item::Error(ref value) => {
+                    return Err(Error::S(format!(
+                        "Error: {}",
+                        value
+                            .evaluate(self.clone())?
+                            .format(self.get_format()),
+                    )));
+                }
+                Item::None => None,
+                Item::Comment(..) => None,
+                ref x => {
+                    return Err(Error::S(format!(
+                        "Not implemented in function: {:?}",
+                        x
+                    )))
+                }
+            };
+            if let Some(result) = result {
+                return Ok(Some(result));
+            }
+        }
+        Ok(None)
     }
 }
 
-impl AsRef<Scope<'static>> for Module {
-    fn as_ref(&self) -> &Scope<'static> {
+impl Deref for ScopeRef {
+    type Target = Scope;
+    fn deref(&self) -> &Scope {
         match self {
-            Module::Builtin(m) => m,
-            Module::Dynamic(m) => m,
+            ScopeRef::Builtin(m) => m,
+            ScopeRef::Dynamic(m) => m,
         }
     }
 }
@@ -37,17 +159,17 @@ impl AsRef<Scope<'static>> for Module {
 /// All scopes except the global scope has a parent.
 /// The global scope is global to a sass document, multiple different
 /// global scopes may exists in the same rust-language process.
-pub struct Scope<'a> {
-    parent: Option<&'a Scope<'a>>,
-    modules: BTreeMap<Name, Module>,
+pub struct Scope {
+    parent: Option<ScopeRef>,
+    modules: Mutex<BTreeMap<Name, ScopeRef>>,
     variables: Mutex<BTreeMap<Name, Value>>,
-    mixins: BTreeMap<Name, Mixin>,
-    functions: BTreeMap<Name, SassFunction>,
+    mixins: Mutex<BTreeMap<Name, Mixin>>,
+    functions: Mutex<BTreeMap<Name, SassFunction>>,
     selectors: Option<Selectors>,
     format: Format,
 }
 
-impl<'a> Scope<'a> {
+impl<'a> Scope {
     /// Create a new global scope
     ///
     /// A "global" scope is just a scope that have no parent.
@@ -56,61 +178,74 @@ impl<'a> Scope<'a> {
     pub fn new_global(format: Format) -> Self {
         Scope {
             parent: None,
-            modules: BTreeMap::new(),
+            modules: Mutex::new(BTreeMap::new()),
             variables: Mutex::new(BTreeMap::new()),
-            mixins: BTreeMap::new(),
-            functions: BTreeMap::new(),
+            mixins: Mutex::new(BTreeMap::new()),
+            functions: Mutex::new(BTreeMap::new()),
             selectors: None,
             format,
         }
     }
+    /// Create a new global scope
+    ///
+    /// A "global" scope is just a scope that have no parent.
+    /// There will be multiple global scopes existing during the
+    /// evaluation of a single sass file.
+    pub fn new_global_ref(format: Format) -> ScopeRef {
+        ScopeRef::dynamic(Scope {
+            parent: None,
+            modules: Mutex::new(BTreeMap::new()),
+            variables: Mutex::new(BTreeMap::new()),
+            mixins: Mutex::new(BTreeMap::new()),
+            functions: Mutex::new(BTreeMap::new()),
+            selectors: None,
+            format,
+        })
+    }
     /// Create a new subscope of a given parent.
-    pub fn sub(parent: &'a Scope<'a>) -> Self {
+    pub fn sub(parent: ScopeRef) -> Self {
+        let format = parent.get_format();
         Scope {
             parent: Some(parent),
-            modules: BTreeMap::new(),
+            modules: Mutex::new(BTreeMap::new()),
             variables: Mutex::new(BTreeMap::new()),
-            mixins: BTreeMap::new(),
-            functions: BTreeMap::new(),
+            mixins: Mutex::new(BTreeMap::new()),
+            functions: Mutex::new(BTreeMap::new()),
             selectors: None,
-            format: parent.get_format(),
+            format,
         }
     }
     /// Create a new subscope of a given parent with selectors.
-    pub fn sub_selectors(
-        parent: &'a Scope<'a>,
-        selectors: Selectors,
-    ) -> Self {
+    pub fn sub_selectors(parent: ScopeRef, selectors: Selectors) -> Self {
+        let format = parent.get_format();
         Scope {
             parent: Some(parent),
-            modules: BTreeMap::new(),
+            modules: Mutex::new(BTreeMap::new()),
             variables: Mutex::new(BTreeMap::new()),
-            mixins: BTreeMap::new(),
-            functions: BTreeMap::new(),
+            mixins: Mutex::new(BTreeMap::new()),
+            functions: Mutex::new(BTreeMap::new()),
             selectors: Some(selectors),
-            format: parent.get_format(),
+            format,
         }
     }
 
     /// Define a module in the scope.
     ///
     /// This is used by the `@use` statement.
-    pub fn define_module(
-        &mut self,
-        name: Name,
-        module: Module,
-    ) {
-        self.modules.insert(name, module);
+    pub fn define_module(&self, name: Name, module: ScopeRef) {
+        self.modules.lock().unwrap().insert(name, module);
     }
     /// Get a module.
     ///
     /// This is used when refering to a function or variable with
     /// namespace.name notation.
-    pub fn get_module(&self, name: &Name) -> Option<Module> {
+    pub fn get_module(&self, name: &Name) -> Option<ScopeRef> {
         self.modules
+            .lock()
+            .unwrap()
             .get(name)
             .cloned()
-            .or_else(|| self.parent.and_then(|p| p.get_module(name)))
+            .or_else(|| self.parent.as_ref().and_then(|p| p.get_module(name)))
     }
     /// Get the format used in this scope.
     pub fn get_format(&self) -> Format {
@@ -118,7 +253,7 @@ impl<'a> Scope<'a> {
     }
 
     /// Define a none-default, non-global variable.
-    pub fn define(&mut self, name: Name, val: &Value) {
+    pub fn define(&self, name: Name, val: &Value) {
         self.set_variable(name, val.clone(), false, false)
     }
 
@@ -126,7 +261,7 @@ impl<'a> Scope<'a> {
     ///
     /// The `$` sign is not included in `name`.
     pub fn set_variable(
-        &mut self,
+        &self,
         name: Name,
         val: Value,
         default: bool,
@@ -146,7 +281,7 @@ impl<'a> Scope<'a> {
     /// Define a variable in the global scope that is an ultimate
     /// parent of this scope.
     pub fn define_global(&self, name: Name, val: Value) {
-        if let Some(parent) = self.parent {
+        if let Some(ref parent) = self.parent {
             parent.define_global(name, val);
         } else {
             self.variables.lock().unwrap().insert(name, val);
@@ -154,7 +289,7 @@ impl<'a> Scope<'a> {
     }
     /// Define multiple names from a value that is a list.
     /// Special case: in names is a single name, value is used directly.
-    pub fn define_multi(&mut self, names: &[Name], value: &Value) {
+    pub fn define_multi(&self, names: &[Name], value: &Value) {
         if names.len() == 1 {
             self.define(names[0].clone(), &value);
         } else {
@@ -181,7 +316,7 @@ impl<'a> Scope<'a> {
     pub fn get_or_none(&self, name: &Name) -> Option<Value> {
         if let Some((modulename, name)) = name.split_module() {
             if let Some(module) = self.get_module(&modulename) {
-                return module.as_ref().get_or_none(&name);
+                return module.get_or_none(&name);
             }
         }
         self.variables
@@ -189,7 +324,9 @@ impl<'a> Scope<'a> {
             .unwrap()
             .get(name)
             .cloned()
-            .or_else(|| self.parent.and_then(|p| p.get_or_none(name)))
+            .or_else(|| {
+                self.parent.as_ref().and_then(|p| p.get_or_none(name))
+            })
     }
 
     /// Get the value for a variable (or an error).
@@ -211,7 +348,7 @@ impl<'a> Scope<'a> {
             .collect()
     }
     /// Restore a set of local variables from a temporary holder
-    pub fn restore_local_values(&mut self, data: Vec<(Name, Option<Value>)>) {
+    pub fn restore_local_values(&self, data: Vec<(Name, Option<Value>)>) {
         let mut vars = self.variables.lock().unwrap();
         for (name, value) in data {
             if let Some(value) = value {
@@ -223,7 +360,7 @@ impl<'a> Scope<'a> {
     }
     /// Get the global Value for a variable.
     pub fn get_global_or_none(&self, name: &Name) -> Option<Value> {
-        if let Some(parent) = self.parent {
+        if let Some(ref parent) = self.parent {
             parent.get_global_or_none(name)
         } else {
             self.get_or_none(name)
@@ -233,48 +370,32 @@ impl<'a> Scope<'a> {
     /// Get a mixin by name.
     ///
     /// Returns the formal args and the body of the mixin.
-    pub fn get_mixin(&self, name: &Name) -> Option<&Mixin> {
+    pub fn get_mixin(&self, name: &Name) -> Option<Mixin> {
         self.mixins
+            .lock()
+            .unwrap()
             .get(name)
-            .or_else(|| self.parent.and_then(|p| p.get_mixin(name)))
+            .cloned()
+            .or_else(|| self.parent.as_ref().and_then(|p| p.get_mixin(name)))
     }
     /// Define a mixin.
-    pub fn define_mixin(&mut self, name: Name, mixin: Mixin) {
-        self.mixins.insert(name, mixin);
+    pub fn define_mixin(&self, name: Name, mixin: Mixin) {
+        self.mixins.lock().unwrap().insert(name, mixin);
     }
     /// Define a function.
-    pub fn define_function(&mut self, name: Name, func: SassFunction) {
-        self.functions.insert(name, func);
+    pub fn define_function(&self, name: Name, func: SassFunction) {
+        self.functions.lock().unwrap().insert(name, func);
     }
     /// Get a function by name.
-    pub fn get_function(&self, name: &Name) -> Option<&SassFunction> {
-        if let Some(f) = self.functions.get(name) {
+    pub fn get_function(&self, name: &Name) -> Option<SassFunction> {
+        let f = self.functions.lock().unwrap().get(name).cloned();
+        if let Some(f) = f {
             return Some(f);
         }
-        if let Some(parent) = self.parent {
+        if let Some(ref parent) = self.parent {
             parent.get_function(name)
         } else {
-            get_builtin_function(name)
-        }
-    }
-    /// Call a function.
-    pub fn call_function(
-        &self,
-        name: &Name,
-        args: &css::CallArgs,
-    ) -> Option<Result<Value, Error>> {
-        if let Some((modulename, name)) = name.split_module() {
-            if let Some(module) = self.get_module(&modulename) {
-                if let Some(f) = module.as_ref().get_function(&name).cloned() {
-                    return Some(f.call(self, args));
-                }
-            }
-            None
-        } else {
-            if let Some(f) = self.functions.get(&name).cloned() {
-                return Some(f.call(self, args));
-            }
-            self.parent.and_then(|p| p.call_function(name, args))
+            get_builtin_function(name).cloned()
         }
     }
     /// Get the selectors active for this scope.
@@ -284,6 +405,7 @@ impl<'a> Scope<'a> {
         }
         self.selectors.as_ref().unwrap_or_else(|| {
             self.parent
+                .as_ref()
                 .map(|p| p.get_selectors())
                 .unwrap_or_else(|| &ROOT)
         })
@@ -292,108 +414,16 @@ impl<'a> Scope<'a> {
     /// Expose another module directly in this.
     ///
     /// This is `use other as *` behavior.
-    pub fn expose_star(&mut self, other: &Scope) {
-        for (name, function) in &other.functions {
+    pub fn expose_star(&self, other: &Scope) {
+        for (name, function) in &*other.functions.lock().unwrap() {
             self.define_function(name.clone(), function.clone());
         }
         for (name, value) in &*other.variables.lock().unwrap() {
             self.define(name.clone(), value);
         }
-        for (name, m) in &other.mixins {
+        for (name, m) in &*other.mixins.lock().unwrap() {
             self.define_mixin(name.clone(), m.clone());
         }
-    }
-
-    /// Evaluate a body of items in this scope.
-    pub fn eval_body(&mut self, body: &[Item]) -> Result<Option<Value>, Error>
-    where
-        Self: Sized,
-    {
-        for b in body {
-            let result = match *b {
-                Item::IfStatement(ref cond, ref do_if, ref do_else) => {
-                    if cond.evaluate(self)?.is_true() {
-                        self.eval_body(do_if)?
-                    } else {
-                        self.eval_body(do_else)?
-                    }
-                }
-                Item::Each(ref names, ref values, ref body) => {
-                    for value in values.evaluate(self)?.iter_items() {
-                        self.define_multi(names, &value);
-                        if let Some(r) = self.eval_body(body)? {
-                            return Ok(Some(r));
-                        }
-                    }
-                    None
-                }
-                Item::For {
-                    ref name,
-                    ref from,
-                    ref to,
-                    inclusive,
-                    ref body,
-                } => {
-                    let range = crate::value::ValueRange::new(
-                        from.evaluate(self)?,
-                        to.evaluate(self)?,
-                        inclusive,
-                    )?;
-                    for value in range {
-                        self.define(name.clone(), &value);
-                        if let Some(r) = self.eval_body(body)? {
-                            return Ok(Some(r));
-                        }
-                    }
-                    None
-                }
-                Item::VariableDeclaration {
-                    ref name,
-                    ref val,
-                    default,
-                    global,
-                } => {
-                    let val = val.evaluate(self)?;
-                    self.set_variable(name.into(), val, default, global);
-                    None
-                }
-                Item::Return(ref v) => Some(v.evaluate(self)?),
-                Item::While(ref cond, ref body) => {
-                    let mut scope = Scope::sub(self);
-                    while cond.evaluate(&scope)?.is_true() {
-                        if let Some(r) = scope.eval_body(body)? {
-                            return Ok(Some(r));
-                        }
-                    }
-                    None
-                }
-                Item::Warn(ref value) => {
-                    eprintln!(
-                        "WARNING: {}",
-                        value.evaluate(self)?.format(self.get_format())
-                    );
-                    None
-                }
-                Item::Error(ref value) => {
-                    return Err(Error::S(format!(
-                        "Error: {}",
-                        value.evaluate(self)?.format(self.get_format()),
-                    )));
-                }
-                Item::None => None,
-                Item::Comment(..) => None,
-                ref x => {
-                    return Err(Error::S(format!(
-                        "Not implemented in function: {:?}",
-                        x
-                    )))
-                }
-            };
-            if let Some(result) = result {
-                return Ok(Some(result));
-            }
-        }
-        Ok(None)
     }
 }
 
@@ -728,25 +758,27 @@ pub mod test {
         s: &[(&'static str, &str)],
         expression: &[u8],
     ) -> Result<String, crate::Error> {
-        use super::Scope;
+        use super::{Scope, ScopeRef};
         use crate::parser::value::value_expression;
         use crate::parser::{code_span, ParseError};
         use crate::sass::Name;
         use nom::bytes::complete::tag;
         use nom::sequence::terminated;
-        let mut scope = Scope::new_global(Default::default());
+        let f = Default::default();
+        let scope = Scope::new_global(f);
         for &(name, val) in s {
             let val = value_expression(code_span(val.as_bytes()));
             scope.define(
                 Name::from_static(name),
-                &ParseError::check(val)?.evaluate(&scope)?,
+                &ParseError::check(val)?
+                    .evaluate(Scope::new_global_ref(f))?,
             );
         }
         let expr =
             terminated(value_expression, tag(";"))(code_span(expression));
         Ok(ParseError::check(expr)?
-            .evaluate(&mut scope)?
-            .format(scope.get_format())
+            .evaluate(ScopeRef::dynamic(scope))?
+            .format(f)
             .to_string())
     }
 }

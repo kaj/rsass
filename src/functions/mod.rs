@@ -1,7 +1,6 @@
 use crate::error::Error;
 use crate::sass::Name;
-use crate::variablescope::Module;
-use crate::{css, sass, Scope};
+use crate::{css, sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -113,10 +112,12 @@ impl SassFunction {
     /// arguments.
     pub fn call(
         &self,
-        scope: &Scope,
+        scope: ScopeRef,
         args: &css::CallArgs,
     ) -> Result<css::Value, Error> {
-        let mut s = self.args.eval(scope, args)?;
+        let s = self.args.eval(scope.clone(), args)?;
+        let cs = Name::from_static("%%CALLING_SCOPE%%");
+        s.define_module(cs, scope);
         match self.body {
             FuncImpl::Builtin(ref body) => body(&s),
             FuncImpl::UserDefined(ref body) => {
@@ -127,7 +128,7 @@ impl SassFunction {
 }
 
 lazy_static! {
-    static ref MODULES: BTreeMap<&'static str, Scope<'static>> = {
+    static ref MODULES: BTreeMap<&'static str, Scope> = {
         let mut modules = BTreeMap::new();
         modules.insert("sass:color", color::create_module());
         modules.insert("sass:list", list::create_module());
@@ -140,8 +141,8 @@ lazy_static! {
     };
 }
 
-pub fn get_global_module(name: &str) -> Option<Module> {
-    MODULES.get(name).map(Module::Builtin)
+pub fn get_global_module(name: &str) -> Option<ScopeRef> {
+    MODULES.get(name).map(ScopeRef::Builtin)
 }
 
 type FunctionMap = BTreeMap<Name, SassFunction>;
@@ -175,13 +176,13 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     use crate::parser::code_span;
     use crate::parser::formalargs::call_args;
     use crate::value::Rgba;
-    let scope = Scope::new_global(Default::default());
+    let scope = Scope::new_global_ref(Default::default());
     assert_eq!(
         FUNCTIONS.get(&name!(rgb)).unwrap().call(
-            &scope,
+            scope.clone(),
             &call_args(code_span(b"(17, 0, 225)"))?
                 .1
-                .evaluate(&scope, true)?
+                .evaluate(scope, true)?
         )?,
         css::Value::Color(Rgba::from_rgb(17, 0, 225).into(), None)
     );

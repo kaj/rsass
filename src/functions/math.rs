@@ -10,8 +10,8 @@ use std::f64::consts::{E, PI};
 ///
 /// Should conform to
 /// [the specification](https://sass-lang.com/documentation/modules/math).
-pub fn create_module() -> Scope<'static> {
-    let mut f = Scope::new_global(Default::default());
+pub fn create_module() -> Scope {
+    let f = Scope::new_global(Default::default());
 
     // - - - Boundig Functions - - -
     def!(f, ceil(number), |s| {

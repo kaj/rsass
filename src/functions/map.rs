@@ -8,8 +8,8 @@ use crate::Scope;
 ///
 /// Should conform to
 /// [the specification](https://sass-lang.com/documentation/modules/map).
-pub fn create_module() -> Scope<'static> {
-    let mut f = Scope::new_global(Default::default());
+pub fn create_module() -> Scope {
+    let f = Scope::new_global(Default::default());
     // TODO deep_merge and deep_remove
     def_va!(f, get(map, key, keys), |s| {
         let map = get_map(s.get("map")?)?;

@@ -162,7 +162,7 @@ pub fn compile_scss(
     let mut file_context = FsFileContext::new();
     file_context.push_path("tests/spec".as_ref());
     let items = parse_scss_data(input)?;
-    format.write_root(&items, &mut Scope::new_global(format), &file_context)
+    format.write_root(&items, Scope::new_global_ref(format), &file_context)
 }
 
 fn normalize_output_css(css: &str) -> String {

@@ -63,7 +63,7 @@ impl Args {
             let items = parse_scss_path(&path)?;
             let result = format.write_root(
                 &items,
-                &mut Scope::new_global(format),
+                Scope::new_global_ref(format),
                 &sub_context,
             )?;
             let out = stdout();

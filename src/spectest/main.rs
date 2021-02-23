@@ -102,7 +102,7 @@ fn handle_suite(
          \n    let mut file_context = FsFileContext::new();\
          \n    file_context.push_path(\"tests/spec\".as_ref());\
          \n    let items = parse_scss_data(input)?;\
-         \n    format.write_root(&items, &mut Scope::new_global(format), &file_context)\
+         \n    format.write_root(&items, Scope::new_global_ref(format), &file_context)\
          \n}}"
     )?;
     Ok(())

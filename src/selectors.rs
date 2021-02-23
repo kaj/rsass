@@ -9,7 +9,7 @@
 use crate::css::Value;
 use crate::sass::SassString;
 use crate::value::{ListSeparator, Quotes};
-use crate::{Error, ParseError, Scope};
+use crate::{Error, ParseError, ScopeRef};
 use std::fmt;
 use std::io::Write;
 
@@ -87,11 +87,11 @@ impl Selectors {
         Value::List(content, sep, false)
     }
     /// Evaluate any interpolation in these Selectors.
-    pub fn eval(&self, scope: &Scope) -> Result<Selectors, Error> {
+    pub fn eval(&self, scope: ScopeRef) -> Result<Selectors, Error> {
         let s = Selectors::new(
             self.s
                 .iter()
-                .map(|s| s.eval(scope))
+                .map(|s| s.eval(scope.clone()))
                 .collect::<Result<Vec<_>, Error>>()?,
         );
         // The "simple" parts we get from evaluating interpolations may
@@ -146,10 +146,10 @@ impl Selector {
         }
     }
 
-    fn eval(&self, scope: &Scope) -> Result<Selector, Error> {
+    fn eval(&self, scope: ScopeRef) -> Result<Selector, Error> {
         self.0
             .iter()
-            .map(|sp| sp.eval(scope))
+            .map(|sp| sp.eval(scope.clone()))
             .collect::<Result<_, _>>()
             .map(Selector)
     }
@@ -210,7 +210,7 @@ impl SelectorPart {
         }
     }
 
-    fn eval(&self, scope: &Scope) -> Result<SelectorPart, Error> {
+    fn eval(&self, scope: ScopeRef) -> Result<SelectorPart, Error> {
         match *self {
             SelectorPart::Attribute {
                 ref name,
@@ -218,7 +218,7 @@ impl SelectorPart {
                 ref val,
                 ref modifier,
             } => Ok(SelectorPart::Attribute {
-                name: name.evaluate2(scope)?,
+                name: name.evaluate2(scope.clone())?,
                 op: op.clone(),
                 val: val.evaluate_opt_unquote(scope)?,
                 modifier: *modifier,
@@ -228,7 +228,7 @@ impl SelectorPart {
             }
             SelectorPart::Pseudo { ref name, ref arg } => {
                 let arg = match &arg {
-                    Some(ref a) => Some(a.eval(scope)?),
+                    Some(ref a) => Some(a.eval(scope.clone())?),
                     None => None,
                 };
                 Ok(SelectorPart::Pseudo {
@@ -238,7 +238,7 @@ impl SelectorPart {
             }
             SelectorPart::PseudoElement { ref name, ref arg } => {
                 let arg = match &arg {
-                    Some(ref a) => Some(a.eval(scope)?),
+                    Some(ref a) => Some(a.eval(scope.clone())?),
                     None => None,
                 };
                 Ok(SelectorPart::PseudoElement {

@@ -10,13 +10,13 @@ fn simple_value() {
         style: output::Style::Compressed,
         precision: 5,
     };
-    let mut scope = Scope::new_global(format);
+    let scope = Scope::new_global(format);
     scope.define(Name::from_static("color"), &Rgba::from_rgb(0, 0, 0).into());
     let file_context = FsFileContext::new();
     assert_eq!(
         String::from_utf8(
             format
-                .write_root(&parsed, &mut scope, &file_context)
+                .write_root(&parsed, ScopeRef::dynamic(scope), &file_context)
                 .unwrap()
         )
         .unwrap(),
@@ -30,7 +30,7 @@ fn simple_function() {
         style: output::Style::Compressed,
         precision: 5,
     };
-    let mut scope = Scope::new_global(format);
+    let scope = Scope::new_global(format);
     scope.define_function(
         Name::from_static("get_answer"),
         SassFunction::builtin(
@@ -44,7 +44,7 @@ fn simple_function() {
     assert_eq!(
         String::from_utf8(
             format
-                .write_root(&parsed, &mut scope, &file_context)
+                .write_root(&parsed, ScopeRef::dynamic(scope), &file_context)
                 .unwrap()
         )
         .unwrap(),
@@ -59,7 +59,7 @@ fn avg(a: Number, b: Number) -> Number {
 
 #[test]
 fn function_with_args() {
-    let mut scope = Scope::new_global(Default::default());
+    let scope = Scope::new_global(Default::default());
     scope.define_function(
         Name::from_static("halfway"),
         SassFunction::builtin(
@@ -96,7 +96,7 @@ fn function_with_args() {
     assert_eq!(
         String::from_utf8(
             format
-                .write_root(&parsed, &mut scope, &file_context)
+                .write_root(&parsed, ScopeRef::dynamic(scope), &file_context)
                 .unwrap()
         )
         .unwrap(),

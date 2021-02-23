@@ -4,8 +4,8 @@ use crate::sass::Name;
 use crate::value::Quotes;
 use crate::{Format, Scope};
 
-pub fn create_module() -> Scope<'static> {
-    let mut f = Scope::new_global(Default::default());
+pub fn create_module() -> Scope {
+    let f = Scope::new_global(Default::default());
     // - - - Mixins - - -
     // TODO: load_css
 
@@ -20,13 +20,17 @@ pub fn create_module() -> Scope<'static> {
                     "Passing a string to call() is deprecated and \
                      will be illegal"
                 );
-                (s.get_function(&(&name).into()).cloned(), name)
+                (s.get_function(&(&name).into()), name)
             }
             ref v => return Err(Error::badarg("string", v)),
         };
         let args = CallArgs::from_value(s.get("args")?);
         if let Some(function) = function {
-            function.call(s, &args)
+            function.call(
+                s.get_module(&Name::from_static("%%CALLING_SCOPE%%"))
+                    .unwrap(),
+                &args,
+            )
         } else {
             Ok(Value::Call(name, args))
         }
@@ -55,7 +59,7 @@ pub fn create_module() -> Scope<'static> {
                 if s.get("css")?.is_true() {
                     Ok(Value::Function(v, None))
                 } else if let Some(f) = s.get_function(&(&v).into()) {
-                    Ok(Value::Function(v, Some(f.clone())))
+                    Ok(Value::Function(v, Some(f)))
                 } else {
                     Err(Error::S(format!("Function {} does not exist", v)))
                 }

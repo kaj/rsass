@@ -3,8 +3,8 @@ use crate::css::Value;
 use crate::value::{ListSeparator, Quotes};
 use crate::Scope;
 
-pub fn create_module() -> Scope<'static> {
-    let mut f = Scope::new_global(Default::default());
+pub fn create_module() -> Scope {
+    let f = Scope::new_global(Default::default());
     def!(f, append(list, val, separator), |s| {
         let (mut list, sep, bra) = get_list(s.get("list")?);
         let sep = match (s.get("separator")?, sep) {
