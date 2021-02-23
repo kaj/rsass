@@ -1,10 +1,11 @@
-use super::{get_color, make_call, Error, Module, SassFunction};
+use super::{get_color, make_call, Error, FunctionMap, SassFunction};
 use crate::css::Value;
 use crate::value::{Hsla, Hwba, Rgba, Unit};
+use crate::Scope;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 
-pub fn register(f: &mut Module) {
+pub fn register(f: &mut Scope) {
     def!(
         f,
         adjust(
@@ -146,7 +147,7 @@ pub fn register(f: &mut Module) {
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
     }
-    f.insert_function(name!(_opacify), func2!(fade_in(color, amount)));
+    f.define_function(name!(_opacify), func2!(fade_in(color, amount)));
 
     fn fade_out(color: Value, amount: Value) -> Result<Value, Error> {
         match (color, amount) {
@@ -157,7 +158,7 @@ pub fn register(f: &mut Module) {
             (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
         }
     }
-    f.insert_function(name!(_fade_out), func2!(fade_out(color, amount)));
+    f.define_function(name!(_fade_out), func2!(fade_out(color, amount)));
 
     def!(
         f,
@@ -226,20 +227,20 @@ pub fn register(f: &mut Module) {
     });
 }
 
-pub fn expose(m: &Module, global: &mut Module) {
-    for &(gname, lname) in &[
-        ("adjust_color", "adjust"),
-        ("alpha", "alpha"),
-        ("opacity", "opacity"),
-        ("change_color", "change"),
-        ("ie_hex_str", "ie_hex_str"),
-        ("opacify", "_opacify"),
-        ("fade_in", "_opacify"),
-        ("scale_color", "scale"),
-        ("transparentize", "_fade_out"),
-        ("fade_out", "_fade_out"),
+pub fn expose(m: &Scope, global: &mut FunctionMap) {
+    for (gname, lname) in &[
+        (name!(adjust_color), name!(adjust)),
+        (name!(alpha), name!(alpha)),
+        (name!(opacity), name!(opacity)),
+        (name!(change_color), name!(change)),
+        (name!(ie_hex_str), name!(ie_hex_str)),
+        (name!(opacify), name!(_opacify)),
+        (name!(fade_in), name!(_opacify)),
+        (name!(scale_color), name!(scale)),
+        (name!(transparentize), name!(_fade_out)),
+        (name!(fade_out), name!(_fade_out)),
     ] {
-        global.expose(gname, m, lname);
+        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }
 }
 

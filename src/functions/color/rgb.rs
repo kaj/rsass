@@ -1,4 +1,4 @@
-use super::{get_color, make_call, Error, Module, SassFunction};
+use super::{get_color, make_call, Error, FunctionMap, SassFunction};
 use crate::css::{CallArgs, Value};
 use crate::value::{ListSeparator, Quotes, Rgba, Unit};
 use crate::Scope;
@@ -111,7 +111,7 @@ pub fn preserve_call(
     )
 }
 
-pub fn register(f: &mut Module) {
+pub fn register(f: &mut Scope) {
     def!(f, _rgb(red, green, blue, alpha, color, channels), |s| {
         do_rgba("rgb", s)
     });
@@ -194,17 +194,17 @@ pub fn register(f: &mut Module) {
     });
 }
 
-pub fn expose(m: &Module, global: &mut Module) {
-    for &(gname, lname) in &[
-        ("rgb", "_rgb"),
-        ("rgba", "_rgba"),
-        ("blue", "blue"),
-        ("green", "green"),
-        ("invert", "invert"),
-        ("mix", "mix"),
-        ("red", "red"),
+pub fn expose(m: &Scope, global: &mut FunctionMap) {
+    for (gname, lname) in &[
+        (name!(rgb), name!(_rgb)),
+        (name!(rgba), name!(_rgba)),
+        (name!(blue), name!(blue)),
+        (name!(green), name!(green)),
+        (name!(invert), name!(invert)),
+        (name!(mix), name!(mix)),
+        (name!(red), name!(red)),
     ] {
-        global.expose(gname, m, lname);
+        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }
 }
 

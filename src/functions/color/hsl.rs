@@ -1,5 +1,5 @@
 use super::rgb::{preserve_call, values_from_list};
-use super::{get_color, make_call, Error, Module, SassFunction};
+use super::{get_color, make_call, Error, FunctionMap, SassFunction};
 use crate::css::Value;
 use crate::value::{Hsla, Numeric, Unit};
 use crate::Scope;
@@ -45,7 +45,7 @@ fn hsla_from_values(
     Some(Hsla::new(h, s, l, a).into())
 }
 
-pub fn register(f: &mut Module) {
+pub fn register(f: &mut Scope) {
     def!(f, _hsl(hue, saturation, lightness, alpha, channels), |s| {
         do_hsla("hsl", s)
     });
@@ -123,22 +123,22 @@ pub fn register(f: &mut Module) {
     });
 }
 
-pub fn expose(m: &Module, global: &mut Module) {
-    for &(gname, lname) in &[
-        ("hsl", "_hsl"),
-        ("hsla", "_hsla"),
-        ("adjust_hue", "_adjust_hue"),
-        ("complement", "complement"),
-        ("darken", "_darken"),
-        ("desaturate", "_desaturate"),
-        ("grayscale", "grayscale"),
-        ("hue", "hue"),
-        ("lighten", "_lighten"),
-        ("lightness", "lightness"),
-        ("saturate", "_saturate"),
-        ("saturation", "saturation"),
+pub fn expose(m: &Scope, global: &mut FunctionMap) {
+    for (gname, lname) in &[
+        (name!(hsl), name!(_hsl)),
+        (name!(hsla), name!(_hsla)),
+        (name!(adjust_hue), name!(_adjust_hue)),
+        (name!(complement), name!(complement)),
+        (name!(darken), name!(_darken)),
+        (name!(desaturate), name!(_desaturate)),
+        (name!(grayscale), name!(grayscale)),
+        (name!(hue), name!(hue)),
+        (name!(lighten), name!(_lighten)),
+        (name!(lightness), name!(lightness)),
+        (name!(saturate), name!(_saturate)),
+        (name!(saturation), name!(saturation)),
     ] {
-        global.expose(gname, m, lname);
+        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }
 }
 

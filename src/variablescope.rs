@@ -1,7 +1,7 @@
 //! A scope is something that contains variable values.
 
 use crate::css::{self, Value};
-use crate::functions::{get_builtin_function, Module, SassFunction};
+use crate::functions::{get_builtin_function, SassFunction};
 use crate::output::Format;
 use crate::sass::{Item, Mixin, Name};
 use crate::selectors::Selectors;
@@ -23,7 +23,7 @@ pub fn new_global<'a>(format: Format) -> Scope<'a> {
 /// global scopes may exists in the same rust-language process.
 pub struct Scope<'a> {
     parent: Option<&'a Scope<'a>>,
-    modules: BTreeMap<Name, &'static Module>,
+    modules: BTreeMap<Name, &'static Scope<'static>>,
     variables: Mutex<BTreeMap<Name, Value>>,
     mixins: BTreeMap<Name, Mixin>,
     functions: BTreeMap<Name, SassFunction>,
@@ -79,14 +79,18 @@ impl<'a> Scope<'a> {
     /// Define a module in the scope.
     ///
     /// This is used by the `@use` statement.
-    pub fn define_module(&mut self, name: Name, module: &'static Module) {
+    pub fn define_module(
+        &mut self,
+        name: Name,
+        module: &'static Scope<'static>,
+    ) {
         self.modules.insert(name, module);
     }
     /// Get a module.
     ///
     /// This is used when refering to a function or variable with
     /// namespace.name notation.
-    pub fn get_module(&self, name: &Name) -> Option<&Module> {
+    pub fn get_module(&self, name: &Name) -> Option<&'static Scope<'static>> {
         self.modules
             .get(name)
             .cloned()
@@ -160,7 +164,7 @@ impl<'a> Scope<'a> {
     pub fn get_or_none(&self, name: &Name) -> Option<Value> {
         if let Some((modulename, name)) = name.split_module() {
             if let Some(module) = self.get_module(&modulename) {
-                return module.get_variable(&name).cloned();
+                return module.get_or_none(&name);
             }
         }
         self.variables
@@ -265,6 +269,18 @@ impl<'a> Scope<'a> {
                 .map(|p| p.get_selectors())
                 .unwrap_or_else(|| &ROOT)
         })
+    }
+
+    /// Expose another module directly in this.
+    ///
+    /// This is `use other as *` behavior.
+    pub fn expose_star(&mut self, other: &Scope) {
+        for (name, function) in &other.functions {
+            self.define_function(name.clone(), function.clone());
+        }
+        for (name, value) in &*other.variables.lock().unwrap() {
+            self.define(name.clone(), value);
+        }
     }
 
     /// Evaluate a body of items in this scope.

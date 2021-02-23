@@ -1,4 +1,4 @@
-use super::{Error, Module, SassFunction};
+use super::{Error, FunctionMap, SassFunction};
 use crate::css::Value;
 use crate::value::{Quotes, Unit};
 use crate::Scope;
@@ -6,8 +6,8 @@ use lazy_static::lazy_static;
 use std::cmp::max;
 use std::sync::Mutex;
 
-pub fn create_module() -> Module {
-    let mut f = Module::new();
+pub fn create_module() -> Scope<'static> {
+    let mut f = Scope::new_global(Default::default());
     def!(f, quote(string), |s| {
         let v = match s.get("string")? {
             Value::Literal(v, Quotes::None) => v.replace('\\', "\\\\"),
@@ -140,27 +140,33 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(m: &Module, global: &mut Module) {
-    for &(gname, lname) in &[
-        ("quote", "quote"),
-        ("str_index", "index"),
-        ("str_insert", "insert"),
-        ("str_length", "length"),
-        ("str_slice", "slice"),
-        ("to_upper_case", "to_upper_case"),
-        ("to_lower_case", "to_lower_case"),
-        ("unique_id", "unique_id"),
-        ("unquote", "unquote"),
+pub fn expose(m: &Scope, global: &mut FunctionMap) {
+    for (gname, lname) in &[
+        (name!(quote), name!(quote)),
+        (name!(str_index), name!(index)),
+        (name!(str_insert), name!(insert)),
+        (name!(str_length), name!(length)),
+        (name!(str_slice), name!(slice)),
+        (name!(to_upper_case), name!(to_upper_case)),
+        (name!(to_lower_case), name!(to_lower_case)),
+        (name!(unique_id), name!(unique_id)),
+        (name!(unquote), name!(unquote)),
     ] {
-        global.expose(gname, m, lname);
+        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }
     // And special one that isn't part of the string module
-    def!(global, url(string), |s| {
-        Ok(Value::Literal(
-            format!("url({})", s.get("string")?.format(Default::default())),
-            Quotes::None,
-        ))
-    });
+    global.insert(
+        name!(url),
+        func!((string), |s| {
+            Ok(Value::Literal(
+                format!(
+                    "url({})",
+                    s.get("string")?.format(Default::default())
+                ),
+                Quotes::None,
+            ))
+        }),
+    );
 }
 
 fn get_integer(s: &Scope, name: &str) -> Result<isize, Error> {

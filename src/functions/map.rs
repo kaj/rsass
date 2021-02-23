@@ -1,14 +1,15 @@
-use super::{Error, Module, SassFunction};
+use super::{Error, FunctionMap, SassFunction};
 use crate::css::Value;
 use crate::ordermap::OrderMap;
 use crate::value::ListSeparator;
+use crate::Scope;
 
 /// Create the `sass:map` standard module.
 ///
 /// Should conform to
 /// [the specification](https://sass-lang.com/documentation/modules/map).
-pub fn create_module() -> Module {
-    let mut f = Module::new();
+pub fn create_module() -> Scope<'static> {
+    let mut f = Scope::new_global(Default::default());
     // TODO deep_merge and deep_remove
     def_va!(f, get(map, key, keys), |s| {
         let map = get_map(s.get("map")?)?;
@@ -124,16 +125,16 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(m: &Module, global: &mut Module) {
-    for &(gname, lname) in &[
-        ("map_get", "get"),
-        ("map_has_key", "has_key"),
-        ("map_keys", "keys"),
-        ("map_merge", "merge"),
-        ("map_remove", "remove"),
-        ("map_values", "values"),
+pub fn expose(m: &Scope, global: &mut FunctionMap) {
+    for (gname, lname) in &[
+        (name!(map_get), name!(get)),
+        (name!(map_has_key), name!(has_key)),
+        (name!(map_keys), name!(keys)),
+        (name!(map_merge), name!(merge)),
+        (name!(map_remove), name!(remove)),
+        (name!(map_values), name!(values)),
     ] {
-        global.expose(gname, m, lname);
+        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }
 }
 

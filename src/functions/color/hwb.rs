@@ -1,12 +1,13 @@
 use super::hsl::{percentage, to_rational2, to_rational_percent};
 use super::rgb::values_from_list;
-use super::{get_color, Error, Module, SassFunction};
+use super::{get_color, Error, SassFunction};
 use crate::css::Value;
 use crate::value::{Hwba, Number, Unit};
+use crate::Scope;
 use num_rational::Rational;
 use num_traits::One;
 
-pub fn register(f: &mut Module) {
+pub fn register(f: &mut Scope) {
     def!(f, hwb(hue, whiteness, blackness, alpha, channels), |s| {
         let (hue, w, b, a) = match s.get("hue")? {
             Value::List(vec, s, p) => values_from_list(&vec)

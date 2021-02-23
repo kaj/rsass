@@ -48,15 +48,7 @@ fn handle_item(
                         scope.define_module(name.into(), module);
                     }
                     UseAs::Star => {
-                        for (name, function) in module.functions() {
-                            scope.define_function(
-                                name.clone(),
-                                function.clone(),
-                            );
-                        }
-                        for (name, value) in module.variables() {
-                            scope.define(name.clone(), value);
-                        }
+                        scope.expose_star(module);
                     }
                     UseAs::Name(name) => {
                         let name = name.evaluate(scope)?.0;
