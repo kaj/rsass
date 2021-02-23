@@ -21,7 +21,7 @@ pub fn expose(m: &Module, global: &mut Module) {
     other::expose(m, global);
 }
 
-fn get_color(s: &dyn Scope, name: &str) -> Result<Color, Error> {
+fn get_color(s: &Scope, name: &str) -> Result<Color, Error> {
     match s.get(name)? {
         Value::Color(col, _) => Ok(col),
         value => Err(Error::badarg("color", &value)),

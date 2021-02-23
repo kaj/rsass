@@ -1,7 +1,6 @@
 use crate::error::Error;
 use crate::sass::Name;
-use crate::variablescope::Scope;
-use crate::{css, sass};
+use crate::{css, sass, Scope};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -25,8 +24,7 @@ pub fn get_builtin_function(name: &Name) -> Option<&'static SassFunction> {
     FUNCTIONS.get_function(name)
 }
 
-type BuiltinFn =
-    dyn Fn(&dyn Scope) -> Result<css::Value, Error> + Send + Sync;
+type BuiltinFn = dyn Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
 
 /// A function that can be called from a sass value.
 ///
@@ -117,7 +115,7 @@ impl SassFunction {
     /// arguments.
     pub fn call(
         &self,
-        scope: &dyn Scope,
+        scope: &Scope,
         args: &css::CallArgs,
     ) -> Result<css::Value, Error> {
         let mut s = self.args.eval(scope, args)?;
@@ -174,8 +172,7 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     use crate::parser::code_span;
     use crate::parser::formalargs::call_args;
     use crate::value::Rgba;
-    use crate::variablescope::new_global;
-    let scope = new_global(Default::default());
+    let scope = Scope::new_global(Default::default());
     assert_eq!(
         FUNCTIONS.get_function(&name!(rgb)).unwrap().call(
             &scope,

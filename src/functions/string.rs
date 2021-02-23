@@ -163,7 +163,7 @@ pub fn expose(m: &Module, global: &mut Module) {
     });
 }
 
-fn get_integer(s: &dyn Scope, name: &str) -> Result<isize, Error> {
+fn get_integer(s: &Scope, name: &str) -> Result<isize, Error> {
     let v0 = s.get(name)?;
     let v = v0
         .clone()

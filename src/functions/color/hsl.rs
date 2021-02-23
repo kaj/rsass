@@ -2,11 +2,11 @@ use super::rgb::{preserve_call, values_from_list};
 use super::{get_color, make_call, Error, Module, SassFunction};
 use crate::css::Value;
 use crate::value::{Hsla, Numeric, Unit};
-use crate::variablescope::Scope;
+use crate::Scope;
 use num_rational::Rational;
 use num_traits::{one, One, Zero};
 
-fn do_hsla(fn_name: &str, s: &dyn Scope) -> Result<Value, Error> {
+fn do_hsla(fn_name: &str, s: &Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
     let hue = s.get("hue")?;
     if let Value::List(vec, sep, bracketed) = if hue.is_null() {
@@ -52,7 +52,7 @@ pub fn register(f: &mut Module) {
     def!(f, _hsla(hue, saturation, lightness, alpha, channels), |s| {
         do_hsla("hsla", s)
     });
-    def!(f, _adjust_hue(color, degrees), |s: &dyn Scope| match (
+    def!(f, _adjust_hue(color, degrees), |s| match (
         s.get("color")?,
         s.get("degrees")?,
     ) {
@@ -65,7 +65,7 @@ pub fn register(f: &mut Module) {
     def!(f, complement(color), |s| {
         Ok(get_color(s, "color")?.rotate_hue(180.into()).into())
     });
-    def!(f, _saturate(color, amount), |s: &dyn Scope| match (
+    def!(f, _saturate(color, amount), |s| match (
         s.get("color")?,
         s.get("amount")?
     ) {

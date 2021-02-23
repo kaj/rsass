@@ -205,13 +205,13 @@ pub fn expose(m: &Module, global: &mut Module) {
     }
 }
 
-fn get_numeric(s: &dyn Scope, name: &str) -> Result<Numeric, Error> {
+fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, Error> {
     s.get(name)?
         .numeric_value()
         .map_err(|v| Error::badarg("number", &v))
 }
 
-fn get_radians(s: &dyn Scope, name: &str) -> Result<f64, Error> {
+fn get_radians(s: &Scope, name: &str) -> Result<f64, Error> {
     let v = get_numeric(s, name)?;
     if let Some(scaled) = v.as_unit_def(Unit::Rad) {
         Ok(f64::from(scaled))
@@ -220,7 +220,7 @@ fn get_radians(s: &dyn Scope, name: &str) -> Result<f64, Error> {
     }
 }
 
-fn get_unitless(s: &dyn Scope, name: &str) -> Result<f64, Error> {
+fn get_unitless(s: &Scope, name: &str) -> Result<f64, Error> {
     let v = get_numeric(s, name)?;
     if v.is_no_unit() {
         Ok(f64::from(v.value))
@@ -230,7 +230,7 @@ fn get_unitless(s: &dyn Scope, name: &str) -> Result<f64, Error> {
 }
 
 fn get_unitless_or(
-    s: &dyn Scope,
+    s: &Scope,
     name: &str,
     default: f64,
 ) -> Result<f64, Error> {

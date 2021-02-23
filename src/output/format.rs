@@ -3,8 +3,7 @@ use super::transform::handle_body;
 use super::Style;
 use crate::file_context::FileContext;
 use crate::sass::Item;
-use crate::variablescope::Scope;
-use crate::Error;
+use crate::{Error, Scope};
 
 /// Specifies the format for outputing css.
 ///
@@ -40,7 +39,7 @@ impl Format {
     pub fn write_root(
         &self,
         items: &[Item],
-        globals: &mut dyn Scope,
+        globals: &mut Scope,
         file_context: &impl FileContext,
     ) -> Result<Vec<u8>, Error> {
         let mut head = CssBuf::new(*self);

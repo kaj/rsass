@@ -2,7 +2,6 @@ use super::{Error, Module, SassFunction};
 use crate::css::{CallArgs, Value};
 use crate::sass::Name;
 use crate::value::Quotes;
-use crate::variablescope::Scope;
 use crate::Format;
 
 pub fn create_module() -> Module {
@@ -11,7 +10,7 @@ pub fn create_module() -> Module {
     // TODO: load_css
 
     // - - - Functions - - -
-    def_va!(f, call(function, args), |s: &dyn Scope| {
+    def_va!(f, call(function, args), |s| {
         let (function, name) = match s.get("function")? {
             Value::Function(ref name, ref func) => {
                 (func.clone(), name.clone())

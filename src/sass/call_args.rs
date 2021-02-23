@@ -1,7 +1,7 @@
 use crate::css;
 use crate::error::Error;
 use crate::sass::Value;
-use crate::variablescope::Scope;
+use crate::Scope;
 use std::default::Default;
 
 /// the actual arguments of a function or mixin call.
@@ -35,7 +35,7 @@ impl CallArgs {
     /// Evaluate these sass CallArgs to css CallArgs.
     pub fn evaluate(
         &self,
-        scope: &dyn Scope,
+        scope: &Scope,
         arithmetic: bool,
     ) -> Result<css::CallArgs, Error> {
         if let [(None, Value::List(list, _, false))] = &self.0[..] {

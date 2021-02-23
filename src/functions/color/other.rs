@@ -1,7 +1,6 @@
 use super::{get_color, make_call, Error, Module, SassFunction};
 use crate::css::Value;
 use crate::value::{Hsla, Hwba, Rgba, Unit};
-use crate::variablescope::Scope;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
 
@@ -12,7 +11,7 @@ pub fn register(f: &mut Module) {
             color, red, green, blue, hue, saturation, lightness, whiteness,
             blackness, alpha
         ),
-        |s: &dyn Scope| {
+        |s| {
             let rgba = get_color(s, "color")?;
             let c_add = |orig: Rational, name: &str| match s.get(name)? {
                 Value::Null => Ok(orig),
@@ -72,7 +71,7 @@ pub fn register(f: &mut Module) {
             color, red, green, blue, hue, saturation, lightness, whiteness,
             blackness, alpha
         ),
-        |s: &dyn Scope| {
+        |s| {
             let rgba = get_color(s, "color")?;
             let h_adj = s.get("hue")?;
             let s_adj = s.get("saturation")?;
@@ -166,7 +165,7 @@ pub fn register(f: &mut Module) {
             color, red, green, blue, hue, saturation, lightness, blackness,
             whiteness, alpha
         ),
-        |s: &dyn Scope| {
+        |s| {
             let rgba = get_color(s, "color")?;
             let h_adj = s.get("hue")?;
             let s_adj = s.get("saturation")?;

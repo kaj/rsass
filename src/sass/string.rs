@@ -1,7 +1,7 @@
 use crate::error::Error;
 use crate::sass::Value;
 use crate::value::Quotes;
-use crate::variablescope::Scope;
+use crate::Scope;
 use std::fmt;
 
 /// A string that may contain interpolations.
@@ -58,10 +58,7 @@ impl SassString {
     /// Evaluate this SassString to a literal String.
     ///
     /// All interpolated values are interpolated in the given `scope`.
-    pub fn evaluate(
-        &self,
-        scope: &dyn Scope,
-    ) -> Result<(String, Quotes), Error> {
+    pub fn evaluate(&self, scope: &Scope) -> Result<(String, Quotes), Error> {
         let mut result = String::new();
         let mut interpolated = false;
         for part in &self.parts {
@@ -126,7 +123,7 @@ impl SassString {
 
     /// Evaluate this SassString and wrap the result in a SassString
     /// of a single raw value.
-    pub fn evaluate2(&self, scope: &dyn Scope) -> Result<SassString, Error> {
+    pub fn evaluate2(&self, scope: &Scope) -> Result<SassString, Error> {
         let (result, quotes) = self.evaluate(scope)?;
         Ok(SassString {
             parts: vec![StringPart::Raw(result)],
@@ -140,7 +137,7 @@ impl SassString {
     /// If the value is name-like, unquote the resulting string.
     pub fn evaluate_opt_unquote(
         &self,
-        scope: &dyn Scope,
+        scope: &Scope,
     ) -> Result<SassString, Error> {
         let (result, quotes) = self.evaluate(scope)?;
         let mut chars = result.chars();

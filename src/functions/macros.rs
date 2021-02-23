@@ -51,7 +51,7 @@ macro_rules! def_va {
 macro_rules! func2 {
     ($name:ident( $($arg:ident $( = $value:expr )* ),* )) => {
         func!(($($arg $( = $value )* ),*),
-              |s: &dyn Scope| $name($(s.get(stringify!($arg))?),*))
+              |s| $name($(s.get(stringify!($arg))?),*))
     };
 }
 
