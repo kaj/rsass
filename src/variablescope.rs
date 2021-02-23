@@ -6,12 +6,13 @@ use crate::output::Format;
 use crate::sass::{Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::Error;
+use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
 /// Create a new global scope.
-pub fn new_global(format: Format) -> GlobalScope {
-    GlobalScope::new(format)
+pub fn new_global<'a>(format: Format) -> ScopeImpl<'a> {
+    ScopeImpl::new_global(format)
 }
 
 /// Variables, functions and mixins are defined in a `Scope`.
@@ -204,7 +205,7 @@ pub trait Scope {
     /// Define a module in the scope.
     ///
     /// This is used by the `@use` statement.
-    fn define_module(&self, name: Name, module: &'static Module);
+    fn define_module(&mut self, name: Name, module: &'static Module);
     /// Get a module.
     ///
     /// This is used when refering to a function or variable with
@@ -217,21 +218,20 @@ pub trait Scope {
 
 pub struct ScopeImpl<'a> {
     parent: Option<&'a dyn Scope>,
-    variables: BTreeMap<Name, Value>,
+    modules: BTreeMap<Name, &'static Module>,
+    variables: Mutex<BTreeMap<Name, Value>>,
     mixins: BTreeMap<Name, Mixin>,
     functions: BTreeMap<Name, SassFunction>,
     selectors: Option<Selectors>,
+    format: Format,
 }
 
 impl Scope for ScopeImpl<'_> {
-    fn define_module(&self, name: Name, module: &'static Module) {
-        // Should this use parent at all?
-        if let Some(parent) = self.parent {
-            parent.define_module(name, module);
-        } // TODO: Else define here!
+    fn define_module(&mut self, name: Name, module: &'static Module) {
+        self.modules.insert(name, module);
     }
     fn get_format(&self) -> Format {
-        self.parent.unwrap().get_format()
+        self.format
     }
 
     fn set_variable(
@@ -249,15 +249,15 @@ impl Scope for ScopeImpl<'_> {
         if global {
             self.define_global(name, val);
         } else {
-            self.variables.insert(name, val);
+            self.variables.lock().unwrap().insert(name, val);
         }
     }
     fn define_global(&self, name: Name, val: Value) {
-        // if let Some(parent) = self.parent {
-        self.parent.unwrap().define_global(name, val);
-        // } else {
-        //     self.variables.insert(name, val);
-        // }
+        if let Some(parent) = self.parent {
+            parent.define_global(name, val);
+        } else {
+            self.variables.lock().unwrap().insert(name, val);
+        }
     }
     fn get_mixin(&self, name: &Name) -> Option<&Mixin> {
         self.mixins
@@ -271,6 +271,7 @@ impl Scope for ScopeImpl<'_> {
             }
         }
         self.variables
+            .lock().unwrap()
             .get(name)
             .cloned()
             .or_else(|| self.parent.and_then(|p| p.get_or_none(name)))
@@ -279,17 +280,19 @@ impl Scope for ScopeImpl<'_> {
         &self,
         names: &[Name],
     ) -> Vec<(Name, Option<Value>)> {
+        let vars = self.variables.lock().unwrap();
         names
             .iter()
-            .map(|name| (name.clone(), self.variables.get(name).cloned()))
+            .map(|name| (name.clone(), vars.get(name).cloned()))
             .collect()
     }
     fn restore_local_values(&mut self, data: Vec<(Name, Option<Value>)>) {
+        let mut vars = self.variables.lock().unwrap();
         for (name, value) in data {
             if let Some(value) = value {
-                self.variables.insert(name, value);
+                vars.insert(name, value);
             } else {
-                self.variables.remove(&name);
+                vars.remove(&name);
             }
         }
     }
@@ -310,10 +313,16 @@ impl Scope for ScopeImpl<'_> {
         if let Some(f) = self.functions.get(name) {
             return Some(f);
         }
-        self.parent.and_then(|p| p.get_function(name))
+        if let Some(parent) = self.parent {
+            parent.get_function(name)
+        } else {
+            get_builtin_function(name)
+        }
     }
     fn get_module(&self, name: &Name) -> Option<&Module> {
-        self.parent.and_then(|p| p.get_module(name))
+        self.modules.get(name).cloned().or_else(|| {
+            self.parent.and_then(|p| p.get_module(name))
+        })
     }
     fn call_function(
         &self,
@@ -335,20 +344,36 @@ impl Scope for ScopeImpl<'_> {
         }
     }
     fn get_selectors(&self) -> &Selectors {
+        lazy_static! {
+            static ref ROOT: Selectors = Selectors::root();
+        }
         self.selectors
             .as_ref()
-            .unwrap_or_else(|| self.parent.unwrap().get_selectors())
+            .unwrap_or_else(|| self.parent.map(|p| p.get_selectors()).unwrap_or_else(|| &ROOT))
     }
 }
 
 impl<'a> ScopeImpl<'a> {
-    pub fn sub(parent: &'a dyn Scope) -> Self {
+    fn new_global(format: Format) -> Self {
         ScopeImpl {
-            parent: Some(parent),
-            variables: BTreeMap::new(),
+            parent: None,
+            modules: BTreeMap::new(),
+            variables: Mutex::new(BTreeMap::new()),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
             selectors: None,
+            format,
+        }
+    }
+    pub fn sub(parent: &'a dyn Scope) -> Self {
+        ScopeImpl {
+            parent: Some(parent),
+            modules: BTreeMap::new(),
+            variables: Mutex::new(BTreeMap::new()),
+            mixins: BTreeMap::new(),
+            functions: BTreeMap::new(),
+            selectors: None,
+            format: parent.get_format(),
         }
     }
     pub fn sub_selectors(
@@ -357,126 +382,16 @@ impl<'a> ScopeImpl<'a> {
     ) -> Self {
         ScopeImpl {
             parent: Some(parent),
-            variables: BTreeMap::new(),
-            mixins: BTreeMap::new(),
-            functions: BTreeMap::new(),
-            selectors: Some(selectors),
-        }
-    }
-}
-
-/// A `Scope` that can be created without allready having a scope as a
-/// parameter is a `GlobalScope`.
-///
-/// There can be multiple "global" scopes in the same process, they
-/// are global to the handling of a scss document.
-pub struct GlobalScope {
-    format: Format,
-    variables: Mutex<BTreeMap<Name, Value>>,
-    mixins: BTreeMap<Name, Mixin>,
-    functions: BTreeMap<Name, SassFunction>,
-    selectors: Selectors,
-    modules: Mutex<BTreeMap<Name, &'static Module>>,
-}
-
-impl GlobalScope {
-    /// Create a new global scope.
-    fn new(format: Format) -> Self {
-        GlobalScope {
-            format,
+            modules: BTreeMap::new(),
             variables: Mutex::new(BTreeMap::new()),
             mixins: BTreeMap::new(),
             functions: BTreeMap::new(),
-            selectors: Selectors::root(),
-            modules: Mutex::new(BTreeMap::new()),
+            selectors: Some(selectors),
+            format: parent.get_format(),
         }
     }
 }
 
-impl Scope for GlobalScope {
-    fn define_module(&self, name: Name, module: &'static Module) {
-        self.modules.lock().unwrap().insert(name, module);
-    }
-    fn get_module(&self, name: &Name) -> Option<&Module> {
-        self.modules.lock().unwrap().get(&name).copied()
-    }
-    fn get_format(&self) -> Format {
-        self.format
-    }
-
-    fn set_variable(
-        &mut self,
-        name: Name,
-        val: Value,
-        default: bool,
-        _global: bool,
-    ) {
-        if default
-            && !matches!(self.get_or_none(&name), Some(Value::Null) | None)
-        {
-            return;
-        }
-        self.define_global(name, val);
-    }
-    fn define_global(&self, name: Name, val: Value) {
-        self.variables.lock().unwrap().insert(name, val);
-    }
-
-    fn get_mixin(&self, name: &Name) -> Option<&Mixin> {
-        self.mixins.get(name)
-    }
-    fn get_or_none(&self, name: &Name) -> Option<Value> {
-        self.get_global_or_none(name)
-    }
-    fn store_local_values(
-        &self,
-        names: &[Name],
-    ) -> Vec<(Name, Option<Value>)> {
-        let variables = self.variables.lock().unwrap();
-        names
-            .iter()
-            .map(|name| (name.clone(), variables.get(name).cloned()))
-            .collect()
-    }
-    fn restore_local_values(&mut self, data: Vec<(Name, Option<Value>)>) {
-        let mut variables = self.variables.lock().unwrap();
-        for (name, value) in data {
-            if let Some(value) = value {
-                variables.insert(name, value);
-            } else {
-                variables.remove(&name);
-            }
-        }
-    }
-    fn get_global_or_none(&self, name: &Name) -> Option<Value> {
-        self.variables.lock().unwrap().get(name).cloned()
-    }
-    fn define_mixin(&mut self, name: Name, mixin: Mixin) {
-        self.mixins.insert(name, mixin);
-    }
-    fn define_function(&mut self, name: Name, func: SassFunction) {
-        self.functions.insert(name, func);
-    }
-    fn get_function(&self, name: &Name) -> Option<&SassFunction> {
-        if let Some(f) = self.functions.get(name) {
-            return Some(f);
-        }
-        get_builtin_function(name)
-    }
-    fn call_function(
-        &self,
-        name: &Name,
-        args: &css::CallArgs,
-    ) -> Option<Result<Value, Error>> {
-        if let Some(f) = self.functions.get(&name).cloned() {
-            return Some(f.call(self, args));
-        }
-        None
-    }
-    fn get_selectors(&self) -> &Selectors {
-        &self.selectors
-    }
-}
 
 #[cfg(test)]
 pub mod test {
@@ -809,13 +724,13 @@ pub mod test {
         s: &[(&'static str, &str)],
         expression: &[u8],
     ) -> Result<String, crate::Error> {
-        use super::{GlobalScope, Scope};
+        use super::{new_global, Scope};
         use crate::parser::value::value_expression;
         use crate::parser::{code_span, ParseError};
         use crate::sass::Name;
         use nom::bytes::complete::tag;
         use nom::sequence::terminated;
-        let mut scope = GlobalScope::new(Default::default());
+        let mut scope = new_global(Default::default());
         for &(name, val) in s {
             let val = value_expression(code_span(val.as_bytes()));
             scope.define(
