@@ -1,4 +1,4 @@
-use super::{Error, Module, SassFunction};
+use super::{Error, FunctionMap, SassFunction};
 use crate::css::{CallArgs, Value};
 use crate::{value::Color, Scope};
 mod hsl;
@@ -6,8 +6,8 @@ mod hwb;
 mod other;
 mod rgb;
 
-pub fn create_module() -> Module {
-    let mut f = Module::new();
+pub fn create_module() -> Scope<'static> {
+    let mut f = Scope::new_global(Default::default());
     hsl::register(&mut f);
     hwb::register(&mut f);
     rgb::register(&mut f);
@@ -15,13 +15,13 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(m: &Module, global: &mut Module) {
+pub fn expose(m: &Scope, global: &mut FunctionMap) {
     rgb::expose(m, global);
     hsl::expose(m, global);
     other::expose(m, global);
 }
 
-fn get_color(s: &dyn Scope, name: &str) -> Result<Color, Error> {
+fn get_color(s: &Scope, name: &str) -> Result<Color, Error> {
     match s.get(name)? {
         Value::Color(col, _) => Ok(col),
         value => Err(Error::badarg("color", &value)),

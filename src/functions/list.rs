@@ -1,9 +1,10 @@
-use super::{Error, Module, SassFunction};
+use super::{Error, FunctionMap, SassFunction};
 use crate::css::Value;
 use crate::value::{ListSeparator, Quotes};
+use crate::Scope;
 
-pub fn create_module() -> Module {
-    let mut f = Module::new();
+pub fn create_module() -> Scope<'static> {
+    let mut f = Scope::new_global(Default::default());
     def!(f, append(list, val, separator), |s| {
         let (mut list, sep, bra) = get_list(s.get("list")?);
         let sep = match (s.get("separator")?, sep) {
@@ -161,19 +162,19 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(m: &Module, global: &mut Module) {
-    for &(gname, lname) in &[
-        ("append", "append"),
-        ("index", "index"),
-        ("is_bracketed", "is_bracketed"),
-        ("join", "join"),
-        ("length", "length"),
-        ("list_separator", "separator"),
-        ("nth", "nth"),
-        ("set_nth", "set_nth"),
-        ("zip", "zip"),
+pub fn expose(m: &Scope, global: &mut FunctionMap) {
+    for (gname, lname) in &[
+        (name!(append), name!(append)),
+        (name!(index), name!(index)),
+        (name!(is_bracketed), name!(is_bracketed)),
+        (name!(join), name!(join)),
+        (name!(length), name!(length)),
+        (name!(list_separator), name!(separator)),
+        (name!(nth), name!(nth)),
+        (name!(set_nth), name!(set_nth)),
+        (name!(zip), name!(zip)),
     ] {
-        global.expose(gname, m, lname);
+        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }
 }
 

@@ -1,13 +1,13 @@
-use super::{Error, Module, SassFunction};
+use super::{Error, FunctionMap, SassFunction};
 use crate::css::Value;
 use crate::parser::code_span;
 use crate::parser::selectors::{selector, selectors};
 use crate::selectors::{Selector, Selectors};
 use crate::value::Quotes;
-use crate::ParseError;
+use crate::{ParseError, Scope};
 
-pub fn create_module() -> Module {
-    let mut f = Module::new();
+pub fn create_module() -> Scope<'static> {
+    let mut f = Scope::new_global(Default::default());
     // TODO: is_superselector
     def_va!(f, append(selectors), |s| match s.get("selectors")? {
         Value::List(v, _, _) => Ok(Value::Literal(
@@ -58,19 +58,19 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(m: &Module, global: &mut Module) {
-    for &(gname, lname) in &[
+pub fn expose(m: &Scope, global: &mut FunctionMap) {
+    for (gname, lname) in &[
         // - - - Mixins - - -
-        //("is_superselector", "is_superselector"),
-        ("selector_append", "append"),
-        //("selector_extend", "extend"),
-        ("selector_nest", "nest"),
-        ("selector_parse", "parse"),
-        //("selector_replace", "replace"),
-        //("selector_unify", "unify"),
-        //("simple_selectors", "simple_selectors"),
+        //(name!(is_superselector), name!(is_superselector)),
+        (name!(selector_append), name!(append)),
+        //(name!(selector_extend), name!(extend)),
+        (name!(selector_nest), name!(nest)),
+        (name!(selector_parse), name!(parse)),
+        //(name!(selector_replace), name!(replace)),
+        //(name!(selector_unify), name!(unify)),
+        //(name!(simple_selectors), name!(simple_selectors)),
     ] {
-        global.expose(gname, m, lname);
+        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }
 }
 

@@ -1,17 +1,16 @@
-use super::{Error, Module, SassFunction};
+use super::{Error, FunctionMap, SassFunction};
 use crate::css::{CallArgs, Value};
 use crate::sass::Name;
 use crate::value::Quotes;
-use crate::variablescope::Scope;
-use crate::Format;
+use crate::{Format, Scope};
 
-pub fn create_module() -> Module {
-    let mut f = Module::new();
+pub fn create_module() -> Scope<'static> {
+    let mut f = Scope::new_global(Default::default());
     // - - - Mixins - - -
     // TODO: load_css
 
     // - - - Functions - - -
-    def_va!(f, call(function, args), |s: &dyn Scope| {
+    def_va!(f, call(function, args), |s| {
         let (function, name) = match s.get("function")? {
             Value::Function(ref name, ref func) => {
                 (func.clone(), name.clone())
@@ -99,22 +98,21 @@ pub fn create_module() -> Module {
     f
 }
 
-pub fn expose(m: &Module, global: &mut Module) {
-    for &(gname, lname) in &[
-        // - - - Mixins - - -
-        ("call", "call"),
-        ("content_exists", "content_exists"),
-        ("feature_exists", "feature_exists"),
-        ("function_exists", "function_exists"),
-        ("get_function", "get_function"),
-        ("global_variable_exists", "global_variable_exists"),
-        ("inspect", "inspect"),
-        // TODO: ("keywords", "keywords"),
-        ("mixin_exists", "mixin_exists"),
-        ("type_of", "type_of"),
-        ("variable_exists", "variable_exists"),
+pub fn expose(m: &Scope, global: &mut FunctionMap) {
+    for (gname, lname) in &[
+        (name!(call), name!(call)),
+        (name!(content_exists), name!(content_exists)),
+        (name!(feature_exists), name!(feature_exists)),
+        (name!(function_exists), name!(function_exists)),
+        (name!(get_function), name!(get_function)),
+        (name!(global_variable_exists), name!(global_variable_exists)),
+        (name!(inspect), name!(inspect)),
+        // TODO: (name!(keywords), name!(keywords)),
+        (name!(mixin_exists), name!(mixin_exists)),
+        (name!(type_of), name!(type_of)),
+        (name!(variable_exists), name!(variable_exists)),
     ] {
-        global.expose(gname, m, lname);
+        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }
 }
 

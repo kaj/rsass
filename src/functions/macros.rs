@@ -35,7 +35,7 @@ macro_rules! func_va {
 }
 macro_rules! def {
     ($f:expr, $name:ident( $($arg:ident$(=$val:expr)* ),* ), $body:expr) => {
-        $f.insert_function(
+        $f.define_function(
             name!($name),
             func!(($($arg $( = $val )* ),*), $body),
         )
@@ -43,7 +43,7 @@ macro_rules! def {
 }
 macro_rules! def_va {
     ($f:expr, $name:ident( $($arg:ident$(=$value:expr)* ),*), $body:expr) => {
-        $f.insert_function(name!($name),
+        $f.define_function(name!($name),
                   func_va!(($($arg $( = $value )* ),*), $body))
     }
 }
@@ -51,7 +51,7 @@ macro_rules! def_va {
 macro_rules! func2 {
     ($name:ident( $($arg:ident $( = $value:expr )* ),* )) => {
         func!(($($arg $( = $value )* ),*),
-              |s: &dyn Scope| $name($(s.get(stringify!($arg))?),*))
+              |s| $name($(s.get(stringify!($arg))?),*))
     };
 }
 

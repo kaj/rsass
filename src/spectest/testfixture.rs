@@ -4,7 +4,7 @@ use super::Error;
 use lazy_static::lazy_static;
 use regex::Regex;
 use rsass::output::Format;
-use rsass::{parse_scss_data, FsFileContext, GlobalScope};
+use rsass::{parse_scss_data, FsFileContext, Scope};
 use std::io::Write;
 
 pub struct TestFixture {
@@ -162,7 +162,7 @@ pub fn compile_scss(
     let mut file_context = FsFileContext::new();
     file_context.push_path("tests/spec".as_ref());
     let items = parse_scss_data(input)?;
-    format.write_root(&items, &mut GlobalScope::new(format), &file_context)
+    format.write_root(&items, &mut Scope::new_global(format), &file_context)
 }
 
 fn normalize_output_css(css: &str) -> String {

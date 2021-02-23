@@ -12,6 +12,7 @@ project adheres to
 * Improve trigonometric precision by using f64 π rather than rational.
 * Handle more peculiarities with atan2, pow, infinities and negative zero.
 * Improve name lookups in scopes and modules, PR #87.
+* new `struct Scope` replaces trait and three structs. PR #95.
 * A color can be Hsla or Hwba as well as Rgba. PR #88, #89.
 * Handle units in `@for` loops inside sass functions.
 * Some types moved into `value` mod, imporoved docs. PR #90.

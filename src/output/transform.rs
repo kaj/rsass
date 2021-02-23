@@ -6,7 +6,7 @@ use crate::parser::parse_imported_scss_file;
 use crate::sass::{FormalArgs, Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
-use crate::variablescope::{Scope, ScopeImpl};
+use crate::Scope;
 use std::io::Write;
 
 pub fn handle_body(
@@ -14,7 +14,7 @@ pub fn handle_body(
     head: &mut CssBuf,
     rule: Option<&mut Rule>,
     buf: &mut CssBuf,
-    scope: &mut dyn Scope,
+    scope: &mut Scope,
     file_context: &impl FileContext,
 ) -> Result<(), Error> {
     let mut rule = rule;
@@ -29,7 +29,7 @@ fn handle_item(
     head: &mut CssBuf,
     rule: Option<&mut Rule>,
     buf: &mut CssBuf,
-    scope: &mut dyn Scope,
+    scope: &mut Scope,
     file_context: &impl FileContext,
 ) -> Result<(), Error> {
     let format = scope.get_format();
@@ -48,15 +48,7 @@ fn handle_item(
                         scope.define_module(name.into(), module);
                     }
                     UseAs::Star => {
-                        for (name, function) in module.functions() {
-                            scope.define_function(
-                                name.clone(),
-                                function.clone(),
-                            );
-                        }
-                        for (name, value) in module.variables() {
-                            scope.define(name.clone(), value);
-                        }
+                        scope.expose_star(module);
                     }
                     UseAs::Name(name) => {
                         let name = name.evaluate(scope)?.0;
@@ -115,7 +107,7 @@ fn handle_item(
                 head,
                 Some(&mut rule),
                 &mut sub,
-                &mut ScopeImpl::sub_selectors(scope, selectors),
+                &mut Scope::sub_selectors(scope, selectors),
                 file_context,
             )?;
             buf.write_rule(&rule, true)?;
@@ -143,7 +135,7 @@ fn handle_item(
                     head,
                     Some(&mut rule),
                     &mut sub,
-                    &mut ScopeImpl::sub(scope),
+                    &mut Scope::sub(scope),
                     file_context,
                 )?;
                 let mut t = CssBuf::new_as(&sub);
@@ -265,7 +257,7 @@ fn handle_item(
             )?;
             let mut rule = rule;
             for value in range {
-                let mut scope = ScopeImpl::sub(scope);
+                let mut scope = Scope::sub(scope);
                 scope.define(name.clone(), &value);
                 handle_body(
                     body,
@@ -279,7 +271,7 @@ fn handle_item(
         }
         Item::While(ref cond, ref body) => {
             let mut rule = rule;
-            let mut scope = ScopeImpl::sub(scope);
+            let mut scope = Scope::sub(scope);
             while cond.evaluate(&scope)?.is_true() {
                 handle_body(
                     body,
@@ -318,7 +310,7 @@ fn handle_item(
                 head,
                 Some(&mut rule),
                 &mut sub,
-                &mut ScopeImpl::sub_selectors(scope, selectors),
+                &mut Scope::sub_selectors(scope, selectors),
                 file_context,
             )?;
             buf.write_rule(&rule, true)?;

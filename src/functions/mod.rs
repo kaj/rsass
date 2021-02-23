@@ -1,7 +1,6 @@
 use crate::error::Error;
 use crate::sass::Name;
-use crate::variablescope::Scope;
-use crate::{css, sass};
+use crate::{css, sass, Scope};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -9,7 +8,6 @@ use std::{cmp, fmt};
 
 #[macro_use]
 mod macros;
-mod module;
 
 mod color;
 mod list;
@@ -19,14 +17,11 @@ mod meta;
 mod selector;
 mod string;
 
-pub use module::Module;
-
 pub fn get_builtin_function(name: &Name) -> Option<&'static SassFunction> {
-    FUNCTIONS.get_function(name)
+    FUNCTIONS.get(name)
 }
 
-type BuiltinFn =
-    dyn Fn(&dyn Scope) -> Result<css::Value, Error> + Send + Sync;
+type BuiltinFn = dyn Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
 
 /// A function that can be called from a sass value.
 ///
@@ -117,7 +112,7 @@ impl SassFunction {
     /// arguments.
     pub fn call(
         &self,
-        scope: &dyn Scope,
+        scope: &Scope,
         args: &css::CallArgs,
     ) -> Result<css::Value, Error> {
         let mut s = self.args.eval(scope, args)?;
@@ -131,7 +126,7 @@ impl SassFunction {
 }
 
 lazy_static! {
-    static ref MODULES: BTreeMap<&'static str, Module> = {
+    static ref MODULES: BTreeMap<&'static str, Scope<'static>> = {
         let mut modules = BTreeMap::new();
         modules.insert("sass:color", color::create_module());
         modules.insert("sass:list", list::create_module());
@@ -144,20 +139,25 @@ lazy_static! {
     };
 }
 
-pub fn get_global_module(name: &str) -> Option<&'static Module> {
+pub fn get_global_module(name: &str) -> Option<&'static Scope<'static>> {
     MODULES.get(name)
 }
 
+type FunctionMap = BTreeMap<Name, SassFunction>;
+
 lazy_static! {
-    static ref FUNCTIONS: Module = {
-        let mut f = Module::new();
-        def!(f, if(condition, if_true, if_false), |s| {
-            if s.get("condition")?.is_true() {
-                Ok(s.get("if_true")?)
-            } else {
-                Ok(s.get("if_false")?)
-            }
-        });
+    static ref FUNCTIONS: FunctionMap = {
+        let mut f = BTreeMap::new();
+        f.insert(
+            name!(if),
+            func!((condition, if_true, if_false), |s| {
+                if s.get("condition")?.is_true() {
+                    Ok(s.get("if_true")?)
+                } else {
+                    Ok(s.get("if_false")?)
+                }
+            }),
+        );
         color::expose(MODULES.get("sass:color").unwrap(), &mut f);
         list::expose(MODULES.get("sass:list").unwrap(), &mut f);
         map::expose(MODULES.get("sass:map").unwrap(), &mut f);
@@ -174,10 +174,9 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     use crate::parser::code_span;
     use crate::parser::formalargs::call_args;
     use crate::value::Rgba;
-    use crate::variablescope::GlobalScope;
-    let scope = GlobalScope::new(Default::default());
+    let scope = Scope::new_global(Default::default());
     assert_eq!(
-        FUNCTIONS.get_function(&name!(rgb)).unwrap().call(
+        FUNCTIONS.get(&name!(rgb)).unwrap().call(
             &scope,
             &call_args(code_span(b"(17, 0, 225)"))?
                 .1

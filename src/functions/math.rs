@@ -1,4 +1,4 @@
-use super::{Error, Module, SassFunction, Scope};
+use super::{Error, FunctionMap, SassFunction, Scope};
 use crate::css::Value;
 use crate::value::{Number, Numeric, Quotes, Unit};
 use num_rational::Rational;
@@ -10,8 +10,8 @@ use std::f64::consts::{E, PI};
 ///
 /// Should conform to
 /// [the specification](https://sass-lang.com/documentation/modules/math).
-pub fn create_module() -> Module {
-    let mut f = Module::new();
+pub fn create_module() -> Scope<'static> {
+    let mut f = Scope::new_global(Default::default());
 
     // - - - Boundig Functions - - -
     def!(f, ceil(number), |s| {
@@ -176,42 +176,42 @@ pub fn create_module() -> Module {
         v => Err(Error::badarg("number or null", &v)),
     });
 
-    f.set_variable(name!(pi), Value::scalar(PI));
-    f.set_variable(name!(e), Value::scalar(E));
+    f.set_variable(name!(pi), Value::scalar(PI), false, false);
+    f.set_variable(name!(e), Value::scalar(E), false, false);
     f
 }
 
-pub fn expose(m: &Module, global: &mut Module) {
-    for &(gname, lname) in &[
+pub fn expose(m: &Scope, global: &mut FunctionMap) {
+    for (gname, lname) in &[
         // - - - Boundig Functions - - -
-        ("ceil", "ceil"),
-        ("floor", "floor"),
-        ("max", "max"),
-        ("min", "min"),
-        ("round", "round"),
+        (name!(ceil), name!(ceil)),
+        (name!(floor), name!(floor)),
+        (name!(max), name!(max)),
+        (name!(min), name!(min)),
+        (name!(round), name!(round)),
         // - - - Distance Functions - - -
-        ("abs", "abs"),
+        (name!(abs), name!(abs)),
         // Exponential and trigonometric functions are not exposed
 
         // - - - Unit Functions - - -
-        ("comparable", "compatible"),
-        ("unitless", "is_unitless"),
-        ("unit", "unit"),
+        (name!(comparable), name!(compatible)),
+        (name!(unitless), name!(is_unitless)),
+        (name!(unit), name!(unit)),
         // - - - Other Functions - - -
-        ("percentage", "percentage"),
-        ("random", "random"),
+        (name!(percentage), name!(percentage)),
+        (name!(random), name!(random)),
     ] {
-        global.expose(gname, m, lname);
+        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }
 }
 
-fn get_numeric(s: &dyn Scope, name: &str) -> Result<Numeric, Error> {
+fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, Error> {
     s.get(name)?
         .numeric_value()
         .map_err(|v| Error::badarg("number", &v))
 }
 
-fn get_radians(s: &dyn Scope, name: &str) -> Result<f64, Error> {
+fn get_radians(s: &Scope, name: &str) -> Result<f64, Error> {
     let v = get_numeric(s, name)?;
     if let Some(scaled) = v.as_unit_def(Unit::Rad) {
         Ok(f64::from(scaled))
@@ -220,7 +220,7 @@ fn get_radians(s: &dyn Scope, name: &str) -> Result<f64, Error> {
     }
 }
 
-fn get_unitless(s: &dyn Scope, name: &str) -> Result<f64, Error> {
+fn get_unitless(s: &Scope, name: &str) -> Result<f64, Error> {
     let v = get_numeric(s, name)?;
     if v.is_no_unit() {
         Ok(f64::from(v.value))
@@ -230,7 +230,7 @@ fn get_unitless(s: &dyn Scope, name: &str) -> Result<f64, Error> {
 }
 
 fn get_unitless_or(
-    s: &dyn Scope,
+    s: &Scope,
     name: &str,
     default: f64,
 ) -> Result<f64, Error> {

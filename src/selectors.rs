@@ -9,8 +9,7 @@
 use crate::css::Value;
 use crate::sass::SassString;
 use crate::value::{ListSeparator, Quotes};
-use crate::variablescope::Scope;
-use crate::{Error, ParseError};
+use crate::{Error, ParseError, Scope};
 use std::fmt;
 use std::io::Write;
 
@@ -88,7 +87,7 @@ impl Selectors {
         Value::List(content, sep, false)
     }
     /// Evaluate any interpolation in these Selectors.
-    pub fn eval(&self, scope: &dyn Scope) -> Result<Selectors, Error> {
+    pub fn eval(&self, scope: &Scope) -> Result<Selectors, Error> {
         let s = Selectors::new(
             self.s
                 .iter()
@@ -147,7 +146,7 @@ impl Selector {
         }
     }
 
-    fn eval(&self, scope: &dyn Scope) -> Result<Selector, Error> {
+    fn eval(&self, scope: &Scope) -> Result<Selector, Error> {
         self.0
             .iter()
             .map(|sp| sp.eval(scope))
@@ -211,7 +210,7 @@ impl SelectorPart {
         }
     }
 
-    fn eval(&self, scope: &dyn Scope) -> Result<SelectorPart, Error> {
+    fn eval(&self, scope: &Scope) -> Result<SelectorPart, Error> {
         match *self {
             SelectorPart::Attribute {
                 ref name,

@@ -4,7 +4,7 @@ use crate::functions::get_builtin_function;
 use crate::ordermap::OrderMap;
 use crate::sass::{CallArgs, Name, SassString};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Quotes, Rgba};
-use crate::variablescope::Scope;
+use crate::Scope;
 use num_traits::Zero;
 
 /// A sass value.
@@ -83,14 +83,14 @@ impl Value {
     }
 
     /// Evaluate this value in a given scope.
-    pub fn evaluate(&self, scope: &dyn Scope) -> Result<css::Value, Error> {
+    pub fn evaluate(&self, scope: &Scope) -> Result<css::Value, Error> {
         self.do_evaluate(scope, false)
     }
 
     /// Evaluate this value to a [`css::Value`].
     pub fn do_evaluate(
         &self,
-        scope: &dyn Scope,
+        scope: &Scope,
         arithmetic: bool,
     ) -> Result<css::Value, Error> {
         match *self {
