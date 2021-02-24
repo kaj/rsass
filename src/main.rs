@@ -1,6 +1,6 @@
 use rsass::{
     output::{Format, Style},
-    parse_scss_path, Error, FsFileContext, Scope,
+    parse_scss_path, Error, FsFileContext, ScopeRef,
 };
 use std::io::{stdout, Write};
 use std::path::PathBuf;
@@ -63,7 +63,7 @@ impl Args {
             let items = parse_scss_path(&path)?;
             let result = format.write_root(
                 &items,
-                Scope::new_global_ref(format),
+                ScopeRef::new_global(format),
                 &sub_context,
             )?;
             let out = stdout();

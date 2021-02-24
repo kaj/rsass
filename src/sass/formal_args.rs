@@ -2,7 +2,7 @@ use crate::css;
 use crate::error::Error;
 use crate::sass::{Name, Value};
 use crate::value::ListSeparator;
-use crate::{Scope, ScopeRef};
+use crate::ScopeRef;
 use std::default::Default;
 
 /// The declared arguments of a mixin or function declaration.
@@ -33,7 +33,7 @@ impl FormalArgs {
         scope: ScopeRef,
         args: &css::CallArgs,
     ) -> Result<ScopeRef, Error> {
-        let argscope = ScopeRef::dynamic(Scope::sub(scope));
+        let argscope = ScopeRef::sub(scope);
         let n = self.0.len();
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
             if let Some(value) = args

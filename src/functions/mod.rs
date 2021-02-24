@@ -128,7 +128,7 @@ impl SassFunction {
         match self.body {
             FuncImpl::Builtin(ref body) => {
                 let s = self.args.eval(
-                    Scope::new_global_ref(callscope.get_format()),
+                    ScopeRef::new_global(callscope.get_format()),
                     args,
                 )?;
                 s.define_module(cs, callscope);
@@ -192,7 +192,7 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     use crate::parser::code_span;
     use crate::parser::formalargs::call_args;
     use crate::value::Rgba;
-    let scope = Scope::new_global_ref(Default::default());
+    let scope = ScopeRef::new_global(Default::default());
     assert_eq!(
         FUNCTIONS.get(&name!(rgb)).unwrap().call(
             scope.clone(),

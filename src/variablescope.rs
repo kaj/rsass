@@ -18,9 +18,26 @@ pub enum ScopeRef {
 }
 
 impl ScopeRef {
-    pub fn dynamic(scope: Scope) -> Self {
+    /// Create a new global scope
+    ///
+    /// A "global" scope is just a scope that have no parent.
+    /// There will be multiple global scopes existing during the
+    /// evaluation of a single sass file.
+    pub fn new_global(format: Format) -> Self {
+        Self::dynamic(Scope::new_global(format))
+    }
+    /// Create a new subscope of a given parent.
+    pub fn sub(parent: ScopeRef) -> Self {
+        Self::dynamic(Scope::sub(parent))
+    }
+    /// Create a new subscope of a given parent with selectors.
+    pub fn sub_selectors(parent: ScopeRef, selectors: Selectors) -> Self {
+        Self::dynamic(Scope::sub_selectors(parent, selectors))
+    }
+    fn dynamic(scope: Scope) -> Self {
         ScopeRef::Dynamic(Arc::new(scope))
     }
+
     pub fn is_same(a: &Self, b: &Self) -> bool {
         match (a, b) {
             (ScopeRef::Builtin(a), ScopeRef::Builtin(b)) => {
@@ -98,7 +115,7 @@ impl ScopeRef {
                 }
                 Item::Return(ref v) => Some(v.evaluate(self.clone())?),
                 Item::While(ref cond, ref body) => {
-                    let scope = Self::dynamic(Scope::sub(self.clone()));
+                    let scope = ScopeRef::sub(self.clone());
                     while cond.evaluate(scope.clone())?.is_true() {
                         if let Some(r) = scope.clone().eval_body(body)? {
                             return Ok(Some(r));
@@ -182,22 +199,6 @@ impl<'a> Scope {
             selectors: None,
             format,
         }
-    }
-    /// Create a new global scope
-    ///
-    /// A "global" scope is just a scope that have no parent.
-    /// There will be multiple global scopes existing during the
-    /// evaluation of a single sass file.
-    pub fn new_global_ref(format: Format) -> ScopeRef {
-        ScopeRef::dynamic(Scope {
-            parent: None,
-            modules: Mutex::new(BTreeMap::new()),
-            variables: Mutex::new(BTreeMap::new()),
-            mixins: Mutex::new(BTreeMap::new()),
-            functions: Mutex::new(BTreeMap::new()),
-            selectors: None,
-            format,
-        })
     }
     /// Create a new subscope of a given parent.
     pub fn sub(parent: ScopeRef) -> Self {
@@ -771,8 +772,7 @@ pub mod test {
             let val = value_expression(code_span(val.as_bytes()));
             scope.define(
                 Name::from_static(name),
-                &ParseError::check(val)?
-                    .evaluate(Scope::new_global_ref(f))?,
+                &ParseError::check(val)?.evaluate(ScopeRef::new_global(f))?,
             );
         }
         let expr =

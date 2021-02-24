@@ -6,7 +6,7 @@ use crate::parser::parse_imported_scss_file;
 use crate::sass::{Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
-use crate::{SassFunction, Scope, ScopeRef};
+use crate::{SassFunction, ScopeRef};
 use std::io::Write;
 
 pub fn handle_body(
@@ -69,7 +69,7 @@ fn handle_item(
             } else if let Some((sub_context, path, mut file)) =
                 file_context.find_file(&name)?
             {
-                let module = Scope::new_global_ref(format);
+                let module = ScopeRef::new_global(format);
                 let items = parse_imported_scss_file(
                     &mut file,
                     &path,
@@ -137,7 +137,7 @@ fn handle_item(
                 head,
                 Some(&mut rule),
                 &mut sub,
-                ScopeRef::dynamic(Scope::sub_selectors(scope, selectors)),
+                ScopeRef::sub_selectors(scope, selectors),
                 file_context,
             )?;
             buf.write_rule(&rule, true)?;
@@ -165,7 +165,7 @@ fn handle_item(
                     head,
                     Some(&mut rule),
                     &mut sub,
-                    ScopeRef::dynamic(Scope::sub(scope)),
+                    ScopeRef::sub(scope),
                     file_context,
                 )?;
                 let mut t = CssBuf::new_as(&sub);
@@ -224,7 +224,7 @@ fn handle_item(
             let sel = scope.get_selectors().clone();
             if let Some(mixin) = scope.get_mixin(&name.into()) {
                 let subscope = mixin.args.eval(
-                    ScopeRef::dynamic(Scope::sub_selectors(mixin.scope, sel)),
+                    ScopeRef::sub_selectors(mixin.scope, sel),
                     &args.evaluate(scope.clone(), true)?,
                 )?;
                 subscope.define_mixin(
@@ -261,10 +261,7 @@ fn handle_item(
                         head,
                         Some(rule),
                         buf,
-                        ScopeRef::dynamic(Scope::sub_selectors(
-                            content.scope,
-                            sel,
-                        )),
+                        ScopeRef::sub_selectors(content.scope, sel),
                         file_context,
                     )?;
                 }
@@ -310,21 +307,21 @@ fn handle_item(
             )?;
             let mut rule = rule;
             for value in range {
-                let scope = Scope::sub(scope.clone());
+                let scope = ScopeRef::sub(scope.clone());
                 scope.define(name.clone(), &value);
                 handle_body(
                     body,
                     head,
                     rule.as_deref_mut(),
                     buf,
-                    ScopeRef::dynamic(scope),
+                    scope,
                     file_context,
                 )?;
             }
         }
         Item::While(ref cond, ref body) => {
             let mut rule = rule;
-            let scope = ScopeRef::dynamic(Scope::sub(scope));
+            let scope = ScopeRef::sub(scope);
             while cond.evaluate(scope.clone())?.is_true() {
                 handle_body(
                     body,
@@ -363,7 +360,7 @@ fn handle_item(
                 head,
                 Some(&mut rule),
                 &mut sub,
-                ScopeRef::dynamic(Scope::sub_selectors(scope, selectors)),
+                ScopeRef::sub_selectors(scope, selectors),
                 file_context,
             )?;
             buf.write_rule(&rule, true)?;

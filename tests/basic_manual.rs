@@ -22,7 +22,7 @@ fn use_module_star() {
         "div {\
          \n  color: purple;\
          \n  col1: purple;\
-         \n  col2: black;\
+         \n  col2: pink;\
          \n}\
          \ndiv em {\
          \n  color: pink;\
@@ -41,7 +41,7 @@ fn use_module() {
         "div {\
          \n  color: purple;\
          \n  col1: purple;\
-         \n  col2: black;\
+         \n  col2: pink;\
          \n}\n",
     );
 }

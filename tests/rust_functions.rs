@@ -10,14 +10,12 @@ fn simple_value() {
         style: output::Style::Compressed,
         precision: 5,
     };
-    let scope = Scope::new_global(format);
+    let scope = ScopeRef::new_global(format);
     scope.define(Name::from_static("color"), &Rgba::from_rgb(0, 0, 0).into());
     let file_context = FsFileContext::new();
     assert_eq!(
         String::from_utf8(
-            format
-                .write_root(&parsed, ScopeRef::dynamic(scope), &file_context)
-                .unwrap()
+            format.write_root(&parsed, scope, &file_context).unwrap()
         )
         .unwrap(),
         "p{color:#000}\n"
@@ -30,7 +28,7 @@ fn simple_function() {
         style: output::Style::Compressed,
         precision: 5,
     };
-    let scope = Scope::new_global(format);
+    let scope = ScopeRef::new_global(format);
     scope.define_function(
         Name::from_static("get_answer"),
         SassFunction::builtin(
@@ -43,9 +41,7 @@ fn simple_function() {
     let file_context = FsFileContext::new();
     assert_eq!(
         String::from_utf8(
-            format
-                .write_root(&parsed, ScopeRef::dynamic(scope), &file_context)
-                .unwrap()
+            format.write_root(&parsed, scope, &file_context).unwrap()
         )
         .unwrap(),
         "p{x:42}\n"
@@ -59,7 +55,7 @@ fn avg(a: Number, b: Number) -> Number {
 
 #[test]
 fn function_with_args() {
-    let scope = Scope::new_global(Default::default());
+    let scope = ScopeRef::new_global(Default::default());
     scope.define_function(
         Name::from_static("halfway"),
         SassFunction::builtin(
@@ -95,9 +91,7 @@ fn function_with_args() {
     let file_context = FsFileContext::new();
     assert_eq!(
         String::from_utf8(
-            format
-                .write_root(&parsed, ScopeRef::dynamic(scope), &file_context)
-                .unwrap()
+            format.write_root(&parsed, scope, &file_context).unwrap()
         )
         .unwrap(),
         "p{x:14}\n"
