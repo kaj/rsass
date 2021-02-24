@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/blue_magentas.hrx"
 #[test]
-#[ignore] // unexepected error
 fn blue_magentas() {
     assert_eq!(
         rsass(
@@ -67,7 +66,6 @@ fn blue_magentas() {
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/blues.hrx"
 #[test]
-#[ignore] // unexepected error
 fn blues() {
     assert_eq!(
         rsass(
@@ -130,7 +128,6 @@ fn blues() {
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/cyan_blues.hrx"
 #[test]
-#[ignore] // unexepected error
 fn cyan_blues() {
     assert_eq!(
         rsass(
@@ -193,7 +190,6 @@ fn cyan_blues() {
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/cyans.hrx"
 #[test]
-#[ignore] // unexepected error
 fn cyans() {
     assert_eq!(
         rsass(
@@ -256,7 +252,6 @@ fn cyans() {
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/green_cyans.hrx"
 #[test]
-#[ignore] // unexepected error
 fn green_cyans() {
     assert_eq!(
         rsass(
@@ -319,7 +314,6 @@ fn green_cyans() {
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/greens.hrx"
 #[test]
-#[ignore] // unexepected error
 fn greens() {
     assert_eq!(
         rsass(
@@ -382,7 +376,6 @@ fn greens() {
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/magenta_reds.hrx"
 #[test]
-#[ignore] // unexepected error
 fn magenta_reds() {
     assert_eq!(
         rsass(
@@ -445,7 +438,6 @@ fn magenta_reds() {
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/magentas.hrx"
 #[test]
-#[ignore] // unexepected error
 fn magentas() {
     assert_eq!(
         rsass(
@@ -508,7 +500,6 @@ fn magentas() {
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/oranges.hrx"
 #[test]
-#[ignore] // unexepected error
 fn oranges() {
     assert_eq!(
         rsass(
@@ -571,7 +562,6 @@ fn oranges() {
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/reds.hrx"
 #[test]
-#[ignore] // unexepected error
 fn reds() {
     assert_eq!(
         rsass(
@@ -634,7 +624,6 @@ fn reds() {
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/yellow_greens.hrx"
 #[test]
-#[ignore] // unexepected error
 fn yellow_greens() {
     assert_eq!(
         rsass(
@@ -697,7 +686,6 @@ fn yellow_greens() {
 
 // From "sass-spec/spec/core_functions/color/hwb/three_args/w3c/yellows.hrx"
 #[test]
-#[ignore] // unexepected error
 fn yellows() {
     assert_eq!(
         rsass(
