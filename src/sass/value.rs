@@ -1,8 +1,7 @@
 use crate::css;
 use crate::error::Error;
-use crate::functions::get_builtin_function;
 use crate::ordermap::OrderMap;
-use crate::sass::{CallArgs, Name, SassString};
+use crate::sass::{CallArgs, SassString};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Quotes, Rgba};
 use crate::ScopeRef;
 use num_traits::Zero;
@@ -127,15 +126,9 @@ impl Value {
             Value::Call(ref name, ref args) => {
                 let args = args.evaluate(scope.clone(), true)?;
                 if let Some(name) = name.single_raw() {
-                    let nname: Name = name.into();
-                    match scope.call_function(&nname, &args) {
-                        Some(value) => Ok(value?),
-                        None => get_builtin_function(&nname)
-                            .map(|f| f.call(scope, &args))
-                            .unwrap_or_else(|| {
-                                Ok(css::Value::Call(name.to_string(), args))
-                            }),
-                    }
+                    scope.call_function(&name.into(), &args).unwrap_or_else(
+                        || Ok(css::Value::Call(name.to_string(), args)),
+                    )
                 } else {
                     let (name, _) = name.evaluate(scope)?;
                     Ok(css::Value::Call(name, args))

@@ -2,7 +2,7 @@ use super::{Error, FunctionMap, SassFunction};
 use crate::css::{CallArgs, Value};
 use crate::sass::Name;
 use crate::value::Quotes;
-use crate::{Format, Scope};
+use crate::{Format, Scope, ScopeRef};
 
 pub fn create_module() -> Scope {
     let f = Scope::new_global(Default::default());
@@ -20,17 +20,13 @@ pub fn create_module() -> Scope {
                     "Passing a string to call() is deprecated and \
                      will be illegal"
                 );
-                (s.get_function(&(&name).into()), name)
+                (call_scope(s).get_function(&(&name).into()), name)
             }
             ref v => return Err(Error::badarg("string", v)),
         };
         let args = CallArgs::from_value(s.get("args")?);
         if let Some(function) = function {
-            function.call(
-                s.get_module(&Name::from_static("%%CALLING_SCOPE%%"))
-                    .unwrap(),
-                &args,
-            )
+            function.call(call_scope(s), &args)
         } else {
             Ok(Value::Call(name, args))
         }
@@ -47,7 +43,7 @@ pub fn create_module() -> Scope {
     });
     def!(f, function_exists(name), |s| match s.get("name")? {
         Value::Literal(v, _) => {
-            Ok(s.get_function(&v.into()).is_some().into())
+            Ok(call_scope(s).get_function(&v.into()).is_some().into())
         }
         v => Err(Error::badarg("string", &v)),
     });
@@ -58,7 +54,9 @@ pub fn create_module() -> Scope {
             Value::Literal(v, _) => {
                 if s.get("css")?.is_true() {
                     Ok(Value::Function(v, None))
-                } else if let Some(f) = s.get_function(&(&v).into()) {
+                } else if let Some(f) =
+                    call_scope(s).get_function(&(&v).into())
+                {
                     Ok(Value::Function(v, Some(f)))
                 } else {
                     Err(Error::S(format!("Function {} does not exist", v)))
@@ -69,7 +67,7 @@ pub fn create_module() -> Scope {
     );
     def!(f, global_variable_exists(name), |s| match s.get("name")? {
         Value::Literal(v, _) => {
-            Ok(s.get_global_or_none(&v.into()).is_some().into())
+            Ok(call_scope(s).get_global_or_none(&v.into()).is_some().into())
         }
         v => Err(Error::badarg("string", &v)),
     });
@@ -84,7 +82,7 @@ pub fn create_module() -> Scope {
     // TODO: keywords
     def!(f, mixin_exists(name), |s| match &s.get("name")? {
         &Value::Literal(ref v, _) => {
-            Ok(s.get_mixin(&v.into()).is_some().into())
+            Ok(call_scope(s).get_mixin(&v.into()).is_some().into())
         }
         v => Err(Error::badarg("string", v)),
     });
@@ -95,7 +93,7 @@ pub fn create_module() -> Scope {
     )));
     def!(f, variable_exists(name), |s| match s.get("name")? {
         Value::Literal(v, _) => {
-            Ok(s.get_or_none(&v.into()).is_some().into())
+            Ok(call_scope(s).get_or_none(&v.into()).is_some().into())
         }
         v => Err(Error::badarg("string", &v)),
     });
@@ -135,6 +133,11 @@ static IMPLEMENTED_FEATURES: &[&str] = &[
     // interpolation treated as SassScript.
     // "custom-property",
 ];
+
+fn call_scope(s: &Scope) -> ScopeRef {
+    s.get_module(&Name::from_static("%%CALLING_SCOPE%%"))
+        .unwrap()
+}
 
 #[cfg(test)]
 mod test {

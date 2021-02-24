@@ -1,5 +1,4 @@
 use super::{CallArgs, FormalArgs, Name, SassString, Value};
-use crate::functions::SassFunction;
 use crate::parser::SourcePos;
 use crate::selectors::Selectors;
 
@@ -47,7 +46,7 @@ pub enum Item {
     Content,
 
     /// An `@function` declaration.
-    FunctionDeclaration(String, SassFunction),
+    FunctionDeclaration(String, FormalArgs, Vec<Item>),
     /// An `@return` statement in a function declaration.
     Return(Value),
 

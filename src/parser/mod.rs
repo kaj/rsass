@@ -30,7 +30,6 @@ use self::util::{
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
-use crate::functions::SassFunction;
 #[cfg(test)]
 use crate::sass::{CallArgs, FormalArgs};
 use crate::sass::{Item, Mixin, Name, UseAs, Value};
@@ -523,10 +522,7 @@ fn function_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(formal_args, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
-    Ok((
-        input,
-        Item::FunctionDeclaration(name, SassFunction::new(args, body)),
-    ))
+    Ok((input, Item::FunctionDeclaration(name, args, body)))
 }
 
 fn return_stmt2(input: Span) -> IResult<Span, Item> {

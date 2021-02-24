@@ -2,7 +2,7 @@ $color: purple;
 
 @function foo($v) {
     @if $v > 0 {
-        @return purple;
+        @return $color;
     } @else {
         @return black;
     }

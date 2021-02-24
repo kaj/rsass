@@ -21,29 +21,26 @@ impl ScopeRef {
     pub fn dynamic(scope: Scope) -> Self {
         ScopeRef::Dynamic(Arc::new(scope))
     }
+    pub fn is_same(a: &Self, b: &Self) -> bool {
+        match (a, b) {
+            (ScopeRef::Builtin(a), ScopeRef::Builtin(b)) => {
+                std::ptr::eq(a, b)
+            }
+            (ScopeRef::Dynamic(ref a), ScopeRef::Dynamic(ref b)) => {
+                Arc::ptr_eq(a, b)
+            }
+            _ => false,
+        }
+    }
     /// Call a function.
     pub fn call_function(
         &self,
         name: &Name,
         args: &css::CallArgs,
     ) -> Option<Result<Value, Error>> {
-        if let Some((modulename, name)) = name.split_module() {
-            if let Some(module) = self.get_module(&modulename) {
-                if let Some(f) = module.get_function(&name) {
-                    return Some(f.call(self.clone(), args));
-                }
-            }
-            None
-        } else {
-            let f = self.functions.lock().unwrap().get(&name).cloned();
-            if let Some(f) = f {
-                return Some(f.call(self.clone(), args));
-            }
-            self.parent
-                .as_ref()
-                .and_then(|p| p.call_function(name, args))
-        }
+        self.get_function(name).map(|f| f.call(self.clone(), args))
     }
+
     /// Evaluate a body of items in this scope.
     pub fn eval_body(self, body: &[Item]) -> Result<Option<Value>, Error>
     where
@@ -388,14 +385,18 @@ impl<'a> Scope {
     }
     /// Get a function by name.
     pub fn get_function(&self, name: &Name) -> Option<SassFunction> {
-        let f = self.functions.lock().unwrap().get(name).cloned();
-        if let Some(f) = f {
-            return Some(f);
-        }
-        if let Some(ref parent) = self.parent {
-            parent.get_function(name)
+        if let Some((modulename, name)) = name.split_module() {
+            self.get_module(&modulename)
+                .and_then(|m| m.get_function(&name))
         } else {
-            get_builtin_function(name).cloned()
+            let f = self.functions.lock().unwrap().get(name).cloned();
+            if let Some(f) = f {
+                Some(f)
+            } else if let Some(ref parent) = self.parent {
+                parent.get_function(name)
+            } else {
+                get_builtin_function(name).cloned()
+            }
         }
     }
     /// Get the selectors active for this scope.

@@ -6,7 +6,7 @@ use crate::parser::parse_imported_scss_file;
 use crate::sass::{FormalArgs, Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
-use crate::{Scope, ScopeRef};
+use crate::{SassFunction, Scope, ScopeRef};
 use std::io::Write;
 
 pub fn handle_body(
@@ -195,9 +195,15 @@ fn handle_item(
             let val = val.do_evaluate(scope.clone(), true)?;
             scope.set_variable(name.into(), val, *default, *global);
         }
-
-        Item::FunctionDeclaration(ref name, ref func) => {
-            scope.define_function(name.into(), func.clone());
+        Item::FunctionDeclaration(ref name, ref args, ref body) => {
+            scope.define_function(
+                name.into(),
+                SassFunction::closure(
+                    args.clone(),
+                    scope.clone(),
+                    body.clone(),
+                ),
+            );
         }
         Item::Return(_) => {
             return Err(Error::S(

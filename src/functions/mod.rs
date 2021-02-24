@@ -36,7 +36,9 @@ pub struct SassFunction {
 #[derive(Clone)]
 pub enum FuncImpl {
     Builtin(Arc<BuiltinFn>),
-    UserDefined(Vec<sass::Item>),
+    /// A user-defined function is really a closure, it has a scope
+    /// where it is defined and a body of items.
+    UserDefined(ScopeRef, Vec<sass::Item>),
 }
 
 impl PartialOrd for FuncImpl {
@@ -50,8 +52,8 @@ impl PartialOrd for FuncImpl {
                 Some(cmp::Ordering::Greater)
             }
             (
-                &FuncImpl::UserDefined(ref a),
-                &FuncImpl::UserDefined(ref b),
+                &FuncImpl::UserDefined(ref _sa, ref a),
+                &FuncImpl::UserDefined(ref _sb, ref b),
             ) => a.partial_cmp(b),
         }
     }
@@ -61,9 +63,9 @@ impl cmp::PartialEq for FuncImpl {
     fn eq(&self, rhs: &FuncImpl) -> bool {
         match (self, rhs) {
             (
-                &FuncImpl::UserDefined(ref a),
-                &FuncImpl::UserDefined(ref b),
-            ) => a == b,
+                &FuncImpl::UserDefined(ref sa, ref a),
+                &FuncImpl::UserDefined(ref sb, ref b),
+            ) => ScopeRef::is_same(sa, sb) && a == b,
             (&FuncImpl::Builtin(ref a), &FuncImpl::Builtin(ref b)) => {
                 // Each builtin function is only created once, so this
                 // should be ok.
@@ -80,7 +82,7 @@ impl fmt::Debug for FuncImpl {
     fn fmt(&self, out: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
             FuncImpl::Builtin(_) => write!(out, "(builtin function)"),
-            FuncImpl::UserDefined(_) => {
+            FuncImpl::UserDefined(..) => {
                 write!(out, "(user-defined function)")
             }
         }
@@ -101,10 +103,17 @@ impl SassFunction {
     }
 
     /// Create a new `SassFunction` from a scss implementation.
-    pub fn new(args: sass::FormalArgs, body: Vec<sass::Item>) -> Self {
+    ///
+    /// The scope is where the function is defined, used to bind any
+    /// non-parameter names in the body.
+    pub fn closure(
+        args: sass::FormalArgs,
+        scope: ScopeRef,
+        body: Vec<sass::Item>,
+    ) -> Self {
         SassFunction {
             args,
-            body: FuncImpl::UserDefined(body),
+            body: FuncImpl::UserDefined(scope, body),
         }
     }
 
@@ -112,15 +121,22 @@ impl SassFunction {
     /// arguments.
     pub fn call(
         &self,
-        scope: ScopeRef,
+        callscope: ScopeRef,
         args: &css::CallArgs,
     ) -> Result<css::Value, Error> {
-        let s = self.args.eval(scope.clone(), args)?;
         let cs = Name::from_static("%%CALLING_SCOPE%%");
-        s.define_module(cs, scope);
         match self.body {
-            FuncImpl::Builtin(ref body) => body(&s),
-            FuncImpl::UserDefined(ref body) => {
+            FuncImpl::Builtin(ref body) => {
+                let s = self.args.eval(
+                    Scope::new_global_ref(callscope.get_format()),
+                    args,
+                )?;
+                s.define_module(cs, callscope);
+                body(&s)
+            }
+            FuncImpl::UserDefined(ref defscope, ref body) => {
+                let s = self.args.eval(defscope.clone(), args)?;
+                s.define_module(cs, callscope);
                 Ok(s.eval_body(body)?.unwrap_or(css::Value::Null))
             }
         }
