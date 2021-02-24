@@ -1,6 +1,6 @@
 //! A scope is something that contains variable values.
 
-use crate::css::{self, Value};
+use crate::css::Value;
 use crate::functions::{get_builtin_function, SassFunction};
 use crate::output::Format;
 use crate::sass::{Item, Mixin, Name};
@@ -54,14 +54,6 @@ impl ScopeRef {
             }
             _ => false,
         }
-    }
-    /// Call a function.
-    pub fn call_function(
-        &self,
-        name: &Name,
-        args: &css::CallArgs,
-    ) -> Option<Result<Value, Error>> {
-        self.get_function(name).map(|f| f.call(self.clone(), args))
     }
 
     /// Evaluate a body of items in this scope.

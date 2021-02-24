@@ -126,9 +126,11 @@ impl Value {
             Value::Call(ref name, ref args) => {
                 let args = args.evaluate(scope.clone(), true)?;
                 if let Some(name) = name.single_raw() {
-                    scope.call_function(&name.into(), &args).unwrap_or_else(
-                        || Ok(css::Value::Call(name.to_string(), args)),
-                    )
+                    if let Some(f) = scope.get_function(&name.into()) {
+                        f.call(scope.clone(), &args)
+                    } else {
+                        Ok(css::Value::Call(name.to_string(), args))
+                    }
                 } else {
                     let (name, _) = name.evaluate(scope)?;
                     Ok(css::Value::Call(name, args))
