@@ -3,7 +3,7 @@ use crate::css::{BodyItem, Rule};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
-use crate::sass::{FormalArgs, Item, Mixin, Name};
+use crate::sass::{Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
 use crate::{SassFunction, Scope, ScopeRef};
@@ -211,20 +211,38 @@ fn handle_item(
             ));
         }
 
-        Item::MixinDeclaration(ref name, ref mixin) => {
-            scope.define_mixin(name.into(), mixin.clone())
-        }
+        Item::MixinDeclaration(ref name, ref args, ref body) => scope
+            .define_mixin(
+                name.into(),
+                Mixin {
+                    args: args.clone(),
+                    scope: scope.clone(),
+                    body: body.clone(),
+                },
+            ),
         Item::MixinCall(ref name, ref args, ref body) => {
+            let sel = scope.get_selectors().clone();
             if let Some(mixin) = scope.get_mixin(&name.into()) {
-                let scope = mixin.0.eval(
-                    scope.clone(),
+                let subscope = mixin.args.eval(
+                    ScopeRef::dynamic(Scope::sub_selectors(mixin.scope, sel)),
                     &args.evaluate(scope.clone(), true)?,
                 )?;
-                scope.define_mixin(
+                subscope.define_mixin(
                     Name::from_static("%%BODY%%"),
-                    Mixin(FormalArgs::default(), body.clone()),
+                    Mixin {
+                        args: Default::default(),
+                        scope,
+                        body: body.clone(),
+                    },
                 );
-                handle_body(&mixin.1, head, rule, buf, scope, file_context)?;
+                handle_body(
+                    &mixin.body,
+                    head,
+                    rule,
+                    buf,
+                    subscope,
+                    file_context,
+                )?;
             } else {
                 return Err(Error::S(format!(
                     "Unknown mixin {}({:?})",
@@ -234,15 +252,19 @@ fn handle_item(
         }
         Item::Content => {
             if let Some(rule) = rule {
-                if let Some(body) =
+                if let Some(content) =
                     scope.get_mixin(&Name::from_static("%%BODY%%"))
                 {
+                    let sel = scope.get_selectors().clone();
                     handle_body(
-                        &body.1,
+                        &content.body,
                         head,
                         Some(rule),
                         buf,
-                        scope,
+                        ScopeRef::dynamic(Scope::sub_selectors(
+                            content.scope,
+                            sel,
+                        )),
                         file_context,
                     )?;
                 }

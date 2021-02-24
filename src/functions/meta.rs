@@ -33,7 +33,7 @@ pub fn create_module() -> Scope {
     });
     def!(f, content_exists(), |s| {
         let content = s.get_mixin(&Name::from_static("%%BODY%%"));
-        Ok(content.map(|m| !m.1.is_empty()).unwrap_or(false).into())
+        Ok(content.map(|m| !m.body.is_empty()).unwrap_or(false).into())
     });
     def!(f, feature_exists(feature), |s| match &s.get("feature")? {
         &Value::Literal(ref v, _) => {

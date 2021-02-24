@@ -1872,7 +1872,6 @@ mod media;
 
 // From "sass-spec/spec/non_conformant/scss/mixin-content-selectors.hrx"
 #[test]
-#[ignore] // wrong result
 fn mixin_content_selectors() {
     assert_eq!(
         rsass(
