@@ -6,8 +6,8 @@ use lazy_static::lazy_static;
 use std::cmp::max;
 use std::sync::Mutex;
 
-pub fn create_module() -> Scope<'static> {
-    let mut f = Scope::new_global(Default::default());
+pub fn create_module() -> Scope {
+    let f = Scope::new_global(Default::default());
     def!(f, quote(string), |s| {
         let v = match s.get("string")? {
             Value::Literal(v, Quotes::None) => v.replace('\\', "\\\\"),

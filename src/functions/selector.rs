@@ -6,8 +6,8 @@ use crate::selectors::{Selector, Selectors};
 use crate::value::Quotes;
 use crate::{ParseError, Scope};
 
-pub fn create_module() -> Scope<'static> {
-    let mut f = Scope::new_global(Default::default());
+pub fn create_module() -> Scope {
+    let f = Scope::new_global(Default::default());
     // TODO: is_superselector
     def_va!(f, append(selectors), |s| match s.get("selectors")? {
         Value::List(v, _, _) => Ok(Value::Literal(

@@ -30,10 +30,9 @@ use self::util::{
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
-use crate::functions::SassFunction;
 #[cfg(test)]
 use crate::sass::{CallArgs, FormalArgs};
-use crate::sass::{Item, Mixin, Name, UseAs, Value};
+use crate::sass::{Item, Name, UseAs, Value};
 use crate::selectors::Selectors;
 use crate::value::ListSeparator;
 #[cfg(test)]
@@ -257,7 +256,10 @@ fn mixin_call(input: Span) -> IResult<Span, Item> {
 
 /// What follows the `@include` tag.
 fn mixin_call2(input: Span) -> IResult<Span, Item> {
-    let (input, name) = terminated(name, opt_spacelike)(input)?;
+    let (input, n1) = terminated(name, opt_spacelike)(input)?;
+    let (input, n2) = opt(preceded(tag("."), name))(input)?;
+    let name = n2.map(|n2| format!("{}.{}", n1, n2)).unwrap_or(n1);
+    let (input, _) = opt_spacelike(input)?;
     let (input, args) = terminated(opt(call_args), opt_spacelike)(input)?;
     let (input, body) = terminated(
         opt(body_block),
@@ -515,7 +517,7 @@ fn mixin_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, body) = body_block(input)?;
     Ok((
         input,
-        Item::MixinDeclaration(name, Mixin(args.unwrap_or_default(), body)),
+        Item::MixinDeclaration(name, args.unwrap_or_default(), body),
     ))
 }
 
@@ -523,10 +525,7 @@ fn function_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(formal_args, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
-    Ok((
-        input,
-        Item::FunctionDeclaration(name, SassFunction::new(args, body)),
-    ))
+    Ok((input, Item::FunctionDeclaration(name, args, body)))
 }
 
 fn return_stmt2(input: Span) -> IResult<Span, Item> {
@@ -715,7 +714,11 @@ fn test_mixin_call_named_args() {
 fn test_mixin_declaration_empty() {
     assert_eq!(
         check_parse!(mixin_declaration, b"@mixin foo() {}\n"),
-        Item::MixinDeclaration("foo".into(), Default::default()),
+        Item::MixinDeclaration(
+            "foo".into(),
+            Default::default(),
+            Default::default()
+        ),
     )
 }
 
@@ -728,17 +731,15 @@ fn test_mixin_declaration() {
         ),
         Item::MixinDeclaration(
             "foo".into(),
-            Mixin(
-                FormalArgs::new(vec![("x".into(), Value::Null)], false),
-                vec![Item::Property(
-                    "foo-bar".into(),
-                    Value::List(
-                        vec![string("baz"), Value::Variable("x".into())],
-                        ListSeparator::Space,
-                        false,
-                    ),
-                )],
-            ),
+            FormalArgs::new(vec![("x".into(), Value::Null)], false),
+            vec![Item::Property(
+                "foo-bar".into(),
+                Value::List(
+                    vec![string("baz"), Value::Variable("x".into())],
+                    ListSeparator::Space,
+                    false,
+                ),
+            )],
         ),
     )
 }
@@ -757,25 +758,20 @@ fn test_mixin_declaration_default_and_subrules() {
         ),
         Item::MixinDeclaration(
             "bar".into(),
-            Mixin(
-                FormalArgs::new(
-                    vec![
-                        ("a".into(), Value::Null),
-                        ("b".into(), string("flug"))
-                    ],
-                    false,
-                ),
-                vec![
-                    Item::Property("foo-bar".into(), string("baz")),
-                    Item::Rule(
-                        selectors(code_span(b"foo, bar")).unwrap().1,
-                        vec![Item::Property(
-                            "property".into(),
-                            Value::Variable("b".into()),
-                        )],
-                    ),
-                ],
+            FormalArgs::new(
+                vec![("a".into(), Value::Null), ("b".into(), string("flug"))],
+                false,
             ),
+            vec![
+                Item::Property("foo-bar".into(), string("baz")),
+                Item::Rule(
+                    selectors(code_span(b"foo, bar")).unwrap().1,
+                    vec![Item::Property(
+                        "property".into(),
+                        Value::Variable("b".into()),
+                    )],
+                ),
+            ],
         ),
     )
 }

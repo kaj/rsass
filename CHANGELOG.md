@@ -9,6 +9,7 @@ project adheres to
 
 ## Unreleased
 
+* Support `@use` of user-defined modules.  PR #96.
 * Improve trigonometric precision by using f64 π rather than rational.
 * Handle more peculiarities with atan2, pow, infinities and negative zero.
 * Improve name lookups in scopes and modules, PR #87.

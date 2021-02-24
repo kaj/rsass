@@ -6,7 +6,7 @@ mod hwb;
 mod other;
 mod rgb;
 
-pub fn create_module() -> Scope<'static> {
+pub fn create_module() -> Scope {
     let mut f = Scope::new_global(Default::default());
     hsl::register(&mut f);
     hwb::register(&mut f);

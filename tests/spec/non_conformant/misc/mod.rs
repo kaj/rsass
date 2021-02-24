@@ -141,7 +141,6 @@ fn media_interpolation() {
 
 // From "sass-spec/spec/non_conformant/misc/mixin_content.hrx"
 #[test]
-#[ignore] // wrong result
 fn mixin_content() {
     assert_eq!(
         rsass(

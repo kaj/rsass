@@ -1,10 +1,9 @@
 use crate::css;
 use crate::error::Error;
-use crate::functions::get_builtin_function;
 use crate::ordermap::OrderMap;
-use crate::sass::{CallArgs, Name, SassString};
+use crate::sass::{CallArgs, SassString};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Quotes, Rgba};
-use crate::Scope;
+use crate::ScopeRef;
 use num_traits::Zero;
 
 /// A sass value.
@@ -83,14 +82,14 @@ impl Value {
     }
 
     /// Evaluate this value in a given scope.
-    pub fn evaluate(&self, scope: &Scope) -> Result<css::Value, Error> {
+    pub fn evaluate(&self, scope: ScopeRef) -> Result<css::Value, Error> {
         self.do_evaluate(scope, false)
     }
 
     /// Evaluate this value to a [`css::Value`].
     pub fn do_evaluate(
         &self,
-        scope: &Scope,
+        scope: ScopeRef,
         arithmetic: bool,
     ) -> Result<css::Value, Error> {
         match *self {
@@ -120,21 +119,17 @@ impl Value {
             Value::List(ref v, s, b) => {
                 let items = v
                     .iter()
-                    .map(|v| v.do_evaluate(scope, false))
+                    .map(|v| v.do_evaluate(scope.clone(), false))
                     .collect::<Result<Vec<_>, Error>>()?;
                 Ok(css::Value::List(items, s, b))
             }
             Value::Call(ref name, ref args) => {
-                let args = args.evaluate(scope, true)?;
+                let args = args.evaluate(scope.clone(), true)?;
                 if let Some(name) = name.single_raw() {
-                    let nname: Name = name.into();
-                    match scope.call_function(&nname, &args) {
-                        Some(value) => Ok(value?),
-                        None => get_builtin_function(&nname)
-                            .map(|f| f.call(scope, &args))
-                            .unwrap_or_else(|| {
-                                Ok(css::Value::Call(name.to_string(), args))
-                            }),
+                    if let Some(f) = scope.get_function(&name.into()) {
+                        f.call(scope.clone(), &args)
+                    } else {
+                        Ok(css::Value::Call(name.to_string(), args))
                     }
                 } else {
                     let (name, _) = name.evaluate(scope)?;
@@ -149,8 +144,8 @@ impl Value {
                     .iter()
                     .map(|&(ref k, ref v)| {
                         Ok((
-                            k.do_evaluate(scope, false)?,
-                            v.do_evaluate(scope, false)?,
+                            k.do_evaluate(scope.clone(), false)?,
+                            v.do_evaluate(scope.clone(), false)?,
                         ))
                     })
                     .collect::<Result<OrderMap<_, _>, Error>>()?;
@@ -162,9 +157,9 @@ impl Value {
             Value::BinOp(ref a, _, ref op, _, ref b) => {
                 let (a, b) = {
                     let arithmetic = arithmetic | (*op != Operator::Div);
-                    let aa = a.do_evaluate(scope, arithmetic)?;
+                    let aa = a.do_evaluate(scope.clone(), arithmetic)?;
                     let b = b.do_evaluate(
-                        scope,
+                        scope.clone(),
                         arithmetic || aa.is_calculated(),
                     )?;
                     if !arithmetic && b.is_calculated() && !aa.is_calculated()

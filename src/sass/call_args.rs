@@ -1,7 +1,7 @@
 use crate::css;
 use crate::error::Error;
 use crate::sass::Value;
-use crate::Scope;
+use crate::ScopeRef;
 use std::default::Default;
 
 /// the actual arguments of a function or mixin call.
@@ -35,7 +35,7 @@ impl CallArgs {
     /// Evaluate these sass CallArgs to css CallArgs.
     pub fn evaluate(
         &self,
-        scope: &Scope,
+        scope: ScopeRef,
         arithmetic: bool,
     ) -> Result<css::CallArgs, Error> {
         if let [(None, Value::List(list, _, false))] = &self.0[..] {
@@ -45,7 +45,10 @@ impl CallArgs {
                         map.iter()
                             .map(|(k, v)| {
                                 Ok((
-                                    match k.do_evaluate(scope, arithmetic)? {
+                                    match k.do_evaluate(
+                                        scope.clone(),
+                                        arithmetic,
+                                    )? {
                                         css::Value::Null => None,
                                         css::Value::Literal(s, _) => Some(s),
                                         x => {
@@ -54,7 +57,7 @@ impl CallArgs {
                                             ))
                                         }
                                     },
-                                    v.do_evaluate(scope, arithmetic)?,
+                                    v.do_evaluate(scope.clone(), arithmetic)?,
                                 ))
                             })
                             .collect::<Result<Vec<_>, Error>>()?,
@@ -65,7 +68,7 @@ impl CallArgs {
         let args = self.0
                 .iter()
                 .map(|&(ref n, ref v)| -> Result<(Option<String>, css::Value), Error> {
-                    Ok((n.clone(), v.do_evaluate(scope, arithmetic)?))
+                    Ok((n.clone(), v.do_evaluate(scope.clone(), arithmetic)?))
                 })
                 .collect::<Result<Vec<_>, Error>>()?;
         Ok(css::CallArgs(args))

@@ -2363,7 +2363,6 @@ fn t187_test_multiline_var() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/188_test_mixin_content.hrx"
 #[test]
-#[ignore] // wrong result
 fn t188_test_mixin_content() {
     assert_eq!(
         rsass(

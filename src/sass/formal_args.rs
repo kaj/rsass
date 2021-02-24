@@ -2,7 +2,7 @@ use crate::css;
 use crate::error::Error;
 use crate::sass::{Name, Value};
 use crate::value::ListSeparator;
-use crate::Scope;
+use crate::ScopeRef;
 use std::default::Default;
 
 /// The declared arguments of a mixin or function declaration.
@@ -28,12 +28,12 @@ impl FormalArgs {
     /// Evaluate a set of call arguments for these formal arguments.
     ///
     /// Returns a Scope that is a sub-scope to the given `scope`.
-    pub fn eval<'a>(
+    pub fn eval(
         &self,
-        scope: &'a Scope<'a>,
+        scope: ScopeRef,
         args: &css::CallArgs,
-    ) -> Result<Scope<'a>, Error> {
-        let mut argscope = Scope::sub(scope);
+    ) -> Result<ScopeRef, Error> {
+        let argscope = ScopeRef::sub(scope);
         let n = self.0.len();
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
             if let Some(value) = args
@@ -56,7 +56,8 @@ impl FormalArgs {
                 match args.get(i) {
                     Some(&(None, ref v)) => argscope.define(name.clone(), v),
                     _ => {
-                        let v = default.do_evaluate(&argscope, true)?;
+                        let v =
+                            default.do_evaluate(argscope.clone(), true)?;
                         argscope.define(name.clone(), &v)
                     }
                 };

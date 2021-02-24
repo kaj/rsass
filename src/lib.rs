@@ -70,7 +70,7 @@ pub use crate::parser::{
     parse_scss_data, parse_scss_file, parse_scss_path, parse_value_data,
     ParseError, SourcePos,
 };
-pub use crate::variablescope::Scope;
+pub use crate::variablescope::{Scope, ScopeRef};
 
 /// Parse a scss value from a buffer and write its css representation
 /// in the given format.
@@ -86,8 +86,8 @@ pub use crate::variablescope::Scope;
 /// # }
 /// ```
 pub fn compile_value(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
-    let scope = Scope::new_global(format);
-    let value = parse_value_data(input)?.evaluate(&scope)?;
+    let scope = ScopeRef::new_global(format);
+    let value = parse_value_data(input)?.evaluate(scope)?;
     Ok(value.format(format).to_string().into_bytes())
 }
 
@@ -115,7 +115,7 @@ pub fn compile_value(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
 pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
     let file_context = FsFileContext::new();
     let items = parse_scss_data(input)?;
-    format.write_root(&items, &mut Scope::new_global(format), &file_context)
+    format.write_root(&items, ScopeRef::new_global(format), &file_context)
 }
 
 /// Parse a file of scss data and write css in the given style.
@@ -145,5 +145,5 @@ pub fn compile_scss_path(
     let file_context = FsFileContext::new();
     let (sub_context, path) = file_context.file(path);
     let items = parse_scss_path(&path)?;
-    format.write_root(&items, &mut Scope::new_global(format), &sub_context)
+    format.write_root(&items, ScopeRef::new_global(format), &sub_context)
 }

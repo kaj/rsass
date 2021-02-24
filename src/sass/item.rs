@@ -1,5 +1,4 @@
 use super::{CallArgs, FormalArgs, Name, SassString, Value};
-use crate::functions::SassFunction;
 use crate::parser::SourcePos;
 use crate::selectors::Selectors;
 
@@ -40,14 +39,14 @@ pub enum Item {
     Error(Value),
 
     /// A `@mixin` directive, declaring a mixin.
-    MixinDeclaration(String, Mixin),
+    MixinDeclaration(String, FormalArgs, Vec<Item>),
     /// An `@include` directive, calling a mixin.
     MixinCall(String, CallArgs, Vec<Item>),
     /// An `@content` directive (in a mixin declaration).
     Content,
 
     /// An `@function` declaration.
-    FunctionDeclaration(String, SassFunction),
+    FunctionDeclaration(String, FormalArgs, Vec<Item>),
     /// An `@return` statement in a function declaration.
     Return(Value),
 
@@ -97,7 +96,3 @@ pub enum UseAs {
     /// An explicit name, `@use foo as bar`.
     Name(SassString),
 }
-
-/// A mixin is a callable body of items.
-#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd)]
-pub struct Mixin(pub FormalArgs, pub Vec<Item>);

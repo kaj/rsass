@@ -10,6 +10,47 @@ fn txx_empty_rule() {
 }
 
 #[test]
+fn use_module_star() {
+    check(
+        b"@use 'tests/basic/defs' as *;\
+          \ndiv {\
+          \n  color: $color;\
+          \n  col1: foo(1);\
+          \n  col2: foo(0);\
+          \n  @include myem;
+          \n}\n",
+        "div {\
+         \n  color: purple;\
+         \n  col1: purple;\
+         \n  col2: pink;\
+         \n}\
+         \ndiv em {\
+         \n  color: pink;\
+         \n}\n",
+    );
+}
+#[test]
+fn use_module() {
+    check(
+        b"@use 'tests/basic/defs';\
+          \ndiv {\
+          \n  color: defs.$color;\
+          \n  col1: defs.foo(1);\
+          \n  col2: defs.foo(0);\
+          \n  @include defs.myem;
+          \n}\n",
+        "div {\
+         \n  color: purple;\
+         \n  col1: purple;\
+         \n  col2: pink;\
+         \n}\
+         \ndiv em {\
+         \n  color: pink;\
+         \n}\n",
+    );
+}
+
+#[test]
 fn t14_imports() {
     let path = "tests/basic/14_imports/input.scss";
     assert_eq!(

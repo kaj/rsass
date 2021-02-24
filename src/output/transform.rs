@@ -3,10 +3,10 @@ use crate::css::{BodyItem, Rule};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
-use crate::sass::{FormalArgs, Item, Mixin, Name};
+use crate::sass::{Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
-use crate::Scope;
+use crate::{SassFunction, ScopeRef};
 use std::io::Write;
 
 pub fn handle_body(
@@ -14,12 +14,19 @@ pub fn handle_body(
     head: &mut CssBuf,
     rule: Option<&mut Rule>,
     buf: &mut CssBuf,
-    scope: &mut Scope,
+    scope: ScopeRef,
     file_context: &impl FileContext,
 ) -> Result<(), Error> {
     let mut rule = rule;
     for b in items {
-        handle_item(b, head, rule.as_deref_mut(), buf, scope, file_context)?;
+        handle_item(
+            b,
+            head,
+            rule.as_deref_mut(),
+            buf,
+            scope.clone(),
+            file_context,
+        )?;
     }
     Ok(())
 }
@@ -29,7 +36,7 @@ fn handle_item(
     head: &mut CssBuf,
     rule: Option<&mut Rule>,
     buf: &mut CssBuf,
-    scope: &mut Scope,
+    scope: ScopeRef,
     file_context: &impl FileContext,
 ) -> Result<(), Error> {
     let format = scope.get_format();
@@ -37,24 +44,47 @@ fn handle_item(
         Item::Use(ref name, ref as_n) => {
             use crate::functions::get_global_module;
             use crate::sass::UseAs;
-            let name = name.evaluate(scope)?.0;
-            if let Some(module) = get_global_module(&name) {
+            let name = name.evaluate(scope.clone())?.0;
+            let do_use = |module: ScopeRef| -> Result<(), Error> {
                 match as_n {
                     UseAs::KeepName => {
                         let name = name
-                            .rfind(':')
+                            .rfind(|c| c == ':' || c == '/')
                             .map(|i| &name[i + 1..])
                             .unwrap_or(&name);
                         scope.define_module(name.into(), module);
                     }
                     UseAs::Star => {
-                        scope.expose_star(module);
+                        scope.expose_star(&module);
                     }
                     UseAs::Name(name) => {
-                        let name = name.evaluate(scope)?.0;
+                        let name = name.evaluate(scope.clone())?.0;
                         scope.define_module(name.into(), module);
                     }
                 }
+                Ok(())
+            };
+            if let Some(module) = get_global_module(&name) {
+                do_use(module)?
+            } else if let Some((sub_context, path, mut file)) =
+                file_context.find_file(&name)?
+            {
+                let module = ScopeRef::new_global(format);
+                let items = parse_imported_scss_file(
+                    &mut file,
+                    &path,
+                    // TODO: Get a proper pos!
+                    crate::parser::code_span(b"").into(),
+                )?;
+                handle_body(
+                    &items,
+                    head,
+                    None,
+                    buf,
+                    module.clone(),
+                    &sub_context,
+                )?;
+                do_use(module)?;
             } else {
                 return Err(Error::S(format!("Module {:?} not found", name)));
             }
@@ -63,7 +93,7 @@ fn handle_item(
             let mut rule = rule;
             'name: for name in names {
                 if args.is_null() {
-                    let (x, _q) = name.evaluate(scope)?;
+                    let (x, _q) = name.evaluate(scope.clone())?;
                     if let Some((sub_context, path, mut file)) =
                         file_context.find_file(&x)?
                     {
@@ -77,7 +107,7 @@ fn handle_item(
                             head,
                             rule.as_deref_mut(),
                             buf,
-                            scope,
+                            scope.clone(),
                             &sub_context,
                         )?;
                         continue 'name;
@@ -85,20 +115,20 @@ fn handle_item(
                 }
                 if buf.is_root_level() {
                     head.add_import(
-                        name.evaluate2(scope)?,
-                        args.evaluate(scope)?,
+                        name.evaluate2(scope.clone())?,
+                        args.evaluate(scope.clone())?,
                     )?;
                 } else {
                     buf.add_import(
-                        name.evaluate2(scope)?,
-                        args.evaluate(scope)?,
+                        name.evaluate2(scope.clone())?,
+                        args.evaluate(scope.clone())?,
                     )?;
                 }
             }
         }
         Item::AtRoot(ref selectors, ref body) => {
             let selectors = selectors
-                .eval(scope)?
+                .eval(scope.clone())?
                 .with_backref(scope.get_selectors().one());
             let mut rule = Rule::new(selectors.clone());
             let mut sub = CssBuf::new_as(buf);
@@ -107,7 +137,7 @@ fn handle_item(
                 head,
                 Some(&mut rule),
                 &mut sub,
-                &mut Scope::sub_selectors(scope, selectors),
+                ScopeRef::sub_selectors(scope, selectors),
                 file_context,
             )?;
             buf.write_rule(&rule, true)?;
@@ -120,7 +150,7 @@ fn handle_item(
         } => {
             buf.do_separate();
             write!(buf, "@{}", name)?;
-            let args = args.evaluate(scope)?;
+            let args = args.evaluate(scope.clone())?;
             if !args.is_null() {
                 write!(buf, " {}", args.format(format))?;
             }
@@ -135,7 +165,7 @@ fn handle_item(
                     head,
                     Some(&mut rule),
                     &mut sub,
-                    &mut Scope::sub(scope),
+                    ScopeRef::sub(scope),
                     file_context,
                 )?;
                 let mut t = CssBuf::new_as(&sub);
@@ -162,12 +192,18 @@ fn handle_item(
             default,
             global,
         } => {
-            let val = val.do_evaluate(scope, true)?;
+            let val = val.do_evaluate(scope.clone(), true)?;
             scope.set_variable(name.into(), val, *default, *global);
         }
-
-        Item::FunctionDeclaration(ref name, ref func) => {
-            scope.define_function(name.into(), func.clone());
+        Item::FunctionDeclaration(ref name, ref args, ref body) => {
+            scope.define_function(
+                name.into(),
+                SassFunction::closure(
+                    args.clone(),
+                    scope.clone(),
+                    body.clone(),
+                ),
+            );
         }
         Item::Return(_) => {
             return Err(Error::S(
@@ -175,23 +211,36 @@ fn handle_item(
             ));
         }
 
-        Item::MixinDeclaration(ref name, ref mixin) => {
-            scope.define_mixin(name.into(), mixin.clone())
-        }
+        Item::MixinDeclaration(ref name, ref args, ref body) => scope
+            .define_mixin(
+                name.into(),
+                Mixin {
+                    args: args.clone(),
+                    scope: scope.clone(),
+                    body: body.clone(),
+                },
+            ),
         Item::MixinCall(ref name, ref args, ref body) => {
+            let sel = scope.get_selectors().clone();
             if let Some(mixin) = scope.get_mixin(&name.into()) {
-                let mut scope =
-                    mixin.0.eval(scope, &args.evaluate(scope, true)?)?;
-                scope.define_mixin(
+                let subscope = mixin.args.eval(
+                    ScopeRef::sub_selectors(mixin.scope, sel),
+                    &args.evaluate(scope.clone(), true)?,
+                )?;
+                subscope.define_mixin(
                     Name::from_static("%%BODY%%"),
-                    Mixin(FormalArgs::default(), body.clone()),
+                    Mixin {
+                        args: Default::default(),
+                        scope,
+                        body: body.clone(),
+                    },
                 );
                 handle_body(
-                    &mixin.1,
+                    &mixin.body,
                     head,
                     rule,
                     buf,
-                    &mut scope,
+                    subscope,
                     file_context,
                 )?;
             } else {
@@ -203,15 +252,16 @@ fn handle_item(
         }
         Item::Content => {
             if let Some(rule) = rule {
-                if let Some(body) =
-                    scope.get_mixin(&Name::from_static("%%BODY%%")).cloned()
+                if let Some(content) =
+                    scope.get_mixin(&Name::from_static("%%BODY%%"))
                 {
+                    let sel = scope.get_selectors().clone();
                     handle_body(
-                        &body.1,
+                        &content.body,
                         head,
                         Some(rule),
                         buf,
-                        scope,
+                        ScopeRef::sub_selectors(content.scope, sel),
                         file_context,
                     )?;
                 }
@@ -223,21 +273,21 @@ fn handle_item(
         }
 
         Item::IfStatement(ref cond, ref do_if, ref do_else) => {
-            let cond = cond.evaluate(scope)?.is_true();
+            let cond = cond.evaluate(scope.clone())?.is_true();
             let items = if cond { do_if } else { do_else };
             handle_body(items, head, rule, buf, scope, file_context)?;
         }
         Item::Each(ref names, ref values, ref body) => {
             let mut rule = rule;
             let pushed = scope.store_local_values(names);
-            for value in values.evaluate(scope)?.iter_items() {
+            for value in values.evaluate(scope.clone())?.iter_items() {
                 scope.define_multi(&names, &value);
                 handle_body(
                     body,
                     head,
                     rule.as_deref_mut(),
                     buf,
-                    scope,
+                    scope.clone(),
                     file_context,
                 )?;
             }
@@ -251,34 +301,34 @@ fn handle_item(
             ref body,
         } => {
             let range = ValueRange::new(
-                from.evaluate(scope)?,
-                to.evaluate(scope)?,
+                from.evaluate(scope.clone())?,
+                to.evaluate(scope.clone())?,
                 *inclusive,
             )?;
             let mut rule = rule;
             for value in range {
-                let mut scope = Scope::sub(scope);
+                let scope = ScopeRef::sub(scope.clone());
                 scope.define(name.clone(), &value);
                 handle_body(
                     body,
                     head,
                     rule.as_deref_mut(),
                     buf,
-                    &mut scope,
+                    scope,
                     file_context,
                 )?;
             }
         }
         Item::While(ref cond, ref body) => {
             let mut rule = rule;
-            let mut scope = Scope::sub(scope);
-            while cond.evaluate(&scope)?.is_true() {
+            let scope = ScopeRef::sub(scope);
+            while cond.evaluate(scope.clone())?.is_true() {
                 handle_body(
                     body,
                     head,
                     rule.as_deref_mut(),
                     buf,
-                    &mut scope,
+                    scope.clone(),
                     file_context,
                 )?;
             }
@@ -302,7 +352,7 @@ fn handle_item(
                 buf.do_separate();
             }
             let selectors =
-                selectors.eval(scope)?.inside(scope.get_selectors());
+                selectors.eval(scope.clone())?.inside(scope.get_selectors());
             let mut rule = Rule::new(selectors.clone());
             let mut sub = CssBuf::new_as(buf);
             handle_body(
@@ -310,7 +360,7 @@ fn handle_item(
                 head,
                 Some(&mut rule),
                 &mut sub,
-                &mut Scope::sub_selectors(scope, selectors),
+                ScopeRef::sub_selectors(scope, selectors),
                 file_context,
             )?;
             buf.write_rule(&rule, true)?;
@@ -318,7 +368,7 @@ fn handle_item(
         }
         Item::Property(ref name, ref value) => {
             if let Some(rule) = rule {
-                let v = value.evaluate(scope)?;
+                let v = value.evaluate(scope.clone())?;
                 if !v.is_null() {
                     let (name, _q) = name.evaluate(scope)?;
                     rule.push(BodyItem::Property(name, v));
@@ -329,8 +379,8 @@ fn handle_item(
         }
         Item::NamespaceRule(ref name, ref value, ref body) => {
             if let Some(rule) = rule {
-                let value = value.evaluate(scope)?;
-                let (name, _quotes) = name.evaluate(scope)?;
+                let value = value.evaluate(scope.clone())?;
+                let (name, _quotes) = name.evaluate(scope.clone())?;
                 if !value.is_null() {
                     rule.push(BodyItem::Property(name.clone(), value));
                 }
