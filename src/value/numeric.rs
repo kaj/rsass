@@ -48,8 +48,8 @@ impl Numeric {
 
     /// Convert this numeric value to a given unit, if possible.
     ///
-    /// Like [as_unit], except a unitless numeric is considered to be
-    /// the expected unit.
+    /// Like [as_unit](Self::as_unit), except a unitless numeric is
+    /// considered to be the expected unit.
     pub fn as_unit_def(&self, unit: Unit) -> Option<Number> {
         if self.is_no_unit() {
             Some(self.value.clone())

@@ -11,14 +11,19 @@ use std::collections::BTreeMap;
 use std::ops::Deref;
 use std::sync::{Arc, Mutex};
 
+/// A static or dynamic scope referece.
+///
+/// This dereferences to a [Scope].
 #[derive(Clone)]
 pub enum ScopeRef {
+    /// The builtin scopes in rsass is static.
     Builtin(&'static Scope),
+    /// All other scopes are dynamic.  This uses [Arc] reference counting.
     Dynamic(Arc<Scope>),
 }
 
 impl ScopeRef {
-    /// Create a new global scope
+    /// Create a new global scope.
     ///
     /// A "global" scope is just a scope that have no parent.
     /// There will be multiple global scopes existing during the
@@ -38,6 +43,7 @@ impl ScopeRef {
         ScopeRef::Dynamic(Arc::new(scope))
     }
 
+    /// Check if `a` and `b` references the same scope.
     pub fn is_same(a: &Self, b: &Self) -> bool {
         match (a, b) {
             (ScopeRef::Builtin(a), ScopeRef::Builtin(b)) => {
@@ -170,7 +176,7 @@ impl Deref for ScopeRef {
 /// Variables, functions and mixins are defined in a `Scope`.
 ///
 /// A scope can be a local scope, e.g. in a function, or the global scope.
-/// All scopes except the global scope has a parent.
+/// All non-global scopes have a parent.
 /// The global scope is global to a sass document, multiple different
 /// global scopes may exists in the same rust-language process.
 pub struct Scope {
@@ -184,7 +190,7 @@ pub struct Scope {
 }
 
 impl<'a> Scope {
-    /// Create a new global scope
+    /// Create a new global scope.
     ///
     /// A "global" scope is just a scope that have no parent.
     /// There will be multiple global scopes existing during the

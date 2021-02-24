@@ -59,7 +59,7 @@ pub mod sass;
 pub mod selectors;
 #[forbid(missing_docs)]
 pub mod value;
-// TODO #[forbid(missing_docs)]
+#[forbid(missing_docs)]
 mod variablescope;
 
 pub use crate::error::Error;
