@@ -37,11 +37,15 @@ fn use_module() {
           \n  color: defs.$color;\
           \n  col1: defs.foo(1);\
           \n  col2: defs.foo(0);\
+          \n  @include defs.myem;
           \n}\n",
         "div {\
          \n  color: purple;\
          \n  col1: purple;\
          \n  col2: pink;\
+         \n}\
+         \ndiv em {\
+         \n  color: pink;\
          \n}\n",
     );
 }

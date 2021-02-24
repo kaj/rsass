@@ -256,7 +256,10 @@ fn mixin_call(input: Span) -> IResult<Span, Item> {
 
 /// What follows the `@include` tag.
 fn mixin_call2(input: Span) -> IResult<Span, Item> {
-    let (input, name) = terminated(name, opt_spacelike)(input)?;
+    let (input, n1) = terminated(name, opt_spacelike)(input)?;
+    let (input, n2) = opt(preceded(tag("."), name))(input)?;
+    let name = n2.map(|n2| format!("{}.{}", n1, n2)).unwrap_or(n1);
+    let (input, _) = opt_spacelike(input)?;
     let (input, args) = terminated(opt(call_args), opt_spacelike)(input)?;
     let (input, body) = terminated(
         opt(body_block),

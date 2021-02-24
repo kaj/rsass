@@ -369,12 +369,14 @@ impl<'a> Scope {
     ///
     /// Returns the formal args and the body of the mixin.
     pub fn get_mixin(&self, name: &Name) -> Option<Mixin> {
-        self.mixins
-            .lock()
-            .unwrap()
-            .get(name)
-            .cloned()
-            .or_else(|| self.parent.as_ref().and_then(|p| p.get_mixin(name)))
+        if let Some((modulename, name)) = name.split_module() {
+            self.get_module(&modulename)
+                .and_then(|m| m.get_mixin(&name))
+        } else {
+            self.mixins.lock().unwrap().get(name).cloned().or_else(|| {
+                self.parent.as_ref().and_then(|p| p.get_mixin(name))
+            })
+        }
     }
     /// Define a mixin.
     pub fn define_mixin(&self, name: Name, mixin: Mixin) {
