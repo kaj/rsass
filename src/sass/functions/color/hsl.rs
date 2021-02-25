@@ -1,5 +1,5 @@
 use super::rgb::{preserve_call, values_from_list};
-use super::{get_color, make_call, Error, FunctionMap, SassFunction};
+use super::{get_color, make_call, Error, FunctionMap};
 use crate::css::Value;
 use crate::value::{Hsla, Numeric, Unit};
 use crate::Scope;
@@ -210,4 +210,4 @@ fn test_hsl_blue_magenta() {
 }
 
 #[cfg(test)]
-use super::super::super::variablescope::test::do_evaluate;
+use crate::variablescope::test::do_evaluate;

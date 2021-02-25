@@ -1,4 +1,4 @@
-use super::{Error, FunctionMap, SassFunction};
+use super::{Error, FunctionMap};
 use crate::css::{CallArgs, Value};
 use crate::{value::Color, Scope};
 mod hsl;

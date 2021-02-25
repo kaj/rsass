@@ -46,8 +46,6 @@ mod error;
 #[forbid(missing_docs)]
 mod file_context;
 #[forbid(missing_docs)]
-mod functions;
-#[forbid(missing_docs)]
 mod ordermap;
 #[forbid(missing_docs)]
 pub mod output;
@@ -64,7 +62,6 @@ mod variablescope;
 
 pub use crate::error::Error;
 pub use crate::file_context::{FileContext, FsFileContext};
-pub use crate::functions::SassFunction;
 use crate::output::Format;
 pub use crate::parser::{
     parse_scss_data, parse_scss_file, parse_scss_path, parse_value_data,

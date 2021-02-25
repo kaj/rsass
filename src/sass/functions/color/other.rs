@@ -1,4 +1,4 @@
-use super::{get_color, make_call, Error, FunctionMap, SassFunction};
+use super::{get_color, make_call, Error, FunctionMap};
 use crate::css::Value;
 use crate::value::{Hsla, Hwba, Rgba, Unit};
 use crate::Scope;

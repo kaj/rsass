@@ -1,4 +1,4 @@
-use super::{Error, FunctionMap, SassFunction, Scope};
+use super::{Error, FunctionMap, Scope};
 use crate::css::Value;
 use crate::value::{Number, Numeric, Quotes, Unit};
 use num_rational::Rational;

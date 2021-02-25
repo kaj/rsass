@@ -1,8 +1,8 @@
 use crate::css::CallArgs;
 use crate::error::Error;
-use crate::functions::SassFunction;
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
+use crate::sass::Function;
 use crate::value::{Color, ListSeparator, Number, Numeric, Operator, Quotes};
 use std::convert::TryFrom;
 
@@ -14,7 +14,7 @@ pub enum Value {
     /// An function call that was not evaluated.
     Call(String, CallArgs),
     /// A (callable?) function.
-    Function(String, Option<SassFunction>),
+    Function(String, Option<Function>),
     /// A string literal.
     Literal(String, Quotes),
     /// A comma- or space separated list of values, with or without brackets.

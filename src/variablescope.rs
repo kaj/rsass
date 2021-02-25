@@ -1,9 +1,8 @@
 //! A scope is something that contains variable values.
 
 use crate::css::Value;
-use crate::functions::{get_builtin_function, SassFunction};
 use crate::output::Format;
-use crate::sass::{Item, Mixin, Name};
+use crate::sass::{Function, Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::Error;
 use lazy_static::lazy_static;
@@ -176,7 +175,7 @@ pub struct Scope {
     modules: Mutex<BTreeMap<Name, ScopeRef>>,
     variables: Mutex<BTreeMap<Name, Value>>,
     mixins: Mutex<BTreeMap<Name, Mixin>>,
-    functions: Mutex<BTreeMap<Name, SassFunction>>,
+    functions: Mutex<BTreeMap<Name, Function>>,
     selectors: Option<Selectors>,
     format: Format,
 }
@@ -381,11 +380,11 @@ impl<'a> Scope {
         self.mixins.lock().unwrap().insert(name, mixin);
     }
     /// Define a function.
-    pub fn define_function(&self, name: Name, func: SassFunction) {
+    pub fn define_function(&self, name: Name, func: Function) {
         self.functions.lock().unwrap().insert(name, func);
     }
     /// Get a function by name.
-    pub fn get_function(&self, name: &Name) -> Option<SassFunction> {
+    pub fn get_function(&self, name: &Name) -> Option<Function> {
         if let Some((modulename, name)) = name.split_module() {
             self.get_module(&modulename)
                 .and_then(|m| m.get_function(&name))
@@ -396,7 +395,7 @@ impl<'a> Scope {
             } else if let Some(ref parent) = self.parent {
                 parent.get_function(name)
             } else {
-                get_builtin_function(name).cloned()
+                Function::get_builtin(name).cloned()
             }
         }
     }

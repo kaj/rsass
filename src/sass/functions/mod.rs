@@ -17,10 +17,6 @@ mod meta;
 mod selector;
 mod string;
 
-pub fn get_builtin_function(name: &Name) -> Option<&'static SassFunction> {
-    FUNCTIONS.get(name)
-}
-
 type BuiltinFn = dyn Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
 
 /// A function that can be called from a sass value.
@@ -28,7 +24,7 @@ type BuiltinFn = dyn Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
 /// The function can be either "builtin" (implemented in rust) or
 /// "user defined" (implemented in scss).
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct SassFunction {
+pub struct Function {
     args: sass::FormalArgs,
     body: FuncImpl,
 }
@@ -89,20 +85,28 @@ impl fmt::Debug for FuncImpl {
     }
 }
 
-impl SassFunction {
-    /// Create a new `SassFunction` from a rust implementation.
+impl Function {
+    /// Get a built-in function by name.
+    pub fn get_builtin(name: &Name) -> Option<&'static Function> {
+        FUNCTIONS.get(name)
+    }
+
+    /// Create a new `Function` from a rust implementation.
+    ///
+    /// Note: This does not expose the function in any scope, it just
+    /// creates it.
     pub fn builtin(
         args: Vec<(Name, sass::Value)>,
         is_varargs: bool,
         body: Arc<BuiltinFn>,
     ) -> Self {
-        SassFunction {
+        Function {
             args: sass::FormalArgs::new(args, is_varargs),
             body: FuncImpl::Builtin(body),
         }
     }
 
-    /// Create a new `SassFunction` from a scss implementation.
+    /// Create a new `Function` from a scss implementation.
     ///
     /// The scope is where the function is defined, used to bind any
     /// non-parameter names in the body.
@@ -111,7 +115,7 @@ impl SassFunction {
         scope: ScopeRef,
         body: Vec<sass::Item>,
     ) -> Self {
-        SassFunction {
+        Function {
             args,
             body: FuncImpl::UserDefined(scope, body),
         }
@@ -157,11 +161,12 @@ lazy_static! {
     };
 }
 
+/// Get a global module (e.g. `sass::math`) by name.
 pub fn get_global_module(name: &str) -> Option<ScopeRef> {
     MODULES.get(name).map(ScopeRef::Builtin)
 }
 
-type FunctionMap = BTreeMap<Name, SassFunction>;
+type FunctionMap = BTreeMap<Name, Function>;
 
 lazy_static! {
     static ref FUNCTIONS: FunctionMap = {
@@ -211,4 +216,4 @@ fn test_nth() {
 }
 
 #[cfg(test)]
-use super::variablescope::test::do_evaluate;
+use crate::variablescope::test::do_evaluate;

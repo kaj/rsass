@@ -3,10 +3,10 @@ use crate::css::{BodyItem, Rule};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
-use crate::sass::{Item, Mixin, Name};
+use crate::sass::{Function, Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
-use crate::{SassFunction, ScopeRef};
+use crate::ScopeRef;
 use std::io::Write;
 
 pub fn handle_body(
@@ -42,8 +42,7 @@ fn handle_item(
     let format = scope.get_format();
     match item {
         Item::Use(ref name, ref as_n) => {
-            use crate::functions::get_global_module;
-            use crate::sass::UseAs;
+            use crate::sass::{get_global_module, UseAs};
             let name = name.evaluate(scope.clone())?.0;
             let do_use = |module: ScopeRef| -> Result<(), Error> {
                 match as_n {
@@ -198,11 +197,7 @@ fn handle_item(
         Item::FunctionDeclaration(ref name, ref args, ref body) => {
             scope.define_function(
                 name.into(),
-                SassFunction::closure(
-                    args.clone(),
-                    scope.clone(),
-                    body.clone(),
-                ),
+                Function::closure(args.clone(), scope.clone(), body.clone()),
             );
         }
         Item::Return(_) => {

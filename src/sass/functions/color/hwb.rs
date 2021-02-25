@@ -1,6 +1,6 @@
 use super::hsl::{percentage, to_rational2, to_rational_percent};
 use super::rgb::values_from_list;
-use super::{get_color, Error, SassFunction};
+use super::{get_color, Error};
 use crate::css::Value;
 use crate::value::{Hwba, Number, Unit};
 use crate::Scope;

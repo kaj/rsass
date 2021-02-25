@@ -1,4 +1,4 @@
-use super::{Error, FunctionMap, SassFunction};
+use super::{Error, FunctionMap};
 use crate::css::Value;
 use crate::ordermap::OrderMap;
 use crate::value::ListSeparator;

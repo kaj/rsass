@@ -1,4 +1,4 @@
-use super::{Error, FunctionMap, SassFunction};
+use super::{Error, FunctionMap};
 use crate::css::{CallArgs, Value};
 use crate::sass::Name;
 use crate::value::Quotes;
@@ -141,7 +141,7 @@ fn call_scope(s: &Scope) -> ScopeRef {
 
 #[cfg(test)]
 mod test {
-    use super::super::super::variablescope::test::do_evaluate;
+    use crate::variablescope::test::do_evaluate;
 
     #[test]
     fn variable_exists_not_null() {

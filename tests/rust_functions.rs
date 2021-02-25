@@ -1,4 +1,4 @@
-use rsass::sass::Name;
+use rsass::sass::{Function, Name};
 use rsass::value::{Number, Numeric, Rgba, Unit};
 use rsass::*;
 use std::sync::Arc;
@@ -31,7 +31,7 @@ fn simple_function() {
     let scope = ScopeRef::new_global(format);
     scope.define_function(
         Name::from_static("get_answer"),
-        SassFunction::builtin(
+        Function::builtin(
             vec![],
             false,
             Arc::new(|_| Ok(css::Value::scalar(42))),
@@ -58,7 +58,7 @@ fn function_with_args() {
     let scope = ScopeRef::new_global(Default::default());
     scope.define_function(
         Name::from_static("halfway"),
-        SassFunction::builtin(
+        Function::builtin(
             vec![
                 ("a".into(), sass::Value::Null),
                 ("b".into(), sass::Value::scalar(0)),
