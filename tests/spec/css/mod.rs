@@ -460,6 +460,110 @@ mod selector {
             }
         }
     }
+    mod escaping {
+        #[allow(unused)]
+        use super::rsass;
+        #[test]
+        fn dollar_char() {
+            assert_eq!(
+                rsass(
+                    ".u\\$ {a: b;}\
+            \n"
+                )
+                .unwrap(),
+                ".u\\$ {\
+        \n  a: b;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn dollar_char_as_numeric() {
+            assert_eq!(
+                rsass(
+                    ".u\\24 {a: b;}\
+            \n"
+                )
+                .unwrap(),
+                ".u\\$ {\
+        \n  a: b;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn number_as_first_char_with_space() {
+            assert_eq!(
+                rsass(
+                    ".\\31 u {a: b;}\
+            \n"
+                )
+                .unwrap(),
+                ".\\31 u {\
+        \n  a: b;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn number_as_first_char_without_space() {
+            assert_eq!(
+                rsass(
+                    ".\\31u {a: b;}\
+            \n"
+                )
+                .unwrap(),
+                ".\\31 u {\
+        \n  a: b;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn number_as_nonfirst_char_with_space() {
+            assert_eq!(
+                rsass(
+                    ".a\\31 u {a: b;}\
+            \n"
+                )
+                .unwrap(),
+                ".a1u {\
+        \n  a: b;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn number_as_nonfirst_char_without_space() {
+            assert_eq!(
+                rsass(
+                    ".a\\31u {a: b;}\
+            \n"
+                )
+                .unwrap(),
+                ".a1u {\
+        \n  a: b;\
+        \n}\
+        \n"
+            );
+        }
+        #[test]
+        fn parenthesis_in_interpolation() {
+            assert_eq!(
+                rsass(
+                    ".u#{\'\\\\28\'} { a: b; }\
+            \n"
+                )
+                .unwrap(),
+                ".u\\( {\
+        \n  a: b;\
+        \n}\
+        \n"
+            );
+        }
+    }
     mod inline_comments {
         #[allow(unused)]
         use super::rsass;

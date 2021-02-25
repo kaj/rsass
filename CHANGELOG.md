@@ -20,7 +20,7 @@ project adheres to
 * Add support for `$=`, `~=` and `^=` in css attribute selectors. PR #92.
 * A `Numeric` is a Number with a Unit.  Also hide NumValue enum. PR #93.
 * The `SassFunction` type is now named `sass::Function`.
-* Test suite sass-spec updated to 2021-02-04.
+* Test suite sass-spec updated to 2021-02-18.
 * Some cleanups.
 
 
