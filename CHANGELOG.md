@@ -7,7 +7,16 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.18.0 - 2021-02-25
+
+Progress: 2892 of 5945 tests passed in dart-sass compatibility mode.
+
+### Breaking changes
+
+Lots of things have been moved around.  See `Scope`, `Numeric`, and
+`Function` in particular.
+
+### Improvements
 
 * Support `@use` of user-defined modules.  PR #96.
 * Improve trigonometric precision by using f64 π rather than rational.
@@ -17,12 +26,21 @@ project adheres to
 * A color can be Hsla or Hwba as well as Rgba. PR #88, #89.
 * Handle units in `@for` loops inside sass functions.
 * Some types moved into `value` mod, imporoved docs. PR #90.
-* Add support for `$=`, `~=` and `^=` in css attribute selectors. PR #92.
+* Add support for `$=`, `~=` and `^=` in css attribute selectors.
+  Issue #91, PR #92.
 * A `Numeric` is a Number with a Unit.  Also hide NumValue enum. PR #93.
 * The `SassFunction` type is now named `sass::Function`.
 * Test suite sass-spec updated to 2021-02-18.
 * Some cleanups.
 
+Thanks to @mfeckie for #91/#92.
+
+Tested with rustc 1.50.0 (cb75ad5db 2021-02-10),
+rustc 1.48.0 (7eac88abb 2020-11-16),
+rustc 1.46.0 (04488afe3 2020-08-24),
+rustc 1.44.1 (c7087fe00 2020-06-17),
+rustc 1.51.0-beta.3 (b631c914c 2021-02-24), and
+rustc 1.52.0-nightly (a8486b64b 2021-02-24).
 
 ## Release 0.17.0 - 2021-01-29
 
