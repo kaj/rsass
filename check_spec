@@ -4,6 +4,8 @@
 #
 # Default run:
 #     ./check-spec
+# Regenerate the rust tests in tests/spec:
+#     ./check-spec update-tests
 # Just show which "basic" tests are still failing:
 #     ./check-spec basic
 # Generate stats to update lib.rs docs and readme:
