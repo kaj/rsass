@@ -308,8 +308,8 @@ fn number(input: Span) -> IResult<Span, Value> {
             unit,
         )),
         |(sign, num, unit)| {
-            Value::Numeric(Numeric {
-                value: if sign == Some(b"-") {
+            Value::Numeric(Numeric::new(
+                if sign == Some(b"-") {
                     // Only f64-based Number can represent negative zero.
                     if num.is_zero() {
                         (-0.0).into()
@@ -320,7 +320,7 @@ fn number(input: Span) -> IResult<Span, Value> {
                     num
                 },
                 unit,
-            })
+            ))
         },
     )(input)
 }

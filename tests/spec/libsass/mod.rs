@@ -333,7 +333,6 @@ mod color_functions;
 
 // From "sass-spec/spec/libsass/conversions.hrx"
 #[test]
-#[ignore] // wrong result
 fn conversions() {
     assert_eq!(
         rsass(

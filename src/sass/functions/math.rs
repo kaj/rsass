@@ -1,6 +1,6 @@
 use super::{Error, FunctionMap, Scope};
 use crate::css::Value;
-use crate::value::{Number, Numeric, Quotes, Unit};
+use crate::value::{Number, Numeric, Quotes, Unit, UnitSet};
 use num_rational::Rational;
 use rand::{thread_rng, Rng};
 use std::cmp::Ordering;
@@ -62,7 +62,7 @@ pub fn create_module() -> Scope {
                 let unit = first.unit;
                 for v in rest {
                     let scaled = as_numeric(v)?
-                        .as_unit(unit.clone())
+                        .as_unitset(&unit)
                         .ok_or_else(|| Error::badarg(&unit.to_string(), v))?;
                     sum += f64::from(scaled).powi(2);
                 }
@@ -125,7 +125,7 @@ pub fn create_module() -> Scope {
     def!(f, atan2(y, x), |s| {
         let y = get_numeric(s, "y")?;
         let x = get_numeric(s, "x")?;
-        let x = x.as_unit(y.unit).unwrap_or(x.value);
+        let x = x.as_unitset(&y.unit).unwrap_or(x.value);
         Ok(deg_value(f64::from(y.value).atan2(f64::from(x))))
     });
 
@@ -133,10 +133,7 @@ pub fn create_module() -> Scope {
     def!(f, compatible(number1, number2), |s| {
         let u1 = get_numeric(s, "number1")?.unit;
         let u2 = get_numeric(s, "number2")?.unit;
-        let ans = u1 == Unit::None
-            || u2 == Unit::None
-            || u1.dimension() == u2.dimension();
-        Ok(ans.into())
+        Ok(u1.is_compatible(&u2).into())
     });
     def!(f, is_unitless(number), |s| {
         Ok((get_numeric(s, "number")?.is_no_unit()).into())
@@ -254,7 +251,7 @@ fn as_numeric(v: &Value) -> Result<Numeric, Error> {
     }
 }
 
-fn number<T: Into<Number>>(v: T, unit: Unit) -> Value {
+fn number(v: impl Into<Number>, unit: impl Into<UnitSet>) -> Value {
     Numeric::new(v.into(), unit).into()
 }
 

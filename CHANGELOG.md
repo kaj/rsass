@@ -9,7 +9,15 @@ project adheres to
 
 ## Unreleased
 
+### Breaking changes
+
+* The unit of a `Numeric` is now a `UnitSet` rather than a `Unit`.
+
+### Improvements
+
 * Added a Contributing section to readme.
+* Handle values with multiple units. PR #97.
+
 
 ## Release 0.18.0 - 2021-02-25
 

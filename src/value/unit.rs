@@ -179,8 +179,8 @@ impl Unit {
             Unit::Hz => one(),
             Unit::Khz => Number::rational(1000, 1),
 
-            Unit::Dpi => Number::rational(96, 1),
-            Unit::Dpcm => Number::rational(9600, 254),
+            Unit::Dpi => Number::rational(1, 96),
+            Unit::Dpcm => Number::rational(254, 9600),
             Unit::Dppx => one(),
 
             Unit::Percent => Number::rational(1, 100),

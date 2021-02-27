@@ -425,6 +425,14 @@ impl Number {
             NumValue::Float(s) => Some(s.ceil() as isize),
         }
     }
+    /// Computes self^p.
+    pub fn powi(self, p: i32) -> Self {
+        match self.value {
+            NumValue::Rational(s) => s.pow(p).into(),
+            NumValue::BigRational(s) => s.pow(p).into(),
+            NumValue::Float(s) => s.powi(p).into(),
+        }
+    }
 
     /// Get a reference to this `Value` bound to an output format.
     pub fn format(&self, format: Format) -> Formatted<Self> {

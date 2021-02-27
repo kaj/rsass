@@ -1,6 +1,6 @@
 use super::{get_color, make_call, Error, FunctionMap};
 use crate::css::Value;
-use crate::value::{Hsla, Hwba, Rgba, Unit};
+use crate::value::{Hsla, Hwba, Rgba};
 use crate::Scope;
 use num_rational::Rational;
 use num_traits::{One, Signed, Zero};
@@ -259,7 +259,7 @@ fn to_rational(v: Value) -> Result<Rational, Error> {
 fn to_rational_percent(v: Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
-        Value::Numeric(v, _) if v.unit == Unit::Percent => {
+        Value::Numeric(v, _) if v.unit.is_percent() => {
             Ok(v.as_ratio()? / 100)
         }
         Value::Numeric(v, ..) => {

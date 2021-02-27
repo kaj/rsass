@@ -1,4 +1,4 @@
-use super::{Number, Numeric, Unit};
+use super::{Number, Numeric, UnitSet};
 use crate::css::Value;
 use std::fmt;
 
@@ -6,7 +6,7 @@ pub struct ValueRange {
     from: Number,
     to: Number,
     step: Number,
-    unit: Unit,
+    unit: UnitSet,
 }
 
 impl ValueRange {
@@ -21,7 +21,7 @@ impl ValueRange {
 
         let to = if from.is_no_unit() || to.is_no_unit() {
             to.value
-        } else if let Some(scaled) = to.as_unit(from.unit.clone()) {
+        } else if let Some(scaled) = to.as_unitset(&from.unit) {
             scaled
         } else {
             return Err(RangeError::IncompatibleUnits(from.unit, to.unit));
@@ -61,7 +61,7 @@ impl Iterator for ValueRange {
 pub enum RangeError {
     FromNotNumeric(Value),
     ToNotNumeric(Value),
-    IncompatibleUnits(Unit, Unit),
+    IncompatibleUnits(UnitSet, UnitSet),
 }
 
 impl fmt::Display for RangeError {
