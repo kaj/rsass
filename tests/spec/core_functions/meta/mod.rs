@@ -3205,7 +3205,6 @@ mod type_of {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn unit() {
             assert_eq!(
                 rsass(

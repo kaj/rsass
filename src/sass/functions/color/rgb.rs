@@ -215,7 +215,7 @@ fn int_value(v: Rational) -> Value {
 fn to_int(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(v, ..) => {
-            if v.unit == Unit::Percent {
+            if v.unit.is_percent() {
                 Ok(v.as_ratio()? * 255 / 100)
             } else {
                 v.as_ratio()
@@ -227,10 +227,10 @@ fn to_int(v: &Value) -> Result<Rational, Error> {
 
 fn to_rational(v: &Value) -> Result<Rational, Error> {
     match v {
-        Value::Numeric(num, _) if num.unit == Unit::Percent => {
+        Value::Numeric(num, _) if num.unit.is_percent() => {
             Ok(num.as_ratio()? / 100)
         }
-        Value::Numeric(num, _) if num.unit == Unit::None => num.as_ratio(),
+        Value::Numeric(num, _) if num.unit.is_none() => num.as_ratio(),
         v => Err(Error::badarg("number", &v)),
     }
 }

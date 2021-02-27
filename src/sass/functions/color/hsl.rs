@@ -159,7 +159,7 @@ pub fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, ..) => {
-            if v.unit == Unit::Percent || v.value > one() {
+            if v.unit.is_percent() || v.value > one() {
                 Ok(v.as_ratio()? / 100)
             } else {
                 Ok(v.as_ratio()?)
@@ -174,7 +174,7 @@ pub fn to_rational2(v: &Value) -> Result<Rational, Error> {
     match v {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, ..) => {
-            if v.unit == Unit::Percent {
+            if v.unit.is_percent() {
                 Ok(v.as_ratio()? / 100)
             } else {
                 Ok(v.as_ratio()?)
