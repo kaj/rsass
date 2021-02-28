@@ -1,5 +1,5 @@
 use crate::css::Value;
-use crate::parser::ParseError;
+use crate::parser::{ParseError, SourcePos};
 use crate::value::RangeError;
 use std::convert::From;
 use std::{fmt, io};
@@ -13,6 +13,8 @@ pub enum Error {
     ///
     /// This is (probably) an error writing output.
     IoError(io::Error),
+    /// A bad call to a builtin function
+    BadCall(String, SourcePos),
     BadValue(String),
     BadArguments(String),
     /// A range error
@@ -74,6 +76,11 @@ impl fmt::Display for Error {
                 write!(out, "Undefined variable: \"${}\"", name)
             }
             Error::ParseError(ref err) => err.fmt(out),
+            Error::BadCall(ref msg, ref pos) => {
+                msg.fmt(out)?;
+                writeln!(out)?;
+                pos.show(out, "invocation")
+            }
             Error::BadRange(ref err) => err.fmt(out),
             Error::BadValue(ref err) => err.fmt(out),
             // fallback

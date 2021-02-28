@@ -12,11 +12,13 @@ project adheres to
 ### Breaking changes
 
 * The unit of a `Numeric` is now a `UnitSet` rather than a `Unit`.
+* `Error` has a new variant.
 
 ### Improvements
 
 * Added a Contributing section to readme.
 * Handle values with multiple units. PR #97.
+* Show call position for errors in function calls.
 
 
 ## Release 0.18.0 - 2021-02-25

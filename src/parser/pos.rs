@@ -1,4 +1,5 @@
 use super::Span;
+use std::fmt::{self, Write};
 use std::str::from_utf8;
 
 /// A position in sass input.
@@ -12,6 +13,48 @@ pub struct SourcePos {
     pub line_pos: usize,
     /// The source file name and from where it was loaded.
     pub file: SourceName,
+}
+
+impl SourcePos {
+    /// Show this source position.
+    ///
+    /// Dislays the line containg the position, highlighting
+    /// the position.
+    pub fn show(&self, out: &mut impl Write, what: &str) -> fmt::Result {
+        let line_no = self.line_no.to_string();
+        write!(
+            out,
+            "{0:lnw$} ,\
+             \n{ln} | {line}\
+             \n{0:lnw$} |{0:>lpos$}^ {what}\
+             \n{0:lnw$} '",
+            "",
+            line = self.line,
+            ln = line_no,
+            lnw = line_no.len(),
+            lpos = self.line_pos,
+            what = what,
+        )?;
+        let mut nextpos = Some(self);
+        while let Some(pos) = nextpos {
+            write!(
+                out,
+                "\n{0:lnw$} {file} {row}:{col}  {cause}",
+                "",
+                lnw = line_no.len(),
+                file = pos.file.name(),
+                row = pos.line_no,
+                col = pos.line_pos,
+                cause = if pos.file.imported_from().is_some() {
+                    "import"
+                } else {
+                    "root stylesheet"
+                },
+            )?;
+            nextpos = pos.file.imported_from();
+        }
+        Ok(())
+    }
 }
 
 impl From<Span<'_>> for SourcePos {

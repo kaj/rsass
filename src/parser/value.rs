@@ -448,7 +448,7 @@ fn special_function(input: Span) -> IResult<Span, Value> {
 
 pub fn function_call(input: Span) -> IResult<Span, Value> {
     map(pair(sass_string, call_args), |(name, args)| {
-        Value::Call(name, args)
+        Value::Call(name, args, input.into())
     })(input)
 }
 
@@ -637,18 +637,35 @@ mod test {
 
     #[test]
     fn call_no_args() {
-        check_expr("foo();", Call("foo".into(), CallArgs::default()))
+        assert_eq!(
+            parse_call("foo();"),
+            Ok(("foo".into(), CallArgs::default(), ";".as_bytes())),
+        );
     }
 
     #[test]
     fn call_one_arg() {
-        check_expr(
-            "foo(17);",
-            Call(
+        assert_eq!(
+            parse_call("foo(17);"),
+            Ok((
                 "foo".into(),
                 CallArgs::new(vec![(None, Value::scalar(17))]),
-            ),
-        )
+                ";".as_bytes(),
+            )),
+        );
+    }
+
+    // test helper
+    fn parse_call(
+        expr: &str,
+    ) -> Result<(SassString, CallArgs, &[u8]), String> {
+        let (rest, value) = value_expression(code_span(expr.as_bytes()))
+            .map_err(|e| e.to_string())?;
+        if let Value::Call(name, args, _) = value {
+            Ok((name, args, rest.fragment()))
+        } else {
+            Err(format!("Not a call parse result: {:?} {:?}", value, rest))
+        }
     }
 
     #[test]

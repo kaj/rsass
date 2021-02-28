@@ -1,6 +1,7 @@
 use crate::css;
 use crate::error::Error;
 use crate::ordermap::OrderMap;
+use crate::parser::SourcePos;
 use crate::sass::{CallArgs, SassString};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Quotes, Rgba};
 use crate::ScopeRef;
@@ -12,7 +13,7 @@ pub enum Value {
     /// A special kind of escape.  Only really used for !important.
     Bang(String),
     /// A call has a name and an argument (which may be multi).
-    Call(SassString, CallArgs),
+    Call(SassString, CallArgs, SourcePos),
     /// A literal string value (quoted or not).
     Literal(SassString),
     /// A comma- or space separated list of values, with or without brackets.
@@ -123,11 +124,13 @@ impl Value {
                     .collect::<Result<Vec<_>, Error>>()?;
                 Ok(css::Value::List(items, s, b))
             }
-            Value::Call(ref name, ref args) => {
+            Value::Call(ref name, ref args, ref pos) => {
                 let args = args.evaluate(scope.clone(), true)?;
                 if let Some(name) = name.single_raw() {
                     if let Some(f) = scope.get_function(&name.into()) {
-                        f.call(scope.clone(), &args)
+                        f.call(scope.clone(), &args).map_err(|e| {
+                            Error::BadCall(e.to_string(), pos.clone())
+                        })
                     } else {
                         Ok(css::Value::Call(name.to_string(), args))
                     }
