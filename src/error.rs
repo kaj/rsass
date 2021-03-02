@@ -1,4 +1,5 @@
 use crate::css::Value;
+use crate::output::Format;
 use crate::parser::{ParseError, SourcePos};
 use crate::sass::Name;
 use crate::value::RangeError;
@@ -93,7 +94,7 @@ impl fmt::Display for Error {
                     out,
                     "Error: ${}: {} {}.",
                     name.as_ref(),
-                    value.format(Default::default()),
+                    value.format(Format::introspect()),
                     problem
                 )
             }
@@ -101,7 +102,7 @@ impl fmt::Display for Error {
             Error::BadCall(ref msg, ref pos) => {
                 msg.fmt(out)?;
                 writeln!(out)?;
-                pos.show(out, "invocation")
+                pos.show(out, "")
             }
             Error::BadRange(ref err) => err.fmt(out),
             Error::BadValue(ref err) => err.fmt(out),

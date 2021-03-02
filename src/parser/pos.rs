@@ -11,11 +11,24 @@ pub struct SourcePos {
     pub line_no: u32,
     /// The position on the line.
     pub line_pos: usize,
+    length: usize,
     /// The source file name and from where it was loaded.
     pub file: SourceName,
 }
 
 impl SourcePos {
+    /// Create a new SourcePos from a start and an end Span.
+    pub fn from_to(start: Span, end: Span) -> Self {
+        let mut result = Self::from(start);
+        result.length =
+            std::cmp::max(1, end.location_offset() - start.location_offset());
+        result
+    }
+    /// ...
+    pub fn length(mut self, l: usize) -> Self {
+        self.length = l;
+        self
+    }
     /// Show this source position.
     ///
     /// Dislays the line containg the position, highlighting
@@ -26,13 +39,14 @@ impl SourcePos {
             out,
             "{0:lnw$} ,\
              \n{ln} | {line}\
-             \n{0:lnw$} |{0:>lpos$}^ {what}\
+             \n{0:lnw$} |{0:>lpos$}{mark}{what}\
              \n{0:lnw$} '",
             "",
             line = self.line,
             ln = line_no,
             lnw = line_no.len(),
             lpos = self.line_pos,
+            mark = "^".repeat(self.length),
             what = what,
         )?;
         let mut nextpos = Some(self);
@@ -65,6 +79,7 @@ impl From<Span<'_>> for SourcePos {
                 .to_string(),
             line_no: span.location_line(),
             line_pos: span.get_utf8_column(),
+            length: 1,
             file: span.extra.clone(),
         }
     }

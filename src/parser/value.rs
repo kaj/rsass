@@ -5,7 +5,7 @@ use super::strings::{
 };
 use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
-use super::{input_to_string, sass_string, Span};
+use super::{input_to_string, sass_string, SourcePos, Span};
 use crate::sass::{SassString, Value};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use nom::branch::alt;
@@ -447,9 +447,9 @@ fn special_function(input: Span) -> IResult<Span, Value> {
 }
 
 pub fn function_call(input: Span) -> IResult<Span, Value> {
-    map(pair(sass_string, call_args), |(name, args)| {
-        Value::Call(name, args, input.into())
-    })(input)
+    let (rest, (name, args)) = pair(sass_string, call_args)(input)?;
+    let pos = SourcePos::from_to(input, rest);
+    Ok((rest, Value::Call(name, args, pos)))
 }
 
 fn literal_or_color(s: SassString) -> Value {
