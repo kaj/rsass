@@ -1,5 +1,6 @@
 use crate::css::Value;
 use crate::parser::{ParseError, SourcePos};
+use crate::sass::Name;
 use crate::value::RangeError;
 use std::convert::From;
 use std::{fmt, io};
@@ -16,6 +17,7 @@ pub enum Error {
     /// A bad call to a builtin function
     BadCall(String, SourcePos),
     BadValue(String),
+    BadArgument(Name, Value, &'static str),
     BadArguments(String),
     /// A range error
     BadRange(RangeError),
@@ -37,6 +39,17 @@ impl Error {
             actual.format(Default::default()),
             expected,
         ))
+    }
+
+    /// Wrong kind of argument to a sass function.
+    /// `expected` is a string describing what the parameter should
+    /// have been, `actual` is the argument.
+    pub fn bad_arg(
+        name: Name,
+        actual: &Value,
+        problem: &'static str,
+    ) -> Error {
+        Error::BadArgument(name, actual.clone(), problem)
     }
 
     /// Wrong kind of argument to a sass function.
@@ -74,6 +87,15 @@ impl fmt::Display for Error {
             }
             Error::UndefinedVariable(ref name) => {
                 write!(out, "Undefined variable: \"${}\"", name)
+            }
+            Error::BadArgument(ref name, ref value, problem) => {
+                write!(
+                    out,
+                    "Error: ${}: {} {}.",
+                    name.as_ref(),
+                    value.format(Default::default()),
+                    problem
+                )
             }
             Error::ParseError(ref err) => err.fmt(out),
             Error::BadCall(ref msg, ref pos) => {

@@ -1,5 +1,6 @@
 use super::{Error, FunctionMap, Scope};
 use crate::css::Value;
+use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Unit, UnitSet};
 use num_rational::Rational;
 use rand::{thread_rng, Rng};
@@ -72,7 +73,7 @@ pub fn create_module() -> Scope {
             }
         }
         Value::Numeric(v, _) => Ok(number(v.value.abs(), v.unit)),
-        v => Err(Error::badarg("number", &v)),
+        v => Err(Error::bad_arg(name!(number), &v, "is not a number")),
     });
 
     // - - - Exponential Functions - - -
@@ -205,7 +206,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, Error> {
     s.get(name)?
         .numeric_value()
-        .map_err(|v| Error::badarg("number", &v))
+        .map_err(|v| Error::bad_arg(Name::from(name), &v, "is not a number"))
 }
 
 fn get_radians(s: &Scope, name: &str) -> Result<f64, Error> {

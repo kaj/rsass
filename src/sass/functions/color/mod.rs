@@ -1,5 +1,6 @@
 use super::{Error, FunctionMap};
 use crate::css::{CallArgs, Value};
+use crate::sass::Name;
 use crate::{value::Color, Scope};
 mod hsl;
 mod hwb;
@@ -24,7 +25,9 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 fn get_color(s: &Scope, name: &str) -> Result<Color, Error> {
     match s.get(name)? {
         Value::Color(col, _) => Ok(col),
-        value => Err(Error::badarg("color", &value)),
+        value => {
+            Err(Error::bad_arg(Name::from(name), &value, "is not a color"))
+        }
     }
 }
 

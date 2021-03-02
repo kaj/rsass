@@ -1,4 +1,4 @@
-use super::{get_color, make_call, Error, FunctionMap};
+use super::{get_color, make_call, Error, FunctionMap, Name};
 use crate::css::Value;
 use crate::value::{Hsla, Hwba, Rgba};
 use crate::Scope;
@@ -13,54 +13,50 @@ pub fn register(f: &mut Scope) {
             blackness, alpha
         ),
         |s| {
+            fn opt_add(a: Rational, b: Option<Rational>) -> Rational {
+                if let Some(b) = b {
+                    a + b
+                } else {
+                    a
+                }
+            }
             let rgba = get_color(s, "color")?;
-            let c_add = |orig: Rational, name: &str| match s.get(name)? {
-                Value::Null => Ok(orig),
-                x => to_rational(x).map(|x| orig + x),
-            };
-            let h_adj = s.get("hue")?;
-            let s_adj = s.get("saturation")?;
-            let l_adj = s.get("lightness")?;
-            let b_adj = s.get("blackness")?;
-            let w_adj = s.get("whiteness")?;
-            if h_adj.is_null()
-                && s_adj.is_null()
-                && l_adj.is_null()
-                && b_adj.is_null()
-                && w_adj.is_null()
+            let h_adj = get_opt_rational(s, "hue")?;
+            let s_adj = get_opt_rational_pct(s, "saturation")?;
+            let l_adj = get_opt_rational_pct(s, "lightness")?;
+            let b_adj = get_opt_rational_pct(s, "blackness")?;
+            let w_adj = get_opt_rational_pct(s, "whiteness")?;
+            let a_adj = get_opt_rational(s, "alpha")?;
+            if h_adj.is_none()
+                && s_adj.is_none()
+                && l_adj.is_none()
+                && b_adj.is_none()
+                && w_adj.is_none()
             {
                 let rgba = rgba.to_rgba();
                 Ok(Rgba::new(
-                    c_add(rgba.red(), "red")?,
-                    c_add(rgba.green(), "green")?,
-                    c_add(rgba.blue(), "blue")?,
-                    c_add(rgba.alpha(), "alpha")?,
+                    opt_add(rgba.red(), get_opt_rational(s, "red")?),
+                    opt_add(rgba.green(), get_opt_rational(s, "green")?),
+                    opt_add(rgba.blue(), get_opt_rational(s, "blue")?),
+                    opt_add(rgba.alpha(), get_opt_rational(s, "alpha")?),
                 )
                 .into())
-            } else if b_adj.is_null() && w_adj.is_null() {
+            } else if b_adj.is_none() && w_adj.is_none() {
                 let hsla = rgba.to_hsla();
-                let sl_add = |orig: Rational, x: Value| match x {
-                    Value::Null => Ok(orig),
-                    x => to_rational_percent(x).map(|x| orig + x),
-                };
                 Ok(Hsla::new(
-                    c_add(hsla.hue(), "hue")?,
-                    sl_add(hsla.sat(), s_adj)?,
-                    sl_add(hsla.lum(), l_adj)?,
-                    c_add(hsla.alpha(), "alpha")?,
+                    opt_add(hsla.hue(), h_adj),
+                    opt_add(hsla.sat(), s_adj),
+                    opt_add(hsla.lum(), l_adj),
+                    opt_add(hsla.alpha(), a_adj),
                 )
                 .into())
             } else {
                 let hwba = rgba.to_hwba();
-                let sl_add = |orig: Rational, x: Value| match x {
-                    Value::Null => Ok(orig),
-                    x => to_rational_percent(x).map(|x| clamp_z1(orig + x)),
-                };
                 Ok(Hwba::new(
-                    c_add(hwba.hue(), "hue")?,
-                    sl_add(hwba.whiteness(), w_adj)?,
-                    sl_add(hwba.blackness(), b_adj)?,
-                    c_add(hwba.alpha(), "alpha")?,
+                    opt_add(hwba.hue(), h_adj),
+                    opt_add(hwba.whiteness(), w_adj),
+                    opt_add(hwba.blackness(), b_adj),
+                    opt_add(hwba.alpha(), a_adj),
                 )
                 .into())
             }
@@ -244,6 +240,37 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
+fn get_opt_rational(
+    s: &Scope,
+    name: &str,
+) -> Result<Option<Rational>, Error> {
+    match s.get(name)? {
+        Value::Numeric(v, ..) => Some(v.as_ratio()).transpose(),
+        Value::Null => Ok(None),
+        v => Err(Error::bad_arg(Name::from(name), &v, "is not a number")),
+    }
+}
+fn get_opt_rational_pct(
+    s: &Scope,
+    name: &str,
+) -> Result<Option<Rational>, Error> {
+    match s.get(name)? {
+        Value::Numeric(v, _) if v.unit.is_percent() => {
+            Ok(Some(v.as_ratio()? / 100))
+        }
+        Value::Numeric(v, ..) => {
+            let v = v.as_ratio()?;
+            Ok(Some(if v.abs() < Rational::one() {
+                v
+            } else {
+                v / 100
+            }))
+        }
+        Value::Null => Ok(None),
+        v => Err(Error::bad_arg(Name::from(name), &v, "is not a number")),
+    }
+}
+
 fn to_rational(v: Value) -> Result<Rational, Error> {
     match v {
         Value::Numeric(v, ..) => v.as_ratio(),
@@ -271,17 +298,6 @@ fn to_rational_percent(v: Value) -> Result<Rational, Error> {
             })
         }
         v => Err(Error::badarg("number", &v)),
-    }
-}
-
-/// Clamp a value into the zero - one range.
-fn clamp_z1(v: Rational) -> Rational {
-    if v < Rational::zero() {
-        Rational::zero()
-    } else if v > Rational::one() {
-        Rational::one()
-    } else {
-        v
     }
 }
 
