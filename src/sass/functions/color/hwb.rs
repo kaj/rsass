@@ -2,6 +2,7 @@ use super::hsl::{percentage, to_rational2, to_rational_percent};
 use super::rgb::values_from_list;
 use super::{get_color, Error};
 use crate::css::Value;
+use crate::output::Format;
 use crate::value::{Hwba, Number, Unit};
 use crate::Scope;
 use num_rational::Rational;
@@ -24,13 +25,13 @@ pub fn register(f: &mut Scope) {
                 s.get("alpha")?,
             ),
         };
-        let hue = as_deg(&hue)?;
-        let w = to_rational_percent(&w)?;
-        let b = to_rational_percent(&b)?;
+        let hue = as_hue(&hue)?;
+        let w = to_rational_percent(&w, name!(whiteness))?;
+        let b = to_rational_percent(&b, name!(blackness))?;
         let a = if a.is_null() {
             Rational::one()
         } else {
-            to_rational2(&a)?
+            to_rational2(&a, name!(alpha))?
         };
         Ok(Hwba::new(hue.as_ratio()?, w, b, a).into())
     });
@@ -43,18 +44,21 @@ pub fn register(f: &mut Scope) {
 }
 
 fn badchannels(v: &Value) -> Error {
-    Error::badarg("Expected channels list", v)
+    Error::S(format!(
+        "Error: Expected numeric channels, got \"hwb({})\".",
+        v.format(Format::introspect()),
+    ))
 }
 
-fn as_deg(v: &Value) -> Result<Number, Error> {
+fn as_hue(v: &Value) -> Result<Number, Error> {
     match v {
         Value::Numeric(vv, ..) => {
             if let Some(scaled) = vv.as_unit_def(Unit::Deg) {
                 Ok(scaled)
             } else {
-                Err(Error::badarg("angle", &v))
+                Err(Error::bad_arg(name!(hue), &v, "is not an angle"))
             }
         }
-        v => Err(Error::badarg("angle", &v)),
+        v => Err(Error::bad_arg(name!(hue), &v, "is not a number")),
     }
 }

@@ -1,4 +1,4 @@
-use super::{Error, FunctionMap};
+use super::{get_string, Error, FunctionMap};
 use crate::css::{CallArgs, Value};
 use crate::sass::Name;
 use crate::value::Quotes;
@@ -22,7 +22,13 @@ pub fn create_module() -> Scope {
                 );
                 (call_scope(s).get_function(&(&name).into()), name)
             }
-            ref v => return Err(Error::badarg("string", v)),
+            ref v => {
+                return Err(Error::bad_arg(
+                    name!(function),
+                    v,
+                    "is not a function reference",
+                ))
+            }
         };
         let args = CallArgs::from_value(s.get("args")?);
         if let Some(function) = function {
@@ -35,41 +41,27 @@ pub fn create_module() -> Scope {
         let content = s.get_mixin(&Name::from_static("%%BODY%%"));
         Ok(content.map(|m| !m.body.is_empty()).unwrap_or(false).into())
     });
-    def!(f, feature_exists(feature), |s| match &s.get("feature")? {
-        &Value::Literal(ref v, _) => {
-            Ok(IMPLEMENTED_FEATURES.iter().any(|s| s == v).into())
-        }
-        v => Err(Error::badarg("string", v)),
+    def!(f, feature_exists(feature), |s| {
+        let (feature, _q) = get_string(s, "feature")?;
+        Ok(IMPLEMENTED_FEATURES.iter().any(|s| s == &feature).into())
     });
-    def!(f, function_exists(name), |s| match s.get("name")? {
-        Value::Literal(v, _) => {
-            Ok(call_scope(s).get_function(&v.into()).is_some().into())
-        }
-        v => Err(Error::badarg("string", &v)),
+    def!(f, function_exists(name), |s| {
+        let (name, _q) = get_string(s, "name")?;
+        Ok(call_scope(s).get_function(&name.into()).is_some().into())
     });
-    def!(
-        f,
-        get_function(name, css = b"false"),
-        |s| match s.get("name")? {
-            Value::Literal(v, _) => {
-                if s.get("css")?.is_true() {
-                    Ok(Value::Function(v, None))
-                } else if let Some(f) =
-                    call_scope(s).get_function(&(&v).into())
-                {
-                    Ok(Value::Function(v, Some(f)))
-                } else {
-                    Err(Error::S(format!("Function {} does not exist", v)))
-                }
-            }
-            ref v => Err(Error::badarg("string", v)),
+    def!(f, get_function(name, css = b"false"), |s| {
+        let (v, _q) = get_string(s, "name")?;
+        if s.get("css")?.is_true() {
+            Ok(Value::Function(v, None))
+        } else if let Some(f) = call_scope(s).get_function(&(&v).into()) {
+            Ok(Value::Function(v, Some(f)))
+        } else {
+            Err(Error::S(format!("Error: Function not found: {}", v)))
         }
-    );
-    def!(f, global_variable_exists(name), |s| match s.get("name")? {
-        Value::Literal(v, _) => {
-            Ok(call_scope(s).get_global_or_none(&v.into()).is_some().into())
-        }
-        v => Err(Error::badarg("string", &v)),
+    });
+    def!(f, global_variable_exists(name), |s| {
+        let (v, _q) = get_string(s, "name")?;
+        Ok(call_scope(s).get_global_or_none(&v.into()).is_some().into())
     });
     def!(f, inspect(value), |s| Ok(Value::Literal(
         match s.get("value")? {
@@ -80,22 +72,18 @@ pub fn create_module() -> Scope {
         Quotes::None
     )));
     // TODO: keywords
-    def!(f, mixin_exists(name), |s| match &s.get("name")? {
-        &Value::Literal(ref v, _) => {
-            Ok(call_scope(s).get_mixin(&v.into()).is_some().into())
-        }
-        v => Err(Error::badarg("string", v)),
+    def!(f, mixin_exists(name), |s| {
+        let (v, _q) = get_string(s, "name")?;
+        Ok(call_scope(s).get_mixin(&v.into()).is_some().into())
     });
     // TODO: module_functions, module_variables
     def!(f, type_of(value), |s| Ok(Value::Literal(
         s.get("value")?.type_name().into(),
         Quotes::None
     )));
-    def!(f, variable_exists(name), |s| match s.get("name")? {
-        Value::Literal(v, _) => {
-            Ok(call_scope(s).get_or_none(&v.into()).is_some().into())
-        }
-        v => Err(Error::badarg("string", &v)),
+    def!(f, variable_exists(name), |s| {
+        let (v, _q) = get_string(s, "name")?;
+        Ok(call_scope(s).get_or_none(&v.into()).is_some().into())
     });
     f
 }

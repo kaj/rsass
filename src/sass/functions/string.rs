@@ -1,6 +1,6 @@
-use super::{Error, FunctionMap};
+use super::{get_integer, get_string, Error, FunctionMap};
 use crate::css::Value;
-use crate::value::{Quotes, Unit};
+use crate::value::Quotes;
 use crate::Scope;
 use lazy_static::lazy_static;
 use std::cmp::max;
@@ -20,59 +20,44 @@ pub fn create_module() -> Scope {
             Ok(Value::Literal(v, Quotes::Double))
         }
     });
-    def!(f, index(string, substring), |s| match (
-        s.get("string")?,
-        s.get("substring")?,
-    ) {
-        (Value::Literal(s, _), Value::Literal(sub, _)) => {
-            Ok(match s.find(&sub) {
-                Some(o) => Value::scalar(1 + s[0..o].chars().count()),
-                None => Value::Null,
-            })
-        }
-        (full, sub) => {
-            Err(Error::badargs(&["string", "string"], &[&full, &sub]))
-        }
+    def!(f, index(string, substring), |s| {
+        let (string, _) = get_string(s, "string")?;
+        let (sub, _) = get_string(s, "substring")?;
+        Ok(match string.find(&sub) {
+            Some(o) => Value::scalar(1 + string[0..o].chars().count()),
+            None => Value::Null,
+        })
     });
-    def!(f, insert(string, insert, index), |s| match (
-        s.get("string")?,
-        s.get("insert")?,
-    ) {
-        (Value::Literal(st, q), Value::Literal(insert, _)) => {
-            let index = get_integer(s, "index")?;
-            let i = if index.is_negative() {
-                let len = st.chars().count() as isize;
-                max(len + 1 + index, 0) as usize
-            } else if index.is_positive() {
-                index as usize - 1
-            } else {
-                0
-            };
-            let mut s = st.chars();
-            Ok(Value::Literal(
-                format!(
-                    "{}{}{}",
-                    s.by_ref().take(i).collect::<String>(),
-                    insert,
-                    s.collect::<String>()
-                ),
-                q,
-            ))
-        }
-        (st, i) => Err(Error::badargs(
-            &["string", "string", "number"],
-            &[&st, &i, &s.get("index")?],
-        )),
+    def!(f, insert(string, insert, index), |s| {
+        let (string, q) = get_string(s, "string")?;
+        let (insert, _) = get_string(s, "insert")?;
+        let index = get_integer(s, "index")?;
+
+        let i = if index.is_negative() {
+            let len = string.chars().count() as isize;
+            max(len + 1 + index, 0) as usize
+        } else if index.is_positive() {
+            index as usize - 1
+        } else {
+            0
+        };
+        let mut s = string.chars();
+        Ok(Value::Literal(
+            format!(
+                "{}{}{}",
+                s.by_ref().take(i).collect::<String>(),
+                insert,
+                s.collect::<String>()
+            ),
+            q,
+        ))
     });
-    def!(f, length(string), |s| match &s.get("string")? {
-        &Value::Literal(ref v, _) => Ok(Value::scalar(v.chars().count())),
-        v => Err(Error::badarg("string", v)),
+    def!(f, length(string), |s| {
+        let (v, _q) = get_string(s, "string")?;
+        Ok(Value::scalar(v.chars().count()))
     });
     def!(f, slice(string, start_at, end_at = b"-1"), |s| {
-        let (st, q) = match s.get("string")? {
-            Value::Literal(st, q) => (st, q),
-            v => return Err(Error::badarg("string", &v)),
-        };
+        let (st, q) = get_string(s, "string")?;
         let start_at = index_to_rust(get_integer(s, "start_at")?, &st);
         let end_at = index_to_rust_end(get_integer(s, "end_at")?, &st);
         let c = st.chars();
@@ -167,22 +152,6 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
             ))
         }),
     );
-}
-
-fn get_integer(s: &Scope, name: &str) -> Result<isize, Error> {
-    let v0 = s.get(name)?;
-    let v = v0
-        .clone()
-        .numeric_value()
-        .map_err(|v| Error::badarg("number", &v))?
-        .as_unit(Unit::None)
-        .ok_or_else(|| Error::S("bad unit".into()))?;
-    if v.is_integer() {
-        v.to_integer()
-            .ok_or_else(|| Error::S(format!("{:?} is not an int", v)))
-    } else {
-        Err(Error::badarg("integer", &v0))
-    }
 }
 
 /// Convert index from sass (rational number, first is one) to rust

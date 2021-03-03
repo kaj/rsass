@@ -1,4 +1,4 @@
-use super::{Error, FunctionMap};
+use super::{Error, FunctionMap, Name};
 use crate::css::Value;
 use crate::ordermap::OrderMap;
 use crate::value::ListSeparator;
@@ -12,7 +12,7 @@ pub fn create_module() -> Scope {
     let f = Scope::new_global(Default::default());
     // TODO deep_merge and deep_remove
     def_va!(f, get(map, key, keys), |s| {
-        let map = get_map(s.get("map")?)?;
+        let map = get_map(s, name!(map))?;
         let mut val = map.get(&s.get("key")?).cloned();
         match s.get("keys")? {
             Value::List(keys, ..) => {
@@ -39,7 +39,7 @@ pub fn create_module() -> Scope {
         Ok(val.unwrap_or(Value::Null))
     });
     def_va!(f, has_key(map, key, keys), |s| {
-        let map = get_map(s.get("map")?)?;
+        let map = get_map(s, name!(map))?;
         match s.get("keys")? {
             Value::List(keys, ..) => {
                 if let Some((last, keys)) = keys.split_last() {
@@ -72,13 +72,13 @@ pub fn create_module() -> Scope {
         }
     });
     def!(f, keys(map), |s| {
-        let map = get_map(s.get("map")?)?;
+        let map = get_map(s, name!(map))?;
         Ok(Value::List(map.keys(), ListSeparator::Comma, false))
     });
     // TODO: Merge should be varargs
     def!(f, merge(map1, map2), |s| {
-        let mut map1 = get_map(s.get("map1")?)?;
-        let map2 = get_map(s.get("map2")?)?;
+        let mut map1 = get_map(s, name!(map1))?;
+        let map2 = get_map(s, name!(map2))?;
         for (key, value) in map2 {
             map1.insert(key, value);
         }
@@ -88,7 +88,7 @@ pub fn create_module() -> Scope {
     // alias for "keys", which makes a mess when using more than one
     // positional argument.
     def_va!(f, remove(map, key, keys), |s| {
-        let mut map = get_map(s.get("map")?)?;
+        let mut map = get_map(s, name!(map))?;
         let key = s.get("key")?;
         let keys = s.get("keys")?;
         match (key, keys) {
@@ -112,14 +112,14 @@ pub fn create_module() -> Scope {
     });
     def!(f, set(map, key, value), |s| {
         // TODO: handle keys... arguments before key for nested maps
-        let mut map = get_map(s.get("map")?)?;
+        let mut map = get_map(s, name!(map))?;
         let key = s.get("key")?;
         let value = s.get("value")?;
         map.insert(key, value);
         Ok(Value::Map(map))
     });
     def!(f, values(map), |s| {
-        let map = get_map(s.get("map")?)?;
+        let map = get_map(s, name!(map))?;
         Ok(Value::List(map.values(), ListSeparator::Comma, false))
     });
     f
@@ -138,12 +138,12 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn get_map(v: Value) -> Result<OrderMap<Value, Value>, Error> {
-    match v {
+fn get_map(s: &Scope, name: Name) -> Result<OrderMap<Value, Value>, Error> {
+    match s.get(name.as_ref())? {
         Value::Map(m) => Ok(m),
         // An empty map and an empty list looks the same
         Value::List(ref l, ..) if l.is_empty() => Ok(OrderMap::new()),
-        v => Err(Error::badarg("map", &v)),
+        v => Err(Error::bad_arg(name, &v, "is not a map")),
     }
 }
 

@@ -1,4 +1,4 @@
-use super::{Error, FunctionMap};
+use super::{get_integer, get_string, Error, FunctionMap, Name};
 use crate::css::Value;
 use crate::value::{ListSeparator, Quotes};
 use crate::Scope;
@@ -58,29 +58,19 @@ pub fn create_module() -> Scope {
         |s| {
             let (mut list1, sep1, bra1) = get_list(s.get("list1")?);
             let (mut list2, sep2, _bra2) = get_list(s.get("list2")?);
-            let separator = match s.get("separator")? {
-                Value::Literal(ref sep, _)
-                    if sep.to_lowercase() == "comma" =>
-                {
-                    ListSeparator::Comma
-                }
-                Value::Literal(ref sep, _)
-                    if sep.to_lowercase() == "space" =>
-                {
-                    ListSeparator::Space
-                }
-                Value::Literal(ref sep, _)
-                    if sep.to_lowercase() == "auto" =>
-                {
-                    sep1.or(sep2).unwrap_or(ListSeparator::Space)
-                }
-                ref other => {
-                    return Err(Error::badarg(
-                        "'comma', 'space', or 'auto'",
-                        other,
-                    ));
-                }
-            };
+            let separator =
+                match get_string(s, "separator")?.0.to_lowercase().as_ref() {
+                    "comma" => ListSeparator::Comma,
+                    "space" => ListSeparator::Space,
+                    "auto" => sep1.or(sep2).unwrap_or(ListSeparator::Space),
+                    _other => {
+                        return Err(Error::BadArgument(
+                            name!(separator),
+                            "Must be \"space\", \"comma\", or \"auto\""
+                                .into(),
+                        ));
+                    }
+                };
             list1.append(&mut list2);
             let bra = match s.get("bracketed")? {
                 Value::Literal(ref s, _) if s == "auto" => bra1,
@@ -108,13 +98,13 @@ pub fn create_module() -> Scope {
         Quotes::None
     )));
     def!(f, nth(list, n), |s| {
-        let n = s.get("n")?.integer_value()?;
+        let n = get_integer(s, "n")?;
         match s.get("list")? {
             Value::List(list, _, _) => {
-                Ok(list[list_index(n, &list)?].clone())
+                Ok(list[list_index(n, &list, name!(n))?].clone())
             }
             Value::Map(map) => {
-                let n = rust_index(n, map.len())?;
+                let n = rust_index(n, map.len(), name!(n))?;
                 if let Some(&(ref k, ref v)) = map.get_item(n) {
                     Ok(Value::List(
                         vec![k.clone(), v.clone()],
@@ -129,9 +119,9 @@ pub fn create_module() -> Scope {
         }
     });
     def!(f, set_nth(list, n, value), |s| {
-        let n = s.get("n")?.integer_value()?;
+        let n = get_integer(s, "n")?;
         let (mut list, sep, bra) = get_list(s.get("list")?);
-        let i = list_index(n, &list)?;
+        let i = list_index(n, &list, name!(n))?;
         list[i] = s.get("value")?;
         Ok(Value::List(list, sep.unwrap_or(ListSeparator::Space), bra))
     });
@@ -211,20 +201,23 @@ fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
     }
 }
 
-fn list_index(n: isize, list: &[Value]) -> Result<usize, Error> {
+fn list_index(n: isize, list: &[Value], name: Name) -> Result<usize, Error> {
     let len = list.len();
-    rust_index(n, len)
+    rust_index(n, len, name)
 }
 
-fn rust_index(n: isize, len: usize) -> Result<usize, Error> {
+fn rust_index(n: isize, len: usize, name: Name) -> Result<usize, Error> {
     if n > 0 && n as usize <= len {
         Ok((n - 1) as usize)
     } else if n < 0 && n >= -(len as isize) {
         Ok((len as isize + n) as usize)
     } else {
-        let msg =
-            format!("Expected index for list of length {}, got {}", len, n);
-        Err(Error::BadArguments(msg))
+        let msg = if n == 0 {
+            "List index may not be 0".into()
+        } else {
+            format!("Invalid index {} for a list with {} elements", n, len)
+        };
+        Err(Error::BadArgument(name, msg))
     }
 }
 

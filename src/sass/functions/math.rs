@@ -1,5 +1,6 @@
-use super::{Error, FunctionMap, Scope};
+use super::{get_numeric, Error, FunctionMap, Scope};
 use crate::css::Value;
+use crate::output::Format;
 use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Unit, UnitSet};
 use num_rational::Rational;
@@ -59,27 +60,45 @@ pub fn create_module() -> Scope {
         Value::List(v, _, _) => {
             if let Some((first, rest)) = v.split_first() {
                 let first = as_numeric(first)?;
-                let mut sum = f64::from(first.value).powi(2);
-                let unit = first.unit;
-                for v in rest {
-                    let scaled = as_numeric(v)?
+                let mut sum = f64::from(first.value.clone()).powi(2);
+                let unit = first.unit.clone();
+                for (i, v) in rest.iter().enumerate() {
+                    let num = as_numeric(v)?;
+                    let scaled = num
                         .as_unitset(&unit)
-                        .ok_or_else(|| Error::badarg(&unit.to_string(), v))?;
+                        .ok_or_else(|| Error::S(format!(
+                            "Error: $numbers[{}]: {} and $numbers[1]: {} have incompatible units{}.",
+                            i + 2,
+                            v.format(Format::introspect()),
+                            first.format(Format::introspect()),
+                            if unit.is_none() || num.is_no_unit() {
+                                " (one has units and the other doesn't)"
+                            } else {
+                                ""
+                            }
+                        )))?;
                     sum += f64::from(scaled).powi(2);
                 }
                 Ok(number(sum.sqrt(), unit))
             } else {
-                Err(Error::badarg("number", &Value::Null))
+                Err(Error::S(
+                    "Error: At least one argument must be passed.".into(),
+                ))
             }
         }
         Value::Numeric(v, _) => Ok(number(v.value.abs(), v.unit)),
+        Value::Null => {
+            Err(Error::S(
+                "Error: At least one argument must be passed.".into(),
+            ))
+        }
         v => Err(Error::bad_arg(name!(number), &v, "is not a number")),
     });
 
     // - - - Exponential Functions - - -
     def!(f, log(number, base), |s| {
         let num = get_unitless(s, "number")?;
-        let base = get_unitless_or(s, "base", std::f64::consts::E)?;
+        let base = get_base(s)?;
         Ok(Value::scalar(num.log(base)))
     });
     def!(f, pow(base, exponent), |s| {
@@ -149,29 +168,36 @@ pub fn create_module() -> Scope {
 
     // - - - Other Functions - - -
     def!(f, percentage(number), |s| {
-        let val = get_numeric(s, "number")?;
-        let val = val
-            .as_unit(Unit::Percent)
-            .ok_or_else(|| Error::badarg("number", &val.into()))?;
-        Ok(Numeric::new(val, Unit::Percent).into())
+        let val = check_unitless(get_numeric(s, "number")?, name!(number))?;
+        Ok(Numeric::new(val * 100, Unit::Percent).into())
     });
-    def!(f, random(limit), |s| match s.get("limit")? {
-        Value::Null => {
+    def!(f, random(limit), |s| match get_opt_numeric(s, "limit")? {
+        None => {
             let rez = 1_000_000;
             Ok(Value::scalar(Rational::new(intrand(rez), rez)))
         }
-        Value::Numeric(val, _) => {
-            let bound = val
-                .value
-                .to_integer()
-                .ok_or_else(|| Error::S("bound must be > 0".into()))?;
+        Some(val) => {
+            let bound = val.value.to_integer().ok_or_else(|| {
+                Error::BadArgument(
+                    "limit".into(),
+                    format!(
+                        "Must be greater than 0, was {}",
+                        val.format(Format::introspect())
+                    ),
+                )
+            })?;
             if bound > 0 {
                 Ok(Value::scalar(intrand(bound) + 1))
             } else {
-                Err(Error::S("bound must be > 0".into()))
+                Err(Error::BadArgument(
+                    "limit".into(),
+                    format!(
+                        "Must be greater than 0, was {}",
+                        val.format(Format::introspect())
+                    ),
+                ))
             }
         }
-        v => Err(Error::badarg("number or null", &v)),
     });
 
     f.set_variable(name!(pi), Value::scalar(PI), false, false);
@@ -203,10 +229,15 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, Error> {
-    s.get(name)?
-        .numeric_value()
-        .map_err(|v| Error::bad_arg(Name::from(name), &v, "is not a number"))
+fn get_opt_numeric(s: &Scope, name: &str) -> Result<Option<Numeric>, Error> {
+    let v = s.get(name)?;
+    if v.is_null() {
+        Ok(None)
+    } else {
+        v.numeric_value().map(Some).map_err(|v| {
+            Error::bad_arg(Name::from(name), &v, "is not a number")
+        })
+    }
 }
 
 fn get_radians(s: &Scope, name: &str) -> Result<f64, Error> {
@@ -214,41 +245,51 @@ fn get_radians(s: &Scope, name: &str) -> Result<f64, Error> {
     if let Some(scaled) = v.as_unit_def(Unit::Rad) {
         Ok(f64::from(scaled))
     } else {
-        Err(Error::badarg("angle", &v.into()))
+        Err(Error::BadArgument(
+            name.into(),
+            format!(
+                "Expected {} to have an angle unit (deg, grad, rad, turn)",
+                v.format(Format::introspect())
+            ),
+        ))
     }
 }
 
 fn get_unitless(s: &Scope, name: &str) -> Result<f64, Error> {
-    let v = get_numeric(s, name)?;
-    if v.is_no_unit() {
-        Ok(f64::from(v.value))
+    Ok(check_unitless(get_numeric(s, name)?, name.into())?.into())
+}
+
+fn get_base(s: &Scope) -> Result<f64, Error> {
+    let name = name!(base);
+    if let Some(v) = get_opt_numeric(s, name.as_ref())? {
+        Ok(f64::from(check_unitless(v, name)?))
     } else {
-        Err(Error::badarg("unitless", &v.into()))
+        Ok(std::f64::consts::E)
     }
 }
 
-fn get_unitless_or(
-    s: &Scope,
-    name: &str,
-    default: f64,
-) -> Result<f64, Error> {
-    match s.get(name)? {
-        Value::Numeric(v, _) => {
-            if v.is_no_unit() {
-                Ok(f64::from(v.value))
-            } else {
-                Err(Error::badarg("unitless", &v.into()))
-            }
-        }
-        Value::Null => Ok(default),
-        v => Err(Error::badarg("number", &v)),
+fn check_unitless(val: Numeric, name: Name) -> Result<Number, Error> {
+    if val.is_no_unit() {
+        Ok(val.value)
+    } else {
+        Err(Error::BadArgument(
+            name,
+            format!(
+                "Expected {} to have no units",
+                val.format(Format::introspect())
+            ),
+        ))
     }
 }
 
+// Only used by hypot function, which treats arguments as unnamed.
 fn as_numeric(v: &Value) -> Result<Numeric, Error> {
     match v {
         Value::Numeric(v, _) => Ok(v.clone()),
-        v => Err(Error::badarg("number", &v)),
+        v => Err(Error::S(format!(
+            "Error: {} is not a number.",
+            v.format(Format::introspect()),
+        ))),
     }
 }
 

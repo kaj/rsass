@@ -1,5 +1,6 @@
 use crate::error::Error;
 use crate::sass::Name;
+use crate::value::{Numeric, Quotes, Unit};
 use crate::{css, sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -190,6 +191,41 @@ lazy_static! {
         string::expose(MODULES.get("sass:string").unwrap(), &mut f);
         f
     };
+}
+
+// argument helpers for the actual functions
+fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, Error> {
+    s.get(name)?
+        .numeric_value()
+        .map_err(|v| Error::bad_arg(Name::from(name), &v, "is not a number"))
+}
+
+fn get_integer(s: &Scope, name: &'static str) -> Result<isize, Error> {
+    let v0 = get_numeric(s, name)?;
+    let v = v0.as_unit(Unit::None).ok_or_else(|| {
+        Error::bad_arg(Name::from_static(name), &v0.into(), "is not unitless")
+    })?;
+    if v.is_integer() { v.to_integer() } else { None }.ok_or_else(|| {
+        Error::bad_arg(
+            Name::from_static(name),
+            &css::Value::scalar(v),
+            "is not an int",
+        )
+    })
+}
+
+fn get_string(
+    s: &Scope,
+    name: &'static str,
+) -> Result<(String, Quotes), Error> {
+    match s.get(name)? {
+        css::Value::Literal(s, q) => Ok((s, q)),
+        v => Err(Error::bad_arg(
+            Name::from_static(name),
+            &v,
+            "is not a string",
+        )),
+    }
 }
 
 #[test]

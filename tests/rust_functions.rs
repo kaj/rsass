@@ -56,6 +56,11 @@ fn avg(a: Number, b: Number) -> Number {
 #[test]
 fn function_with_args() {
     let scope = ScopeRef::new_global(Default::default());
+    fn get_number(s: &Scope, name: Name) -> Result<Numeric, Error> {
+        s.get(name.as_ref())?
+            .numeric_value()
+            .map_err(|v| Error::bad_arg(name, &v, "is not a number"))
+    }
     scope.define_function(
         Name::from_static("halfway"),
         Function::builtin(
@@ -65,14 +70,8 @@ fn function_with_args() {
             ],
             false,
             Arc::new(|s| {
-                let a = s
-                    .get("a")?
-                    .numeric_value()
-                    .map_err(|v| Error::badarg("number", &v))?;
-                let b = s
-                    .get("b")?
-                    .numeric_value()
-                    .map_err(|v| Error::badarg("number", &v))?;
+                let a = get_number(s, "a".into())?;
+                let b = get_number(s, "b".into())?;
                 if a.unit == b.unit || b.unit.is_none() {
                     Ok(Numeric::new(avg(a.value, b.value), a.unit).into())
                 } else if a.unit.is_none() {

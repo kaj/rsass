@@ -18,7 +18,7 @@ pub enum Error {
     /// A bad call to a builtin function
     BadCall(String, SourcePos),
     BadValue(String),
-    BadArgument(Name, Value, &'static str),
+    BadArgument(Name, String),
     BadArguments(String),
     /// A range error
     BadRange(RangeError),
@@ -50,28 +50,10 @@ impl Error {
         actual: &Value,
         problem: &'static str,
     ) -> Error {
-        Error::BadArgument(name, actual.clone(), problem)
-    }
-
-    /// Wrong kind of argument to a sass function.
-    /// `expected` is a string describing what the parameter should
-    /// have been, `actual` is the argument.
-    pub fn badarg(expected: &str, actual: &Value) -> Error {
-        Error::BadArguments(format!(
-            "expected {}, got {} = {}",
-            expected,
-            actual.type_name(),
-            actual.format(Default::default())
-        ))
-    }
-
-    /// Multiple-argument variant of `badarg`.
-    pub fn badargs(expected: &[&str], actual: &[&Value]) -> Error {
-        // TODO Better message!
-        Error::BadArguments(format!(
-            "expected {:?}, got {:?}",
-            expected, actual
-        ))
+        Error::BadArgument(
+            name,
+            format!("{} {}", actual.format(Format::introspect()), problem),
+        )
     }
 
     pub fn undefined_variable(name: &str) -> Self {
@@ -89,14 +71,8 @@ impl fmt::Display for Error {
             Error::UndefinedVariable(ref name) => {
                 write!(out, "Undefined variable: \"${}\"", name)
             }
-            Error::BadArgument(ref name, ref value, problem) => {
-                write!(
-                    out,
-                    "Error: ${}: {} {}.",
-                    name.as_ref(),
-                    value.format(Format::introspect()),
-                    problem
-                )
+            Error::BadArgument(ref name, ref problem) => {
+                write!(out, "Error: ${}: {}.", name.as_ref(), problem)
             }
             Error::ParseError(ref err) => err.fmt(out),
             Error::BadCall(ref msg, ref pos) => {

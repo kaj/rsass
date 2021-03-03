@@ -50,13 +50,6 @@ macro_rules! def_va {
     }
 }
 
-macro_rules! func2 {
-    ($name:ident( $($arg:ident $( = $value:expr )* ),* )) => {
-        func!(($($arg $( = $value )* ),*),
-              |s| $name($(s.get(stringify!($arg))?),*))
-    };
-}
-
 macro_rules! dep_warn {
     ($first: expr, $($arg:expr),*) => {{
         use std::sync::Once;
