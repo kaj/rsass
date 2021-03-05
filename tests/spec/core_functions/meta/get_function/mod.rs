@@ -214,7 +214,6 @@ mod equality {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn redefined() {
             assert_eq!(
                 rsass(

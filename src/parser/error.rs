@@ -54,7 +54,6 @@ impl From<nom::error::Error<Span<'_>>> for ParseError {
 impl fmt::Display for ParseError {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         writeln!(out, "{}", self.msg)?;
-        self.pos.show(out, "")?;
-        Ok(())
+        self.pos.show(out)
     }
 }

@@ -10,7 +10,7 @@ mod other;
 mod rgb;
 
 pub fn create_module() -> Scope {
-    let mut f = Scope::new_global(Default::default());
+    let mut f = Scope::builtin_module("sass:color");
     hsl::register(&mut f);
     hwb::register(&mut f);
     rgb::register(&mut f);

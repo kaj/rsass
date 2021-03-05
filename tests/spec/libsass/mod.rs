@@ -1802,7 +1802,7 @@ mod selectors;
 
 // From "sass-spec/spec/libsass/test.hrx"
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn test() {
     assert_eq!(
         rsass(

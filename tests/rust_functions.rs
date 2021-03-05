@@ -34,6 +34,11 @@ fn simple_function() {
         Function::builtin(
             vec![],
             false,
+            SourcePos::mock_function(
+                "get_answer".into(),
+                &[],
+                &"test".into(),
+            ),
             Arc::new(|_| Ok(css::Value::scalar(42))),
         ),
     );
@@ -69,6 +74,11 @@ fn function_with_args() {
                 ("b".into(), sass::Value::scalar(0)),
             ],
             false,
+            SourcePos::mock_function(
+                "halfway".into(),
+                &["a".into(), "b".into()],
+                &"test".into(),
+            ),
             Arc::new(|s| {
                 let a = get_number(s, "a".into())?;
                 let b = get_number(s, "b".into())?;
@@ -77,7 +87,7 @@ fn function_with_args() {
                 } else if a.unit.is_none() {
                     Ok(Numeric::new(avg(a.value, b.value), b.unit).into())
                 } else {
-                    Err(Error::BadArguments("Incopatible args".into()))
+                    Err(Error::S("Incopatible args".into()))
                 }
             }),
         ),

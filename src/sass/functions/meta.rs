@@ -5,7 +5,7 @@ use crate::value::Quotes;
 use crate::{Format, Scope, ScopeRef};
 
 pub fn create_module() -> Scope {
-    let f = Scope::new_global(Default::default());
+    let f = Scope::builtin_module("sass:meta");
     // - - - Mixins - - -
     // TODO: load_css
 
@@ -45,8 +45,9 @@ pub fn create_module() -> Scope {
         let (feature, _q) = get_string(s, "feature")?;
         Ok(IMPLEMENTED_FEATURES.iter().any(|s| s == &feature).into())
     });
-    def!(f, function_exists(name), |s| {
+    def!(f, function_exists(name, module), |s| {
         let (name, _q) = get_string(s, "name")?;
+        // TODO: handle module argument.
         Ok(call_scope(s).get_function(&name.into()).is_some().into())
     });
     def!(f, get_function(name, css = b"false"), |s| {
@@ -59,8 +60,9 @@ pub fn create_module() -> Scope {
             Err(Error::S(format!("Error: Function not found: {}", v)))
         }
     });
-    def!(f, global_variable_exists(name), |s| {
+    def!(f, global_variable_exists(name, module), |s| {
         let (v, _q) = get_string(s, "name")?;
+        // TODO: handle module argument.
         Ok(call_scope(s).get_global_or_none(&v.into()).is_some().into())
     });
     def!(f, inspect(value), |s| Ok(Value::Literal(
@@ -72,8 +74,9 @@ pub fn create_module() -> Scope {
         Quotes::None
     )));
     // TODO: keywords
-    def!(f, mixin_exists(name), |s| {
+    def!(f, mixin_exists(name, module), |s| {
         let (v, _q) = get_string(s, "name")?;
+        // TODO: handle module argument.
         Ok(call_scope(s).get_mixin(&v.into()).is_some().into())
     });
     // TODO: module_functions, module_variables

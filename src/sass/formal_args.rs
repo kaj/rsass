@@ -1,16 +1,17 @@
 use crate::css;
 use crate::error::Error;
+use crate::parser::SourcePos;
 use crate::sass::{Name, Value};
 use crate::value::ListSeparator;
 use crate::ScopeRef;
-use std::default::Default;
+use std::fmt;
 
 /// The declared arguments of a mixin or function declaration.
 ///
 /// The arguments are ordered (so they have a position).
 /// Each argument also has a name and may have a default value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct FormalArgs(Vec<(Name, Value)>, bool);
+pub struct FormalArgs(Vec<(Name, Value)>, bool, SourcePos);
 
 impl FormalArgs {
     /// Create a new FormalArgs.
@@ -21,8 +22,12 @@ impl FormalArgs {
     ///
     /// If `is_varargs` is true, all extra call arguments are bundled
     /// as a List value for the last named argument.
-    pub fn new(a: Vec<(Name, Value)>, is_varargs: bool) -> Self {
-        FormalArgs(a, is_varargs)
+    pub fn new(
+        a: Vec<(Name, Value)>,
+        is_varargs: bool,
+        pos: SourcePos,
+    ) -> Self {
+        FormalArgs(a, is_varargs, pos)
     }
 
     /// Evaluate a set of call arguments for these formal arguments.
@@ -32,9 +37,13 @@ impl FormalArgs {
         &self,
         scope: ScopeRef,
         args: &css::CallArgs,
-    ) -> Result<ScopeRef, Error> {
+    ) -> Result<ScopeRef, ArgsError> {
         let argscope = ScopeRef::sub(scope);
         let n = self.0.len();
+        let m = args.len();
+        if !self.1 && m > n {
+            return Err(ArgsError::TooMany(n, m));
+        }
         for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
             if let Some(value) = args
                 .iter()
@@ -43,21 +52,26 @@ impl FormalArgs {
             {
                 argscope.define(name.clone(), value);
             } else if self.1 && i + 1 == n && args.len() > n {
-                let args = args
-                    .iter()
-                    .skip(i)
-                    .map(|&(_, ref v)| v.clone())
-                    .collect();
-                argscope.define(
-                    name.clone(),
-                    &css::Value::List(args, ListSeparator::Comma, false),
-                );
+                if self.1 {
+                    let args = args
+                        .iter()
+                        .skip(i)
+                        .map(|&(_, ref v)| v.clone())
+                        .collect();
+                    argscope.define(
+                        name.clone(),
+                        &css::Value::List(args, ListSeparator::Comma, false),
+                    );
+                } else {
+                    return Err(ArgsError::TooMany(n, args.len()));
+                }
             } else {
                 match args.get(i) {
                     Some(&(None, ref v)) => argscope.define(name.clone(), v),
                     _ => {
-                        let v =
-                            default.do_evaluate(argscope.clone(), true)?;
+                        let v = default
+                            .do_evaluate(argscope.clone(), true)
+                            .map_err(ArgsError::Eval)?;
                         argscope.define(name.clone(), &v)
                     }
                 };
@@ -65,10 +79,32 @@ impl FormalArgs {
         }
         Ok(argscope)
     }
+    /// Get the position of declaration for the function with these arguments.
+    pub fn decl_pos(&self) -> &SourcePos {
+        &self.2
+    }
 }
 
-impl Default for FormalArgs {
-    fn default() -> Self {
-        FormalArgs::new(vec![], false)
+/// Error evaluating arguments
+pub enum ArgsError {
+    /// Got the first number of arguments, but only the second number allowed.
+    TooMany(usize, usize),
+    /// An error evaluating one of the arguments.
+    Eval(Error),
+}
+
+impl fmt::Display for ArgsError {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ArgsError::TooMany(n, m) => write!(
+                out,
+                "Error: Only {} argument{} allowed, but {} {} passed.",
+                n,
+                if *n != 1 { "s" } else { "" },
+                m,
+                if *m != 1 { "were" } else { "was" },
+            ),
+            ArgsError::Eval(e) => e.fmt(out),
+        }
     }
 }

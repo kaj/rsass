@@ -15,11 +15,14 @@ pub enum Error {
     ///
     /// This is (probably) an error writing output.
     IoError(io::Error),
-    /// A bad call to a builtin function
-    BadCall(String, SourcePos),
+    /// A bad call to a builtin function, with call- and optionally
+    /// declaration position.
+    BadCall(String, SourcePos, Option<SourcePos>),
     BadValue(String),
     BadArgument(Name, String),
-    BadArguments(String),
+    /// The pos here is the function declaration.
+    /// This error will be wrapped in a BadCall, giving the pos of the call.
+    BadArguments(String, SourcePos),
     /// A range error
     BadRange(RangeError),
     /// Error parsing sass data.
@@ -72,13 +75,20 @@ impl fmt::Display for Error {
                 write!(out, "Undefined variable: \"${}\"", name)
             }
             Error::BadArgument(ref name, ref problem) => {
-                write!(out, "Error: ${}: {}.", name.as_ref(), problem)
+                write!(out, "Error: ${}: {}.", name, problem)
             }
             Error::ParseError(ref err) => err.fmt(out),
-            Error::BadCall(ref msg, ref pos) => {
+            Error::BadCall(ref msg, ref callpos, ref declpos) => {
                 msg.fmt(out)?;
                 writeln!(out)?;
-                pos.show(out, "")
+                if let Some(declpos) = declpos {
+                    callpos.show_detail(out, '^', " invocation")?;
+                    writeln!(out)?;
+                    declpos.show_detail(out, '=', " declaration")?;
+                    callpos.show_files(out)
+                } else {
+                    callpos.show(out)
+                }
             }
             Error::BadRange(ref err) => err.fmt(out),
             Error::BadValue(ref err) => err.fmt(out),

@@ -2,6 +2,10 @@ macro_rules! name {
     ($name:ident) => {
         crate::sass::Name::from_static(stringify!($name))
     };
+    () => {
+        // an empty name
+        crate::sass::Name::from_static("")
+    };
 }
 
 macro_rules! one_arg {
@@ -18,28 +22,34 @@ macro_rules! one_arg {
 }
 
 macro_rules! func {
-    (( $($arg:ident $( = $value:expr )* ),* ), $body:expr) => {{
+    ($module:expr, $name:expr, ( $($arg:ident $( = $value:expr )* ),* ), $body:expr) => {{
+        use crate::SourcePos;
         use crate::sass::Function;
         use std::sync::Arc;
         Function::builtin(vec![ $( one_arg!($arg $( = $value)* ) ),* ],
                           false,
+                          SourcePos::mock_function($name, &[$(name!($arg)),*], $module),
                           Arc::new($body))
     }};
 }
 macro_rules! func_va {
     (( $($arg:ident $( = $value:expr )* ),* ), $body:expr) => {{
+        use crate::parser::code_span;
         use crate::sass::Function;
         use std::sync::Arc;
         Function::builtin(vec![ $( one_arg!($arg $( = $value)* ) ),* ],
                           true,
+                          // FIXME
+                          code_span(b"@function").into(),
                           Arc::new($body))
     }};
 }
 macro_rules! def {
     ($f:expr, $name:ident( $($arg:ident$(=$val:expr)* ),* ), $body:expr) => {
+        let name = name!($name);
         $f.define_function(
-            name!($name),
-            func!(($($arg $( = $val )* ),*), $body),
+            name.clone(),
+            func!(&$f.get_name(), name, ($($arg $( = $val )* ),*), $body),
         )
     }
 }

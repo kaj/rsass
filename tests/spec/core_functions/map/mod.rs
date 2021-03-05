@@ -1455,7 +1455,7 @@ mod set {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn empty() {
             assert_eq!(
                 rsass(
@@ -1471,7 +1471,7 @@ mod set {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn long() {
             assert_eq!(
         rsass(
@@ -1487,7 +1487,7 @@ mod set {
     );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn new_key() {
             assert_eq!(
                 rsass(
@@ -1503,7 +1503,7 @@ mod set {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn update_existing_key() {
             assert_eq!(
                 rsass(
@@ -1519,7 +1519,7 @@ mod set {
             );
         }
         #[test]
-        #[ignore] // wrong result
+        #[ignore] // unexepected error
         fn value_is_not_a_map() {
             assert_eq!(
                 rsass(

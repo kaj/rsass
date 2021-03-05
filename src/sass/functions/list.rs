@@ -4,7 +4,7 @@ use crate::value::{ListSeparator, Quotes};
 use crate::Scope;
 
 pub fn create_module() -> Scope {
-    let f = Scope::new_global(Default::default());
+    let f = Scope::builtin_module("sass:list");
     def!(f, append(list, val, separator), |s| {
         let (mut list, sep, bra) = get_list(s.get("list")?);
         let sep = match (s.get("separator")?, sep) {

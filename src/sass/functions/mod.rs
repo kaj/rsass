@@ -1,4 +1,5 @@
 use crate::error::Error;
+use crate::parser::SourcePos;
 use crate::sass::Name;
 use crate::value::{Numeric, Quotes, Unit};
 use crate::{css, sass, Scope, ScopeRef};
@@ -99,10 +100,11 @@ impl Function {
     pub fn builtin(
         args: Vec<(Name, sass::Value)>,
         is_varargs: bool,
+        pos: SourcePos,
         body: Arc<BuiltinFn>,
     ) -> Self {
         Function {
-            args: sass::FormalArgs::new(args, is_varargs),
+            args: sass::FormalArgs::new(args, is_varargs, pos),
             body: FuncImpl::Builtin(body),
         }
     }
@@ -132,15 +134,27 @@ impl Function {
         let cs = Name::from_static("%%CALLING_SCOPE%%");
         match self.body {
             FuncImpl::Builtin(ref body) => {
-                let s = self.args.eval(
-                    ScopeRef::new_global(callscope.get_format()),
-                    args,
-                )?;
+                let s = self
+                    .args
+                    .eval(ScopeRef::new_global(callscope.get_format()), args)
+                    .map_err(|e| match e {
+                        sass::ArgsError::Eval(e) => e,
+                        ae => Error::BadArguments(
+                            ae.to_string(),
+                            self.args.decl_pos().clone(),
+                        ),
+                    })?;
                 s.define_module(cs, callscope);
                 body(&s)
             }
             FuncImpl::UserDefined(ref defscope, ref body) => {
-                let s = self.args.eval(defscope.clone(), args)?;
+                let s =
+                    self.args.eval(defscope.clone(), args).map_err(|e| {
+                        match e {
+                            sass::ArgsError::Eval(e) => e,
+                            ae => Error::S(ae.to_string()),
+                        }
+                    })?;
                 s.define_module(cs, callscope);
                 Ok(s.eval_body(body)?.unwrap_or(css::Value::Null))
             }
@@ -174,7 +188,7 @@ lazy_static! {
         let mut f = BTreeMap::new();
         f.insert(
             name!(if),
-            func!((condition, if_true, if_false), |s| {
+            func!(&name!(), name!(if), (condition, if_true, if_false), |s| {
                 if s.get("condition")?.is_true() {
                     Ok(s.get("if_true")?)
                 } else {

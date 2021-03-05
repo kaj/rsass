@@ -39,30 +39,49 @@ impl CallArgs {
         arithmetic: bool,
     ) -> Result<css::CallArgs, Error> {
         if let [(None, Value::List(list, _, false))] = &self.0[..] {
-            if let [Value::Map(map), Value::Literal(mark)] = &list[..] {
-                if mark.is_unquoted() && mark.single_raw() == Some("...") {
-                    return Ok(css::CallArgs(
-                        map.iter()
-                            .map(|(k, v)| {
-                                Ok((
-                                    match k.do_evaluate(
-                                        scope.clone(),
-                                        arithmetic,
-                                    )? {
-                                        css::Value::Null => None,
-                                        css::Value::Literal(s, _) => Some(s),
-                                        x => {
-                                            return Err(Error::bad_value(
-                                                "string", &x,
-                                            ))
-                                        }
-                                    },
-                                    v.do_evaluate(scope.clone(), arithmetic)?,
-                                ))
-                            })
-                            .collect::<Result<Vec<_>, Error>>()?,
-                    ));
+            match &list[..] {
+                [Value::Map(map), Value::Literal(mark)] => {
+                    if mark.is_unquoted() && mark.single_raw() == Some("...")
+                    {
+                        return Ok(css::CallArgs(
+                            map.iter()
+                                .map(|(k, v)| {
+                                    Ok((
+                                        match k.do_evaluate(
+                                            scope.clone(),
+                                            arithmetic,
+                                        )? {
+                                            css::Value::Null => None,
+                                            css::Value::Literal(s, _) => {
+                                                Some(s)
+                                            }
+                                            x => {
+                                                return Err(Error::bad_value(
+                                                    "string", &x,
+                                                ))
+                                            }
+                                        },
+                                        v.do_evaluate(
+                                            scope.clone(),
+                                            arithmetic,
+                                        )?,
+                                    ))
+                                })
+                                .collect::<Result<Vec<_>, Error>>()?,
+                        ));
+                    }
                 }
+                [va, Value::Literal(mark)] => {
+                    if mark.is_unquoted()
+                        && mark.single_raw() == Some("...")
+                        && va
+                            .do_evaluate(scope.clone(), arithmetic)?
+                            .is_null()
+                    {
+                        return Ok(css::CallArgs(vec![]));
+                    }
+                }
+                _ => (),
             }
         }
         let args = self.0

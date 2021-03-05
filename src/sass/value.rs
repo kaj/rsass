@@ -128,8 +128,15 @@ impl Value {
                 let args = args.evaluate(scope.clone(), true)?;
                 if let Some(name) = name.single_raw() {
                     if let Some(f) = scope.get_function(&name.into()) {
-                        f.call(scope.clone(), &args).map_err(|e| {
-                            Error::BadCall(e.to_string(), pos.clone())
+                        f.call(scope.clone(), &args).map_err(|e| match e {
+                            Error::BadArguments(msg, decl) => {
+                                Error::BadCall(msg, pos.clone(), Some(decl))
+                            }
+                            e => Error::BadCall(
+                                e.to_string(),
+                                pos.clone(),
+                                None,
+                            ),
                         })
                     } else {
                         Ok(css::Value::Call(name.to_string(), args))

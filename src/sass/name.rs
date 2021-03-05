@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use std::fmt;
 
 /// A sass name, used to idenify functions, variables, mixins, etc.
 ///
@@ -41,6 +42,12 @@ impl Name {
         } else {
             None
         }
+    }
+}
+
+impl fmt::Display for Name {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        self.key.replace('_', "-").fmt(out)
     }
 }
 

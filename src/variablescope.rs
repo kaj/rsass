@@ -197,6 +197,23 @@ impl<'a> Scope {
             format,
         }
     }
+    /// Create a scope for a built-in module.
+    pub fn builtin_module(name: &'static str) -> Self {
+        let s = Scope::new_global(Default::default());
+        s.set_variable(
+            Name::from_static("@scope_name@"),
+            name.into(),
+            false,
+            false,
+        );
+        s
+    }
+    pub(crate) fn get_name(&self) -> Name {
+        match self.get_or_none(&Name::from_static("@scope_name@")) {
+            Some(Value::Literal(s, _q)) => s.into(),
+            _ => Name::from_static(""),
+        }
+    }
     /// Create a new subscope of a given parent.
     pub fn sub(parent: ScopeRef) -> Self {
         let format = parent.get_format();

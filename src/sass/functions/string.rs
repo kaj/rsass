@@ -7,7 +7,7 @@ use std::cmp::max;
 use std::sync::Mutex;
 
 pub fn create_module() -> Scope {
-    let f = Scope::new_global(Default::default());
+    let f = Scope::builtin_module("sass:string");
     def!(f, quote(string), |s| {
         let v = match s.get("string")? {
             Value::Literal(v, Quotes::None) => v.replace('\\', "\\\\"),
@@ -142,7 +142,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     // And special one that isn't part of the string module
     global.insert(
         name!(url),
-        func!((string), |s| {
+        func!(&name!(), name!(url), (string), |s| {
             Ok(Value::Literal(
                 format!(
                     "url({})",
