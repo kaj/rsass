@@ -11,7 +11,7 @@ use std::fmt;
 /// The arguments are ordered (so they have a position).
 /// Each argument also has a name and may have a default value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct FormalArgs(Vec<(Name, Value)>, bool, SourcePos);
+pub struct FormalArgs(Vec<(Name, Option<Value>)>, bool, SourcePos);
 
 impl FormalArgs {
     /// Create a new FormalArgs.
@@ -23,7 +23,7 @@ impl FormalArgs {
     /// If `is_varargs` is true, all extra call arguments are bundled
     /// as a List value for the last named argument.
     pub fn new(
-        a: Vec<(Name, Value)>,
+        a: Vec<(Name, Option<Value>)>,
         is_varargs: bool,
         pos: SourcePos,
     ) -> Self {
@@ -69,10 +69,17 @@ impl FormalArgs {
                 match args.get(i) {
                     Some(&(None, ref v)) => argscope.define(name.clone(), v),
                     _ => {
-                        let v = default
-                            .do_evaluate(argscope.clone(), true)
-                            .map_err(ArgsError::Eval)?;
-                        argscope.define(name.clone(), &v)
+                        if let Some(default) = default {
+                            let v = default
+                                .do_evaluate(argscope.clone(), true)
+                                .map_err(ArgsError::Eval)?;
+                            argscope.define(name.clone(), &v)
+                        } else if i + 1 == self.0.len() && self.1 {
+                            // Should be an empty list?
+                            argscope.define(name.clone(), &css::Value::Null)
+                        } else {
+                            return Err(ArgsError::Missing(name.clone()));
+                        }
                     }
                 };
             }
@@ -89,6 +96,8 @@ impl FormalArgs {
 pub enum ArgsError {
     /// Got the first number of arguments, but only the second number allowed.
     TooMany(usize, usize),
+    /// A required argument is missing
+    Missing(Name),
     /// An error evaluating one of the arguments.
     Eval(Error),
 }
@@ -104,6 +113,9 @@ impl fmt::Display for ArgsError {
                 m,
                 if *m != 1 { "were" } else { "was" },
             ),
+            ArgsError::Missing(name) => {
+                write!(out, "Error: Missing argument ${}.", name)
+            }
             ArgsError::Eval(e) => e.fmt(out),
         }
     }

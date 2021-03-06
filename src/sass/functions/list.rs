@@ -5,7 +5,7 @@ use crate::Scope;
 
 pub fn create_module() -> Scope {
     let f = Scope::builtin_module("sass:list");
-    def!(f, append(list, val, separator), |s| {
+    def!(f, append(list, val, separator = b"null"), |s| {
         let (mut list, sep, bra) = get_list(s.get("list")?);
         let sep = match (s.get("separator")?, sep) {
             (Value::Literal(ref s, _), _) if s == "comma" => {

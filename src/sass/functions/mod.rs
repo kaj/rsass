@@ -98,7 +98,7 @@ impl Function {
     /// Note: This does not expose the function in any scope, it just
     /// creates it.
     pub fn builtin(
-        args: Vec<(Name, sass::Value)>,
+        args: Vec<(Name, Option<sass::Value>)>,
         is_varargs: bool,
         pos: SourcePos,
         body: Arc<BuiltinFn>,

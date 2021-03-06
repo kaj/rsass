@@ -57,7 +57,6 @@ mod call {
             #[allow(unused)]
             use super::rsass;
             #[test]
-            #[ignore] // wrong result
             fn combined() {
                 assert_eq!(
                     rsass(
@@ -74,6 +73,7 @@ mod call {
                 );
             }
             #[test]
+            #[ignore] // wrong result
             fn named() {
                 assert_eq!(
                     rsass(

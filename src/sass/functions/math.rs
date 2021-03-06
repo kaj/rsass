@@ -96,7 +96,7 @@ pub fn create_module() -> Scope {
     });
 
     // - - - Exponential Functions - - -
-    def!(f, log(number, base), |s| {
+    def!(f, log(number, base = b"null"), |s| {
         let num = get_unitless(s, "number")?;
         let base = get_base(s)?;
         Ok(Value::scalar(num.log(base)))
@@ -171,34 +171,38 @@ pub fn create_module() -> Scope {
         let val = check_unitless(get_numeric(s, "number")?, name!(number))?;
         Ok(Numeric::new(val * 100, Unit::Percent).into())
     });
-    def!(f, random(limit), |s| match get_opt_numeric(s, "limit")? {
-        None => {
-            let rez = 1_000_000;
-            Ok(Value::scalar(Rational::new(intrand(rez), rez)))
-        }
-        Some(val) => {
-            let bound = val.value.to_integer().ok_or_else(|| {
-                Error::BadArgument(
-                    "limit".into(),
-                    format!(
-                        "Must be greater than 0, was {}",
-                        val.format(Format::introspect())
-                    ),
-                )
-            })?;
-            if bound > 0 {
-                Ok(Value::scalar(intrand(bound) + 1))
-            } else {
-                Err(Error::BadArgument(
-                    "limit".into(),
-                    format!(
-                        "Must be greater than 0, was {}",
-                        val.format(Format::introspect())
-                    ),
-                ))
+    def!(
+        f,
+        random(limit = b"null"),
+        |s| match get_opt_numeric(s, "limit")? {
+            None => {
+                let rez = 1_000_000;
+                Ok(Value::scalar(Rational::new(intrand(rez), rez)))
+            }
+            Some(val) => {
+                let bound = val.value.to_integer().ok_or_else(|| {
+                    Error::BadArgument(
+                        "limit".into(),
+                        format!(
+                            "Must be greater than 0, was {}",
+                            val.format(Format::introspect())
+                        ),
+                    )
+                })?;
+                if bound > 0 {
+                    Ok(Value::scalar(intrand(bound) + 1))
+                } else {
+                    Err(Error::BadArgument(
+                        "limit".into(),
+                        format!(
+                            "Must be greater than 0, was {}",
+                            val.format(Format::introspect())
+                        ),
+                    ))
+                }
             }
         }
-    });
+    );
 
     f.set_variable(name!(pi), Value::scalar(PI), false, false);
     f.set_variable(name!(e), Value::scalar(E), false, false);

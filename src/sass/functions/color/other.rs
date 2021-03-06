@@ -12,8 +12,16 @@ pub fn register(f: &mut Scope) {
     def!(
         f,
         adjust(
-            color, red, green, blue, hue, saturation, lightness, whiteness,
-            blackness, alpha
+            color,
+            red = b"null",
+            green = b"null",
+            blue = b"null",
+            hue = b"null",
+            saturation = b"null",
+            lightness = b"null",
+            whiteness = b"null",
+            blackness = b"null",
+            alpha = b"null"
         ),
         |s| {
             fn opt_add(a: Rational, b: Option<Rational>) -> Rational {
@@ -68,8 +76,16 @@ pub fn register(f: &mut Scope) {
     def!(
         f,
         scale(
-            color, red, green, blue, hue, saturation, lightness, whiteness,
-            blackness, alpha
+            color,
+            red = b"null",
+            green = b"null",
+            blue = b"null",
+            hue = b"null",
+            saturation = b"null",
+            lightness = b"null",
+            whiteness = b"null",
+            blackness = b"null",
+            alpha = b"null"
         ),
         |s| {
             let rgba = get_color(s, "color")?;
@@ -155,8 +171,16 @@ pub fn register(f: &mut Scope) {
     def!(
         f,
         change(
-            color, red, green, blue, hue, saturation, lightness, blackness,
-            whiteness, alpha
+            color,
+            red = b"null",
+            green = b"null",
+            blue = b"null",
+            hue = b"null",
+            saturation = b"null",
+            lightness = b"null",
+            blackness = b"null",
+            whiteness = b"null",
+            alpha = b"null"
         ),
         |s| {
             let rgba = get_color(s, "color")?;

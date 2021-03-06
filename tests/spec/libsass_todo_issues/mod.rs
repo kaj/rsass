@@ -138,7 +138,7 @@ mod issue_2295;
 
 // From "sass-spec/spec/libsass-todo-issues/issue_2818.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn issue_2818() {
     assert_eq!(
         rsass(

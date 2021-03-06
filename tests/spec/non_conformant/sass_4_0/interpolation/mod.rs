@@ -34,7 +34,6 @@ fn after_hyphen() {
 
 // From "sass-spec/spec/non_conformant/sass_4_0/interpolation/function_name.hrx"
 #[test]
-#[ignore] // wrong result
 fn function_name() {
     assert_eq!(
         rsass(

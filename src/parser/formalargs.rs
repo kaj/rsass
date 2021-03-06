@@ -10,7 +10,9 @@ use nom::multi::separated_list0;
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::IResult;
 
-pub fn formal_args(input: Span) -> IResult<Span, (Vec<(Name, Value)>, bool)> {
+pub fn formal_args(
+    input: Span,
+) -> IResult<Span, (Vec<(Name, Option<Value>)>, bool)> {
     let (input, _) = terminated(tag("("), opt_spacelike)(input)?;
     let (input, v) = separated_list0(
         preceded(tag(","), opt_spacelike),
@@ -23,7 +25,7 @@ pub fn formal_args(input: Span) -> IResult<Span, (Vec<(Name, Value)>, bool)> {
                     opt_spacelike,
                 )),
             ),
-            |(name, d)| (name.into(), d.unwrap_or(Value::Null)),
+            |(name, d)| (name.into(), d),
         ),
     )(input)?;
     let (input, _) = terminated(opt(tag(",")), opt_spacelike)(input)?;

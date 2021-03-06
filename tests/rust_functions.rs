@@ -70,8 +70,8 @@ fn function_with_args() {
         Name::from_static("halfway"),
         Function::builtin(
             vec![
-                ("a".into(), sass::Value::Null),
-                ("b".into(), sass::Value::scalar(0)),
+                ("a".into(), None),
+                ("b".into(), Some(sass::Value::scalar(0))),
             ],
             false,
             SourcePos::mock_function(

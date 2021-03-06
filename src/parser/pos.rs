@@ -86,7 +86,7 @@ impl SourcePos {
             ln = line_no,
             lnw = line_no.len(),
             lpos = self.line_pos,
-            mark = String::from(marker).repeat(self.length),
+            mark = marker.to_string().repeat(self.length),
             what = what,
         )
     }

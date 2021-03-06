@@ -130,12 +130,30 @@ pub fn preserve_call(
 }
 
 pub fn register(f: &mut Scope) {
-    def!(f, _rgb(red, green, blue, alpha, color, channels), |s| {
-        do_rgba("rgb", s)
-    });
-    def!(f, _rgba(red, green, blue, alpha, color, channels), |s| {
-        do_rgba("rgba", s)
-    });
+    def!(
+        f,
+        _rgb(
+            red = b"null",
+            green = b"null",
+            blue = b"null",
+            alpha = b"null",
+            color = b"null",
+            channels = b"null"
+        ),
+        |s| { do_rgba("rgb", s) }
+    );
+    def!(
+        f,
+        _rgba(
+            red = b"null",
+            green = b"null",
+            blue = b"null",
+            alpha = b"null",
+            color = b"null",
+            channels = b"null"
+        ),
+        |s| { do_rgba("rgba", s) }
+    );
     def!(f, red(color), |s| {
         Ok(Value::scalar(get_color(s, "color")?.to_rgba().red()))
     });

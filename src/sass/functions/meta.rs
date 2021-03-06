@@ -10,7 +10,7 @@ pub fn create_module() -> Scope {
     // TODO: load_css
 
     // - - - Functions - - -
-    def_va!(f, call(function, args), |s| {
+    def_va!(f, call(function, args = b"null"), |s| {
         let (function, name) = match s.get("function")? {
             Value::Function(ref name, ref func) => {
                 (func.clone(), name.clone())
@@ -45,7 +45,7 @@ pub fn create_module() -> Scope {
         let (feature, _q) = get_string(s, "feature")?;
         Ok(IMPLEMENTED_FEATURES.iter().any(|s| s == &feature).into())
     });
-    def!(f, function_exists(name, module), |s| {
+    def!(f, function_exists(name, module = b"null"), |s| {
         let (name, _q) = get_string(s, "name")?;
         // TODO: handle module argument.
         Ok(call_scope(s).get_function(&name.into()).is_some().into())
@@ -60,7 +60,7 @@ pub fn create_module() -> Scope {
             Err(Error::S(format!("Error: Function not found: {}", v)))
         }
     });
-    def!(f, global_variable_exists(name, module), |s| {
+    def!(f, global_variable_exists(name, module = b"null"), |s| {
         let (v, _q) = get_string(s, "name")?;
         // TODO: handle module argument.
         Ok(call_scope(s).get_global_or_none(&v.into()).is_some().into())
@@ -74,7 +74,7 @@ pub fn create_module() -> Scope {
         Quotes::None
     )));
     // TODO: keywords
-    def!(f, mixin_exists(name, module), |s| {
+    def!(f, mixin_exists(name, module = b"null"), |s| {
         let (v, _q) = get_string(s, "name")?;
         // TODO: handle module argument.
         Ok(call_scope(s).get_mixin(&v.into()).is_some().into())

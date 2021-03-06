@@ -10,13 +10,13 @@ macro_rules! name {
 
 macro_rules! one_arg {
     ($name:ident) => {
-        (stringify!($name).into(), $crate::sass::Value::Null)
+        (stringify!($name).into(), None)
     };
     ($name:ident = $value:expr) => {{
         use $crate::parser::parse_value_data;
         (
             stringify!($name).into(),
-            parse_value_data($value).expect(stringify!($name)),
+            Some(parse_value_data($value).expect(stringify!($name))),
         )
     }};
 }

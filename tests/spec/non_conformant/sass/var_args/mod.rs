@@ -4,7 +4,7 @@ use super::rsass;
 
 // From "sass-spec/spec/non_conformant/sass/var-args/error.hrx"
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn error() {
     assert_eq!(
         rsass(

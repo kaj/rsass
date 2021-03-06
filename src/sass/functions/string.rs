@@ -142,7 +142,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     // And special one that isn't part of the string module
     global.insert(
         name!(url),
-        func!(&name!(), name!(url), (string), |s| {
+        func!(&name!(), name!(url), (string = b"null"), |s| {
             Ok(Value::Literal(
                 format!(
                     "url({})",

@@ -11,7 +11,7 @@ use crate::Scope;
 pub fn create_module() -> Scope {
     let f = Scope::builtin_module("sass:map");
     // TODO deep_merge and deep_remove
-    def_va!(f, get(map, key, keys), |s| {
+    def_va!(f, get(map, key = b"null", keys = b"()"), |s| {
         let map = get_map(s, name!(map))?;
         let mut val = map.get(&s.get("key")?).cloned();
         match s.get("keys")? {
@@ -38,7 +38,7 @@ pub fn create_module() -> Scope {
         };
         Ok(val.unwrap_or(Value::Null))
     });
-    def_va!(f, has_key(map, key, keys), |s| {
+    def_va!(f, has_key(map, key, keys = b"null"), |s| {
         let map = get_map(s, name!(map))?;
         match s.get("keys")? {
             Value::List(keys, ..) => {
@@ -87,7 +87,7 @@ pub fn create_module() -> Scope {
     // It's really map_remove(map, keys), but "key" is supported as an
     // alias for "keys", which makes a mess when using more than one
     // positional argument.
-    def_va!(f, remove(map, key, keys), |s| {
+    def_va!(f, remove(map, key = b"null", keys = b"null"), |s| {
         let mut map = get_map(s, name!(map))?;
         let key = s.get("key")?;
         let keys = s.get("keys")?;

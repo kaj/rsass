@@ -53,12 +53,28 @@ fn hsla_from_values(
 }
 
 pub fn register(f: &mut Scope) {
-    def!(f, _hsl(hue, saturation, lightness, alpha, channels), |s| {
-        do_hsla("hsl", s)
-    });
-    def!(f, _hsla(hue, saturation, lightness, alpha, channels), |s| {
-        do_hsla("hsla", s)
-    });
+    def!(
+        f,
+        _hsl(
+            hue = b"null",
+            saturation = b"null",
+            lightness = b"null",
+            alpha = b"null",
+            channels = b"()"
+        ),
+        |s| { do_hsla("hsl", s) }
+    );
+    def!(
+        f,
+        _hsla(
+            hue = b"null",
+            saturation = b"null",
+            lightness = b"null",
+            alpha = b"null",
+            channels = b"null"
+        ),
+        |s| { do_hsla("hsla", s) }
+    );
     def!(f, _adjust_hue(color, degrees), |s| {
         let col = get_color(s, "color")?;
         let adj = get_opt_rational(s, "degrees")?;
@@ -71,7 +87,7 @@ pub fn register(f: &mut Scope) {
     def!(f, complement(color), |s| {
         Ok(get_color(s, "color")?.rotate_hue(180.into()).into())
     });
-    def!(f, _saturate(color, amount), |s| match (
+    def!(f, _saturate(color = b"null", amount = b"null"), |s| match (
         s.get("color")?,
         s.get("amount")?
     ) {
