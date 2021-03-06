@@ -1,7 +1,7 @@
 use crate::error::Error;
 use crate::parser::SourcePos;
 use crate::sass::Name;
-use crate::value::{Numeric, Quotes, Unit};
+use crate::value::{Numeric, Quotes};
 use crate::{css, sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -208,37 +208,89 @@ lazy_static! {
 }
 
 // argument helpers for the actual functions
-fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, Error> {
-    s.get(name)?
-        .numeric_value()
-        .map_err(|v| Error::bad_arg(Name::from(name), &v, "is not a number"))
+
+fn get_checked<T, F>(s: &Scope, name: Name, check: F) -> Result<T, Error>
+where
+    F: Fn(css::Value) -> Result<T, String>,
+{
+    check(s.get(name.as_ref())?).map_err(|e| Error::BadArgument(name, e))
 }
 
-fn get_integer(s: &Scope, name: &'static str) -> Result<isize, Error> {
-    let v0 = get_numeric(s, name)?;
-    let v = v0.as_unit(Unit::None).ok_or_else(|| {
-        Error::bad_arg(Name::from_static(name), &v0.into(), "is not unitless")
-    })?;
-    if v.is_integer() { v.to_integer() } else { None }.ok_or_else(|| {
-        Error::bad_arg(
-            Name::from_static(name),
-            &css::Value::scalar(v),
-            "is not an int",
-        )
-    })
+fn get_opt_check<T, F>(
+    s: &Scope,
+    name: Name,
+    check: F,
+) -> Result<Option<T>, Error>
+where
+    F: Fn(css::Value) -> Result<T, String>,
+{
+    let v = s.get(name.as_ref())?;
+    if v.is_null() {
+        Ok(None)
+    } else {
+        check(v)
+            .map_err(|e| Error::BadArgument(name.clone(), e))
+            .map(Some)
+    }
+}
+
+fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, Error> {
+    get_checked(s, name.into(), check::numeric)
+}
+
+fn get_integer(s: &Scope, name: Name) -> Result<isize, Error> {
+    get_checked(s, name, check::unitless_int)
 }
 
 fn get_string(
     s: &Scope,
     name: &'static str,
 ) -> Result<(String, Quotes), Error> {
-    match s.get(name)? {
-        css::Value::Literal(s, q) => Ok((s, q)),
-        v => Err(Error::bad_arg(
-            Name::from_static(name),
-            &v,
-            "is not a string",
-        )),
+    get_checked(s, name.into(), check::string)
+}
+
+mod check {
+    use crate::css::Value;
+    use crate::output::Format;
+    use crate::value::{Number, Numeric, Quotes};
+
+    pub fn numeric(v: Value) -> Result<Numeric, String> {
+        v.numeric_value().map_err(|v| {
+            format!("{} is not a number", v.format(Format::introspect()))
+        })
+    }
+    pub fn int(v: Value) -> Result<isize, String> {
+        numeric(v)?.value.into_integer().map_err(|v| {
+            format!("{} is not an int", v.format(Format::introspect()))
+        })
+    }
+
+    pub fn unitless(v: Value) -> Result<Number, String> {
+        let val = numeric(v)?;
+        if val.is_no_unit() {
+            Ok(val.value)
+        } else {
+            Err(format!(
+                "Expected {} to have no units",
+                val.format(Format::introspect())
+            ))
+        }
+    }
+    pub fn unitless_int(v: Value) -> Result<isize, String> {
+        let v0 = unitless(v)?;
+        v0.into_integer().map_err(|v| {
+            format!("{} is not an int", v.format(Format::introspect()))
+        })
+    }
+
+    pub fn string(v: Value) -> Result<(String, Quotes), String> {
+        match v {
+            Value::Literal(s, q) => Ok((s, q)),
+            v => Err(format!(
+                "{} is not a string",
+                v.format(Format::introspect())
+            )),
+        }
     }
 }
 

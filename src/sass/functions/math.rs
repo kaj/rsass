@@ -1,7 +1,8 @@
-use super::{get_numeric, Error, FunctionMap, Scope};
+use super::{
+    check, get_checked, get_numeric, get_opt_check, Error, FunctionMap, Scope,
+};
 use crate::css::Value;
 use crate::output::Format;
-use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Unit, UnitSet};
 use num_rational::Rational;
 use rand::{thread_rng, Rng};
@@ -168,41 +169,25 @@ pub fn create_module() -> Scope {
 
     // - - - Other Functions - - -
     def!(f, percentage(number), |s| {
-        let val = check_unitless(get_numeric(s, "number")?, name!(number))?;
+        let val = get_checked(s, name!(number), check::unitless)?;
         Ok(Numeric::new(val * 100, Unit::Percent).into())
     });
-    def!(
-        f,
-        random(limit = b"null"),
-        |s| match get_opt_numeric(s, "limit")? {
+    def!(f, random(limit = b"null"), |s| {
+        match get_opt_check(s, name!(limit), |v| {
+            let v = check::int(v)?;
+            if v > 0 {
+                Ok(v)
+            } else {
+                Err(format!("Must be greater than 0, was {}", v))
+            }
+        })? {
             None => {
                 let rez = 1_000_000;
                 Ok(Value::scalar(Rational::new(intrand(rez), rez)))
             }
-            Some(val) => {
-                let bound = val.value.to_integer().ok_or_else(|| {
-                    Error::BadArgument(
-                        "limit".into(),
-                        format!(
-                            "Must be greater than 0, was {}",
-                            val.format(Format::introspect())
-                        ),
-                    )
-                })?;
-                if bound > 0 {
-                    Ok(Value::scalar(intrand(bound) + 1))
-                } else {
-                    Err(Error::BadArgument(
-                        "limit".into(),
-                        format!(
-                            "Must be greater than 0, was {}",
-                            val.format(Format::introspect())
-                        ),
-                    ))
-                }
-            }
+            Some(bound) => Ok(Value::scalar(intrand(bound) + 1)),
         }
-    );
+    });
 
     f.set_variable(name!(pi), Value::scalar(PI), false, false);
     f.set_variable(name!(e), Value::scalar(E), false, false);
@@ -233,68 +218,32 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn get_opt_numeric(s: &Scope, name: &str) -> Result<Option<Numeric>, Error> {
-    let v = s.get(name)?;
-    if v.is_null() {
-        Ok(None)
-    } else {
-        v.numeric_value().map(Some).map_err(|v| {
-            Error::bad_arg(Name::from(name), &v, "is not a number")
-        })
-    }
-}
-
 fn get_radians(s: &Scope, name: &str) -> Result<f64, Error> {
-    let v = get_numeric(s, name)?;
-    if let Some(scaled) = v.as_unit_def(Unit::Rad) {
-        Ok(f64::from(scaled))
-    } else {
-        Err(Error::BadArgument(
-            name.into(),
+    get_checked(s, name.into(), |v| {
+        let v = check::numeric(v)?;
+        v.as_unit_def(Unit::Rad).map(Into::into).ok_or_else(|| {
             format!(
                 "Expected {} to have an angle unit (deg, grad, rad, turn)",
                 v.format(Format::introspect())
-            ),
-        ))
-    }
+            )
+        })
+    })
 }
 
 fn get_unitless(s: &Scope, name: &str) -> Result<f64, Error> {
-    Ok(check_unitless(get_numeric(s, name)?, name.into())?.into())
+    get_checked(s, name.into(), |v| Ok(check::unitless(v)?.into()))
 }
 
 fn get_base(s: &Scope) -> Result<f64, Error> {
-    let name = name!(base);
-    if let Some(v) = get_opt_numeric(s, name.as_ref())? {
-        Ok(f64::from(check_unitless(v, name)?))
-    } else {
-        Ok(std::f64::consts::E)
-    }
-}
-
-fn check_unitless(val: Numeric, name: Name) -> Result<Number, Error> {
-    if val.is_no_unit() {
-        Ok(val.value)
-    } else {
-        Err(Error::BadArgument(
-            name,
-            format!(
-                "Expected {} to have no units",
-                val.format(Format::introspect())
-            ),
-        ))
-    }
+    Ok(
+        get_opt_check(s, name!(base), |v| Ok(check::unitless(v)?.into()))?
+            .unwrap_or(std::f64::consts::E),
+    )
 }
 
 // Only used by hypot function, which treats arguments as unnamed.
 fn as_numeric(v: &Value) -> Result<Numeric, Error> {
-    match v {
-        Value::Numeric(v, _) => Ok(v.clone()),
-        v => Err(Error::S(format!(
-            "Error: {} is not a number.",
-            v.format(Format::introspect()),
-        ))),
-    }
+    check::numeric(v.clone()).map_err(|e| Error::S(format!("Error: {}.", e)))
 }
 
 fn number(v: impl Into<Number>, unit: impl Into<UnitSet>) -> Value {

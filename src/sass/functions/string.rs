@@ -31,7 +31,7 @@ pub fn create_module() -> Scope {
     def!(f, insert(string, insert, index), |s| {
         let (string, q) = get_string(s, "string")?;
         let (insert, _) = get_string(s, "insert")?;
-        let index = get_integer(s, "index")?;
+        let index = get_integer(s, name!(index))?;
 
         let i = if index.is_negative() {
             let len = string.chars().count() as isize;
@@ -58,8 +58,8 @@ pub fn create_module() -> Scope {
     });
     def!(f, slice(string, start_at, end_at = b"-1"), |s| {
         let (st, q) = get_string(s, "string")?;
-        let start_at = index_to_rust(get_integer(s, "start_at")?, &st);
-        let end_at = index_to_rust_end(get_integer(s, "end_at")?, &st);
+        let start_at = index_to_rust(get_integer(s, name!(start_at))?, &st);
+        let end_at = index_to_rust_end(get_integer(s, name!(end_at))?, &st);
         let c = st.chars();
         if start_at <= end_at {
             Ok(Value::Literal(

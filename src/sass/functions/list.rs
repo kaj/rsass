@@ -98,7 +98,7 @@ pub fn create_module() -> Scope {
         Quotes::None
     )));
     def!(f, nth(list, n), |s| {
-        let n = get_integer(s, "n")?;
+        let n = get_integer(s, name!(n))?;
         match s.get("list")? {
             Value::List(list, _, _) => {
                 Ok(list[list_index(n, &list, name!(n))?].clone())
@@ -119,8 +119,8 @@ pub fn create_module() -> Scope {
         }
     });
     def!(f, set_nth(list, n, value), |s| {
-        let n = get_integer(s, "n")?;
         let (mut list, sep, bra) = get_list(s.get("list")?);
+        let n = get_integer(s, name!(n))?;
         let i = list_index(n, &list, name!(n))?;
         list[i] = s.get("value")?;
         Ok(Value::List(list, sep.unwrap_or(ListSeparator::Space), bra))
