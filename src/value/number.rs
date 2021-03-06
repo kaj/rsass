@@ -13,7 +13,7 @@ use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 /// Only the actual numeric value is included, not any unit.
 /// Internally, a number is represented as either a rational or a
 /// floating-point value as needed.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
+#[derive(Clone, PartialEq, Eq, PartialOrd)]
 pub struct Number {
     value: NumValue,
 }
@@ -779,4 +779,56 @@ where
         write!(out, ".{}", dec)?;
     }
     Ok(())
+}
+
+impl fmt::Debug for Number {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        out.write_str("Number ")?;
+        match &self.value {
+            NumValue::Rational(r) => {
+                r.numer().fmt(out)?;
+                out.write_str(" / ")?;
+                r.denom().fmt(out)
+            }
+            NumValue::BigRational(r) => {
+                out.debug_list().entry(r.numer()).entry(r.denom()).finish()
+            }
+            NumValue::Float(f) => f.fmt(out),
+        }
+    }
+}
+
+#[test]
+fn debug_integer() {
+    assert_eq!(format!("{:?}", Number::from(17)), "Number 17 / 1",);
+}
+#[test]
+fn debug_long_integer() {
+    assert_eq!(format!("{:?}", Number::from(17)), "Number 17 / 1",);
+}
+
+#[test]
+fn debug_biginteger() {
+    assert_eq!(
+        format!("{:?}", Number::from(Ratio::<BigInt>::new(17.into(), 1.into()))),
+        "Number [BigInt { sign: Plus, data: BigUint { data: [17] } }, BigInt { sign: Plus, data: BigUint { data: [1] } }]",
+    );
+}
+
+#[test]
+fn debug_float() {
+    assert_eq!(format!("{:?}", Number::from(17.5)), "Number 17.5",);
+}
+
+#[test]
+fn debug_int_value() {
+    assert_eq!(
+        format!("{:#?}", crate::sass::Value::scalar(17)),
+        "Numeric(\
+         \n    Numeric {\
+         \n        value: Number 17 / 1,\
+         \n        unit: UnitSet [],\
+         \n    },\
+         \n)",
+    );
 }

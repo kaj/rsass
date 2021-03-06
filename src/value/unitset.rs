@@ -8,7 +8,7 @@ use std::ops::{Div, Mul};
 /// Eg. `10em * 10em` is an area of 100em².
 /// Css does not support such arbitrary units, but sass does, and if
 /// you divide it by a length you get a valid css length.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct UnitSet {
     units: Vec<(Unit, i8)>,
 }
@@ -154,5 +154,12 @@ impl Display for UnitSet {
             }
         }
         Ok(())
+    }
+}
+
+impl fmt::Debug for UnitSet {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        out.write_str("UnitSet ")?;
+        out.debug_list().entries(&self.units).finish()
     }
 }
