@@ -3,6 +3,7 @@ use super::{
 };
 use crate::css::Value;
 use crate::output::Format;
+use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Unit, UnitSet};
 use num_rational::Rational;
 use rand::{thread_rng, Rng};
@@ -23,8 +24,20 @@ pub fn create_module() -> Scope {
     });
     def!(f, clamp(min, number, max), |s| {
         let min_v = get_numeric(s, "min")?;
-        let mut num = get_numeric(s, "number")?;
-        let max_v = get_numeric(s, "max")?;
+        let check_numeric_compat_unit =
+            |v: Value| -> Result<Numeric, String> {
+                let v = check::numeric(v)?;
+                if (v.is_no_unit() != min_v.is_no_unit())
+                    || !v.unit.is_compatible(&min_v.unit)
+                {
+                    return Err(diff_units_msg(&v, &min_v, name!(min)));
+                }
+                Ok(v)
+            };
+        let mut num =
+            get_checked(s, name!(number), check_numeric_compat_unit)?;
+        let max_v = get_checked(s, name!(max), check_numeric_compat_unit)?;
+
         if num >= max_v {
             num = max_v;
         }
@@ -65,19 +78,12 @@ pub fn create_module() -> Scope {
                 let unit = first.unit.clone();
                 for (i, v) in rest.iter().enumerate() {
                     let num = as_numeric(v)?;
-                    let scaled = num
-                        .as_unitset(&unit)
-                        .ok_or_else(|| Error::S(format!(
-                            "Error: $numbers[{}]: {} and $numbers[1]: {} have incompatible units{}.",
-                            i + 2,
-                            v.format(Format::introspect()),
-                            first.format(Format::introspect()),
-                            if unit.is_none() || num.is_no_unit() {
-                                " (one has units and the other doesn't)"
-                            } else {
-                                ""
-                            }
-                        )))?;
+                    let scaled = num.as_unitset(&unit).ok_or_else(|| {
+                        Error::BadArgument(
+                            format!("numbers[{}]", i + 2).into(),
+                            diff_units_msg(&num, &first, "numbers[1]".into()),
+                        )
+                    })?;
                     sum += f64::from(scaled).powi(2);
                 }
                 Ok(number(sum.sqrt(), unit))
@@ -295,4 +301,22 @@ static NULL_VALUE: Value = Value::Null;
 
 fn intrand(lim: isize) -> isize {
     thread_rng().gen_range(0..lim)
+}
+
+fn diff_units_msg(
+    one: &Numeric,
+    other: &Numeric,
+    other_name: Name,
+) -> String {
+    format!(
+        "{} and ${}: {} have incompatible units{}",
+        one.format(Format::introspect()),
+        other_name,
+        other.format(Format::introspect()),
+        if one.is_no_unit() || other.is_no_unit() {
+            " (one has units and the other doesn't)"
+        } else {
+            ""
+        }
+    )
 }
