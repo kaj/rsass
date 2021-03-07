@@ -1,4 +1,4 @@
-use super::{get_string, Error, FunctionMap};
+use super::{check, get_opt_check, get_string, Error, FunctionMap};
 use crate::css::{CallArgs, Value};
 use crate::sass::Name;
 use crate::value::Quotes;
@@ -10,7 +10,7 @@ pub fn create_module() -> Scope {
     // TODO: load_css
 
     // - - - Functions - - -
-    def_va!(f, call(function, args = b"null"), |s| {
+    def_va!(f, call(function, args), |s| {
         let (function, name) = match s.get("function")? {
             Value::Function(ref name, ref func) => {
                 (func.clone(), name.clone())
@@ -47,23 +47,41 @@ pub fn create_module() -> Scope {
     });
     def!(f, function_exists(name, module = b"null"), |s| {
         let (name, _q) = get_string(s, "name")?;
-        // TODO: handle module argument.
-        Ok(call_scope(s).get_function(&name.into()).is_some().into())
+        let module = get_opt_check(s, name!(module), check::string)?;
+        let module = get_scope(s, module.map(|(s, _q)| s))?;
+        Ok(module.get_function(&name.into()).is_some().into())
     });
-    def!(f, get_function(name, css = b"false"), |s| {
-        let (v, _q) = get_string(s, "name")?;
-        if s.get("css")?.is_true() {
-            Ok(Value::Function(v, None))
-        } else if let Some(f) = call_scope(s).get_function(&(&v).into()) {
-            Ok(Value::Function(v, Some(f)))
-        } else {
-            Err(Error::S(format!("Error: Function not found: {}", v)))
+    def!(
+        f,
+        get_function(name, css = b"false", module = b"null"),
+        |s| {
+            let (v, q) = get_string(s, "name")?;
+            let module = get_opt_check(s, name!(module), check::string)?;
+            if s.get("css")?.is_true() {
+                if module.is_some() {
+                    return Err(Error::error(
+                        "$css and $module may not both be passed at once",
+                    ));
+                }
+                Ok(Value::Function(v, None))
+            } else {
+                let module = get_scope(s, module.map(|(s, _q)| s))?;
+                if let Some(f) = module.get_function(&(&v).into()) {
+                    Ok(Value::Function(v, Some(f)))
+                } else {
+                    Err(Error::S(format!(
+                        "Error: Function not found: {}",
+                        Value::Literal(v, q).format(Format::introspect())
+                    )))
+                }
+            }
         }
-    });
+    );
     def!(f, global_variable_exists(name, module = b"null"), |s| {
         let (v, _q) = get_string(s, "name")?;
-        // TODO: handle module argument.
-        Ok(call_scope(s).get_global_or_none(&v.into()).is_some().into())
+        let module = get_opt_check(s, name!(module), check::string)?;
+        let module = get_scope(s, module.map(|(s, _q)| s))?;
+        Ok(module.get_global_or_none(&v.into()).is_some().into())
     });
     def!(f, inspect(value), |s| Ok(Value::Literal(
         match s.get("value")? {
@@ -76,8 +94,9 @@ pub fn create_module() -> Scope {
     // TODO: keywords
     def!(f, mixin_exists(name, module = b"null"), |s| {
         let (v, _q) = get_string(s, "name")?;
-        // TODO: handle module argument.
-        Ok(call_scope(s).get_mixin(&v.into()).is_some().into())
+        let module = get_opt_check(s, name!(module), check::string)?;
+        let module = get_scope(s, module.map(|(s, _q)| s))?;
+        Ok(module.get_mixin(&v.into()).is_some().into())
     });
     // TODO: module_functions, module_variables
     def!(f, type_of(value), |s| Ok(Value::Literal(
@@ -128,6 +147,21 @@ static IMPLEMENTED_FEATURES: &[&str] = &[
 fn call_scope(s: &Scope) -> ScopeRef {
     s.get_module(&Name::from_static("%%CALLING_SCOPE%%"))
         .unwrap()
+}
+
+fn get_scope(s: &Scope, module: Option<String>) -> Result<ScopeRef, Error> {
+    if let Some(module) = module {
+        if let Some(module) = call_scope(s).get_module(&(&module).into()) {
+            Ok(module)
+        } else {
+            Err(Error::error(format!(
+                "There is no module with the namespace {:?}",
+                module
+            )))
+        }
+    } else {
+        Ok(call_scope(s))
+    }
 }
 
 #[cfg(test)]

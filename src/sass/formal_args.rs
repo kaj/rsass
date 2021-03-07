@@ -137,6 +137,9 @@ impl fmt::Display for InnerArgs {
                 }
             }
         }
+        if self.1 {
+            out.write_str("...")?;
+        }
         out.write_str(")")
     }
 }

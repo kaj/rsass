@@ -58,6 +58,7 @@ impl Value {
         match *self {
             Value::Color(..) => "color",
             Value::Literal(..) => "string",
+            Value::Map(..) => "map",
             Value::Numeric(..) => "number",
             Value::List(..) => "list",
             Value::Function(..) => "function",
