@@ -78,8 +78,14 @@ impl FormalArgs {
                         } else if i + 1 == self.0 .0.len()
                             && self.is_varargs()
                         {
-                            // Should be an empty list?
-                            argscope.define(name.clone(), &css::Value::Null)
+                            argscope.define(
+                                name.clone(),
+                                &css::Value::List(
+                                    vec![],
+                                    ListSeparator::Space,
+                                    false,
+                                ),
+                            )
                         } else {
                             return Err(ArgsError::Missing(name.clone()));
                         }

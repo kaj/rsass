@@ -173,7 +173,7 @@ fn special_args_minmax(input: Span) -> IResult<Span, SassString> {
 }
 
 fn special_arg_parts_minmax(input: Span) -> IResult<Span, Vec<StringPart>> {
-    let (input, parts) = many0(alt((
+    let (input, parts) = many1(alt((
         map(special_function_misc, |s| s.into_parts()),
         map(special_function_minmax, |s| s.into_parts()),
         map(

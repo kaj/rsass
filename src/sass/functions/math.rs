@@ -51,14 +51,12 @@ pub fn create_module() -> Scope {
         Ok(number(val.value.floor(), val.unit))
     });
     def_va!(f, max(numbers), |s| match s.get("numbers")? {
-        Value::List(v, _, _) => {
-            Ok(find_extreme(&v, Ordering::Greater).clone())
-        }
-        single_value => Ok(single_value),
+        Value::List(v, _, _) => find_extreme(&v, Ordering::Greater),
+        single_value => find_extreme(&[single_value], Ordering::Greater),
     });
     def_va!(f, min(numbers), |s| match s.get("numbers")? {
-        Value::List(v, _, _) => Ok(find_extreme(&v, Ordering::Less).clone()),
-        single_value => Ok(single_value),
+        Value::List(v, _, _) => find_extreme(&v, Ordering::Less),
+        single_value => find_extreme(&[single_value], Ordering::Less),
     });
     def!(f, round(number), |s| {
         let val = get_numeric(s, "number")?;
@@ -262,42 +260,48 @@ fn deg_value(rad: f64) -> Value {
     number(rad.to_degrees(), Unit::Deg)
 }
 
-fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
-    match v.split_first() {
-        Some((first, rest)) => {
-            let second = find_extreme(rest, pref);
-            match (first, second) {
-                (&Value::Null, b) => b,
-                (a, &Value::Null) => a,
-                (&Value::Numeric(ref va, _), &Value::Numeric(ref vb, _)) => {
-                    if let Some(o) = va.partial_cmp(vb) {
-                        if o == pref {
-                            first
-                        } else {
-                            second
-                        }
-                    } else if va.is_no_unit() || vb.is_no_unit() {
-                        if let Some(o) = va.value.partial_cmp(&vb.value) {
-                            if o == pref {
-                                first
-                            } else {
-                                second
-                            }
-                        } else {
-                            &NULL_VALUE
-                        }
-                    } else {
-                        &NULL_VALUE
-                    }
-                }
-                (_, _) => &NULL_VALUE,
-            }
-        }
-        None => &NULL_VALUE,
-    }
+fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
+    find_extreme_inner(v, pref)?
+        .ok_or_else(|| {
+            Error::S("Error: At least one argument must be passed.".into())
+        })
+        .map(Into::into)
 }
 
-static NULL_VALUE: Value = Value::Null;
+fn find_extreme_inner(
+    v: &[Value],
+    pref: Ordering,
+) -> Result<Option<Numeric>, Error> {
+    if let Some((first, rest)) = v.split_first() {
+        let va = check::numeric(first.clone())
+            .map_err(|s| Error::S(format!("Error: {}.", s)))?;
+        if let Some(vb) = find_extreme_inner(rest, pref)? {
+            if let Some(o) = va.partial_cmp(&vb) {
+                Ok(Some(if o == pref { va } else { vb }))
+            } else if va.is_no_unit() || vb.is_no_unit() {
+                if let Some(o) = va.value.partial_cmp(&vb.value) {
+                    Ok(Some(if o == pref { va } else { vb }))
+                } else {
+                    Err(Error::S(format!(
+                        "Error: {} and {} could not be compared.",
+                        va.format(Format::introspect()),
+                        vb.format(Format::introspect()),
+                    )))
+                }
+            } else {
+                Err(Error::S(format!(
+                    "Error: {} and {} have incompatible units.",
+                    va.format(Format::introspect()),
+                    vb.format(Format::introspect()),
+                )))
+            }
+        } else {
+            Ok(Some(va))
+        }
+    } else {
+        Ok(None)
+    }
+}
 
 fn intrand(lim: isize) -> isize {
     thread_rng().gen_range(0..lim)
