@@ -21,43 +21,21 @@ macro_rules! one_arg {
     }};
 }
 
-macro_rules! func {
-    ($module:expr, $name:expr, ( $($arg:ident $( = $value:expr )* ),* ), $body:expr) => {{
-        use crate::SourcePos;
-        use crate::sass::Function;
-        use std::sync::Arc;
-        Function::builtin(vec![ $( one_arg!($arg $( = $value)* ) ),* ],
-                          false,
-                          SourcePos::mock_function($name, &[$(name!($arg)),*], $module),
-                          Arc::new($body))
-    }};
-}
-macro_rules! func_va {
-    (( $($arg:ident $( = $value:expr )* ),* ), $body:expr) => {{
-        use crate::parser::code_span;
-        use crate::sass::Function;
-        use std::sync::Arc;
-        Function::builtin(vec![ $( one_arg!($arg $( = $value)* ) ),* ],
-                          true,
-                          // FIXME
-                          code_span(b"@function").into(),
-                          Arc::new($body))
-    }};
-}
 macro_rules! def {
-    ($f:expr, $name:ident( $($arg:ident$(=$val:expr)* ),* ), $body:expr) => {
-        let name = name!($name);
-        $f.define_function(
-            name.clone(),
-            func!(&$f.get_name(), name, ($($arg $( = $val )* ),*), $body),
-        )
-    }
+    ($f:expr, $name:ident( $($arg:ident$(=$val:expr)* ),* ), $body:expr) => {{
+        use crate::sass::{Functions, InnerArgs};
+        use std::sync::Arc;
+        let args = InnerArgs::new(vec![ $(one_arg!($arg $(=$val)*)),* ]);
+        $f.builtin_fn(name!($name), args, Arc::new($body));
+    }}
 }
 macro_rules! def_va {
-    ($f:expr, $name:ident( $($arg:ident$(=$value:expr)* ),*), $body:expr) => {
-        $f.define_function(name!($name),
-                  func_va!(($($arg $( = $value )* ),*), $body))
-    }
+    ($f:expr, $name:ident( $($arg:ident$(=$val:expr)* ),*), $body:expr) => {{
+        use crate::sass::{Functions, InnerArgs};
+        use std::sync::Arc;
+        let args = InnerArgs::new_va(vec![ $(one_arg!($arg $(=$val)*)),* ]);
+        $f.builtin_fn(name!($name), args, Arc::new($body));
+    }}
 }
 
 macro_rules! dep_warn {

@@ -5,7 +5,7 @@ use crate::value::Quotes;
 use crate::{Format, Scope, ScopeRef};
 
 pub fn create_module() -> Scope {
-    let f = Scope::builtin_module("sass:meta");
+    let mut f = Scope::builtin_module("sass:meta");
     // - - - Mixins - - -
     // TODO: load_css
 

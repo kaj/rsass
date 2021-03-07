@@ -32,7 +32,7 @@ use self::value::{
 };
 #[cfg(test)]
 use crate::sass::CallArgs;
-use crate::sass::{FormalArgs, Item, Name, UseAs, Value};
+use crate::sass::{FormalArgs, InnerArgs, Item, Name, UseAs, Value};
 use crate::selectors::Selectors;
 use crate::value::ListSeparator;
 #[cfg(test)]
@@ -517,10 +517,10 @@ fn mixin_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(opt(formal_args), opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
-    let args = if let Some((a, va)) = args {
-        FormalArgs::new(a, va, input.into())
+    let args = if let Some(args) = args {
+        FormalArgs::new(args, input.into())
     } else {
-        FormalArgs::new(Default::default(), false, input.into())
+        FormalArgs::new(InnerArgs::none(), input.into())
     };
     Ok((input, Item::MixinDeclaration(name, args, body)))
 }
@@ -529,7 +529,7 @@ fn function_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(formal_args, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
-    let args = FormalArgs::new(args.0, args.1, input.into());
+    let args = FormalArgs::new(args, input.into());
     Ok((input, Item::FunctionDeclaration(name, args, body)))
 }
 

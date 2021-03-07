@@ -9,7 +9,7 @@ use crate::Scope;
 /// Should conform to
 /// [the specification](https://sass-lang.com/documentation/modules/map).
 pub fn create_module() -> Scope {
-    let f = Scope::builtin_module("sass:map");
+    let mut f = Scope::builtin_module("sass:map");
     // TODO deep_merge and deep_remove
     def_va!(f, get(map, key = b"null", keys = b"()"), |s| {
         let map = get_map(s, name!(map))?;

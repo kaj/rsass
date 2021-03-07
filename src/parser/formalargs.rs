@@ -2,7 +2,7 @@ use super::strings::name;
 use super::util::{ignore_comments, opt_spacelike};
 use super::value::space_list;
 use super::Span;
-use crate::sass::{CallArgs, Name, Value};
+use crate::sass::{CallArgs, InnerArgs};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{map, opt};
@@ -10,9 +10,7 @@ use nom::multi::separated_list0;
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::IResult;
 
-pub fn formal_args(
-    input: Span,
-) -> IResult<Span, (Vec<(Name, Option<Value>)>, bool)> {
+pub fn formal_args(input: Span) -> IResult<Span, InnerArgs> {
     let (input, _) = terminated(tag("("), opt_spacelike)(input)?;
     let (input, v) = separated_list0(
         preceded(tag(","), opt_spacelike),
@@ -31,7 +29,14 @@ pub fn formal_args(
     let (input, _) = terminated(opt(tag(",")), opt_spacelike)(input)?;
     let (input, va) = terminated(opt(tag("...")), opt_spacelike)(input)?;
     let (input, _) = tag(")")(input)?;
-    Ok((input, (v, va.is_some())))
+    Ok((
+        input,
+        if va.is_none() {
+            InnerArgs::new(v)
+        } else {
+            InnerArgs::new_va(v)
+        },
+    ))
 }
 
 pub fn call_args(input: Span) -> IResult<Span, CallArgs> {

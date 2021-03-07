@@ -7,7 +7,7 @@ use std::cmp::max;
 use std::sync::Mutex;
 
 pub fn create_module() -> Scope {
-    let f = Scope::builtin_module("sass:string");
+    let mut f = Scope::builtin_module("sass:string");
     def!(f, quote(string), |s| {
         let v = match s.get("string")? {
             Value::Literal(v, Quotes::None) => v.replace('\\', "\\\\"),
@@ -140,18 +140,12 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }
     // And special one that isn't part of the string module
-    global.insert(
-        name!(url),
-        func!(&name!(), name!(url), (string = b"null"), |s| {
-            Ok(Value::Literal(
-                format!(
-                    "url({})",
-                    s.get("string")?.format(Default::default())
-                ),
-                Quotes::None,
-            ))
-        }),
-    );
+    def!(global, url(string = b"null"), |s| {
+        Ok(Value::Literal(
+            format!("url({})", s.get("string")?.format(Default::default())),
+            Quotes::None,
+        ))
+    });
 }
 
 /// Convert index from sass (rational number, first is one) to rust

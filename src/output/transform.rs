@@ -3,7 +3,7 @@ use crate::css::{BodyItem, Rule};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
-use crate::sass::{self, FormalArgs, Function, Item, Mixin, Name};
+use crate::sass::{self, FormalArgs, Function, InnerArgs, Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
 use crate::ScopeRef;
@@ -233,8 +233,7 @@ fn handle_item(
                     Mixin {
                         /// TODO: Figure out a proper position
                         args: FormalArgs::new(
-                            vec![],
-                            false,
+                            InnerArgs::none(),
                             crate::parser::code_span(b"").into(),
                         ),
                         scope,

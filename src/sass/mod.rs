@@ -9,8 +9,8 @@ mod string;
 mod value;
 
 pub use self::call_args::CallArgs;
-pub use self::formal_args::{ArgsError, FormalArgs};
-pub use self::functions::{get_global_module, Function};
+pub use self::formal_args::{ArgsError, FormalArgs, InnerArgs};
+pub use self::functions::{get_global_module, Function, Functions};
 pub use self::item::{Item, UseAs};
 pub use self::mixin::Mixin;
 pub use self::name::Name;

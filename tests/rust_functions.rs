@@ -1,4 +1,5 @@
-use rsass::sass::{Function, Name};
+use lazy_static::lazy_static;
+use rsass::sass::{Functions, InnerArgs, Name};
 use rsass::value::{Number, Numeric, Rgba};
 use rsass::*;
 use std::sync::Arc;
@@ -22,6 +23,42 @@ fn simple_value() {
     );
 }
 
+#[cfg(test)]
+lazy_static! {
+    static ref TEST: Scope = {
+        fn get_number(s: &Scope, name: Name) -> Result<Numeric, Error> {
+            s.get(name.as_ref())?
+                .numeric_value()
+                .map_err(|v| Error::bad_arg(name, &v, "is not a number"))
+        }
+        let mut scope = Scope::builtin_module("test");
+        scope.builtin_fn(
+            Name::from_static("get_answer"),
+            InnerArgs::none(),
+            Arc::new(|_| Ok(css::Value::scalar(42))),
+        );
+        scope.builtin_fn(
+            Name::from_static("halfway"),
+            InnerArgs::new(vec![
+                ("a".into(), None),
+                ("b".into(), Some(sass::Value::scalar(0))),
+            ]),
+            Arc::new(|s| {
+                let a = get_number(s, "a".into())?;
+                let b = get_number(s, "b".into())?;
+                if a.unit == b.unit || b.unit.is_none() {
+                    Ok(Numeric::new(avg(a.value, b.value), a.unit).into())
+                } else if a.unit.is_none() {
+                    Ok(Numeric::new(avg(a.value, b.value), b.unit).into())
+                } else {
+                    Err(Error::S("Incopatible args".into()))
+                }
+            }),
+        );
+        scope
+    };
+}
+
 #[test]
 fn simple_function() {
     let format = output::Format {
@@ -29,20 +66,8 @@ fn simple_function() {
         precision: 5,
     };
     let scope = ScopeRef::new_global(format);
-    scope.define_function(
-        Name::from_static("get_answer"),
-        Function::builtin(
-            vec![],
-            false,
-            SourcePos::mock_function(
-                "get_answer".into(),
-                &[],
-                &"test".into(),
-            ),
-            Arc::new(|_| Ok(css::Value::scalar(42))),
-        ),
-    );
-    let parsed = parse_scss_data(b"p { x: get_answer(); }").unwrap();
+    scope.define_module(Name::from_static("test"), ScopeRef::Builtin(&TEST));
+    let parsed = parse_scss_data(b"p { x: test.get_answer(); }").unwrap();
     let file_context = FsFileContext::new();
     assert_eq!(
         String::from_utf8(
@@ -61,38 +86,8 @@ fn avg(a: Number, b: Number) -> Number {
 #[test]
 fn function_with_args() {
     let scope = ScopeRef::new_global(Default::default());
-    fn get_number(s: &Scope, name: Name) -> Result<Numeric, Error> {
-        s.get(name.as_ref())?
-            .numeric_value()
-            .map_err(|v| Error::bad_arg(name, &v, "is not a number"))
-    }
-    scope.define_function(
-        Name::from_static("halfway"),
-        Function::builtin(
-            vec![
-                ("a".into(), None),
-                ("b".into(), Some(sass::Value::scalar(0))),
-            ],
-            false,
-            SourcePos::mock_function(
-                "halfway".into(),
-                &["a".into(), "b".into()],
-                &"test".into(),
-            ),
-            Arc::new(|s| {
-                let a = get_number(s, "a".into())?;
-                let b = get_number(s, "b".into())?;
-                if a.unit == b.unit || b.unit.is_none() {
-                    Ok(Numeric::new(avg(a.value, b.value), a.unit).into())
-                } else if a.unit.is_none() {
-                    Ok(Numeric::new(avg(a.value, b.value), b.unit).into())
-                } else {
-                    Err(Error::S("Incopatible args".into()))
-                }
-            }),
-        ),
-    );
-    let parsed = parse_scss_data(b"p { x: halfway(10, 18); }").unwrap();
+    scope.define_module(Name::from_static("test"), ScopeRef::Builtin(&TEST));
+    let parsed = parse_scss_data(b"p { x: test.halfway(10, 18); }").unwrap();
     let format = output::Format {
         style: output::Style::Compressed,
         precision: 5,

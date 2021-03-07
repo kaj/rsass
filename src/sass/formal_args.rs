@@ -11,7 +11,7 @@ use std::fmt;
 /// The arguments are ordered (so they have a position).
 /// Each argument also has a name and may have a default value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct FormalArgs(Vec<(Name, Option<Value>)>, bool, SourcePos);
+pub struct FormalArgs(InnerArgs, SourcePos);
 
 impl FormalArgs {
     /// Create a new FormalArgs.
@@ -22,12 +22,13 @@ impl FormalArgs {
     ///
     /// If `is_varargs` is true, all extra call arguments are bundled
     /// as a List value for the last named argument.
-    pub fn new(
-        a: Vec<(Name, Option<Value>)>,
-        is_varargs: bool,
-        pos: SourcePos,
-    ) -> Self {
-        FormalArgs(a, is_varargs, pos)
+    pub fn new(args: InnerArgs, pos: SourcePos) -> Self {
+        FormalArgs(args, pos)
+    }
+
+    /// Return true if this formalarg is varargs.
+    pub fn is_varargs(&self) -> bool {
+        self.0 .1
     }
 
     /// Evaluate a set of call arguments for these formal arguments.
@@ -39,20 +40,20 @@ impl FormalArgs {
         args: &css::CallArgs,
     ) -> Result<ScopeRef, ArgsError> {
         let argscope = ScopeRef::sub(scope);
-        let n = self.0.len();
+        let n = self.0 .0.len();
         let m = args.len();
-        if !self.1 && m > n {
+        if !self.is_varargs() && m > n {
             return Err(ArgsError::TooMany(n, m));
         }
-        for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
+        for (i, &(ref name, ref default)) in self.0 .0.iter().enumerate() {
             if let Some(value) = args
                 .iter()
                 .find(|&&(ref k, ref _v)| k.as_deref() == Some(name.as_ref()))
                 .map(|&(ref _k, ref v)| v)
             {
                 argscope.define(name.clone(), value);
-            } else if self.1 && i + 1 == n && args.len() > n {
-                if self.1 {
+            } else if self.is_varargs() && i + 1 == n && args.len() > n {
+                if self.is_varargs() {
                     let args = args
                         .iter()
                         .skip(i)
@@ -74,7 +75,9 @@ impl FormalArgs {
                                 .do_evaluate(argscope.clone(), true)
                                 .map_err(ArgsError::Eval)?;
                             argscope.define(name.clone(), &v)
-                        } else if i + 1 == self.0.len() && self.1 {
+                        } else if i + 1 == self.0 .0.len()
+                            && self.is_varargs()
+                        {
                             // Should be an empty list?
                             argscope.define(name.clone(), &css::Value::Null)
                         } else {
@@ -88,7 +91,47 @@ impl FormalArgs {
     }
     /// Get the position of declaration for the function with these arguments.
     pub fn decl_pos(&self) -> &SourcePos {
-        &self.2
+        &self.1
+    }
+}
+
+/// ...
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
+pub struct InnerArgs(Vec<(Name, Option<Value>)>, bool);
+
+impl InnerArgs {
+    /// Create a new set of arguments
+    pub fn new(args: Vec<(Name, Option<Value>)>) -> InnerArgs {
+        InnerArgs(args, false)
+    }
+    /// Create a new set of varargs arguments
+    pub fn new_va(args: Vec<(Name, Option<Value>)>) -> InnerArgs {
+        InnerArgs(args, true)
+    }
+    /// Create an empty set of arguments.
+    pub fn none() -> InnerArgs {
+        InnerArgs(vec![], false)
+    }
+}
+
+impl fmt::Display for InnerArgs {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        out.write_str("(")?;
+        if let Some((first, rest)) = self.0.split_first() {
+            write!(out, "${}", first.0)?;
+            if let Some(default) = &first.1 {
+                out.write_str(": ")?;
+                default.inspect(out)?;
+            }
+            for (name, default) in rest {
+                write!(out, ", ${}", name)?;
+                if let Some(default) = default {
+                    out.write_str(": ")?;
+                    default.inspect(out)?;
+                }
+            }
+        }
+        out.write_str(")")
     }
 }
 

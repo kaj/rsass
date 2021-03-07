@@ -1,6 +1,6 @@
 use crate::error::Error;
 use crate::parser::SourcePos;
-use crate::sass::Name;
+use crate::sass::{FormalArgs, Name};
 use crate::value::{Numeric, Quotes};
 use crate::{css, sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
@@ -27,7 +27,7 @@ type BuiltinFn = dyn Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
 /// "user defined" (implemented in scss).
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Function {
-    args: sass::FormalArgs,
+    args: FormalArgs,
     body: FuncImpl,
 }
 
@@ -87,6 +87,29 @@ impl fmt::Debug for FuncImpl {
     }
 }
 
+use crate::sass::InnerArgs;
+/// ...
+pub trait Functions {
+    /// ...
+    fn builtin_fn(
+        &mut self,
+        name: Name,
+        args: InnerArgs,
+        body: Arc<BuiltinFn>,
+    );
+}
+impl Functions for Scope {
+    fn builtin_fn(
+        &mut self,
+        name: Name,
+        args: InnerArgs,
+        body: Arc<BuiltinFn>,
+    ) {
+        let f = Function::builtin(&self.get_name(), &name, args, body);
+        self.define_function(name, f);
+    }
+}
+
 impl Function {
     /// Get a built-in function by name.
     pub fn get_builtin(name: &Name) -> Option<&'static Function> {
@@ -98,13 +121,14 @@ impl Function {
     /// Note: This does not expose the function in any scope, it just
     /// creates it.
     pub fn builtin(
-        args: Vec<(Name, Option<sass::Value>)>,
-        is_varargs: bool,
-        pos: SourcePos,
+        module: &Name,
+        name: &Name,
+        args: sass::InnerArgs,
         body: Arc<BuiltinFn>,
     ) -> Self {
+        let pos = SourcePos::mock_function(name, &args, module);
         Function {
-            args: sass::FormalArgs::new(args, is_varargs, pos),
+            args: FormalArgs::new(args, pos),
             body: FuncImpl::Builtin(body),
         }
     }
@@ -114,7 +138,7 @@ impl Function {
     /// The scope is where the function is defined, used to bind any
     /// non-parameter names in the body.
     pub fn closure(
-        args: sass::FormalArgs,
+        args: FormalArgs,
         scope: ScopeRef,
         body: Vec<sass::Item>,
     ) -> Self {
@@ -182,20 +206,28 @@ pub fn get_global_module(name: &str) -> Option<ScopeRef> {
 }
 
 type FunctionMap = BTreeMap<Name, Function>;
+impl Functions for FunctionMap {
+    fn builtin_fn(
+        &mut self,
+        name: Name,
+        args: InnerArgs,
+        body: Arc<BuiltinFn>,
+    ) {
+        let f = Function::builtin(&name!(), &name, args, body);
+        self.insert(name, f);
+    }
+}
 
 lazy_static! {
     static ref FUNCTIONS: FunctionMap = {
         let mut f = BTreeMap::new();
-        f.insert(
-            name!(if),
-            func!(&name!(), name!(if), (condition, if_true, if_false), |s| {
-                if s.get("condition")?.is_true() {
-                    Ok(s.get("if_true")?)
-                } else {
-                    Ok(s.get("if_false")?)
-                }
-            }),
-        );
+        def!(f, if(condition, if_true, if_false), |s| {
+            if s.get("condition")?.is_true() {
+                Ok(s.get("if_true")?)
+            } else {
+                Ok(s.get("if_false")?)
+            }
+        });
         color::expose(MODULES.get("sass:color").unwrap(), &mut f);
         list::expose(MODULES.get("sass:list").unwrap(), &mut f);
         map::expose(MODULES.get("sass:map").unwrap(), &mut f);

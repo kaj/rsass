@@ -1,5 +1,5 @@
 use super::Span;
-use crate::sass::Name;
+use crate::sass::{InnerArgs, Name};
 use std::fmt::{self, Write};
 use std::str::from_utf8;
 
@@ -27,17 +27,17 @@ impl SourcePos {
         result
     }
     /// ...
-    pub fn mock_function(name: Name, args: &[Name], module: &Name) -> Self {
-        let args = args
-            .iter()
-            .map(|a| format!("${}", a))
-            .collect::<Vec<_>>()
-            .join(", ");
+    pub fn mock_function(
+        name: &Name,
+        args: &InnerArgs,
+        module: &Name,
+    ) -> Self {
+        let args = args.to_string();
         SourcePos {
-            line: format!("@function {}({}) {{", name, args),
+            line: format!("@function {}{} {{", name, args),
             line_no: 1,
             line_pos: 11,
-            length: name.as_ref().chars().count() + args.chars().count() + 2,
+            length: name.as_ref().chars().count() + args.chars().count(),
             file: SourceName::root(module.as_ref()),
         }
     }
