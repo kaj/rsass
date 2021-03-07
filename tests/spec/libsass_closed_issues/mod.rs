@@ -757,33 +757,8 @@ fn issue_1103() {
 }
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1106.hrx"
-#[test]
-fn issue_1106() {
-    assert_eq!(
-        rsass(
-            "@function foo() { @return null; }\
-            \n$foo: null;\
-            \na {\
-            \n    foo: bar;\
-            \n    variable: $foo;\
-            \n    function: foo();\
-            \n    unquote: unquote($foo);\
-            \n}\
-            \n\
-            \nb {\
-            \n    variable: $foo;\
-            \n    function: foo();\
-            \n    unquote: unquote($foo);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        "a {\
-        \n  foo: bar;\
-        \n}\
-        \n"
-    );
-}
+
+// Ignoring "issue_1106", error tests are not supported yet.
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1107.hrx"
 #[test]
@@ -2060,6 +2035,7 @@ fn issue_1257() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1258.hrx"
 #[test]
+#[ignore] // unexepected error
 fn issue_1258() {
     assert_eq!(
         rsass(
@@ -2358,6 +2334,7 @@ fn issue_1285() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1291.hrx"
 #[test]
+#[ignore] // unexepected error
 fn issue_1291() {
     assert_eq!(
         rsass(
@@ -4684,29 +4661,8 @@ fn issue_1685() {
 }
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1706.hrx"
-#[test]
-fn issue_1706() {
-    assert_eq!(
-        rsass(
-            "@function calc($e) { @return custom; }\
-            \n@function -foo-calc($e) { @return custom; }\
-            \n\
-            \n.test {\
-            \n    a: calc(1px * 1%);\
-            \n    b: -foo-calc(2px * 2%);\
-            \n    c: call(calc, 3px * 3%);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        ".test {\
-        \n  a: calc(1px * 1%);\
-        \n  b: -foo-calc(2px * 2%);\
-        \n  c: custom;\
-        \n}\
-        \n"
-    );
-}
+
+// Ignoring "issue_1706", error tests are not supported yet.
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1709.hrx"
 #[test]
@@ -11173,55 +11129,8 @@ fn issue_672() {
 // Ignoring "issue_673", error tests are not supported yet.
 
 // From "sass-spec/spec/libsass-closed-issues/issue_674.hrx"
-#[test]
-fn issue_674() {
-    assert_eq!(
-        rsass(
-            "\
-            \n$base-path:\'../images/\';\
-            \n$base-attr:\'data-\';\
-            \n\
-            \n@function url($src, $path:\'\'){\
-            \n  @return unquote(\'url(\'+$base-path + $path+ $src +\')\');\
-            \n}\
-            \n@function url2($src, $path:\'\'){\
-            \n  @return unquote(\'url(\'+ $base-path + $path+ $src +\')\');\
-            \n}\
-            \n@function attr($arg1, $arg2:\'\'){\
-            \n  @return unquote(\'attr(\'+$base-attr + $arg1 + $arg2 +\')\');\
-            \n}\
-            \n\
-            \ndiv {\
-            \n    background: url(\'image.png\');\
-            \n    background: url(\'image.png\',\'img/\');\
-            \n    background: url2(\'image.png\',\'img/\');\
-            \n\
-            \n  &:after {\
-            \n    content: attr(value);\
-            \n    content: attr(value, -extra);\
-            \n    content: url(\'icon.png\');\
-            \n    content: url(\'icon.png\',\'gfx/\');\
-            \n    content: url2(\'icon.png\',\'gfx/\');\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        "div {\
-        \n  background: url(../images/image.png);\
-        \n  background: url(../images/img/image.png);\
-        \n  background: url(../images/img/image.png);\
-        \n}\
-        \ndiv:after {\
-        \n  content: attr(data-value);\
-        \n  content: attr(data-value-extra);\
-        \n  content: url(../images/icon.png);\
-        \n  content: url(../images/gfx/icon.png);\
-        \n  content: url(../images/gfx/icon.png);\
-        \n}\
-        \n"
-    );
-}
+
+// Ignoring "issue_674", error tests are not supported yet.
 
 // From "sass-spec/spec/libsass-closed-issues/issue_683.hrx"
 #[test]

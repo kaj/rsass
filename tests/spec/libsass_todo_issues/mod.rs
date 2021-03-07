@@ -34,27 +34,8 @@ fn issue_1026() {
 }
 
 // From "sass-spec/spec/libsass-todo-issues/issue_1096.hrx"
-#[test]
-#[ignore] // wrong result
-fn issue_1096() {
-    assert_eq!(
-        rsass(
-            "// line-endings in this file must be CRLF\r\
-            \n@import url(\"foo\\\r\
-            \nbar\");\r\
-            \n@import url(\"foo\r\
-            \nbar\");\r\
-            \n@import url(foo\r\
-            \nbar);\r\
-            \n"
-        )
-        .unwrap(),
-        "@import url(\"foobar\");\
-        \n@import url(\"foo\\a bar\");\
-        \n@import url(foo bar);\
-        \n"
-    );
-}
+
+// Ignoring "issue_1096", error tests are not supported yet.
 
 mod issue_1694;
 

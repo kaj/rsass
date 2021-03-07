@@ -247,13 +247,6 @@ mod test {
             assert_eq!("type-of(red)", do_evaluate(&[], b"ty#{pe}-of(red);"))
         }
         #[test]
-        fn t16() {
-            assert_eq!(
-                "\"length(a b c d)\"",
-                do_evaluate(&[], b"quote(le#{ng}th(a b c d));")
-            )
-        }
-        #[test]
         fn t17() {
             assert_eq!("aqua", do_evaluate(&[], b"aqua;"))
         }

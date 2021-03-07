@@ -118,7 +118,13 @@ impl<'a> Display for Formatted<'a, Value> {
             }
             Value::True => write!(out, "true"),
             Value::False => write!(out, "false"),
-            Value::Null => Ok(()),
+            Value::Null => {
+                if self.format.is_introspection() {
+                    out.write_str("null")
+                } else {
+                    Ok(())
+                }
+            }
             Value::Map(ref map) => write!(
                 out,
                 "({})",

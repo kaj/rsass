@@ -722,25 +722,12 @@ pub mod test {
     }
 
     #[test]
-    fn quote_keywords() {
-        assert_expr!(b"quote(foo bar);", "\"foo bar\"")
-    }
-    #[test]
-    fn quote_expr() {
-        let vars = [("s", "foo"), ("n", "5")];
-        assert_expr!(&vars, b"quote($s $n * 3 + 2);", "\"foo 17\"")
-    }
-    #[test]
     fn quoted_string() {
         assert_expr!(b"\"foobar\";", "\"foobar\"")
     }
     #[test]
     fn unquote_string() {
         assert_expr!(b"unquote(\"foo bar\");", "foo bar")
-    }
-    #[test]
-    fn unquote_quote() {
-        assert_expr!(b"unquote(quote(foo bar));", "foo bar")
     }
 
     #[test]

@@ -362,17 +362,6 @@ fn load_test_fixture_dir(
     options.precision = options.precision.or(precision);
     let input = content(&specdir.join(INPUT_FILENAME))?;
 
-    for filename in EXPECTED_OUTPUT_FILENAMES {
-        let path = specdir.join(filename);
-        if path.exists() {
-            return Ok(TestFixture::new_ok(
-                name,
-                input,
-                &content(&path)?,
-                options,
-            ));
-        }
-    }
     for filename in EXPECTED_ERROR_FILENAMES {
         let path = specdir.join(filename);
         if path.exists() {
@@ -380,6 +369,17 @@ fn load_test_fixture_dir(
                 name,
                 input,
                 content(&path)?,
+                options,
+            ));
+        }
+    }
+    for filename in EXPECTED_OUTPUT_FILENAMES {
+        let path = specdir.join(filename);
+        if path.exists() {
+            return Ok(TestFixture::new_ok(
+                name,
+                input,
+                &content(&path)?,
                 options,
             ));
         }
@@ -399,7 +399,6 @@ fn load_test_fixture_hrx(
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAMES: &[&str] =
         &["output-dart-sass.css", "output.css"];
-    static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
 
     let mut options =
         if let Some(yml) = archive.get(&format!("{}options.yml", prefix)) {
@@ -411,6 +410,16 @@ fn load_test_fixture_hrx(
 
     if let Some(input) = archive.get(&format!("{}{}", prefix, INPUT_FILENAME))
     {
+        if let Some(error) =
+            archive.get(&format!("{}{}", prefix, "error-dart-sass"))
+        {
+            return Ok(TestFixture::new_err(
+                name,
+                input.to_string(),
+                error.to_string(),
+                options,
+            ));
+        }
         for filename in EXPECTED_OUTPUT_FILENAMES {
             if let Some(output) =
                 archive.get(&format!("{}{}", prefix, filename))
@@ -423,17 +432,13 @@ fn load_test_fixture_hrx(
                 ));
             }
         }
-        for filename in EXPECTED_ERROR_FILENAMES {
-            if let Some(error) =
-                archive.get(&format!("{}{}", prefix, filename))
-            {
-                return Ok(TestFixture::new_err(
-                    name,
-                    input.to_string(),
-                    error.to_string(),
-                    options,
-                ));
-            }
+        if let Some(error) = archive.get(&format!("{}{}", prefix, "error")) {
+            return Ok(TestFixture::new_err(
+                name,
+                input.to_string(),
+                error.to_string(),
+                options,
+            ));
         }
         return Err(Error(format!(
             "No expected CSS / error found for {:?}",

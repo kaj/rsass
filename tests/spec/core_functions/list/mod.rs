@@ -1607,7 +1607,6 @@ mod zip {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn no_lists() {
         assert_eq!(
             rsass(
