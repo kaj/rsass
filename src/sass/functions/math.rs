@@ -86,16 +86,12 @@ pub fn create_module() -> Scope {
                 }
                 Ok(number(sum.sqrt(), unit))
             } else {
-                Err(Error::S(
-                    "Error: At least one argument must be passed.".into(),
-                ))
+                Err(Error::error("At least one argument must be passed"))
             }
         }
         Value::Numeric(v, _) => Ok(number(v.value.abs(), v.unit)),
         Value::Null => {
-            Err(Error::S(
-                "Error: At least one argument must be passed.".into(),
-            ))
+            Err(Error::error("At least one argument must be passed"))
         }
         v => Err(Error::bad_arg(name!(number), &v, "is not a number")),
     });
@@ -247,7 +243,7 @@ fn get_base(s: &Scope) -> Result<f64, Error> {
 
 // Only used by hypot function, which treats arguments as unnamed.
 fn as_numeric(v: &Value) -> Result<Numeric, Error> {
-    check::numeric(v.clone()).map_err(|e| Error::S(format!("Error: {}.", e)))
+    check::numeric(v.clone()).map_err(Error::error)
 }
 
 fn number(v: impl Into<Number>, unit: impl Into<UnitSet>) -> Value {
@@ -262,9 +258,7 @@ fn deg_value(rad: f64) -> Value {
 
 fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
     find_extreme_inner(v, pref)?
-        .ok_or_else(|| {
-            Error::S("Error: At least one argument must be passed.".into())
-        })
+        .ok_or_else(|| Error::error("At least one argument must be passed"))
         .map(Into::into)
 }
 
@@ -273,8 +267,7 @@ fn find_extreme_inner(
     pref: Ordering,
 ) -> Result<Option<Numeric>, Error> {
     if let Some((first, rest)) = v.split_first() {
-        let va = check::numeric(first.clone())
-            .map_err(|s| Error::S(format!("Error: {}.", s)))?;
+        let va = check::numeric(first.clone()).map_err(Error::error)?;
         if let Some(vb) = find_extreme_inner(rest, pref)? {
             if let Some(o) = va.partial_cmp(&vb) {
                 Ok(Some(if o == pref { va } else { vb }))
@@ -282,15 +275,15 @@ fn find_extreme_inner(
                 if let Some(o) = va.value.partial_cmp(&vb.value) {
                     Ok(Some(if o == pref { va } else { vb }))
                 } else {
-                    Err(Error::S(format!(
-                        "Error: {} and {} could not be compared.",
+                    Err(Error::error(format!(
+                        "{} and {} could not be compared",
                         va.format(Format::introspect()),
                         vb.format(Format::introspect()),
                     )))
                 }
             } else {
-                Err(Error::S(format!(
-                    "Error: {} and {} have incompatible units.",
+                Err(Error::error(format!(
+                    "{} and {} have incompatible units",
                     va.format(Format::introspect()),
                     vb.format(Format::introspect()),
                 )))

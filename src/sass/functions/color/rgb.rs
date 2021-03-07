@@ -223,7 +223,7 @@ pub fn register(f: &mut Scope) {
                 if w == one() {
                     Ok(make_call("invert", vec![col]))
                 } else {
-                    Err(Error::S("Error: Only one argument may be passed to the plain-CSS invert() function.".into()))
+                    Err(Error::error("Only one argument may be passed to the plain-CSS invert() function."))
                 }
             }
         }

@@ -62,6 +62,10 @@ impl Error {
     pub fn undefined_variable(name: &str) -> Self {
         Error::UndefinedVariable(name.to_string())
     }
+
+    pub fn error<T: AsRef<str>>(msg: T) -> Self {
+        Error::S(format!("Error: {}.", msg.as_ref()))
+    }
 }
 
 impl fmt::Display for Error {

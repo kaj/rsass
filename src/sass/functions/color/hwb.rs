@@ -56,8 +56,8 @@ pub fn register(f: &mut Scope) {
 }
 
 fn badchannels(v: &Value) -> Error {
-    Error::S(format!(
-        "Error: Expected numeric channels, got \"hwb({})\".",
+    Error::error(format!(
+        "Expected numeric channels, got \"hwb({})\"",
         v.format(Format::introspect()),
     ))
 }
