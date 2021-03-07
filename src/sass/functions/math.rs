@@ -145,8 +145,11 @@ pub fn create_module() -> Scope {
     });
     def!(f, atan2(y, x), |s| {
         let y = get_numeric(s, "y")?;
-        let x = get_numeric(s, "x")?;
-        let x = x.as_unitset(&y.unit).unwrap_or(x.value);
+        let x = get_checked(s, name!(x), |v| {
+            let v = check::numeric(v)?;
+            v.as_unitset(&y.unit)
+                .ok_or_else(|| diff_units_msg(&v, &y, name!(y)))
+        })?;
         Ok(deg_value(f64::from(y.value).atan2(f64::from(x))))
     });
 
