@@ -13,12 +13,16 @@ project adheres to
 
 * The unit of a `Numeric` is now a `UnitSet` rather than a `Unit`.
 * `Error` has a new variant.
+* A sass::Value::Call now has a source position.
 
 ### Improvements
 
 * Added a Contributing section to readme.
 * Handle values with multiple units. PR #97.
-* Show call position for errors in function calls.
+* Show call position for errors in function calls, and test for type
+  errors in many standard functions. Many error messages are made
+  identical to dart-sass, improving test-suit progress with more than
+  400 tests.  PR #99.
 
 
 ## Release 0.18.0 - 2021-02-25
