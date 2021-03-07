@@ -99,7 +99,9 @@ pub fn create_module() -> Scope {
     // - - - Exponential Functions - - -
     def!(f, log(number, base = b"null"), |s| {
         let num = get_unitless(s, "number")?;
-        let base = get_base(s)?;
+        let base = get_opt_check(s, name!(base), check::unitless)?
+            .map(Into::into)
+            .unwrap_or(E);
         Ok(Value::scalar(num.log(base)))
     });
     def!(f, pow(base, exponent), |s| {
@@ -235,13 +237,6 @@ fn get_radians(s: &Scope, name: &str) -> Result<f64, Error> {
 
 fn get_unitless(s: &Scope, name: &str) -> Result<f64, Error> {
     get_checked(s, name.into(), |v| Ok(check::unitless(v)?.into()))
-}
-
-fn get_base(s: &Scope) -> Result<f64, Error> {
-    Ok(
-        get_opt_check(s, name!(base), |v| Ok(check::unitless(v)?.into()))?
-            .unwrap_or(std::f64::consts::E),
-    )
 }
 
 // Only used by hypot function, which treats arguments as unnamed.
