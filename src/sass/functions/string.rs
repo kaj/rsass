@@ -9,10 +9,9 @@ use std::sync::Mutex;
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:string");
     def!(f, quote(string), |s| {
-        let v = match s.get("string")? {
-            Value::Literal(v, Quotes::None) => v.replace('\\', "\\\\"),
-            Value::Literal(v, _) => v,
-            v => format!("{}", v.format(Default::default())),
+        let v = match get_string(s, "string")? {
+            (v, Quotes::None) => v.replace('\\', "\\\\"),
+            (v, _) => v,
         };
         if v.contains('"') && !v.contains('\'') {
             Ok(Value::Literal(v, Quotes::Single))
@@ -70,30 +69,22 @@ pub fn create_module() -> Scope {
             Err(Error::S(format!("Bad indexes: {}..{}", start_at, end_at)))
         }
     });
-    def!(f, to_upper_case(string), |s| match s.get("string")? {
-        Value::Literal(v, q) => Ok(Value::Literal(v.to_ascii_uppercase(), q)),
-        v => Ok(v),
+    def!(f, to_upper_case(string), |s| {
+        let (v, q) = get_string(s, "string")?;
+        Ok(Value::Literal(v.to_ascii_uppercase(), q))
     });
-    def!(
-        f,
-        to_upper_case_unicode(string),
-        |s| match s.get("string")? {
-            Value::Literal(v, q) => Ok(Value::Literal(v.to_uppercase(), q)),
-            v => Ok(v),
-        }
-    );
-    def!(f, to_lower_case(string), |s| match s.get("string")? {
-        Value::Literal(v, q) => Ok(Value::Literal(v.to_ascii_lowercase(), q)),
-        v => Ok(v),
+    def!(f, to_upper_case_unicode(string), |s| {
+        let (v, q) = get_string(s, "string")?;
+        Ok(Value::Literal(v.to_uppercase(), q))
     });
-    def!(
-        f,
-        to_lower_case_unicode(string),
-        |s| match s.get("string")? {
-            Value::Literal(v, q) => Ok(Value::Literal(v.to_lowercase(), q)),
-            v => Ok(v),
-        }
-    );
+    def!(f, to_lower_case(string), |s| {
+        let (v, q) = get_string(s, "string")?;
+        Ok(Value::Literal(v.to_ascii_lowercase(), q))
+    });
+    def!(f, to_lower_case_unicode(string), |s| {
+        let (v, q) = get_string(s, "string")?;
+        Ok(Value::Literal(v.to_lowercase(), q))
+    });
     def!(f, unique_id(), |_s| {
         lazy_static! {
             static ref CALL_ID: Mutex<u64> =
@@ -108,18 +99,9 @@ pub fn create_module() -> Scope {
             Quotes::None,
         ))
     });
-    def!(f, unquote(string), |s| match s.get("string")? {
-        Value::Literal(v, Quotes::None) =>
-            Ok(Value::Literal(v, Quotes::None)),
-        Value::Literal(v, _) =>
-            Ok(Value::Literal(v.replace("\\\\", "\\"), Quotes::None)),
-        v => {
-            dep_warn!(
-                "Passing {}, a non-string value, to unquote()",
-                v.format(Default::default())
-            );
-            Ok(v)
-        }
+    def!(f, unquote(string), |s| match get_string(s, "string")? {
+        (v, Quotes::None) => Ok(Value::Literal(v, Quotes::None)),
+        (v, _) => Ok(Value::Literal(v.replace("\\\\", "\\"), Quotes::None)),
     });
 
     f
