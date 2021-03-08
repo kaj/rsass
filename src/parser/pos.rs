@@ -26,8 +26,8 @@ impl SourcePos {
             std::cmp::max(1, end.location_offset() - start.location_offset());
         result
     }
-    /// ...
-    pub fn mock_function(
+
+    pub(crate) fn mock_function(
         name: &Name,
         args: &InnerArgs,
         module: &Name,
@@ -41,11 +41,7 @@ impl SourcePos {
             file: SourceName::root(module.as_ref()),
         }
     }
-    /// ...
-    pub fn length(mut self, l: usize) -> Self {
-        self.length = l;
-        self
-    }
+
     /// Show this source position.
     ///
     /// Dislays the line containg the position, highlighting
