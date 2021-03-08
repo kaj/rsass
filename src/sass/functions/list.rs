@@ -1,21 +1,15 @@
-use super::{get_integer, get_string, Error, FunctionMap, Name};
+use super::{check, get_checked, get_integer, Error, FunctionMap, Name};
 use crate::css::Value;
 use crate::value::{ListSeparator, Quotes};
 use crate::Scope;
 
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:list");
-    def!(f, append(list, val, separator = b"null"), |s| {
+    def!(f, append(list, val, separator = b"auto"), |s| {
         let (mut list, sep, bra) = get_list(s.get("list")?);
-        let sep = match (s.get("separator")?, sep) {
-            (Value::Literal(ref s, _), _) if s == "comma" => {
-                ListSeparator::Comma
-            }
-            (Value::Literal(ref s, _), _) if s == "space" => {
-                ListSeparator::Space
-            }
-            (_, s) => s.unwrap_or(ListSeparator::Space),
-        };
+        let sep = get_checked(s, name!(separator), check_separator)?
+            .or(sep)
+            .unwrap_or(ListSeparator::Space);
         list.push(s.get("val")?);
         Ok(Value::List(list, sep, bra))
     });
@@ -58,25 +52,16 @@ pub fn create_module() -> Scope {
         |s| {
             let (mut list1, sep1, bra1) = get_list(s.get("list1")?);
             let (mut list2, sep2, _bra2) = get_list(s.get("list2")?);
-            let separator =
-                match get_string(s, "separator")?.0.to_lowercase().as_ref() {
-                    "comma" => ListSeparator::Comma,
-                    "space" => ListSeparator::Space,
-                    "auto" => sep1.or(sep2).unwrap_or(ListSeparator::Space),
-                    _other => {
-                        return Err(Error::BadArgument(
-                            name!(separator),
-                            "Must be \"space\", \"comma\", or \"auto\""
-                                .into(),
-                        ));
-                    }
-                };
+            let sep = get_checked(s, name!(separator), check_separator)?
+                .or(sep1)
+                .or(sep2)
+                .unwrap_or(ListSeparator::Space);
             list1.append(&mut list2);
             let bra = match s.get("bracketed")? {
                 Value::Literal(ref s, _) if s == "auto" => bra1,
                 b => b.is_true(),
             };
-            Ok(Value::List(list1, separator, bra))
+            Ok(Value::List(list1, sep, bra))
         }
     );
     def!(f, length(list), |s| match s.get("list")? {
@@ -165,6 +150,15 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(zip), name!(zip)),
     ] {
         global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
+    }
+}
+
+fn check_separator(v: Value) -> Result<Option<ListSeparator>, String> {
+    match check::string(v)?.0.as_ref() {
+        "comma" => Ok(Some(ListSeparator::Comma)),
+        "space" => Ok(Some(ListSeparator::Space)),
+        "auto" => Ok(None),
+        _ => Err("Must be \"space\", \"comma\", or \"auto\"".into()),
     }
 }
 

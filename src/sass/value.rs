@@ -233,7 +233,11 @@ impl Value {
         match *self {
             Value::Bang(ref s) => write!(out, "!{}", s),
             Value::Literal(ref s) => {
-                write!(out, "{:?}", s)
+                if let Some(s) = s.single_raw() {
+                    out.write_str(s)
+                } else {
+                    write!(out, "{:?}", s)
+                }
             }
             Value::Paren(ref v, _expl) => {
                 out.write_str("(")?;

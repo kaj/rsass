@@ -3143,7 +3143,6 @@ mod type_of {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn empty() {
             assert_eq!(
                 rsass(
@@ -3158,7 +3157,6 @@ mod type_of {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn non_empty() {
             assert_eq!(
                 rsass(
