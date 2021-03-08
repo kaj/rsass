@@ -1,7 +1,6 @@
 use super::{check, get_opt_check, get_string, Error, FunctionMap};
 use crate::css::{CallArgs, Value};
 use crate::sass::Name;
-use crate::value::Quotes;
 use crate::{Format, Scope, ScopeRef};
 
 pub fn create_module() -> Scope {
@@ -83,14 +82,12 @@ pub fn create_module() -> Scope {
         let module = get_scope(s, module.map(|(s, _q)| s))?;
         Ok(module.get_global_or_none(&v.into()).is_some().into())
     });
-    def!(f, inspect(value), |s| Ok(Value::Literal(
-        match s.get("value")? {
-            Value::Null => "null".to_string(),
-            Value::List(ref v, _, false) if v.is_empty() => "()".to_string(),
-            v => format!("{}", v.format(Format::introspect())),
-        },
-        Quotes::None
-    )));
+    def!(f, inspect(value), |s| {
+        Ok(s.get("value")?
+            .format(Format::introspect())
+            .to_string()
+            .into())
+    });
     // TODO: keywords
     def!(f, mixin_exists(name, module = b"null"), |s| {
         let (v, _q) = get_string(s, "name")?;
@@ -99,10 +96,9 @@ pub fn create_module() -> Scope {
         Ok(module.get_mixin(&v.into()).is_some().into())
     });
     // TODO: module_functions, module_variables
-    def!(f, type_of(value), |s| Ok(Value::Literal(
-        s.get("value")?.type_name().into(),
-        Quotes::None
-    )));
+    def!(f, type_of(value), |s| {
+        Ok(s.get("value")?.type_name().into())
+    });
     def!(f, variable_exists(name), |s| {
         let (v, _q) = get_string(s, "name")?;
         Ok(call_scope(s).get_or_none(&v.into()).is_some().into())

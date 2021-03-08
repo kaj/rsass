@@ -44,6 +44,9 @@ impl<'a> Display for Formatted<'a, Value> {
             }
             Value::List(ref v, sep, brackets) => {
                 let introspect = self.format.is_introspection();
+                if introspect && v.is_empty() && !brackets {
+                    return out.write_str("()");
+                }
                 let t = v
                     .iter()
                     .filter(|v| !v.is_null() || introspect)
@@ -53,7 +56,7 @@ impl<'a> Display for Formatted<'a, Value> {
                                 ((brackets || introspect)
                                     && (sep == ListSeparator::Space
                                         || inner == ListSeparator::Comma))
-                                    || (v.is_empty() && introspect)
+                                    && !(v.is_empty() && introspect)
                             }
                             _ => false,
                         };
