@@ -1,8 +1,9 @@
+use crate::css::{CallArgs, Value};
 use crate::error::Error;
 use crate::parser::SourcePos;
 use crate::sass::{FormalArgs, Name};
 use crate::value::{Numeric, Quotes};
-use crate::{css, sass, Scope, ScopeRef};
+use crate::{sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -19,7 +20,7 @@ mod meta;
 mod selector;
 mod string;
 
-type BuiltinFn = dyn Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
+type BuiltinFn = dyn Fn(&Scope) -> Result<Value, Error> + Send + Sync;
 
 /// A function that can be called from a sass value.
 ///
@@ -156,36 +157,35 @@ impl Function {
     pub fn call(
         &self,
         callscope: ScopeRef,
-        args: &css::CallArgs,
-    ) -> Result<css::Value, Error> {
+        args: &CallArgs,
+    ) -> Result<Value, Error> {
         let cs = Name::from_static("%%CALLING_SCOPE%%");
         match self.body {
             FuncImpl::Builtin(ref body) => {
-                let s = self
-                    .args
-                    .eval(ScopeRef::new_global(callscope.get_format()), args)
-                    .map_err(|e| match e {
-                        sass::ArgsError::Eval(e) => e,
-                        ae => Error::BadArguments(
-                            ae.to_string(),
-                            self.pos.clone(),
-                        ),
-                    })?;
+                let s = self.do_eval_args(
+                    ScopeRef::new_global(callscope.get_format()),
+                    args,
+                )?;
                 s.define_module(cs, callscope);
                 body(&s)
             }
             FuncImpl::UserDefined(ref defscope, ref body) => {
-                let s =
-                    self.args.eval(defscope.clone(), args).map_err(|e| {
-                        match e {
-                            sass::ArgsError::Eval(e) => e,
-                            ae => Error::S(ae.to_string()),
-                        }
-                    })?;
+                let s = self.do_eval_args(defscope.clone(), args)?;
                 s.define_module(cs, callscope);
-                Ok(s.eval_body(body)?.unwrap_or(css::Value::Null))
+                Ok(s.eval_body(body)?.unwrap_or(Value::Null))
             }
         }
+    }
+
+    fn do_eval_args(
+        &self,
+        def: ScopeRef,
+        args: &CallArgs,
+    ) -> Result<ScopeRef, Error> {
+        self.args.eval(def, args).map_err(|e| match e {
+            sass::ArgsError::Eval(e) => e,
+            ae => Error::BadArguments(ae.to_string(), self.pos.clone()),
+        })
     }
 }
 
@@ -203,7 +203,7 @@ lazy_static! {
     };
 }
 
-/// Get a global module (e.g. `sass::math`) by name.
+/// Get a global module (e.g. `sass:math`) by name.
 pub fn get_global_module(name: &str) -> Option<ScopeRef> {
     MODULES.get(name).map(ScopeRef::Builtin)
 }
@@ -246,7 +246,7 @@ lazy_static! {
 
 fn get_checked<T, F>(s: &Scope, name: Name, check: F) -> Result<T, Error>
 where
-    F: Fn(css::Value) -> Result<T, String>,
+    F: Fn(Value) -> Result<T, String>,
 {
     check(s.get(name.as_ref())?).map_err(|e| Error::BadArgument(name, e))
 }
@@ -257,15 +257,11 @@ fn get_opt_check<T, F>(
     check: F,
 ) -> Result<Option<T>, Error>
 where
-    F: Fn(css::Value) -> Result<T, String>,
+    F: Fn(Value) -> Result<T, String>,
 {
-    let v = s.get(name.as_ref())?;
-    if v.is_null() {
-        Ok(None)
-    } else {
-        check(v)
-            .map_err(|e| Error::BadArgument(name.clone(), e))
-            .map(Some)
+    match s.get(name.as_ref())? {
+        Value::Null => Ok(None),
+        v => check(v).map_err(|e| Error::BadArgument(name, e)).map(Some),
     }
 }
 
@@ -342,7 +338,7 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
                 .1
                 .evaluate(scope, true)?
         )?,
-        css::Value::Color(Rgba::from_rgb(17, 0, 225).into(), None)
+        Value::Color(Rgba::from_rgb(17, 0, 225).into(), None)
     );
     Ok(())
 }
