@@ -12,7 +12,7 @@ project adheres to
 ### Breaking changes
 
 * The unit of a `Numeric` is now a `UnitSet` rather than a `Unit`.
-* `Error` has a new variant.
+* `Error` has new variants and a new field in `BadArguments`.
 * A sass::Value::Call now has a source position.
 
 ### Improvements

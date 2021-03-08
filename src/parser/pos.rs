@@ -46,6 +46,9 @@ impl SourcePos {
     ///
     /// Dislays the line containg the position, highlighting
     /// the position.
+    /// This is typically used when there is one source position
+    /// relevant for an error.
+    /// This includes [Self::show_files].
     pub fn show(&self, out: &mut impl Write) -> fmt::Result {
         self.show_impl(out, "", '^', "")?;
         self.show_files(out)
@@ -53,7 +56,10 @@ impl SourcePos {
     /// Show this source position.
     ///
     /// Dislays the line containg the position, highlighting
-    /// the position.
+    /// the position with a specific identifier.
+    /// This is typically used when there is more than one source
+    /// position relevant for an error.
+    /// This does not include [Self::show_files].
     pub fn show_detail(
         &self,
         out: &mut impl Write,
@@ -86,7 +92,7 @@ impl SourcePos {
             what = what,
         )
     }
-    /// ...
+    /// Show the file name of this pos and where it was imported from.
     pub fn show_files(&self, out: &mut impl Write) -> fmt::Result {
         let mut nextpos = Some(self);
         while let Some(pos) = nextpos {
