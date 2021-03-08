@@ -1,5 +1,5 @@
 use super::Span;
-use crate::sass::{InnerArgs, Name};
+use crate::sass::{FormalArgs, Name};
 use std::fmt::{self, Write};
 use std::str::from_utf8;
 
@@ -29,7 +29,7 @@ impl SourcePos {
 
     pub(crate) fn mock_function(
         name: &Name,
-        args: &InnerArgs,
+        args: &FormalArgs,
         module: &Name,
     ) -> Self {
         let args = args.to_string();

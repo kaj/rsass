@@ -1,6 +1,5 @@
 use crate::css;
 use crate::error::Error;
-use crate::parser::SourcePos;
 use crate::sass::{Name, Value};
 use crate::value::ListSeparator;
 use crate::ScopeRef;
@@ -11,24 +10,27 @@ use std::fmt;
 /// The arguments are ordered (so they have a position).
 /// Each argument also has a name and may have a default value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct FormalArgs(InnerArgs, SourcePos);
+pub struct FormalArgs(Vec<(Name, Option<Value>)>, bool);
 
 impl FormalArgs {
     /// Create a new FormalArgs.
     ///
-    /// The given arg-pairs each have a name and a default value.
-    /// It the default value is [`Null`](Value::Null), the argument
-    /// does not have a default.
-    ///
-    /// If `is_varargs` is true, all extra call arguments are bundled
-    /// as a List value for the last named argument.
-    pub fn new(args: InnerArgs, pos: SourcePos) -> Self {
-        FormalArgs(args, pos)
+    /// The given arg-pairs each have a name and an optional default value.
+    pub fn new(args: Vec<(Name, Option<Value>)>) -> FormalArgs {
+        FormalArgs(args, false)
+    }
+    /// Create a new set of varargs arguments
+    pub fn new_va(args: Vec<(Name, Option<Value>)>) -> FormalArgs {
+        FormalArgs(args, true)
+    }
+    /// Create an empty set of arguments.
+    pub fn none() -> FormalArgs {
+        FormalArgs(vec![], false)
     }
 
     /// Return true if this formalarg is varargs.
     pub fn is_varargs(&self) -> bool {
-        self.0 .1
+        self.1
     }
 
     /// Evaluate a set of call arguments for these formal arguments.
@@ -40,12 +42,12 @@ impl FormalArgs {
         args: &css::CallArgs,
     ) -> Result<ScopeRef, ArgsError> {
         let argscope = ScopeRef::sub(scope);
-        let n = self.0 .0.len();
+        let n = self.0.len();
         let m = args.len();
         if !self.is_varargs() && m > n {
             return Err(ArgsError::TooMany(n, m));
         }
-        for (i, &(ref name, ref default)) in self.0 .0.iter().enumerate() {
+        for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
             if let Some(value) = args
                 .iter()
                 .find(|&&(ref k, ref _v)| k.as_deref() == Some(name.as_ref()))
@@ -75,9 +77,7 @@ impl FormalArgs {
                                 .do_evaluate(argscope.clone(), true)
                                 .map_err(ArgsError::Eval)?;
                             argscope.define(name.clone(), &v)
-                        } else if i + 1 == self.0 .0.len()
-                            && self.is_varargs()
-                        {
+                        } else if i + 1 == self.0.len() && self.is_varargs() {
                             argscope.define(
                                 name.clone(),
                                 &css::Value::List(
@@ -95,32 +95,9 @@ impl FormalArgs {
         }
         Ok(argscope)
     }
-    /// Get the position of declaration for the function with these arguments.
-    pub fn decl_pos(&self) -> &SourcePos {
-        &self.1
-    }
 }
 
-/// ...
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct InnerArgs(Vec<(Name, Option<Value>)>, bool);
-
-impl InnerArgs {
-    /// Create a new set of arguments
-    pub fn new(args: Vec<(Name, Option<Value>)>) -> InnerArgs {
-        InnerArgs(args, false)
-    }
-    /// Create a new set of varargs arguments
-    pub fn new_va(args: Vec<(Name, Option<Value>)>) -> InnerArgs {
-        InnerArgs(args, true)
-    }
-    /// Create an empty set of arguments.
-    pub fn none() -> InnerArgs {
-        InnerArgs(vec![], false)
-    }
-}
-
-impl fmt::Display for InnerArgs {
+impl fmt::Display for FormalArgs {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         out.write_str("(")?;
         if let Some((first, rest)) = self.0.split_first() {

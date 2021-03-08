@@ -3,7 +3,7 @@ use crate::css::{BodyItem, Rule};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
-use crate::sass::{self, FormalArgs, Function, InnerArgs, Item, Mixin, Name};
+use crate::sass::{self, FormalArgs, Function, Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
 use crate::ScopeRef;
@@ -194,10 +194,15 @@ fn handle_item(
             let val = val.do_evaluate(scope.clone(), true)?;
             scope.set_variable(name.into(), val, *default, *global);
         }
-        Item::FunctionDeclaration(ref name, ref args, ref body) => {
+        Item::FunctionDeclaration(ref name, ref args, ref pos, ref body) => {
             scope.define_function(
                 name.into(),
-                Function::closure(args.clone(), scope.clone(), body.clone()),
+                Function::closure(
+                    args.clone(),
+                    pos.clone(),
+                    scope.clone(),
+                    body.clone(),
+                ),
             );
         }
         Item::Return(_) => {
@@ -231,11 +236,7 @@ fn handle_item(
                 subscope.define_mixin(
                     Name::from_static("%%BODY%%"),
                     Mixin {
-                        /// TODO: Figure out a proper position
-                        args: FormalArgs::new(
-                            InnerArgs::none(),
-                            crate::parser::code_span(b"").into(),
-                        ),
+                        args: FormalArgs::none(),
                         scope,
                         body: body.clone(),
                     },

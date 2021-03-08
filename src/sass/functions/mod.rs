@@ -28,6 +28,7 @@ type BuiltinFn = dyn Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Function {
     args: FormalArgs,
+    pos: SourcePos,
     body: FuncImpl,
 }
 
@@ -87,14 +88,13 @@ impl fmt::Debug for FuncImpl {
     }
 }
 
-use crate::sass::InnerArgs;
 /// ...
 pub trait Functions {
     /// ...
     fn builtin_fn(
         &mut self,
         name: Name,
-        args: InnerArgs,
+        args: FormalArgs,
         body: Arc<BuiltinFn>,
     );
 }
@@ -102,7 +102,7 @@ impl Functions for Scope {
     fn builtin_fn(
         &mut self,
         name: Name,
-        args: InnerArgs,
+        args: FormalArgs,
         body: Arc<BuiltinFn>,
     ) {
         let f = Function::builtin(&self.get_name(), &name, args, body);
@@ -123,12 +123,13 @@ impl Function {
     pub fn builtin(
         module: &Name,
         name: &Name,
-        args: sass::InnerArgs,
+        args: FormalArgs,
         body: Arc<BuiltinFn>,
     ) -> Self {
         let pos = SourcePos::mock_function(name, &args, module);
         Function {
-            args: FormalArgs::new(args, pos),
+            args,
+            pos,
             body: FuncImpl::Builtin(body),
         }
     }
@@ -139,11 +140,13 @@ impl Function {
     /// non-parameter names in the body.
     pub fn closure(
         args: FormalArgs,
+        pos: SourcePos,
         scope: ScopeRef,
         body: Vec<sass::Item>,
     ) -> Self {
         Function {
             args,
+            pos,
             body: FuncImpl::UserDefined(scope, body),
         }
     }
@@ -165,7 +168,7 @@ impl Function {
                         sass::ArgsError::Eval(e) => e,
                         ae => Error::BadArguments(
                             ae.to_string(),
-                            self.args.decl_pos().clone(),
+                            self.pos.clone(),
                         ),
                     })?;
                 s.define_module(cs, callscope);
@@ -210,7 +213,7 @@ impl Functions for FunctionMap {
     fn builtin_fn(
         &mut self,
         name: Name,
-        args: InnerArgs,
+        args: FormalArgs,
         body: Arc<BuiltinFn>,
     ) {
         let f = Function::builtin(&name!(), &name, args, body);

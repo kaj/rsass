@@ -32,7 +32,7 @@ use self::value::{
 };
 #[cfg(test)]
 use crate::sass::CallArgs;
-use crate::sass::{FormalArgs, InnerArgs, Item, Name, UseAs, Value};
+use crate::sass::{FormalArgs, Item, Name, UseAs, Value};
 use crate::selectors::Selectors;
 use crate::value::ListSeparator;
 #[cfg(test)]
@@ -506,31 +506,25 @@ fn while_loop2(input: Span) -> IResult<Span, Item> {
     Ok((input, Item::While(cond, body)))
 }
 
-/*
 #[cfg(test)] // TODO: Or remove this?
 fn mixin_declaration(input: Span) -> IResult<Span, Item> {
     preceded(tag("@mixin "), mixin_declaration2)(input)
 }
- */
 
 fn mixin_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(opt(formal_args), opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
-    let args = if let Some(args) = args {
-        FormalArgs::new(args, input.into())
-    } else {
-        FormalArgs::new(InnerArgs::none(), input.into())
-    };
+    let args = args.unwrap_or_else(|| FormalArgs::none());
     Ok((input, Item::MixinDeclaration(name, args, body)))
 }
 
 fn function_declaration2(input: Span) -> IResult<Span, Item> {
-    let (input, name) = terminated(name, opt_spacelike)(input)?;
-    let (input, args) = terminated(formal_args, opt_spacelike)(input)?;
-    let (input, body) = body_block(input)?;
-    let args = FormalArgs::new(args, input.into());
-    Ok((input, Item::FunctionDeclaration(name, args, body)))
+    let (end, name) = terminated(name, opt_spacelike)(input)?;
+    let (end, args) = formal_args(end)?;
+    let (rest, body) = preceded(opt_spacelike, body_block)(end)?;
+    let pos = SourcePos::from_to(input, end);
+    Ok((rest, Item::FunctionDeclaration(name, args, pos, body)))
 }
 
 fn return_stmt2(input: Span) -> IResult<Span, Item> {
@@ -715,14 +709,13 @@ fn test_mixin_call_named_args() {
     )
 }
 
-/*
 #[test]
 fn test_mixin_declaration_empty() {
     assert_eq!(
         check_parse!(mixin_declaration, b"@mixin foo() {}\n"),
         Item::MixinDeclaration(
             "foo".into(),
-            Default::default(),
+            FormalArgs::none(),
             Default::default()
         ),
     )
@@ -737,7 +730,7 @@ fn test_mixin_declaration() {
         ),
         Item::MixinDeclaration(
             "foo".into(),
-            FormalArgs::new(vec![("x".into(), Value::Null)], false),
+            FormalArgs::new(vec![("x".into(), None)]),
             vec![Item::Property(
                 "foo-bar".into(),
                 Value::List(
@@ -764,10 +757,10 @@ fn test_mixin_declaration_default_and_subrules() {
         ),
         Item::MixinDeclaration(
             "bar".into(),
-            FormalArgs::new(
-                vec![("a".into(), Value::Null), ("b".into(), string("flug"))],
-                false,
-            ),
+            FormalArgs::new(vec![
+                ("a".into(), None),
+                ("b".into(), Some(string("flug")))
+            ]),
             vec![
                 Item::Property("foo-bar".into(), string("baz")),
                 Item::Rule(
@@ -781,7 +774,6 @@ fn test_mixin_declaration_default_and_subrules() {
         ),
     )
 }
- */
 
 #[test]
 fn test_simple_property() {

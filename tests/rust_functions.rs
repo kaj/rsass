@@ -1,5 +1,5 @@
 use lazy_static::lazy_static;
-use rsass::sass::{Functions, InnerArgs, Name};
+use rsass::sass::{FormalArgs, Functions, Name};
 use rsass::value::{Number, Numeric, Rgba};
 use rsass::*;
 use std::sync::Arc;
@@ -34,12 +34,12 @@ lazy_static! {
         let mut scope = Scope::builtin_module("test");
         scope.builtin_fn(
             Name::from_static("get_answer"),
-            InnerArgs::none(),
+            FormalArgs::none(),
             Arc::new(|_| Ok(css::Value::scalar(42))),
         );
         scope.builtin_fn(
             Name::from_static("halfway"),
-            InnerArgs::new(vec![
+            FormalArgs::new(vec![
                 ("a".into(), None),
                 ("b".into(), Some(sass::Value::scalar(0))),
             ]),
