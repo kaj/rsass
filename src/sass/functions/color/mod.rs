@@ -1,9 +1,9 @@
-use super::{Error, FunctionMap};
+use super::{check, get_checked, get_opt_check, Error, FunctionMap};
 use crate::css::{CallArgs, Value};
+use crate::output::Format;
 use crate::sass::Name;
-use crate::value::{Color, Quotes, Rational};
+use crate::value::{Color, Number, Quotes, Rational, Unit};
 use crate::Scope;
-use num_traits::{One, Signed};
 mod hsl;
 mod hwb;
 mod other;
@@ -24,46 +24,57 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     other::expose(m, global);
 }
 
-fn get_color(s: &Scope, name: &str) -> Result<Color, Error> {
-    match s.get(name)? {
+fn get_color(s: &Scope, name: &'static str) -> Result<Color, Error> {
+    get_checked(s, Name::from_static(name), check_color)
+}
+fn check_color(v: Value) -> Result<Color, String> {
+    match v {
         Value::Color(col, _) => Ok(col),
-        value => {
-            Err(Error::bad_arg(Name::from(name), &value, "is not a color"))
+        v => {
+            Err(format!("{} is not a color", v.format(Format::introspect())))
         }
     }
 }
-fn get_rational(s: &Scope, name: &str) -> Result<Rational, Error> {
-    match s.get(name)? {
-        Value::Numeric(v, ..) => v.as_ratio(),
-        v => Err(Error::bad_arg(Name::from(name), &v, "is not a number")),
+
+fn check_pct(v: Value) -> Result<Number, String> {
+    let val = check::numeric(v)?;
+    val.as_unit_def(Unit::Percent)
+        .ok_or_else(|| format!("xyzzy"))
+}
+fn check_pct_rational_range(v: Value) -> Result<Rational, String> {
+    let val = check_pct(v)?;
+    if val < 0.into() || val > 100.into() {
+        Err(format!(
+            "Expected {} to be within 0 and 100",
+            val.format(Format::introspect())
+        ))
+    } else {
+        val.as_ratio().map_err(|e| e.to_string()).map(|v| v / 100)
     }
 }
-fn get_rational_pct(s: &Scope, name: &str) -> Result<Rational, Error> {
-    match s.get(name)? {
-        Value::Numeric(v, _) if v.unit.is_percent() => {
-            Ok(v.as_ratio()? / 100)
-        }
-        Value::Numeric(v, ..) => {
-            let v = v.as_ratio()?;
-            Ok(if v.abs() < Rational::one() {
-                v
-            } else {
-                v / 100
-            })
-        }
-        v => Err(Error::bad_arg(Name::from(name), &v, "is not a number")),
+fn check_rational(v: Value) -> Result<Rational, String> {
+    check::numeric(v)?.as_ratio().map_err(|e| e.to_string())
+}
+/// Get a rational number in the 0..1 range.
+fn check_rational_fract(v: Value) -> Result<Rational, String> {
+    let val = check::numeric(v)?
+        .as_unit_def(Unit::None)
+        .ok_or_else(|| format!("xyzzy"))?;
+    if val < 0.into() || val > 1.into() {
+        Err(format!(
+            "Expected {} to be within 0 and 1",
+            val.format(Format::introspect())
+        ))
+    } else {
+        val.as_ratio().map_err(|e| e.to_string())
     }
 }
 
 fn get_opt_rational(
     s: &Scope,
-    name: &str,
+    name: &'static str,
 ) -> Result<Option<Rational>, Error> {
-    match s.get(name)? {
-        Value::Numeric(v, ..) => Some(v.as_ratio()).transpose(),
-        Value::Null => Ok(None),
-        v => Err(Error::bad_arg(Name::from(name), &v, "is not a number")),
-    }
+    get_opt_check(s, Name::from_static(name), check_rational)
 }
 
 fn nospecial_value<F>(

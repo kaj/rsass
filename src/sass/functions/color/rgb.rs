@@ -1,13 +1,13 @@
 use super::{
-    get_color, get_rational_pct, make_call, nospecial_value, Error,
-    FunctionMap, Name,
+    check_pct_rational_range, get_checked, get_color, make_call,
+    nospecial_value, Error, FunctionMap, Name,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
-use crate::value::{ListSeparator, Number, Quotes, Rgba};
+use crate::value::{ListSeparator, Quotes, Rgba};
 use crate::Scope;
 use num_rational::Rational;
-use num_traits::{one, One, Signed, Zero};
+use num_traits::{one, One, Zero};
 
 fn do_rgba(fn_name: &str, s: &Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
@@ -168,7 +168,7 @@ pub fn register(f: &mut Scope) {
         let a = a.to_rgba();
         let b = get_color(s, "color2")?;
         let b = b.to_rgba();
-        let w = get_rational_pct(s, "weight")?;
+        let w = get_checked(s, name!(weight), check_pct_rational_range)?;
         let one = Rational::one();
 
         let w_a = {
@@ -198,16 +198,8 @@ pub fn register(f: &mut Scope) {
         |s| match s.get("color")? {
             Value::Color(rgba, _) => {
                 let rgba = rgba.to_rgba();
-                let w = get_rational_pct(s, "weight")?;
-                if w.is_negative() || w > one() {
-                    return Err(Error::BadArgument(
-                        name!(weight),
-                        format!(
-                            "Expected {} to be within 0 and 100",
-                            f64::from(Number::from(w)) * 100.0,
-                        ),
-                    ));
-                }
+                let w =
+                    get_checked(s, name!(weight), check_pct_rational_range)?;
                 let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
                 Ok(Rgba::new(
                     inv(rgba.red()),
@@ -218,12 +210,12 @@ pub fn register(f: &mut Scope) {
                 .into())
             }
             col => {
-                let w = get_rational_pct(s, "weight")?;
-
+                let w =
+                    get_checked(s, name!(weight), check_pct_rational_range)?;
                 if w == one() {
                     Ok(make_call("invert", vec![col]))
                 } else {
-                    Err(Error::error("Only one argument may be passed to the plain-CSS invert() function."))
+                    Err(Error::error("Only one argument may be passed to the plain-CSS invert() function"))
                 }
             }
         }

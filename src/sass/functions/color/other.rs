@@ -1,6 +1,6 @@
 use super::{
-    get_color, get_opt_rational, get_rational, make_call, Error, FunctionMap,
-    Name,
+    check_rational_fract, get_checked, get_color, get_opt_rational,
+    make_call, Error, FunctionMap, Name,
 };
 use crate::css::Value;
 use crate::value::{Hsla, Hwba, Rgba};
@@ -155,15 +155,15 @@ pub fn register(f: &mut Scope) {
         v => Ok(make_call("alpha", vec![v])),
     });
 
-    def!(f, _fade_in(color, amount), |s| {
+    def!(f, fade_in(color, amount), |s| {
         let mut col = get_color(s, "color")?;
-        let amount = get_rational(s, "amount")?;
+        let amount = get_checked(s, name!(amount), check_rational_fract)?;
         col.set_alpha(col.get_alpha() + amount);
         Ok(col.into())
     });
-    def!(f, _fade_out(color, amount), |s| {
+    def!(f, fade_out(color, amount), |s| {
         let mut col = get_color(s, "color")?;
-        let amount = get_rational(s, "amount")?;
+        let amount = get_checked(s, name!(amount), check_rational_fract)?;
         col.set_alpha(col.get_alpha() - amount);
         Ok(col.into())
     });
@@ -243,11 +243,11 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(opacity), name!(opacity)),
         (name!(change_color), name!(change)),
         (name!(ie_hex_str), name!(ie_hex_str)),
-        (name!(opacify), name!(_fade_in)),
-        (name!(fade_in), name!(_fade_in)),
+        (name!(opacify), name!(fade_in)),
+        (name!(fade_in), name!(fade_in)),
         (name!(scale_color), name!(scale)),
-        (name!(transparentize), name!(_fade_out)),
-        (name!(fade_out), name!(_fade_out)),
+        (name!(transparentize), name!(fade_out)),
+        (name!(fade_out), name!(fade_out)),
     ] {
         global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }

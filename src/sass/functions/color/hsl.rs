@@ -1,13 +1,13 @@
 use super::rgb::{preserve_call, values_from_list};
 use super::{
-    get_color, get_opt_rational, get_rational_pct, make_call,
-    nospecial_value, Error, FunctionMap, Name,
+    check_pct_rational_range, get_checked, get_color, get_opt_check,
+    get_opt_rational, make_call, nospecial_value, Error, FunctionMap, Name,
 };
 use crate::css::Value;
 use crate::value::{Hsla, Numeric, Unit};
 use crate::Scope;
 use num_rational::Rational;
-use num_traits::{one, One, Zero};
+use num_traits::{one, zero, One, Zero};
 
 fn do_hsla(fn_name: &str, s: &Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
@@ -75,7 +75,7 @@ pub fn register(f: &mut Scope) {
         ),
         |s| { do_hsla("hsla", s) }
     );
-    def!(f, _adjust_hue(color, degrees), |s| {
+    def!(f, adjust_hue(color, degrees), |s| {
         let col = get_color(s, "color")?;
         let adj = get_opt_rational(s, "degrees")?;
         if let Some(adj) = adj {
@@ -87,34 +87,29 @@ pub fn register(f: &mut Scope) {
     def!(f, complement(color), |s| {
         Ok(get_color(s, "color")?.rotate_hue(180.into()).into())
     });
-    def!(f, _saturate(color = b"null", amount = b"null"), |s| match (
-        s.get("color")?,
-        s.get("amount")?
-    ) {
-        (Value::Color(c, _), Value::Null) => Ok(Value::Color(c, None)),
-        (Value::Color(col, _), v @ Value::Numeric(..)) => {
-            let hsla = col.to_hsla();
-            let amount = to_rational2(&v, name!(amount))?;
-            Ok(Hsla::new(
-                hsla.hue(),
-                hsla.sat() + amount,
-                hsla.lum(),
-                hsla.alpha(),
-            )
-            .into())
-        }
-        (c, v) => Ok(make_call("saturate", vec![c, v])),
+    def!(f, saturate(color = b"null", amount = b"null"), |s| {
+        let col = match s.get("color")? {
+            Value::Color(col, _) => col,
+            c => return Ok(make_call("saturate", vec![c, s.get("amount")?])),
+        };
+        let hsla = col.to_hsla();
+        let sat = hsla.sat()
+            + get_opt_check(s, name!(amount), check_pct_rational_range)?
+                .unwrap_or_else(zero);
+        Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha()).into())
     });
-    def!(f, _lighten(color, amount), |s| {
+    def!(f, lighten(color, amount), |s| {
         let col = get_color(s, "color")?;
         let hsla = col.to_hsla();
-        let lum = hsla.lum() + get_rational_pct(s, "amount")?;
+        let lum = hsla.lum()
+            + get_checked(s, name!(amount), check_pct_rational_range)?;
         Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
     });
-    def!(f, _darken(color, amount), |s| {
+    def!(f, darken(color, amount), |s| {
         let col = get_color(s, "color")?;
         let hsla = col.to_hsla();
-        let lum = hsla.lum() - get_rational_pct(s, "amount")?;
+        let lum = hsla.lum()
+            - get_checked(s, name!(amount), check_pct_rational_range)?;
         Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
     });
     def!(f, hue(color), |s| {
@@ -128,10 +123,11 @@ pub fn register(f: &mut Scope) {
     def!(f, lightness(color), |s| {
         Ok(percentage(get_color(s, "color")?.to_hsla().lum()))
     });
-    def!(f, _desaturate(color, amount), |s| {
+    def!(f, desaturate(color, amount), |s| {
         let col = get_color(s, "color")?;
         let hsla = col.to_hsla();
-        let sat = hsla.sat() - get_rational_pct(s, "amount")?;
+        let sat = hsla.sat()
+            - get_checked(s, name!(amount), check_pct_rational_range)?;
         Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha()).into())
     });
     def!(f, grayscale(color), |args| match args.get("color")? {
@@ -150,15 +146,15 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     for (gname, lname) in &[
         (name!(hsl), name!(_hsl)),
         (name!(hsla), name!(_hsla)),
-        (name!(adjust_hue), name!(_adjust_hue)),
+        (name!(adjust_hue), name!(adjust_hue)),
         (name!(complement), name!(complement)),
-        (name!(darken), name!(_darken)),
-        (name!(desaturate), name!(_desaturate)),
+        (name!(darken), name!(darken)),
+        (name!(desaturate), name!(desaturate)),
         (name!(grayscale), name!(grayscale)),
         (name!(hue), name!(hue)),
-        (name!(lighten), name!(_lighten)),
+        (name!(lighten), name!(lighten)),
         (name!(lightness), name!(lightness)),
-        (name!(saturate), name!(_saturate)),
+        (name!(saturate), name!(saturate)),
         (name!(saturation), name!(saturation)),
     ] {
         global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
