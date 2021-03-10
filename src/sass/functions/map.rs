@@ -38,7 +38,7 @@ pub fn create_module() -> Scope {
         };
         Ok(val.unwrap_or(Value::Null))
     });
-    def_va!(f, has_key(map, key, keys = b"null"), |s| {
+    def_va!(f, has_key(map, key, keys), |s| {
         let map = get_map(s, name!(map))?;
         match s.get("keys")? {
             Value::List(keys, ..) => {
