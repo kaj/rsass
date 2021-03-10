@@ -110,14 +110,7 @@ pub fn create_module() -> Scope {
         }
         Ok(Value::Map(map))
     });
-    def!(f, set(map, key, value), |s| {
-        // TODO: handle keys... arguments before key for nested maps
-        let mut map = get_map(s, name!(map))?;
-        let key = s.get("key")?;
-        let value = s.get("value")?;
-        map.insert(key, value);
-        Ok(Value::Map(map))
-    });
+    def_va!(f, set(map, args), set);
     def!(f, values(map), |s| {
         let map = get_map(s, name!(map))?;
         Ok(Value::List(map.values(), ListSeparator::Comma, false))
@@ -128,6 +121,7 @@ pub fn create_module() -> Scope {
 pub fn expose(m: &Scope, global: &mut FunctionMap) {
     for (gname, lname) in &[
         (name!(map_get), name!(get)),
+        (name!(map_set), name!(set)),
         (name!(map_has_key), name!(has_key)),
         (name!(map_keys), name!(keys)),
         (name!(map_merge), name!(merge)),
@@ -144,6 +138,41 @@ fn get_map(s: &Scope, name: Name) -> Result<OrderMap<Value, Value>, Error> {
         // An empty map and an empty list looks the same
         Value::List(ref l, ..) if l.is_empty() => Ok(OrderMap::new()),
         v => Err(Error::bad_arg(name, &v, "is not a map")),
+    }
+}
+
+fn set(s: &Scope) -> Result<Value, Error> {
+    let map = get_map(s, name!(map))?;
+    let mut args = match s.get("args")? {
+        Value::List(v, ..) => v,
+        _ => return Err(Error::error("Expected $args to contain a value")),
+    };
+    if let Some(value) = args.pop() {
+        Ok(Value::Map(set_inner(map, &args, value)?))
+    } else {
+        Err(Error::error("Expected $args to contain a key"))
+    }
+}
+fn set_inner(
+    mut map: OrderMap<Value, Value>,
+    keys: &[Value],
+    value: Value,
+) -> Result<OrderMap<Value, Value>, Error> {
+    if let Some((key, rest)) = keys.split_first() {
+        if rest.is_empty() {
+            map.insert(key.clone(), value);
+            Ok(map)
+        } else {
+            let inner = match map.get(&key) {
+                Some(Value::Map(inner)) => inner.clone(),
+                _ => OrderMap::new(),
+            };
+            let inner = set_inner(inner, rest, value)?;
+            map.insert(key.clone(), Value::Map(inner));
+            Ok(map)
+        }
+    } else {
+        Err(Error::error("Expected $args to contain a value"))
     }
 }
 
