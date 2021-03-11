@@ -56,7 +56,7 @@ impl<'a> Display for Formatted<'a, Value> {
                                 ((brackets || introspect)
                                     && (sep == ListSeparator::Space
                                         || inner == ListSeparator::Comma))
-                                    && !(v.is_empty() && introspect)
+                                    && !(introspect && v.len() < 2)
                             }
                             _ => false,
                         };
@@ -71,7 +71,11 @@ impl<'a> Display for Formatted<'a, Value> {
                     && t.len() == 1
                     && sep == ListSeparator::Comma
                 {
-                    format!("{},", t[0])
+                    if self.format.is_introspection() && !brackets {
+                        format!("({},)", t[0])
+                    } else {
+                        format!("{},", t[0])
+                    }
                 } else {
                     t.join(match sep {
                         ListSeparator::Comma => {
@@ -132,11 +136,27 @@ impl<'a> Display for Formatted<'a, Value> {
                 out,
                 "({})",
                 map.iter()
-                    .map(|&(ref k, ref v)| format!(
-                        "{}: {}",
-                        k.format(self.format),
-                        v.format(self.format)
-                    ))
+                    .map(|&(ref k, ref v)| {
+                        let k = if self.format.is_introspection()
+                            && matches!(
+                                k,
+                                Value::List(_, ListSeparator::Comma, _)
+                            ) {
+                            format!("({})", k.format(self.format))
+                        } else {
+                            format!("{}", k.format(self.format))
+                        };
+                        let v = if self.format.is_introspection()
+                            && matches!(
+                                v,
+                                Value::List(_, ListSeparator::Comma, _)
+                            ) {
+                            format!("({})", v.format(self.format))
+                        } else {
+                            format!("{}", v.format(self.format))
+                        };
+                        format!("{}: {}", k, v)
+                    })
                     .collect::<Vec<_>>()
                     .join(", ")
             ),
