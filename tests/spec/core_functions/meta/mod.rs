@@ -1759,7 +1759,6 @@ mod inspect {
                 }
             }
             #[test]
-            #[ignore] // wrong result
             fn comma() {
                 assert_eq!(
                     rsass(
@@ -1828,7 +1827,6 @@ mod inspect {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
                 fn comma() {
                     assert_eq!(
                         rsass(
@@ -1872,7 +1870,6 @@ mod inspect {
                 #[allow(unused)]
                 use super::rsass;
                 #[test]
-                #[ignore] // wrong result
                 fn comma() {
                     assert_eq!(
                         rsass(

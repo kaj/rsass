@@ -7470,7 +7470,6 @@ fn issue_2330() {
 
 // From "sass-spec/spec/libsass-closed-issues/issue_2333.hrx"
 #[test]
-#[ignore] // wrong result
 fn issue_2333() {
     assert_eq!(
         rsass("test { test: inspect((a:1,b:(foo,bar),c:3)); }").unwrap(),
