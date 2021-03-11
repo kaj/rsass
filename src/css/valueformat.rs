@@ -132,34 +132,30 @@ impl<'a> Display for Formatted<'a, Value> {
                     Ok(())
                 }
             }
-            Value::Map(ref map) => write!(
-                out,
-                "({})",
-                map.iter()
-                    .map(|&(ref k, ref v)| {
-                        let k = if self.format.is_introspection()
-                            && matches!(
-                                k,
-                                Value::List(_, ListSeparator::Comma, _)
-                            ) {
-                            format!("({})", k.format(self.format))
-                        } else {
-                            format!("{}", k.format(self.format))
-                        };
-                        let v = if self.format.is_introspection()
-                            && matches!(
-                                v,
-                                Value::List(_, ListSeparator::Comma, _)
-                            ) {
-                            format!("({})", v.format(self.format))
-                        } else {
-                            format!("{}", v.format(self.format))
-                        };
-                        format!("{}: {}", k, v)
-                    })
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            ),
+            Value::Map(ref map) => {
+                out.write_char('(')?;
+                for (i, (k, v)) in map.iter().enumerate() {
+                    if i > 0 {
+                        out.write_str(", ")?;
+                    }
+                    if matches!(k, Value::List(_, ListSeparator::Comma, _))
+                        && self.format.is_introspection()
+                    {
+                        write!(out, "({})", k.format(self.format))?;
+                    } else {
+                        write!(out, "{}", k.format(self.format))?;
+                    }
+                    out.write_str(": ")?;
+                    if matches!(v, Value::List(_, ListSeparator::Comma, _))
+                        && self.format.is_introspection()
+                    {
+                        write!(out, "({})", v.format(self.format))?;
+                    } else {
+                        write!(out, "{}", v.format(self.format))?;
+                    }
+                }
+                out.write_char(')')
+            }
             Value::UnicodeRange(ref s) => write!(out, "{}", s),
             Value::Paren(ref v) => {
                 out.write_char('(')?;
