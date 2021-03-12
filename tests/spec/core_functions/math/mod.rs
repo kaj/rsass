@@ -2848,7 +2848,6 @@ mod unit {
         // Ignoring "test_type", error tests are not supported yet.
     }
     #[test]
-    #[ignore] // wrong result
     fn multiple_denominators() {
         assert_eq!(
             rsass(
@@ -2908,7 +2907,6 @@ mod unit {
         #[allow(unused)]
         use super::rsass;
         #[test]
-        #[ignore] // wrong result
         fn multiple() {
             assert_eq!(
                 rsass(

@@ -140,21 +140,52 @@ impl From<Unit> for UnitSet {
 
 impl Display for UnitSet {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        if let Some(((u, p), rest)) = &self.units.split_first() {
-            u.fmt(out)?;
-            if *p != 1 {
-                write!(out, "^{}", p)?;
+        let pos: Vec<_> =
+            self.units.iter().filter(|(_u, p)| *p > 0).collect();
+        let neg: Vec<_> =
+            self.units.iter().filter(|(_u, p)| *p < 0).collect();
+
+        if let Some(((u, p), rest)) = pos.split_first() {
+            write_one(out, u, *p)?;
+            for (u, p) in rest {
+                out.write_str("*")?;
+                write_one(out, u, p.abs())?;
             }
-            for (u, p) in *rest {
-                out.write_str(if *p > 0 { "*" } else { "/" })?;
-                u.fmt(out)?;
-                if p.abs() != 1 {
-                    write!(out, "^{}", p.abs())?;
+            if let Some(((u, p), rest)) = neg.split_first() {
+                out.write_str("/")?;
+                write_one(out, u, p.abs())?;
+                for (u, p) in rest {
+                    out.write_str("*")?;
+                    write_one(out, u, p.abs())?;
+                }
+            }
+        } else {
+            match neg.split_first() {
+                None => (),
+                Some(((u, p), [])) => {
+                    write_one(out, u, *p)?;
+                }
+                Some(((u, p), rest)) => {
+                    out.write_str("(")?;
+                    write_one(out, u, p.abs())?;
+                    for (u, p) in rest {
+                        out.write_str("*")?;
+                        write_one(out, u, p.abs())?;
+                    }
+                    out.write_str(")^-1")?;
                 }
             }
         }
         Ok(())
     }
+}
+
+fn write_one(out: &mut fmt::Formatter, u: &Unit, p: i8) -> fmt::Result {
+    u.fmt(out)?;
+    if p != 1 {
+        write!(out, "^{}", p)?;
+    }
+    Ok(())
 }
 
 impl fmt::Debug for UnitSet {
