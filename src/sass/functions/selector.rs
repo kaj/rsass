@@ -7,7 +7,7 @@ use crate::value::Quotes;
 use crate::{ParseError, Scope};
 
 pub fn create_module() -> Scope {
-    let f = Scope::new_global(Default::default());
+    let mut f = Scope::builtin_module("sass:selector");
     // TODO: is_superselector
     def_va!(f, append(selectors), |s| match s.get("selectors")? {
         Value::List(v, _, _) => Ok(Value::Literal(

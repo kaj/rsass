@@ -1,6 +1,10 @@
-use super::{get_color, make_call, Error, FunctionMap};
+use super::{
+    check, check_pct_rational_range, get_checked, get_color, make_call,
+    nospecial_value, Error, FunctionMap, Name,
+};
 use crate::css::{CallArgs, Value};
-use crate::value::{ListSeparator, Quotes, Rgba, Unit};
+use crate::output::Format;
+use crate::value::{ListSeparator, Quotes, Rgba};
 use crate::Scope;
 use num_rational::Rational;
 use num_traits::{one, One, Zero};
@@ -36,7 +40,7 @@ fn do_rgba(fn_name: &str, s: &Scope) -> Result<Value, Error> {
         red.clone()
     } {
         if let Some((r, g, b, a)) = values_from_list(&vec) {
-            Ok(rgba_from_values(&r, &g, &b, &a)
+            Ok(rgba_from_values(&r, &g, &b, &a)?
                 .unwrap_or_else(|| make_call(fn_name, vec![r, g, b, a])))
         } else {
             Ok(preserve_call(fn_name, vec, sep, bracketed))
@@ -44,7 +48,7 @@ fn do_rgba(fn_name: &str, s: &Scope) -> Result<Value, Error> {
     } else {
         let green = s.get("green")?;
         let blue = s.get("blue")?;
-        Ok(rgba_from_values(&red, &green, &blue, &a)
+        Ok(rgba_from_values(&red, &green, &blue, &a)?
             .unwrap_or_else(|| make_call(fn_name, vec![red, green, blue, a])))
     }
 }
@@ -79,16 +83,30 @@ fn rgba_from_values(
     g: &Value,
     b: &Value,
     a: &Value,
-) -> Option<Value> {
-    let r = to_int(r).ok()?;
-    let g = to_int(g).ok()?;
-    let b = to_int(b).ok()?;
+) -> Result<Option<Value>, Error> {
+    let r = to_channel(r, name!(red))?;
+    let g = to_channel(g, name!(green))?;
+    let b = to_channel(b, name!(blue))?;
     let a = if a.is_null() {
-        Rational::one()
+        Some(Rational::one())
     } else {
-        to_rational(a).ok()?
+        nospecial_value(a, name!(alpha), to_rational)?
     };
-    Some(Rgba::new(r, g, b, a).into())
+    if let (Some(r), Some(g), Some(b), Some(a)) = (r, g, b, a) {
+        Ok(Some(Rgba::new(r, g, b, a).into()))
+    } else {
+        Ok(None)
+    }
+}
+
+fn to_channel(v: &Value, name: Name) -> Result<Option<Rational>, Error> {
+    // Note: This null check is not quite correct, it should kind of
+    // belong in values_from_list.
+    if v.is_null() {
+        Ok(None)
+    } else {
+        nospecial_value(v, name, to_int)
+    }
 }
 
 pub fn preserve_call(
@@ -112,12 +130,30 @@ pub fn preserve_call(
 }
 
 pub fn register(f: &mut Scope) {
-    def!(f, _rgb(red, green, blue, alpha, color, channels), |s| {
-        do_rgba("rgb", s)
-    });
-    def!(f, _rgba(red, green, blue, alpha, color, channels), |s| {
-        do_rgba("rgba", s)
-    });
+    def!(
+        f,
+        _rgb(
+            red = b"null",
+            green = b"null",
+            blue = b"null",
+            alpha = b"null",
+            color = b"null",
+            channels = b"null"
+        ),
+        |s| { do_rgba("rgb", s) }
+    );
+    def!(
+        f,
+        _rgba(
+            red = b"null",
+            green = b"null",
+            blue = b"null",
+            alpha = b"null",
+            color = b"null",
+            channels = b"null"
+        ),
+        |s| { do_rgba("rgba", s) }
+    );
     def!(f, red(color), |s| {
         Ok(Value::scalar(get_color(s, "color")?.to_rgba().red()))
     });
@@ -127,71 +163,63 @@ pub fn register(f: &mut Scope) {
     def!(f, blue(color), |s| {
         Ok(Value::scalar(get_color(s, "color")?.to_rgba().blue()))
     });
-    def!(f, mix(color1, color2, weight = b"50%"), |s| match (
-        s.get("color1")?,
-        s.get("color2")?,
-        s.get("weight")?,
-    ) {
-        (Value::Color(a, _), Value::Color(b, _), w @ Value::Numeric(..)) => {
-            let a = a.to_rgba();
-            let b = b.to_rgba();
-            let w = to_rational(&w)?;
-            let one = Rational::one();
+    def!(f, mix(color1, color2, weight = b"50%"), |s| {
+        let a = get_color(s, "color1")?;
+        let a = a.to_rgba();
+        let b = get_color(s, "color2")?;
+        let b = b.to_rgba();
+        let w = get_checked(s, name!(weight), check_pct_rational_range)?;
+        let one = Rational::one();
 
-            let w_a = {
-                let wa = a.alpha() - b.alpha();
-                let w2 = w * 2 - 1;
-                let divis = w2 * wa + 1;
-                if divis.is_zero() {
-                    w
+        let w_a = {
+            let wa = a.alpha() - b.alpha();
+            let w2 = w * 2 - 1;
+            let divis = w2 * wa + 1;
+            if divis.is_zero() {
+                w
+            } else {
+                (((w2 + wa) / divis) + 1) / 2
+            }
+        };
+        let w_b = one - w_a;
+
+        let m_c = |c_a, c_b| w_a * c_a + w_b * c_b;
+        Ok(Rgba::new(
+            m_c(a.red(), b.red()),
+            m_c(a.green(), b.green()),
+            m_c(a.blue(), b.blue()),
+            a.alpha() * w + b.alpha() * (one - w),
+        )
+        .into())
+    });
+    def!(
+        f,
+        invert(color, weight = b"100%"),
+        |s| match s.get("color")? {
+            Value::Color(rgba, _) => {
+                let rgba = rgba.to_rgba();
+                let w =
+                    get_checked(s, name!(weight), check_pct_rational_range)?;
+                let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
+                Ok(Rgba::new(
+                    inv(rgba.red()),
+                    inv(rgba.green()),
+                    inv(rgba.blue()),
+                    rgba.alpha(),
+                )
+                .into())
+            }
+            col => {
+                let w =
+                    get_checked(s, name!(weight), check_pct_rational_range)?;
+                if w == one() {
+                    Ok(make_call("invert", vec![col]))
                 } else {
-                    (((w2 + wa) / divis) + 1) / 2
+                    Err(Error::error("Only one argument may be passed to the plain-CSS invert() function"))
                 }
-            };
-            let w_b = one - w_a;
-
-            let m_c = |c_a, c_b| w_a * c_a + w_b * c_b;
-            Ok(Rgba::new(
-                m_c(a.red(), b.red()),
-                m_c(a.green(), b.green()),
-                m_c(a.blue(), b.blue()),
-                a.alpha() * w + b.alpha() * (one - w),
-            )
-            .into())
+            }
         }
-        (color1, color2, weight) => Err(Error::badargs(
-            &["color", "color", "number"],
-            &[&color1, &color2, &weight],
-        )),
-    });
-    def!(f, invert(color, weight = b"100%"), |s| match (
-        s.get("color")?,
-        s.get("weight")?,
-    ) {
-        (Value::Color(rgba, _), Value::Numeric(w, ..)) => {
-            let rgba = rgba.to_rgba();
-            let w = w
-                .as_unit(Unit::None)
-                .ok_or_else(|| {
-                    Error::badarg("unitless or percent", &w.into())
-                })?
-                .as_ratio()?;
-            let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
-            Ok(Rgba::new(
-                inv(rgba.red()),
-                inv(rgba.green()),
-                inv(rgba.blue()),
-                rgba.alpha(),
-            )
-            .into())
-        }
-        (col, Value::Numeric(w, ..))
-            if w.as_unit(Unit::None) == Some(one()) =>
-        {
-            Ok(make_call("invert", vec![col]))
-        }
-        (value, weight) => Ok(make_call("invert", vec![value, weight])),
-    });
+    );
 }
 
 pub fn expose(m: &Scope, global: &mut FunctionMap) {
@@ -212,26 +240,28 @@ fn int_value(v: Rational) -> Value {
     Value::scalar(v.to_integer())
 }
 
-fn to_int(v: &Value) -> Result<Rational, Error> {
-    match v {
-        Value::Numeric(v, ..) => {
-            if v.unit.is_percent() {
-                Ok(v.as_ratio()? * 255 / 100)
-            } else {
-                v.as_ratio()
-            }
-        }
-        v => Err(Error::badarg("number", &v)),
+fn to_int(v: Value) -> Result<Rational, String> {
+    let v = check::numeric(v.clone())?;
+    let r = v.value.as_ratio().map_err(|e| e.to_string())?;
+    if v.unit.is_percent() {
+        Ok(r * 255 / 100)
+    } else {
+        Ok(r)
     }
 }
 
-fn to_rational(v: &Value) -> Result<Rational, Error> {
-    match v {
-        Value::Numeric(num, _) if num.unit.is_percent() => {
-            Ok(num.as_ratio()? / 100)
-        }
-        Value::Numeric(num, _) if num.unit.is_none() => num.as_ratio(),
-        v => Err(Error::badarg("number", &v)),
+fn to_rational(v: Value) -> Result<Rational, String> {
+    let num = check::numeric(v)?;
+    let r = num.value.as_ratio().map_err(|e| e.to_string())?;
+    if num.unit.is_percent() {
+        Ok(r / 100)
+    } else if num.unit.is_none() {
+        Ok(r)
+    } else {
+        Err(format!(
+            "Expected {} to have no units or \"%\"",
+            num.format(Format::introspect()),
+        ))
     }
 }
 

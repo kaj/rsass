@@ -1247,7 +1247,7 @@ fn media() {
 
 // From "sass-spec/spec/libsass/mixin.hrx"
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn mixin() {
     assert_eq!(
         rsass(
@@ -1590,42 +1590,8 @@ fn placeholder_nested() {
 mod precision;
 
 // From "sass-spec/spec/libsass/properties-in-media.hrx"
-#[test]
-#[ignore] // wrong result
-fn properties_in_media() {
-    assert_eq!(
-        rsass(
-            "@media only screen {\r\
-            \n    /* asd */\r\
-            \n  color: red;\r\
-            \n  color: gray;\r\
-            \n    /* asd */\r\
-            \n  color: green;\r\
-            \n  foo {\r\
-            \n    bar: baz;\r\
-            \n    qwe: baz;\r\
-            \n  }\r\
-            \n  color: blue;\r\
-            \n  color: yellow;\r\
-            \n}"
-        )
-        .unwrap(),
-        "@media only screen {\
-        \n  /* asd */\
-        \n  color: red;\
-        \n  color: gray;\
-        \n  /* asd */\
-        \n  color: green;\
-        \n  foo {\
-        \n    bar: baz;\
-        \n    qwe: baz;\
-        \n  }\
-        \n  color: blue;\
-        \n  color: yellow;\
-        \n}\
-        \n"
-    );
-}
+
+// Ignoring "properties_in_media", error tests are not supported yet.
 
 // From "sass-spec/spec/libsass/propsets.hrx"
 #[test]
@@ -1802,7 +1768,7 @@ mod selectors;
 
 // From "sass-spec/spec/libsass/test.hrx"
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn test() {
     assert_eq!(
         rsass(

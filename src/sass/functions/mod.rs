@@ -1,6 +1,9 @@
+use crate::css::{CallArgs, Value};
 use crate::error::Error;
-use crate::sass::Name;
-use crate::{css, sass, Scope, ScopeRef};
+use crate::parser::SourcePos;
+use crate::sass::{FormalArgs, Name};
+use crate::value::{Numeric, Quotes};
+use crate::{sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -17,7 +20,7 @@ mod meta;
 mod selector;
 mod string;
 
-type BuiltinFn = dyn Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
+type BuiltinFn = dyn Fn(&Scope) -> Result<Value, Error> + Send + Sync;
 
 /// A function that can be called from a sass value.
 ///
@@ -25,7 +28,8 @@ type BuiltinFn = dyn Fn(&Scope) -> Result<css::Value, Error> + Send + Sync;
 /// "user defined" (implemented in scss).
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Function {
-    args: sass::FormalArgs,
+    args: FormalArgs,
+    pos: SourcePos,
     body: FuncImpl,
 }
 
@@ -85,6 +89,26 @@ impl fmt::Debug for FuncImpl {
     }
 }
 
+trait Functions {
+    fn builtin_fn(
+        &mut self,
+        name: Name,
+        args: FormalArgs,
+        body: Arc<BuiltinFn>,
+    );
+}
+impl Functions for Scope {
+    fn builtin_fn(
+        &mut self,
+        name: Name,
+        args: FormalArgs,
+        body: Arc<BuiltinFn>,
+    ) {
+        let f = Function::builtin(&self.get_name(), &name, args, body);
+        self.define_function(name, f);
+    }
+}
+
 impl Function {
     /// Get a built-in function by name.
     pub fn get_builtin(name: &Name) -> Option<&'static Function> {
@@ -96,12 +120,15 @@ impl Function {
     /// Note: This does not expose the function in any scope, it just
     /// creates it.
     pub fn builtin(
-        args: Vec<(Name, sass::Value)>,
-        is_varargs: bool,
+        module: &Name,
+        name: &Name,
+        args: FormalArgs,
         body: Arc<BuiltinFn>,
     ) -> Self {
+        let pos = SourcePos::mock_function(name, &args, module);
         Function {
-            args: sass::FormalArgs::new(args, is_varargs),
+            args,
+            pos,
             body: FuncImpl::Builtin(body),
         }
     }
@@ -111,12 +138,14 @@ impl Function {
     /// The scope is where the function is defined, used to bind any
     /// non-parameter names in the body.
     pub fn closure(
-        args: sass::FormalArgs,
+        args: FormalArgs,
+        pos: SourcePos,
         scope: ScopeRef,
         body: Vec<sass::Item>,
     ) -> Self {
         Function {
             args,
+            pos,
             body: FuncImpl::UserDefined(scope, body),
         }
     }
@@ -126,12 +155,12 @@ impl Function {
     pub fn call(
         &self,
         callscope: ScopeRef,
-        args: &css::CallArgs,
-    ) -> Result<css::Value, Error> {
+        args: &CallArgs,
+    ) -> Result<Value, Error> {
         let cs = Name::from_static("%%CALLING_SCOPE%%");
         match self.body {
             FuncImpl::Builtin(ref body) => {
-                let s = self.args.eval(
+                let s = self.do_eval_args(
                     ScopeRef::new_global(callscope.get_format()),
                     args,
                 )?;
@@ -139,11 +168,22 @@ impl Function {
                 body(&s)
             }
             FuncImpl::UserDefined(ref defscope, ref body) => {
-                let s = self.args.eval(defscope.clone(), args)?;
+                let s = self.do_eval_args(defscope.clone(), args)?;
                 s.define_module(cs, callscope);
-                Ok(s.eval_body(body)?.unwrap_or(css::Value::Null))
+                Ok(s.eval_body(body)?.unwrap_or(Value::Null))
             }
         }
+    }
+
+    fn do_eval_args(
+        &self,
+        def: ScopeRef,
+        args: &CallArgs,
+    ) -> Result<ScopeRef, Error> {
+        self.args.eval(def, args).map_err(|e| match e {
+            sass::ArgsError::Eval(e) => e,
+            ae => Error::BadArguments(ae.to_string(), self.pos.clone()),
+        })
     }
 }
 
@@ -161,26 +201,34 @@ lazy_static! {
     };
 }
 
-/// Get a global module (e.g. `sass::math`) by name.
+/// Get a global module (e.g. `sass:math`) by name.
 pub fn get_global_module(name: &str) -> Option<ScopeRef> {
     MODULES.get(name).map(ScopeRef::Builtin)
 }
 
 type FunctionMap = BTreeMap<Name, Function>;
+impl Functions for FunctionMap {
+    fn builtin_fn(
+        &mut self,
+        name: Name,
+        args: FormalArgs,
+        body: Arc<BuiltinFn>,
+    ) {
+        let f = Function::builtin(&name!(), &name, args, body);
+        self.insert(name, f);
+    }
+}
 
 lazy_static! {
     static ref FUNCTIONS: FunctionMap = {
         let mut f = BTreeMap::new();
-        f.insert(
-            name!(if),
-            func!((condition, if_true, if_false), |s| {
-                if s.get("condition")?.is_true() {
-                    Ok(s.get("if_true")?)
-                } else {
-                    Ok(s.get("if_false")?)
-                }
-            }),
-        );
+        def!(f, if(condition, if_true, if_false), |s| {
+            if s.get("condition")?.is_true() {
+                Ok(s.get("if_true")?)
+            } else {
+                Ok(s.get("if_false")?)
+            }
+        });
         color::expose(MODULES.get("sass:color").unwrap(), &mut f);
         list::expose(MODULES.get("sass:list").unwrap(), &mut f);
         map::expose(MODULES.get("sass:map").unwrap(), &mut f);
@@ -190,6 +238,98 @@ lazy_static! {
         string::expose(MODULES.get("sass:string").unwrap(), &mut f);
         f
     };
+}
+
+// argument helpers for the actual functions
+
+trait CheckedArg<T> {
+    fn named(self, name: Name) -> Result<T, Error>;
+}
+impl<T> CheckedArg<T> for Result<T, String> {
+    fn named(self, name: Name) -> Result<T, Error> {
+        self.map_err(|e| Error::BadArgument(name, e))
+    }
+}
+
+fn get_checked<T, F>(s: &Scope, name: Name, check: F) -> Result<T, Error>
+where
+    F: Fn(Value) -> Result<T, String>,
+{
+    check(s.get(name.as_ref())?).named(name)
+}
+
+fn get_opt_check<T, F>(
+    s: &Scope,
+    name: Name,
+    check: F,
+) -> Result<Option<T>, Error>
+where
+    F: Fn(Value) -> Result<T, String>,
+{
+    match s.get(name.as_ref())? {
+        Value::Null => Ok(None),
+        v => check(v).named(name).map(Some),
+    }
+}
+
+fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, Error> {
+    get_checked(s, name.into(), check::numeric)
+}
+
+fn get_integer(s: &Scope, name: Name) -> Result<isize, Error> {
+    get_checked(s, name, check::unitless_int)
+}
+
+fn get_string(
+    s: &Scope,
+    name: &'static str,
+) -> Result<(String, Quotes), Error> {
+    get_checked(s, name.into(), check::string)
+}
+
+mod check {
+    use crate::css::Value;
+    use crate::output::Format;
+    use crate::value::{Number, Numeric, Quotes};
+
+    pub fn numeric(v: Value) -> Result<Numeric, String> {
+        v.numeric_value().map_err(|v| {
+            format!("{} is not a number", v.format(Format::introspect()))
+        })
+    }
+    pub fn int(v: Value) -> Result<isize, String> {
+        numeric(v)?.value.into_integer().map_err(|v| {
+            format!("{} is not an int", v.format(Format::introspect()))
+        })
+    }
+
+    pub fn unitless(v: Value) -> Result<Number, String> {
+        let val = numeric(v)?;
+        if val.is_no_unit() {
+            Ok(val.value)
+        } else {
+            Err(format!(
+                "Expected {} to have no units",
+                val.format(Format::introspect())
+            ))
+        }
+    }
+    pub fn unitless_int(v: Value) -> Result<isize, String> {
+        let v0 = unitless(v)?;
+        v0.into_integer().map_err(|v| {
+            format!("{} is not an int", v.format(Format::introspect()))
+        })
+    }
+
+    pub fn string(v: Value) -> Result<(String, Quotes), String> {
+        match v {
+            Value::Literal(s, q) => Ok((s, q)),
+            v => Err(format!(
+                "{} is not a string",
+                v.format(Format::introspect())
+            )),
+        }
+    }
 }
 
 #[test]
@@ -205,7 +345,7 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
                 .1
                 .evaluate(scope, true)?
         )?,
-        css::Value::Color(Rgba::from_rgb(17, 0, 225).into(), None)
+        Value::Color(Rgba::from_rgb(17, 0, 225).into(), None)
     );
     Ok(())
 }

@@ -3,31 +3,8 @@
 use super::rsass;
 
 // From "sass-spec/spec/non_conformant/sass/var-args/error.hrx"
-#[test]
-#[ignore] // wrong result
-fn error() {
-    assert_eq!(
-        rsass(
-            "@mixin bar($x, $y, $z) {\
-            \n  x: $x;\
-            \n  y: $y;\
-            \n  z: $z;\
-            \n}\
-            \n\
-            \ndiv {\
-            \n  @include bar(a, c d e...);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        "div {\
-        \n  x: a;\
-        \n  y: c;\
-        \n  z: d;\
-        \n}\
-        \n"
-    );
-}
+
+// Ignoring "error", error tests are not supported yet.
 
 // From "sass-spec/spec/non_conformant/sass/var-args/success.hrx"
 #[test]

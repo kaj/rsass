@@ -1,4 +1,4 @@
-use rsass::sass::{Function, Name};
+use rsass::sass::{FormalArgs, Function, Name};
 use rsass::value::{Number, Numeric, Rgba};
 use rsass::*;
 use std::sync::Arc;
@@ -32,8 +32,9 @@ fn simple_function() {
     scope.define_function(
         Name::from_static("get_answer"),
         Function::builtin(
-            vec![],
-            false,
+            &Name::from_static(""),
+            &Name::from_static("get_answer"),
+            FormalArgs::none(),
             Arc::new(|_| Ok(css::Value::scalar(42))),
         ),
     );
@@ -59,26 +60,25 @@ fn function_with_args() {
     scope.define_function(
         Name::from_static("halfway"),
         Function::builtin(
-            vec![
-                ("a".into(), sass::Value::Null),
-                ("b".into(), sass::Value::scalar(0)),
-            ],
-            false,
+            &Name::from_static(""),
+            &Name::from_static("halfway"),
+            FormalArgs::new(vec![
+                ("a".into(), None),
+                ("b".into(), Some(sass::Value::scalar(0))),
+            ]),
             Arc::new(|s| {
-                let a = s
-                    .get("a")?
-                    .numeric_value()
-                    .map_err(|v| Error::badarg("number", &v))?;
-                let b = s
-                    .get("b")?
-                    .numeric_value()
-                    .map_err(|v| Error::badarg("number", &v))?;
+                let a = s.get("a")?.numeric_value().map_err(|v| {
+                    Error::bad_arg("a".into(), &v, "is not a number")
+                })?;
+                let b = s.get("b")?.numeric_value().map_err(|v| {
+                    Error::bad_arg("b".into(), &v, "is not a number")
+                })?;
                 if a.unit == b.unit || b.unit.is_none() {
                     Ok(Numeric::new(avg(a.value, b.value), a.unit).into())
                 } else if a.unit.is_none() {
                     Ok(Numeric::new(avg(a.value, b.value), b.unit).into())
                 } else {
-                    Err(Error::BadArguments("Incopatible args".into()))
+                    Err(Error::error("Incopatible args"))
                 }
             }),
         ),

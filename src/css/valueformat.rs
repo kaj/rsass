@@ -44,6 +44,9 @@ impl<'a> Display for Formatted<'a, Value> {
             }
             Value::List(ref v, sep, brackets) => {
                 let introspect = self.format.is_introspection();
+                if introspect && v.is_empty() && !brackets {
+                    return out.write_str("()");
+                }
                 let t = v
                     .iter()
                     .filter(|v| !v.is_null() || introspect)
@@ -53,7 +56,7 @@ impl<'a> Display for Formatted<'a, Value> {
                                 ((brackets || introspect)
                                     && (sep == ListSeparator::Space
                                         || inner == ListSeparator::Comma))
-                                    || (v.is_empty() && introspect)
+                                    && !(introspect && v.len() < 2)
                             }
                             _ => false,
                         };
@@ -68,7 +71,11 @@ impl<'a> Display for Formatted<'a, Value> {
                     && t.len() == 1
                     && sep == ListSeparator::Comma
                 {
-                    format!("{},", t[0])
+                    if self.format.is_introspection() && !brackets {
+                        format!("({},)", t[0])
+                    } else {
+                        format!("{},", t[0])
+                    }
                 } else {
                     t.join(match sep {
                         ListSeparator::Comma => {
@@ -118,19 +125,37 @@ impl<'a> Display for Formatted<'a, Value> {
             }
             Value::True => write!(out, "true"),
             Value::False => write!(out, "false"),
-            Value::Null => Ok(()),
-            Value::Map(ref map) => write!(
-                out,
-                "({})",
-                map.iter()
-                    .map(|&(ref k, ref v)| format!(
-                        "{}: {}",
-                        k.format(self.format),
-                        v.format(self.format)
-                    ))
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            ),
+            Value::Null => {
+                if self.format.is_introspection() {
+                    out.write_str("null")
+                } else {
+                    Ok(())
+                }
+            }
+            Value::Map(ref map) => {
+                out.write_char('(')?;
+                for (i, (k, v)) in map.iter().enumerate() {
+                    if i > 0 {
+                        out.write_str(", ")?;
+                    }
+                    if matches!(k, Value::List(_, ListSeparator::Comma, _))
+                        && self.format.is_introspection()
+                    {
+                        write!(out, "({})", k.format(self.format))?;
+                    } else {
+                        write!(out, "{}", k.format(self.format))?;
+                    }
+                    out.write_str(": ")?;
+                    if matches!(v, Value::List(_, ListSeparator::Comma, _))
+                        && self.format.is_introspection()
+                    {
+                        write!(out, "({})", v.format(self.format))?;
+                    } else {
+                        write!(out, "{}", v.format(self.format))?;
+                    }
+                }
+                out.write_char(')')
+            }
             Value::UnicodeRange(ref s) => write!(out, "{}", s),
             Value::Paren(ref v) => {
                 out.write_char('(')?;

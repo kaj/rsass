@@ -404,14 +404,36 @@ impl Number {
     }
 
     /// Returns true if the number is an integer.
+    #[deprecated]
     pub fn is_integer(&self) -> bool {
-        match &self.value {
-            NumValue::Rational(s) => s.is_integer(),
-            NumValue::BigRational(s) => s.is_integer(),
-            NumValue::Float(s) => {
-                // TODO: A bigger epsilon might be needed?
-                (s.round() - s).abs() <= std::f64::EPSILON
+        self.clone().into_integer().is_ok()
+    }
+
+    /// Returns true if the number is an integer.
+    pub fn into_integer(self) -> Result<isize, Self> {
+        fn float_int(s: &f64) -> Option<isize> {
+            if (s.round() - s).abs() <= std::f64::EPSILON {
+                Some(s.round() as isize)
+            } else {
+                None
             }
+        }
+        match &self.value {
+            NumValue::Rational(s) => {
+                if s.is_integer() {
+                    Ok(s.to_integer())
+                } else {
+                    float_int(&ratio_to_float(s)).ok_or(self)
+                }
+            }
+            NumValue::BigRational(s) => {
+                if s.is_integer() {
+                    isize::try_from(s.to_integer()).map_err(|_| self)
+                } else {
+                    float_int(&ratio_to_float(s)).ok_or(self)
+                }
+            }
+            NumValue::Float(s) => float_int(s).ok_or(self),
         }
     }
 

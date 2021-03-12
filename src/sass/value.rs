@@ -1,6 +1,8 @@
 use crate::css;
 use crate::error::Error;
 use crate::ordermap::OrderMap;
+use crate::output::Format;
+use crate::parser::SourcePos;
 use crate::sass::{CallArgs, SassString};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Quotes, Rgba};
 use crate::ScopeRef;
@@ -12,7 +14,7 @@ pub enum Value {
     /// A special kind of escape.  Only really used for !important.
     Bang(String),
     /// A call has a name and an argument (which may be multi).
-    Call(SassString, CallArgs),
+    Call(SassString, CallArgs, SourcePos),
     /// A literal string value (quoted or not).
     Literal(SassString),
     /// A comma- or space separated list of values, with or without brackets.
@@ -123,11 +125,20 @@ impl Value {
                     .collect::<Result<Vec<_>, Error>>()?;
                 Ok(css::Value::List(items, s, b))
             }
-            Value::Call(ref name, ref args) => {
+            Value::Call(ref name, ref args, ref pos) => {
                 let args = args.evaluate(scope.clone(), true)?;
                 if let Some(name) = name.single_raw() {
                     if let Some(f) = scope.get_function(&name.into()) {
-                        f.call(scope.clone(), &args)
+                        f.call(scope.clone(), &args).map_err(|e| match e {
+                            Error::BadArguments(msg, decl) => {
+                                Error::BadCall(msg, pos.clone(), Some(decl))
+                            }
+                            e => Error::BadCall(
+                                e.to_string(),
+                                pos.clone(),
+                                None,
+                            ),
+                        })
                     } else {
                         Ok(css::Value::Call(name.to_string(), args))
                     }
@@ -211,6 +222,95 @@ impl Value {
             Value::UnicodeRange(ref s) => {
                 Ok(css::Value::UnicodeRange(s.clone()))
             }
+        }
+    }
+
+    /// Write a string representation of this value
+    ///
+    /// This does _not_ evaluate the value.
+    pub fn inspect(&self, out: &mut std::fmt::Formatter) -> std::fmt::Result {
+        use std::fmt::Display;
+        match *self {
+            Value::Bang(ref s) => write!(out, "!{}", s),
+            Value::Literal(ref s) => {
+                if let Some(s) = s.single_raw() {
+                    out.write_str(s)
+                } else {
+                    write!(out, "{:?}", s)
+                }
+            }
+            Value::Paren(ref v, _expl) => {
+                out.write_str("(")?;
+                v.inspect(out)?;
+                out.write_str(")")
+            }
+            Value::Color(ref rgba, ref name) => {
+                if let Some(name) = name {
+                    out.write_str(name)
+                } else {
+                    crate::value::Color::from(rgba.clone())
+                        .format(Format::introspect())
+                        .fmt(out)
+                }
+            }
+            Value::Variable(ref name) => {
+                write!(out, "${}", name)
+            }
+            Value::List(ref v, s, b) => {
+                if b {
+                    out.write_str("(")?;
+                }
+                if let Some((first, rest)) = v.split_first() {
+                    first.inspect(out)?;
+                    for i in rest {
+                        out.write_str(if s == ListSeparator::Space {
+                            " "
+                        } else {
+                            ", "
+                        })?;
+                        i.inspect(out)?;
+                    }
+                }
+                if b {
+                    out.write_str(")")?;
+                }
+                Ok(())
+            }
+            Value::Call(ref name, ref args, ref _pos) => {
+                write!(out, "{}({:?})", name, args)
+            }
+            Value::Numeric(ref num) => {
+                num.format(Format::introspect()).fmt(out)
+            }
+            Value::Map(ref m) => {
+                out.write_str("(")?;
+                if let Some(((k, v), rest)) = m.split_first() {
+                    k.inspect(out)?;
+                    out.write_str(": ")?;
+                    v.inspect(out)?;
+                    for (k, v) in rest {
+                        out.write_str(", ")?;
+                        k.inspect(out)?;
+                        out.write_str(": ")?;
+                        v.inspect(out)?;
+                    }
+                }
+                out.write_str(")")
+            }
+            Value::Null => out.write_str("null"),
+            Value::True => out.write_str("true"),
+            Value::False => out.write_str("false"),
+            Value::BinOp(ref a, _, ref op, _, ref b) => {
+                a.inspect(out)?;
+                op.fmt(out)?;
+                b.inspect(out)
+            }
+            Value::UnaryOp(ref op, ref v) => {
+                op.fmt(out)?;
+                v.inspect(out)
+            }
+            Value::HereSelector => out.write_str("&"),
+            Value::UnicodeRange(ref s) => s.fmt(out),
         }
     }
 }

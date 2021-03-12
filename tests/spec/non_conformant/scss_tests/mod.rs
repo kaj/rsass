@@ -1204,7 +1204,6 @@ fn t066_test_mixin_var_args_act_like_list() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/067_test_mixin_splat_args.hrx"
 #[test]
-#[ignore] // wrong result
 fn t067_test_mixin_splat_args() {
     assert_eq!(
         rsass(
@@ -1232,7 +1231,6 @@ fn t067_test_mixin_splat_args() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/068_test_mixin_splat_expression.hrx"
 #[test]
-#[ignore] // wrong result
 fn t068_test_mixin_splat_expression() {
     assert_eq!(
         rsass(
@@ -1259,7 +1257,6 @@ fn t068_test_mixin_splat_expression() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/069_test_mixin_splat_args_with_var_args.hrx"
 #[test]
-#[ignore] // wrong result
 fn t069_test_mixin_splat_args_with_var_args() {
     assert_eq!(
         rsass(
@@ -1283,7 +1280,6 @@ fn t069_test_mixin_splat_args_with_var_args() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/070_test_mixin_splat_args_with_var_args_and_normal_args.hrx"
 #[test]
-#[ignore] // wrong result
 fn t070_test_mixin_splat_args_with_var_args_and_normal_args() {
     assert_eq!(
         rsass(
@@ -1333,7 +1329,7 @@ fn t071_test_mixin_splat_args_with_var_args_preserves_separator() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/072_test_mixin_var_and_splat_args_pass_through_keywords.hrx"
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn t072_test_mixin_var_and_splat_args_pass_through_keywords() {
     assert_eq!(
         rsass(
@@ -1362,7 +1358,6 @@ fn t072_test_mixin_var_and_splat_args_pass_through_keywords() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/078_test_mixin_list_of_pairs_splat_treated_as_list.hrx"
 #[test]
-#[ignore] // wrong result
 fn t078_test_mixin_list_of_pairs_splat_treated_as_list() {
     assert_eq!(
         rsass(
@@ -1449,7 +1444,6 @@ fn t085_test_function_var_args_act_like_list() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/086_test_function_splat_args.hrx"
 #[test]
-#[ignore] // wrong result
 fn t086_test_function_splat_args() {
     assert_eq!(
         rsass(
@@ -1471,7 +1465,6 @@ fn t086_test_function_splat_args() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/087_test_function_splat_expression.hrx"
 #[test]
-#[ignore] // wrong result
 fn t087_test_function_splat_expression() {
     assert_eq!(
         rsass(
@@ -1492,7 +1485,6 @@ fn t087_test_function_splat_expression() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/088_test_function_splat_args_with_var_args.hrx"
 #[test]
-#[ignore] // wrong result
 fn t088_test_function_splat_args_with_var_args() {
     assert_eq!(
         rsass(
@@ -1514,7 +1506,6 @@ fn t088_test_function_splat_args_with_var_args() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/089_test_function_splat_args_with_var_args_and_normal_args.hrx"
 #[test]
-#[ignore] // wrong result
 fn t089_test_function_splat_args_with_var_args_and_normal_args() {
     assert_eq!(
         rsass(
@@ -1558,7 +1549,7 @@ fn t090_test_function_splat_args_with_var_args_preserves_separator() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/091_test_function_var_and_splat_args_pass_through_keywords.hrx"
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn t091_test_function_var_and_splat_args_pass_through_keywords() {
     assert_eq!(
         rsass(
@@ -1583,7 +1574,6 @@ fn t091_test_function_var_and_splat_args_pass_through_keywords() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/098_test_function_list_of_pairs_splat_treated_as_list.hrx"
 #[test]
-#[ignore] // wrong result
 fn t098_test_function_list_of_pairs_splat_treated_as_list() {
     assert_eq!(
         rsass(
@@ -1606,7 +1596,7 @@ fn t098_test_function_list_of_pairs_splat_treated_as_list() {
 
 // From "sass-spec/spec/non_conformant/scss-tests/103_test_function_var_args_passed_to_native.hrx"
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn t103_test_function_var_args_passed_to_native() {
     assert_eq!(
         rsass(

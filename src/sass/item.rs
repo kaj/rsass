@@ -46,7 +46,7 @@ pub enum Item {
     Content,
 
     /// An `@function` declaration.
-    FunctionDeclaration(String, FormalArgs, Vec<Item>),
+    FunctionDeclaration(String, FormalArgs, SourcePos, Vec<Item>),
     /// An `@return` statement in a function declaration.
     Return(Value),
 

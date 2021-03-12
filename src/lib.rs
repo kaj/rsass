@@ -65,7 +65,7 @@ pub use crate::file_context::{FileContext, FsFileContext};
 use crate::output::Format;
 pub use crate::parser::{
     parse_scss_data, parse_scss_file, parse_scss_path, parse_value_data,
-    ParseError, SourcePos,
+    ParseError, SourceName, SourcePos,
 };
 pub use crate::variablescope::{Scope, ScopeRef};
 

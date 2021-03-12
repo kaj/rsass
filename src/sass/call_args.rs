@@ -38,17 +38,18 @@ impl CallArgs {
         scope: ScopeRef,
         arithmetic: bool,
     ) -> Result<css::CallArgs, Error> {
-        if let [(None, Value::List(list, _, false))] = &self.0[..] {
-            if let [Value::Map(map), Value::Literal(mark)] = &list[..] {
-                if mark.is_unquoted() && mark.single_raw() == Some("...") {
-                    return Ok(css::CallArgs(
-                        map.iter()
-                            .map(|(k, v)| {
-                                Ok((
-                                    match k.do_evaluate(
-                                        scope.clone(),
-                                        arithmetic,
-                                    )? {
+        Ok(css::CallArgs(self.0.iter().fold(
+            Ok(vec![]),
+            |acc, (name, value)| {
+                let mut acc = acc?;
+                if let (None, Value::List(list, _, false)) = (name, value) {
+                    if list.len() == 2 && is_mark(&list[1]) {
+                        let splat =
+                            list[0].do_evaluate(scope.clone(), arithmetic)?;
+                        match splat {
+                            css::Value::Map(map) => {
+                                for (k, v) in map {
+                                    let k = match k {
                                         css::Value::Null => None,
                                         css::Value::Literal(s, _) => Some(s),
                                         x => {
@@ -56,27 +57,45 @@ impl CallArgs {
                                                 "string", &x,
                                             ))
                                         }
-                                    },
-                                    v.do_evaluate(scope.clone(), arithmetic)?,
-                                ))
-                            })
-                            .collect::<Result<Vec<_>, Error>>()?,
-                    ));
+                                    };
+                                    acc.push((k, v));
+                                }
+                                return Ok(acc);
+                            }
+                            css::Value::Null => (),
+                            css::Value::List(items, ..) => {
+                                for item in items {
+                                    acc.push((None, item));
+                                }
+                            }
+                            item => {
+                                acc.push((None, item));
+                            }
+                        }
+                        return Ok(acc);
+                    }
                 }
-            }
-        }
-        let args = self.0
-                .iter()
-                .map(|&(ref n, ref v)| -> Result<(Option<String>, css::Value), Error> {
-                    Ok((n.clone(), v.do_evaluate(scope.clone(), arithmetic)?))
-                })
-                .collect::<Result<Vec<_>, Error>>()?;
-        Ok(css::CallArgs(args))
+                acc.push((
+                    name.clone(),
+                    value.do_evaluate(scope.clone(), arithmetic)?,
+                ));
+                Ok(acc)
+            },
+        )?))
     }
 }
 
 impl Default for CallArgs {
     fn default() -> Self {
         CallArgs(vec![])
+    }
+}
+
+fn is_mark(v: &Value) -> bool {
+    match v {
+        Value::Literal(v, ..) => {
+            v.is_unquoted() && v.single_raw() == Some("...")
+        }
+        _ => false,
     }
 }

@@ -1,5 +1,7 @@
 use crate::css::Value;
-use crate::parser::ParseError;
+use crate::output::Format;
+use crate::parser::{ParseError, SourcePos};
+use crate::sass::Name;
 use crate::value::RangeError;
 use std::convert::From;
 use std::{fmt, io};
@@ -13,8 +15,14 @@ pub enum Error {
     ///
     /// This is (probably) an error writing output.
     IoError(io::Error),
+    /// A bad call to a builtin function, with call- and optionally
+    /// declaration position.
+    BadCall(String, SourcePos, Option<SourcePos>),
     BadValue(String),
-    BadArguments(String),
+    BadArgument(Name, String),
+    /// The pos here is the function declaration.
+    /// This error will be wrapped in a BadCall, giving the pos of the call.
+    BadArguments(String, SourcePos),
     /// A range error
     BadRange(RangeError),
     /// Error parsing sass data.
@@ -40,26 +48,23 @@ impl Error {
     /// Wrong kind of argument to a sass function.
     /// `expected` is a string describing what the parameter should
     /// have been, `actual` is the argument.
-    pub fn badarg(expected: &str, actual: &Value) -> Error {
-        Error::BadArguments(format!(
-            "expected {}, got {} = {}",
-            expected,
-            actual.type_name(),
-            actual.format(Default::default())
-        ))
-    }
-
-    /// Multiple-argument variant of `badarg`.
-    pub fn badargs(expected: &[&str], actual: &[&Value]) -> Error {
-        // TODO Better message!
-        Error::BadArguments(format!(
-            "expected {:?}, got {:?}",
-            expected, actual
-        ))
+    pub fn bad_arg(
+        name: Name,
+        actual: &Value,
+        problem: &'static str,
+    ) -> Error {
+        Error::BadArgument(
+            name,
+            format!("{} {}", actual.format(Format::introspect()), problem),
+        )
     }
 
     pub fn undefined_variable(name: &str) -> Self {
         Error::UndefinedVariable(name.to_string())
+    }
+
+    pub fn error<T: AsRef<str>>(msg: T) -> Self {
+        Error::S(format!("Error: {}.", msg.as_ref()))
     }
 }
 
@@ -73,7 +78,22 @@ impl fmt::Display for Error {
             Error::UndefinedVariable(ref name) => {
                 write!(out, "Undefined variable: \"${}\"", name)
             }
+            Error::BadArgument(ref name, ref problem) => {
+                write!(out, "Error: ${}: {}.", name, problem)
+            }
             Error::ParseError(ref err) => err.fmt(out),
+            Error::BadCall(ref msg, ref callpos, ref declpos) => {
+                msg.fmt(out)?;
+                writeln!(out)?;
+                if let Some(declpos) = declpos {
+                    callpos.show_detail(out, '^', " invocation")?;
+                    writeln!(out)?;
+                    declpos.show_detail(out, '=', " declaration")?;
+                    callpos.show_files(out)
+                } else {
+                    callpos.show(out)
+                }
+            }
             Error::BadRange(ref err) => err.fmt(out),
             Error::BadValue(ref err) => err.fmt(out),
             // fallback

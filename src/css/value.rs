@@ -58,6 +58,7 @@ impl Value {
         match *self {
             Value::Color(..) => "color",
             Value::Literal(..) => "string",
+            Value::Map(..) => "map",
             Value::Numeric(..) => "number",
             Value::List(..) => "list",
             Value::Function(..) => "function",
@@ -125,12 +126,14 @@ impl Value {
     }
 
     /// Check that this value is an integer.
+    #[deprecated]
     pub fn integer_value(&self) -> Result<isize, Error> {
         match self {
-            &Value::Numeric(ref num, ..) if num.value.is_integer() => num
+            &Value::Numeric(ref num, ..) => num
                 .value
-                .to_integer()
-                .ok_or_else(|| Error::bad_value("an integer", self)),
+                .clone()
+                .into_integer()
+                .map_err(|_| Error::bad_value("an integer", self)),
             v => Err(Error::bad_value("a number", v)),
         }
     }

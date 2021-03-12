@@ -1,18 +1,17 @@
-use super::{Error, FunctionMap};
+use super::{get_integer, get_string, Error, FunctionMap};
 use crate::css::Value;
-use crate::value::{Quotes, Unit};
+use crate::value::Quotes;
 use crate::Scope;
 use lazy_static::lazy_static;
 use std::cmp::max;
 use std::sync::Mutex;
 
 pub fn create_module() -> Scope {
-    let f = Scope::new_global(Default::default());
+    let mut f = Scope::builtin_module("sass:string");
     def!(f, quote(string), |s| {
-        let v = match s.get("string")? {
-            Value::Literal(v, Quotes::None) => v.replace('\\', "\\\\"),
-            Value::Literal(v, _) => v,
-            v => format!("{}", v.format(Default::default())),
+        let v = match get_string(s, "string")? {
+            (v, Quotes::None) => v.replace('\\', "\\\\"),
+            (v, _) => v,
         };
         if v.contains('"') && !v.contains('\'') {
             Ok(Value::Literal(v, Quotes::Single))
@@ -20,61 +19,46 @@ pub fn create_module() -> Scope {
             Ok(Value::Literal(v, Quotes::Double))
         }
     });
-    def!(f, index(string, substring), |s| match (
-        s.get("string")?,
-        s.get("substring")?,
-    ) {
-        (Value::Literal(s, _), Value::Literal(sub, _)) => {
-            Ok(match s.find(&sub) {
-                Some(o) => Value::scalar(1 + s[0..o].chars().count()),
-                None => Value::Null,
-            })
-        }
-        (full, sub) => {
-            Err(Error::badargs(&["string", "string"], &[&full, &sub]))
-        }
+    def!(f, index(string, substring), |s| {
+        let (string, _) = get_string(s, "string")?;
+        let (sub, _) = get_string(s, "substring")?;
+        Ok(match string.find(&sub) {
+            Some(o) => Value::scalar(1 + string[0..o].chars().count()),
+            None => Value::Null,
+        })
     });
-    def!(f, insert(string, insert, index), |s| match (
-        s.get("string")?,
-        s.get("insert")?,
-    ) {
-        (Value::Literal(st, q), Value::Literal(insert, _)) => {
-            let index = get_integer(s, "index")?;
-            let i = if index.is_negative() {
-                let len = st.chars().count() as isize;
-                max(len + 1 + index, 0) as usize
-            } else if index.is_positive() {
-                index as usize - 1
-            } else {
-                0
-            };
-            let mut s = st.chars();
-            Ok(Value::Literal(
-                format!(
-                    "{}{}{}",
-                    s.by_ref().take(i).collect::<String>(),
-                    insert,
-                    s.collect::<String>()
-                ),
-                q,
-            ))
-        }
-        (st, i) => Err(Error::badargs(
-            &["string", "string", "number"],
-            &[&st, &i, &s.get("index")?],
-        )),
+    def!(f, insert(string, insert, index), |s| {
+        let (string, q) = get_string(s, "string")?;
+        let (insert, _) = get_string(s, "insert")?;
+        let index = get_integer(s, name!(index))?;
+
+        let i = if index.is_negative() {
+            let len = string.chars().count() as isize;
+            max(len + 1 + index, 0) as usize
+        } else if index.is_positive() {
+            index as usize - 1
+        } else {
+            0
+        };
+        let mut s = string.chars();
+        Ok(Value::Literal(
+            format!(
+                "{}{}{}",
+                s.by_ref().take(i).collect::<String>(),
+                insert,
+                s.collect::<String>()
+            ),
+            q,
+        ))
     });
-    def!(f, length(string), |s| match &s.get("string")? {
-        &Value::Literal(ref v, _) => Ok(Value::scalar(v.chars().count())),
-        v => Err(Error::badarg("string", v)),
+    def!(f, length(string), |s| {
+        let (v, _q) = get_string(s, "string")?;
+        Ok(Value::scalar(v.chars().count()))
     });
     def!(f, slice(string, start_at, end_at = b"-1"), |s| {
-        let (st, q) = match s.get("string")? {
-            Value::Literal(st, q) => (st, q),
-            v => return Err(Error::badarg("string", &v)),
-        };
-        let start_at = index_to_rust(get_integer(s, "start_at")?, &st);
-        let end_at = index_to_rust_end(get_integer(s, "end_at")?, &st);
+        let (st, q) = get_string(s, "string")?;
+        let start_at = index_to_rust(get_integer(s, name!(start_at))?, &st);
+        let end_at = index_to_rust_end(get_integer(s, name!(end_at))?, &st);
         let c = st.chars();
         if start_at <= end_at {
             Ok(Value::Literal(
@@ -85,30 +69,22 @@ pub fn create_module() -> Scope {
             Err(Error::S(format!("Bad indexes: {}..{}", start_at, end_at)))
         }
     });
-    def!(f, to_upper_case(string), |s| match s.get("string")? {
-        Value::Literal(v, q) => Ok(Value::Literal(v.to_ascii_uppercase(), q)),
-        v => Ok(v),
+    def!(f, to_upper_case(string), |s| {
+        let (v, q) = get_string(s, "string")?;
+        Ok(Value::Literal(v.to_ascii_uppercase(), q))
     });
-    def!(
-        f,
-        to_upper_case_unicode(string),
-        |s| match s.get("string")? {
-            Value::Literal(v, q) => Ok(Value::Literal(v.to_uppercase(), q)),
-            v => Ok(v),
-        }
-    );
-    def!(f, to_lower_case(string), |s| match s.get("string")? {
-        Value::Literal(v, q) => Ok(Value::Literal(v.to_ascii_lowercase(), q)),
-        v => Ok(v),
+    def!(f, to_upper_case_unicode(string), |s| {
+        let (v, q) = get_string(s, "string")?;
+        Ok(Value::Literal(v.to_uppercase(), q))
     });
-    def!(
-        f,
-        to_lower_case_unicode(string),
-        |s| match s.get("string")? {
-            Value::Literal(v, q) => Ok(Value::Literal(v.to_lowercase(), q)),
-            v => Ok(v),
-        }
-    );
+    def!(f, to_lower_case(string), |s| {
+        let (v, q) = get_string(s, "string")?;
+        Ok(Value::Literal(v.to_ascii_lowercase(), q))
+    });
+    def!(f, to_lower_case_unicode(string), |s| {
+        let (v, q) = get_string(s, "string")?;
+        Ok(Value::Literal(v.to_lowercase(), q))
+    });
     def!(f, unique_id(), |_s| {
         lazy_static! {
             static ref CALL_ID: Mutex<u64> =
@@ -123,18 +99,9 @@ pub fn create_module() -> Scope {
             Quotes::None,
         ))
     });
-    def!(f, unquote(string), |s| match s.get("string")? {
-        Value::Literal(v, Quotes::None) =>
-            Ok(Value::Literal(v, Quotes::None)),
-        Value::Literal(v, _) =>
-            Ok(Value::Literal(v.replace("\\\\", "\\"), Quotes::None)),
-        v => {
-            dep_warn!(
-                "Passing {}, a non-string value, to unquote()",
-                v.format(Default::default())
-            );
-            Ok(v)
-        }
+    def!(f, unquote(string), |s| match get_string(s, "string")? {
+        (v, Quotes::None) => Ok(Value::Literal(v, Quotes::None)),
+        (v, _) => Ok(Value::Literal(v.replace("\\\\", "\\"), Quotes::None)),
     });
 
     f
@@ -155,34 +122,12 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
     }
     // And special one that isn't part of the string module
-    global.insert(
-        name!(url),
-        func!((string), |s| {
-            Ok(Value::Literal(
-                format!(
-                    "url({})",
-                    s.get("string")?.format(Default::default())
-                ),
-                Quotes::None,
-            ))
-        }),
-    );
-}
-
-fn get_integer(s: &Scope, name: &str) -> Result<isize, Error> {
-    let v0 = s.get(name)?;
-    let v = v0
-        .clone()
-        .numeric_value()
-        .map_err(|v| Error::badarg("number", &v))?
-        .as_unit(Unit::None)
-        .ok_or_else(|| Error::S("bad unit".into()))?;
-    if v.is_integer() {
-        v.to_integer()
-            .ok_or_else(|| Error::S(format!("{:?} is not an int", v)))
-    } else {
-        Err(Error::badarg("integer", &v0))
-    }
+    def!(global, url(string = b"null"), |s| {
+        Ok(Value::Literal(
+            format!("url({})", s.get("string")?.format(Default::default())),
+            Quotes::None,
+        ))
+    });
 }
 
 /// Convert index from sass (rational number, first is one) to rust

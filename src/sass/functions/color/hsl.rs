@@ -1,10 +1,14 @@
 use super::rgb::{preserve_call, values_from_list};
-use super::{get_color, make_call, Error, FunctionMap};
+use super::{
+    check, check_pct_rational_range, get_checked, get_color, get_opt_check,
+    make_call, nospecial_value, to_rational_percent, Error, FunctionMap,
+};
 use crate::css::Value;
+use crate::output::Format;
 use crate::value::{Hsla, Numeric, Unit};
 use crate::Scope;
 use num_rational::Rational;
-use num_traits::{one, One, Zero};
+use num_traits::{zero, One, Zero};
 
 fn do_hsla(fn_name: &str, s: &Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
@@ -15,7 +19,7 @@ fn do_hsla(fn_name: &str, s: &Scope) -> Result<Value, Error> {
         hue.clone()
     } {
         if let Some((h, s, v, a)) = values_from_list(&vec) {
-            Ok(hsla_from_values(&h, &s, &v, &a)
+            Ok(hsla_from_values(&h, &s, &v, &a)?
                 .unwrap_or_else(|| make_call(fn_name, vec![h, s, v, a])))
         } else {
             Ok(preserve_call(fn_name, vec, sep, bracketed))
@@ -23,7 +27,7 @@ fn do_hsla(fn_name: &str, s: &Scope) -> Result<Value, Error> {
     } else {
         let sat = s.get("saturation")?;
         let lig = s.get("lightness")?;
-        Ok(hsla_from_values(&hue, &sat, &lig, &a)
+        Ok(hsla_from_values(&hue, &sat, &lig, &a)?
             .unwrap_or_else(|| make_call(fn_name, vec![hue, sat, lig, a])))
     }
 }
@@ -33,65 +37,80 @@ fn hsla_from_values(
     s: &Value,
     l: &Value,
     a: &Value,
-) -> Option<Value> {
-    let h = to_rational(h).ok()?;
-    let s = to_rational_percent(s).ok()?;
-    let l = to_rational_percent(l).ok()?;
+) -> Result<Option<Value>, Error> {
+    let h = nospecial_value(h, name!(hue), to_rational)?;
+    let s = nospecial_value(s, name!(saturation), to_rational_percent)?;
+    let l = nospecial_value(l, name!(lightness), to_rational_percent)?;
     let a = if a.is_null() {
-        Rational::one()
+        Some(Rational::one())
     } else {
-        to_rational2(a).ok()?
+        nospecial_value(a, name!(alpha), to_rational2)?
     };
-    Some(Hsla::new(h, s, l, a).into())
+    if let (Some(h), Some(s), Some(l), Some(a)) = (h, s, l, a) {
+        Ok(Some(Hsla::new(h, s, l, a).into()))
+    } else {
+        Ok(None)
+    }
 }
 
 pub fn register(f: &mut Scope) {
-    def!(f, _hsl(hue, saturation, lightness, alpha, channels), |s| {
-        do_hsla("hsl", s)
-    });
-    def!(f, _hsla(hue, saturation, lightness, alpha, channels), |s| {
-        do_hsla("hsla", s)
-    });
-    def!(f, _adjust_hue(color, degrees), |s| match (
-        s.get("color")?,
-        s.get("degrees")?,
-    ) {
-        (c @ Value::Color(..), Value::Null) => Ok(c),
-        (Value::Color(col, _), Value::Numeric(v, ..)) => {
-            Ok(col.rotate_hue(v.as_ratio()?).into())
+    def!(
+        f,
+        _hsl(
+            hue = b"null",
+            saturation = b"null",
+            lightness = b"null",
+            alpha = b"null",
+            channels = b"()"
+        ),
+        |s| { do_hsla("hsl", s) }
+    );
+    def!(
+        f,
+        _hsla(
+            hue = b"null",
+            saturation = b"null",
+            lightness = b"null",
+            alpha = b"null",
+            channels = b"null"
+        ),
+        |s| { do_hsla("hsla", s) }
+    );
+    def!(f, adjust_hue(color, degrees), |s| {
+        let col = get_color(s, "color")?;
+        let adj = get_opt_check(s, name!(degrees), to_rational)?;
+        if let Some(adj) = adj {
+            Ok(col.rotate_hue(adj).into())
+        } else {
+            Ok(col.into())
         }
-        (c, v) => Err(Error::badargs(&["color", "number"], &[&c, &v])),
     });
     def!(f, complement(color), |s| {
         Ok(get_color(s, "color")?.rotate_hue(180.into()).into())
     });
-    def!(f, _saturate(color, amount), |s| match (
-        s.get("color")?,
-        s.get("amount")?
-    ) {
-        (Value::Color(c, _), Value::Null) => Ok(Value::Color(c, None)),
-        (Value::Color(col, _), v @ Value::Numeric(..)) => {
-            let hsla = col.to_hsla();
-            Ok(Hsla::new(
-                hsla.hue(),
-                hsla.sat() + to_rational2(&v)?,
-                hsla.lum(),
-                hsla.alpha(),
-            )
-            .into())
-        }
-        (c, v) => Ok(make_call("saturate", vec![c, v])),
+    def!(f, saturate(color = b"null", amount = b"null"), |s| {
+        let col = match s.get("color")? {
+            Value::Color(col, _) => col,
+            c => return Ok(make_call("saturate", vec![c, s.get("amount")?])),
+        };
+        let hsla = col.to_hsla();
+        let sat = hsla.sat()
+            + get_opt_check(s, name!(amount), check_pct_rational_range)?
+                .unwrap_or_else(zero);
+        Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha()).into())
     });
-    def!(f, _lighten(color, amount), |s| {
+    def!(f, lighten(color, amount), |s| {
         let col = get_color(s, "color")?;
         let hsla = col.to_hsla();
-        let lum = hsla.lum() + to_rational_percent(&s.get("amount")?)?;
+        let lum = hsla.lum()
+            + get_checked(s, name!(amount), check_pct_rational_range)?;
         Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
     });
-    def!(f, _darken(color, amount), |s| {
+    def!(f, darken(color, amount), |s| {
         let col = get_color(s, "color")?;
         let hsla = col.to_hsla();
-        let lum = hsla.lum() - to_rational_percent(&s.get("amount")?)?;
+        let lum = hsla.lum()
+            - get_checked(s, name!(amount), check_pct_rational_range)?;
         Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
     });
     def!(f, hue(color), |s| {
@@ -105,10 +124,11 @@ pub fn register(f: &mut Scope) {
     def!(f, lightness(color), |s| {
         Ok(percentage(get_color(s, "color")?.to_hsla().lum()))
     });
-    def!(f, _desaturate(color, amount), |s| {
+    def!(f, desaturate(color, amount), |s| {
         let col = get_color(s, "color")?;
         let hsla = col.to_hsla();
-        let sat = hsla.sat() - to_rational_percent(&s.get("amount")?)?;
+        let sat = hsla.sat()
+            - get_checked(s, name!(amount), check_pct_rational_range)?;
         Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha()).into())
     });
     def!(f, grayscale(color), |args| match args.get("color")? {
@@ -127,15 +147,15 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     for (gname, lname) in &[
         (name!(hsl), name!(_hsl)),
         (name!(hsla), name!(_hsla)),
-        (name!(adjust_hue), name!(_adjust_hue)),
+        (name!(adjust_hue), name!(adjust_hue)),
         (name!(complement), name!(complement)),
-        (name!(darken), name!(_darken)),
-        (name!(desaturate), name!(_desaturate)),
+        (name!(darken), name!(darken)),
+        (name!(desaturate), name!(desaturate)),
         (name!(grayscale), name!(grayscale)),
         (name!(hue), name!(hue)),
-        (name!(lighten), name!(_lighten)),
+        (name!(lighten), name!(lighten)),
         (name!(lightness), name!(lightness)),
-        (name!(saturate), name!(_saturate)),
+        (name!(saturate), name!(saturate)),
         (name!(saturation), name!(saturation)),
     ] {
         global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
@@ -146,41 +166,28 @@ pub fn percentage(v: Rational) -> Value {
     Numeric::new(v * 100, Unit::Percent).into()
 }
 
-fn to_rational(v: &Value) -> Result<Rational, Error> {
-    match v {
-        Value::Numeric(v, ..) => v.as_ratio(),
-        v => Err(Error::badarg("number", v)),
-    }
+fn to_rational(v: Value) -> Result<Rational, String> {
+    check::numeric(v.clone())
+        .and_then(|v| v.as_ratio().map_err(|e| e.to_string()))
 }
 
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-pub fn to_rational_percent(v: &Value) -> Result<Rational, Error> {
+pub fn to_rational2(v: Value) -> Result<Rational, String> {
     match v {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, ..) => {
-            if v.unit.is_percent() || v.value > one() {
-                Ok(v.as_ratio()? / 100)
-            } else {
-                Ok(v.as_ratio()?)
-            }
-        }
-        v => Err(Error::badarg("number", &v)),
-    }
-}
-/// Gets a percentage as a fraction 0 .. 1.
-/// If v is not a percentage, keep it as it is.
-pub fn to_rational2(v: &Value) -> Result<Rational, Error> {
-    match v {
-        Value::Null => Ok(Rational::zero()),
-        Value::Numeric(v, ..) => {
+            let r = v.value.as_ratio().map_err(|e| e.to_string())?;
             if v.unit.is_percent() {
-                Ok(v.as_ratio()? / 100)
+                Ok(r / 100)
             } else {
-                Ok(v.as_ratio()?)
+                Ok(r)
             }
         }
-        v => Err(Error::badarg("number", &v)),
+        v => Err(format!(
+            "{} is not a number",
+            v.format(Format::introspect())
+        )),
     }
 }
 

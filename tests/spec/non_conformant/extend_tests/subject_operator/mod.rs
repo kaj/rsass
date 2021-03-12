@@ -57,22 +57,8 @@ fn t202_test_extend_with_subject_retains_subject_on_target() {
 }
 
 // From "sass-spec/spec/non_conformant/extend-tests/subject-operator/203_test_extend_with_subject_transfers_subject_to_target.hrx"
-#[test]
-#[ignore] // unexepected error
-fn t203_test_extend_with_subject_transfers_subject_to_target() {
-    assert_eq!(
-        rsass(
-            "a.foo .bar {a: b}\
-            \n.bip .bap! {@extend .foo}\
-            \n"
-        )
-        .unwrap(),
-        "a.foo .bar, .bip a.bap! .bar {\
-        \n  a: b;\
-        \n}\
-        \n"
-    );
-}
+
+// Ignoring "t203_test_extend_with_subject_transfers_subject_to_target", error tests are not supported yet.
 
 // From "sass-spec/spec/non_conformant/extend-tests/subject-operator/204_test_extend_with_subject_retains_subject_on_extender.hrx"
 #[test]

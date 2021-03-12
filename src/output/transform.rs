@@ -3,7 +3,7 @@ use crate::css::{BodyItem, Rule};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
-use crate::sass::{Function, Item, Mixin, Name};
+use crate::sass::{self, FormalArgs, Function, Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
 use crate::ScopeRef;
@@ -194,10 +194,15 @@ fn handle_item(
             let val = val.do_evaluate(scope.clone(), true)?;
             scope.set_variable(name.into(), val, *default, *global);
         }
-        Item::FunctionDeclaration(ref name, ref args, ref body) => {
+        Item::FunctionDeclaration(ref name, ref args, ref pos, ref body) => {
             scope.define_function(
                 name.into(),
-                Function::closure(args.clone(), scope.clone(), body.clone()),
+                Function::closure(
+                    args.clone(),
+                    pos.clone(),
+                    scope.clone(),
+                    body.clone(),
+                ),
             );
         }
         Item::Return(_) => {
@@ -218,14 +223,20 @@ fn handle_item(
         Item::MixinCall(ref name, ref args, ref body) => {
             let sel = scope.get_selectors().clone();
             if let Some(mixin) = scope.get_mixin(&name.into()) {
-                let subscope = mixin.args.eval(
-                    ScopeRef::sub_selectors(mixin.scope, sel),
-                    &args.evaluate(scope.clone(), true)?,
-                )?;
+                let subscope = mixin
+                    .args
+                    .eval(
+                        ScopeRef::sub_selectors(mixin.scope, sel),
+                        &args.evaluate(scope.clone(), true)?,
+                    )
+                    .map_err(|e| match e {
+                        sass::ArgsError::Eval(e) => e,
+                        ae => Error::S(ae.to_string()),
+                    })?;
                 subscope.define_mixin(
                     Name::from_static("%%BODY%%"),
                     Mixin {
-                        args: Default::default(),
+                        args: FormalArgs::none(),
                         scope,
                         body: body.clone(),
                     },

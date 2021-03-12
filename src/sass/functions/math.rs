@@ -1,5 +1,9 @@
-use super::{Error, FunctionMap, Scope};
+use super::{
+    check, get_checked, get_numeric, get_opt_check, Error, FunctionMap, Scope,
+};
 use crate::css::Value;
+use crate::output::Format;
+use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Unit, UnitSet};
 use num_rational::Rational;
 use rand::{thread_rng, Rng};
@@ -11,7 +15,7 @@ use std::f64::consts::{E, PI};
 /// Should conform to
 /// [the specification](https://sass-lang.com/documentation/modules/math).
 pub fn create_module() -> Scope {
-    let f = Scope::new_global(Default::default());
+    let mut f = Scope::builtin_module("sass:math");
 
     // - - - Boundig Functions - - -
     def!(f, ceil(number), |s| {
@@ -20,8 +24,20 @@ pub fn create_module() -> Scope {
     });
     def!(f, clamp(min, number, max), |s| {
         let min_v = get_numeric(s, "min")?;
-        let mut num = get_numeric(s, "number")?;
-        let max_v = get_numeric(s, "max")?;
+        let check_numeric_compat_unit =
+            |v: Value| -> Result<Numeric, String> {
+                let v = check::numeric(v)?;
+                if (v.is_no_unit() != min_v.is_no_unit())
+                    || !v.unit.is_compatible(&min_v.unit)
+                {
+                    return Err(diff_units_msg(&v, &min_v, name!(min)));
+                }
+                Ok(v)
+            };
+        let mut num =
+            get_checked(s, name!(number), check_numeric_compat_unit)?;
+        let max_v = get_checked(s, name!(max), check_numeric_compat_unit)?;
+
         if num >= max_v {
             num = max_v;
         }
@@ -35,14 +51,12 @@ pub fn create_module() -> Scope {
         Ok(number(val.value.floor(), val.unit))
     });
     def_va!(f, max(numbers), |s| match s.get("numbers")? {
-        Value::List(v, _, _) => {
-            Ok(find_extreme(&v, Ordering::Greater).clone())
-        }
-        single_value => Ok(single_value),
+        Value::List(v, _, _) => find_extreme(&v, Ordering::Greater),
+        single_value => find_extreme(&[single_value], Ordering::Greater),
     });
     def_va!(f, min(numbers), |s| match s.get("numbers")? {
-        Value::List(v, _, _) => Ok(find_extreme(&v, Ordering::Less).clone()),
-        single_value => Ok(single_value),
+        Value::List(v, _, _) => find_extreme(&v, Ordering::Less),
+        single_value => find_extreme(&[single_value], Ordering::Less),
     });
     def!(f, round(number), |s| {
         let val = get_numeric(s, "number")?;
@@ -58,27 +72,36 @@ pub fn create_module() -> Scope {
         Value::List(v, _, _) => {
             if let Some((first, rest)) = v.split_first() {
                 let first = as_numeric(first)?;
-                let mut sum = f64::from(first.value).powi(2);
-                let unit = first.unit;
-                for v in rest {
-                    let scaled = as_numeric(v)?
-                        .as_unitset(&unit)
-                        .ok_or_else(|| Error::badarg(&unit.to_string(), v))?;
+                let mut sum = f64::from(first.value.clone()).powi(2);
+                let unit = first.unit.clone();
+                for (i, v) in rest.iter().enumerate() {
+                    let num = as_numeric(v)?;
+                    let scaled = num.as_unitset(&unit).ok_or_else(|| {
+                        Error::BadArgument(
+                            format!("numbers[{}]", i + 2).into(),
+                            diff_units_msg(&num, &first, "numbers[1]".into()),
+                        )
+                    })?;
                     sum += f64::from(scaled).powi(2);
                 }
                 Ok(number(sum.sqrt(), unit))
             } else {
-                Err(Error::badarg("number", &Value::Null))
+                Err(Error::error("At least one argument must be passed"))
             }
         }
         Value::Numeric(v, _) => Ok(number(v.value.abs(), v.unit)),
-        v => Err(Error::badarg("number", &v)),
+        Value::Null => {
+            Err(Error::error("At least one argument must be passed"))
+        }
+        v => Err(Error::bad_arg(name!(number), &v, "is not a number")),
     });
 
     // - - - Exponential Functions - - -
-    def!(f, log(number, base), |s| {
+    def!(f, log(number, base = b"null"), |s| {
         let num = get_unitless(s, "number")?;
-        let base = get_unitless_or(s, "base", std::f64::consts::E)?;
+        let base = get_opt_check(s, name!(base), check::unitless)?
+            .map(Into::into)
+            .unwrap_or(E);
         Ok(Value::scalar(num.log(base)))
     });
     def!(f, pow(base, exponent), |s| {
@@ -124,8 +147,11 @@ pub fn create_module() -> Scope {
     });
     def!(f, atan2(y, x), |s| {
         let y = get_numeric(s, "y")?;
-        let x = get_numeric(s, "x")?;
-        let x = x.as_unitset(&y.unit).unwrap_or(x.value);
+        let x = get_checked(s, name!(x), |v| {
+            let v = check::numeric(v)?;
+            v.as_unitset(&y.unit)
+                .ok_or_else(|| diff_units_msg(&v, &y, name!(y)))
+        })?;
         Ok(deg_value(f64::from(y.value).atan2(f64::from(x))))
     });
 
@@ -148,29 +174,24 @@ pub fn create_module() -> Scope {
 
     // - - - Other Functions - - -
     def!(f, percentage(number), |s| {
-        let val = get_numeric(s, "number")?;
-        let val = val
-            .as_unit(Unit::Percent)
-            .ok_or_else(|| Error::badarg("number", &val.into()))?;
-        Ok(Numeric::new(val, Unit::Percent).into())
+        let val = get_checked(s, name!(number), check::unitless)?;
+        Ok(Numeric::new(val * 100, Unit::Percent).into())
     });
-    def!(f, random(limit), |s| match s.get("limit")? {
-        Value::Null => {
-            let rez = 1_000_000;
-            Ok(Value::scalar(Rational::new(intrand(rez), rez)))
-        }
-        Value::Numeric(val, _) => {
-            let bound = val
-                .value
-                .to_integer()
-                .ok_or_else(|| Error::S("bound must be > 0".into()))?;
-            if bound > 0 {
-                Ok(Value::scalar(intrand(bound) + 1))
+    def!(f, random(limit = b"null"), |s| {
+        match get_opt_check(s, name!(limit), |v| {
+            let v = check::int(v)?;
+            if v > 0 {
+                Ok(v)
             } else {
-                Err(Error::S("bound must be > 0".into()))
+                Err(format!("Must be greater than 0, was {}", v))
             }
+        })? {
+            None => {
+                let rez = 1_000_000;
+                Ok(Value::scalar(Rational::new(intrand(rez), rez)))
+            }
+            Some(bound) => Ok(Value::scalar(intrand(bound) + 1)),
         }
-        v => Err(Error::badarg("number or null", &v)),
     });
 
     f.set_variable(name!(pi), Value::scalar(PI), false, false);
@@ -202,53 +223,25 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, Error> {
-    s.get(name)?
-        .numeric_value()
-        .map_err(|v| Error::badarg("number", &v))
-}
-
 fn get_radians(s: &Scope, name: &str) -> Result<f64, Error> {
-    let v = get_numeric(s, name)?;
-    if let Some(scaled) = v.as_unit_def(Unit::Rad) {
-        Ok(f64::from(scaled))
-    } else {
-        Err(Error::badarg("angle", &v.into()))
-    }
+    get_checked(s, name.into(), |v| {
+        let v = check::numeric(v)?;
+        v.as_unit_def(Unit::Rad).map(Into::into).ok_or_else(|| {
+            format!(
+                "Expected {} to have an angle unit (deg, grad, rad, turn)",
+                v.format(Format::introspect())
+            )
+        })
+    })
 }
 
 fn get_unitless(s: &Scope, name: &str) -> Result<f64, Error> {
-    let v = get_numeric(s, name)?;
-    if v.is_no_unit() {
-        Ok(f64::from(v.value))
-    } else {
-        Err(Error::badarg("unitless", &v.into()))
-    }
+    get_checked(s, name.into(), |v| Ok(check::unitless(v)?.into()))
 }
 
-fn get_unitless_or(
-    s: &Scope,
-    name: &str,
-    default: f64,
-) -> Result<f64, Error> {
-    match s.get(name)? {
-        Value::Numeric(v, _) => {
-            if v.is_no_unit() {
-                Ok(f64::from(v.value))
-            } else {
-                Err(Error::badarg("unitless", &v.into()))
-            }
-        }
-        Value::Null => Ok(default),
-        v => Err(Error::badarg("number", &v)),
-    }
-}
-
+// Only used by hypot function, which treats arguments as unnamed.
 fn as_numeric(v: &Value) -> Result<Numeric, Error> {
-    match v {
-        Value::Numeric(v, _) => Ok(v.clone()),
-        v => Err(Error::badarg("number", &v)),
-    }
+    check::numeric(v.clone()).map_err(Error::error)
 }
 
 fn number(v: impl Into<Number>, unit: impl Into<UnitSet>) -> Value {
@@ -261,43 +254,64 @@ fn deg_value(rad: f64) -> Value {
     number(rad.to_degrees(), Unit::Deg)
 }
 
-fn find_extreme(v: &[Value], pref: Ordering) -> &Value {
-    match v.split_first() {
-        Some((first, rest)) => {
-            let second = find_extreme(rest, pref);
-            match (first, second) {
-                (&Value::Null, b) => b,
-                (a, &Value::Null) => a,
-                (&Value::Numeric(ref va, _), &Value::Numeric(ref vb, _)) => {
-                    if let Some(o) = va.partial_cmp(vb) {
-                        if o == pref {
-                            first
-                        } else {
-                            second
-                        }
-                    } else if va.is_no_unit() || vb.is_no_unit() {
-                        if let Some(o) = va.value.partial_cmp(&vb.value) {
-                            if o == pref {
-                                first
-                            } else {
-                                second
-                            }
-                        } else {
-                            &NULL_VALUE
-                        }
-                    } else {
-                        &NULL_VALUE
-                    }
+fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
+    find_extreme_inner(v, pref)?
+        .ok_or_else(|| Error::error("At least one argument must be passed"))
+        .map(Into::into)
+}
+
+fn find_extreme_inner(
+    v: &[Value],
+    pref: Ordering,
+) -> Result<Option<Numeric>, Error> {
+    if let Some((first, rest)) = v.split_first() {
+        let va = check::numeric(first.clone()).map_err(Error::error)?;
+        if let Some(vb) = find_extreme_inner(rest, pref)? {
+            if let Some(o) = va.partial_cmp(&vb) {
+                Ok(Some(if o == pref { va } else { vb }))
+            } else if va.is_no_unit() || vb.is_no_unit() {
+                if let Some(o) = va.value.partial_cmp(&vb.value) {
+                    Ok(Some(if o == pref { va } else { vb }))
+                } else {
+                    Err(Error::error(format!(
+                        "{} and {} could not be compared",
+                        va.format(Format::introspect()),
+                        vb.format(Format::introspect()),
+                    )))
                 }
-                (_, _) => &NULL_VALUE,
+            } else {
+                Err(Error::error(format!(
+                    "{} and {} have incompatible units",
+                    va.format(Format::introspect()),
+                    vb.format(Format::introspect()),
+                )))
             }
+        } else {
+            Ok(Some(va))
         }
-        None => &NULL_VALUE,
+    } else {
+        Ok(None)
     }
 }
 
-static NULL_VALUE: Value = Value::Null;
-
 fn intrand(lim: isize) -> isize {
     thread_rng().gen_range(0..lim)
+}
+
+fn diff_units_msg(
+    one: &Numeric,
+    other: &Numeric,
+    other_name: Name,
+) -> String {
+    format!(
+        "{} and ${}: {} have incompatible units{}",
+        one.format(Format::introspect()),
+        other_name,
+        other.format(Format::introspect()),
+        if one.is_no_unit() || other.is_no_unit() {
+            " (one has units and the other doesn't)"
+        } else {
+            ""
+        }
+    )
 }

@@ -1,5 +1,5 @@
 use super::Value;
-use crate::value::Quotes;
+use crate::value::{ListSeparator, Quotes};
 use std::default::Default;
 use std::fmt;
 
@@ -23,31 +23,58 @@ impl CallArgs {
     /// unquoted "..." string, makring a varargs argument list.
     pub fn from_value(v: Value) -> Self {
         match v {
-            Value::List(v, _, false) => {
-                if let [Value::Map(map), Value::Literal(mark, Quotes::None)] =
-                    &v[..]
-                {
-                    if mark == "..." {
-                        return CallArgs(
-                            map.iter()
-                                .map(|(k, v)| {
-                                    (
-                                        match k {
-                                            Value::Null => None,
-                                            Value::Literal(s, _) => {
-                                                Some(s.clone())
-                                            }
-                                            _x => None, // TODO return Err(Error::bad_value("string", &x)),
-                                        },
-                                        v.clone(),
-                                    )
-                                })
-                                .collect(),
-                        );
+            Value::List(mut v, _, false) => {
+                if v.len() == 2 && is_mark(&v[1]) {
+                    match &v[0] {
+                        Value::Map(map) => {
+                            return CallArgs(
+                                map.iter()
+                                    .map(|(k, v)| {
+                                        (
+                                            match k {
+                                                Value::Null => None,
+                                                Value::Literal(s, _) => {
+                                                    Some(s.clone())
+                                                }
+                                                _x => None, // TODO return Err(Error::bad_value("string", &x)),
+                                            },
+                                            v.clone(),
+                                        )
+                                    })
+                                    .collect(),
+                            );
+                        }
+                        Value::List(list, ..) => {
+                            return CallArgs(
+                                list.iter()
+                                    .map(|v| (None, v.clone()))
+                                    .collect(),
+                            );
+                        }
+                        _ => (),
+                    }
+                }
+                if let Some(last) = v.pop() {
+                    if let Value::List(vv, ListSeparator::Space, false) =
+                        &last
+                    {
+                        match &vv[..] {
+                            [Value::List(vv, _, _), Value::Literal(mark, Quotes::None)]
+                                if mark == "..." =>
+                            {
+                                v.extend(vv.iter().cloned());
+                            }
+                            _ => {
+                                v.push(last);
+                            }
+                        }
+                    } else {
+                        v.push(last);
                     }
                 }
                 CallArgs(v.into_iter().map(|v| (None, v)).collect())
             }
+            Value::Null => CallArgs(vec![]),
             v => CallArgs(vec![(None, v)]),
         }
     }
@@ -70,6 +97,13 @@ impl CallArgs {
     /// Get a specific argument by position.
     pub fn get(&self, index: usize) -> Option<&(Option<String>, Value)> {
         self.0.get(index)
+    }
+}
+
+fn is_mark(v: &Value) -> bool {
+    match v {
+        Value::Literal(mark, Quotes::None) => mark == "...",
+        _ => false,
     }
 }
 

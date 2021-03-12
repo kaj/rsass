@@ -2,7 +2,7 @@ use super::strings::name;
 use super::util::{ignore_comments, opt_spacelike};
 use super::value::space_list;
 use super::Span;
-use crate::sass::{CallArgs, FormalArgs, Value};
+use crate::sass::{CallArgs, FormalArgs};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{map, opt};
@@ -23,13 +23,20 @@ pub fn formal_args(input: Span) -> IResult<Span, FormalArgs> {
                     opt_spacelike,
                 )),
             ),
-            |(name, d)| (name.into(), d.unwrap_or(Value::Null)),
+            |(name, d)| (name.into(), d),
         ),
     )(input)?;
     let (input, _) = terminated(opt(tag(",")), opt_spacelike)(input)?;
     let (input, va) = terminated(opt(tag("...")), opt_spacelike)(input)?;
     let (input, _) = tag(")")(input)?;
-    Ok((input, FormalArgs::new(v, va.is_some())))
+    Ok((
+        input,
+        if va.is_none() {
+            FormalArgs::new(v)
+        } else {
+            FormalArgs::new_va(v)
+        },
+    ))
 }
 
 pub fn call_args(input: Span) -> IResult<Span, CallArgs> {
