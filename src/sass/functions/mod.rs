@@ -244,11 +244,20 @@ lazy_static! {
 
 // argument helpers for the actual functions
 
+trait CheckedArg<T> {
+    fn named(self, name: Name) -> Result<T, Error>;
+}
+impl<T> CheckedArg<T> for Result<T, String> {
+    fn named(self, name: Name) -> Result<T, Error> {
+        self.map_err(|e| Error::BadArgument(name, e))
+    }
+}
+
 fn get_checked<T, F>(s: &Scope, name: Name, check: F) -> Result<T, Error>
 where
     F: Fn(Value) -> Result<T, String>,
 {
-    check(s.get(name.as_ref())?).map_err(|e| Error::BadArgument(name, e))
+    check(s.get(name.as_ref())?).named(name)
 }
 
 fn get_opt_check<T, F>(
@@ -261,7 +270,7 @@ where
 {
     match s.get(name.as_ref())? {
         Value::Null => Ok(None),
-        v => check(v).map_err(|e| Error::BadArgument(name, e)).map(Some),
+        v => check(v).named(name).map(Some),
     }
 }
 

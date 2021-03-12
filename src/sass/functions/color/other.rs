@@ -1,6 +1,6 @@
 use super::{
-    check_rational_fract, get_checked, get_color, get_opt_rational,
-    make_call, Error, FunctionMap, Name,
+    check, check_pct_rational, check_rational_fract, get_checked, get_color,
+    get_opt_check, get_opt_rational, make_call, Error, FunctionMap, Name,
 };
 use crate::css::Value;
 use crate::value::{Hsla, Hwba, Rgba};
@@ -35,8 +35,10 @@ pub fn register(f: &mut Scope) {
             let h_adj = get_opt_rational(s, "hue")?;
             let s_adj = get_opt_rational_pct(s, "saturation")?;
             let l_adj = get_opt_rational_pct(s, "lightness")?;
-            let b_adj = get_opt_rational_pct(s, "blackness")?;
-            let w_adj = get_opt_rational_pct(s, "whiteness")?;
+            let b_adj =
+                get_opt_check(s, name!(blackness), check_pct_rational)?;
+            let w_adj =
+                get_opt_check(s, name!(whiteness), check_pct_rational)?;
             let a_adj = get_opt_rational(s, "alpha")?;
             if h_adj.is_none()
                 && s_adj.is_none()
@@ -255,23 +257,11 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 
 fn get_opt_rational_pct(
     s: &Scope,
-    name: &str,
+    name: &'static str,
 ) -> Result<Option<Rational>, Error> {
-    match s.get(name)? {
-        Value::Numeric(v, _) if v.unit.is_percent() => {
-            Ok(Some(v.as_ratio()? / 100))
-        }
-        Value::Numeric(v, ..) => {
-            let v = v.as_ratio()?;
-            Ok(Some(if v.abs() < Rational::one() {
-                v
-            } else {
-                v / 100
-            }))
-        }
-        Value::Null => Ok(None),
-        v => Err(Error::bad_arg(Name::from(name), &v, "is not a number")),
-    }
+    get_opt_check(s, Name::from_static(name), |v| {
+        Ok(check::numeric(v)?.as_ratio().map_err(|e| e.to_string())? / 100)
+    })
 }
 
 #[cfg(test)]

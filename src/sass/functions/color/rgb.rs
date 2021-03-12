@@ -1,5 +1,5 @@
 use super::{
-    check_pct_rational_range, get_checked, get_color, make_call,
+    check, check_pct_rational_range, get_checked, get_color, make_call,
     nospecial_value, Error, FunctionMap, Name,
 };
 use crate::css::{CallArgs, Value};
@@ -240,33 +240,28 @@ fn int_value(v: Rational) -> Value {
     Value::scalar(v.to_integer())
 }
 
-fn to_int(v: &Value, name: Name) -> Result<Rational, Error> {
-    match v {
-        Value::Numeric(v, ..) => {
-            if v.unit.is_percent() {
-                Ok(v.as_ratio()? * 255 / 100)
-            } else {
-                v.as_ratio()
-            }
-        }
-        v => Err(Error::bad_arg(name, &v, "is not a number")),
+fn to_int(v: Value) -> Result<Rational, String> {
+    let v = check::numeric(v.clone())?;
+    let r = v.value.as_ratio().map_err(|e| e.to_string())?;
+    if v.unit.is_percent() {
+        Ok(r * 255 / 100)
+    } else {
+        Ok(r)
     }
 }
 
-fn to_rational(v: &Value, name: Name) -> Result<Rational, Error> {
-    match v {
-        Value::Numeric(num, _) if num.unit.is_percent() => {
-            Ok(num.as_ratio()? / 100)
-        }
-        Value::Numeric(num, _) if num.unit.is_none() => num.as_ratio(),
-        Value::Numeric(num, _) => Err(Error::BadArgument(
-            name,
-            format!(
-                "Expected {} to have no units or \"%\"",
-                num.format(Format::introspect()),
-            ),
-        )),
-        v => Err(Error::bad_arg(name, &v, "is not a number")),
+fn to_rational(v: Value) -> Result<Rational, String> {
+    let num = check::numeric(v)?;
+    let r = num.value.as_ratio().map_err(|e| e.to_string())?;
+    if num.unit.is_percent() {
+        Ok(r / 100)
+    } else if num.unit.is_none() {
+        Ok(r)
+    } else {
+        Err(format!(
+            "Expected {} to have no units or \"%\"",
+            num.format(Format::introspect()),
+        ))
     }
 }
 

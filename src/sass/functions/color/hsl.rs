@@ -1,13 +1,14 @@
 use super::rgb::{preserve_call, values_from_list};
 use super::{
-    check_pct_rational_range, get_checked, get_color, get_opt_check,
-    get_opt_rational, make_call, nospecial_value, Error, FunctionMap, Name,
+    check, check_pct_rational_range, get_checked, get_color, get_opt_check,
+    make_call, nospecial_value, to_rational_percent, Error, FunctionMap,
 };
 use crate::css::Value;
+use crate::output::Format;
 use crate::value::{Hsla, Numeric, Unit};
 use crate::Scope;
 use num_rational::Rational;
-use num_traits::{one, zero, One, Zero};
+use num_traits::{zero, One, Zero};
 
 fn do_hsla(fn_name: &str, s: &Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
@@ -77,7 +78,7 @@ pub fn register(f: &mut Scope) {
     );
     def!(f, adjust_hue(color, degrees), |s| {
         let col = get_color(s, "color")?;
-        let adj = get_opt_rational(s, "degrees")?;
+        let adj = get_opt_check(s, name!(degrees), to_rational)?;
         if let Some(adj) = adj {
             Ok(col.rotate_hue(adj).into())
         } else {
@@ -165,41 +166,28 @@ pub fn percentage(v: Rational) -> Value {
     Numeric::new(v * 100, Unit::Percent).into()
 }
 
-fn to_rational(v: &Value, name: Name) -> Result<Rational, Error> {
-    match v {
-        Value::Numeric(v, ..) => v.as_ratio(),
-        v => Err(Error::bad_arg(name, v, "is not a number")),
-    }
+fn to_rational(v: Value) -> Result<Rational, String> {
+    check::numeric(v.clone())
+        .and_then(|v| v.as_ratio().map_err(|e| e.to_string()))
 }
 
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-pub fn to_rational_percent(v: &Value, name: Name) -> Result<Rational, Error> {
+pub fn to_rational2(v: Value) -> Result<Rational, String> {
     match v {
         Value::Null => Ok(Rational::zero()),
         Value::Numeric(v, ..) => {
-            if v.unit.is_percent() || v.value > one() {
-                Ok(v.as_ratio()? / 100)
-            } else {
-                Ok(v.as_ratio()?)
-            }
-        }
-        v => Err(Error::bad_arg(name, v, "is not a number")),
-    }
-}
-/// Gets a percentage as a fraction 0 .. 1.
-/// If v is not a percentage, keep it as it is.
-pub fn to_rational2(v: &Value, name: Name) -> Result<Rational, Error> {
-    match v {
-        Value::Null => Ok(Rational::zero()),
-        Value::Numeric(v, ..) => {
+            let r = v.value.as_ratio().map_err(|e| e.to_string())?;
             if v.unit.is_percent() {
-                Ok(v.as_ratio()? / 100)
+                Ok(r / 100)
             } else {
-                Ok(v.as_ratio()?)
+                Ok(r)
             }
         }
-        v => Err(Error::bad_arg(name, v, "is not a number")),
+        v => Err(format!(
+            "{} is not a number",
+            v.format(Format::introspect())
+        )),
     }
 }
 

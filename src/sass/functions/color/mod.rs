@@ -1,9 +1,12 @@
-use super::{check, get_checked, get_opt_check, Error, FunctionMap};
+use super::{
+    check, get_checked, get_opt_check, CheckedArg, Error, FunctionMap,
+};
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::Name;
 use crate::value::{Color, Number, Quotes, Rational, Unit};
 use crate::Scope;
+use num_traits::{one, zero};
 mod hsl;
 mod hwb;
 mod other;
@@ -38,8 +41,35 @@ fn check_color(v: Value) -> Result<Color, String> {
 
 fn check_pct(v: Value) -> Result<Number, String> {
     let val = check::numeric(v)?;
-    val.as_unit_def(Unit::Percent)
-        .ok_or_else(|| format!("xyzzy"))
+    val.as_unit_def(Unit::Percent).ok_or_else(|| {
+        format!(
+            "Expected {} to have unit \"%\"",
+            val.format(Format::introspect())
+        )
+    })
+}
+/// Gets a percentage as a fraction 0 .. 1.
+/// If v is not a percentage, keep it as it is.
+pub fn to_rational_percent(v: Value) -> Result<Rational, String> {
+    match v {
+        Value::Null => Ok(zero()),
+        Value::Numeric(v, ..) => {
+            let r = v.value.as_ratio().map_err(|e| e.to_string())?;
+            if v.unit.is_percent() || r > one() {
+                Ok(r / 100)
+            } else {
+                Ok(r)
+            }
+        }
+        v => Err(format!(
+            "{} is not a number",
+            v.format(Format::introspect())
+        )),
+    }
+}
+
+fn check_pct_rational(v: Value) -> Result<Rational, String> {
+    Ok(check_pct(v)?.as_ratio().map_err(|e| e.to_string())? / 100)
 }
 fn check_pct_rational_range(v: Value) -> Result<Rational, String> {
     let val = check_pct(v)?;
@@ -83,13 +113,13 @@ fn nospecial_value<F>(
     f: F,
 ) -> Result<Option<Rational>, Error>
 where
-    F: Fn(&Value, Name) -> Result<Rational, Error>,
+    F: Fn(Value) -> Result<Rational, String>,
 {
     match v {
         Value::Call(..) => Ok(None),
         Value::Literal(s, Quotes::None) if looks_like_call(s) => Ok(None),
         Value::BinOp(..) => Ok(None),
-        h => f(h, name).map(Some),
+        v => f(v.clone()).named(name).map(Some),
     }
 }
 
