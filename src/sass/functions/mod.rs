@@ -89,9 +89,7 @@ impl fmt::Debug for FuncImpl {
     }
 }
 
-/// ...
-pub trait Functions {
-    /// ...
+trait Functions {
     fn builtin_fn(
         &mut self,
         name: Name,

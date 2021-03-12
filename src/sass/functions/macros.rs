@@ -23,7 +23,7 @@ macro_rules! one_arg {
 
 macro_rules! def {
     ($f:expr, $name:ident( $($arg:ident$(=$val:expr)* ),* ), $body:expr) => {{
-        use crate::sass::{Functions, FormalArgs};
+        use crate::sass::functions::{Functions, FormalArgs};
         use std::sync::Arc;
         let args = FormalArgs::new(vec![ $(one_arg!($arg $(=$val)*)),* ]);
         $f.builtin_fn(name!($name), args, Arc::new($body));
@@ -31,7 +31,7 @@ macro_rules! def {
 }
 macro_rules! def_va {
     ($f:expr, $name:ident( $($arg:ident$(=$val:expr)* ),*), $body:expr) => {{
-        use crate::sass::{Functions, FormalArgs};
+        use crate::sass::functions::{Functions, FormalArgs};
         use std::sync::Arc;
         let args = FormalArgs::new_va(vec![ $(one_arg!($arg $(=$val)*)),* ]);
         $f.builtin_fn(name!($name), args, Arc::new($body));
