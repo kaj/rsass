@@ -339,6 +339,27 @@ fn test_number_zeroes_b() {
     check_value("-0.000000000000000001", "0");
 }
 
+/// https://github.com/kaj/rsass/issues/98
+#[test]
+fn test_rational_overflow_mul() {
+    check_value("1.4142135623 * 1.4142135623", "1.9999999998")
+}
+/// https://github.com/kaj/rsass/issues/98
+#[test]
+fn test_rational_overflow_div() {
+    check_value("1.4142135623 / 1000000000 + 1", "1.0000000014")
+}
+/// https://github.com/kaj/rsass/issues/98
+#[test]
+fn test_rational_overflow_add() {
+    check_value("4142135623 + 1.4142135623", "4142135624.4142135623")
+}
+/// https://github.com/kaj/rsass/issues/98
+#[test]
+fn test_rational_overflow_sub() {
+    check_value("4142135623 - 1.4142135623", "4142135621.5857864377")
+}
+
 fn check_value(input: &str, expected: &str) {
     assert_eq!(
         String::from_utf8(

@@ -23,6 +23,9 @@ project adheres to
   errors in many standard functions. Many error messages are made
   identical to dart-sass, improving test-suit progress with more than
   400 tests.  PR #99.
+* Fix issue #98: overflow in rational number arithmetic.
+
+Thanks to @alvra for reporting #98.
 
 
 ## Release 0.18.0 - 2021-02-25

@@ -2,7 +2,9 @@ use crate::output::{Format, Formatted};
 use num_bigint::BigInt;
 use num_integer::Integer;
 use num_rational::{Ratio, Rational};
-use num_traits::{One, Signed, Zero};
+use num_traits::{
+    CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, One, Signed, Zero,
+};
 use std::cmp::Ordering;
 use std::convert::TryFrom;
 use std::fmt::{self, Write};
@@ -118,7 +120,10 @@ impl Mul for &NumValue {
     type Output = NumValue;
     fn mul(self, rhs: Self) -> NumValue {
         match (self, rhs) {
-            (NumValue::Rational(s), NumValue::Rational(r)) => (s * r).into(),
+            (NumValue::Rational(s), NumValue::Rational(r)) => s
+                .checked_mul(r)
+                .map(Into::into)
+                .unwrap_or_else(|| (biggen(s) * biggen(r)).into()),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
                 (biggen(s) * r).into()
             }
@@ -211,7 +216,10 @@ impl Div for &NumValue {
             return (f64::from(self) / 0.).into();
         }
         match (self, rhs) {
-            (NumValue::Rational(s), NumValue::Rational(r)) => (s / r).into(),
+            (NumValue::Rational(s), NumValue::Rational(r)) => s
+                .checked_div(&r)
+                .map(Into::into)
+                .unwrap_or_else(|| (biggen(&s) / biggen(&r)).into()),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
                 (biggen(&s) / r).into()
             }
@@ -242,7 +250,10 @@ impl Add for NumValue {
     type Output = Self;
     fn add(self, rhs: Self) -> Self {
         match (self, rhs) {
-            (NumValue::Rational(s), NumValue::Rational(r)) => (s + r).into(),
+            (NumValue::Rational(s), NumValue::Rational(r)) => s
+                .checked_add(&r)
+                .map(Into::into)
+                .unwrap_or_else(|| (biggen(&s) + biggen(&r)).into()),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
                 (biggen(&s) + r).into()
             }
@@ -267,7 +278,10 @@ impl Sub for &NumValue {
     type Output = NumValue;
     fn sub(self, rhs: Self) -> NumValue {
         match (self, rhs) {
-            (NumValue::Rational(s), NumValue::Rational(r)) => (s - r).into(),
+            (NumValue::Rational(s), NumValue::Rational(r)) => s
+                .checked_sub(&r)
+                .map(Into::into)
+                .unwrap_or_else(|| (biggen(&s) - biggen(&r)).into()),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
                 (biggen(&s) - r).into()
             }
