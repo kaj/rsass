@@ -12,7 +12,6 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass/base-level-parent/root/at-root-postfix-itpl.hrx"
 #[test]
-#[ignore] // wrong result
 fn at_root_postfix_itpl() {
     assert_eq!(
         rsass(
@@ -39,7 +38,6 @@ fn at_root_postfix_itpl() {
 
 // From "sass-spec/spec/libsass/base-level-parent/root/at-root-prefix-itpl.hrx"
 #[test]
-#[ignore] // wrong result
 fn at_root_prefix_itpl() {
     assert_eq!(
         rsass(

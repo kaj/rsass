@@ -24,6 +24,7 @@ project adheres to
   identical to dart-sass, improving test-suit progress with more than
   400 tests.  PR #99.
 * Fix issue #98: overflow in rational number arithmetic.
+* Allow `@at-root` at document root.
 
 Thanks to @alvra for reporting #98.
 

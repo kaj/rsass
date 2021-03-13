@@ -4,7 +4,6 @@ use super::rsass;
 
 // From "sass-spec/spec/libsass/variable-scoping/blead-global/expanding/at-root.hrx"
 #[test]
-#[ignore] // wrong result
 fn at_root() {
     assert_eq!(
         rsass(

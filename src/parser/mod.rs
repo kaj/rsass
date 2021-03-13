@@ -176,23 +176,12 @@ fn rule_start(input: Span) -> IResult<Span, Selectors> {
 }
 
 fn body_item(input: Span) -> IResult<Span, Item> {
-    let (input, tag) = alt((
-        tag("$"),
-        tag("/*"),
-        tag(";"),
-        tag("@at-root"),
-        tag("@content"),
-        tag("@return"),
-        tag("@"),
-        tag(""),
-    ))(input)?;
+    let (input, tag) =
+        alt((tag("$"), tag("/*"), tag(";"), tag("@"), tag("")))(input)?;
     match *tag.fragment() {
         b"$" => variable_declaration2(input),
         b"/*" => comment_item(input),
         b";" => Ok((input, Item::None)),
-        b"@at-root" => at_root2(input),
-        b"@content" => content_stmt2(input),
-        b"@return" => return_stmt2(input),
         b"@" => at_rule2(input),
         b"" => {
             let (input, selectors) = opt(rule_start)(input)?;
@@ -279,16 +268,19 @@ fn mixin_call2(input: Span) -> IResult<Span, Item> {
 fn at_rule2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     match name.as_ref() {
+        "at-root" => at_root2(input),
+        "charset" => charset2(input),
+        "content" => content_stmt2(input),
         "debug" => map(expression_argument, Item::Debug)(input),
         "each" => each_loop2(input),
         "error" => map(expression_argument, Item::Error)(input),
-        "charset" => charset2(input),
         "for" => for_loop2(input),
         "function" => function_declaration2(input),
+        "if" => if_statement2(input),
         "import" => import2(input),
         "include" => mixin_call2(input),
         "mixin" => mixin_declaration2(input),
-        "if" => if_statement2(input),
+        "return" => return_stmt2(input),
         "use" => use2(input),
         "warn" => map(expression_argument, Item::Warn)(input),
         "while" => while_loop2(input),
