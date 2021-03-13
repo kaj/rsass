@@ -25,6 +25,7 @@ project adheres to
   400 tests.  PR #99.
 * Fix issue #98: overflow in rational number arithmetic.
 * Allow `@at-root` at document root.
+* Boolean operators is truly lazy, e.g. `false and f($x)` does not call `f`.
 
 Thanks to @alvra for reporting #98.
 

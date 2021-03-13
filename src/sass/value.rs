@@ -166,29 +166,47 @@ impl Value {
             Value::True => Ok(css::Value::True),
             Value::False => Ok(css::Value::False),
             Value::BinOp(ref a, _, ref op, _, ref b) => {
-                let (a, b) = {
-                    let arithmetic = arithmetic | (*op != Operator::Div);
-                    let aa = a.do_evaluate(scope.clone(), arithmetic)?;
-                    let b = b.do_evaluate(
-                        scope.clone(),
-                        arithmetic || aa.is_calculated(),
-                    )?;
-                    if !arithmetic && b.is_calculated() && !aa.is_calculated()
-                    {
-                        (a.do_evaluate(scope, true)?, b)
+                if *op == Operator::And {
+                    let a = a.do_evaluate(scope.clone(), true)?;
+                    if a.is_true() {
+                        b.do_evaluate(scope.clone(), true)
                     } else {
-                        (aa, b)
+                        Ok(a)
                     }
-                };
-                Ok(op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
-                    css::Value::BinOp(
-                        Box::new(a),
-                        false,
-                        op.clone(),
-                        false,
-                        Box::new(b),
-                    )
-                }))
+                } else if *op == Operator::Or {
+                    let a = a.do_evaluate(scope.clone(), true)?;
+                    if a.is_true() {
+                        Ok(a)
+                    } else {
+                        b.do_evaluate(scope.clone(), true)
+                    }
+                } else {
+                    let (a, b) = {
+                        let arithmetic = arithmetic | (*op != Operator::Div);
+                        let aa = a.do_evaluate(scope.clone(), arithmetic)?;
+                        let b = b.do_evaluate(
+                            scope.clone(),
+                            arithmetic || aa.is_calculated(),
+                        )?;
+                        if !arithmetic
+                            && b.is_calculated()
+                            && !aa.is_calculated()
+                        {
+                            (a.do_evaluate(scope, true)?, b)
+                        } else {
+                            (aa, b)
+                        }
+                    };
+                    Ok(op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
+                        css::Value::BinOp(
+                            Box::new(a),
+                            false,
+                            op.clone(),
+                            false,
+                            Box::new(b),
+                        )
+                    }))
+                }
             }
             Value::UnaryOp(ref op, ref v) => {
                 let value = v.do_evaluate(scope, true)?;
