@@ -167,8 +167,7 @@ pub fn percentage(v: Rational) -> Value {
 }
 
 fn to_rational(v: Value) -> Result<Rational, String> {
-    check::numeric(v.clone())
-        .and_then(|v| v.as_ratio().map_err(|e| e.to_string()))
+    check::numeric(v).and_then(|v| v.as_ratio().map_err(|e| e.to_string()))
 }
 
 /// Gets a percentage as a fraction 0 .. 1.

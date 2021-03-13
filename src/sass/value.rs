@@ -169,7 +169,7 @@ impl Value {
                 if *op == Operator::And {
                     let a = a.do_evaluate(scope.clone(), true)?;
                     if a.is_true() {
-                        b.do_evaluate(scope.clone(), true)
+                        b.do_evaluate(scope, true)
                     } else {
                         Ok(a)
                     }
@@ -178,7 +178,7 @@ impl Value {
                     if a.is_true() {
                         Ok(a)
                     } else {
-                        b.do_evaluate(scope.clone(), true)
+                        b.do_evaluate(scope, true)
                     }
                 } else {
                     let (a, b) = {

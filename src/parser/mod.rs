@@ -507,7 +507,7 @@ fn mixin_declaration2(input: Span) -> IResult<Span, Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(opt(formal_args), opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
-    let args = args.unwrap_or_else(|| FormalArgs::none());
+    let args = args.unwrap_or_else(FormalArgs::none);
     Ok((input, Item::MixinDeclaration(name, args, body)))
 }
 

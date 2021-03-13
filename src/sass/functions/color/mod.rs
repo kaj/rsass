@@ -89,7 +89,7 @@ fn check_rational(v: Value) -> Result<Rational, String> {
 fn check_rational_fract(v: Value) -> Result<Rational, String> {
     let val = check::numeric(v)?
         .as_unit_def(Unit::None)
-        .ok_or_else(|| format!("xyzzy"))?;
+        .ok_or_else(|| "xyzzy".to_string())?;
     if val < 0.into() || val > 1.into() {
         Err(format!(
             "Expected {} to be within 0 and 1",

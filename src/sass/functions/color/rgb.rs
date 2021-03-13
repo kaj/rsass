@@ -241,7 +241,7 @@ fn int_value(v: Rational) -> Value {
 }
 
 fn to_int(v: Value) -> Result<Rational, String> {
-    let v = check::numeric(v.clone())?;
+    let v = check::numeric(v)?;
     let r = v.value.as_ratio().map_err(|e| e.to_string())?;
     if v.unit.is_percent() {
         Ok(r * 255 / 100)
