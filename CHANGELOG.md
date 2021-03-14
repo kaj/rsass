@@ -26,6 +26,7 @@ project adheres to
 * Fix issue #98: overflow in rational number arithmetic.
 * Allow `@at-root` at document root.
 * Boolean operators is truly lazy, e.g. `false and f($x)` does not call `f`.
+* Refactored number parsing to use overflowing rationals. PR #100.
 * Test suite sass-spec updated to 2021-03-02.
 
 Thanks to @alvra for reporting #98.

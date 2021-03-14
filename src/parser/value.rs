@@ -7,23 +7,17 @@ use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string, SourcePos, Span};
 use crate::sass::{SassString, Value};
-use crate::value::{
-    ListSeparator, Number, Numeric, Operator, Rational, Rgba,
-};
+use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
     alphanumeric1, multispace0, multispace1, one_of,
 };
-use nom::combinator::{
-    map, map_opt, map_res, not, opt, peek, recognize, value,
-};
+use nom::combinator::{map, map_res, not, opt, peek, recognize, value};
 use nom::multi::{fold_many0, fold_many1, many0, many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use nom::IResult;
-use num_bigint::BigInt;
-use num_rational::Ratio;
-use num_traits::{One, Zero};
+use num_traits::Zero;
 use std::str::from_utf8;
 
 pub fn value_expression(input: Span) -> IResult<Span, Value> {
@@ -298,14 +292,8 @@ fn number(input: Span) -> IResult<Span, Value> {
             sign_prefix,
             alt((
                 map(pair(decimal_integer, decimal_decimals), |(n, d)| n + d),
-                map(
-                    pair(decimal_integer_big, decimal_decimals_big),
-                    |(n, d)| n + d,
-                ),
                 decimal_decimals,
-                decimal_decimals_big,
                 decimal_integer,
-                decimal_integer_big,
             )),
             unit,
         )),
@@ -328,65 +316,31 @@ fn number(input: Span) -> IResult<Span, Value> {
 }
 
 pub fn decimal_integer(input: Span) -> IResult<Span, Number> {
-    map_opt(
-        fold_many1(
-            // Note: We should use bytes directly, one_of returns a char.
-            one_of("0123456789"),
-            Some(0isize),
-            |r, d| {
-                r?.checked_mul(10)?.checked_add(isize::from(d as u8 - b'0'))
-            },
-        ),
-        |opt_int| opt_int.map(Number::from),
-    )(input)
-}
-
-pub fn decimal_integer_big(input: Span) -> IResult<Span, Number> {
-    map(
-        fold_many1(
-            // Note: We should use bytes directly, one_of returns a char.
-            one_of("0123456789"),
-            BigInt::zero(),
-            |r, d| r * 10 + BigInt::from(d as u8 - b'0'),
-        ),
-        |i| Ratio::from_integer(i).into(),
+    fold_many1(
+        // Note: We should use bytes directly, one_of returns a char.
+        one_of("0123456789"),
+        Number::from(0),
+        |r, d| (r * 10) + Number::from(isize::from(d as u8 - b'0')),
     )(input)
 }
 
 pub fn decimal_decimals(input: Span) -> IResult<Span, Number> {
-    map_opt(
-        preceded(
-            tag("."),
-            fold_many1(
-                one_of("0123456789"),
-                Some((0isize, 1isize)),
-                |opt_pair, d| {
-                    let (r, n) = opt_pair?;
-                    Some((
-                        r.checked_mul(10)?
-                            .checked_add(isize::from(d as i8 - b'0' as i8))?,
-                        n.checked_mul(10)?,
-                    ))
-                },
-            ),
-        ),
-        |opt_pair| opt_pair.map(|(r, d)| Rational::new(r, d).into()),
-    )(input)
-}
-
-pub fn decimal_decimals_big(input: Span) -> IResult<Span, Number> {
     map(
         preceded(
             tag("."),
             fold_many1(
                 one_of("0123456789"),
-                (BigInt::zero(), BigInt::one()),
+                (Number::from(0), Number::from(1)),
                 |(r, n), d| {
-                    (r * 10 + BigInt::from(d as i8 - b'0' as i8), n * 10)
+                    (
+                        (r * 10)
+                            + Number::from(isize::from(d as i8 - b'0' as i8)),
+                        n * 10,
+                    )
                 },
             ),
         ),
-        |(r, d)| Ratio::new(r, d).into(),
+        |(r, d)| r / d,
     )(input)
 }
 
@@ -506,6 +460,7 @@ mod test {
     use super::*;
     use crate::sass::CallArgs;
     use crate::sass::Value::*;
+    use crate::value::Rational;
     use crate::ScopeRef;
 
     #[test]
