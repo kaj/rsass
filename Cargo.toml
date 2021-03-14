@@ -30,9 +30,9 @@ spectest = ["yaml-rust", "deunicode", "hrx-get", "regex"]
 lazy_static = "1.0"
 nom = { version = "6.0", default-features = false }
 nom_locate = "3.0"
-num-bigint = { version = "0.3.0", default-features = false, features = ["std"] }
+num-bigint = { version = "0.4.0", default-features = false, features = ["std"] }
 num-integer = "0.1.42"
-num-rational = { version = "0.3.0", default-features = false }
+num-rational = { version = "0.4.0", default-features = false }
 num-traits = "^0.2.0"
 rand = "0.8.0"
 structopt = { version = "0.3.9", features = ["wrap_help"], optional = true }

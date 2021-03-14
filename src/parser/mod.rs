@@ -642,7 +642,7 @@ fn input_to_string(s: Span) -> Result<String, Utf8Error> {
 }
 
 #[cfg(test)]
-fn percentage(v: isize) -> Value {
+fn percentage(v: i64) -> Value {
     Value::Numeric(Numeric::new(v, Unit::Percent))
 }
 

@@ -33,7 +33,7 @@ pub fn create_module() -> Scope {
         let index = get_integer(s, name!(index))?;
 
         let i = if index.is_negative() {
-            let len = string.chars().count() as isize;
+            let len = string.chars().count() as i64;
             max(len + 1 + index, 0) as usize
         } else if index.is_positive() {
             index as usize - 1
@@ -133,7 +133,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 /// Convert index from sass (rational number, first is one) to rust
 /// (usize, first is zero).  Sass values might be negative, then -1 is
 /// the last char in the string.
-fn index_to_rust(index: isize, s: &str) -> usize {
+fn index_to_rust(index: i64, s: &str) -> usize {
     let len = s.chars().count();
     if index.is_negative() {
         let i = index.abs() as usize;
@@ -157,7 +157,7 @@ fn index_to_rust(index: isize, s: &str) -> usize {
 /// Convert index from sass (rational number, first is one) to rust
 /// (usize, first is zero).  Sass values might be negative, then -1 is
 /// the last char in the string.
-fn index_to_rust_end(index: isize, s: &str) -> usize {
+fn index_to_rust_end(index: i64, s: &str) -> usize {
     if index.is_negative() {
         let len = s.chars().count();
         let i = index.abs() as usize - 1;

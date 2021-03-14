@@ -1,12 +1,13 @@
 use crate::output::{Format, Formatted};
 use num_bigint::BigInt;
 use num_integer::Integer;
-use num_rational::{Ratio, Rational};
+use num_rational::Ratio;
+pub use num_rational::Rational64 as Rational;
 use num_traits::{
     CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, One, Signed, Zero,
 };
 use std::cmp::Ordering;
-use std::convert::TryFrom;
+use std::convert::{TryFrom, TryInto};
 use std::fmt::{self, Write};
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 
@@ -22,19 +23,19 @@ pub struct Number {
 
 #[derive(Clone, Debug)]
 enum NumValue {
-    Rational(Ratio<isize>),
+    Rational(Rational),
     BigRational(Ratio<BigInt>),
     Float(f64),
 }
 
-impl From<Ratio<isize>> for NumValue {
-    fn from(value: Ratio<isize>) -> NumValue {
+impl From<Rational> for NumValue {
+    fn from(value: Rational) -> NumValue {
         NumValue::Rational(value)
     }
 }
-impl From<isize> for NumValue {
-    fn from(value: isize) -> NumValue {
-        NumValue::Rational(value.into())
+impl From<i64> for NumValue {
+    fn from(value: i64) -> NumValue {
+        NumValue::Rational(Rational::from_integer(value))
     }
 }
 impl From<Ratio<BigInt>> for NumValue {
@@ -138,9 +139,9 @@ impl Mul for &NumValue {
         }
     }
 }
-impl Mul<&Ratio<isize>> for &NumValue {
+impl Mul<&Rational> for &NumValue {
     type Output = NumValue;
-    fn mul(self, rhs: &Ratio<isize>) -> NumValue {
+    fn mul(self, rhs: &Rational) -> NumValue {
         match self {
             NumValue::Rational(s) => (s * rhs).into(),
             NumValue::BigRational(s) => (s * biggen(&rhs)).into(),
@@ -148,9 +149,9 @@ impl Mul<&Ratio<isize>> for &NumValue {
         }
     }
 }
-impl Mul<isize> for NumValue {
+impl Mul<i64> for NumValue {
     type Output = Self;
-    fn mul(self, rhs: isize) -> Self {
+    fn mul(self, rhs: i64) -> Self {
         match self {
             s @ NumValue::Rational(_) => s * NumValue::from(rhs),
             NumValue::BigRational(s) => (s * BigInt::from(rhs)).into(),
@@ -235,9 +236,9 @@ impl Div for &NumValue {
     }
 }
 
-impl Div<isize> for NumValue {
+impl Div<i64> for NumValue {
     type Output = Self;
-    fn div(self, rhs: isize) -> Self {
+    fn div(self, rhs: i64) -> Self {
         match self {
             NumValue::Rational(s) => (s / rhs).into(),
             NumValue::BigRational(s) => (s / BigInt::from(rhs)).into(),
@@ -297,7 +298,7 @@ impl Sub for &NumValue {
     }
 }
 
-fn biggen(val: &Ratio<isize>) -> Ratio<BigInt> {
+fn biggen(val: &Rational) -> Ratio<BigInt> {
     Ratio::<BigInt>::new((*val.numer()).into(), (*val.denom()).into())
 }
 
@@ -356,8 +357,8 @@ impl NumValue {
                 let mut numer = r.numer().clone();
                 let mut denom = r.denom().clone();
                 loop {
-                    let tn = isize::try_from(&numer);
-                    let td = isize::try_from(&denom);
+                    let tn = i64::try_from(&numer);
+                    let td = i64::try_from(&denom);
                     if let (Ok(n), Ok(d)) = (tn, td) {
                         return Ok(Ratio::new(n, d));
                     }
@@ -378,7 +379,7 @@ impl NumValue {
 
 impl Number {
     /// Create a rational number.
-    pub fn rational(num: isize, denom: isize) -> Self {
+    pub fn rational(num: i64, denom: i64) -> Self {
         Rational::new(num, denom).into()
     }
     /// Get this number as a rational number.
@@ -424,10 +425,10 @@ impl Number {
     }
 
     /// Returns true if the number is an integer.
-    pub fn into_integer(self) -> Result<isize, Self> {
-        fn float_int(s: &f64) -> Option<isize> {
+    pub fn into_integer(self) -> Result<i64, Self> {
+        fn float_int(s: &f64) -> Option<i64> {
             if (s.round() - s).abs() <= std::f64::EPSILON {
-                Some(s.round() as isize)
+                Some(s.round() as i64)
             } else {
                 None
             }
@@ -442,7 +443,7 @@ impl Number {
             }
             NumValue::BigRational(s) => {
                 if s.is_integer() {
-                    isize::try_from(s.to_integer()).map_err(|_| self)
+                    i64::try_from(s.to_integer()).map_err(|_| self)
                 } else {
                     float_int(&ratio_to_float(s)).ok_or(self)
                 }
@@ -453,12 +454,12 @@ impl Number {
 
     /// Converts to an integer, rounding towards zero.
     ///
-    /// An integer that is too big to fit in an isize returns `None`.
-    pub fn to_integer(&self) -> Option<isize> {
+    /// An integer that is too big to fit in an i64 returns `None`.
+    pub fn to_integer(&self) -> Option<i64> {
         match &self.value {
             NumValue::Rational(s) => Some(s.to_integer()),
-            NumValue::BigRational(s) => isize::try_from(s.to_integer()).ok(),
-            NumValue::Float(s) => Some(s.ceil() as isize),
+            NumValue::BigRational(s) => i64::try_from(s.to_integer()).ok(),
+            NumValue::Float(s) => Some(s.ceil() as i64),
         }
     }
     /// Computes self^p.
@@ -479,8 +480,8 @@ impl Number {
     }
 }
 
-impl From<isize> for Number {
-    fn from(value: isize) -> Number {
+impl From<i64> for Number {
+    fn from(value: i64) -> Number {
         Number {
             value: value.into(),
         }
@@ -488,13 +489,12 @@ impl From<isize> for Number {
 }
 impl From<i32> for Number {
     fn from(value: i32) -> Number {
-        // isize is be at least 32 bits.
-        (value as isize).into()
+        Number::from(i64::from(value))
     }
 }
 impl From<usize> for Number {
     fn from(value: usize) -> Number {
-        match isize::try_from(value) {
+        match i64::try_from(value) {
             Ok(v) => v.into(),
             Err(_) => Ratio::from_integer(BigInt::from(value)).into(),
         }
@@ -529,17 +529,17 @@ impl Add for Number {
         }
     }
 }
-impl Mul<Ratio<isize>> for Number {
+impl Mul<Rational> for Number {
     type Output = Self;
-    fn mul(self, rhs: Ratio<isize>) -> Self {
+    fn mul(self, rhs: Rational) -> Self {
         Number {
             value: &self.value * &rhs,
         }
     }
 }
-impl Mul<isize> for Number {
+impl Mul<i64> for Number {
     type Output = Self;
-    fn mul(self, rhs: isize) -> Self {
+    fn mul(self, rhs: i64) -> Self {
         Number {
             value: self.value * rhs,
         }
@@ -553,9 +553,9 @@ impl Div for Number {
         }
     }
 }
-impl Div<isize> for Number {
+impl Div<i64> for Number {
     type Output = Self;
-    fn div(self, rhs: isize) -> Self {
+    fn div(self, rhs: i64) -> Self {
         Number {
             value: self.value / rhs,
         }
@@ -582,10 +582,7 @@ impl From<&NumValue> for f64 {
     }
 }
 
-use std::convert::TryInto;
-fn ratio_to_float<
-    T: TryInto<i32> + Div<isize, Output = T> + Signed + Clone,
->(
+fn ratio_to_float<T: TryInto<i32> + Div<i64, Output = T> + Signed + Clone>(
     val: &Ratio<T>,
 ) -> f64 {
     let numer: T = val.numer().clone();
@@ -612,9 +609,9 @@ impl<'a> Div for &'a Number {
     }
 }
 
-impl Mul<&Ratio<isize>> for &Number {
+impl Mul<&Rational> for &Number {
     type Output = Number;
-    fn mul(self, rhs: &Ratio<isize>) -> Self::Output {
+    fn mul(self, rhs: &Rational) -> Self::Output {
         Number {
             value: &self.value * rhs,
         }
@@ -846,8 +843,11 @@ fn debug_long_integer() {
 #[test]
 fn debug_biginteger() {
     assert_eq!(
-        format!("{:?}", Number::from(Ratio::<BigInt>::new(17.into(), 1.into()))),
-        "Number [BigInt { sign: Plus, data: BigUint { data: [17] } }, BigInt { sign: Plus, data: BigUint { data: [1] } }]",
+        format!(
+            "{:?}",
+            Number::from(Ratio::<BigInt>::new(17.into(), 1.into()))
+        ),
+        "Number [17, 1]",
     );
 }
 

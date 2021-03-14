@@ -276,7 +276,7 @@ fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, Error> {
     get_checked(s, name.into(), check::numeric)
 }
 
-fn get_integer(s: &Scope, name: Name) -> Result<isize, Error> {
+fn get_integer(s: &Scope, name: Name) -> Result<i64, Error> {
     get_checked(s, name, check::unitless_int)
 }
 
@@ -297,7 +297,7 @@ mod check {
             format!("{} is not a number", v.format(Format::introspect()))
         })
     }
-    pub fn int(v: Value) -> Result<isize, String> {
+    pub fn int(v: Value) -> Result<i64, String> {
         numeric(v)?.value.into_integer().map_err(|v| {
             format!("{} is not an int", v.format(Format::introspect()))
         })
@@ -314,7 +314,7 @@ mod check {
             ))
         }
     }
-    pub fn unitless_int(v: Value) -> Result<isize, String> {
+    pub fn unitless_int(v: Value) -> Result<i64, String> {
         let v0 = unitless(v)?;
         v0.into_integer().map_err(|v| {
             format!("{} is not an int", v.format(Format::introspect()))

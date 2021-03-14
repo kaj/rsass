@@ -320,7 +320,7 @@ pub fn decimal_integer(input: Span) -> IResult<Span, Number> {
         // Note: We should use bytes directly, one_of returns a char.
         one_of("0123456789"),
         Number::from(0),
-        |r, d| (r * 10) + Number::from(isize::from(d as u8 - b'0')),
+        |r, d| (r * 10) + Number::from(i64::from(d as u8 - b'0')),
     )(input)
 }
 
@@ -333,8 +333,7 @@ pub fn decimal_decimals(input: Span) -> IResult<Span, Number> {
                 (Number::from(0), Number::from(1)),
                 |(r, n), d| {
                     (
-                        (r * 10)
-                            + Number::from(isize::from(d as i8 - b'0' as i8)),
+                        (r * 10) + Number::from(i64::from(d as u8 - b'0')),
                         n * 10,
                     )
                 },
@@ -495,7 +494,7 @@ mod test {
         check_expr("+.34;", number(34, 100))
     }
 
-    fn number(nom: isize, denom: isize) -> Value {
+    fn number(nom: i64, denom: i64) -> Value {
         Value::scalar(Rational::new(nom, denom))
     }
 

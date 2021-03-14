@@ -127,7 +127,7 @@ impl Value {
 
     /// Check that this value is an integer.
     #[deprecated]
-    pub fn integer_value(&self) -> Result<isize, Error> {
+    pub fn integer_value(&self) -> Result<i64, Error> {
         match self {
             &Value::Numeric(ref num, ..) => num
                 .value

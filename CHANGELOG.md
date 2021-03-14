@@ -14,6 +14,7 @@ project adheres to
 * The unit of a `Numeric` is now a `UnitSet` rather than a `Unit`.
 * `Error` has new variants and a new field in `BadArguments`.
 * A sass::Value::Call now has a source position.
+* A `Rational` is now a `Ratio<i64>` rather than a `Ratio<isize>`.
 
 ### Improvements
 
@@ -28,6 +29,7 @@ project adheres to
 * Boolean operators is truly lazy, e.g. `false and f($x)` does not call `f`.
 * Refactored number parsing to use overflowing rationals. PR #100.
 * Test suite sass-spec updated to 2021-03-02.
+* Updated num-rational and num-bigint to 0.4.0.
 
 Thanks to @alvra for reporting #98.
 

@@ -30,19 +30,19 @@ impl Rgba {
     /// Create a color from rgb byte values.
     pub fn from_rgb(r: u8, g: u8, b: u8) -> Self {
         Rgba {
-            red: Rational::from_integer(r as isize),
-            green: Rational::from_integer(g as isize),
-            blue: Rational::from_integer(b as isize),
+            red: Rational::from_integer(r.into()),
+            green: Rational::from_integer(g.into()),
+            blue: Rational::from_integer(b.into()),
             alpha: Rational::one(),
         }
     }
     /// Create a color from rgba byte values.
     pub fn from_rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
         Rgba {
-            red: Rational::from_integer(r as isize),
-            green: Rational::from_integer(g as isize),
-            blue: Rational::from_integer(b as isize),
-            alpha: Rational::from_integer(a as isize) / 255,
+            red: Rational::from_integer(r.into()),
+            green: Rational::from_integer(g.into()),
+            blue: Rational::from_integer(b.into()),
+            alpha: Rational::from_integer(a.into()) / 255,
         }
     }
 

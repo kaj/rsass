@@ -293,7 +293,7 @@ fn find_extreme_inner(
     }
 }
 
-fn intrand(lim: isize) -> isize {
+fn intrand(lim: i64) -> i64 {
     thread_rng().gen_range(0..lim)
 }
 

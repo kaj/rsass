@@ -65,8 +65,8 @@ pub fn create_module() -> Scope {
         }
     );
     def!(f, length(list), |s| match s.get("list")? {
-        Value::List(v, _, _) => Ok(Value::scalar(v.len() as isize)),
-        Value::Map(m) => Ok(Value::scalar(m.len() as isize)),
+        Value::List(v, _, _) => Ok(Value::scalar(v.len() as i64)),
+        Value::Map(m) => Ok(Value::scalar(m.len() as i64)),
         // A null value is considered eqivalent to an empty list
         Value::Null => Ok(Value::scalar(0)),
         // Any other value is a singleton list of that value
@@ -195,16 +195,16 @@ fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
     }
 }
 
-fn list_index(n: isize, list: &[Value], name: Name) -> Result<usize, Error> {
+fn list_index(n: i64, list: &[Value], name: Name) -> Result<usize, Error> {
     let len = list.len();
     rust_index(n, len, name)
 }
 
-fn rust_index(n: isize, len: usize, name: Name) -> Result<usize, Error> {
+fn rust_index(n: i64, len: usize, name: Name) -> Result<usize, Error> {
     if n > 0 && n as usize <= len {
         Ok((n - 1) as usize)
-    } else if n < 0 && n >= -(len as isize) {
-        Ok((len as isize + n) as usize)
+    } else if n < 0 && n >= -(len as i64) {
+        Ok((len as i64 + n) as usize)
     } else {
         let msg = if n == 0 {
             "List index may not be 0".into()
