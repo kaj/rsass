@@ -152,7 +152,7 @@ impl Mul<isize> for NumValue {
     type Output = Self;
     fn mul(self, rhs: isize) -> Self {
         match self {
-            NumValue::Rational(s) => (s * rhs).into(),
+            s @ NumValue::Rational(_) => s * NumValue::from(rhs),
             NumValue::BigRational(s) => (s * BigInt::from(rhs)).into(),
             NumValue::Float(s) => (s * (rhs as f64)).into(),
         }
