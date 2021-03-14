@@ -1,7 +1,7 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
 #![allow(clippy::unreadable_literal)]
+use super::Rational;
 use lazy_static::lazy_static;
-use num_rational::Rational;
 use num_traits::{one, One, Signed, Zero};
 use std::collections::BTreeMap;
 use std::ops::{Add, Div, Sub};

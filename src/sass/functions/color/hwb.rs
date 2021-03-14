@@ -5,8 +5,7 @@ use crate::css::Value;
 use crate::output::Format;
 use crate::value::{Hwba, Number, Unit};
 use crate::Scope;
-use num_rational::Rational;
-use num_traits::One;
+use num_traits::one;
 
 pub fn register(f: &mut Scope) {
     def!(
@@ -40,7 +39,7 @@ pub fn register(f: &mut Scope) {
             let w = check_pct_rational_range(w).named(name!(whiteness))?;
             let b = check_pct_rational_range(b).named(name!(blackness))?;
             let a = match a {
-                Value::Null => Rational::one(),
+                Value::Null => one(),
                 a => to_rational2(a).named(name!(alpha))?,
             };
             Ok(Hwba::new(hue.as_ratio()?, w, b, a).into())

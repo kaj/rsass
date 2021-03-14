@@ -4,10 +4,9 @@ use super::{
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
-use crate::value::{ListSeparator, Quotes, Rgba};
+use crate::value::{ListSeparator, Quotes, Rational, Rgba};
 use crate::Scope;
-use num_rational::Rational;
-use num_traits::{one, One, Zero};
+use num_traits::{one, Zero};
 
 fn do_rgba(fn_name: &str, s: &Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
@@ -87,10 +86,9 @@ fn rgba_from_values(
     let r = to_channel(r, name!(red))?;
     let g = to_channel(g, name!(green))?;
     let b = to_channel(b, name!(blue))?;
-    let a = if a.is_null() {
-        Some(Rational::one())
-    } else {
-        nospecial_value(a, name!(alpha), to_rational)?
+    let a = match a {
+        Value::Null => Some(one()),
+        a => nospecial_value(a, name!(alpha), to_rational)?,
     };
     if let (Some(r), Some(g), Some(b), Some(a)) = (r, g, b, a) {
         Ok(Some(Rgba::new(r, g, b, a).into()))
@@ -169,7 +167,7 @@ pub fn register(f: &mut Scope) {
         let b = get_color(s, "color2")?;
         let b = b.to_rgba();
         let w = get_checked(s, name!(weight), check_pct_rational_range)?;
-        let one = Rational::one();
+        let one: Rational = one();
 
         let w_a = {
             let wa = a.alpha() - b.alpha();

@@ -7,7 +7,9 @@ use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string, SourcePos, Span};
 use crate::sass::{SassString, Value};
-use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
+use crate::value::{
+    ListSeparator, Number, Numeric, Operator, Rational, Rgba,
+};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
@@ -20,7 +22,7 @@ use nom::multi::{fold_many0, fold_many1, many0, many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use nom::IResult;
 use num_bigint::BigInt;
-use num_rational::{Ratio, Rational};
+use num_rational::Ratio;
 use num_traits::{One, Zero};
 use std::str::from_utf8;
 
@@ -505,7 +507,6 @@ mod test {
     use crate::sass::CallArgs;
     use crate::sass::Value::*;
     use crate::ScopeRef;
-    use num_rational::Rational;
 
     #[test]
     fn simple_number() {

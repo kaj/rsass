@@ -4,8 +4,7 @@ use super::{
 use crate::css::Value;
 use crate::output::Format;
 use crate::sass::Name;
-use crate::value::{Number, Numeric, Quotes, Unit, UnitSet};
-use num_rational::Rational;
+use crate::value::{Number, Numeric, Quotes, Rational, Unit, UnitSet};
 use rand::{thread_rng, Rng};
 use std::cmp::Ordering;
 use std::f64::consts::{E, PI};

@@ -5,10 +5,9 @@ use super::{
 };
 use crate::css::Value;
 use crate::output::Format;
-use crate::value::{Hsla, Numeric, Unit};
+use crate::value::{Hsla, Numeric, Rational, Unit};
 use crate::Scope;
-use num_rational::Rational;
-use num_traits::{zero, One, Zero};
+use num_traits::{one, zero};
 
 fn do_hsla(fn_name: &str, s: &Scope) -> Result<Value, Error> {
     let a = s.get("alpha")?;
@@ -41,10 +40,9 @@ fn hsla_from_values(
     let h = nospecial_value(h, name!(hue), to_rational)?;
     let s = nospecial_value(s, name!(saturation), to_rational_percent)?;
     let l = nospecial_value(l, name!(lightness), to_rational_percent)?;
-    let a = if a.is_null() {
-        Some(Rational::one())
-    } else {
-        nospecial_value(a, name!(alpha), to_rational2)?
+    let a = match a {
+        Value::Null => Some(one()),
+        a => nospecial_value(a, name!(alpha), to_rational2)?,
     };
     if let (Some(h), Some(s), Some(l), Some(a)) = (h, s, l, a) {
         Ok(Some(Hsla::new(h, s, l, a).into()))
@@ -135,7 +133,7 @@ pub fn register(f: &mut Scope) {
         Value::Color(col, _) => {
             let hsla = col.to_hsla();
             Ok(
-                Hsla::new(hsla.hue(), Zero::zero(), hsla.lum(), hsla.alpha())
+                Hsla::new(hsla.hue(), zero(), hsla.lum(), hsla.alpha())
                     .into(),
             )
         }
@@ -174,7 +172,7 @@ fn to_rational(v: Value) -> Result<Rational, String> {
 /// If v is not a percentage, keep it as it is.
 pub fn to_rational2(v: Value) -> Result<Rational, String> {
     match v {
-        Value::Null => Ok(Rational::zero()),
+        Value::Null => Ok(zero()),
         Value::Numeric(v, ..) => {
             let r = v.value.as_ratio().map_err(|e| e.to_string())?;
             if v.unit.is_percent() {

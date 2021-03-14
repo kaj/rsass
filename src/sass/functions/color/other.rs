@@ -3,10 +3,9 @@ use super::{
     get_opt_check, get_opt_rational, make_call, Error, FunctionMap, Name,
 };
 use crate::css::Value;
-use crate::value::{Hsla, Hwba, Rgba};
+use crate::value::{Hsla, Hwba, Rational, Rgba};
 use crate::Scope;
-use num_rational::Rational;
-use num_traits::{One, Signed};
+use num_traits::{one, Signed};
 
 pub fn register(f: &mut Scope) {
     def!(
@@ -110,7 +109,7 @@ pub fn register(f: &mut Scope) {
                     }
                 }
             };
-            let one = Rational::one();
+            let one: Rational = one();
             let ff = Rational::from_integer(255);
             if h_adj.is_none()
                 && s_adj.is_none()

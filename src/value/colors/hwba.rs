@@ -1,5 +1,4 @@
-use super::clamp;
-use num_rational::Rational;
+use super::{clamp, Rational};
 use num_traits::{one, zero};
 
 /// A color defined by hue, whiteness, blackness, and alpha.
