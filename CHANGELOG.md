@@ -7,7 +7,9 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.19.0 - 2021-03-14
+
+Progress: 3371 of 5945 tests passed in dart-sass compatibility mode.
 
 ### Breaking changes
 
@@ -32,6 +34,13 @@ project adheres to
 * Updated num-rational and num-bigint to 0.4.0.
 
 Thanks to @alvra for reporting #98.
+
+Tested with rustc 1.50.0 (cb75ad5db 2021-02-10),
+rustc 1.48.0 (7eac88abb 2020-11-16),
+rustc 1.46.0 (04488afe3 2020-08-24),
+rustc 1.44.1 (c7087fe00 2020-06-17),
+rustc 1.51.0-beta.6 (6a1835ad7 2021-03-12), and
+rustc 1.52.0-nightly (acca81892 2021-03-13).
 
 
 ## Release 0.18.0 - 2021-02-25
