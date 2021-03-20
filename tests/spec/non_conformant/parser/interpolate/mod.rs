@@ -1,6 +1,4 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate"
-#[allow(unused)]
-use super::rsass;
 
 mod t00_concatenation;
 

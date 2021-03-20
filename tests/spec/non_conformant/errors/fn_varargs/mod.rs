@@ -1,24 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/fn-varargs"
-#[allow(unused)]
-use super::rsass;
 
-// From "sass-spec/spec/non_conformant/errors/fn-varargs/at-start.hrx"
+mod at_start;
 
-// Ignoring "at_start", error tests are not supported yet.
+mod multiple;
 
-// From "sass-spec/spec/non_conformant/errors/fn-varargs/multiple.hrx"
+mod with_default;
 
-// Ignoring "multiple", error tests are not supported yet.
-
-// From "sass-spec/spec/non_conformant/errors/fn-varargs/with-default.hrx"
-
-// Ignoring "with_default", error tests are not supported yet.
-
-// From "sass-spec/spec/non_conformant/errors/fn-varargs/with-optional.hrx"
-#[test]
-fn with_optional() {
-    assert_eq!(
-        rsass("@function test($param:\"default\",$rest...) {}").unwrap(),
-        ""
-    );
-}
+mod with_optional;

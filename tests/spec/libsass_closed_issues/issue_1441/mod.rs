@@ -1,63 +1,7 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1441"
-#[allow(unused)]
-use super::rsass;
 
-// From "sass-spec/spec/libsass-closed-issues/issue_1441/adjacent.hrx"
-#[test]
-fn adjacent() {
-    assert_eq!(
-        rsass(
-            ".adjacent {\
-            \n    & + & {\
-            \n        foo: bar;\
-            \n    }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        ".adjacent + .adjacent {\
-        \n  foo: bar;\
-        \n}\
-        \n"
-    );
-}
+mod adjacent;
 
-// From "sass-spec/spec/libsass-closed-issues/issue_1441/child.hrx"
-#[test]
-fn child() {
-    assert_eq!(
-        rsass(
-            ".child {\
-            \n    & > & {\
-            \n        foo: bar;\
-            \n    }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        ".child > .child {\
-        \n  foo: bar;\
-        \n}\
-        \n"
-    );
-}
+mod child;
 
-// From "sass-spec/spec/libsass-closed-issues/issue_1441/sibling.hrx"
-#[test]
-fn sibling() {
-    assert_eq!(
-        rsass(
-            ".sibling {\
-            \n    & ~ & {\
-            \n        foo: bar;\
-            \n    }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
-        ".sibling ~ .sibling {\
-        \n  foo: bar;\
-        \n}\
-        \n"
-    );
-}
+mod sibling;

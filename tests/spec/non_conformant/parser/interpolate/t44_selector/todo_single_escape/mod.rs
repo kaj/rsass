@@ -1,15 +1,7 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/44_selector/todo_single_escape"
-#[allow(unused)]
-use super::rsass;
 
-// From "sass-spec/spec/non_conformant/parser/interpolate/44_selector/todo_single_escape/11_escaped_interpolated_value.hrx"
+mod t11_escaped_interpolated_value;
 
-// Ignoring "t11_escaped_interpolated_value", error tests are not supported yet.
+mod t21_escaped_interpolated_variable;
 
-// From "sass-spec/spec/non_conformant/parser/interpolate/44_selector/todo_single_escape/21_escaped_interpolated_variable.hrx"
-
-// Ignoring "t21_escaped_interpolated_variable", error tests are not supported yet.
-
-// From "sass-spec/spec/non_conformant/parser/interpolate/44_selector/todo_single_escape/31_escaped_literal.hrx"
-
-// Ignoring "t31_escaped_literal", error tests are not supported yet.
+mod t31_escaped_literal;

@@ -1,6 +1,4 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions"
-#[allow(unused)]
-use super::rsass;
 
 mod color;
 

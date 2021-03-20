@@ -1,87 +1,25 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/imported"
-#[allow(unused)]
-use super::rsass;
 
-// From "sass-spec/spec/libsass/base-level-parent/imported/at-root-alone-itpl.hrx"
+mod at_root_alone_itpl;
 
-// Ignoring "at_root_alone_itpl", error tests are not supported yet.
+mod at_root_alone;
 
-// From "sass-spec/spec/libsass/base-level-parent/imported/at-root-alone.hrx"
+mod at_root_postfix_itpl;
 
-// Ignoring "at_root_alone", error tests are not supported yet.
+mod at_root_postfix;
 
-// From "sass-spec/spec/libsass/base-level-parent/imported/at-root-postfix-itpl.hrx"
-#[test]
-#[ignore] // wrong result
-fn at_root_postfix_itpl() {
-    assert_eq!(
-        rsass("@import \"include.scss\";").unwrap(),
-        "post foo {\
-        \n  bar: baz;\
-        \n}\
-        \n"
-    );
-}
+mod at_root_prefix_itpl;
 
-// From "sass-spec/spec/libsass/base-level-parent/imported/at-root-postfix.hrx"
+mod at_root_prefix;
 
-// Ignoring "at_root_postfix", error tests are not supported yet.
+mod basic_alone_itpl;
 
-// From "sass-spec/spec/libsass/base-level-parent/imported/at-root-prefix-itpl.hrx"
-#[test]
-#[ignore] // wrong result
-fn at_root_prefix_itpl() {
-    assert_eq!(
-        rsass("@import \"include.scss\";").unwrap(),
-        "pre foo {\
-        \n  bar: baz;\
-        \n}\
-        \n"
-    );
-}
+mod basic_alone;
 
-// From "sass-spec/spec/libsass/base-level-parent/imported/at-root-prefix.hrx"
+mod basic_postfix_itpl;
 
-// Ignoring "at_root_prefix", error tests are not supported yet.
+mod basic_postfix;
 
-// From "sass-spec/spec/libsass/base-level-parent/imported/basic-alone-itpl.hrx"
+mod basic_prefix_itpl;
 
-// Ignoring "basic_alone_itpl", error tests are not supported yet.
-
-// From "sass-spec/spec/libsass/base-level-parent/imported/basic-alone.hrx"
-
-// Ignoring "basic_alone", error tests are not supported yet.
-
-// From "sass-spec/spec/libsass/base-level-parent/imported/basic-postfix-itpl.hrx"
-#[test]
-#[ignore] // wrong result
-fn basic_postfix_itpl() {
-    assert_eq!(
-        rsass("@import \"include.scss\";").unwrap(),
-        "post foo {\
-        \n  bar: baz;\
-        \n}\
-        \n"
-    );
-}
-
-// From "sass-spec/spec/libsass/base-level-parent/imported/basic-postfix.hrx"
-
-// Ignoring "basic_postfix", error tests are not supported yet.
-
-// From "sass-spec/spec/libsass/base-level-parent/imported/basic-prefix-itpl.hrx"
-#[test]
-#[ignore] // wrong result
-fn basic_prefix_itpl() {
-    assert_eq!(
-        rsass("@import \"include.scss\";").unwrap(),
-        "pre foo {\
-        \n  bar: baz;\
-        \n}\
-        \n"
-    );
-}
-
-// From "sass-spec/spec/libsass/base-level-parent/imported/basic-prefix.hrx"
-
-// Ignoring "basic_prefix", error tests are not supported yet.
+mod basic_prefix;

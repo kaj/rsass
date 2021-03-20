@@ -1,15 +1,7 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/error-directive-nested"
-#[allow(unused)]
-use super::rsass;
 
-// From "sass-spec/spec/libsass/error-directive-nested/function.hrx"
+mod function;
 
-// Ignoring "function", error tests are not supported yet.
+mod inline;
 
-// From "sass-spec/spec/libsass/error-directive-nested/inline.hrx"
-
-// Ignoring "inline", error tests are not supported yet.
-
-// From "sass-spec/spec/libsass/error-directive-nested/mixin.hrx"
-
-// Ignoring "mixin", error tests are not supported yet.
+mod mixin;

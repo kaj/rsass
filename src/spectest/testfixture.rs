@@ -95,7 +95,7 @@ impl TestFixture {
                      \n        {}\
                      \n    );",
                     if precision.is_none() {
-                        "rsass("
+                        "crate::rsass("
                     } else {
                         "crate::rsass_fmt(format,"
                     },

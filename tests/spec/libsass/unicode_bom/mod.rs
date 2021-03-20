@@ -1,6 +1,4 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/unicode-bom"
-#[allow(unused)]
-use super::rsass;
 
 // Ignoring "utf-16-big", not expected to work yet.
 
@@ -10,7 +8,7 @@ use super::rsass;
 #[test]
 fn utf_8() {
     assert_eq!(
-        rsass("\u{feff}foo { bar: baz; }").unwrap(),
+        crate::rsass("\u{feff}foo { bar: baz; }").unwrap(),
         "foo {\
         \n  bar: baz;\
         \n}\

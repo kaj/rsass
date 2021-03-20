@@ -1,12 +1,10 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/24_escapes_double_quoted_specials"
-#[allow(unused)]
-use super::rsass;
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/24_escapes_double_quoted_specials/01_inline"
 #[test]
 fn t01_inline() {
     assert_eq!(
-        rsass(
+        crate::rsass(
             ".result {\
             \n  output: \"\\0_\\a_\\A\";\
             \n  output: #{\"\\0_\\a_\\A\"};\
@@ -35,7 +33,7 @@ fn t01_inline() {
 #[test]
 fn t02_variable() {
     assert_eq!(
-        rsass(
+        crate::rsass(
             "$input: \"\\0_\\a_\\A\";\
             \n.result {\
             \n  output: $input;\
@@ -65,7 +63,7 @@ fn t02_variable() {
 #[test]
 fn t03_inline_double() {
     assert_eq!(
-        rsass(
+        crate::rsass(
             ".result {\
             \n  output: #{#{\"\\0_\\a_\\A\"}};\
             \n  output: #{\"[#{\"\\0_\\a_\\A\"}]\"};\
@@ -92,7 +90,7 @@ fn t03_inline_double() {
 #[test]
 fn t04_variable_double() {
     assert_eq!(
-        rsass(
+        crate::rsass(
             "$input: \"\\0_\\a_\\A\";\
             \n.result {\
             \n  output: #{#{$input}};\
@@ -120,7 +118,7 @@ fn t04_variable_double() {
 #[test]
 fn t06_escape_interpolation() {
     assert_eq!(
-        rsass(
+        crate::rsass(
             "$input: \"\\0_\\a_\\A\";\
             \n.result {\
             \n  output: \"[\\#{\"\\0_\\a_\\A\"}]\";\
@@ -146,7 +144,7 @@ fn t06_escape_interpolation() {
 #[test]
 fn todo_05_variable_quoted_double() {
     assert_eq!(
-        rsass(
+        crate::rsass(
             "$input: \"\\0_\\a_\\A\";\
             \n.result {\
             \n  dquoted: \"#{#{$input}}\";\

@@ -125,9 +125,24 @@ fn handle_entries(
         } else if entry.file_type()?.is_file()
             && entry.file_name().to_string_lossy().ends_with(".hrx")
         {
-            spec_hrx_to_test(rs, &entry.path(), precision).map_err(|e| {
-                Error(format!("Failed to handle {:?}: {}", entry.path(), e))
-            })?;
+            let name = fn_name_os(&entry.file_name());
+            writeln!(rs, "\nmod {};", name)?;
+            let mut rs =
+                File::create(rssuitedir.join(format!("{}.rs", name)))?;
+            writeln!(
+                rs,
+                "//! Tests auto-converted from {:?}\n",
+                suitedir.join(entry.file_name()),
+            )?;
+            spec_hrx_to_test(&mut rs, &entry.path(), precision).map_err(
+                |e| {
+                    Error(format!(
+                        "Failed to handle {:?}: {}",
+                        entry.path(),
+                        e
+                    ))
+                },
+            )?;
         } else if entry.file_type()?.is_dir() {
             if entry.path().join("error").is_file() {
                 ignore(
@@ -168,9 +183,7 @@ fn handle_entries(
                         let mut rs = File::create(rssuitedir.join("mod.rs"))?;
                         writeln!(
                             rs,
-                            "//! Tests auto-converted from {:?}\
-                             \n#[allow(unused)]\
-                             \nuse super::rsass;",
+                            "//! Tests auto-converted from {:?}\n",
                             suitedir.join(entry.file_name()),
                         )?;
                         let tt = format!(
@@ -232,8 +245,8 @@ fn spec_hrx_to_test(
     let archive = Archive::load(suite)
         .map_err(|e| Error(format!("Failed to load hrx: {}", e)))?;
 
-    writeln!(rs, "\n// From {:?}", suite)?;
     eprintln!("Handle {}", suite.display());
+    writeln!(rs)?;
     handle_hrx_part(rs, suite, &archive, "", precision)
 }
 
@@ -263,7 +276,7 @@ fn handle_hrx_part(
         .collect::<BTreeSet<_>>();
 
     let name = if prefix.is_empty() {
-        fn_name_os(&suite.file_name().unwrap_or_default())
+        None
     } else {
         let t = if prefix.ends_with('/') {
             &prefix[0..prefix.len() - 1]
@@ -275,12 +288,16 @@ fn handle_hrx_part(
         } else {
             t
         };
-        fn_name(t)
+        Some(fn_name(t))
     };
 
     if archive.get(&format!("{}input.scss", prefix)).is_some() {
-        let fixture =
-            load_test_fixture_hrx(name, &archive, prefix, precision)?;
+        let fixture = load_test_fixture_hrx(
+            name.unwrap_or_else(|| "test".into()),
+            &archive,
+            prefix,
+            precision,
+        )?;
         fixture.write_test(rs)
     } else {
         let options = archive
@@ -293,11 +310,9 @@ fn handle_hrx_part(
         } else {
             let precision = options.precision.or(precision);
             if !tests.is_empty() {
-                writeln!(
-                    rs,
-                    "mod {} {{\n#[allow(unused)]\nuse super::rsass;",
-                    name,
-                )?;
+                if let Some(ref name) = name {
+                    writeln!(rs, "mod {} {{", name,)?;
+                }
                 for name in tests {
                     handle_hrx_part(
                         rs,
@@ -307,7 +322,9 @@ fn handle_hrx_part(
                         precision,
                     )?;
                 }
-                writeln!(rs, "}}")?;
+                if name.is_some() {
+                    writeln!(rs, "}}")?;
+                }
             }
             Ok(())
         }
@@ -335,6 +352,7 @@ fn fn_name(name: &str) -> String {
         || t == "loop"
         || t == "match"
         || t == "override"
+        || t == "return"
         || t == "static"
         || t == "super"
         || t == "true"

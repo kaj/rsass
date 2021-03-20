@@ -1,19 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2023"
-#[allow(unused)]
-use super::rsass;
 
-// From "sass-spec/spec/libsass-closed-issues/issue_2023/id-selector-id.hrx"
+mod id_selector_id;
 
-// Ignoring "id_selector_id", error tests are not supported yet.
+mod id_selector_nr;
 
-// From "sass-spec/spec/libsass-closed-issues/issue_2023/id-selector-nr.hrx"
+mod pseudo_selector_id;
 
-// Ignoring "id_selector_nr", error tests are not supported yet.
-
-// From "sass-spec/spec/libsass-closed-issues/issue_2023/pseudo-selector-id.hrx"
-
-// Ignoring "pseudo_selector_id", error tests are not supported yet.
-
-// From "sass-spec/spec/libsass-closed-issues/issue_2023/pseudo-selector-nr.hrx"
-
-// Ignoring "pseudo_selector_nr", error tests are not supported yet.
+mod pseudo_selector_nr;

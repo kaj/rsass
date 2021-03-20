@@ -1,23 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/sass/semicolon"
-#[allow(unused)]
-use super::rsass;
 
-// From "sass-spec/spec/non_conformant/sass/semicolon/at_rule.hrx"
+mod at_rule;
 
-// From "sass-spec/spec/non_conformant/sass/semicolon/content.hrx"
+mod content;
 
-// From "sass-spec/spec/non_conformant/sass/semicolon/debug.hrx"
+mod debug;
 
-// From "sass-spec/spec/non_conformant/sass/semicolon/declaration.hrx"
+mod declaration;
 
-// From "sass-spec/spec/non_conformant/sass/semicolon/error.hrx"
+mod error;
 
-// From "sass-spec/spec/non_conformant/sass/semicolon/import.hrx"
+mod import;
 
-// From "sass-spec/spec/non_conformant/sass/semicolon/include.hrx"
+mod include;
 
-// From "sass-spec/spec/non_conformant/sass/semicolon/return.hrx"
+mod test_return;
 
-// From "sass-spec/spec/non_conformant/sass/semicolon/variable.hrx"
+mod variable;
 
-// From "sass-spec/spec/non_conformant/sass/semicolon/warn.hrx"
+mod warn;
