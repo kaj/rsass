@@ -30,7 +30,7 @@ mod error {
     // Ignoring "selector_unify", error tests are not supported yet.
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn extend() {
     assert_eq!(
         crate::rsass(
@@ -46,7 +46,7 @@ fn extend() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn is_superselector() {
     assert_eq!(
         crate::rsass(
@@ -92,7 +92,7 @@ fn parse() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn replace() {
     assert_eq!(
         crate::rsass(
@@ -108,7 +108,7 @@ fn replace() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn simple_selectors() {
     assert_eq!(
         crate::rsass(
@@ -124,7 +124,7 @@ fn simple_selectors() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn unify() {
     assert_eq!(
         crate::rsass(

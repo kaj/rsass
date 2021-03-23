@@ -111,7 +111,7 @@ fn inspect() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn keywords() {
     assert_eq!(
         crate::rsass(
