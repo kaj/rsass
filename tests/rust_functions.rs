@@ -32,7 +32,7 @@ fn simple_function() {
     scope.define_function(
         Name::from_static("get_answer"),
         Function::builtin(
-            &Name::from_static(""),
+            "",
             &Name::from_static("get_answer"),
             FormalArgs::none(),
             Arc::new(|_| Ok(css::Value::scalar(42))),
@@ -60,7 +60,7 @@ fn function_with_args() {
     scope.define_function(
         Name::from_static("halfway"),
         Function::builtin(
-            &Name::from_static(""),
+            "",
             &Name::from_static("halfway"),
             FormalArgs::new(vec![
                 ("a".into(), None),

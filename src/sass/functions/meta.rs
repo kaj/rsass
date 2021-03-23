@@ -141,13 +141,12 @@ static IMPLEMENTED_FEATURES: &[&str] = &[
 ];
 
 fn call_scope(s: &Scope) -> ScopeRef {
-    s.get_module(&Name::from_static("%%CALLING_SCOPE%%"))
-        .unwrap()
+    s.get_module("%%CALLING_SCOPE%%").unwrap()
 }
 
 fn get_scope(s: &Scope, module: Option<String>) -> Result<ScopeRef, Error> {
     if let Some(module) = module {
-        if let Some(module) = call_scope(s).get_module(&(&module).into()) {
+        if let Some(module) = call_scope(s).get_module(&module) {
             Ok(module)
         } else {
             Err(Error::error(format!(

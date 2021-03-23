@@ -58,7 +58,7 @@ fn handle_item(
                     }
                     UseAs::Name(name) => {
                         let name = name.evaluate(scope.clone())?.0;
-                        scope.define_module(name.into(), module);
+                        scope.define_module(name, module);
                     }
                 }
                 Ok(())

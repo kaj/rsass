@@ -120,7 +120,7 @@ impl Function {
     /// Note: This does not expose the function in any scope, it just
     /// creates it.
     pub fn builtin(
-        module: &Name,
+        module: &str,
         name: &Name,
         args: FormalArgs,
         body: Arc<BuiltinFn>,
@@ -157,19 +157,19 @@ impl Function {
         callscope: ScopeRef,
         args: &CallArgs,
     ) -> Result<Value, Error> {
-        let cs = Name::from_static("%%CALLING_SCOPE%%");
+        let cs = "%%CALLING_SCOPE%%";
         match self.body {
             FuncImpl::Builtin(ref body) => {
                 let s = self.do_eval_args(
                     ScopeRef::new_global(callscope.get_format()),
                     args,
                 )?;
-                s.define_module(cs, callscope);
+                s.define_module(cs.into(), callscope);
                 body(&s)
             }
             FuncImpl::UserDefined(ref defscope, ref body) => {
                 let s = self.do_eval_args(defscope.clone(), args)?;
-                s.define_module(cs, callscope);
+                s.define_module(cs.into(), callscope);
                 Ok(s.eval_body(body)?.unwrap_or(Value::Null))
             }
         }
@@ -214,7 +214,7 @@ impl Functions for FunctionMap {
         args: FormalArgs,
         body: Arc<BuiltinFn>,
     ) {
-        let f = Function::builtin(&name!(), &name, args, body);
+        let f = Function::builtin("", &name, args, body);
         self.insert(name, f);
     }
 }

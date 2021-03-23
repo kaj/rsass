@@ -28,13 +28,11 @@ impl Name {
     /// Check if a name is "module.local".
     ///
     /// If so, return the module name and the local name as separate names.
-    pub fn split_module(&self) -> Option<(Name, Name)> {
+    pub fn split_module(&self) -> Option<(String, Name)> {
         let mut parts = self.key.splitn(2, '.');
         if let (Some(module), Some(local)) = (parts.next(), parts.next()) {
             Some((
-                Name {
-                    key: module.to_string().into(),
-                },
+                module.to_string(),
                 Name {
                     key: local.to_string().into(),
                 },

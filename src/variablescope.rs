@@ -172,7 +172,7 @@ impl Deref for ScopeRef {
 /// global scopes may exists in the same rust-language process.
 pub struct Scope {
     parent: Option<ScopeRef>,
-    modules: Mutex<BTreeMap<Name, ScopeRef>>,
+    modules: Mutex<BTreeMap<String, ScopeRef>>,
     variables: Mutex<BTreeMap<Name, Value>>,
     mixins: Mutex<BTreeMap<Name, Mixin>>,
     functions: Mutex<BTreeMap<Name, Function>>,
@@ -208,10 +208,10 @@ impl<'a> Scope {
         );
         s
     }
-    pub(crate) fn get_name(&self) -> Name {
+    pub(crate) fn get_name(&self) -> String {
         match self.get_or_none(&Name::from_static("@scope_name@")) {
-            Some(Value::Literal(s, _q)) => s.into(),
-            _ => Name::from_static(""),
+            Some(Value::Literal(s, _q)) => s,
+            _ => "".into(),
         }
     }
     /// Create a new subscope of a given parent.
@@ -244,14 +244,14 @@ impl<'a> Scope {
     /// Define a module in the scope.
     ///
     /// This is used by the `@use` statement.
-    pub fn define_module(&self, name: Name, module: ScopeRef) {
+    pub fn define_module(&self, name: String, module: ScopeRef) {
         self.modules.lock().unwrap().insert(name, module);
     }
     /// Get a module.
     ///
     /// This is used when refering to a function or variable with
     /// namespace.name notation.
-    pub fn get_module(&self, name: &Name) -> Option<ScopeRef> {
+    pub fn get_module(&self, name: &str) -> Option<ScopeRef> {
         self.modules
             .lock()
             .unwrap()
@@ -411,7 +411,7 @@ impl<'a> Scope {
                 Some(f)
             } else if let Some(ref parent) = self.parent {
                 parent.get_function(name)
-            } else if self.get_name().as_ref() == "" {
+            } else if self.get_name() == "" {
                 Function::get_builtin(name).cloned()
             } else {
                 None

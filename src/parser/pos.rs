@@ -30,7 +30,7 @@ impl SourcePos {
     pub(crate) fn mock_function(
         name: &Name,
         args: &FormalArgs,
-        module: &Name,
+        module: &str,
     ) -> Self {
         let args = args.to_string();
         SourcePos {
@@ -38,7 +38,7 @@ impl SourcePos {
             line_no: 1,
             line_pos: 11,
             length: name.as_ref().chars().count() + args.chars().count(),
-            file: SourceName::root(module.as_ref()),
+            file: SourceName::root(module),
         }
     }
 
