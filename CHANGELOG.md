@@ -7,6 +7,12 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+* A space-separated list can be a key in a map.
+* The builtin modules does not inherit the global functions.
+
+
 ## Release 0.19.0 - 2021-03-14
 
 Progress: 3371 of 5945 tests passed in dart-sass compatibility mode.

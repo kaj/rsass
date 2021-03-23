@@ -411,8 +411,10 @@ impl<'a> Scope {
                 Some(f)
             } else if let Some(ref parent) = self.parent {
                 parent.get_function(name)
-            } else {
+            } else if self.get_name().as_ref() == "" {
                 Function::get_builtin(name).cloned()
+            } else {
+                None
             }
         }
     }

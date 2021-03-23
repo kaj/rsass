@@ -139,6 +139,12 @@ impl Value {
                                 None,
                             ),
                         })
+                    } else if name.contains('.') {
+                        Err(Error::BadCall(
+                            "Error: Undefined function.".into(),
+                            pos.clone(),
+                            None,
+                        ))
                     } else {
                         Ok(css::Value::Call(name.to_string(), args))
                     }
