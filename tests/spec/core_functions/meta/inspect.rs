@@ -761,7 +761,6 @@ mod map {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn space() {
                 assert_eq!(
                     crate::rsass(

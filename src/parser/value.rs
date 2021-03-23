@@ -68,6 +68,26 @@ pub fn space_list(input: Span) -> IResult<Span, Value> {
     ))
 }
 
+pub fn simple_space_list(input: Span) -> IResult<Span, Value> {
+    let (input, first) = single_expression(input)?;
+    let (input, list) = fold_many0(
+        preceded(spacelike2, single_expression),
+        vec![first],
+        |mut list, item| {
+            list.push(item);
+            list
+        },
+    )(input)?;
+    Ok((
+        input,
+        if list.len() == 1 {
+            list.into_iter().next().unwrap()
+        } else {
+            Value::List(list, ListSeparator::Space, false)
+        },
+    ))
+}
+
 fn se_or_ext_string(input: Span) -> IResult<Span, Value> {
     alt((single_expression, map(sass_string_ext, Value::Literal)))(input)
 }
@@ -163,13 +183,13 @@ fn term_value(input: Span) -> IResult<Span, Value> {
 
 pub fn single_value(input: Span) -> IResult<Span, Value> {
     if let Ok((input0, _p)) = preceded(tag("("), opt_spacelike)(input) {
-        if let Ok((input, first_key)) = sum_expression(input0) {
+        if let Ok((input, first_key)) = simple_space_list(input0) {
             let (input, value) = if let Ok((mut input, first_val)) =
                 preceded(colon, space_list)(input)
             {
                 let mut items = vec![(first_key, first_val)];
                 while let Ok((rest, (key, val))) = pair(
-                    preceded(comma, sum_expression),
+                    preceded(comma, simple_space_list),
                     preceded(colon, space_list),
                 )(input)
                 {
