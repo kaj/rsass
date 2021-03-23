@@ -11,7 +11,7 @@ use crate::Scope;
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:map");
     // TODO deep_merge and deep_remove
-    def_va!(f, get(map, key = b"null", keys = b"()"), |s| {
+    def_va!(f, get(map, key, keys), |s| {
         let map = get_map(s, name!(map))?;
         let mut val = map.get(&s.get("key")?).cloned();
         match s.get("keys")? {
