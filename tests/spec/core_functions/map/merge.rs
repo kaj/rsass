@@ -92,7 +92,6 @@ fn named() {
 }
 mod nested {
     #[test]
-    #[ignore] // unexepected error
     fn different_keys() {
         assert_eq!(
         crate::rsass(
@@ -108,7 +107,6 @@ mod nested {
     }
     mod empty {
         #[test]
-        #[ignore] // unexepected error
         fn both() {
             assert_eq!(
                 crate::rsass(
@@ -123,7 +121,6 @@ mod nested {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn first() {
             assert_eq!(
                 crate::rsass(
@@ -138,7 +135,6 @@ mod nested {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn second() {
             assert_eq!(
                 crate::rsass(
@@ -154,7 +150,6 @@ mod nested {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn intermediate_value_is_not_a_map() {
         assert_eq!(
             crate::rsass(
@@ -169,7 +164,6 @@ mod nested {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn leaf_value_is_not_a_map() {
         assert_eq!(
             crate::rsass(
@@ -184,7 +178,6 @@ mod nested {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn multiple_keys() {
         assert_eq!(
         crate::rsass(
@@ -199,7 +192,6 @@ mod nested {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn overlapping_keys() {
         assert_eq!(
         crate::rsass(
@@ -214,7 +206,6 @@ mod nested {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn same_keys() {
         assert_eq!(
         crate::rsass(

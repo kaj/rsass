@@ -75,12 +75,21 @@ pub fn create_module() -> Scope {
         let map = get_map(s, name!(map))?;
         Ok(Value::List(map.keys(), ListSeparator::Comma, false))
     });
-    // TODO: Merge should be varargs
-    def!(f, merge(map1, map2), |s| {
+    def_va!(f, merge(map1, map2), |s| {
         let mut map1 = get_map(s, name!(map1))?;
-        let map2 = get_map(s, name!(map2))?;
+        let map2 = get_va_map(s, name!(map2))?;
         for (key, value) in map2 {
-            map1.insert(key, value);
+            if let (Some(Value::Map(m1)), Value::Map(ref m2)) =
+                (map1.get(&key), &value)
+            {
+                let mut m1 = m1.clone();
+                for (key, value) in m2.clone().iter() {
+                    m1.insert(key.clone(), value.clone());
+                }
+                map1.insert(key, Value::Map(m1));
+            } else {
+                map1.insert(key, value);
+            }
         }
         Ok(Value::Map(map1))
     });
@@ -139,6 +148,34 @@ fn get_map(s: &Scope, name: Name) -> Result<OrderMap<Value, Value>, Error> {
         Value::List(ref l, ..) if l.is_empty() => Ok(OrderMap::new()),
         v => Err(Error::bad_arg(name, &v, "is not a map")),
     }
+}
+
+fn get_va_map(
+    s: &Scope,
+    name: Name,
+) -> Result<OrderMap<Value, Value>, Error> {
+    match s.get(name.as_ref())? {
+        Value::Map(m) => Ok(m),
+        Value::List(ref l, ..) => Ok(map_from_list(&l)),
+        v => Err(Error::bad_arg(name, &v, "is not a map")),
+    }
+}
+
+fn map_from_list(values: &[Value]) -> OrderMap<Value, Value> {
+    let mut m = OrderMap::new();
+    match values.split_first() {
+        Some((first, [Value::List(ref l, ..)])) if l.is_empty() => {
+            m.insert(first.clone(), Value::Map(OrderMap::new()));
+        }
+        Some((first, [other])) => {
+            m.insert(first.clone(), other.clone());
+        }
+        Some((first, rest)) => {
+            m.insert(first.clone(), Value::Map(map_from_list(rest)));
+        }
+        None => (),
+    }
+    m
 }
 
 fn set(s: &Scope) -> Result<Value, Error> {
