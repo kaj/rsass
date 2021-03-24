@@ -9,7 +9,6 @@ mod error {
 mod found {
     mod nested {
         #[test]
-        #[ignore] // unexepected error
         fn first() {
             assert_eq!(
                 crate::rsass(
@@ -25,7 +24,6 @@ mod found {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn last() {
             assert_eq!(
                 crate::rsass(
@@ -41,7 +39,6 @@ mod found {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn middle() {
             assert_eq!(
                 crate::rsass(
@@ -57,7 +54,6 @@ mod found {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn single() {
             assert_eq!(
                 crate::rsass(
@@ -74,7 +70,6 @@ mod found {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn top_level() {
         assert_eq!(
             crate::rsass(
@@ -92,7 +87,6 @@ mod found {
 }
 mod not_found {
     #[test]
-    #[ignore] // unexepected error
     fn empty() {
         assert_eq!(
             crate::rsass(
@@ -108,7 +102,6 @@ mod not_found {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn extra_keys() {
         assert_eq!(
             crate::rsass(
@@ -124,7 +117,6 @@ mod not_found {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn nested() {
         assert_eq!(
             crate::rsass(
@@ -140,7 +132,6 @@ mod not_found {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn not_a_map() {
         assert_eq!(
             crate::rsass(
@@ -156,7 +147,6 @@ mod not_found {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn top_level() {
         assert_eq!(
             crate::rsass(

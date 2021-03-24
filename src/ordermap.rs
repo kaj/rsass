@@ -37,6 +37,14 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
         }
         None
     }
+    pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
+        for kv in &mut self.0 {
+            if &kv.0 == key {
+                return Some(&mut kv.1);
+            }
+        }
+        None
+    }
     pub fn remove(&mut self, key: &K) {
         self.0.retain(|&(ref k, ref _v)| k != key);
     }

@@ -13,7 +13,7 @@ project adheres to
 * The builtin modules does not inherit the global functions.
 * Scope names is not `sass::Name` (`$a_b` and `$a-b` is the same
   variable, but `a_b` and `a-b` are different scopes).
-* Improve `sass:map` functions `get` and `merge`.
+* Improve `sass:map` functions `get` and `merge` and add `deep-remove`.
 
 
 ## Release 0.19.0 - 2021-03-14
