@@ -47,10 +47,14 @@ pub fn unit(input: Span) -> IResult<Span, Unit> {
 
             // Special units
             "fr" => Some(Unit::Fr),
-            "%" => Some(Unit::Percent),
 
+            name if ok_as_unit(name) => Some(Unit::Unknown(name.to_string())),
             _ => None,
         }),
         value(Unit::None, tag("")),
     ))(input)
+}
+
+fn ok_as_unit(name: &str) -> bool {
+    name.chars().all(|c| c.is_alphabetic())
 }

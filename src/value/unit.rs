@@ -72,6 +72,9 @@ pub enum Unit {
     Fr,
     /// No unit.
     None,
+
+    /// An unknown (but named) unit.
+    Unknown(String),
 }
 
 /// Dimension of a unit.
@@ -104,6 +107,8 @@ pub enum Dimension {
     Resolution,
     /// No dimension (no unit, percentage, or grid fraction).
     None,
+    /// The dimension of an unknown (but named) unit.
+    Unknown(String),
 }
 
 impl Unit {
@@ -135,6 +140,8 @@ impl Unit {
             Unit::Dpi | Unit::Dpcm | Unit::Dppx => Dimension::Resolution,
 
             Unit::Percent | Unit::Fr | Unit::None => Dimension::None,
+
+            Unit::Unknown(ref name) => Dimension::Unknown(name.clone()),
         }
     }
 
@@ -186,6 +193,8 @@ impl Unit {
             Unit::Percent => Number::rational(1, 100),
             Unit::Fr => one(),
             Unit::None => one(),
+
+            Unit::Unknown(_) => one(),
         }
     }
 }
@@ -228,6 +237,8 @@ impl fmt::Display for Unit {
             Unit::Percent => write!(out, "%"),
             Unit::Fr => write!(out, "fr"),
             Unit::None => Ok(()),
+
+            Unit::Unknown(ref name) => out.write_str(name),
         }
     }
 }

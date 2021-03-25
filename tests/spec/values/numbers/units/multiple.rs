@@ -135,7 +135,6 @@ fn division_cancels_numerator_twice() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn division_cancels_unknown() {
     assert_eq!(
         crate::rsass(
@@ -288,7 +287,6 @@ fn multiplication_cancels_numerator_twice() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn multiplication_cancels_unknown() {
     assert_eq!(
         crate::rsass(
