@@ -7,9 +7,15 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Release 0.19.2 - 2021-03-25
+## Release 0.20.0 - 2021-03-25
 
 Progress: 3456 of 5962 tests passed in dart-sass compatibility mode.
+
+### Breaking changes
+
+* The name of a module is no longer a `sass::Name`, but instead a `String`.
+
+### Improvements
 
 * A space-separated list can be a key in a map.
 * The builtin modules does not inherit the global functions.
@@ -25,6 +31,10 @@ Tested with rustc 1.51.0 (2fd73fabe 2021-03-23),
 1.51.0-beta.8 (73f48e5f6 2021-03-18),
 1.53.0-nightly (07e0e2ec2 2021-03-24).
 
+### Release 0.19.2 - 2021-03-25
+
+Version 0.20.0 was originally released as 0.19.2, but yanked as there
+was a breaking change.
 
 ## Release 0.19.0 - 2021-03-14
 
