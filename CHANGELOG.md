@@ -7,7 +7,9 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.19.2 - 2021-03-25
+
+Progress: 3456 of 5962 tests passed in dart-sass compatibility mode.
 
 * A space-separated list can be a key in a map.
 * The builtin modules does not inherit the global functions.
@@ -15,6 +17,13 @@ project adheres to
   variable, but `a_b` and `a-b` are different scopes).
 * Improve `sass:map` functions `get` and `merge` and add `deep-merge`
   and `deep-remove`.
+
+Tested with rustc 1.51.0 (2fd73fabe 2021-03-23),
+1.48.0 (7eac88abb 2020-11-16),
+1.46.0 (04488afe3 2020-08-24),
+1.44.1 (c7087fe00 2020-06-17),
+1.51.0-beta.8 (73f48e5f6 2021-03-18),
+1.53.0-nightly (07e0e2ec2 2021-03-24).
 
 
 ## Release 0.19.0 - 2021-03-14
