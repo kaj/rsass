@@ -10,7 +10,13 @@ use crate::Scope;
 /// [the specification](https://sass-lang.com/documentation/modules/map).
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:map");
-    // TODO deep_merge
+
+    def!(f, deep_merge(map1, map2), |s| {
+        let map1 = get_map(s, name!(map1))?;
+        let mut map2 = get_va_map(s, name!(map2))?;
+        do_deep_merge(&mut map2, &map1);
+        Ok(Value::Map(map2))
+    });
 
     def_va!(f, deep_remove(map, key, keys), |s| {
         let mut map = get_map(s, name!(map))?;
@@ -192,6 +198,26 @@ fn map_from_list(values: &[Value]) -> OrderMap<Value, Value> {
         None => (),
     }
     m
+}
+
+fn do_deep_merge(
+    map1: &mut OrderMap<Value, Value>,
+    map2: &OrderMap<Value, Value>,
+) {
+    for (key, value) in map2.iter() {
+        match (map1.get_mut(&key), value) {
+            (Some(Value::Map(m1)), Value::Map(ref m2)) => {
+                do_deep_merge(m1, m2);
+            }
+            (Some(v1), v2) if v1.is_null() => {
+                map1.insert(key.clone(), v2.clone());
+            }
+            (None, v2) => {
+                map1.insert(key.clone(), v2.clone());
+            }
+            _ => (),
+        }
+    }
 }
 
 fn do_deep_remove(map: &mut OrderMap<Value, Value>, keys: &[Value]) {
