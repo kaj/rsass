@@ -161,7 +161,7 @@ impl Unit {
     /// Some of these are exact and correct, others are more arbitrary.
     /// When comparing 10cm to 4in, these factors will give correct results.
     /// When comparing rems to vw, who can say?
-    fn scale_factor(&self) -> Number {
+    pub(crate) fn scale_factor(&self) -> Number {
         match *self {
             Unit::Em | Unit::Rem => Number::rational(10, 2),
             Unit::Ex => Number::rational(10, 3),
