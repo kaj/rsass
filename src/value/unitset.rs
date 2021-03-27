@@ -1,4 +1,4 @@
-use super::{Number, Unit};
+use super::{Dimension, Number, Unit};
 use num_traits::one;
 use std::fmt::{self, Display};
 use std::ops::{Div, Mul};
@@ -30,17 +30,22 @@ impl UnitSet {
 
     /// Check if this UnitSet is compatible with another UnitSet.
     pub fn is_compatible(&self, other: &Self) -> bool {
+        self.is_none()
+            || other.is_none()
+            || self.dimension() == other.dimension()
+    }
+
+    fn dimension(&self) -> Vec<(Dimension, i8)> {
         use std::collections::BTreeMap;
-        let dim = |t: &Self| {
-            t.units.iter().fold(
-                BTreeMap::<_, i8>::new(),
-                |mut a, (unit, power)| {
-                    *a.entry(unit.dimension()).or_insert(0) += *power;
-                    a
-                },
-            )
-        };
-        self.is_none() || other.is_none() || dim(self) == dim(other)
+        self.units
+            .iter()
+            .fold(BTreeMap::new(), |mut map, (unit, power)| {
+                *map.entry(unit.dimension()).or_insert(0) += *power;
+                map
+            })
+            .into_iter()
+            .filter(|(_d, power)| *power != 0)
+            .collect::<Vec<_>>()
     }
 
     /// Get a scaling factor to convert this unit to another unit.
@@ -52,8 +57,15 @@ impl UnitSet {
         } else if other.is_none() {
             self.scale_to_unit(&Unit::None)
         } else {
-            // TODO: Lots of complicated cases ...
-            None
+            let quote = self / other;
+            if quote.dimension().is_empty() {
+                Some(quote.units.iter().fold(one(), |a, (unit, power)| {
+                    a * unit.scale_factor().powi((*power).into())
+                }))
+            } else {
+                // self and other differs in dimension.
+                None
+            }
         }
     }
     /// Get a scaling factor to convert this unit to another unit.
@@ -79,9 +91,15 @@ impl UnitSet {
                 let (au, ap) = a.last_mut().unwrap();
                 for (bu, bp) in b {
                     if let Some(f) = bu.scale_to(au) {
-                        factor = factor * f.powi(i32::from(*bp));
-                        *ap += *bp;
-                        *bp = 0;
+                        if ap.abs() > bp.abs() {
+                            factor = factor * f.powi((*bp).into());
+                            *ap += *bp;
+                            *bp = 0;
+                        } else {
+                            factor = factor / f.powi((*ap).into());
+                            *bp += *ap;
+                            *ap = 0;
+                        }
                     }
                 }
             }
