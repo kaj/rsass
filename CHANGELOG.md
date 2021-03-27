@@ -7,6 +7,17 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Breaking changes
+
+* `value::Unit` has a new alternative.
+
+### Improvements
+
+* Handle unknown units.  PR #101.
+
+
 ## Release 0.20.0 - 2021-03-25
 
 Progress: 3456 of 5962 tests passed in dart-sass compatibility mode.
