@@ -54,8 +54,9 @@ impl<'a> Display for Formatted<'a, Value> {
                         let needs_paren = match *v {
                             Value::List(ref v, inner, false) => {
                                 ((brackets || introspect)
-                                    && (sep == ListSeparator::Space
-                                        || inner == ListSeparator::Comma))
+                                    && (sep != Some(ListSeparator::Comma)
+                                        || inner
+                                            == Some(ListSeparator::Comma)))
                                     && !(introspect && v.len() < 2)
                             }
                             _ => false,
@@ -69,7 +70,7 @@ impl<'a> Display for Formatted<'a, Value> {
                     .collect::<Vec<_>>();
                 let t = if self.format.is_introspection()
                     && t.len() == 1
-                    && sep == ListSeparator::Comma
+                    && sep == Some(ListSeparator::Comma)
                 {
                     if self.format.is_introspection() && !brackets {
                         format!("({},)", t[0])
@@ -78,14 +79,14 @@ impl<'a> Display for Formatted<'a, Value> {
                     }
                 } else {
                     t.join(match sep {
-                        ListSeparator::Comma => {
+                        Some(ListSeparator::Comma) => {
                             if self.format.is_compressed() {
                                 ","
                             } else {
                                 ", "
                             }
                         }
-                        ListSeparator::Space => " ",
+                        _ => " ",
                     })
                 };
                 if brackets {
@@ -138,16 +139,20 @@ impl<'a> Display for Formatted<'a, Value> {
                     if i > 0 {
                         out.write_str(", ")?;
                     }
-                    if matches!(k, Value::List(_, ListSeparator::Comma, _))
-                        && self.format.is_introspection()
+                    if matches!(
+                        k,
+                        Value::List(_, Some(ListSeparator::Comma), _)
+                    ) && self.format.is_introspection()
                     {
                         write!(out, "({})", k.format(self.format))?;
                     } else {
                         write!(out, "{}", k.format(self.format))?;
                     }
                     out.write_str(": ")?;
-                    if matches!(v, Value::List(_, ListSeparator::Comma, _))
-                        && self.format.is_introspection()
+                    if matches!(
+                        v,
+                        Value::List(_, Some(ListSeparator::Comma), _)
+                    ) && self.format.is_introspection()
                     {
                         write!(out, "({})", v.format(self.format))?;
                     } else {

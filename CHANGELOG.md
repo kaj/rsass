@@ -12,10 +12,13 @@ project adheres to
 ### Breaking changes
 
 * `value::Unit` has a new alternative.
+* The `List` alternative in `sass::Value` and `css::Value` is modified.
 
 ### Improvements
 
 * Handle unknown units.  PR #101.
+* List can be undecided between beeing comma-separated and beeing
+  space-separated.  PR #102.
 
 
 ## Release 0.20.0 - 2021-03-25

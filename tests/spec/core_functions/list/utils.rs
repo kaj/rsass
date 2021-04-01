@@ -35,7 +35,6 @@ mod real_separator {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn space() {
             assert_eq!(
                 crate::rsass(
@@ -115,7 +114,6 @@ mod real_separator {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn undecided() {
             assert_eq!(
                 crate::rsass(

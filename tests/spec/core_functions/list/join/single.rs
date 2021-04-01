@@ -18,7 +18,6 @@ mod both {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn last() {
             assert_eq!(
                 crate::rsass(
@@ -114,7 +113,6 @@ mod first {
     }
     mod undecided {
         #[test]
-        #[ignore] // wrong result
         fn and_comma() {
             assert_eq!(
                 crate::rsass(
