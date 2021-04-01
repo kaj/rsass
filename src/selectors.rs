@@ -74,15 +74,15 @@ impl Selectors {
                         .split_whitespace()
                         .map(|p| Value::Literal(p.to_string(), Quotes::None))
                         .collect(),
-                    ListSeparator::Space,
+                    Some(ListSeparator::Space),
                     false,
                 )
             })
             .collect::<Vec<_>>();
         let sep = if content.len() == 1 {
-            ListSeparator::Space
+            None
         } else {
-            ListSeparator::Comma
+            Some(ListSeparator::Comma)
         };
         Value::List(content, sep, false)
     }

@@ -55,8 +55,11 @@ impl CallArgs {
                     }
                 }
                 if let Some(last) = v.pop() {
-                    if let Value::List(vv, ListSeparator::Space, false) =
-                        &last
+                    if let Value::List(
+                        vv,
+                        Some(ListSeparator::Space),
+                        false,
+                    ) = &last
                     {
                         match &vv[..] {
                             [Value::List(vv, _, _), Value::Literal(mark, Quotes::None)]

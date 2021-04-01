@@ -18,7 +18,7 @@ pub enum Value {
     /// A literal string value (quoted or not).
     Literal(SassString),
     /// A comma- or space separated list of values, with or without brackets.
-    List(Vec<Value>, ListSeparator, bool),
+    List(Vec<Value>, Option<ListSeparator>, bool),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
     Numeric(Numeric),
@@ -118,13 +118,13 @@ impl Value {
             Value::Variable(ref name) => {
                 Ok(scope.get(name)?.into_calculated())
             }
-            Value::List(ref v, s, b) => {
-                let items = v
-                    .iter()
+            Value::List(ref v, s, b) => Ok(css::Value::List(
+                v.iter()
                     .map(|v| v.do_evaluate(scope.clone(), false))
-                    .collect::<Result<Vec<_>, Error>>()?;
-                Ok(css::Value::List(items, s, b))
-            }
+                    .collect::<Result<_, _>>()?,
+                s,
+                b,
+            )),
             Value::Call(ref name, ref args, ref pos) => {
                 let args = args.evaluate(scope.clone(), true)?;
                 if let Some(name) = name.single_raw() {
@@ -287,10 +287,10 @@ impl Value {
                 if let Some((first, rest)) = v.split_first() {
                     first.inspect(out)?;
                     for i in rest {
-                        out.write_str(if s == ListSeparator::Space {
-                            " "
-                        } else {
+                        out.write_str(if s == Some(ListSeparator::Comma) {
                             ", "
+                        } else {
+                            " "
                         })?;
                         i.inspect(out)?;
                     }

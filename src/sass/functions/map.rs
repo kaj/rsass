@@ -95,7 +95,7 @@ pub fn create_module() -> Scope {
     });
     def!(f, keys(map), |s| {
         let map = get_map(s, name!(map))?;
-        Ok(Value::List(map.keys(), ListSeparator::Comma, false))
+        Ok(Value::List(map.keys(), Some(ListSeparator::Comma), false))
     });
     def_va!(f, merge(map1, map2), |s| {
         let mut map1 = get_map(s, name!(map1))?;
@@ -144,7 +144,7 @@ pub fn create_module() -> Scope {
     def_va!(f, set(map, args), set);
     def!(f, values(map), |s| {
         let map = get_map(s, name!(map))?;
-        Ok(Value::List(map.values(), ListSeparator::Comma, false))
+        Ok(Value::List(map.values(), Some(ListSeparator::Comma), false))
     });
     f
 }

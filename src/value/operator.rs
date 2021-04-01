@@ -115,7 +115,7 @@ impl Operator {
                 (a @ Value::UnicodeRange(..), b @ Value::Literal(..)) => {
                     Some(Value::List(
                         vec![a, Value::UnaryOp(Operator::Minus, Box::new(b))],
-                        ListSeparator::Space,
+                        Some(ListSeparator::Space),
                         false,
                     ))
                 }

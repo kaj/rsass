@@ -110,7 +110,7 @@ fn to_channel(v: &Value, name: Name) -> Result<Option<Rational>, Error> {
 pub fn preserve_call(
     fn_name: &str,
     vec: Vec<Value>,
-    sep: ListSeparator,
+    sep: Option<ListSeparator>,
     bracketed: bool,
 ) -> Value {
     Value::Call(

@@ -47,7 +47,6 @@ mod both {
     }
     mod space {
         #[test]
-        #[ignore] // wrong result
         fn first() {
             assert_eq!(
                 crate::rsass(
@@ -69,7 +68,6 @@ mod both {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn last() {
             assert_eq!(
                 crate::rsass(
@@ -92,7 +90,6 @@ mod both {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn undecided() {
         assert_eq!(
         crate::rsass(
@@ -134,7 +131,6 @@ mod first {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn space() {
         assert_eq!(
             crate::rsass(
@@ -213,7 +209,6 @@ mod map {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn undecided() {
             assert_eq!(
                 crate::rsass(
@@ -267,7 +262,6 @@ mod map {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn undecided() {
             assert_eq!(
                 crate::rsass(

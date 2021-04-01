@@ -18,7 +18,7 @@ pub enum Value {
     /// A string literal.
     Literal(String, Quotes),
     /// A comma- or space separated list of values, with or without brackets.
-    List(Vec<Value>, ListSeparator, bool),
+    List(Vec<Value>, Option<ListSeparator>, bool),
     /// A Numeric value is a rational value with a Unit (which may be
     /// Unit::None) and flags.
     ///
@@ -214,7 +214,7 @@ impl Value {
                 .map(|&(ref k, ref v)| {
                     Value::List(
                         vec![k.clone(), v.clone()],
-                        ListSeparator::Space,
+                        Some(ListSeparator::Space),
                         false,
                     )
                 })

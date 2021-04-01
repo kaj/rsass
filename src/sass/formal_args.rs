@@ -63,7 +63,11 @@ impl FormalArgs {
                         .collect();
                     argscope.define(
                         name.clone(),
-                        &css::Value::List(args, ListSeparator::Comma, false),
+                        &css::Value::List(
+                            args,
+                            Some(ListSeparator::Comma),
+                            false,
+                        ),
                     );
                 } else {
                     return Err(ArgsError::TooMany(n, args.len()));
@@ -80,11 +84,7 @@ impl FormalArgs {
                         } else if i + 1 == self.0.len() && self.is_varargs() {
                             argscope.define(
                                 name.clone(),
-                                &css::Value::List(
-                                    vec![],
-                                    ListSeparator::Space,
-                                    false,
-                                ),
+                                &css::Value::List(vec![], None, false),
                             )
                         } else {
                             return Err(ArgsError::Missing(name.clone()));

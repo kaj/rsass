@@ -388,7 +388,7 @@ fn media_args(input: Span) -> IResult<Span, Value> {
                 if args.len() == 1 {
                     args.into_iter().next().unwrap()
                 } else {
-                    Value::List(args, ListSeparator::Space, false)
+                    Value::List(args, Some(ListSeparator::Space), false)
                 }
             },
         ),
@@ -398,7 +398,7 @@ fn media_args(input: Span) -> IResult<Span, Value> {
         if args.len() == 1 {
             args.into_iter().next().unwrap()
         } else {
-            Value::List(args, ListSeparator::Comma, false)
+            Value::List(args, Some(ListSeparator::Comma), false)
         },
     ))
 }
@@ -727,7 +727,7 @@ fn test_mixin_declaration() {
                 "foo-bar".into(),
                 Value::List(
                     vec![string("baz"), Value::Variable("x".into())],
-                    ListSeparator::Space,
+                    Some(ListSeparator::Space),
                     false,
                 ),
             )],
@@ -789,7 +789,7 @@ fn test_property_2() {
             "background-position".into(),
             Value::List(
                 vec![percentage(90), percentage(50)],
-                ListSeparator::Space,
+                Some(ListSeparator::Space),
                 false,
             ),
         ),
@@ -817,7 +817,7 @@ fn test_variable_declaration_global() {
             name: "y".into(),
             val: Value::List(
                 vec![string("some"), string("value")],
-                ListSeparator::Space,
+                Some(ListSeparator::Space),
                 false,
             ),
             default: false,
@@ -834,7 +834,7 @@ fn test_variable_declaration_default() {
             name: "y".into(),
             val: Value::List(
                 vec![string("some"), string("value")],
-                ListSeparator::Space,
+                Some(ListSeparator::Space),
                 false,
             ),
             default: true,

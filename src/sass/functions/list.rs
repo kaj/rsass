@@ -11,7 +11,7 @@ pub fn create_module() -> Scope {
             .or(sep)
             .unwrap_or(ListSeparator::Space);
         list.push(s.get("val")?);
-        Ok(Value::List(list, sep, bra))
+        Ok(Value::List(list, Some(sep), bra))
     });
     def!(f, index(list, value), |s| match s.get("list")? {
         Value::List(v, _, _) => {
@@ -24,7 +24,9 @@ pub fn create_module() -> Scope {
             Ok(Value::Null)
         }
         Value::Map(map) => match s.get("value")? {
-            Value::List(ref l, ListSeparator::Space, _) if l.len() == 2 => {
+            Value::List(ref l, Some(ListSeparator::Space), _)
+                if l.len() == 2 =>
+            {
                 for (i, &(ref k, ref v)) in map.iter().enumerate() {
                     if *k == l[0] && *v == l[1] {
                         return Ok(Value::scalar(i + 1));
@@ -61,7 +63,7 @@ pub fn create_module() -> Scope {
                 Value::Literal(ref s, _) if s == "auto" => bra1,
                 b => b.is_true(),
             };
-            Ok(Value::List(list1, sep, bra))
+            Ok(Value::List(list1, Some(sep), bra))
         }
     );
     def!(f, length(list), |s| match s.get("list")? {
@@ -74,7 +76,7 @@ pub fn create_module() -> Scope {
     });
     def!(f, separator(list), |s| Ok(Value::Literal(
         match s.get("list")? {
-            Value::List(_, ListSeparator::Comma, _) => "comma",
+            Value::List(_, Some(ListSeparator::Comma), _) => "comma",
             Value::Map(ref map) if map.len() == 0 => "space",
             Value::Map(_) => "comma",
             _ => "space",
@@ -93,7 +95,7 @@ pub fn create_module() -> Scope {
                 if let Some(&(ref k, ref v)) = map.get_item(n) {
                     Ok(Value::List(
                         vec![k.clone(), v.clone()],
-                        ListSeparator::Space,
+                        Some(ListSeparator::Space),
                         false,
                     ))
                 } else {
@@ -108,7 +110,7 @@ pub fn create_module() -> Scope {
         let n = get_integer(s, name!(n))?;
         let i = list_index(n, &list, name!(n))?;
         list[i] = s.get("value")?;
-        Ok(Value::List(list, sep.unwrap_or(ListSeparator::Space), bra))
+        Ok(Value::List(list, sep, bra))
     });
     def_va!(f, zip(lists), |s| {
         // TODO: A single argument is just the first list, unless its
@@ -119,20 +121,16 @@ pub fn create_module() -> Scope {
         // We probably need to actually make a difference between
         // named an positional arguments!
         let (v, s, b) = get_list(s.get("lists")?);
-        let v = if b {
-            vec![Value::List(v, s.unwrap_or(ListSeparator::Space), b)]
-        } else {
-            v
-        };
+        let v = if b { vec![Value::List(v, s, b)] } else { v };
         let lists = v.into_iter().map(|v| v.iter_items()).collect::<Vec<_>>();
         let len = lists.iter().map(|v| v.len()).min().unwrap_or(0);
         let result = (0..len)
             .map(|i| {
                 let items = lists.iter().map(|v| v[i].clone()).collect();
-                Value::List(items, ListSeparator::Space, false)
+                Value::List(items, Some(ListSeparator::Space), false)
             })
             .collect();
-        Ok(Value::List(result, ListSeparator::Comma, false))
+        Ok(Value::List(result, Some(ListSeparator::Comma), false))
     });
     f
 }
@@ -164,14 +162,7 @@ fn check_separator(v: Value) -> Result<Option<ListSeparator>, String> {
 
 fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
     match value {
-        Value::List(v, s, bra) => {
-            let sep = if v.is_empty() && s == ListSeparator::Space {
-                None
-            } else {
-                Some(s)
-            };
-            (v, sep, bra)
-        }
+        Value::List(v, s, bra) => (v, s, bra),
         Value::Map(map) => {
             if map.len() == 0 {
                 (vec![], None, false)
@@ -181,7 +172,7 @@ fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
                         .map(|&(ref k, ref v)| {
                             Value::List(
                                 vec![k.clone(), v.clone()],
-                                ListSeparator::Space,
+                                Some(ListSeparator::Space),
                                 false,
                             )
                         })
