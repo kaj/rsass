@@ -126,8 +126,7 @@ impl FileContext for FsFileContext {
                     };
                     if full.is_file() {
                         let c = if let Some(parent) = parent {
-                            let mut path = vec![];
-                            path.push(PathBuf::from(parent));
+                            let mut path = vec![PathBuf::from(parent)];
                             path.extend_from_slice(&self.path);
                             Self { path }
                         } else {
