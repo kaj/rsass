@@ -64,6 +64,13 @@ pub fn code_span(value: &[u8]) -> Span {
     }
     Span::new_extra(value, &SOURCE)
 }
+pub fn input_span(value: &[u8]) -> Span {
+    use lazy_static::lazy_static;
+    lazy_static! {
+        static ref SOURCE: SourceName = SourceName::root("-");
+    }
+    Span::new_extra(value, &SOURCE)
+}
 
 /// Parse a scss value.
 ///

@@ -2,7 +2,6 @@
 
 mod complex {
     #[test]
-    #[ignore] // wrong result
     fn adjacent_sibling() {
         assert_eq!(
             crate::rsass(
@@ -22,7 +21,6 @@ mod complex {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn child() {
         assert_eq!(
             crate::rsass(
@@ -42,7 +40,6 @@ mod complex {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn descendant() {
         assert_eq!(
             crate::rsass(
@@ -62,7 +59,6 @@ mod complex {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn sibling() {
         assert_eq!(
             crate::rsass(
@@ -83,7 +79,6 @@ mod complex {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn compound() {
     assert_eq!(
         crate::rsass(
@@ -196,7 +191,6 @@ mod simple {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn combined_arg() {
                 assert_eq!(
         crate::rsass(
@@ -230,7 +224,6 @@ mod simple {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn selector_arg() {
                 assert_eq!(
                     crate::rsass(
@@ -281,7 +274,6 @@ mod simple {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn selector_arg() {
                 assert_eq!(
                     crate::rsass(
