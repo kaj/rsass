@@ -445,6 +445,22 @@ impl<'a> Scope {
             self.define_mixin(name.clone(), m.clone());
         }
     }
+
+    /// Get the variables of this scope as a `Value::Map`.
+    pub fn variables_dict(&self) -> Value {
+        use crate::ordermap::OrderMap;
+        use crate::value::Quotes;
+        let mut result = OrderMap::new();
+        for (name, value) in &*self.variables.lock().unwrap() {
+            if name != &Name::from_static("@scope_name@") {
+                result.insert(
+                    Value::Literal(name.to_string(), Quotes::Double),
+                    value.clone(),
+                );
+            }
+        }
+        Value::Map(result)
+    }
 }
 
 #[cfg(test)]

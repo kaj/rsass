@@ -19,7 +19,6 @@ fn test_as() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn core_module() {
     assert_eq!(
         crate::rsass(

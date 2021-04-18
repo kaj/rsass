@@ -21,6 +21,7 @@ project adheres to
   space-separated.  PR #102.
 * Improved parameter handling and returned values of the supported
   selector functions.  PR #103.
+* Implement `meta.module_variables` function.
 
 
 ## Release 0.20.0 - 2021-03-25

@@ -95,7 +95,12 @@ pub fn create_module() -> Scope {
         let module = get_scope(s, module.map(|(s, _q)| s))?;
         Ok(module.get_mixin(&v.into()).is_some().into())
     });
-    // TODO: module_functions, module_variables
+    // TODO: module_functions
+    def!(f, module_variables(module), |s| {
+        let module = get_opt_check(s, name!(module), check::string)?;
+        let module = get_scope(s, module.map(|(s, _q)| s))?;
+        Ok(module.variables_dict())
+    });
     def!(f, type_of(value), |s| {
         Ok(s.get("value")?.type_name().into())
     });
