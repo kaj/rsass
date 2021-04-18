@@ -19,6 +19,8 @@ project adheres to
 * Handle unknown units.  PR #101.
 * List can be undecided between beeing comma-separated and beeing
   space-separated.  PR #102.
+* Improved parameter handling and returned values of the supported
+  selector functions.  PR #103.
 
 
 ## Release 0.20.0 - 2021-03-25

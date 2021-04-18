@@ -71,41 +71,30 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 fn parse_selectors(v: Value) -> Result<Selectors, Error> {
     match v {
         Value::List(v, s, _) => {
-
             if s != Some(ListSeparator::Space) {
-                let v = v.iter().map(check_selector).collect::<Result<_, _>>()?;
+                let v =
+                    v.iter().map(check_selector).collect::<Result<_, _>>()?;
                 Ok(Selectors::new(v))
             } else {
                 let (mut outer, last) = v.iter().fold(
                     Result::<_, Error>::Ok((vec![], vec![])),
                     |a, v: &Value| {
                         let (mut outer, mut a) = a?;
-                        match check_selector(v) {
-                            Ok(s) => {
-                                if !a.is_empty() {
-                                    a.push(SelectorPart::Descendant)
-                                }
-                                a.extend(s.0.iter().cloned());
+                        if let Ok(ref mut s) = check_selector(v) {
+                            push_descendant(&mut a, s)
+                        } else {
+                            let mut s = parse_selectors(v.clone())?;
+                            if let Some(f) = s.s.first_mut() {
+                                push_descendant(&mut a, f);
+                                std::mem::swap(&mut a, &mut f.0);
                             }
-                            Err(_) => {
-                                let mut s = parse_selectors(v.clone())?;
-                                eprintln!("should merge {:?}", s);
-                                if let Some(f) = s.s.first_mut() {
-                                    if !a.is_empty() {
-                                        a.push(SelectorPart::Descendant)
-                                    }
-                                    a.extend(f.0.iter().cloned());
-                                    f.0.clear();
-                                    std::mem::swap(&mut a, &mut f.0);
-                                }
-                                if let Some(last) = s.s.pop() {
-                                    a = last.0;
-                                }
-                                outer.extend(s.s);
+                            if let Some(last) = s.s.pop() {
+                                a = last.0;
                             }
+                            outer.extend(s.s);
                         }
                         Ok((outer, a))
-                    }
+                    },
                 )?;
                 outer.push(Selector(last));
                 Ok(Selectors::new(outer))
@@ -118,28 +107,30 @@ fn parse_selectors(v: Value) -> Result<Selectors, Error> {
                 Ok(ParseError::check(selectors(input_span(s.as_bytes())))?)
             }
         }
-        v => Err(Error::bad_value("a valid selector: it must be a string,\
-                                   \na list of strings, or a list of lists of strings", &v)),
+        v => Err(bad_selector(&v)),
     }
+}
+
+fn push_descendant(to: &mut Vec<SelectorPart>, from: &mut Selector) {
+    if !to.is_empty() {
+        to.push(SelectorPart::Descendant)
+    }
+    to.extend(from.0.drain(..));
 }
 
 fn check_selector(v: &Value) -> Result<Selector, Error> {
     match v {
-        Value::List(v, _, _) => {
-            Ok(Selector(
-                v.iter().fold(
-                    Result::<_, Error>::Ok(vec![]),
-                    |a, v| {
-                        let mut a = a?;
-                        if !a.is_empty() {
-                            a.push(SelectorPart::Descendant)
-                        }
-                        a.push(check_selector_part(v)?);
-                        Ok(a)
-                    }
-                )?,
-            ))
-        }
+        Value::List(v, _, _) => Ok(Selector(v.iter().fold(
+            Result::<_, Error>::Ok(vec![]),
+            |a, v| {
+                let mut a = a?;
+                if !a.is_empty() {
+                    a.push(SelectorPart::Descendant)
+                }
+                a.push(check_selector_part(v)?);
+                Ok(a)
+            },
+        )?)),
         Value::Literal(s, _) => {
             if s.is_empty() {
                 Ok(Selector::root())
@@ -147,8 +138,7 @@ fn check_selector(v: &Value) -> Result<Selector, Error> {
                 Ok(ParseError::check(selector(input_span(s.as_bytes())))?)
             }
         }
-        v => Err(Error::bad_value("a valid selector: it must be a string,\
-                                   \na list of strings, or a list of lists of strings", &v)),
+        v => Err(bad_selector(v)),
     }
 }
 fn check_selector_part(v: &Value) -> Result<SelectorPart, Error> {
@@ -156,11 +146,18 @@ fn check_selector_part(v: &Value) -> Result<SelectorPart, Error> {
         Value::Literal(s, _) => {
             Ok(ParseError::check(selector_part(input_span(s.as_bytes())))?)
         }
-        v => Err(Error::bad_value("a valid selector: it must be a string,\
-                                   \na list of strings, or a list of lists of strings", &v)),
+        v => Err(bad_selector(v)),
     }
 }
 
 fn parse_selector(s: &str) -> Result<Selector, Error> {
     Ok(ParseError::check(selector(input_span(s.as_bytes())))?)
+}
+
+fn bad_selector(v: &Value) -> Error {
+    Error::bad_value(
+        "a valid selector: it must be a string,\
+         \na list of strings, or a list of lists of strings",
+        v,
+    )
 }

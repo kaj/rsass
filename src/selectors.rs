@@ -8,7 +8,7 @@
 //! leafs of simple selectors in some future release.
 use crate::css::Value;
 use crate::sass::SassString;
-use crate::value::{ListSeparator, Quotes};
+use crate::value::ListSeparator;
 use crate::{Error, ParseError, ScopeRef};
 use std::fmt;
 use std::io::Write;
@@ -70,44 +70,32 @@ impl Selectors {
             .iter()
             .map(|s: &Selector| {
                 let (mut v, last) = s.0.iter().fold(
-                    (vec![], None),
+                    (vec![], Option::<String>::None),
                     |(mut v, mut last), part| {
                         match part {
                             SelectorPart::Descendant => {
-                                if let Some(last) = last {
-                                    v.push(Value::Literal(
-                                        last,
-                                        Quotes::None,
-                                    ));
+                                if let Some(last) = last.take() {
+                                    v.push(last.into());
                                 }
-                                last = None;
                             }
                             SelectorPart::RelOp(op) => {
-                                if let Some(last) = last {
-                                    v.push(Value::Literal(
-                                        last,
-                                        Quotes::None,
-                                    ));
+                                if let Some(last) = last.take() {
+                                    v.push(last.into());
                                 }
-                                v.push(Value::Literal(
-                                    char::from(*op).to_string(),
-                                    Quotes::None,
-                                ));
-                                last = None;
+                                v.push(char::from(*op).to_string().into());
                             }
                             part => {
-                                last = Some(format!(
-                                    "{}{}",
-                                    last.unwrap_or(String::new()),
-                                    part,
-                                ));
+                                last = Some(match last {
+                                    Some(last) => format!("{}{}", last, part),
+                                    None => part.to_string(),
+                                });
                             }
                         }
                         (v, last)
                     },
                 );
                 if let Some(last) = last {
-                    v.push(Value::Literal(last, Quotes::None));
+                    v.push(last.into());
                 }
                 Value::List(v, Some(ListSeparator::Space), false)
             })
@@ -148,7 +136,7 @@ impl Selector {
     }
 
     fn join(&self, other: &Selector, alt_context: &Selector) -> Selector {
-        if other.0.iter().any(|p| p.has_backref()) {
+        if other.has_backref() {
             let mut result = Vec::new();
             let context = if self.0.is_empty() { alt_context } else { self };
             for p in &other.0 {
@@ -173,6 +161,10 @@ impl Selector {
             .map(|sp| sp.eval(scope.clone()))
             .collect::<Result<_, _>>()
             .map(Selector)
+    }
+
+    fn has_backref(&self) -> bool {
+        self.0.iter().any(|p| p.has_backref())
     }
 }
 
@@ -238,13 +230,10 @@ impl SelectorPart {
             | SelectorPart::Attribute { .. } => false,
             SelectorPart::BackRef => true,
             SelectorPart::PseudoElement { ref arg, .. }
-            | SelectorPart::Pseudo { ref arg, .. } => {
-                if let Some(arg) = arg {
-                    arg.s.iter().any(|s| s.0.iter().any(|p| p.has_backref()))
-                } else {
-                    false
-                }
-            }
+            | SelectorPart::Pseudo { ref arg, .. } => arg
+                .as_ref()
+                .map(|a| a.s.iter().any(|s| s.has_backref()))
+                .unwrap_or(false),
         }
     }
     fn clone_in(&self, context: &Selector) -> Vec<SelectorPart> {
