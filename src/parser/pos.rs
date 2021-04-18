@@ -114,6 +114,15 @@ impl SourcePos {
         }
         Ok(())
     }
+
+    /// If self is preceded (on same line) by `s`, include `s` in self.
+    pub(crate) fn opt_back(&mut self, s: &str) {
+        if self.line[..self.line_pos - 1].ends_with(s) {
+            let len = s.chars().count();
+            self.line_pos -= len;
+            self.length += len;
+        }
+    }
 }
 
 impl From<Span<'_>> for SourcePos {

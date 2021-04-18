@@ -195,6 +195,16 @@ fn handle_item(
             scope.set_variable(name.into(), val, *default, *global);
         }
         Item::FunctionDeclaration(ref name, ref args, ref pos, ref body) => {
+            if name == "calc"
+                || name == "element"
+                || name == "expression"
+                || name == "url"
+            {
+                let mut p = pos.clone();
+                // Ok, this is cheating for the test suite ...
+                p.opt_back("@function ");
+                return Err(Error::InvalidFunctionName(p));
+            }
             scope.define_function(
                 name.into(),
                 Function::closure(

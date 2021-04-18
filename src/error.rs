@@ -18,6 +18,7 @@ pub enum Error {
     /// A bad call to a builtin function, with call- and optionally
     /// declaration position.
     BadCall(String, SourcePos, Option<SourcePos>),
+    InvalidFunctionName(SourcePos),
     BadValue(String),
     BadArgument(Name, String),
     /// The pos here is the function declaration.
@@ -93,6 +94,10 @@ impl fmt::Display for Error {
                 } else {
                     callpos.show(out)
                 }
+            }
+            Error::InvalidFunctionName(ref pos) => {
+                writeln!(out, "Error: Invalid function name.")?;
+                pos.show(out)
             }
             Error::BadRange(ref err) => err.fmt(out),
             Error::BadValue(ref err) => err.fmt(out),
