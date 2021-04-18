@@ -47,7 +47,7 @@ pub fn create_module() -> Scope {
     def!(f, function_exists(name, module = b"null"), |s| {
         let (name, _q) = get_string(s, "name")?;
         let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module.map(|(s, _q)| s))?;
+        let module = get_scope(s, module.map(|(s, _q)| s), true)?;
         Ok(module.get_function(&name.into()).is_some().into())
     });
     def!(
@@ -64,7 +64,7 @@ pub fn create_module() -> Scope {
                 }
                 Ok(Value::Function(v, None))
             } else {
-                let module = get_scope(s, module.map(|(s, _q)| s))?;
+                let module = get_scope(s, module.map(|(s, _q)| s), true)?;
                 if let Some(f) = module.get_function(&(&v).into()) {
                     Ok(Value::Function(v, Some(f)))
                 } else {
@@ -79,7 +79,7 @@ pub fn create_module() -> Scope {
     def!(f, global_variable_exists(name, module = b"null"), |s| {
         let (v, _q) = get_string(s, "name")?;
         let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module.map(|(s, _q)| s))?;
+        let module = get_scope(s, module.map(|(s, _q)| s), true)?;
         Ok(module.get_global_or_none(&v.into()).is_some().into())
     });
     def!(f, inspect(value), |s| {
@@ -92,14 +92,18 @@ pub fn create_module() -> Scope {
     def!(f, mixin_exists(name, module = b"null"), |s| {
         let (v, _q) = get_string(s, "name")?;
         let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module.map(|(s, _q)| s))?;
+        let module = get_scope(s, module.map(|(s, _q)| s), true)?;
         Ok(module.get_mixin(&v.into()).is_some().into())
     });
-    // TODO: module_functions
+    def!(f, module_functions(module), |s| {
+        let module = get_opt_check(s, name!(module), check::string)?;
+        let module = get_scope(s, module.map(|(s, _q)| s), false)?;
+        Ok(module.functions_map())
+    });
     def!(f, module_variables(module), |s| {
         let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module.map(|(s, _q)| s))?;
-        Ok(module.variables_dict())
+        let module = get_scope(s, module.map(|(s, _q)| s), false)?;
+        Ok(module.variables_map())
     });
     def!(f, type_of(value), |s| {
         Ok(s.get("value")?.type_name().into())
@@ -149,13 +153,19 @@ fn call_scope(s: &Scope) -> ScopeRef {
     s.get_module("%%CALLING_SCOPE%%").unwrap()
 }
 
-fn get_scope(s: &Scope, module: Option<String>) -> Result<ScopeRef, Error> {
+// Note: `the` is compensating for an inconsistensy in sass-spec
+fn get_scope(
+    s: &Scope,
+    module: Option<String>,
+    the: bool,
+) -> Result<ScopeRef, Error> {
     if let Some(module) = module {
         if let Some(module) = call_scope(s).get_module(&module) {
             Ok(module)
         } else {
             Err(Error::error(format!(
-                "There is no module with the namespace {:?}",
+                "There is no module with {}namespace {:?}",
+                if the { "the " } else { "" },
                 module
             )))
         }

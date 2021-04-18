@@ -446,8 +446,22 @@ impl<'a> Scope {
         }
     }
 
+    /// Get the functions of this scope as a `Value::Map`.
+    pub fn functions_map(&self) -> Value {
+        use crate::ordermap::OrderMap;
+        use crate::value::Quotes;
+        let mut result = OrderMap::new();
+        for (name, value) in &*self.functions.lock().unwrap() {
+            let name = name.to_string();
+            result.insert(
+                Value::Literal(name.clone(), Quotes::Double),
+                Value::Function(name, Some(value.clone())),
+            );
+        }
+        Value::Map(result)
+    }
     /// Get the variables of this scope as a `Value::Map`.
-    pub fn variables_dict(&self) -> Value {
+    pub fn variables_map(&self) -> Value {
         use crate::ordermap::OrderMap;
         use crate::value::Quotes;
         let mut result = OrderMap::new();
