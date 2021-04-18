@@ -78,7 +78,6 @@ mod format {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn output() {
         assert_eq!(
             crate::rsass(

@@ -8,7 +8,7 @@
 //! leafs of simple selectors in some future release.
 use crate::css::Value;
 use crate::sass::SassString;
-use crate::value::{ListSeparator, Quotes};
+use crate::value::ListSeparator;
 use crate::{Error, ParseError, ScopeRef};
 use std::fmt;
 use std::io::Write;
@@ -69,22 +69,38 @@ impl Selectors {
             .s
             .iter()
             .map(|s: &Selector| {
-                Value::List(
-                    s.to_string()
-                        .split_whitespace()
-                        .map(|p| Value::Literal(p.to_string(), Quotes::None))
-                        .collect(),
-                    Some(ListSeparator::Space),
-                    false,
-                )
+                let (mut v, last) = s.0.iter().fold(
+                    (vec![], Option::<String>::None),
+                    |(mut v, mut last), part| {
+                        match part {
+                            SelectorPart::Descendant => {
+                                if let Some(last) = last.take() {
+                                    v.push(last.into());
+                                }
+                            }
+                            SelectorPart::RelOp(op) => {
+                                if let Some(last) = last.take() {
+                                    v.push(last.into());
+                                }
+                                v.push(char::from(*op).to_string().into());
+                            }
+                            part => {
+                                last = Some(match last {
+                                    Some(last) => format!("{}{}", last, part),
+                                    None => part.to_string(),
+                                });
+                            }
+                        }
+                        (v, last)
+                    },
+                );
+                if let Some(last) = last {
+                    v.push(last.into());
+                }
+                Value::List(v, Some(ListSeparator::Space), false)
             })
             .collect::<Vec<_>>();
-        let sep = if content.len() == 1 {
-            None
-        } else {
-            Some(ListSeparator::Comma)
-        };
-        Value::List(content, sep, false)
+        Value::List(content, Some(ListSeparator::Comma), false)
     }
     /// Evaluate any interpolation in these Selectors.
     pub fn eval(&self, scope: ScopeRef) -> Result<Selectors, Error> {
@@ -97,10 +113,10 @@ impl Selectors {
         // The "simple" parts we get from evaluating interpolations may
         // contain high-level selector separators (i.e. ","), so we need to
         // parse the selectors again, from a string representation.
-        use crate::parser::code_span;
+        use crate::parser::input_span;
         use crate::parser::selectors::selectors;
         // TODO: Get the span from the source of self!
-        Ok(ParseError::check(selectors(code_span(
+        Ok(ParseError::check(selectors(input_span(
             format!("{} ", s).as_bytes(),
         )))?)
     }
@@ -120,18 +136,11 @@ impl Selector {
     }
 
     fn join(&self, other: &Selector, alt_context: &Selector) -> Selector {
-        if other.0.iter().any(|p| p == &SelectorPart::BackRef) {
+        if other.has_backref() {
             let mut result = Vec::new();
+            let context = if self.0.is_empty() { alt_context } else { self };
             for p in &other.0 {
-                if p == &SelectorPart::BackRef {
-                    if self.0.is_empty() {
-                        result.extend(alt_context.0.iter().cloned());
-                    } else {
-                        result.extend(self.0.iter().cloned());
-                    }
-                } else {
-                    result.push(p.clone())
-                }
+                result.extend(p.clone_in(context));
             }
             Selector(result)
         } else {
@@ -152,6 +161,10 @@ impl Selector {
             .map(|sp| sp.eval(scope.clone()))
             .collect::<Result<_, _>>()
             .map(Selector)
+    }
+
+    fn has_backref(&self) -> bool {
+        self.0.iter().any(|p| p.has_backref())
     }
 }
 
@@ -209,7 +222,49 @@ impl SelectorPart {
             | SelectorPart::BackRef => false,
         }
     }
-
+    fn has_backref(&self) -> bool {
+        match *self {
+            SelectorPart::Descendant
+            | SelectorPart::RelOp(_)
+            | SelectorPart::Simple(_)
+            | SelectorPart::Attribute { .. } => false,
+            SelectorPart::BackRef => true,
+            SelectorPart::PseudoElement { ref arg, .. }
+            | SelectorPart::Pseudo { ref arg, .. } => arg
+                .as_ref()
+                .map(|a| a.s.iter().any(|s| s.has_backref()))
+                .unwrap_or(false),
+        }
+    }
+    fn clone_in(&self, context: &Selector) -> Vec<SelectorPart> {
+        match self {
+            s @ SelectorPart::Descendant
+            | s @ SelectorPart::RelOp(_)
+            | s @ SelectorPart::Simple(_)
+            | s @ SelectorPart::Attribute { .. } => vec![s.clone()],
+            SelectorPart::BackRef => context.0.clone(),
+            SelectorPart::PseudoElement { name, arg } => {
+                vec![SelectorPart::PseudoElement {
+                    name: name.clone(),
+                    arg: arg.as_ref().map(|a| {
+                        a.inside(
+                            &Selectors::root().with_backref(context.clone()),
+                        )
+                    }),
+                }]
+            }
+            SelectorPart::Pseudo { name, arg } => {
+                vec![SelectorPart::Pseudo {
+                    name: name.clone(),
+                    arg: arg.as_ref().map(|a| {
+                        a.inside(
+                            &Selectors::root().with_backref(context.clone()),
+                        )
+                    }),
+                }]
+            }
+        }
+    }
     fn eval(&self, scope: ScopeRef) -> Result<SelectorPart, Error> {
         match *self {
             SelectorPart::Attribute {
@@ -332,11 +387,11 @@ impl fmt::Display for SelectorPart {
                     // their arg in compact form.  Maybe we need more
                     // hard-coded names here, or maybe the condition
                     // should be on the argument rather than the name?
-                    if out.alternate()
-                        || name == "nth-child"
-                        || name == "nth-of-type"
-                    {
+                    if out.alternate() || name == "nth-of-type" {
                         write!(out, ":{}({:#})", name, arg)
+                    } else if name == "nth-child" {
+                        let arg = format!("{:#}", arg);
+                        write!(out, ":{}({})", name, arg.replace(',', ", "))
                     } else {
                         write!(out, ":{}({})", name, arg)
                     }

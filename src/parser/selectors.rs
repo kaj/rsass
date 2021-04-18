@@ -29,7 +29,7 @@ pub fn selector(input: Span) -> IResult<Span, Selector> {
     Ok((input, Selector(s)))
 }
 
-fn selector_part(input: Span) -> IResult<Span, SelectorPart> {
+pub(crate) fn selector_part(input: Span) -> IResult<Span, SelectorPart> {
     alt((
         map(sass_string, SelectorPart::Simple),
         value(SelectorPart::Simple("*".into()), tag("*")),
