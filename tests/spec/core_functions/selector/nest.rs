@@ -319,7 +319,6 @@ mod parent {
     }
     mod selector_pseudo {
         #[test]
-        #[ignore] // wrong result
         fn complex_parent() {
             assert_eq!(
                 crate::rsass(
@@ -334,7 +333,6 @@ mod parent {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn simple_parent() {
             assert_eq!(
                 crate::rsass(

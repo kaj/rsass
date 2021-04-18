@@ -148,18 +148,11 @@ impl Selector {
     }
 
     fn join(&self, other: &Selector, alt_context: &Selector) -> Selector {
-        if other.0.iter().any(|p| p == &SelectorPart::BackRef) {
+        if other.0.iter().any(|p| p.has_backref()) {
             let mut result = Vec::new();
+            let context = if self.0.is_empty() { alt_context } else { self };
             for p in &other.0 {
-                if p == &SelectorPart::BackRef {
-                    if self.0.is_empty() {
-                        result.extend(alt_context.0.iter().cloned());
-                    } else {
-                        result.extend(self.0.iter().cloned());
-                    }
-                } else {
-                    result.push(p.clone())
-                }
+                result.extend(p.clone_in(context));
             }
             Selector(result)
         } else {
@@ -237,7 +230,52 @@ impl SelectorPart {
             | SelectorPart::BackRef => false,
         }
     }
-
+    fn has_backref(&self) -> bool {
+        match *self {
+            SelectorPart::Descendant
+            | SelectorPart::RelOp(_)
+            | SelectorPart::Simple(_)
+            | SelectorPart::Attribute { .. } => false,
+            SelectorPart::BackRef => true,
+            SelectorPart::PseudoElement { ref arg, .. }
+            | SelectorPart::Pseudo { ref arg, .. } => {
+                if let Some(arg) = arg {
+                    arg.s.iter().any(|s| s.0.iter().any(|p| p.has_backref()))
+                } else {
+                    false
+                }
+            }
+        }
+    }
+    fn clone_in(&self, context: &Selector) -> Vec<SelectorPart> {
+        match self {
+            s @ SelectorPart::Descendant
+            | s @ SelectorPart::RelOp(_)
+            | s @ SelectorPart::Simple(_)
+            | s @ SelectorPart::Attribute { .. } => vec![s.clone()],
+            SelectorPart::BackRef => context.0.clone(),
+            SelectorPart::PseudoElement { name, arg } => {
+                vec![SelectorPart::PseudoElement {
+                    name: name.clone(),
+                    arg: arg.as_ref().map(|a| {
+                        a.inside(
+                            &Selectors::root().with_backref(context.clone()),
+                        )
+                    }),
+                }]
+            }
+            SelectorPart::Pseudo { name, arg } => {
+                vec![SelectorPart::Pseudo {
+                    name: name.clone(),
+                    arg: arg.as_ref().map(|a| {
+                        a.inside(
+                            &Selectors::root().with_backref(context.clone()),
+                        )
+                    }),
+                }]
+            }
+        }
+    }
     fn eval(&self, scope: ScopeRef) -> Result<SelectorPart, Error> {
         match *self {
             SelectorPart::Attribute {
