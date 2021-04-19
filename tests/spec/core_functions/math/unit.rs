@@ -44,7 +44,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn test_type() {
         assert_eq!(
             crate::rsass(

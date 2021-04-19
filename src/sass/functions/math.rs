@@ -164,15 +164,9 @@ pub fn create_module() -> Scope {
         Ok((get_numeric(s, "number")?.is_no_unit()).into())
     });
     def!(f, unit(number), |s| {
-        let v = match s.get("number")? {
-            Value::Numeric(v, _) => {
-                let mut unit = v.unit;
-                unit.simplify();
-                format!("{}", unit)
-            }
-            _ => "".into(),
-        };
-        Ok(Value::Literal(v, Quotes::Double))
+        let mut unit = get_numeric(s, "number")?.unit;
+        unit.simplify();
+        Ok(Value::Literal(unit.to_string(), Quotes::Double))
     });
 
     // - - - Other Functions - - -

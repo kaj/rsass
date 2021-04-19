@@ -398,6 +398,19 @@ pub fn name(input: Span) -> IResult<Span, String> {
     )(input)
 }
 
+pub fn unitname(input: Span) -> IResult<Span, String> {
+    let (input, first) =
+        verify(alt((escaped_char, name_char)), |c| c.is_alphabetic())(input)?;
+    fold_many0(
+        verify(alt((escaped_char, name_char)), |c| c.is_alphanumeric()),
+        first.to_string(),
+        |mut s, c| {
+            s.push(c);
+            s
+        },
+    )(input)
+}
+
 pub fn name_char(input: Span) -> IResult<Span, char> {
     verify(take_char, is_name_char)(input)
 }
