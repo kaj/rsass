@@ -15,12 +15,66 @@ fn alpha() {
     );
 }
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: grayscale()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $color.\
+         \n  ,--> input.scss\
+         \n1 | a {b: grayscale()}\
+         \n  |       ^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function grayscale($color) {\
+         \n  |           ================= declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: grayscale(red, 1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: grayscale(red, 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function grayscale($color) {\
+         \n  |           ================= declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: grayscale(c)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $color: c is not a color.\
+         \n  ,\
+         \n1 | a {b: grayscale(c)}\
+         \n  |       ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn max_saturation() {

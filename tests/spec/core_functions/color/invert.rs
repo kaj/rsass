@@ -30,22 +30,135 @@ fn black() {
 }
 mod error {
     mod bounds {
-
-        // Ignoring "too_high", error tests are not supported yet.
-
-        // Ignoring "too_low", error tests are not supported yet.
+        #[test]
+        fn too_high() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: invert(red, 100.001)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $weight: Expected 100.001 to be within 0 and 100.\
+         \n  ,\
+         \n1 | a {b: invert(red, 100.001)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn too_low() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: invert(red, -0.001)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $weight: Expected -0.001 to be within 0 and 100.\
+         \n  ,\
+         \n1 | a {b: invert(red, -0.001)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
-
-    // Ignoring "number_with_weight", error tests are not supported yet.
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn number_with_weight() {
+        assert_eq!(
+        crate::rsass(
+            "a {b: invert(1, 50%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: Only one argument may be passed to the plain-CSS invert() function.\
+         \n  ,\
+         \n1 | a {b: invert(1, 50%)}\
+         \n  |       ^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: invert()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $color.\
+         \n  ,--> input.scss\
+         \n1 | a {b: invert()}\
+         \n  |       ^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function invert($color, $weight: 100%) {\
+         \n  |           ============================= declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: invert(turquoise, 0%, 1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 2 arguments allowed, but 3 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: invert(turquoise, 0%, 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function invert($color, $weight: 100%) {\
+         \n  |           ============================= declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "color", error tests are not supported yet.
-
-        // Ignoring "weight", error tests are not supported yet.
+        #[test]
+        #[ignore] // missing error
+        fn color() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: invert(c)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $color: c is not a color.\
+         \n  ,\
+         \n1 | a {b: invert(c)}\
+         \n  |       ^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn weight() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: invert(red, c)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $weight: c is not a number.\
+         \n  ,\
+         \n1 | a {b: invert(red, c)}\
+         \n  |       ^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 #[test]

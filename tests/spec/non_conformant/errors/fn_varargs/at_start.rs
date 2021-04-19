@@ -1,3 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/fn-varargs/at-start.hrx"
 
-// Ignoring "test", error tests are not supported yet.
+#[test]
+#[ignore] // wrong error
+fn test() {
+    assert_eq!(
+        crate::rsass("@function test($rest...,$param) {}").unwrap_err(),
+        "Error: expected \")\".\
+         \n  ,\
+         \n1 | @function test($rest...,$param) {}\
+         \n  |                        ^\
+         \n  \'\
+         \n  input.scss 1:24  root stylesheet\
+         \n",
+    );
+}

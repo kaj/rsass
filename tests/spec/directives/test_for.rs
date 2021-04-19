@@ -14,18 +14,90 @@ fn empty() {
     );
 }
 mod error {
-
-    // Ignoring "from_float", error tests are not supported yet.
-
-    // Ignoring "from_type", error tests are not supported yet.
-
-    // Ignoring "incompatible_units", error tests are not supported yet.
-
-    // Ignoring "to_float", error tests are not supported yet.
-
-    // Ignoring "to_type", error tests are not supported yet.
-
-    // Ignoring "unit_coersion_to_float", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn from_float() {
+        assert_eq!(
+            crate::rsass("@for $i from 1.5 through 4 {}").unwrap_err(),
+            "Error: 1.5 is not an int.\
+         \n  ,\
+         \n1 | @for $i from 1.5 through 4 {}\
+         \n  |              ^^^\
+         \n  \'\
+         \n  input.scss 1:14  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn from_type() {
+        assert_eq!(
+            crate::rsass("@for $i from \"foo\" through 4 {}").unwrap_err(),
+            "Error: \"foo\" is not a number.\
+         \n  ,\
+         \n1 | @for $i from \"foo\" through 4 {}\
+         \n  |              ^^^^^\
+         \n  \'\
+         \n  input.scss 1:14  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn incompatible_units() {
+        assert_eq!(
+            crate::rsass("@for $i from 100% through 42px {}").unwrap_err(),
+            "Error: Expected 42px to have unit %.\
+         \n  ,\
+         \n1 | @for $i from 100% through 42px {}\
+         \n  |                           ^^^^\
+         \n  \'\
+         \n  input.scss 1:27  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn to_float() {
+        assert_eq!(
+            crate::rsass("@for $i from 1 through 1.5 {}").unwrap_err(),
+            "Error: 1.5 is not an int.\
+         \n  ,\
+         \n1 | @for $i from 1 through 1.5 {}\
+         \n  |                        ^^^\
+         \n  \'\
+         \n  input.scss 1:24  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn to_type() {
+        assert_eq!(
+            crate::rsass("@for $i from 1 through \"foo\" {}").unwrap_err(),
+            "Error: \"foo\" is not a number.\
+         \n  ,\
+         \n1 | @for $i from 1 through \"foo\" {}\
+         \n  |                        ^^^^^\
+         \n  \'\
+         \n  input.scss 1:24  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn unit_coersion_to_float() {
+        assert_eq!(
+            crate::rsass("@for $i from 1cm through 5mm {}").unwrap_err(),
+            "Error: 0.5cm is not an int.\
+         \n  ,\
+         \n1 | @for $i from 1cm through 5mm {}\
+         \n  |                          ^^^\
+         \n  \'\
+         \n  input.scss 1:26  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn exclusive_backward() {

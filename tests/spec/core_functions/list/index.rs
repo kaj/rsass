@@ -1,10 +1,48 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/index.hrx"
 
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: index(c d e)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $value.\
+         \n  ,--> input.scss\
+         \n1 | a {b: index(c d e)}\
+         \n  |       ^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function index($list, $value) {\
+         \n  |           ==================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: index(c d e, d, e)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 2 arguments allowed, but 3 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: index(c d e, d, e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function index($list, $value) {\
+         \n  |           ==================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 mod found {
     #[test]

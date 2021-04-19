@@ -1,50 +1,299 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/scale_color/error/bounds.hrx"
 
 mod alpha {
-
-    // Ignoring "too_high", error tests are not supported yet.
-
-    // Ignoring "too_low", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn too_high() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: scale-color(red, $alpha: 100.001%)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $alpha: Expected 100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $alpha: 100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn too_low() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: scale-color(red, $alpha: -100.001%)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $alpha: Expected -100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $alpha: -100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 mod blackness {
-
-    // Ignoring "too_high", error tests are not supported yet.
-
-    // Ignoring "too_low", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn too_high() {
+        assert_eq!(
+        crate::rsass(
+            "a {b: scale-color(red, $blackness: 100.001%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: $blackness: Expected 100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $blackness: 100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn too_low() {
+        assert_eq!(
+        crate::rsass(
+            "a {b: scale-color(red, $blackness: -100.001%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: $blackness: Expected -100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $blackness: -100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+    }
 }
 mod blue {
-
-    // Ignoring "too_high", error tests are not supported yet.
-
-    // Ignoring "too_low", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn too_high() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: scale-color(blue, $blue: 100.001%)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $blue: Expected 100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(blue, $blue: 100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn too_low() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: scale-color(blue, $blue: -100.001%)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $blue: Expected -100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(blue, $blue: -100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 mod green {
-
-    // Ignoring "too_high", error tests are not supported yet.
-
-    // Ignoring "too_low", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn too_high() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: scale-color(green, $green: 100.001%)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $green: Expected 100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(green, $green: 100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn too_low() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: scale-color(green, $green: -100.001%)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $green: Expected -100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(green, $green: -100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 mod lightness {
-
-    // Ignoring "too_high", error tests are not supported yet.
-
-    // Ignoring "too_low", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn too_high() {
+        assert_eq!(
+        crate::rsass(
+            "a {b: scale-color(red, $lightness: 100.001%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: $lightness: Expected 100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $lightness: 100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn too_low() {
+        assert_eq!(
+        crate::rsass(
+            "a {b: scale-color(red, $lightness: -100.001%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: $lightness: Expected -100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $lightness: -100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+    }
 }
 mod red {
-
-    // Ignoring "too_high", error tests are not supported yet.
-
-    // Ignoring "too_low", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn too_high() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: scale-color(red, $red: 100.001%)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $red: Expected 100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $red: 100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn too_low() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: scale-color(red, $red: -100.001%)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $red: Expected -100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $red: -100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 mod saturation {
-
-    // Ignoring "too_high", error tests are not supported yet.
-
-    // Ignoring "too_low", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn too_high() {
+        assert_eq!(
+        crate::rsass(
+            "a {b: scale-color(red, $saturation: 100.001%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: $saturation: Expected 100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $saturation: 100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn too_low() {
+        assert_eq!(
+        crate::rsass(
+            "a {b: scale-color(red, $saturation: -100.001%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: $saturation: Expected -100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $saturation: -100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+    }
 }
 mod whiteness {
-
-    // Ignoring "too_high", error tests are not supported yet.
-
-    // Ignoring "too_low", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn too_high() {
+        assert_eq!(
+        crate::rsass(
+            "a {b: scale-color(red, $whiteness: 100.001%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: $whiteness: Expected 100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $whiteness: 100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn too_low() {
+        assert_eq!(
+        crate::rsass(
+            "a {b: scale-color(red, $whiteness: -100.001%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: $whiteness: Expected -100.001% to be within -100% and 100%.\
+         \n  ,\
+         \n1 | a {b: scale-color(red, $whiteness: -100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+    }
 }

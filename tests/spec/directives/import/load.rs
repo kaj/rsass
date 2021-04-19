@@ -48,8 +48,24 @@ mod index {
         \n"
         );
     }
-
-    // Ignoring "dir_dot_scss", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn dir_dot_scss() {
+        assert_eq!(
+            crate::rsass(
+                "@import \"dir.scss\";\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Can\'t find stylesheet to import.\
+         \n  ,\
+         \n1 | @import \"dir.scss\";\
+         \n  |         ^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:9  root stylesheet\
+         \n",
+        );
+    }
     #[test]
     #[ignore] // wrong result
     fn partial() {

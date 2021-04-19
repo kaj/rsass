@@ -29,15 +29,83 @@ fn alpha() {
     );
 }
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: adjust-hue(red)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $degrees.\
+         \n  ,--> input.scss\
+         \n1 | a {b: adjust-hue(red)}\
+         \n  |       ^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function adjust-hue($color, $degrees) {\
+         \n  |           ============================ declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: adjust-hue(red, 1, 2)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 2 arguments allowed, but 3 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: adjust-hue(red, 1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function adjust-hue($color, $degrees) {\
+         \n  |           ============================ declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "color", error tests are not supported yet.
-
-        // Ignoring "hue", error tests are not supported yet.
+        #[test]
+        fn color() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: adjust-hue(1, 2)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $color: 1 is not a color.\
+         \n  ,\
+         \n1 | a {b: adjust-hue(1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn hue() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: adjust-hue(red, blue)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $degrees: blue is not a number.\
+         \n  ,\
+         \n1 | a {b: adjust-hue(red, blue)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 #[test]

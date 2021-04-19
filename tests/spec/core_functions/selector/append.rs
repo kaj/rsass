@@ -31,20 +31,142 @@ mod classes {
     }
 }
 mod error {
-
-    // Ignoring "invalid", error tests are not supported yet.
-
-    // Ignoring "leading_combinator", error tests are not supported yet.
-
-    // Ignoring "namespace", error tests are not supported yet.
-
-    // Ignoring "parent", error tests are not supported yet.
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
-
-    // Ignoring "universal", error tests are not supported yet.
+    #[test]
+    #[ignore] // wrong error
+    fn invalid() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: selector-append(\"[c\", \"d\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: expected more input.\
+         \n  ,\
+         \n1 | [c\
+         \n  |   ^\
+         \n  \'\
+         \n  - 1:3  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-append(\"[c\", \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn leading_combinator() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: selector-append(\".c\", \"> .d\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Can\'t append > .d to .c.\
+         \n  ,\
+         \n1 | a {b: selector-append(\".c\", \"> .d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn namespace() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: selector-append(\"c\", \"|d\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Can\'t append |d to c.\
+         \n  ,\
+         \n1 | a {b: selector-append(\"c\", \"|d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn parent() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: selector-append(\".c\", \"&\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Parent selectors aren\'t allowed here.\
+         \n  ,\
+         \n1 | &\
+         \n  | ^\
+         \n  \'\
+         \n  - 1:1  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-append(\".c\", \"&\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: selector-append()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $selectors: At least one selector must be passed.\
+         \n  ,\
+         \n1 | a {b: selector-append()}\
+         \n  |       ^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: selector-append(\"c\", 1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: 1 is not a valid selector: it must be a string,\
+         \na list of strings, or a list of lists of strings.\
+         \n  ,\
+         \n1 | a {b: selector-append(\"c\", 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn universal() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: selector-append(\".c\", \"*\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Can\'t append * to .c.\
+         \n  ,\
+         \n1 | a {b: selector-append(\".c\", \"*\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 mod format {
     mod input {

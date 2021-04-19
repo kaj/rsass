@@ -25,6 +25,7 @@ fn main() -> Result<(), Error> {
             "directives/use",    // `@use` is not supported at all
             "libsass-closed-issues/issue_185/mixin.hrx", // stack overflow
             "libsass-todo-issues/issue_221262.hrx", // stack overflow
+            "libsass-todo-issues/issue_221260.hrx", // stack overflow
             "libsass-todo-issues/issue_221292.hrx", // stack overflow
             "libsass/unicode-bom/utf-16-big", // rsass only handles utf8
             "libsass/unicode-bom/utf-16-little", // rsass only handles utf8
@@ -71,7 +72,7 @@ fn handle_suite(
     writeln!(
         rs,
         "use rsass::output::Format;\
-         \nuse rsass::{{parse_scss_data, Error, FsFileContext, ScopeRef}};",
+         \nuse rsass::{{parse_scss_file, Error, FsFileContext, ScopeRef}};",
     )?;
 
     handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)
@@ -88,10 +89,7 @@ fn handle_suite(
          \nfn rsass_fmt(format: Format, input: &str)\
          \n-> Result<String, String> {{\
          \n    compile_scss(input.as_bytes(), format)\
-         \n        .map_err(|e| {{\
-         \n            eprintln!(\"{{}}\", e);\
-         \n            \"rsass failed\".into()\
-         \n        }})\
+         \n        .map_err(|e| format!(\"{{}}\\n\", e))\
          \n        .and_then(|s| {{\
          \n            String::from_utf8(s)\
          \n                .map(|s| s.replace(\"\\n\\n\", \"\\n\"))\
@@ -101,7 +99,7 @@ fn handle_suite(
          \npub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {{\
          \n    let mut file_context = FsFileContext::new();\
          \n    file_context.push_path(\"tests/spec\".as_ref());\
-         \n    let items = parse_scss_data(input)?;\
+         \n    let items = parse_scss_file(&mut &input[..], \"input.scss\")?;\
          \n    format.write_root(&items, ScopeRef::new_global(format), &file_context)\
          \n}}"
     )?;
@@ -351,6 +349,7 @@ fn fn_name(name: &str) -> String {
         || t == "if"
         || t == "loop"
         || t == "match"
+        || t == "mod"
         || t == "override"
         || t == "return"
         || t == "static"

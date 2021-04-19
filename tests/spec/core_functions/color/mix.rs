@@ -183,22 +183,135 @@ mod both_weights {
 }
 mod error {
     mod bounds {
-
-        // Ignoring "too_high", error tests are not supported yet.
-
-        // Ignoring "too_low", error tests are not supported yet.
+        #[test]
+        fn too_high() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: mix(red, blue, 100.001)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $weight: Expected 100.001 to be within 0 and 100.\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, 100.001)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn too_low() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: mix(red, blue, -0.001)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $weight: Expected -0.001 to be within 0 and 100.\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, -0.001)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: mix(red)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $color2.\
+         \n  ,--> input.scss\
+         \n1 | a {b: mix(red)}\
+         \n  |       ^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function mix($color1, $color2, $weight: 50%) {\
+         \n  |           =================================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: mix(red, blue, 100, 1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 3 arguments allowed, but 4 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: mix(red, blue, 100, 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function mix($color1, $color2, $weight: 50%) {\
+         \n  |           =================================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "color1", error tests are not supported yet.
-
-        // Ignoring "color2", error tests are not supported yet.
-
-        // Ignoring "weight", error tests are not supported yet.
+        #[test]
+        fn color1() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: mix(1, blue)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $color1: 1 is not a color.\
+         \n  ,\
+         \n1 | a {b: mix(1, blue)}\
+         \n  |       ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn color2() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: mix(red, 1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $color2: 1 is not a color.\
+         \n  ,\
+         \n1 | a {b: mix(red, 1)}\
+         \n  |       ^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn weight() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: mix(red, blue, green)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $weight: green is not a number.\
+         \n  ,\
+         \n1 | a {b: mix(red, blue, green)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 mod explicit_weight {

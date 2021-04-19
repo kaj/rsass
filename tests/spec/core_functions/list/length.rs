@@ -43,10 +43,48 @@ fn t2() {
     );
 }
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: length()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $list.\
+         \n  ,--> input.scss\
+         \n1 | a {b: length()}\
+         \n  |       ^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function length($list) {\
+         \n  |           ============= declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: length(1, 2)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: length(1, 2)}\
+         \n  |       ^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function length($list) {\
+         \n  |           ============= declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn many() {

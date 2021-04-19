@@ -45,10 +45,48 @@ mod bracketed {
     }
 }
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: is-bracketed()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $list.\
+         \n  ,--> input.scss\
+         \n1 | a {b: is-bracketed()}\
+         \n  |       ^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function is-bracketed($list) {\
+         \n  |           =================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: is-bracketed(a b, c d)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: is-bracketed(a b, c d)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function is-bracketed($list) {\
+         \n  |           =================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 mod unbracketed {
     #[test]

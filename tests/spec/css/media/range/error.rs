@@ -1,36 +1,264 @@
 //! Tests auto-converted from "sass-spec/spec/css/media/range/error.hrx"
 
 mod invalid_binary_operator {
-
-    // Ignoring "before_colon", error tests are not supported yet.
-
-    // Ignoring "eq", error tests are not supported yet.
-
-    // Ignoring "gt", error tests are not supported yet.
-
-    // Ignoring "gte", error tests are not supported yet.
-
-    // Ignoring "in_subexpression", error tests are not supported yet.
-
-    // Ignoring "lt", error tests are not supported yet.
-
-    // Ignoring "lte", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn before_colon() {
+        assert_eq!(
+        crate::rsass(
+            "// Even though this isn\'t *technically* ambiguous, disallowing it makes parsing\
+             \n// much easier because you don\'t have to disambiguate what the first `<` (or\
+             \n// other comparison operator) is.\
+             \n@media (1 < 2: 10px) {a {b: c}}\
+             \n"
+        ).unwrap_err(),
+        "Error: expected \")\".\
+         \n  ,\
+         \n4 | @media (1 < 2: 10px) {a {b: c}}\
+         \n  |              ^\
+         \n  \'\
+         \n  input.scss 4:14  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn eq() {
+        assert_eq!(
+            crate::rsass(
+                "@media (1 = 2 = width) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: expected \")\".\
+         \n  ,\
+         \n1 | @media (1 = 2 = width) {a {b: c}}\
+         \n  |               ^\
+         \n  \'\
+         \n  input.scss 1:15  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn gt() {
+        assert_eq!(
+            crate::rsass(
+                "@media (3 > width > 2 > 1) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: expected \")\".\
+         \n  ,\
+         \n1 | @media (3 > width > 2 > 1) {a {b: c}}\
+         \n  |                       ^\
+         \n  \'\
+         \n  input.scss 1:23  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn gte() {
+        assert_eq!(
+            crate::rsass(
+                "@media (3 >= width >= 2 >= 1) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: expected \")\".\
+         \n  ,\
+         \n1 | @media (3 >= width >= 2 >= 1) {a {b: c}}\
+         \n  |                         ^\
+         \n  \'\
+         \n  input.scss 1:25  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn in_subexpression() {
+        assert_eq!(
+        crate::rsass(
+            "// Even though `1 < 2` here isn\'t syntactically at the top-level, because `<`\
+             \n// binds more tightly than `or`, it\'s disallowed because it\'s not in parentheses\
+             \n// or square brackets.\
+             \n@media (1 < 2 or false = width) {a {b: c}}\
+             \n"
+        ).unwrap_err(),
+        "Error: expected \")\".\
+         \n  ,\
+         \n4 | @media (1 < 2 or false = width) {a {b: c}}\
+         \n  |                        ^\
+         \n  \'\
+         \n  input.scss 4:24  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn lt() {
+        assert_eq!(
+            crate::rsass(
+                "@media (1 < width < 2 < 3) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: expected \")\".\
+         \n  ,\
+         \n1 | @media (1 < width < 2 < 3) {a {b: c}}\
+         \n  |                       ^\
+         \n  \'\
+         \n  input.scss 1:23  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn lte() {
+        assert_eq!(
+            crate::rsass(
+                "@media (1 <= width <= 2 <= 3) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: expected \")\".\
+         \n  ,\
+         \n1 | @media (1 <= width <= 2 <= 3) {a {b: c}}\
+         \n  |                         ^\
+         \n  \'\
+         \n  input.scss 1:25  root stylesheet\
+         \n",
+        );
+    }
 }
 mod invalid_comparison {
-
-    // Ignoring "gte", error tests are not supported yet.
-
-    // Ignoring "lte", error tests are not supported yet.
-
-    // Ignoring "range_gte", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn gte() {
+        assert_eq!(
+            crate::rsass(
+                "@media (width > = 100px) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Expected expression.\
+         \n  ,\
+         \n1 | @media (width > = 100px) {a {b: c}}\
+         \n  |                 ^\
+         \n  \'\
+         \n  input.scss 1:17  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn lte() {
+        assert_eq!(
+            crate::rsass(
+                "@media (width < = 100px) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Expected expression.\
+         \n  ,\
+         \n1 | @media (width < = 100px) {a {b: c}}\
+         \n  |                 ^\
+         \n  \'\
+         \n  input.scss 1:17  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn range_gte() {
+        assert_eq!(
+            crate::rsass(
+                "@media (10px > width > = 1px) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Expected expression.\
+         \n  ,\
+         \n1 | @media (10px > width > = 1px) {a {b: c}}\
+         \n  |                        ^\
+         \n  \'\
+         \n  input.scss 1:24  root stylesheet\
+         \n",
+        );
+    }
 }
 mod mismatched_range {
-
-    // Ignoring "gt_lt", error tests are not supported yet.
-
-    // Ignoring "gte_lte", error tests are not supported yet.
-
-    // Ignoring "lt_gt", error tests are not supported yet.
-
-    // Ignoring "lte_gte", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn gt_lt() {
+        assert_eq!(
+            crate::rsass(
+                "@media (1px > width < 2px) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: expected \")\".\
+         \n  ,\
+         \n1 | @media (1px > width < 2px) {a {b: c}}\
+         \n  |                     ^\
+         \n  \'\
+         \n  input.scss 1:21  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn gte_lte() {
+        assert_eq!(
+            crate::rsass(
+                "@media (1px >= width <= 2px) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: expected \")\".\
+         \n  ,\
+         \n1 | @media (1px >= width <= 2px) {a {b: c}}\
+         \n  |                      ^\
+         \n  \'\
+         \n  input.scss 1:22  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn lt_gt() {
+        assert_eq!(
+            crate::rsass(
+                "@media (1px < width > 2px) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: expected \")\".\
+         \n  ,\
+         \n1 | @media (1px < width > 2px) {a {b: c}}\
+         \n  |                     ^\
+         \n  \'\
+         \n  input.scss 1:21  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn lte_gte() {
+        assert_eq!(
+            crate::rsass(
+                "@media (1px <= width >= 2px) {a {b: c}}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: expected \")\".\
+         \n  ,\
+         \n1 | @media (1px <= width >= 2px) {a {b: c}}\
+         \n  |                      ^\
+         \n  \'\
+         \n  input.scss 1:22  root stylesheet\
+         \n",
+        );
+    }
 }

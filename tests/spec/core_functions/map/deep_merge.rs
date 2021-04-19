@@ -95,15 +95,87 @@ mod deep {
     }
 }
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "@use \'sass:map\';\
+             \na {b: map.deep-merge((c: d))}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $map2.\
+         \n  ,--> input.scss\
+         \n2 | a {b: map.deep-merge((c: d))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:map\
+         \n1 | @function deep-merge($map1, $map2) {\
+         \n  |           ======================== declaration\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "@use \'sass:map\';\
+             \na {b: map.deep-merge((c: d), (e: f), (g: h))}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 2 arguments allowed, but 3 were passed.\
+         \n  ,--> input.scss\
+         \n2 | a {b: map.deep-merge((c: d), (e: f), (g: h))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:map\
+         \n1 | @function deep-merge($map1, $map2) {\
+         \n  |           ======================== declaration\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "map1", error tests are not supported yet.
-
-        // Ignoring "map2", error tests are not supported yet.
+        #[test]
+        fn map1() {
+            assert_eq!(
+                crate::rsass(
+                    "@use \'sass:map\';\
+             \na {b: map.deep-merge(1, (c: d))}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $map1: 1 is not a map.\
+         \n  ,\
+         \n2 | a {b: map.deep-merge(1, (c: d))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn map2() {
+            assert_eq!(
+                crate::rsass(
+                    "@use \'sass:map\';\
+             \na {b: map.deep-merge((c: d), 1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $map2: 1 is not a map.\
+         \n  ,\
+         \n2 | a {b: map.deep-merge((c: d), 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 #[test]

@@ -16,14 +16,86 @@ fn decimal() {
     );
 }
 mod error {
-
-    // Ignoring "too_many_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
-
-    // Ignoring "units", error tests are not supported yet.
-
-    // Ignoring "zero_args", error tests are not supported yet.
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:math\" as math;\
+             \na {b: math.acos(0, 0)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n2 | a {b: math.acos(0, 0)}\
+         \n  |       ^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:math\
+         \n1 | @function acos($number) {\
+         \n  |           ============= declaration\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:math\" as math;\
+             \na {b: math.acos(\"0\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $number: \"0\" is not a number.\
+         \n  ,\
+         \n2 | a {b: math.acos(\"0\")}\
+         \n  |       ^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn units() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:math\" as math;\
+             \na {b: math.acos(1px)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $number: Expected 1px to have no units.\
+         \n  ,\
+         \n2 | a {b: math.acos(1px)}\
+         \n  |       ^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn zero_args() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:math\" as math;\
+             \na {b: math.acos()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $number.\
+         \n  ,--> input.scss\
+         \n2 | a {b: math.acos()}\
+         \n  |       ^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:math\
+         \n1 | @function acos($number) {\
+         \n  |           ============= declaration\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn greater_than_one() {

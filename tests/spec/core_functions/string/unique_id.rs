@@ -1,8 +1,27 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/string/unique_id.hrx"
 
 mod error {
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: unique-id(c)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 0 arguments allowed, but 1 was passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: unique-id(c)}\
+         \n  |       ^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:string\
+         \n1 | @function unique-id() {\
+         \n  |           =========== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn is_identifier() {

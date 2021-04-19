@@ -1,13 +1,64 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/remove.hrx"
 
 mod error {
-
-    // Ignoring "positional_and_named", error tests are not supported yet.
-
-    // Ignoring "too_few_args", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn positional_and_named() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: map-remove((c: d, e: f), c, $key: e)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Argument $key was passed both by position and by name.\
+         \n  ,\
+         \n1 | a {b: map-remove((c: d, e: f), c, $key: e)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: map-remove()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $map.\
+         \n  ,--> input.scss\
+         \n1 | a {b: map-remove()}\
+         \n  |       ^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,\
+         \n1 | @function remove($map) {\
+         \n  |           ============ declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "map", error tests are not supported yet.
+        #[test]
+        fn map() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: map-remove(1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $map: 1 is not a map.\
+         \n  ,\
+         \n1 | a {b: map-remove(1)}\
+         \n  |       ^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 mod found {

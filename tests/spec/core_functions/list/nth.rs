@@ -62,19 +62,117 @@ mod t2 {
 }
 mod error {
     mod index {
-
-        // Ignoring "t0", error tests are not supported yet.
-
-        // Ignoring "too_high", error tests are not supported yet.
-
-        // Ignoring "too_low", error tests are not supported yet.
+        #[test]
+        fn t0() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: nth(c d, 0)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $n: List index may not be 0.\
+         \n  ,\
+         \n1 | a {b: nth(c d, 0)}\
+         \n  |       ^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn too_high() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: nth(c d, 3)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $n: Invalid index 3 for a list with 2 elements.\
+         \n  ,\
+         \n1 | a {b: nth(c d, 3)}\
+         \n  |       ^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn too_low() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: nth(c d, -3)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $n: Invalid index -3 for a list with 2 elements.\
+         \n  ,\
+         \n1 | a {b: nth(c d, -3)}\
+         \n  |       ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: nth(c d)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $n.\
+         \n  ,--> input.scss\
+         \n1 | a {b: nth(c d)}\
+         \n  |       ^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function nth($list, $n) {\
+         \n  |           ============== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: nth(c d, 1, 2)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 2 arguments allowed, but 3 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: nth(c d, 1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:list\
+         \n1 | @function nth($list, $n) {\
+         \n  |           ============== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: nth(c d, e)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $n: e is not a number.\
+         \n  ,\
+         \n1 | a {b: nth(c d, e)}\
+         \n  |       ^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn map() {

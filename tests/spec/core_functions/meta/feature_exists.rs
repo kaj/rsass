@@ -44,12 +44,65 @@ fn dash_sensitive() {
     );
 }
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
-
-    // Ignoring "test_type", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: feature-exists()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $feature.\
+         \n  ,--> input.scss\
+         \n1 | a {b: feature-exists()}\
+         \n  |       ^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:meta\
+         \n1 | @function feature-exists($feature) {\
+         \n  |           ======================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: feature-exists(at-error, custom-property)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: feature-exists(at-error, custom-property)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:meta\
+         \n1 | @function feature-exists($feature) {\
+         \n  |           ======================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn test_type() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: feature-exists(1)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $feature: 1 is not a string.\
+         \n  ,\
+         \n1 | a {b: feature-exists(1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 #[ignore] // wrong result

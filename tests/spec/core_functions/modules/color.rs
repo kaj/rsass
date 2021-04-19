@@ -155,30 +155,258 @@ mod css_overloads {
     }
 }
 mod error {
-
-    // Ignoring "adjust_color", error tests are not supported yet.
-
-    // Ignoring "adjust_hue", error tests are not supported yet.
-
-    // Ignoring "change_color", error tests are not supported yet.
-
-    // Ignoring "darken", error tests are not supported yet.
-
-    // Ignoring "desaturate", error tests are not supported yet.
-
-    // Ignoring "fade_in", error tests are not supported yet.
-
-    // Ignoring "fade_out", error tests are not supported yet.
-
-    // Ignoring "lighten", error tests are not supported yet.
-
-    // Ignoring "opacify", error tests are not supported yet.
-
-    // Ignoring "saturate", error tests are not supported yet.
-
-    // Ignoring "scale_color", error tests are not supported yet.
-
-    // Ignoring "transparentize", error tests are not supported yet.
+    #[test]
+    fn adjust_color() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:color\";\
+             \na {b: color.adjust-color(#abcdef, $red: 10)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: color.adjust-color(#abcdef, $red: 10)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn adjust_hue() {
+        assert_eq!(
+        crate::rsass(
+            "@use \"sass:color\";\
+             \na {b: color.adjust-hue(#abcdef, 10)}\
+             \n"
+        ).unwrap_err(),
+        "Error: The function adjust-hue() isn\'t in the sass:color module.\
+         \n\
+         \nRecommendation: color.adjust(#abcdef, $hue: 10)\
+         \n\
+         \nMore info: https://sass-lang.com/documentation/functions/color#adjust-hue\
+         \n  ,\
+         \n2 | a {b: color.adjust-hue(#abcdef, 10)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    fn change_color() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:color\";\
+             \na {b: color.change-color(#abcdef, $red: 10)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: color.change-color(#abcdef, $red: 10)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn darken() {
+        assert_eq!(
+        crate::rsass(
+            "@use \"sass:color\";\
+             \na {b: color.darken(#abcdef, 10%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: The function darken() isn\'t in the sass:color module.\
+         \n\
+         \nRecommendation: color.adjust(#abcdef, $lightness: -10%)\
+         \n\
+         \nMore info: https://sass-lang.com/documentation/functions/color#darken\
+         \n  ,\
+         \n2 | a {b: color.darken(#abcdef, 10%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn desaturate() {
+        assert_eq!(
+        crate::rsass(
+            "@use \"sass:color\";\
+             \na {b: color.desaturate(#abcdef, 10%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: The function desaturate() isn\'t in the sass:color module.\
+         \n\
+         \nRecommendation: color.adjust(#abcdef, $saturation: -10%)\
+         \n\
+         \nMore info: https://sass-lang.com/documentation/functions/color#desaturate\
+         \n  ,\
+         \n2 | a {b: color.desaturate(#abcdef, 10%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn fade_in() {
+        assert_eq!(
+        crate::rsass(
+            "@use \"sass:color\";\
+             \na {b: color.fade-in(#abcdef, 0.5)}\
+             \n"
+        ).unwrap_err(),
+        "Error: The function fade-in() isn\'t in the sass:color module.\
+         \n\
+         \nRecommendation: color.adjust(#abcdef, $alpha: 0.5)\
+         \n\
+         \nMore info: https://sass-lang.com/documentation/functions/color#fade-in\
+         \n  ,\
+         \n2 | a {b: color.fade-in(#abcdef, 0.5)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn fade_out() {
+        assert_eq!(
+        crate::rsass(
+            "@use \"sass:color\";\
+             \na {b: color.fade-out(#abcdef, 0.5)}\
+             \n"
+        ).unwrap_err(),
+        "Error: The function fade-out() isn\'t in the sass:color module.\
+         \n\
+         \nRecommendation: color.adjust(#abcdef, $alpha: -0.5)\
+         \n\
+         \nMore info: https://sass-lang.com/documentation/functions/color#fade-out\
+         \n  ,\
+         \n2 | a {b: color.fade-out(#abcdef, 0.5)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn lighten() {
+        assert_eq!(
+        crate::rsass(
+            "@use \"sass:color\";\
+             \na {b: color.lighten(#abcdef, 10%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: The function lighten() isn\'t in the sass:color module.\
+         \n\
+         \nRecommendation: color.adjust(#abcdef, $lightness: 10%)\
+         \n\
+         \nMore info: https://sass-lang.com/documentation/functions/color#lighten\
+         \n  ,\
+         \n2 | a {b: color.lighten(#abcdef, 10%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn opacify() {
+        assert_eq!(
+        crate::rsass(
+            "@use \"sass:color\";\
+             \na {b: color.opacify(#abcdef, 0.5)}\
+             \n"
+        ).unwrap_err(),
+        "Error: The function opacify() isn\'t in the sass:color module.\
+         \n\
+         \nRecommendation: color.adjust(#abcdef, $alpha: 0.5)\
+         \n\
+         \nMore info: https://sass-lang.com/documentation/functions/color#opacify\
+         \n  ,\
+         \n2 | a {b: color.opacify(#abcdef, 0.5)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn saturate() {
+        assert_eq!(
+        crate::rsass(
+            "@use \"sass:color\";\
+             \na {b: color.saturate(#abcdef, 10%)}\
+             \n"
+        ).unwrap_err(),
+        "Error: The function saturate() isn\'t in the sass:color module.\
+         \n\
+         \nRecommendation: color.adjust(#abcdef, $saturation: 10%)\
+         \n\
+         \nMore info: https://sass-lang.com/documentation/functions/color#saturate\
+         \n  ,\
+         \n2 | a {b: color.saturate(#abcdef, 10%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    fn scale_color() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:color\";\
+             \na {b: color.scale-color(#abcdef, $red: 10%)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: color.scale-color(#abcdef, $red: 10%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn transparentize() {
+        assert_eq!(
+        crate::rsass(
+            "@use \"sass:color\";\
+             \na {b: color.transparentize(#abcdef, 0.5)}\
+             \n"
+        ).unwrap_err(),
+        "Error: The function transparentize() isn\'t in the sass:color module.\
+         \n\
+         \nRecommendation: color.adjust(#abcdef, $alpha: -0.5)\
+         \n\
+         \nMore info: https://sass-lang.com/documentation/functions/color#transparentize\
+         \n  ,\
+         \n2 | a {b: color.transparentize(#abcdef, 0.5)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+    );
+    }
 }
 #[test]
 fn green() {
@@ -241,6 +469,7 @@ fn invert() {
     );
 }
 #[test]
+#[ignore] // wrong result
 fn lightness() {
     assert_eq!(
         crate::rsass(

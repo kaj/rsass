@@ -1,3 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/arglists/can-end-with-comma/error-function-2.hrx"
 
-// Ignoring "test", error tests are not supported yet.
+#[test]
+#[ignore] // wrong error
+fn test() {
+    assert_eq!(
+        crate::rsass(
+            "// double comma at end of arglist\
+             \n@function double-comma-error($a,$b,,) {\
+             \n}\
+             \n"
+        )
+        .unwrap_err(),
+        "Error: expected \")\".\
+         \n  ,\
+         \n2 | @function double-comma-error($a,$b,,) {\
+         \n  |                                    ^\
+         \n  \'\
+         \n  input.scss 2:36  root stylesheet\
+         \n",
+    );
+}

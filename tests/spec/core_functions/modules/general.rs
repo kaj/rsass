@@ -16,8 +16,25 @@ fn test_as() {
     );
 }
 mod error {
-
-    // Ignoring "set_variable", error tests are not supported yet.
+    #[test]
+    #[ignore] // wrong error
+    fn set_variable() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:math\";\
+             \nmath.$a: b;\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined variable.\
+         \n  ,\
+         \n2 | math.$a: b;\
+         \n  | ^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet\
+         \n",
+        );
+    }
 }
 mod forward {
     #[test]
@@ -53,10 +70,44 @@ mod forward {
         );
     }
     mod error {
-
-        // Ignoring "hide", error tests are not supported yet.
-
-        // Ignoring "show", error tests are not supported yet.
+        #[test]
+        #[ignore] // wrong error
+        fn hide() {
+            assert_eq!(
+                crate::rsass(
+                    "@use \"other\";\
+             \na {b: other.round(0.7)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: other.round(0.7)}\
+         \n  |       ^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn show() {
+            assert_eq!(
+                crate::rsass(
+                    "@use \"other\";\
+             \na {b: other.round(0.7)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: other.round(0.7)}\
+         \n  |       ^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+            );
+        }
     }
     #[test]
     #[ignore] // unexepected error

@@ -2,26 +2,178 @@
 
 mod error {
     mod invalid {
-
-        // Ignoring "initial", error tests are not supported yet.
-
-        // Ignoring "later", error tests are not supported yet.
+        #[test]
+        #[ignore] // wrong error
+        fn initial() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: selector-nest(\"[c\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: expected more input.\
+         \n  ,\
+         \n1 | [c\
+         \n  |   ^\
+         \n  \'\
+         \n  - 1:3  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-nest(\"[c\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn later() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: selector-nest(\"c\", \"[d\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: expected more input.\
+         \n  ,\
+         \n1 | [d\
+         \n  |   ^\
+         \n  \'\
+         \n  - 1:3  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-nest(\"c\", \"[d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
     mod parent {
-
-        // Ignoring "first_arg", error tests are not supported yet.
-
-        // Ignoring "non_initial", error tests are not supported yet.
-
-        // Ignoring "prefix", error tests are not supported yet.
+        #[test]
+        #[ignore] // missing error
+        fn first_arg() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: selector-nest(\"&\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: Parent selectors aren\'t allowed here.\
+         \n  ,\
+         \n1 | &\
+         \n  | ^\
+         \n  \'\
+         \n  - 1:1  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-nest(\"&\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn non_initial() {
+            assert_eq!(
+        crate::rsass(
+            "a {b: selector-nest(\"c\", \"[d]&\")}\
+             \n"
+        ).unwrap_err(),
+        "Error: \"&\" may only used at the beginning of a compound selector.\
+         \n  ,\
+         \n1 | [d]&\
+         \n  |    ^\
+         \n  \'\
+         \n  - 1:4  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-nest(\"c\", \"[d]&\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn prefix() {
+            assert_eq!(
+        crate::rsass(
+            "a {b: selector-nest(\"c\", \"d&\")}\
+             \n"
+        ).unwrap_err(),
+        "Error: \"&\" may only used at the beginning of a compound selector.\
+         \n  ,\
+         \n1 | d&\
+         \n  |  ^\
+         \n  \'\
+         \n  - 1:2  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-nest(\"c\", \"d&\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+        }
     }
-
-    // Ignoring "too_few_args", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: selector-nest()}\
+             \n\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: $selectors: At least one selector must be passed.\
+         \n  ,\
+         \n1 | a {b: selector-nest()}\
+         \n  |       ^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "initial", error tests are not supported yet.
-
-        // Ignoring "later", error tests are not supported yet.
+        #[test]
+        fn initial() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: selector-nest(1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: 1 is not a valid selector: it must be a string,\
+         \na list of strings, or a list of lists of strings.\
+         \n  ,\
+         \n1 | a {b: selector-nest(1)}\
+         \n  |       ^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn later() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: selector-nest(\"c\", 1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: 1 is not a valid selector: it must be a string,\
+         \na list of strings, or a list of lists of strings.\
+         \n  ,\
+         \n1 | a {b: selector-nest(\"c\", 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 mod format {

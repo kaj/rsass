@@ -16,18 +16,114 @@ fn append() {
     );
 }
 mod error {
-
-    // Ignoring "selector_append", error tests are not supported yet.
-
-    // Ignoring "selector_extend", error tests are not supported yet.
-
-    // Ignoring "selector_nest", error tests are not supported yet.
-
-    // Ignoring "selector_parse", error tests are not supported yet.
-
-    // Ignoring "selector_replace", error tests are not supported yet.
-
-    // Ignoring "selector_unify", error tests are not supported yet.
+    #[test]
+    fn selector_append() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:selector\";\
+             \na {b: selector.selector-append(c, d)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: selector.selector-append(c, d)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn selector_extend() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:selector\";\
+             \na {b: selector.selector-extend(c, c, d)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: selector.selector-extend(c, c, d)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn selector_nest() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:selector\";\
+             \na {b: selector.selector-nest(c, d)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: selector.selector-nest(c, d)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn selector_parse() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:selector\";\
+             \na {b: selector.selector-parse(\".c.d\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: selector.selector-parse(\".c.d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn selector_replace() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:selector\";\
+             \na {b: selector.selector-replace(c, c, d)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: selector.selector-replace(c, c, d)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn selector_unify() {
+        assert_eq!(
+            crate::rsass(
+                "@use \"sass:selector\";\
+             \na {b: selector.selector-unify(\".c\", \".d\")}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Undefined function.\
+         \n  ,\
+         \n2 | a {b: selector.selector-unify(\".c\", \".d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 #[ignore] // unexepected error

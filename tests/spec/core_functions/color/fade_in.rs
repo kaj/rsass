@@ -2,20 +2,118 @@
 
 mod error {
     mod bounds {
-
-        // Ignoring "too_high", error tests are not supported yet.
-
-        // Ignoring "too_low", error tests are not supported yet.
+        #[test]
+        fn too_high() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: fade-in(red, 1.001)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $amount: Expected 1.001 to be within 0 and 1.\
+         \n  ,\
+         \n1 | a {b: fade-in(red, 1.001)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn too_low() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: fade-in(red, -0.001)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $amount: Expected -0.001 to be within 0 and 1.\
+         \n  ,\
+         \n1 | a {b: fade-in(red, -0.001)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: fade-in(red)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $amount.\
+         \n  ,--> input.scss\
+         \n1 | a {b: fade-in(red)}\
+         \n  |       ^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function fade-in($color, $amount) {\
+         \n  |           ======================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: fade-in(red, 0.1, 2)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 2 arguments allowed, but 3 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: fade-in(red, 0.1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function fade-in($color, $amount) {\
+         \n  |           ======================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "alpha", error tests are not supported yet.
-
-        // Ignoring "color", error tests are not supported yet.
+        #[test]
+        fn alpha() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: fade-in(red, blue)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $amount: blue is not a number.\
+         \n  ,\
+         \n1 | a {b: fade-in(red, blue)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn color() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: fade-in(1, 0.1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $color: 1 is not a color.\
+         \n  ,\
+         \n1 | a {b: fade-in(1, 0.1)}\
+         \n  |       ^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 #[test]

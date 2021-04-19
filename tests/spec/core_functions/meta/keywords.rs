@@ -51,15 +51,87 @@ mod empty {
     }
 }
 mod error {
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn too_few_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: keywords()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $args.\
+         \n  ,--> input.scss\
+         \n1 | a {b: keywords()}\
+         \n  |       ^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:meta\
+         \n1 | @function keywords($args) {\
+         \n  |           =============== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn too_many_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: keywords(1, 2)}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Only 1 argument allowed, but 2 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: keywords(1, 2)}\
+         \n  |       ^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:meta\
+         \n1 | @function keywords($args) {\
+         \n  |           =============== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "non_arg_list", error tests are not supported yet.
-
-        // Ignoring "non_list", error tests are not supported yet.
+        #[test]
+        #[ignore] // missing error
+        fn non_arg_list() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: keywords(1 2 3)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $args: 1 2 3 is not an argument list.\
+         \n  ,\
+         \n1 | a {b: keywords(1 2 3)}\
+         \n  |       ^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn non_list() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: keywords(1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $args: 1 is not an argument list.\
+         \n  ,\
+         \n1 | a {b: keywords(1)}\
+         \n  |       ^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
     }
 }
 mod forwarded {

@@ -1,3 +1,29 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1487.hrx"
 
-// Ignoring "test", error tests are not supported yet.
+#[test]
+#[ignore] // missing error
+fn test() {
+    assert_eq!(
+        crate::rsass(
+            "@mixin foo() {\
+             \n    foo: &;\
+             \n}\
+             \n\
+             \nfoo {\
+             \n  @include foo { bar: baz }\
+             \n}\
+             \n"
+        )
+        .unwrap_err(),
+        "Error: Mixin doesn\'t accept a content block.\
+         \n    ,\
+         \n1   | @mixin foo() {\
+         \n    |        ===== declaration\
+         \n... |\
+         \n6   |   @include foo { bar: baz }\
+         \n    |   ^^^^^^^^^^^^ invocation\
+         \n    \'\
+         \n  input.scss 6:3  root stylesheet\
+         \n",
+    );
+}

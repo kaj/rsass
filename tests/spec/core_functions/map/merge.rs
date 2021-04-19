@@ -59,22 +59,119 @@ mod empty {
     }
 }
 mod error {
-
-    // Ignoring "one_arg", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn one_arg() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: map-merge((c: d))}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Expected $args to contain a key.\
+         \n  ,\
+         \n1 | a {b: map-merge((c: d))}\
+         \n  |       ^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
     mod test_type {
-
-        // Ignoring "map1", error tests are not supported yet.
-
-        // Ignoring "map2", error tests are not supported yet.
+        #[test]
+        fn map1() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: map-merge(1, (c: d))}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $map1: 1 is not a map.\
+         \n  ,\
+         \n1 | a {b: map-merge(1, (c: d))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        fn map2() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: map-merge((c: d), 1)}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $map2: 1 is not a map.\
+         \n  ,\
+         \n1 | a {b: map-merge((c: d), 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
         mod nested {
-
-            // Ignoring "map1", error tests are not supported yet.
-
-            // Ignoring "map2", error tests are not supported yet.
+            #[test]
+            fn map1() {
+                assert_eq!(
+                    crate::rsass(
+                        "a {b: map-merge(1, c, (d: e))}\
+             \n"
+                    )
+                    .unwrap_err(),
+                    "Error: $map1: 1 is not a map.\
+         \n  ,\
+         \n1 | a {b: map-merge(1, c, (d: e))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+                );
+            }
+            #[test]
+            #[ignore] // missing error
+            fn map2() {
+                assert_eq!(
+                    crate::rsass(
+                        "a {b: map-merge((c: d), e, 1)}\
+             \n"
+                    )
+                    .unwrap_err(),
+                    "Error: $map2: 1 is not a map.\
+         \n  ,\
+         \n1 | a {b: map-merge((c: d), e, 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+                );
+            }
         }
     }
-
-    // Ignoring "zero_args", error tests are not supported yet.
+    #[test]
+    #[ignore] // wrong error
+    fn zero_args() {
+        assert_eq!(
+            crate::rsass(
+                "a {b: map-merge()}\
+             \n"
+            )
+            .unwrap_err(),
+            "Error: Missing argument $map1.\
+         \n  ,--> input.scss\
+         \n1 | a {b: map-merge()}\
+         \n  |       ^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,\
+         \n1 | @function merge($map1, $args...) {\
+         \n  |           ====================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+        );
+    }
 }
 #[test]
 fn named() {

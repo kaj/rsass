@@ -33,38 +33,282 @@ fn compound() {
 mod error {
     mod extendee {
         mod complex {
-
-            // Ignoring "list", error tests are not supported yet.
-
-            // Ignoring "string", error tests are not supported yet.
+            #[test]
+            #[ignore] // missing error
+            fn list() {
+                assert_eq!(
+                    crate::rsass(
+                        "a {b: selector-replace(\"c\", d e, \"f\")}\
+             \n"
+                    )
+                    .unwrap_err(),
+                    "Error: Can\'t extend complex selector d e.\
+         \n  ,\
+         \n1 | a {b: selector-replace(\"c\", d e, \"f\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+                );
+            }
+            #[test]
+            #[ignore] // missing error
+            fn string() {
+                assert_eq!(
+                    crate::rsass(
+                        "a {b: selector-replace(\"c\", \"d e\", \"f\")}\
+             \n"
+                    )
+                    .unwrap_err(),
+                    "Error: Can\'t extend complex selector d e.\
+         \n  ,\
+         \n1 | a {b: selector-replace(\"c\", \"d e\", \"f\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+                );
+            }
         }
-
-        // Ignoring "invalid", error tests are not supported yet.
-
-        // Ignoring "parent", error tests are not supported yet.
-
-        // Ignoring "test_type", error tests are not supported yet.
+        #[test]
+        #[ignore] // missing error
+        fn invalid() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: selector-replace(\"c\", \"[d\", \"e\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $original: expected more input.\
+         \n  ,\
+         \n1 | [d\
+         \n  |   ^\
+         \n  \'\
+         \n  - 1:3  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-replace(\"c\", \"[d\", \"e\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn parent() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: selector-replace(\"c\", \"&\", \"d\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $original: Parent selectors aren\'t allowed here.\
+         \n  ,\
+         \n1 | &\
+         \n  | ^\
+         \n  \'\
+         \n  - 1:1  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-replace(\"c\", \"&\", \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn test_type() {
+            assert_eq!(
+        crate::rsass(
+            "a {b: selector-replace(\"c\", 1, \"d\")}\
+             \n"
+        ).unwrap_err(),
+        "Error: $original: 1 is not a valid selector: it must be a string,\
+         \na list of strings, or a list of lists of strings.\
+         \n  ,\
+         \n1 | a {b: selector-replace(\"c\", 1, \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+        }
     }
     mod extender {
-
-        // Ignoring "invalid", error tests are not supported yet.
-
-        // Ignoring "parent", error tests are not supported yet.
-
-        // Ignoring "test_type", error tests are not supported yet.
+        #[test]
+        #[ignore] // missing error
+        fn invalid() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: selector-replace(\"c\", \"d\", \"[e\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $replacement: expected more input.\
+         \n  ,\
+         \n1 | [e\
+         \n  |   ^\
+         \n  \'\
+         \n  - 1:3  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-replace(\"c\", \"d\", \"[e\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn parent() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: selector-replace(\"c\", \"d\", \"&\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $replacement: Parent selectors aren\'t allowed here.\
+         \n  ,\
+         \n1 | &\
+         \n  | ^\
+         \n  \'\
+         \n  - 1:1  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-replace(\"c\", \"d\", \"&\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn test_type() {
+            assert_eq!(
+        crate::rsass(
+            "a {b: selector-replace(\"c\", \"d\", 1)}\
+             \n"
+        ).unwrap_err(),
+        "Error: $replacement: 1 is not a valid selector: it must be a string,\
+         \na list of strings, or a list of lists of strings.\
+         \n  ,\
+         \n1 | a {b: selector-replace(\"c\", \"d\", 1)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+        }
     }
     mod selector {
-
-        // Ignoring "invalid", error tests are not supported yet.
-
-        // Ignoring "parent", error tests are not supported yet.
-
-        // Ignoring "test_type", error tests are not supported yet.
+        #[test]
+        #[ignore] // missing error
+        fn invalid() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: selector-replace(\"[c\", \"d\", \"e\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $selector: expected more input.\
+         \n  ,\
+         \n1 | [c\
+         \n  |   ^\
+         \n  \'\
+         \n  - 1:3  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-replace(\"[c\", \"d\", \"e\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn parent() {
+            assert_eq!(
+                crate::rsass(
+                    "a {b: selector-replace(\"&\", \"c\", \"d\")}\
+             \n"
+                )
+                .unwrap_err(),
+                "Error: $selector: Parent selectors aren\'t allowed here.\
+         \n  ,\
+         \n1 | &\
+         \n  | ^\
+         \n  \'\
+         \n  - 1:1  root stylesheet\
+         \n  ,\
+         \n1 | a {b: selector-replace(\"&\", \"c\", \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn test_type() {
+            assert_eq!(
+        crate::rsass(
+            "a {b: selector-replace(1, \"c\", \"d\")}\
+             \n"
+        ).unwrap_err(),
+        "Error: $selector: 1 is not a valid selector: it must be a string,\
+         \na list of strings, or a list of lists of strings.\
+         \n  ,\
+         \n1 | a {b: selector-replace(1, \"c\", \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+        }
     }
-
-    // Ignoring "too_few_args", error tests are not supported yet.
-
-    // Ignoring "too_many_args", error tests are not supported yet.
+    #[test]
+    #[ignore] // missing error
+    fn too_few_args() {
+        assert_eq!(
+        crate::rsass(
+            "a {b: selector-replace(\"c\", \"d\")}\
+             \n"
+        ).unwrap_err(),
+        "Error: Missing argument $replacement.\
+         \n  ,--> input.scss\
+         \n1 | a {b: selector-replace(\"c\", \"d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:selector\
+         \n1 | @function replace($selector, $original, $replacement) {\
+         \n  |           =========================================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn too_many_args() {
+        assert_eq!(
+        crate::rsass(
+            "a {b: selector-replace(\"c\", \"d\", \"e\", \"f\")}\
+             \n"
+        ).unwrap_err(),
+        "Error: Only 3 arguments allowed, but 4 were passed.\
+         \n  ,--> input.scss\
+         \n1 | a {b: selector-replace(\"c\", \"d\", \"e\", \"f\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:selector\
+         \n1 | @function replace($selector, $original, $replacement) {\
+         \n  |           =========================================== declaration\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet\
+         \n",
+    );
+    }
 }
 mod format {
     mod input {
