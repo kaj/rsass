@@ -469,7 +469,6 @@ fn invert() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn lightness() {
     assert_eq!(
         crate::rsass(

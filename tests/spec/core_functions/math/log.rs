@@ -32,7 +32,6 @@ mod base {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn null() {
         assert_eq!(
             crate::rsass(
@@ -78,7 +77,6 @@ mod base {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positive() {
         assert_eq!(
             crate::rsass(
@@ -241,7 +239,6 @@ fn infinity() {
 }
 mod named_arg {
     #[test]
-    #[ignore] // wrong result
     fn number() {
         assert_eq!(
             crate::rsass(
@@ -259,7 +256,6 @@ mod named_arg {
 }
 mod named_args {
     #[test]
-    #[ignore] // wrong result
     fn number_with_base() {
         assert_eq!(
             crate::rsass(
@@ -291,7 +287,6 @@ fn negative() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn positive() {
     assert_eq!(
         crate::rsass(

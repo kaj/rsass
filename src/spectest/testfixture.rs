@@ -120,7 +120,7 @@ impl TestFixture {
     fn is_failure(&self) -> Option<&'static str> {
         let format = Format {
             style: Style::Expanded,
-            precision: self.options.precision.unwrap_or(6) as usize,
+            precision: self.options.precision.unwrap_or(10) as usize,
         };
         match (&self.expectation, rsass(&self.input, format)) {
             (ExpectedError(_), Ok(_)) => Some("missing error"),

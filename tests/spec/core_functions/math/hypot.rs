@@ -1,7 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/hypot.hrx"
 
 #[test]
-#[ignore] // wrong result
 fn compatible_units() {
     assert_eq!(
         crate::rsass(
@@ -314,7 +313,6 @@ mod infinity {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn unitless() {
     assert_eq!(
         crate::rsass(

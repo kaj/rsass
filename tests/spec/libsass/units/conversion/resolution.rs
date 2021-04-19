@@ -1,7 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/units/conversion/resolution.hrx"
 
 #[test]
-#[ignore] // wrong result
 fn test() {
     assert_eq!(
         crate::rsass(

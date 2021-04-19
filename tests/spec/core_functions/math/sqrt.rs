@@ -98,7 +98,6 @@ fn infinity() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn named_arg() {
     assert_eq!(
         crate::rsass(
@@ -159,7 +158,6 @@ fn negative_zero_fuzzy() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn positive() {
     assert_eq!(
         crate::rsass(

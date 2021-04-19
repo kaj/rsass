@@ -18,7 +18,6 @@ mod asymptote {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn deg() {
     assert_eq!(
         crate::rsass(
@@ -115,7 +114,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn grad() {
     assert_eq!(
         crate::rsass(
@@ -146,7 +144,6 @@ fn infinity() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn named_arg() {
     assert_eq!(
         crate::rsass(
@@ -224,7 +221,6 @@ fn negative_zero_fuzzy() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn rad() {
     assert_eq!(
         crate::rsass(
@@ -255,7 +251,6 @@ fn turn() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn unitless() {
     assert_eq!(
         crate::rsass(

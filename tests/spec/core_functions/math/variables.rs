@@ -1,7 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/variables.hrx"
 
 #[test]
-#[ignore] // wrong result
 fn e() {
     assert_eq!(
         crate::rsass(
@@ -59,7 +58,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn pi() {
     assert_eq!(
         crate::rsass(

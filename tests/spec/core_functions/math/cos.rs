@@ -1,7 +1,6 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/cos.hrx"
 
 #[test]
-#[ignore] // wrong result
 fn deg() {
     assert_eq!(
         crate::rsass(
@@ -98,7 +97,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn grad() {
     assert_eq!(
         crate::rsass(
@@ -129,7 +127,6 @@ fn infinity() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn named_arg() {
     assert_eq!(
         crate::rsass(
@@ -160,7 +157,6 @@ fn negative_infinity() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn rad() {
     assert_eq!(
         crate::rsass(
@@ -191,7 +187,6 @@ fn turn() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn unitless() {
     assert_eq!(
         crate::rsass(
