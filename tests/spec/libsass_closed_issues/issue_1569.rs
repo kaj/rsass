@@ -21,7 +21,6 @@ fn test() {
          \n2 | .nihilo & {\
          \n  | ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
     );
 }

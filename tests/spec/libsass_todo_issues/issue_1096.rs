@@ -20,7 +20,6 @@ fn test() {
          \n4 | @import url(\"foo\
          \n  |                 ^\
          \n  \'\
-         \n  input.scss 4:17  root stylesheet\
-         \n",
+         \n  input.scss 4:17  root stylesheet",
     );
 }

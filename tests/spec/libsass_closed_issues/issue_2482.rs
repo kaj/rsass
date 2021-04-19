@@ -22,7 +22,6 @@ fn test() {
          \n  | \'----^\
          \n  \'\
          \n  input.scss 3:2  mixin()\
-         \n  input.scss 9:1  root stylesheet\
-         \n",
+         \n  input.scss 9:1  root stylesheet",
     );
 }

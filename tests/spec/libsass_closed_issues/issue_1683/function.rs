@@ -21,7 +21,6 @@ fn test() {
          \n    |      ^^^^^^^^^^^^^ invocation\
          \n    \'\
          \n  input.scss 4:6  foo()\
-         \n  input.scss 4:6  root stylesheet\
-         \n",
+         \n  input.scss 4:6  root stylesheet",
     );
 }

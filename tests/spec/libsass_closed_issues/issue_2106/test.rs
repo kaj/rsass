@@ -14,7 +14,6 @@ fn test() {
          \n1 | @import \"../does-not-exist\";\
          \n  |         ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
     );
 }

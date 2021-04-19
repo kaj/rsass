@@ -17,8 +17,7 @@ fn named() {
          \n1 | @function join($list1, $list2, $separator: auto, $bracketed: auto) {\
          \n  |           ======================================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -38,8 +37,7 @@ fn positional_and_named() {
          \n1 | @function join($list1, $list2, $separator: auto, $bracketed: auto) {\
          \n  |           ======================================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -58,8 +56,7 @@ fn too_few_args() {
          \n1 | @function join($list1, $list2, $separator: auto, $bracketed: auto) {\
          \n  |           ======================================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -78,8 +75,7 @@ fn too_many_args() {
          \n1 | @function join($list1, $list2, $separator: auto, $bracketed: auto) {\
          \n  |           ======================================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 mod test_type {
@@ -96,8 +92,7 @@ mod test_type {
          \n1 | a {b: join(c, d, $separator: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }
@@ -114,7 +109,6 @@ fn unknown_separator() {
          \n1 | a {b: join(c, d, $separator: e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }

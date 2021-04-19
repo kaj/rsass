@@ -15,8 +15,7 @@ mod alpha {
          \n1 | a {b: adjust-color(red, $alpha: 1.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -33,8 +32,7 @@ mod alpha {
          \n1 | a {b: adjust-color(red, $alpha: -1.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }
@@ -52,8 +50,7 @@ mod blackness {
          \n1 | a {b: adjust-color(red, $blackness: 100.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
     #[test]
@@ -69,8 +66,7 @@ mod blackness {
          \n1 | a {b: adjust-color(red, $blackness: -100.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
 }
@@ -89,8 +85,7 @@ mod blue {
          \n1 | a {b: adjust-color(blue, $blue: 256)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -107,8 +102,7 @@ mod blue {
          \n1 | a {b: adjust-color(blue, $blue: -256)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }
@@ -127,8 +121,7 @@ mod green {
          \n1 | a {b: adjust-color(green, $green: 256)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -145,8 +138,7 @@ mod green {
          \n1 | a {b: adjust-color(green, $green: -256)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }
@@ -164,8 +156,7 @@ mod lightness {
          \n1 | a {b: adjust-color(red, $lightness: 100.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
     #[test]
@@ -181,8 +172,7 @@ mod lightness {
          \n1 | a {b: adjust-color(red, $lightness: -100.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
 }
@@ -201,8 +191,7 @@ mod red {
          \n1 | a {b: adjust-color(red, $red: 256)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -219,8 +208,7 @@ mod red {
          \n1 | a {b: adjust-color(red, $red: -256)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }
@@ -238,8 +226,7 @@ mod saturation {
          \n1 | a {b: adjust-color(red, $saturation: 100.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
     #[test]
@@ -255,8 +242,7 @@ mod saturation {
          \n1 | a {b: adjust-color(red, $saturation: -100.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
 }
@@ -274,8 +260,7 @@ mod whiteness {
          \n1 | a {b: adjust-color(red, $whiteness: 100.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
     #[test]
@@ -291,8 +276,7 @@ mod whiteness {
          \n1 | a {b: adjust-color(red, $whiteness: -100.001%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
 }

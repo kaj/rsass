@@ -16,7 +16,6 @@ fn test() {
          \n1 | @while {\
          \n  |        ^\
          \n  \'\
-         \n  input.scss 1:8  root stylesheet\
-         \n",
+         \n  input.scss 1:8  root stylesheet",
     );
 }

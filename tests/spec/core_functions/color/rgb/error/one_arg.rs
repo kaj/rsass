@@ -17,8 +17,7 @@ mod list {
          \n2 |   b: rgb([1 2 3]);\
          \n  |      ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
     #[test]
@@ -37,8 +36,7 @@ mod list {
          \n2 |   b: rgb((1, 2, 3));\
          \n  |      ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
     #[test]
@@ -57,8 +55,7 @@ mod list {
          \n2 |   b: rgb(());\
          \n  |      ^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
     #[test]
@@ -77,8 +74,7 @@ mod list {
          \n2 |   b: rgb(1 2 3 0.4);\
          \n  |      ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
     #[test]
@@ -97,8 +93,7 @@ mod list {
          \n2 |   b: rgb(1);\
          \n  |      ^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
     #[test]
@@ -117,8 +112,7 @@ mod list {
          \n2 |   b: rgb(1 2);\
          \n  |      ^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }
@@ -137,8 +131,7 @@ fn quoted_var_slash() {
          \n2 |   b: rgb(1 2 \"var(--foo) / 0.4\");\
          \n  |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
     );
 }
 mod test_type {
@@ -157,8 +150,7 @@ mod test_type {
          \n2 |   b: rgb(1 2 \"foo\");\
          \n  |      ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
     #[test]
@@ -176,8 +168,7 @@ mod test_type {
          \n2 |   b: rgb(1 \"foo\" 3);\
          \n  |      ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
     #[test]
@@ -195,8 +186,7 @@ mod test_type {
          \n2 |   b: rgb(\"foo\" 2 3);\
          \n  |      ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }

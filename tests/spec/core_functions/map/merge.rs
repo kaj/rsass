@@ -73,8 +73,7 @@ mod error {
          \n1 | a {b: map-merge((c: d))}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -91,8 +90,7 @@ mod error {
          \n1 | a {b: map-merge(1, (c: d))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -108,8 +106,7 @@ mod error {
          \n1 | a {b: map-merge((c: d), 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         mod nested {
@@ -126,8 +123,7 @@ mod error {
          \n1 | a {b: map-merge(1, c, (d: e))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
                 );
             }
             #[test]
@@ -144,8 +140,7 @@ mod error {
          \n1 | a {b: map-merge((c: d), e, 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
                 );
             }
         }
@@ -168,8 +163,7 @@ mod error {
          \n1 | @function merge($map1, $args...) {\
          \n  |           ====================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

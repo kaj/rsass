@@ -18,7 +18,6 @@ fn test() {
          \n2 |     .open&{\
          \n  |          ^\
          \n  \'\
-         \n  input.scss 2:10  root stylesheet\
-         \n",
+         \n  input.scss 2:10  root stylesheet",
     );
 }

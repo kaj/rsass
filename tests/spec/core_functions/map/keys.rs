@@ -37,8 +37,7 @@ mod error {
          \n1 | @function keys($map) {\
          \n  |           ========== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -59,8 +58,7 @@ mod error {
          \n1 | @function keys($map) {\
          \n  |           ========== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -76,8 +74,7 @@ mod error {
          \n1 | a {b: map-keys(1)}\
          \n  |       ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

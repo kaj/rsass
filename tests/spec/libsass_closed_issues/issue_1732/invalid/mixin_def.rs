@@ -18,7 +18,6 @@ fn test() {
          \n  |   ^^^^\
          \n  \'\
          \n  input.scss 2:3  a()\
-         \n  input.scss 5:1  root stylesheet\
-         \n",
+         \n  input.scss 5:1  root stylesheet",
     );
 }

@@ -17,7 +17,6 @@ fn test() {
          \n3 |   d:\
          \n  |     ^\
          \n  \'\
-         \n  input.scss 3:5  root stylesheet\
-         \n",
+         \n  input.scss 3:5  root stylesheet",
     );
 }

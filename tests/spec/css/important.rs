@@ -16,8 +16,7 @@ mod error {
          \n3 | a {b: !\
          \n  |        ^\
          \n  \'\
-         \n  input.scss 3:8  root stylesheet\
-         \n",
+         \n  input.scss 3:8  root stylesheet",
     );
         }
     }

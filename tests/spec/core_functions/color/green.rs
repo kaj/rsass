@@ -18,8 +18,7 @@ mod error {
          \n1 | @function green($color) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -39,8 +38,7 @@ mod error {
          \n1 | @function green($color) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -56,8 +54,7 @@ mod error {
          \n1 | a {b: green(1)}\
          \n  |       ^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

@@ -15,7 +15,6 @@ fn test() {
          \n2 |   err: 2px - 2px*2px;\r\
          \n  |        ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:8  root stylesheet\
-         \n",
+         \n  input.scss 2:8  root stylesheet",
     );
 }

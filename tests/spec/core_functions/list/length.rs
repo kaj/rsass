@@ -60,8 +60,7 @@ mod error {
          \n1 | @function length($list) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -81,8 +80,7 @@ mod error {
          \n1 | @function length($list) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

@@ -17,7 +17,6 @@ fn test() {
          \n3 |   @include incorrectly-terminated($a,$b,;\
          \n  |                                         ^\
          \n  \'\
-         \n  input.scss 3:41  root stylesheet\
-         \n",
+         \n  input.scss 3:41  root stylesheet",
     );
 }

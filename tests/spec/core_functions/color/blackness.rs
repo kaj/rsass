@@ -19,8 +19,7 @@ mod error {
          \n1 | @function blackness($color) {\
          \n  |           ================= declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -41,8 +40,7 @@ mod error {
          \n1 | @function blackness($color) {\
          \n  |           ================= declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -59,8 +57,7 @@ mod error {
          \n2 | a {b: color.blackness(1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

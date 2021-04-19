@@ -88,8 +88,7 @@ mod error {
          \n3 | $variables: meta.module-variables(\"other\");\
          \n  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:13  root stylesheet\
-         \n",
+         \n  input.scss 3:13  root stylesheet",
         );
     }
     #[test]
@@ -109,8 +108,7 @@ mod error {
          \n4 | a {b: meta.inspect(meta.module-variables(\"other_module\"))}\
          \n  |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 4:20  root stylesheet\
-         \n",
+         \n  input.scss 4:20  root stylesheet",
         );
     }
     #[test]
@@ -130,8 +128,7 @@ mod error {
          \n4 | a {b: meta.inspect(meta.module-variables(\"other\"))}\
          \n  |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 4:20  root stylesheet\
-         \n",
+         \n  input.scss 4:20  root stylesheet",
         );
     }
     #[test]
@@ -148,8 +145,7 @@ mod error {
          \n2 | a {b: meta.inspect(meta.module-variables(\"other\"))}\
          \n  |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:20  root stylesheet\
-         \n",
+         \n  input.scss 2:20  root stylesheet",
         );
     }
     #[test]
@@ -170,8 +166,7 @@ mod error {
          \n1 | @function module-variables($module) {\
          \n  |           ========================= declaration\
          \n  \'\
-         \n  input.scss 2:20  root stylesheet\
-         \n",
+         \n  input.scss 2:20  root stylesheet",
         );
     }
     #[test]
@@ -191,8 +186,7 @@ mod error {
          \n1 | @function module-variables($module) {\
          \n  |           ========================= declaration\
          \n  \'\
-         \n  input.scss 2:20  root stylesheet\
-         \n",
+         \n  input.scss 2:20  root stylesheet",
     );
     }
     #[test]
@@ -209,8 +203,7 @@ mod error {
          \n2 | a {b: meta.inspect(meta.module-variables(1))}\
          \n  |                    ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:20  root stylesheet\
-         \n",
+         \n  input.scss 2:20  root stylesheet",
         );
     }
 }

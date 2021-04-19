@@ -34,7 +34,7 @@ fn rsass(input: &str) -> Result<String, String> {
 #[allow(unused)]
 fn rsass_fmt(format: Format, input: &str) -> Result<String, String> {
     compile_scss(input.as_bytes(), format)
-        .map_err(|e| format!("{}\n", e))
+        .map_err(|e| e.to_string())
         .and_then(|s| {
             String::from_utf8(s)
                 .map(|s| s.replace("\n\n", "\n"))

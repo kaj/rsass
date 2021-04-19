@@ -22,7 +22,6 @@ fn test() {
          \n5 |     c {\
          \n  |       ^\
          \n  \'\
-         \n  input.scss 5:7  root stylesheet\
-         \n",
+         \n  input.scss 5:7  root stylesheet",
     );
 }

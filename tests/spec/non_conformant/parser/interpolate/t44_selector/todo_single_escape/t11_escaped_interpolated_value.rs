@@ -15,7 +15,6 @@ fn test() {
          \n2 | .test11@bar{ content: \'1.1\'; }\
          \n  |        ^\
          \n  \'\
-         \n  input.scss 2:8  root stylesheet\
-         \n",
+         \n  input.scss 2:8  root stylesheet",
     );
 }

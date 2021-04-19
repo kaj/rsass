@@ -17,7 +17,6 @@ fn test() {
          \n2 |     &.ruby {\
          \n  |     ^^^^^^^\
          \n  \'\
-         \n  input.scss 2:5  root stylesheet\
-         \n",
+         \n  input.scss 2:5  root stylesheet",
     );
 }

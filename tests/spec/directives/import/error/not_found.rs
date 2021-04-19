@@ -15,8 +15,7 @@ fn directory_dot_import() {
          \n3 | @import \"other\";\
          \n  |         ^^^^^^^\
          \n  \'\
-         \n  input.scss 3:9  root stylesheet\
-         \n",
+         \n  input.scss 3:9  root stylesheet",
     );
 }
 #[test]
@@ -33,8 +32,7 @@ fn no_extension() {
          \n1 | @import \"other\";\
          \n  |         ^^^^^^^\
          \n  \'\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
     );
 }
 #[test]
@@ -54,7 +52,6 @@ fn parent_relative() {
          \n  |         ^^^^^^^^^\
          \n  \'\
          \n  dir/child.scss 1:9  @import\
-         \n  input.scss 4:9      root stylesheet\
-         \n",
+         \n  input.scss 4:9      root stylesheet",
     );
 }

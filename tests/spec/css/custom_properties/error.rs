@@ -17,8 +17,7 @@ mod brackets {
          \n3 | }\
          \n  | ^\
          \n  \'\
-         \n  input.scss 3:1  root stylesheet\
-         \n",
+         \n  input.scss 3:1  root stylesheet",
         );
     }
     #[test]
@@ -37,8 +36,7 @@ mod brackets {
          \n2 |   --prop: [{];\
          \n  |             ^\
          \n  \'\
-         \n  input.scss 2:13  root stylesheet\
-         \n",
+         \n  input.scss 2:13  root stylesheet",
         );
     }
     #[test]
@@ -57,8 +55,7 @@ mod brackets {
          \n2 |   --prop: );\
          \n  |           ^\
          \n  \'\
-         \n  input.scss 2:11  root stylesheet\
-         \n",
+         \n  input.scss 2:11  root stylesheet",
         );
     }
     #[test]
@@ -77,8 +74,7 @@ mod brackets {
          \n2 |   --prop: {(};\
          \n  |             ^\
          \n  \'\
-         \n  input.scss 2:13  root stylesheet\
-         \n",
+         \n  input.scss 2:13  root stylesheet",
         );
     }
     #[test]
@@ -97,8 +93,7 @@ mod brackets {
          \n2 |   --prop: ];\
          \n  |           ^\
          \n  \'\
-         \n  input.scss 2:11  root stylesheet\
-         \n",
+         \n  input.scss 2:11  root stylesheet",
         );
     }
     #[test]
@@ -117,8 +112,7 @@ mod brackets {
          \n2 |   --prop: ([);\
          \n  |             ^\
          \n  \'\
-         \n  input.scss 2:13  root stylesheet\
-         \n",
+         \n  input.scss 2:13  root stylesheet",
         );
     }
 }
@@ -139,8 +133,7 @@ fn empty() {
          \n3 |   --property:;\
          \n  |              ^\
          \n  \'\
-         \n  input.scss 3:14  root stylesheet\
-         \n",
+         \n  input.scss 3:14  root stylesheet",
     );
 }
 #[test]
@@ -160,7 +153,6 @@ fn empty_interpolation() {
          \n3 |   --property:#{\"\"};\
          \n  |              ^^^^^\
          \n  \'\
-         \n  input.scss 3:14  root stylesheet\
-         \n",
+         \n  input.scss 3:14  root stylesheet",
     );
 }

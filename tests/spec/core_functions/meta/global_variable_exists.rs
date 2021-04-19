@@ -195,8 +195,7 @@ mod error {
          \n1 | @function global-variable-exists($name, $module: null) {\
          \n  |           ============================================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
         }
         #[test]
@@ -215,8 +214,7 @@ mod error {
          \n1 | @function global-variable-exists($name, $module: null) {\
          \n  |           ============================================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
         }
         mod test_type {
@@ -233,8 +231,7 @@ mod error {
          \n1 | a {b: global-variable-exists(\"c\", 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
                 );
             }
             #[test]
@@ -250,8 +247,7 @@ mod error {
          \n1 | a {b: global-variable-exists(12px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
                 );
             }
         }
@@ -278,8 +274,7 @@ mod error {
          \n4   | a {b: global-variable-exists(member)}\
          \n    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ variable use\
          \n    \'\
-         \n  input.scss 4:7  root stylesheet\
-         \n",
+         \n  input.scss 4:7  root stylesheet",
         );
     }
     mod module {
@@ -296,8 +291,7 @@ mod error {
          \n1 | a {b: global-variable-exists(\"c\", \"color\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -314,8 +308,7 @@ mod error {
          \n2 | c {d: global-variable-exists(\"c\", $module: \"a_b\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -331,8 +324,7 @@ mod error {
          \n1 | a {b: global-variable-exists(\"c\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

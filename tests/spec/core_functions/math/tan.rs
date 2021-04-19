@@ -51,8 +51,7 @@ mod error {
          \n1 | @function tan($number) {\
          \n  |           ============ declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -69,8 +68,7 @@ mod error {
          \n2 | a {b: math.tan(\"0\")}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -86,8 +84,7 @@ mod error {
          \n2 | a {b: math.tan(1px)}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
     #[test]
@@ -108,8 +105,7 @@ mod error {
          \n1 | @function tan($number) {\
          \n  |           ============ declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

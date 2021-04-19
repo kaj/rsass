@@ -10,7 +10,6 @@ fn test() {
          \n1 | @return 42;\
          \n  | ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:1  root stylesheet\
-         \n",
+         \n  input.scss 1:1  root stylesheet",
     );
 }

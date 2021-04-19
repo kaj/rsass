@@ -16,8 +16,7 @@ mod syntax {
          \n1 | @supports (a !:$) {@b}\
          \n  |              ^\
          \n  \'\
-         \n  input.scss 1:14  root stylesheet\
-         \n",
+         \n  input.scss 1:14  root stylesheet",
             );
         }
         #[test]
@@ -34,8 +33,7 @@ mod syntax {
          \n1 | @supports (1 a) {@b}\
          \n  |            ^\
          \n  \'\
-         \n  input.scss 1:12  root stylesheet\
-         \n",
+         \n  input.scss 1:12  root stylesheet",
             );
         }
         #[test]
@@ -52,8 +50,7 @@ mod syntax {
          \n1 | @supports (not a) {@b}\
          \n  |                ^\
          \n  \'\
-         \n  input.scss 1:16  root stylesheet\
-         \n",
+         \n  input.scss 1:16  root stylesheet",
             );
         }
     }
@@ -72,8 +69,7 @@ mod syntax {
          \n1 | @supports (a: b) (c: d) {@e}\
          \n  |                  ^\
          \n  \'\
-         \n  input.scss 1:18  root stylesheet\
-         \n",
+         \n  input.scss 1:18  root stylesheet",
             );
         }
         #[test]
@@ -90,8 +86,7 @@ mod syntax {
          \n1 | @supports (not a: b) {@c}\
          \n  |                ^\
          \n  \'\
-         \n  input.scss 1:16  root stylesheet\
-         \n",
+         \n  input.scss 1:16  root stylesheet",
             );
         }
         #[test]
@@ -108,8 +103,7 @@ mod syntax {
          \n1 | @supports ((a): b) {c}\
          \n  |               ^\
          \n  \'\
-         \n  input.scss 1:15  root stylesheet\
-         \n",
+         \n  input.scss 1:15  root stylesheet",
             );
         }
     }
@@ -128,8 +122,7 @@ mod syntax {
          \n1 | @supports not(:) {@b}\
          \n  |               ^\
          \n  \'\
-         \n  input.scss 1:15  root stylesheet\
-         \n",
+         \n  input.scss 1:15  root stylesheet",
             );
         }
         #[test]
@@ -146,8 +139,7 @@ mod syntax {
          \n1 | @supports a (b) {@b}\
          \n  |           ^\
          \n  \'\
-         \n  input.scss 1:11  root stylesheet\
-         \n",
+         \n  input.scss 1:11  root stylesheet",
             );
         }
     }
@@ -166,8 +158,7 @@ mod syntax {
          \n1 | @supports a#{b} {@c}\
          \n  |           ^^^^^\
          \n  \'\
-         \n  input.scss 1:11  root stylesheet\
-         \n",
+         \n  input.scss 1:11  root stylesheet",
             );
         }
         #[test]
@@ -184,8 +175,7 @@ mod syntax {
          \n1 | @supports #{a}b {@c}\
          \n  |           ^^^^^\
          \n  \'\
-         \n  input.scss 1:11  root stylesheet\
-         \n",
+         \n  input.scss 1:11  root stylesheet",
             );
         }
         #[test]
@@ -202,8 +192,7 @@ mod syntax {
          \n1 | @supports a {@b}\
          \n  |           ^\
          \n  \'\
-         \n  input.scss 1:11  root stylesheet\
-         \n",
+         \n  input.scss 1:11  root stylesheet",
             );
         }
     }
@@ -221,8 +210,7 @@ mod syntax {
          \n1 | @supports not a {@b}\
          \n  |               ^\
          \n  \'\
-         \n  input.scss 1:15  root stylesheet\
-         \n",
+         \n  input.scss 1:15  root stylesheet",
         );
     }
     #[test]
@@ -239,8 +227,7 @@ mod syntax {
          \n1 | @supports {@a}\
          \n  |           ^\
          \n  \'\
-         \n  input.scss 1:11  root stylesheet\
-         \n",
+         \n  input.scss 1:11  root stylesheet",
         );
     }
     mod operator {
@@ -258,8 +245,7 @@ mod syntax {
          \n1 | @supports not (a: b) and (c: d) {@e}\
          \n  |                      ^\
          \n  \'\
-         \n  input.scss 1:22  root stylesheet\
-         \n",
+         \n  input.scss 1:22  root stylesheet",
             );
         }
         #[test]
@@ -276,8 +262,7 @@ mod syntax {
          \n1 | @supports not {@c}\
          \n  |               ^\
          \n  \'\
-         \n  input.scss 1:15  root stylesheet\
-         \n",
+         \n  input.scss 1:15  root stylesheet",
             );
         }
         #[test]
@@ -294,8 +279,7 @@ mod syntax {
          \n1 | @supports (a: b) and (not c: d) {@e}\
          \n  |                           ^\
          \n  \'\
-         \n  input.scss 1:27  root stylesheet\
-         \n",
+         \n  input.scss 1:27  root stylesheet",
             );
         }
         #[test]
@@ -312,8 +296,7 @@ mod syntax {
          \n1 | @supports (a: b) and not() {@c}\
          \n  |                      ^^^\
          \n  \'\
-         \n  input.scss 1:22  root stylesheet\
-         \n",
+         \n  input.scss 1:22  root stylesheet",
             );
         }
         #[test]
@@ -330,8 +313,7 @@ mod syntax {
          \n1 | @supports (a: b) and (c: d) or (e: f) {@g}\
          \n  |                             ^\
          \n  \'\
-         \n  input.scss 1:29  root stylesheet\
-         \n",
+         \n  input.scss 1:29  root stylesheet",
             );
         }
         #[test]
@@ -348,8 +330,7 @@ mod syntax {
          \n1 | @supports (a: b) and {@c}\
          \n  |                      ^\
          \n  \'\
-         \n  input.scss 1:22  root stylesheet\
-         \n",
+         \n  input.scss 1:22  root stylesheet",
             );
         }
         #[test]
@@ -366,8 +347,7 @@ mod syntax {
          \n1 | @supports (a: b) or {@c}\
          \n  |                     ^\
          \n  \'\
-         \n  input.scss 1:21  root stylesheet\
-         \n",
+         \n  input.scss 1:21  root stylesheet",
             );
         }
     }
@@ -385,8 +365,7 @@ mod syntax {
          \n1 | @supports a: b {@c}\
          \n  |           ^\
          \n  \'\
-         \n  input.scss 1:11  root stylesheet\
-         \n",
+         \n  input.scss 1:11  root stylesheet",
         );
     }
 }

@@ -15,7 +15,6 @@ fn test() {
          \n2 |   test: change-color(red, $red: 0.5, $hue: 0.2);\
          \n  |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:9  root stylesheet\
-         \n",
+         \n  input.scss 2:9  root stylesheet",
     );
 }

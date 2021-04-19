@@ -15,7 +15,6 @@ fn test() {
          \n2 |   @mixin foo() {}\
          \n  |   ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:3  root stylesheet\
-         \n",
+         \n  input.scss 2:3  root stylesheet",
     );
 }

@@ -81,8 +81,7 @@ mod error {
          \n1 | @function type-of($value) {\
          \n  |           =============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -102,8 +101,7 @@ mod error {
          \n1 | @function type-of($value) {\
          \n  |           =============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

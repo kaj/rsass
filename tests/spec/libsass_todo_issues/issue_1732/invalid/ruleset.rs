@@ -14,7 +14,6 @@ fn test() {
          \n1 | color: green;\
          \n  |             ^\
          \n  \'\
-         \n  input.scss 1:13  root stylesheet\
-         \n",
+         \n  input.scss 1:13  root stylesheet",
     );
 }

@@ -14,7 +14,6 @@ fn test() {
          \n1 | @warn(\"foo\";\
          \n  |            ^\
          \n  \'\
-         \n  input.scss 1:12  root stylesheet\
-         \n",
+         \n  input.scss 1:12  root stylesheet",
     );
 }

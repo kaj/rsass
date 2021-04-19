@@ -33,7 +33,6 @@ fn test() {
          \n3 |   background: saturate(red);\
          \n  |               ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:15  root stylesheet\
-         \n",
+         \n  input.scss 3:15  root stylesheet",
     );
 }

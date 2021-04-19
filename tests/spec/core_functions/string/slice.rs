@@ -302,8 +302,7 @@ mod error {
          \n1 | a {b: str-slice(\"\", 1, 1.5)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -320,8 +319,7 @@ mod error {
          \n1 | a {b: str-slice(\"\", 0.5)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -342,8 +340,7 @@ mod error {
          \n1 | @function slice($string, $start-at, $end-at: -1) {\
          \n  |           ====================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -363,8 +360,7 @@ mod error {
          \n1 | @function slice($string, $start-at, $end-at: -1) {\
          \n  |           ====================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -381,8 +377,7 @@ mod error {
          \n1 | a {b: str-slice(\"cde\", 1, \"f\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -398,8 +393,7 @@ mod error {
          \n1 | a {b: str-slice(\"cde\", \"f\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -415,8 +409,7 @@ mod error {
          \n1 | a {b: str-slice(1, 2)}\
          \n  |       ^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

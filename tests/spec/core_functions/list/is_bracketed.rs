@@ -62,8 +62,7 @@ mod error {
          \n1 | @function is-bracketed($list) {\
          \n  |           =================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -83,8 +82,7 @@ mod error {
          \n1 | @function is-bracketed($list) {\
          \n  |           =================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

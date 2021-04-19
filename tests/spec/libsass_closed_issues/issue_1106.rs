@@ -26,7 +26,6 @@ fn test() {
          \n7 |     unquote: unquote($foo);\
          \n  |              ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 7:14  root stylesheet\
-         \n",
+         \n  input.scss 7:14  root stylesheet",
     );
 }

@@ -14,7 +14,6 @@ fn test() {
          \n1 | @debug;\
          \n  |       ^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }

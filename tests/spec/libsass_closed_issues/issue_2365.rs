@@ -20,7 +20,6 @@ fn test() {
          \n4 |     },\
          \n  |      ^\
          \n  \'\
-         \n  input.scss 4:6  root stylesheet\
-         \n",
+         \n  input.scss 4:6  root stylesheet",
     );
 }

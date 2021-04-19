@@ -16,8 +16,7 @@ mod blue {
          \n2 |   b: rgb(0, 0, \"foo\");\
          \n  |      ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }
@@ -37,8 +36,7 @@ mod green {
          \n2 |   b: rgb(0, \"foo\", 0);\
          \n  |      ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }
@@ -58,8 +56,7 @@ mod red {
          \n2 |   b: rgb(\"foo\", 0, 0);\
          \n  |      ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }

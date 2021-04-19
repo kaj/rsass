@@ -16,8 +16,7 @@ mod hue {
          \n2 |   b: hsl(\"foo\", 100%, 50%);\
          \n  |      ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }
@@ -37,8 +36,7 @@ mod lightness {
          \n2 |   b: hsl(0, 100%, \"foo\");\
          \n  |      ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }
@@ -58,8 +56,7 @@ mod saturation {
          \n2 |   b: hsl(0, \"foo\", 50%);\
          \n  |      ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }

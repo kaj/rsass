@@ -112,8 +112,7 @@ mod error {
          \n4 | a {b: call(get-function(\"if\"), true, \"\", $undefined)}\
          \n  |                                          ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 4:42  root stylesheet\
-         \n",
+         \n  input.scss 4:42  root stylesheet",
     );
     }
     #[test]
@@ -130,8 +129,7 @@ mod error {
          \n1 | a {b: call(get-function(\"rgb\"), 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -151,8 +149,7 @@ mod error {
          \n1 | @function call($function, $args...) {\
          \n  |           ========================= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -168,8 +165,7 @@ mod error {
          \n1 | a {b: call(1)}\
          \n  |       ^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

@@ -15,7 +15,6 @@ fn test() {
          \n2 | .bip .bap! {@extend .foo}\
          \n  |          ^\
          \n  \'\
-         \n  input.scss 2:10  root stylesheet\
-         \n",
+         \n  input.scss 2:10  root stylesheet",
     );
 }

@@ -29,8 +29,7 @@ mod error {
          \n1 | a {b: desaturate(plum, 100.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -46,8 +45,7 @@ mod error {
          \n1 | a {b: desaturate(plum, -0.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -69,8 +67,7 @@ mod error {
          \n1 | @function desaturate($color, $amount) {\
          \n  |           =========================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -91,8 +88,7 @@ mod error {
          \n1 | @function desaturate($color, $amount) {\
          \n  |           =========================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -112,8 +108,7 @@ mod error {
          \n1 | @function desaturate($color, $amount) {\
          \n  |           =========================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -130,8 +125,7 @@ mod error {
          \n1 | a {b: desaturate(1, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -147,8 +141,7 @@ mod error {
          \n1 | a {b: desaturate(plum, blue)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

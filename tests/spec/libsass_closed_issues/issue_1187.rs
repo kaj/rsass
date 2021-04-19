@@ -25,7 +25,6 @@ fn test() {
          \n5 |   $b: 2\
          \n  |   ^^ second key\
          \n  \'\
-         \n  input.scss 5:3  root stylesheet\
-         \n",
+         \n  input.scss 5:3  root stylesheet",
     );
 }

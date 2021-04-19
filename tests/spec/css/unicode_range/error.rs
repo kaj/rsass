@@ -16,8 +16,7 @@ fn ident_minus_space_ident() {
          \n2 |   a: U+abc- def;\
          \n  |            ^\
          \n  \'\
-         \n  input.scss 2:12  root stylesheet\
-         \n",
+         \n  input.scss 2:12  root stylesheet",
     );
 }
 #[test]
@@ -36,8 +35,7 @@ fn minus_ident_minus() {
          \n2 |   a: u+123-abc-def;\
          \n  |               ^\
          \n  \'\
-         \n  input.scss 2:15  root stylesheet\
-         \n",
+         \n  input.scss 2:15  root stylesheet",
     );
 }
 #[test]
@@ -56,8 +54,7 @@ fn minus_number_minus_ident() {
          \n2 |   a: U+123-456-ABC;\
          \n  |               ^\
          \n  \'\
-         \n  input.scss 2:15  root stylesheet\
-         \n",
+         \n  input.scss 2:15  root stylesheet",
     );
 }
 #[test]
@@ -76,8 +73,7 @@ fn no_digits() {
          \n2 |   a: U+;\
          \n  |        ^\
          \n  \'\
-         \n  input.scss 2:8  root stylesheet\
-         \n",
+         \n  input.scss 2:8  root stylesheet",
     );
 }
 #[test]
@@ -96,8 +92,7 @@ fn nothing_after_minus() {
          \n2 |   a: U+abc-;\
          \n  |            ^\
          \n  \'\
-         \n  input.scss 2:12  root stylesheet\
-         \n",
+         \n  input.scss 2:12  root stylesheet",
     );
 }
 #[test]
@@ -116,8 +111,7 @@ fn question_mark_after_minus() {
          \n2 |   a: u+abc-de?;\
          \n  |              ^\
          \n  \'\
-         \n  input.scss 2:14  root stylesheet\
-         \n",
+         \n  input.scss 2:14  root stylesheet",
     );
 }
 #[test]
@@ -136,8 +130,7 @@ fn too_many_decimal_digits() {
          \n2 |   a: U+1234567;\
          \n  |              ^\
          \n  \'\
-         \n  input.scss 2:14  root stylesheet\
-         \n",
+         \n  input.scss 2:14  root stylesheet",
     );
 }
 #[test]
@@ -156,8 +149,7 @@ fn too_many_decimal_digits_after_minus() {
          \n2 |   a: U+abc-1234567;\
          \n  |                  ^\
          \n  \'\
-         \n  input.scss 2:18  root stylesheet\
-         \n",
+         \n  input.scss 2:18  root stylesheet",
     );
 }
 #[test]
@@ -176,8 +168,7 @@ fn too_many_digits_after_minus() {
          \n2 |   a: U+abc-abcdefa;\
          \n  |                  ^\
          \n  \'\
-         \n  input.scss 2:18  root stylesheet\
-         \n",
+         \n  input.scss 2:18  root stylesheet",
     );
 }
 #[test]
@@ -196,8 +187,7 @@ fn too_many_hex_digits() {
          \n2 |   a: U+ABCDEFA;\
          \n  |              ^\
          \n  \'\
-         \n  input.scss 2:14  root stylesheet\
-         \n",
+         \n  input.scss 2:14  root stylesheet",
     );
 }
 #[test]
@@ -216,7 +206,6 @@ fn too_many_question_marks() {
          \n2 |   a: U+???????;\
          \n  |              ^\
          \n  \'\
-         \n  input.scss 2:14  root stylesheet\
-         \n",
+         \n  input.scss 2:14  root stylesheet",
     );
 }

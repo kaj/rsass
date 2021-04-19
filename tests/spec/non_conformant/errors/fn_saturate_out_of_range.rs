@@ -15,7 +15,6 @@ fn test() {
          \n2 |   bar: saturate(red, 125);\
          \n  |        ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:8  root stylesheet\
-         \n",
+         \n  input.scss 2:8  root stylesheet",
     );
 }

@@ -23,7 +23,6 @@ fn test() {
          \n8 |     @include c();\
          \n  |     ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 8:5  root stylesheet\
-         \n",
+         \n  input.scss 8:5  root stylesheet",
     );
 }

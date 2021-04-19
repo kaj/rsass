@@ -17,8 +17,7 @@ mod alpha {
          \n2 |   b: rgb(#123, \"foo\");\
          \n  |      ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
     #[test]
@@ -37,8 +36,7 @@ mod alpha {
          \n2 |   b: rgb(#123, 0.5px);\
          \n  |      ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }
@@ -59,8 +57,7 @@ mod color {
          \n2 |   b: rgb(\"foo\", 0.5);\
          \n  |      ^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }

@@ -16,8 +16,7 @@ mod alpha {
          \n2 |   b: rgba(0, 0, 0, 0.5px);\
          \n  |      ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }
@@ -37,8 +36,7 @@ mod blue {
          \n2 |   b: rgba(0, 0, \"foo\", 0.5);\
          \n  |      ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }
@@ -58,8 +56,7 @@ mod green {
          \n2 |   b: rgba(0, \"foo\", 0, 0.5);\
          \n  |      ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }
@@ -79,8 +76,7 @@ mod red {
          \n2 |   b: rgba(\"foo\", 0, 0, 0.5);\
          \n  |      ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
         );
     }
 }

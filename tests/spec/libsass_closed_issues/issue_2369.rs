@@ -14,7 +14,6 @@ fn test() {
          \n1 | @a(#{url(\\#{})}\
          \n  |           ^^\
          \n  \'\
-         \n  input.scss 1:11  root stylesheet\
-         \n",
+         \n  input.scss 1:11  root stylesheet",
     );
 }

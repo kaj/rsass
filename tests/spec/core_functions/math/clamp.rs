@@ -61,8 +61,7 @@ mod error {
          \n2 | a {b: math.clamp(1deg, 1px, 1s)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -79,8 +78,7 @@ mod error {
          \n2 | a {b: math.clamp(1deg, 1turn, 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -97,8 +95,7 @@ mod error {
          \n2 | a {b: math.clamp(1deg, 1px, 1turn)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -115,8 +112,7 @@ mod error {
          \n2 | a {b: math.clamp(1turn, 1deg, 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }
@@ -138,8 +134,7 @@ mod error {
          \n1 | @function clamp($min, $number, $max) {\
          \n  |           ========================== declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     mod some_unitless {
@@ -156,8 +151,7 @@ mod error {
          \n2 | a {b: math.clamp(0px, 1px, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -173,8 +167,7 @@ mod error {
          \n2 | a {b: math.clamp(0, 1px, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -190,8 +183,7 @@ mod error {
          \n2 | a {b: math.clamp(0, 1px, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -207,8 +199,7 @@ mod error {
          \n2 | a {b: math.clamp(0, 1, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -224,8 +215,7 @@ mod error {
          \n2 | a {b: math.clamp(0px, 1, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -241,8 +231,7 @@ mod error {
          \n2 | a {b: math.clamp(0px, 1, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
     }
@@ -264,8 +253,7 @@ mod error {
          \n1 | @function clamp($min, $number, $max) {\
          \n  |           ========================== declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -286,8 +274,7 @@ mod error {
          \n1 | @function clamp($min, $number, $max) {\
          \n  |           ========================== declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     mod test_type {
@@ -305,8 +292,7 @@ mod error {
          \n2 | a {b: math.clamp(1, 2, \"0\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -323,8 +309,7 @@ mod error {
          \n2 | a {b: math.clamp(\"0\", 1, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -341,8 +326,7 @@ mod error {
          \n2 | a {b: math.clamp(1, \"0\", 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }
@@ -364,8 +348,7 @@ mod error {
          \n1 | @function clamp($min, $number, $max) {\
          \n  |           ========================== declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

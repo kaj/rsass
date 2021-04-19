@@ -32,8 +32,7 @@ mod error {
          \n1 | @function is-unitless($number) {\
          \n  |           ==================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -53,8 +52,7 @@ mod error {
          \n1 | @function is-unitless($number) {\
          \n  |           ==================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -70,8 +68,7 @@ mod error {
          \n1 | a {b: unitless(c)}\
          \n  |       ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

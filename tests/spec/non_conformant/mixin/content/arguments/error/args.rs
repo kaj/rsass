@@ -24,8 +24,7 @@ fn named() {
          \n    \'\
          \n  input.scss 3:3  @content\
          \n  input.scss 3:3  mixin()\
-         \n  input.scss 6:1  root stylesheet\
-         \n",
+         \n  input.scss 6:1  root stylesheet",
     );
 }
 #[test]
@@ -51,8 +50,7 @@ fn none_expected() {
          \n    \'\
          \n  input.scss 3:3  @content\
          \n  input.scss 3:3  mixin()\
-         \n  input.scss 6:1  root stylesheet\
-         \n",
+         \n  input.scss 6:1  root stylesheet",
     );
 }
 #[test]
@@ -78,8 +76,7 @@ fn none_passed() {
          \n    \'\
          \n  input.scss 3:3  @content\
          \n  input.scss 3:3  mixin()\
-         \n  input.scss 6:1  root stylesheet\
-         \n",
+         \n  input.scss 6:1  root stylesheet",
     );
 }
 #[test]
@@ -105,8 +102,7 @@ fn too_few() {
          \n    \'\
          \n  input.scss 3:3  @content\
          \n  input.scss 3:3  mixin()\
-         \n  input.scss 6:1  root stylesheet\
-         \n",
+         \n  input.scss 6:1  root stylesheet",
     );
 }
 #[test]
@@ -132,7 +128,6 @@ fn too_many() {
          \n    \'\
          \n  input.scss 3:3  @content\
          \n  input.scss 3:3  mixin()\
-         \n  input.scss 6:1  root stylesheet\
-         \n",
+         \n  input.scss 6:1  root stylesheet",
     );
 }

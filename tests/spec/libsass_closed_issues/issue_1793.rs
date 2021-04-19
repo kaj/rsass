@@ -16,7 +16,6 @@ fn test() {
          \n1 | @media (max-width: (2px*5in)) {\
          \n  |                    ^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:20  root stylesheet\
-         \n",
+         \n  input.scss 1:20  root stylesheet",
     );
 }

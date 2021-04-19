@@ -13,7 +13,6 @@ fn test() {
          \n1 | @error \"Buckle your seatbelt Dorothy, \'cause Kansas is going bye-bye\"\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:1  root stylesheet\
-         \n",
+         \n  input.scss 1:1  root stylesheet",
     );
 }

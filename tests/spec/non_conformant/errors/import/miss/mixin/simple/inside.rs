@@ -19,7 +19,6 @@ fn test() {
          \n  |                                                         ^^^^^^^\
          \n  \'\
          \n  input.scss 2:57  import-google-fonts()\
-         \n  input.scss 6:3   root stylesheet\
-         \n",
+         \n  input.scss 6:3   root stylesheet",
     );
 }

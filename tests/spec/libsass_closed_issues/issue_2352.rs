@@ -22,7 +22,6 @@ fn test() {
          \n8 |     color: test($theme...);\
          \n  |                 ^^^^^^\
          \n  \'\
-         \n  input.scss 8:14  root stylesheet\
-         \n",
+         \n  input.scss 8:14  root stylesheet",
     );
 }

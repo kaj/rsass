@@ -18,8 +18,7 @@ mod error {
          \n1 | @function floor($number) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -40,8 +39,7 @@ mod error {
          \n1 | @function floor($number) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -57,8 +55,7 @@ mod error {
          \n1 | a {b: floor(c)}\
          \n  |       ^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

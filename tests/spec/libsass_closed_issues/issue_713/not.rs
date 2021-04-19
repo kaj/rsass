@@ -20,7 +20,6 @@ fn test() {
          \n1 | @function not() {\
          \n  | ^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:1  root stylesheet\
-         \n",
+         \n  input.scss 1:1  root stylesheet",
     );
 }

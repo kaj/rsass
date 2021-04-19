@@ -14,8 +14,7 @@ mod error {
          \n1 | a {b: random(1.5)}\
          \n  |       ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -31,8 +30,7 @@ mod error {
          \n1 | a {b: random(-1)}\
          \n  |       ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -48,8 +46,7 @@ mod error {
          \n1 | a {b: random(c)}\
          \n  |       ^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -65,8 +62,7 @@ mod error {
          \n1 | a {b: random(0)}\
          \n  |       ^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

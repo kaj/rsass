@@ -15,8 +15,7 @@ mod single_equals {
          \n1 | a {b: c(=d)}\
          \n  |         ^\
          \n  \'\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -33,8 +32,7 @@ mod single_equals {
          \n1 | a {b: c(=)}\
          \n  |         ^\
          \n  \'\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -51,8 +49,7 @@ mod single_equals {
          \n1 | a {b: c(d=)}\
          \n  |           ^\
          \n  \'\
-         \n  input.scss 1:11  root stylesheet\
-         \n",
+         \n  input.scss 1:11  root stylesheet",
         );
     }
 }

@@ -14,8 +14,7 @@ fn blue_and_lightness() {
          \n1 | a {b: change-color(red, $blue: 1, $lightness: 1%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -32,8 +31,7 @@ fn green_and_saturation() {
          \n1 | a {b: change-color(red, $green: 1, $saturation: 1%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -50,8 +48,7 @@ fn green_and_whiteness() {
          \n1 | a {b: change-color(red, $green: 1, $whiteness: 1%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -68,8 +65,7 @@ fn lightness_and_whiteness() {
          \n1 | a {b: change-color(red, $lightness: 1%, $whiteness: 1%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -86,8 +82,7 @@ fn red_and_blackness() {
          \n1 | a {b: adjust-color(red, $red: 1, $blackness: 1%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -104,8 +99,7 @@ fn red_and_hue() {
          \n1 | a {b: change-color(red, $red: 1, $hue: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -122,7 +116,6 @@ fn saturation_and_blackness() {
          \n1 | a {b: change-color(red, $saturation: 1%, $blackness: 1%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }

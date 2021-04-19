@@ -16,7 +16,6 @@ fn test() {
          \n1 | @import \"plain\";\
          \n  |         ^^^^^^^\
          \n  \'\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
     );
 }

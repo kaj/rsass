@@ -23,7 +23,6 @@ fn test() {
          \n  \'\
          \n  input.scss 6:3  @content\
          \n  input.scss 2:3  parent()\
-         \n  input.scss 5:1  root stylesheet\
-         \n",
+         \n  input.scss 5:1  root stylesheet",
     );
 }

@@ -15,7 +15,6 @@ fn test() {
          \n2 |   filter: progid:DXImageTransform.Microsoft.#{Alpha(opacity=20)};\
          \n  |                                             ^\
          \n  \'\
-         \n  input.scss 2:45  root stylesheet\
-         \n",
+         \n  input.scss 2:45  root stylesheet",
     );
 }

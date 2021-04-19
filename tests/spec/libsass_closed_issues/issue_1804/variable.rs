@@ -19,7 +19,6 @@ fn test() {
          \n5 |   bar: #{($foo*$bar)};\
          \n  |          ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 5:10  root stylesheet\
-         \n",
+         \n  input.scss 5:10  root stylesheet",
     );
 }

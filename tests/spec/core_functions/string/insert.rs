@@ -137,8 +137,7 @@ mod error {
          \n1 | a {b: str-insert(\"\", \"\", 0.5)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -158,8 +157,7 @@ mod error {
          \n1 | @function insert($string, $insert, $index) {\
          \n  |           ================================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -179,8 +177,7 @@ mod error {
          \n1 | @function insert($string, $insert, $index) {\
          \n  |           ================================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -197,8 +194,7 @@ mod error {
          \n1 | a {b: str-insert(\"\", \"\", \"\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -214,8 +210,7 @@ mod error {
          \n1 | a {b: str-insert(\"\", 1, 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -231,8 +226,7 @@ mod error {
          \n1 | a {b: str-insert(1, \"\", 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

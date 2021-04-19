@@ -18,7 +18,6 @@ fn test() {
          \n1 | @function red($color) {\
          \n  |           =========== declaration\
          \n  \'\
-         \n  input.scss 2:10  root stylesheet\
-         \n",
+         \n  input.scss 2:10  root stylesheet",
     );
 }

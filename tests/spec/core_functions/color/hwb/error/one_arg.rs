@@ -16,8 +16,7 @@ mod alpha {
          \n2 | a {b: color.hwb(0 0 0 / 0.5px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -34,8 +33,7 @@ mod alpha {
          \n2 | a {b: color.hwb(0 0 0 / var(--c))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
@@ -55,8 +53,7 @@ mod blackness {
          \n2 | a {b: color.hwb(0 30% 101%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -74,8 +71,7 @@ mod blackness {
          \n2 | a {b: color.hwb(0 30% -1%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -92,8 +88,7 @@ mod blackness {
          \n2 | a {b: color.hwb(0 30% \"foo\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     mod unit {
@@ -112,8 +107,7 @@ mod blackness {
          \n2 | a {b: color.hwb(0 30% 40)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -130,8 +124,7 @@ mod blackness {
          \n2 | a {b: color.hwb(0 30% 40px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }
@@ -149,8 +142,7 @@ mod blackness {
          \n2 | a {b: color.hwb(0 30% var(--c) / 0.5px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -167,8 +159,7 @@ mod blackness {
          \n2 | a {b: color.hwb(0 30% var(--c))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }
@@ -188,8 +179,7 @@ mod hue {
          \n2 | a {b: color.hwb(\"foo\" 30% 40%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -206,8 +196,7 @@ mod hue {
          \n2 | a {b: color.hwb(var(--c) 30% 40%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
@@ -227,8 +216,7 @@ mod list {
          \n2 | a {b: color.hwb([0 30% 40%])}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -246,8 +234,7 @@ mod list {
          \n2 | a {b: color.hwb((0, 30%, 40%))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -265,8 +252,7 @@ mod list {
          \n2 | a {b: color.hwb(())}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -284,8 +270,7 @@ mod list {
          \n2 | a {b: color.hwb(0 30% 40% 0.4)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -303,8 +288,7 @@ mod list {
          \n2 | a {b: color.hwb(0)}\
          \n  |       ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -322,8 +306,7 @@ mod list {
          \n2 | a {b: color.hwb(0 30%)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
@@ -341,8 +324,7 @@ fn quoted_var_slash() {
          \n2 | a {b: color.hwb(0 30% \"var(--foo) / 0.4\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
 }
 mod whiteness {
@@ -361,8 +343,7 @@ mod whiteness {
          \n2 | a {b: color.hwb(0 101% 40%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -380,8 +361,7 @@ mod whiteness {
          \n2 | a {b: color.hwb(0 -1% 40%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -398,8 +378,7 @@ mod whiteness {
          \n2 | a {b: color.hwb(0 \"foo\" 40%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     mod unit {
@@ -418,8 +397,7 @@ mod whiteness {
          \n2 | a {b: color.hwb(0 30 40%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -436,8 +414,7 @@ mod whiteness {
          \n2 | a {b: color.hwb(0 30px 40%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }
@@ -455,8 +432,7 @@ mod whiteness {
          \n2 | a {b: color.hwb(0 var(--c) 40%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

@@ -25,7 +25,6 @@ fn test() {
          \n  \'\
          \n  input.scss 8:3  @content\
          \n  input.scss 3:5  test()\
-         \n  input.scss 7:1  root stylesheet\
-         \n",
+         \n  input.scss 7:1  root stylesheet",
     );
 }

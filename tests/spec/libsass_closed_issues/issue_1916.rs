@@ -28,7 +28,6 @@ fn test() {
          \n13 |     @extend .z-depth-half-1;\
          \n   |     ^^^^^^^^^^^^^^^^^^^^^^^\
          \n   \'\
-         \n  input.scss 13:5  root stylesheet\
-         \n",
+         \n  input.scss 13:5  root stylesheet",
     );
 }

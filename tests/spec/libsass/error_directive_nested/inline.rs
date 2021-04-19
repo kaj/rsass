@@ -19,7 +19,6 @@ fn test() {
          \n3 |     @error test;\
          \n  |     ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:5  root stylesheet\
-         \n",
+         \n  input.scss 3:5  root stylesheet",
     );
 }

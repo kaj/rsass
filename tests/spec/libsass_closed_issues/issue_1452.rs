@@ -16,7 +16,6 @@ fn test() {
          \n2 |   foo: foo(());\
          \n  |            ^^\
          \n  \'\
-         \n  input.scss 2:12  root stylesheet\
-         \n",
+         \n  input.scss 2:12  root stylesheet",
     );
 }

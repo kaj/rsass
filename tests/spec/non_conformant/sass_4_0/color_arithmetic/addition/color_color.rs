@@ -14,7 +14,6 @@ fn test() {
          \n1 | $v: #abc + #123;\
          \n  |     ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:5  root stylesheet\
-         \n",
+         \n  input.scss 1:5  root stylesheet",
     );
 }

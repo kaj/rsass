@@ -24,8 +24,7 @@ mod error {
          \n1 | @for $i from 1.5 through 4 {}\
          \n  |              ^^^\
          \n  \'\
-         \n  input.scss 1:14  root stylesheet\
-         \n",
+         \n  input.scss 1:14  root stylesheet",
         );
     }
     #[test]
@@ -38,8 +37,7 @@ mod error {
          \n1 | @for $i from \"foo\" through 4 {}\
          \n  |              ^^^^^\
          \n  \'\
-         \n  input.scss 1:14  root stylesheet\
-         \n",
+         \n  input.scss 1:14  root stylesheet",
         );
     }
     #[test]
@@ -52,8 +50,7 @@ mod error {
          \n1 | @for $i from 100% through 42px {}\
          \n  |                           ^^^^\
          \n  \'\
-         \n  input.scss 1:27  root stylesheet\
-         \n",
+         \n  input.scss 1:27  root stylesheet",
         );
     }
     #[test]
@@ -66,8 +63,7 @@ mod error {
          \n1 | @for $i from 1 through 1.5 {}\
          \n  |                        ^^^\
          \n  \'\
-         \n  input.scss 1:24  root stylesheet\
-         \n",
+         \n  input.scss 1:24  root stylesheet",
         );
     }
     #[test]
@@ -80,8 +76,7 @@ mod error {
          \n1 | @for $i from 1 through \"foo\" {}\
          \n  |                        ^^^^^\
          \n  \'\
-         \n  input.scss 1:24  root stylesheet\
-         \n",
+         \n  input.scss 1:24  root stylesheet",
         );
     }
     #[test]
@@ -94,8 +89,7 @@ mod error {
          \n1 | @for $i from 1cm through 5mm {}\
          \n  |                          ^^^\
          \n  \'\
-         \n  input.scss 1:26  root stylesheet\
-         \n",
+         \n  input.scss 1:26  root stylesheet",
         );
     }
 }

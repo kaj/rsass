@@ -80,8 +80,7 @@ mod error {
          \n1 | a {b: set-nth(c d, 0, e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -101,8 +100,7 @@ mod error {
          \n1 | @function set-nth($list, $n, $value) {\
          \n  |           ========================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -118,8 +116,7 @@ mod error {
          \n1 | a {b: set-nth(c d, 3, e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -135,8 +132,7 @@ mod error {
          \n1 | a {b: set-nth(c d, -3, e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -156,8 +152,7 @@ mod error {
          \n1 | @function set-nth($list, $n, $value) {\
          \n  |           ========================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -174,8 +169,7 @@ mod error {
          \n1 | a {b: set-nth(c d, e, f)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

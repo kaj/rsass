@@ -15,8 +15,7 @@ mod none {
          \n1 | a {b: scale-color(red, $alpha: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -33,8 +32,7 @@ mod none {
          \n1 | a {b: scale-color(black, $blackness: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -51,8 +49,7 @@ mod none {
          \n1 | a {b: scale-color(blue, $blue: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -69,8 +66,7 @@ mod none {
          \n1 | a {b: scale-color(green, $green: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -87,8 +83,7 @@ mod none {
          \n1 | a {b: scale-color(red, $lightness: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -105,8 +100,7 @@ mod none {
          \n1 | a {b: scale-color(red, $red: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -123,8 +117,7 @@ mod none {
          \n1 | a {b: scale-color(red, $saturation: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -141,9 +134,7 @@ mod none {
          \n1 | a {b: scale-color(white, $whiteness: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }
@@ -162,8 +153,7 @@ mod wrong {
          \n1 | a {b: scale-color(red, $alpha: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -180,8 +170,7 @@ mod wrong {
          \n1 | a {b: scale-color(black, $blackness: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -198,8 +187,7 @@ mod wrong {
          \n1 | a {b: scale-color(blue, $blue: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -216,8 +204,7 @@ mod wrong {
          \n1 | a {b: scale-color(green, $green: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -234,8 +221,7 @@ mod wrong {
          \n1 | a {b: scale-color(red, $lightness: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -252,8 +238,7 @@ mod wrong {
          \n1 | a {b: scale-color(red, $red: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -270,8 +255,7 @@ mod wrong {
          \n1 | a {b: scale-color(red, $saturation: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -288,8 +272,7 @@ mod wrong {
          \n1 | a {b: scale-color(white, $whiteness: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

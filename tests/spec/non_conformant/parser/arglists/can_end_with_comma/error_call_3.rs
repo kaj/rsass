@@ -17,7 +17,6 @@ fn test() {
          \n3 |   a: incorrectly-terminated($a,$b,;\
          \n  |                                   ^\
          \n  \'\
-         \n  input.scss 3:35  root stylesheet\
-         \n",
+         \n  input.scss 3:35  root stylesheet",
     );
 }

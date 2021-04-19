@@ -16,7 +16,6 @@ fn test() {
          \n3 | $error: $foo + 20px; // line 3\
          \n  |         ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:9  root stylesheet\
-         \n",
+         \n  input.scss 3:9  root stylesheet",
     );
 }

@@ -160,8 +160,7 @@ mod error {
          \n1 | @function function-exists($name, $module: null) {\
          \n  |           ===================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -181,8 +180,7 @@ mod error {
          \n1 | @function function-exists($name, $module: null) {\
          \n  |           ===================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         mod test_type {
@@ -199,8 +197,7 @@ mod error {
          \n1 | a {b: function-exists(\"red\", 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
                 );
             }
             #[test]
@@ -216,8 +213,7 @@ mod error {
          \n1 | a {b: function-exists(12px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
                 );
             }
         }
@@ -244,8 +240,7 @@ mod error {
          \n4   | a {b: function-exists(member)}\
          \n    |       ^^^^^^^^^^^^^^^^^^^^^^^ function use\
          \n    \'\
-         \n  input.scss 4:7  root stylesheet\
-         \n",
+         \n  input.scss 4:7  root stylesheet",
         );
     }
     mod module {
@@ -262,8 +257,7 @@ mod error {
          \n1 | a {b: function-exists(\"red\", \"color\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -280,8 +274,7 @@ mod error {
          \n2 | c {d: function-exists(\"c\", $module: \"a_b\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -297,8 +290,7 @@ mod error {
          \n1 | a {b: function-exists(\"c\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

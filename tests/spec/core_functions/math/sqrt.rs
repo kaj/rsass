@@ -19,8 +19,7 @@ mod error {
          \n1 | @function sqrt($number) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -37,8 +36,7 @@ mod error {
          \n2 | a {b: math.sqrt(\"0\")}\
          \n  |       ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -55,8 +53,7 @@ mod error {
          \n2 | a {b: math.sqrt(1px)}\
          \n  |       ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -77,8 +74,7 @@ mod error {
          \n1 | @function sqrt($number) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

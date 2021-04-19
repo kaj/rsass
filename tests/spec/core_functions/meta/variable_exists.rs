@@ -22,8 +22,7 @@ fn conflict() {
          \n4   | a {b: variable-exists(member)}\
          \n    |       ^^^^^^^^^^^^^^^^^^^^^^^ variable use\
          \n    \'\
-         \n  input.scss 4:7  root stylesheet\
-         \n",
+         \n  input.scss 4:7  root stylesheet",
     );
 }
 mod dash_insensitive {
@@ -79,8 +78,7 @@ mod error {
          \n1 | @function variable-exists($name) {\
          \n  |           ====================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -100,8 +98,7 @@ mod error {
          \n1 | @function variable-exists($name) {\
          \n  |           ====================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -117,8 +114,7 @@ mod error {
          \n1 | a {b: variable-exists(12px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

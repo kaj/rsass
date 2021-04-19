@@ -19,8 +19,7 @@ mod error {
          \n1 | @function deep-remove($map, $key, $keys...) {\
          \n  |           ================================= declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -37,8 +36,7 @@ mod error {
          \n2 | a {b: map.deep-remove(1, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

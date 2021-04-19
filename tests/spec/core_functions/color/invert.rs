@@ -43,8 +43,7 @@ mod error {
          \n1 | a {b: invert(red, 100.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -60,8 +59,7 @@ mod error {
          \n1 | a {b: invert(red, -0.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -77,8 +75,7 @@ mod error {
          \n1 | a {b: invert(1, 50%)}\
          \n  |       ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
     #[test]
@@ -98,8 +95,7 @@ mod error {
          \n1 | @function invert($color, $weight: 100%) {\
          \n  |           ============================= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -119,8 +115,7 @@ mod error {
          \n1 | @function invert($color, $weight: 100%) {\
          \n  |           ============================= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -138,8 +133,7 @@ mod error {
          \n1 | a {b: invert(c)}\
          \n  |       ^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -155,8 +149,7 @@ mod error {
          \n1 | a {b: invert(red, c)}\
          \n  |       ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

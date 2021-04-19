@@ -17,8 +17,7 @@ mod function {
          \n3 | $d: a($b: 1, 2);\
          \n  |              ^\
          \n  \'\
-         \n  input.scss 3:14  root stylesheet\
-         \n",
+         \n  input.scss 3:14  root stylesheet",
     );
         }
     }
@@ -40,8 +39,7 @@ mod mixin {
          \n3 | @include a($b: 1, 2) {}\
          \n  |                   ^\
          \n  \'\
-         \n  input.scss 3:19  root stylesheet\
-         \n",
+         \n  input.scss 3:19  root stylesheet",
     );
         }
     }

@@ -61,8 +61,7 @@ mod error {
          \n1 | @function feature-exists($feature) {\
          \n  |           ======================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -82,8 +81,7 @@ mod error {
          \n1 | @function feature-exists($feature) {\
          \n  |           ======================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -99,8 +97,7 @@ mod error {
          \n1 | a {b: feature-exists(1)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

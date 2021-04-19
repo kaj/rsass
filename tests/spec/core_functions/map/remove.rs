@@ -15,8 +15,7 @@ mod error {
          \n1 | a {b: map-remove((c: d, e: f), c, $key: e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -37,8 +36,7 @@ mod error {
          \n1 | @function remove($map) {\
          \n  |           ============ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -55,8 +53,7 @@ mod error {
          \n1 | a {b: map-remove(1)}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

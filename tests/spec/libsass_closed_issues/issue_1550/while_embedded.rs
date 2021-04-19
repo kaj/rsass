@@ -20,7 +20,6 @@ fn test() {
          \n3 |   @function foo() {\
          \n  |   ^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:3  root stylesheet\
-         \n",
+         \n  input.scss 3:3  root stylesheet",
     );
 }

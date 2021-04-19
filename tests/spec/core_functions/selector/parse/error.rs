@@ -14,8 +14,7 @@ fn inner_comma() {
          \n1 | a {b: selector-parse(((c,),))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -33,8 +32,7 @@ fn outer_space() {
          \n1 | a {b: selector-parse(append((), append((), c)))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -56,8 +54,7 @@ fn parent() {
          \n1 | a {b: selector-parse(\"&\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 mod parse {
@@ -80,8 +77,7 @@ mod parse {
          \n1 | a {b: selector-parse(\"c {\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -103,8 +99,7 @@ mod parse {
          \n1 | a {b: selector-parse(\"[c\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }
@@ -125,8 +120,7 @@ fn too_few_args() {
          \n1 | @function parse($selector) {\
          \n  |           ================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -146,8 +140,7 @@ fn too_many_args() {
          \n1 | @function parse($selector) {\
          \n  |           ================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -164,8 +157,7 @@ fn too_nested() {
          \n1 | a {b: selector-parse((append((), append((), c)),))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -183,7 +175,6 @@ fn test_type() {
          \n1 | a {b: selector-parse(1)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }

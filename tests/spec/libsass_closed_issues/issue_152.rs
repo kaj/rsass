@@ -30,7 +30,6 @@ fn test() {
          \n5 |   a: #{10}% 100%;\
          \n  |      ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 5:6  root stylesheet\
-         \n",
+         \n  input.scss 5:6  root stylesheet",
     );
 }

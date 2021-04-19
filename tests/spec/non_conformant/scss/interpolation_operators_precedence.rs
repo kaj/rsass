@@ -61,7 +61,6 @@ fn test() {
          \n13 |   c04: (#{a} *5.0% + 2);\
          \n   |         ^^^^^^^^^^\
          \n   \'\
-         \n  input.scss 13:9  root stylesheet\
-         \n",
+         \n  input.scss 13:9  root stylesheet",
     );
 }

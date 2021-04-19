@@ -22,7 +22,6 @@ fn test() {
          \n8 |     c: c();\
          \n  |        ^^^\
          \n  \'\
-         \n  input.scss 8:8  root stylesheet\
-         \n",
+         \n  input.scss 8:8  root stylesheet",
     );
 }

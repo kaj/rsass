@@ -19,8 +19,7 @@ mod arglist {
          \n5 | @include mixin() using ($arg1: ) {}\
          \n  |                                ^\
          \n  \'\
-         \n  input.scss 5:32  root stylesheet\
-         \n",
+         \n  input.scss 5:32  root stylesheet",
         );
     }
     #[test]
@@ -41,8 +40,7 @@ mod arglist {
          \n5 | @include mixin using {}\
          \n  |                      ^\
          \n  \'\
-         \n  input.scss 5:22  root stylesheet\
-         \n",
+         \n  input.scss 5:22  root stylesheet",
         );
     }
     #[test]
@@ -63,8 +61,7 @@ mod arglist {
          \n5 | @include mixin using $arg1 {}\
          \n  |                      ^\
          \n  \'\
-         \n  input.scss 5:22  root stylesheet\
-         \n",
+         \n  input.scss 5:22  root stylesheet",
         );
     }
 }
@@ -86,8 +83,7 @@ fn missing_block() {
          \n5 | @include mixin using ();\
          \n  |                        ^\
          \n  \'\
-         \n  input.scss 5:24  root stylesheet\
-         \n",
+         \n  input.scss 5:24  root stylesheet",
     );
 }
 #[test]
@@ -108,7 +104,6 @@ fn missing_using() {
          \n5 | @include mixin() () {}\
          \n  |                  ^\
          \n  \'\
-         \n  input.scss 5:18  root stylesheet\
-         \n",
+         \n  input.scss 5:18  root stylesheet",
     );
 }

@@ -62,8 +62,7 @@ mod index {
          \n1 | @import \"dir.scss\";\
          \n  |         ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]

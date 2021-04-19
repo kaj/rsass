@@ -15,8 +15,7 @@ mod error {
          \n2 | a {b: math.pow(1px, 0)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -33,8 +32,7 @@ mod error {
          \n2 | a {b: math.pow(\"0\", 0)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -51,8 +49,7 @@ mod error {
          \n2 | a {b: math.pow(0, 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -69,8 +66,7 @@ mod error {
          \n2 | a {b: math.pow(0, \"0\")}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -91,8 +87,7 @@ mod error {
          \n1 | @function pow($base, $exponent) {\
          \n  |           ===================== declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -113,12 +108,10 @@ mod error {
          \n1 | @function pow($base, $exponent) {\
          \n  |           ===================== declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn zero_args() {
         assert_eq!(
             crate::rsass(
@@ -136,9 +129,7 @@ mod error {
          \n1 | @function pow($base, $exponent) {\
          \n  |           ===================== declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

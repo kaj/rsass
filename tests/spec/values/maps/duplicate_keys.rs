@@ -24,7 +24,6 @@ fn test() {
          \n7 |     eta: 6,\
          \n  |     ^^^ second key\
          \n  \'\
-         \n  input.scss 7:5  root stylesheet\
-         \n",
+         \n  input.scss 7:5  root stylesheet",
     );
 }

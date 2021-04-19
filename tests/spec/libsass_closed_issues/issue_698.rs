@@ -13,7 +13,6 @@ fn test() {
         .unwrap_err(),
         "Error: Invalid null operation: \"\"foo\" plus null\".\
          \n        on line 2 of input.scss\
-         \n  Use --trace for backtrace.\
-         \n",
+         \n  Use --trace for backtrace.",
     );
 }

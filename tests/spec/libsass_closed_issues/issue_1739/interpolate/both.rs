@@ -46,7 +46,6 @@ fn test() {
          \n23 |   baz: #{1*2}*#{1*2};\
          \n   |        ^^^^^^^^^^^^^\
          \n   \'\
-         \n  input.scss 23:8  root stylesheet\
-         \n",
+         \n  input.scss 23:8  root stylesheet",
     );
 }

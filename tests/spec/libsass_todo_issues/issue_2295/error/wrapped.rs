@@ -16,7 +16,6 @@ fn test() {
          \n  |                ^\
          \n  \'\
          \n  include.scss 2:16  @import\
-         \n  input.scss 2:11    root stylesheet\
-         \n",
+         \n  input.scss 2:11    root stylesheet",
     );
 }

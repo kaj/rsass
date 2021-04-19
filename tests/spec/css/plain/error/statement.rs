@@ -12,8 +12,7 @@ mod at_rule {
          \n  |   ^^^^^^^^^^^\
          \n  \'\
          \n  plain.css 2:3   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -27,8 +26,7 @@ mod at_rule {
          \n  | ^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -42,8 +40,7 @@ mod at_rule {
          \n  | ^^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -57,8 +54,7 @@ mod at_rule {
          \n  | ^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -72,8 +68,7 @@ mod at_rule {
          \n  | ^^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -87,8 +82,7 @@ mod at_rule {
          \n  |   ^^^^^^^^^\
          \n  \'\
          \n  plain.css 2:3   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -102,8 +96,7 @@ mod at_rule {
          \n  | ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -117,8 +110,7 @@ mod at_rule {
          \n  | ^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -132,8 +124,7 @@ mod at_rule {
          \n  | ^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     mod import {
@@ -148,8 +139,7 @@ mod at_rule {
          \n  |                 ^^^^^^\
          \n  \'\
          \n  plain.css 1:17  @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
             );
         }
         #[test]
@@ -163,8 +153,7 @@ mod at_rule {
          \n  |              ^\
          \n  \'\
          \n  plain.css 1:14  @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
             );
         }
         #[test]
@@ -190,8 +179,7 @@ mod at_rule {
          \n  | ^^^^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -205,8 +193,7 @@ mod at_rule {
          \n  |       ^^^^\
          \n  \'\
          \n  plain.css 1:7   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -220,8 +207,7 @@ mod at_rule {
          \n  | ^^^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -235,8 +221,7 @@ mod at_rule {
          \n  | ^^^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -250,8 +235,7 @@ mod at_rule {
          \n  | ^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -265,8 +249,7 @@ mod at_rule {
          \n  | ^^^^^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
 }
@@ -285,8 +268,7 @@ fn silent_comment() {
          \n  | ^^^^^^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
     );
 }
 mod style_rule {
@@ -302,8 +284,7 @@ mod style_rule {
          \n  |        ^^^^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
             );
         }
         #[test]
@@ -317,8 +298,7 @@ mod style_rule {
          \n  |    ^^^^\
          \n  \'\
          \n  plain.css 2:4   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
             );
         }
         #[test]
@@ -332,8 +312,7 @@ mod style_rule {
          \n  |  ^^^^\
          \n  \'\
          \n  plain.css 1:2   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
             );
         }
     }
@@ -348,8 +327,7 @@ mod style_rule {
          \n  |     ^\
          \n  \'\
          \n  plain.css 2:5   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -363,8 +341,7 @@ mod style_rule {
          \n  |      ^\
          \n  \'\
          \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -378,8 +355,7 @@ mod style_rule {
          \n  | ^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -393,8 +369,7 @@ mod style_rule {
          \n  | ^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
 }

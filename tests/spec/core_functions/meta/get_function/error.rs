@@ -19,8 +19,7 @@ mod argument {
          \n6 | a {b: get-function($foo-ref)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 6:7  root stylesheet\
-         \n",
+         \n  input.scss 6:7  root stylesheet",
         );
     }
     #[test]
@@ -39,8 +38,7 @@ mod argument {
          \n1 | @function get-function($name, $css: false, $module: null) {\
          \n  |           =============================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
     #[test]
@@ -59,8 +57,7 @@ mod argument {
          \n1 | @function get-function($name, $css: false, $module: null) {\
          \n  |           =============================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
     mod test_type {
@@ -77,8 +74,7 @@ mod argument {
          \n1 | a {b: get-function(c, $module: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -94,8 +90,7 @@ mod argument {
          \n1 | a {b: get-function(2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -122,8 +117,7 @@ fn conflict() {
          \n4   | a {b: get-function(member)}\
          \n    |       ^^^^^^^^^^^^^^^^^^^^ function use\
          \n    \'\
-         \n  input.scss 4:7  root stylesheet\
-         \n",
+         \n  input.scss 4:7  root stylesheet",
     );
 }
 #[test]
@@ -140,8 +134,7 @@ fn division() {
          \n1 | a {b: get-function(rgb) / get-function(lighten)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -165,8 +158,7 @@ fn function_exists() {
          \n8 |   error: get-function($add-two-fn);\
          \n  |          ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 8:10  root stylesheet\
-         \n",
+         \n  input.scss 8:10  root stylesheet",
     );
 }
 mod module {
@@ -184,8 +176,7 @@ mod module {
          \n2 | a {b: get-function(\"red\", $css: true, $module: \"color\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -201,8 +192,7 @@ mod module {
          \n1 | a {b: get-function(\"red\", $module: \"color\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -219,8 +209,7 @@ mod module {
          \n2 | c {d: get-function(\"c\", $module: \"a_b\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -236,8 +225,7 @@ mod module {
          \n1 | a {b: get-function(\"c\", $module: \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -254,8 +242,7 @@ mod module {
          \n2 | a {b: get-function(\"c\", $module: \"color\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }
@@ -272,8 +259,7 @@ fn non_existent() {
          \n1 | a {b: get-function(does-not-exist)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 mod through_forward {
@@ -294,8 +280,7 @@ mod through_forward {
          \n3 |   b: call(get-function(c));\
          \n  |           ^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:11  root stylesheet\
-         \n",
+         \n  input.scss 3:11  root stylesheet",
         );
     }
     #[test]
@@ -315,8 +300,7 @@ mod through_forward {
          \n3 |   b: call(get-function(d));\
          \n  |           ^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:11  root stylesheet\
-         \n",
+         \n  input.scss 3:11  root stylesheet",
         );
     }
 }

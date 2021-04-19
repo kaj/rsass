@@ -18,7 +18,6 @@ fn test() {
          \n1 | @function hwb($hue, $whiteness, $blackness, $alpha: 1) {\
          \n  |           ============================================ declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
 }

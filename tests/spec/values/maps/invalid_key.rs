@@ -14,7 +14,6 @@ fn test() {
          \n1 | $id: inspect((a,b:c)...)\
          \n  |                  ^\
          \n  \'\
-         \n  input.scss 1:18  root stylesheet\
-         \n",
+         \n  input.scss 1:18  root stylesheet",
     );
 }

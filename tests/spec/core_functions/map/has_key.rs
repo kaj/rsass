@@ -18,8 +18,7 @@ mod error {
          \n1 | @function has-key($map, $key, $keys...) {\
          \n  |           ============================= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -36,8 +35,7 @@ mod error {
          \n1 | a {b: map-has-key(1, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

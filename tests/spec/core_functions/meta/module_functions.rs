@@ -104,8 +104,7 @@ mod error {
          \n3 | $a: meta.module-functions(\"other\");\
          \n  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:5  root stylesheet\
-         \n",
+         \n  input.scss 3:5  root stylesheet",
         );
     }
     #[test]
@@ -125,8 +124,7 @@ mod error {
          \n4 | $a: meta.module-functions(\"other_module\");\
          \n  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 4:5  root stylesheet\
-         \n",
+         \n  input.scss 4:5  root stylesheet",
         );
     }
     #[test]
@@ -146,8 +144,7 @@ mod error {
          \n4 | $a: meta.module-functions(\"other\");\
          \n  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 4:5  root stylesheet\
-         \n",
+         \n  input.scss 4:5  root stylesheet",
         );
     }
     #[test]
@@ -164,8 +161,7 @@ mod error {
          \n2 | $a: meta.module-functions(\"other\");\
          \n  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:5  root stylesheet\
-         \n",
+         \n  input.scss 2:5  root stylesheet",
         );
     }
     #[test]
@@ -186,8 +182,7 @@ mod error {
          \n1 | @function module-functions($module) {\
          \n  |           ========================= declaration\
          \n  \'\
-         \n  input.scss 2:5  root stylesheet\
-         \n",
+         \n  input.scss 2:5  root stylesheet",
         );
     }
     #[test]
@@ -208,8 +203,7 @@ mod error {
          \n1 | @function module-functions($module) {\
          \n  |           ========================= declaration\
          \n  \'\
-         \n  input.scss 2:5  root stylesheet\
-         \n",
+         \n  input.scss 2:5  root stylesheet",
         );
     }
     #[test]
@@ -226,8 +220,7 @@ mod error {
          \n2 | $a: meta.module-functions(1);\
          \n  |     ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:5  root stylesheet\
-         \n",
+         \n  input.scss 2:5  root stylesheet",
         );
     }
 }

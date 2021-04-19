@@ -17,8 +17,7 @@ mod invalid_binary_operator {
          \n4 | @media (1 < 2: 10px) {a {b: c}}\
          \n  |              ^\
          \n  \'\
-         \n  input.scss 4:14  root stylesheet\
-         \n",
+         \n  input.scss 4:14  root stylesheet",
     );
     }
     #[test]
@@ -35,8 +34,7 @@ mod invalid_binary_operator {
          \n1 | @media (1 = 2 = width) {a {b: c}}\
          \n  |               ^\
          \n  \'\
-         \n  input.scss 1:15  root stylesheet\
-         \n",
+         \n  input.scss 1:15  root stylesheet",
         );
     }
     #[test]
@@ -53,8 +51,7 @@ mod invalid_binary_operator {
          \n1 | @media (3 > width > 2 > 1) {a {b: c}}\
          \n  |                       ^\
          \n  \'\
-         \n  input.scss 1:23  root stylesheet\
-         \n",
+         \n  input.scss 1:23  root stylesheet",
         );
     }
     #[test]
@@ -71,8 +68,7 @@ mod invalid_binary_operator {
          \n1 | @media (3 >= width >= 2 >= 1) {a {b: c}}\
          \n  |                         ^\
          \n  \'\
-         \n  input.scss 1:25  root stylesheet\
-         \n",
+         \n  input.scss 1:25  root stylesheet",
         );
     }
     #[test]
@@ -91,8 +87,7 @@ mod invalid_binary_operator {
          \n4 | @media (1 < 2 or false = width) {a {b: c}}\
          \n  |                        ^\
          \n  \'\
-         \n  input.scss 4:24  root stylesheet\
-         \n",
+         \n  input.scss 4:24  root stylesheet",
     );
     }
     #[test]
@@ -109,8 +104,7 @@ mod invalid_binary_operator {
          \n1 | @media (1 < width < 2 < 3) {a {b: c}}\
          \n  |                       ^\
          \n  \'\
-         \n  input.scss 1:23  root stylesheet\
-         \n",
+         \n  input.scss 1:23  root stylesheet",
         );
     }
     #[test]
@@ -127,8 +121,7 @@ mod invalid_binary_operator {
          \n1 | @media (1 <= width <= 2 <= 3) {a {b: c}}\
          \n  |                         ^\
          \n  \'\
-         \n  input.scss 1:25  root stylesheet\
-         \n",
+         \n  input.scss 1:25  root stylesheet",
         );
     }
 }
@@ -147,8 +140,7 @@ mod invalid_comparison {
          \n1 | @media (width > = 100px) {a {b: c}}\
          \n  |                 ^\
          \n  \'\
-         \n  input.scss 1:17  root stylesheet\
-         \n",
+         \n  input.scss 1:17  root stylesheet",
         );
     }
     #[test]
@@ -165,8 +157,7 @@ mod invalid_comparison {
          \n1 | @media (width < = 100px) {a {b: c}}\
          \n  |                 ^\
          \n  \'\
-         \n  input.scss 1:17  root stylesheet\
-         \n",
+         \n  input.scss 1:17  root stylesheet",
         );
     }
     #[test]
@@ -183,8 +174,7 @@ mod invalid_comparison {
          \n1 | @media (10px > width > = 1px) {a {b: c}}\
          \n  |                        ^\
          \n  \'\
-         \n  input.scss 1:24  root stylesheet\
-         \n",
+         \n  input.scss 1:24  root stylesheet",
         );
     }
 }
@@ -203,8 +193,7 @@ mod mismatched_range {
          \n1 | @media (1px > width < 2px) {a {b: c}}\
          \n  |                     ^\
          \n  \'\
-         \n  input.scss 1:21  root stylesheet\
-         \n",
+         \n  input.scss 1:21  root stylesheet",
         );
     }
     #[test]
@@ -221,8 +210,7 @@ mod mismatched_range {
          \n1 | @media (1px >= width <= 2px) {a {b: c}}\
          \n  |                      ^\
          \n  \'\
-         \n  input.scss 1:22  root stylesheet\
-         \n",
+         \n  input.scss 1:22  root stylesheet",
         );
     }
     #[test]
@@ -239,8 +227,7 @@ mod mismatched_range {
          \n1 | @media (1px < width > 2px) {a {b: c}}\
          \n  |                     ^\
          \n  \'\
-         \n  input.scss 1:21  root stylesheet\
-         \n",
+         \n  input.scss 1:21  root stylesheet",
         );
     }
     #[test]
@@ -257,8 +244,7 @@ mod mismatched_range {
          \n1 | @media (1px <= width >= 2px) {a {b: c}}\
          \n  |                      ^\
          \n  \'\
-         \n  input.scss 1:22  root stylesheet\
-         \n",
+         \n  input.scss 1:22  root stylesheet",
         );
     }
 }

@@ -16,7 +16,6 @@ fn test() {
          \n2 |   @extend %an-undefined-placeholder;\
          \n  |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:3  root stylesheet\
-         \n",
+         \n  input.scss 2:3  root stylesheet",
     );
 }

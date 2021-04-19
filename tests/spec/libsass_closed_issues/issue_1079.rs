@@ -10,7 +10,6 @@ fn test() {
          \n1 | hdr(2, 5){ color: #08c; }\
          \n  |    ^\
          \n  \'\
-         \n  input.scss 1:4  root stylesheet\
-         \n",
+         \n  input.scss 1:4  root stylesheet",
     );
 }

@@ -16,7 +16,6 @@ fn test() {
          \n1 | #4d{\
          \n  |  ^\
          \n  \'\
-         \n  input.scss 1:2  root stylesheet\
-         \n",
+         \n  input.scss 1:2  root stylesheet",
     );
 }

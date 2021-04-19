@@ -18,8 +18,7 @@ mod error {
          \n1 | @function quote($string) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -39,8 +38,7 @@ mod error {
          \n1 | @function quote($string) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -56,8 +54,7 @@ mod error {
          \n1 | a {b: quote((1, 2, 3))}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

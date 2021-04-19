@@ -102,8 +102,7 @@ mod error {
          \n2 | [a=b 1]{c: d}\
          \n  |      ^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
     );
             }
             #[test]
@@ -120,8 +119,7 @@ mod error {
          \n1 | [a b]{c: d}\
          \n  |    ^\
          \n  \'\
-         \n  input.scss 1:4  root stylesheet\
-         \n",
+         \n  input.scss 1:4  root stylesheet",
                 );
             }
             #[test]
@@ -139,8 +137,7 @@ mod error {
          \n2 | [a=b cd]{e: f}\
          \n  |       ^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
                 );
             }
             #[test]
@@ -157,8 +154,7 @@ mod error {
          \n2 | [a=b _]{c: d}\
          \n  |      ^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
     );
             }
             #[test]
@@ -175,8 +171,7 @@ mod error {
          \n2 | [a=b ï]{c: d}\
          \n  |      ^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
     );
             }
         }
@@ -412,8 +407,7 @@ fn reference_combinator() {
          \n3 | .foo /bar/ .baz{\
          \n  |      ^\
          \n  \'\
-         \n  input.scss 3:6  root stylesheet\
-         \n",
+         \n  input.scss 3:6  root stylesheet",
     );
 }
 #[test]

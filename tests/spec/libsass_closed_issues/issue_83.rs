@@ -27,7 +27,6 @@ fn test() {
          \n    |   ^^^^^^^^^^^^^^^ invocation\
          \n    \'\
          \n  input.scss 7:3  colors()\
-         \n  input.scss 7:3  root stylesheet\
-         \n",
+         \n  input.scss 7:3  root stylesheet",
     );
 }

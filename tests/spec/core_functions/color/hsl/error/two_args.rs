@@ -16,7 +16,6 @@ fn test() {
          \n2 |   b: hsl(#123, 0.5);\
          \n  |      ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
     );
 }

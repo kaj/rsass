@@ -19,7 +19,6 @@ fn test() {
          \n2 |   pre&{\
          \n  |      ^\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
     );
 }

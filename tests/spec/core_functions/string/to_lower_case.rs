@@ -46,8 +46,7 @@ mod error {
          \n1 | @function to-lower-case($string) {\
          \n  |           ====================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -68,8 +67,7 @@ mod error {
          \n1 | @function to-lower-case($string) {\
          \n  |           ====================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -85,8 +83,7 @@ mod error {
          \n1 | a {b: to-lower-case(1)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

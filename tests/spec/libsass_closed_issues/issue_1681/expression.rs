@@ -15,7 +15,6 @@ fn test() {
          \n1 | @function expression() {\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:1  root stylesheet\
-         \n",
+         \n  input.scss 1:1  root stylesheet",
     );
 }

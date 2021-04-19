@@ -23,7 +23,6 @@ fn test() {
          \n5 |     opacity: 1;\
          \n  |     ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 5:5  root stylesheet\
-         \n",
+         \n  input.scss 5:5  root stylesheet",
     );
 }

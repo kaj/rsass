@@ -18,8 +18,7 @@ mod error {
          \n1 | @function compatible($number1, $number2) {\
          \n  |           ============================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -39,8 +38,7 @@ mod error {
          \n1 | @function compatible($number1, $number2) {\
          \n  |           ============================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -57,8 +55,7 @@ mod error {
          \n1 | a {b: comparable(c, 1)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -74,8 +71,7 @@ mod error {
          \n1 | a {b: comparable(1, c)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

@@ -26,7 +26,6 @@ fn test() {
          \n    |   ^^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n    \'\
          \n  input.scss 8:3  bar()\
-         \n  input.scss 8:3  root stylesheet\
-         \n",
+         \n  input.scss 8:3  root stylesheet",
     );
 }

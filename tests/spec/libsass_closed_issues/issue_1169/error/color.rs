@@ -22,7 +22,6 @@ fn test() {
          \n3 |   red: \'bar\',\
          \n  |   ^^^ second key\
          \n  \'\
-         \n  input.scss 3:3  root stylesheet\
-         \n",
+         \n  input.scss 3:3  root stylesheet",
     );
 }

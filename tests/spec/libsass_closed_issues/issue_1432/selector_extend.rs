@@ -14,7 +14,6 @@ fn test() {
          \n1 | @debug(selector-extend(\".a .b\", \".b\", null));\
          \n  |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:8  root stylesheet\
-         \n",
+         \n  input.scss 1:8  root stylesheet",
     );
 }

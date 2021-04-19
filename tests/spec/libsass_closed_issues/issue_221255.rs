@@ -9,7 +9,6 @@ fn test() {
         ).unwrap_err(),
         "Error: Invalid CSS after \"\'#{\": expected expression (e.g. 1px, bold), was \")\'{\"\
          \n        on line 1 of input.scss\
-         \n  Use --trace for backtrace.\
-         \n",
+         \n  Use --trace for backtrace.",
     );
 }

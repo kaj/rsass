@@ -30,8 +30,7 @@ mod error {
          \n2 | a {b: math.atan2(1px, 1deg)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -52,8 +51,7 @@ mod error {
          \n1 | @function atan2($y, $x) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -74,8 +72,7 @@ mod error {
          \n1 | @function atan2($y, $x) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -91,8 +88,7 @@ mod error {
          \n2 | a {b: math.atan2(1px, 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
     #[test]
@@ -108,8 +104,7 @@ mod error {
          \n2 | a {b: math.atan2(1, 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
     #[test]
@@ -126,8 +121,7 @@ mod error {
          \n2 | a {b: math.atan2(0, \"0\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -144,8 +138,7 @@ mod error {
          \n2 | a {b: math.atan2(\"0\", 0)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -166,8 +159,7 @@ mod error {
          \n1 | @function atan2($y, $x) {\
          \n  |           ============= declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

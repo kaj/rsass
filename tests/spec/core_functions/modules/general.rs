@@ -31,8 +31,7 @@ mod error {
          \n2 | math.$a: b;\
          \n  | ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
         );
     }
 }
@@ -85,8 +84,7 @@ mod forward {
          \n2 | a {b: other.round(0.7)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -104,8 +102,7 @@ mod forward {
          \n2 | a {b: other.round(0.7)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }

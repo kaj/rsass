@@ -17,7 +17,6 @@ fn test() {
          \n3 | @include no-content {}\
          \n  | ^^^^^^^^^^^^^^^^^^^ invocation\
          \n  \'\
-         \n  input.scss 3:1  root stylesheet\
-         \n",
+         \n  input.scss 3:1  root stylesheet",
     );
 }

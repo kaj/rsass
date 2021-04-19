@@ -19,8 +19,7 @@ fn in_declaration() {
          \n4 |     @asdf;\
          \n  |     ^^^^^\
          \n  \'\
-         \n  input.scss 4:5  root stylesheet\
-         \n",
+         \n  input.scss 4:5  root stylesheet",
     );
 }
 #[test]
@@ -41,8 +40,7 @@ fn in_function() {
          \n3 |   @asdf;\
          \n  |   ^^^^^\
          \n  \'\
-         \n  input.scss 3:3  root stylesheet\
-         \n",
+         \n  input.scss 3:3  root stylesheet",
     );
 }
 mod interpolation {
@@ -64,8 +62,7 @@ mod interpolation {
          \n4 |     @#{\"asdf\"};\
          \n  |      ^\
          \n  \'\
-         \n  input.scss 4:6  root stylesheet\
-         \n",
+         \n  input.scss 4:6  root stylesheet",
     );
     }
     #[test]
@@ -86,8 +83,7 @@ mod interpolation {
          \n3 |   @#{\"asdf\"};\
          \n  |    ^\
          \n  \'\
-         \n  input.scss 3:4  root stylesheet\
-         \n",
+         \n  input.scss 3:4  root stylesheet",
         );
     }
     #[test]
@@ -104,8 +100,7 @@ mod interpolation {
          \n2 | @ #{\"unknown\"};\
          \n  |  ^\
          \n  \'\
-         \n  input.scss 2:2  root stylesheet\
-         \n",
+         \n  input.scss 2:2  root stylesheet",
     );
     }
 }
@@ -124,7 +119,6 @@ fn space_after_at() {
          \n2 | @ unknown;\
          \n  |  ^\
          \n  \'\
-         \n  input.scss 2:2  root stylesheet\
-         \n",
+         \n  input.scss 2:2  root stylesheet",
     );
 }

@@ -46,8 +46,7 @@ mod error {
          \n1 | @function adjust-hue($color, $degrees) {\
          \n  |           ============================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -67,8 +66,7 @@ mod error {
          \n1 | @function adjust-hue($color, $degrees) {\
          \n  |           ============================ declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -85,8 +83,7 @@ mod error {
          \n1 | a {b: adjust-hue(1, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -102,8 +99,7 @@ mod error {
          \n1 | a {b: adjust-hue(red, blue)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

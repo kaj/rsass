@@ -18,7 +18,6 @@ fn test() {
          \n1 | @function foo($bar:#{}) {\
          \n  |                    ^^\
          \n  \'\
-         \n  input.scss 1:20  root stylesheet\
-         \n",
+         \n  input.scss 1:20  root stylesheet",
     );
 }

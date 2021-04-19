@@ -15,7 +15,6 @@ fn test() {
          \n2 | test { baz: $map; }\
          \n  |             ^^^^\
          \n  \'\
-         \n  input.scss 2:13  root stylesheet\
-         \n",
+         \n  input.scss 2:13  root stylesheet",
     );
 }

@@ -25,7 +25,6 @@ fn test() {
          \n3 |   color: red;\
          \n  |             ^\
          \n  \'\
-         \n  input.scss 3:13  root stylesheet\
-         \n",
+         \n  input.scss 3:13  root stylesheet",
     );
 }

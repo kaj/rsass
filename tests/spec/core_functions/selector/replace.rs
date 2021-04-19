@@ -47,8 +47,7 @@ mod error {
          \n1 | a {b: selector-replace(\"c\", d e, \"f\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
                 );
             }
             #[test]
@@ -65,8 +64,7 @@ mod error {
          \n1 | a {b: selector-replace(\"c\", \"d e\", \"f\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
                 );
             }
         }
@@ -89,8 +87,7 @@ mod error {
          \n1 | a {b: selector-replace(\"c\", \"[d\", \"e\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -112,8 +109,7 @@ mod error {
          \n1 | a {b: selector-replace(\"c\", \"&\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -130,8 +126,7 @@ mod error {
          \n1 | a {b: selector-replace(\"c\", 1, \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
         }
     }
@@ -155,8 +150,7 @@ mod error {
          \n1 | a {b: selector-replace(\"c\", \"d\", \"[e\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -178,8 +172,7 @@ mod error {
          \n1 | a {b: selector-replace(\"c\", \"d\", \"&\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -196,8 +189,7 @@ mod error {
          \n1 | a {b: selector-replace(\"c\", \"d\", 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
         }
     }
@@ -221,8 +213,7 @@ mod error {
          \n1 | a {b: selector-replace(\"[c\", \"d\", \"e\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -244,8 +235,7 @@ mod error {
          \n1 | a {b: selector-replace(\"&\", \"c\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -262,8 +252,7 @@ mod error {
          \n1 | a {b: selector-replace(1, \"c\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
         }
     }
@@ -284,8 +273,7 @@ mod error {
          \n1 | @function replace($selector, $original, $replacement) {\
          \n  |           =========================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
     #[test]
@@ -305,8 +293,7 @@ mod error {
          \n1 | @function replace($selector, $original, $replacement) {\
          \n  |           =========================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
     }
 }

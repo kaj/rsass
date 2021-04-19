@@ -16,8 +16,7 @@ mod test_else {
          \n4 | @else i\
          \n  |       ^\
          \n  \'\
-         \n  input.scss 4:7  root stylesheet\
-         \n",
+         \n  input.scss 4:7  root stylesheet",
     );
     }
 }

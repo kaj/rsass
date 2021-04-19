@@ -12,8 +12,7 @@ mod function {
          \n  |      ^^^^^^^^^^^^^^^\
          \n  \'\
          \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -27,8 +26,7 @@ mod function {
          \n  |                   ^^^^^^^^^^\
          \n  \'\
          \n  plain.css 2:19  @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -42,8 +40,7 @@ mod function {
          \n  |                      ^\
          \n  \'\
          \n  plain.css 2:22  @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
 }
@@ -59,8 +56,7 @@ mod interpolation {
          \n  |           ^^^^^^\
          \n  \'\
          \n  plain.css 2:11  @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -74,8 +70,7 @@ mod interpolation {
          \n  |       ^^^^\
          \n  \'\
          \n  plain.css 2:7   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -89,8 +84,7 @@ mod interpolation {
          \n  |        ^^^^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -104,8 +98,7 @@ mod interpolation {
          \n  |      ^^^^\
          \n  \'\
          \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
 }
@@ -121,8 +114,7 @@ mod list {
          \n  |      ^\
          \n  \'\
          \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -136,8 +128,7 @@ mod list {
          \n  |      ^\
          \n  \'\
          \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
 }
@@ -152,8 +143,7 @@ fn map() {
          \n  |      ^\
          \n  \'\
          \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
     );
 }
 mod operation {
@@ -168,8 +158,7 @@ mod operation {
          \n  |        ^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -183,8 +172,7 @@ mod operation {
          \n  |        ^^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -198,8 +186,7 @@ mod operation {
          \n  |        ^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -213,8 +200,7 @@ mod operation {
          \n  |        ^^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -228,8 +214,7 @@ mod operation {
          \n  |        ^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -243,8 +228,7 @@ mod operation {
          \n  |        ^^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -258,8 +242,7 @@ mod operation {
          \n  |        ^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -273,8 +256,7 @@ mod operation {
          \n  |        ^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -288,8 +270,7 @@ mod operation {
          \n  |        ^^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -303,8 +284,7 @@ mod operation {
          \n  |        ^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
 }
@@ -319,8 +299,7 @@ fn parent_selector() {
          \n  |      ^\
          \n  \'\
          \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
     );
 }
 #[test]
@@ -334,8 +313,7 @@ fn parentheses() {
          \n  |      ^\
          \n  \'\
          \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
     );
 }
 #[test]
@@ -353,8 +331,7 @@ fn silent_comment() {
          \n  |        ^^^^\
          \n  \'\
          \n  plain.css 2:8   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
     );
 }
 mod variable {
@@ -369,8 +346,7 @@ mod variable {
          \n  | ^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
     #[test]
@@ -384,8 +360,7 @@ mod variable {
          \n  |      ^^^^\
          \n  \'\
          \n  plain.css 2:6   @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
         );
     }
 }

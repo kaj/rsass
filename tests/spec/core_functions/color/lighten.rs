@@ -29,8 +29,7 @@ mod error {
          \n1 | a {b: lighten(red, 100.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -46,8 +45,7 @@ mod error {
          \n1 | a {b: lighten(red, -0.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -68,8 +66,7 @@ mod error {
          \n1 | @function lighten($color, $amount) {\
          \n  |           ======================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -89,8 +86,7 @@ mod error {
          \n1 | @function lighten($color, $amount) {\
          \n  |           ======================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -107,8 +103,7 @@ mod error {
          \n1 | a {b: lighten(1, 2)}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -124,8 +119,7 @@ mod error {
          \n1 | a {b: lighten(red, blue)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

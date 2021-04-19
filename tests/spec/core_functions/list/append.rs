@@ -147,8 +147,7 @@ mod error {
          \n1 | @function append($list, $val, $separator: auto) {\
          \n  |           ===================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -168,8 +167,7 @@ mod error {
          \n1 | @function append($list, $val, $separator: auto) {\
          \n  |           ===================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -186,8 +184,7 @@ mod error {
          \n1 | a {b: append(c, d, $separator: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -204,8 +201,7 @@ mod error {
          \n1 | a {b: append(c, d, $separator: e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

@@ -22,7 +22,6 @@ fn test() {
          \n4 |     @import \'_include\';\
          \n  |     ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 4:5  root stylesheet\
-         \n",
+         \n  input.scss 4:5  root stylesheet",
     );
 }

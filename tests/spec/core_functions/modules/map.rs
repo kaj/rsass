@@ -15,8 +15,7 @@ mod error {
          \n2 | a {b: map.map-get((c: d), c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -33,8 +32,7 @@ mod error {
          \n2 | a {b: map.map-has-key((c: d), c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -51,8 +49,7 @@ mod error {
          \n2 | a {b: map.map-keys((c: d))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -70,8 +67,7 @@ mod error {
          \n3 | a {b: meta.map-inspect(map.merge((c: d), (e: f)))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:7  root stylesheet\
-         \n",
+         \n  input.scss 3:7  root stylesheet",
         );
     }
     #[test]
@@ -89,8 +85,7 @@ mod error {
          \n3 | a {b: meta.map-inspect(map.remove((c: d), c))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:7  root stylesheet\
-         \n",
+         \n  input.scss 3:7  root stylesheet",
         );
     }
     #[test]
@@ -107,8 +102,7 @@ mod error {
          \n2 | a {b: map.map-values((c: d), c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

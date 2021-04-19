@@ -18,8 +18,7 @@ mod from_other {
          \n  |    ^^^^^^^^^^^^^^^\
          \n  \'\
          \n  _other.scss 1:4  load-css()\
-         \n  input.scss 2:1   root stylesheet\
-         \n",
+         \n  input.scss 2:1   root stylesheet",
         );
     }
     #[test]
@@ -38,8 +37,7 @@ mod from_other {
          \n  |       ^^^^^^^^^\
          \n  \'\
          \n  _other.scss 1:7  load-css()\
-         \n  input.scss 2:1   root stylesheet\
-         \n",
+         \n  input.scss 2:1   root stylesheet",
         );
     }
     #[test]
@@ -58,8 +56,7 @@ mod from_other {
          \n  |       ^\
          \n  \'\
          \n  _other.scss 1:7  load-css()\
-         \n  input.scss 2:1   root stylesheet\
-         \n",
+         \n  input.scss 2:1   root stylesheet",
         );
     }
 }
@@ -80,8 +77,7 @@ mod load {
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  _other.scss 2:1  load-css()\
-         \n  input.scss 2:1   root stylesheet\
-         \n",
+         \n  input.scss 2:1   root stylesheet",
         );
     }
     #[test]
@@ -99,8 +95,7 @@ mod load {
          \n2 | @include meta.load-css(\"other\");\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
         );
     }
 }
@@ -122,8 +117,7 @@ mod member {
          \n4 | a {b: $c}\
          \n  |       ^^\
          \n  \'\
-         \n  input.scss 4:7  root stylesheet\
-         \n",
+         \n  input.scss 4:7  root stylesheet",
         );
     }
     #[test]
@@ -143,8 +137,7 @@ mod member {
          \n4 | a {b: other.$c}\
          \n  |       ^^^^^^^^\
          \n  \'\
-         \n  input.scss 4:7  root stylesheet\
-         \n",
+         \n  input.scss 4:7  root stylesheet",
         );
     }
 }
@@ -167,8 +160,7 @@ fn too_few_args() {
          \n1 | @mixin load-css($url, $with: null) {\
          \n  |        =========================== declaration\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
     );
 }
 #[test]
@@ -190,8 +182,7 @@ fn too_many_args() {
          \n1 | @mixin load-css($url, $with: null) {\
          \n  |        =========================== declaration\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
     );
 }
 mod test_type {
@@ -210,8 +201,7 @@ mod test_type {
          \n2 | @include meta.load-css(1);\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
         );
     }
     mod with {
@@ -230,8 +220,7 @@ mod test_type {
          \n2 | @include meta.load-css(\"other\", $with: (1: null));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
             );
         }
         #[test]
@@ -249,8 +238,7 @@ mod test_type {
          \n2 | @include meta.load-css(\"other\", $with: 1);\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
             );
         }
     }
@@ -277,8 +265,7 @@ mod with {
          \n    | ^^^^^^^^^^^^^^ variable use\
          \n    \'\
          \n  _midstream.scss 4:1  load-css()\
-         \n  input.scss 2:1       root stylesheet\
-         \n",
+         \n  input.scss 2:1       root stylesheet",
         );
     }
     #[test]
@@ -296,8 +283,7 @@ mod with {
          \n2 | @include meta.load-css(\"sass:color\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
         );
     }
     mod multi_configuration {
@@ -319,8 +305,7 @@ mod with {
          \n3 | @include meta.load-css(\"other\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
          \n  \'\
-         \n  input.scss 3:1  root stylesheet\
-         \n",
+         \n  input.scss 3:1  root stylesheet",
     );
             }
             #[test]
@@ -345,8 +330,7 @@ mod with {
          \n  | ================================================== configuration\
          \n  \'\
          \n  _midstream.scss 1:1  load-css()\
-         \n  input.scss 3:1       root stylesheet\
-         \n",
+         \n  input.scss 3:1       root stylesheet",
     );
             }
             #[test]
@@ -366,8 +350,7 @@ mod with {
          \n3 | @include meta.load-css(\"other\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
          \n  \'\
-         \n  input.scss 3:1  root stylesheet\
-         \n",
+         \n  input.scss 3:1  root stylesheet",
     );
             }
         }
@@ -389,8 +372,7 @@ mod with {
          \n3 | @include meta.load-css(\"other\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
          \n  \'\
-         \n  input.scss 3:1  root stylesheet\
-         \n",
+         \n  input.scss 3:1  root stylesheet",
     );
             }
             #[test]
@@ -413,8 +395,7 @@ mod with {
          \n2 | @include meta.load-css(\"other\", $with: (a: b));\
          \n  | ============================================== original load\
          \n  \'\
-         \n  input.scss 4:1  root stylesheet\
-         \n",
+         \n  input.scss 4:1  root stylesheet",
     );
             }
             #[test]
@@ -439,8 +420,7 @@ mod with {
          \n  | ================================================== configuration\
          \n  \'\
          \n  _midstream.scss 1:1  load-css()\
-         \n  input.scss 3:1       root stylesheet\
-         \n",
+         \n  input.scss 3:1       root stylesheet",
     );
             }
             #[test]
@@ -460,8 +440,7 @@ mod with {
          \n3 | @include meta.load-css(\"other\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
          \n  \'\
-         \n  input.scss 3:1  root stylesheet\
-         \n",
+         \n  input.scss 3:1  root stylesheet",
     );
             }
         }
@@ -481,8 +460,7 @@ mod with {
          \n2 | @include meta.load-css(\"midstream\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
         );
     }
     #[test]
@@ -500,8 +478,7 @@ mod with {
          \n2 | @include meta.load-css(\"other\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
         );
     }
     #[test]
@@ -519,8 +496,7 @@ mod with {
          \n2 | @include meta.load-css(\"other\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
         );
     }
     #[test]
@@ -538,8 +514,7 @@ mod with {
          \n2 | @include meta.load-css(\"other\", $with: (a-b: c, a_b: c));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
         );
     }
     mod through_forward {
@@ -557,8 +532,7 @@ mod with {
          \n2 | @include meta.load-css(\"used\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
     );
         }
         #[test]
@@ -575,8 +549,7 @@ mod with {
          \n2 | @include meta.load-css(\"used\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
     );
         }
         #[test]
@@ -593,8 +566,7 @@ mod with {
          \n2 | @include meta.load-css(\"used\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
     );
         }
         #[test]
@@ -611,8 +583,7 @@ mod with {
          \n2 | @include meta.load-css(\"used\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
     );
         }
     }
@@ -631,8 +602,7 @@ mod with {
          \n2 | @include meta.load-css(\"other\", $with: (a: b));\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
         );
     }
 }

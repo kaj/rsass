@@ -20,7 +20,6 @@ fn test() {
          \n1 | @function rgb($channels) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 2:6  root stylesheet\
-         \n",
+         \n  input.scss 2:6  root stylesheet",
     );
 }

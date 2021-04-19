@@ -25,7 +25,6 @@ fn test() {
          \n3 |   bar: call(min, $foo...);\
          \n  |        ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:8  root stylesheet\
-         \n",
+         \n  input.scss 3:8  root stylesheet",
     );
 }

@@ -89,7 +89,7 @@ fn handle_suite(
          \nfn rsass_fmt(format: Format, input: &str)\
          \n-> Result<String, String> {{\
          \n    compile_scss(input.as_bytes(), format)\
-         \n        .map_err(|e| format!(\"{{}}\\n\", e))\
+         \n        .map_err(|e| e.to_string())\
          \n        .and_then(|s| {{\
          \n            String::from_utf8(s)\
          \n                .map(|s| s.replace(\"\\n\\n\", \"\\n\"))\
@@ -385,7 +385,7 @@ fn load_test_fixture_dir(
             return Ok(TestFixture::new_err(
                 name,
                 input,
-                content(&path)?,
+                content(&path)?.trim().to_string(),
                 options,
             ));
         }
@@ -433,7 +433,7 @@ fn load_test_fixture_hrx(
             return Ok(TestFixture::new_err(
                 name,
                 input.to_string(),
-                error.to_string(),
+                error.trim().to_string(),
                 options,
             ));
         }
@@ -453,7 +453,7 @@ fn load_test_fixture_hrx(
             return Ok(TestFixture::new_err(
                 name,
                 input.to_string(),
-                error.to_string(),
+                error.trim().to_string(),
                 options,
             ));
         }

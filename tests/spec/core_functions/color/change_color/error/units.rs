@@ -15,8 +15,7 @@ mod none {
          \n1 | a {b: change-color(black, $blackness: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -33,9 +32,7 @@ mod none {
          \n1 | a {b: change-color(white, $whiteness: 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }
@@ -54,8 +51,7 @@ mod wrong {
          \n1 | a {b: change-color(black, $blackness: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -72,8 +68,7 @@ mod wrong {
          \n1 | a {b: change-color(white, $whiteness: 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

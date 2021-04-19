@@ -16,8 +16,7 @@ mod error {
          \n1 | a {b: saturate(red)}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -39,8 +38,7 @@ mod error {
          \n1 | @function saturate($amount) {\
          \n  |           ================= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -61,8 +59,7 @@ mod error {
          \n1 | @function saturate($color, $amount) {\
          \n  |           ========================= declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod two_args {
@@ -79,8 +76,7 @@ mod error {
          \n1 | a {b: saturate(plum, 100.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
             }
             #[test]
@@ -96,8 +92,7 @@ mod error {
          \n1 | a {b: saturate(plum, -0.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
                 );
             }
         }
@@ -116,8 +111,7 @@ mod error {
          \n1 | a {b: saturate(1, 2)}\
          \n  |       ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
                 );
             }
             #[test]
@@ -133,8 +127,7 @@ mod error {
          \n1 | a {b: saturate(plum, blue)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
                 );
             }
         }

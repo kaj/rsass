@@ -38,7 +38,6 @@ fn test() {
          \n5 | @function url($src, $path:\'\'){\
          \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 5:1  root stylesheet\
-         \n",
+         \n  input.scss 5:1  root stylesheet",
     );
 }

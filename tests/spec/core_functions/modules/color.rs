@@ -169,8 +169,7 @@ mod error {
          \n2 | a {b: color.adjust-color(#abcdef, $red: 10)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -191,8 +190,7 @@ mod error {
          \n2 | a {b: color.adjust-hue(#abcdef, 10)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
     #[test]
@@ -209,8 +207,7 @@ mod error {
          \n2 | a {b: color.change-color(#abcdef, $red: 10)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -231,8 +228,7 @@ mod error {
          \n2 | a {b: color.darken(#abcdef, 10%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
     #[test]
@@ -253,8 +249,7 @@ mod error {
          \n2 | a {b: color.desaturate(#abcdef, 10%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
     #[test]
@@ -275,8 +270,7 @@ mod error {
          \n2 | a {b: color.fade-in(#abcdef, 0.5)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
     #[test]
@@ -297,8 +291,7 @@ mod error {
          \n2 | a {b: color.fade-out(#abcdef, 0.5)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
     #[test]
@@ -319,8 +312,7 @@ mod error {
          \n2 | a {b: color.lighten(#abcdef, 10%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
     #[test]
@@ -341,8 +333,7 @@ mod error {
          \n2 | a {b: color.opacify(#abcdef, 0.5)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
     #[test]
@@ -363,8 +354,7 @@ mod error {
          \n2 | a {b: color.saturate(#abcdef, 10%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
     #[test]
@@ -381,8 +371,7 @@ mod error {
          \n2 | a {b: color.scale-color(#abcdef, $red: 10%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -403,8 +392,7 @@ mod error {
          \n2 | a {b: color.transparentize(#abcdef, 0.5)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
     }
 }

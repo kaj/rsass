@@ -32,7 +32,6 @@ fn test() {
          \n13 |     @extend %btnBase;\
          \n   |     ^^^^^^^^^^^^^^^^\
          \n   \'\
-         \n  input.scss 13:5  root stylesheet\
-         \n",
+         \n  input.scss 13:5  root stylesheet",
     );
 }

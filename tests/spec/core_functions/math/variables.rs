@@ -32,8 +32,7 @@ mod error {
          \n2 | math.$e: 0;\
          \n  | ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
             );
         }
         #[test]
@@ -51,8 +50,7 @@ mod error {
          \n2 | math.$pi: 0;\
          \n  | ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:1  root stylesheet\
-         \n",
+         \n  input.scss 2:1  root stylesheet",
             );
         }
     }

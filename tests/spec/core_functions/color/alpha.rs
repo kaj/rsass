@@ -73,8 +73,7 @@ mod error {
          \n1 | a {b: alpha(\"c=d\")}\
          \n  |       ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -91,8 +90,7 @@ mod error {
          \n1 | a {b: alpha()}\
          \n  |       ^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -109,8 +107,7 @@ mod error {
          \n1 | a {b: alpha(red, green)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -127,8 +124,7 @@ mod error {
          \n1 | a {b: alpha(1)}\
          \n  |       ^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod unquoted_string {
@@ -146,8 +142,7 @@ mod error {
          \n1 | a {b: alpha(cd)}\
          \n  |       ^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -164,8 +159,7 @@ mod error {
          \n1 | a {b: alpha(unquote(\"1=c\"))}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

@@ -20,7 +20,6 @@ fn test() {
          \n6 |   @include foo(#{});\
          \n  |                ^^\
          \n  \'\
-         \n  input.scss 6:16  root stylesheet\
-         \n",
+         \n  input.scss 6:16  root stylesheet",
     );
 }

@@ -14,7 +14,6 @@ fn test() {
          \n1 | .test31@baz{ content: \'3.1\'; }\
          \n  |        ^\
          \n  \'\
-         \n  input.scss 1:8  root stylesheet\
-         \n",
+         \n  input.scss 1:8  root stylesheet",
     );
 }

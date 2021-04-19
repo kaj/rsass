@@ -14,7 +14,6 @@ fn test() {
          \n1 | $map: (a:b,c:d) + 1;\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }

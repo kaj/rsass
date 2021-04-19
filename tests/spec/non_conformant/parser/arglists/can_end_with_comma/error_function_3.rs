@@ -16,7 +16,6 @@ fn test() {
          \n2 | @function missing-paren-error($a,$b, {\
          \n  |                                      ^\
          \n  \'\
-         \n  input.scss 2:38  root stylesheet\
-         \n",
+         \n  input.scss 2:38  root stylesheet",
     );
 }

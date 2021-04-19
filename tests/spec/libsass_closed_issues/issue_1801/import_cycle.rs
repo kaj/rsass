@@ -20,7 +20,6 @@ fn test() {
          \n  \'\
          \n  _beta.scss 1:9   @import\
          \n  _alpha.scss 1:9  @import\
-         \n  input.scss 1:9   root stylesheet\
-         \n",
+         \n  input.scss 1:9   root stylesheet",
     );
 }

@@ -22,7 +22,6 @@ fn test() {
          \n    |   ^^^^^^^^^^^^^^^^^^^^^^ invocation\
          \n    \'\
          \n  input.scss 4:3  foo()\
-         \n  input.scss 4:3  root stylesheet\
-         \n",
+         \n  input.scss 4:3  root stylesheet",
     );
 }

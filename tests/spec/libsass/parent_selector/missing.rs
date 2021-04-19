@@ -48,7 +48,6 @@ fn test() {
          \n   \'\
          \n  input.scss 30:5  @content\
          \n  input.scss 22:9  grid-media-query()\
-         \n  input.scss 29:3  root stylesheet\
-         \n",
+         \n  input.scss 29:3  root stylesheet",
     );
 }

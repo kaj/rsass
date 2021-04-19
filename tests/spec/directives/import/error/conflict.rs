@@ -19,8 +19,7 @@ fn all() {
          \n3 | @import \"other\";\
          \n  |         ^^^^^^^\
          \n  \'\
-         \n  input.scss 3:9  root stylesheet\
-         \n",
+         \n  input.scss 3:9  root stylesheet",
     );
 }
 #[test]
@@ -40,8 +39,7 @@ fn extension() {
          \n3 | @import \"other\";\
          \n  |         ^^^^^^^\
          \n  \'\
-         \n  input.scss 3:9  root stylesheet\
-         \n",
+         \n  input.scss 3:9  root stylesheet",
     );
 }
 mod import_only {
@@ -62,8 +60,7 @@ mod import_only {
          \n3 | @import \"other\";\
          \n  |         ^^^^^^^\
          \n  \'\
-         \n  input.scss 3:9  root stylesheet\
-         \n",
+         \n  input.scss 3:9  root stylesheet",
     );
     }
     #[test]
@@ -83,8 +80,7 @@ mod import_only {
          \n3 | @import \"other.scss\";\
          \n  |         ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:9  root stylesheet\
-         \n",
+         \n  input.scss 3:9  root stylesheet",
     );
     }
 }
@@ -105,8 +101,7 @@ fn index() {
          \n3 | @import \"other\";\
          \n  |         ^^^^^^^\
          \n  \'\
-         \n  input.scss 3:9  root stylesheet\
-         \n",
+         \n  input.scss 3:9  root stylesheet",
     );
 }
 #[test]
@@ -126,7 +121,6 @@ fn partial() {
          \n3 | @import \"other\";\
          \n  |         ^^^^^^^\
          \n  \'\
-         \n  input.scss 3:9  root stylesheet\
-         \n",
+         \n  input.scss 3:9  root stylesheet",
     );
 }

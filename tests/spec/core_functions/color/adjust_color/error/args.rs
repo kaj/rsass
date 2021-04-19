@@ -18,8 +18,7 @@ fn too_few() {
          \n1 | @function adjust($color, $kwargs...) {\
          \n  |           ========================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -35,8 +34,7 @@ fn too_many() {
          \n1 | a {b: adjust-color(red, 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -53,7 +51,6 @@ fn unknown() {
          \n1 | a {b: adjust-color(red, $ambience: 10%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }

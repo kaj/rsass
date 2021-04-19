@@ -35,8 +35,7 @@ mod inaccessible {
          \n3 | b {@include c}\
          \n  |    ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 3:4  root stylesheet\
-         \n",
+         \n  input.scss 3:4  root stylesheet",
             );
         }
         #[test]
@@ -55,8 +54,7 @@ mod inaccessible {
          \n3 | b {c: $d}\
          \n  |       ^^\
          \n  \'\
-         \n  input.scss 3:7  root stylesheet\
-         \n",
+         \n  input.scss 3:7  root stylesheet",
             );
         }
     }

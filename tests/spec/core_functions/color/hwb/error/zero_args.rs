@@ -19,7 +19,6 @@ fn test() {
          \n1 | @function hwb($channels) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
 }

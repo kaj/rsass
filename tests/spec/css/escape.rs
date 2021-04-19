@@ -17,8 +17,7 @@ mod error {
          \n2 | a {b: \\110000}\
          \n  |       ^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }

@@ -75,8 +75,7 @@ mod error {
          \n1 | a {b: nth(c d, 0)}\
          \n  |       ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -92,8 +91,7 @@ mod error {
          \n1 | a {b: nth(c d, 3)}\
          \n  |       ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -109,8 +107,7 @@ mod error {
          \n1 | a {b: nth(c d, -3)}\
          \n  |       ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -131,8 +128,7 @@ mod error {
          \n1 | @function nth($list, $n) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -152,8 +148,7 @@ mod error {
          \n1 | @function nth($list, $n) {\
          \n  |           ============== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -169,8 +164,7 @@ mod error {
          \n1 | a {b: nth(c d, e)}\
          \n  |       ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

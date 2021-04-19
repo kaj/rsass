@@ -10,7 +10,6 @@ fn test() {
          \n1 | @function test($rest...,$param) {}\
          \n  |                        ^\
          \n  \'\
-         \n  input.scss 1:24  root stylesheet\
-         \n",
+         \n  input.scss 1:24  root stylesheet",
     );
 }

@@ -24,7 +24,6 @@ fn test() {
          \n2 |   a: 1, two, 3,\
          \n  |            ^\
          \n  \'\
-         \n  input.scss 2:12  root stylesheet\
-         \n",
+         \n  input.scss 2:12  root stylesheet",
     );
 }

@@ -14,7 +14,6 @@ fn test() {
          \n1 | @else{}\
          \n  | ^^^^^\
          \n  \'\
-         \n  input.scss 1:1  root stylesheet\
-         \n",
+         \n  input.scss 1:1  root stylesheet",
     );
 }

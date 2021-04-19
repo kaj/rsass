@@ -137,8 +137,7 @@ mod error {
          \n2 | a {b: math.log(1, 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -155,8 +154,7 @@ mod error {
          \n2 | a {b: math.log(1px)}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -177,8 +175,7 @@ mod error {
          \n1 | @function log($number, $base: null) {\
          \n  |           ========================= declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -195,8 +192,7 @@ mod error {
          \n2 | a {b: math.log(\"0\")}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -217,8 +213,7 @@ mod error {
          \n1 | @function log($number, $base: null) {\
          \n  |           ========================= declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

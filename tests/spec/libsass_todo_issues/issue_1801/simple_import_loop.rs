@@ -19,7 +19,6 @@ fn test() {
          \n  |         ====== original load\
          \n  \'\
          \n  _susy.scss 1:9  @import\
-         \n  input.scss 1:9  root stylesheet\
-         \n",
+         \n  input.scss 1:9  root stylesheet",
     );
 }

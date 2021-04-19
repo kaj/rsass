@@ -15,8 +15,7 @@ mod error {
          \n1 | a {b: fade-in(red, 1.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -32,8 +31,7 @@ mod error {
          \n1 | a {b: fade-in(red, -0.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -54,8 +52,7 @@ mod error {
          \n1 | @function fade-in($color, $amount) {\
          \n  |           ======================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -75,8 +72,7 @@ mod error {
          \n1 | @function fade-in($color, $amount) {\
          \n  |           ======================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -93,8 +89,7 @@ mod error {
          \n1 | a {b: fade-in(red, blue)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -110,8 +105,7 @@ mod error {
          \n1 | a {b: fade-in(1, 0.1)}\
          \n  |       ^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

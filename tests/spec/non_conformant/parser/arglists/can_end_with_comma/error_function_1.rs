@@ -16,7 +16,6 @@ fn test() {
          \n2 | @function double-comma-error($a,,$b) {\
          \n  |                                 ^\
          \n  \'\
-         \n  input.scss 2:33  root stylesheet\
-         \n",
+         \n  input.scss 2:33  root stylesheet",
     );
 }

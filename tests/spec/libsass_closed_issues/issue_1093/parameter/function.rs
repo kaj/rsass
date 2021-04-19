@@ -18,7 +18,6 @@ fn test() {
          \n5 | $foo: foo(#{});\
          \n  |           ^^\
          \n  \'\
-         \n  input.scss 5:11  root stylesheet\
-         \n",
+         \n  input.scss 5:11  root stylesheet",
     );
 }

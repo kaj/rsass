@@ -21,7 +21,6 @@ fn test() {
          \n6 |     @extend .a;\
          \n  |     ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 6:5  root stylesheet\
-         \n",
+         \n  input.scss 6:5  root stylesheet",
     );
 }

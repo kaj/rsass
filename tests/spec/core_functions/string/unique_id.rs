@@ -18,8 +18,7 @@ mod error {
          \n1 | @function unique-id() {\
          \n  |           =========== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
 }

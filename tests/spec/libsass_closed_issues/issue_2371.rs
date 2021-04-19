@@ -14,7 +14,6 @@ fn test() {
          \n1 | #{a==b}\
          \n  |        ^\
          \n  \'\
-         \n  input.scss 1:8  root stylesheet\
-         \n",
+         \n  input.scss 1:8  root stylesheet",
     );
 }

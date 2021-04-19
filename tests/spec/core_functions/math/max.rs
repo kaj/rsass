@@ -16,8 +16,7 @@ mod error {
          \n2 | a {b: max($arg, 2s)}\
          \n  |       ^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -33,8 +32,7 @@ mod error {
          \n1 | a {b: max()}\
          \n  |       ^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -52,8 +50,7 @@ mod error {
          \n2 | a {b: max($arg)}\
          \n  |       ^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -70,8 +67,7 @@ mod error {
          \n2 | a {b: max(1, $arg)}\
          \n  |       ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -88,8 +84,7 @@ mod error {
          \n2 | a {b: max(1, 2, $arg)}\
          \n  |       ^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }

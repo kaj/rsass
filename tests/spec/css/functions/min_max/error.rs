@@ -17,8 +17,7 @@ fn dangling_operator() {
          \n4 |   x: min(1px +, 2px);\
          \n  |               ^\
          \n  \'\
-         \n  input.scss 4:15  root stylesheet\
-         \n",
+         \n  input.scss 4:15  root stylesheet",
     );
 }
 #[test]
@@ -37,7 +36,6 @@ fn plain_css_function() {
          \n4 |   x: min(something(1px), 2px);\
          \n  |      ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 4:6  root stylesheet\
-         \n",
+         \n  input.scss 4:6  root stylesheet",
     );
 }

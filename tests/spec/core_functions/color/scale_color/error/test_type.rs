@@ -13,8 +13,7 @@ fn alpha() {
          \n1 | a {b: scale-color(red, $alpha: c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -30,8 +29,7 @@ fn blackness() {
          \n1 | a {b: scale-color(red, $blackness: c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -47,8 +45,7 @@ fn blue() {
          \n1 | a {b: scale-color(red, $blue: c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -64,8 +61,7 @@ fn color() {
          \n1 | a {b: scale-color(1)}\
          \n  |       ^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -81,8 +77,7 @@ fn green() {
          \n1 | a {b: scale-color(red, $green: c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -98,8 +93,7 @@ fn lightness() {
          \n1 | a {b: scale-color(red, $lightness: c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -115,8 +109,7 @@ fn red() {
          \n1 | a {b: scale-color(red, $red: c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
@@ -132,12 +125,10 @@ fn saturation() {
          \n1 | a {b: scale-color(red, $saturation: c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }
 #[test]
-#[ignore] // wrong error
 fn whiteness() {
     assert_eq!(
         crate::rsass(
@@ -150,8 +141,6 @@ fn whiteness() {
          \n1 | a {b: scale-color(red, $whiteness: c)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
     );
 }

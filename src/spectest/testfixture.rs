@@ -158,7 +158,7 @@ fn escaped_newline() -> impl FnMut(char) -> bool {
 
 fn rsass(input: &str, format: Format) -> Result<String, String> {
     compile_scss(input.as_bytes(), format)
-        .map_err(|e| format!("{}\n", e))
+        .map_err(|e| e.to_string())
         .and_then(|s| {
             String::from_utf8(s)
                 .map(|s| normalize_output_css(s.as_str()))

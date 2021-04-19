@@ -28,7 +28,6 @@ fn test() {
          \n2 |   &.#ff0{\
          \n  |     ^\
          \n  \'\
-         \n  input.scss 2:5  root stylesheet\
-         \n",
+         \n  input.scss 2:5  root stylesheet",
     );
 }

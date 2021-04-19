@@ -30,8 +30,7 @@ mod error {
          \n2 | a {b: math.hypot(1turn, 1px, 1s)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -47,8 +46,7 @@ mod error {
          \n2 | a {b: math.hypot(1deg, 1px, 1turn)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -64,8 +62,7 @@ mod error {
          \n2 | a {b: math.hypot(1deg, 1turn, 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -81,8 +78,7 @@ mod error {
          \n2 | a {b: math.hypot(1turn, 1deg, 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
     }
@@ -100,8 +96,7 @@ mod error {
          \n2 | a {b: math.hypot(0, 1px, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -117,8 +112,7 @@ mod error {
          \n2 | a {b: math.hypot(0, 1, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -134,8 +128,7 @@ mod error {
          \n2 | a {b: math.hypot(0, 1px, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -151,8 +144,7 @@ mod error {
          \n2 | a {b: math.hypot(0px, 1, 2px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -168,8 +160,7 @@ mod error {
          \n2 | a {b: math.hypot(0px, 1, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
         #[test]
@@ -185,8 +176,7 @@ mod error {
          \n2 | a {b: math.hypot(0px, 1px, 2)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
     );
         }
     }
@@ -205,8 +195,7 @@ mod error {
          \n2 | a {b: math.hypot(\"0\", 1px, 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -223,8 +212,7 @@ mod error {
          \n2 | a {b: math.hypot(1px, \"0\", 1px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
         #[test]
@@ -241,8 +229,7 @@ mod error {
          \n2 | a {b: math.hypot(1px, 1px, \"0\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
             );
         }
     }
@@ -260,8 +247,7 @@ mod error {
          \n2 | a {b: math.hypot()}\
          \n  |       ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

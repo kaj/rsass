@@ -30,8 +30,7 @@ mod error {
          \n2 | a {b: map.set((c: d))}\
          \n  |       ^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -48,8 +47,7 @@ mod error {
          \n2 | a {b: map.set((c: d), e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -66,8 +64,7 @@ mod error {
          \n2 | a {b: map.set(1, c, d)}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     #[test]
@@ -89,8 +86,7 @@ mod error {
          \n1 | @function set($map, $args...) {\
          \n  |           =================== declaration\
          \n  \'\
-         \n  input.scss 2:7  root stylesheet\
-         \n",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
 }

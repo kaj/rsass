@@ -18,7 +18,6 @@ fn test() {
          \n2 | a.baz {@extend .foo.bar}\
          \n  |                ^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:16  root stylesheet\
-         \n",
+         \n  input.scss 2:16  root stylesheet",
     );
 }

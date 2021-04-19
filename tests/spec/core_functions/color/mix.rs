@@ -196,8 +196,7 @@ mod error {
          \n1 | a {b: mix(red, blue, 100.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -213,8 +212,7 @@ mod error {
          \n1 | a {b: mix(red, blue, -0.001)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }
@@ -235,8 +233,7 @@ mod error {
          \n1 | @function mix($color1, $color2, $weight: 50%) {\
          \n  |           =================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -256,8 +253,7 @@ mod error {
          \n1 | @function mix($color1, $color2, $weight: 50%) {\
          \n  |           =================================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -274,8 +270,7 @@ mod error {
          \n1 | a {b: mix(1, blue)}\
          \n  |       ^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -291,8 +286,7 @@ mod error {
          \n1 | a {b: mix(red, 1)}\
          \n  |       ^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -308,8 +302,7 @@ mod error {
          \n1 | a {b: mix(red, blue, green)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

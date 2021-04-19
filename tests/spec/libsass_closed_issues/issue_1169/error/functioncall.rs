@@ -26,7 +26,6 @@ fn test() {
          \n7 |   fncall(1+2): \'bar\',\
          \n  |   ^^^^^^^^^^^ second key\
          \n  \'\
-         \n  input.scss 7:3  root stylesheet\
-         \n",
+         \n  input.scss 7:3  root stylesheet",
     );
 }

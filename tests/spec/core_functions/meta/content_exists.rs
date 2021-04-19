@@ -23,8 +23,7 @@ mod error {
          \n  \'\
          \n  input.scss 6:9  @content\
          \n  input.scss 2:3  call-content()\
-         \n  input.scss 5:1  root stylesheet\
-         \n",
+         \n  input.scss 5:1  root stylesheet",
         );
     }
     #[test]
@@ -51,8 +50,7 @@ mod error {
          \n  \'\
          \n  input.scss 2:11  call-content-exists()\
          \n  input.scss 6:9   call-function()\
-         \n  input.scss 9:1   root stylesheet\
-         \n",
+         \n  input.scss 9:1   root stylesheet",
         );
     }
     #[test]
@@ -69,8 +67,7 @@ mod error {
          \n1 | a {b: content-exists()}\
          \n  |       ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -95,8 +92,7 @@ mod error {
          \n  |           ================ declaration\
          \n  \'\
          \n  input.scss 2:9  a()\
-         \n  input.scss 4:1  root stylesheet\
-         \n",
+         \n  input.scss 4:1  root stylesheet",
         );
     }
 }

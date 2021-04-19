@@ -107,8 +107,7 @@ mod error {
          \n1 | @function index($string, $substring) {\
          \n  |           ========================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     #[test]
@@ -128,8 +127,7 @@ mod error {
          \n1 | @function index($string, $substring) {\
          \n  |           ========================== declaration\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
         );
     }
     mod test_type {
@@ -146,8 +144,7 @@ mod error {
          \n1 | a {b: str-index(1, \"c\")}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
         #[test]
@@ -163,8 +160,7 @@ mod error {
          \n1 | a {b: str-index(\"c\", 1)}\
          \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet\
-         \n",
+         \n  input.scss 1:7  root stylesheet",
             );
         }
     }

@@ -16,7 +16,6 @@ fn test() {
          \n2 |   bar: #{(2px*5in)};\
          \n  |          ^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:10  root stylesheet\
-         \n",
+         \n  input.scss 2:10  root stylesheet",
     );
 }

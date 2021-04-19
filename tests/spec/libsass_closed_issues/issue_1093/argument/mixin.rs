@@ -20,7 +20,6 @@ fn test() {
          \n1 | @mixin foo($bar:#{}) {\
          \n  |                 ^^\
          \n  \'\
-         \n  input.scss 1:17  root stylesheet\
-         \n",
+         \n  input.scss 1:17  root stylesheet",
     );
 }

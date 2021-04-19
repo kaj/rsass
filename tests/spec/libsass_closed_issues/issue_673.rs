@@ -30,7 +30,6 @@ fn test() {
          \n9 |             @extend .example;\
          \n  |             ^^^^^^^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 9:13  root stylesheet\
-         \n",
+         \n  input.scss 9:13  root stylesheet",
     );
 }

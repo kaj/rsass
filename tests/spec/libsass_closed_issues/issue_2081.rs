@@ -14,7 +14,6 @@ fn test() {
          \n1 | $foo: #{bar();};\
          \n  |              ^\
          \n  \'\
-         \n  input.scss 1:14  root stylesheet\
-         \n",
+         \n  input.scss 1:14  root stylesheet",
     );
 }
