@@ -1,6 +1,5 @@
 use super::{get_checked, Error, FunctionMap, Name};
-use crate::css::Value;
-use crate::ordermap::OrderMap;
+use crate::css::{Value, ValueMap};
 use crate::output::Format;
 use crate::value::ListSeparator;
 use crate::Scope;
@@ -165,17 +164,17 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn get_map(s: &Scope, name: Name) -> Result<OrderMap<Value, Value>, Error> {
+fn get_map(s: &Scope, name: Name) -> Result<ValueMap, Error> {
     get_checked(s, name, TryInto::try_into)
 }
 
-impl TryInto<OrderMap<Value, Value>> for Value {
+impl TryInto<ValueMap> for Value {
     type Error = String;
-    fn try_into(self) -> Result<OrderMap<Value, Value>, String> {
+    fn try_into(self) -> Result<ValueMap, String> {
         match self {
             Value::Map(m) => Ok(m),
             // An empty map and an empty list looks the same
-            Value::List(ref l, ..) if l.is_empty() => Ok(OrderMap::new()),
+            Value::List(ref l, ..) if l.is_empty() => Ok(ValueMap::new()),
             v => Err(format!(
                 "{} is not a map",
                 &v.format(Format::introspect())
@@ -184,24 +183,20 @@ impl TryInto<OrderMap<Value, Value>> for Value {
     }
 }
 
-fn get_va_map(
-    s: &Scope,
-    name: Name,
-) -> Result<OrderMap<Value, Value>, Error> {
+fn get_va_map(s: &Scope, name: Name) -> Result<ValueMap, Error> {
     get_checked(s, name, as_va_map)
 }
-fn as_va_map(v: Value) -> Result<OrderMap<Value, Value>, String> {
+
+fn as_va_map(v: Value) -> Result<ValueMap, String> {
     match v {
         Value::List(mut values, ..) => {
             let mut result = if let Some(last) = values.pop() {
                 last.try_into()?
             } else {
-                OrderMap::new()
+                ValueMap::new()
             };
             while let Some(prev) = values.pop() {
-                let mut t = OrderMap::new();
-                t.insert(prev, Value::Map(result));
-                result = t;
+                result = ValueMap::singleton(prev, Value::Map(result));
             }
             Ok(result)
         }
@@ -209,10 +204,7 @@ fn as_va_map(v: Value) -> Result<OrderMap<Value, Value>, String> {
     }
 }
 
-fn do_deep_merge(
-    map1: &mut OrderMap<Value, Value>,
-    map2: &OrderMap<Value, Value>,
-) {
+fn do_deep_merge(map1: &mut ValueMap, map2: &ValueMap) {
     for (key, value) in map2.iter() {
         match (map1.get_mut(&key), value) {
             (Some(Value::Map(m1)), Value::Map(ref m2)) => {
@@ -229,7 +221,7 @@ fn do_deep_merge(
     }
 }
 
-fn do_deep_remove(map: &mut OrderMap<Value, Value>, keys: &[Value]) {
+fn do_deep_remove(map: &mut ValueMap, keys: &[Value]) {
     match keys.len() {
         0 => (), // Error?  Or just fine?
         1 => {
@@ -256,10 +248,10 @@ fn set(s: &Scope) -> Result<Value, Error> {
     }
 }
 fn set_inner(
-    mut map: OrderMap<Value, Value>,
+    mut map: ValueMap,
     keys: &[Value],
     value: Value,
-) -> Result<OrderMap<Value, Value>, Error> {
+) -> Result<ValueMap, Error> {
     if let Some((key, rest)) = keys.split_first() {
         if rest.is_empty() {
             map.insert(key.clone(), value);
@@ -267,7 +259,7 @@ fn set_inner(
         } else {
             let inner = match map.get(&key) {
                 Some(Value::Map(inner)) => inner.clone(),
-                _ => OrderMap::new(),
+                _ => ValueMap::new(),
             };
             let inner = set_inner(inner, rest, value)?;
             map.insert(key.clone(), Value::Map(inner));

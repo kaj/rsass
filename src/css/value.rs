@@ -39,13 +39,16 @@ pub enum Value {
     /// A unary operator and its operand.
     UnaryOp(Operator, Box<Value>),
     /// A map of values.
-    Map(OrderMap<Value, Value>),
+    Map(ValueMap),
     /// A unicode range for font selections. U+NN, U+N?, U+NN-MM.
     /// The string is the entire value, including the "U+" tag.
     UnicodeRange(String),
     /// A value in parenthesis.
     Paren(Box<Value>),
 }
+
+/// An OrderMap where both the keys and the values are css values.
+pub type ValueMap = OrderMap<Value, Value>;
 
 impl Value {
     /// Create a numeric value with no unit.

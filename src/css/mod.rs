@@ -6,4 +6,4 @@ mod valueformat;
 
 pub use self::call_args::CallArgs;
 pub use self::rule::{BodyItem, Rule};
-pub use self::value::Value;
+pub use self::value::{Value, ValueMap};

@@ -1,6 +1,5 @@
 use crate::css;
 use crate::error::Error;
-use crate::ordermap::OrderMap;
 use crate::output::Format;
 use crate::parser::SourcePos;
 use crate::sass::{CallArgs, SassString};
@@ -165,7 +164,7 @@ impl Value {
                             v.do_evaluate(scope.clone(), false)?,
                         ))
                     })
-                    .collect::<Result<OrderMap<_, _>, Error>>()?;
+                    .collect::<Result<css::ValueMap, Error>>()?;
                 Ok(css::Value::Map(items))
             }
             Value::Null => Ok(css::Value::Null),

@@ -448,9 +448,9 @@ impl<'a> Scope {
 
     /// Get the functions of this scope as a `Value::Map`.
     pub fn functions_map(&self) -> Value {
-        use crate::ordermap::OrderMap;
+        use crate::css::ValueMap;
         use crate::value::Quotes;
-        let mut result = OrderMap::new();
+        let mut result = ValueMap::new();
         for (name, value) in &*self.functions.lock().unwrap() {
             let name = name.to_string();
             result.insert(
@@ -462,9 +462,9 @@ impl<'a> Scope {
     }
     /// Get the variables of this scope as a `Value::Map`.
     pub fn variables_map(&self) -> Value {
-        use crate::ordermap::OrderMap;
+        use crate::css::ValueMap;
         use crate::value::Quotes;
-        let mut result = OrderMap::new();
+        let mut result = ValueMap::new();
         for (name, value) in &*self.variables.lock().unwrap() {
             if name != &Name::from_static("@scope_name@") {
                 result.insert(

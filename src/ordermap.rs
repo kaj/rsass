@@ -9,6 +9,10 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
     pub fn new() -> Self {
         OrderMap(Vec::new())
     }
+    pub fn singleton(key: K, value: V) -> Self {
+        OrderMap(vec![(key, value)])
+    }
+
     pub fn insert(&mut self, key: K, value: V) {
         for &mut (ref k, ref mut v) in &mut self.0 {
             if k == &key {
