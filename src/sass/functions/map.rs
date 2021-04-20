@@ -1,8 +1,10 @@
-use super::{Error, FunctionMap, Name};
+use super::{get_checked, Error, FunctionMap, Name};
 use crate::css::Value;
 use crate::ordermap::OrderMap;
+use crate::output::Format;
 use crate::value::ListSeparator;
 use crate::Scope;
+use std::convert::TryInto;
 
 /// Create the `sass:map` standard module.
 ///
@@ -164,11 +166,21 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 }
 
 fn get_map(s: &Scope, name: Name) -> Result<OrderMap<Value, Value>, Error> {
-    match s.get(name.as_ref())? {
-        Value::Map(m) => Ok(m),
-        // An empty map and an empty list looks the same
-        Value::List(ref l, ..) if l.is_empty() => Ok(OrderMap::new()),
-        v => Err(Error::bad_arg(name, &v, "is not a map")),
+    get_checked(s, name, TryInto::try_into)
+}
+
+impl TryInto<OrderMap<Value, Value>> for Value {
+    type Error = String;
+    fn try_into(self) -> Result<OrderMap<Value, Value>, String> {
+        match self {
+            Value::Map(m) => Ok(m),
+            // An empty map and an empty list looks the same
+            Value::List(ref l, ..) if l.is_empty() => Ok(OrderMap::new()),
+            v => Err(format!(
+                "{} is not a map",
+                &v.format(Format::introspect())
+            )),
+        }
     }
 }
 
@@ -176,28 +188,25 @@ fn get_va_map(
     s: &Scope,
     name: Name,
 ) -> Result<OrderMap<Value, Value>, Error> {
-    match s.get(name.as_ref())? {
-        Value::Map(m) => Ok(m),
-        Value::List(ref l, ..) => Ok(map_from_list(&l)),
-        v => Err(Error::bad_arg(name, &v, "is not a map")),
-    }
+    get_checked(s, name, as_va_map)
 }
-
-fn map_from_list(values: &[Value]) -> OrderMap<Value, Value> {
-    let mut m = OrderMap::new();
-    match values.split_first() {
-        Some((first, [Value::List(ref l, ..)])) if l.is_empty() => {
-            m.insert(first.clone(), Value::Map(OrderMap::new()));
+fn as_va_map(v: Value) -> Result<OrderMap<Value, Value>, String> {
+    match v {
+        Value::List(mut values, ..) => {
+            let mut result = if let Some(last) = values.pop() {
+                last.try_into()?
+            } else {
+                OrderMap::new()
+            };
+            while let Some(prev) = values.pop() {
+                let mut t = OrderMap::new();
+                t.insert(prev, Value::Map(result));
+                result = t;
+            }
+            Ok(result)
         }
-        Some((first, [other])) => {
-            m.insert(first.clone(), other.clone());
-        }
-        Some((first, rest)) => {
-            m.insert(first.clone(), Value::Map(map_from_list(rest)));
-        }
-        None => (),
+        v => v.try_into(),
     }
-    m
 }
 
 fn do_deep_merge(

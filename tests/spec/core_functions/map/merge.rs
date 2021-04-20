@@ -127,7 +127,6 @@ mod error {
                 );
             }
             #[test]
-            #[ignore] // missing error
             fn map2() {
                 assert_eq!(
                     crate::rsass(
