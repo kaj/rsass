@@ -156,15 +156,14 @@ impl Value {
                 Ok(css::Value::Numeric(num.clone(), arithmetic))
             }
             Value::Map(ref m) => {
-                let items = m
-                    .iter()
-                    .map(|&(ref k, ref v)| {
-                        Ok((
-                            k.do_evaluate(scope.clone(), false)?,
-                            v.do_evaluate(scope.clone(), false)?,
-                        ))
-                    })
-                    .collect::<Result<css::ValueMap, Error>>()?;
+                let mut items = css::ValueMap::new();
+                for (k, v) in m.iter() {
+                    let k = k.do_evaluate(scope.clone(), false)?;
+                    let v = v.do_evaluate(scope.clone(), false)?;
+                    if items.insert(k, v).is_some() {
+                        return Err(Error::error("Duplicate key"));
+                    }
+                }
                 Ok(css::Value::Map(items))
             }
             Value::Null => Ok(css::Value::Null),

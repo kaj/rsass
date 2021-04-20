@@ -13,14 +13,16 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
         OrderMap(vec![(key, value)])
     }
 
-    pub fn insert(&mut self, key: K, value: V) {
+    pub fn insert(&mut self, key: K, value: V) -> Option<V> {
         for &mut (ref k, ref mut v) in &mut self.0 {
             if k == &key {
-                *v = value;
-                return;
+                let mut value = value;
+                std::mem::swap(v, &mut value);
+                return Some(value);
             }
         }
         self.0.push((key, value));
+        None
     }
     pub fn iter(&self) -> Iter<(K, V)> {
         self.0.iter()

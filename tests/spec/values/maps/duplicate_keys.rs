@@ -1,7 +1,7 @@
 //! Tests auto-converted from "sass-spec/spec/values/maps/duplicate-keys.hrx"
 
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn test() {
     assert_eq!(
         crate::rsass(
