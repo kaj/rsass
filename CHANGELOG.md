@@ -22,6 +22,7 @@ project adheres to
 * Improved parameter handling and returned values of the supported
   selector functions.  PR #103.
 * Implement `meta.module_variables` and `meta.module_functions`.
+* Improved parameter checking for `color.hwb` function.
 
 
 ## Release 0.20.0 - 2021-03-25

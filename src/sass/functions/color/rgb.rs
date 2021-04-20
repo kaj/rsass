@@ -248,7 +248,7 @@ fn to_int(v: Value) -> Result<Rational, String> {
     }
 }
 
-fn to_rational(v: Value) -> Result<Rational, String> {
+pub fn to_rational(v: Value) -> Result<Rational, String> {
     let num = check::numeric(v)?;
     let r = num.value.as_ratio().map_err(|e| e.to_string())?;
     if num.unit.is_percent() {

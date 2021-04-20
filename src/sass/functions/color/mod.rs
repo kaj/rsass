@@ -3,6 +3,7 @@ use super::{
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
+use crate::output::Formatted;
 use crate::sass::Name;
 use crate::value::{Color, Number, Quotes, Rational, Unit};
 use crate::Scope;
@@ -41,13 +42,36 @@ fn check_color(v: Value) -> Result<Color, String> {
 
 fn check_pct(v: Value) -> Result<Number, String> {
     let val = check::numeric(v)?;
-    val.as_unit_def(Unit::Percent).ok_or_else(|| {
-        format!(
-            "Expected {} to have unit \"%\"",
-            val.format(Format::introspect())
-        )
-    })
+    val.as_unit_def(Unit::Percent)
+        .ok_or_else(|| expected_to(&val, "have unit \"%\""))
 }
+
+fn check_expl_pct(v: Value) -> Result<Number, String> {
+    let val = check::numeric(v)?;
+    if !val.unit.is_percent() {
+        return Err(expected_to(&val, "have unit \"%\""));
+    }
+    if val.value < 0.into() || val.value > 100.into() {
+        Err(expected_to(&val, "be within 0% and 100%"))
+    } else {
+        Ok(val.value) // .as_ratio().map_err(|e| e.to_string()).map(|v| v / 100)
+    }
+}
+
+fn expected_to<'a, T>(value: &'a T, cond: &str) -> String
+where
+    Formatted<'a, T>: std::fmt::Display,
+{
+    format!(
+        "Expected {} to {}",
+        Formatted {
+            value,
+            format: Format::introspect()
+        },
+        cond,
+    )
+}
+
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
 pub fn to_rational_percent(v: Value) -> Result<Rational, String> {
@@ -74,10 +98,7 @@ fn check_pct_rational(v: Value) -> Result<Rational, String> {
 fn check_pct_rational_range(v: Value) -> Result<Rational, String> {
     let val = check_pct(v)?;
     if val < 0.into() || val > 100.into() {
-        Err(format!(
-            "Expected {} to be within 0 and 100",
-            val.format(Format::introspect())
-        ))
+        Err(expected_to(&val, "be within 0 and 100"))
     } else {
         val.as_ratio().map_err(|e| e.to_string()).map(|v| v / 100)
     }
@@ -91,10 +112,7 @@ fn check_rational_fract(v: Value) -> Result<Rational, String> {
         .as_unit_def(Unit::None)
         .ok_or_else(|| "xyzzy".to_string())?;
     if val < 0.into() || val > 1.into() {
-        Err(format!(
-            "Expected {} to be within 0 and 1",
-            val.format(Format::introspect())
-        ))
+        Err(expected_to(&val, "be within 0 and 1"))
     } else {
         val.as_ratio().map_err(|e| e.to_string())
     }

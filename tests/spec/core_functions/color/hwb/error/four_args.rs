@@ -2,7 +2,6 @@
 
 mod alpha {
     #[test]
-    #[ignore] // missing error
     fn unit() {
         assert_eq!(
             crate::rsass(
@@ -39,7 +38,6 @@ mod alpha {
 }
 mod blackness {
     #[test]
-    #[ignore] // wrong error
     fn too_high() {
         assert_eq!(
             crate::rsass(
@@ -57,7 +55,6 @@ mod blackness {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_low() {
         assert_eq!(
             crate::rsass(
@@ -93,7 +90,6 @@ mod blackness {
     }
     mod unit {
         #[test]
-        #[ignore] // missing error
         fn none() {
             assert_eq!(
                 crate::rsass(
@@ -184,7 +180,6 @@ mod hue {
 }
 mod whiteness {
     #[test]
-    #[ignore] // wrong error
     fn too_high() {
         assert_eq!(
             crate::rsass(
@@ -202,7 +197,6 @@ mod whiteness {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_low() {
         assert_eq!(
             crate::rsass(
@@ -238,7 +232,6 @@ mod whiteness {
     }
     mod unit {
         #[test]
-        #[ignore] // missing error
         fn none() {
             assert_eq!(
                 crate::rsass(
