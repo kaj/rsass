@@ -1,9 +1,10 @@
 use super::{
-    check, check_pct_rational, check_rational_fract, get_checked, get_color,
-    get_opt_check, get_opt_rational, make_call, Error, FunctionMap, Name,
+    check, check_color, check_pct_rational, check_rational_fract,
+    get_checked, get_color, get_opt_check, get_opt_rational, make_call,
+    CheckedArg, Error, FunctionMap, Name,
 };
 use crate::css::Value;
-use crate::value::{Hsla, Hwba, Rational, Rgba};
+use crate::value::{Hsla, Hwba, Quotes, Rational, Rgba};
 use crate::Scope;
 use num_traits::{one, Signed};
 
@@ -147,13 +148,18 @@ pub fn register(f: &mut Scope) {
         }
     );
 
-    def!(f, opacity(color), |args| match args.get("color")? {
+    def!(f, opacity(color), |s| match s.get("color")? {
         Value::Color(ref col, _) => Ok(Value::scalar(col.get_alpha())),
         v => Ok(make_call("opacity", vec![v])),
     });
-    def!(f, alpha(color), |args| match args.get("color")? {
-        Value::Color(ref col, _) => Ok(Value::scalar(col.get_alpha())),
-        v => Ok(make_call("alpha", vec![v])),
+    def!(f, alpha(color), |s| {
+        let v = s.get("color")?;
+        if ok_as_filterarg(&v) {
+            Ok(make_call("alpha", vec![v]))
+        } else {
+            let color = check_color(v).named(name!(color))?;
+            Ok(Value::scalar(color.get_alpha()))
+        }
     });
 
     def!(f, fade_in(color, amount), |s| {
@@ -261,6 +267,21 @@ fn get_opt_rational_pct(
     get_opt_check(s, Name::from_static(name), |v| {
         Ok(check::numeric(v)?.as_ratio().map_err(|e| e.to_string())? / 100)
     })
+}
+
+fn ok_as_filterarg(v: &Value) -> bool {
+    match v {
+        Value::Literal(ref s, Quotes::None) => {
+            use crate::parser::strings::unitname;
+            use crate::parser::{code_span, util::opt_spacelike};
+            use nom::bytes::complete::tag;
+            use nom::sequence::tuple;
+            tuple((unitname, opt_spacelike, tag("=")))(code_span(s.as_ref()))
+                .is_ok()
+        }
+        Value::List(..) => true,
+        _ => false,
+    }
 }
 
 #[cfg(test)]

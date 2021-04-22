@@ -1,5 +1,6 @@
 use super::{
-    check, get_checked, get_numeric, get_opt_check, Error, FunctionMap, Scope,
+    check, expected_to, get_checked, get_numeric, get_opt_check, Error,
+    FunctionMap, Scope,
 };
 use crate::css::Value;
 use crate::output::Format;
@@ -224,10 +225,7 @@ fn get_radians(s: &Scope, name: &str) -> Result<f64, Error> {
     get_checked(s, name.into(), |v| {
         let v = check::numeric(v)?;
         v.as_unit_def(Unit::Rad).map(Into::into).ok_or_else(|| {
-            format!(
-                "Expected {} to have an angle unit (deg, grad, rad, turn)",
-                v.format(Format::introspect())
-            )
+            expected_to(&v, "have an angle unit (deg, grad, rad, turn)")
         })
     })
 }

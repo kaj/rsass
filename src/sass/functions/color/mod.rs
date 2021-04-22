@@ -1,9 +1,9 @@
 use super::{
-    check, get_checked, get_opt_check, CheckedArg, Error, FunctionMap,
+    check, expected_to, get_checked, get_opt_check, CheckedArg, Error,
+    FunctionMap,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
-use crate::output::Formatted;
 use crate::sass::Name;
 use crate::value::{Color, Number, Quotes, Rational, Unit};
 use crate::Scope;
@@ -54,22 +54,8 @@ fn check_expl_pct(v: Value) -> Result<Number, String> {
     if val.value < 0.into() || val.value > 100.into() {
         Err(expected_to(&val, "be within 0% and 100%"))
     } else {
-        Ok(val.value) // .as_ratio().map_err(|e| e.to_string()).map(|v| v / 100)
+        Ok(val.value)
     }
-}
-
-fn expected_to<'a, T>(value: &'a T, cond: &str) -> String
-where
-    Formatted<'a, T>: std::fmt::Display,
-{
-    format!(
-        "Expected {} to {}",
-        Formatted {
-            value,
-            format: Format::introspect()
-        },
-        cond,
-    )
 }
 
 /// Gets a percentage as a fraction 0 .. 1.

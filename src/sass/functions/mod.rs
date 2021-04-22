@@ -1,5 +1,6 @@
 use crate::css::{CallArgs, Value};
 use crate::error::Error;
+use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
 use crate::sass::{FormalArgs, Name};
 use crate::value::{Numeric, Quotes};
@@ -287,7 +288,22 @@ fn get_string(
     get_checked(s, name.into(), check::string)
 }
 
+fn expected_to<'a, T>(value: &'a T, cond: &str) -> String
+where
+    Formatted<'a, T>: std::fmt::Display,
+{
+    format!(
+        "Expected {} to {}",
+        Formatted {
+            value,
+            format: Format::introspect()
+        },
+        cond,
+    )
+}
+
 mod check {
+    use super::expected_to;
     use crate::css::Value;
     use crate::output::Format;
     use crate::value::{Number, Numeric, Quotes};
@@ -308,10 +324,7 @@ mod check {
         if val.is_no_unit() {
             Ok(val.value)
         } else {
-            Err(format!(
-                "Expected {} to have no units",
-                val.format(Format::introspect())
-            ))
+            Err(expected_to(&val, "have no units"))
         }
     }
     pub fn unitless_int(v: Value) -> Result<i64, String> {

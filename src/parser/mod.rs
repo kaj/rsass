@@ -11,9 +11,9 @@ mod error;
 pub mod formalargs;
 mod pos;
 pub mod selectors;
-mod strings;
+pub(crate) mod strings;
 mod unit;
-mod util;
+pub(crate) mod util;
 pub mod value;
 
 pub use error::ParseError;

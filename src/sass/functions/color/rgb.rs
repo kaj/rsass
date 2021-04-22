@@ -1,6 +1,6 @@
 use super::{
-    check, check_pct_rational_range, get_checked, get_color, make_call,
-    nospecial_value, Error, FunctionMap, Name,
+    check, check_pct_rational_range, expected_to, get_checked, get_color,
+    make_call, nospecial_value, CheckedArg, Error, FunctionMap, Name,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
@@ -190,12 +190,10 @@ pub fn register(f: &mut Scope) {
         )
         .into())
     });
-    def!(
-        f,
-        invert(color, weight = b"100%"),
-        |s| match s.get("color")? {
-            Value::Color(rgba, _) => {
-                let rgba = rgba.to_rgba();
+    def!(f, invert(color, weight = b"100%"), |s| {
+        match s.get("color")? {
+            Value::Color(col, _) => {
+                let rgba = col.to_rgba();
                 let w =
                     get_checked(s, name!(weight), check_pct_rational_range)?;
                 let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
@@ -211,13 +209,22 @@ pub fn register(f: &mut Scope) {
                 let w =
                     get_checked(s, name!(weight), check_pct_rational_range)?;
                 if w == one() {
-                    Ok(make_call("invert", vec![col]))
+                    match col {
+                        v @ Value::Numeric(..) => {
+                            Ok(make_call("invert", vec![v]))
+                        }
+                        v => Err(format!(
+                            "{} is not a color",
+                            v.format(Format::introspect())
+                        ))
+                        .named(name!(color)),
+                    }
                 } else {
                     Err(Error::error("Only one argument may be passed to the plain-CSS invert() function"))
                 }
             }
         }
-    );
+    });
 }
 
 pub fn expose(m: &Scope, global: &mut FunctionMap) {
@@ -256,10 +263,7 @@ pub fn to_rational(v: Value) -> Result<Rational, String> {
     } else if num.unit.is_none() {
         Ok(r)
     } else {
-        Err(format!(
-            "Expected {} to have no units or \"%\"",
-            num.format(Format::introspect()),
-        ))
+        Err(expected_to(&num, "have no units or \"%\""))
     }
 }
 

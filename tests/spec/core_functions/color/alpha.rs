@@ -60,7 +60,6 @@ mod color {
 }
 mod error {
     #[test]
-    #[ignore] // missing error
     fn quoted_string() {
         assert_eq!(
             crate::rsass(
@@ -111,7 +110,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn test_type() {
         assert_eq!(
             crate::rsass(
@@ -129,7 +127,6 @@ mod error {
     }
     mod unquoted_string {
         #[test]
-        #[ignore] // missing error
         fn no_equals() {
             assert_eq!(
                 crate::rsass(
@@ -146,7 +143,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn non_identifier_before_equals() {
             assert_eq!(
                 crate::rsass(

@@ -120,7 +120,6 @@ mod error {
     }
     mod test_type {
         #[test]
-        #[ignore] // missing error
         fn color() {
             assert_eq!(
                 crate::rsass(
