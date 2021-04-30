@@ -24,6 +24,7 @@ project adheres to
 * Implement `meta.module_variables` and `meta.module_functions`.
 * Improved parameter checking for `hwb`, `alpha`, and `invert`
   functions in `sass:color` module.
+* Update sass-spec test suite to 2021-03-02.
 
 
 ## Release 0.20.0 - 2021-03-25
