@@ -14,6 +14,6 @@ mod test_if;
 
 mod import;
 
-// Ignoring "use", not expected to work yet.
+mod test_use;
 
 mod warn;
