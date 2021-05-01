@@ -330,7 +330,7 @@ fn use2(input: Span) -> IResult<Span, Item> {
                     opt_spacelike,
                 )),
             ),
-            tag(";"),
+            alt((tag(";"), all_consuming(tag("")))),
         ),
         |(s, n)| Item::Use(s, n.unwrap_or(UseAs::KeepName)),
     )(input)
