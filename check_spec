@@ -30,12 +30,11 @@ fi
 
 IMPL=dart-sass
 check() {
-    cargo build --release --features=commandline >&2 || exit 1
+    cargo build --release --features=commandline,unimplemented_args >&2 || exit 1
     echo "About to test $1"
     (cd sass-spec && \
-	 bundle install && \
-	 bundle exec sass-spec.rb -c '../target/release/rsass' \
-		--impl $IMPL spec/$1)
+         npm install && \
+         npm run sass-spec -- --command '../target/release/rsass' --cmd-args='' --impl $IMPL -- $1)
 }
 
 list_fails() {
@@ -56,14 +55,14 @@ case "$1" in
 	;;
     "stats")
 	check \
-            | rg --no-line-number '^(\d+) runs, (\d+) assertions, (\d+) failures, (\d+) errors, (\d+) skips' \
-                 --replace 'echo "$0"; echo "Progress: $[$1-$3-$4-$5] of $[$1-$5] tests passed"' - \
+            | rg --no-line-number '^(\d+) runs, (\d+) passing, (\d+) failures, (\d+) todo, (\d+) ignored, (\d+) errors' \
+                 --replace 'echo "$0"; echo "Progress: $[$2] of $[$1-$4-$5] tests passed"' - \
             | bash
         ;;
     "update-tests")
 	cargo run --release --features=spectest --bin=spectest && cargo fmt
 	;;
     *)
-        check $1
+        check spec/$1
 	;;
 esac

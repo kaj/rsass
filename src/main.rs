@@ -39,9 +39,24 @@ struct Args {
                 possible_values = Style::variants())]
     style: Style,
 
+    /// Some kind of forced ascii output
+    /// (Not implemented, but set by the sass-spec test runner)
+    #[cfg(feature = "unimplemented_args")]
+    #[structopt(long)]
+    #[allow(unused)]
+    no_unicode: bool,
+
+    /// No color in error messages
+    /// (not that there is any support for color in error messages
+    /// anyway yet, but the test runner uses this flag)
+    #[cfg(feature = "unimplemented_args")]
+    #[structopt(long)]
+    #[allow(unused)]
+    no_color: bool,
+
     /// Where to search for included resources.
     #[structopt(long, short = "I")]
-    include_path: Option<PathBuf>,
+    load_path: Option<PathBuf>,
 
     /// Sass file(s) to translate
     #[structopt(required = true)]
@@ -56,7 +71,7 @@ impl Args {
         };
         for name in &self.input {
             let mut file_context = FsFileContext::new();
-            if let Some(include_path) = &self.include_path {
+            if let Some(include_path) = &self.load_path {
                 file_context.push_path(include_path.as_ref());
             }
             let (sub_context, path) = file_context.file(name.as_ref());

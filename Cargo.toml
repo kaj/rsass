@@ -25,6 +25,7 @@ required-features = ["spectest"]
 [features]
 commandline = ["structopt"]
 spectest = ["yaml-rust", "deunicode", "hrx-get", "regex"]
+unimplemented_args = []
 
 [dependencies]
 lazy_static = "1.0"
