@@ -30,9 +30,9 @@ impl TestFixture {
     ) -> Self {
         TestFixture {
             fn_name,
-            input: input,
-            options: options,
+            input,
             expectation: ExpectedCSS(normalize_output_css(expected_css)),
+            options,
         }
     }
 
@@ -44,9 +44,9 @@ impl TestFixture {
     ) -> Self {
         TestFixture {
             fn_name,
-            input: input,
+            input,
             expectation: ExpectedError(error),
-            options: options,
+            options,
         }
     }
 
@@ -69,9 +69,10 @@ impl TestFixture {
                 writeln!(
                     rs,
                     "    assert_eq!(\
-                     \n        crate::rsass(\
+                     \n        runner()\
+                     \n        .err(\
                      \n            {}\
-                     \n        ).unwrap_err(),\
+                     \n        ),\
                      \n        {},\
                      \n    );",
                     input, err,
@@ -79,16 +80,6 @@ impl TestFixture {
             }
             ExpectedCSS(ref expected) => {
                 let precision = self.options.precision;
-                if let Some(precision) = precision {
-                    writeln!(
-                        rs,
-                        "    let format = rsass::output::Format {{ \
-                         style: rsass::output::Style::Expanded, \
-                         precision: {} \
-                         }};",
-                        precision,
-                    )?;
-                }
                 let input = format!("{:?}", self.input)
                     .replace(escaped_newline(), "\n            \\n");
                 let expected = format!("{:?}", expected)
@@ -96,19 +87,19 @@ impl TestFixture {
                 writeln!(
                     rs,
                     "    assert_eq!(\
-                     \n        {}\
+                     \n        runner()"
+                )?;
+                if let Some(p) = precision {
+                    writeln!(rs, "         .set_precision({})", p)?;
+                }
+                writeln!(
+                    rs,
+                    "          .ok(\
                      \n            {}\
-                     \n        )\
-                     \n        .unwrap(),\
+                     \n        ),\
                      \n        {}\
                      \n    );",
-                    if precision.is_none() {
-                        "crate::rsass("
-                    } else {
-                        "crate::rsass_fmt(format,"
-                    },
-                    input,
-                    expected,
+                    input, expected,
                 )?;
             }
         }

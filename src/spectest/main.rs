@@ -68,41 +68,11 @@ fn handle_suite(
             ignored,
         )?;
     }
-    writeln!(
-        rs,
-        "use rsass::output::Format;\
-         \nuse rsass::{{parse_scss_file, Error, FsFileContext, ScopeRef}};",
-    )?;
-
+    rs.write_all(include_bytes!("testrunner.rs"))?;
     handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)
         .map_err(|e| {
             Error(format!("Failed to handle suite {:?}: {}", suite, e))
-        })?;
-
-    writeln!(
-        rs,
-        "\nfn rsass(input: &str) -> Result<String, String> {{\
-         \n    rsass_fmt(Default::default(), input)\
-         \n}}\
-         \n#[allow(unused)]\
-         \nfn rsass_fmt(format: Format, input: &str)\
-         \n-> Result<String, String> {{\
-         \n    compile_scss(input.as_bytes(), format)\
-         \n        .map_err(|e| e.to_string())\
-         \n        .and_then(|s| {{\
-         \n            String::from_utf8(s)\
-         \n                .map(|s| s.replace(\"\\n\\n\", \"\\n\"))\
-         \n                .map_err(|e| format!(\"{{:?}}\", e))\
-         \n        }})\
-         \n}}\
-         \npub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {{\
-         \n    let mut file_context = FsFileContext::new();\
-         \n    file_context.push_path(\"tests/spec\".as_ref());\
-         \n    let items = parse_scss_file(&mut &input[..], \"input.scss\")?;\
-         \n    format.write_root(&items, ScopeRef::new_global(format), &file_context)\
-         \n}}"
-    )?;
-    Ok(())
+        })
 }
 
 fn handle_entries(
@@ -183,6 +153,7 @@ fn handle_entries(
                             "//! Tests auto-converted from {:?}\n",
                             suitedir.join(entry.file_name()),
                         )?;
+                        write_fn_runner(&mut rs, precision)?;
                         let tt = format!(
                             "{}/",
                             entry.file_name().to_string_lossy(),
@@ -243,7 +214,7 @@ fn spec_hrx_to_test(
         .map_err(|e| Error(format!("Failed to load hrx: {}", e)))?;
 
     eprintln!("Handle {}", suite.display());
-    writeln!(rs)?;
+    write_fn_runner(rs, precision)?;
     handle_hrx_part(rs, suite, &archive, "", precision)
 }
 
@@ -288,44 +259,64 @@ fn handle_hrx_part(
         Some(fn_name(t))
     };
 
+    let mut options = archive
+        .get(&format!("{}options.yml", prefix))
+        .map(Options::parse)
+        .transpose()?
+        .unwrap_or_default();
+    options.precision = options.precision.or(precision);
+
     if archive.get(&format!("{}input.scss", prefix)).is_some() {
         let fixture = load_test_fixture_hrx(
             name.unwrap_or_else(|| "test".into()),
             &archive,
             prefix,
-            precision,
+            options,
         )?;
         fixture.write_test(rs)
+    } else if let Some(ref reason) = options.should_skip {
+        ignore(rs, &suite.file_name(), reason).map_err(|e| e.into())
     } else {
-        let options = archive
-            .get(&format!("{}options.yml", prefix))
-            .map(Options::parse)
-            .transpose()?
-            .unwrap_or_default();
-        if let Some(ref reason) = options.should_skip {
-            ignore(rs, &suite.file_name(), reason).map_err(|e| e.into())
-        } else {
-            let precision = options.precision.or(precision);
-            if !tests.is_empty() {
-                if let Some(ref name) = name {
-                    writeln!(rs, "mod {} {{", name,)?;
-                }
-                for name in tests {
-                    handle_hrx_part(
-                        rs,
-                        suite,
-                        &archive,
-                        &format!("{}{}", prefix, name),
-                        precision,
-                    )?;
-                }
-                if name.is_some() {
-                    writeln!(rs, "}}")?;
-                }
+        if !tests.is_empty() {
+            if let Some(ref name) = name {
+                writeln!(rs, "mod {} {{", name,)?;
+                writeln!(
+                    rs,
+                    "    #[allow(unused)]\
+                     \n    use super::runner;"
+                )?;
             }
-            Ok(())
+            for name in tests {
+                handle_hrx_part(
+                    rs,
+                    suite,
+                    &archive,
+                    &format!("{}{}", prefix, name),
+                    options.precision,
+                )?;
+            }
+            if name.is_some() {
+                writeln!(rs, "}}")?;
+            }
         }
+        Ok(())
     }
+}
+
+fn write_fn_runner(
+    rs: &mut dyn Write,
+    precision: Option<i64>,
+) -> Result<(), Error> {
+    rs.write_all(
+        b"#[allow(unused)]\
+                   \nfn runner() -> crate::TestRunner {\
+                   \n    crate::TestRunner::new()",
+    )?;
+    if let Some(p) = precision {
+        writeln!(rs, "        .set_precision({})", p)?;
+    }
+    rs.write_all(b"}\n\n")?;
+    Ok(())
 }
 
 fn fn_name_os(name: &OsStr) -> String {
@@ -410,19 +401,11 @@ fn load_test_fixture_hrx(
     name: String,
     archive: &Archive,
     prefix: &str,
-    precision: Option<i64>,
+    options: Options,
 ) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAMES: &[&str] =
         &["output-dart-sass.css", "output.css"];
-
-    let mut options =
-        if let Some(yml) = archive.get(&format!("{}options.yml", prefix)) {
-            Options::parse(yml)?
-        } else {
-            Options::default()
-        };
-    options.precision = options.precision.or(precision);
 
     if let Some(input) = archive.get(&format!("{}{}", prefix, INPUT_FILENAME))
     {
