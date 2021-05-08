@@ -6,7 +6,6 @@ use crate::css::Value;
 use crate::output::Format;
 use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Rational, Unit, UnitSet};
-use rand::{thread_rng, Rng};
 use std::cmp::Ordering;
 use std::f64::consts::{E, PI};
 
@@ -290,7 +289,7 @@ fn find_extreme_inner(
 }
 
 fn intrand(lim: i64) -> i64 {
-    thread_rng().gen_range(0..lim)
+    fastrand::i64(0..lim)
 }
 
 fn diff_units_msg(
