@@ -1,19 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_279.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file("foo.scss", ".test-hello {\n  color: red;\n}\n\n.test-world {\n  @extend .test-hello;\n}\n")
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".theme {\
-            \n  @import \"foo.scss\";\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".theme {\
+             \n  @import \"foo.scss\";\
+             \n}\n"),
         ".theme .test-hello, .theme .test-world {\
-        \n  color: red;\
-        \n}\
-        \n"
+         \n  color: red;\
+         \n}\n"
     );
 }

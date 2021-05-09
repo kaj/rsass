@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/import"
 
+#[allow(unused)]
+use super::runner;
+
 mod css_before_index;
 
 mod in_css;

@@ -1,13 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/http_import.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().ok(
             "@import \"http://fonts.googleapis.com/css?family=Droid+Sans\";"
-        )
-        .unwrap(),
-        "@import \"http://fonts.googleapis.com/css?family=Droid+Sans\";\
-        \n"
+        ),
+        "@import \"http://fonts.googleapis.com/css?family=Droid+Sans\";\n"
     );
 }

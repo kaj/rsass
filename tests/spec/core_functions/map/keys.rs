@@ -1,33 +1,31 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/keys.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn empty() {
     assert_eq!(
-        crate::rsass(
-            "$result: map-keys(());\
-            \na {\
-            \n  value: inspect($result);\
-            \n  separator: list-separator($result);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$result: map-keys(());\
+             \na {\
+             \n  value: inspect($result);\
+             \n  separator: list-separator($result);\
+             \n}\n"),
         "a {\
-        \n  value: ();\
-        \n  separator: comma;\
-        \n}\
-        \n"
+         \n  value: ();\
+         \n  separator: comma;\
+         \n}\n"
     );
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_few_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-keys()}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: map-keys()}\n"),
             "Error: Missing argument $map.\
          \n  ,--> input.scss\
          \n1 | a {b: map-keys()}\
@@ -43,12 +41,7 @@ mod error {
     #[test]
     fn too_many_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-keys((c: d), (e: f))}\
-             \n\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: map-keys((c: d), (e: f))}\n\n"),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: map-keys((c: d), (e: f))}\
@@ -64,11 +57,7 @@ mod error {
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-keys(1)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: map-keys(1)}\n"),
             "Error: $map: 1 is not a map.\
          \n  ,\
          \n1 | a {b: map-keys(1)}\
@@ -81,49 +70,34 @@ mod error {
 #[test]
 fn multiple() {
     assert_eq!(
-        crate::rsass(
-            "a {b: map-keys((c: d, e: f, g: h))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: map-keys((c: d, e: f, g: h))}\n"),
         "a {\
-        \n  b: c, e, g;\
-        \n}\
-        \n"
+         \n  b: c, e, g;\
+         \n}\n"
     );
 }
 #[test]
 fn named() {
     assert_eq!(
-        crate::rsass(
-            "a {b: map-keys($map: (1: 2, 3: 4))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: map-keys($map: (1: 2, 3: 4))}\n"),
         "a {\
-        \n  b: 1, 3;\
-        \n}\
-        \n"
+         \n  b: 1, 3;\
+         \n}\n"
     );
 }
 #[test]
 fn single() {
     assert_eq!(
-        crate::rsass(
-            "$result: map-keys((1: 2));\
-            \na {\
-            \n  value: $result;\
-            \n  type: type-of($result);\
-            \n  separator: list-separator($result);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$result: map-keys((1: 2));\
+             \na {\
+             \n  value: $result;\
+             \n  type: type-of($result);\
+             \n  separator: list-separator($result);\
+             \n}\n"),
         "a {\
-        \n  value: 1;\
-        \n  type: list;\
-        \n  separator: comma;\
-        \n}\
-        \n"
+         \n  value: 1;\
+         \n  type: list;\
+         \n  separator: comma;\
+         \n}\n"
     );
 }

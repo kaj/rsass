@@ -1,20 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_453.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div {\
-            \n    --a: 2px;\
-            \n    top: var(--a);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("div {\
+             \n    --a: 2px;\
+             \n    top: var(--a);\
+             \n}\n"),
         "div {\
-        \n  --a: 2px;\
-        \n  top: var(--a);\
-        \n}\
-        \n"
+         \n  --a: 2px;\
+         \n  top: var(--a);\
+         \n}\n"
     );
 }

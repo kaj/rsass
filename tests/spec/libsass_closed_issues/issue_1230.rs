@@ -1,20 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1230.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div {\
-            \n  transition-property:\
-            \n    border-color,\
-            \n    box-shadow,\
-            \n    color;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("div {\
+             \n  transition-property:\
+             \n    border-color,\
+             \n    box-shadow,\
+             \n    color;\
+             \n}"),
         "div {\
-        \n  transition-property: border-color, box-shadow, color;\
-        \n}\
-        \n"
+         \n  transition-property: border-color, box-shadow, color;\
+         \n}\n"
     );
 }

@@ -1,17 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/selector_interpolation_at_pseudo_begininng.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$zzz: zzz;\
-            \n:#{$zzz}::#{$zzz} { a: b; }\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$zzz: zzz;\
+             \n:#{$zzz}::#{$zzz} { a: b; }\n"),
         ":zzz::zzz {\
-        \n  a: b;\
-        \n}\
-        \n"
+         \n  a: b;\
+         \n}\n"
     );
 }

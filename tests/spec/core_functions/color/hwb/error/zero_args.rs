@@ -1,15 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hwb/error/zero_args.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \'sass:color\';\
-             \na {b: color.hwb()}\
-             \n"
-        )
-        .unwrap_err(),
+             \na {b: color.hwb()}\n"
+        ),
         "Error: Missing argument $channels.\
          \n  ,--> input.scss\
          \n2 | a {b: color.hwb()}\

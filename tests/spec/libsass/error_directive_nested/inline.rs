@@ -1,19 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/error-directive-nested/inline.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "a {\
              \n  b: {\
              \n    @error test;\
              \n    c: d;\
              \n  }\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: test\
          \n  ,\
          \n3 |     @error test;\

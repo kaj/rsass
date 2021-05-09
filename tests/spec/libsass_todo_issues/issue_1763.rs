@@ -1,21 +1,25 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-issues/issue_1763.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file("first.scss", "foo { bar: baz }\n")
+        .mock_file("second.scss", "a { b: c }\n")
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().ok(
             "@import \"first.css\", \"second.css\" (max-width: 400px);\
-            \n@import \"first.scss\", \"second.scss\" (max-width: 400px);\
-            \n"
-        )
-        .unwrap(),
+             \n@import \"first.scss\", \"second.scss\" (max-width: 400px);\n"
+        ),
         "@import \"first.css\";\
-        \n@import \"second.css\" (max-width: 400px);\
-        \n@import \"second.scss\" (max-width: 400px);\
-        \nfoo {\
-        \n  bar: baz;\
-        \n}\
-        \n"
+         \n@import \"second.css\" (max-width: 400px);\
+         \n@import \"second.scss\" (max-width: 400px);\
+         \nfoo {\
+         \n  bar: baz;\
+         \n}\n"
     );
 }

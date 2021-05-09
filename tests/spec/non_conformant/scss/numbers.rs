@@ -1,23 +1,24 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/numbers.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div {\
-            \n  width: 10px;\
-            \n  height: 20%;\
-            \n  blah: 12;\
-            \n  color: #abc;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("div {\
+             \n  width: 10px;\
+             \n  height: 20%;\
+             \n  blah: 12;\
+             \n  color: #abc;\
+             \n}"),
         "div {\
-        \n  width: 10px;\
-        \n  height: 20%;\
-        \n  blah: 12;\
-        \n  color: #abc;\
-        \n}\
-        \n"
+         \n  width: 10px;\
+         \n  height: 20%;\
+         \n  blah: 12;\
+         \n  color: #abc;\
+         \n}\n"
     );
 }

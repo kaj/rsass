@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/values/maps"
 
+#[allow(unused)]
+use super::runner;
+
 mod duplicate_keys;
 
 mod errors;

@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/properties-in-media.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@media only screen {\r\
              \n    /* asd */\r\
              \n  color: red;\r\
@@ -18,8 +23,7 @@ fn test() {
              \n  color: blue;\r\
              \n  color: yellow;\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: expected \"{\".\
          \n  ,\
          \n3 |   color: red;\

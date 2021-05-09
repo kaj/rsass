@@ -1,15 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/invalid-parent/mixin-in-each.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@each $item in (a, b) {\r\
              \n  @mixin foo() {}\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: Mixins may not be declared in control directives.\
          \n  ,\
          \n2 |   @mixin foo() {}\

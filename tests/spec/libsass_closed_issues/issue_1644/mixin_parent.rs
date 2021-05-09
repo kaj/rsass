@@ -1,21 +1,24 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1644/mixin-parent.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin parent {\
              \n  @content;\
-             \n}\
-             \n\
+             \n}\n\
              \n@include parent() {\
              \n  body.immobile & {\
              \n    margin-bottom: 0;\
              \n  }\
-             \n}\
-             \n"
-        ).unwrap_err(),
+             \n}\n"
+        ),
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n  ,\
          \n6 |   body.immobile & {\

@@ -1,20 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1093/argument/mixin.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin foo($bar:#{}) {\
              \n  @return $bar;\
-             \n}\
-             \n\
+             \n}\n\
              \nfoo {\
              \n  @include foo;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Expected expression.\
          \n  ,\
          \n1 | @mixin foo($bar:#{}) {\

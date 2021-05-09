@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_83.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin colors($color) {\r\
              \n  border-color: $color;\r\
              \n  background-color: $color;\r\
@@ -16,8 +21,7 @@ fn test() {
              \n  }\r\
              \n  border-width: 10px;\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: Missing argument $color.\
          \n    ,\
          \n1   | @mixin colors($color) {\

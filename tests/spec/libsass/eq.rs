@@ -1,22 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/eq.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div {\
-            \n  foo: center == \"center\";\
-            \n  foo: (a b c) == (a b c);\
-            \n  foo: a b c == a b c;\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("div {\
+             \n  foo: center == \"center\";\
+             \n  foo: (a b c) == (a b c);\
+             \n  foo: a b c == a b c;\
+             \n}\n"),
         "div {\
-        \n  foo: true;\
-        \n  foo: true;\
-        \n  foo: a b false b c;\
-        \n}\
-        \n"
+         \n  foo: true;\
+         \n  foo: true;\
+         \n  foo: a b false b c;\
+         \n}\n"
     );
 }

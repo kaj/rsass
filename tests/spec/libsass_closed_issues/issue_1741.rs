@@ -1,19 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1741.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".header {\r\
-            \n  .nav-text-link:not(&.popover-link) {\r\
-            \n    margin: 10px;\r\
-            \n  }\r\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok(".header {\r\
+             \n  .nav-text-link:not(&.popover-link) {\r\
+             \n    margin: 10px;\r\
+             \n  }\r\
+             \n}"),
         ".nav-text-link:not(.header.popover-link) {\
-        \n  margin: 10px;\
-        \n}\
-        \n"
+         \n  margin: 10px;\
+         \n}\n"
     );
 }

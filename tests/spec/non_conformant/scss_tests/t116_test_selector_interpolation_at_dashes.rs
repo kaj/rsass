@@ -1,18 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/116_test_selector_interpolation_at_dashes.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$a : a;\
-            \n$b : b;\
-            \ndiv { -foo-#{$a}-#{$b}-foo: foo }\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$a : a;\
+             \n$b : b;\
+             \ndiv { -foo-#{$a}-#{$b}-foo: foo }\n"),
         "div {\
-        \n  -foo-a-b-foo: foo;\
-        \n}\
-        \n"
+         \n  -foo-a-b-foo: foo;\
+         \n}\n"
     );
 }

@@ -1,152 +1,169 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/member/namespaced.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file(
+            "default/basename/foo/baz/qux/other.scss",
+            "$variable: value;\n",
+        )
+        .mock_file(
+            "default/function/other.scss",
+            "@function member() {@return value}\n",
+        )
+        .mock_file("default/mixin/other.scss", "@mixin member() {a {b: c}}\n")
+        .mock_file(
+            "default/variable_assignment/in_declaration/other.scss",
+            "$member: value;\n\n@function get-member() {@return $member}\n",
+        )
+        .mock_file(
+            "default/variable_assignment/in_function/other.scss",
+            "$member: value;\n\n@function get-member() {@return $member}\n",
+        )
+        .mock_file(
+            "default/variable_assignment/nested/other.scss",
+            "$member: value;\n\n@function get-member() {@return $member}\n",
+        )
+        .mock_file(
+            "default/variable_assignment/top_level/other.scss",
+            "$member: value;\n\n@function get-member() {@return $member}\n",
+        )
+        .mock_file("default/variable_use/other.scss", "$member: value;\n")
+        .mock_file(
+            "default/without_extensions/other.foo.bar.baz.scss",
+            "$variable: value;\n",
+        )
+        .mock_file(
+            "default/without_underscore/_other.scss",
+            "$variable: value;\n",
+        )
+        .mock_file(
+            "explicit/function/other.scss",
+            "@function member() {@return value}\n",
+        )
+        .mock_file(
+            "explicit/mixin/other.scss",
+            "@mixin member() {a {b: c}}\n",
+        )
+        .mock_file(
+            "explicit/variable_assignment/other.scss",
+            "$member: value;\n\n@function get-member() {@return $member}\n",
+        )
+        .mock_file("explicit/variable_use/other.scss", "$member: value;\n")
+}
+
 mod default {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // unexepected error
     fn basename() {
         assert_eq!(
-        crate::rsass(
+        runner().ok(
             "// Only the basename of the URL is used for the namespace. Previous components\
-            \n// are discarded.\
-            \n@use \"foo/bar/../baz/qux/other\";\
-            \n\
-            \na {b: other.$variable}\
-            \n"
-        )
-        .unwrap(),
+             \n// are discarded.\
+             \n@use \"foo/bar/../baz/qux/other\";\n\
+             \na {b: other.$variable}\n"
+        ),
         "a {\
-        \n  b: value;\
-        \n}\
-        \n"
+         \n  b: value;\
+         \n}\n"
     );
     }
     #[test]
     #[ignore] // unexepected error
     fn function() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\";\
-            \n\
-            \na {b: other.member()}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\";\n\
+             \na {b: other.member()}\n"),
             "a {\
-        \n  b: value;\
-        \n}\
-        \n"
+         \n  b: value;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn mixin() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\";\
-            \n\
-            \n@include other.member;\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\";\n\
+             \n@include other.member;\n"),
             "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
         );
     }
     mod variable_assignment {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // unexepected error
         fn in_declaration() {
             assert_eq!(
-        crate::rsass(
-            "@use \"other\";\
-            \n\
-            \na {\
-            \n  b: {\
-            \n    // Test assignments within a declaration specially, because declarations\
-            \n    // disallow style rules and variable assignments need to be disambiguated\
-            \n    // with those.\
-            \n    other.$member: new value;\
-            \n\
-            \n    c: other.get-member();\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "@use \"other\";\n\
+             \na {\
+             \n  b: {\
+             \n    // Test assignments within a declaration specially, because declarations\
+             \n    // disallow style rules and variable assignments need to be disambiguated\
+             \n    // with those.\
+             \n    other.$member: new value;\n\
+             \n    c: other.get-member();\
+             \n  }\
+             \n}\n"
+        ),
         "a {\
-        \n  b-c: new value;\
-        \n}\
-        \n"
+         \n  b-c: new value;\
+         \n}\n"
     );
         }
         #[test]
         #[ignore] // unexepected error
         fn in_function() {
             assert_eq!(
-        crate::rsass(
-            "@use \"other\";\
-            \n\
-            \n@function a() {\
-            \n  // Test assignments within a function specially, because functions disallow\
-            \n  // property declarations and variable assignments need to be disambiguated\
-            \n  // with those.\
-            \n  other.$member: new value;\
-            \n\
-            \n  @return other.get-member();\
-            \n}\
-            \n\
-            \nb {c: a()}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "@use \"other\";\n\
+             \n@function a() {\
+             \n  // Test assignments within a function specially, because functions disallow\
+             \n  // property declarations and variable assignments need to be disambiguated\
+             \n  // with those.\
+             \n  other.$member: new value;\n\
+             \n  @return other.get-member();\
+             \n}\n\
+             \nb {c: a()}\n"
+        ),
         "b {\
-        \n  c: new value;\
-        \n}\
-        \n"
+         \n  c: new value;\
+         \n}\n"
     );
         }
         #[test]
         #[ignore] // unexepected error
         fn nested() {
             assert_eq!(
-        crate::rsass(
-            "@use \"other\";\
-            \n\
-            \na {\
-            \n  // Namespaced assignments always assign to the other module\'s variable, even\
-            \n  // if they\'re nested in a block scope.\
-            \n  other.$member: new value;\
-            \n\
-            \n  b: other.get-member();\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "@use \"other\";\n\
+             \na {\
+             \n  // Namespaced assignments always assign to the other module\'s variable, even\
+             \n  // if they\'re nested in a block scope.\
+             \n  other.$member: new value;\n\
+             \n  b: other.get-member();\
+             \n}\n"
+        ),
         "a {\
-        \n  b: new value;\
-        \n}\
-        \n"
+         \n  b: new value;\
+         \n}\n"
     );
         }
         #[test]
         #[ignore] // unexepected error
         fn top_level() {
             assert_eq!(
-                crate::rsass(
-                    "@use \"other\";\
-            \n\
-            \nother.$member: new value;\
-            \n\
-            \na {b: other.get-member()};\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("@use \"other\";\n\
+             \nother.$member: new value;\n\
+             \na {b: other.get-member()};\n"),
                 "a {\
-        \n  b: new value;\
-        \n}\
-        \n"
+         \n  b: new value;\
+         \n}\n"
             );
         }
     }
@@ -154,125 +171,88 @@ mod default {
     #[ignore] // unexepected error
     fn variable_use() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\";\
-            \n\
-            \na {b: other.$member}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\";\n\
+             \na {b: other.$member}\n"),
             "a {\
-        \n  b: value;\
-        \n}\
-        \n"
+         \n  b: value;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn without_extensions() {
         assert_eq!(
-        crate::rsass(
+        runner().ok(
             "// All extensions on the URL are discarded before determining the namespace.\
-            \n@use \"other.foo.bar.baz.scss\";\
-            \n\
-            \na {b: other.$variable}\
-            \n"
-        )
-        .unwrap(),
+             \n@use \"other.foo.bar.baz.scss\";\n\
+             \na {b: other.$variable}\n"
+        ),
         "a {\
-        \n  b: value;\
-        \n}\
-        \n"
+         \n  b: value;\
+         \n}\n"
     );
     }
     #[test]
     #[ignore] // unexepected error
     fn without_underscore() {
         assert_eq!(
-        crate::rsass(
+        runner().ok(
             "// A single leading underscore is removed before determining the namespace.\
-            \n@use \"_other\";\
-            \n\
-            \na {b: other.$variable}\
-            \n"
-        )
-        .unwrap(),
+             \n@use \"_other\";\n\
+             \na {b: other.$variable}\n"
+        ),
         "a {\
-        \n  b: value;\
-        \n}\
-        \n"
+         \n  b: value;\
+         \n}\n"
     );
     }
 }
 mod explicit {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // unexepected error
     fn function() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" as o;\
-            \n\
-            \na {b: o.member()}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\" as o;\n\
+             \na {b: o.member()}\n"),
             "a {\
-        \n  b: value;\
-        \n}\
-        \n"
+         \n  b: value;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn mixin() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" as o;\
-            \n\
-            \n@include o.member;\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\" as o;\n\
+             \n@include o.member;\n"),
             "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn variable_assignment() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" as o;\
-            \n\
-            \no.$member: new value;\
-            \n\
-            \na {b: o.get-member()}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\" as o;\n\
+             \no.$member: new value;\n\
+             \na {b: o.get-member()}\n"),
             "a {\
-        \n  b: new value;\
-        \n}\
-        \n"
+         \n  b: new value;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn variable_use() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" as o;\
-            \n\
-            \na {b: o.$member}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\" as o;\n\
+             \na {b: o.$member}\n"),
             "a {\
-        \n  b: value;\
-        \n}\
-        \n"
+         \n  b: value;\
+         \n}\n"
         );
     }
 }

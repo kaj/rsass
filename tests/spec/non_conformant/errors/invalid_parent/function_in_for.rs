@@ -1,15 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/invalid-parent/function-in-for.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@for $i from 1 through 1 {\r\
              \n  @function foo() {}\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: Functions may not be declared in control directives.\
          \n  ,\
          \n2 |   @function foo() {}\

@@ -1,20 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/123_test_nested_extender_with_early_child_selector.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".foo {\
-            \n.bar {a: b}\
-            \n.bip > .baz {@extend .bar}\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".foo {\
+             \n.bar {a: b}\
+             \n.bip > .baz {@extend .bar}\
+             \n}\n"),
         ".foo .bar, .foo .bip > .baz {\
-        \n  a: b;\
-        \n}\
-        \n"
+         \n  a: b;\
+         \n}\n"
     );
 }

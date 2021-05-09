@@ -1,14 +1,42 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/error/with.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file("conflict/_left.scss", "$a: left;\n")
+        .mock_file("conflict/_midstream.scss", "@use \"left\" as *;\n@use \"right\" as *;\n\n$a: c !default;\n")
+        .mock_file("conflict/_right.scss", "$a: right;\n")
+        .mock_file("invalid_expression/error/_other.scss", "$a: c !default;\n")
+        .mock_file("invalid_expression/module_loaded_later/_configured.scss", "$a: c !default;\n")
+        .mock_file("invalid_expression/module_loaded_later/_other.scss", "$b: d;\n")
+        .mock_file("invalid_expression/variable_defined_later/_other.scss", "$a: d !default;\n")
+        .mock_file("multi_configuration/multi_file/_left.scss", "@use \"other\" with ($a: b);\n")
+        .mock_file("multi_configuration/multi_file/_other.scss", "$a: c !default;\n")
+        .mock_file("multi_configuration/multi_file/_right.scss", "@use \"other\" with ($a: b);\n")
+        .mock_file("multi_configuration/one_file/_other.scss", "$a: c !default;\n")
+        .mock_file("multi_configuration/through_forward/_forwarded.scss", "// This file defines no variables, but it still may not be loaded both with and\n// without configuration.\n")
+        .mock_file("multi_configuration/through_forward/_midstream.scss", "@forward \"forwarded\";\n\n$a: c !default;\n")
+        .mock_file("multi_configuration/unconfigured_first/_other.scss", "$a: c !default;\n")
+        .mock_file("namespace/_midstream.scss", "@use \"upstream\";\nupstream.$a: c !default;\n")
+        .mock_file("namespace/_upstream.scss", "$a: d;\n")
+        .mock_file("nested/_other.scss", "c {$a: d !default}\n")
+        .mock_file("not_default/_other.scss", "$a: c;\n")
+        .mock_file("through_forward/as/_forwarded.scss", "$a: d !default;\n")
+        .mock_file("through_forward/as/_used.scss", "@forward \"forwarded\" as c-*;\n")
+        .mock_file("through_forward/hide/_forwarded.scss", "$a: d !default;\n")
+        .mock_file("through_forward/hide/_used.scss", "@forward \"forwarded\" hide $a;\n")
+        .mock_file("through_forward/show/_forwarded.scss", "$a: d !default;\n")
+        .mock_file("through_forward/show/_used.scss", "@forward \"forwarded\" show $b;\n")
+        .mock_file("through_forward/with/_forwarded.scss", "$a: d !default;\n")
+        .mock_file("through_forward/with/_used.scss", "@forward \"forwarded\" with ($a: c);\n")
+        .mock_file("undefined/_other.scss", "// This file defines no variables.\n")
+}
+
 #[test]
 #[ignore] // wrong error
 fn conflict() {
     assert_eq!(
-        crate::rsass(
-            "@use \"midstream\" with ($a: b);\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("@use \"midstream\" with ($a: b);\n"),
         "Error: This variable is available from multiple global modules.\
          \n    ,\
          \n1   | @use \"left\" as *;\
@@ -27,11 +55,7 @@ fn conflict() {
 #[ignore] // wrong error
 fn core_module() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:color\" with ($a: b);\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("@use \"sass:color\" with ($a: b);\n"),
         "Error: Built-in modules can\'t be configured.\
          \n  ,\
          \n1 | @use \"sass:color\" with ($a: b);\
@@ -41,15 +65,13 @@ fn core_module() {
     );
 }
 mod invalid_expression {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn error() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" with ($a: 1px + 1em);\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"other\" with ($a: 1px + 1em);\n"),
             "Error: 1px and 1em have incompatible units.\
          \n  ,\
          \n1 | @use \"other\" with ($a: 1px + 1em);\
@@ -62,12 +84,10 @@ mod invalid_expression {
     #[ignore] // wrong error
     fn module_loaded_later() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"configured\" with ($a: other.$b);\
-             \n@use \"other\";\
-             \n"
-            )
-            .unwrap_err(),
+             \n@use \"other\";\n"
+            ),
             "Error: There is no module with the namespace \"other\".\
          \n  ,\
          \n1 | @use \"configured\" with ($a: other.$b);\
@@ -80,12 +100,10 @@ mod invalid_expression {
     #[ignore] // wrong error
     fn variable_defined_later() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"other\" with ($a: $b);\
-             \n$b: c;\
-             \n"
-            )
-            .unwrap_err(),
+             \n$b: c;\n"
+            ),
             "Error: Undefined variable.\
          \n  ,\
          \n1 | @use \"other\" with ($a: $b);\
@@ -96,15 +114,16 @@ mod invalid_expression {
     }
 }
 mod multi_configuration {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn multi_file() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \"left\";\
-             \n@use \"right\";\
-             \n"
-        ).unwrap_err(),
+             \n@use \"right\";\n"
+        ),
         "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,--> _right.scss\
          \n1 | @use \"other\" with ($a: b);\
@@ -122,11 +141,10 @@ mod multi_configuration {
     #[ignore] // wrong error
     fn one_file() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \"other\" as o1 with ($a: b);\
-             \n@use \"other\" as o2 with ($a: b);\
-             \n"
-        ).unwrap_err(),
+             \n@use \"other\" as o2 with ($a: b);\n"
+        ),
         "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,\
          \n1 | @use \"other\" as o1 with ($a: b);\
@@ -141,11 +159,10 @@ mod multi_configuration {
     #[ignore] // wrong error
     fn through_forward() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \"forwarded\";\
-             \n@use \"midstream\" with ($a: b);\
-             \n"
-        ).unwrap_err(),
+             \n@use \"midstream\" with ($a: b);\n"
+        ),
         "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,--> _midstream.scss\
          \n1 | @forward \"forwarded\";\
@@ -165,11 +182,10 @@ mod multi_configuration {
     #[ignore] // wrong error
     fn unconfigured_first() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \"other\" as o1;\
-             \n@use \"other\" as o2 with ($a: b);\
-             \n"
-        ).unwrap_err(),
+             \n@use \"other\" as o2 with ($a: b);\n"
+        ),
         "Error: This module was already loaded, so it can\'t be configured using \"with\".\
          \n  ,\
          \n1 | @use \"other\" as o1;\
@@ -185,10 +201,9 @@ mod multi_configuration {
 #[ignore] // wrong error
 fn namespace() {
     assert_eq!(
-        crate::rsass(
-            "@use \"midstream\" with ($a: b);\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "@use \"midstream\" with ($a: b);\n"
+        ),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"midstream\" with ($a: b);\
@@ -201,10 +216,9 @@ fn namespace() {
 #[ignore] // wrong error
 fn nested() {
     assert_eq!(
-        crate::rsass(
-            "@use \"other\" with ($a: b);\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "@use \"other\" with ($a: b);\n"
+        ),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"other\" with ($a: b);\
@@ -217,10 +231,9 @@ fn nested() {
 #[ignore] // wrong error
 fn not_default() {
     assert_eq!(
-        crate::rsass(
-            "@use \"other\" with ($a: b);\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "@use \"other\" with ($a: b);\n"
+        ),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"other\" with ($a: b);\
@@ -233,11 +246,7 @@ fn not_default() {
 #[ignore] // wrong error
 fn repeated_variable() {
     assert_eq!(
-        crate::rsass(
-            "@use \"other\" with ($a: b, $a: c);\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("@use \"other\" with ($a: b, $a: c);\n"),
         "Error: The same variable may only be configured once.\
          \n  ,\
          \n1 | @use \"other\" with ($a: b, $a: c);\
@@ -247,14 +256,15 @@ fn repeated_variable() {
     );
 }
 mod through_forward {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn test_as() {
         assert_eq!(
-        crate::rsass(
-            "@use \"used\" with ($a: b);\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "@use \"used\" with ($a: b);\n"
+        ),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"used\" with ($a: b);\
@@ -267,10 +277,9 @@ mod through_forward {
     #[ignore] // wrong error
     fn hide() {
         assert_eq!(
-        crate::rsass(
-            "@use \"used\" with ($a: b);\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "@use \"used\" with ($a: b);\n"
+        ),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"used\" with ($a: b);\
@@ -283,10 +292,9 @@ mod through_forward {
     #[ignore] // wrong error
     fn show() {
         assert_eq!(
-        crate::rsass(
-            "@use \"used\" with ($a: b);\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "@use \"used\" with ($a: b);\n"
+        ),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"used\" with ($a: b);\
@@ -299,10 +307,9 @@ mod through_forward {
     #[ignore] // wrong error
     fn with() {
         assert_eq!(
-        crate::rsass(
-            "@use \"used\" with ($a: b);\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "@use \"used\" with ($a: b);\n"
+        ),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"used\" with ($a: b);\
@@ -316,10 +323,9 @@ mod through_forward {
 #[ignore] // wrong error
 fn undefined() {
     assert_eq!(
-        crate::rsass(
-            "@use \"other\" with ($a: b);\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "@use \"other\" with ($a: b);\n"
+        ),
         "Error: This variable was not declared with !default in the @used module.\
          \n  ,\
          \n1 | @use \"other\" with ($a: b);\

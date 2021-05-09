@@ -1,14 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-issues/issue_1732/invalid/ruleset.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "color: green;\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("color: green;\n"),
         "Error: expected \"{\".\
          \n  ,\
          \n1 | color: green;\

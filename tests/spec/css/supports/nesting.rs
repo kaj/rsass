@@ -1,139 +1,109 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports/nesting.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn empty() {
-    assert_eq!(
-        crate::rsass(
-            "@supports (a: b) {}\
-            \n"
-        )
-        .unwrap(),
-        ""
-    );
+    assert_eq!(runner().ok("@supports (a: b) {}\n"), "");
 }
 #[test]
 #[ignore] // wrong result
 fn invisible() {
     assert_eq!(
-        crate::rsass(
-            "@supports (a: b) {\
-            \n  %c {d: e}\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@supports (a: b) {\
+             \n  %c {d: e}\
+             \n}\n"),
         ""
     );
 }
 #[test]
 fn loud_comment() {
     assert_eq!(
-        crate::rsass(
-            "// Regression test for sass/libsass#2158\
-            \n\
-            \n@supports (a: b) {\
-            \n  /* c */\
-            \n  d {e: f}\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("// Regression test for sass/libsass#2158\n\
+             \n@supports (a: b) {\
+             \n  /* c */\
+             \n  d {e: f}\
+             \n}\n"),
         "@supports (a: b) {\
-        \n  /* c */\
-        \n  d {\
-        \n    e: f;\
-        \n  }\
-        \n}\
-        \n"
+         \n  /* c */\
+         \n  d {\
+         \n    e: f;\
+         \n  }\
+         \n}\n"
     );
 }
 mod media {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong result
     fn in_style_rule() {
         assert_eq!(
-            crate::rsass(
-                "c {\
-            \n  @media screen {\
-            \n    @supports (a: b) {d: e}\
-            \n  }\
-            \n}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("c {\
+             \n  @media screen {\
+             \n    @supports (a: b) {d: e}\
+             \n  }\
+             \n}\n"),
             "@media screen {\
-        \n  @supports (a: b) {\
-        \n    c {\
-        \n      d: e;\
-        \n    }\
-        \n  }\
-        \n}\
-        \n"
+         \n  @supports (a: b) {\
+         \n    c {\
+         \n      d: e;\
+         \n    }\
+         \n  }\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // wrong result
     fn top() {
         assert_eq!(
-            crate::rsass(
-                "@media screen {\
-            \n  @supports (a: b) {\
-            \n    c {d: e}\
-            \n  }\
-            \n}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@media screen {\
+             \n  @supports (a: b) {\
+             \n    c {d: e}\
+             \n  }\
+             \n}\n"),
             "@media screen {\
-        \n  @supports (a: b) {\
-        \n    c {\
-        \n      d: e;\
-        \n    }\
-        \n  }\
-        \n}\
-        \n"
+         \n  @supports (a: b) {\
+         \n    c {\
+         \n      d: e;\
+         \n    }\
+         \n  }\
+         \n}\n"
         );
     }
 }
 #[test]
 fn style_rule() {
     assert_eq!(
-        crate::rsass(
-            "a {\
-            \n  @supports (b: c) {d: e}\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {\
+             \n  @supports (b: c) {d: e}\
+             \n}\n"),
         "@supports (b: c) {\
-        \n  a {\
-        \n    d: e;\
-        \n  }\
-        \n}\
-        \n"
+         \n  a {\
+         \n    d: e;\
+         \n  }\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // wrong result
 fn supports() {
     assert_eq!(
-        crate::rsass(
-            "@supports (a: b) {\
-            \n  @supports (c: d) {\
-            \n    e {f: g}\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@supports (a: b) {\
+             \n  @supports (c: d) {\
+             \n    e {f: g}\
+             \n  }\
+             \n}\n"),
         "@supports (a: b) {\
-        \n  @supports (c: d) {\
-        \n    e {\
-        \n      f: g;\
-        \n    }\
-        \n  }\
-        \n}\
-        \n"
+         \n  @supports (c: d) {\
+         \n    e {\
+         \n      f: g;\
+         \n    }\
+         \n  }\
+         \n}\n"
     );
 }

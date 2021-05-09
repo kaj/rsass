@@ -1,18 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/083_test_pseudoelement_goes_lefter_than_pseudoclass.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".foo::bar {a: b}\
-            \n.baz:bang {@extend .foo}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".foo::bar {a: b}\
+             \n.baz:bang {@extend .foo}\n"),
         ".foo::bar, .baz:bang::bar {\
-        \n  a: b;\
-        \n}\
-        \n"
+         \n  a: b;\
+         \n}\n"
     );
 }

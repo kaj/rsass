@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2352.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "$theme: (red: #D700EE);\r\
              \n\r\
              \n@function test($args...) {\r\
@@ -14,8 +19,7 @@ fn test() {
              \n.test {\r\
              \n\tcolor: test($theme...);\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: Variable keyword argument map must have string keys.\
          \nred is not a string in (red: #D700EE).\
          \n  ,\

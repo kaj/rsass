@@ -1,16 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/fn-error/ruleset.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "a {\r\
              \n  @error \"error\";\r\
              \n  foo: bar;\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: \"error\"\
          \n  ,\
          \n2 |   @error \"error\";\

@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/04_space_list_quoted"
 
+#[allow(unused)]
+use super::runner;
+
 mod t01_inline;
 
 mod t02_variable;

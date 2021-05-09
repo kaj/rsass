@@ -1,18 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/selectors/variables/single/interpolated.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".foo {\
-            \n  $bar: &;\
-            \n  content: #{$bar};\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok(".foo {\
+             \n  $bar: &;\
+             \n  content: #{$bar};\
+             \n}"),
         ".foo {\
-        \n  content: .foo;\
-        \n}\
-        \n"
+         \n  content: .foo;\
+         \n}\n"
     );
 }

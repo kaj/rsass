@@ -1,148 +1,109 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/change_color/units.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod hue {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn angle() {
         assert_eq!(
-            crate::rsass(
-                "a {b: change-color(red, $hue: 60rad)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: change-color(red, $hue: 60rad)}\n"),
             "a {\
-        \n  b: yellow;\
-        \n}\
-        \n"
+         \n  b: yellow;\
+         \n}\n"
         );
     }
     #[test]
     fn deg() {
         assert_eq!(
-            crate::rsass(
-                "a {b: change-color(red, $hue: 60deg)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: change-color(red, $hue: 60deg)}\n"),
             "a {\
-        \n  b: yellow;\
-        \n}\
-        \n"
+         \n  b: yellow;\
+         \n}\n"
         );
     }
     #[test]
     fn unitless() {
         assert_eq!(
-            crate::rsass(
-                "a {b: change-color(red, $hue: 60)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: change-color(red, $hue: 60)}\n"),
             "a {\
-        \n  b: yellow;\
-        \n}\
-        \n"
+         \n  b: yellow;\
+         \n}\n"
         );
     }
     #[test]
     fn unknown() {
         assert_eq!(
-            crate::rsass(
-                "a {b: change-color(red, $hue: 60in)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: change-color(red, $hue: 60in)}\n"),
             "a {\
-        \n  b: yellow;\
-        \n}\
-        \n"
+         \n  b: yellow;\
+         \n}\n"
         );
     }
 }
 mod lightness {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn percent() {
         assert_eq!(
-            crate::rsass(
-                "a {b: change-color(red, $lightness: 30%)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: change-color(red, $lightness: 30%)}\n"),
             "a {\
-        \n  b: #990000;\
-        \n}\
-        \n"
+         \n  b: #990000;\
+         \n}\n"
         );
     }
     #[test]
     fn unitless() {
         assert_eq!(
-            crate::rsass(
-                "a {b: change-color(red, $lightness: 30)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: change-color(red, $lightness: 30)}\n"),
             "a {\
-        \n  b: #990000;\
-        \n}\
-        \n"
+         \n  b: #990000;\
+         \n}\n"
         );
     }
     #[test]
     fn unknown() {
         assert_eq!(
-            crate::rsass(
-                "a {b: change-color(red, $lightness: 30in)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: change-color(red, $lightness: 30in)}\n"),
             "a {\
-        \n  b: #990000;\
-        \n}\
-        \n"
+         \n  b: #990000;\
+         \n}\n"
         );
     }
 }
 mod saturation {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn percent() {
         assert_eq!(
-            crate::rsass(
-                "a {b: change-color(red, $saturation: 50%)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: change-color(red, $saturation: 50%)}\n"),
             "a {\
-        \n  b: #bf4040;\
-        \n}\
-        \n"
+         \n  b: #bf4040;\
+         \n}\n"
         );
     }
     #[test]
     fn unitless() {
         assert_eq!(
-            crate::rsass(
-                "a {b: change-color(red, $saturation: 50)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: change-color(red, $saturation: 50)}\n"),
             "a {\
-        \n  b: #bf4040;\
-        \n}\
-        \n"
+         \n  b: #bf4040;\
+         \n}\n"
         );
     }
     #[test]
     fn unknown() {
         assert_eq!(
-            crate::rsass(
-                "a {b: change-color(red, $saturation: 50in)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: change-color(red, $saturation: 50in)}\n"),
             "a {\
-        \n  b: #bf4040;\
-        \n}\
-        \n"
+         \n  b: #bf4040;\
+         \n}\n"
         );
     }
 }

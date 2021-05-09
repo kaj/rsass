@@ -1,17 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/error/one_arg.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod list {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // missing error
     fn bracketed() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb([1 2 3]);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $channels must be an unbracketed list.\
          \n  ,\
          \n2 |   b: rgb([1 2 3]);\
@@ -24,13 +29,11 @@ mod list {
     #[ignore] // missing error
     fn comma_separated() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb((1, 2, 3));\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $channels must be a space-separated list.\
          \n  ,\
          \n2 |   b: rgb((1, 2, 3));\
@@ -43,13 +46,11 @@ mod list {
     #[ignore] // missing error
     fn empty() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb(());\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: Missing element $red.\
          \n  ,\
          \n2 |   b: rgb(());\
@@ -62,13 +63,11 @@ mod list {
     #[ignore] // missing error
     fn four_elements() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb(1 2 3 0.4);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: Only 3 elements allowed, but 4 were passed.\
          \n  ,\
          \n2 |   b: rgb(1 2 3 0.4);\
@@ -81,13 +80,11 @@ mod list {
     #[ignore] // missing error
     fn one_element() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb(1);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: Missing element $green.\
          \n  ,\
          \n2 |   b: rgb(1);\
@@ -100,13 +97,11 @@ mod list {
     #[ignore] // missing error
     fn two_elements() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb(1 2);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: Missing element $blue.\
          \n  ,\
          \n2 |   b: rgb(1 2);\
@@ -119,13 +114,11 @@ mod list {
 #[test]
 fn quoted_var_slash() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "a {\
              \n  b: rgb(1 2 \"var(--foo) / 0.4\");\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: $blue: \"var(--foo) / 0.4\" is not a number.\
          \n  ,\
          \n2 |   b: rgb(1 2 \"var(--foo) / 0.4\");\
@@ -135,16 +128,16 @@ fn quoted_var_slash() {
     );
 }
 mod test_type {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn blue() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb(1 2 \"foo\");\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $blue: \"foo\" is not a number.\
          \n  ,\
          \n2 |   b: rgb(1 2 \"foo\");\
@@ -156,13 +149,11 @@ mod test_type {
     #[test]
     fn green() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb(1 \"foo\" 3);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $green: \"foo\" is not a number.\
          \n  ,\
          \n2 |   b: rgb(1 \"foo\" 3);\
@@ -174,13 +165,11 @@ mod test_type {
     #[test]
     fn red() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb(\"foo\" 2 3);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $red: \"foo\" is not a number.\
          \n  ,\
          \n2 |   b: rgb(\"foo\" 2 3);\

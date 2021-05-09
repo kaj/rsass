@@ -1,23 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/multiple-operators.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$x: 2;\
-            \n$y: 1;\
-            \n\
-            \n@function getResult() { @return true; }\
-            \n\
-            \n.test {\
-            \n    a: $x > $y == getResult();\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$x: 2;\
+             \n$y: 1;\n\
+             \n@function getResult() { @return true; }\n\
+             \n.test {\
+             \n    a: $x > $y == getResult();\
+             \n}\n"),
         ".test {\
-        \n  a: true;\
-        \n}\
-        \n"
+         \n  a: true;\
+         \n}\n"
     );
 }

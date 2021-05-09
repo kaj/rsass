@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/44_selector/double_escape"
 
+#[allow(unused)]
+use super::runner;
+
 mod t12_double_escaped_interpolated_value_todo;
 
 mod t22_double_escaped_interpolated_variable;

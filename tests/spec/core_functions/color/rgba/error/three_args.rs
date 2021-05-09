@@ -1,16 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgba/error/three_args.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod blue {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgba(0, 0, \"foo\");\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $blue: \"foo\" is not a number.\
          \n  ,\
          \n2 |   b: rgba(0, 0, \"foo\");\
@@ -21,16 +26,16 @@ mod blue {
     }
 }
 mod green {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgba(0, \"foo\", 0);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $green: \"foo\" is not a number.\
          \n  ,\
          \n2 |   b: rgba(0, \"foo\", 0);\
@@ -41,16 +46,16 @@ mod green {
     }
 }
 mod red {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgba(\"foo\", 0, 0);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $red: \"foo\" is not a number.\
          \n  ,\
          \n2 |   b: rgba(\"foo\", 0, 0);\

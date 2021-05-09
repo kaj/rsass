@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/23_escapes_literal_specials"
 
+#[allow(unused)]
+use super::runner;
+
 mod t01_inline;
 
 mod t02_variable;
@@ -14,24 +17,19 @@ mod t05_variable_quoted_double;
 #[test]
 fn t06_escape_interpolation() {
     assert_eq!(
-        crate::rsass(
-            "$input: \\0_\\a_\\A;\
-            \n.result {\
-            \n  output: \"[\\#{\\0_\\a_\\A}]\";\
-            \n  output: \"\\#{\\0_\\a_\\A}\";\
-            \n  output: \'\\#{\\0_\\a_\\A}\';\
-            \n  output: \"[\'\\#{\\0_\\a_\\A}\']\";\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$input: \\0_\\a_\\A;\
+             \n.result {\
+             \n  output: \"[\\#{\\0_\\a_\\A}]\";\
+             \n  output: \"\\#{\\0_\\a_\\A}\";\
+             \n  output: \'\\#{\\0_\\a_\\A}\';\
+             \n  output: \"[\'\\#{\\0_\\a_\\A}\']\";\
+             \n}\n"),
         "@charset \"UTF-8\";\
-        \n.result {\
-        \n  output: \"[#{�_\\a_\\a}]\";\
-        \n  output: \"#{�_\\a_\\a}\";\
-        \n  output: \"#{�_\\a_\\a}\";\
-        \n  output: \"[\'#{�_\\a_\\a}\']\";\
-        \n}\
-        \n"
+         \n.result {\
+         \n  output: \"[#{�_\\a_\\a}]\";\
+         \n  output: \"#{�_\\a_\\a}\";\
+         \n  output: \"#{�_\\a_\\a}\";\
+         \n  output: \"[\'#{�_\\a_\\a}\']\";\
+         \n}\n"
     );
 }

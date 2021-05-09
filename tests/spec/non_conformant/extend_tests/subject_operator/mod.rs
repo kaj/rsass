@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/subject-operator"
 
+#[allow(unused)]
+use super::runner;
+
 mod t200_test_extend_with_subject_transfers_subject_to_extender;
 
 mod t201_test_extend_with_subject_transfers_subject_to_extender;

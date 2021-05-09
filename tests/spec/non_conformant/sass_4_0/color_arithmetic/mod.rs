@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/sass_4_0/color_arithmetic"
 
+#[allow(unused)]
+use super::runner;
+
 mod addition;
 
 mod division;

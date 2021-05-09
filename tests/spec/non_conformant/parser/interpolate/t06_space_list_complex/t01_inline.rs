@@ -1,28 +1,28 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/06_space_list_complex/01_inline.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".result {\
-            \n  output: gamme \"\'\"delta\"\'\";\
-            \n  output: #{gamme \"\'\"delta\"\'\"};\
-            \n  output: \"[#{gamme \"\'\"delta\"\'\"}]\";\
-            \n  output: \"#{gamme \"\'\"delta\"\'\"}\";\
-            \n  output: \'#{gamme \"\'\"delta\"\'\"}\';\
-            \n  output: \"[\'#{gamme \"\'\"delta\"\'\"}\']\";\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".result {\
+             \n  output: gamme \"\'\"delta\"\'\";\
+             \n  output: #{gamme \"\'\"delta\"\'\"};\
+             \n  output: \"[#{gamme \"\'\"delta\"\'\"}]\";\
+             \n  output: \"#{gamme \"\'\"delta\"\'\"}\";\
+             \n  output: \'#{gamme \"\'\"delta\"\'\"}\';\
+             \n  output: \"[\'#{gamme \"\'\"delta\"\'\"}\']\";\
+             \n}\n"),
         ".result {\
-        \n  output: gamme \"\'\" delta \"\'\";\
-        \n  output: gamme \' delta \';\
-        \n  output: \"[gamme \' delta \']\";\
-        \n  output: \"gamme \' delta \'\";\
-        \n  output: \"gamme \' delta \'\";\
-        \n  output: \"[\'gamme \' delta \'\']\";\
-        \n}\
-        \n"
+         \n  output: gamme \"\'\" delta \"\'\";\
+         \n  output: gamme \' delta \';\
+         \n  output: \"[gamme \' delta \']\";\
+         \n  output: \"gamme \' delta \'\";\
+         \n  output: \"gamme \' delta \'\";\
+         \n  output: \"[\'gamme \' delta \'\']\";\
+         \n}\n"
     );
 }

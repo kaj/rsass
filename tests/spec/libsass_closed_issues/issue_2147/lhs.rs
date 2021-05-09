@@ -1,14 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2147/lhs.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$map: (a:b,c:d) + 1;\r\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("$map: (a:b,c:d) + 1;\r\n"),
         "Error: (a: b, c: d) isn\'t a valid CSS value.\
          \n  ,\
          \n1 | $map: (a:b,c:d) + 1;\

@@ -1,23 +1,23 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1224.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@media all and (max-width: 768px) {\
-            \n  @media only screen {\
-            \n    a { b: c; }\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@media all and (max-width: 768px) {\
+             \n  @media only screen {\
+             \n    a { b: c; }\
+             \n  }\
+             \n}\n"),
         "@media only screen and (max-width: 768px) {\
-        \n  a {\
-        \n    b: c;\
-        \n  }\
-        \n}\
-        \n"
+         \n  a {\
+         \n    b: c;\
+         \n  }\
+         \n}\n"
     );
 }

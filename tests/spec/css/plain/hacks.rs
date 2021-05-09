@@ -1,20 +1,23 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/hacks.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner().mock_file(
+        "plain.css",
+        ".hacks {\n  *x: y;\n  :x: y;\n  #x: y;\n  .x: y;\n}\n",
+    )
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@import \"plain\";\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@import \"plain\";\n"),
         ".hacks {\
-        \n  *x: y;\
-        \n  :x: y;\
-        \n  #x: y;\
-        \n  .x: y;\
-        \n}\
-        \n"
+         \n  *x: y;\
+         \n  :x: y;\
+         \n  #x: y;\
+         \n  .x: y;\
+         \n}\n"
     );
 }

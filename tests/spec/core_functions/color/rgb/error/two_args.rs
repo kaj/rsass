@@ -1,17 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/error/two_args.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod alpha {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // missing error
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb(#123, \"foo\");\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $alpha: \"foo\" is not a number.\
          \n  ,\
          \n2 |   b: rgb(#123, \"foo\");\
@@ -24,13 +29,11 @@ mod alpha {
     #[ignore] // missing error
     fn unit() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb(#123, 0.5px);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $alpha: Expected 0.5px to have no units or \"%\".\
          \n  ,\
          \n2 |   b: rgb(#123, 0.5px);\
@@ -41,17 +44,17 @@ mod alpha {
     }
 }
 mod color {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: rgb(\"foo\", 0.5);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $color: \"foo\" is not a color.\
          \n  ,\
          \n2 |   b: rgb(\"foo\", 0.5);\

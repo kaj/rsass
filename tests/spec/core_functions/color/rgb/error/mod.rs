@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb/error"
 
+#[allow(unused)]
+use super::runner;
+
 mod five_args;
 
 mod four_args;

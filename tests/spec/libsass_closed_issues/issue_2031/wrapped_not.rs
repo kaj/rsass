@@ -1,17 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2031/wrapped-not.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ":not(.asd, .qwe) {\r\
-            \n  content: test;\r\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok(":not(.asd, .qwe) {\r\
+             \n  content: test;\r\
+             \n}"),
         ":not(.asd, .qwe) {\
-        \n  content: test;\
-        \n}\
-        \n"
+         \n  content: test;\
+         \n}\n"
     );
 }

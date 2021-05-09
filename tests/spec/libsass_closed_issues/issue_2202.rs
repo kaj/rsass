@@ -1,19 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2202.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@customAtRule;\r\
-            \ntest {\r\
-            \n  content: bar\r\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("@customAtRule;\r\
+             \ntest {\r\
+             \n  content: bar\r\
+             \n}"),
         "@customAtRule;\
-        \ntest {\
-        \n  content: bar;\
-        \n}\
-        \n"
+         \ntest {\
+         \n  content: bar;\
+         \n}\n"
     );
 }

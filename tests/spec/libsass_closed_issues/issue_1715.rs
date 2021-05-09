@@ -1,14 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1715.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "div {\
              \n  color: red(blue, purple);\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n2 |   color: red(blue, purple);\

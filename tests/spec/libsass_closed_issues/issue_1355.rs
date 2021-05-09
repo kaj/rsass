@@ -1,19 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1355.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@function test() {\
              \n  @return;\
-             \n}\
-             \n\
+             \n}\n\
              \ndiv {\
              \n  x: type-of(test());\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: Expected expression.\
          \n  ,\
          \n2 |   @return;\

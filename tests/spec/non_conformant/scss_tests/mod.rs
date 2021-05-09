@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests"
 
+#[allow(unused)]
+use super::runner;
+
 mod t001_test_one_line_comments;
 
 mod t002_test_one_line_comments;
@@ -12,17 +15,11 @@ mod t004_test_variables;
 #[test]
 fn t005_test_unicode_variables() {
     assert_eq!(
-        crate::rsass(
-            "$vär: foo;\
-            \n\
-            \nblat {a: $vär}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$vär: foo;\n\
+             \nblat {a: $vär}\n"),
         "blat {\
-        \n  a: foo;\
-        \n}\
-        \n"
+         \n  a: foo;\
+         \n}\n"
     );
 }
 

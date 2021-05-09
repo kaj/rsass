@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain"
 
+#[allow(unused)]
+use super::runner;
+
 mod boolean_operations;
 
 mod custom_properties;

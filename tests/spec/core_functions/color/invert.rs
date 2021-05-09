@@ -1,43 +1,38 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/invert.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn alpha() {
     assert_eq!(
-        crate::rsass(
-            "a {b: invert(rgba(turquoise, 0.4))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: invert(rgba(turquoise, 0.4))}\n"),
         "a {\
-        \n  b: rgba(191, 31, 47, 0.4);\
-        \n}\
-        \n"
+         \n  b: rgba(191, 31, 47, 0.4);\
+         \n}\n"
     );
 }
 #[test]
 fn black() {
     assert_eq!(
-        crate::rsass(
-            "a {b: invert(black)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: invert(black)}\n"),
         "a {\
-        \n  b: white;\
-        \n}\
-        \n"
+         \n  b: white;\
+         \n}\n"
     );
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     mod bounds {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn too_high() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: invert(red, 100.001)}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: invert(red, 100.001)}\n"),
                 "Error: $weight: Expected 100.001 to be within 0 and 100.\
          \n  ,\
          \n1 | a {b: invert(red, 100.001)}\
@@ -49,11 +44,7 @@ mod error {
         #[test]
         fn too_low() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: invert(red, -0.001)}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: invert(red, -0.001)}\n"),
                 "Error: $weight: Expected -0.001 to be within 0 and 100.\
          \n  ,\
          \n1 | a {b: invert(red, -0.001)}\
@@ -66,10 +57,9 @@ mod error {
     #[test]
     fn number_with_weight() {
         assert_eq!(
-        crate::rsass(
-            "a {b: invert(1, 50%)}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: invert(1, 50%)}\n"
+        ),
         "Error: Only one argument may be passed to the plain-CSS invert() function.\
          \n  ,\
          \n1 | a {b: invert(1, 50%)}\
@@ -81,11 +71,7 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: invert()}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: invert()}\n"),
             "Error: Missing argument $color.\
          \n  ,--> input.scss\
          \n1 | a {b: invert()}\
@@ -101,11 +87,7 @@ mod error {
     #[test]
     fn too_many_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: invert(turquoise, 0%, 1)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: invert(turquoise, 0%, 1)}\n"),
             "Error: Only 2 arguments allowed, but 3 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: invert(turquoise, 0%, 1)}\
@@ -119,14 +101,12 @@ mod error {
         );
     }
     mod test_type {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn color() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: invert(c)}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: invert(c)}\n"),
                 "Error: $color: c is not a color.\
          \n  ,\
          \n1 | a {b: invert(c)}\
@@ -138,11 +118,7 @@ mod error {
         #[test]
         fn weight() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: invert(red, c)}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: invert(red, c)}\n"),
                 "Error: $weight: c is not a number.\
          \n  ,\
          \n1 | a {b: invert(red, c)}\
@@ -156,142 +132,94 @@ mod error {
 #[test]
 fn gray() {
     assert_eq!(
-        crate::rsass(
-            "a {b: invert(gray)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: invert(gray)}\n"),
         "a {\
-        \n  b: #7f7f7f;\
-        \n}\
-        \n"
+         \n  b: #7f7f7f;\
+         \n}\n"
     );
 }
 #[test]
 fn named() {
     assert_eq!(
-        crate::rsass(
-            "a {b: invert($color: turquoise, $weight: 0%)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: invert($color: turquoise, $weight: 0%)}\n"),
         "a {\
-        \n  b: turquoise;\
-        \n}\
-        \n"
+         \n  b: turquoise;\
+         \n}\n"
     );
 }
 #[test]
 fn number() {
     assert_eq!(
-        crate::rsass(
-            "a {b: invert(10%)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: invert(10%)}\n"),
         "a {\
-        \n  b: invert(10%);\
-        \n}\
-        \n"
+         \n  b: invert(10%);\
+         \n}\n"
     );
 }
 #[test]
 fn turquoise() {
     assert_eq!(
-        crate::rsass(
-            "a {b: invert(turquoise)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: invert(turquoise)}\n"),
         "a {\
-        \n  b: #bf1f2f;\
-        \n}\
-        \n"
+         \n  b: #bf1f2f;\
+         \n}\n"
     );
 }
 mod weighted {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn high() {
         assert_eq!(
-            crate::rsass(
-                "a {b: invert(turquoise, 92%)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: invert(turquoise, 92%)}\n"),
             "a {\
-        \n  b: #b52e3c;\
-        \n}\
-        \n"
+         \n  b: #b52e3c;\
+         \n}\n"
         );
     }
     #[test]
     fn low() {
         assert_eq!(
-            crate::rsass(
-                "a {b: invert(turquoise, 23%)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: invert(turquoise, 23%)}\n"),
             "a {\
-        \n  b: #5db4ab;\
-        \n}\
-        \n"
+         \n  b: #5db4ab;\
+         \n}\n"
         );
     }
     #[test]
     fn max() {
         assert_eq!(
-            crate::rsass(
-                "a {b: invert(turquoise, 100%)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: invert(turquoise, 100%)}\n"),
             "a {\
-        \n  b: #bf1f2f;\
-        \n}\
-        \n"
+         \n  b: #bf1f2f;\
+         \n}\n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            crate::rsass(
-                "a {b: invert(turquoise, 50%)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: invert(turquoise, 50%)}\n"),
             "a {\
-        \n  b: gray;\
-        \n}\
-        \n"
+         \n  b: gray;\
+         \n}\n"
         );
     }
     #[test]
     fn min() {
         assert_eq!(
-            crate::rsass(
-                "a {b: invert(turquoise, 0%)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: invert(turquoise, 0%)}\n"),
             "a {\
-        \n  b: turquoise;\
-        \n}\
-        \n"
+         \n  b: turquoise;\
+         \n}\n"
         );
     }
 }
 #[test]
 fn white() {
     assert_eq!(
-        crate::rsass(
-            "a {b: invert(white)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: invert(white)}\n"),
         "a {\
-        \n  b: black;\
-        \n}\
-        \n"
+         \n  b: black;\
+         \n}\n"
     );
 }

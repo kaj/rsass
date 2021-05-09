@@ -1,20 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1487.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin foo() {\
              \n    foo: &;\
-             \n}\
-             \n\
+             \n}\n\
              \nfoo {\
              \n  @include foo { bar: baz }\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Mixin doesn\'t accept a content block.\
          \n    ,\
          \n1   | @mixin foo() {\

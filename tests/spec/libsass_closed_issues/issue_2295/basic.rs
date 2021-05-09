@@ -1,18 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2295/basic.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner().mock_file(
+        "include.scss",
+        "@if (true) {\r\n  .foo { display: none; }\r\n}",
+    )
+}
+
 #[test]
-#[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".my-scope {\r\
-            \n  @import \'include.scss\';\r\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok(".my-scope {\r\
+             \n  @import \'include.scss\';\r\
+             \n}"),
         ".my-scope .foo {\
-        \n  display: none;\
-        \n}\
-        \n"
+         \n  display: none;\
+         \n}\n"
     );
 }

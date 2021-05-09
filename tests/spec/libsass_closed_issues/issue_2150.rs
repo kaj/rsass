@@ -1,27 +1,26 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2150.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@media (min-width: 100px) {\
-            \n  .parent > %child {\
-            \n    color: blue;\
-            \n  }\
-            \n}\
-            \n\
-            \n.foo {\
-            \n  @extend %child;\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@media (min-width: 100px) {\
+             \n  .parent > %child {\
+             \n    color: blue;\
+             \n  }\
+             \n}\n\
+             \n.foo {\
+             \n  @extend %child;\
+             \n}\n"),
         "@media (min-width: 100px) {\
-        \n  .parent > .foo {\
-        \n    color: blue;\
-        \n  }\
-        \n}\
-        \n"
+         \n  .parent > .foo {\
+         \n    color: blue;\
+         \n  }\
+         \n}\n"
     );
 }

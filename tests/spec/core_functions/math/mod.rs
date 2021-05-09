@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math"
 
+#[allow(unused)]
+use super::runner;
+
 mod abs;
 
 mod acos;

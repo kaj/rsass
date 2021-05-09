@@ -1,25 +1,27 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_673.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".example {\
              \n    padding-left: 2rem;\
              \n    padding-right: 2rem;\
              \n}\
-             \n@media screen and (min-width:768px) {\
-             \n\
+             \n@media screen and (min-width:768px) {\n\
              \n    #footer {\
              \n        .row {\
              \n            @extend .example;\
              \n        }\
-             \n    }\
-             \n\
+             \n    }\n\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: From line 1, column 1 of input.scss: \
          \n  ,\
          \n1 | .example {\

@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/import/miss/mixin/simple/inside.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin import-google-fonts() {\r\
              \n  @import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\r\
              \n}\r\
@@ -12,7 +17,7 @@ fn test() {
              \n  $family: unquote(\"Droid+Sans\");\r\
              \n  @include import-google-fonts();\r\
              \n}"
-        ).unwrap_err(),
+        ),
         "Error: Undefined variable.\
          \n  ,\
          \n2 |   @import url(\"http://fonts.googleapis.com/css?family=#{$family}\");\

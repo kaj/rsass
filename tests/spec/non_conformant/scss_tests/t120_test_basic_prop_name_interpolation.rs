@@ -1,16 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/120_test_basic_prop_name_interpolation.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "foo {bar#{1 + 2}: blip}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("foo {bar#{1 + 2}: blip}\n"),
         "foo {\
-        \n  bar3: blip;\
-        \n}\
-        \n"
+         \n  bar3: blip;\
+         \n}\n"
     );
 }

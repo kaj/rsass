@@ -1,54 +1,56 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/load_css/plain_css.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file("at_rule/_other.scss", "@media screen {a {b: c}}\n")
+        .mock_file("empty/user_defined/_other.scss", "// No CSS here!\n")
+        .mock_file("named/_other.scss", "a {b: c}\n")
+        .mock_file("nested/media_query/_midstream.scss", "@use \"upstream\";\n\na {\n  @media b {c: d}\n}\n")
+        .mock_file("nested/media_query/_upstream.scss", "/**/\n")
+        .mock_file("nested/parent_selector/_other.scss", "b {\n  // This & should *not* refer to the `a` in `input.scss`, because the CSS is\n  // resolved context-independently.\n  c & {x: y}\n}\n")
+        .mock_file("nested/plain_plain_css/_other.scss", "b {c: d}\n")
+        .mock_file("plain_css_import/_other.scss", "d {e: f}\n\n// This should be lifted to the top of the output stylesheet.\n@import \"style.css\";\n")
+        .mock_file("style_rule/_other.scss", "a {b: c}\n")
+        .mock_file("through_other_mixin/_upstream.scss", "a {b: in main dir}\n")
+        .mock_file("through_other_mixin/subdir/_midstream.scss", "@use \"sass:meta\";\n\n// This should load relative to _midstream.scss, not input.scss.\n@mixin load-css($module) {\n  @include meta.load-css($module);\n}\n")
+        .mock_file("through_other_mixin/subdir/_upstream.scss", "a {b: in subdir}\n")
+}
+
 #[test]
 #[ignore] // unexepected error
 fn at_rule() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:meta\";\
-            \n@include meta.load-css(\"other\");\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:meta\";\
+             \n@include meta.load-css(\"other\");\n"),
         "@media screen {\
-        \n  a {\
-        \n    b: c;\
-        \n  }\
-        \n}\
-        \n"
+         \n  a {\
+         \n    b: c;\
+         \n  }\
+         \n}\n"
     );
 }
 mod empty {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // unexepected error
     fn built_in() {
         assert_eq!(
-            crate::rsass(
-                "@use \"sass:meta\";\
-            \n@include meta.load-css(\"sass:color\");\
-            \n\
-            \n/* No output other than this */\
-            \n"
-            )
-            .unwrap(),
-            "/* No output other than this */\
-        \n"
+            runner().ok("@use \"sass:meta\";\
+             \n@include meta.load-css(\"sass:color\");\n\
+             \n/* No output other than this */\n"),
+            "/* No output other than this */\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn user_defined() {
         assert_eq!(
-            crate::rsass(
-                "@use \"sass:meta\";\
-            \n@include meta.load-css(\"other\");\
-            \n\
-            \n/* No output other than this */\
-            \n"
-            )
-            .unwrap(),
-            "/* No output other than this */\
-        \n"
+            runner().ok("@use \"sass:meta\";\
+             \n@include meta.load-css(\"other\");\n\
+             \n/* No output other than this */\n"),
+            "/* No output other than this */\n"
         );
     }
 }
@@ -56,69 +58,51 @@ mod empty {
 #[ignore] // unexepected error
 fn named() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:meta\";\
-            \n@include meta.load-css($url: \"other\");\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:meta\";\
+             \n@include meta.load-css($url: \"other\");\n"),
         "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
     );
 }
 mod nested {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // unexepected error
     fn media_query() {
         assert_eq!(
-            crate::rsass(
-                "// Regression test for dart-sass#843\
-            \n@use \"sass:meta\";\
-            \n@include meta.load-css(\"midstream\")\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("// Regression test for dart-sass#843\
+             \n@use \"sass:meta\";\
+             \n@include meta.load-css(\"midstream\")\n"),
             "/**/\
-        \n@media b {\
-        \n  a {\
-        \n    c: d;\
-        \n  }\
-        \n}\
-        \n"
+         \n@media b {\
+         \n  a {\
+         \n    c: d;\
+         \n  }\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn parent_selector() {
         assert_eq!(
-            crate::rsass(
-                "@use \"sass:meta\";\
-            \na {@include meta.load-css(\"other\")}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"sass:meta\";\
+             \na {@include meta.load-css(\"other\")}\n"),
             "a c b {\
-        \n  x: y;\
-        \n}\
-        \n"
+         \n  x: y;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn plain_plain_css() {
         assert_eq!(
-            crate::rsass(
-                "@use \"sass:meta\";\
-            \na {@include meta.load-css(\"other\")}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"sass:meta\";\
+             \na {@include meta.load-css(\"other\")}\n"),
             "a b {\
-        \n  c: d;\
-        \n}\
-        \n"
+         \n  c: d;\
+         \n}\n"
         );
     }
 }
@@ -126,54 +110,37 @@ mod nested {
 #[ignore] // unexepected error
 fn plain_css_import() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:meta\";\
-            \n\
-            \na {b: c}\
-            \n\
-            \n@include meta.load-css(\"other\");\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:meta\";\n\
+             \na {b: c}\n\
+             \n@include meta.load-css(\"other\");\n"),
         "@import \"style.css\";\
-        \na {\
-        \n  b: c;\
-        \n}\
-        \nd {\
-        \n  e: f;\
-        \n}\
-        \n"
+         \na {\
+         \n  b: c;\
+         \n}\
+         \nd {\
+         \n  e: f;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // unexepected error
 fn style_rule() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:meta\";\
-            \n@include meta.load-css(\"other\");\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:meta\";\
+             \n@include meta.load-css(\"other\");\n"),
         "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // unexepected error
 fn through_other_mixin() {
     assert_eq!(
-        crate::rsass(
-            "@use \"subdir/midstream\";\
-            \n@include midstream.load-css(\"upstream\");\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"subdir/midstream\";\
+             \n@include midstream.load-css(\"upstream\");\n"),
         "a {\
-        \n  b: in subdir;\
-        \n}\
-        \n"
+         \n  b: in subdir;\
+         \n}\n"
     );
 }

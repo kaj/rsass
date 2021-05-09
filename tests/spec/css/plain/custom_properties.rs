@@ -1,62 +1,54 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/custom_properties.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file(
+            "arbitrary_tokens/plain.css",
+            "a {--b: `~@#$%^&*()_-+={[]}|?/><}\n",
+        )
+        .mock_file("color/plain.css", "a {--b: #ff0000}\n")
+        .mock_file("identifier/plain.css", "a {--b: c}\n")
+        .mock_file("nested/plain.css", "a {--b: {c: d}}\n")
+}
+
 #[test]
 #[ignore] // wrong result
 fn arbitrary_tokens() {
     assert_eq!(
-        crate::rsass(
-            "@import \"plain\";\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@import \"plain\";\n"),
         "a {\
-        \n  --b: `~@#$%^&*()_-+={[]}|?/><;\
-        \n}\
-        \n"
+         \n  --b: `~@#$%^&*()_-+={[]}|?/><;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // wrong result
 fn color() {
     assert_eq!(
-        crate::rsass(
-            "@import \"plain\";\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@import \"plain\";\n"),
         "a {\
-        \n  --b: #ff0000;\
-        \n}\
-        \n"
+         \n  --b: #ff0000;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // wrong result
 fn identifier() {
     assert_eq!(
-        crate::rsass(
-            "@import \"plain\";\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@import \"plain\";\n"),
         "a {\
-        \n  --b: c;\
-        \n}\
-        \n"
+         \n  --b: c;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // wrong result
 fn nested() {
     assert_eq!(
-        crate::rsass(
-            "@import \"plain\";\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@import \"plain\";\n"),
         "a {\
-        \n  --b: {c: d};\
-        \n}\
-        \n"
+         \n  --b: {c: d};\
+         \n}\n"
     );
 }

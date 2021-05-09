@@ -1,30 +1,30 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_883.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div {\
-            \n  @foo {\
-            \n    font: a;\
-            \n  }\
-            \n  @bar {\
-            \n    color: b;\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("div {\
+             \n  @foo {\
+             \n    font: a;\
+             \n  }\
+             \n  @bar {\
+             \n    color: b;\
+             \n  }\
+             \n}\n"),
         "@foo {\
-        \n  div {\
-        \n    font: a;\
-        \n  }\
-        \n}\
-        \n@bar {\
-        \n  div {\
-        \n    color: b;\
-        \n  }\
-        \n}\
-        \n"
+         \n  div {\
+         \n    font: a;\
+         \n  }\
+         \n}\
+         \n@bar {\
+         \n  div {\
+         \n    color: b;\
+         \n  }\
+         \n}\n"
     );
 }

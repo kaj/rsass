@@ -1,112 +1,97 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/call.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod args {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong result
     fn named() {
         assert_eq!(
-        crate::rsass(
-            "a {b: call(get-function(\"rgb\"), $blue: 1, $green: 2, $red: 3)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "a {b: call(get-function(\"rgb\"), $blue: 1, $green: 2, $red: 3)}\n"
+        ),
         "a {\
-        \n  b: #030201;\
-        \n}\
-        \n"
+         \n  b: #030201;\
+         \n}\n"
     );
     }
     #[test]
     fn none() {
         assert_eq!(
-            crate::rsass(
-                "@function a() {@return b}\
-            \nc {d: call(get-function(\"a\"))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@function a() {@return b}\
+             \nc {d: call(get-function(\"a\"))}\n"),
             "c {\
-        \n  d: b;\
-        \n}\
-        \n"
+         \n  d: b;\
+         \n}\n"
         );
     }
     #[test]
     fn positional() {
         assert_eq!(
-            crate::rsass(
-                "a {b: call(get-function(\"rgb\"), 1, 2, 3)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: call(get-function(\"rgb\"), 1, 2, 3)}\n"),
             "a {\
-        \n  b: #010203;\
-        \n}\
-        \n"
+         \n  b: #010203;\
+         \n}\n"
         );
     }
     mod splat {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn combined() {
             assert_eq!(
-                crate::rsass(
-                    "$positional: 1 2;\
-            \n$named: (\"blue\": 3);\
-            \na {b: call(get-function(\"rgb\"), $positional..., $named...)}\
-            \n"
-                )
-                .unwrap(),
-                "a {\
-        \n  b: #010203;\
-        \n}\
-        \n"
-            );
+        runner().ok(
+            "$positional: 1 2;\
+             \n$named: (\"blue\": 3);\
+             \na {b: call(get-function(\"rgb\"), $positional..., $named...)}\n"
+        ),
+        "a {\
+         \n  b: #010203;\
+         \n}\n"
+    );
         }
         #[test]
         #[ignore] // wrong result
         fn named() {
             assert_eq!(
-                crate::rsass(
-                    "$args: (\"green\": 1, \"blue\": 2, \"red\": 3);\
-            \na {b: call(get-function(\"rgb\"), $args...)}\
-            \n"
-                )
-                .unwrap(),
+                runner()
+                    .ok("$args: (\"green\": 1, \"blue\": 2, \"red\": 3);\
+             \na {b: call(get-function(\"rgb\"), $args...)}\n"),
                 "a {\
-        \n  b: #030102;\
-        \n}\
-        \n"
+         \n  b: #030102;\
+         \n}\n"
             );
         }
         #[test]
         fn positional() {
             assert_eq!(
-                crate::rsass(
-                    "$args: 1, 2, 3;\
-            \na {b: call(get-function(\"rgb\"), $args...)}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("$args: 1, 2, 3;\
+             \na {b: call(get-function(\"rgb\"), $args...)}\n"),
                 "a {\
-        \n  b: #010203;\
-        \n}\
-        \n"
+         \n  b: #010203;\
+         \n}\n"
             );
         }
     }
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn if_args() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "// The if() function has a special behavior to avoid evaluating the\
              \n// non-returned argument but that behavior does not propagate to call()\
              \n// itself when using call() to call if().\
-             \na {b: call(get-function(\"if\"), true, \"\", $undefined)}\
-             \n"
-        ).unwrap_err(),
+             \na {b: call(get-function(\"if\"), true, \"\", $undefined)}\n"
+        ),
         "Error: Undefined variable.\
          \n  ,\
          \n4 | a {b: call(get-function(\"if\"), true, \"\", $undefined)}\
@@ -119,11 +104,7 @@ mod error {
     #[ignore] // missing error
     fn invalid_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: call(get-function(\"rgb\"), 1)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: call(get-function(\"rgb\"), 1)}\n"),
             "Error: Missing element $green.\
          \n  ,\
          \n1 | a {b: call(get-function(\"rgb\"), 1)}\
@@ -135,11 +116,7 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: call()}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: call()}\n"),
             "Error: Missing argument $function.\
          \n  ,--> input.scss\
          \n1 | a {b: call()}\
@@ -155,11 +132,7 @@ mod error {
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
-                "a {b: call(1)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: call(1)}\n"),
             "Error: $function: 1 is not a function reference.\
          \n  ,\
          \n1 | a {b: call(1)}\
@@ -172,45 +145,34 @@ mod error {
 #[test]
 fn named() {
     assert_eq!(
-        crate::rsass(
-            "a {b: call($function: get-function(\"rgb\"), $red: 1, $green: 2, $blue: 3)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "a {b: call($function: get-function(\"rgb\"), $red: 1, $green: 2, $blue: 3)}\n"
+        ),
         "a {\
-        \n  b: #010203;\
-        \n}\
-        \n"
+         \n  b: #010203;\
+         \n}\n"
     );
 }
 mod string {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn built_in() {
         assert_eq!(
-            crate::rsass(
-                "a {b: call(\"rgb\", 1, 2, 3)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: call(\"rgb\", 1, 2, 3)}\n"),
             "a {\
-        \n  b: #010203;\
-        \n}\
-        \n"
+         \n  b: #010203;\
+         \n}\n"
         );
     }
     #[test]
     fn local() {
         assert_eq!(
-            crate::rsass(
-                "@function a($arg) {@return $arg + 1}\
-            \na {b: call(\"a\", 1)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@function a($arg) {@return $arg + 1}\
+             \na {b: call(\"a\", 1)}\n"),
             "a {\
-        \n  b: 2;\
-        \n}\
-        \n"
+         \n  b: 2;\
+         \n}\n"
         );
     }
 }

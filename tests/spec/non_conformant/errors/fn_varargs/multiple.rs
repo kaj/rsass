@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/fn-varargs/multiple.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass("@function test($param...,$rest...) {}").unwrap_err(),
+        runner().err("@function test($param...,$rest...) {}"),
         "Error: expected \")\".\
          \n  ,\
          \n1 | @function test($param...,$rest...) {}\

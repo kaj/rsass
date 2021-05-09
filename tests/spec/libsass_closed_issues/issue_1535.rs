@@ -1,25 +1,25 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1535.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "foo {\
-            \n    test: type-of(1--em);\
-            \n    test: (1--em-2--em);\
-            \n    test: (1--em- 2--em);\
-            \n    test: (1--em -2--em);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("foo {\
+             \n    test: type-of(1--em);\
+             \n    test: (1--em-2--em);\
+             \n    test: (1--em- 2--em);\
+             \n    test: (1--em -2--em);\
+             \n}\n"),
         "foo {\
-        \n  test: list;\
-        \n  test: 1 --em-2--em;\
-        \n  test: 1 --em- 2 --em;\
-        \n  test: 1 --em -2 --em;\
-        \n}\
-        \n"
+         \n  test: list;\
+         \n  test: 1 --em-2--em;\
+         \n  test: 1 --em- 2 --em;\
+         \n  test: 1 --em -2 --em;\
+         \n}\n"
     );
 }

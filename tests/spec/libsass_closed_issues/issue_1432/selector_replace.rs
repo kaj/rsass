@@ -1,13 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1432/selector-replace.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@debug(selector-replace(\"foo\", \"bar\", null));\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "@debug(selector-replace(\"foo\", \"bar\", null));\n"
+        ),
         "Error: $replacement: null is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\

@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/19_escapes_single_quoted_lowercase"
 
+#[allow(unused)]
+use super::runner;
+
 mod t01_inline;
 
 mod t02_variable;

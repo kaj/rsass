@@ -1,20 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_690.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "test {\
-            \n  left: expression(callSomeFunc());\
-            \n  content: expression(\"Smile :-)\");\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("test {\
+             \n  left: expression(callSomeFunc());\
+             \n  content: expression(\"Smile :-)\");\
+             \n}\n"),
         "test {\
-        \n  left: expression(callSomeFunc());\
-        \n  content: expression(\"Smile :-)\");\
-        \n}\
-        \n"
+         \n  left: expression(callSomeFunc());\
+         \n  content: expression(\"Smile :-)\");\
+         \n}\n"
     );
 }

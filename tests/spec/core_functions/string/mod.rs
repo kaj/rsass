@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/string"
 
+#[allow(unused)]
+use super::runner;
+
 mod index;
 
 mod insert;

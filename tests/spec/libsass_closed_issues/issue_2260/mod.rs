@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2260"
 
+#[allow(unused)]
+use super::runner;
+
 mod inner_parent_no_compound;
 
 mod inner_parent_with_compound;

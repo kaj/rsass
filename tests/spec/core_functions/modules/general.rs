@@ -1,31 +1,52 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/modules/general.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file(
+            "forward/as/_other.scss",
+            "@forward \"sass:math\" as s-*;\n",
+        )
+        .mock_file("forward/bare/_other.scss", "@forward \"sass:math\";\n")
+        .mock_file(
+            "forward/error/hide/_other.scss",
+            "@forward \"sass:math\" hide round;\n",
+        )
+        .mock_file(
+            "forward/error/show/_other.scss",
+            "@forward \"sass:math\" show ceil;\n",
+        )
+        .mock_file(
+            "forward/hide/_other.scss",
+            "@forward \"sass:math\" hide ceil;\n",
+        )
+        .mock_file(
+            "forward/show/_other.scss",
+            "@forward \"sass:math\" show round;\n",
+        )
+}
+
 #[test]
 fn test_as() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as m;\
-            \na {b: m.round(0.7)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as m;\
+             \na {b: m.round(0.7)}\n"),
         "a {\
-        \n  b: 1;\
-        \n}\
-        \n"
+         \n  b: 1;\
+         \n}\n"
     );
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn set_variable() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\";\
-             \nmath.$a: b;\
-             \n"
-            )
-            .unwrap_err(),
+             \nmath.$a: b;\n"
+            ),
             "Error: Undefined variable.\
          \n  ,\
          \n2 | math.$a: b;\
@@ -36,49 +57,41 @@ mod error {
     }
 }
 mod forward {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // unexepected error
     fn test_as() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\";\
-            \na {b: other.s-round(0.7)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\";\
+             \na {b: other.s-round(0.7)}\n"),
             "a {\
-        \n  b: 1;\
-        \n}\
-        \n"
+         \n  b: 1;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn bare() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\";\
-            \na {b: other.round(0.7)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\";\
+             \na {b: other.round(0.7)}\n"),
             "a {\
-        \n  b: 1;\
-        \n}\
-        \n"
+         \n  b: 1;\
+         \n}\n"
         );
     }
     mod error {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn hide() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@use \"other\";\
-             \na {b: other.round(0.7)}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: other.round(0.7)}\n"
+                ),
                 "Error: Undefined function.\
          \n  ,\
          \n2 | a {b: other.round(0.7)}\
@@ -91,12 +104,10 @@ mod forward {
         #[ignore] // wrong error
         fn show() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@use \"other\";\
-             \na {b: other.round(0.7)}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: other.round(0.7)}\n"
+                ),
                 "Error: Undefined function.\
          \n  ,\
          \n2 | a {b: other.round(0.7)}\
@@ -110,47 +121,32 @@ mod forward {
     #[ignore] // unexepected error
     fn hide() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\";\
-            \na {b: other.round(0.7)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\";\
+             \na {b: other.round(0.7)}\n"),
             "a {\
-        \n  b: 1;\
-        \n}\
-        \n"
+         \n  b: 1;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn show() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\";\
-            \na {b: other.round(0.7)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\";\
+             \na {b: other.round(0.7)}\n"),
             "a {\
-        \n  b: 1;\
-        \n}\
-        \n"
+         \n  b: 1;\
+         \n}\n"
         );
     }
 }
 #[test]
 fn global() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as *;\
-            \na {b: compatible(1px, 1in)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as *;\
+             \na {b: compatible(1px, 1in)}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }

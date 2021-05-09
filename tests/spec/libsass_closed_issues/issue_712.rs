@@ -1,22 +1,24 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_712.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".foo {\
              \n  content: \'foo\';\
-             \n}\
-             \n\
+             \n}\n\
              \n@media print {\
              \n  .bar {\
              \n    @extend .foo;\
              \n  }\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: From line 1, column 1 of input.scss: \
          \n  ,\
          \n1 | .foo {\

@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate"
 
+#[allow(unused)]
+use super::runner;
+
 mod t00_concatenation;
 
 mod t01_literal;

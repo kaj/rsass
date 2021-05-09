@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1651/with.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "a {\
              \n  display: block;\
              \n}\
@@ -12,10 +17,8 @@ fn test() {
              \n  @at-root (with: media) {\
              \n    @extend .a;\
              \n  }\
-             \n} \
-             \n"
-        )
-        .unwrap_err(),
+             \n} \n"
+        ),
         "Error: @extend may only be used within style rules.\
          \n  ,\
          \n6 |     @extend .a;\

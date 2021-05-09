@@ -1,17 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_699.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".selector {\
-            \n  color: invert(rebeccapurple);\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok(".selector {\
+             \n  color: invert(rebeccapurple);\
+             \n}"),
         ".selector {\
-        \n  color: #99cc66;\
-        \n}\
-        \n"
+         \n  color: #99cc66;\
+         \n}\n"
     );
 }

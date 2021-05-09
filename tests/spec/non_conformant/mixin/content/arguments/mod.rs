@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/mixin/content/arguments"
 
+#[allow(unused)]
+use super::runner;
+
 mod error;
 
 mod none;

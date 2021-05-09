@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-issues"
 
+#[allow(unused)]
+use super::runner;
+
 mod issue_1026;
 
 mod issue_1096;
@@ -12,7 +15,7 @@ mod issue_1763;
 
 mod issue_1798;
 
-mod issue_1801;
+// Ignoring "issue_1801", not expected to work yet.
 
 // Ignoring "issue_2016", tests with expected error not implemented yet.
 

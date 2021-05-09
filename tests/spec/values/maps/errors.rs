@@ -1,15 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/values/maps/errors.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "$map: ( foo: bar );\
-             \ntest { baz: $map; }\
-             \n"
-        )
-        .unwrap_err(),
+             \ntest { baz: $map; }\n"
+        ),
         "Error: (foo: bar) isn\'t a valid CSS value.\
          \n  ,\
          \n2 | test { baz: $map; }\

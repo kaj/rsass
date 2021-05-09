@@ -1,15 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-issues/issue_2295/error/basic.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner().mock_file("include.scss", "display: none;\r\n")
+}
+
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".my-scope {\r\
              \n  @import \'include.scss\';\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: expected \"{\".\
          \n  ,\
          \n1 | display: none;\

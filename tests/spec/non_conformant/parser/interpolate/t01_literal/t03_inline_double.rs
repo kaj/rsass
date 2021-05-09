@@ -1,26 +1,26 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/01_literal/03_inline_double.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".result {\
-            \n  output: #{#{literal}};\
-            \n  output: #{\"[#{literal}]\"};\
-            \n  output: #{\"#{literal}\"};\
-            \n  output: #{\'#{literal}\'};\
-            \n  output: #{\"[\'#{literal}\']\"};\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".result {\
+             \n  output: #{#{literal}};\
+             \n  output: #{\"[#{literal}]\"};\
+             \n  output: #{\"#{literal}\"};\
+             \n  output: #{\'#{literal}\'};\
+             \n  output: #{\"[\'#{literal}\']\"};\
+             \n}\n"),
         ".result {\
-        \n  output: literal;\
-        \n  output: [literal];\
-        \n  output: literal;\
-        \n  output: literal;\
-        \n  output: [\'literal\'];\
-        \n}\
-        \n"
+         \n  output: literal;\
+         \n  output: [literal];\
+         \n  output: literal;\
+         \n  output: literal;\
+         \n  output: [\'literal\'];\
+         \n}\n"
     );
 }

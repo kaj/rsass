@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector"
 
+#[allow(unused)]
+use super::runner;
+
 mod append;
 
 // Ignoring "extend", not expected to work yet.

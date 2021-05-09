@@ -1,18 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/root/basic-alone-itpl.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "#{&} {\r\
              \n  foo {\r\
              \n    bar: baz;\r\
              \n  }\r\
-             \n}\r\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\r\n"
+        ),
         "Error: expected selector.\
          \n  ,\
          \n1 | {\

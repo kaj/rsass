@@ -1,12 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_864.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass("div { color: desaturate(#999, 50%); }").unwrap(),
+        runner().ok("div { color: desaturate(#999, 50%); }"),
         "div {\
-        \n  color: #999999;\
-        \n}\
-        \n"
+         \n  color: #999999;\
+         \n}\n"
     );
 }

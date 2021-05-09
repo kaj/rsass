@@ -10,6 +10,9 @@ mod options;
 use options::Options;
 mod testfixture;
 use testfixture::TestFixture;
+mod testrunner;
+use testrunner::{runner, TestRunner};
+mod writestr;
 
 fn main() -> Result<(), Error> {
     let base = PathBuf::from("sass-spec");
@@ -23,6 +26,8 @@ fn main() -> Result<(), Error> {
             "directives/extend", // `@extend` is not supported at all
             "directives/forward", // `@forward` is not supported at all
             "libsass-closed-issues/issue_185/mixin.hrx", // stack overflow
+            "libsass-closed-issues/issue_1801", // infinite recursion
+            "libsass-todo-issues/issue_1801", // infinite recursion
             "libsass-todo-issues/issue_221262.hrx", // stack overflow
             "libsass-todo-issues/issue_221260.hrx", // stack overflow
             "libsass-todo-issues/issue_221292.hrx", // stack overflow
@@ -68,7 +73,13 @@ fn handle_suite(
             ignored,
         )?;
     }
-    rs.write_all(include_bytes!("testrunner.rs"))?;
+    rs.write_all(
+        b"mod testrunner;\nuse testrunner::{runner, TestRunner};\n\n",
+    )?;
+    {
+        let mut tr = File::create(rssuitedir.join("testrunner.rs"))?;
+        tr.write_all(include_bytes!("testrunner.rs"))?;
+    }
     handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)
         .map_err(|e| {
             Error(format!("Failed to handle suite {:?}: {}", suite, e))
@@ -87,7 +98,7 @@ fn handle_entries(
         suitedir.read_dir()?.collect::<Result<_, _>>()?;
     entries.sort_by_key(|e| e.file_name());
     for entry in entries {
-        if ignored.iter().any(|&i| &entry.file_name() == i) {
+        if ignored.iter().any(|&i| entry.file_name() == i) {
             ignore(rs, &entry.file_name(), "not expected to work yet")?;
         } else if entry.file_type()?.is_file()
             && entry.file_name().to_string_lossy().ends_with(".hrx")
@@ -142,7 +153,6 @@ fn handle_entries(
                     if let Some(ref reason) = options.should_skip {
                         ignore(rs, &entry.file_name(), reason)?;
                     } else {
-                        let precision = options.precision.or(precision);
                         let name = fn_name_os(&entry.file_name());
                         writeln!(rs, "\nmod {};", name)?;
                         let rssuitedir = rssuitedir.join(name);
@@ -153,20 +163,27 @@ fn handle_entries(
                             "//! Tests auto-converted from {:?}\n",
                             suitedir.join(entry.file_name()),
                         )?;
-                        write_fn_runner(&mut rs, precision)?;
+                        if let Some(p) = options.precision {
+                            writeln!(
+                                rs,
+                                "fn runner() -> crate::TestRunner {{\
+                                 \n    super::runner().set_precision({})\
+                                 \n}}\n\n",
+                                p
+                            )?;
+                        } else {
+                            rs.write_all(
+                                b"#[allow(unused)]\nuse super::runner;\n\n",
+                            )?;
+                        }
+                        let precision = options.precision.or(precision);
                         let tt = format!(
                             "{}/",
                             entry.file_name().to_string_lossy(),
                         );
                         let ignored: Vec<&str> = ignored
                             .iter()
-                            .filter_map(|p| {
-                                if p.starts_with(&tt) {
-                                    Some(p.split_at(tt.len()).1)
-                                } else {
-                                    None
-                                }
-                            })
+                            .filter_map(|p| p.strip_prefix(&tt))
                             .collect();
                         handle_entries(
                             &mut rs,
@@ -202,7 +219,7 @@ fn spec_dir_to_test(
     let specdir = suite.join(test);
     let fixture = load_test_fixture_dir(&specdir, precision)?;
     writeln!(rs, "\n// From {:?}", specdir)?;
-    fixture.write_test(rs)
+    fixture.write_test(rs, runner())
 }
 
 fn spec_hrx_to_test(
@@ -214,8 +231,40 @@ fn spec_hrx_to_test(
         .map_err(|e| Error(format!("Failed to load hrx: {}", e)))?;
 
     eprintln!("Handle {}", suite.display());
-    write_fn_runner(rs, precision)?;
-    handle_hrx_part(rs, suite, &archive, "", precision)
+    rs.write_all(
+        b"#[allow(unused)]\
+                   \nfn runner() -> crate::TestRunner {\
+                   \n    super::runner()\n",
+    )?;
+    let mut runner = runner();
+    for (name, content) in archive.entries() {
+        if ![
+            "README.md",
+            "input.scss",
+            "input.sass",
+            "output.css",
+            "output-libsass.css",
+            "output-dart-sass.css",
+            "error",
+            "error-libsass",
+            "error-dart-sass",
+            "warning",
+            "warning-libsass",
+            "warning-dart-sass",
+            "options.yml",
+        ]
+        .iter()
+        .any(|n| name.ends_with(n))
+        {
+            writeln!(rs, "        .mock_file({:?}, {:#?})", name, content)?;
+            runner = runner.mock_file(name, content);
+        }
+    }
+    if let Some(p) = precision {
+        writeln!(rs, "        .set_precision({})", p)?;
+    }
+    rs.write_all(b"}\n\n")?;
+    handle_hrx_part(rs, suite, &archive, "", precision, runner)
 }
 
 fn handle_hrx_part(
@@ -224,33 +273,22 @@ fn handle_hrx_part(
     archive: &Archive,
     prefix: &str,
     precision: Option<i64>,
+    runner: TestRunner,
 ) -> Result<(), Error> {
     use std::collections::BTreeSet;
     let tests = archive
         .names()
         .iter()
         .flat_map(|s| {
-            if s.starts_with(prefix) {
-                let t = prefix.len();
-                if let Some(pos) = s[t..].find('/') {
-                    Some(&s[t..t + pos + 1])
-                } else {
-                    None // Some("")
-                }
-            } else {
-                None
-            }
+            s.strip_prefix(prefix)
+                .and_then(|s| s.find('/').map(|p| &s[..p + 1]))
         })
         .collect::<BTreeSet<_>>();
 
     let name = if prefix.is_empty() {
         None
     } else {
-        let t = if prefix.ends_with('/') {
-            &prefix[0..prefix.len() - 1]
-        } else {
-            prefix
-        };
+        let t = prefix.trim_end_matches('/');
         let t = if let Some(p) = t.rfind('/') {
             &t[p + 1..]
         } else {
@@ -273,17 +311,18 @@ fn handle_hrx_part(
             prefix,
             options,
         )?;
-        fixture.write_test(rs)
+        fixture.write_test(rs, runner)
     } else if let Some(ref reason) = options.should_skip {
         ignore(rs, &suite.file_name(), reason).map_err(|e| e.into())
     } else {
         if !tests.is_empty() {
             if let Some(ref name) = name {
-                writeln!(rs, "mod {} {{", name,)?;
                 writeln!(
                     rs,
-                    "    #[allow(unused)]\
-                     \n    use super::runner;"
+                    "mod {} {{\
+                     \n    #[allow(unused)]\
+                     \n    use super::runner;",
+                    name,
                 )?;
             }
             for name in tests {
@@ -293,6 +332,7 @@ fn handle_hrx_part(
                     &archive,
                     &format!("{}{}", prefix, name),
                     options.precision,
+                    runner.clone(),
                 )?;
             }
             if name.is_some() {
@@ -301,22 +341,6 @@ fn handle_hrx_part(
         }
         Ok(())
     }
-}
-
-fn write_fn_runner(
-    rs: &mut dyn Write,
-    precision: Option<i64>,
-) -> Result<(), Error> {
-    rs.write_all(
-        b"#[allow(unused)]\
-                   \nfn runner() -> crate::TestRunner {\
-                   \n    crate::TestRunner::new()",
-    )?;
-    if let Some(p) = precision {
-        writeln!(rs, "        .set_precision({})", p)?;
-    }
-    rs.write_all(b"}\n\n")?;
-    Ok(())
 }
 
 fn fn_name_os(name: &OsStr) -> String {

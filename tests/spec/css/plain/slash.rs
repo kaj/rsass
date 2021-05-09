@@ -1,17 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/slash.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner().mock_file("plain.css", "a {\n  slash: 1/2/foo/bar;\n}\n")
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@import \"plain\";\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@import \"plain\";\n"),
         "a {\
-        \n  slash: 1/2/foo/bar;\
-        \n}\
-        \n"
+         \n  slash: 1/2/foo/bar;\
+         \n}\n"
     );
 }

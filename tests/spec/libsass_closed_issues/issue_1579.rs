@@ -1,27 +1,25 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1579.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@function foo($a, $b: null, $c: false) {\
-            \n  @return $c;\
-            \n}\
-            \n\
-            \n@function bar($args...) {\
-            \n  @return call(foo, $args...);\
-            \n}\
-            \n\
-            \ntest {\
-            \n  test: bar(3, $c: true);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@function foo($a, $b: null, $c: false) {\
+             \n  @return $c;\
+             \n}\n\
+             \n@function bar($args...) {\
+             \n  @return call(foo, $args...);\
+             \n}\n\
+             \ntest {\
+             \n  test: bar(3, $c: true);\
+             \n}\n"),
         "test {\
-        \n  test: true;\
-        \n}\
-        \n"
+         \n  test: true;\
+         \n}\n"
     );
 }

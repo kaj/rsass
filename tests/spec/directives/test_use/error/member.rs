@@ -1,16 +1,136 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/error/member.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file(
+            "before_use/function/other.scss",
+            "@function member() {@return null}\n",
+        )
+        .mock_file(
+            "before_use/variable_declaration/other.scss",
+            "$member: value;\n",
+        )
+        .mock_file(
+            "before_use/variable_declaration_without_namespace/other.scss",
+            "$member: from other;\n",
+        )
+        .mock_file("before_use/variable_use/other.scss", "$member: value;\n")
+        .mock_file(
+            "conflict/function/other1.scss",
+            "@function member() {@return from other1}\n",
+        )
+        .mock_file(
+            "conflict/function/other2.scss",
+            "@function member() {@return from other2}\n",
+        )
+        .mock_file(
+            "conflict/mixin/other1.scss",
+            "@mixin member {a: from other1}\n",
+        )
+        .mock_file(
+            "conflict/mixin/other2.scss",
+            "@mixin member {a: from other2}\n",
+        )
+        .mock_file(
+            "conflict/same_value/function/_other1.scss",
+            "@function c() {@return d}\n",
+        )
+        .mock_file(
+            "conflict/same_value/function/_other2.scss",
+            "@function c() {@return d}\n",
+        )
+        .mock_file(
+            "conflict/same_value/mixin/_other1.scss",
+            "@mixin b {c: d}\n",
+        )
+        .mock_file(
+            "conflict/same_value/mixin/_other2.scss",
+            "@mixin b {c: d}\n",
+        )
+        .mock_file("conflict/same_value/variable/_other1.scss", "$c: d;\n")
+        .mock_file("conflict/same_value/variable/_other2.scss", "$c: d;\n")
+        .mock_file("conflict/variable/other1.scss", "$member: from other1;\n")
+        .mock_file("conflict/variable/other2.scss", "$member: from other2;\n")
+        .mock_file(
+            "inaccessible/private/function/other.scss",
+            "@function -member() {@return value}\n",
+        )
+        .mock_file(
+            "inaccessible/private/mixin/other.scss",
+            "@mixin -member {a {b: c}}\n",
+        )
+        .mock_file(
+            "inaccessible/private/variable/other.scss",
+            "$-member: value;\n",
+        )
+        .mock_file(
+            "inaccessible/transitive/function/midstream.scss",
+            "@use \"upstream\" as *;\n",
+        )
+        .mock_file(
+            "inaccessible/transitive/function/upstream.scss",
+            "@function upstream() {@return value}\n",
+        )
+        .mock_file(
+            "inaccessible/transitive/mixin/midstream.scss",
+            "@use \"upstream\" as *;\n",
+        )
+        .mock_file(
+            "inaccessible/transitive/mixin/upstream.scss",
+            "@mixin upstream {a {b: c}}\n",
+        )
+        .mock_file(
+            "inaccessible/transitive/variable/midstream.scss",
+            "@use \"upstream\" as *;\n",
+        )
+        .mock_file(
+            "inaccessible/transitive/variable/upstream.scss",
+            "$upstream: value;\n",
+        )
+        .mock_file(
+            "inaccessible/transitive_from_import/function/midstream.scss",
+            "@use \"upstream\" as *;\n",
+        )
+        .mock_file(
+            "inaccessible/transitive_from_import/function/upstream.scss",
+            "@function upstream() {@return value}\n",
+        )
+        .mock_file(
+            "inaccessible/transitive_from_import/mixin/midstream.scss",
+            "@use \"upstream\" as *;\n",
+        )
+        .mock_file(
+            "inaccessible/transitive_from_import/mixin/upstream.scss",
+            "@mixin upstream {a {b: c}}\n",
+        )
+        .mock_file(
+            "inaccessible/transitive_from_import/variable/midstream.scss",
+            "@use \"upstream\" as *;\n",
+        )
+        .mock_file(
+            "inaccessible/transitive_from_import/variable/upstream.scss",
+            "$upstream: value;\n",
+        )
+        .mock_file("missing/global/mixin/other.scss", "")
+        .mock_file("missing/global/variable/other.scss", "")
+        .mock_file("missing/namespaced/function/other.scss", "")
+        .mock_file("missing/namespaced/mixin/other.scss", "")
+        .mock_file("missing/namespaced/variable_declaration/other.scss", "")
+        .mock_file("missing/namespaced/variable_use/other.scss", "")
+}
+
 mod before_use {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn function() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "$variable: other.member();\
-             \n@use \"other\";\
-             \n"
-            )
-            .unwrap_err(),
+             \n@use \"other\";\n"
+            ),
             "Error: There is no module with the namespace \"other\".\
          \n  ,\
          \n1 | $variable: other.member();\
@@ -23,12 +143,10 @@ mod before_use {
     #[ignore] // wrong error
     fn variable_declaration() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "other.$member: value;\
-             \n@use \"other\";\
-             \n"
-            )
-            .unwrap_err(),
+             \n@use \"other\";\n"
+            ),
             "Error: There is no module with the namespace \"other\".\
          \n  ,\
          \n1 | other.$member: value;\
@@ -41,14 +159,11 @@ mod before_use {
     #[ignore] // wrong error
     fn variable_declaration_without_namespace() {
         assert_eq!(
-        crate::rsass(
-            "$member: from input;\
-             \n\
-             \n@use \"other\" as *;\
-             \n\
-             \na {b: $member}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "$member: from input;\n\
+             \n@use \"other\" as *;\n\
+             \na {b: $member}\n"
+        ),
         "Error: This module and the new module both define a variable named \"$member\".\
          \n  ,\
          \n3 | @use \"other\" as *;\
@@ -61,12 +176,10 @@ mod before_use {
     #[ignore] // wrong error
     fn variable_use() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "$variable: other.$member;\
-             \n@use \"other\";\
-             \n"
-            )
-            .unwrap_err(),
+             \n@use \"other\";\n"
+            ),
             "Error: There is no module with the namespace \"other\".\
          \n  ,\
          \n1 | $variable: other.$member;\
@@ -77,18 +190,17 @@ mod before_use {
     }
 }
 mod conflict {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn function() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"other1\" as *;\
-             \n@use \"other2\" as *;\
-             \n\
-             \na {b: member()}\
-             \n"
-            )
-            .unwrap_err(),
+             \n@use \"other2\" as *;\n\
+             \na {b: member()}\n"
+            ),
             "Error: This function is available from multiple global modules.\
          \n    ,\
          \n1   | @use \"other1\" as *;\
@@ -106,14 +218,11 @@ mod conflict {
     #[ignore] // wrong error
     fn mixin() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"other1\" as *;\
-             \n@use \"other2\" as *;\
-             \n\
-             \na {@include member}\
-             \n"
-            )
-            .unwrap_err(),
+             \n@use \"other2\" as *;\n\
+             \na {@include member}\n"
+            ),
             "Error: This mixin is available from multiple global modules.\
          \n    ,\
          \n1   | @use \"other1\" as *;\
@@ -128,17 +237,17 @@ mod conflict {
         );
     }
     mod same_value {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn function() {
             assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \"other1\" as *;\
-             \n@use \"other2\" as *;\
-             \n\
-             \na {b: c()}\
-             \n"
-        ).unwrap_err(),
+             \n@use \"other2\" as *;\n\
+             \na {b: c()}\n"
+        ),
         "Error: This function is available from multiple global modules.\
          \n    ,\
          \n1   | @use \"other1\" as *;\
@@ -156,13 +265,11 @@ mod conflict {
         #[ignore] // wrong error
         fn mixin() {
             assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \"other1\" as *;\
-             \n@use \"other2\" as *;\
-             \n\
-             \na {@include b}\
-             \n"
-        ).unwrap_err(),
+             \n@use \"other2\" as *;\n\
+             \na {@include b}\n"
+        ),
         "Error: This mixin is available from multiple global modules.\
          \n    ,\
          \n1   | @use \"other1\" as *;\
@@ -180,13 +287,11 @@ mod conflict {
         #[ignore] // wrong error
         fn variable() {
             assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \"other1\" as *;\
-             \n@use \"other2\" as *;\
-             \n\
-             \na {b: $c}\
-             \n"
-        ).unwrap_err(),
+             \n@use \"other2\" as *;\n\
+             \na {b: $c}\n"
+        ),
         "Error: This variable is available from multiple global modules.\
          \n    ,\
          \n1   | @use \"other1\" as *;\
@@ -205,14 +310,11 @@ mod conflict {
     #[ignore] // wrong error
     fn variable() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"other1\" as *;\
-             \n@use \"other2\" as *;\
-             \n\
-             \na {b: $member}\
-             \n"
-            )
-            .unwrap_err(),
+             \n@use \"other2\" as *;\n\
+             \na {b: $member}\n"
+            ),
             "Error: This variable is available from multiple global modules.\
          \n    ,\
          \n1   | @use \"other1\" as *;\
@@ -228,37 +330,34 @@ mod conflict {
     }
 }
 mod inaccessible {
+    #[allow(unused)]
+    use super::runner;
     mod private {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // unexepected error
         fn function() {
             assert_eq!(
-        crate::rsass(
-            "@use \"other\" as *;\
-            \n\
-            \n// This is technically not a compile error, since `-member()` is treated as\
-            \n// plain CSS, but it\'s included here for consistency with the other specs.\
-            \na {b: -member()};\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "@use \"other\" as *;\n\
+             \n// This is technically not a compile error, since `-member()` is treated as\
+             \n// plain CSS, but it\'s included here for consistency with the other specs.\
+             \na {b: -member()};\n"
+        ),
         "a {\
-        \n  b: -member();\
-        \n}\
-        \n"
+         \n  b: -member();\
+         \n}\n"
     );
         }
         #[test]
         #[ignore] // wrong error
         fn mixin() {
             assert_eq!(
-                crate::rsass(
-                    "@use \"other\" as *;\
-             \n\
-             \n@include -member;\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@use \"other\" as *;\n\
+             \n@include -member;\n"
+                ),
                 "Error: Undefined mixin.\
          \n  ,\
          \n3 | @include -member;\
@@ -271,13 +370,10 @@ mod inaccessible {
         #[ignore] // wrong error
         fn variable() {
             assert_eq!(
-                crate::rsass(
-                    "@use \"other\" as *;\
-             \n\
-             \na {b: $-member};\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@use \"other\" as *;\n\
+             \na {b: $-member};\n"
+                ),
                 "Error: Undefined variable.\
          \n  ,\
          \n3 | a {b: $-member};\
@@ -288,36 +384,31 @@ mod inaccessible {
         }
     }
     mod transitive {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // unexepected error
         fn function() {
             assert_eq!(
-        crate::rsass(
-            "@use \"midstream\" as *;\
-            \n\
-            \n// This is technically not a compile error, since `-member()` is treated as\
-            \n// plain CSS, but it\'s included here for consistency with the other specs.\
-            \na {b: upstream()};\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "@use \"midstream\" as *;\n\
+             \n// This is technically not a compile error, since `-member()` is treated as\
+             \n// plain CSS, but it\'s included here for consistency with the other specs.\
+             \na {b: upstream()};\n"
+        ),
         "a {\
-        \n  b: upstream();\
-        \n}\
-        \n"
+         \n  b: upstream();\
+         \n}\n"
     );
         }
         #[test]
         #[ignore] // wrong error
         fn mixin() {
             assert_eq!(
-                crate::rsass(
-                    "@use \"midstream\" as *;\
-             \n\
-             \n@include upstream;\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@use \"midstream\" as *;\n\
+             \n@include upstream;\n"
+                ),
                 "Error: Undefined mixin.\
          \n  ,\
          \n3 | @include upstream;\
@@ -330,13 +421,10 @@ mod inaccessible {
         #[ignore] // wrong error
         fn variable() {
             assert_eq!(
-                crate::rsass(
-                    "@use \"midstream\" as *;\
-             \n\
-             \na {b: $upstream};\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@use \"midstream\" as *;\n\
+             \na {b: $upstream};\n"
+                ),
                 "Error: Undefined variable.\
          \n  ,\
          \n3 | a {b: $upstream};\
@@ -347,36 +435,31 @@ mod inaccessible {
         }
     }
     mod transitive_from_import {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong result
         fn function() {
             assert_eq!(
-        crate::rsass(
-            "@import \"midstream\";\
-            \n\
-            \n// This is technically not a compile error, since `upstream()` is treated as\
-            \n// plain CSS, but it\'s included here for consistency with the other specs.\
-            \na {b: upstream()};\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "@import \"midstream\";\n\
+             \n// This is technically not a compile error, since `upstream()` is treated as\
+             \n// plain CSS, but it\'s included here for consistency with the other specs.\
+             \na {b: upstream()};\n"
+        ),
         "a {\
-        \n  b: upstream();\
-        \n}\
-        \n"
+         \n  b: upstream();\
+         \n}\n"
     );
         }
         #[test]
         #[ignore] // wrong error
         fn mixin() {
             assert_eq!(
-                crate::rsass(
-                    "@import \"midstream\";\
-             \n\
-             \n@include upstream;\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@import \"midstream\";\n\
+             \n@include upstream;\n"
+                ),
                 "Error: Undefined mixin.\
          \n  ,\
          \n3 | @include upstream;\
@@ -389,13 +472,10 @@ mod inaccessible {
         #[ignore] // wrong error
         fn variable() {
             assert_eq!(
-                crate::rsass(
-                    "@import \"midstream\";\
-             \n\
-             \na {b: $upstream};\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@import \"midstream\";\n\
+             \na {b: $upstream};\n"
+                ),
                 "Error: Undefined variable.\
          \n  ,\
          \n3 | a {b: $upstream};\
@@ -407,18 +487,19 @@ mod inaccessible {
     }
 }
 mod missing {
+    #[allow(unused)]
+    use super::runner;
     mod global {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn mixin() {
             assert_eq!(
-                crate::rsass(
-                    "@use \"other\";\
-             \n\
-             \n@include member;\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@use \"other\";\n\
+             \n@include member;\n"
+                ),
                 "Error: Undefined mixin.\
          \n  ,\
          \n3 | @include member;\
@@ -431,13 +512,10 @@ mod missing {
         #[ignore] // wrong error
         fn variable() {
             assert_eq!(
-                crate::rsass(
-                    "@use \"other\";\
-             \n\
-             \na {b: $member}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@use \"other\";\n\
+             \na {b: $member}\n"
+                ),
                 "Error: Undefined variable.\
          \n  ,\
          \n3 | a {b: $member}\
@@ -448,17 +526,16 @@ mod missing {
         }
     }
     mod namespaced {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn function() {
             assert_eq!(
-                crate::rsass(
-                    "@use \"other\";\
-             \n\
-             \na {b: other.member()}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@use \"other\";\n\
+             \na {b: other.member()}\n"
+                ),
                 "Error: Undefined function.\
          \n  ,\
          \n3 | a {b: other.member()}\
@@ -471,13 +548,10 @@ mod missing {
         #[ignore] // wrong error
         fn mixin() {
             assert_eq!(
-                crate::rsass(
-                    "@use \"other\";\
-             \n\
-             \n@include other.member;\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@use \"other\";\n\
+             \n@include other.member;\n"
+                ),
                 "Error: Undefined mixin.\
          \n  ,\
          \n3 | @include other.member;\
@@ -490,13 +564,10 @@ mod missing {
         #[ignore] // wrong error
         fn variable_declaration() {
             assert_eq!(
-                crate::rsass(
-                    "@use \"other\";\
-             \n\
-             \nother.$member: value;\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@use \"other\";\n\
+             \nother.$member: value;\n"
+                ),
                 "Error: Undefined variable.\
          \n  ,\
          \n3 | other.$member: value;\
@@ -509,13 +580,10 @@ mod missing {
         #[ignore] // wrong error
         fn variable_use() {
             assert_eq!(
-                crate::rsass(
-                    "@use \"other\";\
-             \n\
-             \na {b: other.$member}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err(
+                    "@use \"other\";\n\
+             \na {b: other.$member}\n"
+                ),
                 "Error: Undefined variable.\
          \n  ,\
          \n3 | a {b: other.$member}\

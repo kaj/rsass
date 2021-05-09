@@ -1,17 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/misc/empty_content.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@mixin foo { @content }\
-            \na { b: c; @include foo {} }\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@mixin foo { @content }\
+             \na { b: c; @include foo {} }\n"),
         "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
     );
 }

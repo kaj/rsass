@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/misc"
 
+#[allow(unused)]
+use super::runner;
+
 mod jma_pseudo_test;
 
 mod directive_interpolation;
@@ -32,17 +35,11 @@ mod trailing_comma_in_selector;
 #[test]
 fn unicode_variables() {
     assert_eq!(
-        crate::rsass(
-            "$vär: foo;\
-            \n\
-            \nblat {a: $vär}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$vär: foo;\n\
+             \nblat {a: $vär}\n"),
         "blat {\
-        \n  a: foo;\
-        \n}\
-        \n"
+         \n  a: foo;\
+         \n}\n"
     );
 }
 

@@ -1,20 +1,23 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-issues/issue_1096.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "// line-endings in this file must be CRLF\r\
              \n@import url(\"foo\\\r\
              \nbar\");\r\
              \n@import url(\"foo\r\
              \nbar\");\r\
              \n@import url(foo\r\
-             \nbar);\r\
-             \n"
-        )
-        .unwrap_err(),
+             \nbar);\r\n"
+        ),
         "Error: Expected \".\
          \n  ,\
          \n4 | @import url(\"foo\

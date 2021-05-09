@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/unicode-bom"
 
+#[allow(unused)]
+use super::runner;
+
 // Ignoring "utf-16-big", not expected to work yet.
 
 // Ignoring "utf-16-little", not expected to work yet.
@@ -8,10 +11,9 @@
 #[test]
 fn utf_8() {
     assert_eq!(
-        crate::rsass("\u{feff}foo { bar: baz; }").unwrap(),
+        runner().ok("\u{feff}foo { bar: baz; }"),
         "foo {\
-        \n  bar: baz;\
-        \n}\
-        \n"
+         \n  bar: baz;\
+         \n}\n"
     );
 }

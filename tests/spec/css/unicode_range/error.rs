@@ -1,16 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/css/unicode_range/error.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn ident_minus_space_ident() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".ident-minus-space-ident {\
              \n  a: U+abc- def;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Expected hex digit.\
          \n  ,\
          \n2 |   a: U+abc- def;\
@@ -23,13 +26,11 @@ fn ident_minus_space_ident() {
 #[ignore] // missing error
 fn minus_ident_minus() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".minus-ident-minus {\
              \n  a: u+123-abc-def;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Expected end of identifier.\
          \n  ,\
          \n2 |   a: u+123-abc-def;\
@@ -42,13 +43,11 @@ fn minus_ident_minus() {
 #[ignore] // missing error
 fn minus_number_minus_ident() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".minus-number-minus-ident {\
              \n  a: U+123-456-ABC;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Expected end of identifier.\
          \n  ,\
          \n2 |   a: U+123-456-ABC;\
@@ -61,13 +60,11 @@ fn minus_number_minus_ident() {
 #[ignore] // missing error
 fn no_digits() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".no-digits {\
              \n  a: U+;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Expected hex digit or \"?\".\
          \n  ,\
          \n2 |   a: U+;\
@@ -80,13 +77,11 @@ fn no_digits() {
 #[ignore] // missing error
 fn nothing_after_minus() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".nothing-after-minus {\
              \n  a: U+abc-;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Expected hex digit.\
          \n  ,\
          \n2 |   a: U+abc-;\
@@ -99,13 +94,11 @@ fn nothing_after_minus() {
 #[ignore] // missing error
 fn question_mark_after_minus() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".question-mark-after-minus {\
              \n  a: u+abc-de?;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: expected \";\".\
          \n  ,\
          \n2 |   a: u+abc-de?;\
@@ -118,13 +111,11 @@ fn question_mark_after_minus() {
 #[ignore] // missing error
 fn too_many_decimal_digits() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".too-many-decimal-digits {\
              \n  a: U+1234567;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Expected end of identifier.\
          \n  ,\
          \n2 |   a: U+1234567;\
@@ -137,13 +128,11 @@ fn too_many_decimal_digits() {
 #[ignore] // missing error
 fn too_many_decimal_digits_after_minus() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".too-many-decimal-digits-after-minus {\
              \n  a: U+abc-1234567;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Expected end of identifier.\
          \n  ,\
          \n2 |   a: U+abc-1234567;\
@@ -156,13 +145,11 @@ fn too_many_decimal_digits_after_minus() {
 #[ignore] // missing error
 fn too_many_digits_after_minus() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".too-many-hex-digits-after-minus {\
              \n  a: U+abc-abcdefa;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Expected end of identifier.\
          \n  ,\
          \n2 |   a: U+abc-abcdefa;\
@@ -175,13 +162,11 @@ fn too_many_digits_after_minus() {
 #[ignore] // missing error
 fn too_many_hex_digits() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".too-many-hex-digits {\
              \n  a: U+ABCDEFA;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Expected end of identifier.\
          \n  ,\
          \n2 |   a: U+ABCDEFA;\
@@ -194,13 +179,11 @@ fn too_many_hex_digits() {
 #[ignore] // missing error
 fn too_many_question_marks() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".too-many-question-marks {\
              \n  a: U+???????;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: expected \";\".\
          \n  ,\
          \n2 |   a: U+???????;\

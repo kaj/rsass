@@ -1,20 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_478.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$x: \"x\";\
-            \n$y: \"y\";\
-            \n#{$x}--#{$y} {\
-            \n  a: 1\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$x: \"x\";\
+             \n$y: \"y\";\
+             \n#{$x}--#{$y} {\
+             \n  a: 1\
+             \n}\n"),
         "x--y {\
-        \n  a: 1;\
-        \n}\
-        \n"
+         \n  a: 1;\
+         \n}\n"
     );
 }

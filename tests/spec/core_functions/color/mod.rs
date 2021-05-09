@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color"
 
+#[allow(unused)]
+use super::runner;
+
 mod adjust_color;
 
 mod adjust_hue;

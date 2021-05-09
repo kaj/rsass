@@ -1,14 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1658.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@else{}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("@else{}\n"),
         "Error: This at-rule is not allowed here.\
          \n  ,\
          \n1 | @else{}\

@@ -1,19 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/important.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div {\
-            \n  color: red ! important;\
-            \n  width: 5px ! important;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("div {\
+             \n  color: red ! important;\
+             \n  width: 5px ! important;\
+             \n}"),
         "div {\
-        \n  color: red !important;\
-        \n  width: 5px !important;\
-        \n}\
-        \n"
+         \n  color: red !important;\
+         \n  width: 5px !important;\
+         \n}\n"
     );
 }

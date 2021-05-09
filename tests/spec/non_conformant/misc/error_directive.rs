@@ -1,13 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/misc/error-directive.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@error \"Buckle your seatbelt Dorothy, \'cause Kansas is going bye-bye\"\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "@error \"Buckle your seatbelt Dorothy, \'cause Kansas is going bye-bye\"\n"
+        ),
         "Error: \"Buckle your seatbelt Dorothy, \'cause Kansas is going bye-bye\"\
          \n  ,\
          \n1 | @error \"Buckle your seatbelt Dorothy, \'cause Kansas is going bye-bye\"\

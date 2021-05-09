@@ -1,16 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hsla/error/three_args.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod hue {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: hsla(\"foo\", 100%, 50%);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $hue: \"foo\" is not a number.\
          \n  ,\
          \n2 |   b: hsla(\"foo\", 100%, 50%);\
@@ -21,16 +26,16 @@ mod hue {
     }
 }
 mod lightness {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: hsla(0, 100%, \"foo\");\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $lightness: \"foo\" is not a number.\
          \n  ,\
          \n2 |   b: hsla(0, 100%, \"foo\");\
@@ -41,16 +46,16 @@ mod lightness {
     }
 }
 mod saturation {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  b: hsla(0, \"foo\", 50%);\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: $saturation: \"foo\" is not a number.\
          \n  ,\
          \n2 |   b: hsla(0, \"foo\", 50%);\

@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/root"
 
+#[allow(unused)]
+use super::runner;
+
 mod at_root_alone_itpl;
 
 mod at_root_alone;

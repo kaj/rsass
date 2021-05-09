@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/css"
 
+#[allow(unused)]
+use super::runner;
+
 mod blockless_directive_without_semicolon;
 
 mod comment;

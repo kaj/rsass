@@ -1,17 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1732/invalid/mixin-def.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin a {\
              \n  b: c;\
-             \n}\
-             \n\
+             \n}\n\
              \n@include a();"
-        )
-        .unwrap_err(),
+        ),
         "Error: Declarations may only be used within style rules.\
          \n  ,\
          \n2 |   b: c;\

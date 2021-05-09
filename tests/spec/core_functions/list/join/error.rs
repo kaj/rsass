@@ -1,13 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/join/error.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn named() {
     assert_eq!(
-        crate::rsass(
-            "a {b: join(c, d, $invalid: true)}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: join(c, d, $invalid: true)}\n"
+        ),
         "Error: No argument named $invalid.\
          \n  ,--> input.scss\
          \n1 | a {b: join(c, d, $invalid: true)}\
@@ -24,10 +28,9 @@ fn named() {
 #[ignore] // wrong error
 fn positional_and_named() {
     assert_eq!(
-        crate::rsass(
-            "a {b: join(c, d, comma, true, false, $invalid: true)}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: join(c, d, comma, true, false, $invalid: true)}\n"
+        ),
         "Error: Only 4 positional arguments allowed, but 5 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: join(c, d, comma, true, false, $invalid: true)}\
@@ -43,10 +46,9 @@ fn positional_and_named() {
 #[test]
 fn too_few_args() {
     assert_eq!(
-        crate::rsass(
-            "a {b: join(c)}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: join(c)}\n"
+        ),
         "Error: Missing argument $list2.\
          \n  ,--> input.scss\
          \n1 | a {b: join(c)}\
@@ -62,10 +64,9 @@ fn too_few_args() {
 #[test]
 fn too_many_args() {
     assert_eq!(
-        crate::rsass(
-            "a {b: join(c, d, comma, true, false)}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: join(c, d, comma, true, false)}\n"
+        ),
         "Error: Only 4 arguments allowed, but 5 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: join(c, d, comma, true, false)}\
@@ -79,14 +80,12 @@ fn too_many_args() {
     );
 }
 mod test_type {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn separator() {
         assert_eq!(
-            crate::rsass(
-                "a {b: join(c, d, $separator: 1)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: join(c, d, $separator: 1)}\n"),
             "Error: $separator: 1 is not a string.\
          \n  ,\
          \n1 | a {b: join(c, d, $separator: 1)}\
@@ -99,11 +98,7 @@ mod test_type {
 #[test]
 fn unknown_separator() {
     assert_eq!(
-        crate::rsass(
-            "a {b: join(c, d, $separator: e)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: join(c, d, $separator: e)}\n"),
         "Error: $separator: Must be \"space\", \"comma\", or \"auto\".\
          \n  ,\
          \n1 | a {b: join(c, d, $separator: e)}\

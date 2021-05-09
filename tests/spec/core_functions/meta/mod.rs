@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta"
 
+#[allow(unused)]
+use super::runner;
+
 mod call;
 
 mod content_exists;

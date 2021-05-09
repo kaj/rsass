@@ -1,24 +1,24 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/newlines_in_selectors.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "foo, bar\
-            \nbaz {\
-            \n  bang, bip\
-            \n  bop {a: b}}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("foo, bar\
+             \nbaz {\
+             \n  bang, bip\
+             \n  bop {a: b}}\n"),
         "foo bang, foo bip\
-        \nbop, bar\
-        \nbaz bang, bar\
-        \nbaz bip\
-        \nbop {\
-        \n  a: b;\
-        \n}\
-        \n"
+         \nbop, bar\
+         \nbaz bang, bar\
+         \nbaz bip\
+         \nbop {\
+         \n  a: b;\
+         \n}\n"
     );
 }

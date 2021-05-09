@@ -1,57 +1,45 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/feature_exists.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn at_error() {
     assert_eq!(
-        crate::rsass(
-            "a {b: feature-exists(at-error)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: feature-exists(at-error)}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // wrong result
 fn custom_property() {
     assert_eq!(
-        crate::rsass(
-            "a {b: feature-exists(custom-property)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: feature-exists(custom-property)}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }
 #[test]
 fn dash_sensitive() {
     assert_eq!(
-        crate::rsass(
-            "a {b: feature-exists(at_error)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: feature-exists(at_error)}\n"),
         "a {\
-        \n  b: false;\
-        \n}\
-        \n"
+         \n  b: false;\
+         \n}\n"
     );
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_few_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: feature-exists()}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: feature-exists()}\n"),
             "Error: Missing argument $feature.\
          \n  ,--> input.scss\
          \n1 | a {b: feature-exists()}\
@@ -67,11 +55,8 @@ mod error {
     #[test]
     fn too_many_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: feature-exists(at-error, custom-property)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner()
+                .err("a {b: feature-exists(at-error, custom-property)}\n"),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: feature-exists(at-error, custom-property)}\
@@ -87,11 +72,7 @@ mod error {
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
-                "a {b: feature-exists(1)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: feature-exists(1)}\n"),
             "Error: $feature: 1 is not a string.\
          \n  ,\
          \n1 | a {b: feature-exists(1)}\
@@ -105,84 +86,54 @@ mod error {
 #[ignore] // wrong result
 fn extend_selector_pseudoclass() {
     assert_eq!(
-        crate::rsass(
-            "a {b: feature-exists(extend-selector-pseudoclass)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: feature-exists(extend-selector-pseudoclass)}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }
 #[test]
 fn global_variable_shadowing() {
     assert_eq!(
-        crate::rsass(
-            "a {b: feature-exists(global-variable-shadowing)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: feature-exists(global-variable-shadowing)}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }
 #[test]
 fn named() {
     assert_eq!(
-        crate::rsass(
-            "a {b: feature-exists($feature: at-error)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: feature-exists($feature: at-error)}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }
 #[test]
 fn quote_insensitive() {
     assert_eq!(
-        crate::rsass(
-            "a {b: feature-exists(\"at-error\")}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: feature-exists(\"at-error\")}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }
 #[test]
 fn units_level_3() {
     assert_eq!(
-        crate::rsass(
-            "a {b: feature-exists(units-level-3)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: feature-exists(units-level-3)}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }
 #[test]
 fn unknown() {
     assert_eq!(
-        crate::rsass(
-            "a {b: feature-exists(unknown)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: feature-exists(unknown)}\n"),
         "a {\
-        \n  b: false;\
-        \n}\
-        \n"
+         \n  b: false;\
+         \n}\n"
     );
 }

@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass"
 
+#[allow(unused)]
+use super::runner;
+
 mod sass_utf8;
 
 mod arg_eval;
@@ -24,18 +27,13 @@ mod calc;
 #[test]
 fn charset() {
     assert_eq!(
-        crate::rsass(
-            "div {\
-            \n  content: to-upper-case(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\");\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("div {\
+             \n  content: to-upper-case(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\");\
+             \n}\n"),
         "@charset \"UTF-8\";\
-        \ndiv {\
-        \n  content: \"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ\u{488}ݓ\";\
-        \n}\
-        \n"
+         \ndiv {\
+         \n  content: \"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\";\
+         \n}\n"
     );
 }
 
@@ -51,18 +49,13 @@ mod css_nth_selectors;
 #[test]
 fn css_unicode() {
     assert_eq!(
-        crate::rsass(
-            "@charset \"UTF-8\";\
-            \nfoo {\
-            \n  bar: föö bâr; }\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@charset \"UTF-8\";\
+             \nfoo {\
+             \n  bar: föö bâr; }\n"),
         "@charset \"UTF-8\";\
-        \nfoo {\
-        \n  bar: föö bâr;\
-        \n}\
-        \n"
+         \nfoo {\
+         \n  bar: föö bâr;\
+         \n}\n"
     );
 }
 

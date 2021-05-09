@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/nested/at-root-prefix.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "test{\r\
              \n  @at-root {\r\
              \n    pre& {\r\
@@ -14,8 +19,7 @@ fn test() {
              \n    }\r\
              \n  }\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: \"&\" may only used at the beginning of a compound selector.\
          \n  ,\
          \n3 |     pre&{\

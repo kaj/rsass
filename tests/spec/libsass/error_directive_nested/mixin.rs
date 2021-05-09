@@ -1,23 +1,25 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/error-directive-nested/mixin.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin c() {\
              \n  @error test;\
              \n  c: d;\
-             \n}\
-             \n\
+             \n}\n\
              \na {\
              \n  b: {\
              \n    @include c();\
              \n  }\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: test\
          \n  ,\
          \n8 |     @include c();\

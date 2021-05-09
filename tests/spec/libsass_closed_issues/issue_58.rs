@@ -1,17 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_58.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "test {\r\
-            \n  background: url(/static_loc/img/beta.png);\r\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("test {\r\
+             \n  background: url(/static_loc/img/beta.png);\r\
+             \n}"),
         "test {\
-        \n  background: url(/static_loc/img/beta.png);\
-        \n}\
-        \n"
+         \n  background: url(/static_loc/img/beta.png);\
+         \n}\n"
     );
 }

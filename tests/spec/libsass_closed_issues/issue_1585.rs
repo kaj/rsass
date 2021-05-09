@@ -1,14 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1585.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin bar() {\
              \n  @at-root { @content; }\
-             \n}\
-             \n\
+             \n}\n\
              \n.test {\
              \n  @include bar() {\
              \n    color: yellow;\
@@ -16,10 +20,8 @@ fn test() {
              \n      color: green;\
              \n    }\
              \n  }\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Declarations may only be used within style rules.\
          \n  ,\
          \n7 |     color: yellow;\

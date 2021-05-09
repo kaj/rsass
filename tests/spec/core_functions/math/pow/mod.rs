@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/pow"
 
+#[allow(unused)]
+use super::runner;
+
 mod arguments;
 
 mod base_greater_than_zero;

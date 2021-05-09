@@ -1,19 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/css/unknown_directive/error.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn in_declaration() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "// Unknown at-rules aren\'t allowed in property declarations.\
              \n.x {\
              \n  y: {\
              \n    @asdf;\
              \n  }\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: This at-rule is not allowed here.\
          \n  ,\
          \n4 |     @asdf;\
@@ -26,15 +29,13 @@ fn in_declaration() {
 #[ignore] // missing error
 fn in_function() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "// Unknown at-rules aren\'t allowed in functions.\
              \n@function foo() {\
              \n  @asdf;\
              \n  @return null;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: This at-rule is not allowed here.\
          \n  ,\
          \n3 |   @asdf;\
@@ -44,19 +45,20 @@ fn in_function() {
     );
 }
 mod interpolation {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn in_declaration() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "// Unknown at-rules aren\'t allowed in property declarations.\
              \n.x {\
              \n  y: {\
              \n    @#{\"asdf\"};\
              \n  }\
-             \n}\
-             \n"
-        ).unwrap_err(),
+             \n}\n"
+        ),
         "Error: Expected identifier.\
          \n  ,\
          \n4 |     @#{\"asdf\"};\
@@ -69,15 +71,13 @@ mod interpolation {
     #[ignore] // wrong error
     fn in_function() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "// Unknown at-rules aren\'t allowed in functions.\
              \n@function foo() {\
              \n  @#{\"asdf\"};\
              \n  @return null;\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: Expected identifier.\
          \n  ,\
          \n3 |   @#{\"asdf\"};\
@@ -90,11 +90,10 @@ mod interpolation {
     #[ignore] // wrong error
     fn space_after_at() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "// No whitespace is allowed between the @ and the rule name.\
-             \n@ #{\"unknown\"};\
-             \n"
-        ).unwrap_err(),
+             \n@ #{\"unknown\"};\n"
+        ),
         "Error: Expected identifier.\
          \n  ,\
          \n2 | @ #{\"unknown\"};\
@@ -108,12 +107,10 @@ mod interpolation {
 #[ignore] // wrong error
 fn space_after_at() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "// No whitespace is allowed between the @ and the rule name.\
-             \n@ unknown;\
-             \n"
-        )
-        .unwrap_err(),
+             \n@ unknown;\n"
+        ),
         "Error: Expected identifier.\
          \n  ,\
          \n2 | @ unknown;\

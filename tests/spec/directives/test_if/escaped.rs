@@ -1,33 +1,30 @@
 //! Tests auto-converted from "sass-spec/spec/directives/if/escaped.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn if_only() {
     assert_eq!(
-        crate::rsass(
+        runner().ok(
             "// Escapes should be normalized before directives are parsed.\
-            \n@\\69 f true {a {b: c}}\
-            \n"
-        )
-        .unwrap(),
+             \n@\\69 f true {a {b: c}}\n"
+        ),
         "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
     );
 }
 #[test]
 fn with_else() {
     assert_eq!(
-        crate::rsass(
-            "// See sass/dart-sass#1011\
-            \n@if false {}\
-            \n@\\65lse {a {b: c}}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("// See sass/dart-sass#1011\
+             \n@if false {}\
+             \n@\\65lse {a {b: c}}\n"),
         "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
     );
 }

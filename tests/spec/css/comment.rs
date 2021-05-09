@@ -1,51 +1,60 @@
 //! Tests auto-converted from "sass-spec/spec/css/comment.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod converts_newlines {
-    mod sass {}
+    #[allow(unused)]
+    use super::runner;
+    mod sass {
+        #[allow(unused)]
+        use super::runner;
+    }
     mod scss {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn cr() {
             assert_eq!(
-                crate::rsass(
-                    "/* foo\r * bar */\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("/* foo\r * bar */\n"),
                 "/* foo\
-        \n * bar */\
-        \n"
+         \n * bar */\n"
             );
         }
         #[test]
         fn ff() {
             assert_eq!(
-                crate::rsass(
-                    "/* foo\u{c} * bar */\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("/* foo\u{c} * bar */\n"),
                 "/* foo\
-        \n * bar */\
-        \n"
+         \n * bar */\n"
             );
         }
     }
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     mod loud {
-        mod multi_line {}
+        #[allow(unused)]
+        use super::runner;
+        mod multi_line {
+            #[allow(unused)]
+            use super::runner;
+        }
         mod unterminated {
+            #[allow(unused)]
+            use super::runner;
             #[test]
             #[ignore] // missing error
             fn scss() {
                 assert_eq!(
-                    crate::rsass(
+                    runner().err(
                         "a {\
              \n  b: c /* d\
-             \n}\
-             \n"
-                    )
-                    .unwrap_err(),
+             \n}\n"
+                    ),
                     "Error: expected more input.\
          \n  ,\
          \n3 | }\
@@ -58,39 +67,35 @@ mod error {
     }
 }
 mod inline {
+    #[allow(unused)]
+    use super::runner;
     mod loud {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn scss() {
             assert_eq!(
-                crate::rsass(
-                    "a {\
-            \n  b: c /* d */ e;\
-            \n}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("a {\
+             \n  b: c /* d */ e;\
+             \n}\n"),
                 "a {\
-        \n  b: c e;\
-        \n}\
-        \n"
+         \n  b: c e;\
+         \n}\n"
             );
         }
     }
     mod silent {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn scss() {
             assert_eq!(
-                crate::rsass(
-                    "a {\
-            \n  b: c // d\
-            \n}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("a {\
+             \n  b: c // d\
+             \n}\n"),
                 "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
             );
         }
     }
@@ -98,64 +103,49 @@ mod inline {
 #[test]
 fn multiple() {
     assert_eq!(
-        crate::rsass(
-            ".foo {\
-            \n  /* Foo Bar */\
-            \n  /* Baz Bang */ }\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".foo {\
+             \n  /* Foo Bar */\
+             \n  /* Baz Bang */ }\n"),
         ".foo {\
-        \n  /* Foo Bar */\
-        \n  /* Baz Bang */\
-        \n}\
-        \n"
+         \n  /* Foo Bar */\
+         \n  /* Baz Bang */\
+         \n}\n"
     );
 }
 #[test]
 fn multiple_stars() {
     assert_eq!(
-        crate::rsass(
-            "a /***/ b {x: y}\
-            \na /****/ b {x: y}\
-            \na /* **/ b {x: y}\
-            \na /** */ b {x: y}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a /***/ b {x: y}\
+             \na /****/ b {x: y}\
+             \na /* **/ b {x: y}\
+             \na /** */ b {x: y}\n"),
         "a b {\
-        \n  x: y;\
-        \n}\
-        \na b {\
-        \n  x: y;\
-        \n}\
-        \na b {\
-        \n  x: y;\
-        \n}\
-        \na b {\
-        \n  x: y;\
-        \n}\
-        \n"
+         \n  x: y;\
+         \n}\
+         \na b {\
+         \n  x: y;\
+         \n}\
+         \na b {\
+         \n  x: y;\
+         \n}\
+         \na b {\
+         \n  x: y;\
+         \n}\n"
     );
 }
 #[test]
 fn weird_indentation() {
     assert_eq!(
-        crate::rsass(
-            ".foo {\
-            \n    /* Foo\
-            \n Bar\
-            \nBaz */\
-            \n  a: b; }\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".foo {\
+             \n    /* Foo\
+             \n Bar\
+             \nBaz */\
+             \n  a: b; }\n"),
         ".foo {\
-        \n  /* Foo\
-        \n   Bar\
-        \n  Baz */\
-        \n  a: b;\
-        \n}\
-        \n"
+         \n  /* Foo\
+         \n   Bar\
+         \n  Baz */\
+         \n  a: b;\
+         \n}\n"
     );
 }

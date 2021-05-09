@@ -1,14 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hwb/error/five_args.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \'sass:color\';\
-             \na {b: color.hwb(0, 30%, 40%, 0.5, 0)}\
-             \n"
-        ).unwrap_err(),
+             \na {b: color.hwb(0, 30%, 40%, 0.5, 0)}\n"
+        ),
         "Error: Only 4 arguments allowed, but 5 were passed.\
          \n  ,--> input.scss\
          \n2 | a {b: color.hwb(0, 30%, 40%, 0.5, 0)}\

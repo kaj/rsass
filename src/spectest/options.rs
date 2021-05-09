@@ -10,20 +10,21 @@ pub struct Options {
 
 impl Options {
     pub fn parse(options: &str) -> Result<Options, Error> {
-        let options = YamlLoader::load_from_str(&options)?;
-        if options.len() > 1 {
-            Err(Error(format!("Found multiple-doc options {:?}", options)))?;
+        match &YamlLoader::load_from_str(&options)?[..] {
+            [] => Err(Error(format!("Found zero-doc options {:?}", options))),
+            [options] => {
+                //eprintln!("Found options: {:?}", options);
+                Ok(Options {
+                    precision: options[":precision"].as_i64(),
+                    // Target version no longer used by sass-spec,
+                    // and no other reasons to skip implemented here.
+                    should_skip: None,
+                })
+            }
+            multiple => Err(Error(format!(
+                "Found multiple-doc options {:?}",
+                multiple
+            ))),
         }
-        if options.len() == 0 {
-            Err(Error(format!("Found zero-doc options {:?}", options)))?;
-        }
-        let options = &options[0];
-        eprintln!("Found options: {:?}", options);
-        Ok(Options {
-            precision: options[":precision"].as_i64(),
-            // Target version no longer used by sass-spec,
-            // and no other reasons to skip implemented here.
-            should_skip: None,
-        })
     }
 }

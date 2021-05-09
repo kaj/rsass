@@ -1,21 +1,23 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/nested-compound-unification.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().ok(
             "// Make sure compound unification properly handles weaving together parent\
-            \n// selectors.\
-            \n.a .b {@extend .e}\
-            \n.c .d {@extend .f}\
-            \n.e.f {x: y}\
-            \n"
-        )
-        .unwrap(),
+             \n// selectors.\
+             \n.a .b {@extend .e}\
+             \n.c .d {@extend .f}\
+             \n.e.f {x: y}\n"
+        ),
         ".e.f, .a .f.b, .c .e.d, .a .c .b.d, .c .a .b.d {\
-        \n  x: y;\
-        \n}\
-        \n"
+         \n  x: y;\
+         \n}\n"
     );
 }

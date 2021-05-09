@@ -1,18 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_349.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div {\
-            \n  blah: not true;\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("div {\
+             \n  blah: not true;\
+             \n}\n"),
         "div {\
-        \n  blah: false;\
-        \n}\
-        \n"
+         \n  blah: false;\
+         \n}\n"
     );
 }

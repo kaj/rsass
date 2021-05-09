@@ -1,56 +1,44 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/length.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn t0() {
     assert_eq!(
-        crate::rsass(
-            "a {b: length(())}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: length(())}\n"),
         "a {\
-        \n  b: 0;\
-        \n}\
-        \n"
+         \n  b: 0;\
+         \n}\n"
     );
 }
 #[test]
 fn t1() {
     assert_eq!(
-        crate::rsass(
-            "a {b: length(join((), 1))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: length(join((), 1))}\n"),
         "a {\
-        \n  b: 1;\
-        \n}\
-        \n"
+         \n  b: 1;\
+         \n}\n"
     );
 }
 #[test]
 fn t2() {
     assert_eq!(
-        crate::rsass(
-            "a {b: length(c d)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: length(c d)}\n"),
         "a {\
-        \n  b: 2;\
-        \n}\
-        \n"
+         \n  b: 2;\
+         \n}\n"
     );
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_few_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: length()}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: length()}\n"),
             "Error: Missing argument $list.\
          \n  ,--> input.scss\
          \n1 | a {b: length()}\
@@ -66,11 +54,7 @@ mod error {
     #[test]
     fn too_many_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: length(1, 2)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: length(1, 2)}\n"),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: length(1, 2)}\
@@ -87,73 +71,50 @@ mod error {
 #[test]
 fn many() {
     assert_eq!(
-        crate::rsass(
-            "a {b: length((1, 2, 3, 4, 5))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: length((1, 2, 3, 4, 5))}\n"),
         "a {\
-        \n  b: 5;\
-        \n}\
-        \n"
+         \n  b: 5;\
+         \n}\n"
     );
 }
 mod map {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn empty() {
         assert_eq!(
-            crate::rsass(
-                "@import \"core_functions/list/utils\";\
-            \na {b: length($empty-map)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@import \"core_functions/list/utils\";\
+             \na {b: length($empty-map)}\n"),
             "a {\
-        \n  b: 0;\
-        \n}\
-        \n"
+         \n  b: 0;\
+         \n}\n"
         );
     }
     #[test]
     fn non_empty() {
         assert_eq!(
-            crate::rsass(
-                "a {b: length((1: 2, 3: 4))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: length((1: 2, 3: 4))}\n"),
             "a {\
-        \n  b: 2;\
-        \n}\
-        \n"
+         \n  b: 2;\
+         \n}\n"
         );
     }
 }
 #[test]
 fn named() {
     assert_eq!(
-        crate::rsass(
-            "a {b: length($list: 1 2 3)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: length($list: 1 2 3)}\n"),
         "a {\
-        \n  b: 3;\
-        \n}\
-        \n"
+         \n  b: 3;\
+         \n}\n"
     );
 }
 #[test]
 fn non_list() {
     assert_eq!(
-        crate::rsass(
-            "a {b: length(c)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: length(c)}\n"),
         "a {\
-        \n  b: 1;\
-        \n}\
-        \n"
+         \n  b: 1;\
+         \n}\n"
     );
 }

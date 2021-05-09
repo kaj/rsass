@@ -1,20 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1901.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "a, b {\
-            \n    &:not(c) {\
-            \n        d: e;\
-            \n    }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a, b {\
+             \n    &:not(c) {\
+             \n        d: e;\
+             \n    }\
+             \n}\n"),
         "a:not(c), b:not(c) {\
-        \n  d: e;\
-        \n}\
-        \n"
+         \n  d: e;\
+         \n}\n"
     );
 }

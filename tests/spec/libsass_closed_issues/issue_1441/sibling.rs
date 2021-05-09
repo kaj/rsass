@@ -1,20 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1441/sibling.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".sibling {\
-            \n    & ~ & {\
-            \n        foo: bar;\
-            \n    }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".sibling {\
+             \n    & ~ & {\
+             \n        foo: bar;\
+             \n    }\
+             \n}\n"),
         ".sibling ~ .sibling {\
-        \n  foo: bar;\
-        \n}\
-        \n"
+         \n  foo: bar;\
+         \n}\n"
     );
 }

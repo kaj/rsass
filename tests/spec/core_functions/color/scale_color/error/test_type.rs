@@ -1,13 +1,14 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/scale_color/error/type.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn alpha() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $alpha: c)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $alpha: c)}\n"),
         "Error: $alpha: c is not a number.\
          \n  ,\
          \n1 | a {b: scale-color(red, $alpha: c)}\
@@ -19,11 +20,7 @@ fn alpha() {
 #[test]
 fn blackness() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $blackness: c)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $blackness: c)}\n"),
         "Error: $blackness: c is not a number.\
          \n  ,\
          \n1 | a {b: scale-color(red, $blackness: c)}\
@@ -35,11 +32,7 @@ fn blackness() {
 #[test]
 fn blue() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $blue: c)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $blue: c)}\n"),
         "Error: $blue: c is not a number.\
          \n  ,\
          \n1 | a {b: scale-color(red, $blue: c)}\
@@ -51,11 +44,7 @@ fn blue() {
 #[test]
 fn color() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(1)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(1)}\n"),
         "Error: $color: 1 is not a color.\
          \n  ,\
          \n1 | a {b: scale-color(1)}\
@@ -67,11 +56,7 @@ fn color() {
 #[test]
 fn green() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $green: c)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $green: c)}\n"),
         "Error: $green: c is not a number.\
          \n  ,\
          \n1 | a {b: scale-color(red, $green: c)}\
@@ -83,11 +68,7 @@ fn green() {
 #[test]
 fn lightness() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $lightness: c)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $lightness: c)}\n"),
         "Error: $lightness: c is not a number.\
          \n  ,\
          \n1 | a {b: scale-color(red, $lightness: c)}\
@@ -99,11 +80,7 @@ fn lightness() {
 #[test]
 fn red() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $red: c)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $red: c)}\n"),
         "Error: $red: c is not a number.\
          \n  ,\
          \n1 | a {b: scale-color(red, $red: c)}\
@@ -115,11 +92,7 @@ fn red() {
 #[test]
 fn saturation() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $saturation: c)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $saturation: c)}\n"),
         "Error: $saturation: c is not a number.\
          \n  ,\
          \n1 | a {b: scale-color(red, $saturation: c)}\
@@ -131,11 +104,7 @@ fn saturation() {
 #[test]
 fn whiteness() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $whiteness: c)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $whiteness: c)}\n"),
         "Error: $whiteness: c is not a number.\
          \n  ,\
          \n1 | a {b: scale-color(red, $whiteness: c)}\

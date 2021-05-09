@@ -1,18 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1550/mixin_embedded.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin foo() {\
              \n  @function foo() {\
              \n    @return \'foo\';\
              \n  }\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Mixins may not contain function declarations.\
          \n  ,\
          \n2 |   @function foo() {\

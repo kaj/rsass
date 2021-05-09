@@ -1,16 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/parse/named.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "a {b: selector-parse($selector: \"c\")}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: selector-parse($selector: \"c\")}\n"),
         "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
     );
 }

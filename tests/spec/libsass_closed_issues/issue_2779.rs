@@ -1,14 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2779.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@debug(selector-extend(\".a .b\", \"&b\", ndll));\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("@debug(selector-extend(\".a .b\", \"&b\", ndll));\n"),
         "Error: $extendee: Parent selectors aren\'t allowed here.\
          \n  ,\
          \n1 | &b\

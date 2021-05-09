@@ -1,17 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1683/function.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@function foo($x, $y) { @return null }\
-             \n\
+        runner().err(
+            "@function foo($x, $y) { @return null }\n\
              \na {\
              \n  b: foo(1 2 3...);\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: Only 2 arguments allowed, but 3 were passed.\
          \n    ,\
          \n1   | @function foo($x, $y) { @return null }\
