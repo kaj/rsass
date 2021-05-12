@@ -91,7 +91,7 @@ fn handle_entries(
     root: &Path,
     suitedir: &Path,
     rssuitedir: &Path,
-    precision: Option<i64>,
+    precision: Option<usize>,
     ignored: &[&str],
 ) -> Result<(), Error> {
     let mut entries: Vec<DirEntry> =
@@ -214,7 +214,7 @@ fn spec_dir_to_test(
     rs: &mut dyn Write,
     suite: &Path,
     test: &OsStr,
-    precision: Option<i64>,
+    precision: Option<usize>,
 ) -> Result<(), Error> {
     let specdir = suite.join(test);
     let fixture = load_test_fixture_dir(&specdir, precision)?;
@@ -225,7 +225,7 @@ fn spec_dir_to_test(
 fn spec_hrx_to_test(
     rs: &mut dyn Write,
     suite: &Path,
-    precision: Option<i64>,
+    precision: Option<usize>,
 ) -> Result<(), Error> {
     let archive = Archive::load(suite)
         .map_err(|e| Error(format!("Failed to load hrx: {}", e)))?;
@@ -272,7 +272,7 @@ fn handle_hrx_part(
     suite: &Path,
     archive: &Archive,
     prefix: &str,
-    precision: Option<i64>,
+    precision: Option<usize>,
     runner: TestRunner,
 ) -> Result<(), Error> {
     use std::collections::BTreeSet;
@@ -381,7 +381,7 @@ fn fn_name(name: &str) -> String {
 
 fn load_test_fixture_dir(
     specdir: &Path,
-    precision: Option<i64>,
+    precision: Option<usize>,
 ) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAMES: &[&str] =
@@ -517,6 +517,11 @@ impl From<std::num::ParseFloatError> for Error {
 impl From<std::path::StripPrefixError> for Error {
     fn from(e: std::path::StripPrefixError) -> Self {
         Error(format!("{}", e))
+    }
+}
+impl From<std::num::TryFromIntError> for Error {
+    fn from(e: std::num::TryFromIntError) -> Self {
+        Error(e.to_string())
     }
 }
 

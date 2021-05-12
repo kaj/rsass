@@ -1,9 +1,10 @@
 use super::Error;
+use std::convert::TryInto;
 use yaml_rust::YamlLoader;
 
 #[derive(Default)]
 pub struct Options {
-    pub precision: Option<i64>,
+    pub precision: Option<usize>,
     /// None for tests that should work, or Some(reason to skip).
     pub should_skip: Option<String>,
 }
@@ -15,7 +16,10 @@ impl Options {
             [options] => {
                 //eprintln!("Found options: {:?}", options);
                 Ok(Options {
-                    precision: options[":precision"].as_i64(),
+                    precision: options[":precision"]
+                        .as_i64()
+                        .map(TryInto::try_into)
+                        .transpose()?,
                     // Target version no longer used by sass-spec,
                     // and no other reasons to skip implemented here.
                     should_skip: None,
