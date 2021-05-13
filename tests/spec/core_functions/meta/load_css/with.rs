@@ -15,6 +15,7 @@ fn runner() -> crate::TestRunner {
         .mock_file("multi_load/use/_midstream.scss", "@use \"upstream\";\nb {c: upstream.$a}\n")
         .mock_file("multi_load/use/_upstream.scss", "$a: original !default;\n")
         .mock_file("multiple/_other.scss", "$a: original a !default;\n$b: original b !default;\n$c: original c !default;\n\nd {\n  a: $a;\n  b: $b;\n  c: $c;\n}\n")
+        .mock_file("null/_other.scss", "$a: original !default;\nb {c: $a}\n")
         .mock_file("single/_other.scss", "$a: original !default;\nb {c: $a}\n")
         .mock_file("some_unconfigured/_other.scss", "$a: original a !default;\n$b: original b !default;\n\nc {\n  a: $a;\n  b: $b;\n}\n")
         .mock_file("through_forward/as/_forwarded.scss", "$a: original !default;\nc {d: $a}\n")
@@ -158,6 +159,17 @@ fn multiple() {
          \n  a: configured a;\
          \n  b: configured b;\
          \n  c: configured c;\
+         \n}\n"
+    );
+}
+#[test]
+#[ignore] // unexepected error
+fn null() {
+    assert_eq!(
+        runner().ok("@use \"sass:meta\";\
+             \n@include meta.load-css(\"other\", $with: (a: null));\n"),
+        "b {\
+         \n  c: original;\
          \n}\n"
     );
 }

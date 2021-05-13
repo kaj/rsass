@@ -39,6 +39,36 @@ mod error {
     mod loud {
         #[allow(unused)]
         use super::runner;
+        mod interpolation {
+            #[allow(unused)]
+            use super::runner;
+            #[test]
+            #[ignore] // wrong error
+            fn failure() {
+                assert_eq!(
+                    runner().err("/* #{$undefined} */\n"),
+                    "Error: Undefined variable.\
+         \n  ,\
+         \n1 | /* #{$undefined} */\
+         \n  |      ^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:6  root stylesheet",
+                );
+            }
+            #[test]
+            #[ignore] // missing error
+            fn unterminated() {
+                assert_eq!(
+                    runner().err("/* #{broken */\n"),
+                    "Error: Expected expression.\
+         \n  ,\
+         \n1 | /* #{broken */\
+         \n  |               ^\
+         \n  \'\
+         \n  input.scss 1:15  root stylesheet",
+                );
+            }
+        }
         mod multi_line {
             #[allow(unused)]
             use super::runner;

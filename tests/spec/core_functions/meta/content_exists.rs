@@ -5,6 +5,53 @@ fn runner() -> crate::TestRunner {
     super::runner()
 }
 
+mod controls {
+    #[allow(unused)]
+    use super::runner;
+    #[test]
+    fn test_false() {
+        assert_eq!(
+            runner().ok("// Regression test for sass/libsass#2842\
+             \n@mixin test-content-exists() {\
+             \n  @if content-exists() {\
+             \n    @content;\
+             \n  }\
+             \n  @else {\
+             \n    content-exists: false;\
+             \n  }\
+             \n}\n\
+             \na {\
+             \n  @include test-content-exists();\
+             \n}\n"),
+            "a {\
+         \n  content-exists: false;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn test_true() {
+        assert_eq!(
+            runner().ok("// Regression test for sass/libsass#2842\
+             \n@mixin test-content-exists() {\
+             \n  @if content-exists() {\
+             \n    @content;\
+             \n  }\
+             \n  @else {\
+             \n    content-exists: false;\
+             \n  }\
+             \n}\n\
+             \na {\
+             \n  @include test-content-exists() {\
+             \n    content: present;\
+             \n  }\
+             \n}\n"),
+            "a {\
+         \n  content: present;\
+         \n}\n"
+        );
+    }
+}
 mod error {
     #[allow(unused)]
     use super::runner;

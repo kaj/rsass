@@ -317,6 +317,34 @@ mod error {
             );
         }
     }
+    mod unit {
+        #[allow(unused)]
+        use super::runner;
+        #[test]
+        fn end() {
+            assert_eq!(
+                runner().err("a {b: str-slice(\"\", 1, 2px)}\n"),
+                "Error: $end-at: Expected 2px to have no units.\
+         \n  ,\
+         \n1 | a {b: str-slice(\"\", 1, 2px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet",
+            );
+        }
+        #[test]
+        fn start() {
+            assert_eq!(
+                runner().err("a {b: str-slice(\"\", 1px)}\n"),
+                "Error: $start-at: Expected 1px to have no units.\
+         \n  ,\
+         \n1 | a {b: str-slice(\"\", 1px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet",
+            );
+        }
+    }
 }
 #[test]
 fn named() {

@@ -25,7 +25,7 @@ project adheres to
 * Improved parameter checking for `hwb`, `alpha`, and `invert`
   functions in `sass:color` module.
 * The `--include-path` cli argument is now named `--load-path`.
-* Update sass-spec test suite to 2021-03-02.  Also include "other"
+* Update sass-spec test suite to 2021-05-12.  Also include "other"
   files (for `@use` and `@import`) in rust code for the suite.
 
 

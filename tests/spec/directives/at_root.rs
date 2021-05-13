@@ -24,3 +24,19 @@ mod keyframes {
         );
     }
 }
+#[test]
+#[ignore] // unexepected error
+fn property_only() {
+    assert_eq!(
+        runner().ok("@media print {\
+             \n  a {\
+             \n    @at-root (without: media) {\
+             \n      b: c;\
+             \n    }\
+             \n  }\
+             \n}\n"),
+        "a {\
+         \n  b: c;\
+         \n}\n"
+    );
+}

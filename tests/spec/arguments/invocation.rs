@@ -36,6 +36,38 @@ mod mixin {
         #[allow(unused)]
         use super::runner;
         #[test]
+        #[ignore] // wrong error
+        fn duplicate_named() {
+            assert_eq!(
+                runner().err(
+                    "@mixin a($b) {}\n\
+             \n@include a($b: 1, $b: 2);\n"
+                ),
+                "Error: Duplicate argument.\
+         \n  ,\
+         \n3 | @include a($b: 1, $b: 2);\
+         \n  |                   ^^\
+         \n  \'\
+         \n  input.scss 3:19  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn duplicate_named_normalization() {
+            assert_eq!(
+                runner().err(
+                    "@mixin a($b-c) {}\n\
+             \n@include a($b-c: 1, $b_c: 2);\n"
+                ),
+                "Error: Duplicate argument.\
+         \n  ,\
+         \n3 | @include a($b-c: 1, $b_c: 2);\
+         \n  |                     ^^^^\
+         \n  \'\
+         \n  input.scss 3:21  root stylesheet",
+            );
+        }
+        #[test]
         #[ignore] // missing error
         fn positional_after_named() {
             assert_eq!(
