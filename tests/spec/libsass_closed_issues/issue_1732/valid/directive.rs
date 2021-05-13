@@ -1,21 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1732/valid/directive.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@media all {\
-            \n  .foo {\
-            \n\tcolor: red;\
-            \n  }\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("@media all {\
+             \n  .foo {\
+             \n\tcolor: red;\
+             \n  }\
+             \n}"),
         "@media all {\
-        \n  .foo {\
-        \n    color: red;\
-        \n  }\
-        \n}\
-        \n"
+         \n  .foo {\
+         \n    color: red;\
+         \n  }\
+         \n}\n"
     );
 }

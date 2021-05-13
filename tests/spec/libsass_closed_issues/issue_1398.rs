@@ -1,22 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1398.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@media screen and (hux: 3/4) {\
-            \n  foo {\
-            \n    bar: baz;\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@media screen and (hux: 3/4) {\
+             \n  foo {\
+             \n    bar: baz;\
+             \n  }\
+             \n}\n"),
         "@media screen and (hux: 3/4) {\
-        \n  foo {\
-        \n    bar: baz;\
-        \n  }\
-        \n}\
-        \n"
+         \n  foo {\
+         \n    bar: baz;\
+         \n  }\
+         \n}\n"
     );
 }

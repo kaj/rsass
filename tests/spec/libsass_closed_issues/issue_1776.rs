@@ -1,17 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1776.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "h1 {\r\
-            \n  width :calc(100% - 110px);\r\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("h1 {\r\
+             \n  width :calc(100% - 110px);\r\
+             \n}"),
         "h1 {\
-        \n  width: calc(100% - 110px);\
-        \n}\
-        \n"
+         \n  width: calc(100% - 110px);\
+         \n}\n"
     );
 }

@@ -1,19 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/hyphen-interpolated.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div {\
-            \n  foo: -hux-#{2+3};\
-            \n  bar: hux-#{2+3};\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("div {\
+             \n  foo: -hux-#{2+3};\
+             \n  bar: hux-#{2+3};\
+             \n}"),
         "div {\
-        \n  foo: -hux-5;\
-        \n  bar: hux-5;\
-        \n}\
-        \n"
+         \n  foo: -hux-5;\
+         \n  bar: hux-5;\
+         \n}\n"
     );
 }

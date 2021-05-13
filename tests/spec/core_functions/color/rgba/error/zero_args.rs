@@ -1,16 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgba/error/zero_args.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "a {\
              \n  b: rgba();\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Missing argument $channels.\
          \n  ,--> input.scss\
          \n2 |   b: rgba();\

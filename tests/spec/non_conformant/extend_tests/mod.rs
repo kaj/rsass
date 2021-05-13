@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests"
 
+#[allow(unused)]
+use super::runner;
+
 mod t001_test_basic;
 
 mod t002_test_basic;

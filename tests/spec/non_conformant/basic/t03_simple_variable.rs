@@ -1,19 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/basic/03_simple_variable.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$color: red;\
-            \n\
-            \na {\
-            \n  color: $color;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("$color: red;\n\
+             \na {\
+             \n  color: $color;\
+             \n}"),
         "a {\
-        \n  color: red;\
-        \n}\
-        \n"
+         \n  color: red;\
+         \n}\n"
     );
 }

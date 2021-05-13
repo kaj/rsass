@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/parent-selector"
 
+#[allow(unused)]
+use super::runner;
+
 mod basic;
 
 mod inner_combinator;

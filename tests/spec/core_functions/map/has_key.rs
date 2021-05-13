@@ -1,14 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/has_key.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_few_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-has-key(1)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: map-has-key(1)}\n"),
             "Error: Missing argument $key.\
          \n  ,--> input.scss\
          \n1 | a {b: map-has-key(1)}\
@@ -22,14 +25,12 @@ mod error {
         );
     }
     mod test_type {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn map() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: map-has-key(1, 2)}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: map-has-key(1, 2)}\n"),
                 "Error: $map: 1 is not a map.\
          \n  ,\
          \n1 | a {b: map-has-key(1, 2)}\
@@ -41,180 +42,133 @@ mod error {
     }
 }
 mod found {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn first() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-has-key((1: 2, 3: 4, 5: 6), 1)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: map-has-key((1: 2, 3: 4, 5: 6), 1)}\n"),
             "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
         );
     }
     #[test]
     fn last() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-has-key((1: 2, 3: 4, 5: 6), 5)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: map-has-key((1: 2, 3: 4, 5: 6), 5)}\n"),
             "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
         );
     }
     #[test]
     fn middle() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-has-key((1: 2, 3: 4, 5: 6), 3)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: map-has-key((1: 2, 3: 4, 5: 6), 3)}\n"),
             "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
         );
     }
     #[test]
     fn single() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-has-key((c: d), c)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: map-has-key((c: d), c)}\n"),
             "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
         );
     }
 }
 #[test]
 fn named() {
     assert_eq!(
-        crate::rsass(
-            "a {b: map-has-key($map: (c: d), $key: c)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: map-has-key($map: (c: d), $key: c)}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }
 mod nested {
+    #[allow(unused)]
+    use super::runner;
     mod found {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn full_path() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: map-has-key((c: (d: (e: f))), c, d, e)}\
-            \n"
-                )
-                .unwrap(),
+                runner()
+                    .ok("a {b: map-has-key((c: (d: (e: f))), c, d, e)}\n"),
                 "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
             );
         }
         #[test]
         fn partial_path() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: map-has-key((c: (d: (e: f))), c, d)}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("a {b: map-has-key((c: (d: (e: f))), c, d)}\n"),
                 "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
             );
         }
     }
     mod not_found {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn deep() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: map-has-key((c: (d: (e: f))), c, d, g)}\
-            \n"
-                )
-                .unwrap(),
+                runner()
+                    .ok("a {b: map-has-key((c: (d: (e: f))), c, d, g)}\n"),
                 "a {\
-        \n  b: false;\
-        \n}\
-        \n"
+         \n  b: false;\
+         \n}\n"
             );
         }
         #[test]
         fn too_many_keys() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: map-has-key((c: (d: (e: f))), c, d, e, f)}\
-            \n"
-                )
-                .unwrap(),
+                runner()
+                    .ok("a {b: map-has-key((c: (d: (e: f))), c, d, e, f)}\n"),
                 "a {\
-        \n  b: false;\
-        \n}\
-        \n"
+         \n  b: false;\
+         \n}\n"
             );
         }
         #[test]
         fn top_level() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: map-has-key((c: (d: (e: f))), d)}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("a {b: map-has-key((c: (d: (e: f))), d)}\n"),
                 "a {\
-        \n  b: false;\
-        \n}\
-        \n"
+         \n  b: false;\
+         \n}\n"
             );
         }
     }
 }
 mod not_found {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn empty() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-has-key((), 1)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: map-has-key((), 1)}\n"),
             "a {\
-        \n  b: false;\
-        \n}\
-        \n"
+         \n  b: false;\
+         \n}\n"
         );
     }
     #[test]
     fn non_empty() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-has-key((c: d), d)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: map-has-key((c: d), d)}\n"),
             "a {\
-        \n  b: false;\
-        \n}\
-        \n"
+         \n  b: false;\
+         \n}\n"
         );
     }
 }

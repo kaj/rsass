@@ -1,15 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1681/element.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@function element() {\
              \n  @return null;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Invalid function name.\
          \n  ,\
          \n1 | @function element() {\

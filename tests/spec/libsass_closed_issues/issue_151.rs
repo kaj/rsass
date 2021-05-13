@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_151.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "div.colors {\
              \n  background: grayscale(red);\
              \n  background: saturate(red);\
@@ -15,8 +20,7 @@ fn test() {
              \n  color: saturate(#369, 20%);\
              \n  color: invert(#369);\
              \n  color: alpha(#369);\
-             \n}\
-             \n\
+             \n}\n\
              \ndiv.numbers {\
              \n  filter: grayscale(30%);\
              \n  filter: saturate(30%);\
@@ -24,10 +28,8 @@ fn test() {
              \n  -webkit-filter: grayscale(0.3);\
              \n  -webkit-filter: saturate(0.3);\
              \n  -webkit-filter: invert(0.3);\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: $amount: red is not a number.\
          \n  ,\
          \n3 |   background: saturate(red);\

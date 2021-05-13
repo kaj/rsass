@@ -1,20 +1,23 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1550/while_embedded.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "$i: 1;\
              \n@while $i == 1 {\
              \n  @function foo() {\
              \n    @return \'foo\';\
              \n  }\
              \n  $i: $i + 1;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Functions may not be declared in control directives.\
          \n  ,\
          \n3 |   @function foo() {\

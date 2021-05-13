@@ -1,15 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/invalid-parent/function-in-function.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@function foo () {\r\
              \n  @function bar() {}\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: This at-rule is not allowed here.\
          \n  ,\
          \n2 |   @function bar() {}\

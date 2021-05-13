@@ -1,15 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/atan.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_many_args() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.atan(0, 0)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.atan(0, 0)}\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n2 | a {b: math.atan(0, 0)}\
@@ -25,12 +30,10 @@ mod error {
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.atan(\"0\")}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.atan(\"0\")}\n"
+            ),
             "Error: $number: \"0\" is not a number.\
          \n  ,\
          \n2 | a {b: math.atan(\"0\")}\
@@ -42,12 +45,10 @@ mod error {
     #[test]
     fn units() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.atan(1px)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.atan(1px)}\n"
+            ),
             "Error: $number: Expected 1px to have no units.\
          \n  ,\
          \n2 | a {b: math.atan(1px)}\
@@ -59,12 +60,10 @@ mod error {
     #[test]
     fn zero_args() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.atan()}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.atan()}\n"
+            ),
             "Error: Missing argument $number.\
          \n  ,--> input.scss\
          \n2 | a {b: math.atan()}\
@@ -81,120 +80,80 @@ mod error {
 #[test]
 fn infinity() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.atan(1 / 0)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.atan(1 / 0)}\n"),
         "a {\
-        \n  b: 90deg;\
-        \n}\
-        \n"
+         \n  b: 90deg;\
+         \n}\n"
     );
 }
 #[test]
 fn negative() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.atan(-1)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.atan(-1)}\n"),
         "a {\
-        \n  b: -45deg;\
-        \n}\
-        \n"
+         \n  b: -45deg;\
+         \n}\n"
     );
 }
 #[test]
 fn negative_infinity() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.atan(-1 / 0)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.atan(-1 / 0)}\n"),
         "a {\
-        \n  b: -90deg;\
-        \n}\
-        \n"
+         \n  b: -90deg;\
+         \n}\n"
     );
 }
 #[test]
 fn negative_zero() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.atan(-0.0)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.atan(-0.0)}\n"),
         "a {\
-        \n  b: 0deg;\
-        \n}\
-        \n"
+         \n  b: 0deg;\
+         \n}\n"
     );
 }
 #[test]
 fn negative_zero_fuzzy() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.atan(-0.000000000001)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.atan(-0.000000000001)}\n"),
         "a {\
-        \n  b: 0deg;\
-        \n}\
-        \n"
+         \n  b: 0deg;\
+         \n}\n"
     );
 }
 #[test]
 fn positive() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.atan(1)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.atan(1)}\n"),
         "a {\
-        \n  b: 45deg;\
-        \n}\
-        \n"
+         \n  b: 45deg;\
+         \n}\n"
     );
 }
 #[test]
 fn zero() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.atan(0)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.atan(0)}\n"),
         "a {\
-        \n  b: 0deg;\
-        \n}\
-        \n"
+         \n  b: 0deg;\
+         \n}\n"
     );
 }
 #[test]
 fn zero_fuzzy() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.atan(0.000000000001)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.atan(0.000000000001)}\n"),
         "a {\
-        \n  b: 0deg;\
-        \n}\
-        \n"
+         \n  b: 0deg;\
+         \n}\n"
     );
 }

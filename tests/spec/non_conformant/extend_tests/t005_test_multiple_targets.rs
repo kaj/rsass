@@ -1,22 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/005_test_multiple_targets.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".foo {a: b}\
-            \n.bar {@extend .foo}\
-            \n.blip .foo {c: d}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".foo {a: b}\
+             \n.bar {@extend .foo}\
+             \n.blip .foo {c: d}\n"),
         ".foo, .bar {\
-        \n  a: b;\
-        \n}\
-        \n.blip .foo, .blip .bar {\
-        \n  c: d;\
-        \n}\
-        \n"
+         \n  a: b;\
+         \n}\
+         \n.blip .foo, .blip .bar {\
+         \n  c: d;\
+         \n}\n"
     );
 }

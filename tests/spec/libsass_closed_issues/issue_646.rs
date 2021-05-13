@@ -1,23 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_646.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@function foo() {\
-            \n  /* $bar: 1; */\
-            \n @return true;\
-            \n}\
-            \n\
-            \nfoo {\
-            \n  foo: foo();\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@function foo() {\
+             \n  /* $bar: 1; */\
+             \n @return true;\
+             \n}\n\
+             \nfoo {\
+             \n  foo: foo();\
+             \n}\n"),
         "foo {\
-        \n  foo: true;\
-        \n}\
-        \n"
+         \n  foo: true;\
+         \n}\n"
     );
 }

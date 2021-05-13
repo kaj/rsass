@@ -1,109 +1,96 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/deep_merge.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod deep {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn different_keys() {
         assert_eq!(
-        crate::rsass(
+        runner().ok(
             "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((c: (d: e, f: g)), (c: (1: 2, 3: 4))))}\
-            \n"
-        )
-        .unwrap(),
+             \na {b: inspect(map.deep-merge((c: (d: e, f: g)), (c: (1: 2, 3: 4))))}\n"
+        ),
         "a {\
-        \n  b: (c: (1: 2, 3: 4, d: e, f: g));\
-        \n}\
-        \n"
+         \n  b: (c: (1: 2, 3: 4, d: e, f: g));\
+         \n}\n"
     );
     }
     mod empty {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn first() {
             assert_eq!(
-                crate::rsass(
-                    "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((c: ()), (c: (d: e))))}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("@use \'sass:map\';\
+             \na {b: inspect(map.deep-merge((c: ()), (c: (d: e))))}\n"),
                 "a {\
-        \n  b: (c: (d: e));\
-        \n}\
-        \n"
+         \n  b: (c: (d: e));\
+         \n}\n"
             );
         }
         #[test]
         fn second() {
             assert_eq!(
-                crate::rsass(
-                    "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((c: (d: e)), (c: ())))}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("@use \'sass:map\';\
+             \na {b: inspect(map.deep-merge((c: (d: e)), (c: ())))}\n"),
                 "a {\
-        \n  b: (c: (d: e));\
-        \n}\
-        \n"
+         \n  b: (c: (d: e));\
+         \n}\n"
             );
         }
     }
     #[test]
     fn multiple_layers() {
         assert_eq!(
-        crate::rsass(
+        runner().ok(
             "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((c: (d: (e: (f: g)))), (c: (d: (e: (1: 2))))))}\
-            \n"
-        )
-        .unwrap(),
+             \na {b: inspect(map.deep-merge((c: (d: (e: (f: g)))), (c: (d: (e: (1: 2))))))}\n"
+        ),
         "a {\
-        \n  b: (c: (d: (e: (1: 2, f: g))));\
-        \n}\
-        \n"
+         \n  b: (c: (d: (e: (1: 2, f: g))));\
+         \n}\n"
     );
     }
     #[test]
     fn overlapping_keys() {
         assert_eq!(
-        crate::rsass(
+        runner().ok(
             "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((c: (d: e, f: g, h: i)), (c: (j: 1, f: 2, k: 3))))}\
-            \n"
-        )
-        .unwrap(),
+             \na {b: inspect(map.deep-merge((c: (d: e, f: g, h: i)), (c: (j: 1, f: 2, k: 3))))}\n"
+        ),
         "a {\
-        \n  b: (c: (j: 1, f: 2, k: 3, d: e, h: i));\
-        \n}\
-        \n"
+         \n  b: (c: (j: 1, f: 2, k: 3, d: e, h: i));\
+         \n}\n"
     );
     }
     #[test]
     fn same_keys() {
         assert_eq!(
-        crate::rsass(
+        runner().ok(
             "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((c: (d: e, f: g)), (c: (d: 1, f: 2))))}\
-            \n"
-        )
-        .unwrap(),
+             \na {b: inspect(map.deep-merge((c: (d: e, f: g)), (c: (d: 1, f: 2))))}\n"
+        ),
         "a {\
-        \n  b: (c: (d: 1, f: 2));\
-        \n}\
-        \n"
+         \n  b: (c: (d: 1, f: 2));\
+         \n}\n"
     );
     }
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_few_args() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:map\';\
-             \na {b: map.deep-merge((c: d))}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: map.deep-merge((c: d))}\n"
+            ),
             "Error: Missing argument $map2.\
          \n  ,--> input.scss\
          \n2 | a {b: map.deep-merge((c: d))}\
@@ -119,12 +106,10 @@ mod error {
     #[test]
     fn too_many_args() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:map\';\
-             \na {b: map.deep-merge((c: d), (e: f), (g: h))}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: map.deep-merge((c: d), (e: f), (g: h))}\n"
+            ),
             "Error: Only 2 arguments allowed, but 3 were passed.\
          \n  ,--> input.scss\
          \n2 | a {b: map.deep-merge((c: d), (e: f), (g: h))}\
@@ -138,15 +123,15 @@ mod error {
         );
     }
     mod test_type {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn map1() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@use \'sass:map\';\
-             \na {b: map.deep-merge(1, (c: d))}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: map.deep-merge(1, (c: d))}\n"
+                ),
                 "Error: $map1: 1 is not a map.\
          \n  ,\
          \n2 | a {b: map.deep-merge(1, (c: d))}\
@@ -158,12 +143,10 @@ mod error {
         #[test]
         fn map2() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@use \'sass:map\';\
-             \na {b: map.deep-merge((c: d), 1)}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: map.deep-merge((c: d), 1)}\n"
+                ),
                 "Error: $map2: 1 is not a map.\
          \n  ,\
          \n2 | a {b: map.deep-merge((c: d), 1)}\
@@ -177,109 +160,82 @@ mod error {
 #[test]
 fn named() {
     assert_eq!(
-        crate::rsass(
+        runner().ok(
             "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge($map1: (c: d), $map2: (1: 2)))}\
-            \n"
-        )
-        .unwrap(),
+             \na {b: inspect(map.deep-merge($map1: (c: d), $map2: (1: 2)))}\n"
+        ),
         "a {\
-        \n  b: (1: 2, c: d);\
-        \n}\
-        \n"
+         \n  b: (1: 2, c: d);\
+         \n}\n"
     );
 }
 mod shallow {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn different_keys() {
         assert_eq!(
-            crate::rsass(
-                "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((c: d, e: f), (1: 2, 3: 4)))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \'sass:map\';\
+             \na {b: inspect(map.deep-merge((c: d, e: f), (1: 2, 3: 4)))}\n"),
             "a {\
-        \n  b: (1: 2, 3: 4, c: d, e: f);\
-        \n}\
-        \n"
+         \n  b: (1: 2, 3: 4, c: d, e: f);\
+         \n}\n"
         );
     }
     mod empty {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn both() {
             assert_eq!(
-                crate::rsass(
-                    "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((), ()))}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("@use \'sass:map\';\
+             \na {b: inspect(map.deep-merge((), ()))}\n"),
                 "a {\
-        \n  b: ();\
-        \n}\
-        \n"
+         \n  b: ();\
+         \n}\n"
             );
         }
         #[test]
         fn first() {
             assert_eq!(
-                crate::rsass(
-                    "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((), (c: d, e: f)))}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("@use \'sass:map\';\
+             \na {b: inspect(map.deep-merge((), (c: d, e: f)))}\n"),
                 "a {\
-        \n  b: (c: d, e: f);\
-        \n}\
-        \n"
+         \n  b: (c: d, e: f);\
+         \n}\n"
             );
         }
         #[test]
         fn second() {
             assert_eq!(
-                crate::rsass(
-                    "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((c: d, e: f), ()))}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("@use \'sass:map\';\
+             \na {b: inspect(map.deep-merge((c: d, e: f), ()))}\n"),
                 "a {\
-        \n  b: (c: d, e: f);\
-        \n}\
-        \n"
+         \n  b: (c: d, e: f);\
+         \n}\n"
             );
         }
     }
     #[test]
     fn overlapping_keys() {
         assert_eq!(
-        crate::rsass(
+        runner().ok(
             "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((c: d, e: f, g: h), (i: 1, e: 2, j: 3)))}\
-            \n"
-        )
-        .unwrap(),
+             \na {b: inspect(map.deep-merge((c: d, e: f, g: h), (i: 1, e: 2, j: 3)))}\n"
+        ),
         "a {\
-        \n  b: (i: 1, e: 2, j: 3, c: d, g: h);\
-        \n}\
-        \n"
+         \n  b: (i: 1, e: 2, j: 3, c: d, g: h);\
+         \n}\n"
     );
     }
     #[test]
     fn same_keys() {
         assert_eq!(
-            crate::rsass(
-                "@use \'sass:map\';\
-            \na {b: inspect(map.deep-merge((c: d, e: f), (c: 1, e: 2)))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \'sass:map\';\
+             \na {b: inspect(map.deep-merge((c: d, e: f), (c: 1, e: 2)))}\n"),
             "a {\
-        \n  b: (c: 1, e: 2);\
-        \n}\
-        \n"
+         \n  b: (c: 1, e: 2);\
+         \n}\n"
         );
     }
 }

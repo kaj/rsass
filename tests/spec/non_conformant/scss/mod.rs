@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss"
 
+#[allow(unused)]
+use super::runner;
+
 mod almost_ambiguous_nested_rules_and_declarations;
 
 mod alpha;

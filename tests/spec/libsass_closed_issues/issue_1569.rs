@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1569.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "$common-border: \"foo\";\
              \n.nihilo & {\
              \n  .dijitMenu {\
@@ -13,9 +18,8 @@ fn test() {
              \n      color: getColor(\'text-dark-main\');\
              \n    }\
              \n  }\
-             \n}\
-             \n"
-        ).unwrap_err(),
+             \n}\n"
+        ),
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n  ,\
          \n2 | .nihilo & {\

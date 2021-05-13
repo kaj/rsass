@@ -1,10 +1,14 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/019_test_css_import_directive.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass("@import \"foo.css\";").unwrap(),
-        "@import \"foo.css\";\
-        \n"
+        runner().ok("@import \"foo.css\";"),
+        "@import \"foo.css\";\n"
     );
 }

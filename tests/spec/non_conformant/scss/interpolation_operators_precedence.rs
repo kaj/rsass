@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/interpolation-operators-precedence.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".test {\
              \n  a01: (#{a}+5.0% + 2);\
              \n  a02: (#{a}+ 5.0% + 2);\
@@ -52,10 +57,8 @@ fn test() {
              \n  e04: (#{a} >=5.0% >= 2);\
              \n  e05: (#{a} <=5.0% <= 2);\
              \n  e06: (#{a} !=5.0% != 2);\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Undefined operation \"a * 5%\".\
          \n   ,\
          \n13 |   c04: (#{a} *5.0% + 2);\

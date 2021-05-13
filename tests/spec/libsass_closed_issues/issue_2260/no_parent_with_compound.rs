@@ -1,23 +1,26 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2260/no-parent-with-compound.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin test() {\
              \n  @at-root {\
              \n    @content;\
              \n  }\
-             \n}\
-             \n\
+             \n}\n\
              \n@include test {\
              \n  .test & {\
              \n    property: value;\
              \n   }\
-             \n}\
-             \n"
-        ).unwrap_err(),
+             \n}\n"
+        ),
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n  ,\
          \n8 |   .test & {\

@@ -1,39 +1,39 @@
 //! Tests auto-converted from "sass-spec/spec/css/custom_properties/trailing_comment.hrx"
 
-mod sass {}
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
+mod sass {
+    #[allow(unused)]
+    use super::runner;
+}
 mod scss {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong result
     fn loud() {
         assert_eq!(
-            crate::rsass(
-                "a {\
-            \n  --b: c /* comment */;\
-            \n}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {\
+             \n  --b: c /* comment */;\
+             \n}\n"),
             "a {\
-        \n  --b: c /* comment */;\
-        \n}\
-        \n"
+         \n  --b: c /* comment */;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // wrong result
     fn silent() {
         assert_eq!(
-            crate::rsass(
-                "a {\
-            \n  --b: c // comment;\
-            \n}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {\
+             \n  --b: c // comment;\
+             \n}\n"),
             "a {\
-        \n  --b: c // comment;\
-        \n}\
-        \n"
+         \n  --b: c // comment;\
+         \n}\n"
         );
     }
 }

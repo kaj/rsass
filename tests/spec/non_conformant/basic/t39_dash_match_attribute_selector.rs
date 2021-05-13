@@ -1,17 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/basic/39_dash_match_attribute_selector.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div[class|=\"blah\"] {\
-            \n  color: blue;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("div[class|=\"blah\"] {\
+             \n  color: blue;\
+             \n}"),
         "div[class|=blah] {\
-        \n  color: blue;\
-        \n}\
-        \n"
+         \n  color: blue;\
+         \n}\n"
     );
 }

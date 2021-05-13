@@ -1,12 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2304.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file("_module.scss", ".foo, & {\n  background: red;\n}\n\n.foo, &:before {\n  background: red;\n}")
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@import \"module\";"
-        ).unwrap_err(),
+        ),
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n  ,\
          \n1 | .foo, & {\

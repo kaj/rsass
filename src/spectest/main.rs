@@ -10,6 +10,9 @@ mod options;
 use options::Options;
 mod testfixture;
 use testfixture::TestFixture;
+mod testrunner;
+use testrunner::{runner, TestRunner};
+mod writestr;
 
 fn main() -> Result<(), Error> {
     let base = PathBuf::from("sass-spec");
@@ -23,6 +26,8 @@ fn main() -> Result<(), Error> {
             "directives/extend", // `@extend` is not supported at all
             "directives/forward", // `@forward` is not supported at all
             "libsass-closed-issues/issue_185/mixin.hrx", // stack overflow
+            "libsass-closed-issues/issue_1801", // infinite recursion
+            "libsass-todo-issues/issue_1801", // infinite recursion
             "libsass-todo-issues/issue_221262.hrx", // stack overflow
             "libsass-todo-issues/issue_221260.hrx", // stack overflow
             "libsass-todo-issues/issue_221292.hrx", // stack overflow
@@ -68,41 +73,17 @@ fn handle_suite(
             ignored,
         )?;
     }
-    writeln!(
-        rs,
-        "use rsass::output::Format;\
-         \nuse rsass::{{parse_scss_file, Error, FsFileContext, ScopeRef}};",
+    rs.write_all(
+        b"mod testrunner;\nuse testrunner::{runner, TestRunner};\n\n",
     )?;
-
+    {
+        let mut tr = File::create(rssuitedir.join("testrunner.rs"))?;
+        tr.write_all(include_bytes!("testrunner.rs"))?;
+    }
     handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)
         .map_err(|e| {
             Error(format!("Failed to handle suite {:?}: {}", suite, e))
-        })?;
-
-    writeln!(
-        rs,
-        "\nfn rsass(input: &str) -> Result<String, String> {{\
-         \n    rsass_fmt(Default::default(), input)\
-         \n}}\
-         \n#[allow(unused)]\
-         \nfn rsass_fmt(format: Format, input: &str)\
-         \n-> Result<String, String> {{\
-         \n    compile_scss(input.as_bytes(), format)\
-         \n        .map_err(|e| e.to_string())\
-         \n        .and_then(|s| {{\
-         \n            String::from_utf8(s)\
-         \n                .map(|s| s.replace(\"\\n\\n\", \"\\n\"))\
-         \n                .map_err(|e| format!(\"{{:?}}\", e))\
-         \n        }})\
-         \n}}\
-         \npub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {{\
-         \n    let mut file_context = FsFileContext::new();\
-         \n    file_context.push_path(\"tests/spec\".as_ref());\
-         \n    let items = parse_scss_file(&mut &input[..], \"input.scss\")?;\
-         \n    format.write_root(&items, ScopeRef::new_global(format), &file_context)\
-         \n}}"
-    )?;
-    Ok(())
+        })
 }
 
 fn handle_entries(
@@ -110,14 +91,14 @@ fn handle_entries(
     root: &Path,
     suitedir: &Path,
     rssuitedir: &Path,
-    precision: Option<i64>,
+    precision: Option<usize>,
     ignored: &[&str],
 ) -> Result<(), Error> {
     let mut entries: Vec<DirEntry> =
         suitedir.read_dir()?.collect::<Result<_, _>>()?;
     entries.sort_by_key(|e| e.file_name());
     for entry in entries {
-        if ignored.iter().any(|&i| &entry.file_name() == i) {
+        if ignored.iter().any(|&i| entry.file_name() == i) {
             ignore(rs, &entry.file_name(), "not expected to work yet")?;
         } else if entry.file_type()?.is_file()
             && entry.file_name().to_string_lossy().ends_with(".hrx")
@@ -172,7 +153,6 @@ fn handle_entries(
                     if let Some(ref reason) = options.should_skip {
                         ignore(rs, &entry.file_name(), reason)?;
                     } else {
-                        let precision = options.precision.or(precision);
                         let name = fn_name_os(&entry.file_name());
                         writeln!(rs, "\nmod {};", name)?;
                         let rssuitedir = rssuitedir.join(name);
@@ -183,19 +163,27 @@ fn handle_entries(
                             "//! Tests auto-converted from {:?}\n",
                             suitedir.join(entry.file_name()),
                         )?;
+                        if let Some(p) = options.precision {
+                            writeln!(
+                                rs,
+                                "fn runner() -> crate::TestRunner {{\
+                                 \n    super::runner().set_precision({})\
+                                 \n}}\n\n",
+                                p
+                            )?;
+                        } else {
+                            rs.write_all(
+                                b"#[allow(unused)]\nuse super::runner;\n\n",
+                            )?;
+                        }
+                        let precision = options.precision.or(precision);
                         let tt = format!(
                             "{}/",
                             entry.file_name().to_string_lossy(),
                         );
                         let ignored: Vec<&str> = ignored
                             .iter()
-                            .filter_map(|p| {
-                                if p.starts_with(&tt) {
-                                    Some(p.split_at(tt.len()).1)
-                                } else {
-                                    None
-                                }
-                            })
+                            .filter_map(|p| p.strip_prefix(&tt))
                             .collect();
                         handle_entries(
                             &mut rs,
@@ -226,25 +214,57 @@ fn spec_dir_to_test(
     rs: &mut dyn Write,
     suite: &Path,
     test: &OsStr,
-    precision: Option<i64>,
+    precision: Option<usize>,
 ) -> Result<(), Error> {
     let specdir = suite.join(test);
     let fixture = load_test_fixture_dir(&specdir, precision)?;
     writeln!(rs, "\n// From {:?}", specdir)?;
-    fixture.write_test(rs)
+    fixture.write_test(rs, runner())
 }
 
 fn spec_hrx_to_test(
     rs: &mut dyn Write,
     suite: &Path,
-    precision: Option<i64>,
+    precision: Option<usize>,
 ) -> Result<(), Error> {
     let archive = Archive::load(suite)
         .map_err(|e| Error(format!("Failed to load hrx: {}", e)))?;
 
     eprintln!("Handle {}", suite.display());
-    writeln!(rs)?;
-    handle_hrx_part(rs, suite, &archive, "", precision)
+    rs.write_all(
+        b"#[allow(unused)]\
+                   \nfn runner() -> crate::TestRunner {\
+                   \n    super::runner()\n",
+    )?;
+    let mut runner = runner();
+    for (name, content) in archive.entries() {
+        if ![
+            "README.md",
+            "input.scss",
+            "input.sass",
+            "output.css",
+            "output-libsass.css",
+            "output-dart-sass.css",
+            "error",
+            "error-libsass",
+            "error-dart-sass",
+            "warning",
+            "warning-libsass",
+            "warning-dart-sass",
+            "options.yml",
+        ]
+        .iter()
+        .any(|n| name.ends_with(n))
+        {
+            writeln!(rs, "        .mock_file({:?}, {:#?})", name, content)?;
+            runner = runner.mock_file(name, content);
+        }
+    }
+    if let Some(p) = precision {
+        writeln!(rs, "        .set_precision({})", p)?;
+    }
+    rs.write_all(b"}\n\n")?;
+    handle_hrx_part(rs, suite, &archive, "", precision, runner)
 }
 
 fn handle_hrx_part(
@@ -252,34 +272,23 @@ fn handle_hrx_part(
     suite: &Path,
     archive: &Archive,
     prefix: &str,
-    precision: Option<i64>,
+    precision: Option<usize>,
+    runner: TestRunner,
 ) -> Result<(), Error> {
     use std::collections::BTreeSet;
     let tests = archive
         .names()
         .iter()
         .flat_map(|s| {
-            if s.starts_with(prefix) {
-                let t = prefix.len();
-                if let Some(pos) = s[t..].find('/') {
-                    Some(&s[t..t + pos + 1])
-                } else {
-                    None // Some("")
-                }
-            } else {
-                None
-            }
+            s.strip_prefix(prefix)
+                .and_then(|s| s.find('/').map(|p| &s[..p + 1]))
         })
         .collect::<BTreeSet<_>>();
 
     let name = if prefix.is_empty() {
         None
     } else {
-        let t = if prefix.ends_with('/') {
-            &prefix[0..prefix.len() - 1]
-        } else {
-            prefix
-        };
+        let t = prefix.trim_end_matches('/');
         let t = if let Some(p) = t.rfind('/') {
             &t[p + 1..]
         } else {
@@ -288,43 +297,49 @@ fn handle_hrx_part(
         Some(fn_name(t))
     };
 
+    let mut options = archive
+        .get(&format!("{}options.yml", prefix))
+        .map(Options::parse)
+        .transpose()?
+        .unwrap_or_default();
+    options.precision = options.precision.or(precision);
+
     if archive.get(&format!("{}input.scss", prefix)).is_some() {
         let fixture = load_test_fixture_hrx(
             name.unwrap_or_else(|| "test".into()),
             &archive,
             prefix,
-            precision,
+            options,
         )?;
-        fixture.write_test(rs)
+        fixture.write_test(rs, runner)
+    } else if let Some(ref reason) = options.should_skip {
+        ignore(rs, &suite.file_name(), reason).map_err(|e| e.into())
     } else {
-        let options = archive
-            .get(&format!("{}options.yml", prefix))
-            .map(Options::parse)
-            .transpose()?
-            .unwrap_or_default();
-        if let Some(ref reason) = options.should_skip {
-            ignore(rs, &suite.file_name(), reason).map_err(|e| e.into())
-        } else {
-            let precision = options.precision.or(precision);
-            if !tests.is_empty() {
-                if let Some(ref name) = name {
-                    writeln!(rs, "mod {} {{", name,)?;
-                }
-                for name in tests {
-                    handle_hrx_part(
-                        rs,
-                        suite,
-                        &archive,
-                        &format!("{}{}", prefix, name),
-                        precision,
-                    )?;
-                }
-                if name.is_some() {
-                    writeln!(rs, "}}")?;
-                }
+        if !tests.is_empty() {
+            if let Some(ref name) = name {
+                writeln!(
+                    rs,
+                    "mod {} {{\
+                     \n    #[allow(unused)]\
+                     \n    use super::runner;",
+                    name,
+                )?;
             }
-            Ok(())
+            for name in tests {
+                handle_hrx_part(
+                    rs,
+                    suite,
+                    &archive,
+                    &format!("{}{}", prefix, name),
+                    options.precision,
+                    runner.clone(),
+                )?;
+            }
+            if name.is_some() {
+                writeln!(rs, "}}")?;
+            }
         }
+        Ok(())
     }
 }
 
@@ -366,7 +381,7 @@ fn fn_name(name: &str) -> String {
 
 fn load_test_fixture_dir(
     specdir: &Path,
-    precision: Option<i64>,
+    precision: Option<usize>,
 ) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAMES: &[&str] =
@@ -410,19 +425,11 @@ fn load_test_fixture_hrx(
     name: String,
     archive: &Archive,
     prefix: &str,
-    precision: Option<i64>,
+    options: Options,
 ) -> Result<TestFixture, Error> {
     static INPUT_FILENAME: &str = "input.scss";
     static EXPECTED_OUTPUT_FILENAMES: &[&str] =
         &["output-dart-sass.css", "output.css"];
-
-    let mut options =
-        if let Some(yml) = archive.get(&format!("{}options.yml", prefix)) {
-            Options::parse(yml)?
-        } else {
-            Options::default()
-        };
-    options.precision = options.precision.or(precision);
 
     if let Some(input) = archive.get(&format!("{}{}", prefix, INPUT_FILENAME))
     {
@@ -510,6 +517,11 @@ impl From<std::num::ParseFloatError> for Error {
 impl From<std::path::StripPrefixError> for Error {
     fn from(e: std::path::StripPrefixError) -> Self {
         Error(format!("{}", e))
+    }
+}
+impl From<std::num::TryFromIntError> for Error {
+    fn from(e: std::num::TryFromIntError) -> Self {
+        Error(e.to_string())
     }
 }
 

@@ -1,22 +1,24 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/error-directive-nested/function.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@function c() {\
              \n  @error test;\
              \n  @return d;\
-             \n}\
-             \n\
+             \n}\n\
              \na {\
              \n  b: {\
              \n    c: c();\
              \n  }\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: test\
          \n  ,\
          \n8 |     c: c();\

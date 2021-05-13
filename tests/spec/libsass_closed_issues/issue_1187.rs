@@ -1,23 +1,26 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1187.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "$a: \'foo\';\
              \n$b: \'foo\';\
              \n$map: (\
              \n  $a: 1,\
              \n  $b: 2\
-             \n);\
-             \n\
+             \n);\n\
              \n.foo {\
              \n  content: $a == $b;\
              \n  content: inspect($map);\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: Duplicate key.\
          \n  ,\
          \n4 |   $a: 1,\

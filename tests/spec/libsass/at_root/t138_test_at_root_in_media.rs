@@ -1,22 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/at-root/138_test_at_root_in_media.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@media screen {\
-            \n  .foo {\
-            \n    @at-root .bar {a: b}\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@media screen {\
+             \n  .foo {\
+             \n    @at-root .bar {a: b}\
+             \n  }\
+             \n}\n"),
         "@media screen {\
-        \n  .bar {\
-        \n    a: b;\
-        \n  }\
-        \n}\
-        \n"
+         \n  .bar {\
+         \n    a: b;\
+         \n  }\
+         \n}\n"
     );
 }

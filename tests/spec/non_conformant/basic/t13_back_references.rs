@@ -1,23 +1,24 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/basic/13_back_references.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "hey, ho {\
-            \n  & > boo, foo &.goo {\
-            \n    bloo: bloo;\
-            \n  }\
-            \n  blah: blah;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("hey, ho {\
+             \n  & > boo, foo &.goo {\
+             \n    bloo: bloo;\
+             \n  }\
+             \n  blah: blah;\
+             \n}"),
         "hey, ho {\
-        \n  blah: blah;\
-        \n}\
-        \nhey > boo, foo hey.goo, ho > boo, foo ho.goo {\
-        \n  bloo: bloo;\
-        \n}\
-        \n"
+         \n  blah: blah;\
+         \n}\
+         \nhey > boo, foo hey.goo, ho > boo, foo ho.goo {\
+         \n  bloo: bloo;\
+         \n}\n"
     );
 }

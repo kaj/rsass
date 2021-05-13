@@ -1,20 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/at-root/141_test_at_root_with_parent_ref.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".foo {\
-            \n  @at-root & {\
-            \n    a: b;\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".foo {\
+             \n  @at-root & {\
+             \n    a: b;\
+             \n  }\
+             \n}\n"),
         ".foo {\
-        \n  a: b;\
-        \n}\
-        \n"
+         \n  a: b;\
+         \n}\n"
     );
 }

@@ -1,12 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/imported/at-root-postfix.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner().mock_file(
+        "include.scss",
+        "@at-root {\n  &post {\n    foo {\n      bar: baz;\n    }\n  }\n}",
+    )
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@import \"include.scss\";"
-        ).unwrap_err(),
+        ),
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n  ,\
          \n2 |   &post {\

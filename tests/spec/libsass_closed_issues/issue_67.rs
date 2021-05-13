@@ -1,12 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_67.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass("foo {bar: 70% - 40%}").unwrap(),
+        runner().ok("foo {bar: 70% - 40%}"),
         "foo {\
-        \n  bar: 30%;\
-        \n}\
-        \n"
+         \n  bar: 30%;\
+         \n}\n"
     );
 }

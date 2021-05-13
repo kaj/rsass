@@ -1,20 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1647/directives.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@foo #{\"directive\"} {\
-            \n  .#{\"foo\"} { #{\"foo-prop\"}: #{\"foo-val\"}; }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@foo #{\"directive\"} {\
+             \n  .#{\"foo\"} { #{\"foo-prop\"}: #{\"foo-val\"}; }\
+             \n}\n"),
         "@foo directive {\
-        \n  .foo {\
-        \n    foo-prop: foo-val;\
-        \n  }\
-        \n}\
-        \n"
+         \n  .foo {\
+         \n    foo-prop: foo-val;\
+         \n  }\
+         \n}\n"
     );
 }

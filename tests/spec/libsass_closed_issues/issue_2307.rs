@@ -1,15 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2307.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "0//#{\
-             \n{\
-             \n"
-        )
-        .unwrap_err(),
+             \n{\n"
+        ),
         "Error: expected \"}\".\
          \n  ,\
          \n2 | {\

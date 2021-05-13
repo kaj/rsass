@@ -1,13 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1432/selector-extend.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@debug(selector-extend(\".a .b\", \".b\", null));\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "@debug(selector-extend(\".a .b\", \".b\", null));\n"
+        ),
         "Error: $extender: null is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\

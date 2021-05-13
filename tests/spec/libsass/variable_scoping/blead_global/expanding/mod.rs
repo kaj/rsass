@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/variable-scoping/blead-global/expanding"
 
+#[allow(unused)]
+use super::runner;
+
 mod at_root;
 
 mod each;

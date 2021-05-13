@@ -1,38 +1,36 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/if-in-mixin.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$x: true;\
-            \n\
-            \n@mixin foobar() {\
-            \n  @if $x {\
-            \n    $x: false !global;\
-            \n    content: foo;\
-            \n  }\
-            \n  @else {\
-            \n    $x: true !global;\
-            \n    content: bar;\
-            \n  }\
-            \n}\
-            \n\
-            \ndiv {\
-            \n  @include foobar();\
-            \n  @include foobar();\
-            \n  @include foobar();\
-            \n  $x: true !global;\
-            \n  @include foobar();\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$x: true;\n\
+             \n@mixin foobar() {\
+             \n  @if $x {\
+             \n    $x: false !global;\
+             \n    content: foo;\
+             \n  }\
+             \n  @else {\
+             \n    $x: true !global;\
+             \n    content: bar;\
+             \n  }\
+             \n}\n\
+             \ndiv {\
+             \n  @include foobar();\
+             \n  @include foobar();\
+             \n  @include foobar();\
+             \n  $x: true !global;\
+             \n  @include foobar();\
+             \n}\n"),
         "div {\
-        \n  content: foo;\
-        \n  content: bar;\
-        \n  content: foo;\
-        \n  content: foo;\
-        \n}\
-        \n"
+         \n  content: foo;\
+         \n  content: bar;\
+         \n  content: foo;\
+         \n  content: foo;\
+         \n}\n"
     );
 }

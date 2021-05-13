@@ -1,20 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1441/adjacent.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".adjacent {\
-            \n    & + & {\
-            \n        foo: bar;\
-            \n    }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".adjacent {\
+             \n    & + & {\
+             \n        foo: bar;\
+             \n    }\
+             \n}\n"),
         ".adjacent + .adjacent {\
-        \n  foo: bar;\
-        \n}\
-        \n"
+         \n  foo: bar;\
+         \n}\n"
     );
 }

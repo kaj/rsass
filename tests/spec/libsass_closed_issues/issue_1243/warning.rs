@@ -1,14 +1,11 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1243/warning.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
-    assert_eq!(
-        crate::rsass(
-            "@warning \"foo\"\
-            \n"
-        )
-        .unwrap(),
-        "@warning \"foo\";\
-        \n"
-    );
+    assert_eq!(runner().ok("@warning \"foo\"\n"), "@warning \"foo\";\n");
 }

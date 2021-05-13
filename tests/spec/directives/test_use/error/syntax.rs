@@ -1,17 +1,24 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/error/syntax.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod after {
+    #[allow(unused)]
+    use super::runner;
     mod at_rule {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn css() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@keyframes foo {};\
-             \n@use \"other\";\
-             \n"
-                )
-                .unwrap_err(),
+             \n@use \"other\";\n"
+                ),
                 "Error: @use rules must be written before any other rules.\
          \n  ,\
          \n2 | @use \"other\";\
@@ -24,12 +31,10 @@ mod after {
         #[ignore] // wrong error
         fn import() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@import \"other1\";\
-             \n@use \"other2\";\
-             \n"
-                )
-                .unwrap_err(),
+             \n@use \"other2\";\n"
+                ),
                 "Error: @use rules must be written before any other rules.\
          \n  ,\
          \n2 | @use \"other2\";\
@@ -42,12 +47,10 @@ mod after {
         #[ignore] // wrong error
         fn sass() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@if true {};\
-             \n@use \"other\";\
-             \n"
-                )
-                .unwrap_err(),
+             \n@use \"other\";\n"
+                ),
                 "Error: @use rules must be written before any other rules.\
          \n  ,\
          \n2 | @use \"other\";\
@@ -60,12 +63,10 @@ mod after {
         #[ignore] // wrong error
         fn unknown() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@fblthp;\
-             \n@use \"other\";\
-             \n"
-                )
-                .unwrap_err(),
+             \n@use \"other\";\n"
+                ),
                 "Error: @use rules must be written before any other rules.\
          \n  ,\
          \n2 | @use \"other\";\
@@ -75,17 +76,18 @@ mod after {
             );
         }
     }
-    mod indented {}
+    mod indented {
+        #[allow(unused)]
+        use super::runner;
+    }
     #[test]
     #[ignore] // wrong error
     fn style_rule() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {};\
-             \n@use \"other\";\
-             \n"
-            )
-            .unwrap_err(),
+             \n@use \"other\";\n"
+            ),
             "Error: @use rules must be written before any other rules.\
          \n  ,\
          \n2 | @use \"other\";\
@@ -96,14 +98,10 @@ mod after {
     }
 }
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn as_invalid() {
     assert_eq!(
-        crate::rsass(
-            "@use \"foo\" as 1;\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("@use \"foo\" as 1;\n"),
         "Error: Expected identifier.\
          \n  ,\
          \n1 | @use \"foo\" as 1;\
@@ -116,11 +114,7 @@ fn as_invalid() {
 #[ignore] // wrong error
 fn as_nothing() {
     assert_eq!(
-        crate::rsass(
-            "@use \"foo\" as;\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("@use \"foo\" as;\n"),
         "Error: Expected identifier.\
          \n  ,\
          \n1 | @use \"foo\" as;\
@@ -133,11 +127,7 @@ fn as_nothing() {
 #[ignore] // wrong error
 fn empty() {
     assert_eq!(
-        crate::rsass(
-            "@use;\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("@use;\n"),
         "Error: Expected string.\
          \n  ,\
          \n1 | @use;\
@@ -147,16 +137,16 @@ fn empty() {
     );
 }
 mod member {
+    #[allow(unused)]
+    use super::runner;
     mod function {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn definition() {
             assert_eq!(
-                crate::rsass(
-                    "@function namespace.member() {@return null}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@function namespace.member() {@return null}\n"),
                 "Error: expected \"(\".\
          \n  ,\
          \n1 | @function namespace.member() {@return null}\
@@ -169,11 +159,7 @@ mod member {
         #[ignore] // wrong error
         fn no_member() {
             assert_eq!(
-                crate::rsass(
-                    "a {a: namespace.()}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {a: namespace.()}\n"),
                 "Error: Expected identifier.\
          \n  ,\
          \n1 | a {a: namespace.()}\
@@ -186,11 +172,7 @@ mod member {
         #[ignore] // wrong error
         fn no_namespace() {
             assert_eq!(
-                crate::rsass(
-                    "a {a: .member()}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {a: .member()}\n"),
                 "Error: Expected digit.\
          \n  ,\
          \n1 | a {a: .member()}\
@@ -203,10 +185,9 @@ mod member {
         #[ignore] // wrong error
         fn private() {
             assert_eq!(
-        crate::rsass(
-            "a {a: namespace._member()}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {a: namespace._member()}\n"
+        ),
         "Error: Private members can\'t be accessed from outside their modules.\
          \n  ,\
          \n1 | a {a: namespace._member()}\
@@ -220,12 +201,11 @@ mod member {
     #[ignore] // missing error
     fn identifier_only() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "// A namespaced identifier with neither parentheses for a function nor a leading\
              \n// dollar sign for a variable is invalid syntax.\
-             \na {a: namespace.member}\
-             \n"
-        ).unwrap_err(),
+             \na {a: namespace.member}\n"
+        ),
         "Error: expected \"(\".\
          \n  ,\
          \n3 | a {a: namespace.member}\
@@ -235,15 +215,13 @@ mod member {
     );
     }
     mod mixin {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn definition() {
             assert_eq!(
-                crate::rsass(
-                    "@mixin namespace.member() {}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@mixin namespace.member() {}\n"),
                 "Error: expected \"{\".\
          \n  ,\
          \n1 | @mixin namespace.member() {}\
@@ -256,11 +234,7 @@ mod member {
         #[ignore] // wrong error
         fn no_member() {
             assert_eq!(
-                crate::rsass(
-                    "a {@include namespace.}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {@include namespace.}\n"),
                 "Error: Expected identifier.\
          \n  ,\
          \n1 | a {@include namespace.}\
@@ -273,11 +247,7 @@ mod member {
         #[ignore] // wrong error
         fn no_namespace() {
             assert_eq!(
-                crate::rsass(
-                    "a {@include .member}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {@include .member}\n"),
                 "Error: Expected identifier.\
          \n  ,\
          \n1 | a {@include .member}\
@@ -290,10 +260,9 @@ mod member {
         #[ignore] // wrong error
         fn private() {
             assert_eq!(
-        crate::rsass(
-            "a {@include namespace._member}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {@include namespace._member}\n"
+        ),
         "Error: Private members can\'t be accessed from outside their modules.\
          \n  ,\
          \n1 | a {@include namespace._member}\
@@ -307,14 +276,13 @@ mod member {
     #[ignore] // missing error
     fn unused_private() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "// Private member usage is a syntax error, so it should fail at parse time\
              \n// without needing to be executed.\
              \n@function foo() {\
              \n  @debug namespace.$_member;\
-             \n}\
-             \n"
-        ).unwrap_err(),
+             \n}\n"
+        ),
         "Error: Private members can\'t be accessed from outside their modules.\
          \n  ,\
          \n4 |   @debug namespace.$_member;\
@@ -324,14 +292,15 @@ mod member {
     );
     }
     mod variable {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn global() {
             assert_eq!(
-        crate::rsass(
-            "namespace.$member: value !global;\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "namespace.$member: value !global;\n"
+        ),
         "Error: !global isn\'t allowed for variables in other modules.\
          \n  ,\
          \n1 | namespace.$member: value !global;\
@@ -344,11 +313,7 @@ mod member {
         #[ignore] // wrong error
         fn no_member() {
             assert_eq!(
-                crate::rsass(
-                    "a {a: namespace.$}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {a: namespace.$}\n"),
                 "Error: Expected identifier.\
          \n  ,\
          \n1 | a {a: namespace.$}\
@@ -361,11 +326,7 @@ mod member {
         #[ignore] // wrong error
         fn no_namespace() {
             assert_eq!(
-                crate::rsass(
-                    "a {a: $.member}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {a: $.member}\n"),
                 "Error: Expected identifier.\
          \n  ,\
          \n1 | a {a: $.member}\
@@ -378,10 +339,9 @@ mod member {
         #[ignore] // wrong error
         fn private() {
             assert_eq!(
-        crate::rsass(
-            "a {a: namespace.$_member}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {a: namespace.$_member}\n"
+        ),
         "Error: Private members can\'t be accessed from outside their modules.\
          \n  ,\
          \n1 | a {a: namespace.$_member}\
@@ -393,15 +353,13 @@ mod member {
     }
 }
 mod url {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn empty() {
         assert_eq!(
-            crate::rsass(
-                "@use \"\";\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"\";\n"),
             "Error: Invalid Sass identifier \"\"\
          \n  ,\
          \n1 | @use \"\";\
@@ -414,11 +372,7 @@ mod url {
     #[ignore] // wrong error
     fn non_identifier() {
         assert_eq!(
-            crate::rsass(
-                "@use \"123\";\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"123\";\n"),
             "Error: Invalid Sass identifier \"123\"\
          \n  ,\
          \n1 | @use \"123\";\
@@ -428,14 +382,10 @@ mod url {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn unquoted() {
         assert_eq!(
-            crate::rsass(
-                "@use foo;\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use foo;\n"),
             "Error: Expected string.\
          \n  ,\
          \n1 | @use foo;\
@@ -446,16 +396,13 @@ mod url {
     }
 }
 mod with {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn before_as() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" with ($a: b) as c;\
-             \n\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"other\" with ($a: b) as c;\n\n"),
             "Error: expected \";\".\
          \n  ,\
          \n1 | @use \"other\" with ($a: b) as c;\
@@ -468,11 +415,7 @@ mod with {
     #[ignore] // wrong error
     fn default() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" with ($a: b !default);\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"other\" with ($a: b !default);\n"),
             "Error: expected \")\".\
          \n  ,\
          \n1 | @use \"other\" with ($a: b !default);\
@@ -485,11 +428,7 @@ mod with {
     #[ignore] // wrong error
     fn empty() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" with ();\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"other\" with ();\n"),
             "Error: expected \"$\".\
          \n  ,\
          \n1 | @use \"other\" with ();\
@@ -502,11 +441,7 @@ mod with {
     #[ignore] // wrong error
     fn extra_comma() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" with ($a: b,,);\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"other\" with ($a: b,,);\n"),
             "Error: expected \")\".\
          \n  ,\
          \n1 | @use \"other\" with ($a: b,,);\
@@ -519,11 +454,7 @@ mod with {
     #[ignore] // wrong error
     fn missing_keyword() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" with (a);\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"other\" with (a);\n"),
             "Error: expected \"$\".\
          \n  ,\
          \n1 | @use \"other\" with (a);\
@@ -536,11 +467,7 @@ mod with {
     #[ignore] // wrong error
     fn missing_value() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" with ($a);\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"other\" with ($a);\n"),
             "Error: expected \":\".\
          \n  ,\
          \n1 | @use \"other\" with ($a);\
@@ -553,11 +480,7 @@ mod with {
     #[ignore] // wrong error
     fn namespace_variable() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" with (a.$b: c);\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"other\" with (a.$b: c);\n"),
             "Error: expected \"$\".\
          \n  ,\
          \n1 | @use \"other\" with (a.$b: c);\
@@ -570,11 +493,7 @@ mod with {
     #[ignore] // wrong error
     fn no_arguments() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" with;\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"other\" with;\n"),
             "Error: expected \"(\".\
          \n  ,\
          \n1 | @use \"other\" with;\
@@ -587,11 +506,7 @@ mod with {
     #[ignore] // wrong error
     fn space_after_dollar() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" with ($ a: b);\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@use \"other\" with ($ a: b);\n"),
             "Error: Expected identifier.\
          \n  ,\
          \n1 | @use \"other\" with ($ a: b);\
@@ -602,17 +517,17 @@ mod with {
     }
 }
 mod within {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn function() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@function foo {\
              \n  @use \"other\";\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: expected \"(\".\
          \n  ,\
          \n1 | @function foo {\
@@ -625,13 +540,11 @@ mod within {
     #[ignore] // missing error
     fn mixin() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@mixin foo {\
              \n  @use \"other\";\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: This at-rule is not allowed here.\
          \n  ,\
          \n2 |   @use \"other\";\
@@ -644,13 +557,11 @@ mod within {
     #[ignore] // wrong error
     fn style_rule() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "a {\
              \n  @use \"other\";\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: This at-rule is not allowed here.\
          \n  ,\
          \n2 |   @use \"other\";\

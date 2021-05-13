@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use"
 
+#[allow(unused)]
+use super::runner;
+
 mod css;
 
 mod error;

@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/at-root"
 
+#[allow(unused)]
+use super::runner;
+
 mod t135_test_simple_at_root;
 
 mod t136_test_at_root_with_selector;

@@ -1,18 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/no_namespace_properties_without_space.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "foo {\
-            \n  bar:baz {\
-            \n    bip: bop }}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("foo {\
+             \n  bar:baz {\
+             \n    bip: bop }}\n"),
         "foo bar:baz {\
-        \n  bip: bop;\
-        \n}\
-        \n"
+         \n  bip: bop;\
+         \n}\n"
     );
 }

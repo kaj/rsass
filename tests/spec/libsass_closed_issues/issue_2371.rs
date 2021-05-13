@@ -1,14 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2371.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "#{a==b}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("#{a==b}\n"),
         "Error: expected \"{\".\
          \n  ,\
          \n1 | #{a==b}\

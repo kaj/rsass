@@ -1,10 +1,14 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/url_import.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass("@import url(fonts.sass);").unwrap(),
-        "@import url(fonts.sass);\
-        \n"
+        runner().ok("@import url(fonts.sass);"),
+        "@import url(fonts.sass);\n"
     );
 }

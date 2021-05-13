@@ -1,10 +1,8 @@
-use super::ignore;
 use super::options::Options;
-use super::Error;
+use super::writestr::WriteStr;
+use super::{ignore, Error, TestRunner};
 use lazy_static::lazy_static;
 use regex::Regex;
-use rsass::output::{Format, Style};
-use rsass::{parse_scss_file, FsFileContext, ScopeRef};
 use std::io::Write;
 
 pub struct TestFixture {
@@ -30,9 +28,9 @@ impl TestFixture {
     ) -> Self {
         TestFixture {
             fn_name,
-            input: input,
-            options: options,
+            input,
             expectation: ExpectedCSS(normalize_output_css(expected_css)),
+            options,
         }
     }
 
@@ -44,71 +42,59 @@ impl TestFixture {
     ) -> Self {
         TestFixture {
             fn_name,
-            input: input,
+            input,
             expectation: ExpectedError(error),
-            options: options,
+            options,
         }
     }
 
-    pub fn write_test(&self, rs: &mut dyn Write) -> Result<(), Error> {
+    pub fn write_test(
+        &self,
+        rs: &mut dyn Write,
+        runner: TestRunner,
+    ) -> Result<(), Error> {
         if let Some(ref reason) = self.options.should_skip {
             ignore(rs, &self.fn_name, reason)?;
             return Ok(());
         }
         rs.write_all(b"#[test]\n")?;
-        if let Some(reason) = self.is_failure() {
+        if let Some(reason) = self.is_failure(runner) {
             writeln!(rs, "#[ignore] // {}", reason)?;
         }
         writeln!(rs, "fn {}() {{", self.fn_name)?;
+        let runner = if let Some(p) = self.options.precision {
+            writeln!(rs, "    let runner = runner().set_precision({});", p)?;
+            "runner"
+        } else {
+            "runner()"
+        };
         match self.expectation {
             ExpectedError(ref err) => {
-                let input = format!("{:?}", self.input)
-                    .replace(escaped_newline(), "\n             \\n");
-                let err = format!("{:?}", err)
-                    .replace(escaped_newline(), "\n         \\n");
                 writeln!(
                     rs,
                     "    assert_eq!(\
-                     \n        crate::rsass(\
+                     \n        {}.err(\
                      \n            {}\
-                     \n        ).unwrap_err(),\
+                     \n        ),\
                      \n        {},\
                      \n    );",
-                    input, err,
+                    runner,
+                    WriteStr(&self.input, 13),
+                    WriteStr(err, 9),
                 )?;
             }
             ExpectedCSS(ref expected) => {
-                let precision = self.options.precision;
-                if let Some(precision) = precision {
-                    writeln!(
-                        rs,
-                        "    let format = rsass::output::Format {{ \
-                         style: rsass::output::Style::Expanded, \
-                         precision: {} \
-                         }};",
-                        precision,
-                    )?;
-                }
-                let input = format!("{:?}", self.input)
-                    .replace(escaped_newline(), "\n            \\n");
-                let expected = format!("{:?}", expected)
-                    .replace(escaped_newline(), "\n        \\n");
                 writeln!(
                     rs,
                     "    assert_eq!(\
-                     \n        {}\
+                     \n        {}.ok(\
                      \n            {}\
-                     \n        )\
-                     \n        .unwrap(),\
+                     \n        ),\
                      \n        {}\
                      \n    );",
-                    if precision.is_none() {
-                        "crate::rsass("
-                    } else {
-                        "crate::rsass_fmt(format,"
-                    },
-                    input,
-                    expected,
+                    runner,
+                    WriteStr(&self.input, 13),
+                    WriteStr(expected, 9),
                 )?;
             }
         }
@@ -117,12 +103,13 @@ impl TestFixture {
     }
 
     /// Execute the test here and now, return None for success or Some reason to fail.
-    fn is_failure(&self) -> Option<&'static str> {
-        let format = Format {
-            style: Style::Expanded,
-            precision: self.options.precision.unwrap_or(10) as usize,
+    fn is_failure(&self, runner: TestRunner) -> Option<&'static str> {
+        let runner = if let Some(precision) = self.options.precision {
+            runner.set_precision(precision as usize)
+        } else {
+            runner
         };
-        match (&self.expectation, rsass(&self.input, format)) {
+        match (&self.expectation, runner.run(&self.input)) {
             (ExpectedError(_), Ok(_)) => Some("missing error"),
             (ExpectedError(ref expected), Err(ref actual)) => {
                 // TODO: some flexibility in comparision?
@@ -142,38 +129,6 @@ impl TestFixture {
             (ExpectedCSS(_), Err(_)) => Some("unexepected error"),
         }
     }
-}
-
-/// Return a pattern function matching the 'n' in \n, unless the
-/// backslash is also escaped.
-fn escaped_newline() -> impl FnMut(char) -> bool {
-    let mut n = 0;
-    move |c: char| {
-        let next_n = if c == '\\' { n + 1 } else { 0 };
-        let result = n % 2 == 1 && c == 'n';
-        n = next_n;
-        result
-    }
-}
-
-fn rsass(input: &str, format: Format) -> Result<String, String> {
-    compile_scss(input.as_bytes(), format)
-        .map_err(|e| e.to_string())
-        .and_then(|s| {
-            String::from_utf8(s)
-                .map(|s| normalize_output_css(s.as_str()))
-                .map_err(|e| format!("{:?}", e))
-        })
-}
-
-pub fn compile_scss(
-    input: &[u8],
-    format: Format,
-) -> Result<Vec<u8>, rsass::Error> {
-    let mut file_context = FsFileContext::new();
-    file_context.push_path("tests/spec".as_ref());
-    let items = parse_scss_file(&mut &input[..], "input.scss")?;
-    format.write_root(&items, ScopeRef::new_global(format), &file_context)
 }
 
 fn normalize_output_css(css: &str) -> String {

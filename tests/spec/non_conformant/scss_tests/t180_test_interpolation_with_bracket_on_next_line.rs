@@ -1,17 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/180_test_interpolation_with_bracket_on_next_line.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "a.#{\"foo\"} b\
-            \n{color: red}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a.#{\"foo\"} b\
+             \n{color: red}\n"),
         "a.foo b {\
-        \n  color: red;\
-        \n}\
-        \n"
+         \n  color: red;\
+         \n}\n"
     );
 }

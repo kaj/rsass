@@ -1,26 +1,26 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1650/negative.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ":nth-of-type(2n-1),\
-            \n:nth-of-type(2n-  1),\
-            \n:nth-of-type(2n  -1),\
-            \n:nth-of-type(2n  -  1),\
-            \n:nth-of-type( 2n  -  1 )\
-            \n{ color: red; }\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(":nth-of-type(2n-1),\
+             \n:nth-of-type(2n-  1),\
+             \n:nth-of-type(2n  -1),\
+             \n:nth-of-type(2n  -  1),\
+             \n:nth-of-type( 2n  -  1 )\
+             \n{ color: red; }\n"),
         ":nth-of-type(2n-1),\
-        \n:nth-of-type(2n- 1),\
-        \n:nth-of-type(2n -1),\
-        \n:nth-of-type(2n - 1),\
-        \n:nth-of-type(2n - 1) {\
-        \n  color: red;\
-        \n}\
-        \n"
+         \n:nth-of-type(2n- 1),\
+         \n:nth-of-type(2n -1),\
+         \n:nth-of-type(2n - 1),\
+         \n:nth-of-type(2n - 1) {\
+         \n  color: red;\
+         \n}\n"
     );
 }

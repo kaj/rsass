@@ -1,14 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1484.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div {\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("div {\n"),
         "Error: expected \"}\".\
          \n  ,\
          \n1 | div {\

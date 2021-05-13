@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/values/maps/duplicate-keys.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "$map: (\
              \n  alpha: 1,\
              \n  beta: 2,\
@@ -13,10 +18,8 @@ fn test() {
              \n    eta: 5,\
              \n    eta: 6,\
              \n  ),\
-             \n);\
-             \n"
-        )
-        .unwrap_err(),
+             \n);\n"
+        ),
         "Error: Duplicate key.\
          \n  ,\
          \n6 |     eta: 5,\

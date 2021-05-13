@@ -1,18 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2808.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "test {\
-            \n  content: str-slice(abcdef, -10, 2)\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("test {\
+             \n  content: str-slice(abcdef, -10, 2)\
+             \n}\n"),
         "test {\
-        \n  content: ab;\
-        \n}\
-        \n"
+         \n  content: ab;\
+         \n}\n"
     );
 }

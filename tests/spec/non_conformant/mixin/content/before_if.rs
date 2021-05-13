@@ -1,27 +1,26 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/mixin/content/before_if.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "// Regression test for sass/dart-sass#482.\
-            \n@mixin outer {\
-            \n  a {@content}\
-            \n}\
-            \n\
-            \n@mixin inner {\
-            \n  @content;\
-            \n}\
-            \n\
-            \n@include outer {\
-            \n  @include inner {}\
-            \n  x: y;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("// Regression test for sass/dart-sass#482.\
+             \n@mixin outer {\
+             \n  a {@content}\
+             \n}\n\
+             \n@mixin inner {\
+             \n  @content;\
+             \n}\n\
+             \n@include outer {\
+             \n  @include inner {}\
+             \n  x: y;\
+             \n}"),
         "a {\
-        \n  x: y;\
-        \n}\
-        \n"
+         \n  x: y;\
+         \n}\n"
     );
 }

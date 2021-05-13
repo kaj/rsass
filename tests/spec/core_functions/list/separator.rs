@@ -1,60 +1,49 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/list/separator.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod empty {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn comma() {
         assert_eq!(
-            crate::rsass(
-                "a {b: list-separator(join((), (), comma))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: list-separator(join((), (), comma))}\n"),
             "a {\
-        \n  b: comma;\
-        \n}\
-        \n"
+         \n  b: comma;\
+         \n}\n"
         );
     }
     #[test]
     fn map() {
         assert_eq!(
-            crate::rsass(
-                "@import \"core_functions/list/utils\";\
-            \n\
-            \na {b: list-separator($empty-map)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@import \"core_functions/list/utils\";\n\
+             \na {b: list-separator($empty-map)}\n"),
             "a {\
-        \n  b: space;\
-        \n}\
-        \n"
+         \n  b: space;\
+         \n}\n"
         );
     }
     #[test]
     fn space() {
         assert_eq!(
-            crate::rsass(
-                "a {b: list-separator(())}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: list-separator(())}\n"),
             "a {\
-        \n  b: space;\
-        \n}\
-        \n"
+         \n  b: space;\
+         \n}\n"
         );
     }
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_few_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: list-separator()}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: list-separator()}\n"),
             "Error: Missing argument $list.\
          \n  ,--> input.scss\
          \n1 | a {b: list-separator()}\
@@ -70,11 +59,7 @@ mod error {
     #[test]
     fn too_many_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: list-separator(c, d)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: list-separator(c, d)}\n"),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: list-separator(c, d)}\
@@ -89,90 +74,64 @@ mod error {
     }
 }
 mod multi {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn comma() {
         assert_eq!(
-            crate::rsass(
-                "a {b: list-separator((1, 2, 3))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: list-separator((1, 2, 3))}\n"),
             "a {\
-        \n  b: comma;\
-        \n}\
-        \n"
+         \n  b: comma;\
+         \n}\n"
         );
     }
     #[test]
     fn map() {
         assert_eq!(
-            crate::rsass(
-                "a {b: list-separator((c: d, e: f, g: h))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: list-separator((c: d, e: f, g: h))}\n"),
             "a {\
-        \n  b: comma;\
-        \n}\
-        \n"
+         \n  b: comma;\
+         \n}\n"
         );
     }
     #[test]
     fn space() {
         assert_eq!(
-            crate::rsass(
-                "a {b: list-separator(1 2 3)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: list-separator(1 2 3)}\n"),
             "a {\
-        \n  b: space;\
-        \n}\
-        \n"
+         \n  b: space;\
+         \n}\n"
         );
     }
 }
 mod single {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn comma() {
         assert_eq!(
-            crate::rsass(
-                "a {b: list-separator((1,))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: list-separator((1,))}\n"),
             "a {\
-        \n  b: comma;\
-        \n}\
-        \n"
+         \n  b: comma;\
+         \n}\n"
         );
     }
     #[test]
     fn non_list() {
         assert_eq!(
-            crate::rsass(
-                "a {b: list-separator(1)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: list-separator(1)}\n"),
             "a {\
-        \n  b: space;\
-        \n}\
-        \n"
+         \n  b: space;\
+         \n}\n"
         );
     }
     #[test]
     fn space() {
         assert_eq!(
-            crate::rsass(
-                "a {b: list-separator([1])}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: list-separator([1])}\n"),
             "a {\
-        \n  b: space;\
-        \n}\
-        \n"
+         \n  b: space;\
+         \n}\n"
         );
     }
 }

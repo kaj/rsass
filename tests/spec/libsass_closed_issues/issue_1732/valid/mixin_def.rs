@@ -1,15 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1732/valid/mixin-def.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@mixin a {\
-            \n  b: c;\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@mixin a {\
+             \n  b: c;\
+             \n}\n"),
         ""
     );
 }

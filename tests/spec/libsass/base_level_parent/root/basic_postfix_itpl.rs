@@ -1,20 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/root/basic-postfix-itpl.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "#{&}post {\r\
-            \n  foo {\r\
-            \n    bar: baz;\r\
-            \n  }\r\
-            \n}\r\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("#{&}post {\r\
+             \n  foo {\r\
+             \n    bar: baz;\r\
+             \n  }\r\
+             \n}\r\n"),
         "post foo {\
-        \n  bar: baz;\
-        \n}\
-        \n"
+         \n  bar: baz;\
+         \n}\n"
     );
 }

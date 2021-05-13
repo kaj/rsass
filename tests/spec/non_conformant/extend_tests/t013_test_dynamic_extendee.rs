@@ -1,18 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/013_test_dynamic_extendee.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "[baz^=\"blip12px\"] {a: b}\
-            \n.bar {@extend [baz^=\"blip#{12px}\"]}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("[baz^=\"blip12px\"] {a: b}\
+             \n.bar {@extend [baz^=\"blip#{12px}\"]}\n"),
         "[baz^=blip12px], .bar {\
-        \n  a: b;\
-        \n}\
-        \n"
+         \n  a: b;\
+         \n}\n"
     );
 }

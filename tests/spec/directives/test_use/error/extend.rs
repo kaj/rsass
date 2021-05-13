@@ -1,16 +1,32 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/error/extend.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file("optional_and_mandatory/different_files/_mandatory.scss", "@use \"shared\";\n\ndownstream {@extend %-in-other};\n")
+        .mock_file("optional_and_mandatory/different_files/_optional.scss", "@use \"shared\";\n\ndownstream {@extend %-in-other !optional};\n")
+        .mock_file("optional_and_mandatory/different_files/_shared.scss", "%-in-other {x: y}\n")
+        .mock_file("optional_and_mandatory/same_file/_other.scss", "%-in-other {x: y}\n")
+        .mock_file("scope/diamond/_left.scss", "@use \"shared\";\n\nleft-extendee {@extend in-shared}\nleft-extender {@extend right-extendee}\n")
+        .mock_file("scope/diamond/_right.scss", "@use \"shared\";\n\nright-extendee {@extend in-shared}\n")
+        .mock_file("scope/diamond/_shared.scss", "in-shared {x: y}\n")
+        .mock_file("scope/downstream/_other.scss", "in-other {@extend in-input}\n")
+        .mock_file("scope/private/_other.scss", "%-in-other {x: y}\n\nin-other {@extend %-in-other}\n")
+        .mock_file("scope/sibling/_left.scss", "left-extendee {in: left}\nleft-extender {@extend right-extendee}\n")
+        .mock_file("scope/sibling/_right.scss", "right-extendee {in: right}\n")
+}
+
 mod optional_and_mandatory {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn different_files() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"optional\";\
-             \n@use \"mandatory\";\
-             \n"
-            )
-            .unwrap_err(),
+             \n@use \"mandatory\";\n"
+            ),
             "Error: The target selector was not found.\
          \nUse \"@extend %-in-other !optional\" to avoid this error.\
          \n  ,\
@@ -24,16 +40,13 @@ mod optional_and_mandatory {
     #[ignore] // wrong error
     fn same_file() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\";\
-             \n\
+            runner().err(
+                "@use \"other\";\n\
              \nin-input {\
              \n  @extend %-in-other !optional;\
              \n  @extend %-in-other;\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: The target selector was not found.\
          \nUse \"@extend %-in-other !optional\" to avoid this error.\
          \n  ,\
@@ -45,18 +58,19 @@ mod optional_and_mandatory {
     }
 }
 mod scope {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn diamond() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "// Even though left-extendee and right-extendee both end up in the style rule\
              \n// defined in _shared.scss, they aren\'t extended by the other file because those\
              \n// files don\'t use one another.\
              \n@use \"left\";\
-             \n@use \"right\";\
-             \n"
-        ).unwrap_err(),
+             \n@use \"right\";\n"
+        ),
         "Error: The target selector was not found.\
          \nUse \"@extend right-extendee !optional\" to avoid this error.\
          \n  ,\
@@ -70,13 +84,10 @@ mod scope {
     #[ignore] // wrong error
     fn downstream() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\";\
-             \n\
-             \nin-input {x: y}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err(
+                "@use \"other\";\n\
+             \nin-input {x: y}\n"
+            ),
             "Error: The target selector was not found.\
          \nUse \"@extend in-input !optional\" to avoid this error.\
          \n  ,\
@@ -90,13 +101,10 @@ mod scope {
     #[ignore] // wrong error
     fn private() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\";\
-             \n\
-             \nin-input {@extend %-in-other}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err(
+                "@use \"other\";\n\
+             \nin-input {@extend %-in-other}\n"
+            ),
             "Error: The target selector was not found.\
          \nUse \"@extend %-in-other !optional\" to avoid this error.\
          \n  ,\
@@ -110,12 +118,10 @@ mod scope {
     #[ignore] // wrong error
     fn sibling() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"left\";\
-             \n@use \"right\";\
-             \n"
-            )
-            .unwrap_err(),
+             \n@use \"right\";\n"
+            ),
             "Error: The target selector was not found.\
          \nUse \"@extend right-extendee !optional\" to avoid this error.\
          \n  ,\

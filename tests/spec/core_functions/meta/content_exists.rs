@@ -1,21 +1,25 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/content_exists.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn in_content() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@mixin call-content {\
              \n  @content;\
-             \n}\
-             \n\
+             \n}\n\
              \n@include call-content {\
              \n  a {b: content-exists()}\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: content-exists() may only be called within a mixin.\
          \n  ,\
          \n6 |   a {b: content-exists()}\
@@ -30,19 +34,15 @@ mod error {
     #[ignore] // missing error
     fn in_function_called_by_mixin() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@function call-content-exists() {\
              \n  @return content-exists();\
-             \n}\
-             \n\
+             \n}\n\
              \n@mixin call-function {\
              \n  a {b: call-content-exists()};\
-             \n}\
-             \n\
-             \n@include call-function;\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n\
+             \n@include call-function;\n"
+            ),
             "Error: content-exists() may only be called within a mixin.\
          \n  ,\
          \n2 |   @return content-exists();\
@@ -57,11 +57,7 @@ mod error {
     #[ignore] // missing error
     fn outside_mixin() {
         assert_eq!(
-            crate::rsass(
-                "a {b: content-exists()}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: content-exists()}\n"),
             "Error: content-exists() may only be called within a mixin.\
          \n  ,\
          \n1 | a {b: content-exists()}\
@@ -74,14 +70,12 @@ mod error {
     #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@mixin a {\
              \n  b {c: content-exists(1)}\
              \n}\
-             \n@include a;\
-             \n"
-            )
-            .unwrap_err(),
+             \n@include a;\n"
+            ),
             "Error: Only 0 arguments allowed, but 1 was passed.\
          \n  ,--> input.scss\
          \n2 |   b {c: content-exists(1)}\
@@ -97,91 +91,73 @@ mod error {
     }
 }
 mod test_false {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // unexepected error
     fn through_content() {
         assert_eq!(
-            crate::rsass(
-                "@mixin call-content {\
-            \n  @content;\
-            \n}\
-            \n\
-            \n@mixin print-content-exists {\
-            \n  a {b: content-exists()}\
-            \n}\
-            \n\
-            \n@include call-content {\
-            \n  @include print-content-exists;\
-            \n}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@mixin call-content {\
+             \n  @content;\
+             \n}\n\
+             \n@mixin print-content-exists {\
+             \n  a {b: content-exists()}\
+             \n}\n\
+             \n@include call-content {\
+             \n  @include print-content-exists;\
+             \n}\n"),
             "a {\
-        \n  b: false;\
-        \n}\
-        \n"
+         \n  b: false;\
+         \n}\n"
         );
     }
     #[test]
     fn top_level() {
         assert_eq!(
-            crate::rsass(
-                "@mixin a {\
-            \n  b {c: content-exists()}\
-            \n}\
-            \n@include a;\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@mixin a {\
+             \n  b {c: content-exists()}\
+             \n}\
+             \n@include a;\n"),
             "b {\
-        \n  c: false;\
-        \n}\
-        \n"
+         \n  c: false;\
+         \n}\n"
         );
     }
 }
 mod test_true {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // unexepected error
     fn empty() {
         assert_eq!(
-            crate::rsass(
-                "@mixin a {\
-            \n  b {c: content-exists()}\
-            \n  @content;\
-            \n}\
-            \n@include a {}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@mixin a {\
+             \n  b {c: content-exists()}\
+             \n  @content;\
+             \n}\
+             \n@include a {}\n"),
             "b {\
-        \n  c: true;\
-        \n}\
-        \n"
+         \n  c: true;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn non_empty() {
         assert_eq!(
-            crate::rsass(
-                "@mixin a {\
-            \n  b {c: content-exists()}\
-            \n  @content;\
-            \n}\
-            \n@include a {\
-            \n  d {e: f}\
-            \n}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@mixin a {\
+             \n  b {c: content-exists()}\
+             \n  @content;\
+             \n}\
+             \n@include a {\
+             \n  d {e: f}\
+             \n}\n"),
             "b {\
-        \n  c: true;\
-        \n}\
-        \nd {\
-        \n  e: f;\
-        \n}\
-        \n"
+         \n  c: true;\
+         \n}\
+         \nd {\
+         \n  e: f;\
+         \n}\n"
         );
     }
 }

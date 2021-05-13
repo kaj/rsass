@@ -1,17 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/interpolated-selectors.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "foo#{bar} hux {\
-            \n  color: red;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("foo#{bar} hux {\
+             \n  color: red;\
+             \n}"),
         "foobar hux {\
-        \n  color: red;\
-        \n}\
-        \n"
+         \n  color: red;\
+         \n}\n"
     );
 }

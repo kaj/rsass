@@ -1,19 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/image-url.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div {\
-            \n  blah: image-url(\"hello.png\", false);\
-            \n  blah: image-url(\"hello.png\", true);\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("div {\
+             \n  blah: image-url(\"hello.png\", false);\
+             \n  blah: image-url(\"hello.png\", true);\
+             \n}"),
         "div {\
-        \n  blah: image-url(\"hello.png\", false);\
-        \n  blah: image-url(\"hello.png\", true);\
-        \n}\
-        \n"
+         \n  blah: image-url(\"hello.png\", false);\
+         \n  blah: image-url(\"hello.png\", true);\
+         \n}\n"
     );
 }

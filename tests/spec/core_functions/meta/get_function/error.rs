@@ -1,19 +1,47 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/get_function/error.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file(
+            "conflict/other1.scss",
+            "@function member() {@return from other1}\n",
+        )
+        .mock_file(
+            "conflict/other2.scss",
+            "@function member() {@return from other2}\n",
+        )
+        .mock_file(
+            "through_forward/hide/_midstream.scss",
+            "@forward \"upstream\" hide c;\n",
+        )
+        .mock_file(
+            "through_forward/hide/_upstream.scss",
+            "@function c() {@return c}\n",
+        )
+        .mock_file(
+            "through_forward/show/_midstream.scss",
+            "@forward \"upstream\" show c;\n",
+        )
+        .mock_file(
+            "through_forward/show/_upstream.scss",
+            "@function d() {@return c}\n",
+        )
+}
+
 mod argument {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn function_ref() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@function foo() {\
              \n  @return null;\
-             \n}\
-             \n\
+             \n}\n\
              \n$foo-ref: get-function(foo);\
-             \na {b: get-function($foo-ref)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: get-function($foo-ref)}\n"
+            ),
             "Error: $name: get-function(\"foo\") is not a string.\
          \n  ,\
          \n6 | a {b: get-function($foo-ref)}\
@@ -25,10 +53,9 @@ mod argument {
     #[test]
     fn too_few() {
         assert_eq!(
-        crate::rsass(
-            "a {b: get-function()}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: get-function()}\n"
+        ),
         "Error: Missing argument $name.\
          \n  ,--> input.scss\
          \n1 | a {b: get-function()}\
@@ -44,10 +71,9 @@ mod argument {
     #[test]
     fn too_many() {
         assert_eq!(
-        crate::rsass(
-            "a {b: get-function(c, true, d, e)}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: get-function(c, true, d, e)}\n"
+        ),
         "Error: Only 3 arguments allowed, but 4 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: get-function(c, true, d, e)}\
@@ -61,14 +87,12 @@ mod argument {
     );
     }
     mod test_type {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn module() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: get-function(c, $module: 1)}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: get-function(c, $module: 1)}\n"),
                 "Error: $module: 1 is not a string.\
          \n  ,\
          \n1 | a {b: get-function(c, $module: 1)}\
@@ -80,11 +104,7 @@ mod argument {
         #[test]
         fn name() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: get-function(2px)}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: get-function(2px)}\n"),
                 "Error: $name: 2px is not a string.\
          \n  ,\
          \n1 | a {b: get-function(2px)}\
@@ -99,14 +119,11 @@ mod argument {
 #[ignore] // wrong error
 fn conflict() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \"other1\" as *;\
-             \n@use \"other2\" as *;\
-             \n\
-             \na {b: get-function(member)}\
-             \n"
-        )
-        .unwrap_err(),
+             \n@use \"other2\" as *;\n\
+             \na {b: get-function(member)}\n"
+        ),
         "Error: This function is available from multiple global modules.\
          \n    ,\
          \n1   | @use \"other1\" as *;\
@@ -124,11 +141,7 @@ fn conflict() {
 #[ignore] // missing error
 fn division() {
     assert_eq!(
-        crate::rsass(
-            "a {b: get-function(rgb) / get-function(lighten)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: get-function(rgb) / get-function(lighten)}\n"),
         "Error: get-function(\"rgb\") isn\'t a valid CSS value.\
          \n  ,\
          \n1 | a {b: get-function(rgb) / get-function(lighten)}\
@@ -140,19 +153,15 @@ fn division() {
 #[test]
 fn function_exists() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@function add-two($v) {\
              \n  @return $v + 2;\
-             \n}\
-             \n\
-             \n$add-two-fn: get-function(add-two);\
-             \n\
+             \n}\n\
+             \n$add-two-fn: get-function(add-two);\n\
              \n.error {\
              \n  error: get-function($add-two-fn);\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: $name: get-function(\"add-two\") is not a string.\
          \n  ,\
          \n8 |   error: get-function($add-two-fn);\
@@ -162,31 +171,28 @@ fn function_exists() {
     );
 }
 mod module {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn and_css() {
         assert_eq!(
-            crate::rsass(
-                "@use \"sass:color\";\
-             \na {b: get-function(\"red\", $css: true, $module: \"color\")}\
-             \n"
-            )
-            .unwrap_err(),
-            "Error: $css and $module may not both be passed at once.\
+        runner().err(
+            "@use \"sass:color\";\
+             \na {b: get-function(\"red\", $css: true, $module: \"color\")}\n"
+        ),
+        "Error: $css and $module may not both be passed at once.\
          \n  ,\
          \n2 | a {b: get-function(\"red\", $css: true, $module: \"color\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
-        );
+    );
     }
     #[test]
     fn built_in_but_not_loaded() {
         assert_eq!(
-            crate::rsass(
-                "a {b: get-function(\"red\", $module: \"color\")}\
-             \n"
-            )
-            .unwrap_err(),
+            runner()
+                .err("a {b: get-function(\"red\", $module: \"color\")}\n"),
             "Error: There is no module with the namespace \"color\".\
          \n  ,\
          \n1 | a {b: get-function(\"red\", $module: \"color\")}\
@@ -198,12 +204,10 @@ mod module {
     #[test]
     fn dash_sensitive() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:color\" as a-b;\
-             \nc {d: get-function(\"c\", $module: \"a_b\")}\
-             \n"
-            )
-            .unwrap_err(),
+             \nc {d: get-function(\"c\", $module: \"a_b\")}\n"
+            ),
             "Error: There is no module with the namespace \"a_b\".\
          \n  ,\
          \n2 | c {d: get-function(\"c\", $module: \"a_b\")}\
@@ -215,11 +219,7 @@ mod module {
     #[test]
     fn non_existent() {
         assert_eq!(
-            crate::rsass(
-                "a {b: get-function(\"c\", $module: \"d\")}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: get-function(\"c\", $module: \"d\")}\n"),
             "Error: There is no module with the namespace \"d\".\
          \n  ,\
          \n1 | a {b: get-function(\"c\", $module: \"d\")}\
@@ -231,12 +231,10 @@ mod module {
     #[test]
     fn undefined() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:color\";\
-             \na {b: get-function(\"c\", $module: \"color\")}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: get-function(\"c\", $module: \"color\")}\n"
+            ),
             "Error: Function not found: \"c\"\
          \n  ,\
          \n2 | a {b: get-function(\"c\", $module: \"color\")}\
@@ -249,11 +247,7 @@ mod module {
 #[test]
 fn non_existent() {
     assert_eq!(
-        crate::rsass(
-            "a {b: get-function(does-not-exist)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: get-function(does-not-exist)}\n"),
         "Error: Function not found: does-not-exist\
          \n  ,\
          \n1 | a {b: get-function(does-not-exist)}\
@@ -263,18 +257,18 @@ fn non_existent() {
     );
 }
 mod through_forward {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong error
     fn hide() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"midstream\" as *;\
              \na {\
              \n  b: call(get-function(c));\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: Function not found: c\
          \n  ,\
          \n3 |   b: call(get-function(c));\
@@ -287,14 +281,12 @@ mod through_forward {
     #[ignore] // wrong error
     fn show() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"midstream\" as *;\
              \na {\
              \n  b: call(get-function(d));\
-             \n}\
-             \n"
-            )
-            .unwrap_err(),
+             \n}\n"
+            ),
             "Error: Function not found: d\
          \n  ,\
          \n3 |   b: call(get-function(d));\

@@ -1,20 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/values/maps/length.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$map: (aaa: 100, bbb: 200, ccc: 300);\
-            \n\
-            \na {\
-            \n  b: length($map);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$map: (aaa: 100, bbb: 200, ccc: 300);\n\
+             \na {\
+             \n  b: length($map);\
+             \n}\n"),
         "a {\
-        \n  b: 3;\
-        \n}\
-        \n"
+         \n  b: 3;\
+         \n}\n"
     );
 }

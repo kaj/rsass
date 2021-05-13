@@ -1,17 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/directives/import/escaped.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner().mock_file("other.scss", "a {b: c}\n")
+}
+
 #[test]
-#[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@impor\\74 \"other\"\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@impor\\74 \"other\"\n"),
         "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
     );
 }

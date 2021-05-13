@@ -1,17 +1,23 @@
 //! Tests auto-converted from "sass-spec/spec/css/media/range/error.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod invalid_binary_operator {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // missing error
     fn before_colon() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "// Even though this isn\'t *technically* ambiguous, disallowing it makes parsing\
              \n// much easier because you don\'t have to disambiguate what the first `<` (or\
              \n// other comparison operator) is.\
-             \n@media (1 < 2: 10px) {a {b: c}}\
-             \n"
-        ).unwrap_err(),
+             \n@media (1 < 2: 10px) {a {b: c}}\n"
+        ),
         "Error: expected \")\".\
          \n  ,\
          \n4 | @media (1 < 2: 10px) {a {b: c}}\
@@ -24,11 +30,7 @@ mod invalid_binary_operator {
     #[ignore] // missing error
     fn eq() {
         assert_eq!(
-            crate::rsass(
-                "@media (1 = 2 = width) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (1 = 2 = width) {a {b: c}}\n"),
             "Error: expected \")\".\
          \n  ,\
          \n1 | @media (1 = 2 = width) {a {b: c}}\
@@ -41,11 +43,7 @@ mod invalid_binary_operator {
     #[ignore] // missing error
     fn gt() {
         assert_eq!(
-            crate::rsass(
-                "@media (3 > width > 2 > 1) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (3 > width > 2 > 1) {a {b: c}}\n"),
             "Error: expected \")\".\
          \n  ,\
          \n1 | @media (3 > width > 2 > 1) {a {b: c}}\
@@ -58,11 +56,7 @@ mod invalid_binary_operator {
     #[ignore] // missing error
     fn gte() {
         assert_eq!(
-            crate::rsass(
-                "@media (3 >= width >= 2 >= 1) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (3 >= width >= 2 >= 1) {a {b: c}}\n"),
             "Error: expected \")\".\
          \n  ,\
          \n1 | @media (3 >= width >= 2 >= 1) {a {b: c}}\
@@ -75,13 +69,12 @@ mod invalid_binary_operator {
     #[ignore] // missing error
     fn in_subexpression() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "// Even though `1 < 2` here isn\'t syntactically at the top-level, because `<`\
              \n// binds more tightly than `or`, it\'s disallowed because it\'s not in parentheses\
              \n// or square brackets.\
-             \n@media (1 < 2 or false = width) {a {b: c}}\
-             \n"
-        ).unwrap_err(),
+             \n@media (1 < 2 or false = width) {a {b: c}}\n"
+        ),
         "Error: expected \")\".\
          \n  ,\
          \n4 | @media (1 < 2 or false = width) {a {b: c}}\
@@ -94,11 +87,7 @@ mod invalid_binary_operator {
     #[ignore] // missing error
     fn lt() {
         assert_eq!(
-            crate::rsass(
-                "@media (1 < width < 2 < 3) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (1 < width < 2 < 3) {a {b: c}}\n"),
             "Error: expected \")\".\
          \n  ,\
          \n1 | @media (1 < width < 2 < 3) {a {b: c}}\
@@ -111,11 +100,7 @@ mod invalid_binary_operator {
     #[ignore] // missing error
     fn lte() {
         assert_eq!(
-            crate::rsass(
-                "@media (1 <= width <= 2 <= 3) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (1 <= width <= 2 <= 3) {a {b: c}}\n"),
             "Error: expected \")\".\
          \n  ,\
          \n1 | @media (1 <= width <= 2 <= 3) {a {b: c}}\
@@ -126,15 +111,13 @@ mod invalid_binary_operator {
     }
 }
 mod invalid_comparison {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // missing error
     fn gte() {
         assert_eq!(
-            crate::rsass(
-                "@media (width > = 100px) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (width > = 100px) {a {b: c}}\n"),
             "Error: Expected expression.\
          \n  ,\
          \n1 | @media (width > = 100px) {a {b: c}}\
@@ -147,11 +130,7 @@ mod invalid_comparison {
     #[ignore] // missing error
     fn lte() {
         assert_eq!(
-            crate::rsass(
-                "@media (width < = 100px) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (width < = 100px) {a {b: c}}\n"),
             "Error: Expected expression.\
          \n  ,\
          \n1 | @media (width < = 100px) {a {b: c}}\
@@ -164,11 +143,7 @@ mod invalid_comparison {
     #[ignore] // missing error
     fn range_gte() {
         assert_eq!(
-            crate::rsass(
-                "@media (10px > width > = 1px) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (10px > width > = 1px) {a {b: c}}\n"),
             "Error: Expected expression.\
          \n  ,\
          \n1 | @media (10px > width > = 1px) {a {b: c}}\
@@ -179,15 +154,13 @@ mod invalid_comparison {
     }
 }
 mod mismatched_range {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // missing error
     fn gt_lt() {
         assert_eq!(
-            crate::rsass(
-                "@media (1px > width < 2px) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (1px > width < 2px) {a {b: c}}\n"),
             "Error: expected \")\".\
          \n  ,\
          \n1 | @media (1px > width < 2px) {a {b: c}}\
@@ -200,11 +173,7 @@ mod mismatched_range {
     #[ignore] // missing error
     fn gte_lte() {
         assert_eq!(
-            crate::rsass(
-                "@media (1px >= width <= 2px) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (1px >= width <= 2px) {a {b: c}}\n"),
             "Error: expected \")\".\
          \n  ,\
          \n1 | @media (1px >= width <= 2px) {a {b: c}}\
@@ -217,11 +186,7 @@ mod mismatched_range {
     #[ignore] // missing error
     fn lt_gt() {
         assert_eq!(
-            crate::rsass(
-                "@media (1px < width > 2px) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (1px < width > 2px) {a {b: c}}\n"),
             "Error: expected \")\".\
          \n  ,\
          \n1 | @media (1px < width > 2px) {a {b: c}}\
@@ -234,11 +199,7 @@ mod mismatched_range {
     #[ignore] // missing error
     fn lte_gte() {
         assert_eq!(
-            crate::rsass(
-                "@media (1px <= width >= 2px) {a {b: c}}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@media (1px <= width >= 2px) {a {b: c}}\n"),
             "Error: expected \")\".\
          \n  ,\
          \n1 | @media (1px <= width >= 2px) {a {b: c}}\

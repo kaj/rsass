@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1644/complex.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "$tablet-portrait:                 768px;\
              \n$tablet-landscape:                980px;\
              \n$desk-normal:                     1120px;\
@@ -16,31 +21,26 @@ fn test() {
              \n        \'desk-big\':          \'(min-width: \' +  $desk-big + \')\'\
              \n);\
              \n@mixin grid-media-query($media-query, $breakpointDefinitions) {\
-             \n  $breakpoint-found: false;\
-             \n\
+             \n  $breakpoint-found: false;\n\
              \n  @each $breakpoint, $breakpointvalue in $breakpointDefinitions{\
              \n    $name: $breakpoint;\
-             \n    $declaration: $breakpointvalue;\
-             \n\
+             \n    $declaration: $breakpointvalue;\n\
              \n    @if $media-query == $name and $declaration{\
-             \n      $breakpoint-found: true;\
-             \n\
+             \n      $breakpoint-found: true;\n\
              \n      @media only screen and #{$declaration} {\
              \n        @content;\
              \n      }\
              \n    }\
              \n  }\
-             \n}\
-             \n\
+             \n}\n\
              \n@each $name in map-keys($grid-breakpoints-immobile) {\
              \n  @include grid-media-query($name, $grid-breakpoints-immobile) {\
              \n    body.immobile & {\
              \n      margin-bottom: 0;\
              \n    }\
              \n  }\
-             \n}\
-             \n"
-        ).unwrap_err(),
+             \n}\n"
+        ),
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n   ,\
          \n30 |     body.immobile & {\

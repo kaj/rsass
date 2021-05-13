@@ -1,47 +1,45 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/selector/replace.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn complex() {
     assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(\"c d\", \"d\", \"e f\")}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: selector-replace(\"c d\", \"d\", \"e f\")}\n"),
         "a {\
-        \n  b: c e f, e c f;\
-        \n}\
-        \n"
+         \n  b: c e f, e c f;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // wrong result
 fn compound() {
     assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(\"c.d\", \"c\", \"e\")}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: selector-replace(\"c.d\", \"c\", \"e\")}\n"),
         "a {\
-        \n  b: e.d;\
-        \n}\
-        \n"
+         \n  b: e.d;\
+         \n}\n"
     );
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     mod extendee {
+        #[allow(unused)]
+        use super::runner;
         mod complex {
+            #[allow(unused)]
+            use super::runner;
             #[test]
             #[ignore] // missing error
             fn list() {
                 assert_eq!(
-                    crate::rsass(
-                        "a {b: selector-replace(\"c\", d e, \"f\")}\
-             \n"
-                    )
-                    .unwrap_err(),
+                    runner()
+                        .err("a {b: selector-replace(\"c\", d e, \"f\")}\n"),
                     "Error: Can\'t extend complex selector d e.\
          \n  ,\
          \n1 | a {b: selector-replace(\"c\", d e, \"f\")}\
@@ -54,11 +52,9 @@ mod error {
             #[ignore] // missing error
             fn string() {
                 assert_eq!(
-                    crate::rsass(
-                        "a {b: selector-replace(\"c\", \"d e\", \"f\")}\
-             \n"
-                    )
-                    .unwrap_err(),
+                    runner().err(
+                        "a {b: selector-replace(\"c\", \"d e\", \"f\")}\n"
+                    ),
                     "Error: Can\'t extend complex selector d e.\
          \n  ,\
          \n1 | a {b: selector-replace(\"c\", \"d e\", \"f\")}\
@@ -72,11 +68,8 @@ mod error {
         #[ignore] // missing error
         fn invalid() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: selector-replace(\"c\", \"[d\", \"e\")}\
-             \n"
-                )
-                .unwrap_err(),
+                runner()
+                    .err("a {b: selector-replace(\"c\", \"[d\", \"e\")}\n"),
                 "Error: $original: expected more input.\
          \n  ,\
          \n1 | [d\
@@ -94,11 +87,8 @@ mod error {
         #[ignore] // missing error
         fn parent() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: selector-replace(\"c\", \"&\", \"d\")}\
-             \n"
-                )
-                .unwrap_err(),
+                runner()
+                    .err("a {b: selector-replace(\"c\", \"&\", \"d\")}\n"),
                 "Error: $original: Parent selectors aren\'t allowed here.\
          \n  ,\
          \n1 | &\
@@ -116,10 +106,9 @@ mod error {
         #[ignore] // missing error
         fn test_type() {
             assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(\"c\", 1, \"d\")}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: selector-replace(\"c\", 1, \"d\")}\n"
+        ),
         "Error: $original: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
@@ -131,15 +120,14 @@ mod error {
         }
     }
     mod extender {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // missing error
         fn invalid() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: selector-replace(\"c\", \"d\", \"[e\")}\
-             \n"
-                )
-                .unwrap_err(),
+                runner()
+                    .err("a {b: selector-replace(\"c\", \"d\", \"[e\")}\n"),
                 "Error: $replacement: expected more input.\
          \n  ,\
          \n1 | [e\
@@ -157,11 +145,8 @@ mod error {
         #[ignore] // missing error
         fn parent() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: selector-replace(\"c\", \"d\", \"&\")}\
-             \n"
-                )
-                .unwrap_err(),
+                runner()
+                    .err("a {b: selector-replace(\"c\", \"d\", \"&\")}\n"),
                 "Error: $replacement: Parent selectors aren\'t allowed here.\
          \n  ,\
          \n1 | &\
@@ -179,10 +164,9 @@ mod error {
         #[ignore] // missing error
         fn test_type() {
             assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(\"c\", \"d\", 1)}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: selector-replace(\"c\", \"d\", 1)}\n"
+        ),
         "Error: $replacement: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
@@ -194,15 +178,14 @@ mod error {
         }
     }
     mod selector {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // missing error
         fn invalid() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: selector-replace(\"[c\", \"d\", \"e\")}\
-             \n"
-                )
-                .unwrap_err(),
+                runner()
+                    .err("a {b: selector-replace(\"[c\", \"d\", \"e\")}\n"),
                 "Error: $selector: expected more input.\
          \n  ,\
          \n1 | [c\
@@ -220,11 +203,8 @@ mod error {
         #[ignore] // missing error
         fn parent() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: selector-replace(\"&\", \"c\", \"d\")}\
-             \n"
-                )
-                .unwrap_err(),
+                runner()
+                    .err("a {b: selector-replace(\"&\", \"c\", \"d\")}\n"),
                 "Error: $selector: Parent selectors aren\'t allowed here.\
          \n  ,\
          \n1 | &\
@@ -242,10 +222,9 @@ mod error {
         #[ignore] // missing error
         fn test_type() {
             assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(1, \"c\", \"d\")}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: selector-replace(1, \"c\", \"d\")}\n"
+        ),
         "Error: $selector: 1 is not a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings.\
          \n  ,\
@@ -260,10 +239,9 @@ mod error {
     #[ignore] // missing error
     fn too_few_args() {
         assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(\"c\", \"d\")}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: selector-replace(\"c\", \"d\")}\n"
+        ),
         "Error: Missing argument $replacement.\
          \n  ,--> input.scss\
          \n1 | a {b: selector-replace(\"c\", \"d\")}\
@@ -280,10 +258,9 @@ mod error {
     #[ignore] // missing error
     fn too_many_args() {
         assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(\"c\", \"d\", \"e\", \"f\")}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "a {b: selector-replace(\"c\", \"d\", \"e\", \"f\")}\n"
+        ),
         "Error: Only 3 arguments allowed, but 4 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: selector-replace(\"c\", \"d\", \"e\", \"f\")}\
@@ -298,98 +275,88 @@ mod error {
     }
 }
 mod format {
+    #[allow(unused)]
+    use super::runner;
     mod input {
+        #[allow(unused)]
+        use super::runner;
         mod multiple_extendees {
+            #[allow(unused)]
+            use super::runner;
             #[test]
             #[ignore] // wrong result
             fn compound() {
                 assert_eq!(
-                    crate::rsass(
-                        "a {b: selector-replace(\"c.d\", \"c.d\", \".e\")}\
-            \n"
-                    )
-                    .unwrap(),
+                    runner().ok(
+                        "a {b: selector-replace(\"c.d\", \"c.d\", \".e\")}\n"
+                    ),
                     "a {\
-        \n  b: .e;\
-        \n}\
-        \n"
+         \n  b: .e;\
+         \n}\n"
                 );
             }
             #[test]
             #[ignore] // wrong result
             fn list() {
                 assert_eq!(
-                    crate::rsass(
-                        "a {b: selector-replace(\"c.d\", \"c, .d\", \".e\")}\
-            \n"
-                    )
-                    .unwrap(),
-                    "a {\
-        \n  b: .e;\
-        \n}\
-        \n"
-                );
+        runner().ok(
+            "a {b: selector-replace(\"c.d\", \"c, .d\", \".e\")}\n"
+        ),
+        "a {\
+         \n  b: .e;\
+         \n}\n"
+    );
             }
             #[test]
             #[ignore] // wrong result
             fn list_of_compound() {
                 assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(\"c.d.e.f\", \"c.d, .e.f\", \".g\")}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "a {b: selector-replace(\"c.d.e.f\", \"c.d, .e.f\", \".g\")}\n"
+        ),
         "a {\
-        \n  b: .g;\
-        \n}\
-        \n"
+         \n  b: .g;\
+         \n}\n"
     );
             }
         }
         mod non_string {
+            #[allow(unused)]
+            use super::runner;
             #[test]
             #[ignore] // wrong result
             fn extendee() {
                 assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(\"c.d\", (c, \".d\"), \".e\")}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "a {b: selector-replace(\"c.d\", (c, \".d\"), \".e\")}\n"
+        ),
         "a {\
-        \n  b: .e;\
-        \n}\
-        \n"
+         \n  b: .e;\
+         \n}\n"
     );
             }
             #[test]
             #[ignore] // wrong result
             fn extender() {
                 assert_eq!(
-                    crate::rsass(
-                        "a {b: selector-replace(\"c\", \"c\", (d, e f))}\
-            \n"
-                    )
-                    .unwrap(),
+                    runner().ok(
+                        "a {b: selector-replace(\"c\", \"c\", (d, e f))}\n"
+                    ),
                     "a {\
-        \n  b: d, e f;\
-        \n}\
-        \n"
+         \n  b: d, e f;\
+         \n}\n"
                 );
             }
             #[test]
             #[ignore] // wrong result
             fn selector() {
                 assert_eq!(
-                    crate::rsass(
-                        "a {b: selector-replace((c, d c), \"c\", \"e\")}\
-            \n"
-                    )
-                    .unwrap(),
+                    runner().ok(
+                        "a {b: selector-replace((c, d c), \"c\", \"e\")}\n"
+                    ),
                     "a {\
-        \n  b: e, d e;\
-        \n}\
-        \n"
+         \n  b: e, d e;\
+         \n}\n"
                 );
             }
         }
@@ -398,20 +365,17 @@ mod format {
     #[ignore] // wrong result
     fn output() {
         assert_eq!(
-            crate::rsass(
+            runner().ok(
                 "$result: selector-replace(\"c d, e f\", \"g\", \"g\");\
-            \na {\
-            \n  result: $result;\
-            \n  structure: $result == (\"c\" \"d\", \"e\" \"f\");\
-            \n}\
-            \n"
-            )
-            .unwrap(),
+             \na {\
+             \n  result: $result;\
+             \n  structure: $result == (\"c\" \"d\", \"e\" \"f\");\
+             \n}\n"
+            ),
             "a {\
-        \n  result: c d, e f;\
-        \n  structure: true;\
-        \n}\
-        \n"
+         \n  result: c d, e f;\
+         \n  structure: true;\
+         \n}\n"
         );
     }
 }
@@ -419,76 +383,58 @@ mod format {
 #[ignore] // wrong result
 fn named() {
     assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace($selector: \"c.d\", $original: \"c\", $replacement: \"e\")}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "a {b: selector-replace($selector: \"c.d\", $original: \"c\", $replacement: \"e\")}\n"
+        ),
         "a {\
-        \n  b: e.d;\
-        \n}\
-        \n"
+         \n  b: e.d;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // wrong result
 fn no_op() {
     assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(\"c\", \"d\", \"e\")}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: selector-replace(\"c\", \"d\", \"e\")}\n"),
         "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // wrong result
 fn partial_no_op() {
     assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(\"c, d\", \"d\", \"e\")}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: selector-replace(\"c, d\", \"d\", \"e\")}\n"),
         "a {\
-        \n  b: c, e;\
-        \n}\
-        \n"
+         \n  b: c, e;\
+         \n}\n"
     );
 }
 mod selector_pseudo {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // wrong result
     fn matches() {
         assert_eq!(
-            crate::rsass(
-                "a {b: selector-replace(\":matches(c)\", \"c\", \"d\")}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok(
+                "a {b: selector-replace(\":matches(c)\", \"c\", \"d\")}\n"
+            ),
             "a {\
-        \n  b: :matches(d);\
-        \n}\
-        \n"
+         \n  b: :matches(d);\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // wrong result
     fn not() {
         assert_eq!(
-            crate::rsass(
-                "a {b: selector-replace(\":not(c)\", \"c\", \"d\")}\
-            \n"
-            )
-            .unwrap(),
+            runner()
+                .ok("a {b: selector-replace(\":not(c)\", \"c\", \"d\")}\n"),
             "a {\
-        \n  b: :not(d);\
-        \n}\
-        \n"
+         \n  b: :not(d);\
+         \n}\n"
         );
     }
 }
@@ -496,14 +442,9 @@ mod selector_pseudo {
 #[ignore] // wrong result
 fn simple() {
     assert_eq!(
-        crate::rsass(
-            "a {b: selector-replace(\"c\", \"c\", \"d\")}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: selector-replace(\"c\", \"c\", \"d\")}\n"),
         "a {\
-        \n  b: d;\
-        \n}\
-        \n"
+         \n  b: d;\
+         \n}\n"
     );
 }

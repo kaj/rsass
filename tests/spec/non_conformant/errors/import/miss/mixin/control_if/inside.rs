@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/import/miss/mixin/control-if/inside.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin do_import() {\r\
              \n  @if (true) {\r\
              \n    @import \'_include\';\r\
@@ -14,8 +19,7 @@ fn test() {
              \nfoo {\r\
              \n  @include do_import();\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: This at-rule is not allowed here.\
          \n  ,\
          \n3 |     @import \'_include\';\

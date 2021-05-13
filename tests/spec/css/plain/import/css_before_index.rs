@@ -1,17 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain/import/css_before_index.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file("index/other.scss", "other {index: true}\n")
+        .mock_file("other.css", "other {index: false}\n")
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@import \'other\';\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@import \'other\';\n"),
         "other {\
-        \n  index: false;\
-        \n}\
-        \n"
+         \n  index: false;\
+         \n}\n"
     );
 }

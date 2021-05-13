@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/directives"
 
+#[allow(unused)]
+use super::runner;
+
 mod at_root;
 
 // Ignoring "extend", not expected to work yet.

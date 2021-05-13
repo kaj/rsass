@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/operations"
 
+#[allow(unused)]
+use super::runner;
+
 mod addition;
 
 mod binary_and_unary;

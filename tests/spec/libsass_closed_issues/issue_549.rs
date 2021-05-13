@@ -1,21 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_549.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$value: 10;\
-            \n\
-            \nfoo {\
-            \n  filter: foo(opacity=$value*100);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$value: 10;\n\
+             \nfoo {\
+             \n  filter: foo(opacity=$value*100);\
+             \n}\n"),
         "foo {\
-        \n  filter: foo(opacity=1000);\
-        \n}\
-        \n"
+         \n  filter: foo(opacity=1000);\
+         \n}\n"
     );
 }

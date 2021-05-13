@@ -1,20 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_713/not.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@function not() {\
              \n  @return \"not\";\
-             \n}\
-             \n\
+             \n}\n\
              \ntest {\
              \n  not: not();\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Invalid function name.\
          \n  ,\
          \n1 | @function not() {\

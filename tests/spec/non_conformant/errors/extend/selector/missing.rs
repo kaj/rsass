@@ -1,17 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/extend/selector/missing.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".baz {\
              \n  @extend .foo;\
              \n  color: green;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: The target selector was not found.\
          \nUse \"@extend .foo !optional\" to avoid this error.\
          \n  ,\

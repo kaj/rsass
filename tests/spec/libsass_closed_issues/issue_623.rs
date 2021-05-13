@@ -1,24 +1,23 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_623.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "a {\
-            \n  filter: alpha(opacity=.3); }\
-            \n\
-            \ndiv {\
-            \n  filter: alpha(opacity=0.7); }\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {\
+             \n  filter: alpha(opacity=.3); }\n\
+             \ndiv {\
+             \n  filter: alpha(opacity=0.7); }\n"),
         "a {\
-        \n  filter: alpha(opacity=0.3);\
-        \n}\
-        \ndiv {\
-        \n  filter: alpha(opacity=0.7);\
-        \n}\
-        \n"
+         \n  filter: alpha(opacity=0.3);\
+         \n}\
+         \ndiv {\
+         \n  filter: alpha(opacity=0.7);\
+         \n}\n"
     );
 }

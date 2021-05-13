@@ -1,28 +1,28 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/33_space_list/01_inline.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".result {\
-            \n  output: \"[\"\'foo   \'\"]\"    \"bar\";\
-            \n  output: #{\"[\"\'foo   \'\"]\"    \"bar\"};\
-            \n  output: \"[#{\"[\"\'foo   \'\"]\"    \"bar\"}]\";\
-            \n  output: \"#{\"[\"\'foo   \'\"]\"    \"bar\"}\";\
-            \n  output: \'#{\"[\"\'foo   \'\"]\"    \"bar\"}\';\
-            \n  output: \"[\'#{\"[\"\'foo   \'\"]\"    \"bar\"}\']\";\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".result {\
+             \n  output: \"[\"\'foo   \'\"]\"    \"bar\";\
+             \n  output: #{\"[\"\'foo   \'\"]\"    \"bar\"};\
+             \n  output: \"[#{\"[\"\'foo   \'\"]\"    \"bar\"}]\";\
+             \n  output: \"#{\"[\"\'foo   \'\"]\"    \"bar\"}\";\
+             \n  output: \'#{\"[\"\'foo   \'\"]\"    \"bar\"}\';\
+             \n  output: \"[\'#{\"[\"\'foo   \'\"]\"    \"bar\"}\']\";\
+             \n}\n"),
         ".result {\
-        \n  output: \"[\" \"foo   \" \"]\" \"bar\";\
-        \n  output: [ foo    ] bar;\
-        \n  output: \"[[ foo    ] bar]\";\
-        \n  output: \"[ foo    ] bar\";\
-        \n  output: \"[ foo    ] bar\";\
-        \n  output: \"[\'[ foo    ] bar\']\";\
-        \n}\
-        \n"
+         \n  output: \"[\" \"foo   \" \"]\" \"bar\";\
+         \n  output: [ foo    ] bar;\
+         \n  output: \"[[ foo    ] bar]\";\
+         \n  output: \"[ foo    ] bar\";\
+         \n  output: \"[ foo    ] bar\";\
+         \n  output: \"[\'[ foo    ] bar\']\";\
+         \n}\n"
     );
 }

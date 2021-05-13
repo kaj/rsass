@@ -1,25 +1,25 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1941/function_mixin.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@function parent() {\
              \n  @mixin nested {\
              \n    foo: bar;\
-             \n  }\
-             \n\
+             \n  }\n\
              \n  @include nested;\
-             \n}\
-             \n\
-             \n\
+             \n}\n\n\
              \ntest {\
              \n  foo: parent();\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: This at-rule is not allowed here.\
          \n  ,\
          \n2 |   @mixin nested {\

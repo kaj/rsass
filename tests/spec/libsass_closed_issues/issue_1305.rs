@@ -1,18 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1305.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".foo {\
-            \n    content: call(\'unquote\', \'foo\', ()...);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".foo {\
+             \n    content: call(\'unquote\', \'foo\', ()...);\
+             \n}\n"),
         ".foo {\
-        \n  content: foo;\
-        \n}\
-        \n"
+         \n  content: foo;\
+         \n}\n"
     );
 }

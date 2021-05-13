@@ -1,21 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1596.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@document url(http://www.w3.org/),\
-            \n               url-prefix(http://www.w3.org/Style/),\
-            \n               domain(mozilla.org),\
-            \n               regexp(\"https:.*\");\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@document url(http://www.w3.org/),\
+             \n               url-prefix(http://www.w3.org/Style/),\
+             \n               domain(mozilla.org),\
+             \n               regexp(\"https:.*\");\n"),
         "@document url(http://www.w3.org/),\
-        \n               url-prefix(http://www.w3.org/Style/),\
-        \n               domain(mozilla.org),\
-        \n               regexp(\"https:.*\");\
-        \n"
+         \n               url-prefix(http://www.w3.org/Style/),\
+         \n               domain(mozilla.org),\
+         \n               regexp(\"https:.*\");\n"
     );
 }

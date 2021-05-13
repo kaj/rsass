@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/import/file/mixin/control-if/outside.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner().mock_file("_include.scss", "")
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin do_import() {\r\
              \n  @import \'_include\';\r\
              \n}\r\
@@ -12,8 +17,7 @@ fn test() {
              \n@if (true) {\r\
              \n  @include do_import();\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: This at-rule is not allowed here.\
          \n  ,\
          \n2 |   @import \'_include\';\

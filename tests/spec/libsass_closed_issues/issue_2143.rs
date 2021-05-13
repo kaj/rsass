@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2143.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass("$map:;").unwrap_err(),
+        runner().err("$map:;"),
         "Error: Expected expression.\
          \n  ,\
          \n1 | $map:;\

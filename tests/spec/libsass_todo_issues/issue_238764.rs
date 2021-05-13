@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-issues/issue_238764.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin bar {\r\
              \n  @at-root @bar {a: b}\r\
              \n}\r\
@@ -12,8 +17,7 @@ fn test() {
              \n.foo {\r\
              \n  @include bar;\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: expected selector.\
          \n  ,\
          \n2 |   @at-root @bar{a: b}\

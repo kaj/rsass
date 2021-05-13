@@ -1,16 +1,16 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/hey1.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div { width: 1px; }\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("div { width: 1px; }\n"),
         "div {\
-        \n  width: 1px;\
-        \n}\
-        \n"
+         \n  width: 1px;\
+         \n}\n"
     );
 }

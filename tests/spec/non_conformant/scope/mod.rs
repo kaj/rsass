@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scope"
 
+#[allow(unused)]
+use super::runner;
+
 mod clash;
 
 mod each;

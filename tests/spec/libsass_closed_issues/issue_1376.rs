@@ -1,19 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1376.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".div{\
-            \n  $foo: 1, null, 2, null, 3;\
-            \n\
-            \n  content: \"#{$foo}\";\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok(".div{\
+             \n  $foo: 1, null, 2, null, 3;\n\
+             \n  content: \"#{$foo}\";\
+             \n}"),
         ".div {\
-        \n  content: \"1, 2, 3\";\
-        \n}\
-        \n"
+         \n  content: \"1, 2, 3\";\
+         \n}\n"
     );
 }

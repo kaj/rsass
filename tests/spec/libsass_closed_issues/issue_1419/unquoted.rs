@@ -1,18 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1419/unquoted.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "foo {\
-            \n  foo: to-upper-case(ab\\63 d);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("foo {\
+             \n  foo: to-upper-case(ab\\63 d);\
+             \n}\n"),
         "foo {\
-        \n  foo: ABCD;\
-        \n}\
-        \n"
+         \n  foo: ABCD;\
+         \n}\n"
     );
 }

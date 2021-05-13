@@ -1,21 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/selectors/variables/multiple/bare.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".foo a,\
-            \n.bar p {\
-            \n  $bar: &;\
-            \n  content: $bar;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok(".foo a,\
+             \n.bar p {\
+             \n  $bar: &;\
+             \n  content: $bar;\
+             \n}"),
         ".foo a,\
-        \n.bar p {\
-        \n  content: .foo a, .bar p;\
-        \n}\
-        \n"
+         \n.bar p {\
+         \n  content: .foo a, .bar p;\
+         \n}\n"
     );
 }

@@ -1,15 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hwb/error/one_arg.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod alpha {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn unit() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0 0 0 / 0.5px)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0 0 0 / 0.5px)}\n"
+            ),
             "Error: $whiteness: Expected 0 to have unit \"%\".\
          \n  ,\
          \n2 | a {b: color.hwb(0 0 0 / 0.5px)}\
@@ -21,12 +26,10 @@ mod alpha {
     #[test]
     fn var() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0 0 0 / var(--c))}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0 0 0 / var(--c))}\n"
+            ),
             "Error: Expected numeric channels, got \"hwb(0 0 0/var(--c))\".\
          \n  ,\
          \n2 | a {b: color.hwb(0 0 0 / var(--c))}\
@@ -37,15 +40,15 @@ mod alpha {
     }
 }
 mod blackness {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_high() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0 30% 101%)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0 30% 101%)}\n"
+            ),
             "Error: $blackness: Expected 101% to be within 0% and 100%.\
          \n  ,\
          \n2 | a {b: color.hwb(0 30% 101%)}\
@@ -57,12 +60,10 @@ mod blackness {
     #[test]
     fn too_low() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0 30% -1%)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0 30% -1%)}\n"
+            ),
             "Error: $blackness: Expected -1% to be within 0% and 100%.\
          \n  ,\
          \n2 | a {b: color.hwb(0 30% -1%)}\
@@ -74,12 +75,10 @@ mod blackness {
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0 30% \"foo\")}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0 30% \"foo\")}\n"
+            ),
             "Error: $blackness: \"foo\" is not a number.\
          \n  ,\
          \n2 | a {b: color.hwb(0 30% \"foo\")}\
@@ -89,15 +88,15 @@ mod blackness {
         );
     }
     mod unit {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn none() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@use \'sass:color\';\
-             \na {b: color.hwb(0 30% 40)}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: color.hwb(0 30% 40)}\n"
+                ),
                 "Error: $blackness: Expected 40 to have unit \"%\".\
          \n  ,\
          \n2 | a {b: color.hwb(0 30% 40)}\
@@ -109,12 +108,10 @@ mod blackness {
         #[test]
         fn wrong() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@use \'sass:color\';\
-             \na {b: color.hwb(0 30% 40px)}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: color.hwb(0 30% 40px)}\n"
+                ),
                 "Error: $blackness: Expected 40px to have unit \"%\".\
          \n  ,\
          \n2 | a {b: color.hwb(0 30% 40px)}\
@@ -125,14 +122,15 @@ mod blackness {
         }
     }
     mod var {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn alpha() {
             assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \'sass:color\';\
-             \na {b: color.hwb(0 30% var(--c) / 0.5px)}\
-             \n"
-        ).unwrap_err(),
+             \na {b: color.hwb(0 30% var(--c) / 0.5px)}\n"
+        ),
         "Error: Expected numeric channels, got \"hwb(0 30% var(--c)/0.5px)\".\
          \n  ,\
          \n2 | a {b: color.hwb(0 30% var(--c) / 0.5px)}\
@@ -144,12 +142,10 @@ mod blackness {
         #[test]
         fn no_alpha() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@use \'sass:color\';\
-             \na {b: color.hwb(0 30% var(--c))}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: color.hwb(0 30% var(--c))}\n"
+                ),
                 "Error: $blackness: var(--c) is not a number.\
          \n  ,\
          \n2 | a {b: color.hwb(0 30% var(--c))}\
@@ -161,15 +157,15 @@ mod blackness {
     }
 }
 mod hue {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(\"foo\" 30% 40%)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(\"foo\" 30% 40%)}\n"
+            ),
             "Error: $hue: \"foo\" is not a number.\
          \n  ,\
          \n2 | a {b: color.hwb(\"foo\" 30% 40%)}\
@@ -181,12 +177,10 @@ mod hue {
     #[test]
     fn var() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(var(--c) 30% 40%)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(var(--c) 30% 40%)}\n"
+            ),
             "Error: $hue: var(--c) is not a number.\
          \n  ,\
          \n2 | a {b: color.hwb(var(--c) 30% 40%)}\
@@ -197,15 +191,15 @@ mod hue {
     }
 }
 mod list {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn bracketed() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb([0 30% 40%])}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb([0 30% 40%])}\n"
+            ),
             "Error: $channels must be an unbracketed list.\
          \n  ,\
          \n2 | a {b: color.hwb([0 30% 40%])}\
@@ -217,12 +211,10 @@ mod list {
     #[test]
     fn comma_separated() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb((0, 30%, 40%))}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb((0, 30%, 40%))}\n"
+            ),
             "Error: $channels must be a space-separated list.\
          \n  ,\
          \n2 | a {b: color.hwb((0, 30%, 40%))}\
@@ -234,12 +226,10 @@ mod list {
     #[test]
     fn empty() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(())}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(())}\n"
+            ),
             "Error: Missing element $hue.\
          \n  ,\
          \n2 | a {b: color.hwb(())}\
@@ -251,12 +241,10 @@ mod list {
     #[test]
     fn four_elements() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0 30% 40% 0.4)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0 30% 40% 0.4)}\n"
+            ),
             "Error: Only 3 elements allowed, but 4 were passed.\
          \n  ,\
          \n2 | a {b: color.hwb(0 30% 40% 0.4)}\
@@ -268,12 +256,10 @@ mod list {
     #[test]
     fn one_element() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0)}\n"
+            ),
             "Error: Missing element $whiteness.\
          \n  ,\
          \n2 | a {b: color.hwb(0)}\
@@ -285,12 +271,10 @@ mod list {
     #[test]
     fn two_elements() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0 30%)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0 30%)}\n"
+            ),
             "Error: Missing element $blackness.\
          \n  ,\
          \n2 | a {b: color.hwb(0 30%)}\
@@ -303,12 +287,10 @@ mod list {
 #[test]
 fn quoted_var_slash() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \'sass:color\';\
-             \na {b: color.hwb(0 30% \"var(--foo) / 0.4\")}\
-             \n"
-        )
-        .unwrap_err(),
+             \na {b: color.hwb(0 30% \"var(--foo) / 0.4\")}\n"
+        ),
         "Error: $blackness: \"var(--foo) / 0.4\" is not a number.\
          \n  ,\
          \n2 | a {b: color.hwb(0 30% \"var(--foo) / 0.4\")}\
@@ -318,15 +300,15 @@ fn quoted_var_slash() {
     );
 }
 mod whiteness {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_high() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0 101% 40%)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0 101% 40%)}\n"
+            ),
             "Error: $whiteness: Expected 101% to be within 0% and 100%.\
          \n  ,\
          \n2 | a {b: color.hwb(0 101% 40%)}\
@@ -338,12 +320,10 @@ mod whiteness {
     #[test]
     fn too_low() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0 -1% 40%)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0 -1% 40%)}\n"
+            ),
             "Error: $whiteness: Expected -1% to be within 0% and 100%.\
          \n  ,\
          \n2 | a {b: color.hwb(0 -1% 40%)}\
@@ -355,12 +335,10 @@ mod whiteness {
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0 \"foo\" 40%)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0 \"foo\" 40%)}\n"
+            ),
             "Error: $whiteness: \"foo\" is not a number.\
          \n  ,\
          \n2 | a {b: color.hwb(0 \"foo\" 40%)}\
@@ -370,15 +348,15 @@ mod whiteness {
         );
     }
     mod unit {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn none() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@use \'sass:color\';\
-             \na {b: color.hwb(0 30 40%)}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: color.hwb(0 30 40%)}\n"
+                ),
                 "Error: $whiteness: Expected 30 to have unit \"%\".\
          \n  ,\
          \n2 | a {b: color.hwb(0 30 40%)}\
@@ -390,12 +368,10 @@ mod whiteness {
         #[test]
         fn wrong() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "@use \'sass:color\';\
-             \na {b: color.hwb(0 30px 40%)}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: color.hwb(0 30px 40%)}\n"
+                ),
                 "Error: $whiteness: Expected 30px to have unit \"%\".\
          \n  ,\
          \n2 | a {b: color.hwb(0 30px 40%)}\
@@ -408,12 +384,10 @@ mod whiteness {
     #[test]
     fn var() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \'sass:color\';\
-             \na {b: color.hwb(0 var(--c) 40%)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: color.hwb(0 var(--c) 40%)}\n"
+            ),
             "Error: $whiteness: var(--c) is not a number.\
          \n  ,\
          \n2 | a {b: color.hwb(0 var(--c) 40%)}\

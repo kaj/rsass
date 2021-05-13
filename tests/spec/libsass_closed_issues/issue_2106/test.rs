@@ -1,14 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2106/test.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@import \"../does-not-exist\";\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("@import \"../does-not-exist\";\n"),
         "Error: Can\'t find stylesheet to import.\
          \n  ,\
          \n1 | @import \"../does-not-exist\";\

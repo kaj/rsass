@@ -1,15 +1,45 @@
 //! Tests auto-converted from "sass-spec/spec/directives/import/error/conflict.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file("all/_other.sass", "a\n  syntax: sass\n  partial: true\n")
+        .mock_file("all/_other.scss", "a {syntax: scss; partial: true}\n")
+        .mock_file("all/other.sass", "a\n  syntax: sass\n  partial: false\n")
+        .mock_file("all/other.scss", "a {syntax: scss; partial: false}\n")
+        .mock_file("extension/other.sass", "a\n  syntax: sass\n")
+        .mock_file("extension/other.scss", "a {syntax: scss}\n")
+        .mock_file(
+            "import_only/no_extension/other.import.sass",
+            "a\n  syntax: sass\n",
+        )
+        .mock_file(
+            "import_only/no_extension/other.import.scss",
+            "a {syntax: scss}\n",
+        )
+        .mock_file(
+            "import_only/with_extension/_other.import.scss",
+            "a {partial: true}\n",
+        )
+        .mock_file(
+            "import_only/with_extension/other.import.scss",
+            "a {partial: false}\n",
+        )
+        .mock_file("index/other/_index.scss", "a {partial: true}\n")
+        .mock_file("index/other/index.scss", "a {partial: false}\n")
+        .mock_file("partial/_other.scss", "a {partial: true}\n")
+        .mock_file("partial/other.scss", "a {partial: false}\n")
+}
+
 #[test]
 #[ignore] // missing error
 fn all() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "// This import can\'t be resolved because it has conflicting partials *and*\
              \n// conflicting extensions.\
-             \n@import \"other\";\
-             \n"
-        ).unwrap_err(),
+             \n@import \"other\";\n"
+        ),
         "Error: It\'s not clear which file to import. Found:\
          \n  _other.sass\
          \n  other.sass\
@@ -26,12 +56,11 @@ fn all() {
 #[ignore] // missing error
 fn extension() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "// This import can\'t be resolved because it could refer to either the \".sass\" or\
              \n// \".scss\" file.\
-             \n@import \"other\";\
-             \n"
-        ).unwrap_err(),
+             \n@import \"other\";\n"
+        ),
         "Error: It\'s not clear which file to import. Found:\
          \n  other.sass\
          \n  other.scss\
@@ -43,16 +72,17 @@ fn extension() {
     );
 }
 mod import_only {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // missing error
     fn no_extension() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "// This import can\'t be resolved because it could refer to either the Sass or\
              \n// the SCSS import-only file.\
-             \n@import \"other\";\
-             \n"
-        ).unwrap_err(),
+             \n@import \"other\";\n"
+        ),
         "Error: It\'s not clear which file to import. Found:\
          \n  other.import.sass\
          \n  other.import.scss\
@@ -67,12 +97,11 @@ mod import_only {
     #[ignore] // missing error
     fn with_extension() {
         assert_eq!(
-        crate::rsass(
+        runner().err(
             "// This import can\'t be resolved because it could refer to either the partial or\
              \n// the non-partial.\
-             \n@import \"other.scss\";\
-             \n"
-        ).unwrap_err(),
+             \n@import \"other.scss\";\n"
+        ),
         "Error: It\'s not clear which file to import. Found:\
          \n  _other.import.scss\
          \n  other.import.scss\
@@ -88,12 +117,11 @@ mod import_only {
 #[ignore] // missing error
 fn index() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "// This import can\'t be resolved because it could refer to either the partial or\
              \n// the non-partial index file.\
-             \n@import \"other\";\
-             \n"
-        ).unwrap_err(),
+             \n@import \"other\";\n"
+        ),
         "Error: It\'s not clear which file to import. Found:\
          \n  other/_index.scss\
          \n  other/index.scss\
@@ -108,12 +136,11 @@ fn index() {
 #[ignore] // missing error
 fn partial() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "// This import can\'t be resolved because it could refer to either the partial or\
              \n// the non-partial file.\
-             \n@import \"other\";\
-             \n"
-        ).unwrap_err(),
+             \n@import \"other\";\n"
+        ),
         "Error: It\'s not clear which file to import. Found:\
          \n  _other.scss\
          \n  other.scss\

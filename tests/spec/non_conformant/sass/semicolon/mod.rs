@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/sass/semicolon"
 
+#[allow(unused)]
+use super::runner;
+
 mod at_rule;
 
 mod content;

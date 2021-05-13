@@ -1,15 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1670.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".this-should-error {\
              \n  @extend %an-undefined-placeholder;\
-             \n}\
-             \n"
-        ).unwrap_err(),
+             \n}\n"
+        ),
         "Error: The target selector was not found.\
          \nUse \"@extend %an-undefined-placeholder !optional\" to avoid this error.\
          \n  ,\

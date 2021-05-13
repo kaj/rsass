@@ -1,16 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-issues/issue_2023/type-selector-nr.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "1 {\r\
              \n    color: red;\r\
-             \n}\r\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\r\n"
+        ),
         "Error: expected selector.\
          \n  ,\
          \n1 | 1{\

@@ -1,158 +1,145 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/member/global.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file(
+            "function/other.scss",
+            "@function member() {@return value}\n",
+        )
+        .mock_file("mixin/other.scss", "@mixin member() {a {b: c}}\n")
+        .mock_file("multiple/left.scss", "$left: left;\n")
+        .mock_file("multiple/right.scss", "$right: right;\n")
+        .mock_file(
+            "no_conflict/function/_other.scss",
+            "@function c() {@return d}\n",
+        )
+        .mock_file("no_conflict/mixin/_other.scss", "@mixin b {c: d}\n")
+        .mock_file("no_conflict/variable/_other.scss", "$c: d;\n")
+        .mock_file(
+            "variable_assignment/nested/local/other.scss",
+            "$member: value;\n\n@function get-member() {@return $member}\n",
+        )
+        .mock_file(
+            "variable_assignment/nested/other.scss",
+            "$member: value;\n\n@function get-member() {@return $member}\n",
+        )
+        .mock_file(
+            "variable_assignment/top_level/other.scss",
+            "$member: value;\n\n@function get-member() {@return $member}\n",
+        )
+        .mock_file("variable_use/other.scss", "$member: value;\n")
+}
+
 #[test]
 #[ignore] // unexepected error
 fn function() {
     assert_eq!(
-        crate::rsass(
-            "@use \"other\" as *;\
-            \n\
-            \na {b: member()}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"other\" as *;\n\
+             \na {b: member()}\n"),
         "a {\
-        \n  b: value;\
-        \n}\
-        \n"
+         \n  b: value;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // unexepected error
 fn mixin() {
     assert_eq!(
-        crate::rsass(
-            "@use \"other\" as *;\
-            \n\
-            \n@include member;\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"other\" as *;\n\
+             \n@include member;\n"),
         "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // unexepected error
 fn multiple() {
     assert_eq!(
-        crate::rsass(
-            "@use \"left\" as *;\
-            \n@use \"right\" as *;\
-            \n\
-            \na {\
-            \n  left: $left;\
-            \n  right: $right;\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"left\" as *;\
+             \n@use \"right\" as *;\n\
+             \na {\
+             \n  left: $left;\
+             \n  right: $right;\
+             \n}\n"),
         "a {\
-        \n  left: left;\
-        \n  right: right;\
-        \n}\
-        \n"
+         \n  left: left;\
+         \n  right: right;\
+         \n}\n"
     );
 }
 mod no_conflict {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // unexepected error
     fn function() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" as *;\
-            \n@use \"other\" as *;\
-            \n\
-            \na {b: c()}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\" as *;\
+             \n@use \"other\" as *;\n\
+             \na {b: c()}\n"),
             "a {\
-        \n  b: d;\
-        \n}\
-        \n"
+         \n  b: d;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn mixin() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" as *;\
-            \n@use \"other\" as *;\
-            \n\
-            \na {@include b}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\" as *;\
+             \n@use \"other\" as *;\n\
+             \na {@include b}\n"),
             "a {\
-        \n  c: d;\
-        \n}\
-        \n"
+         \n  c: d;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn variable() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" as *;\
-            \n@use \"other\" as *;\
-            \n\
-            \na {b: $c}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\" as *;\
+             \n@use \"other\" as *;\n\
+             \na {b: $c}\n"),
             "a {\
-        \n  b: d;\
-        \n}\
-        \n"
+         \n  b: d;\
+         \n}\n"
         );
     }
 }
 mod variable_assignment {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // unexepected error
     fn nested() {
         assert_eq!(
-        crate::rsass(
-            "@use \"other\" as *;\
-            \n\
-            \na {\
-            \n  // A nested variable assignment that doesn\'t have a namespace but is !global\
-            \n  // assigns to a global module\'s variable if one exists.\
-            \n  $member: new value !global;\
-            \n\
-            \n  b: get-member();\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "@use \"other\" as *;\n\
+             \na {\
+             \n  // A nested variable assignment that doesn\'t have a namespace but is !global\
+             \n  // assigns to a global module\'s variable if one exists.\
+             \n  $member: new value !global;\n\
+             \n  b: get-member();\
+             \n}\n"
+        ),
         "a {\
-        \n  b: new value;\
-        \n}\
-        \n"
+         \n  b: new value;\
+         \n}\n"
     );
     }
     #[test]
     #[ignore] // unexepected error
     fn top_level() {
         assert_eq!(
-            crate::rsass(
-                "@use \"other\" as *;\
-            \n\
-            \n$member: new value;\
-            \n\
-            \na {b: get-member()}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"other\" as *;\n\
+             \n$member: new value;\n\
+             \na {b: get-member()}\n"),
             "a {\
-        \n  b: new value;\
-        \n}\
-        \n"
+         \n  b: new value;\
+         \n}\n"
         );
     }
 }
@@ -160,16 +147,10 @@ mod variable_assignment {
 #[ignore] // unexepected error
 fn variable_use() {
     assert_eq!(
-        crate::rsass(
-            "@use \"other\" as *;\
-            \n\
-            \na {b: $member}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"other\" as *;\n\
+             \na {b: $member}\n"),
         "a {\
-        \n  b: value;\
-        \n}\
-        \n"
+         \n  b: value;\
+         \n}\n"
     );
 }

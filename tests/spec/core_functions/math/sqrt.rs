@@ -1,15 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/sqrt.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_many_args() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.sqrt(0, 0)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.sqrt(0, 0)}\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n2 | a {b: math.sqrt(0, 0)}\
@@ -25,12 +30,10 @@ mod error {
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.sqrt(\"0\")}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.sqrt(\"0\")}\n"
+            ),
             "Error: $number: \"0\" is not a number.\
          \n  ,\
          \n2 | a {b: math.sqrt(\"0\")}\
@@ -42,12 +45,10 @@ mod error {
     #[test]
     fn units() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.sqrt(1px)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.sqrt(1px)}\n"
+            ),
             "Error: $number: Expected 1px to have no units.\
          \n  ,\
          \n2 | a {b: math.sqrt(1px)}\
@@ -59,12 +60,10 @@ mod error {
     #[test]
     fn zero_args() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.sqrt()}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.sqrt()}\n"
+            ),
             "Error: Missing argument $number.\
          \n  ,--> input.scss\
          \n2 | a {b: math.sqrt()}\
@@ -81,120 +80,80 @@ mod error {
 #[test]
 fn infinity() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.sqrt(1 / 0)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.sqrt(1 / 0)}\n"),
         "a {\
-        \n  b: Infinity;\
-        \n}\
-        \n"
+         \n  b: Infinity;\
+         \n}\n"
     );
 }
 #[test]
 fn named_arg() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.sqrt($number: 2)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.sqrt($number: 2)}\n"),
         "a {\
-        \n  b: 1.4142135624;\
-        \n}\
-        \n"
+         \n  b: 1.4142135624;\
+         \n}\n"
     );
 }
 #[test]
 fn negative() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.sqrt(-1)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.sqrt(-1)}\n"),
         "a {\
-        \n  b: NaN;\
-        \n}\
-        \n"
+         \n  b: NaN;\
+         \n}\n"
     );
 }
 #[test]
 fn negative_zero() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.sqrt(-0.0)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.sqrt(-0.0)}\n"),
         "a {\
-        \n  b: 0;\
-        \n}\
-        \n"
+         \n  b: 0;\
+         \n}\n"
     );
 }
 #[test]
 fn negative_zero_fuzzy() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.sqrt(-0.000000000001)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.sqrt(-0.000000000001)}\n"),
         "a {\
-        \n  b: 0;\
-        \n}\
-        \n"
+         \n  b: 0;\
+         \n}\n"
     );
 }
 #[test]
 fn positive() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.sqrt(2)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.sqrt(2)}\n"),
         "a {\
-        \n  b: 1.4142135624;\
-        \n}\
-        \n"
+         \n  b: 1.4142135624;\
+         \n}\n"
     );
 }
 #[test]
 fn zero() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.sqrt(0)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.sqrt(0)}\n"),
         "a {\
-        \n  b: 0;\
-        \n}\
-        \n"
+         \n  b: 0;\
+         \n}\n"
     );
 }
 #[test]
 fn zero_fuzzy() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.sqrt(0.000000000001)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.sqrt(0.000000000001)}\n"),
         "a {\
-        \n  b: 0;\
-        \n}\
-        \n"
+         \n  b: 0;\
+         \n}\n"
     );
 }

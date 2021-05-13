@@ -1,23 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2289.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".foo:baz:baz {\
-            \n  float: left;\
-            \n}\
-            \n\
-            \n.bar {\
-            \n  @extend .foo;\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".foo:baz:baz {\
+             \n  float: left;\
+             \n}\n\
+             \n.bar {\
+             \n  @extend .foo;\
+             \n}\n"),
         ".foo:baz:baz, .bar:baz:baz {\
-        \n  float: left;\
-        \n}\
-        \n"
+         \n  float: left;\
+         \n}\n"
     );
 }

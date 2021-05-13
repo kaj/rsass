@@ -1,18 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1822.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             ".btn {\
              \n    .open& {\
              \n        color: #000;\
              \n    }\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: \"&\" may only used at the beginning of a compound selector.\
          \n  ,\
          \n2 |     .open&{\

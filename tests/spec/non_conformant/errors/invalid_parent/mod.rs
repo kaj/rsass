@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/invalid-parent"
 
+#[allow(unused)]
+use super::runner;
+
 mod function_in_each;
 
 mod function_in_for;

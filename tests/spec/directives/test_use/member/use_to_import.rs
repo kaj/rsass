@@ -1,72 +1,69 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/member/use_to_import.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file("function/midstream.scss", "@import \"upstream\";\n")
+        .mock_file(
+            "function/upstream.scss",
+            "@function member() {@return value}\n",
+        )
+        .mock_file("mixin/midstream.scss", "@import \"upstream\";\n")
+        .mock_file("mixin/upstream.scss", "@mixin member() {a {b: c}}\n")
+        .mock_file(
+            "variable_assignment/midstream.scss",
+            "@import \"upstream\";\n",
+        )
+        .mock_file(
+            "variable_assignment/upstream.scss",
+            "$member: value;\n\n@function get-member() {@return $member}\n",
+        )
+        .mock_file("variable_use/midstream.scss", "@import \"upstream\";\n")
+        .mock_file("variable_use/upstream.scss", "$member: value;\n")
+}
+
 #[test]
 #[ignore] // unexepected error
 fn function() {
     assert_eq!(
-        crate::rsass(
-            "@use \"midstream\";\
-            \n\
-            \na {b: midstream.member()}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"midstream\";\n\
+             \na {b: midstream.member()}\n"),
         "a {\
-        \n  b: value;\
-        \n}\
-        \n"
+         \n  b: value;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // unexepected error
 fn mixin() {
     assert_eq!(
-        crate::rsass(
-            "@use \"midstream\";\
-            \n\
-            \n@include midstream.member;\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"midstream\";\n\
+             \n@include midstream.member;\n"),
         "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // unexepected error
 fn variable_assignment() {
     assert_eq!(
-        crate::rsass(
-            "@use \"midstream\";\
-            \n\
-            \nmidstream.$member: new value;\
-            \n\
-            \na {b: midstream.get-member()}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"midstream\";\n\
+             \nmidstream.$member: new value;\n\
+             \na {b: midstream.get-member()}\n"),
         "a {\
-        \n  b: new value;\
-        \n}\
-        \n"
+         \n  b: new value;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // unexepected error
 fn variable_use() {
     assert_eq!(
-        crate::rsass(
-            "@use \"midstream\";\
-            \n\
-            \na {b: midstream.$member}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"midstream\";\n\
+             \na {b: midstream.$member}\n"),
         "a {\
-        \n  b: value;\
-        \n}\
-        \n"
+         \n  b: value;\
+         \n}\n"
     );
 }

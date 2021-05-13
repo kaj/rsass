@@ -1,29 +1,34 @@
 use super::Error;
+use std::convert::TryInto;
 use yaml_rust::YamlLoader;
 
 #[derive(Default)]
 pub struct Options {
-    pub precision: Option<i64>,
+    pub precision: Option<usize>,
     /// None for tests that should work, or Some(reason to skip).
     pub should_skip: Option<String>,
 }
 
 impl Options {
     pub fn parse(options: &str) -> Result<Options, Error> {
-        let options = YamlLoader::load_from_str(&options)?;
-        if options.len() > 1 {
-            Err(Error(format!("Found multiple-doc options {:?}", options)))?;
+        match &YamlLoader::load_from_str(&options)?[..] {
+            [] => Err(Error(format!("Found zero-doc options {:?}", options))),
+            [options] => {
+                //eprintln!("Found options: {:?}", options);
+                Ok(Options {
+                    precision: options[":precision"]
+                        .as_i64()
+                        .map(TryInto::try_into)
+                        .transpose()?,
+                    // Target version no longer used by sass-spec,
+                    // and no other reasons to skip implemented here.
+                    should_skip: None,
+                })
+            }
+            multiple => Err(Error(format!(
+                "Found multiple-doc options {:?}",
+                multiple
+            ))),
         }
-        if options.len() == 0 {
-            Err(Error(format!("Found zero-doc options {:?}", options)))?;
-        }
-        let options = &options[0];
-        eprintln!("Found options: {:?}", options);
-        Ok(Options {
-            precision: options[":precision"].as_i64(),
-            // Target version no longer used by sass-spec,
-            // and no other reasons to skip implemented here.
-            should_skip: None,
-        })
     }
 }

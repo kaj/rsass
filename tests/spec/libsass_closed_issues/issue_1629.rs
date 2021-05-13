@@ -1,18 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1629.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "foo {\
-            \n  background: url(...) 2rem 3rem / auto 2rem;\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("foo {\
+             \n  background: url(...) 2rem 3rem / auto 2rem;\
+             \n}\n"),
         "foo {\
-        \n  background: url(...) 2rem 3rem/auto 2rem;\
-        \n}\
-        \n"
+         \n  background: url(...) 2rem 3rem/auto 2rem;\
+         \n}\n"
     );
 }

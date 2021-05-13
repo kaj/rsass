@@ -1,23 +1,23 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/nesting/parent_with_newline.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".foo,\
-            \n.bar {\
-            \n  .baz & {\
-            \n    color: red;\
-            \n  }\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".foo,\
+             \n.bar {\
+             \n  .baz & {\
+             \n    color: red;\
+             \n  }\
+             \n}\n"),
         ".baz .foo,\
-        \n.baz .bar {\
-        \n  color: red;\
-        \n}\
-        \n"
+         \n.baz .bar {\
+         \n  color: red;\
+         \n}\n"
     );
 }

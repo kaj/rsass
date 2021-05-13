@@ -1,28 +1,26 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/complement.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn alpha() {
     assert_eq!(
-        crate::rsass(
-            "a {b: complement(rgba(turquoise, 0.7))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: complement(rgba(turquoise, 0.7))}\n"),
         "a {\
-        \n  b: rgba(224, 64, 80, 0.7);\
-        \n}\
-        \n"
+         \n  b: rgba(224, 64, 80, 0.7);\
+         \n}\n"
     );
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_few_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: complement()}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: complement()}\n"),
             "Error: Missing argument $color.\
          \n  ,--> input.scss\
          \n1 | a {b: complement()}\
@@ -38,11 +36,7 @@ mod error {
     #[test]
     fn too_many_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: complement(red, 1)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: complement(red, 1)}\n"),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: complement(red, 1)}\
@@ -58,11 +52,7 @@ mod error {
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
-                "a {b: complement(1)}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: complement(1)}\n"),
             "Error: $color: 1 is not a color.\
          \n  ,\
          \n1 | a {b: complement(1)}\
@@ -73,88 +63,60 @@ mod error {
     }
 }
 mod grayscale {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn black() {
         assert_eq!(
-            crate::rsass(
-                "a {b: complement(black)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: complement(black)}\n"),
             "a {\
-        \n  b: black;\
-        \n}\
-        \n"
+         \n  b: black;\
+         \n}\n"
         );
     }
     #[test]
     fn gray() {
         assert_eq!(
-            crate::rsass(
-                "a {b: complement(gray)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: complement(gray)}\n"),
             "a {\
-        \n  b: gray;\
-        \n}\
-        \n"
+         \n  b: gray;\
+         \n}\n"
         );
     }
     #[test]
     fn white() {
         assert_eq!(
-            crate::rsass(
-                "a {b: complement(white)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: complement(white)}\n"),
             "a {\
-        \n  b: white;\
-        \n}\
-        \n"
+         \n  b: white;\
+         \n}\n"
         );
     }
 }
 #[test]
 fn named() {
     assert_eq!(
-        crate::rsass(
-            "a {b: complement($color: red)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: complement($color: red)}\n"),
         "a {\
-        \n  b: aqua;\
-        \n}\
-        \n"
+         \n  b: aqua;\
+         \n}\n"
     );
 }
 #[test]
 fn red() {
     assert_eq!(
-        crate::rsass(
-            "a {b: complement(red)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: complement(red)}\n"),
         "a {\
-        \n  b: aqua;\
-        \n}\
-        \n"
+         \n  b: aqua;\
+         \n}\n"
     );
 }
 #[test]
 fn turquoise() {
     assert_eq!(
-        crate::rsass(
-            "a {b: complement(turquoise)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: complement(turquoise)}\n"),
         "a {\
-        \n  b: #e04050;\
-        \n}\
-        \n"
+         \n  b: #e04050;\
+         \n}\n"
     );
 }

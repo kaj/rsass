@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1739/interpolate/both.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "div {\r\
              \n  baz: #{1/2}/#{1/2};\r\
              \n  baz: #{1/  2}/  #{1/  2};\r\
@@ -39,8 +44,7 @@ fn test() {
              \n  baz: #{1  %2}  %#{1  %2};\r\
              \n  baz: #{1  %  2}  %  #{1  %  2};\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: Undefined operation \"2 * 2\".\
          \n   ,\
          \n23 |   baz: #{1*2}*#{1*2};\

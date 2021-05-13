@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues"
 
+#[allow(unused)]
+use super::runner;
+
 mod t47_str_slice;
 
 mod issue_2640;
@@ -107,39 +110,33 @@ mod issue_1188;
 #[ignore] // wrong result
 fn issue_1192() {
     assert_eq!(
-        crate::rsass(
-            "$keyword: foobar;\
-            \n\
-            \n@mixin test($arglist...){\
-            \n  $map: keywords($arglist);\
-            \n  /*#{inspect($map)}*/\
-            \n  /*#{inspect($arglist)}*/\
-            \n}\
-            \n\
-            \n// Works\
-            \n@include test(foo, bar, baz);\
-            \n// Ruby Sass:  /*foo, bar, baz*/\
-            \n// LibSass  :  /*foo, bar, baz*/\
-            \n\
-            \n// LibSass does not inspect as ()\
-            \n@include test;\
-            \n// Ruby Sass:  /*()*/\
-            \n// LibSass  :  /**/\
-            \n\
-            \n// Ruby Sass throws error – LibSass shows keywords in arglist\
-            \n// (keywords should not show in arglist – see below)\
-            \n@include test(foo, bar, baz, $keyword: keyword);\
-            \n// Ruby Sass:  \"Mixin test1 doesn\'t have an argument named $keyword.\"\
-            \n// LibSass  :  /*foo, bar, baz, $keyword: keyword*/"
-        )
-        .unwrap(),
+        runner().ok(
+            "$keyword: foobar;\n\
+             \n@mixin test($arglist...){\
+             \n  $map: keywords($arglist);\
+             \n  /*#{inspect($map)}*/\
+             \n  /*#{inspect($arglist)}*/\
+             \n}\n\
+             \n// Works\
+             \n@include test(foo, bar, baz);\
+             \n// Ruby Sass:  /*foo, bar, baz*/\
+             \n// LibSass  :  /*foo, bar, baz*/\n\
+             \n// LibSass does not inspect as ()\
+             \n@include test;\
+             \n// Ruby Sass:  /*()*/\
+             \n// LibSass  :  /**/\n\
+             \n// Ruby Sass throws error – LibSass shows keywords in arglist\
+             \n// (keywords should not show in arglist – see below)\
+             \n@include test(foo, bar, baz, $keyword: keyword);\
+             \n// Ruby Sass:  \"Mixin test1 doesn\'t have an argument named $keyword.\"\
+             \n// LibSass  :  /*foo, bar, baz, $keyword: keyword*/"
+        ),
         "/*()*/\
-        \n/*foo, bar, baz*/\
-        \n/*()*/\
-        \n/*()*/\
-        \n/*(keyword: keyword)*/\
-        \n/*foo, bar, baz*/\
-        \n"
+         \n/*foo, bar, baz*/\
+         \n/*()*/\
+         \n/*()*/\
+         \n/*(keyword: keyword)*/\
+         \n/*foo, bar, baz*/\n"
     );
 }
 
@@ -167,17 +164,13 @@ mod issue_1230;
 #[test]
 fn issue_1231() {
     assert_eq!(
-        crate::rsass(
-            "div::before {\
-            \n  content: #{\"\\\"\"+\\e600+\"\\\"\"};\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("div::before {\
+             \n  content: #{\"\\\"\"+\\e600+\"\\\"\"};\
+             \n}"),
         "@charset \"UTF-8\";\
-        \ndiv::before {\
-        \n  content: \"\u{e600}\";\
-        \n}\
-        \n"
+         \ndiv::before {\
+         \n  content: \"\u{e600}\";\
+         \n}\n"
     );
 }
 
@@ -470,22 +463,16 @@ mod issue_1776;
 #[ignore] // wrong result
 fn issue_1786() {
     assert_eq!(
-        crate::rsass(
-            "$input: \"\\0_\\a_\\A\";\
-            \n\
-            \ntest {\
-            \n    bug1: \"#{\"_\\a\" + b}\";\
-            \n    bug2: \"#{a $input}\";\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$input: \"\\0_\\a_\\A\";\n\
+             \ntest {\
+             \n    bug1: \"#{\"_\\a\" + b}\";\
+             \n    bug2: \"#{a $input}\";\
+             \n}\n"),
         "@charset \"UTF-8\";\
-        \ntest {\
-        \n  bug1: \"_\\a b\";\
-        \n  bug2: \"a �_ _ \";\
-        \n}\
-        \n"
+         \ntest {\
+         \n  bug1: \"_\\a b\";\
+         \n  bug2: \"a �_ _ \";\
+         \n}\n"
     );
 }
 
@@ -501,7 +488,7 @@ mod issue_1797;
 
 mod issue_1798;
 
-mod issue_1801;
+// Ignoring "issue_1801", not expected to work yet.
 
 mod issue_1803;
 
@@ -571,24 +558,19 @@ mod issue_1971;
 #[test]
 fn issue_1977() {
     assert_eq!(
-        crate::rsass(
-            "body#some-\\(selector\\) {\
-            \ncolor: red;\
-            \n}\
-            \n\
-            \n#äöü  {\
-            \n  color: reds;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("body#some-\\(selector\\) {\
+             \ncolor: red;\
+             \n}\n\
+             \n#äöü  {\
+             \n  color: reds;\
+             \n}"),
         "@charset \"UTF-8\";\
-        \nbody#some-\\(selector\\) {\
-        \n  color: red;\
-        \n}\
-        \n#äöü {\
-        \n  color: reds;\
-        \n}\
-        \n"
+         \nbody#some-\\(selector\\) {\
+         \n  color: red;\
+         \n}\
+         \n#äöü {\
+         \n  color: reds;\
+         \n}\n"
     );
 }
 
@@ -648,10 +630,9 @@ mod issue_2116;
 #[test]
 fn issue_2120() {
     assert_eq!(
-        crate::rsass("@import url(//xyz.cöm/ürl)").unwrap(),
+        runner().ok("@import url(//xyz.cöm/ürl)"),
         "@charset \"UTF-8\";\
-        \n@import url(//xyz.cöm/ürl);\
-        \n"
+         \n@import url(//xyz.cöm/ürl);\n"
     );
 }
 
@@ -733,42 +714,38 @@ mod issue_231;
 #[test]
 fn issue_2320() {
     assert_eq!(
-        crate::rsass(
-            "$char-f: \'\\66\';\r\
-            \n$char-g: \'\\67\';\r\
-            \n\r\
-            \n.test-1 {\r\
-            \n  content: \'#{$char-f}\\feff\';\r\
-            \n}\r\
-            \n\r\
-            \n.test-2 {\r\
-            \n  content: \'#{$char-g}\\feff\';\r\
-            \n}\r\
-            \n\r\
-            \n// this is broken\r\
-            \n.test-3 {\r\
-            \n  content: \'\\feff#{$char-f}\';\r\
-            \n}\r\
-            \n\r\
-            \n.test-4 {\r\
-            \n  content: \'\\feff#{$char-g}\';\r\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("$char-f: \'\\66\';\r\
+             \n$char-g: \'\\67\';\r\
+             \n\r\
+             \n.test-1 {\r\
+             \n  content: \'#{$char-f}\\feff\';\r\
+             \n}\r\
+             \n\r\
+             \n.test-2 {\r\
+             \n  content: \'#{$char-g}\\feff\';\r\
+             \n}\r\
+             \n\r\
+             \n// this is broken\r\
+             \n.test-3 {\r\
+             \n  content: \'\\feff#{$char-f}\';\r\
+             \n}\r\
+             \n\r\
+             \n.test-4 {\r\
+             \n  content: \'\\feff#{$char-g}\';\r\
+             \n}"),
         "@charset \"UTF-8\";\
-        \n.test-1 {\
-        \n  content: \"f\u{feff}\";\
-        \n}\
-        \n.test-2 {\
-        \n  content: \"g\u{feff}\";\
-        \n}\
-        \n.test-3 {\
-        \n  content: \"\u{feff}f\";\
-        \n}\
-        \n.test-4 {\
-        \n  content: \"\u{feff}g\";\
-        \n}\
-        \n"
+         \n.test-1 {\
+         \n  content: \"f\u{feff}\";\
+         \n}\
+         \n.test-2 {\
+         \n  content: \"g\u{feff}\";\
+         \n}\
+         \n.test-3 {\
+         \n  content: \"\u{feff}f\";\
+         \n}\
+         \n.test-4 {\
+         \n  content: \"\u{feff}g\";\
+         \n}\n"
     );
 }
 
@@ -994,46 +971,37 @@ mod issue_6;
 #[test]
 fn issue_602() {
     assert_eq!(
-        crate::rsass(
-            "#foo.\\bar {\
-            \n  color: red;\
-            \n}\
-            \n\
-            \n#foo.b\\ar {\
-            \n  color: red;\
-            \n}\
-            \n\
-            \n#foo\\.bar {\
-            \n  color: red;\
-            \n}\
-            \n\
-            \n#foo\\bar {\
-            \n  color: red;\
-            \n}\
-            \n\
-            \n#fo\\o.bar {\
-            \n  color: red;\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("#foo.\\bar {\
+             \n  color: red;\
+             \n}\n\
+             \n#foo.b\\ar {\
+             \n  color: red;\
+             \n}\n\
+             \n#foo\\.bar {\
+             \n  color: red;\
+             \n}\n\
+             \n#foo\\bar {\
+             \n  color: red;\
+             \n}\n\
+             \n#fo\\o.bar {\
+             \n  color: red;\
+             \n}\n"),
         "@charset \"UTF-8\";\
-        \n#foo.ºr {\
-        \n  color: red;\
-        \n}\
-        \n#foo.b\\a r {\
-        \n  color: red;\
-        \n}\
-        \n#foo\\.bar {\
-        \n  color: red;\
-        \n}\
-        \n#fooºr {\
-        \n  color: red;\
-        \n}\
-        \n#foo.bar {\
-        \n  color: red;\
-        \n}\
-        \n"
+         \n#foo.ºr {\
+         \n  color: red;\
+         \n}\
+         \n#foo.b\\a r {\
+         \n  color: red;\
+         \n}\
+         \n#foo\\.bar {\
+         \n  color: red;\
+         \n}\
+         \n#fooºr {\
+         \n  color: red;\
+         \n}\
+         \n#foo.bar {\
+         \n  color: red;\
+         \n}\n"
     );
 }
 
@@ -1131,136 +1099,107 @@ mod issue_77;
 #[test]
 fn issue_783() {
     assert_eq!(
-        crate::rsass(
+        runner().ok(
             "// $a: 12px / 1em;\
-            \n// $b: 6px / 1em;\
-            \n// $c: 10em;\
-            \n// $x: -9999em;\
-            \n// $aa: 1px * 1px;\
-            \n\
-            \na {\
-            \n  $foo: 2em;\
-            \n  $bar: 2em;\
-            \n\
-            \n  foo: $foo;          // 2em  ✔\
-            \n  bar: $bar;          // 2em  ✔\
-            \n  // a: $foo * $bar;     // 4em*em isn\'t a valid CSS value.  ✔\
-            \n  a: $foo / $bar;     // 1  ✔\
-            \n  a: $foo + $bar;     // 4em  ✔\
-            \n  a: $foo - $bar;     // 0em  ✔\
-            \n\
-            \n\
-            \n  $foo: 2px;\
-            \n  $bar: 2em;\
-            \n\
-            \n  foo: $foo;          // 2px  ✔\
-            \n  bar: $bar;          // 2em  ✔\
-            \n  // a: $foo * $bar;     // 4em*px isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo / $bar;     // 1px/em isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo + $bar;     // Incompatible units: \'em\' and \'px\'.  ✔\
-            \n  // a: $foo - $bar;     // Incompatible units: \'em\' and \'px\'.  ✔\
-            \n\
-            \n\
-            \n  $foo: 2em;\
-            \n  $bar: 2px;\
-            \n\
-            \n  foo: $foo;          // 2em  ✔\
-            \n  bar: $bar;          // 2px  ✔\
-            \n  // a: $foo * $bar;     // 4em*px isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo / $bar;     // 1em/px isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo + $bar;     // Incompatible units: \'px\' and \'em\'.  ✔\
-            \n  // a: $foo - $bar;     // Incompatible units: \'px\' and \'em\'.  ✔\
-            \n\
-            \n\
-            \n  $foo: 2px / 2em;\
-            \n  $bar: 2px;\
-            \n\
-            \n  // foo: $foo;          // 1px/em isn\'t a valid CSS value.  ✔\
-            \n  bar: $bar;          // 2px  ✔\
-            \n  // a: $foo * $bar;     // 2px*px/em isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo / $bar;     // 0.5/em isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo + $bar;     // Incompatible units: \'\' and \'em\'.\
-            \n  // a: $foo - $bar;     // Incompatible units: \'\' and \'em\'.\
-            \n\
-            \n\
-            \n  $foo: 2em / 2px;\
-            \n  $bar: 2px;\
-            \n\
-            \n  // foo: $foo;          // 1em/px isn\'t a valid CSS value.  ✔\
-            \n  bar: $bar;          // 2px  ✔\
-            \n  a: $foo * $bar;     // 2em  ✔\
-            \n  // a: $foo / $bar;     // 0.5em/px*px isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo + $bar;     // Incompatible units: \'px\' and \'em\'.\
-            \n  // a: $foo - $bar;     // Incompatible units: \'px\' and \'em\'.\
-            \n\
-            \n\
-            \n  $foo: 2em / 2px;\
-            \n  $bar: 2em / 2px;\
-            \n\
-            \n  // foo: $foo;          // 1em/px isn\'t a valid CSS value.  ✔\
-            \n  // bar: $bar;          // 1em/px isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo * $bar;     // 1em*em/px*px isn\'t a valid CSS value.  ✔\
-            \n  a: $foo / $bar;     // 1  ✔\
-            \n  // a: $foo + $bar;     // 2em/px isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo - $bar;     // 0em/px isn\'t a valid CSS value.  ✔\
-            \n\
-            \n\
-            \n  $foo: 2px / 2em;\
-            \n  $bar: 2em / 2px;\
-            \n\
-            \n  // foo: $foo;          // 1px/em isn\'t a valid CSS value.  ✔\
-            \n  // bar: $bar;          // 1em/px isn\'t a valid CSS value.  ✔\
-            \n  a: $foo * $bar;     // 1  ✔\
-            \n  // a: $foo / $bar;     // 1px*px/em*em isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo + $bar;     // Incompatible units: \'em\' and \'px\'.\
-            \n  // a: $foo - $bar;     // Incompatible units: \'em\' and \'px\'.\
-            \n\
-            \n\
-            \n  $foo: 2px;\
-            \n  $bar: 2px / 2em;\
-            \n\
-            \n  foo: $foo;          // 2px  ✔\
-            \n  // bar: $bar;          // 1px/em isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo * $bar;     // 2px*px/em isn\'t a valid CSS value.  ✔\
-            \n  a: $foo / $bar;     // 2em  ✔\
-            \n  // a: $foo + $bar;     // Incompatible units: \'em\' and \'\'.\
-            \n  // a: $foo - $bar;     // Incompatible units: \'em\' and \'\'.\
-            \n\
-            \n\
-            \n  $foo: 2px;\
-            \n  $bar: 2em / 2px;\
-            \n\
-            \n  foo: $foo;          // 2px  ✔\
-            \n  // bar: $bar;          // 1em/px isn\'t a valid CSS value.  ✔\
-            \n  a: $foo * $bar;     // 2em  ✔\
-            \n  // a: $foo / $bar;     // 2px*px/em isn\'t a valid CSS value.  ✔\
-            \n  // a: $foo + $bar;     // Incompatible units: \'em\' and \'px\'.\
-            \n  // a: $foo - $bar;     // Incompatible units: \'em\' and \'px\'.\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+             \n// $b: 6px / 1em;\
+             \n// $c: 10em;\
+             \n// $x: -9999em;\
+             \n// $aa: 1px * 1px;\n\
+             \na {\
+             \n  $foo: 2em;\
+             \n  $bar: 2em;\n\
+             \n  foo: $foo;          // 2em  ✔\
+             \n  bar: $bar;          // 2em  ✔\
+             \n  // a: $foo * $bar;     // 4em*em isn\'t a valid CSS value.  ✔\
+             \n  a: $foo / $bar;     // 1  ✔\
+             \n  a: $foo + $bar;     // 4em  ✔\
+             \n  a: $foo - $bar;     // 0em  ✔\n\n\
+             \n  $foo: 2px;\
+             \n  $bar: 2em;\n\
+             \n  foo: $foo;          // 2px  ✔\
+             \n  bar: $bar;          // 2em  ✔\
+             \n  // a: $foo * $bar;     // 4em*px isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo / $bar;     // 1px/em isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo + $bar;     // Incompatible units: \'em\' and \'px\'.  ✔\
+             \n  // a: $foo - $bar;     // Incompatible units: \'em\' and \'px\'.  ✔\n\n\
+             \n  $foo: 2em;\
+             \n  $bar: 2px;\n\
+             \n  foo: $foo;          // 2em  ✔\
+             \n  bar: $bar;          // 2px  ✔\
+             \n  // a: $foo * $bar;     // 4em*px isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo / $bar;     // 1em/px isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo + $bar;     // Incompatible units: \'px\' and \'em\'.  ✔\
+             \n  // a: $foo - $bar;     // Incompatible units: \'px\' and \'em\'.  ✔\n\n\
+             \n  $foo: 2px / 2em;\
+             \n  $bar: 2px;\n\
+             \n  // foo: $foo;          // 1px/em isn\'t a valid CSS value.  ✔\
+             \n  bar: $bar;          // 2px  ✔\
+             \n  // a: $foo * $bar;     // 2px*px/em isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo / $bar;     // 0.5/em isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo + $bar;     // Incompatible units: \'\' and \'em\'.\
+             \n  // a: $foo - $bar;     // Incompatible units: \'\' and \'em\'.\n\n\
+             \n  $foo: 2em / 2px;\
+             \n  $bar: 2px;\n\
+             \n  // foo: $foo;          // 1em/px isn\'t a valid CSS value.  ✔\
+             \n  bar: $bar;          // 2px  ✔\
+             \n  a: $foo * $bar;     // 2em  ✔\
+             \n  // a: $foo / $bar;     // 0.5em/px*px isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo + $bar;     // Incompatible units: \'px\' and \'em\'.\
+             \n  // a: $foo - $bar;     // Incompatible units: \'px\' and \'em\'.\n\n\
+             \n  $foo: 2em / 2px;\
+             \n  $bar: 2em / 2px;\n\
+             \n  // foo: $foo;          // 1em/px isn\'t a valid CSS value.  ✔\
+             \n  // bar: $bar;          // 1em/px isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo * $bar;     // 1em*em/px*px isn\'t a valid CSS value.  ✔\
+             \n  a: $foo / $bar;     // 1  ✔\
+             \n  // a: $foo + $bar;     // 2em/px isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo - $bar;     // 0em/px isn\'t a valid CSS value.  ✔\n\n\
+             \n  $foo: 2px / 2em;\
+             \n  $bar: 2em / 2px;\n\
+             \n  // foo: $foo;          // 1px/em isn\'t a valid CSS value.  ✔\
+             \n  // bar: $bar;          // 1em/px isn\'t a valid CSS value.  ✔\
+             \n  a: $foo * $bar;     // 1  ✔\
+             \n  // a: $foo / $bar;     // 1px*px/em*em isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo + $bar;     // Incompatible units: \'em\' and \'px\'.\
+             \n  // a: $foo - $bar;     // Incompatible units: \'em\' and \'px\'.\n\n\
+             \n  $foo: 2px;\
+             \n  $bar: 2px / 2em;\n\
+             \n  foo: $foo;          // 2px  ✔\
+             \n  // bar: $bar;          // 1px/em isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo * $bar;     // 2px*px/em isn\'t a valid CSS value.  ✔\
+             \n  a: $foo / $bar;     // 2em  ✔\
+             \n  // a: $foo + $bar;     // Incompatible units: \'em\' and \'\'.\
+             \n  // a: $foo - $bar;     // Incompatible units: \'em\' and \'\'.\n\n\
+             \n  $foo: 2px;\
+             \n  $bar: 2em / 2px;\n\
+             \n  foo: $foo;          // 2px  ✔\
+             \n  // bar: $bar;          // 1em/px isn\'t a valid CSS value.  ✔\
+             \n  a: $foo * $bar;     // 2em  ✔\
+             \n  // a: $foo / $bar;     // 2px*px/em isn\'t a valid CSS value.  ✔\
+             \n  // a: $foo + $bar;     // Incompatible units: \'em\' and \'px\'.\
+             \n  // a: $foo - $bar;     // Incompatible units: \'em\' and \'px\'.\
+             \n}\n"
+        ),
         "a {\
-        \n  foo: 2em;\
-        \n  bar: 2em;\
-        \n  a: 1;\
-        \n  a: 4em;\
-        \n  a: 0em;\
-        \n  foo: 2px;\
-        \n  bar: 2em;\
-        \n  foo: 2em;\
-        \n  bar: 2px;\
-        \n  bar: 2px;\
-        \n  bar: 2px;\
-        \n  a: 2em;\
-        \n  a: 1;\
-        \n  a: 1;\
-        \n  foo: 2px;\
-        \n  a: 2em;\
-        \n  foo: 2px;\
-        \n  a: 2em;\
-        \n}\
-        \n"
+         \n  foo: 2em;\
+         \n  bar: 2em;\
+         \n  a: 1;\
+         \n  a: 4em;\
+         \n  a: 0em;\
+         \n  foo: 2px;\
+         \n  bar: 2em;\
+         \n  foo: 2em;\
+         \n  bar: 2px;\
+         \n  bar: 2px;\
+         \n  bar: 2px;\
+         \n  a: 2em;\
+         \n  a: 1;\
+         \n  a: 1;\
+         \n  foo: 2px;\
+         \n  a: 2em;\
+         \n  foo: 2px;\
+         \n  a: 2em;\
+         \n}\n"
     );
 }
 
@@ -1278,20 +1217,17 @@ mod issue_817;
 #[test]
 fn issue_820() {
     assert_eq!(
-        crate::rsass(
+        runner().ok(
             "@charset \"UTF-8\";\
-            \n/*!  Force output of above line by adding a unicode character. ♫ */\
-            \nhtml, body {\
-            \n  height: 100%; }\
-            \n"
-        )
-        .unwrap(),
+             \n/*!  Force output of above line by adding a unicode character. ♫ */\
+             \nhtml, body {\
+             \n  height: 100%; }\n"
+        ),
         "@charset \"UTF-8\";\
-        \n/*!  Force output of above line by adding a unicode character. ♫ */\
-        \nhtml, body {\
-        \n  height: 100%;\
-        \n}\
-        \n"
+         \n/*!  Force output of above line by adding a unicode character. ♫ */\
+         \nhtml, body {\
+         \n  height: 100%;\
+         \n}\n"
     );
 }
 

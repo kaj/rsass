@@ -1,30 +1,28 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss/default-parameters.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$a: red;\
-            \n\
-            \n@mixin f($a: $a) {\
-            \n  color: $a;\
-            \n}\
-            \n\
-            \nh1 {\
-            \n  @include f;\
-            \n}\
-            \n\
-            \nh2 {\
-            \n  @include f(blue);\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("$a: red;\n\
+             \n@mixin f($a: $a) {\
+             \n  color: $a;\
+             \n}\n\
+             \nh1 {\
+             \n  @include f;\
+             \n}\n\
+             \nh2 {\
+             \n  @include f(blue);\
+             \n}"),
         "h1 {\
-        \n  color: red;\
-        \n}\
-        \nh2 {\
-        \n  color: blue;\
-        \n}\
-        \n"
+         \n  color: red;\
+         \n}\
+         \nh2 {\
+         \n  color: blue;\
+         \n}\n"
     );
 }

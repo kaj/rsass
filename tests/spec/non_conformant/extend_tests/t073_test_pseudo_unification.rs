@@ -1,18 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/073_test_pseudo_unification.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "%-a ::foo(2n+1).baz {a: b}\
-            \n::foo(2n+1) {@extend .baz} -a {@extend %-a}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("%-a ::foo(2n+1).baz {a: b}\
+             \n::foo(2n+1) {@extend .baz} -a {@extend %-a}\n"),
         "-a ::foo(2n+1) {\
-        \n  a: b;\
-        \n}\
-        \n"
+         \n  a: b;\
+         \n}\n"
     );
 }

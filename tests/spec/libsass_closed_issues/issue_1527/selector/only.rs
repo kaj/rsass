@@ -1,13 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1527/selector/only.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "& {}\
-             \n"
-        ).unwrap_err(),
+        runner().err(
+            "& {}\n"
+        ),
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n  ,\
          \n1 | & {}\

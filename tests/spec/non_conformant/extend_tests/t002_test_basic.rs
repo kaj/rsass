@@ -1,18 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/002_test_basic.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // unexepected error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            ".bar {@extend .foo}\
-            \n.foo {a: b}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(".bar {@extend .foo}\
+             \n.foo {a: b}\n"),
         ".foo, .bar {\
-        \n  a: b;\
-        \n}\
-        \n"
+         \n  a: b;\
+         \n}\n"
     );
 }

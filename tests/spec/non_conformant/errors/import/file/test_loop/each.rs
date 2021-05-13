@@ -1,16 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/import/file/loop/each.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner().mock_file("_include.scss", "")
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@each $i in (1) {\r\
              \n  @import \'_include\';\r\
-             \n}\r\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\r\n"
+        ),
         "Error: This at-rule is not allowed here.\
          \n  ,\
          \n2 |   @import \'_include\';\

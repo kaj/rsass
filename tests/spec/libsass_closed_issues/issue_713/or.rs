@@ -1,20 +1,22 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_713/or.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@function or() {\
              \n  @return \"or\";\
-             \n}\
-             \n\
+             \n}\n\
              \ntest {\
              \n  or: or();\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Invalid function name.\
          \n  ,\
          \n1 | @function or() {\

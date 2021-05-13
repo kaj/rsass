@@ -1,25 +1,25 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1941/mixin_mixin.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@mixin parent {\
              \n  @mixin nested {\
              \n    foo: bar;\
-             \n  }\
-             \n\
+             \n  }\n\
              \n  @include nested;\
-             \n}\
-             \n\
-             \n\
+             \n}\n\n\
              \ntest {\
              \n  @include parent;\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Mixins may not contain mixin declarations.\
          \n  ,\
          \n2 |   @mixin nested {\

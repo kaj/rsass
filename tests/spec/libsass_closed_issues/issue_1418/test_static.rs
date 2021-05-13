@@ -1,16 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1418/static.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "foo {\
              \n    color: missing($a: b);\
-             \n}\
-             \n"
-        )
-        .unwrap_err(),
+             \n}\n"
+        ),
         "Error: Plain CSS functions don\'t support keyword arguments.\
          \n  ,\
          \n2 |     color: missing($a: b);\

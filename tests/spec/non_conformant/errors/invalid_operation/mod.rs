@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/invalid-operation"
 
+#[allow(unused)]
+use super::runner;
+
 mod gt;
 
 mod gte;

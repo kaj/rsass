@@ -1,17 +1,44 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/variable_exists.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+        .mock_file("conflict/other1.scss", "$member: from other1;\n")
+        .mock_file("conflict/other2.scss", "$member: from other2;\n")
+        .mock_file(
+            "through_forward/as/_midstream.scss",
+            "@forward \"upstream\" as b-*;\n",
+        )
+        .mock_file("through_forward/as/_upstream.scss", "$c: null;\n")
+        .mock_file(
+            "through_forward/hide/_midstream.scss",
+            "@forward \"upstream\" hide $b;\n",
+        )
+        .mock_file(
+            "through_forward/hide/_upstream.scss",
+            "$b: null;\n$c: null;\n",
+        )
+        .mock_file(
+            "through_forward/show/_midstream.scss",
+            "@forward \"upstream\" show $b;\n",
+        )
+        .mock_file(
+            "through_forward/show/_upstream.scss",
+            "$b: null;\n$c: null;\n",
+        )
+        .mock_file("through_import/other.scss", "$global-variable: null;\n")
+        .mock_file("through_use/other.scss", "$global-variable: null;\n")
+}
+
 #[test]
 #[ignore] // wrong error
 fn conflict() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "@use \"other1\" as *;\
-             \n@use \"other2\" as *;\
-             \n\
-             \na {b: variable-exists(member)}\
-             \n"
-        )
-        .unwrap_err(),
+             \n@use \"other2\" as *;\n\
+             \na {b: variable-exists(member)}\n"
+        ),
         "Error: This variable is available from multiple global modules.\
          \n    ,\
          \n1   | @use \"other1\" as *;\
@@ -26,49 +53,39 @@ fn conflict() {
     );
 }
 mod dash_insensitive {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn dash_to_underscore() {
         assert_eq!(
-            crate::rsass(
-                "$a_b: null;\
-            \n\
-            \nc {d: variable-exists(a-b)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("$a_b: null;\n\
+             \nc {d: variable-exists(a-b)}\n"),
             "c {\
-        \n  d: true;\
-        \n}\
-        \n"
+         \n  d: true;\
+         \n}\n"
         );
     }
     #[test]
     fn underscore_to_dash() {
         assert_eq!(
-            crate::rsass(
-                "$a-b: null;\
-            \n\
-            \nc {d: variable-exists(a_b)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("$a-b: null;\n\
+             \nc {d: variable-exists(a_b)}\n"),
             "c {\
-        \n  d: true;\
-        \n}\
-        \n"
+         \n  d: true;\
+         \n}\n"
         );
     }
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     mod argument {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn too_few() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: variable-exists()}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: variable-exists()}\n"),
                 "Error: Missing argument $name.\
          \n  ,--> input.scss\
          \n1 | a {b: variable-exists()}\
@@ -84,11 +101,7 @@ mod error {
         #[test]
         fn too_many() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: variable-exists(foo, bar)}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: variable-exists(foo, bar)}\n"),
                 "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: variable-exists(foo, bar)}\
@@ -104,11 +117,7 @@ mod error {
         #[test]
         fn test_type() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: variable-exists(12px)}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: variable-exists(12px)}\n"),
                 "Error: $name: 12px is not a string.\
          \n  ,\
          \n1 | a {b: variable-exists(12px)}\
@@ -122,125 +131,91 @@ mod error {
 #[test]
 fn global() {
     assert_eq!(
-        crate::rsass(
-            "$global-variable: null;\
-            \n\
-            \na {b: variable-exists(global-variable)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$global-variable: null;\n\
+             \na {b: variable-exists(global-variable)}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }
 #[test]
 fn keyword() {
     assert_eq!(
-        crate::rsass(
-            "a {b: variable-exists($name: foo)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: variable-exists($name: foo)}\n"),
         "a {\
-        \n  b: false;\
-        \n}\
-        \n"
+         \n  b: false;\
+         \n}\n"
     );
 }
 #[test]
 fn local() {
     assert_eq!(
-        crate::rsass(
-            "a {\
-            \n  $local-variable: null;\
-            \n  b: variable-exists(local-variable);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {\
+             \n  $local-variable: null;\
+             \n  b: variable-exists(local-variable);\
+             \n}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }
 #[test]
 fn non_existent() {
     assert_eq!(
-        crate::rsass(
-            "a {\
-            \n  b: variable-exists(non-existent);\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {\
+             \n  b: variable-exists(non-existent);\
+             \n}\n"),
         "a {\
-        \n  b: false;\
-        \n}\
-        \n"
+         \n  b: false;\
+         \n}\n"
     );
 }
 mod through_forward {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // unexepected error
     fn test_as() {
         assert_eq!(
-            crate::rsass(
-                "@use \"midstream\" as *;\
-            \na {\
-            \n  with-prefix: variable-exists(b-c);\
-            \n  without-prefix: variable-exists(c);\
-            \n}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"midstream\" as *;\
+             \na {\
+             \n  with-prefix: variable-exists(b-c);\
+             \n  without-prefix: variable-exists(c);\
+             \n}\n"),
             "a {\
-        \n  with-prefix: true;\
-        \n  without-prefix: false;\
-        \n}\
-        \n"
+         \n  with-prefix: true;\
+         \n  without-prefix: false;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn hide() {
         assert_eq!(
-            crate::rsass(
-                "@use \"midstream\" as *;\
-            \na {\
-            \n  hidden: variable-exists(b);\
-            \n  not-hidden: variable-exists(c);\
-            \n}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"midstream\" as *;\
+             \na {\
+             \n  hidden: variable-exists(b);\
+             \n  not-hidden: variable-exists(c);\
+             \n}\n"),
             "a {\
-        \n  hidden: false;\
-        \n  not-hidden: true;\
-        \n}\
-        \n"
+         \n  hidden: false;\
+         \n  not-hidden: true;\
+         \n}\n"
         );
     }
     #[test]
     #[ignore] // unexepected error
     fn show() {
         assert_eq!(
-            crate::rsass(
-                "@use \"midstream\" as *;\
-            \na {\
-            \n  shown: variable-exists(b);\
-            \n  not-shown: variable-exists(c);\
-            \n}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("@use \"midstream\" as *;\
+             \na {\
+             \n  shown: variable-exists(b);\
+             \n  not-shown: variable-exists(c);\
+             \n}\n"),
             "a {\
-        \n  shown: true;\
-        \n  not-shown: false;\
-        \n}\
-        \n"
+         \n  shown: true;\
+         \n  not-shown: false;\
+         \n}\n"
         );
     }
 }
@@ -248,31 +223,21 @@ mod through_forward {
 #[ignore] // wrong result
 fn through_import() {
     assert_eq!(
-        crate::rsass(
-            "@import \"other\";\
-            \na {b: variable-exists(global-variable)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@import \"other\";\
+             \na {b: variable-exists(global-variable)}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }
 #[test]
 #[ignore] // unexepected error
 fn through_use() {
     assert_eq!(
-        crate::rsass(
-            "@use \"other\" as *;\
-            \na {b: variable-exists(global-variable)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"other\" as *;\
+             \na {b: variable-exists(global-variable)}\n"),
         "a {\
-        \n  b: true;\
-        \n}\
-        \n"
+         \n  b: true;\
+         \n}\n"
     );
 }

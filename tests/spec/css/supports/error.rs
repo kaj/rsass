@@ -1,16 +1,21 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports/error.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod syntax {
+    #[allow(unused)]
+    use super::runner;
     mod anything {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn colon() {
             assert_eq!(
-                crate::rsass(
-                    "@supports (a !:$) {@b}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports (a !:$) {@b}\n"),
                 "Error: expected \":\".\
          \n  ,\
          \n1 | @supports (a !:$) {@b}\
@@ -23,11 +28,7 @@ mod syntax {
         #[ignore] // wrong error
         fn non_identifier_start() {
             assert_eq!(
-                crate::rsass(
-                    "@supports (1 a) {@b}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports (1 a) {@b}\n"),
                 "Error: Expected identifier.\
          \n  ,\
          \n1 | @supports (1 a) {@b}\
@@ -40,11 +41,7 @@ mod syntax {
         #[ignore] // wrong error
         fn not() {
             assert_eq!(
-                crate::rsass(
-                    "@supports (not a) {@b}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports (not a) {@b}\n"),
                 "Error: Expected @supports condition.\
          \n  ,\
          \n1 | @supports (not a) {@b}\
@@ -55,15 +52,13 @@ mod syntax {
         }
     }
     mod declaration {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn multiple() {
             assert_eq!(
-                crate::rsass(
-                    "@supports (a: b) (c: d) {@e}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports (a: b) (c: d) {@e}\n"),
                 "Error: expected \"{\".\
          \n  ,\
          \n1 | @supports (a: b) (c: d) {@e}\
@@ -76,11 +71,7 @@ mod syntax {
         #[ignore] // wrong error
         fn not() {
             assert_eq!(
-                crate::rsass(
-                    "@supports (not a: b) {@c}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports (not a: b) {@c}\n"),
                 "Error: Expected @supports condition.\
          \n  ,\
          \n1 | @supports (not a: b) {@c}\
@@ -93,11 +84,7 @@ mod syntax {
         #[ignore] // wrong error
         fn parens() {
             assert_eq!(
-                crate::rsass(
-                    "@supports ((a): b) {c}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports ((a): b) {c}\n"),
                 "Error: expected \")\".\
          \n  ,\
          \n1 | @supports ((a): b) {c}\
@@ -108,15 +95,13 @@ mod syntax {
         }
     }
     mod function {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn not() {
             assert_eq!(
-                crate::rsass(
-                    "@supports not(:) {@b}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports not(:) {@b}\n"),
                 "Error: Expected identifier.\
          \n  ,\
          \n1 | @supports not(:) {@b}\
@@ -129,11 +114,7 @@ mod syntax {
         #[ignore] // wrong error
         fn space_before_arg() {
             assert_eq!(
-                crate::rsass(
-                    "@supports a (b) {@b}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports a (b) {@b}\n"),
                 "Error: Expected @supports condition.\
          \n  ,\
          \n1 | @supports a (b) {@b}\
@@ -144,15 +125,13 @@ mod syntax {
         }
     }
     mod ident {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn interpolated_after() {
             assert_eq!(
-                crate::rsass(
-                    "@supports a#{b} {@c}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports a#{b} {@c}\n"),
                 "Error: Expected @supports condition.\
          \n  ,\
          \n1 | @supports a#{b} {@c}\
@@ -165,11 +144,7 @@ mod syntax {
         #[ignore] // wrong error
         fn interpolated_before() {
             assert_eq!(
-                crate::rsass(
-                    "@supports #{a}b {@c}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports #{a}b {@c}\n"),
                 "Error: Expected @supports condition.\
          \n  ,\
          \n1 | @supports #{a}b {@c}\
@@ -182,11 +157,7 @@ mod syntax {
         #[ignore] // wrong error
         fn plain() {
             assert_eq!(
-                crate::rsass(
-                    "@supports a {@b}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports a {@b}\n"),
                 "Error: Expected @supports condition.\
          \n  ,\
          \n1 | @supports a {@b}\
@@ -200,11 +171,7 @@ mod syntax {
     #[ignore] // wrong error
     fn ident_after_not() {
         assert_eq!(
-            crate::rsass(
-                "@supports not a {@b}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@supports not a {@b}\n"),
             "Error: Expected @supports condition.\
          \n  ,\
          \n1 | @supports not a {@b}\
@@ -217,11 +184,7 @@ mod syntax {
     #[ignore] // wrong error
     fn none() {
         assert_eq!(
-            crate::rsass(
-                "@supports {@a}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@supports {@a}\n"),
             "Error: expected \"(\".\
          \n  ,\
          \n1 | @supports {@a}\
@@ -231,15 +194,13 @@ mod syntax {
         );
     }
     mod operator {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         #[ignore] // wrong error
         fn and_after_not() {
             assert_eq!(
-                crate::rsass(
-                    "@supports not (a: b) and (c: d) {@e}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports not (a: b) and (c: d) {@e}\n"),
                 "Error: expected \"{\".\
          \n  ,\
          \n1 | @supports not (a: b) and (c: d) {@e}\
@@ -252,11 +213,7 @@ mod syntax {
         #[ignore] // wrong error
         fn lonely_not() {
             assert_eq!(
-                crate::rsass(
-                    "@supports not {@c}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports not {@c}\n"),
                 "Error: expected \"(\".\
          \n  ,\
          \n1 | @supports not {@c}\
@@ -269,11 +226,7 @@ mod syntax {
         #[ignore] // wrong error
         fn not_after_and() {
             assert_eq!(
-                crate::rsass(
-                    "@supports (a: b) and (not c: d) {@e}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports (a: b) and (not c: d) {@e}\n"),
                 "Error: Expected @supports condition.\
          \n  ,\
          \n1 | @supports (a: b) and (not c: d) {@e}\
@@ -286,11 +239,7 @@ mod syntax {
         #[ignore] // wrong error
         fn not_function_after_and() {
             assert_eq!(
-                crate::rsass(
-                    "@supports (a: b) and not() {@c}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports (a: b) and not() {@c}\n"),
                 "Error: \"not\" is not a valid identifier here.\
          \n  ,\
          \n1 | @supports (a: b) and not() {@c}\
@@ -303,11 +252,7 @@ mod syntax {
         #[ignore] // wrong error
         fn or_after_and() {
             assert_eq!(
-                crate::rsass(
-                    "@supports (a: b) and (c: d) or (e: f) {@g}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports (a: b) and (c: d) or (e: f) {@g}\n"),
                 "Error: Expected \"and\".\
          \n  ,\
          \n1 | @supports (a: b) and (c: d) or (e: f) {@g}\
@@ -320,11 +265,7 @@ mod syntax {
         #[ignore] // wrong error
         fn trailing_and() {
             assert_eq!(
-                crate::rsass(
-                    "@supports (a: b) and {@c}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports (a: b) and {@c}\n"),
                 "Error: expected \"(\".\
          \n  ,\
          \n1 | @supports (a: b) and {@c}\
@@ -337,11 +278,7 @@ mod syntax {
         #[ignore] // wrong error
         fn trailing_or() {
             assert_eq!(
-                crate::rsass(
-                    "@supports (a: b) or {@c}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("@supports (a: b) or {@c}\n"),
                 "Error: expected \"(\".\
          \n  ,\
          \n1 | @supports (a: b) or {@c}\
@@ -355,11 +292,7 @@ mod syntax {
     #[ignore] // wrong error
     fn raw_declaration() {
         assert_eq!(
-            crate::rsass(
-                "@supports a: b {@c}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("@supports a: b {@c}\n"),
             "Error: Expected @supports condition.\
          \n  ,\
          \n1 | @supports a: b {@c}\

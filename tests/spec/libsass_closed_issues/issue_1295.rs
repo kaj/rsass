@@ -1,19 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1295.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "foo {\
-            \n  $nothing: null;\
-            \n  foo: \"#{$nothing}\' %\' \'#{$nothing}\";\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("foo {\
+             \n  $nothing: null;\
+             \n  foo: \"#{$nothing}\' %\' \'#{$nothing}\";\
+             \n}\n"),
         "foo {\
-        \n  foo: \"\' %\' \'\";\
-        \n}\
-        \n"
+         \n  foo: \"\' %\' \'\";\
+         \n}\n"
     );
 }

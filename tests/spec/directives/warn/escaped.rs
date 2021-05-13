@@ -1,17 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/directives/warn/escaped.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@w\\61rn warning;\
-            \na {b: c}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@w\\61rn warning;\
+             \na {b: c}\n"),
         "a {\
-        \n  b: c;\
-        \n}\
-        \n"
+         \n  b: c;\
+         \n}\n"
     );
 }

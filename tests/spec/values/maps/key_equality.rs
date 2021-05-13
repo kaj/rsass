@@ -1,46 +1,38 @@
 //! Tests auto-converted from "sass-spec/spec/values/maps/key_equality.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod infinity {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn negative() {
         assert_eq!(
-            crate::rsass(
-                "a {b: inspect(map-get(((-1/0): b), -1/0))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: inspect(map-get(((-1/0): b), -1/0))}\n"),
             "a {\
-        \n  b: null;\
-        \n}\
-        \n"
+         \n  b: null;\
+         \n}\n"
         );
     }
     #[test]
     fn positive() {
         assert_eq!(
-            crate::rsass(
-                "a {b: inspect(map-get(((1/0): b), 1/0))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: inspect(map-get(((1/0): b), 1/0))}\n"),
             "a {\
-        \n  b: null;\
-        \n}\
-        \n"
+         \n  b: null;\
+         \n}\n"
         );
     }
 }
 #[test]
 fn nan() {
     assert_eq!(
-        crate::rsass(
-            "a {b: inspect(map-get(((0/0): b), 0/0))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("a {b: inspect(map-get(((0/0): b), 0/0))}\n"),
         "a {\
-        \n  b: null;\
-        \n}\
-        \n"
+         \n  b: null;\
+         \n}\n"
     );
 }

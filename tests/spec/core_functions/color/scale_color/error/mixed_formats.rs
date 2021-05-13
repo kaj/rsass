@@ -1,14 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/scale_color/error/mixed_formats.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn blue_and_lightness() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $blue: 1%, $lightness: 1%)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $blue: 1%, $lightness: 1%)}\n"),
         "Error: RGB parameters may not be passed along with HSL parameters.\
          \n  ,\
          \n1 | a {b: scale-color(red, $blue: 1%, $lightness: 1%)}\
@@ -21,11 +22,8 @@ fn blue_and_lightness() {
 #[ignore] // missing error
 fn green_and_saturation() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $green: 1%, $saturation: 1%)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner()
+            .err("a {b: scale-color(red, $green: 1%, $saturation: 1%)}\n"),
         "Error: RGB parameters may not be passed along with HSL parameters.\
          \n  ,\
          \n1 | a {b: scale-color(red, $green: 1%, $saturation: 1%)}\
@@ -38,11 +36,7 @@ fn green_and_saturation() {
 #[ignore] // missing error
 fn green_and_whiteness() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $green: 1%, $whiteness: 1%)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $green: 1%, $whiteness: 1%)}\n"),
         "Error: RGB parameters may not be passed along with HWB parameters.\
          \n  ,\
          \n1 | a {b: scale-color(red, $green: 1%, $whiteness: 1%)}\
@@ -55,11 +49,8 @@ fn green_and_whiteness() {
 #[ignore] // missing error
 fn lightness_and_whiteness() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $lightness: 1%, $whiteness: 1%)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner()
+            .err("a {b: scale-color(red, $lightness: 1%, $whiteness: 1%)}\n"),
         "Error: HSL parameters may not be passed along with HWB parameters.\
          \n  ,\
          \n1 | a {b: scale-color(red, $lightness: 1%, $whiteness: 1%)}\
@@ -72,11 +63,7 @@ fn lightness_and_whiteness() {
 #[ignore] // missing error
 fn red_and_blackness() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $red: 1%, $blackness: 1%)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $red: 1%, $blackness: 1%)}\n"),
         "Error: RGB parameters may not be passed along with HWB parameters.\
          \n  ,\
          \n1 | a {b: scale-color(red, $red: 1%, $blackness: 1%)}\
@@ -89,11 +76,7 @@ fn red_and_blackness() {
 #[ignore] // missing error
 fn red_and_saturation() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $red: 1%, $saturation: 1%)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("a {b: scale-color(red, $red: 1%, $saturation: 1%)}\n"),
         "Error: RGB parameters may not be passed along with HSL parameters.\
          \n  ,\
          \n1 | a {b: scale-color(red, $red: 1%, $saturation: 1%)}\
@@ -106,11 +89,9 @@ fn red_and_saturation() {
 #[ignore] // missing error
 fn saturation_and_blackness() {
     assert_eq!(
-        crate::rsass(
-            "a {b: scale-color(red, $saturation: 1%, $blackness: 1%)}\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err(
+            "a {b: scale-color(red, $saturation: 1%, $blackness: 1%)}\n"
+        ),
         "Error: HSL parameters may not be passed along with HWB parameters.\
          \n  ,\
          \n1 | a {b: scale-color(red, $saturation: 1%, $blackness: 1%)}\

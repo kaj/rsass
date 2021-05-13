@@ -1,18 +1,17 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss-tests/059_test_mixins_with_empty_args.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@mixin foo {a: b}\
-            \n\
-            \n.foo {@include foo();}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@mixin foo {a: b}\n\
+             \n.foo {@include foo();}\n"),
         ".foo {\
-        \n  a: b;\
-        \n}\
-        \n"
+         \n  a: b;\
+         \n}\n"
     );
 }

@@ -1,19 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1672.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$breakpoint: \'tablet\';\
-            \n\
-            \n.-#{$breakpoint} {\
-            \n  color: #FFF;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("$breakpoint: \'tablet\';\n\
+             \n.-#{$breakpoint} {\
+             \n  color: #FFF;\
+             \n}"),
         ".-tablet {\
-        \n  color: #FFF;\
-        \n}\
-        \n"
+         \n  color: #FFF;\
+         \n}\n"
     );
 }

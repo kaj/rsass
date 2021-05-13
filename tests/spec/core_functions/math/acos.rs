@@ -1,30 +1,30 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/acos.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn decimal() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.acos(0.5)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.acos(0.5)}\n"),
         "a {\
-        \n  b: 60deg;\
-        \n}\
-        \n"
+         \n  b: 60deg;\
+         \n}\n"
     );
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn too_many_args() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.acos(0, 0)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.acos(0, 0)}\n"
+            ),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n2 | a {b: math.acos(0, 0)}\
@@ -40,12 +40,10 @@ mod error {
     #[test]
     fn test_type() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.acos(\"0\")}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.acos(\"0\")}\n"
+            ),
             "Error: $number: \"0\" is not a number.\
          \n  ,\
          \n2 | a {b: math.acos(\"0\")}\
@@ -57,12 +55,10 @@ mod error {
     #[test]
     fn units() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.acos(1px)}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.acos(1px)}\n"
+            ),
             "Error: $number: Expected 1px to have no units.\
          \n  ,\
          \n2 | a {b: math.acos(1px)}\
@@ -74,12 +70,10 @@ mod error {
     #[test]
     fn zero_args() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "@use \"sass:math\" as math;\
-             \na {b: math.acos()}\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: math.acos()}\n"
+            ),
             "Error: Missing argument $number.\
          \n  ,--> input.scss\
          \n2 | a {b: math.acos()}\
@@ -96,75 +90,50 @@ mod error {
 #[test]
 fn greater_than_one() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.acos(2)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.acos(2)}\n"),
         "a {\
-        \n  b: NaNdeg;\
-        \n}\
-        \n"
+         \n  b: NaNdeg;\
+         \n}\n"
     );
 }
 #[test]
 fn less_than_negative_one() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.acos(-2)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.acos(-2)}\n"),
         "a {\
-        \n  b: NaNdeg;\
-        \n}\
-        \n"
+         \n  b: NaNdeg;\
+         \n}\n"
     );
 }
 #[test]
 fn negative_decimal() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.acos(-0.5)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.acos(-0.5)}\n"),
         "a {\
-        \n  b: 120deg;\
-        \n}\
-        \n"
+         \n  b: 120deg;\
+         \n}\n"
     );
 }
 #[test]
 fn one() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.acos(1)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.acos(1)}\n"),
         "a {\
-        \n  b: 0deg;\
-        \n}\
-        \n"
+         \n  b: 0deg;\
+         \n}\n"
     );
 }
 #[test]
 fn one_fuzzy() {
     assert_eq!(
-        crate::rsass(
-            "@use \"sass:math\" as math;\
-            \na {b: math.acos(1.000000000001)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.acos(1.000000000001)}\n"),
         "a {\
-        \n  b: 0deg;\
-        \n}\
-        \n"
+         \n  b: 0deg;\
+         \n}\n"
     );
 }

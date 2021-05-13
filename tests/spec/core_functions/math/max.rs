@@ -1,16 +1,20 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/math/max.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn incompatible_units() {
         assert_eq!(
-            crate::rsass(
+            runner().err(
                 "$arg: 1px;\
-             \na {b: max($arg, 2s)}\
-             \n\
-             \n"
-            )
-            .unwrap_err(),
+             \na {b: max($arg, 2s)}\n\n"
+            ),
             "Error: 1px and 2s have incompatible units.\
          \n  ,\
          \n2 | a {b: max($arg, 2s)}\
@@ -22,11 +26,7 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: max()}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: max()}\n"),
             "Error: At least one argument must be passed.\
          \n  ,\
          \n1 | a {b: max()}\
@@ -36,15 +36,15 @@ mod error {
         );
     }
     mod test_type {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn arg_1() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "$arg: c;\
-             \na {b: max($arg)}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: max($arg)}\n"
+                ),
                 "Error: c is not a number.\
          \n  ,\
          \n2 | a {b: max($arg)}\
@@ -56,12 +56,10 @@ mod error {
         #[test]
         fn arg_2() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "$arg: c;\
-             \na {b: max(1, $arg)}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: max(1, $arg)}\n"
+                ),
                 "Error: c is not a number.\
          \n  ,\
          \n2 | a {b: max(1, $arg)}\
@@ -73,12 +71,10 @@ mod error {
         #[test]
         fn arg_3() {
             assert_eq!(
-                crate::rsass(
+                runner().err(
                     "$arg: c;\
-             \na {b: max(1, 2, $arg)}\
-             \n"
-                )
-                .unwrap_err(),
+             \na {b: max(1, 2, $arg)}\n"
+                ),
                 "Error: c is not a number.\
          \n  ,\
          \n2 | a {b: max(1, 2, $arg)}\
@@ -92,92 +88,64 @@ mod error {
 #[test]
 fn one_arg() {
     assert_eq!(
-        crate::rsass(
-            "$arg: 1;\
-            \na {b: max($arg)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$arg: 1;\
+             \na {b: max($arg)}\n"),
         "a {\
-        \n  b: 1;\
-        \n}\
-        \n"
+         \n  b: 1;\
+         \n}\n"
     );
 }
 #[test]
 fn three_args() {
     assert_eq!(
-        crate::rsass(
-            "$arg: 1;\
-            \na {b: max(3, $arg, 2)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$arg: 1;\
+             \na {b: max(3, $arg, 2)}\n"),
         "a {\
-        \n  b: 3;\
-        \n}\
-        \n"
+         \n  b: 3;\
+         \n}\n"
     );
 }
 #[test]
 fn two_args() {
     assert_eq!(
-        crate::rsass(
-            "$arg: 1;\
-            \na {b: max($arg, 2)}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("$arg: 1;\
+             \na {b: max($arg, 2)}\n"),
         "a {\
-        \n  b: 2;\
-        \n}\
-        \n"
+         \n  b: 2;\
+         \n}\n"
     );
 }
 mod units {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn and_unitless() {
         assert_eq!(
-            crate::rsass(
-                "$arg: 2px;\
-            \na {b: max($arg, 1)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("$arg: 2px;\
+             \na {b: max($arg, 1)}\n"),
             "a {\
-        \n  b: 2px;\
-        \n}\
-        \n"
+         \n  b: 2px;\
+         \n}\n"
         );
     }
     #[test]
     fn compatible() {
         assert_eq!(
-            crate::rsass(
-                "$arg: 1px;\
-            \na {b: max($arg, 1in, 1cm)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("$arg: 1px;\
+             \na {b: max($arg, 1in, 1cm)}\n"),
             "a {\
-        \n  b: 1in;\
-        \n}\
-        \n"
+         \n  b: 1in;\
+         \n}\n"
         );
     }
     #[test]
     fn same() {
         assert_eq!(
-            crate::rsass(
-                "$arg: 6px;\
-            \na {b: max($arg, 2px, 10px)}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("$arg: 6px;\
+             \na {b: max($arg, 2px, 10px)}\n"),
             "a {\
-        \n  b: 10px;\
-        \n}\
-        \n"
+         \n  b: 10px;\
+         \n}\n"
         );
     }
 }

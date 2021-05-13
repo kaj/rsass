@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/20_escapes_literal_uppercase"
 
+#[allow(unused)]
+use super::runner;
+
 mod t01_inline;
 
 mod t02_variable;

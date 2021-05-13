@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors"
 
+#[allow(unused)]
+use super::runner;
+
 mod extend;
 
 mod fn_change_color_1;

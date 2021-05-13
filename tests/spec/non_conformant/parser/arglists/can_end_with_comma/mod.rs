@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/arglists/can-end-with-comma"
 
+#[allow(unused)]
+use super::runner;
+
 mod error_call_1;
 
 mod error_call_2;

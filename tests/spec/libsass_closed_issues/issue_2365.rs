@@ -1,10 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2365.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "a {\r\
              \n    b {\r\
              \n        color: red;\r\
@@ -13,8 +18,7 @@ fn test() {
              \n        color: blue;\r\
              \n    }\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: expected selector.\
          \n  ,\
          \n4 |     },\

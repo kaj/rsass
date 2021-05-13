@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_185"
 
+#[allow(unused)]
+use super::runner;
+
 mod hoisting;
 
 mod media_level_4;

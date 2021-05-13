@@ -1,15 +1,19 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/invalid-operation/sub.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().err(
             "test {\r\
              \n  err: 2px - 2px*2px;\r\
              \n}"
-        )
-        .unwrap_err(),
+        ),
         "Error: 2px and 4px*px have incompatible units.\
          \n  ,\
          \n2 |   err: 2px - 2px*2px;\r\

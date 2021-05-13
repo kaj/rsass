@@ -1,5 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/css/custom_properties"
 
+#[allow(unused)]
+use super::runner;
+
 mod error;
 
 mod exclamation;

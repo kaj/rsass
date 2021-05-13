@@ -1,26 +1,27 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1654/basic.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "%foo {\
-            \n  &bar {\
-            \n    display: block;\
-            \n  }\
-            \n  &.bar {\
-            \n    display: block;\
-            \n  }\
-            \n}\
-            \nzoo {\
-            \n  @extend %foo;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("%foo {\
+             \n  &bar {\
+             \n    display: block;\
+             \n  }\
+             \n  &.bar {\
+             \n    display: block;\
+             \n  }\
+             \n}\
+             \nzoo {\
+             \n  @extend %foo;\
+             \n}"),
         "zoo.bar {\
-        \n  display: block;\
-        \n}\
-        \n"
+         \n  display: block;\
+         \n}\n"
     );
 }

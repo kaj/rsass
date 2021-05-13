@@ -1,28 +1,28 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/extend-tests/issue_146.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "%btn-style-default {\
-            \n  background: green;\
-            \n  &:hover{\
-            \n    background: black;\
-            \n  }\
-            \n}\
-            \n\
-            \nbutton {\
-            \n  @extend %btn-style-default;\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("%btn-style-default {\
+             \n  background: green;\
+             \n  &:hover{\
+             \n    background: black;\
+             \n  }\
+             \n}\n\
+             \nbutton {\
+             \n  @extend %btn-style-default;\
+             \n}"),
         "button {\
-        \n  background: green;\
-        \n}\
-        \nbutton:hover {\
-        \n  background: black;\
-        \n}\
-        \n"
+         \n  background: green;\
+         \n}\
+         \nbutton:hover {\
+         \n  background: black;\
+         \n}\n"
     );
 }

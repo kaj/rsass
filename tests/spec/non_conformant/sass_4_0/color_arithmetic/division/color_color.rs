@@ -1,14 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/sass_4_0/color_arithmetic/division/color_color.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // missing error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "$v: #abc / #123;\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("$v: #abc / #123;\n"),
         "Error: Undefined operation \"#abc / #123\".\
          \n  ,\
          \n1 | $v: #abc / #123;\

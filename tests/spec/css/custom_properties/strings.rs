@@ -1,30 +1,32 @@
 //! Tests auto-converted from "sass-spec/spec/css/custom_properties/strings.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
+        runner().ok(
             ".strings {\
-            \n  // Strings are tokenized as units, so their contents shouldn\'t affect anything\
-            \n  // else.\
-            \n  --text: \"foo\";\
-            \n  --bang: \"!\";\
-            \n  --semicolon: \";\";\
-            \n  --square: \"][\";\
-            \n  --curly: \"}{\";\
-            \n  --parens: \")(\";\
-            \n}\
-            \n"
-        )
-        .unwrap(),
+             \n  // Strings are tokenized as units, so their contents shouldn\'t affect anything\
+             \n  // else.\
+             \n  --text: \"foo\";\
+             \n  --bang: \"!\";\
+             \n  --semicolon: \";\";\
+             \n  --square: \"][\";\
+             \n  --curly: \"}{\";\
+             \n  --parens: \")(\";\
+             \n}\n"
+        ),
         ".strings {\
-        \n  --text: \"foo\";\
-        \n  --bang: \"!\";\
-        \n  --semicolon: \";\";\
-        \n  --square: \"][\";\
-        \n  --curly: \"}{\";\
-        \n  --parens: \")(\";\
-        \n}\
-        \n"
+         \n  --text: \"foo\";\
+         \n  --bang: \"!\";\
+         \n  --semicolon: \";\";\
+         \n  --square: \"][\";\
+         \n  --curly: \"}{\";\
+         \n  --parens: \")(\";\
+         \n}\n"
     );
 }

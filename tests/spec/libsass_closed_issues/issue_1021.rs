@@ -1,17 +1,18 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_1021.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "div {\r\
-            \n    top: 10px - 2 * 5px /* arrow size */;\r\
-            \n}"
-        )
-        .unwrap(),
+        runner().ok("div {\r\
+             \n    top: 10px - 2 * 5px /* arrow size */;\r\
+             \n}"),
         "div {\
-        \n  top: 0px;\
-        \n}\
-        \n"
+         \n  top: 0px;\
+         \n}\n"
     );
 }

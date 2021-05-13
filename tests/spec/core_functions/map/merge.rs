@@ -1,73 +1,59 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/map/merge.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 fn different_keys() {
     assert_eq!(
-        crate::rsass(
-            "a {b: inspect(map-merge((c: d, e: f), (1: 2, 3: 4)))}\
-            \n"
-        )
-        .unwrap(),
+        runner()
+            .ok("a {b: inspect(map-merge((c: d, e: f), (1: 2, 3: 4)))}\n"),
         "a {\
-        \n  b: (c: d, e: f, 1: 2, 3: 4);\
-        \n}\
-        \n"
+         \n  b: (c: d, e: f, 1: 2, 3: 4);\
+         \n}\n"
     );
 }
 mod empty {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn both() {
         assert_eq!(
-            crate::rsass(
-                "a {b: inspect(map-merge((), ()))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: inspect(map-merge((), ()))}\n"),
             "a {\
-        \n  b: ();\
-        \n}\
-        \n"
+         \n  b: ();\
+         \n}\n"
         );
     }
     #[test]
     fn first() {
         assert_eq!(
-            crate::rsass(
-                "a {b: inspect(map-merge((), (c: d, e: f)))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: inspect(map-merge((), (c: d, e: f)))}\n"),
             "a {\
-        \n  b: (c: d, e: f);\
-        \n}\
-        \n"
+         \n  b: (c: d, e: f);\
+         \n}\n"
         );
     }
     #[test]
     fn second() {
         assert_eq!(
-            crate::rsass(
-                "a {b: inspect(map-merge((c: d, e: f), ()))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: inspect(map-merge((c: d, e: f), ()))}\n"),
             "a {\
-        \n  b: (c: d, e: f);\
-        \n}\
-        \n"
+         \n  b: (c: d, e: f);\
+         \n}\n"
         );
     }
 }
 mod error {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     #[ignore] // missing error
     fn one_arg() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-merge((c: d))}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: map-merge((c: d))}\n"),
             "Error: Expected $args to contain a key.\
          \n  ,\
          \n1 | a {b: map-merge((c: d))}\
@@ -77,14 +63,12 @@ mod error {
         );
     }
     mod test_type {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn map1() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: map-merge(1, (c: d))}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: map-merge(1, (c: d))}\n"),
                 "Error: $map1: 1 is not a map.\
          \n  ,\
          \n1 | a {b: map-merge(1, (c: d))}\
@@ -96,11 +80,7 @@ mod error {
         #[test]
         fn map2() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: map-merge((c: d), 1)}\
-             \n"
-                )
-                .unwrap_err(),
+                runner().err("a {b: map-merge((c: d), 1)}\n"),
                 "Error: $map2: 1 is not a map.\
          \n  ,\
          \n1 | a {b: map-merge((c: d), 1)}\
@@ -110,14 +90,12 @@ mod error {
             );
         }
         mod nested {
+            #[allow(unused)]
+            use super::runner;
             #[test]
             fn map1() {
                 assert_eq!(
-                    crate::rsass(
-                        "a {b: map-merge(1, c, (d: e))}\
-             \n"
-                    )
-                    .unwrap_err(),
+                    runner().err("a {b: map-merge(1, c, (d: e))}\n"),
                     "Error: $map1: 1 is not a map.\
          \n  ,\
          \n1 | a {b: map-merge(1, c, (d: e))}\
@@ -129,11 +107,7 @@ mod error {
             #[test]
             fn map2() {
                 assert_eq!(
-                    crate::rsass(
-                        "a {b: map-merge((c: d), e, 1)}\
-             \n"
-                    )
-                    .unwrap_err(),
+                    runner().err("a {b: map-merge((c: d), e, 1)}\n"),
                     "Error: $map2: 1 is not a map.\
          \n  ,\
          \n1 | a {b: map-merge((c: d), e, 1)}\
@@ -148,11 +122,7 @@ mod error {
     #[ignore] // wrong error
     fn zero_args() {
         assert_eq!(
-            crate::rsass(
-                "a {b: map-merge()}\
-             \n"
-            )
-            .unwrap_err(),
+            runner().err("a {b: map-merge()}\n"),
             "Error: Missing argument $map1.\
          \n  ,--> input.scss\
          \n1 | a {b: map-merge()}\
@@ -169,172 +139,132 @@ mod error {
 #[test]
 fn named() {
     assert_eq!(
-        crate::rsass(
-            "a {b: inspect(map-merge($map1: (c: d), $map2: (1: 2)))}\
-            \n"
-        )
-        .unwrap(),
+        runner()
+            .ok("a {b: inspect(map-merge($map1: (c: d), $map2: (1: 2)))}\n"),
         "a {\
-        \n  b: (c: d, 1: 2);\
-        \n}\
-        \n"
+         \n  b: (c: d, 1: 2);\
+         \n}\n"
     );
 }
 mod nested {
+    #[allow(unused)]
+    use super::runner;
     #[test]
     fn different_keys() {
         assert_eq!(
-        crate::rsass(
-            "a {b: inspect(map-merge((c: (d: e, f: g)), c, (1: 2, 3: 4)))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "a {b: inspect(map-merge((c: (d: e, f: g)), c, (1: 2, 3: 4)))}\n"
+        ),
         "a {\
-        \n  b: (c: (d: e, f: g, 1: 2, 3: 4));\
-        \n}\
-        \n"
+         \n  b: (c: (d: e, f: g, 1: 2, 3: 4));\
+         \n}\n"
     );
     }
     mod empty {
+        #[allow(unused)]
+        use super::runner;
         #[test]
         fn both() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: inspect(map-merge((c: ()), c, ()))}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok("a {b: inspect(map-merge((c: ()), c, ()))}\n"),
                 "a {\
-        \n  b: (c: ());\
-        \n}\
-        \n"
+         \n  b: (c: ());\
+         \n}\n"
             );
         }
         #[test]
         fn first() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: inspect(map-merge((c: ()), c, (d: e, f: g)))}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok(
+                    "a {b: inspect(map-merge((c: ()), c, (d: e, f: g)))}\n"
+                ),
                 "a {\
-        \n  b: (c: (d: e, f: g));\
-        \n}\
-        \n"
+         \n  b: (c: (d: e, f: g));\
+         \n}\n"
             );
         }
         #[test]
         fn second() {
             assert_eq!(
-                crate::rsass(
-                    "a {b: inspect(map-merge((c: (d: e, f: g)), c, ()))}\
-            \n"
-                )
-                .unwrap(),
+                runner().ok(
+                    "a {b: inspect(map-merge((c: (d: e, f: g)), c, ()))}\n"
+                ),
                 "a {\
-        \n  b: (c: (d: e, f: g));\
-        \n}\
-        \n"
+         \n  b: (c: (d: e, f: g));\
+         \n}\n"
             );
         }
     }
     #[test]
     fn intermediate_value_is_not_a_map() {
         assert_eq!(
-            crate::rsass(
-                "a {b: inspect(map-merge((c: 1), c, d, (e: f)))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: inspect(map-merge((c: 1), c, d, (e: f)))}\n"),
             "a {\
-        \n  b: (c: (d: (e: f)));\
-        \n}\
-        \n"
+         \n  b: (c: (d: (e: f)));\
+         \n}\n"
         );
     }
     #[test]
     fn leaf_value_is_not_a_map() {
         assert_eq!(
-            crate::rsass(
-                "a {b: inspect(map-merge((c: 1), c, (d: e)))}\
-            \n"
-            )
-            .unwrap(),
+            runner().ok("a {b: inspect(map-merge((c: 1), c, (d: e)))}\n"),
             "a {\
-        \n  b: (c: (d: e));\
-        \n}\
-        \n"
+         \n  b: (c: (d: e));\
+         \n}\n"
         );
     }
     #[test]
     fn multiple_keys() {
         assert_eq!(
-        crate::rsass(
-            "a {b: inspect(map-merge((c: (d: (e: (f: (g: h))))), c, d, e, f, (g: 1)))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "a {b: inspect(map-merge((c: (d: (e: (f: (g: h))))), c, d, e, f, (g: 1)))}\n"
+        ),
         "a {\
-        \n  b: (c: (d: (e: (f: (g: 1)))));\
-        \n}\
-        \n"
+         \n  b: (c: (d: (e: (f: (g: 1)))));\
+         \n}\n"
     );
     }
     #[test]
     fn overlapping_keys() {
         assert_eq!(
-        crate::rsass(
-            "a {b: inspect(map-merge((c: (d: e, f: g, h: i)), c, (j: 1, f: 2, k: 3)))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "a {b: inspect(map-merge((c: (d: e, f: g, h: i)), c, (j: 1, f: 2, k: 3)))}\n"
+        ),
         "a {\
-        \n  b: (c: (d: e, f: 2, h: i, j: 1, k: 3));\
-        \n}\
-        \n"
+         \n  b: (c: (d: e, f: 2, h: i, j: 1, k: 3));\
+         \n}\n"
     );
     }
     #[test]
     fn same_keys() {
         assert_eq!(
-        crate::rsass(
-            "a {b: inspect(map-merge((c: (d: e, f: g)), c, (d: 1, f: 2)))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "a {b: inspect(map-merge((c: (d: e, f: g)), c, (d: 1, f: 2)))}\n"
+        ),
         "a {\
-        \n  b: (c: (d: 1, f: 2));\
-        \n}\
-        \n"
+         \n  b: (c: (d: 1, f: 2));\
+         \n}\n"
     );
     }
 }
 #[test]
 fn overlapping_keys() {
     assert_eq!(
-        crate::rsass(
-            "a {b: inspect(map-merge((c: d, e: f, g: h), (i: 1, e: 2, j: 3)))}\
-            \n"
-        )
-        .unwrap(),
+        runner().ok(
+            "a {b: inspect(map-merge((c: d, e: f, g: h), (i: 1, e: 2, j: 3)))}\n"
+        ),
         "a {\
-        \n  b: (c: d, e: 2, g: h, i: 1, j: 3);\
-        \n}\
-        \n"
+         \n  b: (c: d, e: 2, g: h, i: 1, j: 3);\
+         \n}\n"
     );
 }
 #[test]
 fn same_keys() {
     assert_eq!(
-        crate::rsass(
-            "a {b: inspect(map-merge((c: d, e: f), (c: 1, e: 2)))}\
-            \n"
-        )
-        .unwrap(),
+        runner()
+            .ok("a {b: inspect(map-merge((c: d, e: f), (c: 1, e: 2)))}\n"),
         "a {\
-        \n  b: (c: 1, e: 2);\
-        \n}\
-        \n"
+         \n  b: (c: 1, e: 2);\
+         \n}\n"
     );
 }

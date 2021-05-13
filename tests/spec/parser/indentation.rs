@@ -1,3 +1,11 @@
 //! Tests auto-converted from "sass-spec/spec/parser/indentation.hrx"
 
-mod empty_line {}
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
+mod empty_line {
+    #[allow(unused)]
+    use super::runner;
+}

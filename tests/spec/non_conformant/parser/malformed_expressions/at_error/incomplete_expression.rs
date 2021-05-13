@@ -1,14 +1,15 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/malformed_expressions/at-error/incomplete-expression.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong error
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "@error(\"foo\";\
-             \n"
-        )
-        .unwrap_err(),
+        runner().err("@error(\"foo\";\n"),
         "Error: expected \")\".\
          \n  ,\
          \n1 | @error(\"foo\";\

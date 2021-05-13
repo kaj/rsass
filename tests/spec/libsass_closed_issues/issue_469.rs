@@ -1,29 +1,26 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_469.hrx"
 
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
 #[test]
 #[ignore] // wrong result
 fn test() {
     assert_eq!(
-        crate::rsass(
-            "/*!\
-            \n*/\
-            \n\
-            \n@charset \"utf-8\";\
-            \n\
-            \na {\
-            \n  color: red;\
-            \n}\
-            \n\
-            \n@import url(\"x\");\
-            \n"
-        )
-        .unwrap(),
+        runner().ok("/*!\
+             \n*/\n\
+             \n@charset \"utf-8\";\n\
+             \na {\
+             \n  color: red;\
+             \n}\n\
+             \n@import url(\"x\");\n"),
         "/*!\
-        \n*/\
-        \n@import url(\"x\");\
-        \na {\
-        \n  color: red;\
-        \n}\
-        \n"
+         \n*/\
+         \n@import url(\"x\");\
+         \na {\
+         \n  color: red;\
+         \n}\n"
     );
 }
