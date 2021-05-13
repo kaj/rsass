@@ -1,4 +1,15 @@
 //! Value and Item types (and some supporting) for sass.
+
+macro_rules! name {
+    ($name:ident) => {
+        crate::sass::Name::from_static(stringify!($name))
+    };
+    () => {
+        // an empty name
+        crate::sass::Name::from_static("")
+    };
+}
+
 mod call_args;
 mod formal_args;
 mod functions;

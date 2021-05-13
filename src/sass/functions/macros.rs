@@ -1,13 +1,3 @@
-macro_rules! name {
-    ($name:ident) => {
-        crate::sass::Name::from_static(stringify!($name))
-    };
-    () => {
-        // an empty name
-        crate::sass::Name::from_static("")
-    };
-}
-
 macro_rules! one_arg {
     ($name:ident) => {
         (stringify!($name).into(), None)

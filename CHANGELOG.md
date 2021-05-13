@@ -24,6 +24,7 @@ project adheres to
 * Implement `meta.module_variables` and `meta.module_functions`.
 * Improved parameter checking for `hwb`, `alpha`, and `invert`
   functions in `sass:color` module.
+* The `if` function evaluates its arguments lazily.  Issue #107.
 * The `--include-path` cli argument is now named `--load-path`.
 * Update sass-spec test suite to 2021-05-12.  Also include "other"
   files (for `@use` and `@import`) in rust code for the suite.

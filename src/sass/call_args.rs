@@ -1,6 +1,6 @@
+use super::{Name, Value};
 use crate::css;
 use crate::error::Error;
-use crate::sass::Value;
 use crate::ScopeRef;
 use std::default::Default;
 
@@ -82,6 +82,24 @@ impl CallArgs {
                 Ok(acc)
             },
         )?))
+    }
+
+    /// Evaluate a single argument
+    ///
+    /// Only used by the `if` function, which is the only sass
+    /// function that evaluates its arguments lazily.
+    pub fn evaluate_single(
+        &self,
+        scope: ScopeRef,
+        name: Name,
+        num: usize,
+    ) -> Result<css::Value, Error> {
+        self.0
+            .iter()
+            .find(|(n, _)| n.as_ref().map(Name::from).as_ref() == Some(&name))
+            .or(self.0.get(num))
+            .map(|(_, v)| v.do_evaluate(scope, true))
+            .unwrap_or(Ok(css::Value::Null))
     }
 }
 

@@ -125,6 +125,19 @@ impl Value {
                 b,
             )),
             Value::Call(ref name, ref args, ref pos) => {
+                if name.single_raw() == Some("if") {
+                    // Magic: `if` is the only function that evaluates its
+                    // arguments lazily.  So it is implemented inline here.
+                    let (name, num) = if args
+                        .evaluate_single(scope.clone(), name!(condition), 0)?
+                        .is_true()
+                    {
+                        (name!(if_true), 1)
+                    } else {
+                        (name!(if_false), 2)
+                    };
+                    return args.evaluate_single(scope, name, num);
+                }
                 let args = args.evaluate(scope.clone(), true)?;
                 if let Some(name) = name.single_raw() {
                     if let Some(f) = scope.get_function(&name.into()) {
