@@ -12,6 +12,7 @@ mod sass {
 mod scss {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong result
     fn loud() {

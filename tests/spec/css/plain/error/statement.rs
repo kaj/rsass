@@ -84,12 +84,16 @@ fn runner() -> crate::TestRunner {
 
 mod at_rule {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("at_rule")
+    }
+
     #[test]
     #[ignore] // missing error
     fn at_root() {
+        let runner = runner().with_cwd("at_root");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   @at-root b {\
@@ -102,8 +106,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn content() {
+        let runner = runner().with_cwd("content");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @content;\
@@ -116,8 +121,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn debug() {
+        let runner = runner().with_cwd("debug");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @debug foo;\
@@ -130,8 +136,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn each() {
+        let runner = runner().with_cwd("each");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @each $i in 1 2 3 {\
@@ -144,8 +151,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn error() {
+        let runner = runner().with_cwd("error");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @error foo;\
@@ -158,8 +166,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn extend() {
+        let runner = runner().with_cwd("extend");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   @extend b;\
@@ -172,8 +181,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn test_for() {
+        let runner = runner().with_cwd("for");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @for $i from 1 to 5 {\
@@ -186,8 +196,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn function() {
+        let runner = runner().with_cwd("function");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @function foo() {\
@@ -200,8 +211,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn test_if() {
+        let runner = runner().with_cwd("if");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @if true {\
@@ -213,12 +225,16 @@ mod at_rule {
     }
     mod import {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("import")
+        }
+
         #[test]
         #[ignore] // missing error
         fn interpolated() {
+            let runner = runner().with_cwd("interpolated");
             assert_eq!(
-                runner().err("@import \'plain\'"),
+                runner.err("@import \'plain\'"),
                 "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @import url(\"foo#{bar}baz\");\
@@ -231,8 +247,9 @@ mod at_rule {
         #[test]
         #[ignore] // missing error
         fn multi() {
+            let runner = runner().with_cwd("multi");
             assert_eq!(
-                runner().err("@import \'plain\'"),
+                runner.err("@import \'plain\'"),
                 "Error: expected \";\".\
          \n  ,\
          \n1 | @import \"foo\", \"bar\";\
@@ -245,8 +262,9 @@ mod at_rule {
         #[test]
         #[ignore] // wrong result
         fn nested() {
+            let runner = runner().with_cwd("nested");
             assert_eq!(
-                runner().ok("@import \'plain\'"),
+                runner.ok("@import \'plain\'"),
                 "a {\
          \n  @import \"foo\";\
          \n}\n"
@@ -256,8 +274,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn include() {
+        let runner = runner().with_cwd("include");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @include foo;\
@@ -270,8 +289,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn interpolation() {
+        let runner = runner().with_cwd("interpolation");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @foo a#{b}c;\
@@ -284,8 +304,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn mixin() {
+        let runner = runner().with_cwd("mixin");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @mixin foo {\
@@ -298,8 +319,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn test_return() {
+        let runner = runner().with_cwd("return");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @return foo;\
@@ -312,8 +334,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn warn() {
+        let runner = runner().with_cwd("warn");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @warn foo;\
@@ -326,8 +349,9 @@ mod at_rule {
     #[test]
     #[ignore] // missing error
     fn test_while() {
+        let runner = runner().with_cwd("while");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This at-rule isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | @while false {\
@@ -341,8 +365,9 @@ mod at_rule {
 #[test]
 #[ignore] // missing error
 fn silent_comment() {
+    let runner = runner().with_cwd("silent_comment");
     assert_eq!(
-        runner().err("@import \'plain\'\n"),
+        runner.err("@import \'plain\'\n"),
         "Error: Silent comments aren\'t allowed in plain CSS.\
          \n  ,\
          \n1 | // silent\
@@ -354,15 +379,22 @@ fn silent_comment() {
 }
 mod style_rule {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("style_rule")
+    }
+
     mod interpolation {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("interpolation")
+        }
+
         #[test]
         #[ignore] // missing error
         fn custom_property() {
+            let runner = runner().with_cwd("custom_property");
             assert_eq!(
-                runner().err("@import \'plain\'"),
+                runner.err("@import \'plain\'"),
                 "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   --b: #{c};\
@@ -375,8 +407,9 @@ mod style_rule {
         #[test]
         #[ignore] // missing error
         fn declaration() {
+            let runner = runner().with_cwd("declaration");
             assert_eq!(
-                runner().err("@import \'plain\'"),
+                runner.err("@import \'plain\'"),
                 "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   w#{x}y: z;\
@@ -389,8 +422,9 @@ mod style_rule {
         #[test]
         #[ignore] // missing error
         fn selector() {
+            let runner = runner().with_cwd("selector");
             assert_eq!(
-                runner().err("@import \'plain\'"),
+                runner.err("@import \'plain\'"),
                 "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n1 | a#{b}c {\
@@ -404,8 +438,9 @@ mod style_rule {
     #[test]
     #[ignore] // missing error
     fn nested() {
+        let runner = runner().with_cwd("nested");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: expected \":\".\
          \n  ,\
          \n2 |   b {\
@@ -418,8 +453,9 @@ mod style_rule {
     #[test]
     #[ignore] // missing error
     fn nested_property() {
+        let runner = runner().with_cwd("nested_property");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Nested declarations aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: {\
@@ -432,8 +468,9 @@ mod style_rule {
     #[test]
     #[ignore] // missing error
     fn parent_selector() {
+        let runner = runner().with_cwd("parent_selector");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Parent selectors aren\'t allowed here.\
          \n  ,\
          \n1 | &.foo{\
@@ -446,8 +483,9 @@ mod style_rule {
     #[test]
     #[ignore] // missing error
     fn placeholder_selector() {
+        let runner = runner().with_cwd("placeholder_selector");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Placeholder selectors aren\'t allowed here.\
          \n  ,\
          \n1 | %foo{\

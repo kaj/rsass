@@ -18,6 +18,7 @@ fn deg() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_many_args() {
         assert_eq!(

@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod blackness {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn test_type() {
         assert_eq!(
@@ -27,6 +28,7 @@ mod blackness {
 mod hue {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn test_type() {
         assert_eq!(
@@ -46,6 +48,7 @@ mod hue {
 mod whiteness {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn test_type() {
         assert_eq!(

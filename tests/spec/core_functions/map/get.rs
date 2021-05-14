@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -27,6 +28,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn map() {
             assert_eq!(
@@ -44,6 +46,7 @@ mod error {
 mod found {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn first() {
         assert_eq!(
@@ -93,9 +96,11 @@ fn named() {
 mod nested {
     #[allow(unused)]
     use super::runner;
+
     mod found {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn full_path() {
             assert_eq!(
@@ -119,6 +124,7 @@ mod nested {
     mod not_found {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn deep() {
             assert_eq!(
@@ -155,6 +161,7 @@ mod nested {
 mod not_found {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn dash_sensitive() {
         assert_eq!(

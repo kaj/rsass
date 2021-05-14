@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod t1 {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn of_1() {
         assert_eq!(
@@ -35,6 +36,7 @@ mod t1 {
 mod t2 {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn of_2() {
         assert_eq!(
@@ -57,9 +59,11 @@ mod t2 {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     mod index {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn t0() {
             assert_eq!(
@@ -163,9 +167,11 @@ fn named() {
 mod negative {
     #[allow(unused)]
     use super::runner;
+
     mod t1 {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn of_1() {
             assert_eq!(
@@ -193,6 +199,7 @@ mod negative {
     mod t2 {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn of_2() {
             assert_eq!(

@@ -8,12 +8,15 @@ fn runner() -> crate::TestRunner {
 mod base {
     #[allow(unused)]
     use super::runner;
+
     mod greater_than_negative_one {
         #[allow(unused)]
         use super::runner;
+
         mod with_exponent {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             fn infinity() {
                 assert_eq!(
@@ -39,9 +42,11 @@ mod base {
     mod less_than_negative_one {
         #[allow(unused)]
         use super::runner;
+
         mod with_exponent {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             fn decimal() {
                 assert_eq!(
@@ -117,9 +122,11 @@ mod base {
     mod negative_one {
         #[allow(unused)]
         use super::runner;
+
         mod with_exponent {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             fn infinity() {
                 assert_eq!(
@@ -145,9 +152,11 @@ mod base {
     mod negative_one_fuzzy {
         #[allow(unused)]
         use super::runner;
+
         mod with_exponent {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             fn infinity() {
                 assert_eq!(

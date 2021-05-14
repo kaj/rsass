@@ -34,8 +34,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 #[ignore] // missing error
 fn all() {
+    let runner = runner().with_cwd("all");
     assert_eq!(
-        runner().err(
+        runner.err(
             "// This import can\'t be resolved because it has conflicting partials *and*\
              \n// conflicting extensions.\
              \n@import \"other\";\n"
@@ -55,8 +56,9 @@ fn all() {
 #[test]
 #[ignore] // missing error
 fn extension() {
+    let runner = runner().with_cwd("extension");
     assert_eq!(
-        runner().err(
+        runner.err(
             "// This import can\'t be resolved because it could refer to either the \".sass\" or\
              \n// \".scss\" file.\
              \n@import \"other\";\n"
@@ -73,12 +75,16 @@ fn extension() {
 }
 mod import_only {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("import_only")
+    }
+
     #[test]
     #[ignore] // missing error
     fn no_extension() {
+        let runner = runner().with_cwd("no_extension");
         assert_eq!(
-        runner().err(
+        runner.err(
             "// This import can\'t be resolved because it could refer to either the Sass or\
              \n// the SCSS import-only file.\
              \n@import \"other\";\n"
@@ -96,8 +102,9 @@ mod import_only {
     #[test]
     #[ignore] // missing error
     fn with_extension() {
+        let runner = runner().with_cwd("with_extension");
         assert_eq!(
-        runner().err(
+        runner.err(
             "// This import can\'t be resolved because it could refer to either the partial or\
              \n// the non-partial.\
              \n@import \"other.scss\";\n"
@@ -116,8 +123,9 @@ mod import_only {
 #[test]
 #[ignore] // missing error
 fn index() {
+    let runner = runner().with_cwd("index");
     assert_eq!(
-        runner().err(
+        runner.err(
             "// This import can\'t be resolved because it could refer to either the partial or\
              \n// the non-partial index file.\
              \n@import \"other\";\n"
@@ -135,8 +143,9 @@ fn index() {
 #[test]
 #[ignore] // missing error
 fn partial() {
+    let runner = runner().with_cwd("partial");
     assert_eq!(
-        runner().err(
+        runner.err(
             "// This import can\'t be resolved because it could refer to either the partial or\
              \n// the non-partial file.\
              \n@import \"other\";\n"

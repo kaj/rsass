@@ -35,8 +35,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 #[ignore] // wrong error
 fn conflict() {
+    let runner = runner().with_cwd("conflict");
     assert_eq!(
-        runner().err("@use \"midstream\" with ($a: b);\n"),
+        runner.err("@use \"midstream\" with ($a: b);\n"),
         "Error: This variable is available from multiple global modules.\
          \n    ,\
          \n1   | @use \"left\" as *;\
@@ -54,8 +55,9 @@ fn conflict() {
 #[test]
 #[ignore] // wrong error
 fn core_module() {
+    let runner = runner().with_cwd("core_module");
     assert_eq!(
-        runner().err("@use \"sass:color\" with ($a: b);\n"),
+        runner.err("@use \"sass:color\" with ($a: b);\n"),
         "Error: Built-in modules can\'t be configured.\
          \n  ,\
          \n1 | @use \"sass:color\" with ($a: b);\
@@ -66,12 +68,16 @@ fn core_module() {
 }
 mod invalid_expression {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("invalid_expression")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn error() {
+        let runner = runner().with_cwd("error");
         assert_eq!(
-            runner().err("@use \"other\" with ($a: 1px + 1em);\n"),
+            runner.err("@use \"other\" with ($a: 1px + 1em);\n"),
             "Error: 1px and 1em have incompatible units.\
          \n  ,\
          \n1 | @use \"other\" with ($a: 1px + 1em);\
@@ -83,8 +89,9 @@ mod invalid_expression {
     #[test]
     #[ignore] // wrong error
     fn module_loaded_later() {
+        let runner = runner().with_cwd("module_loaded_later");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"configured\" with ($a: other.$b);\
              \n@use \"other\";\n"
             ),
@@ -99,8 +106,9 @@ mod invalid_expression {
     #[test]
     #[ignore] // wrong error
     fn variable_defined_later() {
+        let runner = runner().with_cwd("variable_defined_later");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"other\" with ($a: $b);\
              \n$b: c;\n"
             ),
@@ -115,12 +123,16 @@ mod invalid_expression {
 }
 mod multi_configuration {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("multi_configuration")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn multi_file() {
+        let runner = runner().with_cwd("multi_file");
         assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"left\";\
              \n@use \"right\";\n"
         ),
@@ -140,8 +152,9 @@ mod multi_configuration {
     #[test]
     #[ignore] // wrong error
     fn one_file() {
+        let runner = runner().with_cwd("one_file");
         assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"other\" as o1 with ($a: b);\
              \n@use \"other\" as o2 with ($a: b);\n"
         ),
@@ -158,8 +171,9 @@ mod multi_configuration {
     #[test]
     #[ignore] // wrong error
     fn through_forward() {
+        let runner = runner().with_cwd("through_forward");
         assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"forwarded\";\
              \n@use \"midstream\" with ($a: b);\n"
         ),
@@ -181,8 +195,9 @@ mod multi_configuration {
     #[test]
     #[ignore] // wrong error
     fn unconfigured_first() {
+        let runner = runner().with_cwd("unconfigured_first");
         assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"other\" as o1;\
              \n@use \"other\" as o2 with ($a: b);\n"
         ),
@@ -200,8 +215,9 @@ mod multi_configuration {
 #[test]
 #[ignore] // wrong error
 fn namespace() {
+    let runner = runner().with_cwd("namespace");
     assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"midstream\" with ($a: b);\n"
         ),
         "Error: This variable was not declared with !default in the @used module.\
@@ -215,8 +231,9 @@ fn namespace() {
 #[test]
 #[ignore] // wrong error
 fn nested() {
+    let runner = runner().with_cwd("nested");
     assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"other\" with ($a: b);\n"
         ),
         "Error: This variable was not declared with !default in the @used module.\
@@ -230,8 +247,9 @@ fn nested() {
 #[test]
 #[ignore] // wrong error
 fn not_default() {
+    let runner = runner().with_cwd("not_default");
     assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"other\" with ($a: b);\n"
         ),
         "Error: This variable was not declared with !default in the @used module.\
@@ -245,8 +263,9 @@ fn not_default() {
 #[test]
 #[ignore] // wrong error
 fn repeated_variable() {
+    let runner = runner().with_cwd("repeated_variable");
     assert_eq!(
-        runner().err("@use \"other\" with ($a: b, $a: c);\n"),
+        runner.err("@use \"other\" with ($a: b, $a: c);\n"),
         "Error: The same variable may only be configured once.\
          \n  ,\
          \n1 | @use \"other\" with ($a: b, $a: c);\
@@ -257,12 +276,16 @@ fn repeated_variable() {
 }
 mod through_forward {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("through_forward")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn test_as() {
+        let runner = runner().with_cwd("as");
         assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"used\" with ($a: b);\n"
         ),
         "Error: This variable was not declared with !default in the @used module.\
@@ -276,8 +299,9 @@ mod through_forward {
     #[test]
     #[ignore] // wrong error
     fn hide() {
+        let runner = runner().with_cwd("hide");
         assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"used\" with ($a: b);\n"
         ),
         "Error: This variable was not declared with !default in the @used module.\
@@ -291,8 +315,9 @@ mod through_forward {
     #[test]
     #[ignore] // wrong error
     fn show() {
+        let runner = runner().with_cwd("show");
         assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"used\" with ($a: b);\n"
         ),
         "Error: This variable was not declared with !default in the @used module.\
@@ -306,8 +331,9 @@ mod through_forward {
     #[test]
     #[ignore] // wrong error
     fn with() {
+        let runner = runner().with_cwd("with");
         assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"used\" with ($a: b);\n"
         ),
         "Error: This variable was not declared with !default in the @used module.\
@@ -322,8 +348,9 @@ mod through_forward {
 #[test]
 #[ignore] // wrong error
 fn undefined() {
+    let runner = runner().with_cwd("undefined");
     assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"other\" with ($a: b);\n"
         ),
         "Error: This variable was not declared with !default in the @used module.\

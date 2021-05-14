@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -43,6 +44,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -81,6 +83,7 @@ fn named() {
 mod unit {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn to_compatible() {
         assert_eq!(
@@ -121,6 +124,7 @@ mod unit {
 mod unitless {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn to_unit() {
         assert_eq!(

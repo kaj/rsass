@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod asymptote {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn radian() {
         assert_eq!(
@@ -32,6 +33,7 @@ fn deg() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_many_args() {
         assert_eq!(
@@ -134,6 +136,7 @@ fn named_arg() {
 mod negative_asymptote {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn radian() {
         assert_eq!(

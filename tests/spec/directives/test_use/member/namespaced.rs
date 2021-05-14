@@ -54,12 +54,16 @@ fn runner() -> crate::TestRunner {
 
 mod default {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("default")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn basename() {
+        let runner = runner().with_cwd("basename");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "// Only the basename of the URL is used for the namespace. Previous components\
              \n// are discarded.\
              \n@use \"foo/bar/../baz/qux/other\";\n\
@@ -71,10 +75,10 @@ mod default {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn function() {
+        let runner = runner().with_cwd("function");
         assert_eq!(
-            runner().ok("@use \"other\";\n\
+            runner.ok("@use \"other\";\n\
              \na {b: other.member()}\n"),
             "a {\
          \n  b: value;\
@@ -82,10 +86,10 @@ mod default {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn mixin() {
+        let runner = runner().with_cwd("mixin");
         assert_eq!(
-            runner().ok("@use \"other\";\n\
+            runner.ok("@use \"other\";\n\
              \n@include other.member;\n"),
             "a {\
          \n  b: c;\
@@ -94,12 +98,16 @@ mod default {
     }
     mod variable_assignment {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("variable_assignment")
+        }
+
         #[test]
         #[ignore] // unexepected error
         fn in_declaration() {
+            let runner = runner().with_cwd("in_declaration");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"other\";\n\
              \na {\
              \n  b: {\
@@ -119,8 +127,9 @@ mod default {
         #[test]
         #[ignore] // unexepected error
         fn in_function() {
+            let runner = runner().with_cwd("in_function");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"other\";\n\
              \n@function a() {\
              \n  // Test assignments within a function specially, because functions disallow\
@@ -139,8 +148,9 @@ mod default {
         #[test]
         #[ignore] // unexepected error
         fn nested() {
+            let runner = runner().with_cwd("nested");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"other\";\n\
              \na {\
              \n  // Namespaced assignments always assign to the other module\'s variable, even\
@@ -157,8 +167,9 @@ mod default {
         #[test]
         #[ignore] // unexepected error
         fn top_level() {
+            let runner = runner().with_cwd("top_level");
             assert_eq!(
-                runner().ok("@use \"other\";\n\
+                runner.ok("@use \"other\";\n\
              \nother.$member: new value;\n\
              \na {b: other.get-member()};\n"),
                 "a {\
@@ -168,10 +179,10 @@ mod default {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn variable_use() {
+        let runner = runner().with_cwd("variable_use");
         assert_eq!(
-            runner().ok("@use \"other\";\n\
+            runner.ok("@use \"other\";\n\
              \na {b: other.$member}\n"),
             "a {\
          \n  b: value;\
@@ -181,8 +192,9 @@ mod default {
     #[test]
     #[ignore] // unexepected error
     fn without_extensions() {
+        let runner = runner().with_cwd("without_extensions");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "// All extensions on the URL are discarded before determining the namespace.\
              \n@use \"other.foo.bar.baz.scss\";\n\
              \na {b: other.$variable}\n"
@@ -195,8 +207,9 @@ mod default {
     #[test]
     #[ignore] // unexepected error
     fn without_underscore() {
+        let runner = runner().with_cwd("without_underscore");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "// A single leading underscore is removed before determining the namespace.\
              \n@use \"_other\";\n\
              \na {b: other.$variable}\n"
@@ -209,12 +222,15 @@ mod default {
 }
 mod explicit {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("explicit")
+    }
+
     #[test]
-    #[ignore] // unexepected error
     fn function() {
+        let runner = runner().with_cwd("function");
         assert_eq!(
-            runner().ok("@use \"other\" as o;\n\
+            runner.ok("@use \"other\" as o;\n\
              \na {b: o.member()}\n"),
             "a {\
          \n  b: value;\
@@ -222,10 +238,10 @@ mod explicit {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn mixin() {
+        let runner = runner().with_cwd("mixin");
         assert_eq!(
-            runner().ok("@use \"other\" as o;\n\
+            runner.ok("@use \"other\" as o;\n\
              \n@include o.member;\n"),
             "a {\
          \n  b: c;\
@@ -235,8 +251,9 @@ mod explicit {
     #[test]
     #[ignore] // unexepected error
     fn variable_assignment() {
+        let runner = runner().with_cwd("variable_assignment");
         assert_eq!(
-            runner().ok("@use \"other\" as o;\n\
+            runner.ok("@use \"other\" as o;\n\
              \no.$member: new value;\n\
              \na {b: o.get-member()}\n"),
             "a {\
@@ -245,10 +262,10 @@ mod explicit {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn variable_use() {
+        let runner = runner().with_cwd("variable_use");
         assert_eq!(
-            runner().ok("@use \"other\" as o;\n\
+            runner.ok("@use \"other\" as o;\n\
              \na {b: o.$member}\n"),
             "a {\
          \n  b: value;\

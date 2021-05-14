@@ -58,9 +58,11 @@ fn complement() {
 mod css_overloads {
     #[allow(unused)]
     use super::runner;
+
     mod alpha {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn multi_arg() {
             assert_eq!(
@@ -116,6 +118,7 @@ mod css_overloads {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn adjust_color() {
         assert_eq!(

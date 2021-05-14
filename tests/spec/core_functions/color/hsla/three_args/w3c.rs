@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod black_to_white_through {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn blue() {
         assert_eq!(
@@ -229,6 +230,7 @@ fn blue_to_red() {
 mod gray_to {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn blue() {
         assert_eq!(

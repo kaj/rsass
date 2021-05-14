@@ -18,6 +18,7 @@ fn different_keys() {
 mod empty {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn both() {
         assert_eq!(
@@ -49,6 +50,7 @@ mod empty {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn one_arg() {
@@ -65,6 +67,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn map1() {
             assert_eq!(
@@ -92,6 +95,7 @@ mod error {
         mod nested {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             fn map1() {
                 assert_eq!(
@@ -149,6 +153,7 @@ fn named() {
 mod nested {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn different_keys() {
         assert_eq!(
@@ -163,6 +168,7 @@ mod nested {
     mod empty {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn both() {
             assert_eq!(

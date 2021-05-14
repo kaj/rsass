@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod color {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn max() {
         assert_eq!(
@@ -48,6 +49,7 @@ mod color {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn quoted_string() {
         assert_eq!(
@@ -101,6 +103,7 @@ mod error {
     mod unquoted_string {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn no_equals() {
             assert_eq!(
@@ -130,6 +133,7 @@ mod error {
 mod filter {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn multi_args() {
         assert_eq!(
@@ -161,6 +165,7 @@ mod filter {
 mod opacity {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn filter() {
         assert_eq!(

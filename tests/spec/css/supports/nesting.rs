@@ -39,6 +39,7 @@ fn loud_comment() {
 mod media {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong result
     fn in_style_rule() {

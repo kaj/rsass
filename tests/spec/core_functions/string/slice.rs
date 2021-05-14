@@ -38,9 +38,11 @@ fn double_width_character() {
 mod empty {
     #[allow(unused)]
     use super::runner;
+
     mod end {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn t0() {
             assert_eq!(
@@ -72,6 +74,7 @@ mod empty {
     mod start {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn t0() {
             assert_eq!(
@@ -113,9 +116,11 @@ mod empty {
 mod end {
     #[allow(unused)]
     use super::runner;
+
     mod negative {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn t1() {
             assert_eq!(
@@ -156,6 +161,7 @@ mod end {
     mod positive {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn t0() {
             assert_eq!(
@@ -215,9 +221,11 @@ mod end {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     mod decimal {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn end() {
@@ -280,6 +288,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn end_at() {
             assert_eq!(
@@ -320,6 +329,7 @@ mod error {
     mod unit {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn end() {
             assert_eq!(
@@ -360,9 +370,11 @@ fn named() {
 mod start {
     #[allow(unused)]
     use super::runner;
+
     mod negative {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn t1() {
             assert_eq!(
@@ -403,6 +415,7 @@ mod start {
     mod positive {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn t0() {
             assert_eq!(

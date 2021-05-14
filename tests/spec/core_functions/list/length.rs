@@ -35,6 +35,7 @@ fn t2() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -80,6 +81,7 @@ fn many() {
 mod map {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn empty() {
         assert_eq!(

@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn str_index() {
         assert_eq!(

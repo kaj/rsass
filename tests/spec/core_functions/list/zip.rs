@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod map {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn empty() {
         assert_eq!(
@@ -54,6 +55,7 @@ fn non_list() {
 mod one_list {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn bracketed() {
         assert_eq!(
@@ -147,6 +149,7 @@ fn three_lists() {
 mod two_lists {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn first_empty() {
         assert_eq!(

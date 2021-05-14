@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod percent {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn above_max() {
         assert_eq!(
@@ -57,6 +58,7 @@ mod percent {
 mod unitless {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn above_max() {
         assert_eq!(

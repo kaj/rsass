@@ -18,6 +18,7 @@ fn compatible_units() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn incompatible_units() {
         assert_eq!(

@@ -45,12 +45,16 @@ fn runner() -> crate::TestRunner {
 
 mod core_module {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("core_module")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn indirect() {
+        let runner = runner().with_cwd("indirect");
         assert_eq!(
-            runner().ok("// Regression test for sass/dart-sass#838.\
+            runner.ok("// Regression test for sass/dart-sass#838.\
              \n@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (c: e));\n"),
             "a {\
@@ -62,8 +66,9 @@ mod core_module {
 #[test]
 #[ignore] // unexepected error
 fn dash_insensitive() {
+    let runner = runner().with_cwd("dash_insensitive");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a_b: configured));\n"
         ),
@@ -75,8 +80,9 @@ fn dash_insensitive() {
 #[test]
 #[ignore] // unexepected error
 fn doesnt_run_default() {
+    let runner = runner().with_cwd("doesnt_run_default");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\
+        runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a: configured));\n"),
         "b {\
          \n  c: configured;\
@@ -86,8 +92,9 @@ fn doesnt_run_default() {
 #[test]
 #[ignore] // unexepected error
 fn empty() {
+    let runner = runner().with_cwd("empty");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\
+        runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: ());\n"),
         "a {\
          \n  b: c;\
@@ -96,12 +103,16 @@ fn empty() {
 }
 mod multi_load {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("multi_load")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn empty() {
+        let runner = runner().with_cwd("empty");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"upstream\", $with: (a: configured));\n\
              \n// An empty configuration map counts as no configuration.\
@@ -115,8 +126,9 @@ mod multi_load {
     #[test]
     #[ignore] // unexepected error
     fn forward() {
+        let runner = runner().with_cwd("forward");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "// This indirection is necessary so that we can execute `meta.load-css()` before\
              \n// we begin loading `used`.\
              \n@use \"loads\";\
@@ -131,8 +143,9 @@ mod multi_load {
     #[test]
     #[ignore] // unexepected error
     fn test_use() {
+        let runner = runner().with_cwd("use");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"upstream\", $with: (a: configured));\n\
              \n// We have to load this dynamically, because we can\'t have a `@use` after an\
@@ -148,8 +161,9 @@ mod multi_load {
 #[test]
 #[ignore] // unexepected error
 fn multiple() {
+    let runner = runner().with_cwd("multiple");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\
+        runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (\
              \n  a: configured a,\
              \n  b: configured b,\
@@ -165,8 +179,9 @@ fn multiple() {
 #[test]
 #[ignore] // unexepected error
 fn null() {
+    let runner = runner().with_cwd("null");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\
+        runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a: null));\n"),
         "b {\
          \n  c: original;\
@@ -176,8 +191,9 @@ fn null() {
 #[test]
 #[ignore] // unexepected error
 fn single() {
+    let runner = runner().with_cwd("single");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\
+        runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a: configured));\n"),
         "b {\
          \n  c: configured;\
@@ -187,8 +203,9 @@ fn single() {
 #[test]
 #[ignore] // unexepected error
 fn some_unconfigured() {
+    let runner = runner().with_cwd("some_unconfigured");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a: configured a));\n"
         ),
@@ -200,12 +217,16 @@ fn some_unconfigured() {
 }
 mod through_forward {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("through_forward")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn test_as() {
+        let runner = runner().with_cwd("as");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (b-a: configured));\n"
         ),
@@ -217,8 +238,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn bare() {
+        let runner = runner().with_cwd("bare");
         assert_eq!(
-            runner().ok(
+            runner.ok(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (a: configured));\n"
             ),
@@ -230,8 +252,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn hide() {
+        let runner = runner().with_cwd("hide");
         assert_eq!(
-            runner().ok(
+            runner.ok(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (a: configured));\n"
             ),
@@ -243,8 +266,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn show() {
+        let runner = runner().with_cwd("show");
         assert_eq!(
-            runner().ok(
+            runner.ok(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (a: configured));\n"
             ),
@@ -256,8 +280,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn transitive() {
+        let runner = runner().with_cwd("transitive");
         assert_eq!(
-            runner().ok(
+            runner.ok(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (a: configured));\n"
             ),
@@ -268,12 +293,16 @@ mod through_forward {
     }
     mod with {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("with")
+        }
+
         #[test]
         #[ignore] // unexepected error
         fn default() {
+            let runner = runner().with_cwd("default");
             assert_eq!(
-                runner().ok(
+                runner.ok(
                     "@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (a: from input));\n"
                 ),
@@ -285,8 +314,9 @@ mod through_forward {
         #[test]
         #[ignore] // unexepected error
         fn null() {
+            let runner = runner().with_cwd("null");
             assert_eq!(
-                runner().ok("@use \"sass:meta\";\
+                runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (a: null));\n"),
                 "b {\
          \n  c: from loaded;\
@@ -296,8 +326,9 @@ mod through_forward {
         #[test]
         #[ignore] // unexepected error
         fn unconfigured() {
+            let runner = runner().with_cwd("unconfigured");
             assert_eq!(
-                runner().ok(
+                runner.ok(
                     "@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (a: from input));\n"
                 ),
@@ -311,12 +342,16 @@ mod through_forward {
 }
 mod through_import {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("through_import")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn direct() {
+        let runner = runner().with_cwd("direct");
         assert_eq!(
-            runner().ok(
+            runner.ok(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (a: configured));\n"
             ),
@@ -328,8 +363,9 @@ mod through_import {
     #[test]
     #[ignore] // unexepected error
     fn transitive() {
+        let runner = runner().with_cwd("transitive");
         assert_eq!(
-            runner().ok(
+            runner.ok(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"loaded\", $with: (a: configured));\n"
             ),
@@ -342,8 +378,9 @@ mod through_import {
 #[test]
 #[ignore] // unexepected error
 fn variable_exists() {
+    let runner = runner().with_cwd("variable_exists");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\
+        runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a: configured));\n"),
         "b {\
          \n  before-declaration: false;\

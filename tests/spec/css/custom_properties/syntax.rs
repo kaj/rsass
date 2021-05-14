@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod double_dash {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn declare() {
         assert_eq!(
@@ -30,6 +31,7 @@ mod double_dash {
 mod initial_digit {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn declare() {
         assert_eq!(
@@ -52,6 +54,7 @@ mod initial_digit {
 mod triple_dash {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn declare() {
         assert_eq!(

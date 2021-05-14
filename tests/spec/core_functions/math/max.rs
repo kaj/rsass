@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn incompatible_units() {
         assert_eq!(
@@ -38,6 +39,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -118,6 +120,7 @@ fn two_args() {
 mod units {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn and_unitless() {
         assert_eq!(

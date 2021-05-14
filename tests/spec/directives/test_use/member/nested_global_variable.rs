@@ -11,8 +11,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 #[ignore] // unexepected error
 fn direct() {
+    let runner = runner().with_cwd("direct");
     assert_eq!(
-        runner().ok("@use \"other\";\n\
+        runner.ok("@use \"other\";\n\
              \na {b: inspect(other.$member)}\n"),
         "a {\
          \n  b: null;\
@@ -22,8 +23,9 @@ fn direct() {
 #[test]
 #[ignore] // unexepected error
 fn through_import() {
+    let runner = runner().with_cwd("through_import");
     assert_eq!(
-        runner().ok("@use \"used\";\n\
+        runner.ok("@use \"used\";\n\
              \na {b: inspect(used.$member)}\n"),
         "a {\
          \n  b: null;\

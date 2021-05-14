@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod attribute {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn dash_dash() {
         assert_eq!(
@@ -27,6 +28,7 @@ mod attribute {
     mod modifier {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn after_string() {
             assert_eq!(
@@ -77,12 +79,15 @@ mod attribute {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     mod attribute {
         #[allow(unused)]
         use super::runner;
+
         mod modifier {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             #[ignore] // wrong error
             fn digit() {
@@ -166,6 +171,7 @@ mod error {
 mod escaping {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn dollar_char() {
         assert_eq!(
@@ -235,6 +241,7 @@ mod escaping {
 mod inline_comments {
     #[allow(unused)]
     use super::runner;
+
     mod loud {
         #[allow(unused)]
         use super::runner;
@@ -247,12 +254,15 @@ mod inline_comments {
 mod placeholder {
     #[allow(unused)]
     use super::runner;
+
     mod pseudoselectors {
         #[allow(unused)]
         use super::runner;
+
         mod matches {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             #[ignore] // wrong result
             fn solo() {
@@ -282,6 +292,7 @@ mod placeholder {
         mod not {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             #[ignore] // wrong result
             fn solo() {
@@ -327,9 +338,11 @@ mod placeholder {
 mod pseudoselector {
     #[allow(unused)]
     use super::runner;
+
     mod nested {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn adjacent_combinators() {
             assert_eq!(

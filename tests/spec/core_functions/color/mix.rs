@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod alpha {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn even() {
         assert_eq!(
@@ -60,6 +61,7 @@ mod alpha {
 mod both_weights {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn contradiction() {
         assert_eq!(
@@ -77,6 +79,7 @@ mod both_weights {
     mod mixed {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn firstwards() {
             assert_eq!(
@@ -103,6 +106,7 @@ mod both_weights {
     mod transparent {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn first() {
             assert_eq!(
@@ -125,6 +129,7 @@ mod both_weights {
     mod weighted {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn first() {
             assert_eq!(
@@ -152,9 +157,11 @@ mod both_weights {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     mod bounds {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn too_high() {
             assert_eq!(
@@ -215,6 +222,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn color1() {
             assert_eq!(
@@ -256,6 +264,7 @@ mod error {
 mod explicit_weight {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn even() {
         assert_eq!(
@@ -316,6 +325,7 @@ fn named() {
 mod unweighted {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn average() {
         assert_eq!(

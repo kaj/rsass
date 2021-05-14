@@ -43,8 +43,9 @@ fn runner() -> crate::TestRunner {
 
 #[test]
 fn chosen_prefix() {
+    let runner = runner().with_cwd("chosen_prefix");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:color\" as a;\
              \nb {c: call(get-function(\"red\", $module: \"a\"), #abcdef)}\n"
         ),
@@ -55,8 +56,9 @@ fn chosen_prefix() {
 }
 #[test]
 fn defined() {
+    let runner = runner().with_cwd("defined");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:color\";\
              \na {b: call(get-function(\"red\", $module: \"color\"), #abcdef)}\n"
         ),
@@ -67,8 +69,9 @@ fn defined() {
 }
 #[test]
 fn named() {
+    let runner = runner().with_cwd("named");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:color\";\
              \na {b: call(get-function($name: \"red\", $module: \"color\"), #abcdef)}\n"
         ),
@@ -79,12 +82,16 @@ fn named() {
 }
 mod through_forward {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("through_forward")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn test_as() {
+        let runner = runner().with_cwd("as");
         assert_eq!(
-            runner().ok("@use \"midstream\" as *;\
+            runner.ok("@use \"midstream\" as *;\
              \na {\
              \n  b: call(get-function(c-d));\
              \n}\n"),
@@ -96,8 +103,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn bare() {
+        let runner = runner().with_cwd("bare");
         assert_eq!(
-            runner().ok("@use \"midstream\" as *;\
+            runner.ok("@use \"midstream\" as *;\
              \na {b: call(get-function(c))}\n"),
             "a {\
          \n  b: c;\
@@ -107,8 +115,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn hide() {
+        let runner = runner().with_cwd("hide");
         assert_eq!(
-            runner().ok("@use \"midstream\" as *;\
+            runner.ok("@use \"midstream\" as *;\
              \na {\
              \n  b: call(get-function(d));\
              \n}\n"),
@@ -120,8 +129,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn show() {
+        let runner = runner().with_cwd("show");
         assert_eq!(
-            runner().ok("@use \"midstream\" as *;\
+            runner.ok("@use \"midstream\" as *;\
              \na {\
              \n  b: call(get-function(c));\
              \n}\n"),
@@ -132,10 +142,10 @@ mod through_forward {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn through_use() {
+    let runner = runner().with_cwd("through_use");
     assert_eq!(
-        runner().ok("@use \"other\" as *;\
+        runner.ok("@use \"other\" as *;\
              \na {b: call(get-function(add-two), 10)}\n"),
         "a {\
          \n  b: 12;\

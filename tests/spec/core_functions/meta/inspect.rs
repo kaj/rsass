@@ -8,11 +8,15 @@ fn runner() -> crate::TestRunner {
 
 mod boolean {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("boolean")
+    }
+
     #[test]
     fn test_false() {
+        let runner = runner().with_cwd("false");
         assert_eq!(
-            runner().ok("$result: inspect(false);\
+            runner.ok("$result: inspect(false);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -25,8 +29,9 @@ mod boolean {
     }
     #[test]
     fn test_true() {
+        let runner = runner().with_cwd("true");
         assert_eq!(
-            runner().ok("$result: inspect(true);\
+            runner.ok("$result: inspect(true);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -40,14 +45,21 @@ mod boolean {
 }
 mod color {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("color")
+    }
+
     mod generated {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("generated")
+        }
+
         #[test]
         fn alpha() {
+            let runner = runner().with_cwd("alpha");
             assert_eq!(
-                runner().ok("$result: inspect(rgba(1, 2, 3, 0.4));\
+                runner.ok("$result: inspect(rgba(1, 2, 3, 0.4));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -59,10 +71,10 @@ mod color {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn long_hex() {
+            let runner = runner().with_cwd("long_hex");
             assert_eq!(
-                runner().ok("@import \"../utils\";\
+                runner.ok("@import \"../utils\";\
              \n$result: inspect(generated-color(#abcdef));\
              \na {\
              \n  value: $result;\
@@ -75,10 +87,10 @@ mod color {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn named() {
+            let runner = runner().with_cwd("named");
             assert_eq!(
-                runner().ok("@import \"../utils\";\
+                runner.ok("@import \"../utils\";\
              \n$result: inspect(generated-color(#00f));\
              \na {\
              \n  value: $result;\
@@ -91,10 +103,10 @@ mod color {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn short_hex() {
+            let runner = runner().with_cwd("short_hex");
             assert_eq!(
-                runner().ok("@import \"../utils\";\
+                runner.ok("@import \"../utils\";\
              \n$result: inspect(generated-color(#abc));\
              \na {\
              \n  value: $result;\
@@ -107,10 +119,10 @@ mod color {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn transparent() {
+            let runner = runner().with_cwd("transparent");
             assert_eq!(
-                runner().ok("@import \"../utils\";\
+                runner.ok("@import \"../utils\";\
              \n$result: inspect(generated-color(transparent));\
              \na {\
              \n  value: $result;\
@@ -125,11 +137,15 @@ mod color {
     }
     mod literal {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("literal")
+        }
+
         #[test]
         fn long_hex() {
+            let runner = runner().with_cwd("long_hex");
             assert_eq!(
-                runner().ok("$result: inspect(#0000ff);\
+                runner.ok("$result: inspect(#0000ff);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -142,8 +158,9 @@ mod color {
         }
         #[test]
         fn named() {
+            let runner = runner().with_cwd("named");
             assert_eq!(
-                runner().ok("$result: inspect(blue);\
+                runner.ok("$result: inspect(blue);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -156,8 +173,9 @@ mod color {
         }
         #[test]
         fn short_hex() {
+            let runner = runner().with_cwd("short_hex");
             assert_eq!(
-                runner().ok("$result: inspect(#00f);\
+                runner.ok("$result: inspect(#00f);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -170,8 +188,9 @@ mod color {
         }
         #[test]
         fn transparent() {
+            let runner = runner().with_cwd("transparent");
             assert_eq!(
-                runner().ok("$result: inspect(transparent);\
+                runner.ok("$result: inspect(transparent);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -186,11 +205,15 @@ mod color {
 }
 mod error {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("error")
+    }
+
     #[test]
     fn too_few_args() {
+        let runner = runner().with_cwd("too_few_args");
         assert_eq!(
-            runner().err("a {a: inspect()}\n"),
+            runner.err("a {a: inspect()}\n"),
             "Error: Missing argument $value.\
          \n  ,--> input.scss\
          \n1 | a {a: inspect()}\
@@ -205,8 +228,9 @@ mod error {
     }
     #[test]
     fn too_many_args() {
+        let runner = runner().with_cwd("too_many_args");
         assert_eq!(
-            runner().err("a {a: inspect(1, 2)}\n"),
+            runner.err("a {a: inspect(1, 2)}\n"),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n1 | a {a: inspect(1, 2)}\
@@ -222,8 +246,9 @@ mod error {
 }
 #[test]
 fn function() {
+    let runner = runner().with_cwd("function");
     assert_eq!(
-        runner().ok("$result: inspect(get-function(\"get-function\"));\
+        runner.ok("$result: inspect(get-function(\"get-function\"));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -236,11 +261,15 @@ fn function() {
 }
 mod list {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("list")
+    }
+
     #[test]
     fn bracketed() {
+        let runner = runner().with_cwd("bracketed");
         assert_eq!(
-            runner().ok("$result: inspect([1, 2, 3]);\
+            runner.ok("$result: inspect([1, 2, 3]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -253,8 +282,9 @@ mod list {
     }
     #[test]
     fn comma() {
+        let runner = runner().with_cwd("comma");
         assert_eq!(
-            runner().ok("$result: inspect((1, 2, 3));\
+            runner.ok("$result: inspect((1, 2, 3));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -267,8 +297,9 @@ mod list {
     }
     #[test]
     fn empty() {
+        let runner = runner().with_cwd("empty");
         assert_eq!(
-            runner().ok("$result: inspect(());\
+            runner.ok("$result: inspect(());\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -281,17 +312,27 @@ mod list {
     }
     mod nested {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("nested")
+        }
+
         mod bracketed {
             #[allow(unused)]
-            use super::runner;
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("bracketed")
+            }
+
             mod in_comma {
                 #[allow(unused)]
-                use super::runner;
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_comma")
+                }
+
                 #[test]
                 fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect([[1, 2], [3, 4]]);\
+                        runner.ok("$result: inspect([[1, 2], [3, 4]]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -304,8 +345,9 @@ mod list {
                 }
                 #[test]
                 fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect(((1, 2), (3, 4)));\
+                        runner.ok("$result: inspect(((1, 2), (3, 4)));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -319,11 +361,15 @@ mod list {
             }
             mod in_space {
                 #[allow(unused)]
-                use super::runner;
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_space")
+                }
+
                 #[test]
                 fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect([[1, 2] [3, 4]]);\
+                        runner.ok("$result: inspect([[1, 2] [3, 4]]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -336,8 +382,9 @@ mod list {
                 }
                 #[test]
                 fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect([1, 2] [3, 4]);\
+                        runner.ok("$result: inspect([1, 2] [3, 4]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -352,14 +399,21 @@ mod list {
         }
         mod comma {
             #[allow(unused)]
-            use super::runner;
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("comma")
+            }
+
             mod in_comma {
                 #[allow(unused)]
-                use super::runner;
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_comma")
+                }
+
                 #[test]
                 fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect([(1, 2), (3, 4)]);\
+                        runner.ok("$result: inspect([(1, 2), (3, 4)]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -372,8 +426,9 @@ mod list {
                 }
                 #[test]
                 fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect(((1, 2), (3, 4)));\
+                        runner.ok("$result: inspect(((1, 2), (3, 4)));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -387,11 +442,15 @@ mod list {
             }
             mod in_space {
                 #[allow(unused)]
-                use super::runner;
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_space")
+                }
+
                 #[test]
                 fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect([(1, 2) (3, 4)]);\
+                        runner.ok("$result: inspect([(1, 2) (3, 4)]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -404,8 +463,9 @@ mod list {
                 }
                 #[test]
                 fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect((1, 2) (3, 4));\
+                        runner.ok("$result: inspect((1, 2) (3, 4));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -420,14 +480,21 @@ mod list {
         }
         mod empty {
             #[allow(unused)]
-            use super::runner;
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("empty")
+            }
+
             mod in_comma {
                 #[allow(unused)]
-                use super::runner;
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_comma")
+                }
+
                 #[test]
                 fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect([(), ()]);\
+                        runner.ok("$result: inspect([(), ()]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -440,8 +507,9 @@ mod list {
                 }
                 #[test]
                 fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect(((), ()));\
+                        runner.ok("$result: inspect(((), ()));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -455,11 +523,15 @@ mod list {
             }
             mod in_space {
                 #[allow(unused)]
-                use super::runner;
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_space")
+                }
+
                 #[test]
                 fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect([() ()]);\
+                        runner.ok("$result: inspect([() ()]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -472,8 +544,9 @@ mod list {
                 }
                 #[test]
                 fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect(() ());\
+                        runner.ok("$result: inspect(() ());\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -488,14 +561,21 @@ mod list {
         }
         mod space {
             #[allow(unused)]
-            use super::runner;
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("space")
+            }
+
             mod in_comma {
                 #[allow(unused)]
-                use super::runner;
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_comma")
+                }
+
                 #[test]
                 fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect([1 2, 3 4]);\
+                        runner.ok("$result: inspect([1 2, 3 4]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -508,8 +588,9 @@ mod list {
                 }
                 #[test]
                 fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect((1 2, 3 4));\
+                        runner.ok("$result: inspect((1 2, 3 4));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -523,11 +604,15 @@ mod list {
             }
             mod in_space {
                 #[allow(unused)]
-                use super::runner;
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_space")
+                }
+
                 #[test]
                 fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect([(1 2) (3 4)]);\
+                        runner.ok("$result: inspect([(1 2) (3 4)]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -540,8 +625,9 @@ mod list {
                 }
                 #[test]
                 fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
-                        runner().ok("$result: inspect((1 2) (3 4));\
+                        runner.ok("$result: inspect((1 2) (3 4));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -557,14 +643,21 @@ mod list {
     }
     mod single {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("single")
+        }
+
         mod bracketed {
             #[allow(unused)]
-            use super::runner;
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("bracketed")
+            }
+
             #[test]
             fn comma() {
+                let runner = runner().with_cwd("comma");
                 assert_eq!(
-                    runner().ok("$result: inspect([1,]);\
+                    runner.ok("$result: inspect([1,]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -577,8 +670,9 @@ mod list {
             }
             #[test]
             fn undecided() {
+                let runner = runner().with_cwd("undecided");
                 assert_eq!(
-                    runner().ok("$result: inspect([1]);\
+                    runner.ok("$result: inspect([1]);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -592,8 +686,9 @@ mod list {
         }
         #[test]
         fn comma() {
+            let runner = runner().with_cwd("comma");
             assert_eq!(
-                runner().ok("$result: inspect((1,));\
+                runner.ok("$result: inspect((1,));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -606,8 +701,9 @@ mod list {
         }
         #[test]
         fn space() {
+            let runner = runner().with_cwd("space");
             assert_eq!(
-                runner().ok("$result: inspect(append((), 1, space));\
+                runner.ok("$result: inspect(append((), 1, space));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -621,8 +717,9 @@ mod list {
     }
     #[test]
     fn space() {
+        let runner = runner().with_cwd("space");
         assert_eq!(
-            runner().ok("$result: inspect(1 2 3);\
+            runner.ok("$result: inspect(1 2 3);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -636,17 +733,27 @@ mod list {
 }
 mod map {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("map")
+    }
+
     mod list {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("list")
+        }
+
         mod key {
             #[allow(unused)]
-            use super::runner;
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("key")
+            }
+
             #[test]
             fn comma() {
+                let runner = runner().with_cwd("comma");
                 assert_eq!(
-                    runner().ok("$result: inspect(((1, 2): 3, (4, 5): 6));\
+                    runner.ok("$result: inspect(((1, 2): 3, (4, 5): 6));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -659,8 +766,9 @@ mod map {
             }
             #[test]
             fn space() {
+                let runner = runner().with_cwd("space");
                 assert_eq!(
-                    runner().ok("$result: inspect((1 2: 3, 4 5: 6));\
+                    runner.ok("$result: inspect((1 2: 3, 4 5: 6));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -674,11 +782,15 @@ mod map {
         }
         mod value {
             #[allow(unused)]
-            use super::runner;
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("value")
+            }
+
             #[test]
             fn comma() {
+                let runner = runner().with_cwd("comma");
                 assert_eq!(
-                    runner().ok("$result: inspect((1: (2, 3), 4: (5, 6)));\
+                    runner.ok("$result: inspect((1: (2, 3), 4: (5, 6)));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -691,8 +803,9 @@ mod map {
             }
             #[test]
             fn space() {
+                let runner = runner().with_cwd("space");
                 assert_eq!(
-                    runner().ok("$result: inspect((1: 2 3, 4: 5 6));\
+                    runner.ok("$result: inspect((1: 2 3, 4: 5 6));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -707,8 +820,9 @@ mod map {
     }
     #[test]
     fn number() {
+        let runner = runner().with_cwd("number");
         assert_eq!(
-            runner().ok("$result: inspect((1: 2, 3: 4));\
+            runner.ok("$result: inspect((1: 2, 3: 4));\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -722,8 +836,9 @@ mod map {
 }
 #[test]
 fn null() {
+    let runner = runner().with_cwd("null");
     assert_eq!(
-        runner().ok("$result: inspect(null);\
+        runner.ok("$result: inspect(null);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -736,11 +851,15 @@ fn null() {
 }
 mod number {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("number")
+    }
+
     #[test]
     fn unit() {
+        let runner = runner().with_cwd("unit");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "// We explicitly don\'t test the inspect format for complex units. Their format\
              \n// isn\'t guaranteed by the spec, since they can\'t be written literally in Sass.\
              \n$result: inspect(50px);\
@@ -757,8 +876,9 @@ mod number {
     }
     #[test]
     fn unitless() {
+        let runner = runner().with_cwd("unitless");
         assert_eq!(
-            runner().ok("$result: inspect(123.456);\
+            runner.ok("$result: inspect(123.456);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\
@@ -772,11 +892,15 @@ mod number {
 }
 mod string {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("string")
+    }
+
     #[test]
     fn quoted() {
+        let runner = runner().with_cwd("quoted");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "$result: inspect(\"foo\");\
              \na {\
              \n  value: $result;\
@@ -797,8 +921,9 @@ mod string {
     }
     #[test]
     fn unquoted() {
+        let runner = runner().with_cwd("unquoted");
         assert_eq!(
-            runner().ok("$result: inspect(foo);\
+            runner.ok("$result: inspect(foo);\
              \na {\
              \n  value: $result;\
              \n  type: type-of($result);\

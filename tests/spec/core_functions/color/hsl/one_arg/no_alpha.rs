@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod clamped {
     #[allow(unused)]
     use super::runner;
+
     mod lightness {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn above() {
             assert_eq!(
@@ -33,6 +35,7 @@ mod clamped {
     mod saturation {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn above() {
             assert_eq!(
@@ -56,6 +59,7 @@ mod clamped {
 mod in_gamut {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn blue() {
         assert_eq!(
@@ -68,6 +72,7 @@ mod in_gamut {
     mod grayish {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn yellow() {
             assert_eq!(
@@ -100,9 +105,11 @@ fn named() {
 mod units {
     #[allow(unused)]
     use super::runner;
+
     mod hue {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn deg() {
             assert_eq!(
@@ -116,6 +123,7 @@ mod units {
     mod lightness {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn unitless() {
             assert_eq!(
@@ -129,6 +137,7 @@ mod units {
     mod saturation {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn unitless() {
             assert_eq!(

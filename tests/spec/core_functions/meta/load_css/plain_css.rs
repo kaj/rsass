@@ -20,8 +20,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 #[ignore] // unexepected error
 fn at_rule() {
+    let runner = runner().with_cwd("at_rule");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\
+        runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\n"),
         "@media screen {\
          \n  a {\
@@ -32,12 +33,16 @@ fn at_rule() {
 }
 mod empty {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("empty")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn built_in() {
+        let runner = runner().with_cwd("built_in");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\
+            runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"sass:color\");\n\
              \n/* No output other than this */\n"),
             "/* No output other than this */\n"
@@ -46,8 +51,9 @@ mod empty {
     #[test]
     #[ignore] // unexepected error
     fn user_defined() {
+        let runner = runner().with_cwd("user_defined");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\
+            runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\n\
              \n/* No output other than this */\n"),
             "/* No output other than this */\n"
@@ -57,8 +63,9 @@ mod empty {
 #[test]
 #[ignore] // unexepected error
 fn named() {
+    let runner = runner().with_cwd("named");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\
+        runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css($url: \"other\");\n"),
         "a {\
          \n  b: c;\
@@ -67,12 +74,16 @@ fn named() {
 }
 mod nested {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("nested")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn media_query() {
+        let runner = runner().with_cwd("media_query");
         assert_eq!(
-            runner().ok("// Regression test for dart-sass#843\
+            runner.ok("// Regression test for dart-sass#843\
              \n@use \"sass:meta\";\
              \n@include meta.load-css(\"midstream\")\n"),
             "/**/\
@@ -86,8 +97,9 @@ mod nested {
     #[test]
     #[ignore] // unexepected error
     fn parent_selector() {
+        let runner = runner().with_cwd("parent_selector");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\
+            runner.ok("@use \"sass:meta\";\
              \na {@include meta.load-css(\"other\")}\n"),
             "a c b {\
          \n  x: y;\
@@ -97,8 +109,9 @@ mod nested {
     #[test]
     #[ignore] // unexepected error
     fn plain_plain_css() {
+        let runner = runner().with_cwd("plain_plain_css");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\
+            runner.ok("@use \"sass:meta\";\
              \na {@include meta.load-css(\"other\")}\n"),
             "a b {\
          \n  c: d;\
@@ -109,8 +122,9 @@ mod nested {
 #[test]
 #[ignore] // unexepected error
 fn plain_css_import() {
+    let runner = runner().with_cwd("plain_css_import");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\n\
+        runner.ok("@use \"sass:meta\";\n\
              \na {b: c}\n\
              \n@include meta.load-css(\"other\");\n"),
         "@import \"style.css\";\
@@ -125,8 +139,9 @@ fn plain_css_import() {
 #[test]
 #[ignore] // unexepected error
 fn style_rule() {
+    let runner = runner().with_cwd("style_rule");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\
+        runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\n"),
         "a {\
          \n  b: c;\
@@ -136,8 +151,9 @@ fn style_rule() {
 #[test]
 #[ignore] // unexepected error
 fn through_other_mixin() {
+    let runner = runner().with_cwd("through_other_mixin");
     assert_eq!(
-        runner().ok("@use \"subdir/midstream\";\
+        runner.ok("@use \"subdir/midstream\";\
              \n@include midstream.load-css(\"upstream\");\n"),
         "a {\
          \n  b: in subdir;\

@@ -9,8 +9,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 #[ignore] // wrong result
 fn dash_insensitive() {
+    let runner = runner().with_cwd("dash_insensitive");
     assert_eq!(
-        runner().ok("@import \"../utils\";\
+        runner.ok("@import \"../utils\";\
              \na {b: inspect(args-to-keywords($c-d: e, $f_g: h))}\n"),
         "a {\
          \n  b: (c-d: e, f-g: h);\
@@ -19,12 +20,16 @@ fn dash_insensitive() {
 }
 mod empty {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("empty")
+    }
+
     #[test]
     #[ignore] // wrong result
     fn no_args() {
+        let runner = runner().with_cwd("no_args");
         assert_eq!(
-            runner().ok("@import \"../../utils\";\
+            runner.ok("@import \"../../utils\";\
              \na {b: inspect(args-to-keywords())}\n"),
             "a {\
          \n  b: ();\
@@ -34,8 +39,9 @@ mod empty {
     #[test]
     #[ignore] // wrong result
     fn positional() {
+        let runner = runner().with_cwd("positional");
         assert_eq!(
-            runner().ok("@import \"../../utils\";\
+            runner.ok("@import \"../../utils\";\
              \na {b: inspect(args-to-keywords(1, 2, 3))}\n"),
             "a {\
          \n  b: ();\
@@ -45,12 +51,16 @@ mod empty {
 }
 mod error {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("error")
+    }
+
     #[test]
     #[ignore] // missing error
     fn too_few_args() {
+        let runner = runner().with_cwd("too_few_args");
         assert_eq!(
-            runner().err("a {b: keywords()}\n"),
+            runner.err("a {b: keywords()}\n"),
             "Error: Missing argument $args.\
          \n  ,--> input.scss\
          \n1 | a {b: keywords()}\
@@ -66,8 +76,9 @@ mod error {
     #[test]
     #[ignore] // missing error
     fn too_many_args() {
+        let runner = runner().with_cwd("too_many_args");
         assert_eq!(
-            runner().err("a {b: keywords(1, 2)}\n"),
+            runner.err("a {b: keywords(1, 2)}\n"),
             "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: keywords(1, 2)}\
@@ -82,12 +93,16 @@ mod error {
     }
     mod test_type {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("type")
+        }
+
         #[test]
         #[ignore] // missing error
         fn non_arg_list() {
+            let runner = runner().with_cwd("non_arg_list");
             assert_eq!(
-                runner().err("a {b: keywords(1 2 3)}\n"),
+                runner.err("a {b: keywords(1 2 3)}\n"),
                 "Error: $args: 1 2 3 is not an argument list.\
          \n  ,\
          \n1 | a {b: keywords(1 2 3)}\
@@ -99,8 +114,9 @@ mod error {
         #[test]
         #[ignore] // missing error
         fn non_list() {
+            let runner = runner().with_cwd("non_list");
             assert_eq!(
-                runner().err("a {b: keywords(1)}\n"),
+                runner.err("a {b: keywords(1)}\n"),
                 "Error: $args: 1 is not an argument list.\
          \n  ,\
          \n1 | a {b: keywords(1)}\
@@ -113,12 +129,16 @@ mod error {
 }
 mod forwarded {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("forwarded")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn call() {
+        let runner = runner().with_cwd("call");
         assert_eq!(
-            runner().ok("@import \"../../utils\";\n\
+            runner.ok("@import \"../../utils\";\n\
              \n@function args-to-keywords-forward($args...) {\
              \n  @return call(get-function(\"args-to-keywords\"), $args...);\
              \n}\n\
@@ -131,8 +151,9 @@ mod forwarded {
     #[test]
     #[ignore] // unexepected error
     fn content() {
+        let runner = runner().with_cwd("content");
         assert_eq!(
-            runner().ok("@import \"../../utils\";\n\
+            runner.ok("@import \"../../utils\";\n\
              \n@mixin args-to-keywords-forward($args...) {\
              \n  @content($args...);\
              \n}\n\
@@ -147,8 +168,9 @@ mod forwarded {
     #[test]
     #[ignore] // wrong result
     fn function() {
+        let runner = runner().with_cwd("function");
         assert_eq!(
-            runner().ok("@import \"../../utils\";\n\
+            runner.ok("@import \"../../utils\";\n\
              \n@function args-to-keywords-forward($args...) {\
              \n  @return args-to-keywords($args...);\
              \n}\n\
@@ -161,8 +183,9 @@ mod forwarded {
     #[test]
     #[ignore] // wrong result
     fn mixin() {
+        let runner = runner().with_cwd("mixin");
         assert_eq!(
-            runner().ok("@import \"../../utils\";\n\
+            runner.ok("@import \"../../utils\";\n\
              \n@mixin args-to-keywords-forward($args...) {\
              \n  a {b: inspect(args-to-keywords($args...))}\
              \n}\n\
@@ -176,8 +199,9 @@ mod forwarded {
 #[test]
 #[ignore] // wrong result
 fn multi_arg() {
+    let runner = runner().with_cwd("multi_arg");
     assert_eq!(
-        runner().ok("@import \"../utils\";\
+        runner.ok("@import \"../utils\";\
              \na {b: inspect(args-to-keywords($c: d, $e: f, $g: h))}\n"),
         "a {\
          \n  b: (c: d, e: f, g: h);\
@@ -187,8 +211,9 @@ fn multi_arg() {
 #[test]
 #[ignore] // wrong result
 fn named() {
+    let runner = runner().with_cwd("named");
     assert_eq!(
-        runner().ok("@function args-to-keywords($args...) {\
+        runner.ok("@function args-to-keywords($args...) {\
              \n  @return keywords($args: $args);\
              \n}\n\
              \na {b: inspect(args-to-keywords($c: d))}\n"),
@@ -200,8 +225,9 @@ fn named() {
 #[test]
 #[ignore] // wrong result
 fn one_arg() {
+    let runner = runner().with_cwd("one_arg");
     assert_eq!(
-        runner().ok("@import \"../utils\";\
+        runner.ok("@import \"../utils\";\
              \na {b: inspect(args-to-keywords($c: d))}\n"),
         "a {\
          \n  b: (c: d);\

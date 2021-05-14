@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod with_exponent {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn decimal() {
         assert_eq!(

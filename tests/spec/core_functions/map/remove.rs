@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn positional_and_named() {
@@ -41,6 +42,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn map() {
             assert_eq!(
@@ -58,6 +60,7 @@ mod error {
 mod found {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn first() {
         assert_eq!(
@@ -91,6 +94,7 @@ mod found {
     mod multiple {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn all() {
             assert_eq!(
@@ -136,6 +140,7 @@ fn named() {
 mod not_found {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn empty() {
         assert_eq!(

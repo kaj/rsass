@@ -39,6 +39,7 @@ fn double_width_character() {
 mod empty_destination {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn empty_source() {
         assert_eq!(
@@ -97,6 +98,7 @@ fn empty_insertion() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn decimal() {
         assert_eq!(
@@ -144,6 +146,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn index() {
             assert_eq!(
@@ -185,9 +188,11 @@ mod error {
 mod index {
     #[allow(unused)]
     use super::runner;
+
     mod negative {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn t1() {
             assert_eq!(
@@ -228,6 +233,7 @@ mod index {
     mod positive {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn t0() {
             assert_eq!(

@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod exclam {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn middle() {
         assert_eq!(

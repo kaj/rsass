@@ -38,6 +38,7 @@ fn compatible() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn comparable() {
         assert_eq!(

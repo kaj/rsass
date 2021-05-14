@@ -31,10 +31,11 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn conflict() {
+    let runner = runner().with_cwd("conflict");
     assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"other1\" as *;\
              \n@use \"other2\" as *;\n\
              \na {b: variable-exists(member)}\n"
@@ -54,11 +55,15 @@ fn conflict() {
 }
 mod dash_insensitive {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("dash_insensitive")
+    }
+
     #[test]
     fn dash_to_underscore() {
+        let runner = runner().with_cwd("dash_to_underscore");
         assert_eq!(
-            runner().ok("$a_b: null;\n\
+            runner.ok("$a_b: null;\n\
              \nc {d: variable-exists(a-b)}\n"),
             "c {\
          \n  d: true;\
@@ -67,8 +72,9 @@ mod dash_insensitive {
     }
     #[test]
     fn underscore_to_dash() {
+        let runner = runner().with_cwd("underscore_to_dash");
         assert_eq!(
-            runner().ok("$a-b: null;\n\
+            runner.ok("$a-b: null;\n\
              \nc {d: variable-exists(a_b)}\n"),
             "c {\
          \n  d: true;\
@@ -78,14 +84,21 @@ mod dash_insensitive {
 }
 mod error {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("error")
+    }
+
     mod argument {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("argument")
+        }
+
         #[test]
         fn too_few() {
+            let runner = runner().with_cwd("too_few");
             assert_eq!(
-                runner().err("a {b: variable-exists()}\n"),
+                runner.err("a {b: variable-exists()}\n"),
                 "Error: Missing argument $name.\
          \n  ,--> input.scss\
          \n1 | a {b: variable-exists()}\
@@ -100,8 +113,9 @@ mod error {
         }
         #[test]
         fn too_many() {
+            let runner = runner().with_cwd("too_many");
             assert_eq!(
-                runner().err("a {b: variable-exists(foo, bar)}\n"),
+                runner.err("a {b: variable-exists(foo, bar)}\n"),
                 "Error: Only 1 argument allowed, but 2 were passed.\
          \n  ,--> input.scss\
          \n1 | a {b: variable-exists(foo, bar)}\
@@ -116,8 +130,9 @@ mod error {
         }
         #[test]
         fn test_type() {
+            let runner = runner().with_cwd("type");
             assert_eq!(
-                runner().err("a {b: variable-exists(12px)}\n"),
+                runner.err("a {b: variable-exists(12px)}\n"),
                 "Error: $name: 12px is not a string.\
          \n  ,\
          \n1 | a {b: variable-exists(12px)}\
@@ -130,8 +145,9 @@ mod error {
 }
 #[test]
 fn global() {
+    let runner = runner().with_cwd("global");
     assert_eq!(
-        runner().ok("$global-variable: null;\n\
+        runner.ok("$global-variable: null;\n\
              \na {b: variable-exists(global-variable)}\n"),
         "a {\
          \n  b: true;\
@@ -140,8 +156,9 @@ fn global() {
 }
 #[test]
 fn keyword() {
+    let runner = runner().with_cwd("keyword");
     assert_eq!(
-        runner().ok("a {b: variable-exists($name: foo)}\n"),
+        runner.ok("a {b: variable-exists($name: foo)}\n"),
         "a {\
          \n  b: false;\
          \n}\n"
@@ -149,8 +166,9 @@ fn keyword() {
 }
 #[test]
 fn local() {
+    let runner = runner().with_cwd("local");
     assert_eq!(
-        runner().ok("a {\
+        runner.ok("a {\
              \n  $local-variable: null;\
              \n  b: variable-exists(local-variable);\
              \n}\n"),
@@ -161,8 +179,9 @@ fn local() {
 }
 #[test]
 fn non_existent() {
+    let runner = runner().with_cwd("non_existent");
     assert_eq!(
-        runner().ok("a {\
+        runner.ok("a {\
              \n  b: variable-exists(non-existent);\
              \n}\n"),
         "a {\
@@ -172,12 +191,16 @@ fn non_existent() {
 }
 mod through_forward {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("through_forward")
+    }
+
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn test_as() {
+        let runner = runner().with_cwd("as");
         assert_eq!(
-            runner().ok("@use \"midstream\" as *;\
+            runner.ok("@use \"midstream\" as *;\
              \na {\
              \n  with-prefix: variable-exists(b-c);\
              \n  without-prefix: variable-exists(c);\
@@ -189,10 +212,11 @@ mod through_forward {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn hide() {
+        let runner = runner().with_cwd("hide");
         assert_eq!(
-            runner().ok("@use \"midstream\" as *;\
+            runner.ok("@use \"midstream\" as *;\
              \na {\
              \n  hidden: variable-exists(b);\
              \n  not-hidden: variable-exists(c);\
@@ -204,10 +228,11 @@ mod through_forward {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn show() {
+        let runner = runner().with_cwd("show");
         assert_eq!(
-            runner().ok("@use \"midstream\" as *;\
+            runner.ok("@use \"midstream\" as *;\
              \na {\
              \n  shown: variable-exists(b);\
              \n  not-shown: variable-exists(c);\
@@ -220,10 +245,10 @@ mod through_forward {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn through_import() {
+    let runner = runner().with_cwd("through_import");
     assert_eq!(
-        runner().ok("@import \"other\";\
+        runner.ok("@import \"other\";\
              \na {b: variable-exists(global-variable)}\n"),
         "a {\
          \n  b: true;\
@@ -231,10 +256,10 @@ fn through_import() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn through_use() {
+    let runner = runner().with_cwd("through_use");
     assert_eq!(
-        runner().ok("@use \"other\" as *;\
+        runner.ok("@use \"other\" as *;\
              \na {b: variable-exists(global-variable)}\n"),
         "a {\
          \n  b: true;\

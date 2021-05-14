@@ -47,6 +47,7 @@ fn in_function() {
 mod interpolation {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong error
     fn in_declaration() {

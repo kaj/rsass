@@ -168,7 +168,7 @@ fn handle_entries(
                                 rs,
                                 "fn runner() -> crate::TestRunner {{\
                                  \n    super::runner().set_precision({})\
-                                 \n}}\n\n",
+                                 \n}}\n",
                                 p
                             )?;
                         } else {
@@ -294,7 +294,7 @@ fn handle_hrx_part(
         } else {
             t
         };
-        Some(fn_name(t))
+        Some(t)
     };
 
     let mut options = archive
@@ -306,7 +306,7 @@ fn handle_hrx_part(
 
     if archive.get(&format!("{}input.scss", prefix)).is_some() {
         let fixture = load_test_fixture_hrx(
-            name.unwrap_or_else(|| "test".into()),
+            name.map(str::to_owned),
             &archive,
             prefix,
             options,
@@ -317,13 +317,24 @@ fn handle_hrx_part(
     } else {
         if !tests.is_empty() {
             if let Some(ref name) = name {
-                writeln!(
-                    rs,
-                    "mod {} {{\
-                     \n    #[allow(unused)]\
-                     \n    use super::runner;",
-                    name,
-                )?;
+                writeln!(rs, "mod {} {{", fn_name(name))?;
+                if options.precision.is_some() || runner.has_files() {
+                    write!(
+                        rs,
+                        "    #[allow(unused)]\
+                         \n    fn runner() -> crate::TestRunner {{\
+                         \n        super::runner().with_cwd({:?})",
+                        name
+                    )?;
+                    if let Some(p) = options.precision {
+                        write!(rs, ".set_precision({})", p)?;
+                    }
+                    writeln!(rs, "\n}}\n")?;
+                } else {
+                    rs.write_all(
+                        b"#[allow(unused)]\nuse super::runner;\n\n",
+                    )?;
+                }
             }
             for name in tests {
                 handle_hrx_part(
@@ -332,7 +343,7 @@ fn handle_hrx_part(
                     &archive,
                     &format!("{}{}", prefix, name),
                     options.precision,
-                    runner.clone(),
+                    runner.clone().with_cwd(name),
                 )?;
             }
             if name.is_some() {
@@ -388,7 +399,7 @@ fn load_test_fixture_dir(
         &["output-dart-sass.css", "output.css"];
     static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
 
-    let name = fn_name_os(specdir.file_name().unwrap_or_default());
+    let name = specdir.file_name().map(|s| s.to_string_lossy().to_string());
     let mut options = load_options(&specdir)?;
     options.precision = options.precision.or(precision);
     let input = content(&specdir.join(INPUT_FILENAME))?;
@@ -422,7 +433,7 @@ fn load_test_fixture_dir(
 }
 
 fn load_test_fixture_hrx(
-    name: String,
+    name: Option<String>,
     archive: &Archive,
     prefix: &str,
     options: Options,

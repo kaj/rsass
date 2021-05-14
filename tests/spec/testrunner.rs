@@ -1,6 +1,7 @@
 use rsass::output::Format;
 use rsass::{parse_scss_file, Error, FileContext, FsFileContext, ScopeRef};
 use std::collections::BTreeMap;
+use std::path::PathBuf;
 
 pub fn runner() -> TestRunner {
     TestRunner::new()
@@ -16,6 +17,7 @@ pub struct TestRunner {
 struct TestFileContext {
     parent: FsFileContext,
     mock: BTreeMap<String, String>,
+    cwd: PathBuf,
 }
 
 impl TestFileContext {
@@ -25,10 +27,18 @@ impl TestFileContext {
         TestFileContext {
             parent,
             mock: BTreeMap::new(),
+            cwd: PathBuf::new(),
         }
     }
     fn mock_file(&mut self, name: &str, content: &str) {
         self.mock.insert(name.into(), content.into());
+    }
+    #[allow(unused)] // only used while building tests
+    fn has_mock_files(&self) -> bool {
+        !self.mock.is_empty()
+    }
+    fn with_cwd(&mut self, cwd: &str) {
+        self.cwd = self.cwd.join(cwd);
     }
 }
 
@@ -42,19 +52,19 @@ impl FileContext for TestFileContext {
         &self,
         name: &str,
     ) -> Result<Option<(Self, String, Self::File)>, Error> {
+        let (cwd, lname) = name
+            .strip_prefix("../")
+            .map(|n| (self.cwd.parent().unwrap_or(&self.cwd), n))
+            .unwrap_or((&self.cwd, name));
         for name in vec![
-            name.to_string(),
-            format!("{}.scss", name),
-            format!("_{}.scss", name),
-            format!("{}/index.scss", name),
-            format!("{}/_index.scss", name),
+            cwd.join(name),
+            cwd.join(format!("{}.scss", lname)),
+            cwd.join(format!("_{}.scss", lname)),
+            cwd.join(lname).join("index.scss"),
+            cwd.join(lname).join("_index.scss"),
         ] {
+            let name = name.to_string_lossy().to_string();
             if let Some(data) = self.mock.get(&name) {
-                //let path = full.display().to_string();
-                /*return match Self::File::open(full) {
-                        Ok(file) => Ok(Some((c, path, file))),
-                        Err(e) => Err(Error::Input(path, e)),
-                };*/
                 return Ok(Some((
                     self.clone(),
                     name,
@@ -69,6 +79,7 @@ impl FileContext for TestFileContext {
                 TestFileContext {
                     parent: ctx,
                     mock: BTreeMap::new(),
+                    cwd: Default::default(),
                 },
                 name,
                 Cursor::new(buf),
@@ -93,6 +104,14 @@ impl TestRunner {
     }
     pub fn mock_file(mut self, name: &str, content: &str) -> Self {
         self.file_context.mock_file(name, content);
+        self
+    }
+    #[allow(unused)] // only used while building tests
+    pub fn has_files(&self) -> bool {
+        self.file_context.has_mock_files()
+    }
+    pub fn with_cwd(mut self, cwd: &str) -> Self {
+        self.file_context.with_cwd(cwd);
         self
     }
     #[allow(unused)] // only used while executing tests

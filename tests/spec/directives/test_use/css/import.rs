@@ -23,10 +23,10 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn import_into_use() {
+    let runner = runner().with_cwd("import_into_use");
     assert_eq!(
-        runner().ok("@import \"imported\";\n\
+        runner.ok("@import \"imported\";\n\
              \nin-input {a: b}\n"),
         "in-used {\
          \n  a: b;\
@@ -40,10 +40,10 @@ fn import_into_use() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn import_into_use_into_import() {
+    let runner = runner().with_cwd("import_into_use_into_import");
     assert_eq!(
-        runner().ok("@import \"imported-downstream\";\n\
+        runner.ok("@import \"imported-downstream\";\n\
              \nin-input {a: b}\n"),
         "in-imported-upstream {\
          \n  a: b;\
@@ -60,10 +60,10 @@ fn import_into_use_into_import() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn import_module_imported_by_use() {
+    let runner = runner().with_cwd("import_module_imported_by_use");
     assert_eq!(
-        runner().ok("@use \"used\";\
+        runner.ok("@use \"used\";\
              \n@import \"shared\";\n"),
         "a {\
          \n  b: c;\
@@ -76,8 +76,9 @@ fn import_module_imported_by_use() {
 #[test]
 #[ignore] // unexepected error
 fn nested_import_into_use() {
+    let runner = runner().with_cwd("nested_import_into_use");
     assert_eq!(
-        runner().ok("outer {@import \"imported\"}\n"),
+        runner.ok("outer {@import \"imported\"}\n"),
         "outer in-used {\
          \n  parent: (in-used,);\
          \n}\
@@ -87,10 +88,10 @@ fn nested_import_into_use() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn use_and_import_same() {
+    let runner = runner().with_cwd("use_and_import_same");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"other\";\n\
              \n// @import always duplicates CSS, even when that CSS has been @used. In other\
              \n// words, @import\'s duplication takes precedence over @use\'s load-once policy.\
@@ -105,10 +106,10 @@ fn use_and_import_same() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn use_into_import() {
+    let runner = runner().with_cwd("use_into_import");
     assert_eq!(
-        runner().ok("@use \"used\";\n\
+        runner.ok("@use \"used\";\n\
              \nin-input {a: b}\n"),
         "in-imported {\
          \n  a: b;\
@@ -122,10 +123,10 @@ fn use_into_import() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn use_into_import_into_use() {
+    let runner = runner().with_cwd("use_into_import_into_use");
     assert_eq!(
-        runner().ok("@use \"used-downstream\";\n\
+        runner.ok("@use \"used-downstream\";\n\
              \nin-input {a: b}\n"),
         "in-used-upstream {\
          \n  a: b;\
@@ -142,10 +143,10 @@ fn use_into_import_into_use() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn use_module_used_by_import() {
+    let runner = runner().with_cwd("use_module_used_by_import");
     assert_eq!(
-        runner().ok("@use \"shared\";\
+        runner.ok("@use \"shared\";\
              \n@import \"imported\";\n"),
         "a {\
          \n  b: c;\

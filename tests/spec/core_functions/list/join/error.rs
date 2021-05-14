@@ -82,6 +82,7 @@ fn too_many_args() {
 mod test_type {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn separator() {
         assert_eq!(

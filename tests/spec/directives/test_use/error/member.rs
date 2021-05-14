@@ -122,12 +122,16 @@ fn runner() -> crate::TestRunner {
 
 mod before_use {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("before_use")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn function() {
+        let runner = runner().with_cwd("function");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "$variable: other.member();\
              \n@use \"other\";\n"
             ),
@@ -142,8 +146,9 @@ mod before_use {
     #[test]
     #[ignore] // wrong error
     fn variable_declaration() {
+        let runner = runner().with_cwd("variable_declaration");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "other.$member: value;\
              \n@use \"other\";\n"
             ),
@@ -156,10 +161,12 @@ mod before_use {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn variable_declaration_without_namespace() {
+        let runner =
+            runner().with_cwd("variable_declaration_without_namespace");
         assert_eq!(
-        runner().err(
+        runner.err(
             "$member: from input;\n\
              \n@use \"other\" as *;\n\
              \na {b: $member}\n"
@@ -175,8 +182,9 @@ mod before_use {
     #[test]
     #[ignore] // wrong error
     fn variable_use() {
+        let runner = runner().with_cwd("variable_use");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "$variable: other.$member;\
              \n@use \"other\";\n"
             ),
@@ -191,12 +199,16 @@ mod before_use {
 }
 mod conflict {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("conflict")
+    }
+
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn function() {
+        let runner = runner().with_cwd("function");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"other1\" as *;\
              \n@use \"other2\" as *;\n\
              \na {b: member()}\n"
@@ -215,10 +227,11 @@ mod conflict {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn mixin() {
+        let runner = runner().with_cwd("mixin");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"other1\" as *;\
              \n@use \"other2\" as *;\n\
              \na {@include member}\n"
@@ -238,12 +251,16 @@ mod conflict {
     }
     mod same_value {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("same_value")
+        }
+
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn function() {
+            let runner = runner().with_cwd("function");
             assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"other1\" as *;\
              \n@use \"other2\" as *;\n\
              \na {b: c()}\n"
@@ -262,10 +279,11 @@ mod conflict {
     );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn mixin() {
+            let runner = runner().with_cwd("mixin");
             assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"other1\" as *;\
              \n@use \"other2\" as *;\n\
              \na {@include b}\n"
@@ -284,10 +302,11 @@ mod conflict {
     );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn variable() {
+            let runner = runner().with_cwd("variable");
             assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"other1\" as *;\
              \n@use \"other2\" as *;\n\
              \na {b: $c}\n"
@@ -307,10 +326,11 @@ mod conflict {
         }
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn variable() {
+        let runner = runner().with_cwd("variable");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"other1\" as *;\
              \n@use \"other2\" as *;\n\
              \na {b: $member}\n"
@@ -331,15 +351,21 @@ mod conflict {
 }
 mod inaccessible {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("inaccessible")
+    }
+
     mod private {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("private")
+        }
+
         #[test]
-        #[ignore] // unexepected error
         fn function() {
+            let runner = runner().with_cwd("function");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"other\" as *;\n\
              \n// This is technically not a compile error, since `-member()` is treated as\
              \n// plain CSS, but it\'s included here for consistency with the other specs.\
@@ -351,10 +377,11 @@ mod inaccessible {
     );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn mixin() {
+            let runner = runner().with_cwd("mixin");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"other\" as *;\n\
              \n@include -member;\n"
                 ),
@@ -367,10 +394,11 @@ mod inaccessible {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn variable() {
+            let runner = runner().with_cwd("variable");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"other\" as *;\n\
              \na {b: $-member};\n"
                 ),
@@ -385,12 +413,16 @@ mod inaccessible {
     }
     mod transitive {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("transitive")
+        }
+
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn function() {
+            let runner = runner().with_cwd("function");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"midstream\" as *;\n\
              \n// This is technically not a compile error, since `-member()` is treated as\
              \n// plain CSS, but it\'s included here for consistency with the other specs.\
@@ -402,10 +434,11 @@ mod inaccessible {
     );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn mixin() {
+            let runner = runner().with_cwd("mixin");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"midstream\" as *;\n\
              \n@include upstream;\n"
                 ),
@@ -418,10 +451,11 @@ mod inaccessible {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn variable() {
+            let runner = runner().with_cwd("variable");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"midstream\" as *;\n\
              \na {b: $upstream};\n"
                 ),
@@ -436,12 +470,16 @@ mod inaccessible {
     }
     mod transitive_from_import {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("transitive_from_import")
+        }
+
         #[test]
         #[ignore] // wrong result
         fn function() {
+            let runner = runner().with_cwd("function");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "@import \"midstream\";\n\
              \n// This is technically not a compile error, since `upstream()` is treated as\
              \n// plain CSS, but it\'s included here for consistency with the other specs.\
@@ -453,10 +491,11 @@ mod inaccessible {
     );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn mixin() {
+            let runner = runner().with_cwd("mixin");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@import \"midstream\";\n\
              \n@include upstream;\n"
                 ),
@@ -469,10 +508,11 @@ mod inaccessible {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn variable() {
+            let runner = runner().with_cwd("variable");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@import \"midstream\";\n\
              \na {b: $upstream};\n"
                 ),
@@ -488,15 +528,22 @@ mod inaccessible {
 }
 mod missing {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("missing")
+    }
+
     mod global {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("global")
+        }
+
         #[test]
         #[ignore] // wrong error
         fn mixin() {
+            let runner = runner().with_cwd("mixin");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"other\";\n\
              \n@include member;\n"
                 ),
@@ -511,8 +558,9 @@ mod missing {
         #[test]
         #[ignore] // wrong error
         fn variable() {
+            let runner = runner().with_cwd("variable");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"other\";\n\
              \na {b: $member}\n"
                 ),
@@ -527,12 +575,15 @@ mod missing {
     }
     mod namespaced {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("namespaced")
+        }
+
         #[test]
-        #[ignore] // wrong error
         fn function() {
+            let runner = runner().with_cwd("function");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"other\";\n\
              \na {b: other.member()}\n"
                 ),
@@ -547,8 +598,9 @@ mod missing {
         #[test]
         #[ignore] // wrong error
         fn mixin() {
+            let runner = runner().with_cwd("mixin");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"other\";\n\
              \n@include other.member;\n"
                 ),
@@ -563,8 +615,9 @@ mod missing {
         #[test]
         #[ignore] // wrong error
         fn variable_declaration() {
+            let runner = runner().with_cwd("variable_declaration");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"other\";\n\
              \nother.$member: value;\n"
                 ),
@@ -579,8 +632,9 @@ mod missing {
         #[test]
         #[ignore] // wrong error
         fn variable_use() {
+            let runner = runner().with_cwd("variable_use");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"other\";\n\
              \na {b: other.$member}\n"
                 ),

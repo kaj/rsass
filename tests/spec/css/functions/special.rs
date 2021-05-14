@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod clamp {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn interpolation() {
         assert_eq!(

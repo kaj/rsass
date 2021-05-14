@@ -18,12 +18,16 @@ fn runner() -> crate::TestRunner {
 
 mod optional_and_mandatory {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("optional_and_mandatory")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn different_files() {
+        let runner = runner().with_cwd("different_files");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"optional\";\
              \n@use \"mandatory\";\n"
             ),
@@ -37,10 +41,11 @@ mod optional_and_mandatory {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn same_file() {
+        let runner = runner().with_cwd("same_file");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"other\";\n\
              \nin-input {\
              \n  @extend %-in-other !optional;\
@@ -59,12 +64,16 @@ mod optional_and_mandatory {
 }
 mod scope {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("scope")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn diamond() {
+        let runner = runner().with_cwd("diamond");
         assert_eq!(
-        runner().err(
+        runner.err(
             "// Even though left-extendee and right-extendee both end up in the style rule\
              \n// defined in _shared.scss, they aren\'t extended by the other file because those\
              \n// files don\'t use one another.\
@@ -83,8 +92,9 @@ mod scope {
     #[test]
     #[ignore] // wrong error
     fn downstream() {
+        let runner = runner().with_cwd("downstream");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"other\";\n\
              \nin-input {x: y}\n"
             ),
@@ -100,8 +110,9 @@ mod scope {
     #[test]
     #[ignore] // wrong error
     fn private() {
+        let runner = runner().with_cwd("private");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"other\";\n\
              \nin-input {@extend %-in-other}\n"
             ),
@@ -117,8 +128,9 @@ mod scope {
     #[test]
     #[ignore] // wrong error
     fn sibling() {
+        let runner = runner().with_cwd("sibling");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"left\";\
              \n@use \"right\";\n"
             ),

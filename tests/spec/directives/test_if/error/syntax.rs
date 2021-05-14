@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod test_else {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong error
     fn partial_if() {

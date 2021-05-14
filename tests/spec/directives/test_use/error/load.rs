@@ -54,12 +54,16 @@ fn runner() -> crate::TestRunner {
 
 mod conflict {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("conflict")
+    }
+
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn all() {
+        let runner = runner().with_cwd("all");
         assert_eq!(
-        runner().err(
+        runner.err(
             "// This import can\'t be resolved because it has conflicting partials *and*\
              \n// conflicting extensions.\
              \n@use \"other\";\n"
@@ -78,12 +82,16 @@ mod conflict {
     }
     mod extension {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("extension")
+        }
+
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn sass_and_scss() {
+            let runner = runner().with_cwd("sass_and_scss");
             assert_eq!(
-        runner().err(
+        runner.err(
             "// This import can\'t be resolved because it could refer to either the \".sass\" or\
              \n// \".scss\" file.\
              \n@use \"other\";\n"
@@ -100,10 +108,11 @@ mod conflict {
         }
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn index() {
+        let runner = runner().with_cwd("index");
         assert_eq!(
-        runner().err(
+        runner.err(
             "// This import can\'t be resolved because it could refer to either the partial or\
              \n// the non-partial index file.\
              \n@use \"other\";\n"
@@ -119,10 +128,11 @@ mod conflict {
     );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn partial() {
+        let runner = runner().with_cwd("partial");
         assert_eq!(
-        runner().err(
+        runner.err(
             "// This import can\'t be resolved because it could refer to either the partial or\
              \n// the non-partial file.\
              \n@use \"other\";\n"
@@ -140,12 +150,16 @@ mod conflict {
 }
 mod conflicting_namespace {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("conflicting_namespace")
+    }
+
     #[test]
     #[ignore] // missing error
     fn built_in() {
+        let runner = runner().with_cwd("built_in");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "// Regression test for sass/dart-sass#1047\
              \n@use \"sass:math\";\
              \n@use \"sass:math\";\n"
@@ -161,10 +175,11 @@ mod conflicting_namespace {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn explicit() {
+        let runner = runner().with_cwd("explicit");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"other1\" as other;\
              \n@use \"other2\" as other;\n"
             ),
@@ -179,10 +194,11 @@ mod conflicting_namespace {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn implicit() {
+        let runner = runner().with_cwd("implicit");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"dir1/other\";\
              \n@use \"dir2/other\";\n"
             ),
@@ -197,10 +213,11 @@ mod conflicting_namespace {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn mixed() {
+        let runner = runner().with_cwd("mixed");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"other\";\
              \n@use \"other2\" as other;\n"
             ),
@@ -216,10 +233,11 @@ mod conflicting_namespace {
     }
 }
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn dir_dot_scss() {
+    let runner = runner().with_cwd("dir_dot_scss");
     assert_eq!(
-        runner().err("@use \"dir.scss\";\n"),
+        runner.err("@use \"dir.scss\";\n"),
         "Error: Can\'t find stylesheet to import.\
          \n  ,\
          \n1 | @use \"dir.scss\";\
@@ -230,12 +248,16 @@ fn dir_dot_scss() {
 }
 mod test_loop {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("loop")
+    }
+
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn import_to_use() {
+        let runner = runner().with_cwd("import_to_use");
         assert_eq!(
-            runner().err("@import \"other\";\n"),
+            runner.err("@import \"other\";\n"),
             "Error: Module loop: this module is already being loaded.\
          \n  ,\
          \n1 | @use \"input\";\
@@ -248,8 +270,9 @@ mod test_loop {
     #[test]
     #[ignore] // wrong error
     fn use_self() {
+        let runner = runner().with_cwd("use_self");
         assert_eq!(
-            runner().err("@use \"input\";\n"),
+            runner.err("@use \"input\";\n"),
             "Error: Module loop: this module is already being loaded.\
          \n  ,\
          \n1 | @use \"input\";\
@@ -259,10 +282,11 @@ mod test_loop {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn use_to_import() {
+        let runner = runner().with_cwd("use_to_import");
         assert_eq!(
-            runner().err("@use \"other\";\n"),
+            runner.err("@use \"other\";\n"),
             "Error: This file is already being loaded.\
          \n  ,\
          \n1 | @import \"input\";\
@@ -275,8 +299,9 @@ mod test_loop {
     #[test]
     #[ignore] // wrong error
     fn use_to_use() {
+        let runner = runner().with_cwd("use_to_use");
         assert_eq!(
-            runner().err("@use \"other\";\n"),
+            runner.err("@use \"other\";\n"),
             "Error: Module loop: this module is already being loaded.\
          \n  ,\
          \n1 | @use \"input\";\
@@ -290,8 +315,9 @@ mod test_loop {
 #[test]
 #[ignore] // wrong error
 fn missing() {
+    let runner = runner().with_cwd("missing");
     assert_eq!(
-        runner().err("@use \"other\";\n"),
+        runner.err("@use \"other\";\n"),
         "Error: Can\'t find stylesheet to import.\
          \n  ,\
          \n1 | @use \"other\";\
@@ -301,10 +327,11 @@ fn missing() {
     );
 }
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn no_extension() {
+    let runner = runner().with_cwd("no_extension");
     assert_eq!(
-        runner().err("@use \"other\";\n"),
+        runner.err("@use \"other\";\n"),
         "Error: Can\'t find stylesheet to import.\
          \n  ,\
          \n1 | @use \"other\";\
@@ -316,8 +343,9 @@ fn no_extension() {
 #[test]
 #[ignore] // wrong error
 fn unknown_scheme() {
+    let runner = runner().with_cwd("unknown_scheme");
     assert_eq!(
-        runner().err("@use \"scheme:bar\";\n"),
+        runner.err("@use \"scheme:bar\";\n"),
         "Error: Can\'t find stylesheet to import.\
          \n  ,\
          \n1 | @use \"scheme:bar\";\

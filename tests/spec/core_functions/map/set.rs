@@ -18,6 +18,7 @@ fn empty() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn one_arg() {
         assert_eq!(
@@ -97,6 +98,7 @@ fn named() {
 mod nested {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn empty() {
         assert_eq!(

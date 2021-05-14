@@ -22,6 +22,7 @@ fn empty() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(

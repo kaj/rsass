@@ -55,11 +55,15 @@ fn runner() -> crate::TestRunner {
 
 mod dash_insensitive {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("dash_insensitive")
+    }
+
     #[test]
     fn dash_to_underscore() {
+        let runner = runner().with_cwd("dash_to_underscore");
         assert_eq!(
-            runner().ok("$a_b: null;\n\
+            runner.ok("$a_b: null;\n\
              \nc {d: global-variable-exists(a-b)}\n"),
             "c {\
          \n  d: true;\
@@ -68,8 +72,9 @@ mod dash_insensitive {
     }
     #[test]
     fn underscore_to_dash() {
+        let runner = runner().with_cwd("underscore_to_dash");
         assert_eq!(
-            runner().ok("$a-b: null;\n\
+            runner.ok("$a-b: null;\n\
              \nc {d: global-variable-exists(a_b)}\n"),
             "c {\
          \n  d: true;\
@@ -79,12 +84,15 @@ mod dash_insensitive {
 }
 mod different_module {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("different_module")
+    }
+
     #[test]
-    #[ignore] // unexepected error
     fn chosen_prefix() {
+        let runner = runner().with_cwd("chosen_prefix");
         assert_eq!(
-            runner().ok("@use \"other\" as a;\
+            runner.ok("@use \"other\" as a;\
              \nb {c: global-variable-exists(\"d\", \"a\")}\n"),
             "b {\
          \n  c: true;\
@@ -92,10 +100,10 @@ mod different_module {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn defined() {
+        let runner = runner().with_cwd("defined");
         assert_eq!(
-            runner().ok("@use \"other\";\
+            runner.ok("@use \"other\";\
              \na {b: global-variable-exists(\"c\", \"other\")}\n"),
             "a {\
          \n  b: true;\
@@ -104,12 +112,16 @@ mod different_module {
     }
     mod through_forward {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("through_forward")
+        }
+
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn test_as() {
+            let runner = runner().with_cwd("as");
             assert_eq!(
-                runner().ok("@use \"midstream\" as *;\
+                runner.ok("@use \"midstream\" as *;\
              \na {\
              \n  with-prefix: global-variable-exists(b-c);\
              \n  without-prefix: global-variable-exists(c);\
@@ -121,10 +133,11 @@ mod different_module {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn bare() {
+            let runner = runner().with_cwd("bare");
             assert_eq!(
-                runner().ok("@use \"midstream\" as *;\
+                runner.ok("@use \"midstream\" as *;\
              \na {b: variable-exists(c)}\n"),
                 "a {\
          \n  b: true;\
@@ -132,10 +145,11 @@ mod different_module {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn hide() {
+            let runner = runner().with_cwd("hide");
             assert_eq!(
-                runner().ok("@use \"midstream\" as *;\
+                runner.ok("@use \"midstream\" as *;\
              \na {\
              \n  hidden: global-variable-exists(b);\
              \n  not-hidden: global-variable-exists(c);\
@@ -147,10 +161,11 @@ mod different_module {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn show() {
+            let runner = runner().with_cwd("show");
             assert_eq!(
-                runner().ok("@use \"midstream\" as *;\
+                runner.ok("@use \"midstream\" as *;\
              \na {\
              \n  shown: global-variable-exists(b);\
              \n  not-shown: global-variable-exists(c);\
@@ -163,10 +178,10 @@ mod different_module {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn through_use() {
+        let runner = runner().with_cwd("through_use");
         assert_eq!(
-            runner().ok("@use \"other\" as *;\
+            runner.ok("@use \"other\" as *;\
              \na {b: global-variable-exists(global-variable)}\n"),
             "a {\
          \n  b: true;\
@@ -175,8 +190,9 @@ mod different_module {
     }
     #[test]
     fn undefined() {
+        let runner = runner().with_cwd("undefined");
         assert_eq!(
-            runner().ok("@use \"sass:color\";\
+            runner.ok("@use \"sass:color\";\
              \na {b: global-variable-exists(\"c\", \"color\")}\n"),
             "a {\
          \n  b: false;\
@@ -186,14 +202,21 @@ mod different_module {
 }
 mod error {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("error")
+    }
+
     mod argument {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("argument")
+        }
+
         #[test]
         fn too_few() {
+            let runner = runner().with_cwd("too_few");
             assert_eq!(
-        runner().err(
+        runner.err(
             "a {b: global-variable-exists()}\n"
         ),
         "Error: Missing argument $name.\
@@ -210,8 +233,9 @@ mod error {
         }
         #[test]
         fn too_many() {
+            let runner = runner().with_cwd("too_many");
             assert_eq!(
-        runner().err(
+        runner.err(
             "a {b: global-variable-exists(c, d, e)}\n"
         ),
         "Error: Only 2 arguments allowed, but 3 were passed.\
@@ -228,11 +252,15 @@ mod error {
         }
         mod test_type {
             #[allow(unused)]
-            use super::runner;
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("type")
+            }
+
             #[test]
             fn module() {
+                let runner = runner().with_cwd("module");
                 assert_eq!(
-                    runner().err("a {b: global-variable-exists(\"c\", 1)}\n"),
+                    runner.err("a {b: global-variable-exists(\"c\", 1)}\n"),
                     "Error: $module: 1 is not a string.\
          \n  ,\
          \n1 | a {b: global-variable-exists(\"c\", 1)}\
@@ -243,8 +271,9 @@ mod error {
             }
             #[test]
             fn name() {
+                let runner = runner().with_cwd("name");
                 assert_eq!(
-                    runner().err("a {b: global-variable-exists(12px)}\n"),
+                    runner.err("a {b: global-variable-exists(12px)}\n"),
                     "Error: $name: 12px is not a string.\
          \n  ,\
          \n1 | a {b: global-variable-exists(12px)}\
@@ -256,10 +285,11 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn conflict() {
+        let runner = runner().with_cwd("conflict");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"other1\" as *;\
              \n@use \"other2\" as *;\n\
              \na {b: global-variable-exists(member)}\n"
@@ -279,11 +309,15 @@ mod error {
     }
     mod module {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("module")
+        }
+
         #[test]
         fn built_in_but_not_loaded() {
+            let runner = runner().with_cwd("built_in_but_not_loaded");
             assert_eq!(
-                runner()
+                runner
                     .err("a {b: global-variable-exists(\"c\", \"color\")}\n"),
                 "Error: There is no module with the namespace \"color\".\
          \n  ,\
@@ -295,8 +329,9 @@ mod error {
         }
         #[test]
         fn dash_sensitive() {
+            let runner = runner().with_cwd("dash_sensitive");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"sass:color\" as a-b;\
              \nc {d: global-variable-exists(\"c\", $module: \"a_b\")}\n"
                 ),
@@ -310,8 +345,9 @@ mod error {
         }
         #[test]
         fn non_existent() {
+            let runner = runner().with_cwd("non_existent");
             assert_eq!(
-                runner().err("a {b: global-variable-exists(\"c\", \"d\")}\n"),
+                runner.err("a {b: global-variable-exists(\"c\", \"d\")}\n"),
                 "Error: There is no module with the namespace \"d\".\
          \n  ,\
          \n1 | a {b: global-variable-exists(\"c\", \"d\")}\
@@ -323,10 +359,10 @@ mod error {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn named() {
+    let runner = runner().with_cwd("named");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"other\";\
              \na {b: global-variable-exists($name: \"c\", $module: \"other\")}\n"
         ),
@@ -337,11 +373,15 @@ fn named() {
 }
 mod same_module {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("same_module")
+    }
+
     #[test]
     fn global() {
+        let runner = runner().with_cwd("global");
         assert_eq!(
-            runner().ok("$global-variable: null;\n\
+            runner.ok("$global-variable: null;\n\
              \na {b: global-variable-exists(global-variable)}\n"),
             "a {\
          \n  b: true;\
@@ -350,8 +390,9 @@ mod same_module {
     }
     #[test]
     fn local() {
+        let runner = runner().with_cwd("local");
         assert_eq!(
-            runner().ok("a {\
+            runner.ok("a {\
              \n  $local-variable: null;\
              \n  b: global-variable-exists(local-variable);\
              \n}\n"),
@@ -362,8 +403,9 @@ mod same_module {
     }
     #[test]
     fn non_existent() {
+        let runner = runner().with_cwd("non_existent");
         assert_eq!(
-            runner().ok("a {\
+            runner.ok("a {\
              \n  b: global-variable-exists(non-existent);\
              \n}\n"),
             "a {\
@@ -372,10 +414,10 @@ mod same_module {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn through_import() {
+        let runner = runner().with_cwd("through_import");
         assert_eq!(
-            runner().ok("@import \"other\";\
+            runner.ok("@import \"other\";\
              \na {b: global-variable-exists(global-variable)}\n"),
             "a {\
          \n  b: true;\

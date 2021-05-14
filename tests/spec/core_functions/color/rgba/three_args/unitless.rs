@@ -17,6 +17,7 @@ fn beaded() {
 mod clamped {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn blue() {
         assert_eq!(

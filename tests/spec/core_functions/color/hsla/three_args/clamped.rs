@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod lightness {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn above() {
         assert_eq!(
@@ -30,6 +31,7 @@ mod lightness {
 mod saturation {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn above() {
         assert_eq!(

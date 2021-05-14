@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod empty_map {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn same_as_empty_list() {
         assert_eq!(
@@ -22,9 +23,11 @@ mod empty_map {
 mod real_separator {
     #[allow(unused)]
     use super::runner;
+
     mod empty {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn comma() {
             assert_eq!(
@@ -59,6 +62,7 @@ mod real_separator {
     mod multi {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn comma() {
             assert_eq!(
@@ -83,6 +87,7 @@ mod real_separator {
     mod single {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn comma() {
             assert_eq!(
@@ -108,9 +113,11 @@ mod real_separator {
 mod with_separator {
     #[allow(unused)]
     use super::runner;
+
     mod multi {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn comma() {
             assert_eq!(
@@ -135,6 +142,7 @@ mod with_separator {
     mod single {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn comma() {
             assert_eq!(

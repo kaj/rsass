@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod deep {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn different_keys() {
         assert_eq!(
@@ -23,6 +24,7 @@ mod deep {
     mod empty {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn first() {
             assert_eq!(
@@ -84,6 +86,7 @@ mod deep {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -125,6 +128,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn map1() {
             assert_eq!(
@@ -172,6 +176,7 @@ fn named() {
 mod shallow {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn different_keys() {
         assert_eq!(
@@ -185,6 +190,7 @@ mod shallow {
     mod empty {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn both() {
             assert_eq!(

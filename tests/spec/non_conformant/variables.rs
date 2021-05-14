@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod global {
     #[allow(unused)]
     use super::runner;
+
     mod first_declaration {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn nested() {
             assert_eq!(

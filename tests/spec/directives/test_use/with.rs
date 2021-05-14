@@ -53,15 +53,22 @@ fn runner() -> crate::TestRunner {
 
 mod core_module {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("core_module")
+    }
+
     mod indirect {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("indirect")
+        }
+
         #[test]
         #[ignore] // unexepected error
         fn forward() {
+            let runner = runner().with_cwd("forward");
             assert_eq!(
-                runner().ok("// Regression test for sass/dart-sass#838.\
+                runner.ok("// Regression test for sass/dart-sass#838.\
              \n@use \"other\" with ($c: e);\n\
              \na {b: other.$c}\n"),
                 "a {\
@@ -72,8 +79,9 @@ mod core_module {
         #[test]
         #[ignore] // unexepected error
         fn test_use() {
+            let runner = runner().with_cwd("use");
             assert_eq!(
-                runner().ok("// Regression test for sass/dart-sass#838.\
+                runner.ok("// Regression test for sass/dart-sass#838.\
              \n@use \"other\" with ($c: e);\n\
              \na {b: other.$c}\n"),
                 "a {\
@@ -86,8 +94,9 @@ mod core_module {
 #[test]
 #[ignore] // unexepected error
 fn dash_insensitive() {
+    let runner = runner().with_cwd("dash_insensitive");
     assert_eq!(
-        runner().ok("@use \"other\" with ($a_b: configured);\n"),
+        runner.ok("@use \"other\" with ($a_b: configured);\n"),
         "b {\
          \n  c: configured;\
          \n}\n"
@@ -96,8 +105,9 @@ fn dash_insensitive() {
 #[test]
 #[ignore] // unexepected error
 fn doesnt_run_default() {
+    let runner = runner().with_cwd("doesnt_run_default");
     assert_eq!(
-        runner().ok("@use \"other\" with ($a: configured);\n"),
+        runner.ok("@use \"other\" with ($a: configured);\n"),
         "b {\
          \n  c: configured;\
          \n}\n"
@@ -106,8 +116,9 @@ fn doesnt_run_default() {
 #[test]
 #[ignore] // unexepected error
 fn from_variable() {
+    let runner = runner().with_cwd("from_variable");
     assert_eq!(
-        runner().ok("$a: configured;\
+        runner.ok("$a: configured;\
              \n@use \"other\" with ($a: $a);\n"),
         "b {\
          \n  c: configured;\
@@ -116,12 +127,16 @@ fn from_variable() {
 }
 mod multi_load {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("multi_load")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn forward() {
+        let runner = runner().with_cwd("forward");
         assert_eq!(
-            runner().ok("@use \"upstream\" with ($a: configured);\
+            runner.ok("@use \"upstream\" with ($a: configured);\
              \n@use \"midstream\";\
              \nb {c: midstream.$a}\n"),
             "b {\
@@ -132,8 +147,9 @@ mod multi_load {
     #[test]
     #[ignore] // unexepected error
     fn transitive() {
+        let runner = runner().with_cwd("transitive");
         assert_eq!(
-            runner().ok("// Regression test for sass/dart-sass#854.\
+            runner.ok("// Regression test for sass/dart-sass#854.\
              \n@use \"midstream1\" with ($a: overridden 1);\
              \n@use \"midstream2\" with ($a: overridden 2);\n\
              \nb {\
@@ -152,8 +168,9 @@ mod multi_load {
     #[test]
     #[ignore] // unexepected error
     fn test_use() {
+        let runner = runner().with_cwd("use");
         assert_eq!(
-            runner().ok("@use \"upstream\" with ($a: configured);\
+            runner.ok("@use \"upstream\" with ($a: configured);\
              \n@use \"midstream\";\n"),
             "b {\
          \n  c: configured;\
@@ -164,8 +181,9 @@ mod multi_load {
 #[test]
 #[ignore] // unexepected error
 fn multiple() {
+    let runner = runner().with_cwd("multiple");
     assert_eq!(
-        runner().ok("@use \"other\" with (\
+        runner.ok("@use \"other\" with (\
              \n  $a: configured a,\
              \n  $b: configured b,\
              \n  $c: configured c\
@@ -180,8 +198,9 @@ fn multiple() {
 #[test]
 #[ignore] // unexepected error
 fn null() {
+    let runner = runner().with_cwd("null");
     assert_eq!(
-        runner().ok("@use \"other\" with ($a: null);\n"),
+        runner.ok("@use \"other\" with ($a: null);\n"),
         "b {\
          \n  c: original;\
          \n}\n"
@@ -190,8 +209,9 @@ fn null() {
 #[test]
 #[ignore] // unexepected error
 fn single() {
+    let runner = runner().with_cwd("single");
     assert_eq!(
-        runner().ok("@use \"other\" with ($a: configured);\n"),
+        runner.ok("@use \"other\" with ($a: configured);\n"),
         "b {\
          \n  c: configured;\
          \n}\n"
@@ -200,8 +220,9 @@ fn single() {
 #[test]
 #[ignore] // unexepected error
 fn some_unconfigured() {
+    let runner = runner().with_cwd("some_unconfigured");
     assert_eq!(
-        runner().ok("@use \"other\" with ($a: configured a);\n"),
+        runner.ok("@use \"other\" with ($a: configured a);\n"),
         "c {\
          \n  a: configured a;\
          \n  b: original b;\
@@ -210,12 +231,16 @@ fn some_unconfigured() {
 }
 mod through_forward {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("through_forward")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn and_use() {
+        let runner = runner().with_cwd("and_use");
         assert_eq!(
-            runner().ok("// Regression test for sass/sass#2744.\
+            runner.ok("// Regression test for sass/sass#2744.\
              \n@use \"forwarder\" with ($c: e);\n\
              \na {b: forwarder.$c}\n"),
             "a {\
@@ -226,8 +251,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn test_as() {
+        let runner = runner().with_cwd("as");
         assert_eq!(
-            runner().ok("@use \"used\" with ($b-a: configured);\n"),
+            runner.ok("@use \"used\" with ($b-a: configured);\n"),
             "c {\
          \n  d: configured;\
          \n}\n"
@@ -236,8 +262,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn bare() {
+        let runner = runner().with_cwd("bare");
         assert_eq!(
-            runner().ok("@use \"used\" with ($a: configured);\n"),
+            runner.ok("@use \"used\" with ($a: configured);\n"),
             "b {\
          \n  c: configured;\
          \n}\n"
@@ -246,8 +273,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn hide() {
+        let runner = runner().with_cwd("hide");
         assert_eq!(
-            runner().ok("@use \"used\" with ($a: configured);\n"),
+            runner.ok("@use \"used\" with ($a: configured);\n"),
             "b {\
          \n  c: configured;\
          \n}\n"
@@ -256,8 +284,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn show() {
+        let runner = runner().with_cwd("show");
         assert_eq!(
-            runner().ok("@use \"used\" with ($a: configured);\n"),
+            runner.ok("@use \"used\" with ($a: configured);\n"),
             "b {\
          \n  c: configured;\
          \n}\n"
@@ -266,8 +295,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn transitive() {
+        let runner = runner().with_cwd("transitive");
         assert_eq!(
-            runner().ok("@use \"used\" with ($a: configured);\n"),
+            runner.ok("@use \"used\" with ($a: configured);\n"),
             "b {\
          \n  c: configured;\
          \n}\n"
@@ -275,12 +305,16 @@ mod through_forward {
     }
     mod with {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("with")
+        }
+
         #[test]
         #[ignore] // unexepected error
         fn default() {
+            let runner = runner().with_cwd("default");
             assert_eq!(
-                runner().ok("@use \"used\" with ($a: from input);\n"),
+                runner.ok("@use \"used\" with ($a: from input);\n"),
                 "b {\
          \n  c: from input;\
          \n}\n"
@@ -289,8 +323,9 @@ mod through_forward {
         #[test]
         #[ignore] // unexepected error
         fn null() {
+            let runner = runner().with_cwd("null");
             assert_eq!(
-                runner().ok("@use \"used\" with ($a: null);\n"),
+                runner.ok("@use \"used\" with ($a: null);\n"),
                 "b {\
          \n  c: from used;\
          \n}\n"
@@ -299,8 +334,9 @@ mod through_forward {
         #[test]
         #[ignore] // unexepected error
         fn unconfigured() {
+            let runner = runner().with_cwd("unconfigured");
             assert_eq!(
-                runner().ok("@use \"used\" with ($a: from input);\n"),
+                runner.ok("@use \"used\" with ($a: from input);\n"),
                 "c {\
          \n  a: from input;\
          \n  b: from used;\
@@ -311,8 +347,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn with_unrelated_config() {
+        let runner = runner().with_cwd("with_unrelated_config");
         assert_eq!(
-            runner().ok("@use \"used\" with ($from-used: configured);\n"),
+            runner.ok("@use \"used\" with ($from-used: configured);\n"),
             "b {\
          \n  from-forwarded: original;\
          \n}\
@@ -324,12 +361,16 @@ mod through_forward {
 }
 mod through_import {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("through_import")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn direct() {
+        let runner = runner().with_cwd("direct");
         assert_eq!(
-            runner().ok("@use \"used\" with ($a: configured);\n"),
+            runner.ok("@use \"used\" with ($a: configured);\n"),
             "b {\
          \n  c: configured;\
          \n}\n"
@@ -338,8 +379,9 @@ mod through_import {
     #[test]
     #[ignore] // unexepected error
     fn transitive() {
+        let runner = runner().with_cwd("transitive");
         assert_eq!(
-            runner().ok("@use \"used\" with ($a: configured);\n"),
+            runner.ok("@use \"used\" with ($a: configured);\n"),
             "b {\
          \n  c: configured;\
          \n}\n"
@@ -349,8 +391,9 @@ mod through_import {
 #[test]
 #[ignore] // unexepected error
 fn trailing_comma() {
+    let runner = runner().with_cwd("trailing_comma");
     assert_eq!(
-        runner().ok("@use \"other\" with ($a: configured,);\n"),
+        runner.ok("@use \"other\" with ($a: configured,);\n"),
         "b {\
          \n  c: configured;\
          \n}\n"
@@ -359,8 +402,9 @@ fn trailing_comma() {
 #[test]
 #[ignore] // unexepected error
 fn used_in_input() {
+    let runner = runner().with_cwd("used_in_input");
     assert_eq!(
-        runner().ok("@use \"other\" with ($a: configured);\
+        runner.ok("@use \"other\" with ($a: configured);\
              \nb {c: other.$a}\n"),
         "b {\
          \n  c: configured;\
@@ -370,8 +414,9 @@ fn used_in_input() {
 #[test]
 #[ignore] // unexepected error
 fn variable_exists() {
+    let runner = runner().with_cwd("variable_exists");
     assert_eq!(
-        runner().ok("@use \"other\" with ($a: configured);\n"),
+        runner.ok("@use \"other\" with ($a: configured);\n"),
         "b {\
          \n  before-declaration: false;\
          \n  after-declaration: true;\

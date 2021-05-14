@@ -38,22 +38,26 @@ fn runner() -> crate::TestRunner {
 
 mod explicit_extension {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("explicit_extension")
+    }
+
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn sass() {
+        let runner = runner().with_cwd("sass");
         assert_eq!(
-            runner().ok("@import \"other.sass\"\n"),
+            runner.ok("@import \"other.sass\"\n"),
             "a {\
          \n  syntax: sass;\
          \n}\n"
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn scss() {
+        let runner = runner().with_cwd("scss");
         assert_eq!(
-            runner().ok("@import \"other.scss\"\n"),
+            runner.ok("@import \"other.scss\"\n"),
             "a {\
          \n  syntax: scss;\
          \n}\n"
@@ -62,12 +66,15 @@ mod explicit_extension {
 }
 mod index {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("index")
+    }
+
     #[test]
-    #[ignore] // wrong result
     fn dir_dot_foo() {
+        let runner = runner().with_cwd("dir_dot_foo");
         assert_eq!(
-            runner().ok("@import \"dir.foo\";\n"),
+            runner.ok("@import \"dir.foo\";\n"),
             ".foo {\
          \n  a: b;\
          \n}\n"
@@ -76,8 +83,9 @@ mod index {
     #[test]
     #[ignore] // missing error
     fn dir_dot_scss() {
+        let runner = runner().with_cwd("dir_dot_scss");
         assert_eq!(
-            runner().err("@import \"dir.scss\";\n"),
+            runner.err("@import \"dir.scss\";\n"),
             "Error: Can\'t find stylesheet to import.\
          \n  ,\
          \n1 | @import \"dir.scss\";\
@@ -87,10 +95,10 @@ mod index {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn partial() {
+        let runner = runner().with_cwd("partial");
         assert_eq!(
-            runner().ok("@import \"dir\";\n"),
+            runner.ok("@import \"dir\";\n"),
             ".foo {\
          \n  a: b;\
          \n}\n"
@@ -99,18 +107,19 @@ mod index {
     #[test]
     #[ignore] // wrong result
     fn sass() {
+        let runner = runner().with_cwd("sass");
         assert_eq!(
-            runner().ok("@import \"dir\";\n"),
+            runner.ok("@import \"dir\";\n"),
             ".foo {\
          \n  a: b;\
          \n}\n"
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn scss() {
+        let runner = runner().with_cwd("scss");
         assert_eq!(
-            runner().ok("@import \"dir\";\n"),
+            runner.ok("@import \"dir\";\n"),
             ".foo {\
          \n  a: b;\
          \n}\n"
@@ -119,15 +128,22 @@ mod index {
 }
 mod precedence {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("precedence")
+    }
+
     mod import_only {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("import_only")
+        }
+
         #[test]
         #[ignore] // wrong result
         fn before_index() {
+            let runner = runner().with_cwd("before_index");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "// A non-index import-only file takes precedence over an index file.\
              \n@import \"other\";\n"
         ),
@@ -139,8 +155,9 @@ mod precedence {
         #[test]
         #[ignore] // wrong result
         fn explicit_extension() {
+            let runner = runner().with_cwd("explicit_extension");
             assert_eq!(
-                runner().ok("@import \"other\";\n"),
+                runner.ok("@import \"other\";\n"),
                 "a {\
          \n  import-only: true;\
          \n}\n"
@@ -149,8 +166,9 @@ mod precedence {
         #[test]
         #[ignore] // wrong result
         fn implicit_extension() {
+            let runner = runner().with_cwd("implicit_extension");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "// The extension of the import-only file doesn\'t need to match the extension of\
              \n// the use-only file.\
              \n@import \"other\";\n"
@@ -163,8 +181,9 @@ mod precedence {
         #[test]
         #[ignore] // wrong result
         fn index() {
+            let runner = runner().with_cwd("index");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "// A import-only index file takes precedence over a normal index file.\
              \n@import \"other\";\n"
         ),
@@ -174,10 +193,10 @@ mod precedence {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn index_after_normal() {
+            let runner = runner().with_cwd("index_after_normal");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "// Index files, even import-only ones, always come after non-index files.\
              \n@import \"other\";\n"
         ),
@@ -189,8 +208,9 @@ mod precedence {
         #[test]
         #[ignore] // wrong result
         fn normal_before_partial() {
+            let runner = runner().with_cwd("normal_before_partial");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "// A normal import-only file takes precedence over a non-import-only partial.\
              \n@import \"other\";\n"
         ),
@@ -202,8 +222,9 @@ mod precedence {
         #[test]
         #[ignore] // wrong result
         fn partial_before_normal() {
+            let runner = runner().with_cwd("partial_before_normal");
             assert_eq!(
-        runner().ok(
+        runner.ok(
             "// An import-only partial takes precedence over a normal non-import-only file.\
              \n@import \"other\";\n"
         ),
@@ -214,10 +235,10 @@ mod precedence {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn normal_before_index() {
+        let runner = runner().with_cwd("normal_before_index");
         assert_eq!(
-            runner().ok("@import \"dir\";\n"),
+            runner.ok("@import \"dir\";\n"),
             "a {\
          \n  index: false;\
          \n}\n"
@@ -226,18 +247,19 @@ mod precedence {
     #[test]
     #[ignore] // wrong result
     fn sass_before_css() {
+        let runner = runner().with_cwd("sass_before_css");
         assert_eq!(
-            runner().ok("@import \"other\";\n"),
+            runner.ok("@import \"other\";\n"),
             "a {\
          \n  syntax: sass;\
          \n}\n"
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn scss_before_css() {
+        let runner = runner().with_cwd("scss_before_css");
         assert_eq!(
-            runner().ok("@import \"other\";\n"),
+            runner.ok("@import \"other\";\n"),
             "a {\
          \n  syntax: scss;\
          \n}\n"

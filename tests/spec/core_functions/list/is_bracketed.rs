@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod bracketed {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn empty() {
         assert_eq!(
@@ -39,6 +40,7 @@ mod bracketed {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -75,6 +77,7 @@ mod error {
 mod unbracketed {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn empty() {
         assert_eq!(

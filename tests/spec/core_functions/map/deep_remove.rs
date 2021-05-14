@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -46,9 +47,11 @@ mod error {
 mod found {
     #[allow(unused)]
     use super::runner;
+
     mod nested {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn first() {
             assert_eq!(
@@ -110,6 +113,7 @@ mod found {
 mod not_found {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn empty() {
         assert_eq!(

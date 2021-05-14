@@ -21,6 +21,7 @@ fn arglist() {
 mod boolean {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn test_false() {
         assert_eq!(
@@ -52,6 +53,7 @@ fn color() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -97,6 +99,7 @@ fn function() {
 mod list {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn empty() {
         assert_eq!(
@@ -119,6 +122,7 @@ mod list {
 mod map {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn empty() {
         assert_eq!(
@@ -159,6 +163,7 @@ fn null() {
 mod number {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn unit() {
         assert_eq!(
@@ -181,6 +186,7 @@ mod number {
 mod string {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn quoted() {
         assert_eq!(

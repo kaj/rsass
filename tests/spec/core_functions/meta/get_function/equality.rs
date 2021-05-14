@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod built_in {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn different() {
         assert_eq!(
@@ -43,6 +44,7 @@ fn same_value() {
 mod user_defined {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn different() {
         assert_eq!(

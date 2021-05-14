@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod anything {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // unexepected error
     fn ident_only() {
@@ -31,6 +32,7 @@ mod anything {
     mod interpolated_any_value {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // unexepected error
         fn full() {
@@ -55,6 +57,7 @@ mod anything {
     mod interpolated_ident {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // unexepected error
         fn full() {
@@ -120,9 +123,11 @@ mod anything {
 mod declaration {
     #[allow(unused)]
     use super::runner;
+
     mod dynamic {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // unexepected error
         fn lhs() {
@@ -157,6 +162,7 @@ mod declaration {
     mod plain {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // unexepected error
         fn ident() {
@@ -182,6 +188,7 @@ mod declaration {
 mod function {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // unexepected error
     fn after_not() {
@@ -195,6 +202,7 @@ mod function {
     mod interpolated_name {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // unexepected error
         fn full() {
@@ -219,6 +227,7 @@ mod function {
     mod interpolated_value {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // unexepected error
         fn full() {
@@ -284,9 +293,11 @@ mod function {
 mod lone_interpolation {
     #[allow(unused)]
     use super::runner;
+
     mod parens {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // unexepected error
         fn after_operator() {
@@ -323,6 +334,7 @@ mod lone_interpolation {
     mod top_level {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // unexepected error
         fn after_operator() {
@@ -358,6 +370,7 @@ mod lone_interpolation {
 mod operator {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // unexepected error
     fn and() {
@@ -371,6 +384,7 @@ mod operator {
     mod mixed {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // unexepected error
         fn and_in_not() {

@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod infinity {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn negative() {
         assert_eq!(

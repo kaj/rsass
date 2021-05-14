@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod empty {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn comma() {
         assert_eq!(
@@ -40,6 +41,7 @@ mod empty {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -76,6 +78,7 @@ mod error {
 mod multi {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn comma() {
         assert_eq!(
@@ -107,6 +110,7 @@ mod multi {
 mod single {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn comma() {
         assert_eq!(

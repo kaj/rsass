@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod alpha {
     #[allow(unused)]
     use super::runner;
+
     mod calc {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -51,6 +53,7 @@ mod alpha {
     mod clamp {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -91,6 +94,7 @@ mod alpha {
     mod env {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -131,6 +135,7 @@ mod alpha {
     mod max {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -171,6 +176,7 @@ mod alpha {
     mod min {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -211,6 +217,7 @@ mod alpha {
     mod multi_argument_var {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn t1_of_1() {
             assert_eq!(
@@ -245,6 +252,7 @@ mod alpha {
     mod var {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -286,9 +294,11 @@ mod alpha {
 mod no_alpha {
     #[allow(unused)]
     use super::runner;
+
     mod calc {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -320,6 +330,7 @@ mod no_alpha {
     mod clamp {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -351,6 +362,7 @@ mod no_alpha {
     mod env {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -382,6 +394,7 @@ mod no_alpha {
     mod max {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -413,6 +426,7 @@ mod no_alpha {
     mod min {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(
@@ -444,6 +458,7 @@ mod no_alpha {
     mod multi_argument_var {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn t1_of_1() {
             assert_eq!(
@@ -478,6 +493,7 @@ mod no_alpha {
     mod var {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn arg_1() {
             assert_eq!(

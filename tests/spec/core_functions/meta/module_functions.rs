@@ -25,10 +25,10 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn test_as() {
+    let runner = runner().with_cwd("as");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@use \"../util\";\
              \n@use \"other\" as b;\n\
@@ -44,8 +44,9 @@ fn test_as() {
 #[test]
 #[ignore] // unexepected error
 fn core_module() {
+    let runner = runner().with_cwd("core_module");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:map\";\
              \n@use \"sass:meta\";\n\
              \n// We don\'t want to print every function name in this module, since that would\
@@ -64,10 +65,10 @@ fn core_module() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn dash_sensitive() {
+    let runner = runner().with_cwd("dash_sensitive");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@use \"../util\";\
              \n@use \"other\";\n\
@@ -80,10 +81,10 @@ fn dash_sensitive() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn empty() {
+    let runner = runner().with_cwd("empty");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\
+        runner.ok("@use \"sass:meta\";\
              \n@use \"other\";\n\
              \na {b: meta.inspect(meta.module-functions(\"other\"))}\n"),
         "a {\
@@ -93,11 +94,15 @@ fn empty() {
 }
 mod error {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("error")
+    }
+
     #[test]
     fn before_load() {
+        let runner = runner().with_cwd("before_load");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\n\
              \n$a: meta.module-functions(\"other\");\n\
              \n@use \"other\";\n"
@@ -111,10 +116,10 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn dash_sensitive() {
+        let runner = runner().with_cwd("dash_sensitive");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@use \"other-module\";\n\
              \n$a: meta.module-functions(\"other_module\");\n"
@@ -128,10 +133,10 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn global() {
+        let runner = runner().with_cwd("global");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@use \"other\" as *;\n\
              \n$a: meta.module-functions(\"other\");\n"
@@ -146,8 +151,9 @@ mod error {
     }
     #[test]
     fn missing() {
+        let runner = runner().with_cwd("missing");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n$a: meta.module-functions(\"other\");\n"
             ),
@@ -161,8 +167,9 @@ mod error {
     }
     #[test]
     fn too_few_args() {
+        let runner = runner().with_cwd("too_few_args");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n$a: meta.module-functions();\n"
             ),
@@ -180,8 +187,9 @@ mod error {
     }
     #[test]
     fn too_many_args() {
+        let runner = runner().with_cwd("too_many_args");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n$a: meta.module-functions(\"meta\", \"c\");\n"
             ),
@@ -199,8 +207,9 @@ mod error {
     }
     #[test]
     fn test_type() {
+        let runner = runner().with_cwd("type");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n$a: meta.module-functions(1);\n"
             ),
@@ -214,10 +223,10 @@ mod error {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn multiple() {
+    let runner = runner().with_cwd("multiple");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@use \"../util\";\
              \n@use \"other\";\n\
@@ -231,10 +240,10 @@ fn multiple() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn named() {
+    let runner = runner().with_cwd("named");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@use \"../util\";\
              \n@use \"other\";\n\
@@ -249,12 +258,16 @@ fn named() {
 }
 mod through_forward {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("through_forward")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn test_as() {
+        let runner = runner().with_cwd("as");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@use \"../../util\";\
              \n@use \"used\";\n\
@@ -270,8 +283,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn bare() {
+        let runner = runner().with_cwd("bare");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@use \"../../util\";\
              \n@use \"used\";\n\
@@ -287,8 +301,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn hide() {
+        let runner = runner().with_cwd("hide");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@use \"../../util\";\
              \n@use \"used\";\n\
@@ -302,8 +317,9 @@ mod through_forward {
     #[test]
     #[ignore] // unexepected error
     fn show() {
+        let runner = runner().with_cwd("show");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@use \"../../util\";\
              \n@use \"used\";\n\
@@ -317,10 +333,10 @@ mod through_forward {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn through_import() {
+    let runner = runner().with_cwd("through_import");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"sass:meta\";\
              \n@use \"../util\";\
              \n@use \"used\";\n\

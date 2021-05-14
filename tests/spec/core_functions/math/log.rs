@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod base {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn between_zero_and_one() {
         assert_eq!(
@@ -92,6 +93,7 @@ mod base {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn base_has_units() {
         assert_eq!(
@@ -189,6 +191,7 @@ fn infinity() {
 mod named_arg {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn number() {
         assert_eq!(
@@ -203,6 +206,7 @@ mod named_arg {
 mod named_args {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn number_with_base() {
         assert_eq!(

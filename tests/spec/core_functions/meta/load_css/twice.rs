@@ -19,12 +19,16 @@ fn runner() -> crate::TestRunner {
 
 mod load_css {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("load_css")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn different_extend() {
+        let runner = runner().with_cwd("different_extend");
         assert_eq!(
-            runner().ok("@use \"left\";\
+            runner.ok("@use \"left\";\
              \n@use \"right\";\n"),
             "a, left {\
          \n  b: c;\
@@ -37,8 +41,9 @@ mod load_css {
     #[test]
     #[ignore] // unexepected error
     fn different_nesting() {
+        let runner = runner().with_cwd("different_nesting");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\
+            runner.ok("@use \"sass:meta\";\
              \na {@include meta.load-css(\"other\")}\
              \nb {@include meta.load-css(\"other\")}\n"),
             "a c {\
@@ -52,8 +57,9 @@ mod load_css {
     #[test]
     #[ignore] // unexepected error
     fn runs_once() {
+        let runner = runner().with_cwd("runs_once");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\
+            runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\
              \n@include meta.load-css(\"other\");\n\
              \n/* No output other than this */\n"),
@@ -64,8 +70,9 @@ mod load_css {
 #[test]
 #[ignore] // unexepected error
 fn shares_state() {
+    let runner = runner().with_cwd("shares_state");
     assert_eq!(
-        runner().ok("@use \"sass:meta\";\
+        runner.ok("@use \"sass:meta\";\
              \n@use \"shared\";\
              \n@include meta.load-css(\"other\");\n\
              \na {shared-b: shared.$b}\n"),
@@ -76,12 +83,16 @@ fn shares_state() {
 }
 mod test_use {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("use")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn different_extend() {
+        let runner = runner().with_cwd("different_extend");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\
+            runner.ok("@use \"sass:meta\";\
              \n@use \"midstream\";\
              \n@include meta.load-css(\"other\")\n"),
             "b, a {\
@@ -95,8 +106,9 @@ mod test_use {
     #[test]
     #[ignore] // unexepected error
     fn different_nesting() {
+        let runner = runner().with_cwd("different_nesting");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\
+            runner.ok("@use \"sass:meta\";\
              \n@use \"other\";\
              \na {@include meta.load-css(\"other\")}\n"),
             "b {\
@@ -109,12 +121,16 @@ mod test_use {
     }
     mod runs_once {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("runs_once")
+        }
+
         #[test]
         #[ignore] // unexepected error
         fn different_text() {
+            let runner = runner().with_cwd("different_text");
             assert_eq!(
-                runner().ok("@use \"sass:meta\";\
+                runner.ok("@use \"sass:meta\";\
              \n@use \"other\";\
              \n@include meta.load-css(\"_other\");\n\
              \n/* No output other than this */\n"),
@@ -124,8 +140,9 @@ mod test_use {
         #[test]
         #[ignore] // unexepected error
         fn same_text() {
+            let runner = runner().with_cwd("same_text");
             assert_eq!(
-                runner().ok("@use \"sass:meta\";\
+                runner.ok("@use \"sass:meta\";\
              \n@use \"other\";\
              \n@include meta.load-css(\"other\");\n\
              \n/* No output other than this */\n"),

@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod calc {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn arg_1() {
         assert_eq!(
@@ -48,6 +49,7 @@ mod calc {
 mod clamp {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn arg_1() {
         assert_eq!(
@@ -88,6 +90,7 @@ mod clamp {
 mod env {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn arg_1() {
         assert_eq!(
@@ -128,6 +131,7 @@ mod env {
 mod max {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn arg_1() {
         assert_eq!(
@@ -168,6 +172,7 @@ mod max {
 mod min {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn arg_1() {
         assert_eq!(
@@ -208,6 +213,7 @@ mod min {
 mod var {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn arg_1() {
         assert_eq!(

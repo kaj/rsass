@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod args {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong result
     fn named() {
@@ -42,6 +43,7 @@ mod args {
     mod splat {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn combined() {
             assert_eq!(
@@ -82,6 +84,7 @@ mod args {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong error
     fn if_args() {
@@ -156,6 +159,7 @@ fn named() {
 mod string {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn built_in() {
         assert_eq!(

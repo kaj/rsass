@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod complex {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn adjacent_sibling() {
         assert_eq!(
@@ -96,6 +97,7 @@ fn list() {
 mod simple {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn attribute() {
         assert_eq!(
@@ -135,9 +137,11 @@ mod simple {
     mod pseudo {
         #[allow(unused)]
         use super::runner;
+
         mod class {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             #[ignore] // unexepected error
             fn arg() {
@@ -193,6 +197,7 @@ mod simple {
         mod element {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             #[ignore] // unexepected error
             fn arg() {

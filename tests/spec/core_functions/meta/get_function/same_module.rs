@@ -10,8 +10,9 @@ fn runner() -> crate::TestRunner {
 
 #[test]
 fn built_in() {
+    let runner = runner().with_cwd("built_in");
     assert_eq!(
-        runner().ok("$lighten-fn: get-function(lighten);\n\
+        runner.ok("$lighten-fn: get-function(lighten);\n\
              \na {b: call($lighten-fn, red, 30%)}\n"),
         "a {\
          \n  b: #ff9999;\
@@ -20,11 +21,15 @@ fn built_in() {
 }
 mod dash_insensitive {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("dash_insensitive")
+    }
+
     #[test]
     fn dash_to_underscore() {
+        let runner = runner().with_cwd("dash_to_underscore");
         assert_eq!(
-            runner().ok("@function add_two($v) {@return $v + 2}\n\
+            runner.ok("@function add_two($v) {@return $v + 2}\n\
              \na {b: call(get-function(add-two), 10)}\n"),
             "a {\
          \n  b: 12;\
@@ -33,8 +38,9 @@ mod dash_insensitive {
     }
     #[test]
     fn underscore_to_dash() {
+        let runner = runner().with_cwd("underscore_to_dash");
         assert_eq!(
-            runner().ok("@function add-two($v) {@return $v + 2}\n\
+            runner.ok("@function add-two($v) {@return $v + 2}\n\
              \na {b: call(get-function(add_two), 10)}\n"),
             "a {\
          \n  b: 12;\
@@ -44,8 +50,9 @@ mod dash_insensitive {
 }
 #[test]
 fn plain_css() {
+    let runner = runner().with_cwd("plain_css");
     assert_eq!(
-        runner().ok("$sass-fn: get-function(lighten);\
+        runner.ok("$sass-fn: get-function(lighten);\
              \n$css-fn: get-function(lighten, $css: true);\n\
              \na {\
              \n  sass-fn: call($sass-fn, red, 30%);\
@@ -59,8 +66,9 @@ fn plain_css() {
 }
 #[test]
 fn redefined() {
+    let runner = runner().with_cwd("redefined");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "@function add-two($v) {@return $v + 2}\
              \n$add-two-fn: get-function(add-two);\n\
              \n// The function returned by `get-function()` is locked in place when it\'s\
@@ -75,10 +83,10 @@ fn redefined() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn through_import() {
+    let runner = runner().with_cwd("through_import");
     assert_eq!(
-        runner().ok("@import \"other\";\
+        runner.ok("@import \"other\";\
              \na {b: call(get-function(add-two), 10)}\n"),
         "a {\
          \n  b: 12;\
@@ -87,8 +95,9 @@ fn through_import() {
 }
 #[test]
 fn user_defined() {
+    let runner = runner().with_cwd("user_defined");
     assert_eq!(
-        runner().ok("@function add-two($v) {@return $v + 2}\
+        runner.ok("@function add-two($v) {@return $v + 2}\
              \n$add-two-fn: get-function(add-two);\n\
              \na {b: call($add-two-fn, 10)}\n"),
         "a {\

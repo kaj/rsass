@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod decomposed {
     #[allow(unused)]
     use super::runner;
+
     mod complex {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn mixed() {
             assert_eq!(
@@ -42,6 +44,7 @@ mod decomposed {
     mod full {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn mixed() {
             assert_eq!(
@@ -75,6 +78,7 @@ mod decomposed {
     mod middle {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn mixed() {
             assert_eq!(
@@ -106,6 +110,7 @@ mod decomposed {
     mod partial {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn mixed() {
             assert_eq!(
@@ -141,6 +146,7 @@ mod decomposed {
 mod full_string {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn quoted() {
         assert_eq!(

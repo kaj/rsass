@@ -41,6 +41,7 @@ fn alpha_input() {
 mod blue {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn high() {
         assert_eq!(
@@ -90,6 +91,7 @@ mod blue {
 mod green {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn high() {
         assert_eq!(
@@ -150,6 +152,7 @@ fn named() {
 mod red {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn high() {
         assert_eq!(

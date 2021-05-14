@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -92,6 +93,7 @@ fn none() {
 mod numerator_and_denominator {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn multiple() {
         assert_eq!(

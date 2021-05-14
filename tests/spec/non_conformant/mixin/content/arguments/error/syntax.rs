@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod arglist {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong error
     fn invalid() {

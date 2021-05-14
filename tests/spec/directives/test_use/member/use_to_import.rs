@@ -23,10 +23,10 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn function() {
+    let runner = runner().with_cwd("function");
     assert_eq!(
-        runner().ok("@use \"midstream\";\n\
+        runner.ok("@use \"midstream\";\n\
              \na {b: midstream.member()}\n"),
         "a {\
          \n  b: value;\
@@ -34,10 +34,10 @@ fn function() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn mixin() {
+    let runner = runner().with_cwd("mixin");
     assert_eq!(
-        runner().ok("@use \"midstream\";\n\
+        runner.ok("@use \"midstream\";\n\
              \n@include midstream.member;\n"),
         "a {\
          \n  b: c;\
@@ -47,8 +47,9 @@ fn mixin() {
 #[test]
 #[ignore] // unexepected error
 fn variable_assignment() {
+    let runner = runner().with_cwd("variable_assignment");
     assert_eq!(
-        runner().ok("@use \"midstream\";\n\
+        runner.ok("@use \"midstream\";\n\
              \nmidstream.$member: new value;\n\
              \na {b: midstream.get-member()}\n"),
         "a {\
@@ -57,10 +58,10 @@ fn variable_assignment() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn variable_use() {
+    let runner = runner().with_cwd("variable_use");
     assert_eq!(
-        runner().ok("@use \"midstream\";\n\
+        runner.ok("@use \"midstream\";\n\
              \na {b: midstream.$member}\n"),
         "a {\
          \n  b: value;\

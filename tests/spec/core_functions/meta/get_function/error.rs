@@ -31,11 +31,15 @@ fn runner() -> crate::TestRunner {
 
 mod argument {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("argument")
+    }
+
     #[test]
     fn function_ref() {
+        let runner = runner().with_cwd("function_ref");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@function foo() {\
              \n  @return null;\
              \n}\n\
@@ -52,8 +56,9 @@ mod argument {
     }
     #[test]
     fn too_few() {
+        let runner = runner().with_cwd("too_few");
         assert_eq!(
-        runner().err(
+        runner.err(
             "a {b: get-function()}\n"
         ),
         "Error: Missing argument $name.\
@@ -70,8 +75,9 @@ mod argument {
     }
     #[test]
     fn too_many() {
+        let runner = runner().with_cwd("too_many");
         assert_eq!(
-        runner().err(
+        runner.err(
             "a {b: get-function(c, true, d, e)}\n"
         ),
         "Error: Only 3 arguments allowed, but 4 were passed.\
@@ -88,11 +94,15 @@ mod argument {
     }
     mod test_type {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("type")
+        }
+
         #[test]
         fn module() {
+            let runner = runner().with_cwd("module");
             assert_eq!(
-                runner().err("a {b: get-function(c, $module: 1)}\n"),
+                runner.err("a {b: get-function(c, $module: 1)}\n"),
                 "Error: $module: 1 is not a string.\
          \n  ,\
          \n1 | a {b: get-function(c, $module: 1)}\
@@ -103,8 +113,9 @@ mod argument {
         }
         #[test]
         fn name() {
+            let runner = runner().with_cwd("name");
             assert_eq!(
-                runner().err("a {b: get-function(2px)}\n"),
+                runner.err("a {b: get-function(2px)}\n"),
                 "Error: $name: 2px is not a string.\
          \n  ,\
          \n1 | a {b: get-function(2px)}\
@@ -116,10 +127,11 @@ mod argument {
     }
 }
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn conflict() {
+    let runner = runner().with_cwd("conflict");
     assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"other1\" as *;\
              \n@use \"other2\" as *;\n\
              \na {b: get-function(member)}\n"
@@ -140,8 +152,9 @@ fn conflict() {
 #[test]
 #[ignore] // missing error
 fn division() {
+    let runner = runner().with_cwd("division");
     assert_eq!(
-        runner().err("a {b: get-function(rgb) / get-function(lighten)}\n"),
+        runner.err("a {b: get-function(rgb) / get-function(lighten)}\n"),
         "Error: get-function(\"rgb\") isn\'t a valid CSS value.\
          \n  ,\
          \n1 | a {b: get-function(rgb) / get-function(lighten)}\
@@ -152,8 +165,9 @@ fn division() {
 }
 #[test]
 fn function_exists() {
+    let runner = runner().with_cwd("function_exists");
     assert_eq!(
-        runner().err(
+        runner.err(
             "@function add-two($v) {\
              \n  @return $v + 2;\
              \n}\n\
@@ -172,11 +186,15 @@ fn function_exists() {
 }
 mod module {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("module")
+    }
+
     #[test]
     fn and_css() {
+        let runner = runner().with_cwd("and_css");
         assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:color\";\
              \na {b: get-function(\"red\", $css: true, $module: \"color\")}\n"
         ),
@@ -190,9 +208,9 @@ mod module {
     }
     #[test]
     fn built_in_but_not_loaded() {
+        let runner = runner().with_cwd("built_in_but_not_loaded");
         assert_eq!(
-            runner()
-                .err("a {b: get-function(\"red\", $module: \"color\")}\n"),
+            runner.err("a {b: get-function(\"red\", $module: \"color\")}\n"),
             "Error: There is no module with the namespace \"color\".\
          \n  ,\
          \n1 | a {b: get-function(\"red\", $module: \"color\")}\
@@ -203,8 +221,9 @@ mod module {
     }
     #[test]
     fn dash_sensitive() {
+        let runner = runner().with_cwd("dash_sensitive");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:color\" as a-b;\
              \nc {d: get-function(\"c\", $module: \"a_b\")}\n"
             ),
@@ -218,8 +237,9 @@ mod module {
     }
     #[test]
     fn non_existent() {
+        let runner = runner().with_cwd("non_existent");
         assert_eq!(
-            runner().err("a {b: get-function(\"c\", $module: \"d\")}\n"),
+            runner.err("a {b: get-function(\"c\", $module: \"d\")}\n"),
             "Error: There is no module with the namespace \"d\".\
          \n  ,\
          \n1 | a {b: get-function(\"c\", $module: \"d\")}\
@@ -230,8 +250,9 @@ mod module {
     }
     #[test]
     fn undefined() {
+        let runner = runner().with_cwd("undefined");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:color\";\
              \na {b: get-function(\"c\", $module: \"color\")}\n"
             ),
@@ -246,8 +267,9 @@ mod module {
 }
 #[test]
 fn non_existent() {
+    let runner = runner().with_cwd("non_existent");
     assert_eq!(
-        runner().err("a {b: get-function(does-not-exist)}\n"),
+        runner.err("a {b: get-function(does-not-exist)}\n"),
         "Error: Function not found: does-not-exist\
          \n  ,\
          \n1 | a {b: get-function(does-not-exist)}\
@@ -258,12 +280,15 @@ fn non_existent() {
 }
 mod through_forward {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("through_forward")
+    }
+
     #[test]
-    #[ignore] // wrong error
     fn hide() {
+        let runner = runner().with_cwd("hide");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"midstream\" as *;\
              \na {\
              \n  b: call(get-function(c));\
@@ -278,10 +303,10 @@ mod through_forward {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn show() {
+        let runner = runner().with_cwd("show");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"midstream\" as *;\
              \na {\
              \n  b: call(get-function(d));\

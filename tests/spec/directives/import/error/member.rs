@@ -16,15 +16,22 @@ fn runner() -> crate::TestRunner {
 
 mod inaccessible {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("inaccessible")
+    }
+
     mod nested {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("nested")
+        }
+
         #[test]
         #[ignore] // unexepected error
         fn function() {
+            let runner = runner().with_cwd("function");
             assert_eq!(
-                runner().ok("a {@import \"other\"}\n\
+                runner.ok("a {@import \"other\"}\n\
              \nb {c: d()}\n"),
                 "b {\
          \n  c: d();\
@@ -34,8 +41,9 @@ mod inaccessible {
         #[test]
         #[ignore] // wrong error
         fn mixin() {
+            let runner = runner().with_cwd("mixin");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "a {@import \"other\"}\n\
              \nb {@include c}\n"
                 ),
@@ -50,8 +58,9 @@ mod inaccessible {
         #[test]
         #[ignore] // wrong error
         fn variable() {
+            let runner = runner().with_cwd("variable");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "a {@import \"other\"}\n\
              \nb {c: $d}\n"
                 ),

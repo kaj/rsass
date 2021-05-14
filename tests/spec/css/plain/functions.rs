@@ -17,8 +17,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 #[ignore] // wrong result
 fn alpha() {
+    let runner = runner().with_cwd("alpha");
     assert_eq!(
-        runner().ok("@import \"plain\";\n"),
+        runner.ok("@import \"plain\";\n"),
         "a {\
          \n  b: alpha(0.1);\
          \n}\n"
@@ -27,8 +28,9 @@ fn alpha() {
 #[test]
 #[ignore] // wrong result
 fn defined_elsewhere() {
+    let runner = runner().with_cwd("defined_elsewhere");
     assert_eq!(
-        runner().ok("@function a() {@return b}\n\
+        runner.ok("@function a() {@return b}\n\
              \n@import \"plain\";\n"),
         "c {\
          \n  d: a();\
@@ -38,8 +40,9 @@ fn defined_elsewhere() {
 #[test]
 #[ignore] // wrong result
 fn grayscale() {
+    let runner = runner().with_cwd("grayscale");
     assert_eq!(
-        runner().ok("@import \"plain\";\n"),
+        runner.ok("@import \"plain\";\n"),
         "a {\
          \n  b: grayscale(0.1);\
          \n}\n"
@@ -48,8 +51,9 @@ fn grayscale() {
 #[test]
 #[ignore] // wrong result
 fn hsl() {
+    let runner = runner().with_cwd("hsl");
     assert_eq!(
-        runner().ok("@import \"plain\";\n"),
+        runner.ok("@import \"plain\";\n"),
         "a {\
          \n  b: hsl(0, 100%, 50%);\
          \n}\n"
@@ -58,8 +62,9 @@ fn hsl() {
 #[test]
 #[ignore] // wrong result
 fn hsla() {
+    let runner = runner().with_cwd("hsla");
     assert_eq!(
-        runner().ok("@import \"plain\";\n"),
+        runner.ok("@import \"plain\";\n"),
         "a {\
          \n  b: hsla(0, 100%, 50%, 0.5);\
          \n}\n"
@@ -68,8 +73,9 @@ fn hsla() {
 #[test]
 #[ignore] // wrong result
 fn invert() {
+    let runner = runner().with_cwd("invert");
     assert_eq!(
-        runner().ok("@import \"plain\";\n"),
+        runner.ok("@import \"plain\";\n"),
         "a {\
          \n  b: invert(0.1);\
          \n}\n"
@@ -78,8 +84,9 @@ fn invert() {
 #[test]
 #[ignore] // wrong result
 fn rgb() {
+    let runner = runner().with_cwd("rgb");
     assert_eq!(
-        runner().ok("@import \"plain\";\n"),
+        runner.ok("@import \"plain\";\n"),
         "a {\
          \n  b: rgb(10, 20, 30);\
          \n}\n"
@@ -88,8 +95,9 @@ fn rgb() {
 #[test]
 #[ignore] // wrong result
 fn rgba() {
+    let runner = runner().with_cwd("rgba");
     assert_eq!(
-        runner().ok("@import \"plain\";\n"),
+        runner.ok("@import \"plain\";\n"),
         "a {\
          \n  b: rgba(10, 20, 30, 0.5);\
          \n}\n"
@@ -98,8 +106,9 @@ fn rgba() {
 #[test]
 #[ignore] // wrong result
 fn saturate() {
+    let runner = runner().with_cwd("saturate");
     assert_eq!(
-        runner().ok("@import \"plain\";\n"),
+        runner.ok("@import \"plain\";\n"),
         "a {\
          \n  b: saturate(0.1);\
          \n}\n"

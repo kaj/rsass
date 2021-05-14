@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod controls {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn test_false() {
         assert_eq!(
@@ -55,6 +56,7 @@ mod controls {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong error
     fn in_content() {
@@ -140,6 +142,7 @@ mod error {
 mod test_false {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // unexepected error
     fn through_content() {
@@ -174,6 +177,7 @@ mod test_false {
 mod test_true {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // unexepected error
     fn empty() {

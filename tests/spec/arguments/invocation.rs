@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod function {
     #[allow(unused)]
     use super::runner;
+
     mod error {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // missing error
         fn positional_after_named() {
@@ -32,9 +34,11 @@ mod function {
 mod mixin {
     #[allow(unused)]
     use super::runner;
+
     mod error {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn duplicate_named() {

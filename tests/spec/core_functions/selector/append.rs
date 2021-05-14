@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod classes {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn double() {
         assert_eq!(
@@ -30,6 +31,7 @@ mod classes {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong error
     fn invalid() {
@@ -135,9 +137,11 @@ mod error {
 mod format {
     #[allow(unused)]
     use super::runner;
+
     mod input {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn initial() {
             assert_eq!(
@@ -193,6 +197,7 @@ fn one_arg() {
 mod suffix {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn descendant() {
         assert_eq!(

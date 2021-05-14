@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod bubble {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong result
     fn empty() {

@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod larger {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn negative_negative() {
         assert_eq!(

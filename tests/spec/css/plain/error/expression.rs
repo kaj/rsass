@@ -68,12 +68,16 @@ fn runner() -> crate::TestRunner {
 
 mod function {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("function")
+    }
+
     #[test]
     #[ignore] // missing error
     fn built_in() {
+        let runner = runner().with_cwd("built_in");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: This function isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: index(1 2 3, 1);\
@@ -86,8 +90,9 @@ mod function {
     #[test]
     #[ignore] // missing error
     fn keyword_arguments() {
+        let runner = runner().with_cwd("keyword_arguments");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Sass variables aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: hsl(0, 100%, $lightness: 50%);\
@@ -100,8 +105,9 @@ mod function {
     #[test]
     #[ignore] // missing error
     fn variable_arguments() {
+        let runner = runner().with_cwd("variable_arguments");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: expected \")\".\
          \n  ,\
          \n2 |   x: hsl(0, 100%, 50%...);\
@@ -114,12 +120,16 @@ mod function {
 }
 mod interpolation {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("interpolation")
+    }
+
     #[test]
     #[ignore] // missing error
     fn calc() {
+        let runner = runner().with_cwd("calc");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   w: calc(#{1px} + 10%);\
@@ -132,8 +142,9 @@ mod interpolation {
     #[test]
     #[ignore] // missing error
     fn identifier() {
+        let runner = runner().with_cwd("identifier");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   w: x#{y}z;\
@@ -146,8 +157,9 @@ mod interpolation {
     #[test]
     #[ignore] // missing error
     fn quoted_string() {
+        let runner = runner().with_cwd("quoted_string");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   w: \"x#{y}z\";\
@@ -160,8 +172,9 @@ mod interpolation {
     #[test]
     #[ignore] // missing error
     fn standalone() {
+        let runner = runner().with_cwd("standalone");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Interpolation isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   w: #{x};\
@@ -174,12 +187,16 @@ mod interpolation {
 }
 mod list {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("list")
+    }
+
     #[test]
     #[ignore] // missing error
     fn empty() {
+        let runner = runner().with_cwd("empty");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Parentheses aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: ();\
@@ -192,8 +209,9 @@ mod list {
     #[test]
     #[ignore] // missing error
     fn empty_comma() {
+        let runner = runner().with_cwd("empty_comma");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Parentheses aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: (,);\
@@ -207,8 +225,9 @@ mod list {
 #[test]
 #[ignore] // missing error
 fn map() {
+    let runner = runner().with_cwd("map");
     assert_eq!(
-        runner().err("@import \'plain\'"),
+        runner.err("@import \'plain\'"),
         "Error: Parentheses aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: (y: z);\
@@ -220,12 +239,16 @@ fn map() {
 }
 mod operation {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("operation")
+    }
+
     #[test]
     #[ignore] // missing error
     fn addition() {
+        let runner = runner().with_cwd("addition");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y + z;\
@@ -238,8 +261,9 @@ mod operation {
     #[test]
     #[ignore] // missing error
     fn equals() {
+        let runner = runner().with_cwd("equals");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y == z;\
@@ -252,8 +276,9 @@ mod operation {
     #[test]
     #[ignore] // missing error
     fn greater_than() {
+        let runner = runner().with_cwd("greater_than");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y > z;\
@@ -266,8 +291,9 @@ mod operation {
     #[test]
     #[ignore] // missing error
     fn greater_than_or_equal() {
+        let runner = runner().with_cwd("greater_than_or_equal");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y >= z;\
@@ -280,8 +306,9 @@ mod operation {
     #[test]
     #[ignore] // missing error
     fn less_than() {
+        let runner = runner().with_cwd("less_than");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y < z;\
@@ -294,8 +321,9 @@ mod operation {
     #[test]
     #[ignore] // missing error
     fn less_than_or_equal() {
+        let runner = runner().with_cwd("less_than_or_equal");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y <= z;\
@@ -308,8 +336,9 @@ mod operation {
     #[test]
     #[ignore] // missing error
     fn modulo() {
+        let runner = runner().with_cwd("modulo");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y % z;\
@@ -322,8 +351,9 @@ mod operation {
     #[test]
     #[ignore] // missing error
     fn multiplication() {
+        let runner = runner().with_cwd("multiplication");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y * z;\
@@ -336,8 +366,9 @@ mod operation {
     #[test]
     #[ignore] // missing error
     fn not_equals() {
+        let runner = runner().with_cwd("not_equals");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y != z;\
@@ -350,8 +381,9 @@ mod operation {
     #[test]
     #[ignore] // missing error
     fn subtraction() {
+        let runner = runner().with_cwd("subtraction");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Operators aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: y - z;\
@@ -365,8 +397,9 @@ mod operation {
 #[test]
 #[ignore] // missing error
 fn parent_selector() {
+    let runner = runner().with_cwd("parent_selector");
     assert_eq!(
-        runner().err("@import \'plain\'"),
+        runner.err("@import \'plain\'"),
         "Error: The parent selector isn\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: &;\
@@ -379,8 +412,9 @@ fn parent_selector() {
 #[test]
 #[ignore] // missing error
 fn parentheses() {
+    let runner = runner().with_cwd("parentheses");
     assert_eq!(
-        runner().err("@import \'plain\'"),
+        runner.err("@import \'plain\'"),
         "Error: Parentheses aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: (y);\
@@ -393,8 +427,9 @@ fn parentheses() {
 #[test]
 #[ignore] // missing error
 fn silent_comment() {
+    let runner = runner().with_cwd("silent_comment");
     assert_eq!(
-        runner().err("@import \'plain\'\n"),
+        runner.err("@import \'plain\'\n"),
         "Error: Silent comments aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   b: c // d\
@@ -406,12 +441,16 @@ fn silent_comment() {
 }
 mod variable {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("variable")
+    }
+
     #[test]
     #[ignore] // missing error
     fn declaration() {
+        let runner = runner().with_cwd("declaration");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Sass variables aren\'t allowed in plain CSS.\
          \n  ,\
          \n1 | $var: value;\
@@ -424,8 +463,9 @@ mod variable {
     #[test]
     #[ignore] // missing error
     fn test_use() {
+        let runner = runner().with_cwd("use");
         assert_eq!(
-            runner().err("@import \'plain\'"),
+            runner.err("@import \'plain\'"),
             "Error: Sass variables aren\'t allowed in plain CSS.\
          \n  ,\
          \n2 |   x: $var;\

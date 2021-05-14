@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod after {
     #[allow(unused)]
     use super::runner;
+
     mod at_rule {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn css() {
@@ -98,7 +100,7 @@ mod after {
     }
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn as_invalid() {
     assert_eq!(
         runner().err("@use \"foo\" as 1;\n"),
@@ -139,9 +141,11 @@ fn empty() {
 mod member {
     #[allow(unused)]
     use super::runner;
+
     mod function {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn definition() {
@@ -217,6 +221,7 @@ mod member {
     mod mixin {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn definition() {
@@ -294,6 +299,7 @@ mod member {
     mod variable {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn global() {
@@ -355,6 +361,7 @@ mod member {
 mod url {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong error
     fn empty() {
@@ -382,7 +389,7 @@ mod url {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn unquoted() {
         assert_eq!(
             runner().err("@use foo;\n"),
@@ -398,6 +405,7 @@ mod url {
 mod with {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong error
     fn before_as() {
@@ -519,6 +527,7 @@ mod with {
 mod within {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong error
     fn function() {

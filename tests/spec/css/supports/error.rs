@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod syntax {
     #[allow(unused)]
     use super::runner;
+
     mod anything {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn colon() {
@@ -54,6 +56,7 @@ mod syntax {
     mod declaration {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn multiple() {
@@ -97,6 +100,7 @@ mod syntax {
     mod function {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn not() {
@@ -127,6 +131,7 @@ mod syntax {
     mod ident {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn interpolated_after() {
@@ -196,6 +201,7 @@ mod syntax {
     mod operator {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn and_after_not() {

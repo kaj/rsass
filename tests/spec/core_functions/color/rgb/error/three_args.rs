@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod blue {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn test_type() {
         assert_eq!(
@@ -28,6 +29,7 @@ mod blue {
 mod green {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn test_type() {
         assert_eq!(
@@ -48,6 +50,7 @@ mod green {
 mod red {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn test_type() {
         assert_eq!(

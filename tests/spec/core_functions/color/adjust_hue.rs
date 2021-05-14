@@ -26,6 +26,7 @@ fn alpha() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -61,6 +62,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn color() {
             assert_eq!(
@@ -144,6 +146,7 @@ fn negative() {
 mod units {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn angle() {
         assert_eq!(

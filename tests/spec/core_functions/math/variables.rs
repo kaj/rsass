@@ -18,9 +18,11 @@ fn e() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     mod assignment {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn e() {

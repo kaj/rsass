@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod alpha {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn too_high() {
@@ -38,6 +39,7 @@ mod alpha {
 mod blackness {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn too_high() {
@@ -72,6 +74,7 @@ mod blackness {
 mod blue {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn too_high() {
@@ -102,6 +105,7 @@ mod blue {
 mod green {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn too_high() {
@@ -132,6 +136,7 @@ mod green {
 mod lightness {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn too_high() {
@@ -166,6 +171,7 @@ mod lightness {
 mod red {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn too_high() {
@@ -196,6 +202,7 @@ mod red {
 mod saturation {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn too_high() {
@@ -230,6 +237,7 @@ mod saturation {
 mod whiteness {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn too_high() {

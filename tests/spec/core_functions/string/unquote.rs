@@ -25,6 +25,7 @@ fn empty() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -91,6 +92,7 @@ fn escaped_backslash() {
 mod escaped_quotes {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn quoted() {
         assert_eq!(

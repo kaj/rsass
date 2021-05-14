@@ -55,12 +55,16 @@ fn runner() -> crate::TestRunner {
 
 mod diamond_dependency {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("diamond_dependency")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn with_midstream_extend() {
+        let runner = runner().with_cwd("with_midstream_extend");
         assert_eq!(
-            runner().ok("@use \"left\";\
+            runner.ok("@use \"left\";\
              \n@use \"right\";\n"),
             "in-upstream, in-midstream, in-right, in-left {\
          \n  a: b;\
@@ -77,8 +81,9 @@ mod diamond_dependency {
 #[test]
 #[ignore] // unexepected error
 fn diamond_merge() {
+    let runner = runner().with_cwd("diamond_merge");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "// Sibling modules can\'t extend one another\'s selectors, but they can be merged\
              \n// together into the same selector list if they extend the same thing. If they\
              \n// are, they should be optimized with respect to one another.\
@@ -97,12 +102,16 @@ fn diamond_merge() {
 }
 mod extended {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("extended")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn from_other_file() {
+        let runner = runner().with_cwd("from_other_file");
         assert_eq!(
-            runner().ok("@use \"midstream\";\n\
+            runner.ok("@use \"midstream\";\n\
              \nin-input {@extend in-midstream}\n"),
             "in-upstream, in-midstream, in-input {\
          \n  x: y;\
@@ -112,8 +121,9 @@ mod extended {
     #[test]
     #[ignore] // unexepected error
     fn from_same_file() {
+        let runner = runner().with_cwd("from_same_file");
         assert_eq!(
-            runner().ok("@use \"other\";\n\
+            runner.ok("@use \"other\";\n\
              \nin-input {@extend in-other-extender}\n"),
             "in-other-extendee, in-other-extender, in-input {\
          \n  x: y;\
@@ -124,8 +134,9 @@ mod extended {
 #[test]
 #[ignore] // unexepected error
 fn far_upstream() {
+    let runner = runner().with_cwd("far_upstream");
     assert_eq!(
-        runner().ok("@use \"midstream\";\n\
+        runner.ok("@use \"midstream\";\n\
              \nin-input {@extend in-upstream}\n"),
         "in-upstream, in-input {\
          \n  x: y;\
@@ -134,12 +145,16 @@ fn far_upstream() {
 }
 mod midstream_extend_within_pseudoselector {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("midstream_extend_within_pseudoselector")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn matches() {
+        let runner = runner().with_cwd("matches");
         assert_eq!(
-            runner().ok("@use \"midstream\";\
+            runner.ok("@use \"midstream\";\
              \nin-input {\
              \n  @extend in-midstream;\
              \n  y: z;\
@@ -155,12 +170,16 @@ mod midstream_extend_within_pseudoselector {
 }
 mod optional_and_mandatory {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("optional_and_mandatory")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn different_files() {
+        let runner = runner().with_cwd("different_files");
         assert_eq!(
-            runner().ok("@use \"optional\";\
+            runner.ok("@use \"optional\";\
              \n@use \"mandatory\";\n"),
             "in-other, downstream {\
          \n  x: y;\
@@ -168,10 +187,11 @@ mod optional_and_mandatory {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn same_file() {
+        let runner = runner().with_cwd("same_file");
         assert_eq!(
-            runner().ok("@use \"other\";\n\
+            runner.ok("@use \"other\";\n\
              \nin-input {\
              \n  @extend in-other !optional;\
              \n  @extend in-other;\
@@ -185,8 +205,9 @@ mod optional_and_mandatory {
 #[test]
 #[ignore] // unexepected error
 fn placeholder() {
+    let runner = runner().with_cwd("placeholder");
     assert_eq!(
-        runner().ok("@use \"other\";\n\
+        runner.ok("@use \"other\";\n\
              \nin-input {@extend %in-other}\n"),
         "in-input {\
          \n  x: y;\
@@ -195,12 +216,16 @@ fn placeholder() {
 }
 mod scope {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("scope")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn diamond() {
+        let runner = runner().with_cwd("diamond");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "// Even though left-extendee and right-extendee both end up in the style rule\
              \n// defined in _shared.scss, they aren\'t extended by the other file because those\
              \n// files don\'t use one another.\
@@ -215,8 +240,9 @@ mod scope {
     #[test]
     #[ignore] // unexepected error
     fn downstream() {
+        let runner = runner().with_cwd("downstream");
         assert_eq!(
-            runner().ok("@use \"other\";\n\
+            runner.ok("@use \"other\";\n\
              \nin-input {x: y}\n"),
             "in-input {\
          \n  x: y;\
@@ -226,8 +252,9 @@ mod scope {
     #[test]
     #[ignore] // unexepected error
     fn isolated_through_import() {
+        let runner = runner().with_cwd("isolated_through_import");
         assert_eq!(
-            runner().ok("@use \"used-by-input\";\
+            runner.ok("@use \"used-by-input\";\
              \n@import \"imported\";\n"),
             ".in-shared, .in-used-by-input {\
          \n  a: b;\
@@ -240,8 +267,9 @@ mod scope {
     #[test]
     #[ignore] // unexepected error
     fn private() {
+        let runner = runner().with_cwd("private");
         assert_eq!(
-            runner().ok("@use \"other\";\n\
+            runner.ok("@use \"other\";\n\
              \nin-input {@extend %-in-other !optional}\n"),
             "in-other {\
          \n  x: y;\
@@ -251,8 +279,9 @@ mod scope {
     #[test]
     #[ignore] // unexepected error
     fn sibling() {
+        let runner = runner().with_cwd("sibling");
         assert_eq!(
-            runner().ok("@use \"left\";\
+            runner.ok("@use \"left\";\
              \n@use \"right\";\n"),
             "left-extendee {\
          \n  in: left;\
@@ -265,8 +294,9 @@ mod scope {
     #[test]
     #[ignore] // unexepected error
     fn use_and_import_into_diamond_extend() {
+        let runner = runner().with_cwd("use_and_import_into_diamond_extend");
         assert_eq!(
-            runner().ok("@use \"downstream\";\
+            runner.ok("@use \"downstream\";\
              \n@import \"downstream\";\
              \n@import \"imported\";\n"),
             "in-shared, right-extendee, left-extendee {\
@@ -283,8 +313,9 @@ mod scope {
     #[test]
     #[ignore] // unexepected error
     fn use_into_use_and_import_into_import() {
+        let runner = runner().with_cwd("use_into_use_and_import_into_import");
         assert_eq!(
-            runner().ok("@use \"used\";\
+            runner.ok("@use \"used\";\
              \n@import \"imported\";\n"),
             "shared, in-used, in-imported {\
          \n  x: y;\
@@ -297,8 +328,9 @@ mod scope {
     #[test]
     #[ignore] // unexepected error
     fn use_into_use_and_import_into_use() {
+        let runner = runner().with_cwd("use_into_use_and_import_into_use");
         assert_eq!(
-            runner().ok("@use \"used\";\
+            runner.ok("@use \"used\";\
              \n@import \"imported\";\n"),
             "shared, in-used, in-imported {\
          \n  x: y;\
@@ -311,8 +343,9 @@ mod scope {
     #[test]
     #[ignore] // unexepected error
     fn use_into_use_and_use_into_import() {
+        let runner = runner().with_cwd("use_into_use_and_use_into_import");
         assert_eq!(
-            runner().ok("@use \"user\";\
+            runner.ok("@use \"user\";\
              \n@use \"importer\";\n"),
             "shared, in-user {\
          \n  x: y;\
@@ -325,8 +358,10 @@ mod scope {
     #[test]
     #[ignore] // unexepected error
     fn use_into_use_and_use_into_import_into_use() {
+        let runner =
+            runner().with_cwd("use_into_use_and_use_into_import_into_use");
         assert_eq!(
-            runner().ok("@use \"importer\";\
+            runner.ok("@use \"importer\";\
              \n@use \"used\";\n"),
             "shared, in-imported {\
          \n  x: y;\
@@ -340,8 +375,9 @@ mod scope {
 #[test]
 #[ignore] // unexepected error
 fn upstream() {
+    let runner = runner().with_cwd("upstream");
     assert_eq!(
-        runner().ok("@use \"other\";\n\
+        runner.ok("@use \"other\";\n\
              \nin-input {@extend in-other}\n"),
         "in-other, in-input {\
          \n  x: y;\

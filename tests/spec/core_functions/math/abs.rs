@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -65,6 +66,7 @@ fn named() {
 mod negative {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn decimal() {
         assert_eq!(
@@ -87,6 +89,7 @@ mod negative {
 mod positive {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn decimal() {
         assert_eq!(

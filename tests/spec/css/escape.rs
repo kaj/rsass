@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     mod syntax {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // missing error
         fn too_high() {

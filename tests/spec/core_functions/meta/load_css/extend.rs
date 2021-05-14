@@ -11,12 +11,16 @@ fn runner() -> crate::TestRunner {
 
 mod in_input {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("in_input")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn after() {
+        let runner = runner().with_cwd("after");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\
+            runner.ok("@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\n\
              \nd {@extend a}\n"),
             "a, d {\
@@ -27,8 +31,9 @@ mod in_input {
     #[test]
     #[ignore] // unexepected error
     fn before() {
+        let runner = runner().with_cwd("before");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\n\
+            runner.ok("@use \"sass:meta\";\n\
              \nd {@extend a}\
              \n@include meta.load-css(\"other\");\n"),
             "a, d {\
@@ -39,12 +44,16 @@ mod in_input {
 }
 mod in_other {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("in_other")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn after() {
+        let runner = runner().with_cwd("after");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\n\
+            runner.ok("@use \"sass:meta\";\n\
              \n@include meta.load-css(\"other\");\
              \na {b: c}\n"),
             "a {\
@@ -55,8 +64,9 @@ mod in_other {
     #[test]
     #[ignore] // unexepected error
     fn before() {
+        let runner = runner().with_cwd("before");
         assert_eq!(
-            runner().ok("@use \"sass:meta\";\n\
+            runner.ok("@use \"sass:meta\";\n\
              \na {b: c}\
              \n@include meta.load-css(\"other\");\n"),
             "a {\

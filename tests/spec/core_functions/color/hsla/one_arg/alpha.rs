@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod clamped {
     #[allow(unused)]
     use super::runner;
+
     mod alpha {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn above() {
             assert_eq!(
@@ -52,6 +54,7 @@ mod clamped {
 mod in_gamut {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn named() {
         assert_eq!(

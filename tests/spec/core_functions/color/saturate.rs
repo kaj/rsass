@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     mod one_arg {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // missing error
         fn test_type() {
@@ -62,9 +64,11 @@ mod error {
     mod two_args {
         #[allow(unused)]
         use super::runner;
+
         mod bounds {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             fn too_high() {
                 assert_eq!(
@@ -95,6 +99,7 @@ mod error {
         mod test_type {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             #[ignore] // missing error
             fn color() {
@@ -126,6 +131,7 @@ mod error {
 mod one_arg {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn named() {
         assert_eq!(
@@ -157,6 +163,7 @@ mod one_arg {
 mod two_args {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn alpha() {
         assert_eq!(

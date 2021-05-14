@@ -28,8 +28,9 @@ fn runner() -> crate::TestRunner {
 
 #[test]
 fn test_as() {
+    let runner = runner().with_cwd("as");
     assert_eq!(
-        runner().ok("@use \"sass:math\" as m;\
+        runner.ok("@use \"sass:math\" as m;\
              \na {b: m.round(0.7)}\n"),
         "a {\
          \n  b: 1;\
@@ -38,12 +39,16 @@ fn test_as() {
 }
 mod error {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("error")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn set_variable() {
+        let runner = runner().with_cwd("set_variable");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:math\";\
              \nmath.$a: b;\n"
             ),
@@ -58,12 +63,16 @@ mod error {
 }
 mod forward {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("forward")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn test_as() {
+        let runner = runner().with_cwd("as");
         assert_eq!(
-            runner().ok("@use \"other\";\
+            runner.ok("@use \"other\";\
              \na {b: other.s-round(0.7)}\n"),
             "a {\
          \n  b: 1;\
@@ -71,10 +80,11 @@ mod forward {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn bare() {
+        let runner = runner().with_cwd("bare");
         assert_eq!(
-            runner().ok("@use \"other\";\
+            runner.ok("@use \"other\";\
              \na {b: other.round(0.7)}\n"),
             "a {\
          \n  b: 1;\
@@ -83,12 +93,16 @@ mod forward {
     }
     mod error {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("error")
+        }
+
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn hide() {
+            let runner = runner().with_cwd("hide");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"other\";\
              \na {b: other.round(0.7)}\n"
                 ),
@@ -101,10 +115,11 @@ mod forward {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn show() {
+            let runner = runner().with_cwd("show");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"other\";\
              \na {b: other.round(0.7)}\n"
                 ),
@@ -118,10 +133,11 @@ mod forward {
         }
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn hide() {
+        let runner = runner().with_cwd("hide");
         assert_eq!(
-            runner().ok("@use \"other\";\
+            runner.ok("@use \"other\";\
              \na {b: other.round(0.7)}\n"),
             "a {\
          \n  b: 1;\
@@ -129,10 +145,11 @@ mod forward {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn show() {
+        let runner = runner().with_cwd("show");
         assert_eq!(
-            runner().ok("@use \"other\";\
+            runner.ok("@use \"other\";\
              \na {b: other.round(0.7)}\n"),
             "a {\
          \n  b: 1;\
@@ -142,8 +159,9 @@ mod forward {
 }
 #[test]
 fn global() {
+    let runner = runner().with_cwd("global");
     assert_eq!(
-        runner().ok("@use \"sass:math\" as *;\
+        runner.ok("@use \"sass:math\" as *;\
              \na {b: compatible(1px, 1in)}\n"),
         "a {\
          \n  b: true;\

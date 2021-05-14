@@ -41,6 +41,7 @@ fn alpha_input() {
 mod lightness {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn high() {
         assert_eq!(
@@ -101,6 +102,7 @@ fn named() {
 mod saturation {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn high() {
         assert_eq!(

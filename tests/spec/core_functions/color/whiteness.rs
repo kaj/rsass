@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -86,6 +87,7 @@ fn max() {
 mod middle {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong result
     fn half_blackness() {

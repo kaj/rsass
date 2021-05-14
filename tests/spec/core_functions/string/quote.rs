@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -74,6 +75,7 @@ fn named() {
 mod quote_unquoted_quote {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn double() {
         assert_eq!(

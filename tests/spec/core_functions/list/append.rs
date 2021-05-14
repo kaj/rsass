@@ -26,6 +26,7 @@ fn bracketed() {
 mod comma {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn default() {
         assert_eq!(
@@ -48,6 +49,7 @@ mod comma {
 mod empty {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn comma() {
         assert_eq!(
@@ -103,6 +105,7 @@ mod empty {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -138,6 +141,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn separator() {
             assert_eq!(
@@ -167,6 +171,7 @@ mod error {
 mod map {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn empty() {
         assert_eq!(
@@ -216,6 +221,7 @@ fn non_list() {
 mod single {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn comma() {
         assert_eq!(
@@ -248,6 +254,7 @@ mod single {
 mod space {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn default() {
         assert_eq!(

@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod negative {
     #[allow(unused)]
     use super::runner;
+
     mod with_x {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn finite() {
             assert_eq!(
@@ -96,9 +98,11 @@ mod negative {
 mod negative_fuzzy {
     #[allow(unused)]
     use super::runner;
+
     mod with_x {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn finite() {
             assert_eq!(
@@ -164,9 +168,11 @@ mod negative_fuzzy {
 mod positive {
     #[allow(unused)]
     use super::runner;
+
     mod with_x {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn finite() {
             assert_eq!(
@@ -252,9 +258,11 @@ mod positive {
 mod positive_fuzzy {
     #[allow(unused)]
     use super::runner;
+
     mod with_x {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn finite() {
             assert_eq!(

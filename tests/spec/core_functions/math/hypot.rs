@@ -20,9 +20,11 @@ fn compatible_units() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     mod incompatible_units {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn all() {
             assert_eq!(
@@ -87,6 +89,7 @@ mod error {
     mod some_unitless {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn first() {
             assert_eq!(
@@ -181,6 +184,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn first() {
             assert_eq!(
@@ -246,6 +250,7 @@ mod error {
 mod infinity {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn first() {
         assert_eq!(

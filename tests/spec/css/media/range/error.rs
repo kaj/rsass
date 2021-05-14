@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod invalid_binary_operator {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn before_colon() {
@@ -113,6 +114,7 @@ mod invalid_binary_operator {
 mod invalid_comparison {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn gte() {
@@ -156,6 +158,7 @@ mod invalid_comparison {
 mod mismatched_range {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn gt_lt() {

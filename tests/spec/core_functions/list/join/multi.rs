@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod auto {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn bracketed() {
         assert_eq!(
@@ -30,6 +31,7 @@ mod auto {
 mod bracketed {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn and_separator() {
         assert_eq!(
@@ -117,6 +119,7 @@ mod bracketed {
 mod comma {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn both() {
         assert_eq!(
@@ -147,6 +150,7 @@ mod comma {
     mod separator {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn forces_comma() {
             assert_eq!(
@@ -171,6 +175,7 @@ mod comma {
 mod map {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn both() {
         assert_eq!(
@@ -183,6 +188,7 @@ mod map {
     mod first {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn comma() {
             assert_eq!(
@@ -205,6 +211,7 @@ mod map {
     mod second {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn comma() {
             assert_eq!(
@@ -242,6 +249,7 @@ fn named() {
 mod space {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn both() {
         assert_eq!(
@@ -254,6 +262,7 @@ mod space {
     mod separator {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn forces_not_space() {
             assert_eq!(

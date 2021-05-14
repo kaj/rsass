@@ -15,8 +15,9 @@ fn runner() -> crate::TestRunner {
 #[test]
 #[ignore] // missing error
 fn directory_dot_import() {
+    let runner = runner().with_cwd("directory_dot_import");
     assert_eq!(
-        runner().err(
+        runner.err(
             "// Import-only file extensions only apply to individual files, not to\
              \n// directories.\
              \n@import \"other\";\n"
@@ -32,8 +33,9 @@ fn directory_dot_import() {
 #[test]
 #[ignore] // missing error
 fn no_extension() {
+    let runner = runner().with_cwd("no_extension");
     assert_eq!(
-        runner().err("@import \"other\";\n"),
+        runner.err("@import \"other\";\n"),
         "Error: Can\'t find stylesheet to import.\
          \n  ,\
          \n1 | @import \"other\";\
@@ -45,8 +47,9 @@ fn no_extension() {
 #[test]
 #[ignore] // missing error
 fn parent_relative() {
+    let runner = runner().with_cwd("parent_relative");
     assert_eq!(
-        runner().err(
+        runner.err(
             "// A file in a subdirectory shouldn\'t be able to load a URL relative\
              \n// to the importing file.\
              \n// Regression test for scssphp/scssphp#242\

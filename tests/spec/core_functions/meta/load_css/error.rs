@@ -40,12 +40,16 @@ fn runner() -> crate::TestRunner {
 
 mod from_other {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("from_other")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn extend() {
+        let runner = runner().with_cwd("extend");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\n"
             ),
@@ -62,8 +66,9 @@ mod from_other {
     #[test]
     #[ignore] // wrong error
     fn runtime() {
+        let runner = runner().with_cwd("runtime");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\n"
             ),
@@ -79,8 +84,9 @@ mod from_other {
     #[test]
     #[ignore] // wrong error
     fn syntax() {
+        let runner = runner().with_cwd("syntax");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\n"
             ),
@@ -96,12 +102,16 @@ mod from_other {
 }
 mod load {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("load")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn test_loop() {
+        let runner = runner().with_cwd("loop");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\n"
             ),
@@ -117,8 +127,9 @@ mod load {
     #[test]
     #[ignore] // wrong error
     fn missing() {
+        let runner = runner().with_cwd("missing");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\n"
             ),
@@ -133,12 +144,16 @@ mod load {
 }
 mod member {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("member")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn global() {
+        let runner = runner().with_cwd("global");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@meta.load-css(\"other\");\n\
              \na {b: $c}\n"
@@ -154,8 +169,9 @@ mod member {
     #[test]
     #[ignore] // wrong error
     fn namespace() {
+        let runner = runner().with_cwd("namespace");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@meta.load-css(\"other\");\n\
              \na {b: other.$c}\n"
@@ -172,8 +188,9 @@ mod member {
 #[test]
 #[ignore] // wrong error
 fn too_few_args() {
+    let runner = runner().with_cwd("too_few_args");
     assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@include meta.load-css();\n"
         ),
@@ -192,8 +209,9 @@ fn too_few_args() {
 #[test]
 #[ignore] // wrong error
 fn too_many_args() {
+    let runner = runner().with_cwd("too_many_args");
     assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", (), \"a\");\n"
         ),
@@ -211,12 +229,16 @@ fn too_many_args() {
 }
 mod test_type {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("type")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn url() {
+        let runner = runner().with_cwd("url");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(1);\n"
             ),
@@ -230,12 +252,16 @@ mod test_type {
     }
     mod with {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("with")
+        }
+
         #[test]
         #[ignore] // wrong error
         fn key() {
+            let runner = runner().with_cwd("key");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (1: null));\n"
                 ),
@@ -250,8 +276,9 @@ mod test_type {
         #[test]
         #[ignore] // wrong error
         fn map() {
+            let runner = runner().with_cwd("map");
             assert_eq!(
-                runner().err(
+                runner.err(
                     "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: 1);\n"
                 ),
@@ -267,12 +294,16 @@ mod test_type {
 }
 mod with {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("with")
+    }
+
     #[test]
     #[ignore] // wrong error
     fn conflict() {
+        let runner = runner().with_cwd("conflict");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"midstream\", $with: (a: b));\n"
             ),
@@ -293,8 +324,9 @@ mod with {
     #[test]
     #[ignore] // wrong error
     fn core_module() {
+        let runner = runner().with_cwd("core_module");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"sass:color\", $with: (a: b));\n"
             ),
@@ -308,15 +340,22 @@ mod with {
     }
     mod multi_configuration {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("multi_configuration")
+        }
+
         mod double_load {
             #[allow(unused)]
-            use super::runner;
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("double_load")
+            }
+
             #[test]
             #[ignore] // wrong error
             fn both_configured() {
+                let runner = runner().with_cwd("both_configured");
                 assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a: b));\
              \n@include meta.load-css(\"other\", $with: (a: b));\n"
@@ -334,8 +373,9 @@ mod with {
             #[test]
             #[ignore] // wrong error
             fn through_forward() {
+                let runner = runner().with_cwd("through_forward");
                 assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"forwarded\");\
              \n@include meta.load-css(\"midstream\", $with: (a: b));\n"
@@ -358,8 +398,9 @@ mod with {
             #[test]
             #[ignore] // wrong error
             fn unconfigured_first() {
+                let runner = runner().with_cwd("unconfigured_first");
                 assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\");\
              \n@include meta.load-css(\"other\", $with: (a: b));\n"
@@ -377,12 +418,16 @@ mod with {
         }
         mod use_and_load {
             #[allow(unused)]
-            use super::runner;
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("use_and_load")
+            }
+
             #[test]
             #[ignore] // wrong error
             fn both_configured() {
+                let runner = runner().with_cwd("both_configured");
                 assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@use \"other\" with ($a: b);\
              \n@include meta.load-css(\"other\", $with: (a: b));\n"
@@ -400,8 +445,9 @@ mod with {
             #[test]
             #[ignore] // wrong error
             fn load_first() {
+                let runner = runner().with_cwd("load_first");
                 assert_eq!(
-        runner().err(
+        runner.err(
             "// This indirection is necessary so that we can execute `meta.load-css()` before\
              \n// we begin loading `used`.\
              \n@use \"loads\";\
@@ -422,8 +468,9 @@ mod with {
             #[test]
             #[ignore] // wrong error
             fn through_forward() {
+                let runner = runner().with_cwd("through_forward");
                 assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@use \"forwarded\";\
              \n@include meta.load-css(\"midstream\", $with: (a: b));\n"
@@ -446,8 +493,9 @@ mod with {
             #[test]
             #[ignore] // wrong error
             fn unconfigured_first() {
+                let runner = runner().with_cwd("unconfigured_first");
                 assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@use \"other\";\
              \n@include meta.load-css(\"other\", $with: (a: b));\n"
@@ -467,8 +515,9 @@ mod with {
     #[test]
     #[ignore] // wrong error
     fn namespace() {
+        let runner = runner().with_cwd("namespace");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"midstream\", $with: (a: b));\n"
             ),
@@ -483,8 +532,9 @@ mod with {
     #[test]
     #[ignore] // wrong error
     fn nested() {
+        let runner = runner().with_cwd("nested");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a: b));\n"
             ),
@@ -499,8 +549,9 @@ mod with {
     #[test]
     #[ignore] // wrong error
     fn not_default() {
+        let runner = runner().with_cwd("not_default");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a: b));\n"
             ),
@@ -515,8 +566,9 @@ mod with {
     #[test]
     #[ignore] // wrong error
     fn repeated_variable() {
+        let runner = runner().with_cwd("repeated_variable");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a-b: c, a_b: c));\n"
             ),
@@ -530,12 +582,16 @@ mod with {
     }
     mod through_forward {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("through_forward")
+        }
+
         #[test]
         #[ignore] // wrong error
         fn test_as() {
+            let runner = runner().with_cwd("as");
             assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"used\", $with: (a: b));\n"
         ),
@@ -550,8 +606,9 @@ mod with {
         #[test]
         #[ignore] // wrong error
         fn hide() {
+            let runner = runner().with_cwd("hide");
             assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"used\", $with: (a: b));\n"
         ),
@@ -566,8 +623,9 @@ mod with {
         #[test]
         #[ignore] // wrong error
         fn show() {
+            let runner = runner().with_cwd("show");
             assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"used\", $with: (a: b));\n"
         ),
@@ -582,8 +640,9 @@ mod with {
         #[test]
         #[ignore] // wrong error
         fn with() {
+            let runner = runner().with_cwd("with");
             assert_eq!(
-        runner().err(
+        runner.err(
             "@use \"sass:meta\";\
              \n@include meta.load-css(\"used\", $with: (a: b));\n"
         ),
@@ -599,8 +658,9 @@ mod with {
     #[test]
     #[ignore] // wrong error
     fn undefined() {
+        let runner = runner().with_cwd("undefined");
         assert_eq!(
-            runner().err(
+            runner.err(
                 "@use \"sass:meta\";\
              \n@include meta.load-css(\"other\", $with: (a: b));\n"
             ),

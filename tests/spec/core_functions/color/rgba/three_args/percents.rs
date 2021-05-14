@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod all {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn percent() {
         assert_eq!(
@@ -30,6 +31,7 @@ fn boundaries() {
 mod clamped {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn blue() {
         assert_eq!(
@@ -61,6 +63,7 @@ mod clamped {
 mod percent {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn green() {
         assert_eq!(
@@ -74,6 +77,7 @@ mod percent {
 mod unitless {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn green() {
         assert_eq!(

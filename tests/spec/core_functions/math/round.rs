@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod down {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn low() {
         assert_eq!(
@@ -52,6 +53,7 @@ mod down {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -127,6 +129,7 @@ fn preserves_units() {
 mod up {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn high() {
         assert_eq!(

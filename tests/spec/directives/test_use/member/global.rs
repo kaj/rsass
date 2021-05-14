@@ -32,10 +32,10 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn function() {
+    let runner = runner().with_cwd("function");
     assert_eq!(
-        runner().ok("@use \"other\" as *;\n\
+        runner.ok("@use \"other\" as *;\n\
              \na {b: member()}\n"),
         "a {\
          \n  b: value;\
@@ -43,10 +43,10 @@ fn function() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn mixin() {
+    let runner = runner().with_cwd("mixin");
     assert_eq!(
-        runner().ok("@use \"other\" as *;\n\
+        runner.ok("@use \"other\" as *;\n\
              \n@include member;\n"),
         "a {\
          \n  b: c;\
@@ -54,10 +54,10 @@ fn mixin() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn multiple() {
+    let runner = runner().with_cwd("multiple");
     assert_eq!(
-        runner().ok("@use \"left\" as *;\
+        runner.ok("@use \"left\" as *;\
              \n@use \"right\" as *;\n\
              \na {\
              \n  left: $left;\
@@ -71,12 +71,15 @@ fn multiple() {
 }
 mod no_conflict {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("no_conflict")
+    }
+
     #[test]
-    #[ignore] // unexepected error
     fn function() {
+        let runner = runner().with_cwd("function");
         assert_eq!(
-            runner().ok("@use \"other\" as *;\
+            runner.ok("@use \"other\" as *;\
              \n@use \"other\" as *;\n\
              \na {b: c()}\n"),
             "a {\
@@ -85,10 +88,10 @@ mod no_conflict {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn mixin() {
+        let runner = runner().with_cwd("mixin");
         assert_eq!(
-            runner().ok("@use \"other\" as *;\
+            runner.ok("@use \"other\" as *;\
              \n@use \"other\" as *;\n\
              \na {@include b}\n"),
             "a {\
@@ -97,10 +100,10 @@ mod no_conflict {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn variable() {
+        let runner = runner().with_cwd("variable");
         assert_eq!(
-            runner().ok("@use \"other\" as *;\
+            runner.ok("@use \"other\" as *;\
              \n@use \"other\" as *;\n\
              \na {b: $c}\n"),
             "a {\
@@ -111,12 +114,16 @@ mod no_conflict {
 }
 mod variable_assignment {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("variable_assignment")
+    }
+
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn nested() {
+        let runner = runner().with_cwd("nested");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             "@use \"other\" as *;\n\
              \na {\
              \n  // A nested variable assignment that doesn\'t have a namespace but is !global\
@@ -131,10 +138,11 @@ mod variable_assignment {
     );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn top_level() {
+        let runner = runner().with_cwd("top_level");
         assert_eq!(
-            runner().ok("@use \"other\" as *;\n\
+            runner.ok("@use \"other\" as *;\n\
              \n$member: new value;\n\
              \na {b: get-member()}\n"),
             "a {\
@@ -144,10 +152,10 @@ mod variable_assignment {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn variable_use() {
+    let runner = runner().with_cwd("variable_use");
     assert_eq!(
-        runner().ok("@use \"other\" as *;\n\
+        runner.ok("@use \"other\" as *;\n\
              \na {b: $member}\n"),
         "a {\
          \n  b: value;\

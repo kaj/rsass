@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod alpha {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn unit() {
         assert_eq!(
@@ -42,6 +43,7 @@ mod alpha {
 mod blackness {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_high() {
         assert_eq!(
@@ -90,6 +92,7 @@ mod blackness {
     mod unit {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn none() {
             assert_eq!(
@@ -140,6 +143,7 @@ mod blackness {
 mod hue {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn test_type() {
         assert_eq!(
@@ -174,6 +178,7 @@ mod hue {
 mod whiteness {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_high() {
         assert_eq!(
@@ -222,6 +227,7 @@ mod whiteness {
     mod unit {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn none() {
             assert_eq!(

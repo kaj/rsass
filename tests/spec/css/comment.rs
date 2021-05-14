@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod converts_newlines {
     #[allow(unused)]
     use super::runner;
+
     mod sass {
         #[allow(unused)]
         use super::runner;
@@ -15,6 +16,7 @@ mod converts_newlines {
     mod scss {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn cr() {
             assert_eq!(
@@ -36,12 +38,15 @@ mod converts_newlines {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     mod loud {
         #[allow(unused)]
         use super::runner;
+
         mod interpolation {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             #[ignore] // wrong error
             fn failure() {
@@ -76,6 +81,7 @@ mod error {
         mod unterminated {
             #[allow(unused)]
             use super::runner;
+
             #[test]
             #[ignore] // missing error
             fn scss() {
@@ -99,9 +105,11 @@ mod error {
 mod inline {
     #[allow(unused)]
     use super::runner;
+
     mod loud {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn scss() {
             assert_eq!(
@@ -117,6 +125,7 @@ mod inline {
     mod silent {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn scss() {
             assert_eq!(

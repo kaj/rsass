@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod list {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn bracketed() {
@@ -130,6 +131,7 @@ fn quoted_var_slash() {
 mod test_type {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn blue() {
         assert_eq!(

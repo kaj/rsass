@@ -58,22 +58,26 @@ fn runner() -> crate::TestRunner {
 
 mod explicit_extension {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("explicit_extension")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn sass() {
+        let runner = runner().with_cwd("sass");
         assert_eq!(
-            runner().ok("@use \"other.sass\"\n"),
+            runner.ok("@use \"other.sass\"\n"),
             "a {\
          \n  syntax: sass;\
          \n}\n"
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn scss() {
+        let runner = runner().with_cwd("scss");
         assert_eq!(
-            runner().ok("@use \"other.scss\"\n"),
+            runner.ok("@use \"other.scss\"\n"),
             "a {\
          \n  syntax: scss;\
          \n}\n"
@@ -82,22 +86,25 @@ mod explicit_extension {
 }
 mod index {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("index")
+    }
+
     #[test]
-    #[ignore] // unexepected error
     fn dir_dot_foo() {
+        let runner = runner().with_cwd("dir_dot_foo");
         assert_eq!(
-            runner().ok("@use \"dir.foo\";\n"),
+            runner.ok("@use \"dir.foo\";\n"),
             ".foo {\
          \n  a: b;\
          \n}\n"
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn partial() {
+        let runner = runner().with_cwd("partial");
         assert_eq!(
-            runner().ok("@use \"dir\";\n"),
+            runner.ok("@use \"dir\";\n"),
             ".foo {\
          \n  a: b;\
          \n}\n"
@@ -106,18 +113,19 @@ mod index {
     #[test]
     #[ignore] // unexepected error
     fn sass() {
+        let runner = runner().with_cwd("sass");
         assert_eq!(
-            runner().ok("@use \"dir\";\n"),
+            runner.ok("@use \"dir\";\n"),
             ".foo {\
          \n  a: b;\
          \n}\n"
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn scss() {
+        let runner = runner().with_cwd("scss");
         assert_eq!(
-            runner().ok("@use \"dir\";\n"),
+            runner.ok("@use \"dir\";\n"),
             ".foo {\
          \n  a: b;\
          \n}\n"
@@ -126,22 +134,25 @@ mod index {
 }
 mod precedence {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("precedence")
+    }
+
     #[test]
-    #[ignore] // unexepected error
     fn ignores_import_only() {
+        let runner = runner().with_cwd("ignores_import_only");
         assert_eq!(
-            runner().ok("@use \"other\";\n"),
+            runner.ok("@use \"other\";\n"),
             "a {\
          \n  import-only: false;\
          \n}\n"
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn normal_before_index() {
+        let runner = runner().with_cwd("normal_before_index");
         assert_eq!(
-            runner().ok("@use \"dir\";\n"),
+            runner.ok("@use \"dir\";\n"),
             "a {\
          \n  index: false;\
          \n}\n"
@@ -150,18 +161,19 @@ mod precedence {
     #[test]
     #[ignore] // unexepected error
     fn sass_before_css() {
+        let runner = runner().with_cwd("sass_before_css");
         assert_eq!(
-            runner().ok("@use \"other\";\n"),
+            runner.ok("@use \"other\";\n"),
             "a {\
          \n  syntax: sass;\
          \n}\n"
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn scss_before_css() {
+        let runner = runner().with_cwd("scss_before_css");
         assert_eq!(
-            runner().ok("@use \"other\";\n"),
+            runner.ok("@use \"other\";\n"),
             "a {\
          \n  syntax: scss;\
          \n}\n"

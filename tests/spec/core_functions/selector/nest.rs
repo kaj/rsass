@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     mod invalid {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // wrong error
         fn initial() {
@@ -51,6 +53,7 @@ mod error {
     mod parent {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         #[ignore] // missing error
         fn first_arg() {
@@ -126,6 +129,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn initial() {
             assert_eq!(
@@ -157,9 +161,11 @@ mod error {
 mod format {
     #[allow(unused)]
     use super::runner;
+
     mod input {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn initial() {
             assert_eq!(
@@ -183,6 +189,7 @@ mod format {
 mod list {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn test_final() {
         assert_eq!(
@@ -214,6 +221,7 @@ mod list {
     mod parent {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn alone() {
             assert_eq!(
@@ -304,6 +312,7 @@ fn one_arg() {
 mod parent {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn alone() {
         assert_eq!(
@@ -316,6 +325,7 @@ mod parent {
     mod complex {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn complex_parent() {
             assert_eq!(
@@ -365,6 +375,7 @@ mod parent {
     mod selector_pseudo {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn complex_parent() {
             assert_eq!(

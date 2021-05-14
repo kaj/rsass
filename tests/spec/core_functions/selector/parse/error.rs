@@ -56,6 +56,7 @@ fn parent() {
 mod parse {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong error
     fn extra() {

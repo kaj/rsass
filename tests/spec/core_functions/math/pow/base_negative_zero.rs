@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod fuzzy {
     #[allow(unused)]
     use super::runner;
+
     mod with_exponent {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn decimal() {
             assert_eq!(
@@ -106,6 +108,7 @@ mod fuzzy {
 mod with_exponent {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn decimal() {
         assert_eq!(

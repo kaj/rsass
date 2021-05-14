@@ -17,6 +17,7 @@ fn alpha() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -65,6 +66,7 @@ mod error {
 mod grayscale {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn black() {
         assert_eq!(

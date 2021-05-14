@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod both {
     #[allow(unused)]
     use super::runner;
+
     mod comma {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn first() {
             assert_eq!(
@@ -45,6 +47,7 @@ mod both {
     mod space {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn first() {
             assert_eq!(
@@ -99,6 +102,7 @@ mod both {
 mod first {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn comma() {
         assert_eq!(
@@ -122,6 +126,7 @@ mod first {
     mod undecided {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn and_comma() {
             assert_eq!(
@@ -145,9 +150,11 @@ mod first {
 mod map {
     #[allow(unused)]
     use super::runner;
+
     mod first {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn comma() {
             assert_eq!(
@@ -187,6 +194,7 @@ mod map {
     mod second {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn comma() {
             assert_eq!(
@@ -227,6 +235,7 @@ mod map {
 mod second {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn comma() {
         assert_eq!(
@@ -250,6 +259,7 @@ mod second {
     mod undecided {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn comma() {
             assert_eq!(

@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod clamped {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn opaque() {
         assert_eq!(
@@ -39,6 +40,7 @@ fn named() {
 mod opaque_to {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn opaque() {
         assert_eq!(
@@ -70,6 +72,7 @@ mod opaque_to {
 mod partial_to {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn opaque() {
         assert_eq!(
@@ -101,6 +104,7 @@ mod partial_to {
 mod transparent_to {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn opaque() {
         assert_eq!(

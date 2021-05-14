@@ -110,12 +110,15 @@ fn runner() -> crate::TestRunner {
 
 mod import_twice {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("import_twice")
+    }
+
     #[test]
-    #[ignore] // wrong result
     fn no_change() {
+        let runner = runner().with_cwd("no_change");
         assert_eq!(
-            runner().ok("$a: configured;\
+            runner.ok("$a: configured;\
              \n@import \"other\";\
              \n@import \"other\";\n"),
             "b {\
@@ -129,8 +132,9 @@ mod import_twice {
     #[test]
     #[ignore] // wrong result
     fn still_changes_in_same_file() {
+        let runner = runner().with_cwd("still_changes_in_same_file");
         assert_eq!(
-            runner().ok("@import \"other\";\
+            runner.ok("@import \"other\";\
              \n$a: changed;\
              \n@import \"other\";\n\
              \nd {\
@@ -150,8 +154,9 @@ mod import_twice {
     #[test]
     #[ignore] // wrong result
     fn with_change() {
+        let runner = runner().with_cwd("with_change");
         assert_eq!(
-            runner().ok("$a: configured;\
+            runner.ok("$a: configured;\
              \n@import \"other\";\
              \n$a: changed; // This should be ignored\
              \n@import \"other\";\n"),
@@ -166,12 +171,16 @@ mod import_twice {
 }
 mod indirect {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("indirect")
+    }
+
     #[test]
     #[ignore] // wrong result
     fn through_forward() {
+        let runner = runner().with_cwd("through_forward");
         assert_eq!(
-            runner().ok("$a: configured;\
+            runner.ok("$a: configured;\
              \n@import \"midstream\";\n"),
             "b {\
          \n  c: configured;\
@@ -179,10 +188,10 @@ mod indirect {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn through_import() {
+        let runner = runner().with_cwd("through_import");
         assert_eq!(
-            runner().ok("$a: configured;\
+            runner.ok("$a: configured;\
              \n@import \"midstream\";\n"),
             "b {\
          \n  c: configured;\
@@ -192,12 +201,16 @@ mod indirect {
 }
 mod midstream_definition {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("midstream_definition")
+    }
+
     #[test]
     #[ignore] // wrong result
     fn no_config() {
+        let runner = runner().with_cwd("no_config");
         assert_eq!(
-            runner().ok("@import \"midstream\";\n"),
+            runner.ok("@import \"midstream\";\n"),
             "b {\
          \n  c: original;\
          \n}\n"
@@ -206,8 +219,9 @@ mod midstream_definition {
     #[test]
     #[ignore] // wrong result
     fn with_config() {
+        let runner = runner().with_cwd("with_config");
         assert_eq!(
-            runner().ok("$a: configured;\
+            runner.ok("$a: configured;\
              \n@import \"midstream\";\n"),
             "b {\
          \n  c: configured;\
@@ -218,8 +232,9 @@ mod midstream_definition {
 #[test]
 #[ignore] // wrong result
 fn nested() {
+    let runner = runner().with_cwd("nested");
     assert_eq!(
-        runner().ok("a {\
+        runner.ok("a {\
              \n  $a: configured;\
              \n  @import \"midstream\";\
              \n}\n"),
@@ -231,8 +246,9 @@ fn nested() {
 #[test]
 #[ignore] // wrong result
 fn prefixed_as() {
+    let runner = runner().with_cwd("prefixed_as");
     assert_eq!(
-        runner().ok("$d-a: configured;\
+        runner.ok("$d-a: configured;\
              \n@import \"midstream\";\n"),
         "b {\
          \n  c: configured;\
@@ -242,8 +258,9 @@ fn prefixed_as() {
 #[test]
 #[ignore] // wrong result
 fn same_file() {
+    let runner = runner().with_cwd("same_file");
     assert_eq!(
-        runner().ok("$a: configured;\
+        runner.ok("$a: configured;\
              \n@import \"midstream\";\n"),
         "b {\
          \n  c: configured;\
@@ -253,8 +270,9 @@ fn same_file() {
 #[test]
 #[ignore] // wrong result
 fn separate_file() {
+    let runner = runner().with_cwd("separate_file");
     assert_eq!(
-        runner().ok("@import \"config\";\
+        runner.ok("@import \"config\";\
              \n@import \"midstream\";\n"),
         "b {\
          \n  c: configured;\
@@ -264,8 +282,9 @@ fn separate_file() {
 #[test]
 #[ignore] // wrong result
 fn unrelated_variable() {
+    let runner = runner().with_cwd("unrelated_variable");
     assert_eq!(
-        runner().ok("$a: configured;\
+        runner.ok("$a: configured;\
              \n$d: other;\
              \n@import \"midstream\";\n"),
         "b {\

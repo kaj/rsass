@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod hue {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn deg() {
         assert_eq!(

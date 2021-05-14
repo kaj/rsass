@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod hue {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn angle() {
         assert_eq!(
@@ -48,6 +49,7 @@ mod hue {
 mod lightness {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn percent() {
         assert_eq!(
@@ -79,6 +81,7 @@ mod lightness {
 mod saturation {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn percent() {
         assert_eq!(

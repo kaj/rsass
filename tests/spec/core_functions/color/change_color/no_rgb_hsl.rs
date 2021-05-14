@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod alpha {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn high() {
         assert_eq!(

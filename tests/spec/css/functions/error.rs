@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod single_equals {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn no_lhs() {

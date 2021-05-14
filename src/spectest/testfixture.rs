@@ -1,12 +1,12 @@
 use super::options::Options;
 use super::writestr::WriteStr;
-use super::{ignore, Error, TestRunner};
+use super::{fn_name, ignore, Error, TestRunner};
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::io::Write;
 
 pub struct TestFixture {
-    fn_name: String,
+    name: Option<String>,
     input: String,
     expectation: TestExpectation,
     options: Options,
@@ -21,13 +21,13 @@ use TestExpectation::{ExpectedCSS, ExpectedError};
 
 impl TestFixture {
     pub fn new_ok(
-        fn_name: String,
+        name: Option<String>,
         input: String,
         expected_css: &str,
         options: Options,
     ) -> Self {
         TestFixture {
-            fn_name,
+            name,
             input,
             expectation: ExpectedCSS(normalize_output_css(expected_css)),
             options,
@@ -35,13 +35,13 @@ impl TestFixture {
     }
 
     pub fn new_err(
-        fn_name: String,
+        name: Option<String>,
         input: String,
         error: String,
         options: Options,
     ) -> Self {
         TestFixture {
-            fn_name,
+            name,
             input,
             expectation: ExpectedError(error),
             options,
@@ -54,16 +54,29 @@ impl TestFixture {
         runner: TestRunner,
     ) -> Result<(), Error> {
         if let Some(ref reason) = self.options.should_skip {
-            ignore(rs, &self.fn_name, reason)?;
+            ignore(rs, &self.name, reason)?;
             return Ok(());
         }
+        let has_files = runner.has_files();
         rs.write_all(b"#[test]\n")?;
         if let Some(reason) = self.is_failure(runner) {
             writeln!(rs, "#[ignore] // {}", reason)?;
         }
-        writeln!(rs, "fn {}() {{", self.fn_name)?;
-        let runner = if let Some(p) = self.options.precision {
-            writeln!(rs, "    let runner = runner().set_precision({});", p)?;
+        let fname = self.name.as_deref().map(fn_name);
+        writeln!(rs, "fn {}() {{", fname.as_deref().unwrap_or("test"))?;
+        let runner = if self.options.precision.is_some()
+            || (has_files && self.name.is_some())
+        {
+            rs.write_all(b"    let runner = runner()")?;
+            if let Some(p) = self.options.precision {
+                write!(rs, ".set_precision({});", p)?;
+            }
+            if has_files {
+                if let Some(name) = &self.name {
+                    write!(rs, ".with_cwd({:?})", name)?;
+                }
+            }
+            rs.write_all(b";\n")?;
             "runner"
         } else {
             "runner()"

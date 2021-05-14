@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod slash {
     #[allow(unused)]
     use super::runner;
+
     mod with_string {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn slash_minus_string() {
             assert_eq!(

@@ -14,12 +14,16 @@ fn runner() -> crate::TestRunner {
 
 mod at_rule {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("at_rule")
+    }
+
     #[test]
     #[ignore] // unexepected error
     fn childless() {
+        let runner = runner().with_cwd("childless");
         assert_eq!(
-            runner().ok("a {@import \"other\"}\n"),
+            runner.ok("a {@import \"other\"}\n"),
             "a {\
          \n  @b c;\
          \n}\n"
@@ -28,8 +32,9 @@ mod at_rule {
     #[test]
     #[ignore] // unexepected error
     fn declaration_child() {
+        let runner = runner().with_cwd("declaration_child");
         assert_eq!(
-            runner().ok("a {@import \"other\"}\n"),
+            runner.ok("a {@import \"other\"}\n"),
             "@b {\
          \n  a {\
          \n    c: d;\
@@ -40,8 +45,9 @@ mod at_rule {
     #[test]
     #[ignore] // unexepected error
     fn keyframes() {
+        let runner = runner().with_cwd("keyframes");
         assert_eq!(
-            runner().ok("a {@import \"other\"}\n"),
+            runner.ok("a {@import \"other\"}\n"),
             "@keyframes b {\
          \n  0% {\
          \n    c: d;\
@@ -52,8 +58,9 @@ mod at_rule {
     #[test]
     #[ignore] // unexepected error
     fn rule_child() {
+        let runner = runner().with_cwd("rule_child");
         assert_eq!(
-            runner().ok("a {@import \"other\"}\n"),
+            runner.ok("a {@import \"other\"}\n"),
             "@b {\
          \n  a c {\
          \n    d: e;\
@@ -64,12 +71,15 @@ mod at_rule {
 }
 mod scope {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("scope")
+    }
+
     #[test]
-    #[ignore] // wrong result
     fn function() {
+        let runner = runner().with_cwd("function");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             ".parent {\
              \n  // This should be visible to the imported stylesheet. There\'s not really a\
              \n  // good reason for this, but it\'s the historical behavior so whatever.\
@@ -85,10 +95,10 @@ mod scope {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn mixin() {
+        let runner = runner().with_cwd("mixin");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             ".parent {\
              \n  // This should be visible to the imported stylesheet. There\'s not really a\
              \n  // good reason for this, but it\'s the historical behavior so whatever.\
@@ -104,10 +114,10 @@ mod scope {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn variable() {
+        let runner = runner().with_cwd("variable");
         assert_eq!(
-        runner().ok(
+        runner.ok(
             ".parent {\
              \n  // This should be visible to the imported stylesheet. There\'s not really a\
              \n  // good reason for this, but it\'s the historical behavior so whatever.\

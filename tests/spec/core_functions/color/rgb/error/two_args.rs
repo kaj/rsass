@@ -8,6 +8,7 @@ fn runner() -> crate::TestRunner {
 mod alpha {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn test_type() {
@@ -46,6 +47,7 @@ mod alpha {
 mod color {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // wrong error
     fn test_type() {

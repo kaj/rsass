@@ -41,6 +41,7 @@ fn alpha_input() {
 mod hue {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn above_max() {
         assert_eq!(
@@ -99,6 +100,7 @@ mod hue {
 mod lightness {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn fraction() {
         assert_eq!(
@@ -159,6 +161,7 @@ fn named() {
 mod saturation {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn high() {
         assert_eq!(

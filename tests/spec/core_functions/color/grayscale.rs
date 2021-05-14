@@ -17,6 +17,7 @@ fn alpha() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn too_few_args() {
         assert_eq!(
@@ -93,6 +94,7 @@ fn named() {
 mod no_saturation {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn black() {
         assert_eq!(

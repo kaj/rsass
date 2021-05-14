@@ -17,6 +17,7 @@ fn empty() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     #[ignore] // missing error
     fn from_float() {
@@ -233,6 +234,7 @@ fn to_scope() {
 mod unit {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn compatible() {
         assert_eq!(

@@ -39,10 +39,11 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn diamond() {
+    let runner = runner().with_cwd("diamond");
     assert_eq!(
-        runner().ok("@use \"left\";\
+        runner.ok("@use \"left\";\
              \n@use \"right\";\n\
              \na {file: input}\n"),
         "a {\
@@ -61,12 +62,16 @@ fn diamond() {
 }
 mod import_order {
     #[allow(unused)]
-    use super::runner;
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("import_order")
+    }
+
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn comments_and_imports() {
+        let runner = runner().with_cwd("comments_and_imports");
         assert_eq!(
-            runner().ok("/* input comment before use */\
+            runner.ok("/* input comment before use */\
              \n@use \"midstream\";\n\
              \n/* input comment before import */\
              \n@import \"input.css\";\n\
@@ -91,12 +96,15 @@ mod import_order {
     }
     mod import_into_use {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("import_into_use")
+        }
+
         #[test]
-        #[ignore] // wrong result
         fn css_import_above_rule() {
+            let runner = runner().with_cwd("css_import_above_rule");
             assert_eq!(
-                runner().ok("@import \"imported\";\n\
+                runner.ok("@import \"imported\";\n\
              \n@import \"input.css\";\n"),
                 "@import \"used.css\";\
          \n@import \"imported.css\";\
@@ -110,10 +118,10 @@ mod import_order {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn css_import_below_rule() {
+            let runner = runner().with_cwd("css_import_below_rule");
             assert_eq!(
-                runner().ok("@import \"imported\";\n\
+                runner.ok("@import \"imported\";\n\
              \n@import \"input.css\";\n"),
                 "@import \"used.css\";\
          \n@import \"imported.css\";\
@@ -127,10 +135,10 @@ mod import_order {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn sass_import_below_css_import() {
+            let runner = runner().with_cwd("sass_import_below_css_import");
             assert_eq!(
-                runner().ok("@import \"input.css\";\n\
+                runner.ok("@import \"input.css\";\n\
              \n@import \"imported\";\n"),
                 "@import \"input.css\";\
          \n@import \"used.css\";\
@@ -140,12 +148,15 @@ mod import_order {
     }
     mod use_into_import {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("use_into_import")
+        }
+
         #[test]
-        #[ignore] // unexepected error
         fn css_import_above_rule() {
+            let runner = runner().with_cwd("css_import_above_rule");
             assert_eq!(
-                runner().ok("@use \"used\";\n\
+                runner.ok("@use \"used\";\n\
              \n@import \"input.css\";\n"),
                 "@import \"imported.css\";\
          \n@import \"used.css\";\
@@ -159,10 +170,10 @@ mod import_order {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn css_import_below_rule() {
+            let runner = runner().with_cwd("css_import_below_rule");
             assert_eq!(
-                runner().ok("@use \"used\";\n\
+                runner.ok("@use \"used\";\n\
              \n@import \"input.css\";\n"),
                 "@import \"imported.css\";\
          \n@import \"used.css\";\
@@ -176,10 +187,10 @@ mod import_order {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn sass_import_below_css_import() {
+            let runner = runner().with_cwd("sass_import_below_css_import");
             assert_eq!(
-                runner().ok("@use \"used\";\n\
+                runner.ok("@use \"used\";\n\
              \n@import \"input.css\";\n"),
                 "@import \"used.css\";\
          \n@import \"imported.css\";\
@@ -189,12 +200,15 @@ mod import_order {
     }
     mod use_into_use {
         #[allow(unused)]
-        use super::runner;
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("use_into_use")
+        }
+
         #[test]
-        #[ignore] // unexepected error
         fn import_above_rule() {
+            let runner = runner().with_cwd("import_above_rule");
             assert_eq!(
-                runner().ok("@use \"midstream\";\n\
+                runner.ok("@use \"midstream\";\n\
              \n@import \"input.css\";\n"),
                 "@import \"upstream.css\";\
          \n@import \"midstream.css\";\
@@ -208,10 +222,10 @@ mod import_order {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn import_below_rule() {
+            let runner = runner().with_cwd("import_below_rule");
             assert_eq!(
-                runner().ok("@use \"midstream\";\n\
+                runner.ok("@use \"midstream\";\n\
              \n@import \"input.css\";\n"),
                 "@import \"upstream.css\";\
          \n@import \"midstream.css\";\
@@ -227,10 +241,11 @@ mod import_order {
     }
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn once() {
+    let runner = runner().with_cwd("once");
     assert_eq!(
-        runner().ok("@use \"other\" as o1;\
+        runner.ok("@use \"other\" as o1;\
              \n@use \"other\" as o2;\
              \n@use \"other\" as o3;\n"),
         "a {\
@@ -239,10 +254,11 @@ fn once() {
     );
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn triangle() {
+    let runner = runner().with_cwd("triangle");
     assert_eq!(
-        runner().ok("@use \"midstream\";\
+        runner.ok("@use \"midstream\";\
              \n@use \"upstream\";\n\
              \na {file: input}\n"),
         "a {\
@@ -257,10 +273,10 @@ fn triangle() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn unrelated_branches() {
+    let runner = runner().with_cwd("unrelated_branches");
     assert_eq!(
-        runner().ok("@use \"left_midstream\";\
+        runner.ok("@use \"left_midstream\";\
              \n@use \"right_midstream\";\n\
              \na {file: input}\n"),
         "a {\
@@ -281,10 +297,10 @@ fn unrelated_branches() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn use_into_use() {
+    let runner = runner().with_cwd("use_into_use");
     assert_eq!(
-        runner().ok("@use \"midstream\";\n\
+        runner.ok("@use \"midstream\";\n\
              \na {file: input}\n"),
         "a {\
          \n  file: upstream;\
@@ -298,10 +314,10 @@ fn use_into_use() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn use_order() {
+    let runner = runner().with_cwd("use_order");
     assert_eq!(
-        runner().ok("@use \"other1\";\
+        runner.ok("@use \"other1\";\
              \n@use \"other2\";\
              \n@use \"other3\";\n\
              \na {file: input}\n"),

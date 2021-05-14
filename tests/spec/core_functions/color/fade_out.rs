@@ -8,9 +8,11 @@ fn runner() -> crate::TestRunner {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     mod bounds {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn too_high() {
             assert_eq!(
@@ -71,6 +73,7 @@ mod error {
     mod test_type {
         #[allow(unused)]
         use super::runner;
+
         #[test]
         fn alpha() {
             assert_eq!(

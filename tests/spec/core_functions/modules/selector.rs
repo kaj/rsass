@@ -18,6 +18,7 @@ fn append() {
 mod error {
     #[allow(unused)]
     use super::runner;
+
     #[test]
     fn selector_append() {
         assert_eq!(
