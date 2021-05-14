@@ -1,7 +1,6 @@
 use rsass::output::Format;
 use rsass::{parse_scss_file, Error, FileContext, FsFileContext, ScopeRef};
 use std::collections::BTreeMap;
-use std::path::PathBuf;
 
 pub fn runner() -> TestRunner {
     TestRunner::new()
@@ -17,7 +16,7 @@ pub struct TestRunner {
 struct TestFileContext {
     parent: FsFileContext,
     mock: BTreeMap<String, String>,
-    cwd: PathBuf,
+    cwd: String,
 }
 
 impl TestFileContext {
@@ -27,7 +26,7 @@ impl TestFileContext {
         TestFileContext {
             parent,
             mock: BTreeMap::new(),
-            cwd: PathBuf::new(),
+            cwd: String::new(),
         }
     }
     fn mock_file(&mut self, name: &str, content: &str) {
@@ -38,7 +37,19 @@ impl TestFileContext {
         !self.mock.is_empty()
     }
     fn with_cwd(&mut self, cwd: &str) {
-        self.cwd = self.cwd.join(cwd);
+        self.cwd = url_join(&self.cwd, cwd);
+    }
+}
+
+fn url_join(p: &str, c: &str) -> String {
+    if p.is_empty() {
+        c.to_string()
+    } else if c.is_empty() {
+        p.to_string()
+    } else if p.ends_with('/') {
+        format!("{}{}", p, c)
+    } else {
+        format!("{}/{}", p, c)
     }
 }
 
@@ -54,16 +65,24 @@ impl FileContext for TestFileContext {
     ) -> Result<Option<(Self, String, Self::File)>, Error> {
         let (cwd, lname) = name
             .strip_prefix("../")
-            .map(|n| (self.cwd.parent().unwrap_or(&self.cwd), n))
+            .map(|n| {
+                (
+                    self.cwd
+                        .trim_end_matches('/')
+                        .rfind('/')
+                        .map(|p| &self.cwd[..p])
+                        .unwrap_or(""),
+                    n,
+                )
+            })
             .unwrap_or((&self.cwd, name));
         for name in vec![
-            cwd.join(name),
-            cwd.join(format!("{}.scss", lname)),
-            cwd.join(format!("_{}.scss", lname)),
-            cwd.join(lname).join("index.scss"),
-            cwd.join(lname).join("_index.scss"),
+            url_join(cwd, lname),
+            url_join(cwd, &format!("{}.scss", lname)),
+            url_join(cwd, &format!("_{}.scss", lname)),
+            url_join(&url_join(cwd, lname), "index.scss"),
+            url_join(&url_join(cwd, lname), "_index.scss"),
         ] {
-            let name = name.to_string_lossy().to_string();
             if let Some(data) = self.mock.get(&name) {
                 return Ok(Some((
                     self.clone(),
