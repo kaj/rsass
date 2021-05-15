@@ -76,25 +76,16 @@ impl FileContext for TestFileContext {
                 )
             })
             .unwrap_or((&self.cwd, name));
-        let (cwd, lname) = lname
-            .rfind('/') // rsplit_once is new in rust 1.52.0; refactor later
-            .map(|p| (url_join(cwd, &lname[..p]), &lname[p + 1..]))
-            .unwrap_or((cwd.to_string(), lname));
-        for name in vec![
-            url_join(&cwd, lname),
-            url_join(&cwd, &format!("{}.scss", lname)),
-            url_join(&cwd, &format!("_{}.scss", lname)),
-            url_join(&url_join(&cwd, lname), "index.scss"),
-            url_join(&url_join(&cwd, lname), "_index.scss"),
-        ] {
-            if let Some(data) = self.mock.get(&name) {
-                return Ok(Some((
-                    self.clone(),
-                    name,
-                    Cursor::new(data.as_bytes().to_vec()),
-                )));
-            }
+        let tname = url_join(&cwd, lname);
+
+        if let Some(data) = self.mock.get(&tname) {
+            return Ok(Some((
+                self.clone(),
+                tname,
+                Cursor::new(data.as_bytes().to_vec()),
+            )));
         }
+
         Ok(self.parent.find_file(name)?.map(|(ctx, name, mut file)| {
             let mut buf = Vec::new();
             file.read_to_end(&mut buf).unwrap();

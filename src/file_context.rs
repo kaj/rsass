@@ -31,6 +31,66 @@ pub trait FileContext: Sized + std::fmt::Debug {
     /// Anything that can be read can be a File in an implementation.
     type File: std::io::Read;
 
+    /// Find a file for `@import`
+    fn find_file_import(
+        &self,
+        url: &str,
+    ) -> Result<Option<(Self, String, Self::File)>, Error> {
+        let (base, name) = url
+            .rfind('/') // rsplit_once is new in rust 1.52.0; refactor later
+            .map(|p| (&url[..p], &url[p + 1..]))
+            .unwrap_or(("", url));
+
+        for name in &[
+            name,
+            &format!("{}.scss", name),
+            &format!("_{}.scss", name),
+            &format!("{}.import.scss", name),
+            &format!("_{}.import.scss", name),
+            &format!("{}/index.scss", name),
+            &format!("{}/_index.scss", name),
+        ] {
+            let full = if base.is_empty() {
+                name.to_string()
+            } else {
+                format!("{}/{}", base, name)
+            };
+            if let Some(result) = self.find_file(&full)? {
+                return Ok(Some(result));
+            }
+        }
+        Ok(None)
+    }
+
+    /// Find a file for `@import`
+    fn find_file_use(
+        &self,
+        url: &str,
+    ) -> Result<Option<(Self, String, Self::File)>, Error> {
+        let (base, name) = url
+            .rfind('/') // rsplit_once is new in rust 1.52.0; refactor later
+            .map(|p| (&url[..p], &url[p + 1..]))
+            .unwrap_or(("", url));
+
+        for name in &[
+            name,
+            &format!("{}.scss", name),
+            &format!("_{}.scss", name),
+            &format!("{}/index.scss", name),
+            &format!("{}/_index.scss", name),
+        ] {
+            let full = if base.is_empty() {
+                name.to_string()
+            } else {
+                format!("{}/{}", base, name)
+            };
+            if let Some(result) = self.find_file(&full)? {
+                return Ok(Some(result));
+            }
+        }
+        Ok(None)
+    }
+
     /// Find a file.
     ///
     /// If the file is imported from another file,
@@ -112,32 +172,24 @@ impl FileContext for FsFileContext {
         let parent = name.parent();
         if let Some(name) = name.file_name().and_then(|n| n.to_str()) {
             for base in &self.path {
-                for name in &[
-                    name,
-                    &format!("{}.scss", name),
-                    &format!("_{}.scss", name),
-                    &format!("{}/index.scss", name),
-                    &format!("{}/_index.scss", name),
-                ] {
-                    let full = if let Some(parent) = parent {
-                        base.join(parent).join(name)
+                let full = if let Some(parent) = parent {
+                    base.join(parent).join(name)
+                } else {
+                    base.join(name)
+                };
+                if full.is_file() {
+                    let c = if let Some(parent) = parent {
+                        let mut path = vec![PathBuf::from(parent)];
+                        path.extend_from_slice(&self.path);
+                        Self { path }
                     } else {
-                        base.join(name)
+                        self.clone()
                     };
-                    if full.is_file() {
-                        let c = if let Some(parent) = parent {
-                            let mut path = vec![PathBuf::from(parent)];
-                            path.extend_from_slice(&self.path);
-                            Self { path }
-                        } else {
-                            self.clone()
-                        };
-                        let path = full.display().to_string();
-                        return match Self::File::open(full) {
-                            Ok(file) => Ok(Some((c, path, file))),
-                            Err(e) => Err(Error::Input(path, e)),
-                        };
-                    }
+                    let path = full.display().to_string();
+                    return match Self::File::open(full) {
+                        Ok(file) => Ok(Some((c, path, file))),
+                        Err(e) => Err(Error::Input(path, e)),
+                    };
                 }
             }
         }

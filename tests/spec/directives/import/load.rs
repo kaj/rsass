@@ -139,7 +139,6 @@ mod precedence {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn before_index() {
             let runner = runner().with_cwd("before_index");
             assert_eq!(

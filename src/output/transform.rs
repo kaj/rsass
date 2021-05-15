@@ -66,7 +66,7 @@ fn handle_item(
             if let Some(module) = get_global_module(&name) {
                 do_use(module)?
             } else if let Some((sub_context, path, mut file)) =
-                file_context.find_file(&name)?
+                file_context.find_file_use(&name)?
             {
                 let module = ScopeRef::new_global(format);
                 let items = parse_imported_scss_file(
@@ -94,7 +94,7 @@ fn handle_item(
                 if args.is_null() {
                     let (x, _q) = name.evaluate(scope.clone())?;
                     if let Some((sub_context, path, mut file)) =
-                        file_context.find_file(&x)?
+                        file_context.find_file_import(&x)?
                     {
                         let items = parse_imported_scss_file(
                             &mut file,
