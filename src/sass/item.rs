@@ -73,7 +73,7 @@ pub enum Item {
     While(Value, Vec<Item>),
 
     /// An `@use` directive.
-    Use(SassString, UseAs),
+    Use(SassString, UseAs, Vec<(Name, Value)>),
     /// A sass rule; selectors followed by a block of items.
     Rule(Selectors, Vec<Item>),
     /// A sass namespace rule; a name followed by a block of properties.

@@ -33,7 +33,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn conflict() {
     let runner = runner().with_cwd("conflict");
     assert_eq!(
@@ -73,7 +73,7 @@ mod invalid_expression {
     }
 
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn error() {
         let runner = runner().with_cwd("error");
         assert_eq!(
@@ -128,7 +128,7 @@ mod multi_configuration {
     }
 
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn multi_file() {
         let runner = runner().with_cwd("multi_file");
         assert_eq!(
@@ -169,7 +169,7 @@ mod multi_configuration {
     );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn through_forward() {
         let runner = runner().with_cwd("through_forward");
         assert_eq!(
@@ -229,7 +229,7 @@ fn namespace() {
     );
 }
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn nested() {
     let runner = runner().with_cwd("nested");
     assert_eq!(
@@ -245,7 +245,7 @@ fn nested() {
     );
 }
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn not_default() {
     let runner = runner().with_cwd("not_default");
     assert_eq!(
@@ -281,7 +281,7 @@ mod through_forward {
     }
 
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn test_as() {
         let runner = runner().with_cwd("as");
         assert_eq!(
@@ -297,7 +297,7 @@ mod through_forward {
     );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn hide() {
         let runner = runner().with_cwd("hide");
         assert_eq!(
@@ -313,7 +313,7 @@ mod through_forward {
     );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn show() {
         let runner = runner().with_cwd("show");
         assert_eq!(
@@ -329,7 +329,7 @@ mod through_forward {
     );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn with() {
         let runner = runner().with_cwd("with");
         assert_eq!(
@@ -346,7 +346,7 @@ mod through_forward {
     }
 }
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn undefined() {
     let runner = runner().with_cwd("undefined");
     assert_eq!(
