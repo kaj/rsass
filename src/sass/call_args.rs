@@ -97,7 +97,7 @@ impl CallArgs {
         self.0
             .iter()
             .find(|(n, _)| n.as_ref().map(Name::from).as_ref() == Some(&name))
-            .or(self.0.get(num))
+            .or_else(|| self.0.get(num))
             .map(|(_, v)| v.do_evaluate(scope, true))
             .unwrap_or(Ok(css::Value::Null))
     }

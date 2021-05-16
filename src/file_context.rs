@@ -134,6 +134,7 @@ impl FsFileContext {
     /// Create a new FsFileContext.
     ///
     /// Files will be resolved from the current working directory.
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
             path: vec![PathBuf::new()],

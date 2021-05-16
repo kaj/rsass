@@ -73,6 +73,12 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
     }
 }
 
+impl<K: Clone + PartialEq, V: Clone> Default for OrderMap<K, V> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<K, V> IntoIterator for OrderMap<K, V> {
     type Item = (K, V);
     type IntoIter = IntoIter<(K, V)>;

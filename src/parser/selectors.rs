@@ -15,10 +15,7 @@ pub fn selectors(input: Span) -> IResult<Span, Selectors> {
         terminated(tag(","), ignore_comments),
         opt(selector),
     )(input)?;
-    Ok((
-        input,
-        Selectors::new(v.into_iter().filter_map(|i| i).collect()),
-    ))
+    Ok((input, Selectors::new(v.into_iter().flatten().collect())))
 }
 
 pub fn selector(input: Span) -> IResult<Span, Selector> {
