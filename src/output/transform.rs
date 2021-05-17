@@ -41,7 +41,7 @@ fn handle_item(
 ) -> Result<(), Error> {
     let format = scope.get_format();
     match item {
-        Item::Use(ref name, ref as_n) => {
+        Item::Use(ref name, ref as_n, ref with) => {
             use crate::sass::{get_global_module, UseAs};
             let name = name.evaluate(scope.clone())?.0;
             let do_use = |module: ScopeRef| -> Result<(), Error> {
@@ -64,11 +64,28 @@ fn handle_item(
                 Ok(())
             };
             if let Some(module) = get_global_module(&name) {
+                if !with.is_empty() {
+                    return Err(Error::error(
+                        "Built-in modules can\'t be configured",
+                    ));
+                }
                 do_use(module)?
             } else if let Some((sub_context, path, mut file)) =
                 file_context.find_file_use(&name)?
             {
                 let module = ScopeRef::new_global(format);
+                for (name, value) in with {
+                    if module.get_or_none(name).is_none() {
+                        module.define(
+                            name.clone(),
+                            &value.evaluate(scope.clone())?,
+                        );
+                    } else {
+                        return Err(Error::error(
+                            "The same variable may only be configured once",
+                        ));
+                    }
+                }
                 let items = parse_imported_scss_file(
                     &mut file,
                     &path,

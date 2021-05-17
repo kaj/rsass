@@ -64,7 +64,7 @@ mod core_module {
         }
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn forward() {
             let runner = runner().with_cwd("forward");
             assert_eq!(
@@ -77,7 +77,6 @@ mod core_module {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn test_use() {
             let runner = runner().with_cwd("use");
             assert_eq!(
@@ -92,7 +91,6 @@ mod core_module {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn dash_insensitive() {
     let runner = runner().with_cwd("dash_insensitive");
     assert_eq!(
@@ -103,7 +101,6 @@ fn dash_insensitive() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn doesnt_run_default() {
     let runner = runner().with_cwd("doesnt_run_default");
     assert_eq!(
@@ -114,7 +111,6 @@ fn doesnt_run_default() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn from_variable() {
     let runner = runner().with_cwd("from_variable");
     assert_eq!(
@@ -145,7 +141,7 @@ mod multi_load {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn transitive() {
         let runner = runner().with_cwd("transitive");
         assert_eq!(
@@ -166,7 +162,7 @@ mod multi_load {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn test_use() {
         let runner = runner().with_cwd("use");
         assert_eq!(
@@ -196,7 +192,6 @@ fn multiple() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn null() {
     let runner = runner().with_cwd("null");
     assert_eq!(
@@ -207,7 +202,6 @@ fn null() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn single() {
     let runner = runner().with_cwd("single");
     assert_eq!(
@@ -218,7 +212,6 @@ fn single() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn some_unconfigured() {
     let runner = runner().with_cwd("some_unconfigured");
     assert_eq!(
@@ -236,7 +229,7 @@ mod through_forward {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn and_use() {
         let runner = runner().with_cwd("and_use");
         assert_eq!(
@@ -249,7 +242,7 @@ mod through_forward {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn test_as() {
         let runner = runner().with_cwd("as");
         assert_eq!(
@@ -260,7 +253,7 @@ mod through_forward {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn bare() {
         let runner = runner().with_cwd("bare");
         assert_eq!(
@@ -271,7 +264,7 @@ mod through_forward {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn hide() {
         let runner = runner().with_cwd("hide");
         assert_eq!(
@@ -282,7 +275,7 @@ mod through_forward {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn show() {
         let runner = runner().with_cwd("show");
         assert_eq!(
@@ -293,7 +286,7 @@ mod through_forward {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn transitive() {
         let runner = runner().with_cwd("transitive");
         assert_eq!(
@@ -310,7 +303,7 @@ mod through_forward {
         }
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn default() {
             let runner = runner().with_cwd("default");
             assert_eq!(
@@ -321,7 +314,7 @@ mod through_forward {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn null() {
             let runner = runner().with_cwd("null");
             assert_eq!(
@@ -345,7 +338,7 @@ mod through_forward {
         }
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn with_unrelated_config() {
         let runner = runner().with_cwd("with_unrelated_config");
         assert_eq!(
@@ -366,7 +359,6 @@ mod through_import {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn direct() {
         let runner = runner().with_cwd("direct");
         assert_eq!(
@@ -377,7 +369,6 @@ mod through_import {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn transitive() {
         let runner = runner().with_cwd("transitive");
         assert_eq!(
@@ -389,7 +380,6 @@ mod through_import {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn trailing_comma() {
     let runner = runner().with_cwd("trailing_comma");
     assert_eq!(
@@ -400,7 +390,6 @@ fn trailing_comma() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn used_in_input() {
     let runner = runner().with_cwd("used_in_input");
     assert_eq!(
@@ -412,7 +401,7 @@ fn used_in_input() {
     );
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn variable_exists() {
     let runner = runner().with_cwd("variable_exists");
     assert_eq!(

@@ -316,11 +316,33 @@ fn at_rule2(input: Span) -> IResult<Span, Item> {
 fn use2(input: Span) -> IResult<Span, Item> {
     map(
         terminated(
-            pair(
+            tuple((
                 terminated(
                     alt((sass_string_dq, sass_string_sq, sass_string)),
                     opt_spacelike,
                 ),
+                opt(delimited(
+                    terminated(
+                        terminated(tag("with"), opt_spacelike),
+                        terminated(tag("("), opt_spacelike),
+                    ),
+                    separated_list0(
+                        preceded(tag(","), opt_spacelike),
+                        pair(
+                            delimited(
+                                tag("$"),
+                                map(name, Name::from),
+                                delimited(
+                                    opt_spacelike,
+                                    tag(":"),
+                                    opt_spacelike,
+                                ),
+                            ),
+                            terminated(value_expression, opt_spacelike),
+                        ),
+                    ),
+                    terminated(tag(")"), opt_spacelike),
+                )),
                 opt(delimited(
                     terminated(tag("as"), opt_spacelike),
                     alt((
@@ -329,10 +351,12 @@ fn use2(input: Span) -> IResult<Span, Item> {
                     )),
                     opt_spacelike,
                 )),
-            ),
+            )),
             alt((tag(";"), all_consuming(tag("")))),
         ),
-        |(s, n)| Item::Use(s, n.unwrap_or(UseAs::KeepName)),
+        |(s, w, n)| {
+            Item::Use(s, n.unwrap_or(UseAs::KeepName), w.unwrap_or_default())
+        },
     )(input)
 }
 
