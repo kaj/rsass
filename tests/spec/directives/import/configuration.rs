@@ -206,7 +206,6 @@ mod midstream_definition {
     }
 
     #[test]
-    #[ignore] // wrong result
     fn no_config() {
         let runner = runner().with_cwd("no_config");
         assert_eq!(

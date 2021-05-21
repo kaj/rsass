@@ -68,7 +68,6 @@ mod forward {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn test_as() {
         let runner = runner().with_cwd("as");
         assert_eq!(
@@ -80,7 +79,6 @@ mod forward {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn bare() {
         let runner = runner().with_cwd("bare");
         assert_eq!(
@@ -98,7 +96,6 @@ mod forward {
         }
 
         #[test]
-        #[ignore] // missing error
         fn hide() {
             let runner = runner().with_cwd("hide");
             assert_eq!(
@@ -133,7 +130,6 @@ mod forward {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn hide() {
         let runner = runner().with_cwd("hide");
         assert_eq!(
@@ -145,7 +141,6 @@ mod forward {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn show() {
         let runner = runner().with_cwd("show");
         assert_eq!(

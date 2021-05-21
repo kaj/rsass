@@ -64,7 +64,6 @@ mod core_module {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn forward() {
             let runner = runner().with_cwd("forward");
             assert_eq!(
@@ -128,7 +127,6 @@ mod multi_load {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn forward() {
         let runner = runner().with_cwd("forward");
         assert_eq!(
@@ -141,7 +139,6 @@ mod multi_load {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn transitive() {
         let runner = runner().with_cwd("transitive");
         assert_eq!(
@@ -162,7 +159,6 @@ mod multi_load {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn test_use() {
         let runner = runner().with_cwd("use");
         assert_eq!(
@@ -175,7 +171,6 @@ mod multi_load {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn multiple() {
     let runner = runner().with_cwd("multiple");
     assert_eq!(
@@ -303,7 +298,6 @@ mod through_forward {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn default() {
             let runner = runner().with_cwd("default");
             assert_eq!(
@@ -325,7 +319,7 @@ mod through_forward {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn unconfigured() {
             let runner = runner().with_cwd("unconfigured");
             assert_eq!(
@@ -338,7 +332,6 @@ mod through_forward {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn with_unrelated_config() {
         let runner = runner().with_cwd("with_unrelated_config");
         assert_eq!(

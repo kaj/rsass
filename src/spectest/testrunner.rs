@@ -63,20 +63,13 @@ impl FileContext for TestFileContext {
         &self,
         name: &str,
     ) -> Result<Option<(Self, String, Self::File)>, Error> {
-        let (cwd, lname) = name
-            .strip_prefix("../")
-            .map(|n| {
-                (
-                    self.cwd
-                        .trim_end_matches('/')
-                        .rfind('/')
-                        .map(|p| &self.cwd[..p])
-                        .unwrap_or(""),
-                    n,
-                )
-            })
-            .unwrap_or((&self.cwd, name));
-        let tname = url_join(&cwd, lname);
+        let mut cwd: &str = &self.cwd.trim_end_matches('/');
+        let mut lname = name;
+        while let Some(name) = lname.strip_prefix("../") {
+            cwd = cwd.rfind('/').map(|p| &self.cwd[..p]).unwrap_or("");
+            lname = name;
+        }
+        let tname = url_join(cwd, lname);
 
         if let Some(data) = self.mock.get(&tname) {
             return Ok(Some((

@@ -1,4 +1,4 @@
-use super::cssbuf::CssBuf;
+use super::cssbuf::{CssBuf, CssHead};
 use crate::css::{BodyItem, Rule};
 use crate::error::Error;
 use crate::file_context::FileContext;
@@ -11,7 +11,7 @@ use std::io::Write;
 
 pub fn handle_body(
     items: &[Item],
-    head: &mut CssBuf,
+    head: &mut CssHead,
     rule: Option<&mut Rule>,
     buf: &mut CssBuf,
     scope: ScopeRef,
@@ -33,7 +33,7 @@ pub fn handle_body(
 
 fn handle_item(
     item: &Item,
-    head: &mut CssBuf,
+    head: &mut CssHead,
     rule: Option<&mut Rule>,
     buf: &mut CssBuf,
     scope: ScopeRef,
@@ -45,6 +45,7 @@ fn handle_item(
             use crate::sass::{get_global_module, UseAs};
             let name = name.evaluate(scope.clone())?.0;
             let do_use = |module: ScopeRef| -> Result<(), Error> {
+                let module = module.with_forwarded();
                 match as_n {
                     UseAs::KeepName => {
                         let name = name
@@ -57,8 +58,10 @@ fn handle_item(
                         scope.expose_star(&module);
                     }
                     UseAs::Name(name) => {
-                        let name = name.evaluate(scope.clone())?.0;
-                        scope.define_module(name, module);
+                        scope.define_module(name.clone(), module);
+                    }
+                    UseAs::Prefix(prefix) => {
+                        scope.expose_prefix(&module, prefix);
                     }
                 }
                 Ok(())
@@ -73,33 +76,124 @@ fn handle_item(
             } else if let Some((sub_context, path, mut file)) =
                 file_context.find_file_use(&name)?
             {
-                let module = ScopeRef::new_global(format);
-                for (name, value) in with {
-                    if module.get_or_none(name).is_none() {
-                        module.define(
-                            name.clone(),
-                            &value.evaluate(scope.clone())?,
-                        );
-                    } else {
-                        return Err(Error::error(
-                            "The same variable may only be configured once",
-                        ));
+                let module = head.load_module(
+                    &path,
+                    |head| {
+                        let module = ScopeRef::new_global(format);
+                        for (name, value, default) in with {
+                            let default = if *default {
+                                scope.get_or_none(name)
+                            } else {
+                                None
+                            };
+                            let value = if let Some(val) = default {
+                                val
+                            } else {
+                                value.evaluate(scope.clone())?
+                            };
+                            if module.get_or_none(name).is_none() {
+                                module.define(name.clone(), &value);
+                            } else {
+                                return Err(Error::error(
+                                    "The same variable may only be configured once",
+                                ));
+                            }
+                        }
+                        let items = parse_imported_scss_file(
+                            &mut file,
+                            &path,
+                            // TODO: Get a proper pos!
+                            crate::parser::code_span(b"").into(),
+                        )?;
+                        handle_body(
+                            &items,
+                            head,
+                            None,
+                            buf,
+                            module.clone(),
+                            &sub_context,
+                        )?;
+                        Ok(module)
+                    })?;
+                do_use(module)?;
+            } else {
+                return Err(Error::S(format!("Module {:?} not found", name)));
+            }
+        }
+        Item::Forward(ref name, ref as_n, ref expose, ref with) => {
+            use crate::sass::{get_global_module, UseAs};
+            let name = name.evaluate(scope.clone())?.0;
+            let do_use = |module: ScopeRef| -> Result<(), Error> {
+                let module = module.with_forwarded().expose(expose);
+                match as_n {
+                    UseAs::KeepName => {
+                        let name = name
+                            .rfind(|c| c == ':' || c == '/')
+                            .map(|i| &name[i + 1..])
+                            .unwrap_or(&name);
+                        scope.forward().define_module(name.into(), module);
+                    }
+                    UseAs::Star => {
+                        scope.forward().expose_star(&module);
+                    }
+                    UseAs::Name(name) => {
+                        scope.forward().define_module(name.clone(), module);
+                    }
+                    UseAs::Prefix(prefix) => {
+                        scope.forward().expose_prefix(&module, prefix);
                     }
                 }
-                let items = parse_imported_scss_file(
-                    &mut file,
+                Ok(())
+            };
+            if let Some(module) = get_global_module(&name) {
+                if !with.is_empty() {
+                    return Err(Error::error(
+                        "Built-in modules can\'t be configured",
+                    ));
+                }
+                do_use(module)?
+            } else if let Some((sub_context, path, mut file)) =
+                file_context.find_file_use(&name)?
+            {
+                let module = head.load_module(
                     &path,
-                    // TODO: Get a proper pos!
-                    crate::parser::code_span(b"").into(),
-                )?;
-                handle_body(
-                    &items,
-                    head,
-                    None,
-                    buf,
-                    module.clone(),
-                    &sub_context,
-                )?;
+                    |head| {
+                        let module = ScopeRef::new_global(format);
+                        for (name, value, default) in with {
+                            let default = if *default {
+                                scope.get_or_none(name)
+                            } else {
+                                None
+                            };
+                            let value = if let Some(val) = default {
+                                val
+                            } else {
+                                value.evaluate(scope.clone())?
+                            };
+                            if module.get_or_none(name).is_none() {
+                                module.define(name.clone(), &value);
+                            } else {
+                                return Err(Error::error(
+                                    "The same variable may only be configured once",
+                                ));
+                            }
+                        }
+                        let items = parse_imported_scss_file(
+                            &mut file,
+                            &path,
+                            // TODO: Get a proper pos!
+                            crate::parser::code_span(b"").into(),
+                        )?;
+                        handle_body(
+                            &items,
+                            head,
+                            None,
+                            buf,
+                            module.clone(),
+                            &sub_context,
+                        )?;
+                        Ok(module)
+                    })?;
                 do_use(module)?;
             } else {
                 return Err(Error::S(format!("Module {:?} not found", name)));
@@ -118,14 +212,16 @@ fn handle_item(
                             &path,
                             pos.clone(),
                         )?;
+                        let mut thead = CssHead::new(format);
                         handle_body(
                             &items,
-                            head,
+                            &mut thead,
                             rule.as_deref_mut(),
                             buf,
                             scope.clone(),
                             &sub_context,
                         )?;
+                        head.merge_imports(thead);
                         continue 'name;
                     }
                 }

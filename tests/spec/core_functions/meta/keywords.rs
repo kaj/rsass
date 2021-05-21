@@ -134,7 +134,7 @@ mod forwarded {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn call() {
         let runner = runner().with_cwd("call");
         assert_eq!(
