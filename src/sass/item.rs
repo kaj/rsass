@@ -1,6 +1,7 @@
 use super::{CallArgs, FormalArgs, Name, SassString, Value};
 use crate::parser::SourcePos;
 use crate::selectors::Selectors;
+use std::collections::BTreeSet;
 
 /// Every sass file is a sequence of sass items.
 /// Scoping items contains further sequences of items.
@@ -73,7 +74,10 @@ pub enum Item {
     While(Value, Vec<Item>),
 
     /// An `@use` directive.
-    Use(SassString, UseAs, Vec<(Name, Value)>),
+    Use(SassString, UseAs, Vec<(Name, Value, bool)>),
+    /// An `@forward` directive.
+    Forward(SassString, UseAs, Expose, Vec<(Name, Value, bool)>),
+
     /// A sass rule; selectors followed by a block of items.
     Rule(Selectors, Vec<Item>),
     /// A sass namespace rule; a name followed by a block of properties.
@@ -86,7 +90,24 @@ pub enum Item {
     None,
 }
 
-/// The `as` part of an `@use` directive.
+/// How an `@forward`-ed module should be exposed.
+///
+/// As directed by the `show` or `hide` keywords or their absense.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
+pub enum Expose {
+    /// No `show` or `hide` specified; expose everything.
+    All,
+    /// Only show the listed items.
+    ///
+    /// The first list is functions and mixins, the second is variables.
+    Show(BTreeSet<Name>, BTreeSet<Name>),
+    /// Hide the listed items, show everything else.
+    ///
+    /// The first list is functions and mixins, the second is variables.
+    Hide(BTreeSet<Name>, BTreeSet<Name>),
+}
+
+/// The `as` part of an `@use` or `@forward` directive.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub enum UseAs {
     /// A plain `@use foo;`.
@@ -94,5 +115,7 @@ pub enum UseAs {
     /// Include the module contents directly in the scope, `@use foo as *;`.
     Star,
     /// An explicit name, `@use foo as bar`.
-    Name(SassString),
+    Name(String),
+    /// A prefix, `@forward foo as foo-*`.
+    Prefix(String),
 }

@@ -117,7 +117,6 @@ mod different_module {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn test_as() {
             let runner = runner().with_cwd("as");
             assert_eq!(
@@ -133,7 +132,6 @@ mod different_module {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn bare() {
             let runner = runner().with_cwd("bare");
             assert_eq!(
@@ -145,7 +143,6 @@ mod different_module {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn hide() {
             let runner = runner().with_cwd("hide");
             assert_eq!(
@@ -161,7 +158,6 @@ mod different_module {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn show() {
             let runner = runner().with_cwd("show");
             assert_eq!(

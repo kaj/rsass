@@ -2,7 +2,7 @@
 
 use crate::css::Value;
 use crate::output::Format;
-use crate::sass::{Function, Item, Mixin, Name};
+use crate::sass::{Expose, Function, Item, Mixin, Name};
 use crate::selectors::Selectors;
 use crate::Error;
 use lazy_static::lazy_static;
@@ -152,6 +152,63 @@ impl ScopeRef {
         }
         Ok(None)
     }
+
+    pub(crate) fn with_forwarded(self) -> Self {
+        if let Some(forwarded) = self.opt_forward() {
+            let merged = ScopeRef::new_global(self.get_format());
+            merged.expose_star(&self);
+            merged.expose_star(&forwarded);
+            merged
+        } else {
+            self
+        }
+    }
+
+    pub(crate) fn expose(self, filter: &Expose) -> Self {
+        match filter {
+            Expose::All => self,
+            Expose::Show(funs, vars) => {
+                let result = ScopeRef::new_global(self.get_format());
+                for (name, function) in &*self.functions.lock().unwrap() {
+                    if funs.contains(name) {
+                        result
+                            .define_function(name.clone(), function.clone());
+                    }
+                }
+                for (name, m) in &*self.mixins.lock().unwrap() {
+                    if funs.contains(name) {
+                        result.define_mixin(name.clone(), m.clone());
+                    }
+                }
+                for (name, value) in &*self.variables.lock().unwrap() {
+                    if vars.contains(name) {
+                        result.define(name.clone(), value);
+                    }
+                }
+                result
+            }
+            Expose::Hide(funs, vars) => {
+                let result = ScopeRef::new_global(self.get_format());
+                for (name, function) in &*self.functions.lock().unwrap() {
+                    if !funs.contains(name) {
+                        result
+                            .define_function(name.clone(), function.clone());
+                    }
+                }
+                for (name, m) in &*self.mixins.lock().unwrap() {
+                    if !funs.contains(name) {
+                        result.define_mixin(name.clone(), m.clone());
+                    }
+                }
+                for (name, value) in &*self.variables.lock().unwrap() {
+                    if !vars.contains(name) {
+                        result.define(name.clone(), value);
+                    }
+                }
+                result
+            }
+        }
+    }
 }
 
 impl Deref for ScopeRef {
@@ -177,6 +234,7 @@ pub struct Scope {
     mixins: Mutex<BTreeMap<Name, Mixin>>,
     functions: Mutex<BTreeMap<Name, Function>>,
     selectors: Option<Selectors>,
+    forward: Mutex<Option<ScopeRef>>,
     format: Format,
 }
 
@@ -194,6 +252,7 @@ impl<'a> Scope {
             mixins: Mutex::new(BTreeMap::new()),
             functions: Mutex::new(BTreeMap::new()),
             selectors: None,
+            forward: Default::default(),
             format,
         }
     }
@@ -224,6 +283,7 @@ impl<'a> Scope {
             mixins: Mutex::new(BTreeMap::new()),
             functions: Mutex::new(BTreeMap::new()),
             selectors: None,
+            forward: Default::default(),
             format,
         }
     }
@@ -237,6 +297,7 @@ impl<'a> Scope {
             mixins: Mutex::new(BTreeMap::new()),
             functions: Mutex::new(BTreeMap::new()),
             selectors: Some(selectors),
+            forward: Default::default(),
             format,
         }
     }
@@ -433,7 +494,7 @@ impl<'a> Scope {
 
     /// Expose another module directly in this.
     ///
-    /// This is `use other as *` behavior.
+    /// This is `@use other as *` behavior.
     pub fn expose_star(&self, other: &Scope) {
         for (name, function) in &*other.functions.lock().unwrap() {
             self.define_function(name.clone(), function.clone());
@@ -443,6 +504,27 @@ impl<'a> Scope {
         }
         for (name, m) in &*other.mixins.lock().unwrap() {
             self.define_mixin(name.clone(), m.clone());
+        }
+    }
+
+    /// Expose another module in this, with a prefix.
+    ///
+    /// This is `@use other as foo-*` behavior.
+    pub fn expose_prefix(&self, other: &Scope, prefix: &str) {
+        for (name, function) in &*other.functions.lock().unwrap() {
+            self.define_function(
+                format!("{}{}", prefix, name).into(),
+                function.clone(),
+            );
+        }
+        for (name, value) in &*other.variables.lock().unwrap() {
+            self.define(format!("{}{}", prefix, name).into(), value);
+        }
+        for (name, m) in &*other.mixins.lock().unwrap() {
+            self.define_mixin(
+                format!("{}{}", prefix, name).into(),
+                m.clone(),
+            );
         }
     }
 
@@ -474,6 +556,22 @@ impl<'a> Scope {
             }
         }
         Value::Map(result)
+    }
+    /// Get the forward scope for this scope.
+    ///
+    /// Create a new one if necessary.
+    pub fn forward(&self) -> ScopeRef {
+        self.forward
+            .lock()
+            .unwrap()
+            .get_or_insert_with(|| ScopeRef::new_global(self.get_format()))
+            .clone()
+    }
+    /// Get the forward scope for this scope.
+    ///
+    /// Create a new one if necessary.
+    pub fn opt_forward(&self) -> Option<ScopeRef> {
+        self.forward.lock().unwrap().clone()
     }
 }
 

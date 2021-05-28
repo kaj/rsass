@@ -1,4 +1,4 @@
-use super::cssbuf::CssBuf;
+use super::cssbuf::{CssBuf, CssHead};
 use super::transform::handle_body;
 use super::Style;
 use crate::file_context::FileContext;
@@ -42,7 +42,7 @@ impl Format {
         globals: ScopeRef,
         file_context: &impl FileContext,
     ) -> Result<Vec<u8>, Error> {
-        let mut head = CssBuf::new(*self);
+        let mut head = CssHead::new(*self);
         let mut body = CssBuf::new(*self);
         handle_body(
             items,
@@ -52,7 +52,7 @@ impl Format {
             globals,
             file_context,
         )?;
-        Ok(CssBuf::combine_final(head, body))
+        Ok(head.combine_final(body))
     }
 
     /// Get a newline followed by len spaces, unles self is compressed.

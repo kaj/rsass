@@ -39,7 +39,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn diamond() {
     let runner = runner().with_cwd("diamond");
     assert_eq!(
@@ -241,7 +240,6 @@ mod import_order {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn once() {
     let runner = runner().with_cwd("once");
     assert_eq!(
@@ -254,7 +252,6 @@ fn once() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn triangle() {
     let runner = runner().with_cwd("triangle");
     assert_eq!(

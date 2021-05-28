@@ -9,6 +9,7 @@ macro_rules! check_parse {
 
 mod error;
 pub mod formalargs;
+mod imports;
 mod pos;
 pub mod selectors;
 pub(crate) mod strings;
@@ -21,9 +22,7 @@ pub use pos::{SourceName, SourcePos};
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
-use self::strings::{
-    name, sass_string, sass_string_dq, sass_string_sq, special_url,
-};
+use self::strings::{name, sass_string, sass_string_dq, sass_string_sq};
 use self::util::{
     comment2, ignore_comments, ignore_space, opt_spacelike, spacelike,
 };
@@ -32,12 +31,13 @@ use self::value::{
 };
 #[cfg(test)]
 use crate::sass::CallArgs;
-use crate::sass::{FormalArgs, Item, Name, UseAs, Value};
+use crate::sass::{FormalArgs, Item, Name, Value};
 use crate::selectors::Selectors;
 use crate::value::ListSeparator;
 #[cfg(test)]
 use crate::value::{Numeric, Rgba, Unit};
 use crate::Error;
+use imports::{forward2, import2, use2};
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
 use nom::character::complete::one_of;
@@ -47,9 +47,9 @@ use nom::combinator::{
 use nom::multi::{
     fold_many0, many0, many_till, separated_list0, separated_list1,
 };
-use nom::sequence::{delimited, pair, preceded, terminated, tuple};
+use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::IResult;
-use nom_locate::{position, LocatedSpan};
+use nom_locate::LocatedSpan;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -203,34 +203,6 @@ fn body_item(input: Span) -> IResult<Span, Item> {
     }
 }
 
-/// What follows the `@import` tag.
-fn import2(input: Span) -> IResult<Span, Item> {
-    map(
-        terminated(
-            tuple((
-                position,
-                separated_list0(
-                    preceded(tag(","), ignore_comments),
-                    alt((
-                        sass_string_dq,
-                        sass_string_sq,
-                        special_url,
-                        sass_string,
-                    )),
-                ),
-                opt(media_args),
-            )),
-            preceded(
-                opt(ignore_space),
-                alt((tag(";"), all_consuming(tag("")))),
-            ),
-        ),
-        |(position, import, args)| {
-            Item::Import(import, args.unwrap_or(Value::Null), position.into())
-        },
-    )(input)
-}
-
 /// What follows the `@at-root` tag.
 fn at_root2(input: Span) -> IResult<Span, Item> {
     preceded(
@@ -282,6 +254,7 @@ fn at_rule2(input: Span) -> IResult<Span, Item> {
         "each" => each_loop2(input),
         "error" => map(expression_argument, Item::Error)(input),
         "for" => for_loop2(input),
+        "forward" => forward2(input),
         "function" => function_declaration2(input),
         "if" => if_statement2(input),
         "import" => import2(input),
@@ -311,53 +284,6 @@ fn at_rule2(input: Span) -> IResult<Span, Item> {
             ))
         }
     }
-}
-
-fn use2(input: Span) -> IResult<Span, Item> {
-    map(
-        terminated(
-            tuple((
-                terminated(
-                    alt((sass_string_dq, sass_string_sq, sass_string)),
-                    opt_spacelike,
-                ),
-                opt(delimited(
-                    terminated(
-                        terminated(tag("with"), opt_spacelike),
-                        terminated(tag("("), opt_spacelike),
-                    ),
-                    separated_list0(
-                        preceded(tag(","), opt_spacelike),
-                        pair(
-                            delimited(
-                                tag("$"),
-                                map(name, Name::from),
-                                delimited(
-                                    opt_spacelike,
-                                    tag(":"),
-                                    opt_spacelike,
-                                ),
-                            ),
-                            terminated(value_expression, opt_spacelike),
-                        ),
-                    ),
-                    terminated(tag(")"), opt_spacelike),
-                )),
-                opt(delimited(
-                    terminated(tag("as"), opt_spacelike),
-                    alt((
-                        map(sass_string, UseAs::Name),
-                        value(UseAs::Star, tag("*")),
-                    )),
-                    opt_spacelike,
-                )),
-            )),
-            alt((tag(";"), all_consuming(tag("")))),
-        ),
-        |(s, w, n)| {
-            Item::Use(s, n.unwrap_or(UseAs::KeepName), w.unwrap_or_default())
-        },
-    )(input)
 }
 
 fn expression_argument(input: Span) -> IResult<Span, Value> {
