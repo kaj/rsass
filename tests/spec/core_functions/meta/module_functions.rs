@@ -42,7 +42,6 @@ fn test_as() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn core_module() {
     let runner = runner().with_cwd("core_module");
     assert_eq!(

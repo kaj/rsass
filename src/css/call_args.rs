@@ -23,7 +23,7 @@ impl CallArgs {
     /// unquoted "..." string, makring a varargs argument list.
     pub fn from_value(v: Value) -> Self {
         match v {
-            Value::List(mut v, _, false) => {
+            Value::List(mut v, Some(ListSeparator::Comma), false) => {
                 if v.len() == 2 && is_mark(&v[1]) {
                     match &v[0] {
                         Value::Map(map) => {
