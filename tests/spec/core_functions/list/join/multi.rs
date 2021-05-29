@@ -199,7 +199,6 @@ mod map {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn slash() {
             assert_eq!(
                 runner().ok("@use \"sass:list\";\
@@ -233,7 +232,6 @@ mod map {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn slash() {
             assert_eq!(
                 runner().ok("@use \"sass:list\";\
@@ -273,7 +271,6 @@ mod slash {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn both() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -284,7 +281,6 @@ mod slash {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn first() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -295,7 +291,6 @@ mod slash {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn second() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -310,7 +305,6 @@ mod slash {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn forces_not_slash() {
             assert_eq!(
         runner().ok(
@@ -323,7 +317,6 @@ mod slash {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn forces_slash() {
             assert_eq!(
                 runner().ok("a {b: join(c, d, $separator: slash)}\n"),

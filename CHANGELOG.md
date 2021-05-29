@@ -11,7 +11,7 @@ project adheres to
 
 ### Breaking changes
 
-* `value::Unit` has a new alternative.
+* `value::Unit` and `value::ListSeparator` has new alternatives.
 * The `List` alternative in `sass::Value` and `css::Value` is modified.
 * The `Use` alternative in `sass::Item` is modified, and `Forward` added.
 
@@ -28,6 +28,7 @@ project adheres to
 * Implement `math.div` function.
 * Improved parameter checking for `hwb`, `alpha`, and `invert`
   functions in `sass:color` module.
+* Support slash-separated lists. PR #111.
 * The `if` function evaluates its arguments lazily.  Issue #107.
 * The `--include-path` cli argument is now named `--load-path`.
 * Update sass-spec test suite to 2021-05-24.  Also include "other"

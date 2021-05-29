@@ -123,7 +123,6 @@ mod in_gamut {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn slash_list() {
     assert_eq!(
         runner().ok("@use \"sass:list\";\

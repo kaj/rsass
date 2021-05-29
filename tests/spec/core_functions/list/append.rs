@@ -156,7 +156,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn unknown_separator() {
         assert_eq!(
         runner().err(
@@ -259,7 +258,6 @@ mod slash {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn default() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -270,7 +268,6 @@ mod slash {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn overridden() {
         assert_eq!(
             runner().ok("a {b: append(c d, e, $separator: slash)}\n"),

@@ -10,7 +10,6 @@ mod functions {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn length() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -21,7 +20,6 @@ mod functions {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn nth() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -37,7 +35,6 @@ mod output {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn bracketed_slash() {
         assert_eq!(
         runner().ok(
@@ -60,7 +57,6 @@ mod output {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn slash() {
                 assert_eq!(
                     runner().ok("@use \"sass:list\";\
@@ -76,7 +72,6 @@ mod output {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn comma() {
                 assert_eq!(
                     runner().ok("@use \"sass:list\";\
@@ -87,7 +82,6 @@ mod output {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn slash() {
                 assert_eq!(
                     runner().ok("@use \"sass:list\";\
@@ -98,7 +92,6 @@ mod output {
                 );
             }
             #[test]
-            #[ignore] // unexepected error
             fn space() {
                 assert_eq!(
                     runner().ok("@use \"sass:list\";\
@@ -114,7 +107,6 @@ mod output {
             use super::runner;
 
             #[test]
-            #[ignore] // unexepected error
             fn space() {
                 assert_eq!(
                     runner().ok("@use \"sass:list\";\
