@@ -13,10 +13,12 @@ project adheres to
 
 * `value::Unit` has a new alternative.
 * The `List` alternative in `sass::Value` and `css::Value` is modified.
-* The `Use` alternative in `sass::Value` is modified.
+* The `Use` alternative in `sass::Item` is modified, and `Forward` added.
 
 ### Improvements
 
+* Most of `@forward` and some more of `@use` is now supported.
+  PR #109 and #110.
 * Handle unknown units.  PR #101.
 * List can be undecided between beeing comma-separated and beeing
   space-separated.  PR #102.
@@ -26,7 +28,6 @@ project adheres to
 * Improved parameter checking for `hwb`, `alpha`, and `invert`
   functions in `sass:color` module.
 * The `if` function evaluates its arguments lazily.  Issue #107.
-* Modules can now be configured; `@use ... with ...`.  PR #109.
 * The `--include-path` cli argument is now named `--load-path`.
 * Update sass-spec test suite to 2021-05-12.  Also include "other"
   files (for `@use` and `@import`) in rust code for the suite.
