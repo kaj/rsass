@@ -114,10 +114,11 @@ fn grad() {
     );
 }
 #[test]
+#[ignore] // unexepected error
 fn infinity() {
     assert_eq!(
         runner().ok("@use \"sass:math\" as math;\
-             \na {b: math.tan(1 / 0)}\n"),
+             \na {b: math.tan(math.div(1, 0))}\n"),
         "a {\
          \n  b: NaN;\
          \n}\n"
@@ -149,10 +150,11 @@ mod negative_asymptote {
     }
 }
 #[test]
+#[ignore] // unexepected error
 fn negative_infinity() {
     assert_eq!(
         runner().ok("@use \"sass:math\" as math;\
-             \na {b: math.tan(-1 / 0)}\n"),
+             \na {b: math.tan(math.div(-1, 0))}\n"),
         "a {\
          \n  b: NaN;\
          \n}\n"

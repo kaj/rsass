@@ -179,10 +179,11 @@ mod error {
     }
 }
 #[test]
+#[ignore] // unexepected error
 fn infinity() {
     assert_eq!(
         runner().ok("@use \"sass:math\" as math;\
-             \na {b: math.log(1 / 0)}\n"),
+             \na {b: math.log(math.div(1, 0))}\n"),
         "a {\
          \n  b: Infinity;\
          \n}\n"

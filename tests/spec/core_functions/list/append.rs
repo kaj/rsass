@@ -156,16 +156,19 @@ mod error {
         }
     }
     #[test]
+    #[ignore] // wrong error
     fn unknown_separator() {
         assert_eq!(
-            runner().err("a {b: append(c, d, $separator: e)}\n"),
-            "Error: $separator: Must be \"space\", \"comma\", or \"auto\".\
+        runner().err(
+            "a {b: append(c, d, $separator: e)}\n"
+        ),
+        "Error: $separator: Must be \"space\", \"comma\", \"slash\", or \"auto\".\
          \n  ,\
          \n1 | a {b: append(c, d, $separator: e)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
-        );
+    );
     }
 }
 mod map {
@@ -247,6 +250,32 @@ mod single {
             runner().ok("a {b: append(1, 2)}\n"),
             "a {\
          \n  b: 1 2;\
+         \n}\n"
+        );
+    }
+}
+mod slash {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // unexepected error
+    fn default() {
+        assert_eq!(
+            runner().ok("@use \"sass:list\";\
+             \na {b: append(list.slash(c, d), e)}\n"),
+            "a {\
+         \n  b: c / d / e;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn overridden() {
+        assert_eq!(
+            runner().ok("a {b: append(c d, e, $separator: slash)}\n"),
+            "a {\
+         \n  b: c / d / e;\
          \n}\n"
         );
     }

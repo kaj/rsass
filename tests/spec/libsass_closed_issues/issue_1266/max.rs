@@ -15,8 +15,8 @@ fn test() {
              \n  bar: call(max, $foo...);\
              \n}\n"
         ),
-        "DEPRECATION WARNING: Passing a string to call() is deprecated and will be illegal\
-         \nin Dart Sass 2.0.0. Use call(get-function(max)) instead.\n\
+        "DEPRECATION WARNING: Passing a string to call() is deprecated and will be illegal in Dart Sass 2.0.0.\n\
+         \nRecommendation: call(get-function(max))\n\
          \n  ,\
          \n3 |   bar: call(max, $foo...);\
          \n  |        ^^^^^^^^^^^^^^^^^^\

@@ -359,6 +359,48 @@ mod list {
                     );
                 }
             }
+            mod in_slash {
+                #[allow(unused)]
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_slash")
+                }
+
+                #[test]
+                #[ignore] // unexepected error
+                fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
+                    assert_eq!(
+        runner.ok(
+            "$result: inspect(join([[1, 2], [3, 4]], (), $separator: slash));\
+             \na {\
+             \n  value: $result;\
+             \n  type: type-of($result);\
+             \n}\n"
+        ),
+        "a {\
+         \n  value: [[1, 2] / [3, 4]];\
+         \n  type: string;\
+         \n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
+                    assert_eq!(
+                        runner.ok("@use \"sass:list\";\
+             \n$result: inspect(list.slash([1, 2], [3, 4]));\
+             \na {\
+             \n  value: $result;\
+             \n  type: type-of($result);\
+             \n}\n"),
+                        "a {\
+         \n  value: [1, 2] / [3, 4];\
+         \n  type: string;\
+         \n}\n"
+                    );
+                }
+            }
             mod in_space {
                 #[allow(unused)]
                 fn runner() -> crate::TestRunner {
@@ -435,6 +477,48 @@ mod list {
              \n}\n"),
                         "a {\
          \n  value: (1, 2), (3, 4);\
+         \n  type: string;\
+         \n}\n"
+                    );
+                }
+            }
+            mod in_slash {
+                #[allow(unused)]
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_slash")
+                }
+
+                #[test]
+                #[ignore] // unexepected error
+                fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
+                    assert_eq!(
+        runner.ok(
+            "$result: inspect(join([(1, 2), (3, 4)], (), $separator: slash));\
+             \na {\
+             \n  value: $result;\
+             \n  type: type-of($result);\
+             \n}\n"
+        ),
+        "a {\
+         \n  value: [(1, 2) / (3, 4)];\
+         \n  type: string;\
+         \n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
+                    assert_eq!(
+                        runner.ok("@use \"sass:list\";\
+             \n$result: inspect(list.slash((1, 2), (3, 4)));\
+             \na {\
+             \n  value: $result;\
+             \n  type: type-of($result);\
+             \n}\n"),
+                        "a {\
+         \n  value: (1, 2) / (3, 4);\
          \n  type: string;\
          \n}\n"
                     );
@@ -521,6 +605,48 @@ mod list {
                     );
                 }
             }
+            mod in_slash {
+                #[allow(unused)]
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_slash")
+                }
+
+                #[test]
+                #[ignore] // unexepected error
+                fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
+                    assert_eq!(
+        runner.ok(
+            "$result: inspect(join([(), ()], (), $separator: slash));\
+             \na {\
+             \n  value: $result;\
+             \n  type: type-of($result);\
+             \n}\n"
+        ),
+        "a {\
+         \n  value: [() / ()];\
+         \n  type: string;\
+         \n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
+                    assert_eq!(
+                        runner.ok("@use \"sass:list\";\
+             \n$result: inspect(list.slash((), ()));\
+             \na {\
+             \n  value: $result;\
+             \n  type: type-of($result);\
+             \n}\n"),
+                        "a {\
+         \n  value: () / ();\
+         \n  type: string;\
+         \n}\n"
+                    );
+                }
+            }
             mod in_space {
                 #[allow(unused)]
                 fn runner() -> crate::TestRunner {
@@ -597,6 +723,48 @@ mod list {
              \n}\n"),
                         "a {\
          \n  value: 1 2, 3 4;\
+         \n  type: string;\
+         \n}\n"
+                    );
+                }
+            }
+            mod in_slash {
+                #[allow(unused)]
+                fn runner() -> crate::TestRunner {
+                    super::runner().with_cwd("in_slash")
+                }
+
+                #[test]
+                #[ignore] // unexepected error
+                fn bracketed() {
+                    let runner = runner().with_cwd("bracketed");
+                    assert_eq!(
+        runner.ok(
+            "$result: inspect(join([1 2, 3 4], (), $separator: slash));\
+             \na {\
+             \n  value: $result;\
+             \n  type: type-of($result);\
+             \n}\n"
+        ),
+        "a {\
+         \n  value: [1 2 / 3 4];\
+         \n  type: string;\
+         \n}\n"
+    );
+                }
+                #[test]
+                #[ignore] // unexepected error
+                fn unbracketed() {
+                    let runner = runner().with_cwd("unbracketed");
+                    assert_eq!(
+                        runner.ok("@use \"sass:list\";\
+             \n$result: inspect(list.slash(1 2, 3 4));\
+             \na {\
+             \n  value: $result;\
+             \n  type: type-of($result);\
+             \n}\n"),
+                        "a {\
+         \n  value: 1 2 / 3 4;\
          \n  type: string;\
          \n}\n"
                     );
@@ -695,6 +863,22 @@ mod list {
              \n}\n"),
                 "a {\
          \n  value: (1,);\
+         \n  type: string;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn slash() {
+            let runner = runner().with_cwd("slash");
+            assert_eq!(
+                runner.ok("$result: inspect(append((), 1, slash));\
+             \na {\
+             \n  value: $result;\
+             \n  type: type-of($result);\
+             \n}\n"),
+                "a {\
+         \n  value: (1/);\
          \n  type: string;\
          \n}\n"
             );

@@ -128,6 +128,143 @@ fn quoted_var_slash() {
          \n  input.scss 2:6  root stylesheet",
     );
 }
+mod slash_list {
+    #[allow(unused)]
+    use super::runner;
+
+    mod channels {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // wrong error
+        fn bracketed() {
+            assert_eq!(
+                runner().err(
+                    "@use \"sass:list\";\
+             \na {b: rgb(list.slash([1 2 3], 1))}\n"
+                ),
+                "Error: $channels must be an unbracketed list.\
+         \n  ,\
+         \n2 | a {b: rgb(list.slash([1 2 3], 1))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn comma_separated() {
+            assert_eq!(
+                runner().err(
+                    "@use \"sass:list\";\
+             \na {b: rgb(list.slash((1, 2, 3), 1))}\n"
+                ),
+                "Error: $channels must be a space-separated list.\
+         \n  ,\
+         \n2 | a {b: rgb(list.slash((1, 2, 3), 1))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn empty() {
+            assert_eq!(
+                runner().err(
+                    "@use \"sass:list\";\
+             \na {b: rgb(list.slash((), 1))}\n"
+                ),
+                "Error: Missing element $red.\
+         \n  ,\
+         \n2 | a {b: rgb(list.slash((), 1))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn four_elements() {
+            assert_eq!(
+                runner().err(
+                    "@use \"sass:list\";\
+             \na {b: rgb(list.slash(1 2 3 0.4, 1))}\n"
+                ),
+                "Error: Only 3 elements allowed, but 4 were passed.\
+         \n  ,\
+         \n2 | a {b: rgb(list.slash(1 2 3 0.4, 1))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn one_element() {
+            assert_eq!(
+                runner().err(
+                    "@use \"sass:list\";\
+             \na {b: rgb(list.slash(1, 1))}\n"
+                ),
+                "Error: Missing element $green.\
+         \n  ,\
+         \n2 | a {b: rgb(list.slash(1, 1))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn two_elements() {
+            assert_eq!(
+                runner().err(
+                    "@use \"sass:list\";\
+             \na {b: rgb(list.slash(1 2, 1))}\n"
+                ),
+                "Error: Missing element $blue.\
+         \n  ,\
+         \n2 | a {b: rgb(list.slash(1 2, 1))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn too_few_elements() {
+        assert_eq!(
+        runner().err(
+            "a {b: rgb(append((), 1 2 3, $separator: slash))}\n"
+        ),
+        "Error: Only 2 slash-separated elements allowed, but 1 was passed.\
+         \n  ,\
+         \n1 | a {b: rgb(append((), 1 2 3, $separator: slash))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet",
+    );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn too_many_elements() {
+        assert_eq!(
+        runner().err(
+            "@use \"sass:list\";\
+             \na {b: rgb(list.slash(1 2 3, 0.4, 1))}\n"
+        ),
+        "Error: Only 2 slash-separated elements allowed, but 3 were passed.\
+         \n  ,\
+         \n2 | a {b: rgb(list.slash(1 2 3, 0.4, 1))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+    );
+    }
+}
 mod test_type {
     #[allow(unused)]
     use super::runner;

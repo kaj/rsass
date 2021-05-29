@@ -6,11 +6,12 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // unexepected error
 fn compatible_units() {
     assert_eq!(
         runner().ok(
             "@use \"sass:math\" as math;\
-             \na {b: math.hypot(3cm, 4mm * 10, 5q * 40, 6in / 2.54, 7px * 96 / 2.54)}\n"
+             \na {b: math.hypot(3cm, 4mm * 10, 5q * 40, math.div(6in, 2.54), 7px * math.div(96, 2.54))}\n"
         ),
         "a {\
          \n  b: 11.6189500386cm;\
@@ -252,30 +253,33 @@ mod infinity {
     use super::runner;
 
     #[test]
+    #[ignore] // unexepected error
     fn first() {
         assert_eq!(
             runner().ok("@use \"sass:math\" as math;\
-             \na {b: math.hypot(1/0, 1, 1)}\n"),
+             \na {b: math.hypot(math.div(1, 0), 1, 1)}\n"),
             "a {\
          \n  b: Infinity;\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // unexepected error
     fn second() {
         assert_eq!(
             runner().ok("@use \"sass:math\" as math;\
-             \na {b: math.hypot(1, 1/0, 1)}\n"),
+             \na {b: math.hypot(1, math.div(1, 0), 1)}\n"),
             "a {\
          \n  b: Infinity;\
          \n}\n"
         );
     }
     #[test]
+    #[ignore] // unexepected error
     fn third() {
         assert_eq!(
             runner().ok("@use \"sass:math\" as math;\
-             \na {b: math.hypot(1, 1, 1/0)}\n"),
+             \na {b: math.hypot(1, 1, math.div(1, 0))}\n"),
             "a {\
          \n  b: Infinity;\
          \n}\n"

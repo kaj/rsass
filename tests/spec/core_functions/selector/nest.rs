@@ -268,16 +268,33 @@ mod list {
          \n}\n"
             );
         }
-        #[test]
-        #[ignore] // wrong result
-        fn selector_pseudo() {
-            assert_eq!(
-                runner()
-                    .ok("a {b: selector-nest(\"c, d\", \":matches(&)\")}\n"),
-                "a {\
+        mod selector_pseudo {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            #[ignore] // wrong result
+            fn is() {
+                assert_eq!(
+                    runner()
+                        .ok("a {b: selector-nest(\"c, d\", \":is(&)\")}\n"),
+                    "a {\
+         \n  b: :is(c, d);\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn matches() {
+                assert_eq!(
+                    runner().ok(
+                        "a {b: selector-nest(\"c, d\", \":matches(&)\")}\n"
+                    ),
+                    "a {\
          \n  b: :matches(c, d);\
          \n}\n"
-            );
+                );
+            }
         }
         #[test]
         fn suffix() {
@@ -376,24 +393,55 @@ mod parent {
         #[allow(unused)]
         use super::runner;
 
-        #[test]
-        fn complex_parent() {
-            assert_eq!(
-                runner()
-                    .ok("a {b: selector-nest(\"c d\", \":matches(&)\")}\n"),
-                "a {\
+        mod complex_parent {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn is() {
+                assert_eq!(
+                    runner()
+                        .ok("a {b: selector-nest(\"c d\", \":is(&)\")}\n"),
+                    "a {\
+         \n  b: :is(c d);\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn matches() {
+                assert_eq!(
+                    runner().ok(
+                        "a {b: selector-nest(\"c d\", \":matches(&)\")}\n"
+                    ),
+                    "a {\
          \n  b: :matches(c d);\
          \n}\n"
-            );
+                );
+            }
         }
-        #[test]
-        fn simple_parent() {
-            assert_eq!(
-                runner().ok("a {b: selector-nest(\"c\", \":matches(&)\")}\n"),
-                "a {\
+        mod simple_parent {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn is() {
+                assert_eq!(
+                    runner().ok("a {b: selector-nest(\"c\", \":is(&)\")}\n"),
+                    "a {\
+         \n  b: :is(c);\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn matches() {
+                assert_eq!(
+                    runner()
+                        .ok("a {b: selector-nest(\"c\", \":matches(&)\")}\n"),
+                    "a {\
          \n  b: :matches(c);\
          \n}\n"
-            );
+                );
+            }
         }
     }
     #[test]

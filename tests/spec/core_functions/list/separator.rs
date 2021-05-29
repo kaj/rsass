@@ -98,6 +98,17 @@ mod multi {
         );
     }
     #[test]
+    #[ignore] // unexepected error
+    fn slash() {
+        assert_eq!(
+            runner().ok("@use \'sass:list\';\
+             \na {b: list-separator(list.slash(1, 2, 3))}\n"),
+            "a {\
+         \n  b: slash;\
+         \n}\n"
+        );
+    }
+    #[test]
     fn space() {
         assert_eq!(
             runner().ok("a {b: list-separator(1 2 3)}\n"),
@@ -126,6 +137,18 @@ mod single {
             runner().ok("a {b: list-separator(1)}\n"),
             "a {\
          \n  b: space;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn slash() {
+        assert_eq!(
+            runner().ok(
+                "a {b: list-separator(join(1, (), $separator: slash))}\n"
+            ),
+            "a {\
+         \n  b: slash;\
          \n}\n"
         );
     }

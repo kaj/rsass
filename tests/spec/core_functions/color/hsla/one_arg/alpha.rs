@@ -104,3 +104,14 @@ mod in_gamut {
         );
     }
 }
+#[test]
+#[ignore] // unexepected error
+fn slash_list() {
+    assert_eq!(
+        runner().ok("@use \"sass:list\";\
+             \na {b: hsla(list.slash(180 60% 50%, 0))}\n"),
+        "a {\
+         \n  b: rgba(51, 204, 204, 0);\
+         \n}\n"
+    );
+}

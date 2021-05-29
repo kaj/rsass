@@ -14,8 +14,8 @@ fn test() {
              \n    color: call(missing, $a: b);\
              \n}\n"
         ),
-        "DEPRECATION WARNING: Passing a string to call() is deprecated and will be illegal\
-         \nin Dart Sass 2.0.0. Use call(get-function(missing)) instead.\n\
+        "DEPRECATION WARNING: Passing a string to call() is deprecated and will be illegal in Dart Sass 2.0.0.\n\
+         \nRecommendation: call(get-function(missing))\n\
          \n  ,\
          \n2 |     color: call(missing, $a: b);\
          \n  |            ^^^^^^^^^^^^^^^^^^^^\

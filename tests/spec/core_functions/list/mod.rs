@@ -19,6 +19,8 @@ mod separator;
 
 mod set_nth;
 
+mod slash;
+
 mod utils;
 
 mod zip;

@@ -6,3 +6,5 @@ use super::runner;
 mod brackets;
 
 mod equality;
+
+mod slash;

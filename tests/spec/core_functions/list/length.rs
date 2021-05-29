@@ -120,3 +120,14 @@ fn non_list() {
          \n}\n"
     );
 }
+#[test]
+#[ignore] // wrong result
+fn null_list_item() {
+    assert_eq!(
+        runner().ok("// regression test for scssphp/scssphp#403\
+             \na {b: length((null))}\n"),
+        "a {\
+         \n  b: 1;\
+         \n}\n"
+    );
+}

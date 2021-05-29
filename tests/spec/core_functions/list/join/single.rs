@@ -34,6 +34,33 @@ mod both {
             );
         }
     }
+    mod slash {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // unexepected error
+        fn first() {
+            assert_eq!(
+                runner()
+                    .ok("a {b: join(join(1, (), $separator: slash), [2])}\n"),
+                "a {\
+         \n  b: 1 / 2;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn last() {
+            assert_eq!(
+                runner()
+                    .ok("a {b: join([1], join(2, (), $separator: slash))}\n"),
+                "a {\
+         \n  b: [1 / 2];\
+         \n}\n"
+            );
+        }
+    }
     mod space {
         #[allow(unused)]
         use super::runner;
@@ -83,6 +110,17 @@ mod first {
         );
     }
     #[test]
+    #[ignore] // unexepected error
+    fn slash() {
+        assert_eq!(
+            runner()
+                .ok("a {b: join(join(1, (), $separator: slash), 2 3 4)}\n"),
+            "a {\
+         \n  b: 1 / 2 / 3 / 4;\
+         \n}\n"
+        );
+    }
+    #[test]
     fn space() {
         assert_eq!(
             runner().ok("@import \"core_functions/list/utils\";\
@@ -102,6 +140,17 @@ mod first {
                 runner().ok("a {b: join([1], (2, 3, 4))}\n"),
                 "a {\
          \n  b: [1, 2, 3, 4];\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn and_slash() {
+            assert_eq!(
+                runner().ok("@use \"sass:list\";\
+             \na {b: join([1], list.slash(2, 3, 4))}\n"),
+                "a {\
+         \n  b: [1 / 2 / 3 / 4];\
          \n}\n"
             );
         }
@@ -139,6 +188,17 @@ mod non_list {
                 runner().ok("a {b: join(c, (d, e))}\n"),
                 "a {\
          \n  b: c, d, e;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn slash() {
+            assert_eq!(
+                runner().ok("@use \"sass:list\";\
+             \na {b: join(c, list.slash(d, e))}\n"),
+                "a {\
+         \n  b: c / d / e;\
          \n}\n"
             );
         }
@@ -183,6 +243,17 @@ mod non_list {
                 runner().ok("a {b: join((c, d), e)}\n"),
                 "a {\
          \n  b: c, d, e;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn slash() {
+            assert_eq!(
+                runner().ok("@use \"sass:list\";\
+             \na {b: join(list.slash(c, d), e)}\n"),
+                "a {\
+         \n  b: c / d / e;\
          \n}\n"
             );
         }
@@ -232,6 +303,17 @@ mod second {
         );
     }
     #[test]
+    #[ignore] // unexepected error
+    fn slash() {
+        assert_eq!(
+            runner()
+                .ok("a {b: join(1 2 3, join(4, (), $separator: slash))}\n"),
+            "a {\
+         \n  b: 1 2 3 4;\
+         \n}\n"
+        );
+    }
+    #[test]
     fn space() {
         assert_eq!(
             runner().ok("@import \"core_functions/list/utils\";\
@@ -251,6 +333,17 @@ mod second {
                 runner().ok("a {b: join((1, 2, 3), [4])}\n"),
                 "a {\
          \n  b: 1, 2, 3, 4;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn slash() {
+            assert_eq!(
+                runner().ok("@use \"sass:list\";\
+             \na {b: join(list.slash(1, 2, 3), [4])}\n"),
+                "a {\
+         \n  b: 1 / 2 / 3 / 4;\
          \n}\n"
             );
         }

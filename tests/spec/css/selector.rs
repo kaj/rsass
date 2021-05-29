@@ -259,6 +259,36 @@ mod placeholder {
         #[allow(unused)]
         use super::runner;
 
+        mod is {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            #[ignore] // wrong result
+            fn solo() {
+                assert_eq!(
+        runner().ok(
+            "// Since `%b` doesn\'t exist, no selectors can match it, so this rule should be\
+             \n// removed.\
+             \na:is(%b) {x: y}\n"
+        ),
+        ""
+    );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn with_real() {
+                assert_eq!(
+        runner().ok(
+            "// Since `%b` doesn\'t exist, an element matches `%b` or `c` iff it matches `c`.\
+             \na:is(%b, c) {x: y}\n"
+        ),
+        "a:is(c) {\
+         \n  x: y;\
+         \n}\n"
+    );
+            }
+        }
         mod matches {
             #[allow(unused)]
             use super::runner;

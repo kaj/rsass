@@ -24,7 +24,7 @@ fn test() {
          \n  foo: 0.5px;\
          \n  foo: 0.5 0.5px;\
          \n  foo: missing(1px/2px, 0.5px);\
-         \n  foo: missing(1px/2px, 0.5px);\
+         \n  foo: missing(0.5, 0.5px);\
          \n}\n"
     );
 }

@@ -15,6 +15,8 @@ fn runner() -> crate::TestRunner {
         .mock_file("extended/from_same_file/_other.scss", "in-other-extender {@extend in-other-extendee}\n\nin-other-extendee {x: y}\n")
         .mock_file("far_upstream/_midstream.scss", "@use \"upstream\";\n")
         .mock_file("far_upstream/_upstream.scss", "in-upstream {x: y}\n")
+        .mock_file("midstream_extend_within_pseudoselector/is/_midstream.scss", "@use \"upstream\";\n:is(in-midstream) {@extend in-upstream}\n")
+        .mock_file("midstream_extend_within_pseudoselector/is/_upstream.scss", "in-upstream {a: b}\n")
         .mock_file("midstream_extend_within_pseudoselector/matches/_midstream.scss", "@use \"upstream\";\n:matches(in-midstream) {@extend in-upstream}\n")
         .mock_file("midstream_extend_within_pseudoselector/matches/_upstream.scss", "in-upstream {a: b}\n")
         .mock_file("optional_and_mandatory/different_files/_mandatory.scss", "@use \"shared\";\n\ndownstream {@extend in-other};\n")
@@ -149,6 +151,24 @@ mod midstream_extend_within_pseudoselector {
         super::runner().with_cwd("midstream_extend_within_pseudoselector")
     }
 
+    #[test]
+    #[ignore] // unexepected error
+    fn is() {
+        let runner = runner().with_cwd("is");
+        assert_eq!(
+            runner.ok("@use \"midstream\";\
+             \nin-input {\
+             \n  @extend in-midstream;\
+             \n  y: z;\
+             \n}\n"),
+            "in-upstream, :is(in-midstream, in-input) {\
+         \n  a: b;\
+         \n}\
+         \nin-input {\
+         \n  y: z;\
+         \n}\n"
+        );
+    }
     #[test]
     #[ignore] // unexepected error
     fn matches() {

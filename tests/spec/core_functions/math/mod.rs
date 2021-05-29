@@ -21,6 +21,8 @@ mod comparable;
 
 mod cos;
 
+mod div;
+
 mod floor;
 
 mod hypot;

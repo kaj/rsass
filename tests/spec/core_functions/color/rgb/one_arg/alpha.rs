@@ -122,3 +122,14 @@ mod in_gamut {
         );
     }
 }
+#[test]
+#[ignore] // unexepected error
+fn slash_list() {
+    assert_eq!(
+        runner().ok("@use \"sass:list\";\
+             \na {b: rgb(list.slash(0 255 127, 0))}\n"),
+        "a {\
+         \n  b: rgba(0, 255, 127, 0);\
+         \n}\n"
+    );
+}

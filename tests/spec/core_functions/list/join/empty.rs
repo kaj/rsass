@@ -44,6 +44,45 @@ mod both {
             );
         }
     }
+    mod slash {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // unexepected error
+        fn first() {
+            assert_eq!(
+                runner().ok("@import \"core_functions/list/utils\";\n\
+             \n$empty-slash-list: join((), (), $separator: slash);\
+             \n$result: join($empty-slash-list, ());\
+             \na {\
+             \n  value: inspect($result);\
+             \n  separator: real-separator($result);\
+             \n}\n"),
+                "a {\
+         \n  value: ();\
+         \n  separator: slash;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn last() {
+            assert_eq!(
+                runner().ok("@import \"core_functions/list/utils\";\n\
+             \n$empty-slash-list: join((), (), $separator: slash);\
+             \n$result: join((), $empty-slash-list);\
+             \na {\
+             \n  value: inspect($result);\
+             \n  separator: real-separator($result);\
+             \n}\n"),
+                "a {\
+         \n  value: ();\
+         \n  separator: slash;\
+         \n}\n"
+            );
+        }
+    }
     mod space {
         #[allow(unused)]
         use super::runner;
@@ -114,6 +153,18 @@ mod first {
         );
     }
     #[test]
+    #[ignore] // unexepected error
+    fn slash() {
+        assert_eq!(
+            runner()
+                .ok("$empty-slash-list: join((), (), $separator: slash);\
+             \na {b: join($empty-slash-list, 1 2 3)}\n"),
+            "a {\
+         \n  b: 1 / 2 / 3;\
+         \n}\n"
+        );
+    }
+    #[test]
     fn space() {
         assert_eq!(
             runner().ok("@import \"core_functions/list/utils\";\
@@ -133,6 +184,17 @@ mod first {
                 runner().ok("a {b: join((), (1, 2, 3))}\n"),
                 "a {\
          \n  b: 1, 2, 3;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn and_slash() {
+            assert_eq!(
+                runner().ok("@use \"sass:list\";\
+             \na {b: join((), list.slash(1, 2, 3))}\n"),
+                "a {\
+         \n  b: 1 / 2 / 3;\
          \n}\n"
             );
         }
@@ -162,6 +224,18 @@ mod map {
              \na {b: join($empty-map, (1, 2, 3))}\n"),
                 "a {\
          \n  b: 1, 2, 3;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn slash() {
+            assert_eq!(
+                runner().ok("@use \"sass:list\";\
+             \n@import \"core_functions/list/utils\";\
+             \na {b: join($empty-map, list.slash(1, 2, 3))}\n"),
+                "a {\
+         \n  b: 1 / 2 / 3;\
          \n}\n"
             );
         }
@@ -202,6 +276,18 @@ mod map {
              \na {b: join((1, 2, 3), $empty-map)}\n"),
                 "a {\
          \n  b: 1, 2, 3;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn slash() {
+            assert_eq!(
+                runner().ok("@use \"sass:list\";\
+             \n@import \"core_functions/list/utils\";\
+             \na {b: join(list.slash(1, 2, 3), $empty-map)}\n"),
+                "a {\
+         \n  b: 1 / 2 / 3;\
          \n}\n"
             );
         }
@@ -247,6 +333,18 @@ mod second {
         );
     }
     #[test]
+    #[ignore] // unexepected error
+    fn slash() {
+        assert_eq!(
+            runner()
+                .ok("$empty-slash-list: join((), (), $separator: slash);\
+             \na {b: join(1 2 3, $empty-slash-list)}\n"),
+            "a {\
+         \n  b: 1 2 3;\
+         \n}\n"
+        );
+    }
+    #[test]
     fn space() {
         assert_eq!(
             runner().ok("@import \"core_functions/list/utils\";\
@@ -266,6 +364,17 @@ mod second {
                 runner().ok("a {b: join((1, 2, 3), ())}\n"),
                 "a {\
          \n  b: 1, 2, 3;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn slash() {
+            assert_eq!(
+                runner().ok("@use \"sass:list\";\
+             \na {b: join(list.slash(1, 2, 3), ())}\n"),
+                "a {\
+         \n  b: 1 / 2 / 3;\
          \n}\n"
             );
         }

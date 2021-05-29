@@ -426,6 +426,17 @@ mod selector_pseudo {
 
     #[test]
     #[ignore] // wrong result
+    fn is() {
+        assert_eq!(
+            runner()
+                .ok("a {b: selector-replace(\":is(c)\", \"c\", \"d\")}\n"),
+            "a {\
+         \n  b: :is(d);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
     fn matches() {
         assert_eq!(
             runner().ok(

@@ -94,6 +94,45 @@ mod parse {
         );
     }
 }
+mod slash_list {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // wrong error
+    fn in_comma_list() {
+        assert_eq!(
+        runner().err(
+            "@use \"sass:list\";\
+             \na {b: selector-parse((list.slash(c, d), list.slash(e, f)))}\n"
+        ),
+        "Error: $selector: c / d, e / f is not a valid selector: it must be a string,\
+         \na list of strings, or a list of lists of strings.\
+         \n  ,\
+         \n2 | a {b: selector-parse((list.slash(c, d), list.slash(e, f)))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+    );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn top_level() {
+        assert_eq!(
+        runner().err(
+            "@use \"sass:list\";\
+             \na {b: selector-parse(list.slash(c d, e f))}\n"
+        ),
+        "Error: $selector: c d / e f is not a valid selector: it must be a string,\
+         \na list of strings, or a list of lists of strings.\
+         \n  ,\
+         \n2 | a {b: selector-parse(list.slash(c d, e f))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+    );
+    }
+}
 #[test]
 fn too_few_args() {
     assert_eq!(

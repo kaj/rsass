@@ -199,6 +199,17 @@ mod map {
             );
         }
         #[test]
+        #[ignore] // unexepected error
+        fn slash() {
+            assert_eq!(
+                runner().ok("@use \"sass:list\";\
+             \na {b: join((c: d, e: f), list.slash(g, h))}\n"),
+                "a {\
+         \n  b: c d, e f, g, h;\
+         \n}\n"
+            );
+        }
+        #[test]
         fn space() {
             assert_eq!(
                 runner().ok("a {b: inspect(join((c: d, e: f), g h))}\n"),
@@ -218,6 +229,17 @@ mod map {
                 runner().ok("a {b: join((c, d), (e: f, g: h))}\n"),
                 "a {\
          \n  b: c, d, e f, g h;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn slash() {
+            assert_eq!(
+                runner().ok("@use \"sass:list\";\
+             \na {b: join(list.slash(c, d), (e: f, g: h))}\n"),
+                "a {\
+         \n  b: c / d / e f / g h;\
          \n}\n"
             );
         }
@@ -245,6 +267,72 @@ fn named() {
          \n  b: [a, b, c, d];\
          \n}\n"
     );
+}
+mod slash {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // unexepected error
+    fn both() {
+        assert_eq!(
+            runner().ok("@use \"sass:list\";\
+             \na {b: join(list.slash(c, d), list.slash(e, f))}\n"),
+            "a {\
+         \n  b: c / d / e / f;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn first() {
+        assert_eq!(
+            runner().ok("@use \"sass:list\";\
+             \na {b: join(list.slash(c, d), e f)}\n"),
+            "a {\
+         \n  b: c / d / e / f;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn second() {
+        assert_eq!(
+            runner().ok("@use \"sass:list\";\
+             \na {b: join(c d, list.slash(e, f))}\n"),
+            "a {\
+         \n  b: c d e f;\
+         \n}\n"
+        );
+    }
+    mod separator {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // unexepected error
+        fn forces_not_slash() {
+            assert_eq!(
+        runner().ok(
+            "@use \"sass:list\";\
+             \na {b: join(list.slash(c, d), list.slash(e, f), $separator: space)}\n"
+        ),
+        "a {\
+         \n  b: c d e f;\
+         \n}\n"
+    );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn forces_slash() {
+            assert_eq!(
+                runner().ok("a {b: join(c, d, $separator: slash)}\n"),
+                "a {\
+         \n  b: c / d;\
+         \n}\n"
+            );
+        }
+    }
 }
 mod space {
     #[allow(unused)]

@@ -523,3 +523,41 @@ mod no_alpha {
         }
     }
 }
+mod slash_list {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // unexepected error
+    fn alpha() {
+        assert_eq!(
+            runner().ok("@use \"sass:list\";\
+             \na {b: rgba(list.slash(1 2 3, var(--c)))}\n"),
+            "a {\
+         \n  b: rgba(1, 2, 3, var(--c));\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn channels() {
+        assert_eq!(
+            runner().ok("@use \"sass:list\";\
+             \na {b: rgba(list.slash(var(--foo), 0.4))}\n"),
+            "a {\
+         \n  b: rgba(var(--foo) / 0.4);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn some_channels() {
+        assert_eq!(
+            runner().ok("@use \"sass:list\";\
+             \na {b: rgba(list.slash(1 var(--foo), 0.4))}\n"),
+            "a {\
+         \n  b: rgba(1 var(--foo) / 0.4);\
+         \n}\n"
+        );
+    }
+}

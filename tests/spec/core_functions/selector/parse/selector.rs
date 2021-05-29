@@ -177,21 +177,42 @@ mod simple {
          \n}\n"
                 );
             }
-            #[test]
-            fn selector_arg() {
-                assert_eq!(
-                    runner().ok(
-                        "$result: selector-parse(\":matches(b, c)\");\
+            mod selector_arg {
+                #[allow(unused)]
+                use super::runner;
+
+                #[test]
+                fn is() {
+                    assert_eq!(
+                        runner().ok(
+                            "$result: selector-parse(\":is(b, c)\");\
+             \na {\
+             \n  result: $result;\
+             \n  structure: $result == (append((), \":is(b, c)\"),);\
+             \n}\n"
+                        ),
+                        "a {\
+         \n  result: :is(b, c);\
+         \n  structure: true;\
+         \n}\n"
+                    );
+                }
+                #[test]
+                fn matches() {
+                    assert_eq!(
+                        runner().ok(
+                            "$result: selector-parse(\":matches(b, c)\");\
              \na {\
              \n  result: $result;\
              \n  structure: $result == (append((), \":matches(b, c)\"),);\
              \n}\n"
-                    ),
-                    "a {\
+                        ),
+                        "a {\
          \n  result: :matches(b, c);\
          \n  structure: true;\
          \n}\n"
-                );
+                    );
+                }
             }
         }
         mod element {
