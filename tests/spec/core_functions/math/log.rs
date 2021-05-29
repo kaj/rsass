@@ -179,7 +179,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn infinity() {
     assert_eq!(
         runner().ok("@use \"sass:math\" as math;\

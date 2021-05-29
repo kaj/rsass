@@ -24,7 +24,6 @@ mod negative {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:math\" as math;\
@@ -45,7 +44,6 @@ mod negative {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:math\" as math;\
@@ -116,7 +114,6 @@ mod positive {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:math\" as math;\
@@ -137,7 +134,6 @@ mod positive {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn negative_infinity() {
             assert_eq!(
                 runner().ok("@use \"sass:math\" as math;\

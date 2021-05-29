@@ -17,6 +17,30 @@ use std::f64::consts::{E, PI};
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:math");
 
+    def!(f, div(number1, number2), |s| {
+        let a = s.get("number1")?;
+        let b = s.get("number2")?;
+        use crate::value::Operator;
+        match (a, b) {
+            (Value::Color(a, _), Value::Numeric(b, _)) if b.is_no_unit() => {
+                let bn = b.as_ratio()?;
+                Ok((a.to_rgba().as_ref() / bn).into())
+            }
+            (Value::Numeric(ref a, _), Value::Numeric(ref b, _)) => {
+                Ok((a / b).into())
+            }
+            (a, b) => Ok(Value::BinOp(
+                Box::new(a),
+                false,
+                Operator::Div,
+                false,
+                Box::new(b),
+            )
+            .format(Format::introspect())
+            .to_string()
+            .into()),
+        }
+    });
     // - - - Boundig Functions - - -
     def!(f, ceil(number), |s| {
         let val = get_numeric(s, "number")?;

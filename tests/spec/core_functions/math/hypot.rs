@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn compatible_units() {
     assert_eq!(
         runner().ok(
@@ -253,7 +252,6 @@ mod infinity {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn first() {
         assert_eq!(
             runner().ok("@use \"sass:math\" as math;\
@@ -264,7 +262,6 @@ mod infinity {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn second() {
         assert_eq!(
             runner().ok("@use \"sass:math\" as math;\
@@ -275,7 +272,6 @@ mod infinity {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn third() {
         assert_eq!(
             runner().ok("@use \"sass:math\" as math;\

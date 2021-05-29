@@ -99,7 +99,6 @@ fn grad() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn infinity() {
     assert_eq!(
         runner().ok("@use \"sass:math\" as math;\
@@ -120,7 +119,6 @@ fn named_arg() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn negative_infinity() {
     assert_eq!(
         runner().ok("@use \"sass:math\" as math;\

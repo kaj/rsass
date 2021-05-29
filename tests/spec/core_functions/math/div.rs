@@ -10,7 +10,6 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err(
@@ -30,7 +29,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err(
@@ -55,7 +53,6 @@ mod non_numeric {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn denominator() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -71,7 +68,6 @@ mod non_numeric {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn numerator() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -92,7 +88,6 @@ mod unit {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn compatible() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -103,7 +98,6 @@ mod unit {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn denominator() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -114,7 +108,6 @@ mod unit {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn incompatible() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -125,7 +118,6 @@ mod unit {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn numerator() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -136,7 +128,6 @@ mod unit {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn same() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -147,7 +138,6 @@ mod unit {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn unknown() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -163,7 +153,6 @@ mod unitless {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn fraction() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -174,7 +163,6 @@ mod unitless {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn named() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -185,7 +173,6 @@ mod unitless {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn whole() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\

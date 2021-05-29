@@ -25,6 +25,7 @@ project adheres to
 * Improved parameter handling and returned values of the supported
   selector functions.  PR #103.
 * Implement `meta.module_variables` and `meta.module_functions`.
+* Implement `math.div` function.
 * Improved parameter checking for `hwb`, `alpha`, and `invert`
   functions in `sass:color` module.
 * The `if` function evaluates its arguments lazily.  Issue #107.
