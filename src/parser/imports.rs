@@ -4,19 +4,18 @@ use super::strings::{
 };
 use super::util::{ignore_comments, ignore_space, opt_spacelike};
 use super::value::space_list;
-use super::{media_args, Span};
+use super::{media_args, PResult, Span};
 use crate::sass::{Expose, Item, Name, SassString, UseAs, Value};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{all_consuming, map, opt, value};
 use nom::multi::{fold_many0, separated_list0};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
-use nom::IResult;
 use nom_locate::position;
 use std::collections::BTreeSet;
 
 /// What follows the `@import` tag.
-pub fn import2(input: Span) -> IResult<Span, Item> {
+pub fn import2(input: Span) -> PResult<Item> {
     map(
         terminated(
             tuple((
@@ -43,7 +42,7 @@ pub fn import2(input: Span) -> IResult<Span, Item> {
     )(input)
 }
 
-pub fn use2(input: Span) -> IResult<Span, Item> {
+pub fn use2(input: Span) -> PResult<Item> {
     map(
         terminated(
             tuple((
@@ -62,7 +61,7 @@ pub fn use2(input: Span) -> IResult<Span, Item> {
     )(input)
 }
 
-pub fn forward2(input: Span) -> IResult<Span, Item> {
+pub fn forward2(input: Span) -> PResult<Item> {
     let (mut input, path) =
         terminated(any_sass_string, opt_spacelike)(input)?;
     let mut found_as = None;
@@ -110,9 +109,7 @@ pub fn forward2(input: Span) -> IResult<Span, Item> {
     ))
 }
 
-fn exposed_names(
-    input: Span,
-) -> IResult<Span, (BTreeSet<Name>, BTreeSet<Name>)> {
+fn exposed_names(input: Span) -> PResult<(BTreeSet<Name>, BTreeSet<Name>)> {
     let mut funs = BTreeSet::new();
     let mut vars = BTreeSet::new();
     let mut one = pair(
@@ -131,7 +128,7 @@ fn exposed_names(
     )(input)
 }
 
-fn as_arg(input: Span) -> IResult<Span, UseAs> {
+fn as_arg(input: Span) -> PResult<UseAs> {
     terminated(
         alt((
             map(pair(name, opt(tag("*"))), |(name, s)| match s {
@@ -144,7 +141,7 @@ fn as_arg(input: Span) -> IResult<Span, UseAs> {
     )(input)
 }
 
-fn with_arg(input: Span) -> IResult<Span, Vec<(Name, Value, bool)>> {
+fn with_arg(input: Span) -> PResult<Vec<(Name, Value, bool)>> {
     delimited(
         terminated(tag("("), opt_spacelike),
         separated_list0(
@@ -165,10 +162,10 @@ fn with_arg(input: Span) -> IResult<Span, Vec<(Name, Value, bool)>> {
     )(input)
 }
 
-fn any_sass_string(input: Span) -> IResult<Span, SassString> {
+fn any_sass_string(input: Span) -> PResult<SassString> {
     alt((sass_string_dq, sass_string_sq, sass_string))(input)
 }
 
-fn comma(input: Span) -> IResult<Span, ()> {
+fn comma(input: Span) -> PResult<()> {
     map(terminated(tag(","), ignore_comments), |_| ())(input)
 }

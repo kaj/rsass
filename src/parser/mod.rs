@@ -56,6 +56,8 @@ use std::path::Path;
 use std::str::{from_utf8, Utf8Error};
 
 pub type Span<'a> = LocatedSpan<&'a [u8], &'a SourceName>;
+/// A Parsing Result; ok gives a span for the rest of the data and a parsed T.
+type PResult<'a, T> = IResult<Span<'a>, T>;
 
 pub fn code_span(value: &[u8]) -> Span {
     use lazy_static::lazy_static;
@@ -144,7 +146,7 @@ pub fn parse_scss_data(data: &[u8]) -> Result<Vec<Item>, ParseError> {
     ParseError::check(sassfile(code_span(data)))
 }
 
-fn sassfile(input: Span) -> IResult<Span, Vec<Item>> {
+fn sassfile(input: Span) -> PResult<Vec<Item>> {
     preceded(
         opt(tag("\u{feff}".as_bytes())),
         map(
@@ -157,7 +159,7 @@ fn sassfile(input: Span) -> IResult<Span, Vec<Item>> {
     )(input)
 }
 
-fn top_level_item(input: Span) -> IResult<Span, Item> {
+fn top_level_item(input: Span) -> PResult<Item> {
     let (input, tag) = alt((tag("$"), tag("/*"), tag("@"), tag("")))(input)?;
     match *tag.fragment() {
         b"$" => variable_declaration2(input),
@@ -168,21 +170,21 @@ fn top_level_item(input: Span) -> IResult<Span, Item> {
     }
 }
 
-fn comment_item(input: Span) -> IResult<Span, Item> {
+fn comment_item(input: Span) -> PResult<Item> {
     map(comment2, Item::Comment)(input)
 }
 
-fn rule(input: Span) -> IResult<Span, Item> {
+fn rule(input: Span) -> PResult<Item> {
     map(pair(rule_start, body_block2), |(selectors, body)| {
         Item::Rule(selectors, body)
     })(input)
 }
 
-fn rule_start(input: Span) -> IResult<Span, Selectors> {
+fn rule_start(input: Span) -> PResult<Selectors> {
     terminated(selectors, terminated(opt(is_a(", \t\r\n")), tag("{")))(input)
 }
 
-fn body_item(input: Span) -> IResult<Span, Item> {
+fn body_item(input: Span) -> PResult<Item> {
     let (input, tag) =
         alt((tag("$"), tag("/*"), tag(";"), tag("@"), tag("")))(input)?;
     match *tag.fragment() {
@@ -204,7 +206,7 @@ fn body_item(input: Span) -> IResult<Span, Item> {
 }
 
 /// What follows the `@at-root` tag.
-fn at_root2(input: Span) -> IResult<Span, Item> {
+fn at_root2(input: Span) -> PResult<Item> {
     preceded(
         opt_spacelike,
         map(
@@ -218,12 +220,12 @@ fn at_root2(input: Span) -> IResult<Span, Item> {
 }
 
 #[cfg(test)] // TODO: Or remove this?
-fn mixin_call(input: Span) -> IResult<Span, Item> {
+fn mixin_call(input: Span) -> PResult<Item> {
     preceded(tag("@include "), mixin_call2)(input)
 }
 
 /// What follows the `@include` tag.
-fn mixin_call2(input: Span) -> IResult<Span, Item> {
+fn mixin_call2(input: Span) -> PResult<Item> {
     let (input, n1) = terminated(name, opt_spacelike)(input)?;
     let (input, n2) = opt(preceded(tag("."), name))(input)?;
     let name = n2.map(|n2| format!("{}.{}", n1, n2)).unwrap_or(n1);
@@ -244,7 +246,7 @@ fn mixin_call2(input: Span) -> IResult<Span, Item> {
 }
 
 /// What follows an `@` sign
-fn at_rule2(input: Span) -> IResult<Span, Item> {
+fn at_rule2(input: Span) -> PResult<Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     match name.as_ref() {
         "at-root" => at_root2(input),
@@ -286,11 +288,11 @@ fn at_rule2(input: Span) -> IResult<Span, Item> {
     }
 }
 
-fn expression_argument(input: Span) -> IResult<Span, Value> {
+fn expression_argument(input: Span) -> PResult<Value> {
     terminated(value_expression, opt(tag(";")))(input)
 }
 
-fn charset2(input: Span) -> IResult<Span, Item> {
+fn charset2(input: Span) -> PResult<Item> {
     use nom::combinator::map_opt;
     map_opt(
         terminated(
@@ -312,7 +314,7 @@ fn charset2(input: Span) -> IResult<Span, Item> {
     )(input)
 }
 
-fn media_args(input: Span) -> IResult<Span, Value> {
+fn media_args(input: Span) -> PResult<Value> {
     let (input, args) = separated_list0(
         preceded(tag(","), opt_spacelike),
         map(
@@ -373,18 +375,18 @@ fn test_media_args_2() {
 }
 
 #[cfg(test)] // TODO: Or remove this?
-fn if_statement(input: Span) -> IResult<Span, Item> {
+fn if_statement(input: Span) -> PResult<Item> {
     preceded(tag("@if "), if_statement2)(input)
 }
 
-fn if_statement_inner(input: Span) -> IResult<Span, Item> {
+fn if_statement_inner(input: Span) -> PResult<Item> {
     preceded(
         terminated(verify(name, |n: &String| n == "if"), opt_spacelike),
         if_statement2,
     )(input)
 }
 
-fn if_statement2(input: Span) -> IResult<Span, Item> {
+fn if_statement2(input: Span) -> PResult<Item> {
     let (input, cond) = terminated(value_expression, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
     let (input2, word) = opt(delimited(
@@ -409,7 +411,7 @@ fn if_statement2(input: Span) -> IResult<Span, Item> {
 }
 
 /// The part of an each look that follows the `@each`.
-fn each_loop2(input: Span) -> IResult<Span, Item> {
+fn each_loop2(input: Span) -> PResult<Item> {
     let (input, names) = separated_list1(
         delimited(opt_spacelike, tag(","), opt_spacelike),
         map(preceded(tag("$"), name), Name::from),
@@ -424,7 +426,7 @@ fn each_loop2(input: Span) -> IResult<Span, Item> {
 }
 
 /// A for loop after the initial `@for`.
-fn for_loop2(input: Span) -> IResult<Span, Item> {
+fn for_loop2(input: Span) -> PResult<Item> {
     let (input, name) = delimited(tag("$"), name, spacelike)(input)?;
     let (input, from) = delimited(
         terminated(tag("from"), spacelike),
@@ -449,18 +451,18 @@ fn for_loop2(input: Span) -> IResult<Span, Item> {
     ))
 }
 
-fn while_loop2(input: Span) -> IResult<Span, Item> {
+fn while_loop2(input: Span) -> PResult<Item> {
     let (input, cond) = terminated(value_expression, opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
     Ok((input, Item::While(cond, body)))
 }
 
 #[cfg(test)] // TODO: Or remove this?
-fn mixin_declaration(input: Span) -> IResult<Span, Item> {
+fn mixin_declaration(input: Span) -> PResult<Item> {
     preceded(tag("@mixin "), mixin_declaration2)(input)
 }
 
-fn mixin_declaration2(input: Span) -> IResult<Span, Item> {
+fn mixin_declaration2(input: Span) -> PResult<Item> {
     let (input, name) = terminated(name, opt_spacelike)(input)?;
     let (input, args) = terminated(opt(formal_args), opt_spacelike)(input)?;
     let (input, body) = body_block(input)?;
@@ -468,7 +470,7 @@ fn mixin_declaration2(input: Span) -> IResult<Span, Item> {
     Ok((input, Item::MixinDeclaration(name, args, body)))
 }
 
-fn function_declaration2(input: Span) -> IResult<Span, Item> {
+fn function_declaration2(input: Span) -> PResult<Item> {
     let (end, name) = terminated(name, opt_spacelike)(input)?;
     let (end, args) = formal_args(end)?;
     let (rest, body) = preceded(opt_spacelike, body_block)(end)?;
@@ -476,7 +478,7 @@ fn function_declaration2(input: Span) -> IResult<Span, Item> {
     Ok((rest, Item::FunctionDeclaration(name, args, pos, body)))
 }
 
-fn return_stmt2(input: Span) -> IResult<Span, Item> {
+fn return_stmt2(input: Span) -> PResult<Item> {
     let (input, v) =
         delimited(opt_spacelike, value_expression, opt_spacelike)(input)?;
     let (input, _) = opt(tag(";"))(input)?;
@@ -484,13 +486,13 @@ fn return_stmt2(input: Span) -> IResult<Span, Item> {
 }
 
 /// The "rest" of an `@content` statement is just an optional terminator
-fn content_stmt2(input: Span) -> IResult<Span, Item> {
+fn content_stmt2(input: Span) -> PResult<Item> {
     let (input, _) = opt_spacelike(input)?;
     let (input, _) = opt(tag(";"))(input)?;
     Ok((input, Item::Content))
 }
 
-fn property_or_namespace_rule(input: Span) -> IResult<Span, Item> {
+fn property_or_namespace_rule(input: Span) -> PResult<Item> {
     let (input, name) = terminated(
         alt((
             map(preceded(tag("*"), sass_string), |mut s| {
@@ -537,11 +539,11 @@ fn ns_or_prop_item(
     }
 }
 
-fn body_block(input: Span) -> IResult<Span, Vec<Item>> {
+fn body_block(input: Span) -> PResult<Vec<Item>> {
     preceded(tag("{"), body_block2)(input)
 }
 
-fn body_block2(input: Span) -> IResult<Span, Vec<Item>> {
+fn body_block2(input: Span) -> PResult<Vec<Item>> {
     let (input, (v, _end)) = preceded(
         opt_spacelike,
         many_till(
@@ -553,11 +555,11 @@ fn body_block2(input: Span) -> IResult<Span, Vec<Item>> {
 }
 
 #[cfg(test)] // TODO: Or remove this?
-fn variable_declaration(input: Span) -> IResult<Span, Item> {
+fn variable_declaration(input: Span) -> PResult<Item> {
     preceded(tag("$"), variable_declaration2)(input)
 }
 
-fn variable_declaration2(input: Span) -> IResult<Span, Item> {
+fn variable_declaration2(input: Span) -> PResult<Item> {
     let (input, name) = terminated(
         name,
         delimited(opt_spacelike, tag(":"), opt_spacelike),

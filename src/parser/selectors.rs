@@ -1,6 +1,6 @@
 use super::strings::{sass_string, sass_string_dq, sass_string_sq};
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
-use super::{input_to_string, Span};
+use super::{input_to_string, PResult, Span};
 use crate::selectors::{Selector, SelectorPart, Selectors};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
@@ -8,9 +8,8 @@ use nom::character::complete::one_of;
 use nom::combinator::{map, map_res, opt, value};
 use nom::multi::{many1, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
-use nom::IResult;
 
-pub fn selectors(input: Span) -> IResult<Span, Selectors> {
+pub fn selectors(input: Span) -> PResult<Selectors> {
     let (input, v) = separated_list1(
         terminated(tag(","), ignore_comments),
         opt(selector),
@@ -18,7 +17,7 @@ pub fn selectors(input: Span) -> IResult<Span, Selectors> {
     Ok((input, Selectors::new(v.into_iter().flatten().collect())))
 }
 
-pub fn selector(input: Span) -> IResult<Span, Selector> {
+pub fn selector(input: Span) -> PResult<Selector> {
     let (input, mut s) = many1(selector_part)(input)?;
     if s.last() == Some(&SelectorPart::Descendant) {
         s.pop();
@@ -26,7 +25,7 @@ pub fn selector(input: Span) -> IResult<Span, Selector> {
     Ok((input, Selector(s)))
 }
 
-pub(crate) fn selector_part(input: Span) -> IResult<Span, SelectorPart> {
+pub(crate) fn selector_part(input: Span) -> PResult<SelectorPart> {
     alt((
         map(sass_string, SelectorPart::Simple),
         value(SelectorPart::Simple("*".into()), tag("*")),

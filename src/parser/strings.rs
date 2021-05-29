@@ -1,5 +1,5 @@
 use super::value::value_expression;
-use super::{input_to_str, input_to_string, Span};
+use super::{input_to_str, input_to_string, PResult, Span};
 use crate::sass::{SassString, StringPart};
 use crate::value::Quotes;
 use nom::branch::alt;
@@ -10,10 +10,9 @@ use nom::combinator::{
 };
 use nom::multi::{fold_many0, fold_many1, many0, many1, many_m_n};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
-use nom::IResult;
 use std::str::from_utf8;
 
-pub fn sass_string(input: Span) -> IResult<Span, SassString> {
+pub fn sass_string(input: Span) -> PResult<SassString> {
     let (input, first) = alt((
         string_part_interpolation,
         map(unquoted_first_part, StringPart::Raw),
@@ -32,13 +31,13 @@ pub fn sass_string(input: Span) -> IResult<Span, SassString> {
     Ok((input, SassString::new(parts, Quotes::None)))
 }
 
-pub fn sass_string_ext(input: Span) -> IResult<Span, SassString> {
+pub fn sass_string_ext(input: Span) -> PResult<SassString> {
     let (input, parts) =
         many1(alt((string_part_interpolation, extended_part)))(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
 }
 
-fn unquoted_first_part(input: Span) -> IResult<Span, String> {
+fn unquoted_first_part(input: Span) -> PResult<String> {
     let (input, first) = alt((
         map(selector_plain_part, String::from),
         normalized_first_escaped_char,
@@ -59,7 +58,7 @@ fn unquoted_first_part(input: Span) -> IResult<Span, String> {
         },
     )(input)
 }
-fn unquoted_part(input: Span) -> IResult<Span, String> {
+fn unquoted_part(input: Span) -> PResult<String> {
     fold_many1(
         // Note: This could probably be a whole lot more efficient,
         // but try to get stuff correct before caring too much about that.
@@ -76,7 +75,7 @@ fn unquoted_part(input: Span) -> IResult<Span, String> {
     )(input)
 }
 
-fn normalized_first_escaped_char(input: Span) -> IResult<Span, String> {
+fn normalized_first_escaped_char(input: Span) -> PResult<String> {
     let (rest, c) = escaped_char(input)?;
     let result = if c.is_alphabetic() || u32::from(c) >= 0xa1 {
         format!("{}", c)
@@ -87,7 +86,7 @@ fn normalized_first_escaped_char(input: Span) -> IResult<Span, String> {
     };
     Ok((rest, result))
 }
-fn normalized_escaped_char(input: Span) -> IResult<Span, String> {
+fn normalized_escaped_char(input: Span) -> PResult<String> {
     let (rest, c) = escaped_char(input)?;
     let result = if c.is_alphanumeric() || c == '-' || u32::from(c) >= 0xa1 {
         format!("{}", c)
@@ -99,7 +98,7 @@ fn normalized_escaped_char(input: Span) -> IResult<Span, String> {
     Ok((rest, result))
 }
 
-pub fn special_function_misc(input: Span) -> IResult<Span, SassString> {
+pub fn special_function_misc(input: Span) -> PResult<SassString> {
     let (input, start) = recognize(terminated(
         alt((
             map(
@@ -127,7 +126,7 @@ pub fn special_function_misc(input: Span) -> IResult<Span, SassString> {
     Ok((input, args))
 }
 
-pub fn special_function_minmax(input: Span) -> IResult<Span, SassString> {
+pub fn special_function_minmax(input: Span) -> PResult<SassString> {
     let (input, start) = recognize(terminated(
         alt((tag_no_case("max"), tag_no_case("min"))),
         tag("("),
@@ -140,11 +139,11 @@ pub fn special_function_minmax(input: Span) -> IResult<Span, SassString> {
     Ok((input, args))
 }
 
-fn special_args(input: Span) -> IResult<Span, SassString> {
+fn special_args(input: Span) -> PResult<SassString> {
     let (input, parts) = special_arg_parts(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
 }
-pub fn special_arg_parts(input: Span) -> IResult<Span, Vec<StringPart>> {
+pub fn special_arg_parts(input: Span) -> PResult<Vec<StringPart>> {
     let (input, parts) = many0(alt((
         map(string_part_interpolation, |part| vec![part]),
         map(hash_no_interpolation, |s| vec![StringPart::from(s)]),
@@ -167,12 +166,12 @@ pub fn special_arg_parts(input: Span) -> IResult<Span, Vec<StringPart>> {
     Ok((input, parts.into_iter().flatten().collect()))
 }
 
-fn special_args_minmax(input: Span) -> IResult<Span, SassString> {
+fn special_args_minmax(input: Span) -> PResult<SassString> {
     let (input, parts) = special_arg_parts_minmax(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
 }
 
-fn special_arg_parts_minmax(input: Span) -> IResult<Span, Vec<StringPart>> {
+fn special_arg_parts_minmax(input: Span) -> PResult<Vec<StringPart>> {
     let (input, parts) = many1(alt((
         map(special_function_misc, |s| s.into_parts()),
         map(special_function_minmax, |s| s.into_parts()),
@@ -220,7 +219,7 @@ fn special_arg_parts_minmax(input: Span) -> IResult<Span, Vec<StringPart>> {
     Ok((input, parts))
 }
 
-pub fn special_url(input: Span) -> IResult<Span, SassString> {
+pub fn special_url(input: Span) -> PResult<SassString> {
     let (input, _start) = tag("url(")(input)?;
     let (input, _trim) = many0(is_a(" "))(input)?;
     let (input, mut parts) = many1(alt((
@@ -234,13 +233,13 @@ pub fn special_url(input: Span) -> IResult<Span, SassString> {
     Ok((input, SassString::new(parts, Quotes::None)))
 }
 
-pub fn sass_string_dq(input: Span) -> IResult<Span, SassString> {
+pub fn sass_string_dq(input: Span) -> PResult<SassString> {
     let (input, mut parts) = dq_parts(input)?;
     cleanup_escape_ws(&mut parts);
     Ok((input, SassString::new(parts, Quotes::Double)))
 }
 
-fn dq_parts(input: Span) -> IResult<Span, Vec<StringPart>> {
+fn dq_parts(input: Span) -> PResult<Vec<StringPart>> {
     delimited(
         tag("\""),
         many0(alt((
@@ -255,7 +254,7 @@ fn dq_parts(input: Span) -> IResult<Span, Vec<StringPart>> {
     )(input)
 }
 
-pub fn sass_string_sq(input: Span) -> IResult<Span, SassString> {
+pub fn sass_string_sq(input: Span) -> PResult<SassString> {
     let (input, mut parts) = delimited(
         tag("'"),
         many0(alt((
@@ -295,7 +294,7 @@ fn cleanup_escape_ws(parts: &mut [StringPart]) {
     }
 }
 
-fn normalized_escaped_char_q(input: Span) -> IResult<Span, String> {
+fn normalized_escaped_char_q(input: Span) -> PResult<String> {
     let (rest, c) = escaped_char(input)?;
     let result = if c == '\0' {
         "\u{fffd}".to_string()
@@ -309,18 +308,18 @@ fn normalized_escaped_char_q(input: Span) -> IResult<Span, String> {
     Ok((rest, result))
 }
 
-pub fn string_part_interpolation(input: Span) -> IResult<Span, StringPart> {
+pub fn string_part_interpolation(input: Span) -> PResult<StringPart> {
     let (input, expr) =
         delimited(tag("#{"), value_expression, tag("}"))(input)?;
     Ok((input, StringPart::Interpolation(expr)))
 }
 
-fn simple_qstring_part(input: Span) -> IResult<Span, StringPart> {
+fn simple_qstring_part(input: Span) -> PResult<StringPart> {
     let (input, part) = map_res(is_not("\\#'\""), input_to_string)(input)?;
     Ok((input, StringPart::Raw(part)))
 }
 
-fn selector_string(input: Span) -> IResult<Span, String> {
+fn selector_string(input: Span) -> PResult<String> {
     fold_many1(
         // Note: This could probably be a whole lot more efficient,
         // but try to get stuff correct before caring too much about that.
@@ -341,15 +340,15 @@ fn selector_string(input: Span) -> IResult<Span, String> {
     )(input)
 }
 
-fn selector_plain_part(input: Span) -> IResult<Span, &str> {
+fn selector_plain_part(input: Span) -> PResult<&str> {
     map_res(is_not("\r\n\t >$\"'\\#+*/()[]{}:;,=!&@"), input_to_str)(input)
 }
 
-fn hash_no_interpolation(input: Span) -> IResult<Span, &str> {
+fn hash_no_interpolation(input: Span) -> PResult<&str> {
     map_res(terminated(tag("#"), peek(not(tag("{")))), input_to_str)(input)
 }
 
-pub fn extended_part(input: Span) -> IResult<Span, StringPart> {
+pub fn extended_part(input: Span) -> PResult<StringPart> {
     let (input, part) = map_res(
         recognize(pair(
             verify(take_char, is_ext_str_start_char),
@@ -384,7 +383,7 @@ fn is_ext_str_char(c: &char) -> bool {
         || *c == '|'
 }
 
-pub fn name(input: Span) -> IResult<Span, String> {
+pub fn name(input: Span) -> PResult<String> {
     verify(
         fold_many0(
             alt((escaped_char, name_char)),
@@ -398,7 +397,7 @@ pub fn name(input: Span) -> IResult<Span, String> {
     )(input)
 }
 
-pub fn unitname(input: Span) -> IResult<Span, String> {
+pub fn unitname(input: Span) -> PResult<String> {
     let (input, first) =
         verify(alt((escaped_char, name_char)), |c| c.is_alphabetic())(input)?;
     fold_many0(
@@ -411,11 +410,11 @@ pub fn unitname(input: Span) -> IResult<Span, String> {
     )(input)
 }
 
-pub fn name_char(input: Span) -> IResult<Span, char> {
+pub fn name_char(input: Span) -> PResult<char> {
     verify(take_char, is_name_char)(input)
 }
 
-fn escaped_char(input: Span) -> IResult<Span, char> {
+fn escaped_char(input: Span) -> PResult<char> {
     preceded(
         tag("\\"),
         alt((
@@ -442,7 +441,7 @@ fn escaped_char(input: Span) -> IResult<Span, char> {
     )(input)
 }
 
-fn take_char(input: Span) -> IResult<Span, char> {
+fn take_char(input: Span) -> PResult<char> {
     alt((
         map_opt(take(1usize), single_char),
         map_opt(take(2usize), single_char),

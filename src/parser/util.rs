@@ -1,4 +1,4 @@
-use super::Span;
+use super::{PResult, Span};
 use crate::sass::{SassString, StringPart};
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
@@ -6,22 +6,21 @@ use nom::character::complete::multispace1;
 use nom::combinator::{map, map_res, not, opt};
 use nom::multi::{fold_many0, fold_many1, many0};
 use nom::sequence::{preceded, terminated};
-use nom::IResult;
 use std::str::from_utf8;
 
-pub fn spacelike(input: Span) -> IResult<Span, ()> {
+pub fn spacelike(input: Span) -> PResult<()> {
     fold_many1(alt((ignore_space, ignore_lcomment)), (), |(), ()| ())(input)
 }
 
-pub fn spacelike2(input: Span) -> IResult<Span, ()> {
+pub fn spacelike2(input: Span) -> PResult<()> {
     terminated(spacelike, ignore_comments)(input)
 }
 
-pub fn opt_spacelike(input: Span) -> IResult<Span, ()> {
+pub fn opt_spacelike(input: Span) -> PResult<()> {
     fold_many0(alt((ignore_space, ignore_lcomment)), (), |(), ()| ())(input)
 }
 
-pub fn ignore_comments(input: Span) -> IResult<Span, ()> {
+pub fn ignore_comments(input: Span) -> PResult<()> {
     fold_many0(
         alt((ignore_space, ignore_lcomment, map(comment, |_| ()))),
         (),
@@ -29,11 +28,11 @@ pub fn ignore_comments(input: Span) -> IResult<Span, ()> {
     )(input)
 }
 
-pub fn comment(input: Span) -> IResult<Span, SassString> {
+pub fn comment(input: Span) -> PResult<SassString> {
     preceded(tag("/*"), comment2)(input)
 }
 
-pub fn comment2(input: Span) -> IResult<Span, SassString> {
+pub fn comment2(input: Span) -> PResult<SassString> {
     use super::strings::string_part_interpolation;
     use crate::value::Quotes;
     use nom::combinator::peek;
@@ -65,11 +64,11 @@ pub fn comment2(input: Span) -> IResult<Span, SassString> {
     )(input)
 }
 
-pub fn ignore_space(input: Span) -> IResult<Span, ()> {
+pub fn ignore_space(input: Span) -> PResult<()> {
     map(multispace1, |_| ())(input)
 }
 
-fn ignore_lcomment(input: Span) -> IResult<Span, ()> {
+fn ignore_lcomment(input: Span) -> PResult<()> {
     map(terminated(tag("//"), opt(is_not("\n"))), |_| ())(input)
 }
 

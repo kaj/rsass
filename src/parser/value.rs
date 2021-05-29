@@ -5,7 +5,7 @@ use super::strings::{
 };
 use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
-use super::{input_to_string, sass_string, SourcePos, Span};
+use super::{input_to_string, sass_string, PResult, SourcePos, Span};
 use crate::sass::{SassString, Value};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use nom::branch::alt;
@@ -16,11 +16,10 @@ use nom::character::complete::{
 use nom::combinator::{map, map_res, not, opt, peek, recognize, value};
 use nom::multi::{fold_many0, fold_many1, many0, many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
-use nom::IResult;
 use num_traits::Zero;
 use std::str::from_utf8;
 
-pub fn value_expression(input: Span) -> IResult<Span, Value> {
+pub fn value_expression(input: Span) -> PResult<Value> {
     let (input, result) = separated_list1(
         preceded(tag(","), ignore_comments),
         terminated(space_list, ignore_comments),
@@ -37,7 +36,7 @@ pub fn value_expression(input: Span) -> IResult<Span, Value> {
     ))
 }
 
-pub fn space_list(input: Span) -> IResult<Span, Value> {
+pub fn space_list(input: Span) -> PResult<Value> {
     let (input, first) = se_or_ext_string(input)?;
     let (input, list) = fold_many0(
         pair(recognize(ignore_comments), se_or_ext_string),
@@ -68,7 +67,7 @@ pub fn space_list(input: Span) -> IResult<Span, Value> {
     ))
 }
 
-pub fn simple_space_list(input: Span) -> IResult<Span, Value> {
+pub fn simple_space_list(input: Span) -> PResult<Value> {
     let (input, first) = single_expression(input)?;
     let (input, list) = fold_many0(
         preceded(spacelike2, single_expression),
@@ -88,11 +87,11 @@ pub fn simple_space_list(input: Span) -> IResult<Span, Value> {
     ))
 }
 
-fn se_or_ext_string(input: Span) -> IResult<Span, Value> {
+fn se_or_ext_string(input: Span) -> PResult<Value> {
     alt((single_expression, map(sass_string_ext, Value::Literal)))(input)
 }
 
-fn single_expression(input: Span) -> IResult<Span, Value> {
+fn single_expression(input: Span) -> PResult<Value> {
     let (input, a) = logic_expression(input)?;
     fold_many0(
         pair(
@@ -111,7 +110,7 @@ fn single_expression(input: Span) -> IResult<Span, Value> {
     )(input)
 }
 
-fn logic_expression(input: Span) -> IResult<Span, Value> {
+fn logic_expression(input: Span) -> PResult<Value> {
     let (input, a) = sum_expression(input)?;
     fold_many0(
         pair(
@@ -134,7 +133,7 @@ fn logic_expression(input: Span) -> IResult<Span, Value> {
     )(input)
 }
 
-fn sum_expression(input: Span) -> IResult<Span, Value> {
+fn sum_expression(input: Span) -> PResult<Value> {
     let (mut rest, mut v) = term_value(input)?;
     while let Ok((nrest, (op, v2))) = alt((
         pair(
@@ -162,7 +161,7 @@ fn sum_expression(input: Span) -> IResult<Span, Value> {
     Ok((rest, v))
 }
 
-fn term_value(input: Span) -> IResult<Span, Value> {
+fn term_value(input: Span) -> PResult<Value> {
     let (mut rest, mut v) = single_value(input)?;
     while let Ok((nrest, (s1, op, s2, v2))) = tuple((
         map(multispace0, |s: Span| !s.fragment().is_empty()),
@@ -181,7 +180,7 @@ fn term_value(input: Span) -> IResult<Span, Value> {
     Ok((rest, v))
 }
 
-pub fn single_value(input: Span) -> IResult<Span, Value> {
+pub fn single_value(input: Span) -> PResult<Value> {
     if let Ok((input0, _p)) = preceded(tag("("), opt_spacelike)(input) {
         if let Ok((input, first_key)) = simple_space_list(input0) {
             let (input, value) = if let Ok((mut input, first_val)) =
@@ -211,26 +210,26 @@ pub fn single_value(input: Span) -> IResult<Span, Value> {
     }
 }
 
-fn comma(input: Span) -> IResult<Span, Span> {
+fn comma(input: Span) -> PResult<Span> {
     delimited(opt_spacelike, tag(","), opt_spacelike)(input)
 }
 
-fn colon(input: Span) -> IResult<Span, Span> {
+fn colon(input: Span) -> PResult<Span> {
     delimited(opt_spacelike, tag(":"), opt_spacelike)(input)
 }
 
-fn fallback_in_paren(input: Span) -> IResult<Span, Value> {
+fn fallback_in_paren(input: Span) -> PResult<Value> {
     alt((
         map(value_expression, |v| Value::Paren(Box::new(v), false)),
         value(Value::List(vec![], None, false), tag("")),
     ))(input)
 }
 
-fn end_paren(input: Span) -> IResult<Span, Span> {
+fn end_paren(input: Span) -> PResult<Span> {
     preceded(opt_spacelike, tag(")"))(input)
 }
 
-fn simple_value(input: Span) -> IResult<Span, Value> {
+fn simple_value(input: Span) -> PResult<Value> {
     alt((
         bang,
         value(Value::True, tag("true")),
@@ -255,7 +254,7 @@ fn simple_value(input: Span) -> IResult<Span, Value> {
     ))(input)
 }
 
-fn bang(input: Span) -> IResult<Span, Value> {
+fn bang(input: Span) -> PResult<Value> {
     map(
         map_res(
             preceded(
@@ -268,7 +267,7 @@ fn bang(input: Span) -> IResult<Span, Value> {
     )(input)
 }
 
-fn unicode_range(input: Span) -> IResult<Span, Value> {
+fn unicode_range(input: Span) -> PResult<Value> {
     let (rest, _) = tag_no_case("U+")(input)?;
     let (rest, a) = many_m_n(0, 6, one_of("0123456789ABCDEFabcdef"))(rest)?;
     let (rest, _) = opt(alt((
@@ -284,7 +283,7 @@ fn unicode_range(input: Span) -> IResult<Span, Value> {
     ))
 }
 
-fn bracket_list(input: Span) -> IResult<Span, Value> {
+fn bracket_list(input: Span) -> PResult<Value> {
     let (input, content) =
         delimited(tag("["), opt(value_expression), tag("]"))(input)?;
     Ok((
@@ -299,12 +298,12 @@ fn bracket_list(input: Span) -> IResult<Span, Value> {
     ))
 }
 
-fn sign_prefix(input: Span) -> IResult<Span, Option<&[u8]>> {
+fn sign_prefix(input: Span) -> PResult<Option<&[u8]>> {
     opt(alt((tag("-"), tag("+"))))(input)
         .map(|(r, s)| (r, s.map(|s| *s.fragment())))
 }
 
-fn number(input: Span) -> IResult<Span, Value> {
+fn number(input: Span) -> PResult<Value> {
     map(
         tuple((
             sign_prefix,
@@ -333,7 +332,7 @@ fn number(input: Span) -> IResult<Span, Value> {
     )(input)
 }
 
-pub fn decimal_integer(input: Span) -> IResult<Span, Number> {
+pub fn decimal_integer(input: Span) -> PResult<Number> {
     fold_many1(
         // Note: We should use bytes directly, one_of returns a char.
         one_of("0123456789"),
@@ -342,7 +341,7 @@ pub fn decimal_integer(input: Span) -> IResult<Span, Number> {
     )(input)
 }
 
-pub fn decimal_decimals(input: Span) -> IResult<Span, Number> {
+pub fn decimal_decimals(input: Span) -> PResult<Number> {
     map(
         preceded(
             tag("."),
@@ -361,7 +360,7 @@ pub fn decimal_decimals(input: Span) -> IResult<Span, Number> {
     )(input)
 }
 
-pub fn variable(input: Span) -> IResult<Span, Value> {
+pub fn variable(input: Span) -> PResult<Value> {
     map(
         pair(many0(terminated(name, tag("."))), preceded(tag("$"), name)),
         |(modules, name)| {
@@ -374,7 +373,7 @@ pub fn variable(input: Span) -> IResult<Span, Value> {
     )(input)
 }
 
-fn hex_color(input: Span) -> IResult<Span, Value> {
+fn hex_color(input: Span) -> PResult<Value> {
     let (rest, rgba) = delimited(
         tag("#"),
         map(
@@ -394,7 +393,7 @@ fn hex_color(input: Span) -> IResult<Span, Value> {
     Ok((rest, Value::Color(rgba, Some(raw))))
 }
 
-pub fn unary_op(input: Span) -> IResult<Span, Value> {
+pub fn unary_op(input: Span) -> PResult<Value> {
     map(
         pair(
             terminated(
@@ -412,14 +411,14 @@ pub fn unary_op(input: Span) -> IResult<Span, Value> {
     )(input)
 }
 
-fn special_function(input: Span) -> IResult<Span, Value> {
+fn special_function(input: Span) -> PResult<Value> {
     map(
         alt((special_function_misc, special_function_minmax)),
         Value::Literal,
     )(input)
 }
 
-pub fn function_call(input: Span) -> IResult<Span, Value> {
+pub fn function_call(input: Span) -> PResult<Value> {
     let (rest, (name, args)) = pair(sass_string, call_args)(input)?;
     let pos = SourcePos::from_to(input, rest);
     Ok((rest, Value::Call(name, args, pos)))
@@ -434,19 +433,19 @@ fn literal_or_color(s: SassString) -> Value {
     Value::Literal(s)
 }
 
-fn hexchar1(input: Span) -> IResult<Span, u8> {
+fn hexchar1(input: Span) -> PResult<u8> {
     map(hexchar_raw, |one| one * 0x11)(input)
 }
-fn hexchar2(input: Span) -> IResult<Span, u8> {
+fn hexchar2(input: Span) -> PResult<u8> {
     map(pair(hexchar_raw, hexchar_raw), |(hi, lo)| hi * 0x10 + lo)(input)
 }
-fn hexchar_raw(input: Span) -> IResult<Span, u8> {
+fn hexchar_raw(input: Span) -> PResult<u8> {
     map(one_of("0123456789ABCDEFabcdef"), |ch| {
         ch.to_digit(16).unwrap() as u8
     })(input)
 }
 
-pub fn dictionary(input: Span) -> IResult<Span, Value> {
+pub fn dictionary(input: Span) -> PResult<Value> {
     delimited(
         preceded(tag("("), opt_spacelike),
         dictionary_inner,
@@ -454,7 +453,7 @@ pub fn dictionary(input: Span) -> IResult<Span, Value> {
     )(input)
 }
 
-pub fn dictionary_inner(input: Span) -> IResult<Span, Value> {
+pub fn dictionary_inner(input: Span) -> PResult<Value> {
     let (input, items) = terminated(
         separated_list1(
             delimited(opt_spacelike, tag(","), opt_spacelike),

@@ -1,6 +1,6 @@
-use super::{SourcePos, Span};
+use super::{PResult, SourcePos, Span};
 use nom::error::ErrorKind;
-use nom::{Finish, IResult};
+use nom::Finish;
 use std::fmt;
 
 /// An error encountered when parsing sass.
@@ -22,7 +22,7 @@ impl ParseError {
     /// This differs from a `From<nom::Err>` implementation in that an
     /// `Ok` result with remaining unparsed data is also considered an
     /// error.
-    pub fn check<T>(res: IResult<Span, T>) -> Result<T, Self> {
+    pub fn check<T>(res: PResult<T>) -> Result<T, Self> {
         let (rest, value) = res.finish()?;
         if rest.fragment().is_empty() {
             Ok(value)

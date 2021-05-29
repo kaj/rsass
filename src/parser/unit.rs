@@ -1,11 +1,10 @@
 use super::strings::unitname;
-use super::Span;
+use super::{PResult, Span};
 use crate::value::Unit;
 use nom::combinator::{map, value};
-use nom::IResult;
 use nom::{branch::alt, bytes::complete::tag};
 
-pub fn unit(input: Span) -> IResult<Span, Unit> {
+pub fn unit(input: Span) -> PResult<Unit> {
     alt((
         value(Unit::Percent, tag("%")),
         map(unitname, |name| match name.as_ref() {
