@@ -54,6 +54,13 @@ struct Args {
     #[allow(unused)]
     no_color: bool,
 
+    /// Verbose diagnostics
+    /// (Always on, but set by the sass-spec test runner)
+    #[cfg(feature = "unimplemented_args")]
+    #[structopt(long)]
+    #[allow(unused)]
+    verbose: bool,
+
     /// Where to search for included resources.
     #[structopt(long, short = "I")]
     load_path: Option<PathBuf>,
