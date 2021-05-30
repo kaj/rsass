@@ -9,7 +9,7 @@ mod at_root;
 
 mod test_for;
 
-// Ignoring "forward", not expected to work yet.
+mod forward;
 
 mod function;
 

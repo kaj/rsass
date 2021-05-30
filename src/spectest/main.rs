@@ -24,7 +24,6 @@ fn main() -> Result<(), Error> {
             "core_functions/selector/is_superselector", // not supported
             "core_functions/selector/unify",  // not supported
             "directives/extend", // `@extend` is not supported at all
-            "directives/forward", // `@forward` is not supported at all
             "libsass-closed-issues/issue_185/mixin.hrx", // stack overflow
             "libsass-closed-issues/issue_1801", // infinite recursion
             "libsass-todo-issues/issue_1801", // infinite recursion

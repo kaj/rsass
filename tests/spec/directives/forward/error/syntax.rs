@@ -1,0 +1,520 @@
+//! Tests auto-converted from "sass-spec/spec/directives/forward/error/syntax.hrx"
+
+#[allow(unused)]
+fn runner() -> crate::TestRunner {
+    super::runner()
+}
+
+mod after {
+    #[allow(unused)]
+    use super::runner;
+
+    mod at_rule {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // wrong error
+        fn css() {
+            assert_eq!(
+        runner().err(
+            "@keyframes a {};\
+             \n@forward \"b\";\n"
+        ),
+        "Error: @forward rules must be written before any other rules.\
+         \n  ,\
+         \n2 | @forward \"b\";\
+         \n  | ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet",
+    );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn import() {
+            assert_eq!(
+        runner().err(
+            "@import \"a\";\
+             \n@forward \"b\";\n"
+        ),
+        "Error: @forward rules must be written before any other rules.\
+         \n  ,\
+         \n2 | @forward \"b\";\
+         \n  | ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet",
+    );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn sass() {
+            assert_eq!(
+        runner().err(
+            "@if true {};\
+             \n@forward \"a\";\n"
+        ),
+        "Error: @forward rules must be written before any other rules.\
+         \n  ,\
+         \n2 | @forward \"a\";\
+         \n  | ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet",
+    );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn unknown() {
+            assert_eq!(
+        runner().err(
+            "@a;\
+             \n@forward \"b\";\n"
+        ),
+        "Error: @forward rules must be written before any other rules.\
+         \n  ,\
+         \n2 | @forward \"b\";\
+         \n  | ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet",
+    );
+        }
+    }
+    mod indented {
+        #[allow(unused)]
+        use super::runner;
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn style_rule() {
+        assert_eq!(
+            runner().err(
+                "a {};\
+             \n@forward \"b\";\n"
+            ),
+            "Error: @forward rules must be written before any other rules.\
+         \n  ,\
+         \n2 | @forward \"b\";\
+         \n  | ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet",
+        );
+    }
+}
+mod test_as {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // wrong error
+    fn asterisk() {
+        assert_eq!(
+            runner().err("@forward \"a\" as *;\n"),
+            "Error: Expected identifier.\
+         \n  ,\
+         \n1 | @forward \"a\" as *;\
+         \n  |                 ^\
+         \n  \'\
+         \n  input.scss 1:17  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn invalid() {
+        assert_eq!(
+            runner().err("@forward \"a\" as 1-*;\n"),
+            "Error: Expected identifier.\
+         \n  ,\
+         \n1 | @forward \"a\" as 1-*;\
+         \n  |                 ^\
+         \n  \'\
+         \n  input.scss 1:17  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn no_star() {
+        assert_eq!(
+            runner().err("@forward \"a\" as foo;\n"),
+            "Error: expected \"*\".\
+         \n  ,\
+         \n1 | @forward \"a\" as foo;\
+         \n  |                    ^\
+         \n  \'\
+         \n  input.scss 1:20  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn nothing() {
+        assert_eq!(
+            runner().err("@forward \"a\" as;\n"),
+            "Error: Expected identifier.\
+         \n  ,\
+         \n1 | @forward \"a\" as;\
+         \n  |                ^\
+         \n  \'\
+         \n  input.scss 1:16  root stylesheet",
+        );
+    }
+}
+#[test]
+#[ignore] // wrong error
+fn empty() {
+    assert_eq!(
+        runner().err("@forward;\n"),
+        "Error: Expected string.\
+         \n  ,\
+         \n1 | @forward;\
+         \n  |         ^\
+         \n  \'\
+         \n  input.scss 1:9  root stylesheet",
+    );
+}
+mod hide {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // wrong error
+    fn and_show() {
+        assert_eq!(
+            runner().err("@forward \"a\" hide b show c;\n"),
+            "Error: expected \";\".\
+         \n  ,\
+         \n1 | @forward \"a\" hide b show c;\
+         \n  |                     ^\
+         \n  \'\
+         \n  input.scss 1:21  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn empty_variable() {
+        assert_eq!(
+            runner().err("@forward \"a\" hide $;\n"),
+            "Error: Expected variable, mixin, or function name\
+         \n  ,\
+         \n1 | @forward \"a\" hide $;\
+         \n  |                    ^\
+         \n  \'\
+         \n  input.scss 1:20  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn invalid() {
+        assert_eq!(
+            runner().err("@forward \"a\" hide 1;\n"),
+            "Error: Expected variable, mixin, or function name\
+         \n  ,\
+         \n1 | @forward \"a\" hide 1;\
+         \n  |                   ^\
+         \n  \'\
+         \n  input.scss 1:19  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn nothing() {
+        assert_eq!(
+            runner().err("@forward \"a\" hide;\n"),
+            "Error: Expected variable, mixin, or function name\
+         \n  ,\
+         \n1 | @forward \"a\" hide;\
+         \n  |                  ^\
+         \n  \'\
+         \n  input.scss 1:18  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn trailing_comma() {
+        assert_eq!(
+            runner().err("@forward \"a\" hide b,;\n"),
+            "Error: Expected variable, mixin, or function name\
+         \n  ,\
+         \n1 | @forward \"a\" hide b,;\
+         \n  |                     ^\
+         \n  \'\
+         \n  input.scss 1:21  root stylesheet",
+        );
+    }
+}
+mod show {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // wrong error
+    fn and_hide() {
+        assert_eq!(
+            runner().err("@forward \"a\" show b hide c;\n"),
+            "Error: expected \";\".\
+         \n  ,\
+         \n1 | @forward \"a\" show b hide c;\
+         \n  |                     ^\
+         \n  \'\
+         \n  input.scss 1:21  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn empty_variable() {
+        assert_eq!(
+            runner().err("@forward \"a\" show $;\n"),
+            "Error: Expected variable, mixin, or function name\
+         \n  ,\
+         \n1 | @forward \"a\" show $;\
+         \n  |                    ^\
+         \n  \'\
+         \n  input.scss 1:20  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn invalid() {
+        assert_eq!(
+            runner().err("@forward \"a\" show 1;\n"),
+            "Error: Expected variable, mixin, or function name\
+         \n  ,\
+         \n1 | @forward \"a\" show 1;\
+         \n  |                   ^\
+         \n  \'\
+         \n  input.scss 1:19  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn nothing() {
+        assert_eq!(
+            runner().err("@forward \"a\" show;\n"),
+            "Error: Expected variable, mixin, or function name\
+         \n  ,\
+         \n1 | @forward \"a\" show;\
+         \n  |                  ^\
+         \n  \'\
+         \n  input.scss 1:18  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn trailing_comma() {
+        assert_eq!(
+            runner().err("@forward \"a\" show b,;\n"),
+            "Error: Expected variable, mixin, or function name\
+         \n  ,\
+         \n1 | @forward \"a\" show b,;\
+         \n  |                     ^\
+         \n  \'\
+         \n  input.scss 1:21  root stylesheet",
+        );
+    }
+}
+mod url {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // wrong error
+    fn unquoted() {
+        assert_eq!(
+            runner().err("@forward foo;\n"),
+            "Error: Expected string.\
+         \n  ,\
+         \n1 | @forward foo;\
+         \n  |          ^\
+         \n  \'\
+         \n  input.scss 1:10  root stylesheet",
+        );
+    }
+}
+mod with {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // wrong error
+    fn before_as() {
+        assert_eq!(
+            runner().err("@forward \"other\" with ($a: b) as c-*;\n"),
+            "Error: expected \";\".\
+         \n  ,\
+         \n1 | @forward \"other\" with ($a: b) as c-*;\
+         \n  |                               ^\
+         \n  \'\
+         \n  input.scss 1:31  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn before_hide() {
+        assert_eq!(
+            runner().err("@forward \"other\" with ($a: b) hide c;\n"),
+            "Error: expected \";\".\
+         \n  ,\
+         \n1 | @forward \"other\" with ($a: b) hide c;\
+         \n  |                               ^\
+         \n  \'\
+         \n  input.scss 1:31  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn before_show() {
+        assert_eq!(
+            runner().err("@forward \"other\" with ($a: b) show c;\n"),
+            "Error: expected \";\".\
+         \n  ,\
+         \n1 | @forward \"other\" with ($a: b) show c;\
+         \n  |                               ^\
+         \n  \'\
+         \n  input.scss 1:31  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn empty() {
+        assert_eq!(
+            runner().err("@forward \"other\" with ();\n"),
+            "Error: expected \"$\".\
+         \n  ,\
+         \n1 | @forward \"other\" with ();\
+         \n  |                        ^\
+         \n  \'\
+         \n  input.scss 1:24  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn extra_comma() {
+        assert_eq!(
+            runner().err("@forward \"other\" with ($a: b,,);\n"),
+            "Error: expected \")\".\
+         \n  ,\
+         \n1 | @forward \"other\" with ($a: b,,);\
+         \n  |                              ^\
+         \n  \'\
+         \n  input.scss 1:30  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn missing_keyword() {
+        assert_eq!(
+            runner().err("@forward \"other\" with (a);\n"),
+            "Error: expected \"$\".\
+         \n  ,\
+         \n1 | @forward \"other\" with (a);\
+         \n  |                        ^\
+         \n  \'\
+         \n  input.scss 1:24  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn missing_value() {
+        assert_eq!(
+            runner().err("@forward \"other\" with ($a);\n"),
+            "Error: expected \":\".\
+         \n  ,\
+         \n1 | @forward \"other\" with ($a);\
+         \n  |                          ^\
+         \n  \'\
+         \n  input.scss 1:26  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn namespace_variable() {
+        assert_eq!(
+            runner().err("@forward \"other\" with (a.$b: c);\n"),
+            "Error: expected \"$\".\
+         \n  ,\
+         \n1 | @forward \"other\" with (a.$b: c);\
+         \n  |                        ^\
+         \n  \'\
+         \n  input.scss 1:24  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn no_arguments() {
+        assert_eq!(
+            runner().err("@forward \"other\" with;\n"),
+            "Error: expected \"(\".\
+         \n  ,\
+         \n1 | @forward \"other\" with;\
+         \n  |                      ^\
+         \n  \'\
+         \n  input.scss 1:22  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn space_after_dollar() {
+        assert_eq!(
+            runner().err("@forward \"other\" with ($ a: b);\n"),
+            "Error: Expected identifier.\
+         \n  ,\
+         \n1 | @forward \"other\" with ($ a: b);\
+         \n  |                         ^\
+         \n  \'\
+         \n  input.scss 1:25  root stylesheet",
+        );
+    }
+}
+mod within {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    #[ignore] // missing error
+    fn function() {
+        assert_eq!(
+            runner().err(
+                "@function a() {\
+             \n  @forward \"b\";\
+             \n}\n"
+            ),
+            "Error: This at-rule is not allowed here.\
+         \n  ,\
+         \n2 |   @forward \"b\";\
+         \n  |   ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:3  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn mixin() {
+        assert_eq!(
+            runner().err(
+                "@mixin a {\
+             \n  @forward \"b\";\
+             \n}\n"
+            ),
+            "Error: This at-rule is not allowed here.\
+         \n  ,\
+         \n2 |   @forward \"b\";\
+         \n  |   ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:3  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn style_rule() {
+        assert_eq!(
+            runner().err(
+                "a {\
+             \n  @forward \"b\";\
+             \n}\n"
+            ),
+            "Error: This at-rule is not allowed here.\
+         \n  ,\
+         \n2 |   @forward \"b\";\
+         \n  |   ^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:3  root stylesheet",
+        );
+    }
+}
