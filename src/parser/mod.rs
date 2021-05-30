@@ -24,7 +24,8 @@ use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
 use self::strings::{name, sass_string, sass_string_dq, sass_string_sq};
 use self::util::{
-    comment2, ignore_comments, ignore_space, opt_spacelike, spacelike,
+    comment2, ignore_comments, ignore_space, opt_spacelike, semi_or_end,
+    spacelike,
 };
 use self::value::{
     dictionary, function_call, single_value, value_expression,
@@ -270,11 +271,7 @@ fn at_rule2(input: Span) -> PResult<Item> {
             let (input, args) = opt(media_args)(input)?;
             let (input, body) = preceded(
                 opt(ignore_space),
-                alt((
-                    map(body_block, Some),
-                    value(None, all_consuming(tag(""))),
-                    value(None, tag(";")),
-                )),
+                alt((map(body_block, Some), value(None, semi_or_end))),
             )(input)?;
             Ok((
                 input,
@@ -297,10 +294,7 @@ fn charset2(input: Span) -> PResult<Item> {
     map_opt(
         terminated(
             alt((sass_string_dq, sass_string_sq, sass_string)),
-            preceded(
-                opt(ignore_space),
-                alt((tag(";"), all_consuming(tag("")))),
-            ),
+            semi_or_end,
         ),
         |s| {
             s.single_raw().and_then(|s| {
@@ -576,11 +570,7 @@ fn variable_declaration2(input: Span) -> PResult<Item> {
         (false, false),
         |(default, global), (d, g)| (default || d, global || g),
     )(input)?;
-    let (input, _) = alt((
-        peek(tag("}")), // semicolon optional for last thing in block
-        all_consuming(tag("")), // ... or last thing in file
-        terminated(tag(";"), opt_spacelike), // or end with semicolon
-    ))(input)?;
+    let (input, _) = semi_or_end(input)?;
     Ok((
         input,
         Item::VariableDeclaration {
@@ -758,7 +748,7 @@ fn test_property_2() {
 #[test]
 fn test_variable_declaration_simple() {
     assert_eq!(
-        check_parse!(variable_declaration, b"$foo: bar;\n"),
+        check_parse!(variable_declaration, b"$foo: bar;"),
         Item::VariableDeclaration {
             name: "foo".into(),
             val: string("bar"),
@@ -771,7 +761,7 @@ fn test_variable_declaration_simple() {
 #[test]
 fn test_variable_declaration_global() {
     assert_eq!(
-        check_parse!(variable_declaration, b"$y: some value !global;\n"),
+        check_parse!(variable_declaration, b"$y: some value !global;"),
         Item::VariableDeclaration {
             name: "y".into(),
             val: Value::List(
@@ -788,7 +778,7 @@ fn test_variable_declaration_global() {
 #[test]
 fn test_variable_declaration_default() {
     assert_eq!(
-        check_parse!(variable_declaration, b"$y: some value !default;\n"),
+        check_parse!(variable_declaration, b"$y: some value !default;"),
         Item::VariableDeclaration {
             name: "y".into(),
             val: Value::List(

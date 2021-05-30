@@ -3,10 +3,17 @@ use crate::sass::{SassString, StringPart};
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::multispace1;
-use nom::combinator::{map, map_res, not, opt};
+use nom::combinator::{all_consuming, map, map_res, not, opt, peek};
 use nom::multi::{fold_many0, fold_many1, many0};
 use nom::sequence::{preceded, terminated};
 use std::str::from_utf8;
+
+pub fn semi_or_end(input: Span) -> PResult<()> {
+    terminated(
+        opt_spacelike,
+        alt((tag(";"), all_consuming(tag("")), peek(tag("}")))),
+    )(input)
+}
 
 pub fn spacelike(input: Span) -> PResult<()> {
     fold_many1(alt((ignore_space, ignore_lcomment)), (), |(), ()| ())(input)
@@ -35,7 +42,6 @@ pub fn comment(input: Span) -> PResult<SassString> {
 pub fn comment2(input: Span) -> PResult<SassString> {
     use super::strings::string_part_interpolation;
     use crate::value::Quotes;
-    use nom::combinator::peek;
     map(
         terminated(
             many0(alt((

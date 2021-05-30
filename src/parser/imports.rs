@@ -2,13 +2,13 @@
 use super::strings::{
     name, sass_string, sass_string_dq, sass_string_sq, special_url,
 };
-use super::util::{ignore_comments, ignore_space, opt_spacelike};
+use super::util::{ignore_comments, opt_spacelike, semi_or_end};
 use super::value::space_list;
 use super::{media_args, PResult, Span};
 use crate::sass::{Expose, Item, Name, SassString, UseAs, Value};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
-use nom::combinator::{all_consuming, map, opt, value};
+use nom::combinator::{map, opt, value};
 use nom::multi::{fold_many0, separated_list0};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use nom_locate::position;
@@ -31,10 +31,7 @@ pub fn import2(input: Span) -> PResult<Item> {
                 ),
                 opt(media_args),
             )),
-            preceded(
-                opt(ignore_space),
-                alt((tag(";"), all_consuming(tag("")))),
-            ),
+            semi_or_end,
         ),
         |(position, import, args)| {
             Item::Import(import, args.unwrap_or(Value::Null), position.into())
@@ -53,7 +50,7 @@ pub fn use2(input: Span) -> PResult<Item> {
                 )),
                 opt(preceded(terminated(tag("as"), opt_spacelike), as_arg)),
             )),
-            alt((tag(";"), all_consuming(tag("")))),
+            semi_or_end,
         ),
         |(s, w, n)| {
             Item::Use(s, n.unwrap_or(UseAs::KeepName), w.unwrap_or_default())
@@ -97,7 +94,7 @@ pub fn forward2(input: Span) -> PResult<Item> {
             }
         };
     }
-    let (input, _) = alt((tag(";"), all_consuming(tag(""))))(input)?;
+    let (input, ()) = semi_or_end(input)?;
     Ok((
         input,
         Item::Forward(

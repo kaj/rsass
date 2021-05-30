@@ -14,7 +14,7 @@ mod syntax {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn colon() {
             assert_eq!(
                 runner().err("@supports (a !:$) {@b}\n"),
@@ -27,7 +27,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn non_identifier_start() {
             assert_eq!(
                 runner().err("@supports (1 a) {@b}\n"),
@@ -40,7 +40,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn not() {
             assert_eq!(
                 runner().err("@supports (not a) {@b}\n"),
@@ -58,7 +58,7 @@ mod syntax {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn multiple() {
             assert_eq!(
                 runner().err("@supports (a: b) (c: d) {@e}\n"),
@@ -71,7 +71,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn not() {
             assert_eq!(
                 runner().err("@supports (not a: b) {@c}\n"),
@@ -102,7 +102,7 @@ mod syntax {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn not() {
             assert_eq!(
                 runner().err("@supports not(:) {@b}\n"),
@@ -115,7 +115,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn space_before_arg() {
             assert_eq!(
                 runner().err("@supports a (b) {@b}\n"),
@@ -133,7 +133,7 @@ mod syntax {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn interpolated_after() {
             assert_eq!(
                 runner().err("@supports a#{b} {@c}\n"),
@@ -146,7 +146,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn interpolated_before() {
             assert_eq!(
                 runner().err("@supports #{a}b {@c}\n"),
@@ -159,7 +159,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn plain() {
             assert_eq!(
                 runner().err("@supports a {@b}\n"),
@@ -173,7 +173,7 @@ mod syntax {
         }
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn ident_after_not() {
         assert_eq!(
             runner().err("@supports not a {@b}\n"),
@@ -186,7 +186,7 @@ mod syntax {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn none() {
         assert_eq!(
             runner().err("@supports {@a}\n"),
@@ -203,7 +203,7 @@ mod syntax {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn and_after_not() {
             assert_eq!(
                 runner().err("@supports not (a: b) and (c: d) {@e}\n"),
@@ -216,7 +216,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn lonely_not() {
             assert_eq!(
                 runner().err("@supports not {@c}\n"),
@@ -229,7 +229,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn not_after_and() {
             assert_eq!(
                 runner().err("@supports (a: b) and (not c: d) {@e}\n"),
@@ -242,7 +242,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn not_function_after_and() {
             assert_eq!(
                 runner().err("@supports (a: b) and not() {@c}\n"),
@@ -255,7 +255,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn or_after_and() {
             assert_eq!(
                 runner().err("@supports (a: b) and (c: d) or (e: f) {@g}\n"),
@@ -268,7 +268,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn trailing_and() {
             assert_eq!(
                 runner().err("@supports (a: b) and {@c}\n"),
@@ -281,7 +281,7 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn trailing_or() {
             assert_eq!(
                 runner().err("@supports (a: b) or {@c}\n"),
@@ -295,7 +295,7 @@ mod syntax {
         }
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn raw_declaration() {
         assert_eq!(
             runner().err("@supports a: b {@c}\n"),

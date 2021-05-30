@@ -19,7 +19,7 @@ mod at_rule {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn childless() {
         let runner = runner().with_cwd("childless");
         assert_eq!(
@@ -30,7 +30,6 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn declaration_child() {
         let runner = runner().with_cwd("declaration_child");
         assert_eq!(
@@ -43,7 +42,7 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn keyframes() {
         let runner = runner().with_cwd("keyframes");
         assert_eq!(
@@ -56,7 +55,6 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn rule_child() {
         let runner = runner().with_cwd("rule_child");
         assert_eq!(

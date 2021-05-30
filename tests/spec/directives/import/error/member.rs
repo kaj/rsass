@@ -27,7 +27,6 @@ mod inaccessible {
         }
 
         #[test]
-        #[ignore] // unexepected error
         fn function() {
             let runner = runner().with_cwd("function");
             assert_eq!(

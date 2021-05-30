@@ -62,7 +62,7 @@ mod diamond_dependency {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn with_midstream_extend() {
         let runner = runner().with_cwd("with_midstream_extend");
         assert_eq!(
@@ -81,7 +81,7 @@ mod diamond_dependency {
     }
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn diamond_merge() {
     let runner = runner().with_cwd("diamond_merge");
     assert_eq!(
@@ -109,7 +109,7 @@ mod extended {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn from_other_file() {
         let runner = runner().with_cwd("from_other_file");
         assert_eq!(
@@ -121,7 +121,7 @@ mod extended {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn from_same_file() {
         let runner = runner().with_cwd("from_same_file");
         assert_eq!(
@@ -134,7 +134,7 @@ mod extended {
     }
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn far_upstream() {
     let runner = runner().with_cwd("far_upstream");
     assert_eq!(
@@ -152,7 +152,7 @@ mod midstream_extend_within_pseudoselector {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn is() {
         let runner = runner().with_cwd("is");
         assert_eq!(
@@ -170,7 +170,7 @@ mod midstream_extend_within_pseudoselector {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn matches() {
         let runner = runner().with_cwd("matches");
         assert_eq!(
@@ -195,7 +195,7 @@ mod optional_and_mandatory {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn different_files() {
         let runner = runner().with_cwd("different_files");
         assert_eq!(
@@ -223,7 +223,7 @@ mod optional_and_mandatory {
     }
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn placeholder() {
     let runner = runner().with_cwd("placeholder");
     assert_eq!(
@@ -241,7 +241,7 @@ mod scope {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn diamond() {
         let runner = runner().with_cwd("diamond");
         assert_eq!(
@@ -258,7 +258,7 @@ mod scope {
     );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn downstream() {
         let runner = runner().with_cwd("downstream");
         assert_eq!(
@@ -285,7 +285,7 @@ mod scope {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn private() {
         let runner = runner().with_cwd("private");
         assert_eq!(
@@ -297,7 +297,7 @@ mod scope {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn sibling() {
         let runner = runner().with_cwd("sibling");
         assert_eq!(
@@ -312,7 +312,7 @@ mod scope {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn use_and_import_into_diamond_extend() {
         let runner = runner().with_cwd("use_and_import_into_diamond_extend");
         assert_eq!(
@@ -331,7 +331,7 @@ mod scope {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn use_into_use_and_import_into_import() {
         let runner = runner().with_cwd("use_into_use_and_import_into_import");
         assert_eq!(
@@ -346,7 +346,7 @@ mod scope {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn use_into_use_and_import_into_use() {
         let runner = runner().with_cwd("use_into_use_and_import_into_use");
         assert_eq!(
@@ -361,7 +361,7 @@ mod scope {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn use_into_use_and_use_into_import() {
         let runner = runner().with_cwd("use_into_use_and_use_into_import");
         assert_eq!(
@@ -376,7 +376,7 @@ mod scope {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn use_into_use_and_use_into_import_into_use() {
         let runner =
             runner().with_cwd("use_into_use_and_use_into_import_into_use");
@@ -393,7 +393,7 @@ mod scope {
     }
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn upstream() {
     let runner = runner().with_cwd("upstream");
     assert_eq!(

@@ -407,7 +407,7 @@ fn reference_combinator() {
     );
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn slotted() {
     assert_eq!(
         runner().ok("::slotted(.a) {x: y}\n\

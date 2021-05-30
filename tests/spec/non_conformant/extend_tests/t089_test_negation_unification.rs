@@ -6,7 +6,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("%-a :not([a=b]).baz {a: b}\

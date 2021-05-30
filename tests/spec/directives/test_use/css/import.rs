@@ -74,7 +74,7 @@ fn import_module_imported_by_use() {
     );
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn nested_import_into_use() {
     let runner = runner().with_cwd("nested_import_into_use");
     assert_eq!(

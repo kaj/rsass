@@ -23,7 +23,7 @@ mod optional_and_mandatory {
     }
 
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn different_files() {
         let runner = runner().with_cwd("different_files");
         assert_eq!(
@@ -69,7 +69,7 @@ mod scope {
     }
 
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn diamond() {
         let runner = runner().with_cwd("diamond");
         assert_eq!(
@@ -90,7 +90,7 @@ mod scope {
     );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn downstream() {
         let runner = runner().with_cwd("downstream");
         assert_eq!(
@@ -108,7 +108,7 @@ mod scope {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn private() {
         let runner = runner().with_cwd("private");
         assert_eq!(
@@ -126,7 +126,7 @@ mod scope {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn sibling() {
         let runner = runner().with_cwd("sibling");
         assert_eq!(

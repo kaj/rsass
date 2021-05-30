@@ -10,7 +10,7 @@ mod anything {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn ident_only() {
         assert_eq!(
             runner().ok("@supports (a) {@b}\n"),
@@ -20,7 +20,7 @@ mod anything {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn idents() {
         assert_eq!(
             runner().ok("@supports (a b) {@c}\n"),
@@ -34,7 +34,7 @@ mod anything {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn full() {
             assert_eq!(
                 runner().ok("@supports (a #{1 + 1}) {@b}\n"),
@@ -59,7 +59,7 @@ mod anything {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn full() {
             assert_eq!(
                 runner().ok("@supports (#{\"a\"} b) {@c}\n"),
@@ -69,7 +69,7 @@ mod anything {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn full_before_andlike() {
             assert_eq!(
                 runner().ok("@supports (#{\"a\"} andb) {@c}\n"),
@@ -79,7 +79,7 @@ mod anything {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn partial() {
             assert_eq!(
                 runner().ok("@supports (a#{\"b\"}c d) {@e}\n"),
@@ -90,7 +90,7 @@ mod anything {
         }
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn no_space() {
         assert_eq!(
             runner().ok("@supports (a!) {@b}\n"),
@@ -129,7 +129,7 @@ mod declaration {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn lhs() {
             assert_eq!(
                 runner().ok("@supports (1 + 1: b) {@c}\n"),
@@ -139,7 +139,7 @@ mod declaration {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn rhs() {
             assert_eq!(
                 runner().ok("@supports (a: 1 + 1) {@c}\n"),
@@ -150,7 +150,7 @@ mod declaration {
         }
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn nested() {
         assert_eq!(
             runner().ok("@supports ((((a: b)))) {@c}\n"),
@@ -164,7 +164,7 @@ mod declaration {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn ident() {
             assert_eq!(
                 runner().ok("@supports (a: b) {@c}\n"),
@@ -174,7 +174,7 @@ mod declaration {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn quoted_rhs() {
             assert_eq!(
                 runner().ok("@supports (a: \"b\") {@c}\n"),
@@ -190,7 +190,7 @@ mod function {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn after_not() {
         assert_eq!(
             runner().ok("@supports not a() {@b}\n"),
@@ -204,7 +204,7 @@ mod function {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn full() {
             assert_eq!(
                 runner().ok("@supports #{\"a\"}(b) {@c}\n"),
@@ -214,7 +214,7 @@ mod function {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn partial() {
             assert_eq!(
                 runner().ok("@supports a#{\"b\"}c(d) {@e}\n"),
@@ -229,7 +229,7 @@ mod function {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn full() {
             assert_eq!(
                 runner().ok("@supports a(#{1 + 1}) {@c}\n"),
@@ -250,7 +250,7 @@ mod function {
         }
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn no_arg() {
         assert_eq!(
             runner().ok("@supports a() {@b}\n"),
@@ -260,7 +260,7 @@ mod function {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn plain() {
         assert_eq!(
             runner().ok("@supports a(b) {@c}\n"),
@@ -270,7 +270,7 @@ mod function {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn space() {
         assert_eq!(
             runner().ok("@supports a( ) {@b}\n"),
@@ -299,7 +299,7 @@ mod lone_interpolation {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn after_operator() {
             assert_eq!(
                 runner()
@@ -310,7 +310,7 @@ mod lone_interpolation {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn alone() {
             assert_eq!(
                 runner().ok("@supports (#{\"(a: b)\"}) {@c}\n"),
@@ -320,7 +320,7 @@ mod lone_interpolation {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn before_operator() {
             assert_eq!(
                 runner()
@@ -336,7 +336,7 @@ mod lone_interpolation {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn after_operator() {
             assert_eq!(
                 runner().ok("@supports (c: 1 + 1) and #{\"(a: b)\"}  {@d}\n"),
@@ -346,7 +346,7 @@ mod lone_interpolation {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn alone() {
             assert_eq!(
                 runner().ok("@supports #{\"(a: b)\"} {@c}\n"),
@@ -356,7 +356,7 @@ mod lone_interpolation {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn before_operator() {
             assert_eq!(
                 runner().ok("@supports #{\"(a: b)\"} and (c: 1 + 1) {@d}\n"),
@@ -372,7 +372,7 @@ mod operator {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn and() {
         assert_eq!(
             runner().ok("@supports (a: b) and (c: d) and (e: f) {@g}\n"),
@@ -386,7 +386,7 @@ mod operator {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn and_in_not() {
             assert_eq!(
                 runner().ok("@supports not ((a: b) and (c: d)) {@e}\n"),
@@ -396,7 +396,7 @@ mod operator {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn and_in_or() {
             assert_eq!(
                 runner().ok("@supports ((a: b) and (c: d)) or (e: f) {@g}\n"),
@@ -406,7 +406,7 @@ mod operator {
             );
         }
         #[test]
-        #[ignore] // unexepected error
+        #[ignore] // wrong result
         fn or_in_and() {
             assert_eq!(
                 runner().ok("@supports (a: b) and ((c: d) or (e: f)) {@g}\n"),
@@ -417,7 +417,7 @@ mod operator {
         }
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn not() {
         assert_eq!(
             runner().ok("@supports not (a: b) {@c}\n"),
@@ -427,7 +427,7 @@ mod operator {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn or() {
         assert_eq!(
             runner().ok("@supports (a: b) or (c: d) or (e: f) {@g}\n"),
