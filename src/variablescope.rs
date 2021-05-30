@@ -110,7 +110,9 @@ impl ScopeRef {
                     self.set_variable(name.into(), val, default, global);
                     None
                 }
-                Item::Return(ref v) => Some(v.evaluate(self.clone())?),
+                Item::Return(ref v) => {
+                    Some(v.do_evaluate(self.clone(), true)?)
+                }
                 Item::While(ref cond, ref body) => {
                     let scope = ScopeRef::sub(self.clone());
                     while cond.evaluate(scope.clone())?.is_true() {

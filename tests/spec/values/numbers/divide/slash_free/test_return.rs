@@ -16,7 +16,6 @@ fn built_in() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn user_defined() {
     assert_eq!(
         runner().ok("@function a() {@return 1/2}\n\

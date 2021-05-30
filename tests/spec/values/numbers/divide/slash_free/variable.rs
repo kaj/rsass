@@ -15,7 +15,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn forward_with() {
     let runner = runner().with_cwd("forward_with");
     assert_eq!(
@@ -37,7 +36,6 @@ fn local() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn use_with() {
     let runner = runner().with_cwd("use_with");
     assert_eq!(

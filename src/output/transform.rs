@@ -89,7 +89,7 @@ fn handle_item(
                             let value = if let Some(val) = default {
                                 val
                             } else {
-                                value.evaluate(scope.clone())?
+                                value.do_evaluate(scope.clone(), true)?
                             };
                             if module.get_or_none(name).is_none() {
                                 module.define(name.clone(), &value);
@@ -168,7 +168,7 @@ fn handle_item(
                             let value = if let Some(val) = default {
                                 val
                             } else {
-                                value.evaluate(scope.clone())?
+                                value.do_evaluate(scope.clone(), true)?
                             };
                             if module.get_or_none(name).is_none() {
                                 module.define(name.clone(), &value);
