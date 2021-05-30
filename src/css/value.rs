@@ -84,14 +84,18 @@ impl Value {
     }
 
     /// Get this value, but marked as calculated.
+    ///
+    /// Make sure arithmetic operators are evaluated.
     pub fn into_calculated(self) -> Self {
         match self {
             Value::Numeric(num, _) => Value::Numeric(num, true),
-            Value::List(v, sep, bracketed) => Value::List(
-                v.into_iter().map(|i| i.into_calculated()).collect(),
-                sep,
-                bracketed,
-            ),
+            Value::BinOp(a, s1, op, s2, b) => {
+                match op.eval((&*a).clone().into_calculated(), (&*b).clone())
+                {
+                    Some(v) => v,
+                    None => Value::BinOp(a, s1, op, s2, b),
+                }
+            }
             other => other,
         }
     }

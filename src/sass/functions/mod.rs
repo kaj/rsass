@@ -174,6 +174,7 @@ impl Function {
                 Ok(s.eval_body(body)?.unwrap_or(Value::Null))
             }
         }
+        .map(Value::into_calculated)
     }
 
     fn do_eval_args(
