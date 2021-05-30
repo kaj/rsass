@@ -225,8 +225,12 @@ pub fn special_url(input: Span) -> PResult<SassString> {
     let (input, mut parts) = many1(alt((
         string_part_interpolation,
         map(selector_string, StringPart::Raw),
-        map(map_res(is_a("\":.,!+/="), input_to_string), StringPart::Raw),
+        map(
+            map_res(is_a("\":.;,!+/="), input_to_string),
+            StringPart::Raw,
+        ),
     )))(input)?;
+    let (input, _trim) = many0(is_a(" "))(input)?;
     let (input, _end) = tag(")")(input)?;
     parts.insert(0, "url(".into());
     parts.push(")".into());
