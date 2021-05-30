@@ -366,7 +366,6 @@ mod list {
                 }
 
                 #[test]
-                #[ignore] // unexepected error
                 fn bracketed() {
                     let runner = runner().with_cwd("bracketed");
                     assert_eq!(
@@ -384,7 +383,6 @@ mod list {
     );
                 }
                 #[test]
-                #[ignore] // unexepected error
                 fn unbracketed() {
                     let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
@@ -489,7 +487,6 @@ mod list {
                 }
 
                 #[test]
-                #[ignore] // unexepected error
                 fn bracketed() {
                     let runner = runner().with_cwd("bracketed");
                     assert_eq!(
@@ -507,7 +504,6 @@ mod list {
     );
                 }
                 #[test]
-                #[ignore] // unexepected error
                 fn unbracketed() {
                     let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
@@ -612,7 +608,6 @@ mod list {
                 }
 
                 #[test]
-                #[ignore] // unexepected error
                 fn bracketed() {
                     let runner = runner().with_cwd("bracketed");
                     assert_eq!(
@@ -630,7 +625,6 @@ mod list {
     );
                 }
                 #[test]
-                #[ignore] // unexepected error
                 fn unbracketed() {
                     let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
@@ -735,7 +729,6 @@ mod list {
                 }
 
                 #[test]
-                #[ignore] // unexepected error
                 fn bracketed() {
                     let runner = runner().with_cwd("bracketed");
                     assert_eq!(
@@ -753,7 +746,6 @@ mod list {
     );
                 }
                 #[test]
-                #[ignore] // unexepected error
                 fn unbracketed() {
                     let runner = runner().with_cwd("unbracketed");
                     assert_eq!(
@@ -868,7 +860,6 @@ mod list {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn slash() {
             let runner = runner().with_cwd("slash");
             assert_eq!(

@@ -38,7 +38,12 @@ fn do_rgba(fn_name: &str, s: &Scope) -> Result<Value, Error> {
     } else {
         red.clone()
     } {
-        if let Some((r, g, b, a)) = values_from_list(&vec) {
+        if bracketed {
+            return Err(Error::BadValue(
+                "Error: $channels must be an unbracketed list.".into(),
+            ));
+        }
+        if let Some((r, g, b, a)) = values_from_list(&vec, sep) {
             Ok(rgba_from_values(&r, &g, &b, &a)?
                 .unwrap_or_else(|| make_call(fn_name, vec![r, g, b, a])))
         } else {
@@ -54,26 +59,28 @@ fn do_rgba(fn_name: &str, s: &Scope) -> Result<Value, Error> {
 
 pub fn values_from_list(
     vec: &[Value],
+    sep: Option<ListSeparator>,
 ) -> Option<(Value, Value, Value, Value)> {
     use crate::value::Operator::Div;
-
-    if vec.len() == 3 {
-        if let Value::BinOp(a, _, Div, _, b) = &vec[2] {
-            if let (Value::Numeric(..), Value::Numeric(..)) = (&**a, &**b) {
-                Some((vec[0].clone(), vec[1].clone(), *a.clone(), *b.clone()))
+    use Value::{BinOp, Null, Numeric};
+    match vec {
+        [Value::List(rgb, _, _), a] if sep == Some(ListSeparator::Slash) => {
+            match &rgb[..] {
+                [r, g, b] => {
+                    Some((r.clone(), g.clone(), b.clone(), a.clone()))
+                }
+                _ => None,
+            }
+        }
+        [r, g, BinOp(b, _, Div, _, a)] => {
+            if let (b @ Numeric(..), a @ Numeric(..)) = (&**b, &**a) {
+                Some((r.clone(), g.clone(), b.clone(), a.clone()))
             } else {
                 None
             }
-        } else {
-            Some((
-                vec[0].clone(),
-                vec[1].clone(),
-                vec[2].clone(),
-                Value::Null,
-            ))
         }
-    } else {
-        None
+        [r, g, b] => Some((r.clone(), g.clone(), b.clone(), Null)),
+        _ => None,
     }
 }
 

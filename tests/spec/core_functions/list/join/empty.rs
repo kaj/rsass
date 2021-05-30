@@ -49,7 +49,6 @@ mod both {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn first() {
             assert_eq!(
                 runner().ok("@import \"core_functions/list/utils\";\n\
@@ -66,7 +65,6 @@ mod both {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn last() {
             assert_eq!(
                 runner().ok("@import \"core_functions/list/utils\";\n\
@@ -153,7 +151,6 @@ mod first {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn slash() {
         assert_eq!(
             runner()
@@ -188,7 +185,6 @@ mod first {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn and_slash() {
             assert_eq!(
                 runner().ok("@use \"sass:list\";\
@@ -228,7 +224,6 @@ mod map {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn slash() {
             assert_eq!(
                 runner().ok("@use \"sass:list\";\
@@ -280,7 +275,6 @@ mod map {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn slash() {
             assert_eq!(
                 runner().ok("@use \"sass:list\";\
@@ -333,7 +327,6 @@ mod second {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn slash() {
         assert_eq!(
             runner()
@@ -368,7 +361,6 @@ mod second {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn slash() {
             assert_eq!(
                 runner().ok("@use \"sass:list\";\

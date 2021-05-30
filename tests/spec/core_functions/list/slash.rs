@@ -10,7 +10,6 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err(
@@ -27,7 +26,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn many_args() {
     assert_eq!(
         runner().ok(
@@ -40,7 +38,6 @@ fn many_args() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn three_args() {
     assert_eq!(
         runner().ok("@use \"sass:list\";\
@@ -51,7 +48,6 @@ fn three_args() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn two_args() {
     assert_eq!(
         runner().ok("@use \"sass:list\";\

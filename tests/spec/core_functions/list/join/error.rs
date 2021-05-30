@@ -97,7 +97,6 @@ mod test_type {
     }
 }
 #[test]
-#[ignore] // wrong error
 fn unknown_separator() {
     assert_eq!(
         runner().err(

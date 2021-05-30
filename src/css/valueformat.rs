@@ -43,6 +43,7 @@ impl<'a> Display for Formatted<'a, Value> {
                 }
             }
             Value::List(ref v, sep, brackets) => {
+                let sep = sep.unwrap_or_default();
                 let introspect = self.format.is_introspection();
                 if introspect && v.is_empty() && !brackets {
                     return out.write_str("()");
@@ -54,9 +55,7 @@ impl<'a> Display for Formatted<'a, Value> {
                         let needs_paren = match *v {
                             Value::List(ref v, inner, false) => {
                                 ((brackets || introspect)
-                                    && (sep != Some(ListSeparator::Comma)
-                                        || inner
-                                            == Some(ListSeparator::Comma)))
+                                    && (sep <= inner.unwrap_or_default()))
                                     && !(introspect && v.len() < 2)
                             }
                             _ => false,
@@ -70,24 +69,15 @@ impl<'a> Display for Formatted<'a, Value> {
                     .collect::<Vec<_>>();
                 let t = if self.format.is_introspection()
                     && t.len() == 1
-                    && sep == Some(ListSeparator::Comma)
+                    && sep > ListSeparator::Space
                 {
                     if self.format.is_introspection() && !brackets {
-                        format!("({},)", t[0])
+                        format!("({}{})", t[0], sep.sep(true))
                     } else {
                         format!("{},", t[0])
                     }
                 } else {
-                    t.join(match sep {
-                        Some(ListSeparator::Comma) => {
-                            if self.format.is_compressed() {
-                                ","
-                            } else {
-                                ", "
-                            }
-                        }
-                        _ => " ",
-                    })
+                    t.join(sep.sep(self.format.is_compressed()))
                 };
                 if brackets {
                     out.write_str("[")?;

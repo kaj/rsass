@@ -98,7 +98,6 @@ mod multi {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn slash() {
         assert_eq!(
             runner().ok("@use \'sass:list\';\
@@ -141,7 +140,6 @@ mod single {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn slash() {
         assert_eq!(
             runner().ok(

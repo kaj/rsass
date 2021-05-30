@@ -558,7 +558,6 @@ mod slash_list {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn alpha() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -569,7 +568,6 @@ mod slash_list {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn channels() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -580,7 +578,6 @@ mod slash_list {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn some_channels() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\

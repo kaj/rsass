@@ -17,7 +17,12 @@ fn do_hsla(fn_name: &str, s: &Scope) -> Result<Value, Error> {
     } else {
         hue.clone()
     } {
-        if let Some((h, s, v, a)) = values_from_list(&vec) {
+        if bracketed {
+            return Err(Error::BadValue(
+                "Error: $channels must be an unbracketed list.".into(),
+            ));
+        }
+        if let Some((h, s, v, a)) = values_from_list(&vec, sep) {
             Ok(hsla_from_values(&h, &s, &v, &a)?
                 .unwrap_or_else(|| make_call(fn_name, vec![h, s, v, a])))
         } else {

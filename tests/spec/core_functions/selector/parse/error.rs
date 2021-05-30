@@ -99,7 +99,7 @@ mod slash_list {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn in_comma_list() {
         assert_eq!(
         runner().err(
@@ -116,7 +116,7 @@ mod slash_list {
     );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn top_level() {
         assert_eq!(
         runner().err(

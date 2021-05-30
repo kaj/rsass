@@ -77,6 +77,7 @@ pub fn create_module() -> Scope {
     def!(f, separator(list), |s| Ok(Value::Literal(
         match s.get("list")? {
             Value::List(_, Some(ListSeparator::Comma), _) => "comma",
+            Value::List(_, Some(ListSeparator::Slash), _) => "slash",
             Value::Map(ref map) if map.len() == 0 => "space",
             Value::Map(_) => "comma",
             _ => "space",
@@ -84,6 +85,15 @@ pub fn create_module() -> Scope {
         .into(),
         Quotes::None
     )));
+    def_va!(f, slash(elements), |s| {
+        let (list, _, _) = get_list(s.get("elements")?);
+        if list.len() < 2 {
+            return Err(Error::BadValue(
+                "Error: At least two elements are required.".into(),
+            ));
+        }
+        Ok(Value::List(list, Some(ListSeparator::Slash), false))
+    });
     def!(f, nth(list, n), |s| {
         let n = get_integer(s, name!(n))?;
         match s.get("list")? {
@@ -154,9 +164,12 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 fn check_separator(v: Value) -> Result<Option<ListSeparator>, String> {
     match check::string(v)?.0.as_ref() {
         "comma" => Ok(Some(ListSeparator::Comma)),
+        "slash" => Ok(Some(ListSeparator::Slash)),
         "space" => Ok(Some(ListSeparator::Space)),
         "auto" => Ok(None),
-        _ => Err("Must be \"space\", \"comma\", or \"auto\"".into()),
+        _ => {
+            Err("Must be \"space\", \"comma\", \"slash\", or \"auto\"".into())
+        }
     }
 }
 
