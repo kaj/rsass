@@ -100,7 +100,6 @@ fn function() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn hide() {
     let runner = runner().with_cwd("hide");
     assert_eq!(
@@ -169,7 +168,6 @@ mod show {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn different_separator() {
         let runner = runner().with_cwd("different_separator");
         assert_eq!(
@@ -181,7 +179,6 @@ mod show {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn same_separator() {
         let runner = runner().with_cwd("same_separator");
         assert_eq!(

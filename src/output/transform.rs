@@ -3,7 +3,9 @@ use crate::css::{BodyItem, Rule};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
-use crate::sass::{self, FormalArgs, Function, Item, Mixin, Name};
+use crate::sass::{
+    self, get_global_module, Expose, FormalArgs, Function, Item, Mixin, Name,
+};
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
 use crate::ScopeRef;
@@ -42,41 +44,18 @@ fn handle_item(
     let format = scope.get_format();
     match item {
         Item::Use(ref name, ref as_n, ref with) => {
-            use crate::sass::{get_global_module, UseAs};
             let name = name.evaluate(scope.clone())?.0;
-            let do_use = |module: ScopeRef| -> Result<(), Error> {
-                let module = module.with_forwarded();
-                match as_n {
-                    UseAs::KeepName => {
-                        let name = name
-                            .rfind(|c| c == ':' || c == '/')
-                            .map(|i| &name[i + 1..])
-                            .unwrap_or(&name);
-                        scope.define_module(name.into(), module);
-                    }
-                    UseAs::Star => {
-                        scope.expose_star(&module);
-                    }
-                    UseAs::Name(name) => {
-                        scope.define_module(name.clone(), module);
-                    }
-                    UseAs::Prefix(prefix) => {
-                        scope.expose_prefix(&module, prefix);
-                    }
-                }
-                Ok(())
-            };
-            if let Some(module) = get_global_module(&name) {
+            let module = if let Some(module) = get_global_module(&name) {
                 if !with.is_empty() {
                     return Err(Error::error(
                         "Built-in modules can\'t be configured",
                     ));
                 }
-                do_use(module)?
+                module
             } else if let Some((sub_context, path, mut file)) =
                 file_context.find_file_use(&name)?
             {
-                let module = head.load_module(
+                head.load_module(
                     &path,
                     |head| {
                         let module = ScopeRef::new_global(format);
@@ -86,11 +65,9 @@ fn handle_item(
                             } else {
                                 None
                             };
-                            let value = if let Some(val) = default {
-                                val
-                            } else {
-                                value.do_evaluate(scope.clone(), true)?
-                            };
+                            let value = default.ok_or(()).or_else(|()| {
+                                value.do_evaluate(scope.clone(), true)
+                            })?;
                             if module.get_or_none(name).is_none() {
                                 module.define(name.clone(), &value);
                             } else {
@@ -114,48 +91,25 @@ fn handle_item(
                             &sub_context,
                         )?;
                         Ok(module)
-                    })?;
-                do_use(module)?;
+                    })?
             } else {
                 return Err(Error::S(format!("Module {:?} not found", name)));
-            }
+            };
+            scope.do_use(module, &name, as_n, &Expose::All)?;
         }
         Item::Forward(ref name, ref as_n, ref expose, ref with) => {
-            use crate::sass::{get_global_module, UseAs};
             let name = name.evaluate(scope.clone())?.0;
-            let do_use = |module: ScopeRef| -> Result<(), Error> {
-                let module = module.with_forwarded().expose(expose);
-                match as_n {
-                    UseAs::KeepName => {
-                        let name = name
-                            .rfind(|c| c == ':' || c == '/')
-                            .map(|i| &name[i + 1..])
-                            .unwrap_or(&name);
-                        scope.forward().define_module(name.into(), module);
-                    }
-                    UseAs::Star => {
-                        scope.forward().expose_star(&module);
-                    }
-                    UseAs::Name(name) => {
-                        scope.forward().define_module(name.clone(), module);
-                    }
-                    UseAs::Prefix(prefix) => {
-                        scope.forward().expose_prefix(&module, prefix);
-                    }
-                }
-                Ok(())
-            };
-            if let Some(module) = get_global_module(&name) {
+            let module = if let Some(module) = get_global_module(&name) {
                 if !with.is_empty() {
                     return Err(Error::error(
                         "Built-in modules can\'t be configured",
                     ));
                 }
-                do_use(module)?
+                module
             } else if let Some((sub_context, path, mut file)) =
                 file_context.find_file_use(&name)?
             {
-                let module = head.load_module(
+                head.load_module(
                     &path,
                     |head| {
                         let module = ScopeRef::new_global(format);
@@ -165,11 +119,9 @@ fn handle_item(
                             } else {
                                 None
                             };
-                            let value = if let Some(val) = default {
-                                val
-                            } else {
-                                value.do_evaluate(scope.clone(), true)?
-                            };
+                            let value = default.ok_or(()).or_else(|()| {
+                                value.do_evaluate(scope.clone(), true)
+                            })?;
                             if module.get_or_none(name).is_none() {
                                 module.define(name.clone(), &value);
                             } else {
@@ -193,11 +145,11 @@ fn handle_item(
                             &sub_context,
                         )?;
                         Ok(module)
-                    })?;
-                do_use(module)?;
+                    })?
             } else {
                 return Err(Error::S(format!("Module {:?} not found", name)));
-            }
+            };
+            scope.forward().do_use(module, &name, as_n, expose)?;
         }
         Item::Import(ref names, ref args, ref pos) => {
             let mut rule = rule;

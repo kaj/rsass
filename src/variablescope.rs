@@ -2,7 +2,7 @@
 
 use crate::css::Value;
 use crate::output::Format;
-use crate::sass::{Expose, Function, Item, Mixin, Name};
+use crate::sass::{Expose, Function, Item, Mixin, Name, UseAs};
 use crate::selectors::Selectors;
 use crate::Error;
 use lazy_static::lazy_static;
@@ -155,7 +155,7 @@ impl ScopeRef {
         Ok(None)
     }
 
-    pub(crate) fn with_forwarded(self) -> Self {
+    fn with_forwarded(self) -> Self {
         if let Some(forwarded) = self.opt_forward() {
             let merged = ScopeRef::new_global(self.get_format());
             merged.expose_star(&forwarded);
@@ -166,49 +166,27 @@ impl ScopeRef {
         }
     }
 
-    pub(crate) fn expose(self, filter: &Expose) -> Self {
-        match filter {
-            Expose::All => self,
-            Expose::Show(funs, vars) => {
-                let result = ScopeRef::new_global(self.get_format());
-                for (name, function) in &*self.functions.lock().unwrap() {
-                    if funs.contains(name) {
-                        result
-                            .define_function(name.clone(), function.clone());
-                    }
+    fn expose(self, filter: &Expose) -> Self {
+        if filter == &Expose::All {
+            self
+        } else {
+            let result = ScopeRef::new_global(self.get_format());
+            for (name, function) in &*self.functions.lock().unwrap() {
+                if filter.allow_fun(name) {
+                    result.define_function(name.clone(), function.clone());
                 }
-                for (name, m) in &*self.mixins.lock().unwrap() {
-                    if funs.contains(name) {
-                        result.define_mixin(name.clone(), m.clone());
-                    }
-                }
-                for (name, value) in &*self.variables.lock().unwrap() {
-                    if vars.contains(name) {
-                        result.define(name.clone(), value);
-                    }
-                }
-                result
             }
-            Expose::Hide(funs, vars) => {
-                let result = ScopeRef::new_global(self.get_format());
-                for (name, function) in &*self.functions.lock().unwrap() {
-                    if !funs.contains(name) {
-                        result
-                            .define_function(name.clone(), function.clone());
-                    }
+            for (name, m) in &*self.mixins.lock().unwrap() {
+                if filter.allow_fun(name) {
+                    result.define_mixin(name.clone(), m.clone());
                 }
-                for (name, m) in &*self.mixins.lock().unwrap() {
-                    if !funs.contains(name) {
-                        result.define_mixin(name.clone(), m.clone());
-                    }
-                }
-                for (name, value) in &*self.variables.lock().unwrap() {
-                    if !vars.contains(name) {
-                        result.define(name.clone(), value);
-                    }
-                }
-                result
             }
+            for (name, value) in &*self.variables.lock().unwrap() {
+                if filter.allow_var(name) {
+                    result.define(name.clone(), value);
+                }
+            }
+            result
         }
     }
 }
@@ -494,10 +472,53 @@ impl<'a> Scope {
         })
     }
 
-    /// Expose another module directly in this.
-    ///
-    /// This is `@use other as *` behavior.
-    pub fn expose_star(&self, other: &Scope) {
+    pub(crate) fn do_use(
+        &self,
+        module: ScopeRef,
+        name: &str,
+        as_n: &UseAs,
+        expose: &Expose,
+    ) -> Result<(), Error> {
+        let module = module.with_forwarded();
+        match as_n {
+            UseAs::KeepName => {
+                let name = name
+                    .rfind(|c| c == ':' || c == '/')
+                    .map(|i| &name[i + 1..])
+                    .unwrap_or(&name);
+                self.define_module(name.into(), module.expose(expose));
+            }
+            UseAs::Star => {
+                self.expose_star(&module.expose(expose));
+            }
+            UseAs::Name(name) => {
+                self.define_module(name.clone(), module.expose(expose));
+            }
+            UseAs::Prefix(prefix) => {
+                for (name, function) in &*module.functions.lock().unwrap() {
+                    let name = format!("{}{}", prefix, name).into();
+                    if expose.allow_var(&name) {
+                        self.define_function(name, function.clone());
+                    }
+                }
+                for (name, value) in &*module.variables.lock().unwrap() {
+                    let name = format!("{}{}", prefix, name).into();
+                    if expose.allow_fun(&name) {
+                        self.define(name, value);
+                    }
+                }
+                for (name, m) in &*module.mixins.lock().unwrap() {
+                    let name = format!("{}{}", prefix, name).into();
+                    if dbg!(expose.allow_fun(dbg!(&name))) {
+                        self.define_mixin(name, m.clone());
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn expose_star(&self, other: &Scope) {
         for (name, function) in &*other.functions.lock().unwrap() {
             self.define_function(name.clone(), function.clone());
         }
@@ -506,27 +527,6 @@ impl<'a> Scope {
         }
         for (name, m) in &*other.mixins.lock().unwrap() {
             self.define_mixin(name.clone(), m.clone());
-        }
-    }
-
-    /// Expose another module in this, with a prefix.
-    ///
-    /// This is `@use other as foo-*` behavior.
-    pub fn expose_prefix(&self, other: &Scope, prefix: &str) {
-        for (name, function) in &*other.functions.lock().unwrap() {
-            self.define_function(
-                format!("{}{}", prefix, name).into(),
-                function.clone(),
-            );
-        }
-        for (name, value) in &*other.variables.lock().unwrap() {
-            self.define(format!("{}{}", prefix, name).into(), value);
-        }
-        for (name, m) in &*other.mixins.lock().unwrap() {
-            self.define_mixin(
-                format!("{}{}", prefix, name).into(),
-                m.clone(),
-            );
         }
     }
 

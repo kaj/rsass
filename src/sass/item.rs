@@ -107,6 +107,25 @@ pub enum Expose {
     Hide(BTreeSet<Name>, BTreeSet<Name>),
 }
 
+impl Expose {
+    /// Check if `name` should be exposed as a function/mixin.
+    pub fn allow_fun(&self, name: &Name) -> bool {
+        match self {
+            Expose::All => true,
+            Expose::Show(show, _) => show.contains(name),
+            Expose::Hide(hide, _) => !hide.contains(name),
+        }
+    }
+    /// Check if `name` should be exposed as a variable.
+    pub fn allow_var(&self, name: &Name) -> bool {
+        match self {
+            Expose::All => true,
+            Expose::Show(_, show) => show.contains(name),
+            Expose::Hide(_, hide) => !hide.contains(name),
+        }
+    }
+}
+
 /// The `as` part of an `@use` or `@forward` directive.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub enum UseAs {
