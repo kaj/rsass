@@ -158,8 +158,8 @@ impl ScopeRef {
     pub(crate) fn with_forwarded(self) -> Self {
         if let Some(forwarded) = self.opt_forward() {
             let merged = ScopeRef::new_global(self.get_format());
-            merged.expose_star(&self);
             merged.expose_star(&forwarded);
+            merged.expose_star(&self);
             merged
         } else {
             self

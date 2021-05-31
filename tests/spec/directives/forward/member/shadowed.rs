@@ -14,7 +14,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn function() {
     let runner = runner().with_cwd("function");
     assert_eq!(
@@ -26,7 +25,6 @@ fn function() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn mixin() {
     let runner = runner().with_cwd("mixin");
     assert_eq!(
@@ -62,7 +60,6 @@ mod variable_assignment {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn variable_use() {
     let runner = runner().with_cwd("variable_use");
     assert_eq!(

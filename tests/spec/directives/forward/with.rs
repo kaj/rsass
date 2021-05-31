@@ -252,7 +252,6 @@ mod through_forward {
     }
 
     #[test]
-    #[ignore] // wrong result
     fn and_use() {
         let runner = runner().with_cwd("and_use");
         assert_eq!(
