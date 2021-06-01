@@ -7,7 +7,9 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.21.0 - 2021-06-01
+
+Progress: 3727 of 6171 tests passed in dart-sass compatibility mode.
 
 ### Breaking changes
 
@@ -34,6 +36,10 @@ project adheres to
 * At least some documentation on all public items.
 * Update sass-spec test suite to 2021-05-24.  Also include "other"
   files (for `@use` and `@import`) in rust code for the suite.
+
+Tested with rustc 1.52.1, 1.50.0, 1.48.0, 1.45.2,
+1.53.0-beta.3 (82b862164 2021-05-22), and
+1.54.0-nightly (657bc0188 2021-05-31).
 
 
 ## Release 0.20.0 - 2021-03-25

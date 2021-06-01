@@ -1,10 +1,10 @@
 [package]
 name = "rsass"
-version = "0.20.1-PRE"
+version = "0.21.0"
 authors = ["Rasmus Kaj <kaj@kth.se>"]
 categories = ["command-line-utilities", "web-programming"]
 keywords = ["scss", "sass", "css"]
-description = "Early-stage sass implementation in pure rust"
+description = "Sass implementation in pure rust (not complete yet)"
 documentation = "https://docs.rs/rsass"
 repository = "https://github.com/kaj/rsass"
 readme = "README.md"
