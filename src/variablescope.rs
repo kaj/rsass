@@ -207,6 +207,8 @@ impl Deref for ScopeRef {
 /// All non-global scopes have a parent.
 /// The global scope is global to a sass document, multiple different
 /// global scopes may exists in the same rust-language process.
+///
+/// Scopes are often accessed through a [`ScopeRef`].
 pub struct Scope {
     parent: Option<ScopeRef>,
     modules: Mutex<BTreeMap<String, ScopeRef>>,

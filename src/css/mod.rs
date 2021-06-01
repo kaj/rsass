@@ -1,4 +1,4 @@
-//! Value type for css values.
+//! Types for css values and rules.
 mod call_args;
 mod rule;
 mod value;

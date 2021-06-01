@@ -1,14 +1,17 @@
 use super::Value;
 use crate::selectors::Selectors;
 
-/// A css rule
+/// A css rule.
+///
+/// A rule binds [`Selectors`] to a body of [`BodyItem`]s (mainly
+/// properties with [`Value`]s).
 pub struct Rule {
     pub(crate) selectors: Selectors,
     pub(crate) body: Vec<BodyItem>,
 }
 
 impl Rule {
-    /// Create a new Rule
+    /// Create a new Rule.
     pub fn new(selectors: Selectors) -> Rule {
         Rule {
             selectors,

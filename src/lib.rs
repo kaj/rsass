@@ -1,6 +1,5 @@
-//! Sass reimplemented in rust with nom.
+//! Sass reimplemented in rust (not yet complete).
 //!
-//! Sass reimplemented in rust with nom (early stage).
 //! The "r" in the name might stand for the Rust programming language,
 //! for "re-implemented", or possibly for my name Rasmus.
 //!
@@ -12,7 +11,7 @@
 //! let path = "tests/basic/14_imports/a.scss".as_ref();
 //! let format = output::Format {
 //!     style: output::Style::Compressed,
-//!     precision: 5,
+//!     .. Default::default()
 //! };
 //! let css = compile_scss_path(path, format).unwrap();
 //!
@@ -37,27 +36,18 @@
 //! usable for my personal projects, and the number of working tests are
 //! improving.
 #![forbid(unsafe_code)]
-// TODO: #![forbid(missing_docs)]
+#![forbid(missing_docs)]
 use std::path::Path;
 
-#[forbid(missing_docs)]
 pub mod css;
 mod error;
-#[forbid(missing_docs)]
 mod file_context;
-#[forbid(missing_docs)]
 mod ordermap;
-#[forbid(missing_docs)]
 pub mod output;
-#[forbid(missing_docs)]
 mod parser;
-#[forbid(missing_docs)]
 pub mod sass;
-#[forbid(missing_docs)]
 pub mod selectors;
-#[forbid(missing_docs)]
 pub mod value;
-#[forbid(missing_docs)]
 mod variablescope;
 
 pub use crate::error::Error;

@@ -18,8 +18,11 @@ pub enum Error {
     /// A bad call to a builtin function, with call- and optionally
     /// declaration position.
     BadCall(String, SourcePos, Option<SourcePos>),
+    /// Tried to declare a function with a forbidden name.
     InvalidFunctionName(SourcePos),
+    /// Some kind of illegal value.
     BadValue(String),
+    /// An illegal value for a specific parameter.
     BadArgument(Name, String),
     /// The pos here is the function declaration.
     /// This error will be wrapped in a BadCall, giving the pos of the call.
@@ -28,6 +31,7 @@ pub enum Error {
     BadRange(RangeError),
     /// Error parsing sass data.
     ParseError(ParseError),
+    /// An expected variable was not defined.
     UndefinedVariable(String),
     /// Fallback error type.
     ///
@@ -38,6 +42,7 @@ pub enum Error {
 impl std::error::Error for Error {}
 
 impl Error {
+    /// A bad value with an "(actual) is not (expected)" message.
     pub fn bad_value(expected: &str, actual: &Value) -> Self {
         Error::BadValue(format!(
             "Error: {} is not {}.",
@@ -60,10 +65,12 @@ impl Error {
         )
     }
 
+    /// An expected variable was not defined.
     pub fn undefined_variable(name: &str) -> Self {
         Error::UndefinedVariable(name.to_string())
     }
 
+    /// A generic error message.
     pub fn error<T: AsRef<str>>(msg: T) -> Self {
         Error::S(format!("Error: {}.", msg.as_ref()))
     }

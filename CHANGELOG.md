@@ -31,6 +31,7 @@ project adheres to
 * Support slash-separated lists. PR #111.
 * The `if` function evaluates its arguments lazily.  Issue #107.
 * The `--include-path` cli argument is now named `--load-path`.
+* At least some documentation on all public items.
 * Update sass-spec test suite to 2021-05-24.  Also include "other"
   files (for `@use` and `@import`) in rust code for the suite.
 
