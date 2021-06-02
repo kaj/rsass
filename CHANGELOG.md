@@ -16,8 +16,10 @@ project adheres to
 ### Improvements
 
 * Better handling of mixin call bodies, the `@content` item, and the
-  `content_exists` function.
+  `content_exists` function.  Fixes #112.
 * Removed some debug printouts that was accidentally left in 0.21.0.
+
+Thanks to @Keats for reporting #112 and #108.
 
 
 ## Release 0.21.0 - 2021-06-01
