@@ -139,35 +139,26 @@ impl Value {
                     return args.evaluate_single(scope, name, num);
                 }
                 let args = args.evaluate(scope.clone(), true)?;
-                if let Some(name) = name.single_raw() {
-                    if let Some(f) =
-                        scope.get_function(&name.into()).or_else(|| {
-                            Function::get_builtin(&name.into()).cloned()
-                        })
-                    {
-                        f.call(scope.clone(), &args).map_err(|e| match e {
-                            Error::BadArguments(msg, decl) => {
-                                Error::BadCall(msg, pos.clone(), Some(decl))
-                            }
-                            e => Error::BadCall(
-                                e.to_string(),
-                                pos.clone(),
-                                None,
-                            ),
-                        })
-                    } else if name.contains('.') {
-                        Err(Error::BadCall(
-                            "Error: Undefined function.".into(),
-                            pos.clone(),
-                            None,
-                        ))
-                    } else {
-                        Ok(css::Value::Call(name.to_string(), args))
+                let call_err = |e: Error| match e {
+                    Error::BadArguments(msg, decl) => {
+                        Error::BadCall(msg, pos.clone(), Some(decl))
                     }
-                } else {
-                    let (name, _) = name.evaluate(scope)?;
-                    Ok(css::Value::Call(name, args))
+                    e => Error::BadCall(e.to_string(), pos.clone(), None),
+                };
+                if let Some(name) = name.single_raw() {
+                    let name = name.into();
+                    if let Some(f) = scope
+                        .get_function(&name)
+                        .map_err(call_err)?
+                        .or_else(|| Function::get_builtin(&name).cloned())
+                    {
+                        return f
+                            .call(scope.clone(), &args)
+                            .map_err(call_err);
+                    }
                 }
+                let (name, _) = name.evaluate(scope)?;
+                Ok(css::Value::Call(name, args))
             }
             Value::Numeric(ref num) => {
                 Ok(css::Value::Numeric(num.clone(), arithmetic))

@@ -444,21 +444,40 @@ impl<'a> Scope {
         self.functions.lock().unwrap().insert(name, func);
     }
     /// Get a function by name.
-    pub fn get_function(&self, name: &Name) -> Option<Function> {
+    pub fn get_function(
+        &self,
+        name: &Name,
+    ) -> Result<Option<Function>, Error> {
         if let Some((modulename, name)) = name.split_module() {
-            self.get_module(&modulename)
-                .and_then(|m| m.get_function(&name))
+            if let Some(module) = self.get_module(&modulename) {
+                if let Some(f) = module.get_function(&name)? {
+                    Ok(Some(f))
+                } else {
+                    Err(Error::error("Undefined function"))
+                }
+            } else {
+                return Err(Error::error(format!(
+                    "There is no module with the namespace {:?}",
+                    modulename
+                )));
+            }
         } else {
             let f = self.functions.lock().unwrap().get(name).cloned();
             if let Some(f) = f {
-                Some(f)
+                Ok(Some(f))
             } else if let Some(ref parent) = self.parent {
                 parent.get_function(name)
             } else {
-                None
+                Ok(None)
             }
         }
     }
+
+    /// Only for exposing builtin functions; will panic on unknown.
+    pub(crate) fn get_lfunction(&self, name: &Name) -> Function {
+        self.functions.lock().unwrap().get(name).unwrap().clone()
+    }
+
     /// Get the selectors active for this scope.
     pub fn get_selectors(&self) -> &Selectors {
         lazy_static! {

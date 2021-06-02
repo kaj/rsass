@@ -161,7 +161,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(saturate), name!(saturate)),
         (name!(saturation), name!(saturation)),
     ] {
-        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
+        global.insert(gname.clone(), m.get_lfunction(&lname));
     }
 }
 

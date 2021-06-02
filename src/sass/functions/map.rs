@@ -160,7 +160,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(map_remove), name!(remove)),
         (name!(map_values), name!(values)),
     ] {
-        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
+        global.insert(gname.clone(), m.get_lfunction(&lname));
     }
 }
 

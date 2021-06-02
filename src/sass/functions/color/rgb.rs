@@ -244,7 +244,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(mix), name!(mix)),
         (name!(red), name!(red)),
     ] {
-        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
+        global.insert(gname.clone(), m.get_lfunction(&lname));
     }
 }
 

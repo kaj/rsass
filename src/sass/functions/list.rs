@@ -157,7 +157,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(set_nth), name!(set_nth)),
         (name!(zip), name!(zip)),
     ] {
-        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
+        global.insert(gname.clone(), m.get_lfunction(&lname));
     }
 }
 

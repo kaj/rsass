@@ -134,7 +134,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(type_of), name!(type_of)),
         (name!(variable_exists), name!(variable_exists)),
     ] {
-        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
+        global.insert(gname.clone(), m.get_lfunction(&lname));
     }
 }
 
@@ -186,11 +186,11 @@ fn get_function(
 ) -> Result<Option<Function>, Error> {
     if let Some(module) = module {
         let module = get_scope(s, Some(module), true)?;
-        Ok(module.get_function(&name.into()))
+        module.get_function(&name.into())
     } else {
         let name = name.into();
         Ok(call_scope(s)
-            .get_function(&name)
+            .get_function(&name)?
             .or_else(|| Function::get_builtin(&name).cloned()))
     }
 }

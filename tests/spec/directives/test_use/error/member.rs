@@ -127,7 +127,6 @@ mod before_use {
     }
 
     #[test]
-    #[ignore] // wrong error
     fn function() {
         let runner = runner().with_cwd("function");
         assert_eq!(

@@ -64,7 +64,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         //(name!(selector_unify), name!(unify)),
         //(name!(simple_selectors), name!(simple_selectors)),
     ] {
-        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
+        global.insert(gname.clone(), m.get_lfunction(&lname));
     }
 }
 

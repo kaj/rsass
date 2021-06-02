@@ -256,7 +256,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(transparentize), name!(fade_out)),
         (name!(fade_out), name!(fade_out)),
     ] {
-        global.insert(gname.clone(), m.get_function(&lname).unwrap().clone());
+        global.insert(gname.clone(), m.get_lfunction(&lname));
     }
 }
 
