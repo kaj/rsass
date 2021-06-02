@@ -511,7 +511,7 @@ impl<'a> Scope {
                 }
                 for (name, m) in &*module.mixins.lock().unwrap() {
                     let name = format!("{}{}", prefix, name).into();
-                    if dbg!(expose.allow_fun(dbg!(&name))) {
+                    if expose.allow_fun(&name) {
                         self.define_mixin(name, m.clone());
                     }
                 }
