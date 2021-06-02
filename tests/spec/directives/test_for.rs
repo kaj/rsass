@@ -126,6 +126,23 @@ fn exclusive_forward() {
     );
 }
 #[test]
+fn in_declaration() {
+    assert_eq!(
+        runner().ok("a {\
+             \n  b: {\
+             \n    @for $i from 1 through 5 {c: $i}\
+             \n  }\
+             \n}\n"),
+        "a {\
+         \n  b-c: 1;\
+         \n  b-c: 2;\
+         \n  b-c: 3;\
+         \n  b-c: 4;\
+         \n  b-c: 5;\
+         \n}\n"
+    );
+}
+#[test]
 fn inclusive_backward() {
     assert_eq!(
         runner().ok("a {\

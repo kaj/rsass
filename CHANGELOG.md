@@ -19,6 +19,7 @@ project adheres to
   `content_exists` function.  Fixes #112.
 * Some more fixes regarding function calls and modules.
 * Removed some debug printouts that was accidentally left in 0.21.0.
+* Update sass-spec test suite to 2021-06-02.
 
 Thanks to @Keats for reporting #112 and #108.
 

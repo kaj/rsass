@@ -482,5 +482,3 @@ mod nested_compound_unification;
 mod not_into_not_not;
 
 mod selector_list;
-
-mod subject_operator;

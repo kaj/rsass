@@ -93,8 +93,6 @@ mod t044_test_trailing_comma_in_selector;
 
 mod t045_test_parent_selectors;
 
-mod t046_test_parent_selector_with_subject;
-
 mod t047_test_unknown_directive_bubbling;
 
 mod t048_test_namespace_properties;
@@ -196,8 +194,6 @@ mod t114_test_selector_interpolation_at_attr_beginning;
 mod t115_test_selector_interpolation_at_attr_end;
 
 mod t116_test_selector_interpolation_at_dashes;
-
-mod t118_test_parent_selector_with_parent_and_subject;
 
 mod t119_test_basic_prop_name_interpolation;
 
