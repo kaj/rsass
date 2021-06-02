@@ -1,6 +1,6 @@
 use super::{check, get_opt_check, get_string, Error, FunctionMap};
 use crate::css::{CallArgs, Value};
-use crate::sass::{Mixin, Name};
+use crate::sass::{Function, Mixin, Name};
 use crate::{Format, Scope, ScopeRef};
 
 pub fn create_module() -> Scope {
@@ -19,7 +19,7 @@ pub fn create_module() -> Scope {
                     "Passing a string to call() is deprecated and \
                      will be illegal"
                 );
-                (call_scope(s).get_function(&(&name).into()), name)
+                (get_function(s, None, &name)?, name.clone())
             }
             ref v => {
                 return Err(Error::bad_arg(
@@ -52,9 +52,9 @@ pub fn create_module() -> Scope {
     });
     def!(f, function_exists(name, module = b"null"), |s| {
         let (name, _q) = get_string(s, "name")?;
-        let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module.map(|(s, _q)| s), true)?;
-        Ok(module.get_function(&name.into()).is_some().into())
+        let module =
+            get_opt_check(s, name!(module), check::string)?.map(|(s, _q)| s);
+        Ok(get_function(s, module, &name)?.is_some().into())
     });
     def!(
         f,
@@ -69,16 +69,15 @@ pub fn create_module() -> Scope {
                     ));
                 }
                 Ok(Value::Function(v, None))
+            } else if let Some(f) =
+                get_function(s, module.map(|(s, _)| s), &v)?
+            {
+                Ok(Value::Function(v, Some(f)))
             } else {
-                let module = get_scope(s, module.map(|(s, _q)| s), true)?;
-                if let Some(f) = module.get_function(&(&v).into()) {
-                    Ok(Value::Function(v, Some(f)))
-                } else {
-                    Err(Error::S(format!(
-                        "Error: Function not found: {}",
-                        Value::Literal(v, q).format(Format::introspect())
-                    )))
-                }
+                Err(Error::S(format!(
+                    "Error: Function not found: {}",
+                    Value::Literal(v, q).format(Format::introspect())
+                )))
             }
         }
     );
@@ -177,6 +176,22 @@ fn get_scope(
         }
     } else {
         Ok(call_scope(s))
+    }
+}
+
+fn get_function(
+    s: &Scope,
+    module: Option<String>,
+    name: &str,
+) -> Result<Option<Function>, Error> {
+    if let Some(module) = module {
+        let module = get_scope(s, Some(module), true)?;
+        Ok(module.get_function(&name.into()))
+    } else {
+        let name = name.into();
+        Ok(call_scope(s)
+            .get_function(&name)
+            .or_else(|| Function::get_builtin(&name).cloned()))
     }
 }
 

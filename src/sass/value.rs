@@ -2,7 +2,7 @@ use crate::css;
 use crate::error::Error;
 use crate::output::Format;
 use crate::parser::SourcePos;
-use crate::sass::{CallArgs, SassString};
+use crate::sass::{CallArgs, Function, SassString};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Quotes, Rgba};
 use crate::ScopeRef;
 use num_traits::Zero;
@@ -140,7 +140,11 @@ impl Value {
                 }
                 let args = args.evaluate(scope.clone(), true)?;
                 if let Some(name) = name.single_raw() {
-                    if let Some(f) = scope.get_function(&name.into()) {
+                    if let Some(f) =
+                        scope.get_function(&name.into()).or_else(|| {
+                            Function::get_builtin(&name.into()).cloned()
+                        })
+                    {
                         f.call(scope.clone(), &args).map_err(|e| match e {
                             Error::BadArguments(msg, decl) => {
                                 Error::BadCall(msg, pos.clone(), Some(decl))

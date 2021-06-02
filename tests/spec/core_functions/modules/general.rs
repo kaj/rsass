@@ -112,7 +112,6 @@ mod forward {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn show() {
             let runner = runner().with_cwd("show");
             assert_eq!(
