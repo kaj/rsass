@@ -313,7 +313,7 @@ fn handle_item(
                     Mixin {
                         args: FormalArgs::none(),
                         scope,
-                        body: body.clone(),
+                        body: body.clone().unwrap_or_else(Mixin::no_body),
                     },
                 );
                 handle_body(
@@ -332,24 +332,18 @@ fn handle_item(
             }
         }
         Item::Content => {
-            if let Some(rule) = rule {
-                if let Some(content) =
-                    scope.get_mixin(&Name::from_static("%%BODY%%"))
-                {
-                    let sel = scope.get_selectors().clone();
-                    handle_body(
-                        &content.body,
-                        head,
-                        Some(rule),
-                        buf,
-                        ScopeRef::sub_selectors(content.scope, sel),
-                        file_context,
-                    )?;
-                }
-            } else {
-                return Err(Error::S(
-                    "@content not allowed in global context".into(),
-                ));
+            if let Some(content) =
+                scope.get_mixin(&Name::from_static("%%BODY%%"))
+            {
+                let sel = scope.get_selectors().clone();
+                handle_body(
+                    &content.body,
+                    head,
+                    rule,
+                    buf,
+                    ScopeRef::sub_selectors(content.scope, sel),
+                    file_context,
+                )?;
             }
         }
 

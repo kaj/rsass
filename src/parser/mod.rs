@@ -236,14 +236,7 @@ fn mixin_call2(input: Span) -> PResult<Item> {
         opt(body_block),
         terminated(opt_spacelike, opt(tag(";"))),
     )(input)?;
-    Ok((
-        input,
-        Item::MixinCall(
-            name,
-            args.unwrap_or_default(),
-            body.unwrap_or_default(),
-        ),
-    ))
+    Ok((input, Item::MixinCall(name, args.unwrap_or_default(), body)))
 }
 
 /// What follows an `@` sign
@@ -619,7 +612,7 @@ fn if_with_no_else() {
 fn test_mixin_call_noargs() {
     assert_eq!(
         check_parse!(mixin_call, b"@include foo;"),
-        Item::MixinCall("foo".to_string(), CallArgs::default(), vec![]),
+        Item::MixinCall("foo".to_string(), CallArgs::default(), None),
     )
 }
 
@@ -630,7 +623,7 @@ fn test_mixin_call_pos_args() {
         Item::MixinCall(
             "foo".to_string(),
             CallArgs::new(vec![(None, string("bar")), (None, string("baz"))]),
-            vec![],
+            None,
         ),
     )
 }
@@ -645,7 +638,7 @@ fn test_mixin_call_named_args() {
                 (Some("x".into()), string("bar")),
                 (Some("y".into()), string("baz")),
             ]),
-            vec![],
+            None,
         ),
     )
 }

@@ -42,7 +42,7 @@ pub enum Item {
     /// A `@mixin` directive, declaring a mixin.
     MixinDeclaration(String, FormalArgs, Vec<Item>),
     /// An `@include` directive, calling a mixin.
-    MixinCall(String, CallArgs, Vec<Item>),
+    MixinCall(String, CallArgs, Option<Vec<Item>>),
     /// An `@content` directive (in a mixin declaration).
     Content,
 

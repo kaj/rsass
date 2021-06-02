@@ -30,7 +30,6 @@ mod controls {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn test_true() {
         assert_eq!(
             runner().ok("// Regression test for sass/libsass#2842\
@@ -80,7 +79,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn in_function_called_by_mixin() {
         assert_eq!(
             runner().err(
@@ -103,7 +102,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn outside_mixin() {
         assert_eq!(
             runner().err("a {b: content-exists()}\n"),
@@ -144,7 +142,6 @@ mod test_false {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn through_content() {
         assert_eq!(
             runner().ok("@mixin call-content {\
@@ -179,7 +176,6 @@ mod test_true {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn empty() {
         assert_eq!(
             runner().ok("@mixin a {\
@@ -193,7 +189,6 @@ mod test_true {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn non_empty() {
         assert_eq!(
             runner().ok("@mixin a {\

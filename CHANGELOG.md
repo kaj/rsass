@@ -7,6 +7,19 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Breaking changes
+
+* The `sass::Item::MixinCall` enum alternative was modified.
+
+### Improvements
+
+* Better handling of mixin call bodies, the `@content` item, and the
+  `content_exists` function.
+* Removed some debug printouts that was accidentally left in 0.21.0.
+
+
 ## Release 0.21.0 - 2021-06-01
 
 Progress: 3727 of 6171 tests passed in dart-sass compatibility mode.

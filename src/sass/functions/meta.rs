@@ -1,6 +1,6 @@
 use super::{check, get_opt_check, get_string, Error, FunctionMap};
 use crate::css::{CallArgs, Value};
-use crate::sass::Name;
+use crate::sass::{Mixin, Name};
 use crate::{Format, Scope, ScopeRef};
 
 pub fn create_module() -> Scope {
@@ -37,8 +37,14 @@ pub fn create_module() -> Scope {
         }
     });
     def!(f, content_exists(), |s| {
-        let content = s.get_mixin(&Name::from_static("%%BODY%%"));
-        Ok(content.map(|m| !m.body.is_empty()).unwrap_or(false).into())
+        let content = call_scope(s).get_mixin(&Name::from_static("%%BODY%%"));
+        if let Some(content) = content {
+            Ok((!Mixin::is_no_body(&content.body)).into())
+        } else {
+            Err(Error::error(
+                "content-exists() may only be called within a mixin",
+            ))
+        }
     });
     def!(f, feature_exists(feature), |s| {
         let (feature, _q) = get_string(s, "feature")?;
