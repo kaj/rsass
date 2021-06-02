@@ -11,6 +11,6 @@ mod media_wrapper_selector;
 
 mod merge_no_repeat;
 
-// Ignoring "mixin.hrx", not expected to work yet.
+mod mixin;
 
 mod selector_wrapper_media;

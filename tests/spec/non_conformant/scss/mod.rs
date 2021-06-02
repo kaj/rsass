@@ -143,7 +143,7 @@ mod mixin_content_selectors;
 
 mod mixin_content_with_no_block;
 
-// Ignoring "mixin-content.hrx", not expected to work yet.
+mod mixin_content;
 
 mod mixin_with_keyword_args;
 

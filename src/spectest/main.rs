@@ -24,7 +24,6 @@ fn main() -> Result<(), Error> {
             "core_functions/selector/is_superselector", // not supported
             "core_functions/selector/unify",  // not supported
             "directives/extend", // `@extend` is not supported at all
-            "libsass-closed-issues/issue_185/mixin.hrx", // stack overflow
             "libsass-closed-issues/issue_1801", // infinite recursion
             "libsass-todo-issues/issue_1801", // infinite recursion
             "libsass-todo-issues/issue_221262.hrx", // stack overflow
@@ -33,7 +32,6 @@ fn main() -> Result<(), Error> {
             "libsass/unicode-bom/utf-16-big", // rsass only handles utf8
             "libsass/unicode-bom/utf-16-little", // rsass only handles utf8
             "non_conformant/scss/huge.hrx", // stack overflow in debug mode
-            "non_conformant/scss/mixin-content.hrx", // stack overflow
             "non_conformant/scss/multiline_var.hrx", // duplicate rust name
         ],
     )?;
