@@ -78,7 +78,7 @@ pub fn create_module() -> Scope {
         match s.get("list")? {
             Value::List(_, Some(ListSeparator::Comma), _) => "comma",
             Value::List(_, Some(ListSeparator::Slash), _) => "slash",
-            Value::Map(ref map) if map.len() == 0 => "space",
+            Value::Map(ref map) if map.is_empty() => "space",
             Value::Map(_) => "comma",
             _ => "space",
         }
@@ -177,7 +177,7 @@ fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
     match value {
         Value::List(v, s, bra) => (v, s, bra),
         Value::Map(map) => {
-            if map.len() == 0 {
+            if map.is_empty() {
                 (vec![], None, false)
             } else {
                 (

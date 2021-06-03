@@ -1,6 +1,7 @@
 use super::{Name, Value};
 use crate::css;
 use crate::error::Error;
+use crate::ordermap::OrderMap;
 use crate::ScopeRef;
 use std::default::Default;
 
@@ -8,80 +9,69 @@ use std::default::Default;
 ///
 /// Each argument has a Value.  Arguments may be named.
 /// If the optional name is None, the argument is positional.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct CallArgs(Vec<(Option<String>, Value)>);
+#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd)]
+pub struct CallArgs {
+    positional: Vec<Value>,
+    // Ordered for formattig.
+    named: OrderMap<Name, Value>,
+}
 
 impl CallArgs {
     /// Create a new callargs from a vec of name-value pairs.
     ///
     /// The names is none for positional arguments.
-    pub fn new(v: Vec<(Option<String>, Value)>) -> Self {
-        CallArgs(v)
-    }
-
-    /// Create a new callargs from a single value.
-    ///
-    /// If the value is a list, it used as a positional argument list.
-    /// Otherwise it is used as a single positional argument.
-    pub fn from_value(v: Value) -> Self {
-        match v {
-            Value::List(v, _, false) => {
-                CallArgs(v.into_iter().map(|v| (None, v)).collect())
+    pub fn new(v: Vec<(Option<Name>, Value)>) -> Self {
+        let mut positional = Vec::new();
+        let mut named = OrderMap::new();
+        for (name, value) in v {
+            if let Some(name) = name {
+                named.insert(name, value);
+            } else if named.is_empty() || is_splat(&value).is_some() {
+                positional.push(value);
+            } else {
+                // TODO: return Err!
+                eprintln!("ERROR: positional arg after named (three)");
             }
-            v => CallArgs(vec![(None, v)]),
         }
+        CallArgs { positional, named }
     }
 
     /// Evaluate these sass CallArgs to css CallArgs.
-    pub fn evaluate(
-        &self,
-        scope: ScopeRef,
-        arithmetic: bool,
-    ) -> Result<css::CallArgs, Error> {
-        Ok(css::CallArgs(self.0.iter().fold(
-            Ok(vec![]),
-            |acc, (name, value)| {
-                let mut acc = acc?;
-                if let (None, Value::List(list, _, false)) = (name, value) {
-                    if list.len() == 2 && is_mark(&list[1]) {
-                        let splat =
-                            list[0].do_evaluate(scope.clone(), arithmetic)?;
-                        match splat {
-                            css::Value::Map(map) => {
-                                for (k, v) in map {
-                                    let k = match k {
-                                        css::Value::Null => None,
-                                        css::Value::Literal(s, _) => Some(s),
-                                        x => {
-                                            return Err(Error::bad_value(
-                                                "string", &x,
-                                            ))
-                                        }
-                                    };
-                                    acc.push((k, v));
-                                }
-                                return Ok(acc);
-                            }
-                            css::Value::Null => (),
-                            css::Value::List(items, ..) => {
-                                for item in items {
-                                    acc.push((None, item));
-                                }
-                            }
-                            item => {
-                                acc.push((None, item));
-                            }
+    pub fn evaluate(&self, scope: ScopeRef) -> Result<css::CallArgs, Error> {
+        let positional = Vec::new();
+        let named = self.named.iter().try_fold(
+            OrderMap::new(),
+            |mut acc, (name, arg)| {
+                arg.do_evaluate(scope.clone(), true).map(|arg| {
+                    acc.insert(name.clone(), arg);
+                    acc
+                })
+            },
+        )?;
+        let mut result = css::CallArgs { positional, named };
+        for arg in &self.positional {
+            if let Some(splat) = is_splat(arg) {
+                match splat.do_evaluate(scope.clone(), true)? {
+                    css::Value::Map(map) => {
+                        result.add_from_value_map(map)?;
+                    }
+                    css::Value::List(items, ..) => {
+                        for item in items {
+                            result.positional.push(item);
                         }
-                        return Ok(acc);
+                    }
+                    css::Value::Null => (),
+                    item => {
+                        result.positional.push(item);
                     }
                 }
-                acc.push((
-                    name.clone(),
-                    value.do_evaluate(scope.clone(), arithmetic)?,
-                ));
-                Ok(acc)
-            },
-        )?))
+            } else {
+                result
+                    .positional
+                    .push(arg.do_evaluate(scope.clone(), true)?);
+            }
+        }
+        Ok(result)
     }
 
     /// Evaluate a single argument
@@ -94,26 +84,25 @@ impl CallArgs {
         name: Name,
         num: usize,
     ) -> Result<css::Value, Error> {
-        self.0
-            .iter()
-            .find(|(n, _)| n.as_ref().map(Name::from).as_ref() == Some(&name))
-            .or_else(|| self.0.get(num))
-            .map(|(_, v)| v.do_evaluate(scope, true))
+        // TODO: Error if both name and posinal exists?
+        self.positional
+            .get(num)
+            .or_else(|| self.named.get(&name))
+            .map(|v| v.do_evaluate(scope, true))
             .unwrap_or(Ok(css::Value::Null))
     }
 }
 
-impl Default for CallArgs {
-    fn default() -> Self {
-        CallArgs(vec![])
-    }
-}
-
-fn is_mark(v: &Value) -> bool {
-    match v {
-        Value::Literal(v, ..) => {
-            v.is_unquoted() && v.single_raw() == Some("...")
-        }
-        _ => false,
+fn is_splat(arg: &Value) -> Option<&Value> {
+    match arg {
+        Value::List(list, _, false) => match &list[..] {
+            [splat, Value::Literal(v, ..)]
+                if v.is_unquoted() && v.single_raw() == Some("...") =>
+            {
+                Some(splat)
+            }
+            _ => None,
+        },
+        _ => None,
     }
 }

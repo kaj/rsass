@@ -1,134 +1,126 @@
 use super::Value;
-use crate::value::{ListSeparator, Quotes};
+use crate::ordermap::OrderMap;
+use crate::sass::Name;
+use crate::value::ListSeparator;
+use crate::Error;
 use std::default::Default;
 use std::fmt;
 
 /// the actual arguments of a function or mixin call.
 ///
-/// Each argument has a Value.  Arguments may be named.
-/// If the optional name is None, the argument is positional.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct CallArgs(pub Vec<(Option<String>, Value)>);
+/// There are both positional and named values.
+#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd)]
+pub struct CallArgs {
+    // FIXME: The pub is temporary!
+    pub(crate) positional: Vec<Value>,
+    // Ordered for formattig.
+    pub(crate) named: OrderMap<Name, Value>,
+}
 
 impl CallArgs {
-    /// Create args from a vec of values with optional names.
-    pub fn new(v: Vec<(Option<String>, Value)>) -> Self {
-        CallArgs(v)
-    }
-
     /// Create args from a Value.
     ///
     /// The value may be a list of arguments or a single argument.
-    /// There is also special recognition of a list ending in an
-    /// unquoted "..." string, makring a varargs argument list.
-    pub fn from_value(v: Value) -> Self {
+    pub fn from_value(v: Value) -> Result<Self, Error> {
         match v {
-            Value::List(mut v, Some(ListSeparator::Comma), false) => {
-                if v.len() == 2 && is_mark(&v[1]) {
-                    match &v[0] {
-                        Value::Map(map) => {
-                            return CallArgs(
-                                map.iter()
-                                    .map(|(k, v)| {
-                                        (
-                                            match k {
-                                                Value::Null => None,
-                                                Value::Literal(s, _) => {
-                                                    Some(s.clone())
-                                                }
-                                                _x => None, // TODO return Err(Error::bad_value("string", &x)),
-                                            },
-                                            v.clone(),
-                                        )
-                                    })
-                                    .collect(),
-                            );
-                        }
-                        Value::List(list, ..) => {
-                            return CallArgs(
-                                list.iter()
-                                    .map(|v| (None, v.clone()))
-                                    .collect(),
-                            );
-                        }
-                        _ => (),
-                    }
-                }
-                if let Some(last) = v.pop() {
-                    if let Value::List(
-                        vv,
-                        Some(ListSeparator::Space),
-                        false,
-                    ) = &last
-                    {
-                        match &vv[..] {
-                            [Value::List(vv, _, _), Value::Literal(mark, Quotes::None)]
-                                if mark == "..." =>
-                            {
-                                v.extend(vv.iter().cloned());
-                            }
-                            _ => {
-                                v.push(last);
-                            }
-                        }
-                    } else {
-                        v.push(last);
-                    }
-                }
-                CallArgs(v.into_iter().map(|v| (None, v)).collect())
+            Value::List(v, Some(ListSeparator::Comma), false) => {
+                Ok(CallArgs {
+                    positional: v,
+                    ..Default::default()
+                })
             }
-            Value::Null => CallArgs(vec![]),
-            v => CallArgs(vec![(None, v)]),
+            Value::Map(args) => {
+                let mut result = CallArgs::default();
+                result.add_from_value_map(args)?;
+                Ok(result)
+            }
+            Value::Null => Ok(Default::default()),
+            v => Ok(CallArgs {
+                positional: vec![v],
+                ..Default::default()
+            }),
         }
     }
 
-    /// Iterate over values (and their optional names).
-    pub fn iter(&self) -> ::std::slice::Iter<(Option<String>, Value)> {
-        self.0.iter()
+    pub(crate) fn from_list(positional: Vec<Value>) -> Self {
+        CallArgs {
+            positional,
+            ..Default::default()
+        }
+    }
+
+    pub(crate) fn add_from_value_map(
+        &mut self,
+        map: OrderMap<Value, Value>,
+    ) -> Result<(), Error> {
+        for (k, v) in map {
+            match k {
+                Value::Null => self.positional.push(v),
+                Value::Literal(s, _) => {
+                    self.named.insert(s.into(), v);
+                }
+                x => return Err(Error::bad_value("string", &x)),
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn take_positional(&mut self, n: usize) -> Vec<Value> {
+        let n = std::cmp::min(n, self.positional.len());
+        let mut t = self.positional.split_off(n);
+        std::mem::swap(&mut self.positional, &mut t);
+        t
+    }
+    pub(crate) fn only_named(&mut self, name: &Name) -> Option<Value> {
+        if self.positional.is_empty() && self.named.len() == 1 {
+            self.named.remove(name)
+        } else {
+            None
+        }
     }
 
     /// Get number of arguments.
     pub fn len(&self) -> usize {
-        self.0.len()
+        self.positional.len() + self.named.len()
     }
 
     /// Return true if the argument list is empty.
     pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    /// Get a specific argument by position.
-    pub fn get(&self, index: usize) -> Option<&(Option<String>, Value)> {
-        self.0.get(index)
+        self.positional.is_empty() && self.named.is_empty()
     }
 }
 
-fn is_mark(v: &Value) -> bool {
-    match v {
-        Value::Literal(mark, Quotes::None) => mark == "...",
-        _ => false,
-    }
-}
-
-impl Default for CallArgs {
-    fn default() -> Self {
-        CallArgs(vec![])
+impl From<CallArgs> for Value {
+    fn from(args: CallArgs) -> Value {
+        if args.named.is_empty() {
+            Value::List(args.positional, Some(ListSeparator::Comma), false)
+        } else {
+            // TODO: This should be a special arglist value
+            Value::Map(
+                args.positional
+                    .into_iter()
+                    .map(|v| (Value::Null, v))
+                    .chain(
+                        args.named
+                            .into_iter()
+                            .map(|(k, v)| (Value::from(k.as_ref()), v)),
+                    )
+                    .collect(),
+            )
+        }
     }
 }
 
 impl fmt::Display for CallArgs {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        let t = self
-            .0
+        let pos = self
+            .positional
             .iter()
-            .map(|kv| match *kv {
-                (Some(ref k), ref v) => {
-                    format!("${}: {}", k, v.format(Default::default()))
-                }
-                (None, ref v) => format!("{}", v.format(Default::default())),
-            })
-            .collect::<Vec<_>>()
-            .join(", ");
+            .map(|v| format!("{}", v.format(Default::default())));
+        let named = self.named.iter().map(|(k, v)| {
+            format!("${}: {}", k, v.format(Default::default()))
+        });
+        let t = pos.chain(named).collect::<Vec<_>>().join(", ");
         write!(out, "{}", t)
     }
 }

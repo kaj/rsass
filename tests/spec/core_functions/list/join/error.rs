@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
 fn named() {
     assert_eq!(
         runner().err(
@@ -25,7 +24,6 @@ fn named() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn positional_and_named() {
     assert_eq!(
         runner().err(

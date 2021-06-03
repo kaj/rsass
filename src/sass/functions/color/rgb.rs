@@ -2,9 +2,9 @@ use super::{
     check, check_pct_rational_range, expected_to, get_checked, get_color,
     make_call, nospecial_value, CheckedArg, Error, FunctionMap, Name,
 };
-use crate::css::{CallArgs, Value};
+use crate::css::Value;
 use crate::output::Format;
-use crate::value::{ListSeparator, Quotes, Rational, Rgba};
+use crate::value::{ListSeparator, Rational, Rgba};
 use crate::Scope;
 use num_traits::{one, Zero};
 
@@ -47,7 +47,7 @@ fn do_rgba(fn_name: &str, s: &Scope) -> Result<Value, Error> {
             Ok(rgba_from_values(&r, &g, &b, &a)?
                 .unwrap_or_else(|| make_call(fn_name, vec![r, g, b, a])))
         } else {
-            Ok(preserve_call(fn_name, vec, sep, bracketed))
+            Ok(preserve_call(fn_name, vec, sep))
         }
     } else {
         let green = s.get("green")?;
@@ -118,19 +118,14 @@ pub fn preserve_call(
     fn_name: &str,
     vec: Vec<Value>,
     sep: Option<ListSeparator>,
-    bracketed: bool,
 ) -> Value {
-    Value::Call(
-        fn_name.into(),
-        CallArgs::new(vec![(
-            None,
-            Value::Literal(
-                Value::List(vec, sep, bracketed)
-                    .format(Default::default())
-                    .to_string(),
-                Quotes::None,
-            ),
-        )]),
+    make_call(
+        fn_name,
+        if sep == Some(ListSeparator::Comma) {
+            vec
+        } else {
+            vec![Value::List(vec, sep, false)]
+        },
     )
 }
 

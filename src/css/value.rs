@@ -314,10 +314,10 @@ impl PartialEq for Value {
             (Value::UnicodeRange(a), Value::UnicodeRange(b)) => a == b,
             (Value::Paren(a), Value::Paren(b)) => a == b,
             (Value::List(a, ..), Value::Map(b)) => {
-                a.is_empty() && b.len() == 0
+                a.is_empty() && b.is_empty()
             }
             (Value::Map(a), Value::List(b, ..)) => {
-                a.len() == 0 && b.is_empty()
+                a.is_empty() && b.is_empty()
             }
             _ => false,
         }

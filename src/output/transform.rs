@@ -310,7 +310,7 @@ fn handle_item(
                     .args
                     .eval(
                         ScopeRef::sub_selectors(mixin.scope, sel),
-                        &args.evaluate(scope.clone(), true)?,
+                        args.evaluate(scope.clone())?,
                     )
                     .map_err(|e| match e {
                         sass::ArgsError::Eval(e) => e,

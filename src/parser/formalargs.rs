@@ -2,7 +2,7 @@ use super::strings::name;
 use super::util::{ignore_comments, opt_spacelike};
 use super::value::space_list;
 use super::{PResult, Span};
-use crate::sass::{CallArgs, FormalArgs};
+use crate::sass::{CallArgs, FormalArgs, Name};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{map, opt};
@@ -45,7 +45,7 @@ pub fn call_args(input: Span) -> PResult<CallArgs> {
         pair(
             opt(delimited(
                 tag("$"),
-                map(name, |n: String| n.replace("-", "_")),
+                map(name, Name::from),
                 preceded(ignore_comments, tag(":")),
             )),
             alt((

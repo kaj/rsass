@@ -29,9 +29,9 @@ pub fn create_module() -> Scope {
                 ))
             }
         };
-        let args = CallArgs::from_value(s.get("args")?);
+        let args = CallArgs::from_value(s.get("args")?)?;
         if let Some(function) = function {
-            function.call(call_scope(s), &args)
+            function.call(call_scope(s), args)
         } else {
             Ok(Value::Call(name, args))
         }

@@ -38,7 +38,7 @@ fn too_many() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn unknown() {
     assert_eq!(
         runner().err("a {b: change-color(red, $ambience: 10%)}\n"),

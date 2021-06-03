@@ -10,7 +10,6 @@ mod args {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn named() {
         assert_eq!(
         runner().ok(
@@ -58,7 +57,6 @@ mod args {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn named() {
             assert_eq!(
                 runner()

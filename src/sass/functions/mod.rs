@@ -156,7 +156,7 @@ impl Function {
     pub fn call(
         &self,
         callscope: ScopeRef,
-        args: &CallArgs,
+        args: CallArgs,
     ) -> Result<Value, Error> {
         let cs = "%%CALLING_SCOPE%%";
         match self.body {
@@ -180,7 +180,7 @@ impl Function {
     fn do_eval_args(
         &self,
         def: ScopeRef,
-        args: &CallArgs,
+        args: CallArgs,
     ) -> Result<ScopeRef, Error> {
         self.args.eval(def, args).map_err(|e| match e {
             sass::ArgsError::Eval(e) => e,
@@ -355,9 +355,7 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(
         FUNCTIONS.get(&name!(rgb)).unwrap().call(
             scope.clone(),
-            &call_args(code_span(b"(17, 0, 225)"))?
-                .1
-                .evaluate(scope, true)?
+            call_args(code_span(b"(17, 0, 225)"))?.1.evaluate(scope)?
         )?,
         Value::Color(Rgba::from_rgb(17, 0, 225).into(), None)
     );

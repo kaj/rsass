@@ -245,14 +245,28 @@ fn do_deep_remove(map: &mut ValueMap, keys: &[Value]) {
 
 fn set(s: &Scope) -> Result<Value, Error> {
     let map = get_map(s, name!(map))?;
-    let mut args = match s.get("args")? {
-        Value::List(v, ..) => v,
-        _ => return Err(Error::error("Expected $args to contain a value")),
-    };
-    if let Some(value) = args.pop() {
-        Ok(Value::Map(set_inner(map, &args, value)?))
-    } else {
-        Err(Error::error("Expected $args to contain a key"))
+    match s.get("args")? {
+        Value::List(mut v, ..) => {
+            if let Some(value) = v.pop() {
+                Ok(Value::Map(set_inner(map, &v, value)?))
+            } else {
+                Err(Error::error("Expected $args to contain a key"))
+            }
+        }
+        Value::Map(mut args) => {
+            let mut keys = match args.remove(&"keys".into()) {
+                Some(Value::List(v, ..)) => v,
+                Some(v) => vec![v],
+                None => vec![],
+            };
+            if let Some(key) = args.remove(&"key".into()) {
+                keys.push(key);
+            }
+            // TODO: Or return an error on None?
+            let value = args.remove(&"value".into()).unwrap_or(Value::Null);
+            Ok(Value::Map(set_inner(map, &keys, value)?))
+        }
+        _ => Err(Error::error("Expected $args to contain a value")),
     }
 }
 fn set_inner(

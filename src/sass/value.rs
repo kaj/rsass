@@ -105,7 +105,7 @@ impl Value {
             }
             Value::Paren(ref v, ref expl) => {
                 let v = v.do_evaluate(scope, !expl)?;
-                if !expl {
+                if !expl && v != css::Value::Null {
                     Ok(v)
                 } else {
                     Ok(css::Value::Paren(Box::new(v)))
@@ -138,7 +138,7 @@ impl Value {
                     };
                     return args.evaluate_single(scope, name, num);
                 }
-                let args = args.evaluate(scope.clone(), true)?;
+                let args = args.evaluate(scope.clone())?;
                 let call_err = |e: Error| match e {
                     Error::BadArguments(msg, decl) => {
                         Error::BadCall(msg, pos.clone(), Some(decl))
@@ -152,9 +152,7 @@ impl Value {
                         .map_err(call_err)?
                         .or_else(|| Function::get_builtin(&name).cloned())
                     {
-                        return f
-                            .call(scope.clone(), &args)
-                            .map_err(call_err);
+                        return f.call(scope.clone(), args).map_err(call_err);
                     }
                 }
                 let (name, _) = name.evaluate(scope)?;

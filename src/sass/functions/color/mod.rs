@@ -134,11 +134,8 @@ fn looks_like_call(s: &str) -> bool {
 fn make_call(name: &str, args: Vec<Value>) -> Value {
     Value::Call(
         name.into(),
-        CallArgs::new(
-            args.into_iter()
-                .filter(|v| v != &Value::Null)
-                .map(|v| (None, v))
-                .collect(),
+        CallArgs::from_list(
+            args.into_iter().filter(|v| v != &Value::Null).collect(),
         ),
     )
 }

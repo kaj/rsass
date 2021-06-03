@@ -26,7 +26,7 @@ fn do_hsla(fn_name: &str, s: &Scope) -> Result<Value, Error> {
             Ok(hsla_from_values(&h, &s, &v, &a)?
                 .unwrap_or_else(|| make_call(fn_name, vec![h, s, v, a])))
         } else {
-            Ok(preserve_call(fn_name, vec, sep, bracketed))
+            Ok(preserve_call(fn_name, vec, sep))
         }
     } else {
         let sat = s.get("saturation")?;
