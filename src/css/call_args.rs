@@ -23,6 +23,7 @@ impl CallArgs {
     /// The value may be a list of arguments or a single argument.
     pub fn from_value(v: Value) -> Result<Self, Error> {
         match v {
+            Value::ArgList(args) => Ok(args),
             Value::List(v, Some(ListSeparator::Comma), false) => {
                 Ok(CallArgs {
                     positional: v,
@@ -92,22 +93,7 @@ impl CallArgs {
 
 impl From<CallArgs> for Value {
     fn from(args: CallArgs) -> Value {
-        if args.named.is_empty() {
-            Value::List(args.positional, Some(ListSeparator::Comma), false)
-        } else {
-            // TODO: This should be a special arglist value
-            Value::Map(
-                args.positional
-                    .into_iter()
-                    .map(|v| (Value::Null, v))
-                    .chain(
-                        args.named
-                            .into_iter()
-                            .map(|(k, v)| (Value::from(k.as_ref()), v)),
-                    )
-                    .collect(),
-            )
-        }
+        Value::ArgList(args)
     }
 }
 

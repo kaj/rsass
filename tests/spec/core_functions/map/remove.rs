@@ -10,7 +10,6 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn positional_and_named() {
         assert_eq!(
             runner().err("a {b: map-remove((c: d, e: f), c, $key: e)}\n"),

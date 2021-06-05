@@ -65,7 +65,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn zero_args() {
         assert_eq!(
             runner().err(

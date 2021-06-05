@@ -11,6 +11,7 @@ use std::convert::TryInto;
 /// [the specification](https://sass-lang.com/documentation/modules/map).
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:map");
+    let mut g = Scope::new_global(Default::default()); // anonymous
 
     def!(f, deep_merge(map1, map2), |s| {
         let map1 = get_map(s, name!(map1))?;
@@ -23,6 +24,10 @@ pub fn create_module() -> Scope {
         let mut map = get_map(s, name!(map))?;
         let key = s.get("key")?;
         let keychain = match s.get("keys")? {
+            Value::ArgList(mut args) => {
+                args.positional.insert(0, key);
+                args.positional
+            }
             Value::List(mut keys, ..) => {
                 keys.insert(0, key);
                 keys
@@ -34,65 +39,60 @@ pub fn create_module() -> Scope {
         Ok(Value::Map(map))
     });
 
-    def_va!(f, get(map, key, keys), |s| {
-        let map = get_map(s, name!(map))?;
-        let mut val = map.get(&s.get("key")?).cloned();
-        match s.get("keys")? {
+    // Common to get and has_key
+    fn find_value<'a>(
+        map: &'a ValueMap,
+        key: &Value,
+        keys: &Value,
+    ) -> Result<Option<&'a Value>, Error> {
+        let mut val = map.get(key);
+        match keys {
+            Value::ArgList(args) => {
+                if !args.named.is_empty() {
+                    return Err(Error::error(
+                        "xyzzy unexpected named args in map.get",
+                    ));
+                }
+                for k in &args.positional {
+                    match val {
+                        Some(Value::Map(m)) => {
+                            val = m.get(&k);
+                        }
+                        _ => return Ok(None),
+                    }
+                }
+            }
             Value::List(keys, ..) => {
                 for k in keys {
                     match val {
                         Some(Value::Map(m)) => {
-                            val = m.get(&k).cloned();
+                            val = m.get(&k);
                         }
-                        _ => return Ok(Value::Null),
+                        _ => return Ok(None),
                     }
                 }
             }
             Value::Null => (),
-            key => {
-                // Single key
-                match val {
-                    Some(Value::Map(m)) => {
-                        val = m.get(&key).cloned();
-                    }
-                    _ => return Ok(Value::Null),
+            single_key => match val {
+                Some(Value::Map(m)) => {
+                    val = m.get(&single_key);
                 }
-            } //_ => (),
+                _ => return Ok(None),
+            },
         };
-        Ok(val.unwrap_or(Value::Null))
+        Ok(val)
+    }
+    def_va!(f, get(map, key, keys), |s| {
+        let map = get_map(s, name!(map))?;
+        Ok(find_value(&map, &s.get("key")?, &s.get("keys")?)?
+            .cloned()
+            .unwrap_or(Value::Null))
     });
     def_va!(f, has_key(map, key, keys), |s| {
         let map = get_map(s, name!(map))?;
-        match s.get("keys")? {
-            Value::List(keys, ..) => {
-                if let Some((last, keys)) = keys.split_last() {
-                    let mut val = map.get(&s.get("key")?).cloned();
-                    for k in keys {
-                        match val {
-                            Some(Value::Map(m)) => {
-                                val = m.get(&k).cloned();
-                            }
-                            _ => return Ok(Value::False),
-                        }
-                    }
-                    if let Some(Value::Map(val)) = val {
-                        Ok(val.contains_key(last).into())
-                    } else {
-                        Ok(Value::False)
-                    }
-                } else {
-                    Ok(map.contains_key(&s.get("key")?).into())
-                }
-            }
-            Value::Null => Ok(map.contains_key(&s.get("key")?).into()),
-            key => {
-                // Single key
-                match map.get(&s.get("key")?) {
-                    Some(Value::Map(m)) => Ok(m.contains_key(&key).into()),
-                    _ => Ok(Value::Null),
-                }
-            }
-        }
+        Ok(find_value(&map, &s.get("key")?, &s.get("keys")?)?
+            .is_some()
+            .into())
     });
     def!(f, keys(map), |s| {
         let map = get_map(s, name!(map))?;
@@ -102,9 +102,34 @@ pub fn create_module() -> Scope {
             false,
         ))
     });
-    def_va!(f, merge(map1, map2), |s| {
+    def_va!(g, merge(map1, args), |s| {
         let mut map1 = get_map(s, name!(map1))?;
-        let map2 = get_va_map(s, name!(map2))?;
+        let map2 = match s.get("args")? {
+            Value::ArgList(mut args) => {
+                if let Some(map2) = args.only_named(&name!(map2)) {
+                    as_va_map(map2)
+                        .map_err(|e| Error::BadArgument(name!(map2), e))?
+                } else {
+                    let mut values = args.positional;
+                    let mut result = if let Some(last) = values.pop() {
+                        last.try_into()
+                            .map_err(|e| Error::BadArgument(name!(map2), e))?
+                    } else {
+                        return Err(Error::error(
+                            "Expected $args to contain a key",
+                        ));
+                    };
+                    while let Some(prev) = values.pop() {
+                        result =
+                            ValueMap::singleton(prev, Value::Map(result));
+                    }
+                    result
+                }
+            }
+            direct => direct
+                .try_into()
+                .map_err(|e| Error::BadArgument(name!(map2), e))?,
+        };
         for (key, value) in map2 {
             if let (Some(Value::Map(m1)), Value::Map(ref m2)) =
                 (map1.get(&key), &value)
@@ -120,33 +145,40 @@ pub fn create_module() -> Scope {
         }
         Ok(Value::Map(map1))
     });
-    // It's really map_remove(map, keys), but "key" is supported as an
-    // alias for "keys", which makes a mess when using more than one
-    // positional argument.
-    def_va!(f, remove(map, key = b"null", keys = b"null"), |s| {
+    def_va!(g, remove(map, keys), |s| {
         let mut map = get_map(s, name!(map))?;
-        let key = s.get("key")?;
-        let keys = s.get("keys")?;
-        match (key, keys) {
-            (first, Value::List(rest, ..)) => {
-                map.remove(&first);
-                for key in rest {
+        match s.get("keys")? {
+            Value::ArgList(mut args) => {
+                if let Some(key) = args.named.remove(&name!(key)) {
+                    if args.positional.is_empty() {
+                        map.remove(&key);
+                    } else {
+                        return Err(Error::error(
+                            "Argument $key was passed both by position and by name"
+                        ));
+                    }
+                }
+                if !args.named.is_empty() {
+                    return Err(Error::error(
+                        "xyzzy unexpected named args in map.remove",
+                    ));
+                }
+                for key in args.positional {
                     map.remove(&key);
                 }
             }
-            (Value::List(keys, ..), Value::Null) => {
+            Value::List(keys, ..) => {
                 for key in keys {
                     map.remove(&key);
                 }
             }
-            (first, second) => {
-                map.remove(&first);
-                map.remove(&second);
+            key => {
+                map.remove(&key);
             }
         }
         Ok(Value::Map(map))
     });
-    def_va!(f, set(map, args), set);
+    def_va!(g, set(map, args), set);
     def!(f, values(map), |s| {
         let map = get_map(s, name!(map))?;
         Ok(Value::List(
@@ -155,6 +187,7 @@ pub fn create_module() -> Scope {
             false,
         ))
     });
+    f.expose_star(&g);
     f
 }
 
@@ -197,6 +230,23 @@ fn get_va_map(s: &Scope, name: Name) -> Result<ValueMap, Error> {
 
 fn as_va_map(v: Value) -> Result<ValueMap, String> {
     match v {
+        Value::ArgList(args) => {
+            // FIXME: Allow named arguments also?
+            if !args.named.is_empty() {
+                return Err("xyzzy unexpected named args in as_va_map".into());
+            }
+            let mut values = args.positional;
+            let mut result = if let Some(last) = values.pop() {
+                last.try_into()?
+            } else {
+                //ValueMap::new()
+                return Err("xyzzy unexpectedly empty".into());
+            };
+            while let Some(prev) = values.pop() {
+                result = ValueMap::singleton(prev, Value::Map(result));
+            }
+            Ok(result)
+        }
         Value::List(mut values, ..) => {
             let mut result = if let Some(last) = values.pop() {
                 last.try_into()?
@@ -246,6 +296,47 @@ fn do_deep_remove(map: &mut ValueMap, keys: &[Value]) {
 fn set(s: &Scope) -> Result<Value, Error> {
     let map = get_map(s, name!(map))?;
     match s.get("args")? {
+        Value::ArgList(mut args) => {
+            let keys = match args.named.remove(&"keys".into()) {
+                Some(Value::List(v, ..)) => Some(v),
+                Some(v) => Some(vec![v]),
+                None => None,
+            };
+            let key = args.named.remove(&"key".into());
+            if key.is_none() && keys.is_none() && args.positional.is_empty() {
+                return Err(Error::error("Expected $args to contain a key"));
+            }
+            let value = args
+                .named
+                .remove(&"value".into())
+                .or_else(|| {
+                    if key.is_some()
+                        || keys.is_some()
+                        || args.positional.len() > 1
+                    {
+                        args.positional.pop()
+                    } else {
+                        None
+                    }
+                })
+                .ok_or_else(|| {
+                    Error::error("Expected $args to contain a value")
+                })?;
+
+            let mut keys = match (keys, args.positional.is_empty()) {
+                (Some(keys), true) => keys,
+                (None, _) => args.positional,
+                (Some(_), false) => {
+                    return Err(Error::error(
+                        "Got $keys both by name and by position",
+                    ))
+                }
+            };
+            if let Some(key) = key {
+                keys.push(key);
+            }
+            Ok(Value::Map(set_inner(map, &keys, value)?))
+        }
         Value::List(mut v, ..) => {
             if let Some(value) = v.pop() {
                 Ok(Value::Map(set_inner(map, &v, value)?))

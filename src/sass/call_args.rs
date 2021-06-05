@@ -52,6 +52,13 @@ impl CallArgs {
         for arg in &self.positional {
             if let Some(splat) = is_splat(arg) {
                 match splat.do_evaluate(scope.clone(), true)? {
+                    css::Value::ArgList(args) => {
+                        result.positional.extend(args.positional);
+                        for (name, value) in args.named {
+                            // TODO: check for duplicates?
+                            result.named.insert(name, value);
+                        }
+                    }
                     css::Value::Map(map) => {
                         result.add_from_value_map(map)?;
                     }

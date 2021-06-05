@@ -66,7 +66,12 @@ impl SourcePos {
         marker: char,
         what: &str,
     ) -> fmt::Result {
-        self.show_impl(out, &format!("--> {}", self.file.name), marker, what)
+        let filename = if self.file.name.is_empty() {
+            String::new()
+        } else {
+            format!("--> {}", self.file.name)
+        };
+        self.show_impl(out, &filename, marker, what)
     }
     fn show_impl(
         &self,

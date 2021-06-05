@@ -45,6 +45,8 @@ pub enum Value {
     UnicodeRange(String),
     /// A value in parenthesis.
     Paren(Box<Value>),
+    /// An argumentt list
+    ArgList(super::CallArgs),
 }
 
 /// An OrderMap where both the keys and the values are css values.
@@ -59,6 +61,7 @@ impl Value {
     /// Get the type name of this value.
     pub fn type_name(&self) -> &'static str {
         match *self {
+            Value::ArgList(..) => "arglist",
             Value::Color(..) => "color",
             Value::Literal(..) => "string",
             Value::Map(..) => "map",
@@ -215,6 +218,19 @@ impl Value {
     /// containing the value as a single item.
     pub fn iter_items(self) -> Vec<Value> {
         match self {
+            Value::ArgList(args) => {
+                let mut vec = args.positional;
+                // I'm not sure that including the named arguments after the
+                // positional is the right thing to do here.
+                vec.extend(args.named.into_iter().map(|(k, v)| {
+                    Value::List(
+                        vec![Value::from(k.as_ref()), v],
+                        Some(ListSeparator::Space),
+                        false,
+                    )
+                }));
+                vec
+            }
             Value::List(v, _, _) => v,
             Value::Map(map) => map
                 .iter()

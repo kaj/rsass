@@ -537,7 +537,7 @@ impl<'a> Scope {
         Ok(())
     }
 
-    fn expose_star(&self, other: &Scope) {
+    pub(crate) fn expose_star(&self, other: &Scope) {
         for (name, function) in &*other.functions.lock().unwrap() {
             self.define_function(name.clone(), function.clone());
         }

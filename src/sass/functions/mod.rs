@@ -3,7 +3,7 @@ use crate::error::Error;
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
 use crate::sass::{FormalArgs, Name};
-use crate::value::{Numeric, Quotes};
+use crate::value::{ListSeparator, Numeric, Quotes};
 use crate::{sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -287,6 +287,21 @@ fn get_string(
     name: &'static str,
 ) -> Result<(String, Quotes), Error> {
     get_checked(s, name.into(), check::string)
+}
+
+fn get_va_list(s: &Scope, name: Name) -> Result<Vec<Value>, Error> {
+    match s.get(name.as_ref())? {
+        Value::ArgList(args) => {
+            if !args.named.is_empty() {
+                return Err(Error::error(
+                    "xyzzy unexpected named args in get_va_list",
+                ));
+            }
+            Ok(args.positional)
+        }
+        Value::List(v, Some(ListSeparator::Comma), _) => Ok(v),
+        single => Ok(vec![single]),
+    }
 }
 
 fn expected_to<'a, T>(value: &'a T, cond: &str) -> String
