@@ -14,7 +14,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn test_type() {
             assert_eq!(
                 runner().err("a {b: saturate(red)}\n"),
@@ -28,7 +27,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: saturate()}\n"),
@@ -45,7 +43,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
             runner().err("a {b: saturate(plum, 1%, 2)}\n"),
@@ -101,7 +98,6 @@ mod error {
             use super::runner;
 
             #[test]
-            #[ignore] // missing error
             fn color() {
                 assert_eq!(
                     runner().err("a {b: saturate(1, 2)}\n"),

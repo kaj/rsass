@@ -1,159 +1,20 @@
+use super::channels::Channels;
 use super::{
-    check, check_pct_rational_range, expected_to, get_checked, get_color,
-    make_call, nospecial_value, CheckedArg, Error, FunctionMap, Name,
+    bad_arg, check, check_alpha, check_color, check_pct_rational_range,
+    get_checked, get_color, is_special, make_call, CheckedArg, Error,
+    FunctionMap,
 };
-use crate::css::Value;
+use crate::css::{CallArgs, Value};
 use crate::output::Format;
-use crate::value::{ListSeparator, Rational, Rgba};
-use crate::Scope;
+use crate::sass::{ArgsError, FormalArgs, Name};
+use crate::value::{Rational, Rgba};
+use crate::{Scope, ScopeRef};
 use num_traits::{one, Zero};
-
-fn do_rgba(fn_name: &str, s: &Scope) -> Result<Value, Error> {
-    let a = s.get("alpha")?;
-    let red = s.get("red")?;
-    let red = if red.is_null() { s.get("color")? } else { red };
-    if let Value::Color(rgba, _) = red {
-        let rgba = rgba.to_rgba();
-        let a = if a.is_null() { s.get("green")? } else { a };
-        match a {
-            Value::Numeric(a, ..) => Ok(Rgba::new(
-                rgba.red(),
-                rgba.green(),
-                rgba.blue(),
-                a.as_ratio()?,
-            )
-            .into()),
-            _ => Ok(make_call(
-                fn_name,
-                vec![
-                    int_value(rgba.red()),
-                    int_value(rgba.green()),
-                    int_value(rgba.blue()),
-                    a,
-                ],
-            )),
-        }
-    } else if let Value::List(vec, sep, bracketed) = if red.is_null() {
-        s.get("channels")?
-    } else {
-        red.clone()
-    } {
-        if bracketed {
-            return Err(Error::BadValue(
-                "Error: $channels must be an unbracketed list.".into(),
-            ));
-        }
-        if let Some((r, g, b, a)) = values_from_list(&vec, sep) {
-            Ok(rgba_from_values(&r, &g, &b, &a)?
-                .unwrap_or_else(|| make_call(fn_name, vec![r, g, b, a])))
-        } else {
-            Ok(preserve_call(fn_name, vec, sep))
-        }
-    } else {
-        let green = s.get("green")?;
-        let blue = s.get("blue")?;
-        Ok(rgba_from_values(&red, &green, &blue, &a)?
-            .unwrap_or_else(|| make_call(fn_name, vec![red, green, blue, a])))
-    }
-}
-
-pub fn values_from_list(
-    vec: &[Value],
-    sep: Option<ListSeparator>,
-) -> Option<(Value, Value, Value, Value)> {
-    use crate::value::Operator::Div;
-    use Value::{BinOp, Null, Numeric};
-    match vec {
-        [Value::List(rgb, _, _), a] if sep == Some(ListSeparator::Slash) => {
-            match &rgb[..] {
-                [r, g, b] => {
-                    Some((r.clone(), g.clone(), b.clone(), a.clone()))
-                }
-                _ => None,
-            }
-        }
-        [r, g, BinOp(b, _, Div, _, a)] => {
-            if let (b @ Numeric(..), a @ Numeric(..)) = (&**b, &**a) {
-                Some((r.clone(), g.clone(), b.clone(), a.clone()))
-            } else {
-                None
-            }
-        }
-        [r, g, b] => Some((r.clone(), g.clone(), b.clone(), Null)),
-        _ => None,
-    }
-}
-
-fn rgba_from_values(
-    r: &Value,
-    g: &Value,
-    b: &Value,
-    a: &Value,
-) -> Result<Option<Value>, Error> {
-    let r = to_channel(r, name!(red))?;
-    let g = to_channel(g, name!(green))?;
-    let b = to_channel(b, name!(blue))?;
-    let a = match a {
-        Value::Null => Some(one()),
-        a => nospecial_value(a, name!(alpha), to_rational)?,
-    };
-    if let (Some(r), Some(g), Some(b), Some(a)) = (r, g, b, a) {
-        Ok(Some(Rgba::new(r, g, b, a).into()))
-    } else {
-        Ok(None)
-    }
-}
-
-fn to_channel(v: &Value, name: Name) -> Result<Option<Rational>, Error> {
-    // Note: This null check is not quite correct, it should kind of
-    // belong in values_from_list.
-    if v.is_null() {
-        Ok(None)
-    } else {
-        nospecial_value(v, name, to_int)
-    }
-}
-
-pub fn preserve_call(
-    fn_name: &str,
-    vec: Vec<Value>,
-    sep: Option<ListSeparator>,
-) -> Value {
-    make_call(
-        fn_name,
-        if sep == Some(ListSeparator::Comma) {
-            vec
-        } else {
-            vec![Value::List(vec, sep, false)]
-        },
-    )
-}
+use std::convert::TryFrom;
 
 pub fn register(f: &mut Scope) {
-    def!(
-        f,
-        _rgb(
-            red = b"null",
-            green = b"null",
-            blue = b"null",
-            alpha = b"null",
-            color = b"null",
-            channels = b"null"
-        ),
-        |s| { do_rgba("rgb", s) }
-    );
-    def!(
-        f,
-        _rgba(
-            red = b"null",
-            green = b"null",
-            blue = b"null",
-            alpha = b"null",
-            color = b"null",
-            channels = b"null"
-        ),
-        |s| { do_rgba("rgba", s) }
-    );
+    def_va!(f, _rgb(kwargs), |s| do_rgba(&name!(rgb), s));
+    def_va!(f, _rgba(kwargs), |s| do_rgba(&name!(rgba), s));
     def!(f, red(color), |s| {
         Ok(Value::scalar(get_color(s, "color")?.to_rgba().red()))
     });
@@ -243,8 +104,81 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn int_value(v: Rational) -> Value {
-    Value::scalar(v.to_integer())
+fn do_rgba(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
+    let a1 = FormalArgs::new(vec![one_arg!(channels)]);
+    let a1b = FormalArgs::new(vec![one_arg!(color), one_arg!(alpha)]);
+    let a2 = FormalArgs::new(vec![
+        one_arg!(red),
+        one_arg!(green),
+        one_arg!(blue = b"null"),
+        one_arg!(alpha = b"null"),
+    ]);
+    let a2_show = FormalArgs::new(vec![
+        one_arg!(red),
+        one_arg!(green),
+        one_arg!(blue),
+        one_arg!(alpha),
+    ]);
+    let args = CallArgs::from_value(s.get("kwargs")?)?;
+    match a1.eval(s.clone(), args.clone()) {
+        Ok(s) => Channels::try_from(s.get("channels")?)
+            .map_err(|e| e.conv(&["red", "green", "blue"]))
+            .and_then(|c| match c {
+                Channels::Data([h, s, l, a]) => {
+                    rgba_from_values(fn_name, h, s, l, a)
+                }
+                Channels::Special(channels) => {
+                    Ok(make_call(fn_name.as_ref(), vec![channels]))
+                }
+            }),
+        Err(err @ ArgsError::Missing(_)) => Err(bad_arg(err, fn_name, &a1)),
+        Err(_) => match a1b.eval(s.clone(), args.clone()) {
+            Ok(s) => {
+                let c = s.get("color")?;
+                let a = s.get("alpha")?;
+                if is_special(&c) || is_special(&a) {
+                    Ok(make_call(fn_name.as_ref(), vec![c, a]))
+                } else {
+                    let mut c = check_color(c).named(name!(color))?;
+                    c.set_alpha(check_alpha(a).named(name!(alpha))?);
+                    Ok(c.into())
+                }
+            }
+            Err(_) => {
+                let s = a2
+                    .eval(s.clone(), args)
+                    .map_err(|e| bad_arg(e, fn_name, &a2_show))?;
+
+                rgba_from_values(
+                    fn_name,
+                    s.get("red")?,
+                    s.get("green")?,
+                    s.get("blue")?,
+                    s.get("alpha")?,
+                )
+            }
+        },
+    }
+}
+
+fn rgba_from_values(
+    fn_name: &Name,
+    r: Value,
+    g: Value,
+    b: Value,
+    a: Value,
+) -> Result<Value, Error> {
+    if is_special(&r) || is_special(&g) || is_special(&b) || is_special(&a) {
+        Ok(make_call(fn_name.as_ref(), vec![r, g, b, a]))
+    } else {
+        Ok(Rgba::new(
+            to_int(r).named(name!(red))?,
+            to_int(g).named(name!(green))?,
+            to_int(b).named(name!(blue))?,
+            check_alpha(a).named(name!(alpha))?,
+        )
+        .into())
+    }
 }
 
 fn to_int(v: Value) -> Result<Rational, String> {
@@ -254,18 +188,6 @@ fn to_int(v: Value) -> Result<Rational, String> {
         Ok(r * 255 / 100)
     } else {
         Ok(r)
-    }
-}
-
-pub fn to_rational(v: Value) -> Result<Rational, String> {
-    let num = check::numeric(v)?;
-    let r = num.value.as_ratio().map_err(|e| e.to_string())?;
-    if num.unit.is_percent() {
-        Ok(r / 100)
-    } else if num.unit.is_none() {
-        Ok(r)
-    } else {
-        Err(expected_to(&num, "have no units or \"%\""))
     }
 }
 

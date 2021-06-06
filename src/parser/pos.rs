@@ -135,6 +135,7 @@ impl From<Span<'_>> for SourcePos {
         SourcePos {
             line: from_utf8(span.get_line_beginning())
                 .unwrap_or("<<failed to display line>>")
+                .trim_end()
                 .to_string(),
             line_no: span.location_line(),
             line_pos: span.get_utf8_column(),

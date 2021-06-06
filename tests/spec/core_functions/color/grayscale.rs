@@ -51,7 +51,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn test_type() {
         assert_eq!(
             runner().err("a {b: grayscale(c)}\n"),

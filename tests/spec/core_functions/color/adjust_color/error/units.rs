@@ -10,7 +10,6 @@ mod none {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn blackness() {
         assert_eq!(
             runner().err("a {b: adjust-color(black, $blackness: 1)}\n"),
@@ -23,7 +22,6 @@ mod none {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn whiteness() {
         assert_eq!(
             runner().err("a {b: adjust-color(white, $whiteness: 1)}\n"),

@@ -102,7 +102,6 @@ mod error {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn invalid_args() {
         assert_eq!(
             runner().err("a {b: call(get-function(\"rgb\"), 1)}\n"),

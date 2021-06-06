@@ -10,7 +10,6 @@ mod alpha {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn unit() {
         assert_eq!(
             runner().err(

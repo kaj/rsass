@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
 fn too_few() {
     assert_eq!(
         runner().err("a {b: scale-color()}\n"),
@@ -23,7 +22,6 @@ fn too_few() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn too_many() {
     assert_eq!(
         runner().err(
@@ -38,7 +36,6 @@ fn too_many() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn unknown() {
     assert_eq!(
         runner().err("a {b: scale-color(red, $hue: 10%)}\n"),

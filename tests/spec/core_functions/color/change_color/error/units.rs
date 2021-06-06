@@ -10,7 +10,6 @@ mod none {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn blackness() {
         assert_eq!(
             runner().err("a {b: change-color(black, $blackness: 1)}\n"),
@@ -23,7 +22,6 @@ mod none {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn whiteness() {
         assert_eq!(
             runner().err("a {b: change-color(white, $whiteness: 1)}\n"),
@@ -41,7 +39,6 @@ mod wrong {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn blackness() {
         assert_eq!(
             runner().err("a {b: change-color(black, $blackness: 1px)}\n"),
@@ -54,7 +51,6 @@ mod wrong {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn whiteness() {
         assert_eq!(
             runner().err("a {b: change-color(white, $whiteness: 1px)}\n"),

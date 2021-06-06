@@ -21,7 +21,7 @@ mod meta;
 mod selector;
 mod string;
 
-type BuiltinFn = dyn Fn(&Scope) -> Result<Value, Error> + Send + Sync;
+type BuiltinFn = dyn Fn(&ScopeRef) -> Result<Value, Error> + Send + Sync;
 
 /// A function that can be called from a sass value.
 ///

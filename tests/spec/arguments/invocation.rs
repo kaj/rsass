@@ -40,7 +40,7 @@ mod mixin {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn duplicate_named() {
             assert_eq!(
                 runner().err(
@@ -56,7 +56,7 @@ mod mixin {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn duplicate_named_normalization() {
             assert_eq!(
                 runner().err(

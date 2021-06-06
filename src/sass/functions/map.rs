@@ -2,7 +2,7 @@ use super::{get_checked, Error, FunctionMap, Name};
 use crate::css::{Value, ValueMap};
 use crate::output::Format;
 use crate::value::ListSeparator;
-use crate::Scope;
+use crate::{Scope, ScopeRef};
 use std::convert::TryInto;
 
 /// Create the `sass:map` standard module.
@@ -293,7 +293,7 @@ fn do_deep_remove(map: &mut ValueMap, keys: &[Value]) {
     }
 }
 
-fn set(s: &Scope) -> Result<Value, Error> {
+fn set(s: &ScopeRef) -> Result<Value, Error> {
     let map = get_map(s, name!(map))?;
     match s.get("args")? {
         Value::ArgList(mut args) => {

@@ -1,152 +1,190 @@
 use super::{
-    check, check_color, check_pct_rational, check_rational_fract,
-    get_checked, get_color, get_opt_check, get_opt_rational, make_call,
-    CheckedArg, Error, FunctionMap, Name,
+    check, check_color, check_expl_pct_r, check_pct_expl_rational_pm1,
+    check_rational, check_rational_byte, check_rational_fract,
+    check_rational_pm1, check_rational_pmbyte, expected_to, get_checked,
+    get_color, make_call, CheckedArg, Error, FunctionMap, Name,
 };
-use crate::css::Value;
+use crate::css::{CallArgs, Value};
 use crate::value::{Hsla, Hwba, Quotes, Rational, Rgba};
 use crate::Scope;
 use num_traits::{one, Signed};
 
 pub fn register(f: &mut Scope) {
-    def!(
-        f,
-        adjust(
-            color,
-            red = b"null",
-            green = b"null",
-            blue = b"null",
-            hue = b"null",
-            saturation = b"null",
-            lightness = b"null",
-            whiteness = b"null",
-            blackness = b"null",
-            alpha = b"null"
-        ),
-        |s| {
-            fn opt_add(a: Rational, b: Option<Rational>) -> Rational {
-                if let Some(b) = b {
-                    a + b
-                } else {
-                    a
-                }
+    def_va!(f, adjust(color, kwargs), |s| {
+        fn opt_add(a: Rational, b: Option<Rational>) -> Rational {
+            if let Some(b) = b {
+                a + b
+            } else {
+                a
             }
-            let rgba = get_color(s, "color")?;
-            let h_adj = get_opt_rational(s, "hue")?;
-            let s_adj = get_opt_rational_pct(s, "saturation")?;
-            let l_adj = get_opt_rational_pct(s, "lightness")?;
-            let b_adj =
-                get_opt_check(s, name!(blackness), check_pct_rational)?;
-            let w_adj =
-                get_opt_check(s, name!(whiteness), check_pct_rational)?;
-            let a_adj = get_opt_rational(s, "alpha")?;
-            if h_adj.is_none()
-                && s_adj.is_none()
-                && l_adj.is_none()
-                && b_adj.is_none()
-                && w_adj.is_none()
-            {
+        }
+        let rgba = get_color(s, "color")?;
+        let mut args = CallArgs::from_value(s.get("kwargs")?)?;
+        if !args.positional.is_empty() {
+            return Err(Error::error("Only one positional argument is allowed. \
+                                     All other arguments must be passed by name"));
+        }
+        let red = take_opt(&mut args, name!(red), check_rational_pmbyte)?;
+        let gre = take_opt(&mut args, name!(green), check_rational_pmbyte)?;
+        let blu = take_opt(&mut args, name!(blue), check_rational_pmbyte)?;
+        let hue = take_opt(&mut args, name!(hue), check_rational)?;
+        let sat =
+            take_opt(&mut args, name!(saturation), check_pct_rational_pm1)?;
+        let lig =
+            take_opt(&mut args, name!(lightness), check_pct_rational_pm1)?;
+        let bla = take_opt(
+            &mut args,
+            name!(blackness),
+            check_pct_expl_rational_pm1,
+        )?;
+        let whi = take_opt(
+            &mut args,
+            name!(whiteness),
+            check_pct_expl_rational_pm1,
+        )?;
+        let a_adj = take_opt(&mut args, name!(alpha), check_rational_pm1)?;
+
+        if let Some(extra) = args.named.keys().iter().next() {
+            return Err(Error::error(format!(
+                "No argument named ${}",
+                extra
+            )));
+        }
+
+        if red.is_some() || gre.is_some() || blu.is_some() {
+            if bla.is_some() || whi.is_some() {
+                Err(Error::error("RGB parameters may not be passed along with HWB parameters"))
+            } else if hue.is_some() || sat.is_some() || lig.is_some() {
+                Err(Error::error("RGB parameters may not be passed along with HSL parameters"))
+            } else {
                 let rgba = rgba.to_rgba();
                 Ok(Rgba::new(
-                    opt_add(rgba.red(), get_opt_rational(s, "red")?),
-                    opt_add(rgba.green(), get_opt_rational(s, "green")?),
-                    opt_add(rgba.blue(), get_opt_rational(s, "blue")?),
-                    opt_add(rgba.alpha(), get_opt_rational(s, "alpha")?),
+                    opt_add(rgba.red(), red),
+                    opt_add(rgba.green(), gre),
+                    opt_add(rgba.blue(), blu),
+                    opt_add(rgba.alpha(), a_adj),
                 )
                 .into())
-            } else if b_adj.is_none() && w_adj.is_none() {
-                let hsla = rgba.to_hsla();
-                Ok(Hsla::new(
-                    opt_add(hsla.hue(), h_adj),
-                    opt_add(hsla.sat(), s_adj),
-                    opt_add(hsla.lum(), l_adj),
-                    opt_add(hsla.alpha(), a_adj),
-                )
-                .into())
+            }
+        } else if bla.is_some() || whi.is_some() {
+            if sat.is_some() || lig.is_some() {
+                Err(Error::error("HSL parameters may not be passed along with HWB parameters"))
             } else {
                 let hwba = rgba.to_hwba();
                 Ok(Hwba::new(
-                    opt_add(hwba.hue(), h_adj),
-                    opt_add(hwba.whiteness(), w_adj),
-                    opt_add(hwba.blackness(), b_adj),
+                    opt_add(hwba.hue(), hue),
+                    opt_add(hwba.whiteness(), whi),
+                    opt_add(hwba.blackness(), bla),
                     opt_add(hwba.alpha(), a_adj),
                 )
                 .into())
             }
+        } else {
+            let hsla = rgba.to_hsla();
+            Ok(Hsla::new(
+                opt_add(hsla.hue(), hue),
+                opt_add(hsla.sat(), sat),
+                opt_add(hsla.lum(), lig),
+                opt_add(hsla.alpha(), a_adj),
+            )
+            .into())
         }
-    );
-    def!(
-        f,
-        scale(
-            color,
-            red = b"null",
-            green = b"null",
-            blue = b"null",
-            hue = b"null",
-            saturation = b"null",
-            lightness = b"null",
-            whiteness = b"null",
-            blackness = b"null",
-            alpha = b"null"
-        ),
-        |s| {
-            let rgba = get_color(s, "color")?;
-            let h_adj = get_opt_rational_pct(s, "hue")?;
-            let s_adj = get_opt_rational_pct(s, "saturation")?;
-            let l_adj = get_opt_rational_pct(s, "lightness")?;
-            let b_adj = get_opt_rational_pct(s, "blackness")?;
-            let w_adj = get_opt_rational_pct(s, "whiteness")?;
-            let a_adj = get_opt_rational_pct(s, "alpha")?;
-
-            let cmb = |orig: Rational, x: Option<Rational>, max: Rational| {
-                match x {
-                    None => orig,
-                    Some(x) => {
-                        if x.is_positive() {
-                            orig + (max - orig) * x
-                        } else {
-                            orig + orig * x
-                        }
-                    }
+    });
+    def_va!(f, scale(color, kwargs), |s| {
+        let cmb = |orig: Rational, x: Option<Rational>, max: Rational| match x
+        {
+            None => orig,
+            Some(x) => {
+                if x.is_positive() {
+                    orig + (max - orig) * x
+                } else {
+                    orig + orig * x
                 }
-            };
-            let one: Rational = one();
-            let ff = Rational::from_integer(255);
-            if h_adj.is_none()
-                && s_adj.is_none()
-                && l_adj.is_none()
-                && b_adj.is_none()
-                && w_adj.is_none()
-            {
+            }
+        };
+        let one: Rational = one();
+        let ff = Rational::from_integer(255);
+
+        let rgba = get_color(s, "color")?;
+        let mut args = CallArgs::from_value(s.get("kwargs")?)?;
+        if !args.positional.is_empty() {
+            return Err(Error::error("Only one positional argument is allowed. \
+                                     All other arguments must be passed by name"));
+        }
+        let red =
+            take_opt(&mut args, name!(red), check_pct_expl_rational_pm1)?;
+        let gre =
+            take_opt(&mut args, name!(green), check_pct_expl_rational_pm1)?;
+        let blu =
+            take_opt(&mut args, name!(blue), check_pct_expl_rational_pm1)?;
+        let sat = take_opt(
+            &mut args,
+            name!(saturation),
+            check_pct_expl_rational_pm1,
+        )?;
+        let lig = take_opt(
+            &mut args,
+            name!(lightness),
+            check_pct_expl_rational_pm1,
+        )?;
+        let bla = take_opt(
+            &mut args,
+            name!(blackness),
+            check_pct_expl_rational_pm1,
+        )?;
+        let whi = take_opt(
+            &mut args,
+            name!(whiteness),
+            check_pct_expl_rational_pm1,
+        )?;
+        let a_adj =
+            take_opt(&mut args, name!(alpha), check_pct_expl_rational_pm1)?;
+
+        if let Some(extra) = args.named.keys().iter().next() {
+            return Err(Error::error(format!(
+                "No argument named ${}",
+                extra
+            )));
+        }
+        if red.is_some() || gre.is_some() || blu.is_some() {
+            if bla.is_some() || whi.is_some() {
+                Err(Error::error("RGB parameters may not be passed along with HWB parameters"))
+            } else if sat.is_some() || lig.is_some() {
+                Err(Error::error("RGB parameters may not be passed along with HSL parameters"))
+            } else {
                 let rgba = rgba.to_rgba();
                 Ok(Rgba::new(
-                    cmb(rgba.red(), get_opt_rational_pct(s, "red")?, ff),
-                    cmb(rgba.green(), get_opt_rational_pct(s, "green")?, ff),
-                    cmb(rgba.blue(), get_opt_rational_pct(s, "blue")?, ff),
+                    cmb(rgba.red(), red, ff),
+                    cmb(rgba.green(), gre, ff),
+                    cmb(rgba.blue(), blu, ff),
                     cmb(rgba.alpha(), a_adj, one),
                 )
                 .into())
-            } else if b_adj.is_none() && w_adj.is_none() {
-                let hsla = rgba.to_hsla();
-                Ok(Hsla::new(
-                    cmb(hsla.hue(), h_adj, one),
-                    cmb(hsla.sat(), s_adj, one),
-                    cmb(hsla.lum(), l_adj, one),
-                    cmb(hsla.alpha(), a_adj, one),
-                )
-                .into())
-            } else {
-                let hwba = rgba.to_hwba();
-                Ok(Hwba::new(
-                    cmb(hwba.hue(), h_adj, one),
-                    cmb(hwba.whiteness(), w_adj, one),
-                    cmb(hwba.blackness(), b_adj, one),
-                    cmb(hwba.alpha(), a_adj, one),
-                )
-                .into())
             }
+        } else if bla.is_none() && whi.is_none() {
+            let hsla = rgba.to_hsla();
+            Ok(Hsla::new(
+                hsla.hue(),
+                cmb(hsla.sat(), sat, one),
+                cmb(hsla.lum(), lig, one),
+                cmb(hsla.alpha(), a_adj, one),
+            )
+            .into())
+        } else if sat.is_some() || lig.is_some() {
+            Err(Error::error(
+                "HSL parameters may not be passed along with HWB parameters",
+            ))
+        } else {
+            let hwba = rgba.to_hwba();
+            Ok(Hwba::new(
+                hwba.hue(),
+                cmb(hwba.whiteness(), whi, one),
+                cmb(hwba.blackness(), bla, one),
+                cmb(hwba.alpha(), a_adj, one),
+            )
+            .into())
         }
-    );
+    });
 
     def!(f, opacity(color), |s| match s.get("color")? {
         Value::Color(ref col, _) => Ok(Value::scalar(col.get_alpha())),
@@ -162,81 +200,71 @@ pub fn register(f: &mut Scope) {
         }
     });
 
-    def!(f, fade_in(color, amount), |s| {
-        let mut col = get_color(s, "color")?;
-        let amount = get_checked(s, name!(amount), check_rational_fract)?;
-        col.set_alpha(col.get_alpha() + amount);
-        Ok(col.into())
-    });
-    def!(f, fade_out(color, amount), |s| {
-        let mut col = get_color(s, "color")?;
-        let amount = get_checked(s, name!(amount), check_rational_fract)?;
-        col.set_alpha(col.get_alpha() - amount);
-        Ok(col.into())
-    });
+    def_va!(f, change(color, kwargs), |s| {
+        let rgba = get_color(s, "color")?;
+        let mut args = CallArgs::from_value(s.get("kwargs")?)?;
+        if !args.positional.is_empty() {
+            return Err(Error::error("Only one positional argument is allowed. \
+                                     All other arguments must be passed by name"));
+        }
+        let red = take_opt(&mut args, name!(red), check_rational_byte)?;
+        let gre = take_opt(&mut args, name!(green), check_rational_byte)?;
+        let blu = take_opt(&mut args, name!(blue), check_rational_byte)?;
+        let hue = take_opt(&mut args, name!(hue), check_rational)?;
+        let sat =
+            take_opt(&mut args, name!(saturation), check_pct_rational_p1)?;
+        let lig =
+            take_opt(&mut args, name!(lightness), check_pct_rational_p1)?;
+        let bla = take_opt(&mut args, name!(blackness), check_expl_pct_r)?;
+        let whi = take_opt(&mut args, name!(whiteness), check_expl_pct_r)?;
+        let alp = take_opt(&mut args, name!(alpha), check_rational_fract)?;
 
-    def!(
-        f,
-        change(
-            color,
-            red = b"null",
-            green = b"null",
-            blue = b"null",
-            hue = b"null",
-            saturation = b"null",
-            lightness = b"null",
-            blackness = b"null",
-            whiteness = b"null",
-            alpha = b"null"
-        ),
-        |s| {
-            let rgba = get_color(s, "color")?;
-            let h_adj = get_opt_rational(s, "hue")?;
-            let s_adj = get_opt_rational_pct(s, "saturation")?;
-            let l_adj = get_opt_rational_pct(s, "lightness")?;
-            let b_adj = get_opt_rational_pct(s, "blackness")?;
-            let w_adj = get_opt_rational_pct(s, "whiteness")?;
+        if let Some(extra) = args.named.keys().iter().next() {
+            return Err(Error::error(format!(
+                "No argument named ${}",
+                extra
+            )));
+        }
 
-            if h_adj.is_none()
-                && s_adj.is_none()
-                && l_adj.is_none()
-                && b_adj.is_none()
-                && w_adj.is_none()
-            {
+        if red.is_some() || gre.is_some() || blu.is_some() {
+            if hue.is_some() || sat.is_some() || lig.is_some() {
+                Err(Error::error("RGB parameters may not be passed along with HSL parameters"))
+            } else if bla.is_some() || whi.is_some() {
+                Err(Error::error("RGB parameters may not be passed along with HWB parameters"))
+            } else {
                 let rgba = rgba.to_rgba();
                 Ok(Rgba::new(
-                    get_opt_rational(s, "red")?.unwrap_or_else(|| rgba.red()),
-                    get_opt_rational(s, "green")?
-                        .unwrap_or_else(|| rgba.green()),
-                    get_opt_rational(s, "blue")?
-                        .unwrap_or_else(|| rgba.blue()),
-                    get_opt_rational(s, "alpha")?
-                        .unwrap_or_else(|| rgba.alpha()),
-                )
-                .into())
-            } else if b_adj.is_none() && w_adj.is_none() {
-                let hsla = rgba.to_hsla();
-                Ok(Hsla::new(
-                    h_adj.unwrap_or_else(|| hsla.hue()),
-                    s_adj.unwrap_or_else(|| hsla.sat()),
-                    l_adj.unwrap_or_else(|| hsla.lum()),
-                    get_opt_rational(s, "alpha")?
-                        .unwrap_or_else(|| hsla.alpha()),
-                )
-                .into())
-            } else {
-                let hwba = rgba.to_hwba();
-                Ok(Hwba::new(
-                    h_adj.unwrap_or_else(|| hwba.hue()),
-                    w_adj.unwrap_or_else(|| hwba.whiteness()),
-                    b_adj.unwrap_or_else(|| hwba.blackness()),
-                    get_opt_rational(s, "alpha")?
-                        .unwrap_or_else(|| hwba.alpha()),
+                    red.unwrap_or_else(|| rgba.red()),
+                    gre.unwrap_or_else(|| rgba.green()),
+                    blu.unwrap_or_else(|| rgba.blue()),
+                    alp.unwrap_or_else(|| rgba.alpha()),
                 )
                 .into())
             }
+        } else if bla.is_none() && whi.is_none() {
+            let hsla = rgba.to_hsla();
+            Ok(Hsla::new(
+                hue.unwrap_or_else(|| hsla.hue()),
+                sat.unwrap_or_else(|| hsla.sat()),
+                lig.unwrap_or_else(|| hsla.lum()),
+                alp.unwrap_or_else(|| hsla.alpha()),
+            )
+            .into())
+        } else if sat.is_some() || lig.is_some() {
+            Err(Error::error(
+                "HSL parameters may not be passed along with HWB parameters",
+            ))
+        } else {
+            let hwba = rgba.to_hwba();
+            Ok(Hwba::new(
+                hue.unwrap_or_else(|| hwba.hue()),
+                whi.unwrap_or_else(|| hwba.whiteness()),
+                bla.unwrap_or_else(|| hwba.blackness()),
+                alp.unwrap_or_else(|| hwba.alpha()),
+            )
+            .into())
         }
-    );
+    });
     def!(f, ie_hex_str(color), |s| {
         let (r, g, b, alpha) = get_color(s, "color")?.to_rgba().to_bytes();
         Ok(format!("#{:02X}{:02X}{:02X}{:02X}", alpha, r, g, b).into())
@@ -250,23 +278,64 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(opacity), name!(opacity)),
         (name!(change_color), name!(change)),
         (name!(ie_hex_str), name!(ie_hex_str)),
-        (name!(opacify), name!(fade_in)),
-        (name!(fade_in), name!(fade_in)),
         (name!(scale_color), name!(scale)),
-        (name!(transparentize), name!(fade_out)),
-        (name!(fade_out), name!(fade_out)),
     ] {
         global.insert(gname.clone(), m.get_lfunction(&lname));
     }
+    let mut f = Scope::builtin_module("sass:color");
+    def!(f, fade_in(color, amount), |s| {
+        let mut col = get_color(s, "color")?;
+        let amount = get_checked(s, name!(amount), check_rational_fract)?;
+        col.set_alpha(col.get_alpha() + amount);
+        Ok(col.into())
+    });
+    def!(f, fade_out(color, amount), |s| {
+        let mut col = get_color(s, "color")?;
+        let amount = get_checked(s, name!(amount), check_rational_fract)?;
+        col.set_alpha(col.get_alpha() - amount);
+        Ok(col.into())
+    });
+    for (gname, lname) in &[
+        (name!(fade_in), name!(fade_in)),
+        (name!(fade_out), name!(fade_out)),
+        (name!(opacify), name!(fade_in)),
+        (name!(transparentize), name!(fade_out)),
+    ] {
+        global.insert(gname.clone(), f.get_lfunction(&lname));
+    }
 }
 
-fn get_opt_rational_pct(
-    s: &Scope,
-    name: &'static str,
-) -> Result<Option<Rational>, Error> {
-    get_opt_check(s, Name::from_static(name), |v| {
-        Ok(check::numeric(v)?.as_ratio().map_err(|e| e.to_string())? / 100)
-    })
+fn take_opt<T, F>(
+    args: &mut CallArgs,
+    name: Name,
+    check: F,
+) -> Result<Option<T>, Error>
+where
+    F: Fn(Value) -> Result<T, String>,
+{
+    args.named
+        .remove(&name)
+        .map(|v| check(v).named(name))
+        .transpose()
+}
+
+fn check_pct_rational_pm1(v: Value) -> Result<Rational, String> {
+    let val = check::numeric(v)?;
+    if val.value.clone().abs() > 100.into() {
+        Err(expected_to(&val, "be within -100% and 100%"))
+    } else {
+        let r = val.value.as_ratio().map_err(|e| e.to_string())?;
+        Ok(r / 100)
+    }
+}
+fn check_pct_rational_p1(v: Value) -> Result<Rational, String> {
+    let val = check::numeric(v)?;
+    if val.value < 0.into() || val.value > 100.into() {
+        Err(expected_to(&val, "be within 0% and 100%"))
+    } else {
+        let r = val.value.as_ratio().map_err(|e| e.to_string())?;
+        Ok(r / 100)
+    }
 }
 
 fn ok_as_filterarg(v: &Value) -> bool {

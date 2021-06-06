@@ -621,7 +621,7 @@ mod test {
             parse_call("foo(17);"),
             Ok((
                 "foo".into(),
-                CallArgs::new(vec![(None, Value::scalar(17))]),
+                CallArgs::new(vec![(None, Value::scalar(17))]).unwrap(),
                 ";".as_bytes(),
             )),
         );

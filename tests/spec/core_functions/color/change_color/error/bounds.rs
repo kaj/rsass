@@ -10,7 +10,6 @@ mod alpha {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: change-color(red, $alpha: 1.001)}\n"),
@@ -23,7 +22,6 @@ mod alpha {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: change-color(red, $alpha: -0.001)}\n"),
@@ -41,7 +39,6 @@ mod blackness {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: change-color(red, $blackness: 100.001%)}\n"),
@@ -54,7 +51,6 @@ mod blackness {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: change-color(red, $blackness: -0.001%)}\n"),
@@ -72,7 +68,6 @@ mod blue {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: change-color(blue, $blue: 256)}\n"),
@@ -85,7 +80,6 @@ mod blue {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: change-color(blue, $blue: -1)}\n"),
@@ -103,7 +97,6 @@ mod green {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: change-color(green, $green: 256)}\n"),
@@ -116,7 +109,6 @@ mod green {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: change-color(green, $green: -1)}\n"),
@@ -134,7 +126,6 @@ mod lightness {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: change-color(red, $lightness: 100.001%)}\n"),
@@ -147,7 +138,6 @@ mod lightness {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: change-color(red, $lightness: -0.001%)}\n"),
@@ -165,7 +155,6 @@ mod red {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: change-color(red, $red: 256)}\n"),
@@ -178,7 +167,6 @@ mod red {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: change-color(red, $red: -1)}\n"),
@@ -196,7 +184,6 @@ mod saturation {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: change-color(red, $saturation: 100.001%)}\n"),
@@ -209,7 +196,6 @@ mod saturation {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: change-color(red, $saturation: -0.001%)}\n"),
@@ -227,7 +213,6 @@ mod whiteness {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: change-color(red, $whiteness: 100.001%)}\n"),
@@ -240,7 +225,6 @@ mod whiteness {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: change-color(red, $whiteness: -0.001%)}\n"),

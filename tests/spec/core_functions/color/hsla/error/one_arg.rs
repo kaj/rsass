@@ -26,7 +26,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn comma_separated() {
         assert_eq!(
             runner().err(
@@ -43,7 +42,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn empty() {
         assert_eq!(
             runner().err(
@@ -60,7 +58,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn four_elements() {
         assert_eq!(
             runner().err(
@@ -77,7 +74,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn one_element() {
         assert_eq!(
             runner().err(
@@ -94,7 +90,6 @@ mod list {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn two_elements() {
         assert_eq!(
             runner().err(
@@ -136,7 +131,6 @@ mod slash_list {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn bracketed() {
             assert_eq!(
                 runner().err(
@@ -152,7 +146,6 @@ mod slash_list {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn comma_separated() {
             assert_eq!(
                 runner().err(
@@ -168,7 +161,6 @@ mod slash_list {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn empty() {
             assert_eq!(
                 runner().err(
@@ -184,7 +176,6 @@ mod slash_list {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn four_elements() {
             assert_eq!(
                 runner().err(
@@ -200,7 +191,6 @@ mod slash_list {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn one_element() {
             assert_eq!(
                 runner().err(
@@ -216,7 +206,6 @@ mod slash_list {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn two_elements() {
             assert_eq!(
                 runner().err(
@@ -233,7 +222,6 @@ mod slash_list {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn too_few_elements() {
         assert_eq!(
         runner().err(
@@ -248,7 +236,6 @@ mod slash_list {
     );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_elements() {
         assert_eq!(
         runner().err(

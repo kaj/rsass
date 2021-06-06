@@ -20,20 +20,21 @@ impl CallArgs {
     /// Create a new callargs from a vec of name-value pairs.
     ///
     /// The names is none for positional arguments.
-    pub fn new(v: Vec<(Option<Name>, Value)>) -> Self {
+    pub fn new(v: Vec<(Option<Name>, Value)>) -> Result<Self, Error> {
         let mut positional = Vec::new();
         let mut named = OrderMap::new();
         for (name, value) in v {
             if let Some(name) = name {
-                named.insert(name, value);
+                if let Some(_old) = named.insert(name, value) {
+                    return Err(Error::error("Duplicate argument."));
+                }
             } else if named.is_empty() || is_splat(&value).is_some() {
                 positional.push(value);
             } else {
-                // TODO: return Err!
-                eprintln!("ERROR: positional arg after named (three)");
+                return Err(Error::error("positional arg after named"));
             }
         }
-        CallArgs { positional, named }
+        Ok(CallArgs { positional, named })
     }
 
     /// Evaluate these sass CallArgs to css CallArgs.
@@ -55,8 +56,13 @@ impl CallArgs {
                     css::Value::ArgList(args) => {
                         result.positional.extend(args.positional);
                         for (name, value) in args.named {
-                            // TODO: check for duplicates?
-                            result.named.insert(name, value);
+                            if let Some(_existing) =
+                                result.named.insert(name, value)
+                            {
+                                return Err(Error::error(
+                                    "Duplicate argument",
+                                ));
+                            }
                         }
                     }
                     css::Value::Map(map) => {
