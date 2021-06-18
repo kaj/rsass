@@ -164,8 +164,8 @@ impl Value {
             Value::Map(ref m) => {
                 let mut items = css::ValueMap::new();
                 for (k, v) in m.iter() {
-                    let k = k.do_evaluate(scope.clone(), false)?;
-                    let v = v.do_evaluate(scope.clone(), false)?;
+                    let k = k.do_evaluate(scope.clone(), arithmetic)?;
+                    let v = v.do_evaluate(scope.clone(), arithmetic)?;
                     if items.insert(k, v).is_some() {
                         return Err(Error::error("Duplicate key"));
                     }

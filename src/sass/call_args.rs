@@ -51,8 +51,8 @@ impl CallArgs {
         )?;
         let mut result = css::CallArgs { positional, named };
         for arg in &self.positional {
-            if let Some(splat) = is_splat(arg) {
-                match splat.do_evaluate(scope.clone(), true)? {
+            match is_splat(arg) {
+                Some([one]) => match one.do_evaluate(scope.clone(), true)? {
                     css::Value::ArgList(args) => {
                         result.positional.extend(args.positional);
                         for (name, value) in args.named {
@@ -77,11 +77,19 @@ impl CallArgs {
                     item => {
                         result.positional.push(item);
                     }
+                },
+                Some(splat) => {
+                    for arg in splat {
+                        result
+                            .positional
+                            .push(arg.do_evaluate(scope.clone(), true)?);
+                    }
                 }
-            } else {
-                result
-                    .positional
-                    .push(arg.do_evaluate(scope.clone(), true)?);
+                None => {
+                    result
+                        .positional
+                        .push(arg.do_evaluate(scope.clone(), true)?);
+                }
             }
         }
         Ok(result)
@@ -98,24 +106,77 @@ impl CallArgs {
         num: usize,
     ) -> Result<css::Value, Error> {
         // TODO: Error if both name and posinal exists?
-        self.positional
-            .get(num)
-            .or_else(|| self.named.get(&name))
-            .map(|v| v.do_evaluate(scope, true))
-            .unwrap_or(Ok(css::Value::Null))
+        if let Some(v) = self.named.get(&name) {
+            return v.do_evaluate(scope, true);
+        }
+        let mut i = 0;
+        for a in &self.positional {
+            match is_splat(a) {
+                Some([one]) => match one.do_evaluate(scope.clone(), true)? {
+                    css::Value::ArgList(args) => {
+                        if let Some(v) = args
+                            .named
+                            .get(&name)
+                            .or_else(|| args.positional.get(num - i))
+                        {
+                            return Ok(v.clone());
+                        }
+                        i += if args.named.is_empty() {
+                            args.len()
+                        } else {
+                            num + 1
+                        };
+                    }
+                    css::Value::Map(map) => {
+                        if let Some(v) = map.get(&name.to_string().into()) {
+                            return Ok(v.clone());
+                        }
+                        i += num + 1;
+                    }
+                    css::Value::List(items, ..) => {
+                        if let Some(v) = items.get(num - i) {
+                            return Ok(v.clone());
+                        } else {
+                            i += items.len();
+                        }
+                    }
+                    css::Value::Null => (),
+                    v => {
+                        if i == num {
+                            return Ok(v);
+                        } else {
+                            i += 1;
+                        }
+                    }
+                },
+                Some(splat) => {
+                    if let Some(v) = splat.get(num - i) {
+                        return v.do_evaluate(scope, true);
+                    } else {
+                        i += splat.len();
+                    }
+                }
+                None => {
+                    if i == num {
+                        return a.do_evaluate(scope, true);
+                    } else {
+                        i += 1;
+                    }
+                }
+            }
+        }
+        Ok(css::Value::Null)
     }
 }
 
-fn is_splat(arg: &Value) -> Option<&Value> {
-    match arg {
-        Value::List(list, _, false) => match &list[..] {
-            [splat, Value::Literal(v, ..)]
-                if v.is_unquoted() && v.single_raw() == Some("...") =>
-            {
-                Some(splat)
+fn is_splat(arg: &Value) -> Option<&[Value]> {
+    if let Value::List(list, _, false) = arg {
+        // TODO?  Check that sep is None or Space?
+        if let Some((Value::Literal(v, ..), splat)) = list.split_last() {
+            if v.is_unquoted() && v.single_raw() == Some("...") {
+                return Some(splat);
             }
-            _ => None,
-        },
-        _ => None,
+        }
     }
+    None
 }
