@@ -6,7 +6,7 @@ fn runner() -> crate::TestRunner {
         .mock_file("core_module/indirect/forward/_other.scss", "@forward \"sass:color\";\n\n$c: d !default;\n")
         .mock_file("core_module/indirect/use/_other.scss", "@use \"sass:color\";\n\n$c: d !default;\n")
         .mock_file("dash_insensitive/_other.scss", "$a-b: original !default;\nb {c: $a-b}\n")
-        .mock_file("doesnt_run_default/_other.scss", "// This will throw an error if it\'s evaluated, but it shouldn\'t be because `$a`\n// already has a value.\n$a: 1px + 1em !default;\nb {c: $a}\n")
+        .mock_file("doesnt_run_default/_other.scss", "// This will throw an error if it's evaluated, but it shouldn't be because `$a`\n// already has a value.\n$a: 1px + 1em !default;\nb {c: $a}\n")
         .mock_file("from_variable/_other.scss", "$a: original a !default;\nb {c: $a}\n")
         .mock_file("multi_load/forward/_midstream.scss", "@forward \"upstream\";\n")
         .mock_file("multi_load/forward/_upstream.scss", "$a: original !default;\n")

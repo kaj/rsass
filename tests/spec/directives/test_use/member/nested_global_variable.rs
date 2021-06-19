@@ -3,8 +3,8 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
-        .mock_file("direct/other.scss", "x {\n  @if false {\n    // Even though this assignment is deeply nested and never evaluated, it\n    // creates a variable slot in the module that defaults to null. This ensures\n    // that a module will always expose the same members regardless of how it\'s\n    // evaluated.\n    $member: value !global;\n  }\n}\n")
-        .mock_file("through_import/imported.scss", "x {\n  @if false {\n    // Even though this assignment is deeply nested and never evaluated, it\n    // creates a variable slot in the module that defaults to null. This ensures\n    // that a module will always expose the same members regardless of how it\'s\n    // evaluated.\n    $member: value !global;\n  }\n}\n")
+        .mock_file("direct/other.scss", "x {\n  @if false {\n    // Even though this assignment is deeply nested and never evaluated, it\n    // creates a variable slot in the module that defaults to null. This ensures\n    // that a module will always expose the same members regardless of how it's\n    // evaluated.\n    $member: value !global;\n  }\n}\n")
+        .mock_file("through_import/imported.scss", "x {\n  @if false {\n    // Even though this assignment is deeply nested and never evaluated, it\n    // creates a variable slot in the module that defaults to null. This ensures\n    // that a module will always expose the same members regardless of how it's\n    // evaluated.\n    $member: value !global;\n  }\n}\n")
         .mock_file("through_import/used.scss", "@import \"imported\";\n")
 }
 

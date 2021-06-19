@@ -3,7 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
-        .mock_file("color/generated/_utils.scss", "/// Returns a copy of `$color` that doesn\'t have color-literal metadata\n/// associated with it.\n@function generated-color($color) {\n  // This doesn\'t change the value of `$color` at all, but it does construct a\n  // new object.\n  @return scale-color($color, $blue: 0%);\n}\n")
+        .mock_file("color/generated/_utils.scss", "/// Returns a copy of `$color` that doesn't have color-literal metadata\n/// associated with it.\n@function generated-color($color) {\n  // This doesn't change the value of `$color` at all, but it does construct a\n  // new object.\n  @return scale-color($color, $blue: 0%);\n}\n")
 }
 
 mod boolean {

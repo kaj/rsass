@@ -12,7 +12,7 @@ fn runner() -> crate::TestRunner {
         .mock_file("default/_midstream.scss", "@forward \"upstream\" with ($a: configured !default);\n")
         .mock_file("default/_upstream.scss", "$a: original !default;\nb {c: $a}\n")
         .mock_file("doesnt_run_default/_midstream.scss", "@forward \"upstream\" with ($a: configured);\n")
-        .mock_file("doesnt_run_default/_upstream.scss", "// This will throw an error if it\'s evaluated, but it shouldn\'t be because `$a`\n// already has a value.\n$a: 1px + 1em !default;\nb {c: $a}\n")
+        .mock_file("doesnt_run_default/_upstream.scss", "// This will throw an error if it's evaluated, but it shouldn't be because `$a`\n// already has a value.\n$a: 1px + 1em !default;\nb {c: $a}\n")
         .mock_file("from_variable/_midstream.scss", "$a: configured;\n@forward \"upstream\" with ($a: $a);\n")
         .mock_file("from_variable/_upstream.scss", "$a: original a !default;\nb {c: $a}\n")
         .mock_file("multi_load/forward/_midstream.scss", "@forward \"upstream\";\n")
