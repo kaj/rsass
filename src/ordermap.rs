@@ -27,13 +27,11 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
     pub fn iter(&self) -> Iter<(K, V)> {
         self.0.iter()
     }
-    // TODO Should return a specialized iterator!
-    pub fn keys(&self) -> Vec<K> {
-        self.0.iter().map(|&(ref k, ref _v)| k).cloned().collect()
+    pub fn keys(&self) -> impl Iterator<Item = &'_ K> {
+        self.0.iter().map(|&(ref k, ref _v)| k)
     }
-    // TODO Should return a specialized iterator!
-    pub fn values(&self) -> Vec<V> {
-        self.0.iter().map(|&(ref _k, ref v)| v).cloned().collect()
+    pub fn values(&self) -> impl Iterator<Item = &'_ V> {
+        self.0.iter().map(|&(ref _k, ref v)| v)
     }
     pub fn get(&self, key: &K) -> Option<&V> {
         for &(ref k, ref v) in &self.0 {

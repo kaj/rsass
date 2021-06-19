@@ -12,6 +12,7 @@ project adheres to
 ### Breaking changes
 
 * The `sass::Item::MixinCall` enum alternative was modified.
+* The `OrderMap::keys()` and `values()` functions now returns iterators.
 
 ### Improvements
 
