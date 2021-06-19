@@ -1,6 +1,5 @@
-use super::{Number, Rational, Unit, UnitSet};
+use super::{BadNumber, Number, Rational, Unit, UnitSet};
 use crate::output::{Format, Formatted};
-use crate::Error;
 use std::fmt::{self, Display};
 use std::ops::{Div, Mul, Neg};
 
@@ -77,7 +76,7 @@ impl Numeric {
     /// The unit is ignored.  If the value is bignum rational or
     /// floating point, it is approximated as long as it is withing
     /// range, otherwises an error is returned.
-    pub fn as_ratio(&self) -> Result<Rational, Error> {
+    pub fn as_ratio(&self) -> Result<Rational, BadNumber> {
         self.value.as_ratio()
     }
 

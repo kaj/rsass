@@ -5,7 +5,7 @@ use super::{
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::FormalArgs;
-use crate::value::{Hwba, ListSeparator, Number, Unit};
+use crate::value::{Hwba, ListSeparator, Rational, Unit};
 use crate::{Error, Scope, ScopeRef};
 
 pub fn register(f: &mut Scope) {
@@ -43,11 +43,11 @@ fn hwb(s: &ScopeRef) -> Result<Value, Error> {
                 ))
             })?
     };
-    let hue = as_hue(hue).named(name!(hue))?.as_ratio()?;
-    let w = check_expl_pct(w).named(name!(whiteness))?.as_ratio()?;
-    let b = check_expl_pct(b).named(name!(blackness))?.as_ratio()?;
+    let hue = check_hue(hue).named(name!(hue))?;
+    let w = check_expl_pct(w).named(name!(whiteness))?;
+    let b = check_expl_pct(b).named(name!(blackness))?;
     let a = check_alpha(a).named(name!(alpha))?;
-    Ok(Hwba::new(hue, w / 100, b / 100, a).into())
+    Ok(Hwba::new(hue, w, b, a).into())
 }
 
 fn hwb_from_channels(
@@ -106,10 +106,10 @@ fn badchannels(v: &Value) -> Error {
     ))
 }
 
-fn as_hue(v: Value) -> Result<Number, String> {
+fn check_hue(v: Value) -> Result<Rational, String> {
     let vv = check::numeric(v)?;
     if let Some(scaled) = vv.as_unit_def(Unit::Deg) {
-        Ok(scaled)
+        Ok(scaled.as_ratio()?)
     } else {
         Err(format!(
             "{} is not an angle",

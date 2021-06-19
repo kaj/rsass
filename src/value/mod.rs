@@ -11,7 +11,7 @@ mod unitset;
 
 pub use self::colors::{Color, Hsla, Hwba, Rgba};
 pub use self::list_separator::ListSeparator;
-pub use self::number::{Number, Rational};
+pub use self::number::{BadNumber, Number, Rational};
 pub use self::numeric::Numeric;
 pub use self::operator::Operator;
 pub use self::quotes::Quotes;

@@ -350,7 +350,7 @@ impl NumValue {
             NumValue::Float(r) => r.round().into(),
         }
     }
-    pub fn as_ratio(&self) -> Result<Rational, crate::Error> {
+    pub fn as_ratio(&self) -> Result<Rational, BadNumber> {
         match self {
             NumValue::Rational(r) => Ok(*r),
             NumValue::BigRational(r) => {
@@ -365,14 +365,12 @@ impl NumValue {
                     numer /= 32;
                     denom /= 32;
                     if denom.is_zero() {
-                        return Err(crate::Error::BadValue(
-                            "Number too large".into(),
-                        ));
+                        return Err(BadNumber::TooLarge);
                     }
                 }
             }
             NumValue::Float(r) => Ratio::approximate_float(*r)
-                .ok_or_else(|| crate::Error::BadValue(r.to_string())),
+                .ok_or_else(|| BadNumber::BadFloat(*r)),
         }
     }
 }
@@ -387,7 +385,7 @@ impl Number {
     /// If the value is bignum rational or floating point, it is
     /// approximated as long as it is withing range, otherwises an
     /// error is returned.
-    pub fn as_ratio(&self) -> Result<Rational, crate::Error> {
+    pub fn as_ratio(&self) -> Result<Rational, BadNumber> {
         self.value.as_ratio()
     }
 
@@ -827,6 +825,30 @@ impl fmt::Debug for Number {
                 out.debug_list().entry(r.numer()).entry(r.denom()).finish()
             }
             NumValue::Float(f) => f.fmt(out),
+        }
+    }
+}
+
+/// Error signifying that a number could not be approximated as
+/// a rational.
+pub enum BadNumber {
+    /// The number was to large.
+    TooLarge,
+    /// The number was a "special" float value.
+    BadFloat(f64),
+}
+
+impl From<BadNumber> for String {
+    fn from(n: BadNumber) -> String {
+        n.to_string()
+    }
+}
+
+impl fmt::Display for BadNumber {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            BadNumber::TooLarge => out.write_str("Number too large"),
+            BadNumber::BadFloat(f) => write!(out, "Bad float: {}", f),
         }
     }
 }

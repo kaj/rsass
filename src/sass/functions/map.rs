@@ -48,11 +48,7 @@ pub fn create_module() -> Scope {
         let mut val = map.get(key);
         match keys {
             Value::ArgList(args) => {
-                if !args.named.is_empty() {
-                    return Err(Error::error(
-                        "xyzzy unexpected named args in map.get",
-                    ));
-                }
+                args.check_no_named()?;
                 for k in &args.positional {
                     match val {
                         Some(Value::Map(m)) => {
@@ -158,11 +154,7 @@ pub fn create_module() -> Scope {
                         ));
                     }
                 }
-                if !args.named.is_empty() {
-                    return Err(Error::error(
-                        "xyzzy unexpected named args in map.remove",
-                    ));
-                }
+                args.check_no_named()?;
                 for key in args.positional {
                     map.remove(&key);
                 }
@@ -232,9 +224,7 @@ fn as_va_map(v: Value) -> Result<ValueMap, String> {
     match v {
         Value::ArgList(args) => {
             // FIXME: Allow named arguments also?
-            if !args.named.is_empty() {
-                return Err("xyzzy unexpected named args in as_va_map".into());
-            }
+            args.check_no_named().map_err(|e| e.to_string())?;
             let mut values = args.positional;
             let mut result = if let Some(last) = values.pop() {
                 last.try_into()?

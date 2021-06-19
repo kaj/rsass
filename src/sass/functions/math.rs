@@ -23,7 +23,9 @@ pub fn create_module() -> Scope {
         use crate::value::Operator;
         match (a, b) {
             (Value::Color(a, _), Value::Numeric(b, _)) if b.is_no_unit() => {
-                let bn = b.as_ratio()?;
+                let bn = b
+                    .as_ratio()
+                    .map_err(|e| Error::BadValue(e.to_string()))?;
                 Ok((a.to_rgba().as_ref() / bn).into())
             }
             (Value::Numeric(ref a, _), Value::Numeric(ref b, _)) => {

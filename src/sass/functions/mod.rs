@@ -292,11 +292,7 @@ fn get_string(
 fn get_va_list(s: &Scope, name: Name) -> Result<Vec<Value>, Error> {
     match s.get(name.as_ref())? {
         Value::ArgList(args) => {
-            if !args.named.is_empty() {
-                return Err(Error::error(
-                    "xyzzy unexpected named args in get_va_list",
-                ));
-            }
+            args.check_no_named()?;
             Ok(args.positional)
         }
         Value::List(v, Some(ListSeparator::Comma), _) => Ok(v),

@@ -6,7 +6,7 @@ use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::parser::SourcePos;
 use crate::sass::{ArgsError, FormalArgs, Name};
-use crate::value::{Color, Number, Quotes, Rational, Unit};
+use crate::value::{Color, Number, Numeric, Quotes, Rational, Unit};
 use crate::Scope;
 use num_traits::{one, zero, Signed};
 mod channels;
@@ -73,19 +73,35 @@ fn check_color(v: Value) -> Result<Color, String> {
 /// For the alpha parameter of rgba, hsla, hwba functions
 /// Special perk: Defaults to 1.0 if the value is null.
 fn check_alpha(v: Value) -> Result<Rational, String> {
-    match v {
-        Value::Null => Ok(one()),
+    Ok(match v {
+        Value::Null => one(),
         v => {
             let num = check::numeric(v)?;
-            let r = num.value.as_ratio().map_err(|e| e.to_string())?;
-            if num.unit.is_percent() {
-                Ok(r / 100)
-            } else if num.unit.is_none() {
-                Ok(r)
-            } else {
-                Err(expected_to(&num, "have no units or \"%\""))
-            }
+            num.as_unit(Unit::None)
+                .ok_or_else(|| expected_to(&num, "have no units or \"%\""))?
+                .as_ratio()?
         }
+    })
+}
+/// Get a rational number in the 0..1 range.
+fn check_alpha_range(v: Value) -> Result<Rational, String> {
+    let val = check::numeric(v)?;
+    let a = val
+        .as_unit_def(Unit::None)
+        .ok_or_else(|| expected_to(&val, "have no units or \"%\""))?
+        .as_ratio()?;
+    if a < zero() || a > one() {
+        Err(expected_to(&val, "be within 0 and 1"))
+    } else {
+        Ok(a)
+    }
+}
+fn check_alpha_pm(v: Value) -> Result<Rational, String> {
+    let v = check_rational(v)?;
+    if v.abs() > one() {
+        Err(expected_to(&Number::from(v), "be within -1 and 1"))
+    } else {
+        Ok(v)
     }
 }
 
@@ -95,81 +111,57 @@ fn check_pct(v: Value) -> Result<Number, String> {
         .ok_or_else(|| expected_to(&val, "have unit \"%\""))
 }
 
-fn check_pct_expl_rational_pm1(v: Value) -> Result<Rational, String> {
+fn check_expl_pct(v: Value) -> Result<Rational, String> {
     let val = check::numeric(v)?;
     if !val.unit.is_percent() {
         return Err(expected_to(&val, "have unit \"%\""));
     }
-    if val.value.clone().abs() > 100.into() {
-        Err(expected_to(&val, "be within -100% and 100%"))
-    } else {
-        let r = val.value.as_ratio().map_err(|e| e.to_string())?;
-        Ok(r / 100)
-    }
-}
-
-fn check_expl_pct(v: Value) -> Result<Number, String> {
-    let val = check::numeric(v)?;
-    if !val.unit.is_percent() {
-        return Err(expected_to(&val, "have unit \"%\""));
-    }
-    if val.value < 0.into() || val.value > 100.into() {
+    if val.value < zero() || val.value > 100.into() {
         Err(expected_to(&val, "be within 0% and 100%"))
     } else {
-        Ok(val.value)
+        Ok(val.as_ratio()? / 100)
     }
 }
-fn check_expl_pct_r(v: Value) -> Result<Rational, String> {
-    check_expl_pct(v)?
-        .as_ratio()
-        .map(|r| r / 100)
-        .map_err(|e| e.to_string())
-}
 
-fn check_pct_rational_range(v: Value) -> Result<Rational, String> {
+fn check_pct_range(v: Value) -> Result<Rational, String> {
     let val = check_pct(v)?;
-    if val < 0.into() || val > 100.into() {
+    if val < zero() || val > 100.into() {
         Err(expected_to(&val, "be within 0 and 100"))
     } else {
-        val.as_ratio().map_err(|e| e.to_string()).map(|v| v / 100)
+        Ok(val.as_ratio()? / 100)
     }
 }
 fn check_rational(v: Value) -> Result<Rational, String> {
-    check::numeric(v)?.as_ratio().map_err(|e| e.to_string())
+    Ok(check::numeric(v)?.as_ratio()?)
 }
-fn check_rational_pm1(v: Value) -> Result<Rational, String> {
-    let v = check_rational(v)?;
-    if v.abs() > one() {
-        Err(expected_to(&Number::from(v), "be within -1 and 1"))
+
+fn check_channel(v: Value) -> Result<Rational, String> {
+    num2chan(&check::numeric(v)?)
+}
+fn check_channel_range(v: Value) -> Result<Rational, String> {
+    let v = check::numeric(v)?;
+    let r = num2chan(&v)?;
+    if r > Rational::from_integer(255) || r < zero() {
+        Err(expected_to(&v, "be within 0 and 255"))
     } else {
-        Ok(v)
+        Ok(r)
     }
 }
-fn check_rational_byte(v: Value) -> Result<Rational, String> {
-    let v = check_rational(v)?;
-    if v > Rational::from_integer(255) || v < zero() {
-        Err(expected_to(&Number::from(v), "be within 0 and 255"))
+fn check_channel_pm(v: Value) -> Result<Rational, String> {
+    let v = check::numeric(v)?;
+    let r = num2chan(&v)?;
+    if r.abs() > Rational::from_integer(255) {
+        Err(expected_to(&v, "be within -255 and 255"))
     } else {
-        Ok(v)
+        Ok(r)
     }
 }
-fn check_rational_pmbyte(v: Value) -> Result<Rational, String> {
-    let v = check_rational(v)?;
-    if v > Rational::from_integer(255) || v < Rational::from_integer(-255) {
-        Err(expected_to(&Number::from(v), "be within -255 and 255"))
+fn num2chan(v: &Numeric) -> Result<Rational, String> {
+    let r = v.as_ratio()?;
+    if v.unit.is_percent() {
+        Ok(r * 255 / 100)
     } else {
-        Ok(v)
-    }
-}
-/// Get a rational number in the 0..1 range.
-fn check_rational_fract(v: Value) -> Result<Rational, String> {
-    let val = check::numeric(v)?
-        .as_unit_def(Unit::None)
-        .ok_or_else(|| "xyzzy".to_string())?;
-    if val < 0.into() || val > 1.into() {
-        Err(expected_to(&val, "be within 0 and 1"))
-    } else {
-        val.as_ratio().map_err(|e| e.to_string())
+        Ok(r)
     }
 }
 

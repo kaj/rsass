@@ -1,6 +1,6 @@
 use super::Value;
 use crate::ordermap::OrderMap;
-use crate::sass::Name;
+use crate::sass::{ArgsError, Name};
 use crate::value::ListSeparator;
 use crate::Error;
 use std::default::Default;
@@ -77,6 +77,14 @@ impl CallArgs {
             self.named.remove(name)
         } else {
             None
+        }
+    }
+
+    pub(crate) fn check_no_named(&self) -> Result<(), ArgsError> {
+        if let Some(extra) = self.named.keys().next() {
+            Err(ArgsError::Unexpected(extra.clone()))
+        } else {
+            Ok(())
         }
     }
 

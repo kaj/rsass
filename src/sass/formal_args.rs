@@ -182,3 +182,11 @@ impl fmt::Display for ArgsError {
         }
     }
 }
+
+// Note: this is only for some special cases, normally the "context"
+// of a function declaration pos is required.
+impl From<ArgsError> for Error {
+    fn from(e: ArgsError) -> Error {
+        Error::S(e.to_string())
+    }
+}

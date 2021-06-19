@@ -1,15 +1,14 @@
 use super::channels::Channels;
 use super::{
-    bad_arg, check_alpha, check_pct_rational_range, check_rational,
-    get_checked, get_color, get_opt_check, is_special, make_call, CheckedArg,
-    FunctionMap,
+    bad_arg, check_alpha, check_pct_range, check_rational, get_checked,
+    get_color, get_opt_check, is_special, make_call, CheckedArg, FunctionMap,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::{ArgsError, FormalArgs, Name};
 use crate::value::{Hsla, Numeric, Rational, Unit};
 use crate::{Error, Scope, ScopeRef};
-use num_traits::{one, zero};
+use num_traits::zero;
 use std::convert::TryFrom;
 
 pub fn register(f: &mut Scope) {
@@ -70,15 +69,15 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     def!(f, darken(color, amount), |s| {
         let col = get_color(s, "color")?;
         let hsla = col.to_hsla();
-        let lum = hsla.lum()
-            - get_checked(s, name!(amount), check_pct_rational_range)?;
+        let lum =
+            hsla.lum() - get_checked(s, name!(amount), check_pct_range)?;
         Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
     });
     def!(f, desaturate(color, amount), |s| {
         let col = get_color(s, "color")?;
         let hsla = col.to_hsla();
-        let sat = hsla.sat()
-            - get_checked(s, name!(amount), check_pct_rational_range)?;
+        let sat =
+            hsla.sat() - get_checked(s, name!(amount), check_pct_range)?;
         Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha()).into())
     });
     def_va!(f, saturate(kwargs), |s| {
@@ -88,8 +87,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         match a1.eval(s.clone(), args.clone()) {
             Ok(s) => {
                 let col = get_color(&s, "color")?;
-                let sat =
-                    get_checked(&s, name!(amount), check_pct_rational_range)?;
+                let sat = get_checked(&s, name!(amount), check_pct_range)?;
                 let hsla = col.to_hsla();
                 let sat = hsla.sat() + sat;
                 Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha())
@@ -100,7 +98,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
                     .eval(s.clone(), args)
                     .map_err(|e| bad_arg(e, &name!(saturate), &a2))?;
                 let sat = s.get("amount")?;
-                check_pct_rational_range(sat.clone()).named(name!(amount))?;
+                check_pct_range(sat.clone()).named(name!(amount))?;
                 Ok(make_call("saturate", vec![sat]))
             }
             Err(ae) => Err(bad_arg(ae, &name!(saturate), &a1)),
@@ -109,8 +107,8 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     def!(f, lighten(color, amount), |s| {
         let col = get_color(s, "color")?;
         let hsla = col.to_hsla();
-        let lum = hsla.lum()
-            + get_checked(s, name!(amount), check_pct_rational_range)?;
+        let lum =
+            hsla.lum() + get_checked(s, name!(amount), check_pct_range)?;
         Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
     });
     for (gname, lname) in &[
@@ -181,8 +179,8 @@ fn hsla_from_values(
     } else {
         Ok(Hsla::new(
             check_rational(h).named(name!(hue))?,
-            check_rational_percent(s).named(name!(saturation))?,
-            check_rational_percent(l).named(name!(lightness))?,
+            check_pct_opt(s).named(name!(saturation))?,
+            check_pct_opt(l).named(name!(lightness))?,
             check_alpha(a).named(name!(alpha))?,
         )
         .into())
@@ -195,22 +193,17 @@ pub fn percentage(v: Rational) -> Value {
 
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-fn check_rational_percent(v: Value) -> Result<Rational, String> {
-    match v {
-        Value::Null => Ok(zero()),
-        Value::Numeric(v, ..) => {
-            let r = v.value.as_ratio().map_err(|e| e.to_string())?;
-            if v.unit.is_percent() || r > one() {
-                Ok(r / 100)
-            } else {
-                Ok(r)
-            }
-        }
-        v => Err(format!(
-            "{} is not a number",
+fn check_pct_opt(v: Value) -> Result<Rational, String> {
+    let v = super::check::numeric(v)?;
+    if !v.unit.is_percent() {
+        // Note: The deprecation warning should include the parameter name
+        // and line of call, but we don't have that here.
+        dep_warn!(
+            "Passing a number without unit % ({}) is deprecated.",
             v.format(Format::introspect())
-        )),
+        );
     }
+    Ok(v.as_ratio()? / 100)
 }
 
 #[test]

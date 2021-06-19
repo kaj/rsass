@@ -1,13 +1,13 @@
 use super::{
-    check, check_color, check_expl_pct_r, check_pct_expl_rational_pm1,
-    check_rational, check_rational_byte, check_rational_fract,
-    check_rational_pm1, check_rational_pmbyte, expected_to, get_checked,
-    get_color, make_call, CheckedArg, Error, FunctionMap, Name,
+    check, check_alpha_pm, check_alpha_range, check_channel_pm,
+    check_channel_range, check_color, check_expl_pct, check_rational,
+    expected_to, get_checked, get_color, make_call, CheckedArg, Error,
+    FunctionMap, Name,
 };
 use crate::css::{CallArgs, Value};
 use crate::value::{Hsla, Hwba, Quotes, Rational, Rgba};
 use crate::Scope;
-use num_traits::{one, Signed};
+use num_traits::{one, zero, Signed};
 
 pub fn register(f: &mut Scope) {
     def_va!(f, adjust(color, kwargs), |s| {
@@ -24,32 +24,16 @@ pub fn register(f: &mut Scope) {
             return Err(Error::error("Only one positional argument is allowed. \
                                      All other arguments must be passed by name"));
         }
-        let red = take_opt(&mut args, name!(red), check_rational_pmbyte)?;
-        let gre = take_opt(&mut args, name!(green), check_rational_pmbyte)?;
-        let blu = take_opt(&mut args, name!(blue), check_rational_pmbyte)?;
+        let red = take_opt(&mut args, name!(red), check_channel_pm)?;
+        let gre = take_opt(&mut args, name!(green), check_channel_pm)?;
+        let blu = take_opt(&mut args, name!(blue), check_channel_pm)?;
         let hue = take_opt(&mut args, name!(hue), check_rational)?;
-        let sat =
-            take_opt(&mut args, name!(saturation), check_pct_rational_pm1)?;
-        let lig =
-            take_opt(&mut args, name!(lightness), check_pct_rational_pm1)?;
-        let bla = take_opt(
-            &mut args,
-            name!(blackness),
-            check_pct_expl_rational_pm1,
-        )?;
-        let whi = take_opt(
-            &mut args,
-            name!(whiteness),
-            check_pct_expl_rational_pm1,
-        )?;
-        let a_adj = take_opt(&mut args, name!(alpha), check_rational_pm1)?;
-
-        if let Some(extra) = args.named.keys().iter().next() {
-            return Err(Error::error(format!(
-                "No argument named ${}",
-                extra
-            )));
-        }
+        let sat = take_opt(&mut args, name!(saturation), check_pct_pm)?;
+        let lig = take_opt(&mut args, name!(lightness), check_pct_pm)?;
+        let bla = take_opt(&mut args, name!(blackness), check_pct_expl_pm)?;
+        let whi = take_opt(&mut args, name!(whiteness), check_pct_expl_pm)?;
+        let a_adj = take_opt(&mut args, name!(alpha), check_alpha_pm)?;
+        args.check_no_named()?;
 
         if red.is_some() || gre.is_some() || blu.is_some() {
             if bla.is_some() || whi.is_some() {
@@ -111,41 +95,16 @@ pub fn register(f: &mut Scope) {
             return Err(Error::error("Only one positional argument is allowed. \
                                      All other arguments must be passed by name"));
         }
-        let red =
-            take_opt(&mut args, name!(red), check_pct_expl_rational_pm1)?;
-        let gre =
-            take_opt(&mut args, name!(green), check_pct_expl_rational_pm1)?;
-        let blu =
-            take_opt(&mut args, name!(blue), check_pct_expl_rational_pm1)?;
-        let sat = take_opt(
-            &mut args,
-            name!(saturation),
-            check_pct_expl_rational_pm1,
-        )?;
-        let lig = take_opt(
-            &mut args,
-            name!(lightness),
-            check_pct_expl_rational_pm1,
-        )?;
-        let bla = take_opt(
-            &mut args,
-            name!(blackness),
-            check_pct_expl_rational_pm1,
-        )?;
-        let whi = take_opt(
-            &mut args,
-            name!(whiteness),
-            check_pct_expl_rational_pm1,
-        )?;
-        let a_adj =
-            take_opt(&mut args, name!(alpha), check_pct_expl_rational_pm1)?;
+        let red = take_opt(&mut args, name!(red), check_pct_expl_pm)?;
+        let gre = take_opt(&mut args, name!(green), check_pct_expl_pm)?;
+        let blu = take_opt(&mut args, name!(blue), check_pct_expl_pm)?;
+        let sat = take_opt(&mut args, name!(saturation), check_pct_expl_pm)?;
+        let lig = take_opt(&mut args, name!(lightness), check_pct_expl_pm)?;
+        let bla = take_opt(&mut args, name!(blackness), check_pct_expl_pm)?;
+        let whi = take_opt(&mut args, name!(whiteness), check_pct_expl_pm)?;
+        let a_adj = take_opt(&mut args, name!(alpha), check_pct_expl_pm)?;
+        args.check_no_named()?;
 
-        if let Some(extra) = args.named.keys().iter().next() {
-            return Err(Error::error(format!(
-                "No argument named ${}",
-                extra
-            )));
-        }
         if red.is_some() || gre.is_some() || blu.is_some() {
             if bla.is_some() || whi.is_some() {
                 Err(Error::error("RGB parameters may not be passed along with HWB parameters"))
@@ -207,24 +166,17 @@ pub fn register(f: &mut Scope) {
             return Err(Error::error("Only one positional argument is allowed. \
                                      All other arguments must be passed by name"));
         }
-        let red = take_opt(&mut args, name!(red), check_rational_byte)?;
-        let gre = take_opt(&mut args, name!(green), check_rational_byte)?;
-        let blu = take_opt(&mut args, name!(blue), check_rational_byte)?;
+        let red = take_opt(&mut args, name!(red), check_channel_range)?;
+        let gre = take_opt(&mut args, name!(green), check_channel_range)?;
+        let blu = take_opt(&mut args, name!(blue), check_channel_range)?;
         let hue = take_opt(&mut args, name!(hue), check_rational)?;
         let sat =
-            take_opt(&mut args, name!(saturation), check_pct_rational_p1)?;
-        let lig =
-            take_opt(&mut args, name!(lightness), check_pct_rational_p1)?;
-        let bla = take_opt(&mut args, name!(blackness), check_expl_pct_r)?;
-        let whi = take_opt(&mut args, name!(whiteness), check_expl_pct_r)?;
-        let alp = take_opt(&mut args, name!(alpha), check_rational_fract)?;
-
-        if let Some(extra) = args.named.keys().iter().next() {
-            return Err(Error::error(format!(
-                "No argument named ${}",
-                extra
-            )));
-        }
+            take_opt(&mut args, name!(saturation), check_pct_opt_range)?;
+        let lig = take_opt(&mut args, name!(lightness), check_pct_opt_range)?;
+        let bla = take_opt(&mut args, name!(blackness), check_expl_pct)?;
+        let whi = take_opt(&mut args, name!(whiteness), check_expl_pct)?;
+        let alp = take_opt(&mut args, name!(alpha), check_alpha_range)?;
+        args.check_no_named()?;
 
         if red.is_some() || gre.is_some() || blu.is_some() {
             if hue.is_some() || sat.is_some() || lig.is_some() {
@@ -285,13 +237,13 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     let mut f = Scope::builtin_module("sass:color");
     def!(f, fade_in(color, amount), |s| {
         let mut col = get_color(s, "color")?;
-        let amount = get_checked(s, name!(amount), check_rational_fract)?;
+        let amount = get_checked(s, name!(amount), check_alpha_range)?;
         col.set_alpha(col.get_alpha() + amount);
         Ok(col.into())
     });
     def!(f, fade_out(color, amount), |s| {
         let mut col = get_color(s, "color")?;
-        let amount = get_checked(s, name!(amount), check_rational_fract)?;
+        let amount = get_checked(s, name!(amount), check_alpha_range)?;
         col.set_alpha(col.get_alpha() - amount);
         Ok(col.into())
     });
@@ -319,22 +271,32 @@ where
         .transpose()
 }
 
-fn check_pct_rational_pm1(v: Value) -> Result<Rational, String> {
+fn check_pct_pm(v: Value) -> Result<Rational, String> {
     let val = check::numeric(v)?;
     if val.value.clone().abs() > 100.into() {
         Err(expected_to(&val, "be within -100% and 100%"))
     } else {
-        let r = val.value.as_ratio().map_err(|e| e.to_string())?;
-        Ok(r / 100)
+        Ok(val.as_ratio()? / 100)
     }
 }
-fn check_pct_rational_p1(v: Value) -> Result<Rational, String> {
+fn check_pct_expl_pm(v: Value) -> Result<Rational, String> {
     let val = check::numeric(v)?;
-    if val.value < 0.into() || val.value > 100.into() {
+    if !val.unit.is_percent() {
+        return Err(expected_to(&val, "have unit \"%\""));
+    }
+    if val.value.clone().abs() > 100.into() {
+        Err(expected_to(&val, "be within -100% and 100%"))
+    } else {
+        Ok(val.as_ratio()? / 100)
+    }
+}
+
+fn check_pct_opt_range(v: Value) -> Result<Rational, String> {
+    let val = check::numeric(v)?;
+    if val.value < zero() || val.value > 100.into() {
         Err(expected_to(&val, "be within 0% and 100%"))
     } else {
-        let r = val.value.as_ratio().map_err(|e| e.to_string())?;
-        Ok(r / 100)
+        Ok(val.as_ratio()? / 100)
     }
 }
 

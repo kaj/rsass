@@ -1,6 +1,6 @@
 use super::channels::Channels;
 use super::{
-    bad_arg, check, check_alpha, check_color, check_pct_rational_range,
+    bad_arg, check_alpha, check_channel, check_color, check_pct_range,
     get_checked, get_color, is_special, make_call, CheckedArg, Error,
     FunctionMap,
 };
@@ -29,7 +29,7 @@ pub fn register(f: &mut Scope) {
         let a = a.to_rgba();
         let b = get_color(s, "color2")?;
         let b = b.to_rgba();
-        let w = get_checked(s, name!(weight), check_pct_rational_range)?;
+        let w = get_checked(s, name!(weight), check_pct_range)?;
         let one: Rational = one();
 
         let w_a = {
@@ -57,8 +57,7 @@ pub fn register(f: &mut Scope) {
         match s.get("color")? {
             Value::Color(col, _) => {
                 let rgba = col.to_rgba();
-                let w =
-                    get_checked(s, name!(weight), check_pct_rational_range)?;
+                let w = get_checked(s, name!(weight), check_pct_range)?;
                 let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
                 Ok(Rgba::new(
                     inv(rgba.red()),
@@ -69,8 +68,7 @@ pub fn register(f: &mut Scope) {
                 .into())
             }
             col => {
-                let w =
-                    get_checked(s, name!(weight), check_pct_rational_range)?;
+                let w = get_checked(s, name!(weight), check_pct_range)?;
                 if w == one() {
                     match col {
                         v @ Value::Numeric(..) => {
@@ -172,22 +170,12 @@ fn rgba_from_values(
         Ok(make_call(fn_name.as_ref(), vec![r, g, b, a]))
     } else {
         Ok(Rgba::new(
-            to_int(r).named(name!(red))?,
-            to_int(g).named(name!(green))?,
-            to_int(b).named(name!(blue))?,
+            check_channel(r).named(name!(red))?,
+            check_channel(g).named(name!(green))?,
+            check_channel(b).named(name!(blue))?,
             check_alpha(a).named(name!(alpha))?,
         )
         .into())
-    }
-}
-
-fn to_int(v: Value) -> Result<Rational, String> {
-    let v = check::numeric(v)?;
-    let r = v.value.as_ratio().map_err(|e| e.to_string())?;
-    if v.unit.is_percent() {
-        Ok(r * 255 / 100)
-    } else {
-        Ok(r)
     }
 }
 
