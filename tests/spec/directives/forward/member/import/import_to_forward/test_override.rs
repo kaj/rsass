@@ -48,7 +48,6 @@ mod test_override {
     }
 
     #[test]
-    #[ignore] // wrong result
     fn function() {
         let runner = runner().with_cwd("function");
         assert_eq!(
@@ -65,7 +64,6 @@ mod test_override {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn mixin() {
         let runner = runner().with_cwd("mixin");
         assert_eq!(
@@ -82,7 +80,6 @@ mod test_override {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn variable() {
         let runner = runner().with_cwd("variable");
         assert_eq!(

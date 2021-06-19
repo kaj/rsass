@@ -18,9 +18,10 @@ project adheres to
 
 * Better handling of mixin call bodies, the `@content` item, and the
   `content_exists` function.  Fixes #112.
+* `@import` exposes things `@forward`ed in the imported module.
 * Some more fixes regarding function calls and modules.
 * Removed some debug printouts that was accidentally left in 0.21.0.
-* Update sass-spec test suite to 2021-06-02.
+* Update sass-spec test suite to 2021-06-14.
 
 Thanks to @Keats for reporting #112 and #108.
 

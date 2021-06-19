@@ -18,7 +18,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn mixin() {
     let runner = runner().with_cwd("mixin");
     assert_eq!(
@@ -47,7 +46,6 @@ fn variable_assignment() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn variable_use() {
     let runner = runner().with_cwd("variable_use");
     assert_eq!(

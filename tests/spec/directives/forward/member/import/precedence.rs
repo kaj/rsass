@@ -10,7 +10,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn nested() {
     let runner = runner().with_cwd("nested");
     assert_eq!(
@@ -25,7 +24,6 @@ fn nested() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn top_level() {
     let runner = runner().with_cwd("top_level");
     assert_eq!(

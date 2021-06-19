@@ -5,6 +5,7 @@ use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
 use crate::sass::{
     self, get_global_module, Expose, FormalArgs, Function, Item, Mixin, Name,
+    UseAs,
 };
 use crate::selectors::Selectors;
 use crate::value::ValueRange;
@@ -165,15 +166,22 @@ fn handle_item(
                             pos.clone(),
                         )?;
                         let mut thead = CssHead::new(format);
+                        let module = ScopeRef::sub(scope.clone());
                         handle_body(
                             &items,
                             &mut thead,
                             rule.as_deref_mut(),
                             buf,
-                            scope.clone(),
+                            module.clone(),
                             &sub_context,
                         )?;
                         head.merge_imports(thead);
+                        scope.do_use(
+                            module,
+                            "",
+                            &UseAs::Star,
+                            &Expose::All,
+                        )?;
                         continue 'name;
                     }
                 }

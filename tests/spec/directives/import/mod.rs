@@ -11,6 +11,8 @@ mod error;
 
 mod escaped;
 
+mod implicit_dependencies;
+
 mod load;
 
 mod nested;

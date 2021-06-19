@@ -30,7 +30,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn default() {
     let runner = runner().with_cwd("default");
     assert_eq!(
@@ -42,7 +41,6 @@ fn default() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn non_overridable() {
     let runner = runner().with_cwd("non_overridable");
     assert_eq!(
@@ -55,7 +53,6 @@ fn non_overridable() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn overridden() {
     let runner = runner().with_cwd("overridden");
     assert_eq!(

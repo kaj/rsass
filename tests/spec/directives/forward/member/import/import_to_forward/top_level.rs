@@ -9,6 +9,15 @@ fn runner() -> crate::TestRunner {
         .mock_file("post_facto/_other.scss", "@mixin a {b {c: $d}}\n")
         .mock_file("post_facto/_upstream.scss", "$d: e;\n")
         .mock_file(
+            "post_facto/with_use/_midstream.scss",
+            "@forward \"upstream\";\n",
+        )
+        .mock_file(
+            "post_facto/with_use/_other.scss",
+            "@use \"sass:math\";\n\n@mixin a {b {c: $d}}\n",
+        )
+        .mock_file("post_facto/with_use/_upstream.scss", "$d: e;\n")
+        .mock_file(
             "variable_assignment/_midstream.scss",
             "@forward \"upstream\";\n",
         )
@@ -21,7 +30,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn mixin() {
     let runner = runner().with_cwd("mixin");
     assert_eq!(
@@ -33,7 +41,6 @@ fn mixin() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn post_facto() {
     let runner = runner().with_cwd("post_facto");
     assert_eq!(
@@ -59,7 +66,6 @@ fn variable_assignment() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn variable_use() {
     let runner = runner().with_cwd("variable_use");
     assert_eq!(
