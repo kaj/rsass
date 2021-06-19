@@ -12,13 +12,18 @@ project adheres to
 ### Breaking changes
 
 * The `sass::Item::MixinCall` enum alternative was modified.
-* The `OrderMap::keys()` and `values()` functions now returns iterators.
+* Signature changes in `css::CallArgs` and `sass:CallArgs`,
+  and new alternatives in `sass::ArgsError`.
+* `css::Value` has a new variant `ArgList`.
+* The `OrderMap::keys()` and `values()` functions now returns iterators,
+  `OrderMap::remove(key)` now returns the removed value.
 
 ### Improvements
 
 * Better handling of mixin call bodies, the `@content` item, and the
   `content_exists` function.  Fixes #112.
 * `@import` exposes things `@forward`ed in the imported module.
+* Many improvements in parameter passing to functions and mixins.  PR #113.
 * Some more fixes regarding function calls and modules.
 * Removed some debug printouts that was accidentally left in 0.21.0.
 * Update sass-spec test suite to 2021-06-14.
