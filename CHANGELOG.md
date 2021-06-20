@@ -25,6 +25,7 @@ project adheres to
 * `@import` exposes things `@forward`ed in the imported module.
 * Many improvements in parameter passing to functions and mixins.  PR #113.
 * Some more fixes regarding function calls and modules.
+* Support the `keywords` function in `sass:meta`.
 * Removed some debug printouts that was accidentally left in 0.21.0.
 * Update sass-spec test suite to 2021-06-14.
 

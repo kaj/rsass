@@ -1,4 +1,6 @@
-use super::{check, get_opt_check, get_string, Error, FunctionMap};
+use super::{
+    check, get_checked, get_opt_check, get_string, Error, FunctionMap,
+};
 use crate::css::{CallArgs, Value};
 use crate::sass::{Function, Mixin, Name};
 use crate::{Format, Scope, ScopeRef};
@@ -93,7 +95,20 @@ pub fn create_module() -> Scope {
             .to_string()
             .into())
     });
-    // TODO: keywords
+    def!(f, keywords(args), |s| {
+        let args = get_checked(s, name!(args), |v| match v {
+            Value::ArgList(args) => Ok(args.named),
+            v => Err(format!(
+                "{} is not an argument list",
+                v.format(Format::introspect())
+            )),
+        })?;
+        Ok(Value::Map(
+            args.into_iter()
+                .map(|(k, v)| (k.to_string().into(), v))
+                .collect(),
+        ))
+    });
     def!(f, mixin_exists(name, module = b"null"), |s| {
         let (v, _q) = get_string(s, "name")?;
         let module = get_opt_check(s, name!(module), check::string)?;
@@ -129,7 +144,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(get_function), name!(get_function)),
         (name!(global_variable_exists), name!(global_variable_exists)),
         (name!(inspect), name!(inspect)),
-        // TODO: (name!(keywords), name!(keywords)),
+        (name!(keywords), name!(keywords)),
         (name!(mixin_exists), name!(mixin_exists)),
         (name!(type_of), name!(type_of)),
         (name!(variable_exists), name!(variable_exists)),

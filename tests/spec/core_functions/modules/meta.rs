@@ -79,7 +79,6 @@ fn inspect() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn keywords() {
     assert_eq!(
         runner().ok("@use \"sass:meta\";\n\

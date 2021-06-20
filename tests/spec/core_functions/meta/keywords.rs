@@ -7,7 +7,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn dash_insensitive() {
     let runner = runner().with_cwd("dash_insensitive");
     assert_eq!(
@@ -25,7 +24,6 @@ mod empty {
     }
 
     #[test]
-    #[ignore] // wrong result
     fn no_args() {
         let runner = runner().with_cwd("no_args");
         assert_eq!(
@@ -37,7 +35,6 @@ mod empty {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn positional() {
         let runner = runner().with_cwd("positional");
         assert_eq!(
@@ -56,7 +53,6 @@ mod error {
     }
 
     #[test]
-    #[ignore] // missing error
     fn too_few_args() {
         let runner = runner().with_cwd("too_few_args");
         assert_eq!(
@@ -74,7 +70,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_many_args() {
         let runner = runner().with_cwd("too_many_args");
         assert_eq!(
@@ -98,7 +93,6 @@ mod error {
         }
 
         #[test]
-        #[ignore] // missing error
         fn non_arg_list() {
             let runner = runner().with_cwd("non_arg_list");
             assert_eq!(
@@ -112,7 +106,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
         fn non_list() {
             let runner = runner().with_cwd("non_list");
             assert_eq!(
@@ -134,7 +127,6 @@ mod forwarded {
     }
 
     #[test]
-    #[ignore] // wrong result
     fn call() {
         let runner = runner().with_cwd("call");
         assert_eq!(
@@ -166,7 +158,6 @@ mod forwarded {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn function() {
         let runner = runner().with_cwd("function");
         assert_eq!(
@@ -181,7 +172,6 @@ mod forwarded {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn mixin() {
         let runner = runner().with_cwd("mixin");
         assert_eq!(
@@ -197,7 +187,6 @@ mod forwarded {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn multi_arg() {
     let runner = runner().with_cwd("multi_arg");
     assert_eq!(
@@ -209,7 +198,6 @@ fn multi_arg() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn named() {
     let runner = runner().with_cwd("named");
     assert_eq!(
@@ -223,7 +211,6 @@ fn named() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn one_arg() {
     let runner = runner().with_cwd("one_arg");
     assert_eq!(
