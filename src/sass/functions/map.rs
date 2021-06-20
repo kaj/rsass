@@ -1,4 +1,4 @@
-use super::{get_checked, Error, FunctionMap, Name};
+use super::{get_checked, CheckedArg, Error, FunctionMap, Name};
 use crate::css::{Value, ValueMap};
 use crate::output::Format;
 use crate::value::ListSeparator;
@@ -103,13 +103,11 @@ pub fn create_module() -> Scope {
         let map2 = match s.get("args")? {
             Value::ArgList(mut args) => {
                 if let Some(map2) = args.only_named(&name!(map2)) {
-                    as_va_map(map2)
-                        .map_err(|e| Error::BadArgument(name!(map2), e))?
+                    as_va_map(map2).named(name!(map2))?
                 } else {
                     let mut values = args.positional;
                     let mut result = if let Some(last) = values.pop() {
-                        last.try_into()
-                            .map_err(|e| Error::BadArgument(name!(map2), e))?
+                        last.try_into().named(name!(map2))?
                     } else {
                         return Err(Error::error(
                             "Expected $args to contain a key",
@@ -122,9 +120,7 @@ pub fn create_module() -> Scope {
                     result
                 }
             }
-            direct => direct
-                .try_into()
-                .map_err(|e| Error::BadArgument(name!(map2), e))?,
+            direct => direct.try_into().named(name!(map2))?,
         };
         for (key, value) in map2 {
             if let (Some(Value::Map(m1)), Value::Map(ref m2)) =
@@ -223,14 +219,12 @@ fn get_va_map(s: &Scope, name: Name) -> Result<ValueMap, Error> {
 fn as_va_map(v: Value) -> Result<ValueMap, String> {
     match v {
         Value::ArgList(args) => {
-            // FIXME: Allow named arguments also?
             args.check_no_named().map_err(|e| e.to_string())?;
             let mut values = args.positional;
             let mut result = if let Some(last) = values.pop() {
                 last.try_into()?
             } else {
-                //ValueMap::new()
-                return Err("xyzzy unexpectedly empty".into());
+                return Err("arglist unexpectedly empty".into());
             };
             while let Some(prev) = values.pop() {
                 result = ValueMap::singleton(prev, Value::Map(result));
@@ -343,8 +337,9 @@ fn set(s: &ScopeRef) -> Result<Value, Error> {
             if let Some(key) = args.remove(&"key".into()) {
                 keys.push(key);
             }
-            // TODO: Or return an error on None?
-            let value = args.remove(&"value".into()).unwrap_or(Value::Null);
+            let value = args.remove(&"value".into()).ok_or_else(|| {
+                Error::error("Expected $args to contain a value")
+            })?;
             Ok(Value::Map(set_inner(map, &keys, value)?))
         }
         _ => Err(Error::error("Expected $args to contain a value")),

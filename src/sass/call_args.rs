@@ -2,6 +2,7 @@ use super::{Name, Value};
 use crate::css;
 use crate::error::Error;
 use crate::ordermap::OrderMap;
+use crate::value::ListSeparator;
 use crate::ScopeRef;
 use std::default::Default;
 
@@ -170,10 +171,12 @@ impl CallArgs {
 }
 
 fn is_splat(arg: &Value) -> Option<&[Value]> {
-    if let Value::List(list, _, false) = arg {
-        // TODO?  Check that sep is None or Space?
+    if let Value::List(list, sep, false) = arg {
         if let Some((Value::Literal(v, ..), splat)) = list.split_last() {
-            if v.is_unquoted() && v.single_raw() == Some("...") {
+            if v.is_unquoted()
+                && v.single_raw() == Some("...")
+                && sep.unwrap_or_default() == ListSeparator::Space
+            {
                 return Some(splat);
             }
         }

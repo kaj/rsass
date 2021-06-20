@@ -11,7 +11,6 @@ use std::fmt;
 /// There are both positional and named values.
 #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd)]
 pub struct CallArgs {
-    // FIXME: The pub is temporary!
     pub(crate) positional: Vec<Value>,
     // Ordered for formattig.
     pub(crate) named: OrderMap<Name, Value>,

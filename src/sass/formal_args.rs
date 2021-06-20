@@ -9,27 +9,29 @@ use std::fmt;
 /// The arguments are ordered (so they have a position).
 /// Each argument also has a name and may have a default value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct FormalArgs(Vec<(Name, Option<Value>)>, bool);
+pub struct FormalArgs(Vec<(Name, Option<Value>)>, Option<Name>);
 
 impl FormalArgs {
     /// Create a new FormalArgs.
     ///
     /// The given arg-pairs each have a name and an optional default value.
     pub fn new(args: Vec<(Name, Option<Value>)>) -> FormalArgs {
-        FormalArgs(args, false)
+        FormalArgs(args, None)
     }
     /// Create a new set of varargs arguments
     pub fn new_va(args: Vec<(Name, Option<Value>)>) -> FormalArgs {
-        FormalArgs(args, true)
+        let mut args = args;
+        let va = args.pop().map(|(name, _)| name);
+        FormalArgs(args, va)
     }
     /// Create an empty set of arguments.
     pub fn none() -> FormalArgs {
-        FormalArgs(vec![], false)
+        FormalArgs(vec![], None)
     }
 
     /// Return true if this formalarg is varargs.
     pub fn is_varargs(&self) -> bool {
-        self.1
+        self.1.is_some()
     }
 
     /// Evaluate a set of call arguments for these formal arguments.
@@ -42,9 +44,9 @@ impl FormalArgs {
     ) -> Result<ScopeRef, ArgsError> {
         let mut args = args;
         let argscope = ScopeRef::sub(scope);
-        let n = self.0.len();
-        let m = args.len();
         if !self.is_varargs() {
+            let n = self.0.len();
+            let m = args.len();
             if m > n {
                 let n_p = args.positional.len();
                 if n_p != m && n_p > n {
@@ -53,13 +55,13 @@ impl FormalArgs {
                     return Err(ArgsError::TooMany(n, n_p));
                 }
             }
-            let (by_pos, by_name) = self.0.split_at(args.positional.len());
-            for ((name, _default), value) in
-                by_pos.iter().zip(&args.positional)
-            {
-                argscope.define(name.clone(), &value);
-            }
-            for (name, default) in by_name {
+        }
+        let positional = args.take_positional(self.0.len());
+        for ((name, _default), value) in self.0.iter().zip(&positional) {
+            argscope.define(name.clone(), value);
+        }
+        if self.0.len() > positional.len() {
+            for (name, default) in &self.0[positional.len()..] {
                 if let Some(v) = args.named.remove(name) {
                     argscope.define(name.clone(), &v);
                 } else if let Some(default) = default {
@@ -73,43 +75,14 @@ impl FormalArgs {
                     return Err(ArgsError::Missing(name.clone()));
                 }
             }
-            if let Some((extra, _)) = args.named.iter().next() {
-                return Err(ArgsError::Unexpected(extra.clone()));
-            }
-        } else {
-            // Va args must have at least one!
-            // TODO: use va: Option<Name> to remove flag and condtion?
-            let (va, normal) = self.0.split_last().unwrap();
-
-            let positional = args.take_positional(normal.len());
-            for ((name, _default), value) in normal.iter().zip(&positional) {
-                argscope.define(name.clone(), value);
-            }
-            if normal.len() > positional.len() {
-                for (name, default) in &normal[positional.len()..] {
-                    if let Some(v) = args.named.remove(name) {
-                        argscope.define(name.clone(), &v);
-                    } else if let Some(default) = default {
-                        argscope.define(
-                            name.clone(),
-                            &default
-                                .do_evaluate(argscope.clone(), true)
-                                .map_err(ArgsError::Eval)?,
-                        );
-                    } else {
-                        return Err(ArgsError::Missing(name.clone()));
-                    }
-                }
-            }
-
+        }
+        if let Some(va_name) = &self.1 {
             argscope.define(
-                va.0.clone(),
-                &if let Some(v) = args.only_named(&va.0) {
-                    v
-                } else {
-                    args.into()
-                },
+                va_name.clone(),
+                &args.only_named(va_name).unwrap_or_else(|| args.into()),
             );
+        } else {
+            args.check_no_named()?;
         }
         Ok(argscope)
     }
@@ -132,8 +105,8 @@ impl fmt::Display for FormalArgs {
                 }
             }
         }
-        if self.1 {
-            out.write_str("...")?;
+        if let Some(va) = &self.1 {
+            write!(out, ", ${}...", va)?;
         }
         out.write_str(")")
     }
