@@ -1,6 +1,8 @@
 use super::{Name, Value};
 use crate::css;
 use crate::error::Error;
+use crate::ordermap::OrderMap;
+use crate::value::ListSeparator;
 use crate::ScopeRef;
 use std::default::Default;
 
@@ -8,80 +10,90 @@ use std::default::Default;
 ///
 /// Each argument has a Value.  Arguments may be named.
 /// If the optional name is None, the argument is positional.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct CallArgs(Vec<(Option<String>, Value)>);
+#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd)]
+pub struct CallArgs {
+    positional: Vec<Value>,
+    // Ordered for formattig.
+    named: OrderMap<Name, Value>,
+}
 
 impl CallArgs {
     /// Create a new callargs from a vec of name-value pairs.
     ///
     /// The names is none for positional arguments.
-    pub fn new(v: Vec<(Option<String>, Value)>) -> Self {
-        CallArgs(v)
-    }
-
-    /// Create a new callargs from a single value.
-    ///
-    /// If the value is a list, it used as a positional argument list.
-    /// Otherwise it is used as a single positional argument.
-    pub fn from_value(v: Value) -> Self {
-        match v {
-            Value::List(v, _, false) => {
-                CallArgs(v.into_iter().map(|v| (None, v)).collect())
+    pub fn new(v: Vec<(Option<Name>, Value)>) -> Result<Self, Error> {
+        let mut positional = Vec::new();
+        let mut named = OrderMap::new();
+        for (name, value) in v {
+            if let Some(name) = name {
+                if let Some(_old) = named.insert(name, value) {
+                    return Err(Error::error("Duplicate argument."));
+                }
+            } else if named.is_empty() || is_splat(&value).is_some() {
+                positional.push(value);
+            } else {
+                return Err(Error::error("positional arg after named"));
             }
-            v => CallArgs(vec![(None, v)]),
         }
+        Ok(CallArgs { positional, named })
     }
 
     /// Evaluate these sass CallArgs to css CallArgs.
-    pub fn evaluate(
-        &self,
-        scope: ScopeRef,
-        arithmetic: bool,
-    ) -> Result<css::CallArgs, Error> {
-        Ok(css::CallArgs(self.0.iter().fold(
-            Ok(vec![]),
-            |acc, (name, value)| {
-                let mut acc = acc?;
-                if let (None, Value::List(list, _, false)) = (name, value) {
-                    if list.len() == 2 && is_mark(&list[1]) {
-                        let splat =
-                            list[0].do_evaluate(scope.clone(), arithmetic)?;
-                        match splat {
-                            css::Value::Map(map) => {
-                                for (k, v) in map {
-                                    let k = match k {
-                                        css::Value::Null => None,
-                                        css::Value::Literal(s, _) => Some(s),
-                                        x => {
-                                            return Err(Error::bad_value(
-                                                "string", &x,
-                                            ))
-                                        }
-                                    };
-                                    acc.push((k, v));
-                                }
-                                return Ok(acc);
-                            }
-                            css::Value::Null => (),
-                            css::Value::List(items, ..) => {
-                                for item in items {
-                                    acc.push((None, item));
-                                }
-                            }
-                            item => {
-                                acc.push((None, item));
+    pub fn evaluate(&self, scope: ScopeRef) -> Result<css::CallArgs, Error> {
+        let positional = Vec::new();
+        let named = self.named.iter().try_fold(
+            OrderMap::new(),
+            |mut acc, (name, arg)| {
+                arg.do_evaluate(scope.clone(), true).map(|arg| {
+                    acc.insert(name.clone(), arg);
+                    acc
+                })
+            },
+        )?;
+        let mut result = css::CallArgs { positional, named };
+        for arg in &self.positional {
+            match is_splat(arg) {
+                Some([one]) => match one.do_evaluate(scope.clone(), true)? {
+                    css::Value::ArgList(args) => {
+                        result.positional.extend(args.positional);
+                        for (name, value) in args.named {
+                            if let Some(_existing) =
+                                result.named.insert(name, value)
+                            {
+                                return Err(Error::error(
+                                    "Duplicate argument",
+                                ));
                             }
                         }
-                        return Ok(acc);
+                    }
+                    css::Value::Map(map) => {
+                        result.add_from_value_map(map)?;
+                    }
+                    css::Value::List(items, ..) => {
+                        for item in items {
+                            result.positional.push(item);
+                        }
+                    }
+                    css::Value::Null => (),
+                    item => {
+                        result.positional.push(item);
+                    }
+                },
+                Some(splat) => {
+                    for arg in splat {
+                        result
+                            .positional
+                            .push(arg.do_evaluate(scope.clone(), true)?);
                     }
                 }
-                acc.push((
-                    name.clone(),
-                    value.do_evaluate(scope.clone(), arithmetic)?,
-                ));
-                Ok(acc)
-            },
-        )?))
+                None => {
+                    result
+                        .positional
+                        .push(arg.do_evaluate(scope.clone(), true)?);
+                }
+            }
+        }
+        Ok(result)
     }
 
     /// Evaluate a single argument
@@ -94,26 +106,80 @@ impl CallArgs {
         name: Name,
         num: usize,
     ) -> Result<css::Value, Error> {
-        self.0
-            .iter()
-            .find(|(n, _)| n.as_ref().map(Name::from).as_ref() == Some(&name))
-            .or_else(|| self.0.get(num))
-            .map(|(_, v)| v.do_evaluate(scope, true))
-            .unwrap_or(Ok(css::Value::Null))
-    }
-}
-
-impl Default for CallArgs {
-    fn default() -> Self {
-        CallArgs(vec![])
-    }
-}
-
-fn is_mark(v: &Value) -> bool {
-    match v {
-        Value::Literal(v, ..) => {
-            v.is_unquoted() && v.single_raw() == Some("...")
+        // TODO: Error if both name and posinal exists?
+        if let Some(v) = self.named.get(&name) {
+            return v.do_evaluate(scope, true);
         }
-        _ => false,
+        let mut i = 0;
+        for a in &self.positional {
+            match is_splat(a) {
+                Some([one]) => match one.do_evaluate(scope.clone(), true)? {
+                    css::Value::ArgList(args) => {
+                        if let Some(v) = args
+                            .named
+                            .get(&name)
+                            .or_else(|| args.positional.get(num - i))
+                        {
+                            return Ok(v.clone());
+                        }
+                        i += if args.named.is_empty() {
+                            args.len()
+                        } else {
+                            num + 1
+                        };
+                    }
+                    css::Value::Map(map) => {
+                        if let Some(v) = map.get(&name.to_string().into()) {
+                            return Ok(v.clone());
+                        }
+                        i += num + 1;
+                    }
+                    css::Value::List(items, ..) => {
+                        if let Some(v) = items.get(num - i) {
+                            return Ok(v.clone());
+                        } else {
+                            i += items.len();
+                        }
+                    }
+                    css::Value::Null => (),
+                    v => {
+                        if i == num {
+                            return Ok(v);
+                        } else {
+                            i += 1;
+                        }
+                    }
+                },
+                Some(splat) => {
+                    if let Some(v) = splat.get(num - i) {
+                        return v.do_evaluate(scope, true);
+                    } else {
+                        i += splat.len();
+                    }
+                }
+                None => {
+                    if i == num {
+                        return a.do_evaluate(scope, true);
+                    } else {
+                        i += 1;
+                    }
+                }
+            }
+        }
+        Ok(css::Value::Null)
     }
+}
+
+fn is_splat(arg: &Value) -> Option<&[Value]> {
+    if let Value::List(list, sep, false) = arg {
+        if let Some((Value::Literal(v, ..), splat)) = list.split_last() {
+            if v.is_unquoted()
+                && v.single_raw() == Some("...")
+                && sep.unwrap_or_default() == ListSeparator::Space
+            {
+                return Some(splat);
+            }
+        }
+    }
+    None
 }

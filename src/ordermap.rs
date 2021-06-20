@@ -49,8 +49,13 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
         }
         None
     }
-    pub fn remove(&mut self, key: &K) {
-        self.0.retain(|&(ref k, ref _v)| k != key);
+    pub fn remove(&mut self, key: &K) -> Option<V> {
+        for (i, (k, _v)) in self.0.iter().enumerate() {
+            if k == key {
+                return Some(self.0.remove(i).1);
+            }
+        }
+        None
     }
     pub fn contains_key(&self, key: &K) -> bool {
         for &(ref k, ref _v) in &self.0 {
@@ -63,6 +68,9 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
     pub fn len(&self) -> usize {
         self.0.len()
     }
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
     pub fn get_item(&self, i: usize) -> Option<&(K, V)> {
         self.0.get(i)
     }
@@ -71,9 +79,9 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
     }
 }
 
-impl<K: Clone + PartialEq, V: Clone> Default for OrderMap<K, V> {
+impl<K, V> Default for OrderMap<K, V> {
     fn default() -> Self {
-        Self::new()
+        OrderMap(Default::default())
     }
 }
 

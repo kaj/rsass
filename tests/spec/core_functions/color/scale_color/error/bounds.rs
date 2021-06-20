@@ -10,7 +10,6 @@ mod alpha {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $alpha: 100.001%)}\n"),
@@ -23,7 +22,6 @@ mod alpha {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $alpha: -100.001%)}\n"),
@@ -41,7 +39,6 @@ mod blackness {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
         runner().err(
@@ -56,7 +53,6 @@ mod blackness {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
         runner().err(
@@ -76,7 +72,6 @@ mod blue {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: scale-color(blue, $blue: 100.001%)}\n"),
@@ -89,7 +84,6 @@ mod blue {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: scale-color(blue, $blue: -100.001%)}\n"),
@@ -107,7 +101,6 @@ mod green {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: scale-color(green, $green: 100.001%)}\n"),
@@ -120,7 +113,6 @@ mod green {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: scale-color(green, $green: -100.001%)}\n"),
@@ -138,7 +130,6 @@ mod lightness {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
         runner().err(
@@ -153,7 +144,6 @@ mod lightness {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
         runner().err(
@@ -173,7 +163,6 @@ mod red {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $red: 100.001%)}\n"),
@@ -186,7 +175,6 @@ mod red {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $red: -100.001%)}\n"),
@@ -204,7 +192,6 @@ mod saturation {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
         runner().err(
@@ -219,7 +206,6 @@ mod saturation {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
         runner().err(
@@ -239,7 +225,6 @@ mod whiteness {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn too_high() {
         assert_eq!(
         runner().err(
@@ -254,7 +239,6 @@ mod whiteness {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn too_low() {
         assert_eq!(
         runner().err(

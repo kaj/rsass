@@ -1,120 +1,21 @@
-use super::rgb::{preserve_call, values_from_list};
+use super::channels::Channels;
 use super::{
-    check, check_pct_rational_range, get_checked, get_color, get_opt_check,
-    make_call, nospecial_value, to_rational_percent, Error, FunctionMap,
+    bad_arg, check_alpha, check_pct_range, check_rational, get_checked,
+    get_color, get_opt_check, is_special, make_call, CheckedArg, FunctionMap,
 };
-use crate::css::Value;
+use crate::css::{CallArgs, Value};
 use crate::output::Format;
+use crate::sass::{ArgsError, FormalArgs, Name};
 use crate::value::{Hsla, Numeric, Rational, Unit};
-use crate::Scope;
-use num_traits::{one, zero};
-
-fn do_hsla(fn_name: &str, s: &Scope) -> Result<Value, Error> {
-    let a = s.get("alpha")?;
-    let hue = s.get("hue")?;
-    if let Value::List(vec, sep, bracketed) = if hue.is_null() {
-        s.get("channels")?
-    } else {
-        hue.clone()
-    } {
-        if bracketed {
-            return Err(Error::BadValue(
-                "Error: $channels must be an unbracketed list.".into(),
-            ));
-        }
-        if let Some((h, s, v, a)) = values_from_list(&vec, sep) {
-            Ok(hsla_from_values(&h, &s, &v, &a)?
-                .unwrap_or_else(|| make_call(fn_name, vec![h, s, v, a])))
-        } else {
-            Ok(preserve_call(fn_name, vec, sep, bracketed))
-        }
-    } else {
-        let sat = s.get("saturation")?;
-        let lig = s.get("lightness")?;
-        Ok(hsla_from_values(&hue, &sat, &lig, &a)?
-            .unwrap_or_else(|| make_call(fn_name, vec![hue, sat, lig, a])))
-    }
-}
-
-fn hsla_from_values(
-    h: &Value,
-    s: &Value,
-    l: &Value,
-    a: &Value,
-) -> Result<Option<Value>, Error> {
-    let h = nospecial_value(h, name!(hue), to_rational)?;
-    let s = nospecial_value(s, name!(saturation), to_rational_percent)?;
-    let l = nospecial_value(l, name!(lightness), to_rational_percent)?;
-    let a = match a {
-        Value::Null => Some(one()),
-        a => nospecial_value(a, name!(alpha), to_rational2)?,
-    };
-    if let (Some(h), Some(s), Some(l), Some(a)) = (h, s, l, a) {
-        Ok(Some(Hsla::new(h, s, l, a).into()))
-    } else {
-        Ok(None)
-    }
-}
+use crate::{Error, Scope, ScopeRef};
+use num_traits::zero;
+use std::convert::TryFrom;
 
 pub fn register(f: &mut Scope) {
-    def!(
-        f,
-        _hsl(
-            hue = b"null",
-            saturation = b"null",
-            lightness = b"null",
-            alpha = b"null",
-            channels = b"()"
-        ),
-        |s| { do_hsla("hsl", s) }
-    );
-    def!(
-        f,
-        _hsla(
-            hue = b"null",
-            saturation = b"null",
-            lightness = b"null",
-            alpha = b"null",
-            channels = b"null"
-        ),
-        |s| { do_hsla("hsla", s) }
-    );
-    def!(f, adjust_hue(color, degrees), |s| {
-        let col = get_color(s, "color")?;
-        let adj = get_opt_check(s, name!(degrees), to_rational)?;
-        if let Some(adj) = adj {
-            Ok(col.rotate_hue(adj).into())
-        } else {
-            Ok(col.into())
-        }
-    });
+    def_va!(f, _hsl(kwargs), |s| do_hsla(&name!(hsl), s));
+    def_va!(f, _hsla(kwargs), |s| do_hsla(&name!(hsla), s));
     def!(f, complement(color), |s| {
         Ok(get_color(s, "color")?.rotate_hue(180.into()).into())
-    });
-    def!(f, saturate(color = b"null", amount = b"null"), |s| {
-        let col = match s.get("color")? {
-            Value::Color(col, _) => col,
-            c => return Ok(make_call("saturate", vec![c, s.get("amount")?])),
-        };
-        let hsla = col.to_hsla();
-        let sat = hsla.sat()
-            + get_opt_check(s, name!(amount), check_pct_rational_range)?
-                .unwrap_or_else(zero);
-        Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha()).into())
-    });
-    def!(f, lighten(color, amount), |s| {
-        let col = get_color(s, "color")?;
-        let hsla = col.to_hsla();
-        let lum = hsla.lum()
-            + get_checked(s, name!(amount), check_pct_rational_range)?;
-        Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
-    });
-    def!(f, darken(color, amount), |s| {
-        let col = get_color(s, "color")?;
-        let hsla = col.to_hsla();
-        let lum = hsla.lum()
-            - get_checked(s, name!(amount), check_pct_rational_range)?;
-        Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
     });
     def!(f, hue(color), |s| {
         let col = get_color(s, "color")?;
@@ -127,13 +28,6 @@ pub fn register(f: &mut Scope) {
     def!(f, lightness(color), |s| {
         Ok(percentage(get_color(s, "color")?.to_hsla().lum()))
     });
-    def!(f, desaturate(color, amount), |s| {
-        let col = get_color(s, "color")?;
-        let hsla = col.to_hsla();
-        let sat = hsla.sat()
-            - get_checked(s, name!(amount), check_pct_rational_range)?;
-        Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha()).into())
-    });
     def!(f, grayscale(color), |args| match args.get("color")? {
         Value::Color(col, _) => {
             let hsla = col.to_hsla();
@@ -142,7 +36,11 @@ pub fn register(f: &mut Scope) {
                     .into(),
             )
         }
-        v => Ok(make_call("grayscale", vec![v])),
+        v @ Value::Numeric(..) => Ok(make_call("grayscale", vec![v])),
+        v => Err(Error::BadArgument(
+            name!(color),
+            format!("{} is not a color", v.format(Format::introspect()))
+        )),
     });
 }
 
@@ -150,18 +48,142 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     for (gname, lname) in &[
         (name!(hsl), name!(_hsl)),
         (name!(hsla), name!(_hsla)),
-        (name!(adjust_hue), name!(adjust_hue)),
         (name!(complement), name!(complement)),
-        (name!(darken), name!(darken)),
-        (name!(desaturate), name!(desaturate)),
         (name!(grayscale), name!(grayscale)),
         (name!(hue), name!(hue)),
-        (name!(lighten), name!(lighten)),
         (name!(lightness), name!(lightness)),
-        (name!(saturate), name!(saturate)),
         (name!(saturation), name!(saturation)),
     ] {
         global.insert(gname.clone(), m.get_lfunction(&lname));
+    }
+    let mut f = Scope::builtin_module("sass:color");
+    def!(f, adjust_hue(color, degrees), |s| {
+        let col = get_color(s, "color")?;
+        let adj = get_opt_check(s, name!(degrees), check_rational)?;
+        if let Some(adj) = adj {
+            Ok(col.rotate_hue(adj).into())
+        } else {
+            Ok(col.into())
+        }
+    });
+    def!(f, darken(color, amount), |s| {
+        let col = get_color(s, "color")?;
+        let hsla = col.to_hsla();
+        let lum =
+            hsla.lum() - get_checked(s, name!(amount), check_pct_range)?;
+        Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
+    });
+    def!(f, desaturate(color, amount), |s| {
+        let col = get_color(s, "color")?;
+        let hsla = col.to_hsla();
+        let sat =
+            hsla.sat() - get_checked(s, name!(amount), check_pct_range)?;
+        Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha()).into())
+    });
+    def_va!(f, saturate(kwargs), |s| {
+        let a1 = FormalArgs::new(vec![one_arg!(color), one_arg!(amount)]);
+        let a2 = FormalArgs::new(vec![one_arg!(amount)]);
+        let args = CallArgs::from_value(s.get("kwargs")?)?;
+        match a1.eval(s.clone(), args.clone()) {
+            Ok(s) => {
+                let col = get_color(&s, "color")?;
+                let sat = get_checked(&s, name!(amount), check_pct_range)?;
+                let hsla = col.to_hsla();
+                let sat = hsla.sat() + sat;
+                Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha())
+                    .into())
+            }
+            Err(ArgsError::Missing(_)) => {
+                let s = a2
+                    .eval(s.clone(), args)
+                    .map_err(|e| bad_arg(e, &name!(saturate), &a2))?;
+                let sat = s.get("amount")?;
+                check_pct_range(sat.clone()).named(name!(amount))?;
+                Ok(make_call("saturate", vec![sat]))
+            }
+            Err(ae) => Err(bad_arg(ae, &name!(saturate), &a1)),
+        }
+    });
+    def!(f, lighten(color, amount), |s| {
+        let col = get_color(s, "color")?;
+        let hsla = col.to_hsla();
+        let lum =
+            hsla.lum() + get_checked(s, name!(amount), check_pct_range)?;
+        Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
+    });
+    for (gname, lname) in &[
+        (name!(adjust_hue), name!(adjust_hue)),
+        (name!(darken), name!(darken)),
+        (name!(desaturate), name!(desaturate)),
+        (name!(lighten), name!(lighten)),
+        (name!(saturate), name!(saturate)),
+    ] {
+        global.insert(gname.clone(), f.get_lfunction(&lname));
+    }
+}
+
+fn do_hsla(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
+    let a1 = FormalArgs::new(vec![one_arg!(channels)]);
+    let a2 = FormalArgs::new(vec![
+        one_arg!(hue),
+        one_arg!(saturation),
+        one_arg!(lightness = b"null"),
+        one_arg!(alpha = b"null"),
+    ]);
+    let a2_show = FormalArgs::new(vec![
+        one_arg!(hue),
+        one_arg!(saturation),
+        one_arg!(lightness),
+        one_arg!(alpha),
+    ]);
+    let args = CallArgs::from_value(s.get("kwargs")?)?;
+    match a1.eval(s.clone(), args.clone()) {
+        Ok(s) => Channels::try_from(s.get("channels")?)
+            .map_err(|e| e.conv(&["hue", "saturation", "lightness"]))
+            .and_then(|c| match c {
+                Channels::Data([h, s, l, a]) => {
+                    hsla_from_values(fn_name, h, s, l, a)
+                }
+                Channels::Special(channels) => {
+                    Ok(make_call(fn_name.as_ref(), vec![channels]))
+                }
+            }),
+        Err(err @ ArgsError::Missing(_)) => Err(bad_arg(err, fn_name, &a1)),
+        Err(_) => {
+            let s = a2
+                .eval(s.clone(), args)
+                .map_err(|e| bad_arg(e, fn_name, &a2_show))?;
+
+            hsla_from_values(
+                fn_name,
+                s.get("hue")?,
+                s.get("saturation")?,
+                s.get("lightness")?,
+                s.get("alpha")?,
+            )
+        }
+    }
+}
+
+fn hsla_from_values(
+    fn_name: &Name,
+    h: Value,
+    s: Value,
+    l: Value,
+    a: Value,
+) -> Result<Value, Error> {
+    if is_special(&h) || is_special(&s) || is_special(&l) || is_special(&a) {
+        Ok(make_call(fn_name.as_ref(), vec![h, s, l, a]))
+    } else if l == Value::Null {
+        Err(Error::error("Missing argument $lightness"))
+    } else {
+        Ok(Hsla::new(
+            check_rational(h).named(name!(hue))?,
+            check_pct_opt(s).named(name!(saturation))?,
+            check_pct_opt(l).named(name!(lightness))?,
+            check_alpha(a).named(name!(alpha))?,
+        )
+        .into())
     }
 }
 
@@ -169,28 +191,19 @@ pub fn percentage(v: Rational) -> Value {
     Numeric::new(v * 100, Unit::Percent).into()
 }
 
-fn to_rational(v: Value) -> Result<Rational, String> {
-    check::numeric(v).and_then(|v| v.as_ratio().map_err(|e| e.to_string()))
-}
-
 /// Gets a percentage as a fraction 0 .. 1.
 /// If v is not a percentage, keep it as it is.
-pub fn to_rational2(v: Value) -> Result<Rational, String> {
-    match v {
-        Value::Null => Ok(zero()),
-        Value::Numeric(v, ..) => {
-            let r = v.value.as_ratio().map_err(|e| e.to_string())?;
-            if v.unit.is_percent() {
-                Ok(r / 100)
-            } else {
-                Ok(r)
-            }
-        }
-        v => Err(format!(
-            "{} is not a number",
+fn check_pct_opt(v: Value) -> Result<Rational, String> {
+    let v = super::check::numeric(v)?;
+    if !v.unit.is_percent() {
+        // Note: The deprecation warning should include the parameter name
+        // and line of call, but we don't have that here.
+        dep_warn!(
+            "Passing a number without unit % ({}) is deprecated.",
             v.format(Format::introspect())
-        )),
+        );
     }
+    Ok(v.as_ratio()? / 100)
 }
 
 #[test]

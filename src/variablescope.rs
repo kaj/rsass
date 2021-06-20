@@ -537,7 +537,7 @@ impl<'a> Scope {
         Ok(())
     }
 
-    fn expose_star(&self, other: &Scope) {
+    pub(crate) fn expose_star(&self, other: &Scope) {
         for (name, function) in &*other.functions.lock().unwrap() {
             self.define_function(name.clone(), function.clone());
         }
@@ -907,7 +907,10 @@ pub mod test {
         s: &[(&'static str, &str)],
         expression: &[u8],
     ) -> String {
-        do_evaluate_or_error(s, expression).unwrap()
+        match do_evaluate_or_error(s, expression) {
+            Ok(v) => v,
+            Err(e) => panic!("{}", e),
+        }
     }
 
     pub fn do_evaluate_or_error(

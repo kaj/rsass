@@ -121,7 +121,6 @@ fn non_list() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn null_list_item() {
     assert_eq!(
         runner().ok("// regression test for scssphp/scssphp#403\

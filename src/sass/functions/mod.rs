@@ -3,7 +3,7 @@ use crate::error::Error;
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
 use crate::sass::{FormalArgs, Name};
-use crate::value::{Numeric, Quotes};
+use crate::value::{ListSeparator, Numeric, Quotes};
 use crate::{sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -21,7 +21,7 @@ mod meta;
 mod selector;
 mod string;
 
-type BuiltinFn = dyn Fn(&Scope) -> Result<Value, Error> + Send + Sync;
+type BuiltinFn = dyn Fn(&ScopeRef) -> Result<Value, Error> + Send + Sync;
 
 /// A function that can be called from a sass value.
 ///
@@ -156,7 +156,7 @@ impl Function {
     pub fn call(
         &self,
         callscope: ScopeRef,
-        args: &CallArgs,
+        args: CallArgs,
     ) -> Result<Value, Error> {
         let cs = "%%CALLING_SCOPE%%";
         match self.body {
@@ -180,7 +180,7 @@ impl Function {
     fn do_eval_args(
         &self,
         def: ScopeRef,
-        args: &CallArgs,
+        args: CallArgs,
     ) -> Result<ScopeRef, Error> {
         self.args.eval(def, args).map_err(|e| match e {
             sass::ArgsError::Eval(e) => e,
@@ -289,6 +289,17 @@ fn get_string(
     get_checked(s, name.into(), check::string)
 }
 
+fn get_va_list(s: &Scope, name: Name) -> Result<Vec<Value>, Error> {
+    match s.get(name.as_ref())? {
+        Value::ArgList(args) => {
+            args.check_no_named()?;
+            Ok(args.positional)
+        }
+        Value::List(v, Some(ListSeparator::Comma), _) => Ok(v),
+        single => Ok(vec![single]),
+    }
+}
+
 fn expected_to<'a, T>(value: &'a T, cond: &str) -> String
 where
     Formatted<'a, T>: std::fmt::Display,
@@ -355,9 +366,7 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(
         FUNCTIONS.get(&name!(rgb)).unwrap().call(
             scope.clone(),
-            &call_args(code_span(b"(17, 0, 225)"))?
-                .1
-                .evaluate(scope, true)?
+            call_args(code_span(b"(17, 0, 225)"))?.1.evaluate(scope)?
         )?,
         Value::Color(Rgba::from_rgb(17, 0, 225).into(), None)
     );

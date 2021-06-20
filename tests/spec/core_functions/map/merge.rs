@@ -52,7 +52,6 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn one_arg() {
         assert_eq!(
             runner().err("a {b: map-merge((c: d))}\n"),
@@ -123,7 +122,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // wrong error
     fn zero_args() {
         assert_eq!(
             runner().err("a {b: map-merge()}\n"),

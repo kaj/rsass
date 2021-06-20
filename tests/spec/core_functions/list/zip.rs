@@ -78,7 +78,6 @@ mod one_list {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn comma() {
         assert_eq!(
             runner().ok("@import \"core_functions/list/utils\";\n\
@@ -115,7 +114,6 @@ mod one_list {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn space() {
         assert_eq!(
             runner().ok("@import \"core_functions/list/utils\";\n\

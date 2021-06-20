@@ -622,7 +622,8 @@ fn test_mixin_call_pos_args() {
         check_parse!(mixin_call, b"@include foo(bar, baz);"),
         Item::MixinCall(
             "foo".to_string(),
-            CallArgs::new(vec![(None, string("bar")), (None, string("baz"))]),
+            CallArgs::new(vec![(None, string("bar")), (None, string("baz"))])
+                .unwrap(),
             None,
         ),
     )
@@ -637,7 +638,8 @@ fn test_mixin_call_named_args() {
             CallArgs::new(vec![
                 (Some("x".into()), string("bar")),
                 (Some("y".into()), string("baz")),
-            ]),
+            ])
+            .unwrap(),
             None,
         ),
     )

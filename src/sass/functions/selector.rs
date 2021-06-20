@@ -1,4 +1,4 @@
-use super::{Error, FunctionMap};
+use super::{get_va_list, Error, FunctionMap};
 use crate::css::Value;
 use crate::parser::input_span;
 use crate::parser::selectors::{selector, selector_part, selectors};
@@ -9,28 +9,30 @@ use crate::{ParseError, Scope};
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:selector");
     // TODO: is_superselector
-    def_va!(f, append(selectors), |s| match s.get("selectors")? {
-        Value::List(v, _, _) => Ok(v
+    def_va!(f, append(selectors), |s| {
+        Ok(get_va_list(s, name!(selectors))?
             .into_iter()
             .map(parse_selectors)
-            .try_fold(Selectors::root(), |base, ext| ext.and_then(|ext| Ok(
-                Selectors::new(
-                    base.s
-                        .into_iter()
-                        .flat_map(|b| {
-                            ext.s.iter().map(move |e| {
-                                parse_selector(&format!("{}{}", b, e))
+            .try_fold(Selectors::root(), |base, ext| {
+                ext.and_then(|ext| {
+                    Ok(Selectors::new(
+                        base.s
+                            .into_iter()
+                            .flat_map(|b| {
+                                ext.s.iter().map(move |e| {
+                                    parse_selector(&format!("{}{}", b, e))
+                                })
                             })
-                        })
-                        .collect::<Result<_, _>>()?
-                )
-            )),)?
-            .to_value()),
-        v => Ok(parse_selectors(v)?.to_value()),
+                            .collect::<Result<_, _>>()?,
+                    ))
+                })
+            })?
+            .to_value())
     });
     // TODO: extend
-    def_va!(f, nest(selectors), |s| match s.get("selectors")? {
-        Value::List(v, _, _) => Ok(Value::Literal(
+    def_va!(f, nest(selectors), |s| {
+        let v = get_va_list(s, name!(selectors))?;
+        Ok(Value::Literal(
             format!(
                 "{}",
                 v.into_iter()
@@ -39,11 +41,7 @@ pub fn create_module() -> Scope {
                         .map(|e| e.inside(&b)))?
             ),
             Quotes::None,
-        )),
-        v => Ok(Value::Literal(
-            format!("{}", parse_selectors(v)?),
-            Quotes::None,
-        )),
+        ))
     });
     def!(f, parse(selector), |s| {
         Ok(parse_selectors(s.get("selector")?)?.to_value())

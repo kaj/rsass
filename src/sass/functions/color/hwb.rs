@@ -1,60 +1,53 @@
 use super::hsl::percentage;
-use super::rgb::to_rational;
-use super::{check, check_expl_pct, get_color, CheckedArg, Error};
-use crate::css::Value;
+use super::{
+    bad_arg, check, check_alpha, check_expl_pct, get_color, CheckedArg,
+};
+use crate::css::{CallArgs, Value};
 use crate::output::Format;
-use crate::value::{Hwba, ListSeparator, Number, Unit};
-use crate::Scope;
-use num_traits::one;
+use crate::sass::FormalArgs;
+use crate::value::{Hwba, ListSeparator, Rational, Unit};
+use crate::{Error, Scope, ScopeRef};
 
 pub fn register(f: &mut Scope) {
-    def!(
-        f,
-        hwb(
-            hue = b"null",
-            whiteness = b"null",
-            blackness = b"null",
-            alpha = b"null",
-            channels = b"null"
-        ),
-        |s| {
-            let (hue, w, b, a) = match s.get("hue")? {
-                list @ Value::List(..) => hwb_from_channels(list)?,
-                Value::Null => hwb_from_channels(s.get("channels")?)?,
-                hue => (
-                    hue,
-                    s.get("whiteness")?,
-                    s.get("blackness")?,
-                    s.get("alpha")?,
-                ),
-            };
-            let hue = as_hue(hue).named(name!(hue))?;
-            let w = match w {
-                Value::Null => {
-                    return Err(Error::error("Missing element $whiteness"))
-                }
-                w => check_expl_pct(w).named(name!(whiteness))?,
-            };
-            let b = check_expl_pct(b).named(name!(blackness))?;
-            let a = match a {
-                Value::Null => one(),
-                a => to_rational(a).named(name!(alpha))?,
-            };
-            Ok(Hwba::new(
-                hue.as_ratio()?,
-                w.as_ratio()? / 100,
-                b.as_ratio()? / 100,
-                a,
-            )
-            .into())
-        }
-    );
+    def_va!(f, hwb(kwargs), hwb);
     def!(f, blackness(color), |s| {
         Ok(percentage(get_color(s, "color")?.to_hwba().blackness()))
     });
     def!(f, whiteness(color), |s| {
         Ok(percentage(get_color(s, "color")?.to_hwba().whiteness()))
     });
+}
+
+fn hwb(s: &ScopeRef) -> Result<Value, Error> {
+    let args = CallArgs::from_value(s.get("kwargs")?)?;
+    let (hue, w, b, a) = if args.len() < 3 {
+        let a1 = FormalArgs::new(vec![one_arg!(channels)]);
+        a1.eval(s.clone(), args)
+            .map_err(|e| bad_arg(e, &name!(hwb), &a1))
+            .and_then(|s| hwb_from_channels(s.get("channels")?))?
+    } else {
+        let a2 = FormalArgs::new(vec![
+            one_arg!(hue),
+            one_arg!(whiteness),
+            one_arg!(blackness),
+            one_arg!(alpha = b"1"),
+        ]);
+        a2.eval(s.clone(), args)
+            .map_err(|e| bad_arg(e, &name!(hwb), &a2))
+            .and_then(|s| {
+                Ok((
+                    s.get("hue")?,
+                    s.get("whiteness")?,
+                    s.get("blackness")?,
+                    s.get("alpha")?,
+                ))
+            })?
+    };
+    let hue = check_hue(hue).named(name!(hue))?;
+    let w = check_expl_pct(w).named(name!(whiteness))?;
+    let b = check_expl_pct(b).named(name!(blackness))?;
+    let a = check_alpha(a).named(name!(alpha))?;
+    Ok(Hwba::new(hue, w, b, a).into())
 }
 
 fn hwb_from_channels(
@@ -102,7 +95,7 @@ fn hwb_from_channels(
                 ))),
             }
         }
-        v => Err(badchannels(&v)),
+        _hue => Err(Error::error("Missing element $whiteness")),
     }
 }
 
@@ -113,10 +106,10 @@ fn badchannels(v: &Value) -> Error {
     ))
 }
 
-fn as_hue(v: Value) -> Result<Number, String> {
+fn check_hue(v: Value) -> Result<Rational, String> {
     let vv = check::numeric(v)?;
     if let Some(scaled) = vv.as_unit_def(Unit::Deg) {
-        Ok(scaled)
+        Ok(scaled.as_ratio()?)
     } else {
         Err(format!(
             "{} is not an angle",

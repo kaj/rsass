@@ -1,7 +1,6 @@
 use crate::css;
 use crate::error::Error;
 use crate::sass::{Name, Value};
-use crate::value::ListSeparator;
 use crate::ScopeRef;
 use std::fmt;
 
@@ -10,27 +9,29 @@ use std::fmt;
 /// The arguments are ordered (so they have a position).
 /// Each argument also has a name and may have a default value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct FormalArgs(Vec<(Name, Option<Value>)>, bool);
+pub struct FormalArgs(Vec<(Name, Option<Value>)>, Option<Name>);
 
 impl FormalArgs {
     /// Create a new FormalArgs.
     ///
     /// The given arg-pairs each have a name and an optional default value.
     pub fn new(args: Vec<(Name, Option<Value>)>) -> FormalArgs {
-        FormalArgs(args, false)
+        FormalArgs(args, None)
     }
     /// Create a new set of varargs arguments
     pub fn new_va(args: Vec<(Name, Option<Value>)>) -> FormalArgs {
-        FormalArgs(args, true)
+        let mut args = args;
+        let va = args.pop().map(|(name, _)| name);
+        FormalArgs(args, va)
     }
     /// Create an empty set of arguments.
     pub fn none() -> FormalArgs {
-        FormalArgs(vec![], false)
+        FormalArgs(vec![], None)
     }
 
     /// Return true if this formalarg is varargs.
     pub fn is_varargs(&self) -> bool {
-        self.1
+        self.1.is_some()
     }
 
     /// Evaluate a set of call arguments for these formal arguments.
@@ -39,63 +40,49 @@ impl FormalArgs {
     pub fn eval(
         &self,
         scope: ScopeRef,
-        args: &css::CallArgs,
+        args: css::CallArgs,
     ) -> Result<ScopeRef, ArgsError> {
+        let mut args = args;
         let argscope = ScopeRef::sub(scope);
-        let n = self.0.len();
-        let m = args.len();
-        if !self.is_varargs() && m > n {
-            return Err(ArgsError::TooMany(n, m));
+        if !self.is_varargs() {
+            let n = self.0.len();
+            let m = args.len();
+            if m > n {
+                let n_p = args.positional.len();
+                if n_p != m && n_p > n {
+                    return Err(ArgsError::TooManyPos(n, n_p));
+                } else {
+                    return Err(ArgsError::TooMany(n, n_p));
+                }
+            }
         }
-        for (i, &(ref name, ref default)) in self.0.iter().enumerate() {
-            if let Some(value) = args
-                .iter()
-                .find(|&&(ref k, ref _v)| k.as_deref() == Some(name.as_ref()))
-                .map(|&(ref _k, ref v)| v)
-            {
-                argscope.define(name.clone(), value);
-            } else if self.is_varargs() && i + 1 == n && args.len() > n {
-                if self.is_varargs() {
-                    let args = args
-                        .iter()
-                        .skip(i)
-                        .map(|&(_, ref v)| v.clone())
-                        .collect();
+        let positional = args.take_positional(self.0.len());
+        for ((name, _default), value) in self.0.iter().zip(&positional) {
+            argscope.define(name.clone(), value);
+        }
+        if self.0.len() > positional.len() {
+            for (name, default) in &self.0[positional.len()..] {
+                if let Some(v) = args.named.remove(name) {
+                    argscope.define(name.clone(), &v);
+                } else if let Some(default) = default {
                     argscope.define(
                         name.clone(),
-                        &css::Value::List(
-                            args,
-                            Some(ListSeparator::Comma),
-                            false,
-                        ),
+                        &default
+                            .do_evaluate(argscope.clone(), true)
+                            .map_err(ArgsError::Eval)?,
                     );
                 } else {
-                    return Err(ArgsError::TooMany(n, args.len()));
+                    return Err(ArgsError::Missing(name.clone()));
                 }
-            } else {
-                match args.get(i) {
-                    Some(&(None, ref v)) => argscope.define(name.clone(), v),
-                    _ => {
-                        if let Some(default) = default {
-                            let v = default
-                                .do_evaluate(argscope.clone(), true)
-                                .map_err(ArgsError::Eval)?;
-                            argscope.define(name.clone(), &v)
-                        } else if i + 1 == self.0.len() && self.is_varargs() {
-                            argscope.define(
-                                name.clone(),
-                                &css::Value::List(
-                                    vec![],
-                                    Some(ListSeparator::Comma),
-                                    false,
-                                ),
-                            )
-                        } else {
-                            return Err(ArgsError::Missing(name.clone()));
-                        }
-                    }
-                };
             }
+        }
+        if let Some(va_name) = &self.1 {
+            argscope.define(
+                va_name.clone(),
+                &args.only_named(va_name).unwrap_or_else(|| args.into()),
+            );
+        } else {
+            args.check_no_named()?;
         }
         Ok(argscope)
     }
@@ -118,8 +105,8 @@ impl fmt::Display for FormalArgs {
                 }
             }
         }
-        if self.1 {
-            out.write_str("...")?;
+        if let Some(va) = &self.1 {
+            write!(out, ", ${}...", va)?;
         }
         out.write_str(")")
     }
@@ -129,8 +116,12 @@ impl fmt::Display for FormalArgs {
 pub enum ArgsError {
     /// Got the first number of arguments, but only the second number allowed.
     TooMany(usize, usize),
+    /// Got the first number of positional arguments, but only the second number allowed.
+    TooManyPos(usize, usize),
     /// A required argument is missing
     Missing(Name),
+    /// Got unexpected named argumet
+    Unexpected(Name),
     /// An error evaluating one of the arguments.
     Eval(Error),
 }
@@ -138,6 +129,14 @@ pub enum ArgsError {
 impl fmt::Display for ArgsError {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            ArgsError::TooManyPos(n, m) => write!(
+                out,
+                "Error: Only {} positional argument{} allowed, but {} {} passed.",
+                n,
+                if *n != 1 { "s" } else { "" },
+                m,
+                if *m != 1 { "were" } else { "was" },
+            ),
             ArgsError::TooMany(n, m) => write!(
                 out,
                 "Error: Only {} argument{} allowed, but {} {} passed.",
@@ -149,7 +148,18 @@ impl fmt::Display for ArgsError {
             ArgsError::Missing(name) => {
                 write!(out, "Error: Missing argument ${}.", name)
             }
+            ArgsError::Unexpected(name) => {
+                write!(out, "Error: No argument named ${}.", name)
+            }
             ArgsError::Eval(e) => e.fmt(out),
         }
+    }
+}
+
+// Note: this is only for some special cases, normally the "context"
+// of a function declaration pos is required.
+impl From<ArgsError> for Error {
+    fn from(e: ArgsError) -> Error {
+        Error::S(e.to_string())
     }
 }

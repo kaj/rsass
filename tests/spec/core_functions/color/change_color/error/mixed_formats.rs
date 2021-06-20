@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
 fn blue_and_lightness() {
     assert_eq!(
         runner().err("a {b: change-color(red, $blue: 1, $lightness: 1%)}\n"),
@@ -19,7 +18,6 @@ fn blue_and_lightness() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn green_and_saturation() {
     assert_eq!(
         runner()
@@ -33,7 +31,6 @@ fn green_and_saturation() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn green_and_whiteness() {
     assert_eq!(
         runner().err("a {b: change-color(red, $green: 1, $whiteness: 1%)}\n"),
@@ -46,7 +43,6 @@ fn green_and_whiteness() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn lightness_and_whiteness() {
     assert_eq!(
         runner().err(
@@ -61,7 +57,6 @@ fn lightness_and_whiteness() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn red_and_blackness() {
     assert_eq!(
         runner().err("a {b: adjust-color(red, $red: 1, $blackness: 1%)}\n"),
@@ -74,7 +69,6 @@ fn red_and_blackness() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn red_and_hue() {
     assert_eq!(
         runner().err("a {b: change-color(red, $red: 1, $hue: 1)}\n"),
@@ -87,7 +81,6 @@ fn red_and_hue() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn saturation_and_blackness() {
     assert_eq!(
         runner().err(

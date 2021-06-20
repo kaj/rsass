@@ -10,7 +10,6 @@ mod args {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn named() {
         assert_eq!(
         runner().ok(
@@ -58,7 +57,6 @@ mod args {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn named() {
             assert_eq!(
                 runner()
@@ -104,7 +102,6 @@ mod error {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn invalid_args() {
         assert_eq!(
             runner().err("a {b: call(get-function(\"rgb\"), 1)}\n"),

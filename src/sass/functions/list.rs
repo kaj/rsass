@@ -1,4 +1,6 @@
-use super::{check, get_checked, get_integer, Error, FunctionMap, Name};
+use super::{
+    check, get_checked, get_integer, get_va_list, Error, FunctionMap, Name,
+};
 use crate::css::Value;
 use crate::value::{ListSeparator, Quotes};
 use crate::Scope;
@@ -67,6 +69,7 @@ pub fn create_module() -> Scope {
         }
     );
     def!(f, length(list), |s| match s.get("list")? {
+        Value::ArgList(args) => Ok(Value::scalar(args.len() as i64)),
         Value::List(v, _, _) => Ok(Value::scalar(v.len() as i64)),
         Value::Map(m) => Ok(Value::scalar(m.len() as i64)),
         // A null value is considered eqivalent to an empty list
@@ -76,9 +79,10 @@ pub fn create_module() -> Scope {
     });
     def!(f, separator(list), |s| Ok(Value::Literal(
         match s.get("list")? {
+            Value::ArgList(..) => "comma",
             Value::List(_, Some(ListSeparator::Comma), _) => "comma",
             Value::List(_, Some(ListSeparator::Slash), _) => "slash",
-            Value::Map(ref map) if map.len() == 0 => "space",
+            Value::Map(ref map) if map.is_empty() => "space",
             Value::Map(_) => "comma",
             _ => "space",
         }
@@ -86,7 +90,7 @@ pub fn create_module() -> Scope {
         Quotes::None
     )));
     def_va!(f, slash(elements), |s| {
-        let (list, _, _) = get_list(s.get("elements")?);
+        let list = get_va_list(s, name!(elements))?;
         if list.len() < 2 {
             return Err(Error::BadValue(
                 "Error: At least two elements are required.".into(),
@@ -97,6 +101,21 @@ pub fn create_module() -> Scope {
     def!(f, nth(list, n), |s| {
         let n = get_integer(s, name!(n))?;
         match s.get("list")? {
+            Value::ArgList(arg) => {
+                let i = rust_index(n, arg.len(), name!(n))?;
+                Ok(arg.positional.get(i).cloned().unwrap_or_else(|| {
+                    arg.named
+                        .get_item(i - arg.positional.len())
+                        .map(|(k, v)| {
+                            Value::List(
+                                vec![Value::from(k.as_ref()), v.clone()],
+                                Some(ListSeparator::Space),
+                                false,
+                            )
+                        })
+                        .unwrap_or(Value::Null)
+                }))
+            }
             Value::List(list, _, _) => {
                 Ok(list[list_index(n, &list, name!(n))?].clone())
             }
@@ -123,16 +142,10 @@ pub fn create_module() -> Scope {
         Ok(Value::List(list, sep, bra))
     });
     def_va!(f, zip(lists), |s| {
-        // TODO: A single argument is just the first list, unless its
-        // names "lists".
-        // A possible implementation may be a zip(first, lists) style, so I
-        // the first unnamed argument in a separate variable.
-        // But that would leed to problems with to unnamed arguments.
-        // We probably need to actually make a difference between
-        // named an positional arguments!
-        let (v, s, b) = get_list(s.get("lists")?);
-        let v = if b { vec![Value::List(v, s, b)] } else { v };
-        let lists = v.into_iter().map(|v| v.iter_items()).collect::<Vec<_>>();
+        let lists = get_va_list(s, name!(lists))?
+            .into_iter()
+            .map(|v| v.iter_items())
+            .collect::<Vec<_>>();
         let len = lists.iter().map(|v| v.len()).min().unwrap_or(0);
         let result = (0..len)
             .map(|i| {
@@ -175,9 +188,23 @@ fn check_separator(v: Value) -> Result<Option<ListSeparator>, String> {
 
 fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
     match value {
+        Value::ArgList(args) => {
+            let mut vec = args.positional;
+            // I'm not sure that including the named arguments after the
+            // positional is the right thing to do here.
+            // Maybe return an error instead?
+            vec.extend(args.named.into_iter().map(|(k, v)| {
+                Value::List(
+                    vec![Value::from(k.as_ref()), v],
+                    Some(ListSeparator::Space),
+                    false,
+                )
+            }));
+            (vec, Some(ListSeparator::Comma), false)
+        }
         Value::List(v, s, bra) => (v, s, bra),
         Value::Map(map) => {
-            if map.len() == 0 {
+            if map.is_empty() {
                 (vec![], None, false)
             } else {
                 (

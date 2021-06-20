@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn arglist() {
     assert_eq!(
         runner().ok("@function type-of-arglist($args...) {\

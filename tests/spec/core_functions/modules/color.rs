@@ -135,7 +135,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn adjust_hue() {
         assert_eq!(
         runner().err(
@@ -168,7 +167,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn darken() {
         assert_eq!(
         runner().err(
@@ -186,7 +184,6 @@ mod error {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn desaturate() {
         assert_eq!(
         runner().err(
@@ -204,7 +201,6 @@ mod error {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn fade_in() {
         assert_eq!(
         runner().err(
@@ -222,7 +218,6 @@ mod error {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn fade_out() {
         assert_eq!(
         runner().err(
@@ -240,7 +235,6 @@ mod error {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn lighten() {
         assert_eq!(
         runner().err(
@@ -258,7 +252,6 @@ mod error {
     );
     }
     #[test]
-    #[ignore] // wrong error
     fn opacify() {
         assert_eq!(
         runner().err(
@@ -276,7 +269,6 @@ mod error {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn saturate() {
         assert_eq!(
         runner().err(
@@ -309,7 +301,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn transparentize() {
         assert_eq!(
         runner().err(

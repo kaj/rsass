@@ -10,7 +10,6 @@ mod alpha {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn test_type() {
         assert_eq!(
             runner().err(
@@ -27,7 +26,6 @@ mod alpha {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn unit() {
         assert_eq!(
             runner().err(
@@ -49,7 +47,6 @@ mod color {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn test_type() {
         assert_eq!(
             runner().err(

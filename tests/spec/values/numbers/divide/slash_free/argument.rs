@@ -32,7 +32,6 @@ mod function {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn kwargs() {
             assert_eq!(
                 runner().ok("c {d: join(1/2..., (\"list2\": 3/4)...)}\n"),
@@ -42,7 +41,6 @@ mod function {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn list() {
             assert_eq!(
                 runner().ok("c {d: join(1/2 3/4...)}\n"),
@@ -52,7 +50,6 @@ mod function {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn map() {
             assert_eq!(
                 runner()
@@ -106,7 +103,6 @@ mod test_macro {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn rest() {
         assert_eq!(
             runner().ok("c {d: if(true, 1/2 null...)}\n"),

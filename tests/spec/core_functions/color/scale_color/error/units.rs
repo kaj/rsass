@@ -10,7 +10,6 @@ mod none {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn alpha() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $alpha: 1)}\n"),
@@ -23,7 +22,6 @@ mod none {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn blackness() {
         assert_eq!(
             runner().err("a {b: scale-color(black, $blackness: 1)}\n"),
@@ -36,7 +34,6 @@ mod none {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn blue() {
         assert_eq!(
             runner().err("a {b: scale-color(blue, $blue: 1)}\n"),
@@ -49,7 +46,6 @@ mod none {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn green() {
         assert_eq!(
             runner().err("a {b: scale-color(green, $green: 1)}\n"),
@@ -62,7 +58,6 @@ mod none {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn lightness() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $lightness: 1)}\n"),
@@ -75,7 +70,6 @@ mod none {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn red() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $red: 1px)}\n"),
@@ -88,7 +82,6 @@ mod none {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn saturation() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $saturation: 1)}\n"),
@@ -101,7 +94,6 @@ mod none {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn whiteness() {
         assert_eq!(
             runner().err("a {b: scale-color(white, $whiteness: 1)}\n"),
@@ -119,7 +111,6 @@ mod wrong {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn alpha() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $alpha: 1px)}\n"),
@@ -132,7 +123,6 @@ mod wrong {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn blackness() {
         assert_eq!(
             runner().err("a {b: scale-color(black, $blackness: 1px)}\n"),
@@ -145,7 +135,6 @@ mod wrong {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn blue() {
         assert_eq!(
             runner().err("a {b: scale-color(blue, $blue: 1px)}\n"),
@@ -158,7 +147,6 @@ mod wrong {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn green() {
         assert_eq!(
             runner().err("a {b: scale-color(green, $green: 1px)}\n"),
@@ -171,7 +159,6 @@ mod wrong {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn lightness() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $lightness: 1px)}\n"),
@@ -184,7 +171,6 @@ mod wrong {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn red() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $red: 1px)}\n"),
@@ -197,7 +183,6 @@ mod wrong {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn saturation() {
         assert_eq!(
             runner().err("a {b: scale-color(red, $saturation: 1px)}\n"),
@@ -210,7 +195,6 @@ mod wrong {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn whiteness() {
         assert_eq!(
             runner().err("a {b: scale-color(white, $whiteness: 1px)}\n"),

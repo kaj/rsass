@@ -1,6 +1,6 @@
 use super::{
-    check, expected_to, get_checked, get_numeric, get_opt_check, Error,
-    FunctionMap, Scope,
+    check, expected_to, get_checked, get_numeric, get_opt_check, get_va_list,
+    Error, FunctionMap, Scope,
 };
 use crate::css::Value;
 use crate::output::Format;
@@ -23,7 +23,9 @@ pub fn create_module() -> Scope {
         use crate::value::Operator;
         match (a, b) {
             (Value::Color(a, _), Value::Numeric(b, _)) if b.is_no_unit() => {
-                let bn = b.as_ratio()?;
+                let bn = b
+                    .as_ratio()
+                    .map_err(|e| Error::BadValue(e.to_string()))?;
                 Ok((a.to_rgba().as_ref() / bn).into())
             }
             (Value::Numeric(ref a, _), Value::Numeric(ref b, _)) => {
@@ -74,13 +76,11 @@ pub fn create_module() -> Scope {
         let val = get_numeric(s, "number")?;
         Ok(number(val.value.floor(), val.unit))
     });
-    def_va!(f, max(numbers), |s| match s.get("numbers")? {
-        Value::List(v, _, _) => find_extreme(&v, Ordering::Greater),
-        single_value => find_extreme(&[single_value], Ordering::Greater),
+    def_va!(f, max(numbers), |s| {
+        find_extreme(&get_va_list(s, name!(numbers))?, Ordering::Greater)
     });
-    def_va!(f, min(numbers), |s| match s.get("numbers")? {
-        Value::List(v, _, _) => find_extreme(&v, Ordering::Less),
-        single_value => find_extreme(&[single_value], Ordering::Less),
+    def_va!(f, min(numbers), |s| {
+        find_extreme(&get_va_list(s, name!(numbers))?, Ordering::Less)
     });
     def!(f, round(number), |s| {
         let val = get_numeric(s, "number")?;
@@ -92,8 +92,13 @@ pub fn create_module() -> Scope {
         let v = get_numeric(s, "number")?;
         Ok(number(v.value.abs(), v.unit))
     });
-    def_va!(f, hypot(number), |s| match s.get("number")? {
-        Value::List(v, _, _) => {
+    def_va!(f, hypot(number), |s| match get_va_list(s, name!(number))?
+        .as_slice()
+    {
+        [Value::Numeric(v, _)] =>
+            Ok(number(v.value.clone().abs(), v.unit.clone())),
+        [v] => Err(Error::bad_arg(name!(number), &v, "is not a number")),
+        v => {
             if let Some((first, rest)) = v.split_first() {
                 let first = as_numeric(first)?;
                 let mut sum = f64::from(first.value.clone()).powi(2);
@@ -113,11 +118,6 @@ pub fn create_module() -> Scope {
                 Err(Error::error("At least one argument must be passed"))
             }
         }
-        Value::Numeric(v, _) => Ok(number(v.value.abs(), v.unit)),
-        Value::Null => {
-            Err(Error::error("At least one argument must be passed"))
-        }
-        v => Err(Error::bad_arg(name!(number), &v, "is not a number")),
     });
 
     // - - - Exponential Functions - - -
