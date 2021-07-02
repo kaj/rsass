@@ -351,18 +351,17 @@ fn set_inner(
     value: Value,
 ) -> Result<ValueMap, Error> {
     if let Some((key, rest)) = keys.split_first() {
-        if rest.is_empty() {
-            map.insert(key.clone(), value);
-            Ok(map)
+        let value = if rest.is_empty() {
+            value
         } else {
-            let inner = match map.get(&key) {
-                Some(Value::Map(inner)) => inner.clone(),
+            let inner = match map.remove(&key) {
+                Some(Value::Map(inner)) => inner,
                 _ => ValueMap::new(),
             };
-            let inner = set_inner(inner, rest, value)?;
-            map.insert(key.clone(), Value::Map(inner));
-            Ok(map)
-        }
+            Value::Map(set_inner(inner, rest, value)?)
+        };
+        map.insert(key.clone(), value);
+        Ok(map)
     } else {
         Err(Error::error("Expected $args to contain a value"))
     }
