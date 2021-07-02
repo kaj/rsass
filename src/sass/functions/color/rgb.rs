@@ -16,13 +16,16 @@ pub fn register(f: &mut Scope) {
     def_va!(f, _rgb(kwargs), |s| do_rgba(&name!(rgb), s));
     def_va!(f, _rgba(kwargs), |s| do_rgba(&name!(rgba), s));
     def!(f, red(color), |s| {
-        Ok(Value::scalar(get_color(s, "color")?.to_rgba().red()))
+        let c = get_color(s, "color")?;
+        Ok(Value::scalar(c.to_rgba().red().round()))
     });
     def!(f, green(color), |s| {
-        Ok(Value::scalar(get_color(s, "color")?.to_rgba().green()))
+        let c = get_color(s, "color")?;
+        Ok(Value::scalar(c.to_rgba().green().round()))
     });
     def!(f, blue(color), |s| {
-        Ok(Value::scalar(get_color(s, "color")?.to_rgba().blue()))
+        let c = get_color(s, "color")?;
+        Ok(Value::scalar(c.to_rgba().blue().round()))
     });
     def!(f, mix(color1, color2, weight = b"50%"), |s| {
         let a = get_color(s, "color1")?;
