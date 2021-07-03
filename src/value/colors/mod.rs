@@ -135,9 +135,11 @@ impl From<Hwba> for Color {
 }
 
 fn clamp(v: Rational, min: Rational, max: Rational) -> Rational {
-    let v = if v < min { min } else { v };
-    if v > max {
+    // Note: Ord.clamp is in std from 1.50.0.
+    if v >= max {
         max
+    } else if v <= min {
+        min
     } else {
         v
     }
