@@ -7,13 +7,17 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.22.2
+
+Released 2021-07-03.
+Progress: 4002 of 6180 tests passed in dart-sass compatibility mode.
 
 * Changed the `red(..)`, `green(..)`, and `blue(..)` functions to
   always return integers. Issue #114, thanks @Keats.
 * Changed the `blackness(..)` and `whiteness(..)` functions to return
   blackness/whiteness of the integer rgb approximations of the color
   rather than the exact color.
+
 
 ## Release 0.22.0 - 2021-06-20
 
