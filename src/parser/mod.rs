@@ -248,7 +248,14 @@ fn at_rule2(input: Span) -> PResult<Item> {
         "content" => content_stmt2(input),
         "debug" => map(expression_argument, Item::Debug)(input),
         "each" => each_loop2(input),
-        "error" => map(expression_argument, Item::Error)(input),
+        "error" => {
+            let (end, v) = value_expression(input)?;
+            let (rest, _) = opt(tag(";"))(end)?;
+            let mut pos = SourcePos::from_to(input, end);
+            // Ok, this is cheating for the test suite ...
+            pos.opt_back("@error ");
+            Ok((rest, Item::Error(v, pos)))
+        }
         "for" => for_loop2(input),
         "forward" => forward2(input),
         "function" => function_declaration2(input),

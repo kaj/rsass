@@ -9,7 +9,16 @@ project adheres to
 
 ## Unreleased
 
+### Breaking changes
+
+* `Error` has a new alternative, `AtError`.
+* `sass::Item::Error` changed to include a `SourcePos`.
+
+### Improvements
+
 * A css call is just a special kind of string.
+* Include position of directive or function call when reporting
+  `@error` errors.
 
 
 ## Release 0.22.2

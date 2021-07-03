@@ -423,11 +423,11 @@ fn handle_item(
         Item::Warn(ref value) => {
             eprintln!("WARNING: {}", value.evaluate(scope)?.format(format));
         }
-        Item::Error(ref value) => {
-            return Err(Error::S(format!(
-                "Error: {}",
-                value.evaluate(scope)?.format(format)
-            )));
+        Item::Error(ref value, ref pos) => {
+            return Err(Error::AtError(
+                value.evaluate(scope)?.format(format).to_string(),
+                pos.clone(),
+            ));
         }
 
         Item::Rule(ref selectors, ref body) => {

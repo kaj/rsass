@@ -143,6 +143,10 @@ impl Value {
                     Error::BadArguments(msg, decl) => {
                         Error::BadCall(msg, pos.clone(), Some(decl))
                     }
+                    Error::AtError(msg, _pos) => {
+                        let msg = format!("Error: {}", msg);
+                        Error::BadCall(msg, pos.clone(), None)
+                    }
                     e => Error::BadCall(e.to_string(), pos.clone(), None),
                 };
                 if let Some(name) = name.single_raw() {

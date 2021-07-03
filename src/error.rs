@@ -33,6 +33,8 @@ pub enum Error {
     ParseError(ParseError),
     /// An expected variable was not defined.
     UndefinedVariable(String),
+    /// An `@error` reached.
+    AtError(String, SourcePos),
     /// Fallback error type.
     ///
     /// This just contains a string with some message.
@@ -104,6 +106,10 @@ impl fmt::Display for Error {
             }
             Error::InvalidFunctionName(ref pos) => {
                 writeln!(out, "Error: Invalid function name.")?;
+                pos.show(out)
+            }
+            Error::AtError(ref value, ref pos) => {
+                writeln!(out, "Error: {}", value)?;
                 pos.show(out)
             }
             Error::BadRange(ref err) => err.fmt(out),

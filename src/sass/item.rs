@@ -37,7 +37,7 @@ pub enum Item {
     /// An `@warn` directive.
     Warn(Value),
     /// An `@error` directive.
-    Error(Value),
+    Error(Value, SourcePos),
 
     /// A `@mixin` directive, declaring a mixin.
     MixinDeclaration(String, FormalArgs, Vec<Item>),

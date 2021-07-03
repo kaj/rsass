@@ -131,13 +131,14 @@ impl ScopeRef {
                     );
                     None
                 }
-                Item::Error(ref value) => {
-                    return Err(Error::S(format!(
-                        "Error: {}",
+                Item::Error(ref value, ref pos) => {
+                    return Err(Error::AtError(
                         value
-                            .evaluate(self.clone())?
-                            .format(self.get_format()),
-                    )));
+                            .evaluate(self)?
+                            .format(Format::introspect())
+                            .to_string(),
+                        pos.clone(),
+                    ));
                 }
                 Item::None => None,
                 Item::Comment(..) => None,
