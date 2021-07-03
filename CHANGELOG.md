@@ -7,6 +7,11 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+* A css call is just a special kind of string.
+
+
 ## Release 0.22.2
 
 Released 2021-07-03.

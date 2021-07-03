@@ -349,6 +349,9 @@ mod check {
     pub fn string(v: Value) -> Result<(String, Quotes), String> {
         match v {
             Value::Literal(s, q) => Ok((s, q)),
+            Value::Call(name, args) => {
+                Ok((format!("{}({})", name, args), Quotes::None))
+            }
             v => Err(format!(
                 "{} is not a string",
                 v.format(Format::introspect())
