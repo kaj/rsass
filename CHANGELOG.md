@@ -11,7 +11,9 @@ project adheres to
 
 * Changed the `red(..)`, `green(..)`, and `blue(..)` functions to
   always return integers. Issue #114, thanks @Keats.
-
+* Changed the `blackness(..)` and `whiteness(..)` functions to return
+  blackness/whiteness of the integer rgb approximations of the color
+  rather than the exact color.
 
 ## Release 0.22.0 - 2021-06-20
 

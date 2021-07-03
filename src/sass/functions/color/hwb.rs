@@ -11,10 +11,16 @@ use crate::{Error, Scope, ScopeRef};
 pub fn register(f: &mut Scope) {
     def_va!(f, hwb(kwargs), hwb);
     def!(f, blackness(color), |s| {
-        Ok(percentage(get_color(s, "color")?.to_hwba().blackness()))
+        // Blackness of the rgb approximation that can be represented in css.
+        let (r, g, b, _a) = get_color(s, "color")?.to_rgba().to_bytes();
+        let max_c = *[r, g, b].iter().max().unwrap();
+        Ok(percentage(Rational::new((255 - max_c).into(), 255)))
     });
     def!(f, whiteness(color), |s| {
-        Ok(percentage(get_color(s, "color")?.to_hwba().whiteness()))
+        // Whiteness of the rgb approximation that can be represented in css.
+        let (r, g, b, _a) = get_color(s, "color")?.to_rgba().to_bytes();
+        let min_c = *[r, g, b].iter().min().unwrap();
+        Ok(percentage(Rational::new(min_c.into(), 255)))
     });
 }
 
