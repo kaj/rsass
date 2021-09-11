@@ -232,7 +232,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(ie_hex_str), name!(ie_hex_str)),
         (name!(scale_color), name!(scale)),
     ] {
-        global.insert(gname.clone(), m.get_lfunction(&lname));
+        global.insert(gname.clone(), m.get_lfunction(lname));
     }
     let mut f = Scope::builtin_module("sass:color");
     def!(f, fade_in(color, amount), |s| {
@@ -253,7 +253,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(opacify), name!(fade_in)),
         (name!(transparentize), name!(fade_out)),
     ] {
-        global.insert(gname.clone(), f.get_lfunction(&lname));
+        global.insert(gname.clone(), f.get_lfunction(lname));
     }
 }
 

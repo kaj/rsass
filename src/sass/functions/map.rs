@@ -52,7 +52,7 @@ pub fn create_module() -> Scope {
                 for k in &args.positional {
                     match val {
                         Some(Value::Map(m)) => {
-                            val = m.get(&k);
+                            val = m.get(k);
                         }
                         _ => return Ok(None),
                     }
@@ -62,7 +62,7 @@ pub fn create_module() -> Scope {
                 for k in keys {
                     match val {
                         Some(Value::Map(m)) => {
-                            val = m.get(&k);
+                            val = m.get(k);
                         }
                         _ => return Ok(None),
                     }
@@ -71,7 +71,7 @@ pub fn create_module() -> Scope {
             Value::Null => (),
             single_key => match val {
                 Some(Value::Map(m)) => {
-                    val = m.get(&single_key);
+                    val = m.get(single_key);
                 }
                 _ => return Ok(None),
             },
@@ -189,7 +189,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(map_remove), name!(remove)),
         (name!(map_values), name!(values)),
     ] {
-        global.insert(gname.clone(), m.get_lfunction(&lname));
+        global.insert(gname.clone(), m.get_lfunction(lname));
     }
 }
 
@@ -248,7 +248,7 @@ fn as_va_map(v: Value) -> Result<ValueMap, String> {
 
 fn do_deep_merge(map1: &mut ValueMap, map2: &ValueMap) {
     for (key, value) in map2.iter() {
-        match (map1.get_mut(&key), value) {
+        match (map1.get_mut(key), value) {
             (Some(Value::Map(m1)), Value::Map(ref m2)) => {
                 do_deep_merge(m1, m2);
             }
@@ -354,7 +354,7 @@ fn set_inner(
         let value = if rest.is_empty() {
             value
         } else {
-            let inner = match map.remove(&key) {
+            let inner = match map.remove(key) {
                 Some(Value::Map(inner)) => inner,
                 _ => ValueMap::new(),
             };

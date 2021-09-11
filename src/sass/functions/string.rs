@@ -119,7 +119,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(unique_id), name!(unique_id)),
         (name!(unquote), name!(unquote)),
     ] {
-        global.insert(gname.clone(), m.get_lfunction(&lname));
+        global.insert(gname.clone(), m.get_lfunction(lname));
     }
     // And special one that isn't part of the string module
     def!(global, url(string = b"null"), |s| {

@@ -54,7 +54,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(lightness), name!(lightness)),
         (name!(saturation), name!(saturation)),
     ] {
-        global.insert(gname.clone(), m.get_lfunction(&lname));
+        global.insert(gname.clone(), m.get_lfunction(lname));
     }
     let mut f = Scope::builtin_module("sass:color");
     def!(f, adjust_hue(color, degrees), |s| {
@@ -118,7 +118,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(lighten), name!(lighten)),
         (name!(saturate), name!(saturate)),
     ] {
-        global.insert(gname.clone(), f.get_lfunction(&lname));
+        global.insert(gname.clone(), f.get_lfunction(lname));
     }
 }
 

@@ -97,7 +97,7 @@ pub fn create_module() -> Scope {
     {
         [Value::Numeric(v, _)] =>
             Ok(number(v.value.clone().abs(), v.unit.clone())),
-        [v] => Err(Error::bad_arg(name!(number), &v, "is not a number")),
+        [v] => Err(Error::bad_arg(name!(number), v, "is not a number")),
         v => {
             if let Some((first, rest)) = v.split_first() {
                 let first = as_numeric(first)?;
@@ -241,7 +241,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(percentage), name!(percentage)),
         (name!(random), name!(random)),
     ] {
-        global.insert(gname.clone(), m.get_lfunction(&lname));
+        global.insert(gname.clone(), m.get_lfunction(lname));
     }
 }
 

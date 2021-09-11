@@ -364,7 +364,7 @@ fn handle_item(
             let mut rule = rule;
             let pushed = scope.store_local_values(names);
             for value in values.evaluate(scope.clone())?.iter_items() {
-                scope.define_multi(&names, &value);
+                scope.define_multi(names, &value);
                 handle_body(
                     body,
                     head,

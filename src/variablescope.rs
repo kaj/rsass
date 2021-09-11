@@ -347,7 +347,7 @@ impl<'a> Scope {
     /// Special case: in names is a single name, value is used directly.
     pub fn define_multi(&self, names: &[Name], value: &Value) {
         if names.len() == 1 {
-            self.define(names[0].clone(), &value);
+            self.define(names[0].clone(), value);
         } else {
             let values = value.clone().iter_items();
             if values.len() > names.len() {
@@ -361,7 +361,7 @@ impl<'a> Scope {
                 for name in names {
                     self.define(
                         name.clone(),
-                        &values.next().unwrap_or(&Value::Null),
+                        values.next().unwrap_or(&Value::Null),
                     )
                 }
             }
@@ -505,7 +505,7 @@ impl<'a> Scope {
                 let name = name
                     .rfind(|c| c == ':' || c == '/')
                     .map(|i| &name[i + 1..])
-                    .unwrap_or(&name);
+                    .unwrap_or(name);
                 self.define_module(name.into(), module.expose(expose));
             }
             UseAs::Star => {

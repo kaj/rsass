@@ -136,7 +136,7 @@ fn do_parse_scss_file<T: Read>(
     let mut data = vec![];
     file.read_to_end(&mut data)
         .map_err(|e| Error::Input(source.name().to_string(), e))?;
-    let data = Span::new_extra(&data, &source);
+    let data = Span::new_extra(&data, source);
     Ok(ParseError::check(sassfile(data))?)
 }
 

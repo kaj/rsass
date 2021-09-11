@@ -144,7 +144,7 @@ impl Mul<&Rational> for &NumValue {
     fn mul(self, rhs: &Rational) -> NumValue {
         match self {
             NumValue::Rational(s) => (s * rhs).into(),
-            NumValue::BigRational(s) => (s * biggen(&rhs)).into(),
+            NumValue::BigRational(s) => (s * biggen(rhs)).into(),
             NumValue::Float(s) => (s * ratio_to_float(rhs)).into(),
         }
     }
@@ -191,10 +191,10 @@ impl Rem for &NumValue {
         match (self, rhs) {
             (NumValue::Rational(s), NumValue::Rational(r)) => (s % r).into(),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(&s) % r).into()
+                (biggen(s) % r).into()
             }
             (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s % biggen(&r)).into()
+                (s % biggen(r)).into()
             }
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 (s % r).into()
@@ -218,14 +218,14 @@ impl Div for &NumValue {
         }
         match (self, rhs) {
             (NumValue::Rational(s), NumValue::Rational(r)) => s
-                .checked_div(&r)
+                .checked_div(r)
                 .map(Into::into)
-                .unwrap_or_else(|| (biggen(&s) / biggen(&r)).into()),
+                .unwrap_or_else(|| (biggen(s) / biggen(r)).into()),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(&s) / r).into()
+                (biggen(s) / r).into()
             }
             (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s / biggen(&r)).into()
+                (s / biggen(r)).into()
             }
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 (s / r).into()
@@ -280,14 +280,14 @@ impl Sub for &NumValue {
     fn sub(self, rhs: Self) -> NumValue {
         match (self, rhs) {
             (NumValue::Rational(s), NumValue::Rational(r)) => s
-                .checked_sub(&r)
+                .checked_sub(r)
                 .map(Into::into)
-                .unwrap_or_else(|| (biggen(&s) - biggen(&r)).into()),
+                .unwrap_or_else(|| (biggen(s) - biggen(r)).into()),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(&s) - r).into()
+                (biggen(s) - r).into()
             }
             (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s - biggen(&r)).into()
+                (s - biggen(r)).into()
             }
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 (s - r).into()
