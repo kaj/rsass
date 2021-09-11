@@ -113,7 +113,7 @@ fn push_descendant(to: &mut Vec<SelectorPart>, from: &mut Selector) {
     if !to.is_empty() {
         to.push(SelectorPart::Descendant)
     }
-    to.extend(from.0.drain(..));
+    to.append(&mut from.0);
 }
 
 fn check_selector(v: &Value) -> Result<Selector, Error> {
