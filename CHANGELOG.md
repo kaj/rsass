@@ -12,13 +12,16 @@ project adheres to
 ### Breaking changes
 
 * `Error` has a new alternative, `AtError`.
-* `sass::Item::Error` changed to include a `SourcePos`.
+* In `sass::Item`, the `Error`, `MixinCall` and `MixinDeclaration`
+  variants is changed to include a `SourcePos`.  Also, a `sass::Mixin`
+  contains a `SourcePos` for where it is declared.
 
 ### Improvements
 
 * A css call is just a special kind of string.
 * Include position of directive or function call when reporting
   `@error` errors.
+* Improve error reporting from inside mixins and functions.
 
 
 ## Release 0.22.2

@@ -1,3 +1,4 @@
+use crate::parser::SourcePos;
 use crate::sass::{FormalArgs, Item, Value};
 use crate::ScopeRef;
 
@@ -10,6 +11,8 @@ pub struct Mixin {
     pub scope: ScopeRef,
     /// The body of this mixin.
     pub body: Vec<Item>,
+    /// The position where the mixin is declared.
+    pub pos: SourcePos,
 }
 
 impl Mixin {

@@ -139,17 +139,22 @@ impl Value {
                     return args.evaluate_single(scope, name, num);
                 }
                 let args = args.evaluate(scope.clone())?;
-                let call_err = |e: Error| match e {
-                    Error::BadArguments(msg, decl) => {
-                        Error::BadCall(msg, pos.clone(), Some(decl))
-                    }
-                    Error::AtError(msg, _pos) => {
-                        let msg = format!("Error: {}", msg);
-                        Error::BadCall(msg, pos.clone(), None)
-                    }
-                    e => Error::BadCall(e.to_string(), pos.clone(), None),
-                };
                 if let Some(name) = name.single_raw() {
+                    let call_err = |e: Error| match e {
+                        Error::BadArguments(msg, decl) => {
+                            let pos = if decl.file.is_builtin() {
+                                pos.clone()
+                            } else {
+                                pos.in_call(&name)
+                            };
+                            Error::BadCall(msg, pos, Some(decl))
+                        }
+                        Error::AtError(msg, _pos) => {
+                            let msg = format!("Error: {}", msg);
+                            Error::BadCall(msg, pos.clone(), None)
+                        }
+                        e => Error::BadCall(e.to_string(), pos.clone(), None),
+                    };
                     let name = name.into();
                     if let Some(f) = scope
                         .get_function(&name)

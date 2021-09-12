@@ -27,6 +27,13 @@ impl SourcePos {
         result
     }
 
+    pub(crate) fn in_call(&self, name: &str) -> Self {
+        SourcePos {
+            file: SourceName::called(name, self.clone()),
+            ..self.clone()
+        }
+    }
+
     pub(crate) fn mock_function(
         name: &Name,
         args: &FormalArgs,
@@ -97,6 +104,26 @@ impl SourcePos {
             what = what,
         )
     }
+    pub(crate) fn show_inner(
+        &self,
+        out: &mut impl Write,
+        lnw: usize,
+        marker: char,
+        what: &str,
+    ) -> fmt::Result {
+        writeln!(
+            out,
+            "\n{ln:<lnw$} | {line}\
+             \n{0:lnw$} |{0:>lpos$}{mark}{what}",
+            "",
+            line = self.line,
+            ln = self.line_no,
+            lnw = lnw,
+            lpos = self.line_pos,
+            mark = marker.to_string().repeat(self.length),
+            what = what,
+        )
+    }
     /// Show the file name of this pos and where it was imported from.
     pub fn show_files(&self, out: &mut impl Write) -> fmt::Result {
         let mut nextpos = Some(self);
@@ -109,13 +136,13 @@ impl SourcePos {
                 file = pos.file.name(),
                 row = pos.line_no,
                 col = pos.line_pos,
-                cause = if pos.file.imported_from().is_some() {
-                    "import"
-                } else {
-                    "root stylesheet"
-                },
+                cause = pos.file.imported,
             )?;
-            nextpos = pos.file.imported_from();
+            nextpos = match &pos.file.imported {
+                SourceKind::Root => None,
+                SourceKind::Imported(pos) => Some(&pos),
+                SourceKind::Called(_, pos) => Some(&pos),
+            };
         }
         Ok(())
     }
@@ -152,7 +179,7 @@ impl From<Span<'_>> for SourcePos {
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct SourceName {
     name: String,
-    imported: Option<Box<SourcePos>>,
+    imported: SourceKind,
 }
 
 impl SourceName {
@@ -160,14 +187,21 @@ impl SourceName {
     pub fn root<T: ToString>(name: T) -> Self {
         SourceName {
             name: name.to_string(),
-            imported: None,
+            imported: SourceKind::Root,
         }
     }
     /// Create a name for a file imported from a specific pos.
     pub fn imported<T: ToString>(name: T, from: SourcePos) -> Self {
         SourceName {
             name: name.to_string(),
-            imported: Some(Box::new(from)),
+            imported: SourceKind::Imported(Box::new(from)),
+        }
+    }
+    /// Create a name for a mixin called from a specific pos.
+    pub fn called<T: ToString>(name: T, from: SourcePos) -> Self {
+        SourceName {
+            name: from.file.name.clone(),
+            imported: SourceKind::Called(name.to_string(), Box::new(from)),
         }
     }
 
@@ -175,8 +209,27 @@ impl SourceName {
     pub fn name(&self) -> &str {
         &self.name
     }
-    /// Get where this source is imported from, if not top-level.
-    pub fn imported_from(&self) -> Option<&SourcePos> {
-        self.imported.as_ref().map(|b| b.as_ref())
+
+    /// True if this is the position of something built-in.
+    pub fn is_builtin(&self) -> bool {
+        // Note: maybe implement this as a sepate source kind?
+        self.name.starts_with("sass:") || self.name.is_empty()
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+enum SourceKind {
+    Root,
+    Imported(Box<SourcePos>),
+    Called(String, Box<SourcePos>),
+}
+
+impl fmt::Display for SourceKind {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            SourceKind::Root => out.write_str("root stylesheet"),
+            SourceKind::Imported(_) => out.write_str("import"),
+            SourceKind::Called(name, _) => write!(out, "{}()", name),
+        }
     }
 }

@@ -40,9 +40,9 @@ pub enum Item {
     Error(Value, SourcePos),
 
     /// A `@mixin` directive, declaring a mixin.
-    MixinDeclaration(String, FormalArgs, Vec<Item>),
+    MixinDeclaration(String, FormalArgs, Vec<Item>, SourcePos),
     /// An `@include` directive, calling a mixin.
-    MixinCall(String, CallArgs, Option<Vec<Item>>),
+    MixinCall(String, CallArgs, Option<Vec<Item>>, SourcePos),
     /// An `@content` directive (in a mixin declaration).
     Content,
 

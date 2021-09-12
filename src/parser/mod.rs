@@ -30,8 +30,6 @@ use self::util::{
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
-#[cfg(test)]
-use crate::sass::CallArgs;
 use crate::sass::{FormalArgs, Item, Name, Value};
 use crate::selectors::Selectors;
 use crate::value::ListSeparator;
@@ -220,23 +218,24 @@ fn at_root2(input: Span) -> PResult<Item> {
     )(input)
 }
 
-#[cfg(test)] // TODO: Or remove this?
-fn mixin_call(input: Span) -> PResult<Item> {
-    preceded(tag("@include "), mixin_call2)(input)
-}
-
 /// What follows the `@include` tag.
 fn mixin_call2(input: Span) -> PResult<Item> {
-    let (input, n1) = terminated(name, opt_spacelike)(input)?;
-    let (input, n2) = opt(preceded(tag("."), name))(input)?;
+    let (rest, n1) = terminated(name, opt_spacelike)(input)?;
+    let (rest, n2) = opt(preceded(tag("."), name))(rest)?;
     let name = n2.map(|n2| format!("{}.{}", n1, n2)).unwrap_or(n1);
-    let (input, _) = opt_spacelike(input)?;
-    let (input, args) = terminated(opt(call_args), opt_spacelike)(input)?;
-    let (input, body) = terminated(
+    let (rest, _) = opt_spacelike(rest)?;
+    let (rest, args) = terminated(opt(call_args), opt_spacelike)(rest)?;
+    let (end, body) = terminated(
         opt(body_block),
         terminated(opt_spacelike, opt(tag(";"))),
-    )(input)?;
-    Ok((input, Item::MixinCall(name, args.unwrap_or_default(), body)))
+    )(rest)?;
+    let mut pos = SourcePos::from_to(input, rest);
+    // Ok, this is cheating for the test suite ...
+    pos.opt_back("@include ");
+    Ok((
+        end,
+        Item::MixinCall(name, args.unwrap_or_default(), body, pos),
+    ))
 }
 
 /// What follows an `@` sign
@@ -451,17 +450,13 @@ fn while_loop2(input: Span) -> PResult<Item> {
     Ok((input, Item::While(cond, body)))
 }
 
-#[cfg(test)] // TODO: Or remove this?
-fn mixin_declaration(input: Span) -> PResult<Item> {
-    preceded(tag("@mixin "), mixin_declaration2)(input)
-}
-
 fn mixin_declaration2(input: Span) -> PResult<Item> {
-    let (input, name) = terminated(name, opt_spacelike)(input)?;
-    let (input, args) = terminated(opt(formal_args), opt_spacelike)(input)?;
-    let (input, body) = body_block(input)?;
+    let (rest, name) = terminated(name, opt_spacelike)(input)?;
+    let (rest, args) = opt(formal_args)(rest)?;
+    let (end, body) = preceded(opt_spacelike, body_block)(rest)?;
     let args = args.unwrap_or_else(FormalArgs::none);
-    Ok((input, Item::MixinDeclaration(name, args, body)))
+    let pos = SourcePos::from_to(input, rest);
+    Ok((end, Item::MixinDeclaration(name, args, body, pos)))
 }
 
 fn function_declaration2(input: Span) -> PResult<Item> {
@@ -611,109 +606,6 @@ fn if_with_no_else() {
                 vec![Item::Property("color".into(), Value::black())],
             )],
             vec![],
-        ),
-    )
-}
-
-#[test]
-fn test_mixin_call_noargs() {
-    assert_eq!(
-        check_parse!(mixin_call, b"@include foo;"),
-        Item::MixinCall("foo".to_string(), CallArgs::default(), None),
-    )
-}
-
-#[test]
-fn test_mixin_call_pos_args() {
-    assert_eq!(
-        check_parse!(mixin_call, b"@include foo(bar, baz);"),
-        Item::MixinCall(
-            "foo".to_string(),
-            CallArgs::new(vec![(None, string("bar")), (None, string("baz"))])
-                .unwrap(),
-            None,
-        ),
-    )
-}
-
-#[test]
-fn test_mixin_call_named_args() {
-    assert_eq!(
-        check_parse!(mixin_call, b"@include foo($x: bar, $y: baz);"),
-        Item::MixinCall(
-            "foo".to_string(),
-            CallArgs::new(vec![
-                (Some("x".into()), string("bar")),
-                (Some("y".into()), string("baz")),
-            ])
-            .unwrap(),
-            None,
-        ),
-    )
-}
-
-#[test]
-fn test_mixin_declaration_empty() {
-    assert_eq!(
-        check_parse!(mixin_declaration, b"@mixin foo() {}\n"),
-        Item::MixinDeclaration(
-            "foo".into(),
-            FormalArgs::none(),
-            Default::default()
-        ),
-    )
-}
-
-#[test]
-fn test_mixin_declaration() {
-    assert_eq!(
-        check_parse!(
-            mixin_declaration,
-            b"@mixin foo($x) {\n  foo-bar: baz $x;\n}\n"
-        ),
-        Item::MixinDeclaration(
-            "foo".into(),
-            FormalArgs::new(vec![("x".into(), None)]),
-            vec![Item::Property(
-                "foo-bar".into(),
-                Value::List(
-                    vec![string("baz"), Value::Variable("x".into())],
-                    Some(ListSeparator::Space),
-                    false,
-                ),
-            )],
-        ),
-    )
-}
-
-#[test]
-fn test_mixin_declaration_default_and_subrules() {
-    assert_eq!(
-        check_parse!(
-            mixin_declaration,
-            b"@mixin bar($a, $b: flug) {\
-              \n  foo-bar: baz;\
-              \n  foo, bar {\
-              \n    property: $b;\
-              \n  }\
-              \n}\n"
-        ),
-        Item::MixinDeclaration(
-            "bar".into(),
-            FormalArgs::new(vec![
-                ("a".into(), None),
-                ("b".into(), Some(string("flug")))
-            ]),
-            vec![
-                Item::Property("foo-bar".into(), string("baz")),
-                Item::Rule(
-                    selectors(code_span(b"foo, bar")).unwrap().1,
-                    vec![Item::Property(
-                        "property".into(),
-                        Value::Variable("b".into()),
-                    )],
-                ),
-            ],
         ),
     )
 }

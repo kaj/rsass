@@ -113,6 +113,7 @@ impl fmt::Display for FormalArgs {
 }
 
 /// Error evaluating arguments
+#[derive(Debug)]
 pub enum ArgsError {
     /// Got the first number of arguments, but only the second number allowed.
     TooMany(usize, usize),

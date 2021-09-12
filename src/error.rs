@@ -96,9 +96,19 @@ impl fmt::Display for Error {
                 msg.fmt(out)?;
                 writeln!(out)?;
                 if let Some(declpos) = declpos {
-                    callpos.show_detail(out, '^', " invocation")?;
-                    writeln!(out)?;
-                    declpos.show_detail(out, '=', " declaration")?;
+                    if callpos.file.name() == declpos.file.name() {
+                        show_in_file(
+                            out,
+                            callpos,
+                            " invocation",
+                            declpos,
+                            " declaration",
+                        )?;
+                    } else {
+                        callpos.show_detail(out, '^', " invocation")?;
+                        writeln!(out)?;
+                        declpos.show_detail(out, '=', " declaration")?;
+                    }
                     callpos.show_files(out)
                 } else {
                     callpos.show(out)
@@ -118,6 +128,36 @@ impl fmt::Display for Error {
             ref x => write!(out, "{:?}", x),
         }
     }
+}
+
+/// Output multiple positions from the same file.
+fn show_in_file(
+    out: &mut fmt::Formatter,
+    one: &SourcePos,
+    one_name: &str,
+    other: &SourcePos,
+    other_name: &str,
+) -> fmt::Result {
+    if one.line_no < other.line_no {
+        show_in_file2(out, one, one_name, other, other_name)
+    } else {
+        show_in_file2(out, other, other_name, one, one_name)
+    }
+}
+
+fn show_in_file2(
+    out: &mut fmt::Formatter,
+    first: &SourcePos,
+    first_name: &str,
+    second: &SourcePos,
+    second_name: &str,
+) -> fmt::Result {
+    write!(out, "    ,")?;
+    first.show_inner(out, 3, '=', first_name)?;
+    write!(out, "... |")?;
+    second.show_inner(out, 3, '^', second_name)?;
+    write!(out, "    '")?;
+    Ok(())
 }
 
 impl From<io::Error> for Error {
