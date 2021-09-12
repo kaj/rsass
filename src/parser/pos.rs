@@ -11,7 +11,7 @@ pub struct SourcePos {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-pub struct SourcePosImpl {
+struct SourcePosImpl {
     /// The line number of this pos.
     line_no: u32,
     /// The position on the line.
