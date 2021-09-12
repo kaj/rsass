@@ -221,6 +221,7 @@ fn handle_item(
             ref body,
         } => {
             buf.do_separate();
+            let (name, _q) = name.evaluate(scope.clone())?;
             write!(buf, "@{}", name)?;
             let args = args.evaluate(scope.clone())?;
             if !args.is_null() {

@@ -239,8 +239,8 @@ fn mixin_call2(input: Span) -> PResult<Item> {
 }
 
 /// What follows an `@` sign
-fn at_rule2(input: Span) -> PResult<Item> {
-    let (input, name) = terminated(name, opt_spacelike)(input)?;
+fn at_rule2(input0: Span) -> PResult<Item> {
+    let (input, name) = terminated(name, opt_spacelike)(input0)?;
     match name.as_ref() {
         "at-root" => at_root2(input),
         "charset" => charset2(input),
@@ -267,6 +267,7 @@ fn at_rule2(input: Span) -> PResult<Item> {
         "warn" => map(expression_argument, Item::Warn)(input),
         "while" => while_loop2(input),
         _ => {
+            let (input, name) = sass_string(input0)?;
             let (input, args) = opt(media_args)(input)?;
             let (input, body) = preceded(
                 opt(ignore_space),

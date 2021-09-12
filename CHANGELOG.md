@@ -16,6 +16,7 @@ project adheres to
   variants is changed to include a `SourcePos`.  Also, a `sass::Mixin`
   contains a `SourcePos` for where it is declared.
 * The fields of `SourcePos` is now private.
+* The `name` of a `sass::Item::AtRule` is now a SassString.
 
 ### Improvements
 
@@ -23,6 +24,7 @@ project adheres to
 * Include position of directive or function call when reporting
   `@error` errors.
 * Improve error reporting from inside mixins and functions.
+* Support interpolation in `@`-rule names.
 
 
 ## Release 0.22.2

@@ -26,7 +26,7 @@ pub enum Item {
     /// A generic `@` directive.
     AtRule {
         /// The name of this directive
-        name: String,
+        name: SassString,
         /// Any arguments
         args: Value,
         /// The directive may have a body.
