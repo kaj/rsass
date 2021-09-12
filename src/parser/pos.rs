@@ -6,16 +6,16 @@ use std::str::from_utf8;
 /// A position in sass input.
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct SourcePos {
-    /// The text of the source line containing this pos.
-    pub line: String,
     /// The line number of this pos.
-    pub line_no: u32,
+    line_no: u32,
     /// The position on the line.
-    pub line_pos: usize,
+    line_pos: usize,
     /// The length of the interesting part.
     length: usize,
+    /// The text of the source line containing this pos.
+    line: String,
     /// The source file name and from where it was loaded.
-    pub file: SourceName,
+    file: SourceName,
 }
 
 impl SourcePos {
@@ -87,22 +87,10 @@ impl SourcePos {
         marker: char,
         what: &str,
     ) -> fmt::Result {
-        let line_no = self.line_no.to_string();
-        write!(
-            out,
-            "{0:lnw$} ,{arrow}\
-             \n{ln} | {line}\
-             \n{0:lnw$} |{0:>lpos$}{mark}{what}\
-             \n{0:lnw$} '",
-            "",
-            arrow = arrow,
-            line = self.line,
-            ln = line_no,
-            lnw = line_no.len(),
-            lpos = self.line_pos,
-            mark = marker.to_string().repeat(self.length),
-            what = what,
-        )
+        let lnw = self.line_no.to_string().len();
+        write!(out, "{0:lnw$} ,{arrow}", "", arrow = arrow, lnw = lnw)?;
+        self.show_inner(out, lnw, marker, what)?;
+        write!(out, "{0:lnw$} '", "", lnw = lnw)
     }
     pub(crate) fn show_inner(
         &self,
@@ -154,6 +142,14 @@ impl SourcePos {
             self.line_pos -= len;
             self.length += len;
         }
+    }
+
+    /// True if this is the position of something built-in.
+    pub fn is_builtin(&self) -> bool {
+        self.file.is_builtin()
+    }
+    pub(crate) fn same_file_as(&self, other: &Self) -> bool {
+        self.file.name == other.file.name
     }
 }
 

@@ -15,6 +15,7 @@ project adheres to
 * In `sass::Item`, the `Error`, `MixinCall` and `MixinDeclaration`
   variants is changed to include a `SourcePos`.  Also, a `sass::Mixin`
   contains a `SourcePos` for where it is declared.
+* The fields of `SourcePos` is now private.
 
 ### Improvements
 

@@ -96,7 +96,7 @@ impl fmt::Display for Error {
                 msg.fmt(out)?;
                 writeln!(out)?;
                 if let Some(declpos) = declpos {
-                    if callpos.file.name() == declpos.file.name() {
+                    if callpos.same_file_as(declpos) {
                         show_in_file(
                             out,
                             callpos,
@@ -138,7 +138,7 @@ fn show_in_file(
     other: &SourcePos,
     other_name: &str,
 ) -> fmt::Result {
-    if one.line_no < other.line_no {
+    if one < other {
         show_in_file2(out, one, one_name, other, other_name)
     } else {
         show_in_file2(out, other, other_name, one, one_name)

@@ -142,7 +142,7 @@ impl Value {
                 if let Some(name) = name.single_raw() {
                     let call_err = |e: Error| match e {
                         Error::BadArguments(msg, decl) => {
-                            let pos = if decl.file.is_builtin() {
+                            let pos = if decl.is_builtin() {
                                 pos.clone()
                             } else {
                                 pos.in_call(name)
