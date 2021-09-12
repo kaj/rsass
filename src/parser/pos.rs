@@ -2,10 +2,16 @@ use super::Span;
 use crate::sass::{FormalArgs, Name};
 use std::fmt::{self, Write};
 use std::str::from_utf8;
+use std::sync::Arc;
 
 /// A position in sass input.
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct SourcePos {
+    p: Arc<SourcePosImpl>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+pub struct SourcePosImpl {
     /// The line number of this pos.
     line_no: u32,
     /// The position on the line.
@@ -21,16 +27,20 @@ pub struct SourcePos {
 impl SourcePos {
     /// Create a new SourcePos from a start and an end Span.
     pub fn from_to(start: Span, end: Span) -> Self {
-        let mut result = Self::from(start);
+        let mut result = SourcePosImpl::from(start);
         result.length =
             std::cmp::max(1, end.location_offset() - start.location_offset());
-        result
+        SourcePos {
+            p: Arc::new(result),
+        }
     }
 
     pub(crate) fn in_call(&self, name: &str) -> Self {
         SourcePos {
-            file: SourceName::called(name, self.clone()),
-            ..self.clone()
+            p: Arc::new(SourcePosImpl {
+                file: SourceName::called(name, self.clone()),
+                ..(*self.p).clone()
+            }),
         }
     }
 
@@ -41,11 +51,13 @@ impl SourcePos {
     ) -> Self {
         let args = args.to_string();
         SourcePos {
-            line: format!("@function {}{} {{", name, args),
-            line_no: 1,
-            line_pos: 11,
-            length: name.as_ref().chars().count() + args.chars().count(),
-            file: SourceName::root(module),
+            p: Arc::new(SourcePosImpl {
+                line: format!("@function {}{} {{", name, args),
+                line_no: 1,
+                line_pos: 11,
+                length: name.as_ref().chars().count() + args.chars().count(),
+                file: SourceName::root(module),
+            }),
         }
     }
 
@@ -73,10 +85,10 @@ impl SourcePos {
         marker: char,
         what: &str,
     ) -> fmt::Result {
-        let filename = if self.file.name.is_empty() {
+        let filename = if self.p.file.name.is_empty() {
             String::new()
         } else {
-            format!("--> {}", self.file.name)
+            format!("--> {}", self.p.file.name)
         };
         self.show_impl(out, &filename, marker, what)
     }
@@ -87,7 +99,7 @@ impl SourcePos {
         marker: char,
         what: &str,
     ) -> fmt::Result {
-        let lnw = self.line_no.to_string().len();
+        let lnw = self.p.line_no.to_string().len();
         write!(out, "{0:lnw$} ,{arrow}", "", arrow = arrow, lnw = lnw)?;
         self.show_inner(out, lnw, marker, what)?;
         write!(out, "{0:lnw$} '", "", lnw = lnw)
@@ -104,11 +116,11 @@ impl SourcePos {
             "\n{ln:<lnw$} | {line}\
              \n{0:lnw$} |{0:>lpos$}{mark}{what}",
             "",
-            line = self.line,
-            ln = self.line_no,
+            line = self.p.line,
+            ln = self.p.line_no,
             lnw = lnw,
-            lpos = self.line_pos,
-            mark = marker.to_string().repeat(self.length),
+            lpos = self.p.line_pos,
+            mark = marker.to_string().repeat(self.p.length),
             what = what,
         )
     }
@@ -120,13 +132,13 @@ impl SourcePos {
                 out,
                 "\n{0:lnw$} {file} {row}:{col}  {cause}",
                 "",
-                lnw = self.line_no.to_string().len(),
-                file = pos.file.name(),
-                row = pos.line_no,
-                col = pos.line_pos,
-                cause = pos.file.imported,
+                lnw = self.p.line_no.to_string().len(),
+                file = pos.p.file.name(),
+                row = pos.p.line_no,
+                col = pos.p.line_pos,
+                cause = pos.p.file.imported,
             )?;
-            nextpos = match &pos.file.imported {
+            nextpos = match &pos.p.file.imported {
                 SourceKind::Root => None,
                 SourceKind::Imported(pos) => Some(pos),
                 SourceKind::Called(_, pos) => Some(pos),
@@ -137,25 +149,33 @@ impl SourcePos {
 
     /// If self is preceded (on same line) by `s`, include `s` in self.
     pub(crate) fn opt_back(&mut self, s: &str) {
-        if self.line[..self.line_pos - 1].ends_with(s) {
+        let p: &mut SourcePosImpl = Arc::make_mut(&mut self.p);
+        if p.line[..p.line_pos - 1].ends_with(s) {
             let len = s.chars().count();
-            self.line_pos -= len;
-            self.length += len;
+            p.line_pos -= len;
+            p.length += len;
         }
     }
 
     /// True if this is the position of something built-in.
     pub fn is_builtin(&self) -> bool {
-        self.file.is_builtin()
+        self.p.file.is_builtin()
     }
     pub(crate) fn same_file_as(&self, other: &Self) -> bool {
-        self.file.name == other.file.name
+        self.p.file.name == other.p.file.name
     }
 }
 
 impl From<Span<'_>> for SourcePos {
     fn from(span: Span) -> Self {
         SourcePos {
+            p: Arc::new(SourcePosImpl::from(span)),
+        }
+    }
+}
+impl From<Span<'_>> for SourcePosImpl {
+    fn from(span: Span) -> Self {
+        SourcePosImpl {
             line: from_utf8(span.get_line_beginning())
                 .unwrap_or("<<failed to display line>>")
                 .trim_end()
@@ -190,14 +210,14 @@ impl SourceName {
     pub fn imported<T: ToString>(name: T, from: SourcePos) -> Self {
         SourceName {
             name: name.to_string(),
-            imported: SourceKind::Imported(Box::new(from)),
+            imported: SourceKind::Imported(from),
         }
     }
     /// Create a name for a mixin called from a specific pos.
     pub fn called<T: ToString>(name: T, from: SourcePos) -> Self {
         SourceName {
-            name: from.file.name.clone(),
-            imported: SourceKind::Called(name.to_string(), Box::new(from)),
+            name: from.p.file.name.clone(),
+            imported: SourceKind::Called(name.to_string(), from),
         }
     }
 
@@ -216,8 +236,8 @@ impl SourceName {
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 enum SourceKind {
     Root,
-    Imported(Box<SourcePos>),
-    Called(String, Box<SourcePos>),
+    Imported(SourcePos),
+    Called(String, SourcePos),
 }
 
 impl fmt::Display for SourceKind {
