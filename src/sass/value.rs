@@ -145,7 +145,7 @@ impl Value {
                             let pos = if decl.file.is_builtin() {
                                 pos.clone()
                             } else {
-                                pos.in_call(&name)
+                                pos.in_call(name)
                             };
                             Error::BadCall(msg, pos, Some(decl))
                         }

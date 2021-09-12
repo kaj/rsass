@@ -140,8 +140,8 @@ impl SourcePos {
             )?;
             nextpos = match &pos.file.imported {
                 SourceKind::Root => None,
-                SourceKind::Imported(pos) => Some(&pos),
-                SourceKind::Called(_, pos) => Some(&pos),
+                SourceKind::Imported(pos) => Some(pos),
+                SourceKind::Called(_, pos) => Some(pos),
             };
         }
         Ok(())
