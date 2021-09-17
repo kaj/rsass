@@ -100,41 +100,44 @@ pub fn create_module() -> Scope {
     });
     def_va!(g, merge(map1, args), |s| {
         let mut map1 = get_map(s, name!(map1))?;
-        let map2 = match s.get("args")? {
+        let (keys, map2) = match s.get("args")? {
             Value::ArgList(mut args) => {
                 if let Some(map2) = args.only_named(&name!(map2)) {
-                    as_va_map(map2).named(name!(map2))?
+                    (vec![], as_va_map(map2).named(name!(map2))?)
                 } else {
                     let mut values = args.positional;
-                    let mut result = if let Some(last) = values.pop() {
-                        last.try_into().named(name!(map2))?
-                    } else {
-                        return Err(Error::error(
-                            "Expected $args to contain a key",
-                        ));
-                    };
-                    while let Some(prev) = values.pop() {
-                        result =
-                            ValueMap::singleton(prev, Value::Map(result));
-                    }
-                    result
+                    let map2 = values
+                        .pop()
+                        .ok_or_else(|| {
+                            Error::error("Expected $args to contain a key")
+                        })?
+                        .try_into()
+                        .named(name!(map2))?;
+                    (values, map2)
                 }
             }
-            direct => direct.try_into().named(name!(map2))?,
+            direct => (vec![], direct.try_into().named(name!(map2))?),
         };
-        for (key, value) in map2 {
-            if let (Some(Value::Map(m1)), Value::Map(ref m2)) =
-                (map1.get(&key), &value)
-            {
-                let mut m1 = m1.clone();
-                for (key, value) in m2.clone().iter() {
-                    m1.insert(key.clone(), value.clone());
+        fn do_merge(
+            mut keys: impl Iterator<Item = Value>,
+            map1: &mut ValueMap,
+            map2: ValueMap,
+        ) {
+            if let Some(key) = keys.next() {
+                if let Some(Value::Map(m1)) = map1.get_mut(&key) {
+                    do_merge(keys, m1, map2);
+                } else {
+                    let mut m2 = ValueMap::new();
+                    do_merge(keys, &mut m2, map2);
+                    map1.insert(key, Value::Map(m2));
                 }
-                map1.insert(key, Value::Map(m1));
             } else {
-                map1.insert(key, value);
+                for (key, value) in map2 {
+                    map1.insert(key, value);
+                }
             }
         }
+        do_merge(keys.into_iter(), &mut map1, map2);
         Ok(Value::Map(map1))
     });
     def_va!(g, remove(map, keys), |s| {

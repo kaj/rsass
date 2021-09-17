@@ -360,6 +360,30 @@ fn test_rational_overflow_sub() {
     check_value("4142135623 - 1.4142135623", "4142135621.5857864377")
 }
 
+/// https://github.com/kaj/rsass/issues/116
+/// map.merge incorrect output for nested map
+#[test]
+fn issue_116() {
+    check(
+        b"@use \"sass:map\";\n\
+         \n$fonts: (\
+         \n  \"Helvetica\": (\
+         \n    \"weights\": (\
+         \n      \"regular\": 400,\
+         \n      \"medium\": 500,\
+         \n      \"bold\": 700\
+         \n    )\
+         \n  )\
+         \n);\n\
+         \na {\
+         \n    color: inspect(map.merge($fonts, \"Helvetica\", \"weights\", \"regular\", (a: 300)));\
+         \n}\n",
+        "a {\
+         \n  color: (\"Helvetica\": (\"weights\": (\"regular\": (a: 300), \"medium\": 500, \"bold\": 700)));\
+         \n}\n",
+    );
+}
+
 fn check_value(input: &str, expected: &str) {
     assert_eq!(
         String::from_utf8(
