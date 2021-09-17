@@ -25,6 +25,7 @@ project adheres to
   `@error` errors.
 * Improve error reporting from inside mixins and functions.
 * Support interpolation in `@`-rule names.
+* Fixed #116: The `sass:map.merge` function was buggy.
 
 
 ## Release 0.22.2
