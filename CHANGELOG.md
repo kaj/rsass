@@ -26,6 +26,7 @@ project adheres to
 * Improve error reporting from inside mixins and functions.
 * Support interpolation in `@`-rule names.
 * Fixed #116: The `sass:map.merge` function was buggy.
+* Fixed reformatting of to-much-indented comments.
 
 
 ## Release 0.22.2
