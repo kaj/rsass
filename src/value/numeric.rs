@@ -104,6 +104,11 @@ impl PartialOrd for Numeric {
     fn partial_cmp(&self, other: &Numeric) -> Option<std::cmp::Ordering> {
         if self.unit == other.unit {
             self.value.partial_cmp(&other.value)
+        } else if self.is_no_unit() || other.is_no_unit() {
+            match self.value.partial_cmp(&other.value) {
+                Some(std::cmp::Ordering::Equal) => None,
+                other => other,
+            }
         } else if let Some(scaled) = other.as_unitset(&self.unit) {
             self.value.partial_cmp(&scaled)
         } else {
