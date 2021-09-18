@@ -1,10 +1,9 @@
-use crate::css::CallArgs;
+use super::{CallArgs, CssString};
 use crate::error::Error;
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
 use crate::sass::Function;
-use crate::value::{Color, ListSeparator, Number, Numeric, Operator, Quotes};
-use std::convert::TryFrom;
+use crate::value::{Color, ListSeparator, Number, Numeric, Operator};
 
 /// A css value.
 #[derive(Clone, Debug, Eq, PartialOrd)]
@@ -16,7 +15,7 @@ pub enum Value {
     /// A (callable?) function.
     Function(String, Option<Function>),
     /// A string literal.
-    Literal(String, Quotes),
+    Literal(CssString),
     /// A comma- or space separated list of values, with or without brackets.
     List(Vec<Value>, Option<ListSeparator>, bool),
     /// A Numeric value is a rational value with a Unit (which may be
@@ -118,7 +117,7 @@ impl Value {
             Value::List(ref list, _, false) => {
                 list.iter().all(|v| v.is_null())
             }
-            Value::Literal(ref s, Quotes::None) if s.is_empty() => true,
+            Value::Literal(ref s) => s.is_null(),
             Value::Paren(ref v) => v.is_null(),
             _ => false,
         }
@@ -153,54 +152,7 @@ impl Value {
     /// If the value is a quoted string, the content is unquoted.
     pub fn unquote(self) -> Value {
         match self {
-            Value::Literal(s, Quotes::None) => {
-                Value::Literal(s, Quotes::None)
-            }
-            Value::Literal(s, _) => {
-                let mut result = String::new();
-                let mut iter = s.chars().peekable();
-                while let Some(c) = iter.next() {
-                    if c == '\\' {
-                        let mut val: u32 = 0;
-                        let mut got_num = false;
-                        let nextchar = loop {
-                            match iter.peek() {
-                                Some(&c) if c.is_ascii_hexdigit() => {
-                                    val = val * 10 + u32::from(hexvalue(c));
-                                    got_num = true;
-                                    iter.next();
-                                }
-                                Some(' ') if got_num => {
-                                    iter.next();
-                                    break (None);
-                                }
-                                Some(_) if !got_num => break (iter.next()),
-                                _ => break (None),
-                            }
-                        };
-                        if got_num {
-                            if let Ok(c) = char::try_from(val) {
-                                result.push(c);
-                            } else {
-                                result.push('\u{fffd}');
-                            }
-                        }
-                        match nextchar {
-                            Some('\n') => {
-                                result.push('\\');
-                                result.push('a');
-                            }
-                            Some(c) => {
-                                result.push(c);
-                            }
-                            None => (),
-                        }
-                    } else {
-                        result.push(c)
-                    }
-                }
-                Value::Literal(result, Quotes::None)
-            }
+            Value::Literal(s) => s.unquote().into(),
             Value::List(list, s, b) => Value::List(
                 list.into_iter().map(|v| v.unquote()).collect(),
                 s,
@@ -270,18 +222,6 @@ impl Value {
     }
 }
 
-fn hexvalue(c: char) -> u8 {
-    if ('0'..='9').contains(&c) {
-        c as u8 - b'0'
-    } else if ('a'..='f').contains(&c) {
-        c as u8 - b'a' + 10
-    } else if ('A'..='F').contains(&c) {
-        c as u8 - b'A' + 10
-    } else {
-        0
-    }
-}
-
 /// Some Values are equal according to spec even with some
 /// implementation differences.
 impl PartialEq for Value {
@@ -289,23 +229,7 @@ impl PartialEq for Value {
         match (&self, other) {
             (Value::Bang(a), Value::Bang(b)) => a == b,
             (Value::Numeric(a, _), Value::Numeric(b, _)) => a == b,
-            (Value::Literal(a, aq), Value::Literal(b, bq)) => {
-                if aq == bq {
-                    a == b
-                } else {
-                    let a = if aq.is_none() {
-                        a.replace('\\', "\\\\")
-                    } else {
-                        a.clone()
-                    };
-                    let b = if bq.is_none() {
-                        b.replace('\\', "\\\\")
-                    } else {
-                        b.clone()
-                    };
-                    a == b
-                }
-            }
+            (Value::Literal(a), Value::Literal(b)) => a == b,
             (Value::Null, Value::Null) => true,
             (Value::True, Value::True) => true,
             (Value::False, Value::False) => true,
@@ -348,14 +272,19 @@ impl From<bool> for Value {
         }
     }
 }
+impl From<CssString> for Value {
+    fn from(s: CssString) -> Value {
+        Value::Literal(s.pref_dquotes())
+    }
+}
 impl From<&str> for Value {
     fn from(s: &str) -> Value {
-        Value::Literal(s.into(), Quotes::None)
+        String::from(s).into()
     }
 }
 impl From<String> for Value {
     fn from(s: String) -> Value {
-        Value::Literal(s, Quotes::None)
+        CssString::from(s).into()
     }
 }
 impl From<Numeric> for Value {

@@ -3,7 +3,7 @@ use crate::css::Value;
 use crate::parser::input_span;
 use crate::parser::selectors::{selector, selector_part, selectors};
 use crate::selectors::{Selector, SelectorPart, Selectors};
-use crate::value::{ListSeparator, Quotes};
+use crate::value::ListSeparator;
 use crate::{ParseError, Scope};
 
 pub fn create_module() -> Scope {
@@ -32,16 +32,11 @@ pub fn create_module() -> Scope {
     // TODO: extend
     def_va!(f, nest(selectors), |s| {
         let v = get_va_list(s, name!(selectors))?;
-        Ok(Value::Literal(
-            format!(
-                "{}",
-                v.into_iter()
-                    .map(parse_selectors)
-                    .try_fold(Selectors::root(), |b, e| e
-                        .map(|e| e.inside(&b)))?
-            ),
-            Quotes::None,
-        ))
+        Ok(v.into_iter()
+            .map(parse_selectors)
+            .try_fold(Selectors::root(), |b, e| e.map(|e| e.inside(&b)))?
+            .to_string()
+            .into())
     });
     def!(f, parse(selector), |s| {
         Ok(parse_selectors(s.get("selector")?)?.to_value())
@@ -98,11 +93,12 @@ fn parse_selectors(v: Value) -> Result<Selectors, Error> {
                 Ok(Selectors::new(outer))
             }
         }
-        Value::Literal(s, _) => {
-            if s.is_empty() {
+        Value::Literal(s) => {
+            if s.value().is_empty() {
                 Ok(Selectors::root())
             } else {
-                Ok(ParseError::check(selectors(input_span(s.as_bytes())))?)
+                let span = input_span(s.value().as_bytes());
+                Ok(ParseError::check(selectors(span))?)
             }
         }
         v => Err(bad_selector(&v)),
@@ -129,11 +125,12 @@ fn check_selector(v: &Value) -> Result<Selector, Error> {
                 Ok(a)
             },
         )?)),
-        Value::Literal(s, _) => {
-            if s.is_empty() {
+        Value::Literal(s) => {
+            if s.value().is_empty() {
                 Ok(Selector::root())
             } else {
-                Ok(ParseError::check(selector(input_span(s.as_bytes())))?)
+                let span = input_span(s.value().as_bytes());
+                Ok(ParseError::check(selector(span))?)
             }
         }
         v => Err(bad_selector(v)),
@@ -141,9 +138,9 @@ fn check_selector(v: &Value) -> Result<Selector, Error> {
 }
 fn check_selector_part(v: &Value) -> Result<SelectorPart, Error> {
     match v {
-        Value::Literal(s, _) => {
-            Ok(ParseError::check(selector_part(input_span(s.as_bytes())))?)
-        }
+        Value::Literal(s) => Ok(ParseError::check(selector_part(
+            input_span(s.value().as_bytes()),
+        ))?),
         v => Err(bad_selector(v)),
     }
 }

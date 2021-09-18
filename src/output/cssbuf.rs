@@ -1,6 +1,5 @@
 use super::Format;
-use crate::css::{BodyItem, Rule};
-use crate::sass::SassString;
+use crate::css::{BodyItem, CssString, Rule, Value};
 use crate::{Error, ScopeRef};
 use std::collections::BTreeMap;
 use std::io::{self, Write};
@@ -20,8 +19,8 @@ impl CssHead {
     }
     pub fn add_import(
         &mut self,
-        name: SassString,
-        args: crate::css::Value,
+        name: CssString,
+        args: Value,
     ) -> Result<(), Error> {
         self.buf.add_import(name, args)
     }
@@ -163,8 +162,8 @@ impl CssBuf {
 
     pub fn add_import(
         &mut self,
-        name: SassString,
-        args: crate::css::Value,
+        name: CssString,
+        args: Value,
     ) -> Result<(), Error> {
         self.do_indent_no_nl();
         write!(&mut self.buf, "@import {}", name)?;

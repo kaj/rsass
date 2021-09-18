@@ -2,11 +2,11 @@ use super::{
     check, expected_to, get_checked, get_opt_check, CheckedArg, Error,
     FunctionMap,
 };
-use crate::css::{CallArgs, Value};
+use crate::css::{CallArgs, CssString, Value};
 use crate::output::Format;
 use crate::parser::SourcePos;
 use crate::sass::{ArgsError, FormalArgs, Name};
-use crate::value::{Color, Number, Numeric, Quotes, Rational, Unit};
+use crate::value::{Color, Number, Numeric, Rational, Unit};
 use crate::Scope;
 use num_traits::{one, zero, Signed};
 mod channels;
@@ -168,14 +168,16 @@ fn num2chan(v: &Numeric) -> Result<Rational, String> {
 fn is_special(v: &Value) -> bool {
     match v {
         Value::Call(..) => true,
-        Value::Literal(s, Quotes::None) if looks_like_call(s) => true,
+        Value::Literal(s) if looks_like_call(s) => true,
         Value::BinOp(..) => true,
         _ => false,
     }
 }
 
-fn looks_like_call(s: &str) -> bool {
-    s.contains('(') && s.ends_with(')')
+fn looks_like_call(s: &CssString) -> bool {
+    s.quotes().is_none()
+        && s.value().contains('(')
+        && s.value().ends_with(')')
 }
 
 fn make_call(name: &str, args: Vec<Value>) -> Value {

@@ -1,9 +1,9 @@
-use crate::css::{CallArgs, Value};
+use crate::css::{CallArgs, CssString, Value};
 use crate::error::Error;
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
 use crate::sass::{FormalArgs, Name};
-use crate::value::{ListSeparator, Numeric, Quotes};
+use crate::value::{ListSeparator, Numeric};
 use crate::{sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -282,10 +282,7 @@ fn get_integer(s: &Scope, name: Name) -> Result<i64, Error> {
     get_checked(s, name, check::unitless_int)
 }
 
-fn get_string(
-    s: &Scope,
-    name: &'static str,
-) -> Result<(String, Quotes), Error> {
+fn get_string(s: &Scope, name: &'static str) -> Result<CssString, Error> {
     get_checked(s, name.into(), check::string)
 }
 
@@ -316,9 +313,9 @@ where
 
 mod check {
     use super::expected_to;
-    use crate::css::Value;
+    use crate::css::{CssString, Value};
     use crate::output::Format;
-    use crate::value::{Number, Numeric, Quotes};
+    use crate::value::{Number, Numeric};
 
     pub fn numeric(v: Value) -> Result<Numeric, String> {
         v.numeric_value().map_err(|v| {
@@ -346,11 +343,11 @@ mod check {
         })
     }
 
-    pub fn string(v: Value) -> Result<(String, Quotes), String> {
+    pub fn string(v: Value) -> Result<CssString, String> {
         match v {
-            Value::Literal(s, q) => Ok((s, q)),
+            Value::Literal(s) => Ok(s),
             Value::Call(name, args) => {
-                Ok((format!("{}({})", name, args), Quotes::None))
+                Ok(format!("{}({})", name, args).into())
             }
             v => Err(format!(
                 "{} is not a string",

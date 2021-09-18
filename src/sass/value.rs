@@ -3,7 +3,7 @@ use crate::error::Error;
 use crate::output::Format;
 use crate::parser::SourcePos;
 use crate::sass::{CallArgs, Function, SassString};
-use crate::value::{ListSeparator, Number, Numeric, Operator, Quotes, Rgba};
+use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use crate::ScopeRef;
 use num_traits::Zero;
 
@@ -95,14 +95,7 @@ impl Value {
     ) -> Result<css::Value, Error> {
         match *self {
             Value::Bang(ref s) => Ok(css::Value::Bang(s.clone())),
-            Value::Literal(ref s) => {
-                let (s, q) = s.evaluate(scope)?;
-                if s.is_empty() && q == Quotes::None {
-                    Ok(css::Value::Null)
-                } else {
-                    Ok(css::Value::Literal(s, q))
-                }
-            }
+            Value::Literal(ref s) => Ok(s.evaluate(scope)?.into()),
             Value::Paren(ref v, ref expl) => {
                 let v = v.do_evaluate(scope, !expl)?;
                 if !expl && v != css::Value::Null {
@@ -164,8 +157,8 @@ impl Value {
                         return f.call(scope.clone(), args).map_err(call_err);
                     }
                 }
-                let (name, _) = name.evaluate(scope)?;
-                Ok(css::Value::Call(name, args))
+                let name = name.evaluate(scope)?;
+                Ok(css::Value::Call(name.value().into(), args))
             }
             Value::Numeric(ref num) => {
                 Ok(css::Value::Numeric(num.clone(), arithmetic))
@@ -245,11 +238,8 @@ impl Value {
                     (Operator::Plus, css::Value::Numeric(v, _)) => {
                         Ok(css::Value::Numeric(v, true))
                     }
-                    (op, css::Value::Literal(s, Quotes::None)) => {
-                        Ok(css::Value::Literal(
-                            format!("{}{}", op, s),
-                            Quotes::None,
-                        ))
+                    (op, css::Value::Literal(s)) if s.quotes().is_none() => {
+                        Ok(format!("{}{}", op, s).into())
                     }
                     (op, v) => Ok(css::Value::UnaryOp(op, Box::new(v))),
                 }

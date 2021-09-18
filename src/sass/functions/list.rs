@@ -2,7 +2,7 @@ use super::{
     check, get_checked, get_integer, get_va_list, Error, FunctionMap, Name,
 };
 use crate::css::Value;
-use crate::value::{ListSeparator, Quotes};
+use crate::value::ListSeparator;
 use crate::Scope;
 
 pub fn create_module() -> Scope {
@@ -62,7 +62,7 @@ pub fn create_module() -> Scope {
                 .unwrap_or(ListSeparator::Space);
             list1.append(&mut list2);
             let bra = match s.get("bracketed")? {
-                Value::Literal(ref s, _) if s == "auto" => bra1,
+                Value::Literal(ref s) if s.value() == "auto" => bra1,
                 b => b.is_true(),
             };
             Ok(Value::List(list1, Some(sep), bra))
@@ -77,18 +77,16 @@ pub fn create_module() -> Scope {
         // Any other value is a singleton list of that value
         _ => Ok(Value::scalar(1)),
     });
-    def!(f, separator(list), |s| Ok(Value::Literal(
-        match s.get("list")? {
+    def!(f, separator(list), |s| {
+        let sep = match s.get("list")? {
             Value::ArgList(..) => "comma",
             Value::List(_, Some(ListSeparator::Comma), _) => "comma",
             Value::List(_, Some(ListSeparator::Slash), _) => "slash",
-            Value::Map(ref map) if map.is_empty() => "space",
-            Value::Map(_) => "comma",
+            Value::Map(ref map) if !map.is_empty() => "comma",
             _ => "space",
-        }
-        .into(),
-        Quotes::None
-    )));
+        };
+        Ok(sep.into())
+    });
     def_va!(f, slash(elements), |s| {
         let list = get_va_list(s, name!(elements))?;
         if list.len() < 2 {
@@ -175,7 +173,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 }
 
 fn check_separator(v: Value) -> Result<Option<ListSeparator>, String> {
-    match check::string(v)?.0.as_ref() {
+    match check::string(v)?.value() {
         "comma" => Ok(Some(ListSeparator::Comma)),
         "slash" => Ok(Some(ListSeparator::Slash)),
         "space" => Ok(Some(ListSeparator::Space)),

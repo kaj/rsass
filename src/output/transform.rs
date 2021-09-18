@@ -45,8 +45,9 @@ fn handle_item(
     let format = scope.get_format();
     match item {
         Item::Use(ref name, ref as_n, ref with) => {
-            let name = name.evaluate(scope.clone())?.0;
-            let module = if let Some(module) = get_global_module(&name) {
+            let name = name.evaluate(scope.clone())?;
+            let module = if let Some(module) = get_global_module(name.value())
+            {
                 if !with.is_empty() {
                     return Err(Error::error(
                         "Built-in modules can\'t be configured",
@@ -54,7 +55,7 @@ fn handle_item(
                 }
                 module
             } else if let Some((sub_context, path, mut file)) =
-                file_context.find_file_use(&name)?
+                file_context.find_file_use(name.value())?
             {
                 head.load_module(
                     &path,
@@ -94,13 +95,14 @@ fn handle_item(
                         Ok(module)
                     })?
             } else {
-                return Err(Error::S(format!("Module {:?} not found", name)));
+                return Err(Error::S(format!("Module {} not found", name)));
             };
-            scope.do_use(module, &name, as_n, &Expose::All)?;
+            scope.do_use(module, name.value(), as_n, &Expose::All)?;
         }
         Item::Forward(ref name, ref as_n, ref expose, ref with) => {
-            let name = name.evaluate(scope.clone())?.0;
-            let module = if let Some(module) = get_global_module(&name) {
+            let name = name.evaluate(scope.clone())?;
+            let module = if let Some(module) = get_global_module(name.value())
+            {
                 if !with.is_empty() {
                     return Err(Error::error(
                         "Built-in modules can\'t be configured",
@@ -108,7 +110,7 @@ fn handle_item(
                 }
                 module
             } else if let Some((sub_context, path, mut file)) =
-                file_context.find_file_use(&name)?
+                file_context.find_file_use(name.value())?
             {
                 head.load_module(
                     &path,
@@ -148,17 +150,17 @@ fn handle_item(
                         Ok(module)
                     })?
             } else {
-                return Err(Error::S(format!("Module {:?} not found", name)));
+                return Err(Error::S(format!("Module {} not found", name)));
             };
-            scope.forward().do_use(module, &name, as_n, expose)?;
+            scope.forward().do_use(module, name.value(), as_n, expose)?;
         }
         Item::Import(ref names, ref args, ref pos) => {
             let mut rule = rule;
             'name: for name in names {
                 if args.is_null() {
-                    let (x, _q) = name.evaluate(scope.clone())?;
+                    let x = name.evaluate(scope.clone())?;
                     if let Some((sub_context, path, mut file)) =
-                        file_context.find_file_import(&x)?
+                        file_context.find_file_import(x.value())?
                     {
                         let items = parse_imported_scss_file(
                             &mut file,
@@ -187,12 +189,12 @@ fn handle_item(
                 }
                 if buf.is_root_level() {
                     head.add_import(
-                        name.evaluate2(scope.clone())?,
+                        name.evaluate(scope.clone())?,
                         args.evaluate(scope.clone())?,
                     )?;
                 } else {
                     buf.add_import(
-                        name.evaluate2(scope.clone())?,
+                        name.evaluate(scope.clone())?,
                         args.evaluate(scope.clone())?,
                     )?;
                 }
@@ -221,8 +223,8 @@ fn handle_item(
             ref body,
         } => {
             buf.do_separate();
-            let (name, _q) = name.evaluate(scope.clone())?;
-            write!(buf, "@{}", name)?;
+            let name = name.evaluate(scope.clone())?;
+            write!(buf, "@{}", name.value())?;
             let args = args.evaluate(scope.clone())?;
             if !args.is_null() {
                 write!(buf, " {}", args.format(format))?;
@@ -477,8 +479,8 @@ fn handle_item(
             if let Some(rule) = rule {
                 let v = value.evaluate(scope.clone())?;
                 if !v.is_null() {
-                    let (name, _q) = name.evaluate(scope)?;
-                    rule.push(BodyItem::Property(name, v));
+                    let name = name.evaluate(scope)?;
+                    rule.push(BodyItem::Property(name.value().into(), v));
                 }
             } else {
                 return Err(Error::S("Global property not allowed".into()));
@@ -487,9 +489,12 @@ fn handle_item(
         Item::NamespaceRule(ref name, ref value, ref body) => {
             if let Some(rule) = rule {
                 let value = value.evaluate(scope.clone())?;
-                let (name, _quotes) = name.evaluate(scope.clone())?;
+                let name = name.evaluate(scope.clone())?;
                 if !value.is_null() {
-                    rule.push(BodyItem::Property(name.clone(), value));
+                    rule.push(BodyItem::Property(
+                        name.value().to_string(),
+                        value,
+                    ));
                 }
                 let mut t = Rule::new(Selectors::root());
                 let mut sub = CssBuf::new(format);
@@ -503,9 +508,10 @@ fn handle_item(
                 )?;
                 for item in t.body {
                     rule.push(match item {
-                        BodyItem::Property(n, v) => {
-                            BodyItem::Property(format!("{}-{}", name, n), v)
-                        }
+                        BodyItem::Property(n, v) => BodyItem::Property(
+                            format!("{}-{}", name.value(), n),
+                            v,
+                        ),
                         c => c,
                     })
                 }
@@ -522,12 +528,11 @@ fn handle_item(
         }
         Item::Comment(ref c) => {
             if !format.is_compressed() {
+                let c = c.evaluate(scope)?;
                 if let Some(rule) = rule {
-                    let (c, _q) = c.evaluate(scope)?;
-                    rule.push(BodyItem::Comment(c));
+                    rule.push(BodyItem::Comment(c.value().into()));
                 } else {
                     buf.do_separate();
-                    let (c, _q) = c.evaluate(scope)?;
                     write!(buf, "/*{}*/", c)?;
                 }
             }

@@ -1,3 +1,4 @@
+use crate::css::CssString;
 use crate::error::Error;
 use crate::sass::Value;
 use crate::value::Quotes;
@@ -55,13 +56,10 @@ impl SassString {
         SassString { parts: p2, quotes }
     }
 
-    /// Evaluate this SassString to a literal String.
+    /// Evaluate this SassString to a CssString.
     ///
     /// All interpolated values are interpolated in the given `scope`.
-    pub fn evaluate(
-        &self,
-        scope: ScopeRef,
-    ) -> Result<(String, Quotes), Error> {
+    pub fn evaluate(&self, scope: ScopeRef) -> Result<CssString, Error> {
         let mut result = String::new();
         let mut interpolated = false;
         for part in &self.parts {
@@ -118,41 +116,12 @@ impl SassString {
             && result.contains('"')
             && !result.contains('\'')
         {
-            Ok((result, Quotes::Single))
+            Ok(CssString::new(result, Quotes::Single))
         } else {
-            Ok((result, self.quotes))
+            Ok(CssString::new(result, self.quotes))
         }
     }
 
-    /// Evaluate this SassString and wrap the result in a SassString
-    /// of a single raw value.
-    pub fn evaluate2(&self, scope: ScopeRef) -> Result<SassString, Error> {
-        let (result, quotes) = self.evaluate(scope)?;
-        Ok(SassString {
-            parts: vec![StringPart::Raw(result)],
-            quotes,
-        })
-    }
-
-    /// Evaluate this SassString and wrap the result in a SassString
-    /// of a single raw value.
-    ///
-    /// If the value is name-like, unquote the resulting string.
-    pub fn evaluate_opt_unquote(
-        &self,
-        scope: ScopeRef,
-    ) -> Result<SassString, Error> {
-        let (result, quotes) = self.evaluate(scope)?;
-        let mut chars = result.chars();
-        let t = chars.next()
-            .map(|c| c.is_alphabetic()) // first letter
-            .unwrap_or(false) // not empty
-            && chars.all(|c| c.is_alphanumeric() || c == '-');
-        Ok(SassString {
-            parts: vec![StringPart::Raw(result)],
-            quotes: if t { Quotes::None } else { quotes },
-        })
-    }
     /// Return true if self represents an unquoted string.
     pub fn is_unquoted(&self) -> bool {
         self.quotes == Quotes::None
@@ -202,6 +171,15 @@ impl fmt::Display for SassString {
             }
         }
         self.quotes.fmt(out)
+    }
+}
+
+impl From<CssString> for SassString {
+    fn from(s: CssString) -> Self {
+        SassString {
+            parts: vec![StringPart::Raw(s.value().into())],
+            quotes: s.quotes(),
+        }
     }
 }
 

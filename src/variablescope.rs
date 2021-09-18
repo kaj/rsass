@@ -1,6 +1,5 @@
 //! A scope is something that contains variable values.
-
-use crate::css::Value;
+use crate::css::{CssString, Value};
 use crate::output::Format;
 use crate::sass::{Expose, Function, Item, Mixin, Name, UseAs};
 use crate::selectors::Selectors;
@@ -252,7 +251,7 @@ impl<'a> Scope {
     }
     pub(crate) fn get_name(&self) -> String {
         match self.get_or_none(&Name::from_static("@scope_name@")) {
-            Some(Value::Literal(s, _q)) => s,
+            Some(Value::Literal(s)) => s.value().into(),
             _ => "".into(),
         }
     }
@@ -558,7 +557,7 @@ impl<'a> Scope {
         for (name, value) in &*self.functions.lock().unwrap() {
             let name = name.to_string();
             result.insert(
-                Value::Literal(name.clone(), Quotes::Double),
+                CssString::new(name.clone(), Quotes::Double).into(),
                 Value::Function(name, Some(value.clone())),
             );
         }
@@ -572,7 +571,7 @@ impl<'a> Scope {
         for (name, value) in &*self.variables.lock().unwrap() {
             if name != &Name::from_static("@scope_name@") {
                 result.insert(
-                    Value::Literal(name.to_string(), Quotes::Double),
+                    CssString::new(name.to_string(), Quotes::Double).into(),
                     value.clone(),
                 );
             }

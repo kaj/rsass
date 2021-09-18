@@ -427,7 +427,7 @@ fn rel() {
          \n  lt: false;\
          \n  lt: false;\
          \n  lt: false;\
-         \n}\n"
+         \n}\n",
     );
 }
 
