@@ -17,6 +17,9 @@ project adheres to
   contains a `SourcePos` for where it is declared.
 * The fields of `SourcePos` is now private.
 * The `name` of a `sass::Item::AtRule` is now a SassString.
+* PR #118: A `css::Value::Literal` now contains a `CssString` rather
+  than a `String` and a `Quotes`.  Evaluating a `SassString` also
+  returns a `CssString`.
 
 ### Improvements
 

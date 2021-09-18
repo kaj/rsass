@@ -1,7 +1,7 @@
 use super::{
     check, get_checked, get_opt_check, get_string, Error, FunctionMap,
 };
-use crate::css::{CallArgs, Value};
+use crate::css::{CallArgs, CssString, Value};
 use crate::sass::{Function, Mixin, Name};
 use crate::{Format, Scope, ScopeRef};
 
@@ -16,12 +16,13 @@ pub fn create_module() -> Scope {
             Value::Function(ref name, ref func) => {
                 (func.clone(), name.clone())
             }
-            Value::Literal(name, _) => {
+            Value::Literal(name) => {
                 dep_warn!(
                     "Passing a string to call() is deprecated and \
                      will be illegal"
                 );
-                (get_function(s, None, &name)?, name.clone())
+                let name = name.value();
+                (get_function(s, None, name)?, name.into())
             }
             ref v => {
                 return Err(Error::bad_arg(
@@ -49,20 +50,22 @@ pub fn create_module() -> Scope {
         }
     });
     def!(f, feature_exists(feature), |s| {
-        let (feature, _q) = get_string(s, "feature")?;
-        Ok(IMPLEMENTED_FEATURES.iter().any(|s| s == &feature).into())
+        let feature = get_string(s, "feature")?;
+        Ok(IMPLEMENTED_FEATURES
+            .iter()
+            .any(|s| *s == feature.value())
+            .into())
     });
     def!(f, function_exists(name, module = b"null"), |s| {
-        let (name, _q) = get_string(s, "name")?;
-        let module =
-            get_opt_check(s, name!(module), check::string)?.map(|(s, _q)| s);
-        Ok(get_function(s, module, &name)?.is_some().into())
+        let name = get_string(s, "name")?;
+        let module = get_opt_check(s, name!(module), check::string)?;
+        Ok(get_function(s, module, name.value())?.is_some().into())
     });
     def!(
         f,
         get_function(name, css = b"false", module = b"null"),
         |s| {
-            let (v, q) = get_string(s, "name")?;
+            let name = get_string(s, "name")?;
             let module = get_opt_check(s, name!(module), check::string)?;
             if s.get("css")?.is_true() {
                 if module.is_some() {
@@ -70,24 +73,19 @@ pub fn create_module() -> Scope {
                         "$css and $module may not both be passed at once",
                     ));
                 }
-                Ok(Value::Function(v, None))
-            } else if let Some(f) =
-                get_function(s, module.map(|(s, _)| s), &v)?
-            {
-                Ok(Value::Function(v, Some(f)))
+                Ok(Value::Function(name.value().into(), None))
+            } else if let Some(f) = get_function(s, module, name.value())? {
+                Ok(Value::Function(name.value().into(), Some(f)))
             } else {
-                Err(Error::S(format!(
-                    "Error: Function not found: {}",
-                    Value::Literal(v, q).format(Format::introspect())
-                )))
+                Err(Error::S(format!("Error: Function not found: {}", name)))
             }
         }
     );
     def!(f, global_variable_exists(name, module = b"null"), |s| {
-        let (v, _q) = get_string(s, "name")?;
+        let name = get_string(s, "name")?;
         let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module.map(|(s, _q)| s), true)?;
-        Ok(module.get_global_or_none(&v.into()).is_some().into())
+        let module = get_scope(s, module, true)?;
+        Ok(module.get_global_or_none(&name.into()).is_some().into())
     });
     def!(f, inspect(value), |s| {
         Ok(s.get("value")?
@@ -110,27 +108,27 @@ pub fn create_module() -> Scope {
         ))
     });
     def!(f, mixin_exists(name, module = b"null"), |s| {
-        let (v, _q) = get_string(s, "name")?;
+        let name = get_string(s, "name")?.into();
         let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module.map(|(s, _q)| s), true)?;
-        Ok(module.get_mixin(&v.into()).is_some().into())
+        let module = get_scope(s, module, true)?;
+        Ok(module.get_mixin(&name).is_some().into())
     });
     def!(f, module_functions(module), |s| {
         let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module.map(|(s, _q)| s), false)?;
+        let module = get_scope(s, module, false)?;
         Ok(module.functions_map())
     });
     def!(f, module_variables(module), |s| {
         let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module.map(|(s, _q)| s), false)?;
+        let module = get_scope(s, module, false)?;
         Ok(module.variables_map())
     });
     def!(f, type_of(value), |s| {
         Ok(s.get("value")?.type_name().into())
     });
     def!(f, variable_exists(name), |s| {
-        let (v, _q) = get_string(s, "name")?;
-        Ok(call_scope(s).get_or_none(&v.into()).is_some().into())
+        let name = get_string(s, "name")?.into();
+        Ok(call_scope(s).get_or_none(&name).is_some().into())
     });
     f
 }
@@ -176,15 +174,15 @@ fn call_scope(s: &Scope) -> ScopeRef {
 // Note: `the` is compensating for an inconsistensy in sass-spec
 fn get_scope(
     s: &Scope,
-    module: Option<String>,
+    module: Option<CssString>,
     the: bool,
 ) -> Result<ScopeRef, Error> {
     if let Some(module) = module {
-        if let Some(module) = call_scope(s).get_module(&module) {
+        if let Some(module) = call_scope(s).get_module(module.value()) {
             Ok(module)
         } else {
             Err(Error::error(format!(
-                "There is no module with {}namespace {:?}",
+                "There is no module with {}namespace {}",
                 if the { "the " } else { "" },
                 module
             )))
@@ -196,7 +194,7 @@ fn get_scope(
 
 fn get_function(
     s: &Scope,
-    module: Option<String>,
+    module: Option<CssString>,
     name: &str,
 ) -> Result<Option<Function>, Error> {
     if let Some(module) = module {

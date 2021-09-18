@@ -1,107 +1,99 @@
 use super::{get_integer, get_string, Error, FunctionMap};
-use crate::css::Value;
-use crate::value::Quotes;
+use crate::css::{CssString, Value};
 use crate::Scope;
 use lazy_static::lazy_static;
-use std::cmp::max;
+use std::cmp::min;
 use std::sync::Mutex;
 
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:string");
     def!(f, quote(string), |s| {
-        let v = match get_string(s, "string")? {
-            (v, Quotes::None) => v.replace('\\', "\\\\"),
-            (v, _) => v,
-        };
-        if v.contains('"') && !v.contains('\'') {
-            Ok(Value::Literal(v, Quotes::Single))
-        } else {
-            Ok(Value::Literal(v, Quotes::Double))
-        }
+        Ok(get_string(s, "string")?.quote().into())
     });
     def!(f, index(string, substring), |s| {
-        let (string, _) = get_string(s, "string")?;
-        let (sub, _) = get_string(s, "substring")?;
-        Ok(match string.find(&sub) {
-            Some(o) => Value::scalar(1 + string[0..o].chars().count()),
-            None => Value::Null,
-        })
+        let string = get_string(s, "string")?;
+        Ok(string
+            .value()
+            .find(get_string(s, "substring")?.value())
+            .map(|i| Value::scalar(1 + string.value()[0..i].chars().count()))
+            .unwrap_or(Value::Null))
     });
     def!(f, insert(string, insert, index), |s| {
-        let (string, q) = get_string(s, "string")?;
-        let (insert, _) = get_string(s, "insert")?;
+        let string = get_string(s, "string")?;
+        let insert = get_string(s, "insert")?;
         let index = get_integer(s, name!(index))?;
-
-        let i = if index.is_negative() {
-            let len = string.chars().count() as i64;
-            max(len + 1 + index, 0) as usize
-        } else if index.is_positive() {
-            index as usize - 1
+        let index = if index.is_negative() {
+            let len = string.value().chars().count();
+            len.saturating_sub(index.abs() as usize - 1)
+        } else {
+            (index as usize).saturating_sub(1)
+        };
+        let mut s = string.value().chars();
+        let mut join = s.by_ref().take(index).collect::<String>();
+        join.push_str(insert.value());
+        join.extend(s);
+        Ok(CssString::new(join, string.quotes()).into())
+    });
+    def!(f, length(string), |s| {
+        let v = get_string(s, "string")?;
+        Ok(Value::scalar(v.value().chars().count()))
+    });
+    def!(f, slice(string, start_at, end_at = b"-1"), |s| {
+        let string = get_string(s, "string")?;
+        let st = string.value();
+        let len = st.chars().count();
+        let start_at = get_integer(s, name!(start_at))?;
+        let start_at = if start_at.is_negative() {
+            len.saturating_sub(start_at.abs() as usize)
+        } else if start_at.is_positive() {
+            min(start_at as usize - 1, len)
         } else {
             0
         };
-        let mut s = string.chars();
-        Ok(Value::Literal(
-            format!(
-                "{}{}{}",
-                s.by_ref().take(i).collect::<String>(),
-                insert,
-                s.collect::<String>()
-            ),
-            q,
-        ))
-    });
-    def!(f, length(string), |s| {
-        let (v, _q) = get_string(s, "string")?;
-        Ok(Value::scalar(v.chars().count()))
-    });
-    def!(f, slice(string, start_at, end_at = b"-1"), |s| {
-        let (st, q) = get_string(s, "string")?;
-        let start_at = index_to_rust(get_integer(s, name!(start_at))?, &st);
-        let end_at = index_to_rust_end(get_integer(s, name!(end_at))?, &st);
-        let c = st.chars();
+        let end_at = get_integer(s, name!(end_at))?;
+        let end_at = if end_at.is_negative() {
+            len.saturating_sub(end_at.abs() as usize - 1)
+        } else {
+            end_at as usize
+        };
         if start_at <= end_at {
-            Ok(Value::Literal(
-                c.skip(start_at).take(end_at - start_at).collect::<String>(),
-                q,
-            ))
+            let part =
+                st.chars().skip(start_at).take(end_at - start_at).collect();
+            Ok(CssString::new(part, string.quotes()).into())
         } else {
             Err(Error::S(format!("Bad indexes: {}..{}", start_at, end_at)))
         }
     });
     def!(f, to_upper_case(string), |s| {
-        let (v, q) = get_string(s, "string")?;
-        Ok(Value::Literal(v.to_ascii_uppercase(), q))
+        let v = get_string(s, "string")?;
+        Ok(CssString::new(v.value().to_ascii_uppercase(), v.quotes()).into())
     });
     def!(f, to_upper_case_unicode(string), |s| {
-        let (v, q) = get_string(s, "string")?;
-        Ok(Value::Literal(v.to_uppercase(), q))
+        let v = get_string(s, "string")?;
+        Ok(CssString::new(v.value().to_uppercase(), v.quotes()).into())
     });
     def!(f, to_lower_case(string), |s| {
-        let (v, q) = get_string(s, "string")?;
-        Ok(Value::Literal(v.to_ascii_lowercase(), q))
+        let v = get_string(s, "string")?;
+        Ok(CssString::new(v.value().to_ascii_lowercase(), v.quotes()).into())
     });
     def!(f, to_lower_case_unicode(string), |s| {
-        let (v, q) = get_string(s, "string")?;
-        Ok(Value::Literal(v.to_lowercase(), q))
+        let v = get_string(s, "string")?;
+        Ok(CssString::new(v.value().to_lowercase(), v.quotes()).into())
     });
     def!(f, unique_id(), |_s| {
         lazy_static! {
             static ref CALL_ID: Mutex<u64> =
                 Mutex::new(u64::from(std::process::id()) * 0xa01);
         };
-        Ok(Value::Literal(
-            format!("x{:x}", {
-                let mut v = CALL_ID.lock().unwrap();
-                *v += 1;
-                *v
-            }),
-            Quotes::None,
-        ))
+        let v = {
+            let mut v = CALL_ID.lock().unwrap();
+            *v += 1;
+            *v
+        };
+        Ok(format!("x{:x}", v).into())
     });
-    def!(f, unquote(string), |s| match get_string(s, "string")? {
-        (v, Quotes::None) => Ok(Value::Literal(v, Quotes::None)),
-        (v, _) => Ok(Value::Literal(v.replace("\\\\", "\\"), Quotes::None)),
+    def!(f, unquote(string), |s| {
+        Ok(get_string(s, "string")?.unquote().into())
     });
 
     f
@@ -123,52 +115,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
     // And special one that isn't part of the string module
     def!(global, url(string = b"null"), |s| {
-        Ok(Value::Literal(
-            format!("url({})", s.get("string")?.format(Default::default())),
-            Quotes::None,
-        ))
+        let string = s.get("string")?;
+        Ok(format!("url({})", string.format(Default::default())).into())
     });
-}
-
-/// Convert index from sass (rational number, first is one) to rust
-/// (usize, first is zero).  Sass values might be negative, then -1 is
-/// the last char in the string.
-fn index_to_rust(index: i64, s: &str) -> usize {
-    let len = s.chars().count();
-    if index.is_negative() {
-        let i = index.abs() as usize;
-        if i <= len {
-            len - i
-        } else {
-            0
-        }
-    } else if index.is_positive() {
-        let i = index as usize - 1;
-        if i <= len {
-            i
-        } else {
-            len
-        }
-    } else {
-        0
-    }
-}
-
-/// Convert index from sass (rational number, first is one) to rust
-/// (usize, first is zero).  Sass values might be negative, then -1 is
-/// the last char in the string.
-fn index_to_rust_end(index: i64, s: &str) -> usize {
-    if index.is_negative() {
-        let len = s.chars().count();
-        let i = index.abs() as usize - 1;
-        if i <= len {
-            len - i
-        } else {
-            0
-        }
-    } else if index.is_positive() {
-        index as usize
-    } else {
-        0
-    }
 }

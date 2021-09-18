@@ -273,13 +273,13 @@ impl SelectorPart {
                 ref val,
                 ref modifier,
             } => Ok(SelectorPart::Attribute {
-                name: name.evaluate2(scope.clone())?,
+                name: name.evaluate(scope.clone())?.into(),
                 op: op.clone(),
-                val: val.evaluate_opt_unquote(scope)?,
+                val: val.evaluate(scope)?.opt_unquote().into(),
                 modifier: *modifier,
             }),
             SelectorPart::Simple(ref v) => {
-                Ok(SelectorPart::Simple(v.evaluate2(scope)?))
+                Ok(SelectorPart::Simple(v.evaluate(scope)?.into()))
             }
             SelectorPart::Pseudo { ref name, ref arg } => {
                 let arg = match &arg {
@@ -287,7 +287,7 @@ impl SelectorPart {
                     None => None,
                 };
                 Ok(SelectorPart::Pseudo {
-                    name: name.evaluate2(scope)?,
+                    name: name.evaluate(scope)?.into(),
                     arg,
                 })
             }
@@ -297,7 +297,7 @@ impl SelectorPart {
                     None => None,
                 };
                 Ok(SelectorPart::PseudoElement {
-                    name: name.evaluate2(scope)?,
+                    name: name.evaluate(scope)?.into(),
                     arg,
                 })
             }

@@ -1,4 +1,4 @@
-use crate::css::Value;
+use crate::css::{CssString, Value};
 use crate::value::{ListSeparator, Numeric, Quotes};
 use std::fmt;
 
@@ -73,20 +73,30 @@ impl Operator {
                         None
                     }
                 }
-                (Value::Literal(a, Quotes::None), Value::Literal(b, _)) => {
-                    Some(Value::Literal(format!("{}{}", a, b), Quotes::None))
+                (Value::Literal(a), Value::Literal(b)) => {
+                    let val = format!("{}{}", a.value(), b.value());
+                    if a.quotes().is_none() {
+                        Some(CssString::new(val, Quotes::None).into())
+                    } else {
+                        Some(CssString::new(val, Quotes::Double).into())
+                    }
                 }
-                (Value::Literal(a, _), Value::Literal(b, _)) => Some(
-                    Value::Literal(format!("{}{}", a, b), Quotes::Double),
-                ),
-                (Value::Literal(a, q), b) => Some(Value::Literal(
-                    format!("{}{}", a, b.format(Default::default())),
-                    q,
-                )),
-                (a, Value::Literal(b, q)) => Some(Value::Literal(
-                    format!("{}{}", a.format(Default::default()), b),
-                    q,
-                )),
+                (Value::Literal(a), b) => {
+                    let join = format!(
+                        "{}{}",
+                        a.value(),
+                        b.format(Default::default())
+                    );
+                    Some(CssString::new(join, a.quotes()).into())
+                }
+                (a, Value::Literal(b)) => {
+                    let join = format!(
+                        "{}{}",
+                        a.format(Default::default()),
+                        b.value()
+                    );
+                    Some(CssString::new(join, b.quotes()).into())
+                }
                 _ => None,
             },
             Operator::Minus => match (a, b) {

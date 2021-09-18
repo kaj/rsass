@@ -2,7 +2,7 @@ use super::{
     check, expected_to, get_checked, get_numeric, get_opt_check, get_va_list,
     Error, FunctionMap, Scope,
 };
-use crate::css::Value;
+use crate::css::{CssString, Value};
 use crate::output::Format;
 use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Rational, Unit, UnitSet};
@@ -191,7 +191,7 @@ pub fn create_module() -> Scope {
     def!(f, unit(number), |s| {
         let mut unit = get_numeric(s, "number")?.unit;
         unit.simplify();
-        Ok(Value::Literal(unit.to_string(), Quotes::Double))
+        Ok(CssString::new(unit.to_string(), Quotes::Double).into())
     });
 
     // - - - Other Functions - - -

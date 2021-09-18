@@ -56,8 +56,8 @@ impl CallArgs {
         for (k, v) in map {
             match k {
                 Value::Null => self.positional.push(v),
-                Value::Literal(s, _) => {
-                    self.named.insert(s.into(), v);
+                Value::Literal(s) => {
+                    self.named.insert(s.value().into(), v);
                 }
                 x => return Err(Error::bad_value("string", &x)),
             }

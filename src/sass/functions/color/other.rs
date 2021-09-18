@@ -5,7 +5,7 @@ use super::{
     FunctionMap, Name,
 };
 use crate::css::{CallArgs, Value};
-use crate::value::{Hsla, Hwba, Quotes, Rational, Rgba};
+use crate::value::{Hsla, Hwba, Rational, Rgba};
 use crate::Scope;
 use num_traits::{one, zero, Signed};
 
@@ -302,13 +302,13 @@ fn check_pct_opt_range(v: Value) -> Result<Rational, String> {
 
 fn ok_as_filterarg(v: &Value) -> bool {
     match v {
-        Value::Literal(ref s, Quotes::None) => {
+        Value::Literal(ref s) if s.quotes().is_none() => {
             use crate::parser::strings::unitname;
             use crate::parser::{code_span, util::opt_spacelike};
             use nom::bytes::complete::tag;
             use nom::sequence::tuple;
-            tuple((unitname, opt_spacelike, tag("=")))(code_span(s.as_ref()))
-                .is_ok()
+            let span = code_span(s.value().as_ref());
+            tuple((unitname, opt_spacelike, tag("=")))(span).is_ok()
         }
         Value::List(..) => true,
         _ => false,
