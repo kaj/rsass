@@ -187,16 +187,16 @@ fn handle_item(
                         continue 'name;
                     }
                 }
-                if buf.is_root_level() {
-                    head.add_import(
-                        name.evaluate(scope.clone())?,
-                        args.evaluate(scope.clone())?,
-                    )?;
+                let name = name.evaluate(scope.clone())?;
+                let args = args.evaluate(scope.clone())?;
+                if let Some(ref mut rule) =
+                    rule.as_deref_mut().filter(|r| !r.selectors.is_root())
+                {
+                    rule.add_import(name, args);
+                } else if buf.is_root_level() {
+                    head.add_import(name, args)?;
                 } else {
-                    buf.add_import(
-                        name.evaluate(scope.clone())?,
-                        args.evaluate(scope.clone())?,
-                    )?;
+                    buf.add_import(name, args)?;
                 }
             }
         }

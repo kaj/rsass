@@ -1,4 +1,4 @@
-use super::Value;
+use super::{CssString, Value};
 use crate::selectors::Selectors;
 
 /// A css rule.
@@ -22,11 +22,17 @@ impl Rule {
     pub fn push(&mut self, item: BodyItem) {
         self.body.push(item)
     }
+    /// Add an import statement to the body of this rule.
+    pub fn add_import(&mut self, name: CssString, args: Value) {
+        self.body.push(BodyItem::Import(name, args))
+    }
 }
 
 /// Something that may exist inside a rule.
 pub enum BodyItem {
-    /// A property declaration
+    /// An `@import` statement with a name and args.
+    Import(CssString, Value),
+    /// A property declaration with a name and a value.
     Property(String, Value),
     /// A comment
     Comment(String),

@@ -123,6 +123,17 @@ impl CssBuf {
         for item in items {
             self.do_indent();
             match item {
+                BodyItem::Import(ref name, ref args) => {
+                    write!(&mut self.buf, "@import {}", name)?;
+                    if !args.is_null() {
+                        write!(
+                            &mut self.buf,
+                            " {}",
+                            args.format(self.format)
+                        )?;
+                    }
+                    self.add_one(";\n", ";");
+                }
                 BodyItem::Property(ref name, ref val) => write!(
                     self.buf,
                     "{}:{}{};",

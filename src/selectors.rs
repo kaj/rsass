@@ -26,7 +26,10 @@ impl Selectors {
     pub fn root() -> Self {
         Selectors::new(vec![Selector::root()])
     }
-
+    /// Return true if this is a root (empty) selector.
+    pub fn is_root(&self) -> bool {
+        self.s == [Selector::root()] && self.backref == Selector::root()
+    }
     /// Create a new Selectors from a vec of selectors.
     pub fn new(s: Vec<Selector>) -> Self {
         Selectors {
