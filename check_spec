@@ -54,8 +54,9 @@ case "$1" in
 	echo "          scss parser values"
 	;;
     "stats")
-	check \
-            | rg --no-line-number '^(\d+) runs, (\d+) passing, (\d+) failures, (\d+) todo, (\d+) ignored, (\d+) errors' \
+	check | \
+            rg --text --no-line-number --no-unicode \
+               '^(\d+) runs, (\d+) passing, (\d+) failures, (\d+) todo, (\d+) ignored, (\d+) errors' \
                  --replace 'echo "$0"; echo "Progress: $[$2] of $[$1-$4-$5] tests passed"' - \
             | bash
         ;;
