@@ -162,7 +162,6 @@ mod issue_1230;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1231"
 #[test]
-#[ignore] // wrong result
 fn issue_1231() {
     assert_eq!(
         runner().ok("div::before {\

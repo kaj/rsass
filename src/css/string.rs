@@ -142,18 +142,27 @@ impl From<String> for CssString {
 impl fmt::Display for CssString {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         let q = match self.quotes {
-            Quotes::None => return self.value.fmt(out),
-            Quotes::Double => '"',
-            Quotes::Single => '\'',
+            Quotes::None => None,
+            Quotes::Double => Some('"'),
+            Quotes::Single => Some('\''),
         };
-        out.write_char(q)?;
-        for c in self.value.chars() {
-            if c == q {
-                out.write_char('\\')?;
-            }
-            out.write_char(c)?;
+        if let Some(q) = q {
+            out.write_char(q)?;
         }
-        out.write_char(q)
+        for c in self.value.chars() {
+            if Some(c) == q {
+                out.write_char('\\')?;
+                out.write_char(c)?;
+            } else if is_private_use(c) {
+                write!(out, "\\{:x}", c as u32)?;
+            } else {
+                out.write_char(c)?;
+            }
+        }
+        if let Some(q) = q {
+            out.write_char(q)?;
+        };
+        Ok(())
     }
 }
 
@@ -171,4 +180,9 @@ impl From<CssString> for crate::sass::Name {
     fn from(s: CssString) -> Self {
         s.value.into()
     }
+}
+
+fn is_private_use(c: char) -> bool {
+    // https://en.wikipedia.org/wiki/Private_Use_Areas
+    matches!(c as u32, 0xE000..=0xF8FF | 0xF0000..=0xFFFFD | 0x100000..=0x10FFFD)
 }

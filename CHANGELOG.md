@@ -30,6 +30,7 @@ project adheres to
 * Support interpolation in `@`-rule names.
 * Fixed #116: The `sass:map.merge` function was buggy.
 * Fixed reformatting of to-much-indented comments.
+* Unicode Private-use characters are escaped when printed.
 * Update sass-spec test suite to 2021-09-20.
 
 
