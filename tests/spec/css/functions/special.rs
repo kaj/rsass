@@ -5,37 +5,43 @@ fn runner() -> crate::TestRunner {
     super::runner()
 }
 
-mod clamp {
+mod prefixed {
     #[allow(unused)]
     use super::runner;
 
-    #[test]
-    fn interpolation() {
-        assert_eq!(
-            runner().ok("a {b: clamp(#{0}, #{1}, #{2})}\n"),
-            "a {\
-         \n  b: clamp(0, 1, 2);\
+    mod calc {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn interpolation() {
+            assert_eq!(
+                runner().ok("a {b: -a-calc(#{0})}\n"),
+                "a {\
+         \n  b: -a-calc(0);\
          \n}\n"
-        );
-    }
-    #[test]
-    fn numbers() {
-        assert_eq!(
-            runner().ok("a {b: clamp(0, 1, 2)}\n"),
-            "a {\
-         \n  b: clamp(0, 1, 2);\
+            );
+        }
+        #[test]
+        fn number() {
+            assert_eq!(
+                runner().ok("a {b: -a-calc(0)}\n"),
+                "a {\
+         \n  b: -a-calc(0);\
          \n}\n"
-        );
-    }
-    #[test]
-    #[ignore] // unexepected error
-    fn punctuation() {
-        assert_eq!(
-            runner()
-                .ok("a {b: clamp(@#$%^&*({[]})_-+=|\\\\:\"\"\'\'<>,.?/)}\n"),
-            "a {\
-         \n  b: clamp(@#$%^&*({[]})_-+=|\\\\:\"\"\"\"<>,.?/);\
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn punctuation() {
+            assert_eq!(
+                runner().ok(
+                    "a {b: -a-calc(@#$%^&*({[]})_-+=|\\\\:\"\"\'\'<>,.?/)}\n"
+                ),
+                "a {\
+         \n  b: -a-calc(@#$%^&*({[]})_-+=|\\\\:\"\"\"\"<>,.?/);\
          \n}\n"
-        );
+            );
+        }
     }
 }

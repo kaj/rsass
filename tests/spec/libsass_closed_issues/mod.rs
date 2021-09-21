@@ -162,14 +162,14 @@ mod issue_1230;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1231"
 #[test]
+#[ignore] // wrong result
 fn issue_1231() {
     assert_eq!(
         runner().ok("div::before {\
              \n  content: #{\"\\\"\"+\\e600+\"\\\"\"};\
              \n}"),
-        "@charset \"UTF-8\";\
-         \ndiv::before {\
-         \n  content: \"\u{e600}\";\
+        "div::before {\
+         \n  content: \"\\e600\";\
          \n}\n"
     );
 }
@@ -773,15 +773,11 @@ mod issue_2365;
 
 mod issue_2366;
 
-mod issue_2369;
-
 mod issue_2371;
 
 mod issue_2374;
 
 mod issue_2376;
-
-mod issue_2382;
 
 mod issue_238760;
 

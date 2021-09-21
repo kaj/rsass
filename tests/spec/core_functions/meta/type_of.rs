@@ -40,6 +40,46 @@ mod boolean {
         );
     }
 }
+mod calculation {
+    #[allow(unused)]
+    use super::runner;
+
+    mod preserved {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // wrong result
+        fn calc() {
+            assert_eq!(
+                runner().ok("a {b: type-of(calc(var(--c)))}\n"),
+                "a {\
+         \n  b: calculation;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn clamp() {
+            assert_eq!(
+                runner().ok("a {b: type-of(clamp(1%, 1px, 2px))}\n"),
+                "a {\
+         \n  b: calculation;\
+         \n}\n"
+            );
+        }
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn simplified() {
+        assert_eq!(
+            runner().ok("a {b: type-of(calc(1px))}\n"),
+            "a {\
+         \n  b: number;\
+         \n}\n"
+        );
+    }
+}
 #[test]
 fn color() {
     assert_eq!(

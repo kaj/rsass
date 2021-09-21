@@ -9,186 +9,170 @@ fn runner() -> crate::TestRunner {
 #[ignore] // missing error
 fn ident_minus_space_ident() {
     assert_eq!(
-        runner().err(
-            ".ident-minus-space-ident {\
-             \n  a: U+abc- def;\
-             \n}\n"
-        ),
+        runner().err("a {b: U+abc- def}\n"),
         "Error: Expected hex digit.\
          \n  ,\
-         \n2 |   a: U+abc- def;\
-         \n  |            ^\
+         \n1 | a {b: U+abc- def}\
+         \n  |             ^\
          \n  \'\
-         \n  input.scss 2:12  root stylesheet",
+         \n  input.scss 1:13  root stylesheet",
     );
 }
 #[test]
 #[ignore] // missing error
 fn minus_ident_minus() {
     assert_eq!(
-        runner().err(
-            ".minus-ident-minus {\
-             \n  a: u+123-abc-def;\
-             \n}\n"
-        ),
+        runner().err("a {b: u+123-abc-def}\n"),
         "Error: Expected end of identifier.\
          \n  ,\
-         \n2 |   a: u+123-abc-def;\
-         \n  |               ^\
+         \n1 | a {b: u+123-abc-def}\
+         \n  |                ^\
          \n  \'\
-         \n  input.scss 2:15  root stylesheet",
+         \n  input.scss 1:16  root stylesheet",
     );
 }
 #[test]
 #[ignore] // missing error
 fn minus_number_minus_ident() {
     assert_eq!(
-        runner().err(
-            ".minus-number-minus-ident {\
-             \n  a: U+123-456-ABC;\
-             \n}\n"
-        ),
+        runner().err("a {b: U+123-456-ABC}\n"),
         "Error: Expected end of identifier.\
          \n  ,\
-         \n2 |   a: U+123-456-ABC;\
-         \n  |               ^\
+         \n1 | a {b: U+123-456-ABC}\
+         \n  |                ^\
          \n  \'\
-         \n  input.scss 2:15  root stylesheet",
+         \n  input.scss 1:16  root stylesheet",
     );
 }
 #[test]
 #[ignore] // missing error
 fn no_digits() {
     assert_eq!(
-        runner().err(
-            ".no-digits {\
-             \n  a: U+;\
-             \n}\n"
-        ),
+        runner().err("a {b: U+}\n"),
         "Error: Expected hex digit or \"?\".\
          \n  ,\
-         \n2 |   a: U+;\
-         \n  |        ^\
+         \n1 | a {b: U+}\
+         \n  |         ^\
          \n  \'\
-         \n  input.scss 2:8  root stylesheet",
+         \n  input.scss 1:9  root stylesheet",
     );
 }
 #[test]
 #[ignore] // missing error
 fn nothing_after_minus() {
     assert_eq!(
-        runner().err(
-            ".nothing-after-minus {\
-             \n  a: U+abc-;\
-             \n}\n"
-        ),
+        runner().err("a {b: U+abc-}\n"),
         "Error: Expected hex digit.\
          \n  ,\
-         \n2 |   a: U+abc-;\
-         \n  |            ^\
+         \n1 | a {b: U+abc-}\
+         \n  |             ^\
          \n  \'\
-         \n  input.scss 2:12  root stylesheet",
+         \n  input.scss 1:13  root stylesheet",
     );
 }
 #[test]
 #[ignore] // missing error
 fn question_mark_after_minus() {
     assert_eq!(
-        runner().err(
-            ".question-mark-after-minus {\
-             \n  a: u+abc-de?;\
-             \n}\n"
-        ),
+        runner().err("a {b: u+abc-de?}\n"),
         "Error: expected \";\".\
          \n  ,\
-         \n2 |   a: u+abc-de?;\
-         \n  |              ^\
+         \n1 | a {b: u+abc-de?}\
+         \n  |               ^\
          \n  \'\
-         \n  input.scss 2:14  root stylesheet",
+         \n  input.scss 1:15  root stylesheet",
     );
 }
-#[test]
-#[ignore] // missing error
-fn too_many_decimal_digits() {
-    assert_eq!(
-        runner().err(
-            ".too-many-decimal-digits {\
-             \n  a: U+1234567;\
-             \n}\n"
-        ),
-        "Error: Expected end of identifier.\
+mod too_many {
+    #[allow(unused)]
+    use super::runner;
+
+    mod after_minus {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // missing error
+        fn decimal_digits() {
+            assert_eq!(
+                runner().err("a {b: U+abc-1234567}\n"),
+                "Error: Expected at most 6 digits.\
          \n  ,\
-         \n2 |   a: U+1234567;\
-         \n  |              ^\
+         \n1 | a {b: U+abc-1234567}\
+         \n  |             ^^^^^^^\
          \n  \'\
-         \n  input.scss 2:14  root stylesheet",
-    );
-}
-#[test]
-#[ignore] // missing error
-fn too_many_decimal_digits_after_minus() {
-    assert_eq!(
-        runner().err(
-            ".too-many-decimal-digits-after-minus {\
-             \n  a: U+abc-1234567;\
-             \n}\n"
-        ),
-        "Error: Expected end of identifier.\
+         \n  input.scss 1:13  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn hex_digits() {
+            assert_eq!(
+                runner().err("a {b: U+abc-abcdefa}\n"),
+                "Error: Expected at most 6 digits.\
          \n  ,\
-         \n2 |   a: U+abc-1234567;\
-         \n  |                  ^\
+         \n1 | a {b: U+abc-abcdefa}\
+         \n  |             ^^^^^^^\
          \n  \'\
-         \n  input.scss 2:18  root stylesheet",
-    );
-}
-#[test]
-#[ignore] // missing error
-fn too_many_digits_after_minus() {
-    assert_eq!(
-        runner().err(
-            ".too-many-hex-digits-after-minus {\
-             \n  a: U+abc-abcdefa;\
-             \n}\n"
-        ),
-        "Error: Expected end of identifier.\
+         \n  input.scss 1:13  root stylesheet",
+            );
+        }
+    }
+    #[test]
+    #[ignore] // missing error
+    fn decimal_digits() {
+        assert_eq!(
+            runner().err("a {b: U+1234567}\n"),
+            "Error: Expected at most 6 digits.\
          \n  ,\
-         \n2 |   a: U+abc-abcdefa;\
-         \n  |                  ^\
+         \n1 | a {b: U+1234567}\
+         \n  |       ^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:18  root stylesheet",
-    );
-}
-#[test]
-#[ignore] // missing error
-fn too_many_hex_digits() {
-    assert_eq!(
-        runner().err(
-            ".too-many-hex-digits {\
-             \n  a: U+ABCDEFA;\
-             \n}\n"
-        ),
-        "Error: Expected end of identifier.\
+         \n  input.scss 1:7  root stylesheet",
+        );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn hex_digits() {
+        assert_eq!(
+            runner().err("a {b: U+ABCDEFA}\n"),
+            "Error: Expected at most 6 digits.\
          \n  ,\
-         \n2 |   a: U+ABCDEFA;\
-         \n  |              ^\
+         \n1 | a {b: U+ABCDEFA}\
+         \n  |       ^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:14  root stylesheet",
-    );
-}
-#[test]
-#[ignore] // missing error
-fn too_many_question_marks() {
-    assert_eq!(
-        runner().err(
-            ".too-many-question-marks {\
-             \n  a: U+???????;\
-             \n}\n"
-        ),
-        "Error: expected \";\".\
+         \n  input.scss 1:7  root stylesheet",
+        );
+    }
+    mod question_marks {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // missing error
+        fn after_decimal() {
+            assert_eq!(
+                runner().err("a {b: U+12345??}\n"),
+                "Error: Expected at most 6 digits.\
          \n  ,\
-         \n2 |   a: U+???????;\
-         \n  |              ^\
+         \n1 | a {b: U+12345??}\
+         \n  |       ^^^^^^^^^\
          \n  \'\
-         \n  input.scss 2:14  root stylesheet",
-    );
+         \n  input.scss 1:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn after_question_mark() {
+            assert_eq!(
+                runner().err("a {b: U+???????}\n"),
+                "Error: Expected at most 6 digits.\
+         \n  ,\
+         \n1 | a {b: U+???????}\
+         \n  |       ^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet",
+            );
+        }
+    }
 }

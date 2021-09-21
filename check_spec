@@ -22,7 +22,7 @@ esac
 
 if [ -d sass-spec ]; then
     if [ "$update" == "yes" ]; then
-	(cd sass-spec && git fetch >&2 && git rebase origin/master --autostash >&2)
+	(cd sass-spec && git fetch >&2 && git rebase origin/main --autostash >&2)
     fi
 else
    git clone https://github.com/sass/sass-spec.git >&2

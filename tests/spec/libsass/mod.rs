@@ -21,8 +21,6 @@ mod bool;
 
 mod bourbon;
 
-mod calc;
-
 // From "sass-spec/spec/libsass/charset"
 #[test]
 fn charset() {

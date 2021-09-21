@@ -5,48 +5,252 @@ fn runner() -> crate::TestRunner {
     super::runner()
 }
 
-#[test]
-fn test() {
-    assert_eq!(
-        runner().ok("a {\
-             \n  calc-1: hsl(calc(1), 2%, 3%);\
-             \n  calc-2: hsl(1, calc(2%), 3%);\
-             \n  calc-3: hsl(1, 2%, calc(3%));\n\
-             \n  var-1: hsl(var(--foo), 2%, 3%);\
-             \n  var-2: hsl(1, var(--foo), 3%);\
-             \n  var-3: hsl(1, 2%, var(--foo));\n\
-             \n  env-1: hsl(env(--foo), 2%, 3%);\
-             \n  env-2: hsl(1, env(--foo), 3%);\
-             \n  env-3: hsl(1, 2%, env(--foo));\n\
-             \n  min-1: hsl(min(1), 2%, 3%);\
-             \n  min-2: hsl(1, min(2%), 3%);\
-             \n  min-3: hsl(1, 2%, min(3%));\n\
-             \n  max-1: hsl(max(1), 2%, 3%);\
-             \n  max-2: hsl(1, max(2%), 3%);\
-             \n  max-3: hsl(1, 2%, max(3%));\n\
-             \n  clamp-1: hsl(clamp(1, 2, 3), 2%, 3%);\
-             \n  clamp-2: hsl(1, clamp(2%, 3%, 4%), 3%);\
-             \n  clamp-3: hsl(1, 2%, clamp(3%, 4%, 5%));\
-             \n}\n"),
-        "a {\
-         \n  calc-1: hsl(calc(1), 2%, 3%);\
-         \n  calc-2: hsl(1, calc(2%), 3%);\
-         \n  calc-3: hsl(1, 2%, calc(3%));\
-         \n  var-1: hsl(var(--foo), 2%, 3%);\
-         \n  var-2: hsl(1, var(--foo), 3%);\
-         \n  var-3: hsl(1, 2%, var(--foo));\
-         \n  env-1: hsl(env(--foo), 2%, 3%);\
-         \n  env-2: hsl(1, env(--foo), 3%);\
-         \n  env-3: hsl(1, 2%, env(--foo));\
-         \n  min-1: hsl(min(1), 2%, 3%);\
-         \n  min-2: hsl(1, min(2%), 3%);\
-         \n  min-3: hsl(1, 2%, min(3%));\
-         \n  max-1: hsl(max(1), 2%, 3%);\
-         \n  max-2: hsl(1, max(2%), 3%);\
-         \n  max-3: hsl(1, 2%, max(3%));\
-         \n  clamp-1: hsl(clamp(1, 2, 3), 2%, 3%);\
-         \n  clamp-2: hsl(1, clamp(2%, 3%, 4%), 3%);\
-         \n  clamp-3: hsl(1, 2%, clamp(3%, 4%, 5%));\
+mod calc {
+    #[allow(unused)]
+    use super::runner;
+
+    mod calculation {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn arg_1() {
+            assert_eq!(
+                runner().ok("a {b: hsl(calc(1px + 1%), 2%, 3%)}\n"),
+                "a {\
+         \n  b: hsl(calc(1px + 1%), 2%, 3%);\
          \n}\n"
-    );
+            );
+        }
+        #[test]
+        fn arg_2() {
+            assert_eq!(
+                runner().ok("a {b: hsl(1, calc(1px + 1%), 3%)}\n"),
+                "a {\
+         \n  b: hsl(1, calc(1px + 1%), 3%);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn arg_3() {
+            assert_eq!(
+                runner().ok("a {b: hsl(1, 2%, calc(1px + 1%))}\n"),
+                "a {\
+         \n  b: hsl(1, 2%, calc(1px + 1%));\
+         \n}\n"
+            );
+        }
+    }
+    mod string {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn arg_1() {
+            assert_eq!(
+                runner().ok("a {b: hsl(unquote(\"calc(1)\"), 2%, 3%)}\n"),
+                "a {\
+         \n  b: hsl(calc(1), 2%, 3%);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn arg_2() {
+            assert_eq!(
+                runner().ok("a {b: hsl(1, unquote(\"calc(2%)\"), 3%)}\n"),
+                "a {\
+         \n  b: hsl(1, calc(2%), 3%);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn arg_3() {
+            assert_eq!(
+                runner().ok("a {b: hsl(1, 2%, unquote(\"calc(3%)\"))}\n"),
+                "a {\
+         \n  b: hsl(1, 2%, calc(3%));\
+         \n}\n"
+            );
+        }
+    }
+}
+mod clamp {
+    #[allow(unused)]
+    use super::runner;
+
+    mod string {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn arg_1() {
+            assert_eq!(
+                runner()
+                    .ok("a {b: hsl(unquote(\"clamp(1, 2, 3)\"), 2%, 3%)}\n"),
+                "a {\
+         \n  b: hsl(clamp(1, 2, 3), 2%, 3%);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn arg_2() {
+            assert_eq!(
+                runner().ok(
+                    "a {b: hsl(1, unquote(\"clamp(2%, 3%, 4%)\"), 3%)}\n"
+                ),
+                "a {\
+         \n  b: hsl(1, clamp(2%, 3%, 4%), 3%);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn arg_3() {
+            assert_eq!(
+                runner().ok(
+                    "a {b: hsl(1, 2%, unquote(\"clamp(3%, 4%, 5%)\"))}\n"
+                ),
+                "a {\
+         \n  b: hsl(1, 2%, clamp(3%, 4%, 5%));\
+         \n}\n"
+            );
+        }
+    }
+}
+mod env {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn arg_1() {
+        assert_eq!(
+            runner().ok("a {b: hsl(env(--foo), 2%, 3%)}\n"),
+            "a {\
+         \n  b: hsl(env(--foo), 2%, 3%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn arg_2() {
+        assert_eq!(
+            runner().ok("a {b: hsl(1, env(--foo), 3%)}\n"),
+            "a {\
+         \n  b: hsl(1, env(--foo), 3%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn arg_3() {
+        assert_eq!(
+            runner().ok("a {b: hsl(1, 2%, env(--foo))}\n"),
+            "a {\
+         \n  b: hsl(1, 2%, env(--foo));\
+         \n}\n"
+        );
+    }
+}
+mod max {
+    #[allow(unused)]
+    use super::runner;
+
+    mod string {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn arg_1() {
+            assert_eq!(
+                runner().ok("a {b: hsl(unquote(\"max(1)\"), 2%, 3%)}\n"),
+                "a {\
+         \n  b: hsl(max(1), 2%, 3%);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn arg_2() {
+            assert_eq!(
+                runner().ok("a {b: hsl(1, unquote(\"max(2%)\"), 3%)}\n"),
+                "a {\
+         \n  b: hsl(1, max(2%), 3%);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn arg_3() {
+            assert_eq!(
+                runner().ok("a {b: hsl(1, 2%, unquote(\"max(3%)\"))}\n"),
+                "a {\
+         \n  b: hsl(1, 2%, max(3%));\
+         \n}\n"
+            );
+        }
+    }
+}
+mod min {
+    #[allow(unused)]
+    use super::runner;
+
+    mod string {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn arg_1() {
+            assert_eq!(
+                runner().ok("a {b: hsl(unquote(\"min(1)\"), 2%, 3%)}\n"),
+                "a {\
+         \n  b: hsl(min(1), 2%, 3%);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn arg_2() {
+            assert_eq!(
+                runner().ok("a {b: hsl(1, unquote(\"min(2%)\"), 3%)}\n"),
+                "a {\
+         \n  b: hsl(1, min(2%), 3%);\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn arg_3() {
+            assert_eq!(
+                runner().ok("a {b: hsl(1, 2%, unquote(\"min(3%)\"))}\n"),
+                "a {\
+         \n  b: hsl(1, 2%, min(3%));\
+         \n}\n"
+            );
+        }
+    }
+}
+mod var {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn arg_1() {
+        assert_eq!(
+            runner().ok("a {b: hsl(var(--foo), 2%, 3%)}\n"),
+            "a {\
+         \n  b: hsl(var(--foo), 2%, 3%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn arg_2() {
+        assert_eq!(
+            runner().ok("a {b: hsl(1, var(--foo), 3%)}\n"),
+            "a {\
+         \n  b: hsl(1, var(--foo), 3%);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn arg_3() {
+        assert_eq!(
+            runner().ok("a {b: hsl(1, 2%, var(--foo))}\n"),
+            "a {\
+         \n  b: hsl(1, 2%, var(--foo));\
+         \n}\n"
+        );
+    }
 }

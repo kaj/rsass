@@ -13,13 +13,13 @@ mod error {
     fn incompatible_units() {
         assert_eq!(
             runner().err(
-                "$arg: 1px;\
-             \na {b: max($arg, 2s)}\n\n"
+                "@use \"sass:math\";\
+             \na {b: math.max(1px, 2s)}\n"
             ),
             "Error: 1px and 2s have incompatible units.\
          \n  ,\
-         \n2 | a {b: max($arg, 2s)}\
-         \n  |       ^^^^^^^^^^^^^\
+         \n2 | a {b: math.max(1px, 2s)}\
+         \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
         );
@@ -27,13 +27,16 @@ mod error {
     #[test]
     fn too_few_args() {
         assert_eq!(
-            runner().err("a {b: max()}\n"),
+            runner().err(
+                "@use \"sass:math\";\
+             \na {b: math.max()}\n"
+            ),
             "Error: At least one argument must be passed.\
          \n  ,\
-         \n1 | a {b: max()}\
-         \n  |       ^^^^^\
+         \n2 | a {b: math.max()}\
+         \n  |       ^^^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 2:7  root stylesheet",
         );
     }
     mod test_type {
@@ -44,13 +47,13 @@ mod error {
         fn arg_1() {
             assert_eq!(
                 runner().err(
-                    "$arg: c;\
-             \na {b: max($arg)}\n"
+                    "@use \"sass:math\";\
+             \na {b: math.max(c)}\n"
                 ),
                 "Error: c is not a number.\
          \n  ,\
-         \n2 | a {b: max($arg)}\
-         \n  |       ^^^^^^^^^\
+         \n2 | a {b: math.max(c)}\
+         \n  |       ^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
             );
@@ -59,13 +62,13 @@ mod error {
         fn arg_2() {
             assert_eq!(
                 runner().err(
-                    "$arg: c;\
-             \na {b: max(1, $arg)}\n"
+                    "@use \"sass:math\";\
+             \na {b: math.max(1, c)}\n"
                 ),
                 "Error: c is not a number.\
          \n  ,\
-         \n2 | a {b: max(1, $arg)}\
-         \n  |       ^^^^^^^^^^^^\
+         \n2 | a {b: math.max(1, c)}\
+         \n  |       ^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
             );
@@ -74,24 +77,60 @@ mod error {
         fn arg_3() {
             assert_eq!(
                 runner().err(
-                    "$arg: c;\
-             \na {b: max(1, 2, $arg)}\n"
+                    "@use \"sass:math\";\
+             \na {b: math.max(1, 2, c)}\n"
                 ),
                 "Error: c is not a number.\
          \n  ,\
-         \n2 | a {b: max(1, 2, $arg)}\
-         \n  |       ^^^^^^^^^^^^^^^\
+         \n2 | a {b: math.max(1, 2, c)}\
+         \n  |       ^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
             );
         }
     }
 }
+mod global {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn modulo() {
+        assert_eq!(
+            runner().ok("a {b: max(1px, 7px % 4)}\n"),
+            "a {\
+         \n  b: 3px;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn surrounding_whitespace() {
+        assert_eq!(
+        runner().ok(
+            "// The extra whitespace doesn\'t cause this to be parsed as a Sass function, but\
+             \n// we want to verify that it also doesn\'t interfere.\
+             \nb {c: max( 1px, 2px, )}\n"
+        ),
+        "b {\
+         \n  c: 2px;\
+         \n}\n"
+    );
+    }
+    #[test]
+    fn trailing_comma() {
+        assert_eq!(
+            runner().ok("a {b: max(1px, 2px,)}\n"),
+            "a {\
+         \n  b: 2px;\
+         \n}\n"
+        );
+    }
+}
 #[test]
 fn one_arg() {
     assert_eq!(
-        runner().ok("$arg: 1;\
-             \na {b: max($arg)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.max(1)}\n"),
         "a {\
          \n  b: 1;\
          \n}\n"
@@ -100,8 +139,8 @@ fn one_arg() {
 #[test]
 fn three_args() {
     assert_eq!(
-        runner().ok("$arg: 1;\
-             \na {b: max(3, $arg, 2)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.max(3, 1, 2)}\n"),
         "a {\
          \n  b: 3;\
          \n}\n"
@@ -110,8 +149,8 @@ fn three_args() {
 #[test]
 fn two_args() {
     assert_eq!(
-        runner().ok("$arg: 1;\
-             \na {b: max($arg, 2)}\n"),
+        runner().ok("@use \"sass:math\";\
+             \na {b: math.max(1, 2)}\n"),
         "a {\
          \n  b: 2;\
          \n}\n"
@@ -124,8 +163,8 @@ mod units {
     #[test]
     fn and_unitless() {
         assert_eq!(
-            runner().ok("$arg: 2px;\
-             \na {b: max($arg, 1)}\n"),
+            runner().ok("@use \"sass:math\";\
+             \na {b: math.max(2px, 1)}\n"),
             "a {\
          \n  b: 2px;\
          \n}\n"
@@ -134,8 +173,8 @@ mod units {
     #[test]
     fn compatible() {
         assert_eq!(
-            runner().ok("$arg: 1px;\
-             \na {b: max($arg, 1in, 1cm)}\n"),
+            runner().ok("@use \"sass:math\";\
+             \na {b: math.max(1px, 1in, 1cm)}\n"),
             "a {\
          \n  b: 1in;\
          \n}\n"
@@ -144,8 +183,8 @@ mod units {
     #[test]
     fn same() {
         assert_eq!(
-            runner().ok("$arg: 6px;\
-             \na {b: max($arg, 2px, 10px)}\n"),
+            runner().ok("@use \"sass:math\";\
+             \na {b: math.max(6px, 2px, 10px)}\n"),
             "a {\
          \n  b: 10px;\
          \n}\n"

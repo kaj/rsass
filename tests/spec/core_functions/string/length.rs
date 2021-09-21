@@ -118,6 +118,19 @@ fn one_character() {
     );
 }
 #[test]
+fn private_use_character() {
+    assert_eq!(
+        runner().ok(
+            "// Dart Sass emits private-use characters as escapes in expanded mode, but it\
+             \n// should stil treat them as single characters for the purpose of functions.\
+             \na {b: str-length(\"\\E000\")}\n"
+        ),
+        "a {\
+         \n  b: 1;\
+         \n}\n"
+    );
+}
+#[test]
 fn unquoted() {
     assert_eq!(
         runner().ok("a {b: str-length(loofamonster)}\n"),

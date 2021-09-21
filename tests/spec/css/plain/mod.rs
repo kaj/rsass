@@ -5,6 +5,8 @@ use super::runner;
 
 mod boolean_operations;
 
+mod calculation;
+
 mod custom_properties;
 
 mod error;

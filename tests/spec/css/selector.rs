@@ -10,6 +10,18 @@ mod attribute {
     use super::runner;
 
     #[test]
+    fn backslash() {
+        assert_eq!(
+        runner().ok(
+            "// Regression test for https://github.com/sass/dart-sass/issues/1423.\
+             \n[a=\"\\\\\"] {c: d}\n"
+        ),
+        "[a=\"\\\\\"] {\
+         \n  c: d;\
+         \n}\n"
+    );
+    }
+    #[test]
     fn dash_dash() {
         assert_eq!(
         runner().ok(

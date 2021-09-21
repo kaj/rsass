@@ -5,8 +5,6 @@ use super::runner;
 
 mod error;
 
-mod min_max;
-
 mod special;
 
 mod url;

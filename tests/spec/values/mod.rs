@@ -3,6 +3,8 @@
 #[allow(unused)]
 use super::runner;
 
+mod calculation;
+
 mod colors;
 
 mod identifiers;

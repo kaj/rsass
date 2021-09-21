@@ -33,8 +33,15 @@ fn runner() -> crate::TestRunner {
         .mock_file("through_forward/transitive/_midstream.scss", "@forward \"upstream\";\n")
         .mock_file("through_forward/transitive/_upstream.scss", "$a: original !default;\nb {c: $a}\n")
         .mock_file("through_forward/transitive/_used.scss", "@forward \"midstream\";\n")
+        .mock_file("through_forward/with/and_variable/after/_forwarded.scss", "$b: from forwarded !default;\nin-forwarded {d: $b}\n")
+        .mock_file("through_forward/with/and_variable/after/_used.scss", "@forward \"forwarded\" with ($b: from used !default);\n$a: from used !default;\nin-used {c: $a}\n")
+        .mock_file("through_forward/with/and_variable/before/_forwarded.scss", "$b: from forwarded !default;\nin-forwarded {d: $b}\n")
+        .mock_file("through_forward/with/and_variable/before/_used.scss", "$a: from used !default;\n@forward \"forwarded\" with ($b: from used !default);\nin-used {c: $a}\n")
         .mock_file("through_forward/with/default/_forwarded.scss", "$a: from forwarded !default;\nb {c: $a}\n")
         .mock_file("through_forward/with/default/_used.scss", "@forward \"forwarded\" with ($a: from used !default);\n")
+        .mock_file("through_forward/with/multiple/_left.scss", "$a: from left !default;\nin-left {c: $a}\n")
+        .mock_file("through_forward/with/multiple/_right.scss", "$b: from left !default;\nin-right {d: $b}\n")
+        .mock_file("through_forward/with/multiple/_used.scss", "@forward \"left\" with ($a: from used !default);\n@forward \"right\" with ($b: from used !default);\n")
         .mock_file("through_forward/with/null/_forwarded.scss", "$a: from forwarded !default;\nb {c: $a}\n")
         .mock_file("through_forward/with/null/_used.scss", "@forward \"forwarded\" with ($a: from used !default);\n")
         .mock_file("through_forward/with/unconfigured/_forwarded.scss", "$a: from forwarded !default;\n$b: from forwarded !default;\nc {\n  a: $a;\n  b: $b;\n}\n")
@@ -296,6 +303,42 @@ mod through_forward {
             super::runner().with_cwd("with")
         }
 
+        mod and_variable {
+            #[allow(unused)]
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("and_variable")
+            }
+
+            #[test]
+            fn after() {
+                let runner = runner().with_cwd("after");
+                assert_eq!(
+                    runner.ok("// Regression test for sass/dart-sass#1460\
+             \n@use \"used\" with ($a: from input, $b: from input);\n"),
+                    "in-forwarded {\
+         \n  d: from input;\
+         \n}\
+         \nin-used {\
+         \n  c: from input;\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn before() {
+                let runner = runner().with_cwd("before");
+                assert_eq!(
+        runner.ok(
+            "@use \"used\" with ($a: from input, $b: from input);\n"
+        ),
+        "in-forwarded {\
+         \n  d: from input;\
+         \n}\
+         \nin-used {\
+         \n  c: from input;\
+         \n}\n"
+    );
+            }
+        }
         #[test]
         fn default() {
             let runner = runner().with_cwd("default");
@@ -303,6 +346,21 @@ mod through_forward {
                 runner.ok("@use \"used\" with ($a: from input);\n"),
                 "b {\
          \n  c: from input;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn multiple() {
+            let runner = runner().with_cwd("multiple");
+            assert_eq!(
+                runner.ok(
+                    "@use \"used\" with ($a: from input, $b: from input);\n"
+                ),
+                "in-left {\
+         \n  c: from input;\
+         \n}\
+         \nin-right {\
+         \n  d: from input;\
          \n}\n"
             );
         }
