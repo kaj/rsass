@@ -142,17 +142,19 @@ impl<'a> Display for Formatted<'a, Value> {
                 out.write_char(')')
             }
             Value::ArgList(ref args) => {
-                let pos = args
-                    .positional
-                    .iter()
-                    .map(|v| format!("{}", v.format(self.format)));
-                let named = args.named.iter().map(|(k, v)| {
-                    format!("${}: {}", k, v.format(self.format))
-                });
-                let t = pos.chain(named).collect::<Vec<_>>().join(
-                    ListSeparator::Comma.sep(self.format.is_compressed()),
-                );
-                write!(out, "{}", t)
+                // Note: named args not included in output.
+                if let Some((first, rest)) = args.positional.split_first() {
+                    first.format(self.format).fmt(out)?;
+                    let sep =
+                        ListSeparator::Comma.sep(self.format.is_compressed());
+                    for item in rest {
+                        out.write_str(sep)?;
+                        item.format(self.format).fmt(out)?;
+                    }
+                } else {
+                    out.write_str("()")?;
+                }
+                Ok(())
             }
         }
     }

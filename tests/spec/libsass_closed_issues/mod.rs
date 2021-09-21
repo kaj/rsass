@@ -107,7 +107,6 @@ mod issue_1188;
 
 // From "sass-spec/spec/libsass-closed-issues/issue_1192"
 #[test]
-#[ignore] // wrong result
 fn issue_1192() {
     assert_eq!(
         runner().ok(
