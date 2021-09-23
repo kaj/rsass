@@ -29,9 +29,13 @@ project adheres to
 * Improve error reporting from inside mixins and functions.
 * Support interpolation in `@`-rule names.
 * Fixed #116: The `sass:map.merge` function was buggy.
+* Fixed #119: `saturate(200%)` is allowed (the argument is not limited
+  to 0..100%).
 * Fixed reformatting of to-much-indented comments.
 * Unicode Private-use characters are escaped when printed.
 * Update sass-spec test suite to 2021-09-20.
+
+Thanks to @paolobarbolini and @connorskees for reporting issues.
 
 
 ## Release 0.22.2

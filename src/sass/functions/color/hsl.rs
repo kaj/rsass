@@ -1,7 +1,8 @@
 use super::channels::Channels;
 use super::{
-    bad_arg, check_alpha, check_pct_range, check_rational, get_checked,
-    get_color, get_opt_check, is_special, make_call, CheckedArg, FunctionMap,
+    bad_arg, check_alpha, check_pct, check_pct_range, check_rational,
+    get_checked, get_color, get_opt_check, is_special, make_call, CheckedArg,
+    FunctionMap,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
@@ -98,7 +99,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
                     .eval(s.clone(), args)
                     .map_err(|e| bad_arg(e, &name!(saturate), &a2))?;
                 let sat = s.get("amount")?;
-                check_pct_range(sat.clone()).named(name!(amount))?;
+                check_pct(sat.clone()).named(name!(amount))?;
                 Ok(make_call("saturate", vec![sat]))
             }
             Err(ae) => Err(bad_arg(ae, &name!(saturate), &a1)),
