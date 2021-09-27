@@ -33,6 +33,7 @@ project adheres to
   to 0..100%).
 * Fixed reformatting of to-much-indented comments.
 * Unicode Private-use characters are escaped when printed.
+* Updated `nom` to 7.0 and `nom-locate` to 4.0.
 * Update sass-spec test suite to 2021-09-20.
 
 Thanks to @paolobarbolini and @connorskees for reporting issues.

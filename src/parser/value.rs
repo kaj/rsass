@@ -40,7 +40,7 @@ pub fn space_list(input: Span) -> PResult<Value> {
     let (input, first) = se_or_ext_string(input)?;
     let (input, list) = fold_many0(
         pair(recognize(ignore_comments), se_or_ext_string),
-        vec![first],
+        move || vec![first.clone()],
         |mut list: Vec<Value>, (s, item)| {
             match (list.last_mut(), *s.fragment(), &item) {
                 (
@@ -71,7 +71,7 @@ pub fn simple_space_list(input: Span) -> PResult<Value> {
     let (input, first) = single_expression(input)?;
     let (input, list) = fold_many0(
         preceded(spacelike2, single_expression),
-        vec![first],
+        move || vec![first.clone()],
         |mut list, item| {
             list.push(item);
             list
@@ -105,7 +105,7 @@ fn single_expression(input: Span) -> PResult<Value> {
             ),
             single_expression,
         ),
-        a,
+        move || a.clone(),
         |a, (op, b)| Value::BinOp(Box::new(a), false, op, false, Box::new(b)),
     )(input)
 }
@@ -128,7 +128,7 @@ fn logic_expression(input: Span) -> PResult<Value> {
             ),
             sum_expression,
         ),
-        a,
+        move || a.clone(),
         |a, (op, b)| Value::BinOp(Box::new(a), false, op, false, Box::new(b)),
     )(input)
 }
@@ -270,10 +270,10 @@ fn bang(input: Span) -> PResult<Value> {
 fn unicode_range(input: Span) -> PResult<Value> {
     let (rest, _) = tag_no_case("U+")(input)?;
     let (rest, a) = many_m_n(0, 6, one_of("0123456789ABCDEFabcdef"))(rest)?;
-    let (rest, _) = opt(alt((
+    let (rest, _) = alt((
         preceded(tag("-"), many_m_n(1, 6, one_of("0123456789ABCDEFabcdef"))),
-        many_m_n(1, 6 - a.len(), one_of("?")),
-    )))(rest)?;
+        many_m_n(0, 6 - a.len(), one_of("?")),
+    ))(rest)?;
     let length = input.fragment().len() - rest.fragment().len();
     let matched = &input.fragment()[0..length];
     Ok((
@@ -336,7 +336,7 @@ pub fn decimal_integer(input: Span) -> PResult<Number> {
     fold_many1(
         // Note: We should use bytes directly, one_of returns a char.
         one_of("0123456789"),
-        Number::from(0),
+        || Number::from(0),
         |r, d| (r * 10) + Number::from(i64::from(d as u8 - b'0')),
     )(input)
 }
@@ -347,7 +347,7 @@ pub fn decimal_decimals(input: Span) -> PResult<Number> {
             tag("."),
             fold_many1(
                 one_of("0123456789"),
-                (Number::from(0), Number::from(1)),
+                || (Number::from(0), Number::from(1)),
                 |(r, n), d| {
                     (
                         (r * 10) + Number::from(i64::from(d as u8 - b'0')),

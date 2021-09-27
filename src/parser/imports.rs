@@ -9,7 +9,7 @@ use crate::sass::{Expose, Item, Name, SassString, UseAs, Value};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{map, opt, value};
-use nom::multi::{fold_many0, separated_list0};
+use nom::multi::{separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use nom_locate::position;
 use std::collections::BTreeSet;
@@ -107,19 +107,20 @@ pub fn forward2(input: Span) -> PResult<Item> {
 }
 
 fn exposed_names(input: Span) -> PResult<(BTreeSet<Name>, BTreeSet<Name>)> {
-    let mut funs = BTreeSet::new();
-    let mut vars = BTreeSet::new();
-    let mut one = pair(
-        map(opt(tag("$")), |v| v.is_some()),
-        map(terminated(name, opt_spacelike), Name::from),
-    );
-    let (input, (v, n)) = one(input)?;
-    if v { &mut vars } else { &mut funs }.insert(n);
-    fold_many0(
-        preceded(terminated(tag(","), opt_spacelike), one),
-        (funs, vars),
-        |(mut funs, mut vars), (v, n)| {
-            if v { &mut vars } else { &mut funs }.insert(n);
+    map(
+        separated_list1(
+            terminated(tag(","), opt_spacelike),
+            pair(
+                map(opt(tag("$")), |v| v.is_some()),
+                map(terminated(name, opt_spacelike), Name::from),
+            ),
+        ),
+        |items| {
+            let mut funs = BTreeSet::new();
+            let mut vars = BTreeSet::new();
+            for (v, n) in items {
+                if v { &mut vars } else { &mut funs }.insert(n);
+            }
             (funs, vars)
         },
     )(input)

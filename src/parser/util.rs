@@ -16,7 +16,9 @@ pub fn semi_or_end(input: Span) -> PResult<()> {
 }
 
 pub fn spacelike(input: Span) -> PResult<()> {
-    fold_many1(alt((ignore_space, ignore_lcomment)), (), |(), ()| ())(input)
+    fold_many1(alt((ignore_space, ignore_lcomment)), || (), |(), ()| ())(
+        input,
+    )
 }
 
 pub fn spacelike2(input: Span) -> PResult<()> {
@@ -24,13 +26,15 @@ pub fn spacelike2(input: Span) -> PResult<()> {
 }
 
 pub fn opt_spacelike(input: Span) -> PResult<()> {
-    fold_many0(alt((ignore_space, ignore_lcomment)), (), |(), ()| ())(input)
+    fold_many0(alt((ignore_space, ignore_lcomment)), || (), |(), ()| ())(
+        input,
+    )
 }
 
 pub fn ignore_comments(input: Span) -> PResult<()> {
     fold_many0(
         alt((ignore_space, ignore_lcomment, map(comment, |_| ()))),
-        (),
+        || (),
         |(), ()| (),
     )(input)
 }

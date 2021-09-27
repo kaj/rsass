@@ -22,7 +22,7 @@ pub fn sass_string(input: Span) -> PResult<SassString> {
             string_part_interpolation,
             map(unquoted_part, StringPart::Raw),
         )),
-        vec![first],
+        || vec![first.clone()],
         |mut acc, item| {
             acc.push(item);
             acc
@@ -51,7 +51,7 @@ fn unquoted_first_part(input: Span) -> PResult<String> {
             normalized_escaped_char,
             map(hash_no_interpolation, String::from),
         )),
-        first,
+        move || first.clone(),
         |mut acc: String, item: String| {
             acc.push_str(&item);
             acc
@@ -67,7 +67,7 @@ fn unquoted_part(input: Span) -> PResult<String> {
             normalized_escaped_char,
             map(hash_no_interpolation, String::from),
         )),
-        String::new(),
+        String::new,
         |mut acc: String, item: String| {
             acc.push_str(&item);
             acc
@@ -336,7 +336,7 @@ fn selector_string(input: Span) -> PResult<String> {
             map(escaped_char, |c| format!("{}", c)),
             map(hash_no_interpolation, String::from),
         )),
-        String::new(),
+        String::new,
         |mut acc: String, item: String| {
             acc.push_str(&item);
             acc
@@ -391,7 +391,7 @@ pub fn name(input: Span) -> PResult<String> {
     verify(
         fold_many0(
             alt((escaped_char, name_char)),
-            String::new(),
+            String::new,
             |mut s, c| {
                 s.push(c);
                 s
@@ -406,7 +406,7 @@ pub fn unitname(input: Span) -> PResult<String> {
         verify(alt((escaped_char, name_char)), |c| c.is_alphabetic())(input)?;
     fold_many0(
         verify(alt((escaped_char, name_char)), |c| c.is_alphanumeric()),
-        first.to_string(),
+        move || first.to_string(),
         |mut s, c| {
             s.push(c);
             s

@@ -563,7 +563,7 @@ fn variable_declaration2(input: Span) -> PResult<Item> {
             )),
             opt_spacelike,
         ),
-        (false, false),
+        || (false, false),
         |(default, global), (d, g)| (default || d, global || g),
     )(input)?;
     let (input, _) = semi_or_end(input)?;
