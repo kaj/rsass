@@ -1,6 +1,6 @@
+use super::selectors::Selectors;
 use super::{CallArgs, FormalArgs, Name, SassString, Value};
 use crate::parser::SourcePos;
-use crate::selectors::Selectors;
 use std::collections::BTreeSet;
 
 /// Every sass file is a sequence of sass items.

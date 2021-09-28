@@ -46,7 +46,6 @@ mod ordermap;
 pub mod output;
 mod parser;
 pub mod sass;
-pub mod selectors;
 pub mod value;
 mod variablescope;
 

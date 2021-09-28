@@ -1,8 +1,7 @@
 use super::{get_va_list, Error, FunctionMap};
-use crate::css::Value;
+use crate::css::parser::selectors::{selector, selector_part, selectors};
+use crate::css::{Selector, SelectorPart, Selectors, Value};
 use crate::parser::input_span;
-use crate::parser::selectors::{selector, selector_part, selectors};
-use crate::selectors::{Selector, SelectorPart, Selectors};
 use crate::value::ListSeparator;
 use crate::{ParseError, Scope};
 

@@ -30,8 +30,8 @@ use self::util::{
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
+use crate::sass::selectors::Selectors;
 use crate::sass::{FormalArgs, Item, Name, Value};
-use crate::selectors::Selectors;
 use crate::value::ListSeparator;
 #[cfg(test)]
 use crate::value::{Numeric, Rgba, Unit};
@@ -56,7 +56,7 @@ use std::str::{from_utf8, Utf8Error};
 
 pub type Span<'a> = LocatedSpan<&'a [u8], &'a SourceName>;
 /// A Parsing Result; ok gives a span for the rest of the data and a parsed T.
-type PResult<'a, T> = IResult<Span<'a>, T>;
+pub(crate) type PResult<'a, T> = IResult<Span<'a>, T>;
 
 pub fn code_span(value: &[u8]) -> Span {
     use lazy_static::lazy_static;
@@ -578,11 +578,11 @@ fn variable_declaration2(input: Span) -> PResult<Item> {
     ))
 }
 
-fn input_to_str(s: Span) -> Result<&str, Utf8Error> {
+pub(crate) fn input_to_str(s: Span) -> Result<&str, Utf8Error> {
     from_utf8(s.fragment())
 }
 
-fn input_to_string(s: Span) -> Result<String, Utf8Error> {
+pub(crate) fn input_to_string(s: Span) -> Result<String, Utf8Error> {
     from_utf8(s.fragment()).map(String::from)
 }
 

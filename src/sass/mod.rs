@@ -16,6 +16,7 @@ mod functions;
 mod item;
 mod mixin;
 mod name;
+pub mod selectors;
 mod string;
 mod value;
 

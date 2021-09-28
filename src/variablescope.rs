@@ -1,8 +1,7 @@
 //! A scope is something that contains variable values.
-use crate::css::{CssString, Value};
+use crate::css::{CssString, Selectors, Value};
 use crate::output::Format;
 use crate::sass::{Expose, Function, Item, Mixin, Name, UseAs};
-use crate::selectors::Selectors;
 use crate::Error;
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;

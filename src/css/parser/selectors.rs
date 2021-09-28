@@ -1,7 +1,7 @@
-use super::strings::{sass_string, sass_string_dq, sass_string_sq};
-use super::util::{ignore_comments, opt_spacelike, spacelike2};
-use super::{input_to_string, PResult, Span};
-use crate::sass::selectors::{Selector, SelectorPart, Selectors};
+use super::strings::{css_string, css_string_any};
+use crate::css::{Selector, SelectorPart, Selectors};
+use crate::parser::util::{ignore_comments, opt_spacelike, spacelike2};
+use crate::parser::{input_to_string, PResult, Span};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::one_of;
@@ -27,13 +27,13 @@ pub fn selector(input: Span) -> PResult<Selector> {
 
 pub(crate) fn selector_part(input: Span) -> PResult<SelectorPart> {
     alt((
-        map(sass_string, SelectorPart::Simple),
+        map(css_string, SelectorPart::Simple),
         value(SelectorPart::Simple("*".into()), tag("*")),
         map(
             preceded(
                 tag("::"),
                 pair(
-                    sass_string,
+                    css_string,
                     opt(delimited(tag("("), selectors, tag(")"))),
                 ),
             ),
@@ -43,7 +43,7 @@ pub(crate) fn selector_part(input: Span) -> PResult<SelectorPart> {
             preceded(
                 tag(":"),
                 pair(
-                    sass_string,
+                    css_string,
                     opt(delimited(tag("("), selectors, tag(")"))),
                 ),
             ),
@@ -53,7 +53,7 @@ pub(crate) fn selector_part(input: Span) -> PResult<SelectorPart> {
             delimited(
                 terminated(tag("["), opt_spacelike),
                 tuple((
-                    terminated(sass_string, opt_spacelike),
+                    terminated(css_string, opt_spacelike),
                     terminated(
                         map_res(
                             alt((
@@ -68,10 +68,7 @@ pub(crate) fn selector_part(input: Span) -> PResult<SelectorPart> {
                         ),
                         opt_spacelike,
                     ),
-                    terminated(
-                        alt((sass_string_dq, sass_string_sq, sass_string)),
-                        opt_spacelike,
-                    ),
+                    terminated(css_string_any, opt_spacelike),
                     opt(terminated(
                         one_of(
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
@@ -92,7 +89,7 @@ pub(crate) fn selector_part(input: Span) -> PResult<SelectorPart> {
         map(
             delimited(
                 terminated(tag("["), opt_spacelike),
-                sass_string,
+                css_string,
                 preceded(opt_spacelike, tag("]")),
             ),
             |name| SelectorPart::Attribute {
@@ -117,7 +114,7 @@ pub(crate) fn selector_part(input: Span) -> PResult<SelectorPart> {
     ))(input)
 }
 
-#[cfg(test)]
+/*#[cfg(test)]
 mod test {
     use super::*;
     use crate::sass::{SassString, StringPart};
@@ -212,4 +209,4 @@ mod test {
             ]),
         )
     }
-}
+}*/

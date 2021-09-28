@@ -6,10 +6,8 @@
 //!
 //! This _may_ change to a something like a tree of operators with
 //! leafs of simple selectors in some future release.
-use crate::css::Value;
-use crate::sass::SassString;
+use super::{CssString, Value};
 use crate::value::ListSeparator;
-use crate::{Error, ParseError, ScopeRef};
 use std::fmt;
 use std::io::Write;
 
@@ -33,7 +31,11 @@ impl Selectors {
     /// Create a new Selectors from a vec of selectors.
     pub fn new(s: Vec<Selector>) -> Self {
         Selectors {
-            s,
+            s: if s.is_empty() {
+                vec![Selector::root()]
+            } else {
+                s
+            },
             backref: Selector::root(),
         }
     }
@@ -105,24 +107,6 @@ impl Selectors {
             .collect::<Vec<_>>();
         Value::List(content, Some(ListSeparator::Comma), false)
     }
-    /// Evaluate any interpolation in these Selectors.
-    pub fn eval(&self, scope: ScopeRef) -> Result<Selectors, Error> {
-        let s = Selectors::new(
-            self.s
-                .iter()
-                .map(|s| s.eval(scope.clone()))
-                .collect::<Result<Vec<_>, Error>>()?,
-        );
-        // The "simple" parts we get from evaluating interpolations may
-        // contain high-level selector separators (i.e. ","), so we need to
-        // parse the selectors again, from a string representation.
-        use crate::parser::input_span;
-        use crate::parser::selectors::selectors;
-        // TODO: Get the span from the source of self!
-        Ok(ParseError::check(selectors(input_span(
-            format!("{} ", s).as_bytes(),
-        )))?)
-    }
 }
 
 /// A css (or sass) selector.
@@ -158,14 +142,6 @@ impl Selector {
         }
     }
 
-    fn eval(&self, scope: ScopeRef) -> Result<Selector, Error> {
-        self.0
-            .iter()
-            .map(|sp| sp.eval(scope.clone()))
-            .collect::<Result<_, _>>()
-            .map(Selector)
-    }
-
     fn has_backref(&self) -> bool {
         self.0.iter().any(|p| p.has_backref())
     }
@@ -178,7 +154,7 @@ pub enum SelectorPart {
     ///
     /// Note that a Simple selector can hide a more complex selector
     /// through string interpolation.
-    Simple(SassString),
+    Simple(CssString),
     /// The empty relational operator.
     ///
     /// The thing after this is a descendant of the thing before this.
@@ -188,25 +164,25 @@ pub enum SelectorPart {
     /// An attribute selector
     Attribute {
         /// The attribute name
-        name: SassString,
+        name: CssString,
         /// An operator
         op: String,
         /// A value to match.
-        val: SassString,
+        val: CssString,
         /// Optional modifier.
         modifier: Option<char>,
     },
     /// A css3 pseudo-element (::foo)
     PseudoElement {
         /// The name of the pseudo-element
-        name: SassString,
+        name: CssString,
         /// Arguments to the pseudo-element
         arg: Option<Selectors>,
     },
     /// A pseudo-class or a css2 pseudo-element (:foo)
     Pseudo {
         /// The name of the pseudo-class
-        name: SassString,
+        name: CssString,
         /// Arguments to the pseudo-class
         arg: Option<Selectors>,
     },
@@ -266,45 +242,6 @@ impl SelectorPart {
                     }),
                 }]
             }
-        }
-    }
-    fn eval(&self, scope: ScopeRef) -> Result<SelectorPart, Error> {
-        match *self {
-            SelectorPart::Attribute {
-                ref name,
-                ref op,
-                ref val,
-                ref modifier,
-            } => Ok(SelectorPart::Attribute {
-                name: name.evaluate(scope.clone())?.into(),
-                op: op.clone(),
-                val: val.evaluate(scope)?.opt_unquote().into(),
-                modifier: *modifier,
-            }),
-            SelectorPart::Simple(ref v) => {
-                Ok(SelectorPart::Simple(v.evaluate(scope)?.into()))
-            }
-            SelectorPart::Pseudo { ref name, ref arg } => {
-                let arg = match &arg {
-                    Some(ref a) => Some(a.eval(scope.clone())?),
-                    None => None,
-                };
-                Ok(SelectorPart::Pseudo {
-                    name: name.evaluate(scope)?.into(),
-                    arg,
-                })
-            }
-            SelectorPart::PseudoElement { ref name, ref arg } => {
-                let arg = match &arg {
-                    Some(ref a) => Some(a.eval(scope.clone())?),
-                    None => None,
-                };
-                Ok(SelectorPart::PseudoElement {
-                    name: name.evaluate(scope)?.into(),
-                    arg,
-                })
-            }
-            ref sp => Ok(sp.clone()),
         }
     }
 }
