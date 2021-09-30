@@ -40,6 +40,12 @@ impl ParseError {
             pos: pos.into(),
         }
     }
+    pub(crate) fn mock(msg: String, span: Span) -> ParseError {
+        ParseError {
+            msg,
+            pos: span.into(),
+        }
+    }
 }
 
 impl From<nom::error::Error<Span<'_>>> for ParseError {

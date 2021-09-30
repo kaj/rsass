@@ -56,6 +56,12 @@ impl Selectors {
             backref: parent.backref.clone(),
         }
     }
+
+    /// True if any of the selecors contains a backref (`&`).
+    pub fn has_backref(&self) -> bool {
+        self.s.iter().any(|s| s.has_backref())
+    }
+
     /// Get these selectors with a specific backref selector.
     ///
     /// Used to create `@at-root` contexts, to have `&` work in them.
@@ -191,7 +197,7 @@ pub enum SelectorPart {
 }
 
 impl SelectorPart {
-    fn is_operator(&self) -> bool {
+    pub(crate) fn is_operator(&self) -> bool {
         match *self {
             SelectorPart::Descendant | SelectorPart::RelOp(_) => true,
             SelectorPart::Simple(_)
@@ -199,6 +205,13 @@ impl SelectorPart {
             | SelectorPart::PseudoElement { .. }
             | SelectorPart::Pseudo { .. }
             | SelectorPart::BackRef => false,
+        }
+    }
+    pub(crate) fn is_wildcard(&self) -> bool {
+        if let SelectorPart::Simple(s) = self {
+            s.value() == "*" && s.quotes().is_none()
+        } else {
+            false
         }
     }
     fn has_backref(&self) -> bool {

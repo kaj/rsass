@@ -63,7 +63,7 @@ impl Error {
     ) -> Error {
         Error::BadArgument(
             name,
-            format!("{} {}", actual.format(Format::introspect()), problem),
+            format!("{} {}.", actual.format(Format::introspect()), problem),
         )
     }
 

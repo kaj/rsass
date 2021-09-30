@@ -55,7 +55,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn first_arg() {
             assert_eq!(
                 runner().err("a {b: selector-nest(\"&\")}\n"),
@@ -114,7 +113,6 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: selector-nest()}\n\n"),

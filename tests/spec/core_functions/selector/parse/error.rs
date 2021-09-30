@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
 fn inner_comma() {
     assert_eq!(
         runner().err(
@@ -22,7 +21,6 @@ fn inner_comma() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn outer_space() {
     assert_eq!(
         runner().err("a {b: selector-parse(append((), append((), c)))}\n"),
@@ -36,7 +34,6 @@ fn outer_space() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn parent() {
     assert_eq!(
         runner().err("a {b: selector-parse(\"&\")}\n"),
@@ -99,7 +96,6 @@ mod slash_list {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn in_comma_list() {
         assert_eq!(
         runner().err(
@@ -116,7 +112,6 @@ mod slash_list {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn top_level() {
         assert_eq!(
         runner().err(
@@ -166,7 +161,6 @@ fn too_many_args() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn too_nested() {
     assert_eq!(
         runner().err(
@@ -182,7 +176,6 @@ fn too_nested() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn test_type() {
     assert_eq!(
         runner().err("a {b: selector-parse(1)}\n"),

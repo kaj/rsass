@@ -3,7 +3,7 @@ use crate::error::Error;
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
 use crate::sass::{FormalArgs, Name};
-use crate::value::{ListSeparator, Numeric};
+use crate::value::Numeric;
 use crate::{sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -287,14 +287,7 @@ fn get_string(s: &Scope, name: &'static str) -> Result<CssString, Error> {
 }
 
 fn get_va_list(s: &Scope, name: Name) -> Result<Vec<Value>, Error> {
-    match s.get(name.as_ref())? {
-        Value::ArgList(args) => {
-            args.check_no_named()?;
-            Ok(args.positional)
-        }
-        Value::List(v, Some(ListSeparator::Comma), _) => Ok(v),
-        single => Ok(vec![single]),
-    }
+    get_checked(s, name, check::va_list)
 }
 
 fn expected_to<'a, T>(value: &'a T, cond: &str) -> String
@@ -310,6 +303,7 @@ where
         cond,
     )
 }
+
 fn is_not<'a, T>(value: &'a T, expected: &str) -> String
 where
     Formatted<'a, T>: std::fmt::Display,
@@ -327,7 +321,7 @@ where
 mod check {
     use super::{expected_to, is_not};
     use crate::css::{CssString, Value};
-    use crate::value::{Number, Numeric};
+    use crate::value::{ListSeparator, Number, Numeric};
 
     pub fn numeric(v: Value) -> Result<Numeric, String> {
         v.numeric_value().map_err(|v| is_not(&v, "a number"))
@@ -360,6 +354,26 @@ mod check {
                 Ok(format!("{}({})", name, args).into())
             }
             v => Err(is_not(&v, "a string")),
+        }
+    }
+
+    pub fn va_list(v: Value) -> Result<Vec<Value>, String> {
+        match v {
+            Value::ArgList(args) => {
+                args.check_no_named().map_err(|e| e.to_string())?;
+                Ok(args.positional)
+            }
+            Value::List(v, Some(ListSeparator::Comma), _) => Ok(v),
+            single => Ok(vec![single]),
+        }
+    }
+    pub fn va_list_nonempty(v: Value) -> Result<Vec<Value>, String> {
+        let result = va_list(v)?;
+        if result.is_empty() {
+            // TODO: Parameterize "selector"?  Or rename fn va_selectors?
+            Err("At least one selector must be passed.".into())
+        } else {
+            Ok(result)
         }
     }
 }
