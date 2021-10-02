@@ -1,7 +1,7 @@
 use super::strings::{sass_string, sass_string_dq, sass_string_sq};
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
 use super::{input_to_string, PResult, Span};
-use crate::sass::selectors::{Selector, SelectorPart, Selectors};
+use crate::sass::{Selector, SelectorPart, Selectors};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::one_of;

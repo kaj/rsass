@@ -15,7 +15,7 @@ impl CssString {
         CssString { value, quotes }
     }
     /// Special unrequoting for use in a selector
-    pub fn selectorq(self) -> Self {
+    pub(crate) fn selectorq(self) -> Self {
         if self.quotes.is_none() {
             let mut result = String::with_capacity(self.value.len());
             let mut iter = self.value.chars().peekable();

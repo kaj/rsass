@@ -1,5 +1,4 @@
-use super::selectors::Selectors;
-use super::{CallArgs, FormalArgs, Name, SassString, Value};
+use super::{CallArgs, FormalArgs, Name, SassString, Selectors, Value};
 use crate::parser::SourcePos;
 use std::collections::BTreeSet;
 

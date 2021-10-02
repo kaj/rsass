@@ -233,17 +233,13 @@ enum BadSelector {
 impl BadSelector {
     fn context(self, v: &Value) -> Error {
         match self {
-            BadSelector::Value => bad_selector(v),
+            BadSelector::Value => Error::error(bad_selector(v)),
             BadSelector::Parse(e) => e.into(),
         }
     }
     fn context_s(self, v: &Value) -> String {
         match self {
-            BadSelector::Value => is_not(
-                v,
-                "a valid selector: it must be a string,\
-                 \na list of strings, or a list of lists of strings",
-            ),
+            BadSelector::Value => bad_selector(v),
             BadSelector::Parse(e) => e.to_string(),
         }
     }
@@ -254,10 +250,10 @@ impl From<ParseError> for BadSelector {
     }
 }
 
-fn bad_selector(v: &Value) -> Error {
-    Error::bad_value(
+fn bad_selector(v: &Value) -> String {
+    is_not(
+        v,
         "a valid selector: it must be a string,\
          \na list of strings, or a list of lists of strings",
-        v,
     )
 }

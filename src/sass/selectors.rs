@@ -30,10 +30,6 @@ impl Selectors {
     pub fn new(s: Vec<Selector>) -> Self {
         Selectors { s }
     }
-    /// Remove the first of these selectors (or the root selector if empty).
-    pub fn one(&self) -> Selector {
-        self.s.first().cloned().unwrap_or_else(Selector::root)
-    }
 
     /// Evaluate any interpolation in these Selectors.
     pub fn eval(&self, scope: ScopeRef) -> Result<css::Selectors, Error> {
