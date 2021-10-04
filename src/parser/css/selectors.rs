@@ -1,7 +1,7 @@
+use super::super::util::{ignore_comments, opt_spacelike, spacelike2};
+use super::super::{input_to_string, PResult, Span};
 use super::strings::{css_string, css_string_any};
 use crate::css::{Selector, SelectorPart, Selectors};
-use crate::parser::util::{ignore_comments, opt_spacelike, spacelike2};
-use crate::parser::{input_to_string, PResult, Span};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::one_of;

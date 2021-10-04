@@ -1,6 +1,5 @@
 //! Types for css values and rules.
 mod call_args;
-pub(crate) mod parser;
 mod rule;
 mod selectors;
 mod string;

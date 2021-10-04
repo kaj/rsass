@@ -1,6 +1,6 @@
 use super::{check, get_checked, is_not, Error, FunctionMap};
-use crate::css::parser::selectors::{selector, selector_part, selectors};
 use crate::css::{Selector, SelectorPart, Selectors, Value};
+use crate::parser::css::{selector, selector_part, selectors};
 use crate::parser::input_span;
 use crate::sass::Name;
 use crate::value::ListSeparator;

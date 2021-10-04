@@ -42,7 +42,7 @@ impl Selectors {
         // The "simple" parts we get from evaluating interpolations may
         // contain high-level selector separators (i.e. ","), so we need to
         // parse the selectors again, from a string representation.
-        use crate::css::parser::selectors::selectors;
+        use crate::parser::css::selectors;
         use crate::parser::input_span;
         // TODO: Get the span from the source of self!
         Ok(ParseError::check(selectors(input_span(

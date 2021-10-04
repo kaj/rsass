@@ -7,6 +7,7 @@ macro_rules! check_parse {
     }};
 }
 
+pub(crate) mod css;
 mod error;
 pub mod formalargs;
 mod imports;
@@ -55,7 +56,7 @@ use std::str::{from_utf8, Utf8Error};
 
 pub type Span<'a> = LocatedSpan<&'a [u8], &'a SourceName>;
 /// A Parsing Result; ok gives a span for the rest of the data and a parsed T.
-pub(crate) type PResult<'a, T> = IResult<Span<'a>, T>;
+type PResult<'a, T> = IResult<Span<'a>, T>;
 
 pub fn code_span(value: &[u8]) -> Span {
     use lazy_static::lazy_static;
@@ -577,11 +578,11 @@ fn variable_declaration2(input: Span) -> PResult<Item> {
     ))
 }
 
-pub(crate) fn input_to_str(s: Span) -> Result<&str, Utf8Error> {
+fn input_to_str(s: Span) -> Result<&str, Utf8Error> {
     from_utf8(s.fragment())
 }
 
-pub(crate) fn input_to_string(s: Span) -> Result<String, Utf8Error> {
+fn input_to_string(s: Span) -> Result<String, Utf8Error> {
     from_utf8(s.fragment()).map(String::from)
 }
 
