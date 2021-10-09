@@ -302,7 +302,7 @@ where
     Formatted<'a, T>: std::fmt::Display,
 {
     format!(
-        "Expected {} to {}",
+        "Expected {} to {}.",
         Formatted {
             value,
             format: Format::introspect()
@@ -310,22 +310,33 @@ where
         cond,
     )
 }
+fn is_not<'a, T>(value: &'a T, expected: &str) -> String
+where
+    Formatted<'a, T>: std::fmt::Display,
+{
+    format!(
+        "{} is not {}.",
+        Formatted {
+            value,
+            format: Format::introspect()
+        },
+        expected,
+    )
+}
 
 mod check {
-    use super::expected_to;
+    use super::{expected_to, is_not};
     use crate::css::{CssString, Value};
-    use crate::output::Format;
     use crate::value::{Number, Numeric};
 
     pub fn numeric(v: Value) -> Result<Numeric, String> {
-        v.numeric_value().map_err(|v| {
-            format!("{} is not a number", v.format(Format::introspect()))
-        })
+        v.numeric_value().map_err(|v| is_not(&v, "a number"))
     }
     pub fn int(v: Value) -> Result<i64, String> {
-        numeric(v)?.value.into_integer().map_err(|v| {
-            format!("{} is not an int", v.format(Format::introspect()))
-        })
+        numeric(v)?
+            .value
+            .into_integer()
+            .map_err(|v| is_not(&v, "an int"))
     }
 
     pub fn unitless(v: Value) -> Result<Number, String> {
@@ -337,10 +348,9 @@ mod check {
         }
     }
     pub fn unitless_int(v: Value) -> Result<i64, String> {
-        let v0 = unitless(v)?;
-        v0.into_integer().map_err(|v| {
-            format!("{} is not an int", v.format(Format::introspect()))
-        })
+        unitless(v)?
+            .into_integer()
+            .map_err(|v| is_not(&v, "an int"))
     }
 
     pub fn string(v: Value) -> Result<CssString, String> {
@@ -349,10 +359,7 @@ mod check {
             Value::Call(name, args) => {
                 Ok(format!("{}({})", name, args).into())
             }
-            v => Err(format!(
-                "{} is not a string",
-                v.format(Format::introspect())
-            )),
+            v => Err(is_not(&v, "a string")),
         }
     }
 }

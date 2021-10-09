@@ -117,26 +117,26 @@ impl ChaError {
     pub fn conv(self, names: &[&'static str; 3]) -> Error {
         match self {
             Self::Bracketed => {
-                Error::error("$channels must be an unbracketed list")
+                Error::error("$channels must be an unbracketed list.")
             }
             Self::BadSep => {
-                Error::error("$channels must be a space-separated list")
+                Error::error("$channels must be a space-separated list.")
             }
             Self::Missing0 => {
-                Error::error(format!("Missing element ${}", names[0]))
+                Error::error(format!("Missing element ${}.", names[0]))
             }
             Self::Missing1 => {
-                Error::error(format!("Missing element ${}", names[1]))
+                Error::error(format!("Missing element ${}.", names[1]))
             }
             Self::Missing2 => {
-                Error::error(format!("Missing element ${}", names[2]))
+                Error::error(format!("Missing element ${}.", names[2]))
             }
             Self::BadNum(n) => Error::error(format!(
-                "Only 3 elements allowed, but {} were passed",
+                "Only 3 elements allowed, but {} were passed.",
                 n
             )),
             Self::SlashBadNum(n) => Error::error(format!(
-                "Only 2 slash-separated elements allowed, but {} {} passed",
+                "Only 2 slash-separated elements allowed, but {} {} passed.",
                 n,
                 if n == 1 { "was" } else { "were" },
             )),

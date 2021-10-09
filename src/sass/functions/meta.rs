@@ -1,5 +1,6 @@
 use super::{
-    check, get_checked, get_opt_check, get_string, Error, FunctionMap,
+    check, get_checked, get_opt_check, get_string, is_not, CheckedArg, Error,
+    FunctionMap,
 };
 use crate::css::{CallArgs, CssString, Value};
 use crate::sass::{Function, Mixin, Name};
@@ -25,11 +26,8 @@ pub fn create_module() -> Scope {
                 (get_function(s, None, name)?, name.into())
             }
             ref v => {
-                return Err(Error::bad_arg(
-                    name!(function),
-                    v,
-                    "is not a function reference",
-                ))
+                return Err(is_not(v, "a function reference"))
+                    .named(name!(function));
             }
         };
         let args = CallArgs::from_value(s.get("args")?)?;
@@ -45,7 +43,7 @@ pub fn create_module() -> Scope {
             Ok((!Mixin::is_no_body(&content.body)).into())
         } else {
             Err(Error::error(
-                "content-exists() may only be called within a mixin",
+                "content-exists() may only be called within a mixin.",
             ))
         }
     });
@@ -70,7 +68,7 @@ pub fn create_module() -> Scope {
             if s.get("css")?.is_true() {
                 if module.is_some() {
                     return Err(Error::error(
-                        "$css and $module may not both be passed at once",
+                        "$css and $module may not both be passed at once.",
                     ));
                 }
                 Ok(Value::Function(name.value().into(), None))
@@ -96,10 +94,7 @@ pub fn create_module() -> Scope {
     def!(f, keywords(args), |s| {
         let args = get_checked(s, name!(args), |v| match v {
             Value::ArgList(args) => Ok(args.named),
-            v => Err(format!(
-                "{} is not an argument list",
-                v.format(Format::introspect())
-            )),
+            v => Err(is_not(&v, "an argument list")),
         })?;
         Ok(Value::Map(
             args.into_iter()
@@ -182,7 +177,7 @@ fn get_scope(
             Ok(module)
         } else {
             Err(Error::error(format!(
-                "There is no module with {}namespace {}",
+                "There is no module with {}namespace {}.",
                 if the { "the " } else { "" },
                 module
             )))

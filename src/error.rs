@@ -74,7 +74,7 @@ impl Error {
 
     /// A generic error message.
     pub fn error<T: AsRef<str>>(msg: T) -> Self {
-        Error::S(format!("Error: {}.", msg.as_ref()))
+        Error::S(format!("Error: {}", msg.as_ref()))
     }
 }
 
@@ -89,7 +89,7 @@ impl fmt::Display for Error {
                 write!(out, "Undefined variable: \"${}\"", name)
             }
             Error::BadArgument(ref name, ref problem) => {
-                write!(out, "Error: ${}: {}.", name, problem)
+                write!(out, "Error: ${}: {}", name, problem)
             }
             Error::ParseError(ref err) => err.fmt(out),
             Error::BadCall(ref msg, ref callpos, ref declpos) => {

@@ -32,7 +32,7 @@ impl CallArgs {
             } else if named.is_empty() || is_splat(&value).is_some() {
                 positional.push(value);
             } else {
-                return Err(Error::error("positional arg after named"));
+                return Err(Error::error("positional arg after named."));
             }
         }
         Ok(CallArgs { positional, named })
@@ -61,7 +61,7 @@ impl CallArgs {
                                 result.named.insert(name, value)
                             {
                                 return Err(Error::error(
-                                    "Duplicate argument",
+                                    "Duplicate argument.",
                                 ));
                             }
                         }

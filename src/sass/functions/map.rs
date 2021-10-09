@@ -1,6 +1,5 @@
-use super::{get_checked, CheckedArg, Error, FunctionMap, Name};
+use super::{get_checked, is_not, CheckedArg, Error, FunctionMap, Name};
 use crate::css::{Value, ValueMap};
-use crate::output::Format;
 use crate::value::ListSeparator;
 use crate::{Scope, ScopeRef};
 use std::convert::TryInto;
@@ -109,7 +108,7 @@ pub fn create_module() -> Scope {
                     let map2 = values
                         .pop()
                         .ok_or_else(|| {
-                            Error::error("Expected $args to contain a key")
+                            Error::error("Expected $args to contain a key.")
                         })?
                         .try_into()
                         .named(name!(map2))?;
@@ -149,7 +148,7 @@ pub fn create_module() -> Scope {
                         map.remove(&key);
                     } else {
                         return Err(Error::error(
-                            "Argument $key was passed both by position and by name"
+                            "Argument $key was passed both by position and by name."
                         ));
                     }
                 }
@@ -207,10 +206,7 @@ impl TryInto<ValueMap> for Value {
             Value::Map(m) => Ok(m),
             // An empty map and an empty list looks the same
             Value::List(ref l, ..) if l.is_empty() => Ok(ValueMap::new()),
-            v => Err(format!(
-                "{} is not a map",
-                &v.format(Format::introspect())
-            )),
+            v => Err(is_not(&v, "a map")),
         }
     }
 }
@@ -291,7 +287,7 @@ fn set(s: &ScopeRef) -> Result<Value, Error> {
             };
             let key = args.named.remove(&"key".into());
             if key.is_none() && keys.is_none() && args.positional.is_empty() {
-                return Err(Error::error("Expected $args to contain a key"));
+                return Err(Error::error("Expected $args to contain a key."));
             }
             let value = args
                 .named
@@ -307,7 +303,7 @@ fn set(s: &ScopeRef) -> Result<Value, Error> {
                     }
                 })
                 .ok_or_else(|| {
-                    Error::error("Expected $args to contain a value")
+                    Error::error("Expected $args to contain a value.")
                 })?;
 
             let mut keys = match (keys, args.positional.is_empty()) {
@@ -315,7 +311,7 @@ fn set(s: &ScopeRef) -> Result<Value, Error> {
                 (None, _) => args.positional,
                 (Some(_), false) => {
                     return Err(Error::error(
-                        "Got $keys both by name and by position",
+                        "Got $keys both by name and by position.",
                     ))
                 }
             };
@@ -328,7 +324,7 @@ fn set(s: &ScopeRef) -> Result<Value, Error> {
             if let Some(value) = v.pop() {
                 Ok(Value::Map(set_inner(map, &v, value)?))
             } else {
-                Err(Error::error("Expected $args to contain a key"))
+                Err(Error::error("Expected $args to contain a key."))
             }
         }
         Value::Map(mut args) => {
@@ -341,11 +337,11 @@ fn set(s: &ScopeRef) -> Result<Value, Error> {
                 keys.push(key);
             }
             let value = args.remove(&"value".into()).ok_or_else(|| {
-                Error::error("Expected $args to contain a value")
+                Error::error("Expected $args to contain a value.")
             })?;
             Ok(Value::Map(set_inner(map, &keys, value)?))
         }
-        _ => Err(Error::error("Expected $args to contain a value")),
+        _ => Err(Error::error("Expected $args to contain a value.")),
     }
 }
 fn set_inner(
@@ -366,7 +362,7 @@ fn set_inner(
         map.insert(key.clone(), value);
         Ok(map)
     } else {
-        Err(Error::error("Expected $args to contain a value"))
+        Err(Error::error("Expected $args to contain a value."))
     }
 }
 

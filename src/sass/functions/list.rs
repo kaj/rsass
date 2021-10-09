@@ -179,7 +179,8 @@ fn check_separator(v: Value) -> Result<Option<ListSeparator>, String> {
         "space" => Ok(Some(ListSeparator::Space)),
         "auto" => Ok(None),
         _ => {
-            Err("Must be \"space\", \"comma\", \"slash\", or \"auto\"".into())
+            Err("Must be \"space\", \"comma\", \"slash\", or \"auto\"."
+                .into())
         }
     }
 }
@@ -236,9 +237,9 @@ fn rust_index(n: i64, len: usize, name: Name) -> Result<usize, Error> {
         Ok((len as i64 + n) as usize)
     } else {
         let msg = if n == 0 {
-            "List index may not be 0".into()
+            "List index may not be 0.".into()
         } else {
-            format!("Invalid index {} for a list with {} elements", n, len)
+            format!("Invalid index {} for a list with {} elements.", n, len)
         };
         Err(Error::BadArgument(name, msg))
     }

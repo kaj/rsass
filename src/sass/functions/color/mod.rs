@@ -1,6 +1,6 @@
 use super::{
-    check, expected_to, get_checked, get_opt_check, CheckedArg, Error,
-    FunctionMap,
+    check, expected_to, get_checked, get_opt_check, is_not, CheckedArg,
+    Error, FunctionMap,
 };
 use crate::css::{CallArgs, CssString, Value};
 use crate::output::Format;
@@ -64,9 +64,7 @@ fn get_color(s: &Scope, name: &'static str) -> Result<Color, Error> {
 fn check_color(v: Value) -> Result<Color, String> {
     match v {
         Value::Color(col, _) => Ok(col),
-        v => {
-            Err(format!("{} is not a color", v.format(Format::introspect())))
-        }
+        v => Err(is_not(&v, "a color")),
     }
 }
 
