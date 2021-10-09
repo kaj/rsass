@@ -917,25 +917,25 @@ pub mod test {
         s: &[(&'static str, &str)],
         expression: &[u8],
     ) -> Result<String, crate::Error> {
-        use super::{Scope, ScopeRef};
+        use super::ScopeRef;
         use crate::parser::value::value_expression;
         use crate::parser::{code_span, ParseError};
         use crate::sass::Name;
         use nom::bytes::complete::tag;
         use nom::sequence::terminated;
         let f = Default::default();
-        let scope = Scope::new_global(f);
+        let scope = ScopeRef::new_global(f);
         for &(name, val) in s {
             let val = value_expression(code_span(val.as_bytes()));
             scope.define(
                 Name::from_static(name),
-                &ParseError::check(val)?.evaluate(ScopeRef::new_global(f))?,
+                &ParseError::check(val)?.evaluate(scope.clone())?,
             );
         }
         let expr =
             terminated(value_expression, tag(";"))(code_span(expression));
         Ok(ParseError::check(expr)?
-            .evaluate(ScopeRef::dynamic(scope))?
+            .evaluate(scope)?
             .format(f)
             .to_string())
     }

@@ -1,6 +1,7 @@
 use super::Format;
 use crate::css::{BodyItem, CssString, Rule, Value};
 use crate::{Error, ScopeRef};
+use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::io::{self, Write};
 
@@ -151,15 +152,20 @@ impl CssBuf {
                         .unwrap_or(indent);
 
                     self.add_str("/*");
-                    if indent > existing {
-                        let start = self.format.get_indent(indent - existing);
-                        self.add_str(&c.replace("\n", start));
-                    } else if existing > indent {
-                        let start =
-                            self.format.get_indent(existing - indent - 1);
-                        self.add_str(&c.replace(start, "\n"));
-                    } else {
-                        self.add_str(c);
+                    match indent.cmp(&existing) {
+                        Ordering::Greater => {
+                            let start =
+                                self.format.get_indent(indent - existing);
+                            self.add_str(&c.replace("\n", start));
+                        }
+                        Ordering::Less => {
+                            let start =
+                                self.format.get_indent(existing - indent - 1);
+                            self.add_str(&c.replace(start, "\n"));
+                        }
+                        Ordering::Equal => {
+                            self.add_str(c);
+                        }
                     }
                     self.add_str("*/");
                 }

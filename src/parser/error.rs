@@ -1,5 +1,4 @@
 use super::{PResult, SourcePos, Span};
-use nom::error::ErrorKind;
 use nom::Finish;
 use std::fmt;
 
@@ -27,27 +26,25 @@ impl ParseError {
         if rest.fragment().is_empty() {
             Ok(value)
         } else {
-            Err(ParseError::remaining(rest))
+            Err(ParseError::new("Expected end of file.", rest))
         }
     }
 
-    fn remaining(span: Span) -> ParseError {
+    fn new<Msg, Pos>(msg: Msg, pos: Pos) -> Self
+    where
+        Msg: Into<String>,
+        Pos: Into<SourcePos>,
+    {
         ParseError {
-            msg: "Expected end of file.".into(),
-            pos: span.into(),
-        }
-    }
-    fn err(kind: ErrorKind, span: Span) -> ParseError {
-        ParseError {
-            msg: format!("Parse error: {:?}", kind),
-            pos: span.into(),
+            msg: msg.into(),
+            pos: pos.into(),
         }
     }
 }
 
 impl From<nom::error::Error<Span<'_>>> for ParseError {
     fn from(err: nom::error::Error<Span>) -> Self {
-        ParseError::err(err.code, err.input)
+        ParseError::new(format!("Parse error: {:?}", err.code), err.input)
     }
 }
 
