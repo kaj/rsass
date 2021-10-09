@@ -7,14 +7,13 @@ use nom::bytes::complete::tag;
 use nom::character::complete::one_of;
 use nom::combinator::{map, map_res, opt, value};
 use nom::multi::{many1, separated_list1};
-use nom::sequence::{delimited, pair, preceded, terminated, tuple};
+use nom::sequence::{delimited, pair, terminated, tuple};
 
 pub fn selectors(input: Span) -> PResult<Selectors> {
-    let (input, v) = separated_list1(
-        terminated(tag(","), ignore_comments),
-        opt(selector),
-    )(input)?;
-    Ok((input, Selectors::new(v.into_iter().flatten().collect())))
+    map(
+        separated_list1(terminated(tag(","), ignore_comments), selector),
+        Selectors::new,
+    )(input)
 }
 
 pub fn selector(input: Span) -> PResult<Selector> {
@@ -25,91 +24,83 @@ pub fn selector(input: Span) -> PResult<Selector> {
     Ok((input, Selector(s)))
 }
 
-pub(crate) fn selector_part(input: Span) -> PResult<SelectorPart> {
-    alt((
-        map(css_string, SelectorPart::Simple),
-        value(SelectorPart::Simple("*".into()), tag("*")),
-        map(
-            preceded(
-                tag("::"),
-                pair(
-                    css_string,
-                    opt(delimited(tag("("), selectors, tag(")"))),
-                ),
-            ),
+pub fn selector_part(input: Span) -> PResult<SelectorPart> {
+    let (input, mark) =
+        alt((tag("*"), tag("&"), tag("::"), tag(":"), tag("["), tag("")))(
+            input,
+        )?;
+    match *mark.fragment() {
+        b"*" => value(SelectorPart::Simple("*".into()), tag(""))(input),
+        b"&" => value(SelectorPart::BackRef, tag(""))(input),
+        b"::" => map(
+            pair(css_string, opt(delimited(tag("("), selectors, tag(")")))),
             |(name, arg)| SelectorPart::PseudoElement { name, arg },
-        ),
-        map(
-            preceded(
-                tag(":"),
-                pair(
-                    css_string,
-                    opt(delimited(tag("("), selectors, tag(")"))),
-                ),
-            ),
+        )(input),
+        b":" => map(
+            pair(css_string, opt(delimited(tag("("), selectors, tag(")")))),
             |(name, arg)| SelectorPart::Pseudo { name, arg },
-        ),
-        map(
-            delimited(
-                terminated(tag("["), opt_spacelike),
-                tuple((
-                    terminated(css_string, opt_spacelike),
-                    terminated(
-                        map_res(
-                            alt((
-                                tag("*="),
-                                tag("|="),
-                                tag("="),
-                                tag("$="),
-                                tag("~="),
-                                tag("^="),
-                            )),
-                            input_to_string,
-                        ),
-                        opt_spacelike,
-                    ),
-                    terminated(css_string_any, opt_spacelike),
-                    opt(terminated(
-                        one_of(
-                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
-                             abcdefghijklmnopqrstuvwxyz",
-                        ),
-                        opt_spacelike,
-                    )),
-                )),
-                tag("]"),
-            ),
-            |(name, op, val, modifier)| SelectorPart::Attribute {
-                name,
-                op,
-                val,
-                modifier,
-            },
-        ),
-        map(
-            delimited(
-                terminated(tag("["), opt_spacelike),
-                css_string,
-                preceded(opt_spacelike, tag("]")),
-            ),
-            |name| SelectorPart::Attribute {
-                name,
-                op: "".to_string(),
-                val: "".into(),
-                modifier: None,
-            },
-        ),
-        value(SelectorPart::BackRef, tag("&")),
-        delimited(
+        )(input),
+        b"[" => delimited(
             opt_spacelike,
             alt((
-                value(SelectorPart::RelOp(b'>'), tag(">")),
-                value(SelectorPart::RelOp(b'+'), tag("+")),
-                value(SelectorPart::RelOp(b'~'), tag("~")),
-                value(SelectorPart::RelOp(b'\\'), tag("\\")),
+                map(
+                    tuple((
+                        terminated(css_string, opt_spacelike),
+                        terminated(
+                            map_res(
+                                alt((
+                                    tag("*="),
+                                    tag("|="),
+                                    tag("="),
+                                    tag("$="),
+                                    tag("~="),
+                                    tag("^="),
+                                )),
+                                input_to_string,
+                            ),
+                            opt_spacelike,
+                        ),
+                        terminated(css_string_any, opt_spacelike),
+                        opt(terminated(
+                            one_of(
+                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                                 abcdefghijklmnopqrstuvwxyz",
+                            ),
+                            opt_spacelike,
+                        )),
+                    )),
+                    |(name, op, val, modifier)| SelectorPart::Attribute {
+                        name,
+                        op,
+                        val,
+                        modifier,
+                    },
+                ),
+                map(terminated(css_string, opt_spacelike), |name| {
+                    SelectorPart::Attribute {
+                        name,
+                        op: "".to_string(),
+                        val: "".into(),
+                        modifier: None,
+                    }
+                }),
             )),
-            opt_spacelike,
-        ),
-        value(SelectorPart::Descendant, spacelike2),
-    ))(input)
+            tag("]"),
+        )(input),
+        b"" => alt((
+            map(css_string, |s| SelectorPart::Simple(s.to_string())),
+            delimited(
+                opt_spacelike,
+                alt((
+                    value(SelectorPart::RelOp(b'>'), tag(">")),
+                    value(SelectorPart::RelOp(b'+'), tag("+")),
+                    value(SelectorPart::RelOp(b'~'), tag("~")),
+                    value(SelectorPart::RelOp(b'\\'), tag("\\")),
+                )),
+                opt_spacelike,
+            ),
+            value(SelectorPart::Descendant, spacelike2),
+        ))(input),
+        _ => unreachable!(),
+    }
 }

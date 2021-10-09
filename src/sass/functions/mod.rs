@@ -1,4 +1,4 @@
-use crate::css::{CallArgs, CssString, Value};
+use crate::css::{is_not, CallArgs, CssString, Value};
 use crate::error::Error;
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
@@ -301,20 +301,6 @@ where
             format: Format::introspect()
         },
         cond,
-    )
-}
-
-fn is_not<'a, T>(value: &'a T, expected: &str) -> String
-where
-    Formatted<'a, T>: std::fmt::Display,
-{
-    format!(
-        "{} is not {}.",
-        Formatted {
-            value,
-            format: Format::introspect()
-        },
-        expected,
     )
 }
 

@@ -244,7 +244,7 @@ impl Value {
                     (op, v) => Ok(css::Value::UnaryOp(op, Box::new(v))),
                 }
             }
-            Value::HereSelector => Ok(scope.get_selectors().to_value()),
+            Value::HereSelector => Ok(scope.get_selectors().clone().into()),
             Value::UnicodeRange(ref s) => {
                 Ok(css::Value::UnicodeRange(s.clone()))
             }

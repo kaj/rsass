@@ -6,8 +6,12 @@
 //!
 //! This _may_ change to a something like a tree of operators with
 //! leafs of simple selectors in some future release.
-use super::{CssString, Value};
+use super::{is_not, CssString, Value};
+use crate::parser::css::{selector, selector_part, selectors};
+use crate::parser::input_span;
+use crate::parser::{ParseError, SourcePos};
 use crate::value::ListSeparator;
+use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::io::Write;
 
@@ -15,7 +19,7 @@ use std::io::Write;
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Selectors {
     /// The actual selectors.
-    pub s: Vec<Selector>,
+    s: Vec<Selector>,
     backref: Selector,
 }
 
@@ -39,12 +43,46 @@ impl Selectors {
             backref: Selector::root(),
         }
     }
+    /// Validate that this selector is ok to use in css.
+    ///
+    /// `Selectors` can contain backref (`&`), but those must be
+    /// resolved before using the `Selectors` in css.
+    pub fn css_ok(self) -> Result<Self, BadSelector> {
+        if self.has_backref() {
+            let sel = self.to_string();
+            Err(BadSelector::Backref(input_span(sel.as_bytes()).into()))
+        } else {
+            Ok(self)
+        }
+    }
+
     /// Remove the first of these selectors (or the root selector if empty).
-    pub fn one(&self) -> Selector {
+    pub(crate) fn one(&self) -> Selector {
         self.s.first().cloned().unwrap_or_else(Selector::root)
     }
+
+    pub(crate) fn append(self, ext: Self) -> Result<Self, crate::Error> {
+        let ext = ext.css_ok()?;
+        Ok(Selectors::new(
+            self.s
+                .into_iter()
+                .flat_map(|b| {
+                    ext.s.iter().map(move |e| {
+                        if e.0[0].is_operator() || e.0[0].is_wildcard() {
+                            return Err(crate::Error::error(&format!(
+                                "Can't append {} to {}.",
+                                e, b
+                            )));
+                        }
+                        parse_selector(&format!("{}{}", b, e))
+                    })
+                })
+                .collect::<Result<_, _>>()?,
+        ))
+    }
+
     /// Create the full selector for when self is used inside a parent selector.
-    pub fn inside(&self, parent: &Self) -> Self {
+    pub(crate) fn inside(&self, parent: &Self) -> Self {
         let mut result = Vec::new();
         for p in &parent.s {
             for s in &self.s {
@@ -57,26 +95,33 @@ impl Selectors {
         }
     }
 
-    /// True if any of the selecors contains a backref (`&`).
-    pub fn has_backref(&self) -> bool {
+    /// True if any of the selectors contains a backref (`&`).
+    pub(crate) fn has_backref(&self) -> bool {
         self.s.iter().any(|s| s.has_backref())
     }
 
     /// Get these selectors with a specific backref selector.
     ///
     /// Used to create `@at-root` contexts, to have `&` work in them.
-    pub fn with_backref(self, context: Selector) -> Self {
+    pub(crate) fn with_backref(self, context: Selector) -> Self {
         self.inside(&Selectors {
             s: vec![Selector::root()],
             backref: context,
         })
     }
-    /// Create a sass `Value` representing this set of selectors.
-    pub fn to_value(&self) -> Value {
-        if self.s.len() == 1 && self.s[0].0.is_empty() {
+}
+
+impl From<Selectors> for Value {
+    /// Create a css `Value` representing a set of selectors.
+    ///
+    /// The result will be a comma-separated [list](Value::List) of
+    /// space-separated lists of strings, or [null](Value::Null) if
+    /// this is a root (empty) selector.
+    fn from(sel: Selectors) -> Value {
+        if sel.is_root() {
             return Value::Null;
         }
-        let content = self
+        let content = sel
             .s
             .iter()
             .map(|s: &Selector| {
@@ -115,12 +160,100 @@ impl Selectors {
     }
 }
 
+impl TryFrom<Value> for Selectors {
+    type Error = BadSelector;
+    fn try_from(v: Value) -> Result<Self, Self::Error> {
+        value_to_selectors(&v).map_err(move |e| e.ctx(v))
+    }
+}
+fn value_to_selectors(v: &Value) -> Result<Selectors, BadSelector0> {
+    match v {
+        Value::List(vv, s, _) => match s {
+            Some(ListSeparator::Comma) => {
+                let vv = vv
+                    .iter()
+                    .map(value_to_selector)
+                    .collect::<Result<_, _>>()?;
+                Ok(Selectors::new(vv))
+            }
+            Some(ListSeparator::Space) => {
+                let (mut outer, last) = vv.iter().fold(
+                    Result::<_, BadSelector0>::Ok((vec![], vec![])),
+                    |a, v: &Value| {
+                        let (mut outer, mut a) = a?;
+                        if let Ok(ref mut s) = check_selector_str(v) {
+                            push_descendant(&mut a, s)
+                        } else {
+                            let mut s = parse_selectors_str(v)?;
+                            if let Some(f) = s.s.first_mut() {
+                                push_descendant(&mut a, f);
+                                std::mem::swap(&mut a, &mut f.0);
+                            }
+                            if let Some(last) = s.s.pop() {
+                                a = last.0;
+                            }
+                            outer.extend(s.s);
+                        }
+                        Ok((outer, a))
+                    },
+                )?;
+                outer.push(Selector(last));
+                Ok(Selectors::new(outer))
+            }
+            _ => Err(BadSelector0::Value),
+        },
+        Value::Literal(s) => {
+            if s.value().is_empty() {
+                Ok(Selectors::root())
+            } else {
+                let span = input_span(s.value().as_bytes());
+                Ok(ParseError::check(selectors(span))?)
+            }
+        }
+        _ => Err(BadSelector0::Value),
+    }
+}
+
+fn check_selector_str(v: &Value) -> Result<Selector, BadSelector0> {
+    match v {
+        Value::Literal(s) => {
+            if s.value().is_empty() {
+                Ok(Selector::root())
+            } else {
+                let span = input_span(s.value().as_bytes());
+                Ok(ParseError::check(selector(span))?)
+            }
+        }
+        _ => Err(BadSelector0::Value),
+    }
+}
+fn parse_selectors_str(v: &Value) -> Result<Selectors, BadSelector0> {
+    match v {
+        Value::Literal(s) => {
+            if s.value().is_empty() {
+                Ok(Selectors::root())
+            } else {
+                let span = input_span(s.value().as_bytes());
+                Ok(ParseError::check(selectors(span))?)
+            }
+        }
+        _ => Err(BadSelector0::Value),
+    }
+}
+
+fn push_descendant(to: &mut Vec<SelectorPart>, from: &mut Selector) {
+    if !to.is_empty() {
+        to.push(SelectorPart::Descendant)
+    }
+    to.append(&mut from.0);
+}
+
 /// A css (or sass) selector.
 ///
 /// A selector does not contain `,`.  If it does, it is a `Selectors`,
 /// where each of the parts separated by the comma is a `Selector`.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct Selector(pub Vec<SelectorPart>);
+pub struct Selector(pub(crate) Vec<SelectorPart>);
 
 impl Selector {
     /// Get the root (empty) selector.
@@ -153,14 +286,51 @@ impl Selector {
     }
 }
 
+impl TryInto<Selector> for Value {
+    type Error = BadSelector;
+    fn try_into(self) -> Result<Selector, Self::Error> {
+        value_to_selector(&self).map_err(move |e| e.ctx(self))
+    }
+}
+// Internal, the api is try_into.
+fn value_to_selector(v: &Value) -> Result<Selector, BadSelector0> {
+    match v {
+        Value::List(list, sep, _)
+            if sep == &None || sep == &Some(ListSeparator::Space) =>
+        {
+            list_to_selector(list)
+        }
+        Value::Literal(s) => {
+            if s.value().is_empty() {
+                Ok(Selector::root())
+            } else {
+                let span = input_span(s.value().as_bytes());
+                Ok(ParseError::check(selector(span))?)
+            }
+        }
+        _ => Err(BadSelector0::Value),
+    }
+}
+
+fn list_to_selector(list: &[Value]) -> Result<Selector, BadSelector0> {
+    Ok(Selector(list.iter().fold(
+        Result::<_, BadSelector0>::Ok(vec![]),
+        |a, v| {
+            let mut a = a?;
+            if !a.is_empty() {
+                a.push(SelectorPart::Descendant)
+            }
+            a.push(value_to_selector_part(v)?);
+            Ok(a)
+        },
+    )?))
+}
+
 /// A selector consist of a sequence of these parts.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub enum SelectorPart {
     /// A simple selector, eg a class, id or element name.
-    ///
-    /// Note that a Simple selector can hide a more complex selector
-    /// through string interpolation.
-    Simple(CssString),
+    Simple(String),
     /// The empty relational operator.
     ///
     /// The thing after this is a descendant of the thing before this.
@@ -209,7 +379,7 @@ impl SelectorPart {
     }
     pub(crate) fn is_wildcard(&self) -> bool {
         if let SelectorPart::Simple(s) = self {
-            s.value() == "*" && s.quotes().is_none()
+            s == "*"
         } else {
             false
         }
@@ -256,6 +426,21 @@ impl SelectorPart {
                 }]
             }
         }
+    }
+}
+
+impl TryInto<SelectorPart> for Value {
+    type Error = BadSelector;
+    fn try_into(self) -> Result<SelectorPart, Self::Error> {
+        value_to_selector_part(&self).map_err(move |e| e.ctx(self))
+    }
+}
+fn value_to_selector_part(v: &Value) -> Result<SelectorPart, BadSelector0> {
+    match v {
+        Value::Literal(s) => Ok(ParseError::check(selector_part(
+            input_span(s.value().as_bytes()),
+        ))?),
+        _ => Err(BadSelector0::Value),
     }
 }
 
@@ -387,4 +572,66 @@ mod test {
         );
         assert_eq!(format!("{}", s), "foo.bar")
     }
+}
+
+enum BadSelector0 {
+    Value,
+    Parse(ParseError),
+}
+impl BadSelector0 {
+    fn ctx(self, v: Value) -> BadSelector {
+        match self {
+            Self::Value => BadSelector::Value(v),
+            Self::Parse(err) => BadSelector::Parse(err),
+        }
+    }
+}
+impl From<ParseError> for BadSelector0 {
+    fn from(e: ParseError) -> Self {
+        BadSelector0::Parse(e)
+    }
+}
+
+/// The error when a [Value] cannot be converted to a [Selectors] or [Selector].
+#[derive(Debug)]
+pub enum BadSelector {
+    /// The value was not the expected type of list or string.
+    Value(Value),
+    /// There was an error parsing a string value.
+    Parse(ParseError),
+    /// A backref (`&`) were present but not allowed there.
+    Backref(SourcePos),
+}
+
+impl fmt::Display for BadSelector {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            BadSelector::Value(v) => out.write_str(&is_not(
+                v,
+                "a valid selector: it must be a string,\
+                 \na list of strings, or a list of lists of strings",
+            )),
+            BadSelector::Parse(e) => e.fmt(out),
+            BadSelector::Backref(pos) => {
+                writeln!(out, "Parent selectors aren\'t allowed here.")?;
+                pos.show(out)
+            }
+        }
+    }
+}
+impl From<BadSelector> for crate::Error {
+    fn from(e: BadSelector) -> crate::Error {
+        match e {
+            BadSelector::Parse(e) => e.into(),
+            e => crate::Error::error(e.to_string()),
+        }
+    }
+}
+impl From<ParseError> for BadSelector {
+    fn from(e: ParseError) -> Self {
+        BadSelector::Parse(e)
+    }
+}
+fn parse_selector(s: &str) -> Result<Selector, crate::Error> {
+    Ok(ParseError::check(selector(input_span(s.as_bytes())))?)
 }

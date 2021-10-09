@@ -56,14 +56,17 @@ impl Selectors {
 /// A selector does not contain `,`.  If it does, it is a `Selectors`,
 /// where each of the parts separated by the comma is a `Selector`.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
-pub struct Selector(pub Vec<SelectorPart>);
+pub struct Selector(Vec<SelectorPart>);
 
 impl Selector {
     /// Get the root (empty) selector.
     pub fn root() -> Self {
         Selector(vec![])
     }
-
+    /// Create a new selector from parts.
+    pub fn new(s: Vec<SelectorPart>) -> Self {
+        Selector(s)
+    }
     fn eval(&self, scope: ScopeRef) -> Result<css::Selector, Error> {
         self.0
             .iter()
@@ -131,7 +134,7 @@ impl SelectorPart {
                 modifier: *modifier,
             }),
             SelectorPart::Simple(ref v) => {
-                Ok(css::SelectorPart::Simple(v.evaluate(scope)?.selectorq()))
+                Ok(css::SelectorPart::Simple(v.evaluate(scope)?.to_string()))
             }
             SelectorPart::Pseudo { ref name, ref arg } => {
                 let arg = match &arg {

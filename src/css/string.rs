@@ -14,65 +14,6 @@ impl CssString {
     pub fn new(value: String, quotes: Quotes) -> Self {
         CssString { value, quotes }
     }
-    /// Special unrequoting for use in a selector
-    pub(crate) fn selectorq(self) -> Self {
-        if self.quotes.is_none() {
-            let mut result = String::with_capacity(self.value.len());
-            let mut iter = self.value.chars().peekable();
-            while let Some(c) = iter.next() {
-                if c == '\\' {
-                    let mut val: u32 = 0;
-                    let mut got_num = false;
-                    let nextchar = loop {
-                        match iter.peek() {
-                            Some(' ') if got_num => {
-                                iter.next();
-                                break (None);
-                            }
-                            Some(&c) => {
-                                if let Some(digit) = c.to_digit(16) {
-                                    val = val * 16 + digit;
-                                    got_num = true;
-                                    iter.next();
-                                } else if !got_num {
-                                    break (iter.next());
-                                } else {
-                                    break (None);
-                                }
-                            }
-                            _ => break (None),
-                        }
-                    };
-                    if got_num {
-                        if let Ok(c) = char::try_from(val) {
-                            result.push_str(&format!("\\{}", c));
-                        } else {
-                            result.push_str(&format!("\\{}", val));
-                        }
-                    }
-                    match nextchar {
-                        Some('\n') => {
-                            result.push('\\');
-                            result.push('a');
-                        }
-                        Some(c) => {
-                            result.push('\\');
-                            result.push(c);
-                        }
-                        None => (),
-                    }
-                } else {
-                    result.push(c)
-                }
-            }
-            CssString {
-                value: result,
-                quotes: Quotes::None,
-            }
-        } else {
-            self
-        }
-    }
     /// Unquote this string.
     pub fn unquote(self) -> String {
         if self.quotes.is_none() {
