@@ -453,11 +453,11 @@ impl<'a> Scope {
                 if let Some(f) = module.get_function(&name)? {
                     Ok(Some(f))
                 } else {
-                    Err(Error::error("Undefined function"))
+                    Err(Error::error("Undefined function."))
                 }
             } else {
                 return Err(Error::error(format!(
-                    "There is no module with the namespace {:?}",
+                    "There is no module with the namespace {:?}.",
                     modulename
                 )));
             }

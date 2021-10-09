@@ -1,6 +1,6 @@
 use super::{
     check, expected_to, get_checked, get_numeric, get_opt_check, get_va_list,
-    Error, FunctionMap, Scope,
+    is_not, CheckedArg, Error, FunctionMap, Scope,
 };
 use crate::css::{CssString, Value};
 use crate::output::Format;
@@ -97,7 +97,7 @@ pub fn create_module() -> Scope {
     {
         [Value::Numeric(v, _)] =>
             Ok(number(v.value.clone().abs(), v.unit.clone())),
-        [v] => Err(Error::bad_arg(name!(number), v, "is not a number")),
+        [v] => Err(is_not(v, "a number")).named(name!(number)),
         v => {
             if let Some((first, rest)) = v.split_first() {
                 let first = as_numeric(first)?;
@@ -105,17 +105,17 @@ pub fn create_module() -> Scope {
                 let unit = first.unit.clone();
                 for (i, v) in rest.iter().enumerate() {
                     let num = as_numeric(v)?;
-                    let scaled = num.as_unitset(&unit).ok_or_else(|| {
-                        Error::BadArgument(
-                            format!("numbers[{}]", i + 2).into(),
-                            diff_units_msg(&num, &first, "numbers[1]".into()),
-                        )
-                    })?;
+                    let scaled = num
+                        .as_unitset(&unit)
+                        .ok_or_else(|| {
+                            diff_units_msg(&num, &first, "numbers[1]".into())
+                        })
+                        .named(format!("numbers[{}]", i + 2).into())?;
                     sum += f64::from(scaled).powi(2);
                 }
                 Ok(number(sum.sqrt(), unit))
             } else {
-                Err(Error::error("At least one argument must be passed"))
+                Err(Error::error("At least one argument must be passed."))
             }
         }
     });
@@ -205,7 +205,7 @@ pub fn create_module() -> Scope {
             if v > 0 {
                 Ok(v)
             } else {
-                Err(format!("Must be greater than 0, was {}", v))
+                Err(format!("Must be greater than 0, was {}.", v))
             }
         })? {
             None => {
@@ -275,7 +275,7 @@ fn deg_value(rad: f64) -> Value {
 
 fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
     find_extreme_inner(v, pref)?
-        .ok_or_else(|| Error::error("At least one argument must be passed"))
+        .ok_or_else(|| Error::error("At least one argument must be passed."))
         .map(Into::into)
 }
 
@@ -293,14 +293,14 @@ fn find_extreme_inner(
                     Ok(Some(if o == pref { va } else { vb }))
                 } else {
                     Err(Error::error(format!(
-                        "{} and {} could not be compared",
+                        "{} and {} could not be compared.",
                         va.format(Format::introspect()),
                         vb.format(Format::introspect()),
                     )))
                 }
             } else {
                 Err(Error::error(format!(
-                    "{} and {} have incompatible units",
+                    "{} and {} have incompatible units.",
                     va.format(Format::introspect()),
                     vb.format(Format::introspect()),
                 )))
@@ -323,7 +323,7 @@ fn diff_units_msg(
     other_name: Name,
 ) -> String {
     format!(
-        "{} and ${}: {} have incompatible units{}",
+        "{} and ${}: {} have incompatible units{}.",
         one.format(Format::introspect()),
         other_name,
         other.format(Format::introspect()),

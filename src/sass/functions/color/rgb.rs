@@ -1,11 +1,10 @@
 use super::channels::Channels;
 use super::{
     bad_arg, check_alpha, check_channel, check_color, check_pct_range,
-    get_checked, get_color, is_special, make_call, CheckedArg, Error,
+    get_checked, get_color, is_not, is_special, make_call, CheckedArg, Error,
     FunctionMap,
 };
 use crate::css::{CallArgs, Value};
-use crate::output::Format;
 use crate::sass::{ArgsError, FormalArgs, Name};
 use crate::value::{Rational, Rgba};
 use crate::{Scope, ScopeRef};
@@ -77,14 +76,10 @@ pub fn register(f: &mut Scope) {
                         v @ Value::Numeric(..) => {
                             Ok(make_call("invert", vec![v]))
                         }
-                        v => Err(format!(
-                            "{} is not a color",
-                            v.format(Format::introspect())
-                        ))
-                        .named(name!(color)),
+                        v => Err(is_not(&v, "a color")).named(name!(color)),
                     }
                 } else {
-                    Err(Error::error("Only one argument may be passed to the plain-CSS invert() function"))
+                    Err(Error::error("Only one argument may be passed to the plain-CSS invert() function."))
                 }
             }
         }

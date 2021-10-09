@@ -50,7 +50,7 @@ fn handle_item(
             {
                 if !with.is_empty() {
                     return Err(Error::error(
-                        "Built-in modules can\'t be configured",
+                        "Built-in modules can\'t be configured.",
                     ));
                 }
                 module
@@ -74,7 +74,7 @@ fn handle_item(
                                 module.define(name.clone(), &value);
                             } else {
                                 return Err(Error::error(
-                                    "The same variable may only be configured once",
+                                    "The same variable may only be configured once.",
                                 ));
                             }
                         }
@@ -105,7 +105,7 @@ fn handle_item(
             {
                 if !with.is_empty() {
                     return Err(Error::error(
-                        "Built-in modules can\'t be configured",
+                        "Built-in modules can\'t be configured.",
                     ));
                 }
                 module
@@ -129,7 +129,7 @@ fn handle_item(
                                 module.define(name.clone(), &value);
                             } else {
                                 return Err(Error::error(
-                                    "The same variable may only be configured once",
+                                    "The same variable may only be configured once.",
                                 ));
                             }
                         }

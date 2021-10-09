@@ -1,6 +1,7 @@
 use super::hsl::percentage;
 use super::{
-    bad_arg, check, check_alpha, check_expl_pct, get_color, CheckedArg,
+    bad_arg, check, check_alpha, check_expl_pct, get_color, is_not,
+    CheckedArg,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
@@ -61,17 +62,17 @@ fn hwb_from_channels(
 ) -> Result<(Value, Value, Value, Value), Error> {
     match v {
         Value::List(_, _, true) => {
-            Err(Error::error("$channels must be an unbracketed list"))
+            Err(Error::error("$channels must be an unbracketed list."))
         }
         Value::List(_, Some(ListSeparator::Comma), _) => {
-            Err(Error::error("$channels must be a space-separated list"))
+            Err(Error::error("$channels must be a space-separated list."))
         }
         Value::List(vec, s, p) => {
             use crate::value::Operator::Div;
             match vec.len() {
-                0 => Err(Error::error("Missing element $hue")),
-                1 => Err(Error::error("Missing element $whiteness")),
-                2 => Err(Error::error("Missing element $blackness")),
+                0 => Err(Error::error("Missing element $hue.")),
+                1 => Err(Error::error("Missing element $whiteness.")),
+                2 => Err(Error::error("Missing element $blackness.")),
                 3 => {
                     if let Value::BinOp(a, _, Div, _, b) = &vec[2] {
                         if let (Value::Numeric(..), Value::Numeric(..)) =
@@ -96,18 +97,18 @@ fn hwb_from_channels(
                     }
                 }
                 n => Err(Error::error(format!(
-                    "Only 3 elements allowed, but {} were passed",
+                    "Only 3 elements allowed, but {} were passed.",
                     n
                 ))),
             }
         }
-        _hue => Err(Error::error("Missing element $whiteness")),
+        _hue => Err(Error::error("Missing element $whiteness.")),
     }
 }
 
 fn badchannels(v: &Value) -> Error {
     Error::error(format!(
-        "Expected numeric channels, got \"hwb({})\"",
+        "Expected numeric channels, got \"hwb({})\".",
         v.format(Format::introspect()),
     ))
 }
@@ -117,9 +118,6 @@ fn check_hue(v: Value) -> Result<Rational, String> {
     if let Some(scaled) = vv.as_unit_def(Unit::Deg) {
         Ok(scaled.as_ratio()?)
     } else {
-        Err(format!(
-            "{} is not an angle",
-            vv.format(Format::introspect()),
-        ))
+        Err(is_not(&vv, "an angle"))
     }
 }

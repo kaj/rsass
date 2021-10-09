@@ -1,8 +1,8 @@
 use super::channels::Channels;
 use super::{
     bad_arg, check_alpha, check_pct, check_pct_range, check_rational,
-    get_checked, get_color, get_opt_check, is_special, make_call, CheckedArg,
-    FunctionMap,
+    get_checked, get_color, get_opt_check, is_not, is_special, make_call,
+    CheckedArg, FunctionMap,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
@@ -38,10 +38,7 @@ pub fn register(f: &mut Scope) {
             )
         }
         v @ Value::Numeric(..) => Ok(make_call("grayscale", vec![v])),
-        v => Err(Error::BadArgument(
-            name!(color),
-            format!("{} is not a color", v.format(Format::introspect()))
-        )),
+        v => Err(is_not(&v, "a color")).named(name!(color)),
     });
 }
 
@@ -176,7 +173,7 @@ fn hsla_from_values(
     if is_special(&h) || is_special(&s) || is_special(&l) || is_special(&a) {
         Ok(make_call(fn_name.as_ref(), vec![h, s, l, a]))
     } else if l == Value::Null {
-        Err(Error::error("Missing argument $lightness"))
+        Err(Error::error("Missing argument $lightness."))
     } else {
         Ok(Hsla::new(
             check_rational(h).named(name!(hue))?,

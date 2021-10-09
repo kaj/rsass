@@ -22,7 +22,7 @@ pub fn register(f: &mut Scope) {
         let mut args = CallArgs::from_value(s.get("kwargs")?)?;
         if !args.positional.is_empty() {
             return Err(Error::error("Only one positional argument is allowed. \
-                                     All other arguments must be passed by name"));
+                                     All other arguments must be passed by name."));
         }
         let red = take_opt(&mut args, name!(red), check_channel_pm)?;
         let gre = take_opt(&mut args, name!(green), check_channel_pm)?;
@@ -36,33 +36,26 @@ pub fn register(f: &mut Scope) {
         args.check_no_named()?;
 
         if red.is_some() || gre.is_some() || blu.is_some() {
-            if bla.is_some() || whi.is_some() {
-                Err(Error::error("RGB parameters may not be passed along with HWB parameters"))
-            } else if hue.is_some() || sat.is_some() || lig.is_some() {
-                Err(Error::error("RGB parameters may not be passed along with HSL parameters"))
-            } else {
-                let rgba = rgba.to_rgba();
-                Ok(Rgba::new(
-                    opt_add(rgba.red(), red),
-                    opt_add(rgba.green(), gre),
-                    opt_add(rgba.blue(), blu),
-                    opt_add(rgba.alpha(), a_adj),
-                )
-                .into())
-            }
+            check_none(&[bla, whi], "RGB", "HWB")?;
+            check_none(&[hue, sat, lig], "RGB", "HSL")?;
+            let rgba = rgba.to_rgba();
+            Ok(Rgba::new(
+                opt_add(rgba.red(), red),
+                opt_add(rgba.green(), gre),
+                opt_add(rgba.blue(), blu),
+                opt_add(rgba.alpha(), a_adj),
+            )
+            .into())
         } else if bla.is_some() || whi.is_some() {
-            if sat.is_some() || lig.is_some() {
-                Err(Error::error("HSL parameters may not be passed along with HWB parameters"))
-            } else {
-                let hwba = rgba.to_hwba();
-                Ok(Hwba::new(
-                    opt_add(hwba.hue(), hue),
-                    opt_add(hwba.whiteness(), whi),
-                    opt_add(hwba.blackness(), bla),
-                    opt_add(hwba.alpha(), a_adj),
-                )
-                .into())
-            }
+            check_none(&[sat, lig], "HSL", "HWB")?;
+            let hwba = rgba.to_hwba();
+            Ok(Hwba::new(
+                opt_add(hwba.hue(), hue),
+                opt_add(hwba.whiteness(), whi),
+                opt_add(hwba.blackness(), bla),
+                opt_add(hwba.alpha(), a_adj),
+            )
+            .into())
         } else {
             let hsla = rgba.to_hsla();
             Ok(Hsla::new(
@@ -93,7 +86,7 @@ pub fn register(f: &mut Scope) {
         let mut args = CallArgs::from_value(s.get("kwargs")?)?;
         if !args.positional.is_empty() {
             return Err(Error::error("Only one positional argument is allowed. \
-                                     All other arguments must be passed by name"));
+                                     All other arguments must be passed by name."));
         }
         let red = take_opt(&mut args, name!(red), check_pct_expl_pm)?;
         let gre = take_opt(&mut args, name!(green), check_pct_expl_pm)?;
@@ -106,20 +99,16 @@ pub fn register(f: &mut Scope) {
         args.check_no_named()?;
 
         if red.is_some() || gre.is_some() || blu.is_some() {
-            if bla.is_some() || whi.is_some() {
-                Err(Error::error("RGB parameters may not be passed along with HWB parameters"))
-            } else if sat.is_some() || lig.is_some() {
-                Err(Error::error("RGB parameters may not be passed along with HSL parameters"))
-            } else {
-                let rgba = rgba.to_rgba();
-                Ok(Rgba::new(
-                    cmb(rgba.red(), red, ff),
-                    cmb(rgba.green(), gre, ff),
-                    cmb(rgba.blue(), blu, ff),
-                    cmb(rgba.alpha(), a_adj, one),
-                )
-                .into())
-            }
+            check_none(&[bla, whi], "RGB", "HWB")?;
+            check_none(&[sat, lig], "RGB", "HSL")?;
+            let rgba = rgba.to_rgba();
+            Ok(Rgba::new(
+                cmb(rgba.red(), red, ff),
+                cmb(rgba.green(), gre, ff),
+                cmb(rgba.blue(), blu, ff),
+                cmb(rgba.alpha(), a_adj, one),
+            )
+            .into())
         } else if bla.is_none() && whi.is_none() {
             let hsla = rgba.to_hsla();
             Ok(Hsla::new(
@@ -129,11 +118,8 @@ pub fn register(f: &mut Scope) {
                 cmb(hsla.alpha(), a_adj, one),
             )
             .into())
-        } else if sat.is_some() || lig.is_some() {
-            Err(Error::error(
-                "HSL parameters may not be passed along with HWB parameters",
-            ))
         } else {
+            check_none(&[sat, lig], "HSL", "HWB")?;
             let hwba = rgba.to_hwba();
             Ok(Hwba::new(
                 hwba.hue(),
@@ -164,7 +150,7 @@ pub fn register(f: &mut Scope) {
         let mut args = CallArgs::from_value(s.get("kwargs")?)?;
         if !args.positional.is_empty() {
             return Err(Error::error("Only one positional argument is allowed. \
-                                     All other arguments must be passed by name"));
+                                     All other arguments must be passed by name."));
         }
         let red = take_opt(&mut args, name!(red), check_channel_range)?;
         let gre = take_opt(&mut args, name!(green), check_channel_range)?;
@@ -179,20 +165,16 @@ pub fn register(f: &mut Scope) {
         args.check_no_named()?;
 
         if red.is_some() || gre.is_some() || blu.is_some() {
-            if hue.is_some() || sat.is_some() || lig.is_some() {
-                Err(Error::error("RGB parameters may not be passed along with HSL parameters"))
-            } else if bla.is_some() || whi.is_some() {
-                Err(Error::error("RGB parameters may not be passed along with HWB parameters"))
-            } else {
-                let rgba = rgba.to_rgba();
-                Ok(Rgba::new(
-                    red.unwrap_or_else(|| rgba.red()),
-                    gre.unwrap_or_else(|| rgba.green()),
-                    blu.unwrap_or_else(|| rgba.blue()),
-                    alp.unwrap_or_else(|| rgba.alpha()),
-                )
-                .into())
-            }
+            check_none(&[hue, sat, lig], "RGB", "HSL")?;
+            check_none(&[bla, whi], "RGB", "HWB")?;
+            let rgba = rgba.to_rgba();
+            Ok(Rgba::new(
+                red.unwrap_or_else(|| rgba.red()),
+                gre.unwrap_or_else(|| rgba.green()),
+                blu.unwrap_or_else(|| rgba.blue()),
+                alp.unwrap_or_else(|| rgba.alpha()),
+            )
+            .into())
         } else if bla.is_none() && whi.is_none() {
             let hsla = rgba.to_hsla();
             Ok(Hsla::new(
@@ -202,11 +184,8 @@ pub fn register(f: &mut Scope) {
                 alp.unwrap_or_else(|| hsla.alpha()),
             )
             .into())
-        } else if sat.is_some() || lig.is_some() {
-            Err(Error::error(
-                "HSL parameters may not be passed along with HWB parameters",
-            ))
         } else {
+            check_none(&[sat, lig], "HSL", "HWB")?;
             let hwba = rgba.to_hwba();
             Ok(Hwba::new(
                 hue.unwrap_or_else(|| hwba.hue()),
@@ -254,6 +233,21 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(transparentize), name!(fade_out)),
     ] {
         global.insert(gname.clone(), f.get_lfunction(lname));
+    }
+}
+
+fn check_none(
+    args: &[Option<Rational>],
+    kind: &str,
+    with_kind: &str,
+) -> Result<(), Error> {
+    if args.iter().all(|v| v.is_none()) {
+        Ok(())
+    } else {
+        Err(Error::error(format!(
+            "{} parameters may not be passed along with {} parameters.",
+            kind, with_kind
+        )))
     }
 }
 
