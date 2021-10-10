@@ -59,7 +59,7 @@ impl CallArgs {
                 Value::Literal(s) => {
                     self.named.insert(s.value().into(), v);
                 }
-                x => return Err(Error::bad_value("string", &x)),
+                x => return Err(Error::bad_value("a string", &x)),
             }
         }
         Ok(())

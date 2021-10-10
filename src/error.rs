@@ -48,7 +48,7 @@ impl Error {
     pub fn bad_value(expected: &str, actual: &Value) -> Self {
         Error::BadValue(format!(
             "Error: {} is not {}.",
-            actual.format(Default::default()),
+            actual.format(Format::introspect()),
             expected,
         ))
     }
