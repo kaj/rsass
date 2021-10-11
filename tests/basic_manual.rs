@@ -401,6 +401,14 @@ mod issue_122 {
             "InfinityA444-4444M4 black/0-4444M4 #444InfinityInfinity0.44444O #444Infinity0.0869565217",
         )
     }
+    /// https://github.com/kaj/rsass/issues/121 is very similar.
+    #[test]
+    fn issue_121() {
+        check_value(
+            "44A-#444/0+-\0\0\0+44/0+444&",
+            "44A-#444/0-\u{1}\u{0}\u{0}\u{0}Infinity444",
+        )
+    }
 }
 
 /// Test auto-converted from "sass-spec/spec/libsass/rel.hrx", except one failing unit calculation.
