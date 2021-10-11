@@ -7,6 +7,7 @@ macro_rules! check_parse {
     }};
 }
 
+pub(crate) mod css;
 mod error;
 pub mod formalargs;
 mod imports;
@@ -30,8 +31,7 @@ use self::util::{
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
-use crate::sass::{FormalArgs, Item, Name, Value};
-use crate::selectors::Selectors;
+use crate::sass::{FormalArgs, Item, Name, Selectors, Value};
 use crate::value::ListSeparator;
 #[cfg(test)]
 use crate::value::{Numeric, Rgba, Unit};

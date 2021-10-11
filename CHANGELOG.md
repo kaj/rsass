@@ -17,9 +17,12 @@ project adheres to
   contains a `SourcePos` for where it is declared.
 * The fields of `SourcePos` is now private.
 * The `name` of a `sass::Item::AtRule` is now a SassString.
-* PR #118: A `css::Value::Literal` now contains a `CssString` rather
-  than a `String` and a `Quotes`.  Evaluating a `SassString` also
-  returns a `CssString`.
+* A `css::Value::Literal` now contains a `CssString` rather than a
+  `String` and a `Quotes`.  Evaluating a `SassString` also returns a
+  `CssString` (PR #118).
+* The selector types are split from one `selector` module to the `css`
+  and `sass` modules.  Anything that used `selector` types should now
+  use either `css` or `sass` types (PR #123).
 
 ### Improvements
 
@@ -31,6 +34,9 @@ project adheres to
 * Fixed #116: The `sass:map.merge` function was buggy.
 * Fixed #119: `saturate(200%)` is allowed (the argument is not limited
   to 0..100%).
+* `sass:selector` functions `append`, `nest`, and `parse` are closer
+  to correct (PR #123).
+* Css strings and selectors can now be parsed directly (PR #123).
 * Fixed reformatting of to-much-indented comments.
 * Unicode Private-use characters are escaped when printed.
 * Updated `nom` to 7.0 and `nom-locate` to 4.0.

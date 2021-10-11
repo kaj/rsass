@@ -130,10 +130,10 @@ impl CssString {
     }
 }
 
-impl From<String> for CssString {
-    fn from(value: String) -> CssString {
+impl<S: Into<String>> From<S> for CssString {
+    fn from(value: S) -> CssString {
         CssString {
-            value,
+            value: value.into(),
             quotes: Quotes::None,
         }
     }

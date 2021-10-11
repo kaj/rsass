@@ -16,6 +16,7 @@ mod functions;
 mod item;
 mod mixin;
 mod name;
+mod selectors;
 mod string;
 mod value;
 
@@ -25,5 +26,6 @@ pub use self::functions::{get_global_module, Function};
 pub use self::item::{Expose, Item, UseAs};
 pub use self::mixin::Mixin;
 pub use self::name::Name;
+pub use self::selectors::{Selector, SelectorPart, Selectors};
 pub use self::string::{SassString, StringPart};
 pub use self::value::Value;

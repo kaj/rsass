@@ -1,48 +1,36 @@
-use super::{get_va_list, Error, FunctionMap};
-use crate::css::Value;
-use crate::parser::input_span;
-use crate::parser::selectors::{selector, selector_part, selectors};
-use crate::selectors::{Selector, SelectorPart, Selectors};
-use crate::value::ListSeparator;
-use crate::{ParseError, Scope};
+use super::{check, get_checked, Error, FunctionMap};
+use crate::css::{BadSelector, Selectors, Value};
+use crate::sass::Name;
+use crate::Scope;
+use std::convert::{TryFrom, TryInto};
 
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:selector");
     // TODO: is_superselector
     def_va!(f, append(selectors), |s| {
-        Ok(get_va_list(s, name!(selectors))?
+        get_selectors(s, name!(selectors))?
             .into_iter()
-            .map(parse_selectors)
-            .try_fold(Selectors::root(), |base, ext| {
-                ext.and_then(|ext| {
-                    Ok(Selectors::new(
-                        base.s
-                            .into_iter()
-                            .flat_map(|b| {
-                                ext.s.iter().map(move |e| {
-                                    parse_selector(&format!("{}{}", b, e))
-                                })
-                            })
-                            .collect::<Result<_, _>>()?,
-                    ))
-                })
-            })?
-            .to_value())
+            .try_fold(Selectors::root(), |base, ext| base.append(ext))
+            .map(Into::into)
     });
     // TODO: extend
     def_va!(f, nest(selectors), |s| {
-        let v = get_va_list(s, name!(selectors))?;
-        Ok(v.into_iter()
-            .map(parse_selectors)
-            .try_fold(Selectors::root(), |b, e| e.map(|e| e.inside(&b)))?
-            .to_string()
-            .into())
+        let mut v = get_selectors(s, name!(selectors))?.into_iter();
+        let first = v.next().unwrap().css_ok()?;
+        Ok(v.fold(first, |b, e| e.inside(&b)).into())
     });
     def!(f, parse(selector), |s| {
-        Ok(parse_selectors(s.get("selector")?)?.to_value())
+        Ok(get_checked(s, name!(selector), parse_selectors_x)?.into())
     });
     // TODO: replace, unify, simple_selectors
     f
+}
+
+fn get_selectors(s: &Scope, name: Name) -> Result<Vec<Selectors>, Error> {
+    Ok(get_checked(s, name, check::va_list_nonempty)?
+        .into_iter()
+        .map(|v| v.try_into())
+        .collect::<Result<_, BadSelector>>()?)
 }
 
 pub fn expose(m: &Scope, global: &mut FunctionMap) {
@@ -61,98 +49,8 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn parse_selectors(v: Value) -> Result<Selectors, Error> {
-    match v {
-        Value::List(v, s, _) => {
-            if s != Some(ListSeparator::Space) {
-                let v =
-                    v.iter().map(check_selector).collect::<Result<_, _>>()?;
-                Ok(Selectors::new(v))
-            } else {
-                let (mut outer, last) = v.iter().fold(
-                    Result::<_, Error>::Ok((vec![], vec![])),
-                    |a, v: &Value| {
-                        let (mut outer, mut a) = a?;
-                        if let Ok(ref mut s) = check_selector(v) {
-                            push_descendant(&mut a, s)
-                        } else {
-                            let mut s = parse_selectors(v.clone())?;
-                            if let Some(f) = s.s.first_mut() {
-                                push_descendant(&mut a, f);
-                                std::mem::swap(&mut a, &mut f.0);
-                            }
-                            if let Some(last) = s.s.pop() {
-                                a = last.0;
-                            }
-                            outer.extend(s.s);
-                        }
-                        Ok((outer, a))
-                    },
-                )?;
-                outer.push(Selector(last));
-                Ok(Selectors::new(outer))
-            }
-        }
-        Value::Literal(s) => {
-            if s.value().is_empty() {
-                Ok(Selectors::root())
-            } else {
-                let span = input_span(s.value().as_bytes());
-                Ok(ParseError::check(selectors(span))?)
-            }
-        }
-        v => Err(bad_selector(&v)),
-    }
-}
-
-fn push_descendant(to: &mut Vec<SelectorPart>, from: &mut Selector) {
-    if !to.is_empty() {
-        to.push(SelectorPart::Descendant)
-    }
-    to.append(&mut from.0);
-}
-
-fn check_selector(v: &Value) -> Result<Selector, Error> {
-    match v {
-        Value::List(v, _, _) => Ok(Selector(v.iter().fold(
-            Result::<_, Error>::Ok(vec![]),
-            |a, v| {
-                let mut a = a?;
-                if !a.is_empty() {
-                    a.push(SelectorPart::Descendant)
-                }
-                a.push(check_selector_part(v)?);
-                Ok(a)
-            },
-        )?)),
-        Value::Literal(s) => {
-            if s.value().is_empty() {
-                Ok(Selector::root())
-            } else {
-                let span = input_span(s.value().as_bytes());
-                Ok(ParseError::check(selector(span))?)
-            }
-        }
-        v => Err(bad_selector(v)),
-    }
-}
-fn check_selector_part(v: &Value) -> Result<SelectorPart, Error> {
-    match v {
-        Value::Literal(s) => Ok(ParseError::check(selector_part(
-            input_span(s.value().as_bytes()),
-        ))?),
-        v => Err(bad_selector(v)),
-    }
-}
-
-fn parse_selector(s: &str) -> Result<Selector, Error> {
-    Ok(ParseError::check(selector(input_span(s.as_bytes())))?)
-}
-
-fn bad_selector(v: &Value) -> Error {
-    Error::bad_value(
-        "a valid selector: it must be a string,\
-         \na list of strings, or a list of lists of strings",
-        v,
-    )
+fn parse_selectors_x(v: Value) -> Result<Selectors, String> {
+    Selectors::try_from(v)
+        .and_then(|s| s.css_ok())
+        .map_err(|e| e.to_string())
 }

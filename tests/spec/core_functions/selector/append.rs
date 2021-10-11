@@ -51,7 +51,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn leading_combinator() {
         assert_eq!(
             runner().err("a {b: selector-append(\".c\", \"> .d\")}\n"),
@@ -77,7 +76,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn parent() {
         assert_eq!(
             runner().err("a {b: selector-append(\".c\", \"&\")}\n"),
@@ -95,7 +93,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn too_few_args() {
         assert_eq!(
             runner().err("a {b: selector-append()}\n"),
@@ -121,7 +118,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn universal() {
         assert_eq!(
             runner().err("a {b: selector-append(\".c\", \"*\")}\n"),

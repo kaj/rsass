@@ -81,8 +81,7 @@ pub fn create_module() -> Scope {
     );
     def!(f, global_variable_exists(name, module = b"null"), |s| {
         let name = get_string(s, "name")?;
-        let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module, true)?;
+        let module = get_module_arg(s, true)?;
         Ok(module.get_global_or_none(&name.into()).is_some().into())
     });
     def!(f, inspect(value), |s| {
@@ -104,18 +103,15 @@ pub fn create_module() -> Scope {
     });
     def!(f, mixin_exists(name, module = b"null"), |s| {
         let name = get_string(s, "name")?.into();
-        let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module, true)?;
+        let module = get_module_arg(s, true)?;
         Ok(module.get_mixin(&name).is_some().into())
     });
     def!(f, module_functions(module), |s| {
-        let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module, false)?;
+        let module = get_module_arg(s, false)?;
         Ok(module.functions_map())
     });
     def!(f, module_variables(module), |s| {
-        let module = get_opt_check(s, name!(module), check::string)?;
-        let module = get_scope(s, module, false)?;
+        let module = get_module_arg(s, false)?;
         Ok(module.variables_map())
     });
     def!(f, type_of(value), |s| {
@@ -162,6 +158,11 @@ static IMPLEMENTED_FEATURES: &[&str] = &[
     // "custom-property",
 ];
 
+fn get_module_arg(s: &Scope, use_the: bool) -> Result<ScopeRef, Error> {
+    let module = get_opt_check(s, name!(module), check::string)?;
+    get_scope(s, module, use_the)
+}
+
 fn call_scope(s: &Scope) -> ScopeRef {
     s.get_module("%%CALLING_SCOPE%%").unwrap()
 }
@@ -173,15 +174,13 @@ fn get_scope(
     the: bool,
 ) -> Result<ScopeRef, Error> {
     if let Some(module) = module {
-        if let Some(module) = call_scope(s).get_module(module.value()) {
-            Ok(module)
-        } else {
-            Err(Error::error(format!(
+        call_scope(s).get_module(module.value()).ok_or_else(|| {
+            Error::error(format!(
                 "There is no module with {}namespace {}.",
                 if the { "the " } else { "" },
                 module
-            )))
-        }
+            ))
+        })
     } else {
         Ok(call_scope(s))
     }
@@ -193,8 +192,7 @@ fn get_function(
     name: &str,
 ) -> Result<Option<Function>, Error> {
     if let Some(module) = module {
-        let module = get_scope(s, Some(module), true)?;
-        module.get_function(&name.into())
+        get_scope(s, Some(module), true)?.get_function(&name.into())
     } else {
         let name = name.into();
         Ok(call_scope(s)

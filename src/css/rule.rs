@@ -1,5 +1,4 @@
-use super::{CssString, Value};
-use crate::selectors::Selectors;
+use super::{CssString, Selectors, Value};
 
 /// A css rule.
 ///

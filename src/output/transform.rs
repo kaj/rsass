@@ -1,5 +1,5 @@
 use super::cssbuf::{CssBuf, CssHead};
-use crate::css::{BodyItem, Rule};
+use crate::css::{BodyItem, Rule, Selectors};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::parser::parse_imported_scss_file;
@@ -7,7 +7,6 @@ use crate::sass::{
     self, get_global_module, Expose, FormalArgs, Function, Item, Mixin, Name,
     UseAs,
 };
-use crate::selectors::Selectors;
 use crate::value::ValueRange;
 use crate::ScopeRef;
 use std::io::Write;
@@ -232,7 +231,7 @@ fn handle_item(
             if let Some(ref body) = *body {
                 buf.add_one(" {", "{");
                 let selectors = scope.get_selectors().clone();
-                let has_selectors = selectors != Selectors::root();
+                let has_selectors = !selectors.is_root();
                 let mut rule = Rule::new(selectors);
                 let mut sub = CssBuf::new_below(buf);
                 handle_body(

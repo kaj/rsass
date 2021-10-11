@@ -78,7 +78,7 @@ fn function_with_args() {
                 } else if a.unit.is_none() {
                     Ok(Numeric::new(avg(a.value, b.value), b.unit).into())
                 } else {
-                    Err(Error::error("Incopatible args"))
+                    Err(Error::error("Incopatible args."))
                 }
             }),
         ),
