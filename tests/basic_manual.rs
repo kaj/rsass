@@ -384,6 +384,33 @@ fn issue_116() {
     );
 }
 
+/// https://github.com/kaj/rsass/issues/122
+/// A division by zero that causes a panic
+mod issue_122 {
+    use super::check_value;
+    // Note: The important thing here is not to panic, the exact
+    // output may be changed in the future, maybe to report an error.
+    #[test]
+    fn reduced() {
+        check_value("(#111 + #aaa)/0", "#bbbbbb/0")
+    }
+    #[test]
+    fn reported() {
+        check_value(
+            "54A444/0+-4444M4#444/-4444/0+-4444M4#444+44/0+444/0+.44444O#444+44/0+4/46",
+            "InfinityA444-4444M4 black/0-4444M4 #444InfinityInfinity0.44444O #444Infinity0.0869565217",
+        )
+    }
+    /// https://github.com/kaj/rsass/issues/121 is very similar.
+    #[test]
+    fn issue_121() {
+        check_value(
+            "44A-#444/0+-\0\0\0+44/0+444&",
+            "44A-#444/0-\u{1}\u{0}\u{0}\u{0}Infinity444",
+        )
+    }
+}
+
 /// Test auto-converted from "sass-spec/spec/libsass/rel.hrx", except one failing unit calculation.
 #[test]
 fn rel() {

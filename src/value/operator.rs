@@ -1,5 +1,6 @@
 use crate::css::{CssString, Value};
 use crate::value::{ListSeparator, Numeric, Quotes};
+use num_traits::Zero;
 use std::fmt;
 
 /// An operator that can be used in a sass value.
@@ -140,7 +141,7 @@ impl Operator {
             Operator::Div if a.is_calculated() || b.is_calculated() => {
                 match (a, b) {
                     (Value::Color(a, _), Value::Numeric(b, _))
-                        if b.is_no_unit() =>
+                        if b.is_no_unit() && !b.value.is_zero() =>
                     {
                         let bn = b.as_ratio().ok()?;
                         Some((a.to_rgba().as_ref() / bn).into())
