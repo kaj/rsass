@@ -322,6 +322,29 @@ fn named() {
          \n}\n"
     );
 }
+mod unitless_weight {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn firstwards() {
+        assert_eq!(
+            runner().ok("a {b: mix(#91e16f, #0144bf, 92)}\n"),
+            "a {\
+         \n  b: #85d475;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn lastwards() {
+        assert_eq!(
+            runner().ok("a {b: mix(#91e16f, #0144bf, 43)}\n"),
+            "a {\
+         \n  b: #3f889d;\
+         \n}\n"
+        );
+    }
+}
 mod unweighted {
     #[allow(unused)]
     use super::runner;

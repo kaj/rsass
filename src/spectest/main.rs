@@ -355,6 +355,14 @@ fn fn_name_os(name: &OsStr) -> String {
     fn_name(&name.to_string_lossy())
 }
 fn fn_name(name: &str) -> String {
+    use lazy_static::lazy_static;
+    lazy_static! {
+        static ref RUST_WORDS: WordSet<20> = WordSet::new([
+            "as", "else", "false", "final", "for", "if", "in", "loop",
+            "macro", "match", "mod", "override", "return", "static", "super",
+            "true", "type", "use", "where", "while",
+        ]);
+    };
     let t = deunicode(name)
         .to_lowercase()
         .replace(".hrx", "")
@@ -363,30 +371,27 @@ fn fn_name(name: &str) -> String {
         .replace('.', "_");
     if t.chars().next().unwrap_or('0').is_numeric() {
         format!("t{}", t)
-    } else if t == "as"
-        || t == "else"
-        || t == "false"
-        || t == "final"
-        || t == "for"
-        || t == "in"
-        || t == "if"
-        || t == "loop"
-        || t == "macro"
-        || t == "match"
-        || t == "mod"
-        || t == "override"
-        || t == "return"
-        || t == "static"
-        || t == "super"
-        || t == "true"
-        || t == "type"
-        || t == "use"
-        || t == "while"
-    {
+    } else if RUST_WORDS.contains(&t) {
         format!("test_{}", t)
     } else {
         t
     }
+}
+
+struct WordSet<const N: usize> {
+    words: [&'static str; N],
+}
+impl<const N: usize> WordSet<N> {
+    fn new(words: [&'static str; N]) -> Self {
+        assert!(is_sorted(&words));
+        Self { words }
+    }
+    fn contains(&self, word: &str) -> bool {
+        self.words.binary_search(&word).is_ok()
+    }
+}
+fn is_sorted(data: &[&str]) -> bool {
+    data.windows(2).all(|w| w[0] < w[1])
 }
 
 fn load_test_fixture_dir(

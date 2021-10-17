@@ -131,6 +131,4 @@ mod variable_scoping;
 
 mod variables_in_media;
 
-mod warn_directive_nested;
-
 mod wrapped_selector_whitespace;

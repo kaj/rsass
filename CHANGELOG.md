@@ -41,7 +41,7 @@ project adheres to
 * Fixed panics in some color arithmetic (Issue #121, #122, PR #125).
 * Unicode Private-use characters are escaped when printed.
 * Updated `nom` to 7.0 and `nom-locate` to 4.0.
-* Update sass-spec test suite to 2021-09-20.
+* Update sass-spec test suite to 2021-10-13.
 
 Thanks to @paolobarbolini, @connorskees and @charlesxsh for reporting
 issues.

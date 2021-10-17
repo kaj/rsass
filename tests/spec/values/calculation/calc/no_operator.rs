@@ -445,6 +445,59 @@ mod variable {
          \n}\n"
         );
     }
+    mod not_parsed_as_interpolation {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // wrong result
+        fn followed_by_parenthesized_interp() {
+            assert_eq!(
+                runner().ok("$a: 1;\
+             \nb {\
+             \n  c: calc($a);\
+             \n  $_: (\"#{\'\'}\");\
+             \n}\n"),
+                "b {\
+         \n  c: 1;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn in_comment() {
+            assert_eq!(
+        runner().ok(
+            "$a: 1;\
+             \nb {\
+             \n  // A naive parser might check for interpolation in a comment.\
+             \n  c: calc($a /* #{\'\'} */);\
+             \n}\n"
+        ),
+        "b {\
+         \n  c: 1;\
+         \n}\n"
+    );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn parentheses_in_string() {
+            assert_eq!(
+        runner().ok(
+            "@function a($arg) {@return 1}\n\
+             \n$b: 2;\
+             \nc {\
+             \n  // A naive parser might check for closing parentheses regardless of string\
+             \n  // context when looking for interpolation in a calc.\
+             \n  d: calc($b + a(\")#{\'\'}\"));\
+             \n}\n"
+        ),
+        "c {\
+         \n  d: 3;\
+         \n}\n"
+    );
+        }
+    }
     mod number {
         #[allow(unused)]
         use super::runner;

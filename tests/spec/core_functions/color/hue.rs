@@ -8,7 +8,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn above_max() {
     assert_eq!(
-        runner().ok("a {b: hue(hsl(540, 100%, 100%))}\n"),
+        runner().ok("a {b: hue(hsl(540, 50%, 50%))}\n"),
         "a {\
          \n  b: 180deg;\
          \n}\n"
@@ -66,7 +66,7 @@ mod error {
 #[test]
 fn fraction() {
     assert_eq!(
-        runner().ok("a {b: hue(hsl(0.5, 100%, 100%))}\n"),
+        runner().ok("a {b: hue(hsl(0.5, 50%, 50%))}\n"),
         "a {\
          \n  b: 0.5deg;\
          \n}\n"
@@ -75,7 +75,7 @@ fn fraction() {
 #[test]
 fn max() {
     assert_eq!(
-        runner().ok("a {b: hue(hsl(359, 100%, 100%))}\n"),
+        runner().ok("a {b: hue(hsl(359, 50%, 50%))}\n"),
         "a {\
          \n  b: 359deg;\
          \n}\n"
@@ -84,7 +84,7 @@ fn max() {
 #[test]
 fn middle() {
     assert_eq!(
-        runner().ok("a {b: hue(hsl(123, 100%, 100%))}\n"),
+        runner().ok("a {b: hue(hsl(123, 50%, 50%))}\n"),
         "a {\
          \n  b: 123deg;\
          \n}\n"
@@ -93,7 +93,7 @@ fn middle() {
 #[test]
 fn min() {
     assert_eq!(
-        runner().ok("a {b: hue(hsl(0, 100%, 100%))}\n"),
+        runner().ok("a {b: hue(hsl(0, 50%, 50%))}\n"),
         "a {\
          \n  b: 0deg;\
          \n}\n"
@@ -102,7 +102,7 @@ fn min() {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: hue($color: hsl(234, 100%, 100%))}\n"),
+        runner().ok("a {b: hue($color: hsl(234, 50%, 50%))}\n"),
         "a {\
          \n  b: 234deg;\
          \n}\n"
@@ -111,7 +111,7 @@ fn named() {
 #[test]
 fn negative() {
     assert_eq!(
-        runner().ok("a {b: hue(hsl(-180, 100%, 100%))}\n"),
+        runner().ok("a {b: hue(hsl(-180, 50%, 50%))}\n"),
         "a {\
          \n  b: 180deg;\
          \n}\n"

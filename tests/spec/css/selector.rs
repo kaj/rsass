@@ -375,6 +375,24 @@ mod placeholder {
     );
             }
         }
+        mod test_where {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn nesting() {
+                assert_eq!(
+                    runner().ok("a {\
+             \n  :where(&) {\
+             \n    b: c;\
+             \n  }\
+             \n}\n"),
+                    ":where(a) {\
+         \n  b: c;\
+         \n}\n"
+                );
+            }
+        }
     }
 }
 mod pseudoselector {

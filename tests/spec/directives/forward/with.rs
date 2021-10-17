@@ -13,6 +13,9 @@ fn runner() -> crate::TestRunner {
         .mock_file("default/_upstream.scss", "$a: original !default;\nb {c: $a}\n")
         .mock_file("doesnt_run_default/_midstream.scss", "@forward \"upstream\" with ($a: configured);\n")
         .mock_file("doesnt_run_default/_upstream.scss", "// This will throw an error if it's evaluated, but it shouldn't be because `$a`\n// already has a value.\n$a: 1px + 1em !default;\nb {c: $a}\n")
+        .mock_file("facade_contains_multiple_configured_forwards/_left.scss", "$a: original a !default;\na {a: $a}\n")
+        .mock_file("facade_contains_multiple_configured_forwards/_midstream.scss", "@forward \"left\" with ($a: configured a !default);\n@forward \"right\" with ($b: configured b !default);\n\n$c: original c !default;\nc {c: $c}\n")
+        .mock_file("facade_contains_multiple_configured_forwards/_right.scss", "$b: original b !default;\nb {b: $b}\n")
         .mock_file("from_variable/_midstream.scss", "$a: configured;\n@forward \"upstream\" with ($a: $a);\n")
         .mock_file("from_variable/_upstream.scss", "$a: original a !default;\nb {c: $a}\n")
         .mock_file("multi_load/forward/_midstream.scss", "@forward \"upstream\";\n")
@@ -141,6 +144,28 @@ fn doesnt_run_default() {
         runner.ok("@use \"midstream\";\n"),
         "b {\
          \n  c: configured;\
+         \n}\n"
+    );
+}
+#[test]
+fn facade_contains_multiple_configured_forwards() {
+    let runner =
+        runner().with_cwd("facade_contains_multiple_configured_forwards");
+    assert_eq!(
+        runner.ok("// Regression test for sass/dart-sass/#1343.\
+             \n@use \"midstream\" with (\
+             \n  $a: twice-configured a,\
+             \n  $b: twice-configured b,\
+             \n  $c: configured c,\
+             \n);\n"),
+        "a {\
+         \n  a: twice-configured a;\
+         \n}\
+         \nb {\
+         \n  b: twice-configured b;\
+         \n}\
+         \nc {\
+         \n  c: configured c;\
          \n}\n"
     );
 }

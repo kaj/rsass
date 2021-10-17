@@ -42,5 +42,3 @@ fn unicode_variables() {
          \n}\n"
     );
 }
-
-mod warn_directive;

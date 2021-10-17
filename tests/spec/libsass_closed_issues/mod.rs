@@ -147,8 +147,6 @@ mod issue_1208;
 
 mod issue_1210;
 
-mod issue_1214;
-
 mod issue_1215;
 
 mod issue_1216;
@@ -181,8 +179,6 @@ mod issue_1243;
 mod issue_1248;
 
 mod issue_1251;
-
-mod issue_1253;
 
 mod issue_1255;
 
@@ -829,8 +825,6 @@ mod issue_2625;
 
 mod issue_2633;
 
-mod issue_267;
-
 mod issue_2697;
 
 mod issue_274;
@@ -888,8 +882,6 @@ mod issue_453;
 mod issue_456;
 
 mod issue_469;
-
-mod issue_472;
 
 mod issue_478;
 
@@ -1276,8 +1268,6 @@ mod issue_942;
 mod issue_943;
 
 mod issue_945;
-
-mod issue_947;
 
 mod issue_948;
 

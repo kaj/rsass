@@ -11,11 +11,7 @@ mod fn_debug;
 
 mod fn_error;
 
-mod fn_saturate_out_of_range;
-
 mod fn_varargs;
-
-mod fn_warn;
 
 mod import;
 

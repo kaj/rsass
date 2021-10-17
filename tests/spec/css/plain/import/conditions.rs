@@ -76,6 +76,13 @@ mod supports {
         );
     }
     #[test]
+    fn condition_function() {
+        assert_eq!(
+            runner().ok("@import \"a.css\" supports(a(b));\n"),
+            "@import \"a.css\" supports(a(b));\n"
+        );
+    }
+    #[test]
     fn condition_negation() {
         assert_eq!(
             runner().ok("@import \"a.css\" supports(not (a: b));"),
