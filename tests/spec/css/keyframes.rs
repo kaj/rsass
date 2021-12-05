@@ -167,6 +167,73 @@ mod selector {
          \n}\n"
             );
         }
+        mod scientific {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn double() {
+                assert_eq!(
+                    runner().ok("@keyframes a {\
+             \n  1.5e2% {\
+             \n    c: d;\
+             \n  }\
+             \n}\n"),
+                    "@keyframes a {\
+         \n  1.5e2% {\
+         \n    c: d;\
+         \n  }\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn int() {
+                assert_eq!(
+                    runner().ok("@keyframes a {\
+             \n  1e2% {\
+             \n    c: d;\
+             \n  }\
+             \n}\n"),
+                    "@keyframes a {\
+         \n  1e2% {\
+         \n    c: d;\
+         \n  }\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn negative_exponent() {
+                assert_eq!(
+                    runner().ok("@keyframes a {\
+             \n  130E-1% {\
+             \n    c: d;\
+             \n  }\
+             \n}\n"),
+                    "@keyframes a {\
+         \n  130e-1% {\
+         \n    c: d;\
+         \n  }\
+         \n}\n"
+                );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn positive_exponent() {
+                assert_eq!(
+                    runner().ok("@keyframes a {\
+             \n  13E+1% {\
+             \n    c: d;\
+             \n  }\
+             \n}\n"),
+                    "@keyframes a {\
+         \n  13e+1% {\
+         \n    c: d;\
+         \n  }\
+         \n}\n"
+                );
+            }
+        }
     }
     #[test]
     fn to() {

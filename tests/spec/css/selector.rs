@@ -37,6 +37,15 @@ mod attribute {
          \n}\n"
     );
     }
+    #[test]
+    fn empty_namespace() {
+        assert_eq!(
+            runner().ok("[|a] {a: b;}\n"),
+            "[|a] {\
+         \n  a: b;\
+         \n}\n"
+        );
+    }
     mod modifier {
         #[allow(unused)]
         use super::runner;
