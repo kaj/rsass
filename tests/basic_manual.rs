@@ -411,6 +411,15 @@ mod issue_122 {
     }
 }
 
+/// Overflow in gcd for subtraction.
+#[test]
+fn issue_120() {
+    check_value(
+        "4444#4444-.4555555555555555555555555",
+        "4444 rgba(68, 68, 68, 0.2666666667)",
+    )
+}
+
 /// Test auto-converted from "sass-spec/spec/libsass/rel.hrx", except one failing unit calculation.
 #[test]
 fn rel() {
