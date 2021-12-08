@@ -123,11 +123,10 @@ fn cap(n: Rational, max: &Rational) -> Rational {
 }
 
 fn limit_denom(v: Rational) -> Rational {
-    let denom: &i64 = v.denom();
-    let t = i64::BITS - denom.leading_zeros();
-    if t > 48 {
-        let t = t - 46;
-        Rational::new(v.numer() >> t, v.denom() >> t)
+    let spare_bits = v.denom().leading_zeros();
+    if spare_bits < 10 {
+        let shift = 12 - spare_bits;
+        Rational::new(v.numer() >> shift, v.denom() >> shift)
     } else {
         v
     }
