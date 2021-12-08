@@ -2,7 +2,7 @@ use super::{
     check, expected_to, get_checked, get_numeric, get_opt_check, get_va_list,
     is_not, CheckedArg, Error, FunctionMap, Scope,
 };
-use crate::css::{CssString, Value};
+use crate::css::{CallArgs, CssString, Value};
 use crate::output::Format;
 use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Rational, Unit, UnitSet};
@@ -274,17 +274,52 @@ fn deg_value(rad: f64) -> Value {
 }
 
 fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
-    find_extreme_inner(v, pref)?
-        .ok_or_else(|| Error::error("At least one argument must be passed."))
-        .map(Into::into)
+    let as_call = || {
+        Value::Call(
+            if pref == Ordering::Greater {
+                "max"
+            } else {
+                "min"
+            }
+            .into(),
+            CallArgs::from_list(v.to_vec()),
+        )
+    };
+    match find_extreme_inner(v, pref) {
+        Ok(Some(v)) => Ok(v.into()),
+        Ok(None) => {
+            Err(Error::error("At least one argument must be passed."))
+        }
+        Err(ExtremeError::NonNumeric(v)) => {
+            if v.type_name() == "unknown" {
+                Ok(as_call())
+            } else {
+                Err(Error::error(is_not(&v, "a number")))
+            }
+        }
+        Err(ExtremeError::Incompatible(a, b)) => {
+            if a.unit.dimension().is_empty() || b.unit.dimension().is_empty()
+            {
+                Ok(as_call())
+            } else {
+                Err(Error::error(format!(
+                    "{} and {} have incompatible units.",
+                    a.format(Format::introspect()),
+                    b.format(Format::introspect()),
+                )))
+            }
+        }
+        Err(e) => Ok(as_call()),
+    }
 }
 
 fn find_extreme_inner(
     v: &[Value],
     pref: Ordering,
-) -> Result<Option<Numeric>, Error> {
+) -> Result<Option<Numeric>, ExtremeError> {
     if let Some((first, rest)) = v.split_first() {
-        let va = check::numeric(first.clone()).map_err(Error::error)?;
+        let va = check::numeric(first.clone())
+            .map_err(|_| ExtremeError::NonNumeric(first.clone()))?;
         if let Some(vb) = find_extreme_inner(rest, pref)? {
             if let Some(o) = va.partial_cmp(&vb) {
                 Ok(Some(if o == pref { va } else { vb }))
@@ -292,18 +327,10 @@ fn find_extreme_inner(
                 if let Some(o) = va.value.partial_cmp(&vb.value) {
                     Ok(Some(if o == pref { va } else { vb }))
                 } else {
-                    Err(Error::error(format!(
-                        "{} and {} could not be compared.",
-                        va.format(Format::introspect()),
-                        vb.format(Format::introspect()),
-                    )))
+                    Err(ExtremeError::Incomparable(va, vb))
                 }
             } else {
-                Err(Error::error(format!(
-                    "{} and {} have incompatible units.",
-                    va.format(Format::introspect()),
-                    vb.format(Format::introspect()),
-                )))
+                Err(ExtremeError::Incompatible(va, vb))
             }
         } else {
             Ok(Some(va))
@@ -311,6 +338,13 @@ fn find_extreme_inner(
     } else {
         Ok(None)
     }
+}
+
+#[derive(Debug)]
+enum ExtremeError {
+    NonNumeric(Value),
+    Incompatible(Numeric, Numeric),
+    Incomparable(Numeric, Numeric),
 }
 
 fn intrand(lim: i64) -> i64 {

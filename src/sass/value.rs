@@ -177,7 +177,7 @@ impl Value {
             Value::Null => Ok(css::Value::Null),
             Value::True => Ok(css::Value::True),
             Value::False => Ok(css::Value::False),
-            Value::BinOp(ref a, _, ref op, _, ref b) => {
+            Value::BinOp(ref a, s1, ref op, s2, ref b) => {
                 if *op == Operator::And {
                     let a = a.do_evaluate(scope.clone(), true)?;
                     if a.is_true() {
@@ -212,9 +212,11 @@ impl Value {
                     Ok(op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
                         css::Value::BinOp(
                             Box::new(a),
-                            false,
+                            s1 && op != &Operator::Div
+                                && op != &Operator::Minus,
                             op.clone(),
-                            false,
+                            s2 && op != &Operator::Div
+                                && op != &Operator::Minus,
                             Box::new(b),
                         )
                     }))

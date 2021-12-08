@@ -3,7 +3,7 @@ use super::{input_to_str, input_to_string, PResult, Span};
 use crate::sass::{SassString, StringPart};
 use crate::value::Quotes;
 use nom::branch::alt;
-use nom::bytes::complete::{is_a, is_not, tag, tag_no_case, take};
+use nom::bytes::complete::{is_a, is_not, tag, take};
 use nom::character::complete::{alphanumeric1, one_of};
 use nom::combinator::{
     map, map_opt, map_res, not, opt, peek, recognize, value, verify,
@@ -126,19 +126,6 @@ pub fn special_function_misc(input: Span) -> PResult<SassString> {
     Ok((input, args))
 }
 
-pub fn special_function_minmax(input: Span) -> PResult<SassString> {
-    let (input, start) = recognize(terminated(
-        alt((tag_no_case("max"), tag_no_case("min"))),
-        tag("("),
-    ))(input)?;
-    let (input, mut args) = special_args_minmax(input)?;
-    let (input, end) = tag(")")(input)?;
-
-    args.prepend(&from_utf8(start.fragment()).unwrap().to_lowercase());
-    args.append_str(from_utf8(end.fragment()).unwrap());
-    Ok((input, args))
-}
-
 fn special_args(input: Span) -> PResult<SassString> {
     let (input, parts) = special_arg_parts(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
@@ -164,59 +151,6 @@ pub fn special_arg_parts(input: Span) -> PResult<Vec<StringPart>> {
         }),
     )))(input)?;
     Ok((input, parts.into_iter().flatten().collect()))
-}
-
-fn special_args_minmax(input: Span) -> PResult<SassString> {
-    let (input, parts) = special_arg_parts_minmax(input)?;
-    Ok((input, SassString::new(parts, Quotes::None)))
-}
-
-fn special_arg_parts_minmax(input: Span) -> PResult<Vec<StringPart>> {
-    let (input, parts) = many1(alt((
-        map(special_function_misc, |s| s.into_parts()),
-        map(special_function_minmax, |s| s.into_parts()),
-        map(
-            terminated(
-                map_res(
-                    is_not("\r\n\t >$%\"'\\#+*/()[]{}:;,=!&@"),
-                    input_to_str,
-                ),
-                peek(is_not("(")),
-            ),
-            |s| vec![StringPart::from(s)],
-        ),
-        map(string_part_interpolation, |part| vec![part]),
-        map(hash_no_interpolation, |s| vec![StringPart::from(s)]),
-        map(dq_parts, |mut v| {
-            v.insert(0, StringPart::from("\""));
-            v.push(StringPart::from("\""));
-            v
-        }),
-        map(delimited(tag("("), special_arg_parts, tag(")")), |mut v| {
-            v.insert(0, StringPart::from("("));
-            v.push(StringPart::from(")"));
-            v
-        }),
-        map(map_res(is_a("0123456789,.+-*/ "), input_to_str), |s| {
-            vec![StringPart::from(s)]
-        }),
-        // '% is allowed as percentage unit, but not as modulo operator
-        map(
-            terminated(map_res(is_a("% "), input_to_str), peek(is_a(",)"))),
-            |s| vec![StringPart::from(s)],
-        ),
-    )))(input)?;
-    let parts = parts.into_iter().flatten().collect::<Vec<_>>();
-    // Disallow trailing comma
-    if let Some(StringPart::Raw(ref s)) = parts.last() {
-        if s.trim().ends_with(',') {
-            return Err(nom::Err::Error(nom::error::Error::new(
-                input,
-                nom::error::ErrorKind::SeparatedList,
-            )));
-        }
-    }
-    Ok((input, parts))
 }
 
 pub fn special_url(input: Span) -> PResult<SassString> {

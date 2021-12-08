@@ -10,7 +10,7 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn complex_unit() {
         assert_eq!(
             runner().err("a {b: min(1px*1px, 2%*2%)}\n"),
@@ -27,7 +27,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn first() {
             assert_eq!(
                 runner().err("a {b: min(1s, 2px)}\n"),
@@ -41,7 +41,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn second() {
             assert_eq!(
                 runner().err("a {b: min(1px, 2s)}\n"),
@@ -55,7 +55,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn third() {
             assert_eq!(
                 runner().err("a {b: min(1px, 2px, 3s)}\n"),
@@ -74,7 +74,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
         fn invalid_arg() {
             assert_eq!(
                 runner().err("a {b: min(c)}\n"),
@@ -100,7 +99,7 @@ mod error {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn unitless_after_potentially_incompatible() {
         assert_eq!(
             runner().err("a {b: min(1c, 2d, 3)}\n"),
@@ -118,7 +117,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn in_calc() {
             assert_eq!(
                 runner().err("a {b: min(calc(1px + 2))}\n"),
@@ -137,7 +136,6 @@ mod extra_whitespace {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn max_in_min() {
         assert_eq!(
             runner().ok("// Regression test for sass/dart-sass#1444\
@@ -148,7 +146,6 @@ mod extra_whitespace {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn number() {
         assert_eq!(
             runner().ok("a {b: min( 1px )}\n"),
@@ -167,7 +164,6 @@ mod perserved {
         use super::runner;
 
         #[test]
-        #[ignore] // unexepected error
         fn first() {
             assert_eq!(
                 runner().ok("a {b: min(1% + 1px, 2px)}\n"),
@@ -177,7 +173,6 @@ mod perserved {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn second() {
             assert_eq!(
                 runner().ok("a {b: min(1px, 1% + 2px)}\n"),
@@ -187,7 +182,6 @@ mod perserved {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn third() {
             assert_eq!(
                 runner().ok("a {b: min(1px, 2px, 1% + 3px)}\n"),
@@ -253,7 +247,6 @@ mod preserved {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn minus() {
                 assert_eq!(
                     runner().ok("a {b: min(1%, 2.5 - 0.9px)}\n"),
@@ -263,7 +256,6 @@ mod preserved {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn plus() {
                 assert_eq!(
                     runner().ok("a {b: min(1%, 2.5 + 0.9px)}\n"),
@@ -275,7 +267,6 @@ mod preserved {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn variable() {
         assert_eq!(
             runner().ok("$a: 1%;\
@@ -291,7 +282,6 @@ mod simplified {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn compatible_units() {
         assert_eq!(
             runner().ok("a {b: min(1px, 1in, 1cm)}\n"),
@@ -301,7 +291,6 @@ mod simplified {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn first() {
         assert_eq!(
             runner().ok("a {b: min(0px, 1px)}\n"),
@@ -311,7 +300,6 @@ mod simplified {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn only() {
         assert_eq!(
             runner().ok("a {b: min(1px)}\n"),
@@ -325,7 +313,6 @@ mod simplified {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn unitless_and_unit() {
             assert_eq!(
                 runner().ok("a {b: min(1px, 2.5 + 0.9px)}\n"),
@@ -336,7 +323,6 @@ mod simplified {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn second() {
         assert_eq!(
             runner().ok("a {b: min(1px, 0.5px)}\n"),
@@ -346,7 +332,6 @@ mod simplified {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn third() {
         assert_eq!(
             runner().ok("a {b: min(1px, 2.5px, 0.9px)}\n"),
@@ -356,7 +341,6 @@ mod simplified {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unitless_and_unit() {
         assert_eq!(
             runner().ok("a {b: min(1px, 2.5, 0.9px)}\n"),
@@ -366,7 +350,7 @@ mod simplified {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn unitless_between_potentially_incompatible() {
         assert_eq!(
             runner().ok("a {b: min(3d, 2, 1e)}\n"),

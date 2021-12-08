@@ -35,12 +35,15 @@ impl UnitSet {
             || self.dimension() == other.dimension()
     }
 
-    fn dimension(&self) -> Vec<(Dimension, i8)> {
+    pub(crate) fn dimension(&self) -> Vec<(Dimension, i8)> {
         use std::collections::BTreeMap;
         self.units
             .iter()
             .fold(BTreeMap::new(), |mut map, (unit, power)| {
-                *map.entry(unit.dimension()).or_insert(0) += *power;
+                let dim = unit.dimension();
+                if dim != Dimension::None {
+                    *map.entry(unit.dimension()).or_insert(0) += *power;
+                }
                 map
             })
             .into_iter()

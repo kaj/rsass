@@ -75,7 +75,9 @@ impl<'a> Display for Formatted<'a, Value> {
             Value::Call(ref name, ref arg) => {
                 write!(out, "{}({})", name, arg)
             }
-            Value::BinOp(ref a, _, Operator::Plus, _, ref b) => {
+            Value::BinOp(ref a, _, Operator::Plus, _, ref b)
+                if a.type_name() != "number" || b.type_name() != "number" =>
+            {
                 // The plus operator is also a concat operator
                 a.format(self.format).fmt(out)?;
                 b.format(self.format).fmt(out)

@@ -164,7 +164,6 @@ mod preserved {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn first() {
             assert_eq!(
                 runner().ok("a {b: clamp(1% + 1px, 2px, 3px)}\n"),
@@ -174,7 +173,6 @@ mod preserved {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn second() {
             assert_eq!(
                 runner().ok("a {b: clamp(1px, 1% + 2px, 3px)}\n"),
@@ -184,7 +182,6 @@ mod preserved {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn third() {
             assert_eq!(
                 runner().ok("a {b: clamp(1px, 2px, 1% + 3px)}\n"),

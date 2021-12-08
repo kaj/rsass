@@ -1,7 +1,7 @@
 use super::formalargs::call_args;
 use super::strings::{
     name, sass_string_dq, sass_string_ext, sass_string_sq,
-    special_function_minmax, special_function_misc, special_url,
+    special_function_misc, special_url,
 };
 use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
@@ -135,27 +135,28 @@ fn logic_expression(input: Span) -> PResult<Value> {
 
 fn sum_expression(input: Span) -> PResult<Value> {
     let (mut rest, mut v) = term_value(input)?;
-    while let Ok((nrest, (op, v2))) = alt((
-        pair(
+    while let Ok((nrest, (s1, op, s2, v2))) = alt((
+        tuple((
+            value(false, tag("")),
             alt((
                 value(Operator::Plus, tag("+")),
                 value(Operator::Minus, tag("-")),
             )),
-            preceded(opt(spacelike2), term_value),
-        ),
-        pair(
-            preceded(
-                spacelike2,
-                alt((
-                    value(Operator::Plus, tag("+")),
-                    value(Operator::Minus, terminated(tag("-"), spacelike2)),
-                )),
-            ),
-            preceded(opt(spacelike2), term_value),
-        ),
+            map(multispace0, |s: Span| !s.fragment().is_empty()),
+            term_value,
+        )),
+        tuple((
+            value(true, spacelike2),
+            alt((
+                value(Operator::Plus, tag("+")),
+                value(Operator::Minus, terminated(tag("-"), spacelike2)),
+            )),
+            alt((value(true, spacelike2), value(false, tag("")))),
+            term_value,
+        )),
     ))(rest)
     {
-        v = Value::BinOp(Box::new(v), false, op, false, Box::new(v2));
+        v = Value::BinOp(Box::new(v), s1, op, s2, Box::new(v2));
         rest = nrest;
     }
     Ok((rest, v))
@@ -412,10 +413,7 @@ pub fn unary_op(input: Span) -> PResult<Value> {
 }
 
 fn special_function(input: Span) -> PResult<Value> {
-    map(
-        alt((special_function_misc, special_function_minmax)),
-        Value::Literal,
-    )(input)
+    map(special_function_misc, Value::Literal)(input)
 }
 
 pub fn function_call(input: Span) -> PResult<Value> {
