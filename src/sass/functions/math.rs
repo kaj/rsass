@@ -308,7 +308,7 @@ fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
                 )))
             }
         }
-        Err(e) => Ok(as_call()),
+        Err(_) => Ok(as_call()),
     }
 }
 
