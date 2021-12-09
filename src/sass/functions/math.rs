@@ -1,6 +1,6 @@
 use super::{
     check, expected_to, get_checked, get_numeric, get_opt_check, get_va_list,
-    is_not, CheckedArg, Error, FunctionMap, Scope,
+    is_not, is_special, CheckedArg, Error, FunctionMap, Scope,
 };
 use crate::css::{CallArgs, CssString, Value};
 use crate::output::Format;
@@ -284,6 +284,9 @@ fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
             CallArgs::from_list(v.to_vec()),
         )
     };
+    if v.iter().any(is_special) {
+        return Ok(as_call());
+    }
     match find_extreme_inner(v, pref) {
         Ok(Some(v)) => Ok(v.into()),
         Ok(None) => {

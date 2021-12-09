@@ -1,8 +1,8 @@
 use super::{
-    check, expected_to, get_checked, get_opt_check, is_not, CheckedArg,
-    Error, FunctionMap,
+    check, expected_to, get_checked, get_opt_check, is_not, is_special,
+    CheckedArg, Error, FunctionMap,
 };
-use crate::css::{CallArgs, CssString, Value};
+use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::parser::SourcePos;
 use crate::sass::{ArgsError, FormalArgs, Name};
@@ -161,21 +161,6 @@ fn num2chan(v: &Numeric) -> Result<Rational, String> {
     } else {
         Ok(r)
     }
-}
-
-fn is_special(v: &Value) -> bool {
-    match v {
-        Value::Call(..) => true,
-        Value::Literal(s) if looks_like_call(s) => true,
-        Value::BinOp(..) => true,
-        _ => false,
-    }
-}
-
-fn looks_like_call(s: &CssString) -> bool {
-    s.quotes().is_none()
-        && s.value().contains('(')
-        && s.value().ends_with(')')
 }
 
 fn make_call(name: &str, args: Vec<Value>) -> Value {

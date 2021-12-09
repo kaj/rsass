@@ -117,7 +117,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn in_calc() {
             assert_eq!(
                 runner().err("a {b: max(calc(1px + 2))}\n"),

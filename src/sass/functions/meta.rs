@@ -1,9 +1,10 @@
 use super::{
-    check, get_checked, get_opt_check, get_string, is_not, CheckedArg, Error,
-    FunctionMap,
+    check, get_checked, get_opt_check, get_string, is_not, looks_like_call,
+    CheckedArg, Error, FunctionMap,
 };
 use crate::css::{CallArgs, CssString, Value};
 use crate::sass::{Function, Mixin, Name};
+use crate::value::Quotes;
 use crate::{Format, Scope, ScopeRef};
 
 pub fn create_module() -> Scope {
@@ -12,6 +13,18 @@ pub fn create_module() -> Scope {
     // TODO: load_css
 
     // - - - Functions - - -
+    def!(f, calc_name(calc), |s| {
+        let name = get_checked(s, name!(calc), |v| match v {
+            Value::Call(name, _) => Ok(name),
+            Value::Literal(s) if looks_like_call(&s) => {
+                let s = s.value();
+                let i = s.find('(').unwrap();
+                Ok(s[..i].to_string())
+            }
+            v => Err(is_not(&v, "a calculation")),
+        })?;
+        Ok(CssString::new(name.into(), Quotes::Double).into())
+    });
     def_va!(f, call(function, args), |s| {
         let (function, name) = match s.get("function")? {
             Value::Function(ref name, ref func) => {
