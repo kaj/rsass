@@ -34,7 +34,7 @@ pub fn create_module() -> Scope {
             }
             v => Err(is_not(&v, "a calculation")),
         })?;
-        Ok(CssString::new(name.into(), Quotes::Double).into())
+        Ok(CssString::new(name, Quotes::Double).into())
     });
     def_va!(f, call(function, args), |s| {
         let (function, name) = match s.get("function")? {
