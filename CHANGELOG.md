@@ -36,7 +36,7 @@ project adheres to
   to 0..100%).
 * `sass:selector` functions `append`, `nest`, and `parse` are closer
   to correct (PR #123).
-* `sass:meta` function `calc-name` implemented.
+* `sass:meta` functions `calc-args` and `calc-name` implemented.
 * Css strings and selectors can now be parsed directly (PR #123).
 * Fixed reformatting of to-much-indented comments.
 * Fixed panics in some color arithmetic (Issue #120, #121, #122, PR #125).

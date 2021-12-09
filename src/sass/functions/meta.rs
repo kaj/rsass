@@ -13,6 +13,17 @@ pub fn create_module() -> Scope {
     // TODO: load_css
 
     // - - - Functions - - -
+    def!(f, calc_args(calc), |s| {
+        get_checked(s, name!(calc), |v| match v {
+            Value::Call(_, args) => Ok(args.into()),
+            Value::Literal(s) if looks_like_call(&s) => {
+                let s = s.value();
+                let i = s.find('(').unwrap();
+                Ok(s[i + 1..s.len() - 1].into())
+            }
+            v => Err(is_not(&v, "a calculation")),
+        })
+    });
     def!(f, calc_name(calc), |s| {
         let name = get_checked(s, name!(calc), |v| match v {
             Value::Call(name, _) => Ok(name),
