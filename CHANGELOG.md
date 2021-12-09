@@ -39,6 +39,7 @@ project adheres to
 * Css strings and selectors can now be parsed directly (PR #123).
 * Fixed reformatting of to-much-indented comments.
 * Fixed panics in some color arithmetic (Issue #120, #121, #122, PR #125).
+* Replace rand with fastrand, hopefully compile faster (PR #105).
 * Unicode Private-use characters are escaped when printed.
 * Updated `nom` to 7.0 and `nom-locate` to 4.0.
 * Update sass-spec test suite to 2021-11-30.
