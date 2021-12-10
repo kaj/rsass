@@ -7,7 +7,12 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.23.0
+
+Released 2021-12-10.
+Progress: 3849 of 6444 tests passed in dart-sass compatibility mode
+(this may seem like a regression, but that is caused by changed in the
+test suite).
 
 ### Breaking changes
 
