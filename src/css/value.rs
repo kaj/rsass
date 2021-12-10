@@ -61,6 +61,7 @@ impl Value {
     pub fn type_name(&self) -> &'static str {
         match *self {
             Value::ArgList(..) => "arglist",
+            Value::Call(..) => "calculation",
             Value::Color(..) => "color",
             Value::Literal(..) => "string",
             Value::Map(..) => "map",

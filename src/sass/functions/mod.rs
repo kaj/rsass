@@ -304,6 +304,21 @@ where
     )
 }
 
+fn is_special(v: &Value) -> bool {
+    match v {
+        Value::Call(..) => true,
+        Value::Literal(s) if looks_like_call(s) => true,
+        Value::BinOp(..) => true,
+        _ => false,
+    }
+}
+
+fn looks_like_call(s: &CssString) -> bool {
+    s.quotes().is_none()
+        && s.value().contains('(')
+        && s.value().ends_with(')')
+}
+
 mod check {
     use super::{expected_to, is_not};
     use crate::css::{CssString, Value};

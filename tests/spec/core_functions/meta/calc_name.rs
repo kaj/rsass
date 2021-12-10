@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn calc() {
     assert_eq!(
         runner().ok("@use \"sass:meta\";\
@@ -17,7 +16,6 @@ fn calc() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn clamp() {
     assert_eq!(
         runner().ok("@use \"sass:meta\";\
@@ -32,7 +30,6 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn invalid_args() {
         assert_eq!(
             runner().err(
@@ -48,7 +45,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err(
@@ -68,7 +64,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
         runner().err(
@@ -89,7 +84,6 @@ mod error {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn max() {
     assert_eq!(
         runner().ok("@use \"sass:meta\";\
@@ -100,7 +94,6 @@ fn max() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn min() {
     assert_eq!(
         runner().ok("@use \"sass:meta\";\
@@ -111,7 +104,6 @@ fn min() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn named() {
     assert_eq!(
         runner().ok("@use \"sass:meta\";\

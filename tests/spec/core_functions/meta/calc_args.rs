@@ -10,7 +10,6 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn invalid_args() {
         assert_eq!(
             runner().err(
@@ -26,7 +25,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_few_args() {
         assert_eq!(
             runner().err(
@@ -46,7 +44,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn too_many_args() {
         assert_eq!(
         runner().err(
@@ -71,7 +68,6 @@ mod multi_args {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn first() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -83,7 +79,6 @@ mod multi_args {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn length() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -95,7 +90,6 @@ mod multi_args {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn second() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -107,7 +101,6 @@ mod multi_args {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn third() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -120,7 +113,6 @@ mod multi_args {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn named() {
     assert_eq!(
         runner().ok("@use \"sass:meta\";\
@@ -135,7 +127,6 @@ mod one_arg {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn first() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -147,7 +138,6 @@ mod one_arg {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn length() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\
@@ -164,7 +154,6 @@ mod test_type {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn calculation() {
         assert_eq!(
         runner().ok(
@@ -178,7 +167,6 @@ mod test_type {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn css_function() {
         assert_eq!(
         runner().ok(
@@ -192,7 +180,6 @@ mod test_type {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn interpolation() {
         assert_eq!(
         runner().ok(
@@ -206,7 +193,6 @@ mod test_type {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn math() {
         assert_eq!(
         runner().ok(
@@ -220,7 +206,6 @@ mod test_type {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn number() {
         assert_eq!(
         runner().ok(
@@ -234,7 +219,6 @@ mod test_type {
     );
     }
     #[test]
-    #[ignore] // unexepected error
     fn string_variable() {
         assert_eq!(
             runner().ok("@use \"sass:list\";\

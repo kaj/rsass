@@ -59,7 +59,6 @@ mod calculation {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn clamp() {
             assert_eq!(
                 runner().ok("a {b: type-of(clamp(1%, 1px, 2px))}\n"),
