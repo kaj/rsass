@@ -1,3 +1,4 @@
+use clap::Parser;
 use rsass::{
     output::{Format, Style},
     parse_scss_path, Error, FsFileContext, ScopeRef,
@@ -5,10 +6,9 @@ use rsass::{
 use std::io::{stdout, Write};
 use std::path::PathBuf;
 use std::process::exit;
-use structopt::StructOpt;
 
 fn main() {
-    match Args::from_args().run() {
+    match Args::parse().run() {
         Ok(()) => (),
         Err(err) => {
             eprintln!("{}", err);
@@ -17,11 +17,12 @@ fn main() {
     }
 }
 
-#[derive(StructOpt)]
-#[structopt(
+#[derive(Parser)]
+#[clap(
     about,
     author,
-    version_short = "v",
+    version,
+    mut_arg("version", |v| v.short('v')),
     after_help = "For information about rsass and its current state of \
                   development, please refer to https://github.com/kaj/rsass/ .\
                   \n\n\
@@ -30,11 +31,11 @@ fn main() {
 )]
 struct Args {
     /// How many digits of precision to use when outputting decimal numbers.
-    #[structopt(long, default_value = "5")]
+    #[clap(long, default_value = "5")]
     precision: usize,
 
     /// How to format output.
-    #[structopt(long, short = "t", case_insensitive = true,
+    #[clap(long, short = 't', ignore_case = true,
                 default_value = "expanded",
                 possible_values = Style::variants())]
     style: Style,
@@ -42,7 +43,7 @@ struct Args {
     /// Some kind of forced ascii output
     /// (Not implemented, but set by the sass-spec test runner)
     #[cfg(feature = "unimplemented_args")]
-    #[structopt(long)]
+    #[clap(long)]
     #[allow(unused)]
     no_unicode: bool,
 
@@ -50,23 +51,23 @@ struct Args {
     /// (not that there is any support for color in error messages
     /// anyway yet, but the test runner uses this flag)
     #[cfg(feature = "unimplemented_args")]
-    #[structopt(long)]
+    #[clap(long)]
     #[allow(unused)]
     no_color: bool,
 
     /// Verbose diagnostics
     /// (Always on, but set by the sass-spec test runner)
     #[cfg(feature = "unimplemented_args")]
-    #[structopt(long)]
+    #[clap(long)]
     #[allow(unused)]
     verbose: bool,
 
     /// Where to search for included resources.
-    #[structopt(long, short = "I")]
+    #[clap(long, short = 'I')]
     load_path: Option<PathBuf>,
 
     /// Sass file(s) to translate
-    #[structopt(required = true)]
+    #[clap(required = true)]
     input: Vec<PathBuf>,
 }
 

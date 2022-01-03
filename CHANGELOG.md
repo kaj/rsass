@@ -9,6 +9,8 @@ project adheres to
 
 ## Unreleased
 
+* The commandline now uses clap 3.0 rather than structopt.
+
 
 ## Release 0.23.0
 
