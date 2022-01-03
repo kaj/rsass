@@ -23,7 +23,7 @@ doc = false
 required-features = ["spectest"]
 
 [features]
-commandline = ["structopt"]
+commandline = ["clap"]
 spectest = ["yaml-rust", "deunicode", "hrx-get", "regex"]
 unimplemented_args = []
 
@@ -36,7 +36,7 @@ num-integer = "0.1.42"
 num-rational = { version = "0.4.0", default-features = false }
 num-traits = "^0.2.0"
 fastrand = "1.4"
-structopt = { version = "0.3.9", features = ["wrap_help"], optional = true }
+clap = { version = "3.0.0", features = ["derive", "wrap_help"], optional = true }
 deunicode = { version = "1.0", optional = true }
 hrx-get = { version = "0.1.4", optional = true }
 regex = { version = "1.1.0", optional = true }
