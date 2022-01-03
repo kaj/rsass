@@ -18,6 +18,35 @@ mod error {
     #[allow(unused)]
     use super::runner;
 
+    mod supports {
+        #[allow(unused)]
+        use super::runner;
+
+        mod declaration {
+            #[allow(unused)]
+            use super::runner;
+
+            mod custom_prop {
+                #[allow(unused)]
+                use super::runner;
+
+                #[test]
+                #[ignore] // missing error
+                fn empty() {
+                    assert_eq!(
+                        runner()
+                            .err("@import url(\"a.css\") supports(--a:);\n"),
+                        "Error: Expected token.\
+         \n  ,\
+         \n1 | @import url(\"a.css\") supports(--a:);\
+         \n  |                                   ^\
+         \n  \'\
+         \n  input.scss 1:35  root stylesheet",
+                    );
+                }
+            }
+        }
+    }
     #[test]
     #[ignore] // missing error
     fn wrong_order() {
@@ -85,7 +114,7 @@ mod supports {
     #[test]
     fn condition_negation() {
         assert_eq!(
-            runner().ok("@import \"a.css\" supports(not (a: b));"),
+            runner().ok("@import \"a.css\" supports(not (a: b));\n"),
             "@import \"a.css\" supports(not (a: b));\n"
         );
     }

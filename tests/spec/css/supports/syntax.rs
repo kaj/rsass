@@ -124,6 +124,41 @@ mod declaration {
     #[allow(unused)]
     use super::runner;
 
+    mod custom_prop {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // unexepected error
+        fn comma() {
+            assert_eq!(
+                runner().ok("@supports (--a: ,) {@c}\n"),
+                "@supports (--a: ,) {\
+         \n  @c;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn value() {
+            assert_eq!(
+                runner().ok("@supports (--a: b) {@c}\n"),
+                "@supports (--a: b) {\
+         \n  @c;\
+         \n}\n"
+            );
+        }
+        #[test]
+        #[ignore] // unexepected error
+        fn whitespace() {
+            assert_eq!(
+                runner().ok("@supports (--a: ) {@c}\n"),
+                "@supports (--a: ) {\
+         \n  @c;\
+         \n}\n"
+            );
+        }
+    }
     mod dynamic {
         #[allow(unused)]
         use super::runner;

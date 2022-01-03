@@ -5,6 +5,15 @@ fn runner() -> crate::TestRunner {
     super::runner()
 }
 
+#[test]
+fn bracketed() {
+    assert_eq!(
+        runner().ok("a {b: list-separator([c, d])}\n"),
+        "a {\
+         \n  b: comma;\
+         \n}\n"
+    );
+}
 mod empty {
     #[allow(unused)]
     use super::runner;

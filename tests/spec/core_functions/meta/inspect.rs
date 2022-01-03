@@ -259,6 +259,30 @@ fn function() {
          \n}\n"
     );
 }
+mod inspect {
+    #[allow(unused)]
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("inspect")
+    }
+
+    mod empty {
+        #[allow(unused)]
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("empty")
+        }
+
+        #[test]
+        fn bracketed() {
+            let runner = runner().with_cwd("bracketed");
+            assert_eq!(
+                runner.ok("a {b: inspect([])}\n"),
+                "a {\
+         \n  b: [];\
+         \n}\n"
+            );
+        }
+    }
+}
 mod list {
     #[allow(unused)]
     fn runner() -> crate::TestRunner {
@@ -677,6 +701,33 @@ mod list {
          \n}\n"
                     );
                 }
+            }
+        }
+        mod empty_bracketed {
+            #[allow(unused)]
+            fn runner() -> crate::TestRunner {
+                super::runner().with_cwd("empty_bracketed")
+            }
+
+            #[test]
+            fn bracketed() {
+                let runner = runner().with_cwd("bracketed");
+                assert_eq!(
+                    runner.ok("a {b: inspect([[] []])}\n"),
+                    "a {\
+         \n  b: [[] []];\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn unbracketed() {
+                let runner = runner().with_cwd("unbracketed");
+                assert_eq!(
+                    runner.ok("a {b: inspect(([] []))}\n"),
+                    "a {\
+         \n  b: [] [];\
+         \n}\n"
+                );
             }
         }
         mod space {

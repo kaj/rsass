@@ -57,6 +57,24 @@ mod syntax {
         #[allow(unused)]
         use super::runner;
 
+        mod custom_prop {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            #[ignore] // missing error
+            fn empty() {
+                assert_eq!(
+                    runner().err("@supports (--a:) {@c}\n"),
+                    "Error: Expected token.\
+         \n  ,\
+         \n1 | @supports (--a:) {@c}\
+         \n  |                ^\
+         \n  \'\
+         \n  input.scss 1:16  root stylesheet",
+                );
+            }
+        }
         #[test]
         #[ignore] // missing error
         fn multiple() {

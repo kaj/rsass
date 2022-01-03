@@ -51,6 +51,15 @@ mod t2 {
         );
     }
 }
+#[test]
+fn bracketed() {
+    assert_eq!(
+        runner().ok("a {b: nth([c, d], 2)}\n"),
+        "a {\
+         \n  b: d;\
+         \n}\n"
+    );
+}
 mod error {
     #[allow(unused)]
     use super::runner;

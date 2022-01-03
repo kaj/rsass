@@ -10,6 +10,7 @@ project adheres to
 ## Unreleased
 
 * The commandline now uses clap 3.0 rather than structopt.
+* Update sass-spec test suite to 2021-12-30.
 
 
 ## Release 0.23.0
