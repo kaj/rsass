@@ -8,7 +8,7 @@ description = "Sass implementation in pure rust (not complete yet)"
 documentation = "https://docs.rs/rsass"
 repository = "https://github.com/kaj/rsass"
 readme = "README.md"
-license = "MIT/Apache-2.0"
+license = "MIT OR Apache-2.0"
 edition = "2018"
 
 [[bin]]
