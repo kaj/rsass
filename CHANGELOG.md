@@ -10,6 +10,7 @@ project adheres to
 ## Unreleased
 
 * The commandline now uses clap 3.0 rather than structopt.
+* Update update-tests dependency hrx-get to 0.2.0.
 * Update sass-spec test suite to 2022-02-01.
 
 
