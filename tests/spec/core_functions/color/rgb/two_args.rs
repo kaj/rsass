@@ -101,6 +101,69 @@ mod partial_to {
         );
     }
 }
+mod special_functions {
+    #[allow(unused)]
+    use super::runner;
+
+    mod calc {
+        #[allow(unused)]
+        use super::runner;
+
+        mod string {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            #[ignore] // wrong result
+            fn arg_2() {
+                assert_eq!(
+                    runner().ok("a {b: rgb(blue, unquote(\"calc(0.4)\"))}\n"),
+                    "a {\
+         \n  b: rgb(0, 0, 255, calc(0.4));\
+         \n}\n"
+                );
+            }
+        }
+    }
+    mod var {
+        #[allow(unused)]
+        use super::runner;
+
+        mod args {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            #[ignore] // wrong result
+            fn alpha() {
+                assert_eq!(
+                    runner().ok("a {b: rgb(blue, var(--foo))}\n"),
+                    "a {\
+         \n  b: rgb(0, 0, 255, var(--foo));\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn both() {
+                assert_eq!(
+                    runner().ok("a {b: rgb(var(--foo), var(--foo))}\n"),
+                    "a {\
+         \n  b: rgb(var(--foo), var(--foo));\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn color() {
+                assert_eq!(
+                    runner().ok("a {b: rgb(var(--foo), 0.4)}\n"),
+                    "a {\
+         \n  b: rgb(var(--foo), 0.4);\
+         \n}\n"
+                );
+            }
+        }
+    }
+}
 mod transparent_to {
     #[allow(unused)]
     use super::runner;

@@ -17,11 +17,11 @@ fn runner() -> crate::TestRunner {
         .mock_file("no_conflict/mixin/_other.scss", "@mixin b {c: d}\n")
         .mock_file("no_conflict/variable/_other.scss", "$c: d;\n")
         .mock_file(
-            "variable_assignment/nested/local/other.scss",
+            "variable_assignment/nested/global/other.scss",
             "$member: value;\n\n@function get-member() {@return $member}\n",
         )
         .mock_file(
-            "variable_assignment/nested/other.scss",
+            "variable_assignment/nested/local/other.scss",
             "$member: value;\n\n@function get-member() {@return $member}\n",
         )
         .mock_file(
@@ -118,11 +118,17 @@ mod variable_assignment {
         super::runner().with_cwd("variable_assignment")
     }
 
-    #[test]
-    #[ignore] // wrong result
-    fn nested() {
-        let runner = runner().with_cwd("nested");
-        assert_eq!(
+    mod nested {
+        #[allow(unused)]
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("nested")
+        }
+
+        #[test]
+        #[ignore] // wrong result
+        fn global() {
+            let runner = runner().with_cwd("global");
+            assert_eq!(
         runner.ok(
             "@use \"other\" as *;\n\
              \na {\
@@ -136,6 +142,26 @@ mod variable_assignment {
          \n  b: new value;\
          \n}\n"
     );
+        }
+        #[test]
+        fn local() {
+            let runner = runner().with_cwd("local");
+            assert_eq!(
+        runner.ok(
+            "@use \"other\" as *;\n\
+             \na {\
+             \n  // A nested variable assignment that doesn\'t have a namespace and isn\'t\
+             \n  // !global creates a new local variable rather than assigning to a variable\
+             \n  // imported from a module.\
+             \n  $member: new value;\n\
+             \n  b: get-member();\
+             \n}\n"
+        ),
+        "a {\
+         \n  b: value;\
+         \n}\n"
+    );
+        }
     }
     #[test]
     #[ignore] // wrong result

@@ -211,14 +211,29 @@ mod index {
          \n}\n"
             );
         }
-        #[test]
-        fn after_last() {
-            assert_eq!(
-                runner().ok("a {b: str-insert(\"cde\", \"f\", -100)}\n"),
-                "a {\
+        mod after_last {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn less_than_double() {
+                assert_eq!(
+                    runner().ok("// Regression test for sass/dart-sass#1568\
+             \na {b: str-insert(\"cdefghijkl\", \"mno\", -15)}\n"),
+                    "a {\
+         \n  b: \"mnocdefghijkl\";\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn more_than_double() {
+                assert_eq!(
+                    runner().ok("a {b: str-insert(\"cde\", \"f\", -100)}\n"),
+                    "a {\
          \n  b: \"fcde\";\
          \n}\n"
-            );
+                );
+            }
         }
         #[test]
         fn last() {

@@ -57,7 +57,7 @@ mod error {
 #[test]
 fn fraction() {
     assert_eq!(
-        runner().ok("a {b: saturation(hsl(0, 0.5%, 100%))}\n"),
+        runner().ok("a {b: saturation(hsl(0, 0.5%, 50%))}\n"),
         "a {\
          \n  b: 0.5%;\
          \n}\n"
@@ -66,7 +66,7 @@ fn fraction() {
 #[test]
 fn max() {
     assert_eq!(
-        runner().ok("a {b: saturation(hsl(0, 100%, 100%))}\n"),
+        runner().ok("a {b: saturation(hsl(0, 100%, 50%))}\n"),
         "a {\
          \n  b: 100%;\
          \n}\n"
@@ -75,7 +75,7 @@ fn max() {
 #[test]
 fn middle() {
     assert_eq!(
-        runner().ok("a {b: saturation(hsl(0, 50%, 100%))}\n"),
+        runner().ok("a {b: saturation(hsl(0, 50%, 50%))}\n"),
         "a {\
          \n  b: 50%;\
          \n}\n"
@@ -84,7 +84,7 @@ fn middle() {
 #[test]
 fn min() {
     assert_eq!(
-        runner().ok("a {b: saturation(hsl(0, 0%, 100%))}\n"),
+        runner().ok("a {b: saturation(hsl(0, 0%, 50%))}\n"),
         "a {\
          \n  b: 0%;\
          \n}\n"
@@ -93,7 +93,7 @@ fn min() {
 #[test]
 fn named() {
     assert_eq!(
-        runner().ok("a {b: saturation($color: hsl(0, 42%, 100%))}\n"),
+        runner().ok("a {b: saturation($color: hsl(0, 42%, 50%))}\n"),
         "a {\
          \n  b: 42%;\
          \n}\n"

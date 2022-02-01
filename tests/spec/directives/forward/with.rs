@@ -26,10 +26,10 @@ fn runner() -> crate::TestRunner {
         .mock_file("multi_load/transitive/_upstream.scss", "c {d: e}\n")
         .mock_file("multi_load/use/_midstream.scss", "@use \"upstream\";\nb {c: upstream.$a}\n")
         .mock_file("multi_load/use/_upstream.scss", "$a: original !default;\n")
-        .mock_file("multiple/_midstream.scss", "@forward \"upstream\" with (\n  $a: configured a,\n  $b: configured b,\n  $c: configured c\n);\n")
-        .mock_file("multiple/_upstream.scss", "$a: original a !default;\n$b: original b !default;\n$c: original c !default;\n\nd {\n  a: $a;\n  b: $b;\n  c: $c;\n}\n")
         .mock_file("multiple/default/_midstream.scss", "@forward \"upstream\" with (\n  $a: configured a !default,\n  $b: configured b !default,\n  $c: configured c !default\n);\n")
         .mock_file("multiple/default/_upstream.scss", "$a: original a !default;\n$b: original b !default;\n$c: original c !default;\n\nd {\n  a: $a;\n  b: $b;\n  c: $c;\n}\n")
+        .mock_file("multiple/non_default/_midstream.scss", "@forward \"upstream\" with (\n  $a: configured a,\n  $b: configured b,\n  $c: configured c\n);\n")
+        .mock_file("multiple/non_default/_upstream.scss", "$a: original a !default;\n$b: original b !default;\n$c: original c !default;\n\nd {\n  a: $a;\n  b: $b;\n  c: $c;\n}\n")
         .mock_file("null/_midstream.scss", "@forward \"upstream\" with ($a: null);\n")
         .mock_file("null/_upstream.scss", "$a: original !default;\nb {c: $a}\n")
         .mock_file("single/_midstream.scss", "@forward \"upstream\" with ($a: configured);\n")
@@ -71,10 +71,10 @@ fn runner() -> crate::TestRunner {
         .mock_file("through_import/transitive/_imported_downstream.scss", "@import \"imported_upstream\";\n")
         .mock_file("through_import/transitive/_imported_upstream.scss", "$a: original !default;\nb {c: $a}\n")
         .mock_file("through_import/transitive/_used.scss", "@forward \"forwarded\" with ($a: configured);\n")
-        .mock_file("trailing_comma/_midstream.scss", "@forward \"upstream\" with ($a: configured,);\n")
-        .mock_file("trailing_comma/_upstream.scss", "$a: original !default;\nb {c: $a}\n")
         .mock_file("trailing_comma/default/_midstream.scss", "@forward \"upstream\" with ($a: configured !default,);\n")
         .mock_file("trailing_comma/default/_upstream.scss", "$a: original !default;\nb {c: $a}\n")
+        .mock_file("trailing_comma/single/_midstream.scss", "@forward \"upstream\" with ($a: configured,);\n")
+        .mock_file("trailing_comma/single/_upstream.scss", "$a: original !default;\nb {c: $a}\n")
         .mock_file("used_in_input/_midstream.scss", "@forward \"upstream\" with ($a: configured);\n")
         .mock_file("used_in_input/_upstream.scss", "$a: original !default;\n")
         .mock_file("variable_exists/_midstream.scss", "@forward \"upstream\" with ($a: configured);\n")
@@ -227,17 +227,36 @@ mod multi_load {
         );
     }
 }
-#[test]
-fn multiple() {
-    let runner = runner().with_cwd("multiple");
-    assert_eq!(
-        runner.ok("@use \"midstream\";\n"),
-        "d {\
+mod multiple {
+    #[allow(unused)]
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("multiple")
+    }
+
+    #[test]
+    fn default() {
+        let runner = runner().with_cwd("default");
+        assert_eq!(
+            runner.ok("@use \"midstream\";\n"),
+            "d {\
          \n  a: configured a;\
          \n  b: configured b;\
          \n  c: configured c;\
          \n}\n"
-    );
+        );
+    }
+    #[test]
+    fn non_default() {
+        let runner = runner().with_cwd("non_default");
+        assert_eq!(
+            runner.ok("@use \"midstream\";\n"),
+            "d {\
+         \n  a: configured a;\
+         \n  b: configured b;\
+         \n  c: configured c;\
+         \n}\n"
+        );
+    }
 }
 #[test]
 fn null() {
@@ -411,15 +430,32 @@ mod through_import {
         );
     }
 }
-#[test]
-fn trailing_comma() {
-    let runner = runner().with_cwd("trailing_comma");
-    assert_eq!(
-        runner.ok("@use \"midstream\";\n"),
-        "b {\
+mod trailing_comma {
+    #[allow(unused)]
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("trailing_comma")
+    }
+
+    #[test]
+    fn default() {
+        let runner = runner().with_cwd("default");
+        assert_eq!(
+            runner.ok("@use \"midstream\";\n"),
+            "b {\
          \n  c: configured;\
          \n}\n"
-    );
+        );
+    }
+    #[test]
+    fn single() {
+        let runner = runner().with_cwd("single");
+        assert_eq!(
+            runner.ok("@use \"midstream\";\n"),
+            "b {\
+         \n  c: configured;\
+         \n}\n"
+        );
+    }
 }
 #[test]
 fn used_in_input() {

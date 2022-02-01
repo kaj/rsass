@@ -10,14 +10,14 @@ project adheres to
 ## Unreleased
 
 * The commandline now uses clap 3.0 rather than structopt.
-* Update sass-spec test suite to 2021-12-30.
+* Update sass-spec test suite to 2022-02-01.
 
 
 ## Release 0.23.0
 
 Released 2021-12-10.
 Progress: 3849 of 6444 tests passed in dart-sass compatibility mode
-(this may seem like a regression, but that is caused by changed in the
+(this may seem like a regression, but that is caused by changes in the
 test suite).
 
 ### Breaking changes

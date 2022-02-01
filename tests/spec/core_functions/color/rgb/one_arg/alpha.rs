@@ -31,6 +31,29 @@ mod clamped {
          \n}\n"
             );
         }
+        mod percent {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn above() {
+                assert_eq!(
+                    runner().ok("a {b: rgb(0 0 0 / 250%)}\n"),
+                    "a {\
+         \n  b: black;\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn below() {
+                assert_eq!(
+                    runner().ok("a {b: rgb(0 0 0 / -10%)}\n"),
+                    "a {\
+         \n  b: rgba(0, 0, 0, 0);\
+         \n}\n"
+                );
+            }
+        }
     }
     #[test]
     fn blue() {

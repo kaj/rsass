@@ -118,11 +118,45 @@ mod supports {
             "@import \"a.css\" supports(not (a: b));\n"
         );
     }
-    #[test]
-    fn declaration() {
-        assert_eq!(
-            runner().ok("@import \"a.css\" supports(a: b);\n"),
-            "@import \"a.css\" supports(a: b);\n"
-        );
+    mod declaration {
+        #[allow(unused)]
+        use super::runner;
+
+        mod custom_prop {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            #[ignore] // wrong result
+            fn punctuation() {
+                assert_eq!(
+                    runner().ok("@import \"a.css\" supports(--a: ,);\n"),
+                    "@import \"a.css\" supports(--a: ,);\n"
+                );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn value() {
+                assert_eq!(
+                    runner().ok("@import \"a.css\" supports(--a: b);\n"),
+                    "@import \"a.css\" supports(--a: b);\n"
+                );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn whitespace() {
+                assert_eq!(
+                    runner().ok("@import \"a.css\" supports(--a: );\n"),
+                    "@import \"a.css\" supports(--a: );\n"
+                );
+            }
+        }
+        #[test]
+        fn prop() {
+            assert_eq!(
+                runner().ok("@import \"a.css\" supports(a: b);\n"),
+                "@import \"a.css\" supports(a: b);\n"
+            );
+        }
     }
 }

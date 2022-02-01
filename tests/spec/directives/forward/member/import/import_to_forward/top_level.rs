@@ -5,9 +5,6 @@ fn runner() -> crate::TestRunner {
     super::runner()
         .mock_file("mixin/_midstream.scss", "@forward \"upstream\";\n")
         .mock_file("mixin/_upstream.scss", "@mixin a() {b {c: d}}\n")
-        .mock_file("post_facto/_midstream.scss", "@forward \"upstream\";\n")
-        .mock_file("post_facto/_other.scss", "@mixin a {b {c: $d}}\n")
-        .mock_file("post_facto/_upstream.scss", "$d: e;\n")
         .mock_file(
             "post_facto/with_use/_midstream.scss",
             "@forward \"upstream\";\n",
@@ -17,6 +14,15 @@ fn runner() -> crate::TestRunner {
             "@use \"sass:math\";\n\n@mixin a {b {c: $d}}\n",
         )
         .mock_file("post_facto/with_use/_upstream.scss", "$d: e;\n")
+        .mock_file(
+            "post_facto/without_use/_midstream.scss",
+            "@forward \"upstream\";\n",
+        )
+        .mock_file(
+            "post_facto/without_use/_other.scss",
+            "@mixin a {b {c: $d}}\n",
+        )
+        .mock_file("post_facto/without_use/_upstream.scss", "$d: e;\n")
         .mock_file(
             "variable_assignment/_midstream.scss",
             "@forward \"upstream\";\n",
@@ -40,17 +46,36 @@ fn mixin() {
          \n}\n"
     );
 }
-#[test]
-fn post_facto() {
-    let runner = runner().with_cwd("post_facto");
-    assert_eq!(
-        runner.ok("@import \"other\";\
+mod post_facto {
+    #[allow(unused)]
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("post_facto")
+    }
+
+    #[test]
+    fn with_use() {
+        let runner = runner().with_cwd("with_use");
+        assert_eq!(
+            runner.ok("@import \"other\";\
              \n@import \"midstream\";\n\
              \n@include a;\n"),
-        "b {\
+            "b {\
          \n  c: e;\
          \n}\n"
-    );
+        );
+    }
+    #[test]
+    fn without_use() {
+        let runner = runner().with_cwd("without_use");
+        assert_eq!(
+            runner.ok("@import \"other\";\
+             \n@import \"midstream\";\n\
+             \n@include a;\n"),
+            "b {\
+         \n  c: e;\
+         \n}\n"
+        );
+    }
 }
 #[test]
 #[ignore] // wrong result
