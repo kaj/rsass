@@ -114,7 +114,6 @@ mod special_functions {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn arg_2() {
                 assert_eq!(
                     runner().ok("a {b: rgb(blue, unquote(\"calc(0.4)\"))}\n"),
@@ -134,7 +133,6 @@ mod special_functions {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn alpha() {
                 assert_eq!(
                     runner().ok("a {b: rgb(blue, var(--foo))}\n"),

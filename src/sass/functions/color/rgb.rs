@@ -133,7 +133,20 @@ fn do_rgba(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
                 let c = s.get("color")?;
                 let a = s.get("alpha")?;
                 if is_special(&c) || is_special(&a) {
-                    Ok(make_call(fn_name.as_ref(), vec![c, a]))
+                    if let Ok(c) = check_color(c.clone()) {
+                        let c = c.to_rgba();
+                        Ok(make_call(
+                            fn_name.as_ref(),
+                            vec![
+                                Value::scalar(c.red()),
+                                Value::scalar(c.green()),
+                                Value::scalar(c.blue()),
+                                a,
+                            ],
+                        ))
+                    } else {
+                        Ok(make_call(fn_name.as_ref(), vec![c, a]))
+                    }
                 } else {
                     let mut c = check_color(c).named(name!(color))?;
                     c.set_alpha(check_alpha(a).named(name!(alpha))?);
