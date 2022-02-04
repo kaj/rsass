@@ -7,7 +7,10 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.23.2
+
+Released 2022-02-04.
+Progress: 3872 of 6477 tests passed in dart-sass compatibility mode.
 
 * Fix remaining cases of "special arguments" handling in rgb function.
 * The commandline now uses clap 3.0 rather than structopt.
