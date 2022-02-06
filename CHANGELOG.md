@@ -7,6 +7,15 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Release 0.23.4
+
+Released 2022-02-06.
+Progress: 3872 of 6477 tests passed in dart-sass compatibility mode.
+
+* Different kinds of length units are now considered compatible for
+  the `max` and `min` css unctions.
+
+
 ## Release 0.23.2
 
 Released 2022-02-04.

@@ -1,4 +1,4 @@
-use super::{Dimension, Number, Unit};
+use super::{CssDimension, Dimension, Number, Unit};
 use num_traits::one;
 use std::fmt::{self, Display};
 use std::ops::{Div, Mul};
@@ -43,6 +43,22 @@ impl UnitSet {
                 let dim = unit.dimension();
                 if dim != Dimension::None {
                     *map.entry(unit.dimension()).or_insert(0) += *power;
+                }
+                map
+            })
+            .into_iter()
+            .filter(|(_d, power)| *power != 0)
+            .collect::<Vec<_>>()
+    }
+
+    pub(crate) fn css_dimension(&self) -> Vec<(CssDimension, i8)> {
+        use std::collections::BTreeMap;
+        self.units
+            .iter()
+            .fold(BTreeMap::new(), |mut map, (unit, power)| {
+                let dim = CssDimension::from(unit.dimension());
+                if dim != CssDimension::None {
+                    *map.entry(dim).or_insert(0) += *power;
                 }
                 map
             })

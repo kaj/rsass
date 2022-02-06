@@ -300,8 +300,9 @@ fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
             }
         }
         Err(ExtremeError::Incompatible(a, b)) => {
-            if a.unit.dimension().is_empty() || b.unit.dimension().is_empty()
-            {
+            let a_dim = a.unit.css_dimension();
+            let b_dim = b.unit.css_dimension();
+            if a_dim.is_empty() || b_dim.is_empty() || a_dim == b_dim {
                 Ok(as_call())
             } else {
                 Err(Error::error(format!(

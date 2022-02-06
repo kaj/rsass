@@ -83,6 +83,9 @@ pub enum Unit {
 /// There are multiple "length" dimensions, since font-based,
 /// window-based and absolute lengths can't be converted to each
 /// other.
+///
+/// This type is for compatibility in sass functions.
+/// See also [`CssDimension`].
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Dimension {
     /// An absolute length, can be converted to metric.
@@ -239,6 +242,52 @@ impl fmt::Display for Unit {
             Unit::None => Ok(()),
 
             Unit::Unknown(ref name) => out.write_str(name),
+        }
+    }
+}
+
+/// Dimension of a unit.
+///
+/// Units of the same dimension can be converted to each other.
+/// There is a single "length" dimension, since all lengths _can_ be
+/// converted to each other in the browser, where all are converted to
+/// device pixels anyway.
+///
+/// This type is for compatibility in css functions.
+/// See also [`Dimension`].
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum CssDimension {
+    /// A length of any kind.
+    Length,
+    /// An angle.
+    Angle,
+    /// A duration.
+    Time,
+    /// A frequency.
+    Frequency,
+    /// A resolution (number of pixels per length).
+    Resolution,
+    /// No dimension (no unit, percentage, or grid fraction).
+    None,
+    /// The dimension of an unknown (but named) unit.
+    Unknown(String),
+}
+
+impl From<Dimension> for CssDimension {
+    fn from(dim: Dimension) -> Self {
+        match dim {
+            Dimension::LengthAbs
+            | Dimension::LengthVw
+            | Dimension::LengthVh
+            | Dimension::LengthVx
+            | Dimension::LengthRem
+            | Dimension::LenghtEm => CssDimension::Length,
+            Dimension::Angle => CssDimension::Angle,
+            Dimension::Time => CssDimension::Time,
+            Dimension::Frequency => CssDimension::Frequency,
+            Dimension::Resolution => CssDimension::Resolution,
+            Dimension::None => CssDimension::None,
+            Dimension::Unknown(s) => CssDimension::Unknown(s),
         }
     }
 }

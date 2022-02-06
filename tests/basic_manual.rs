@@ -436,6 +436,20 @@ fn rel() {
     );
 }
 
+#[test]
+fn minmax_length_units() {
+    check(
+        b"sel {\
+         \n  a: max(-.8em, -.2vw);\
+         \n  a: min(-.8em, -.2vw);\
+         \n}\n",
+        "sel {\
+         \n  a: max(-0.8em, -0.2vw);\
+         \n  a: min(-0.8em, -0.2vw);\
+         \n}\n",
+    );
+}
+
 fn check_value(input: &str, expected: &str) {
     assert_eq!(
         String::from_utf8(
