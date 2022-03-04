@@ -370,7 +370,7 @@ impl NumValue {
                 }
             }
             NumValue::Float(r) => Ratio::approximate_float(*r)
-                .ok_or_else(|| BadNumber::BadFloat(*r)),
+                .ok_or(BadNumber::BadFloat(*r)),
         }
     }
 }

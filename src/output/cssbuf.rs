@@ -156,7 +156,7 @@ impl CssBuf {
                         Ordering::Greater => {
                             let start =
                                 self.format.get_indent(indent - existing);
-                            self.add_str(&c.replace("\n", start));
+                            self.add_str(&c.replace('\n', start));
                         }
                         Ordering::Less => {
                             let start =

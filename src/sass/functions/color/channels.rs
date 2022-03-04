@@ -4,6 +4,10 @@ use crate::value::ListSeparator;
 use crate::Error;
 use std::convert::TryFrom;
 
+/// Channels data is either four values of parsable data, or one value
+/// of "special" data, that is probably a sass list.
+// only used temporarily for evaluating color function arguments.
+#[allow(clippy::large_enum_variant)]
 pub enum Channels {
     Data([Value; 4]),
     Special(Value),
