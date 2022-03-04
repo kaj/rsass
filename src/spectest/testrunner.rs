@@ -63,7 +63,7 @@ impl FileContext for TestFileContext {
         &self,
         name: &str,
     ) -> Result<Option<(Self, String, Self::File)>, Error> {
-        let mut cwd: &str = &self.cwd.trim_end_matches('/');
+        let mut cwd = self.cwd.trim_end_matches('/');
         let mut lname = name;
         while let Some(name) = lname.strip_prefix("../") {
             cwd = cwd.rfind('/').map(|p| &self.cwd[..p]).unwrap_or("");

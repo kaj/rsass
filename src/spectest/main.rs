@@ -77,7 +77,7 @@ fn handle_suite(
         let mut tr = File::create(rssuitedir.join("testrunner.rs"))?;
         tr.write_all(include_bytes!("testrunner.rs"))?;
     }
-    handle_entries(&mut rs, &base, &suitedir, &rssuitedir, None, ignored)
+    handle_entries(&mut rs, base, &suitedir, &rssuitedir, None, ignored)
         .map_err(|e| {
             Error(format!("Failed to handle suite {:?}: {}", suite, e))
         })
@@ -134,7 +134,7 @@ fn handle_entries(
                 if input.exists() {
                     spec_dir_to_test(
                         rs,
-                        &suitedir,
+                        suitedir,
                         &entry.file_name(),
                         precision,
                     )
@@ -184,7 +184,7 @@ fn handle_entries(
                             .collect();
                         handle_entries(
                             &mut rs,
-                            &root,
+                            root,
                             &entry.path(),
                             &rssuitedir,
                             precision,
@@ -304,7 +304,7 @@ fn handle_hrx_part(
     if archive.get(&format!("{}input.scss", prefix)).is_some() {
         let fixture = load_test_fixture_hrx(
             name.map(str::to_owned),
-            &archive,
+            archive,
             prefix,
             options,
         )?;
@@ -337,7 +337,7 @@ fn handle_hrx_part(
                 handle_hrx_part(
                     rs,
                     suite,
-                    &archive,
+                    archive,
                     &format!("{}{}", prefix, name),
                     options.precision,
                     runner.clone().with_cwd(name),
@@ -404,7 +404,7 @@ fn load_test_fixture_dir(
     static EXPECTED_ERROR_FILENAMES: &[&str] = &["error-dart-sass", "error"];
 
     let name = specdir.file_name().map(|s| s.to_string_lossy().to_string());
-    let mut options = load_options(&specdir)?;
+    let mut options = load_options(specdir)?;
     options.precision = options.precision.or(precision);
     let input = content(&specdir.join(INPUT_FILENAME))?;
 

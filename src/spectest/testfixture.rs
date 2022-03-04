@@ -152,5 +152,5 @@ fn normalize_output_css(css: &str) -> String {
     lazy_static! {
         static ref RE: Regex = Regex::new("(?:\r?\n)+").unwrap();
     }
-    RE.replace_all(&css, "\n").to_string()
+    RE.replace_all(css, "\n").to_string()
 }
