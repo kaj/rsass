@@ -11,7 +11,7 @@ pub struct Options {
 
 impl Options {
     pub fn parse(options: &str) -> Result<Options, Error> {
-        match &YamlLoader::load_from_str(&options)?[..] {
+        match &YamlLoader::load_from_str(options)?[..] {
             [] => Err(Error(format!("Found zero-doc options {:?}", options))),
             [options] => {
                 //eprintln!("Found options: {:?}", options);
