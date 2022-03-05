@@ -18,7 +18,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn at_rule() {
     let runner = runner().with_cwd("at_rule");
     assert_eq!(
@@ -38,7 +37,6 @@ mod empty {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn built_in() {
         let runner = runner().with_cwd("built_in");
         assert_eq!(
@@ -49,7 +47,6 @@ mod empty {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn user_defined() {
         let runner = runner().with_cwd("user_defined");
         assert_eq!(
@@ -61,7 +58,6 @@ mod empty {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn named() {
     let runner = runner().with_cwd("named");
     assert_eq!(
@@ -79,7 +75,6 @@ mod nested {
     }
 
     #[test]
-    #[ignore] // unexepected error
     fn media_query() {
         let runner = runner().with_cwd("media_query");
         assert_eq!(
@@ -95,7 +90,7 @@ mod nested {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn parent_selector() {
         let runner = runner().with_cwd("parent_selector");
         assert_eq!(
@@ -107,7 +102,6 @@ mod nested {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn plain_plain_css() {
         let runner = runner().with_cwd("plain_plain_css");
         assert_eq!(
@@ -120,7 +114,6 @@ mod nested {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn plain_css_import() {
     let runner = runner().with_cwd("plain_css_import");
     assert_eq!(
@@ -137,7 +130,6 @@ fn plain_css_import() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn style_rule() {
     let runner = runner().with_cwd("style_rule");
     assert_eq!(
@@ -149,7 +141,7 @@ fn style_rule() {
     );
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn through_other_mixin() {
     let runner = runner().with_cwd("through_other_mixin");
     assert_eq!(

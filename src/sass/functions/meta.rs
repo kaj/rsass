@@ -3,14 +3,14 @@ use super::{
     CheckedArg, Error, FunctionMap,
 };
 use crate::css::{CallArgs, CssString, Value};
-use crate::sass::{Function, Mixin, Name};
+use crate::sass::{Function, MixinDecl, Name};
 use crate::value::Quotes;
 use crate::{Format, Scope, ScopeRef};
 
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:meta");
     // - - - Mixins - - -
-    // TODO: load_css
+    f.define_mixin(name!(load_css), MixinDecl::LoadCss);
 
     // - - - Functions - - -
     def!(f, calc_args(calc), |s| {
@@ -64,7 +64,7 @@ pub fn create_module() -> Scope {
     def!(f, content_exists(), |s| {
         let content = call_scope(s).get_mixin(&Name::from_static("%%BODY%%"));
         if let Some(content) = content {
-            Ok((!Mixin::is_no_body(&content.body)).into())
+            Ok((!content.is_no_body()).into())
         } else {
             Err(Error::error(
                 "content-exists() may only be called within a mixin.",

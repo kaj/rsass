@@ -466,9 +466,10 @@ fn return_stmt2(input: Span) -> PResult<Item> {
 
 /// The "rest" of an `@content` statement is just an optional terminator
 fn content_stmt2(input: Span) -> PResult<Item> {
-    let (input, _) = opt_spacelike(input)?;
-    let (input, _) = opt(tag(";"))(input)?;
-    Ok((input, Item::Content))
+    let (rest, _) = opt_spacelike(input)?;
+    let (rest, _) = opt(tag(";"))(rest)?;
+    let pos = SourcePos::from_to(input, rest);
+    Ok((rest, Item::Content(pos)))
 }
 
 fn property_or_namespace_rule(input: Span) -> PResult<Item> {

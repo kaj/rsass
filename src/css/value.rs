@@ -1,9 +1,10 @@
-use super::{CallArgs, CssString};
+use super::{is_not, CallArgs, CssString};
 use crate::error::Error;
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
 use crate::sass::Function;
 use crate::value::{Color, ListSeparator, Number, Numeric, Operator};
+use std::convert::TryInto;
 
 /// A css value.
 #[derive(Clone, Debug, Eq, PartialOrd)]
@@ -298,4 +299,33 @@ impl<C: Into<Color>> From<C> for Value {
     fn from(c: C) -> Value {
         Value::Color(c.into(), None)
     }
+}
+
+impl TryInto<OrderMap<CssString, Value>> for Value {
+    type Error = ValueToMapError;
+    fn try_into(self) -> Result<OrderMap<CssString, Value>, ValueToMapError> {
+        match self {
+            Value::Map(m) => m
+                .into_iter()
+                .map(|(k, v)| match (k, v) {
+                    (Value::Literal(k), v) => Ok((k, v)),
+                    (k, _v) => {
+                        Err(ValueToMapError::Key(is_not(&k, "a string")))
+                    }
+                })
+                .collect(),
+            // An empty map and an empty list looks the same
+            Value::List(ref l, ..) if l.is_empty() => Ok(OrderMap::new()),
+            v => Err(ValueToMapError::Root(is_not(&v, "a map"))),
+        }
+    }
+}
+
+/// Specific error type for converting a Value to an OrderMap.
+#[derive(Debug)]
+pub enum ValueToMapError {
+    /// The Value was not convertible to a ValueMap.
+    Root(String),
+    /// One key value was not convertible to the key type.
+    Key(String),
 }

@@ -46,7 +46,7 @@ mod keyframes {
     }
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn load_css() {
     let runner = runner().with_cwd("load_css");
     assert_eq!(

@@ -10,7 +10,7 @@ use crate::css::{BodyItem, Rule, Selectors};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::sass::{
-    self, get_global_module, Expose, FormalArgs, Function, Item, Mixin, Name,
+    get_global_module, CallArgs, Expose, Function, Item, MixinDecl, Name,
     UseAs,
 };
 use crate::value::ValueRange;
@@ -297,47 +297,25 @@ fn handle_item(
         Item::MixinDeclaration(ref name, ref args, ref body, ref pos) => {
             scope.define_mixin(
                 name.into(),
-                Mixin {
-                    args: args.clone(),
-                    scope: scope.clone(),
-                    body: body.clone(),
-                    pos: pos.clone(),
-                },
+                MixinDecl::new(args, &scope, body, pos),
             )
         }
         Item::MixinCall(ref name, ref args, ref body, ref pos) => {
-            let sel = scope.get_selectors().clone();
             if let Some(mixin) = scope.get_mixin(&name.into()) {
-                let subscope = mixin
-                    .args
-                    .eval(
-                        ScopeRef::sub_selectors(mixin.scope.clone(), sel),
-                        args.evaluate(scope.clone())?,
-                    )
-                    .map_err(|e| match e {
-                        sass::ArgsError::Eval(e) => e,
-                        ae => Error::BadCall(
-                            ae.to_string(),
-                            pos.in_call(name),
-                            Some(mixin.pos.clone()),
-                        ),
-                    })?;
-                subscope.define_mixin(
-                    Name::from_static("%%BODY%%"),
-                    Mixin {
-                        args: FormalArgs::none(),
-                        scope,
-                        body: body.clone().unwrap_or_else(Mixin::no_body),
-                        // TODO: Get a better pos?
-                        pos: pos.clone(),
-                    },
-                );
+                let mixin = mixin.get(
+                    name,
+                    scope.clone(),
+                    args,
+                    pos,
+                    file_context,
+                )?;
+                mixin.define_content(&scope, body, pos);
                 handle_body(
                     &mixin.body,
                     head,
                     rule,
                     buf,
-                    subscope,
+                    mixin.scope,
                     file_context,
                 )
                 .map_err(|e: Error| match e {
@@ -362,19 +340,27 @@ fn handle_item(
                 ));
             }
         }
-        Item::Content => {
+        Item::Content(pos) => {
             if let Some(content) =
                 scope.get_mixin(&Name::from_static("%%BODY%%"))
             {
-                let sel = scope.get_selectors().clone();
-                handle_body(
-                    &content.body,
-                    head,
-                    rule,
-                    buf,
-                    ScopeRef::sub_selectors(content.scope, sel),
-                    file_context,
-                )?;
+                if !content.is_no_body() {
+                    let mixin = content.get(
+                        "@content",
+                        scope,
+                        &CallArgs::new(vec![])?,
+                        pos,
+                        file_context,
+                    )?;
+                    handle_body(
+                        &mixin.body,
+                        head,
+                        rule,
+                        buf,
+                        mixin.scope,
+                        file_context,
+                    )?;
+                }
             }
         }
 
