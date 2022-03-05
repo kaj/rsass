@@ -72,14 +72,14 @@ pub fn create_module() -> Scope {
         }
     });
     def!(f, feature_exists(feature), |s| {
-        let feature = get_string(s, "feature")?;
+        let feature = get_string(s, name!(feature))?;
         Ok(IMPLEMENTED_FEATURES
             .iter()
             .any(|s| *s == feature.value())
             .into())
     });
     def!(f, function_exists(name, module = b"null"), |s| {
-        let name = get_string(s, "name")?;
+        let name = get_string(s, name!(name))?;
         let module = get_opt_check(s, name!(module), check::string)?;
         Ok(get_function(s, module, name.value())?.is_some().into())
     });
@@ -87,7 +87,7 @@ pub fn create_module() -> Scope {
         f,
         get_function(name, css = b"false", module = b"null"),
         |s| {
-            let name = get_string(s, "name")?;
+            let name = get_string(s, name!(name))?;
             let module = get_opt_check(s, name!(module), check::string)?;
             if s.get("css")?.is_true() {
                 if module.is_some() {
@@ -104,7 +104,7 @@ pub fn create_module() -> Scope {
         }
     );
     def!(f, global_variable_exists(name, module = b"null"), |s| {
-        let name = get_string(s, "name")?;
+        let name = get_string(s, name!(name))?;
         let module = get_module_arg(s, true)?;
         Ok(module.get_global_or_none(&name.into()).is_some().into())
     });
@@ -126,7 +126,7 @@ pub fn create_module() -> Scope {
         ))
     });
     def!(f, mixin_exists(name, module = b"null"), |s| {
-        let name = get_string(s, "name")?.into();
+        let name = get_string(s, name!(name))?.into();
         let module = get_module_arg(s, true)?;
         Ok(module.get_mixin(&name).is_some().into())
     });
@@ -142,7 +142,7 @@ pub fn create_module() -> Scope {
         Ok(s.get("value")?.type_name().into())
     });
     def!(f, variable_exists(name), |s| {
-        let name = get_string(s, "name")?.into();
+        let name = get_string(s, name!(name))?.into();
         Ok(call_scope(s).get_or_none(&name).is_some().into())
     });
     f

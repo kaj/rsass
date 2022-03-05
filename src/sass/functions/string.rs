@@ -8,19 +8,19 @@ use std::sync::Mutex;
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:string");
     def!(f, quote(string), |s| {
-        Ok(get_string(s, "string")?.quote().into())
+        Ok(get_string(s, name!(string))?.quote().into())
     });
     def!(f, index(string, substring), |s| {
-        let string = get_string(s, "string")?;
+        let string = get_string(s, name!(string))?;
         Ok(string
             .value()
-            .find(get_string(s, "substring")?.value())
+            .find(get_string(s, name!(substring))?.value())
             .map(|i| Value::scalar(1 + string.value()[0..i].chars().count()))
             .unwrap_or(Value::Null))
     });
     def!(f, insert(string, insert, index), |s| {
-        let string = get_string(s, "string")?;
-        let insert = get_string(s, "insert")?;
+        let string = get_string(s, name!(string))?;
+        let insert = get_string(s, name!(insert))?;
         let index = get_integer(s, name!(index))?;
         let index = if index.is_negative() {
             let len = string.value().chars().count();
@@ -35,11 +35,11 @@ pub fn create_module() -> Scope {
         Ok(CssString::new(join, string.quotes()).into())
     });
     def!(f, length(string), |s| {
-        let v = get_string(s, "string")?;
+        let v = get_string(s, name!(string))?;
         Ok(Value::scalar(v.value().chars().count()))
     });
     def!(f, slice(string, start_at, end_at = b"-1"), |s| {
-        let string = get_string(s, "string")?;
+        let string = get_string(s, name!(string))?;
         let st = string.value();
         let len = st.chars().count();
         let start_at = get_integer(s, name!(start_at))?;
@@ -65,19 +65,19 @@ pub fn create_module() -> Scope {
         }
     });
     def!(f, to_upper_case(string), |s| {
-        let v = get_string(s, "string")?;
+        let v = get_string(s, name!(string))?;
         Ok(CssString::new(v.value().to_ascii_uppercase(), v.quotes()).into())
     });
     def!(f, to_upper_case_unicode(string), |s| {
-        let v = get_string(s, "string")?;
+        let v = get_string(s, name!(string))?;
         Ok(CssString::new(v.value().to_uppercase(), v.quotes()).into())
     });
     def!(f, to_lower_case(string), |s| {
-        let v = get_string(s, "string")?;
+        let v = get_string(s, name!(string))?;
         Ok(CssString::new(v.value().to_ascii_lowercase(), v.quotes()).into())
     });
     def!(f, to_lower_case_unicode(string), |s| {
-        let v = get_string(s, "string")?;
+        let v = get_string(s, name!(string))?;
         Ok(CssString::new(v.value().to_lowercase(), v.quotes()).into())
     });
     def!(f, unique_id(), |_s| {
@@ -93,7 +93,7 @@ pub fn create_module() -> Scope {
         Ok(format!("x{:x}", v).into())
     });
     def!(f, unquote(string), |s| {
-        Ok(get_string(s, "string")?.unquote().into())
+        Ok(get_string(s, name!(string))?.unquote().into())
     });
 
     f
