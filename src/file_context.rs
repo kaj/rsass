@@ -32,63 +32,43 @@ pub trait FileContext: Sized + std::fmt::Debug {
     type File: std::io::Read;
 
     /// Find a file for `@import`
+    ///
+    /// This includes "import-only" filenames, otherwise the same as [`#find_file_use`].
     fn find_file_import(
         &self,
         url: &str,
     ) -> Result<Option<(Self, String, Self::File)>, Error> {
-        let (base, name) = url
-            .rfind('/') // rsplit_once is new in rust 1.52.0; refactor later
-            .map(|p| (&url[..p], &url[p + 1..]))
-            .unwrap_or(("", url));
-
-        for name in &[
-            name,
-            &format!("{}.scss", name),
-            &format!("_{}.scss", name),
-            &format!("{}.import.scss", name),
-            &format!("_{}.import.scss", name),
-            &format!("{}/index.scss", name),
-            &format!("{}/_index.scss", name),
-        ] {
-            let full = if base.is_empty() {
-                name.to_string()
-            } else {
-                format!("{}/{}", base, name)
-            };
-            if let Some(result) = self.find_file(&full)? {
-                return Ok(Some(result));
-            }
-        }
-        Ok(None)
+        do_find_file(
+            self,
+            url,
+            &[
+                // base will either be empty or end with a slash.
+                &|base, name| format!("{}{}.scss", base, name),
+                &|base, name| format!("{}_{}.scss", base, name),
+                &|base, name| format!("{}{}.import.scss", base, name),
+                &|base, name| format!("{}_{}.import.scss", base, name),
+                &|base, name| format!("{}{}/index.scss", base, name),
+                &|base, name| format!("{}{}/_index.scss", base, name),
+            ],
+        )
     }
 
-    /// Find a file for `@import`
+    /// Find a file for `@use`
     fn find_file_use(
         &self,
         url: &str,
     ) -> Result<Option<(Self, String, Self::File)>, Error> {
-        let (base, name) = url
-            .rfind('/') // rsplit_once is new in rust 1.52.0; refactor later
-            .map(|p| (&url[..p], &url[p + 1..]))
-            .unwrap_or(("", url));
-
-        for name in &[
-            name,
-            &format!("{}.scss", name),
-            &format!("_{}.scss", name),
-            &format!("{}/index.scss", name),
-            &format!("{}/_index.scss", name),
-        ] {
-            let full = if base.is_empty() {
-                name.to_string()
-            } else {
-                format!("{}/{}", base, name)
-            };
-            if let Some(result) = self.find_file(&full)? {
-                return Ok(Some(result));
-            }
-        }
-        Ok(None)
+        do_find_file(
+            self,
+            url,
+            &[
+                // base will either be empty or end with a slash.
+                &|base, name| format!("{}{}.scss", base, name),
+                &|base, name| format!("{}_{}.scss", base, name),
+                &|base, name| format!("{}{}/index.scss", base, name),
+                &|base, name| format!("{}{}/_index.scss", base, name),
+            ],
+        )
     }
 
     /// Find a file.
@@ -103,6 +83,29 @@ pub trait FileContext: Sized + std::fmt::Debug {
         &self,
         url: &str,
     ) -> Result<Option<(Self, String, Self::File)>, Error>;
+}
+
+/// Find a file for `@use`
+fn do_find_file<FC: FileContext>(
+    ctx: &FC,
+    url: &str,
+    names: &[&dyn Fn(&str, &str) -> String],
+) -> Result<Option<(FC, String, FC::File)>, Error> {
+    if let Some(result) = ctx.find_file(url)? {
+        return Ok(Some(result));
+    }
+
+    let (base, name) = url
+        .rfind('/')
+        .map(|p| url.split_at(p + 1))
+        .unwrap_or(("", url));
+
+    for name in names.iter().map(|f| f(base, name)) {
+        if let Some(result) = ctx.find_file(&name)? {
+            return Ok(Some(result));
+        }
+    }
+    Ok(None)
 }
 
 /// A filesystem file context specifies where to find local files.
