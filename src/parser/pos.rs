@@ -127,22 +127,36 @@ impl SourcePos {
     /// Show the file name of this pos and where it was imported from.
     pub fn show_files(&self, out: &mut impl Write) -> fmt::Result {
         let mut nextpos = Some(self);
+        let mut lines = Vec::new();
         while let Some(pos) = nextpos {
-            write!(
-                out,
-                "\n{0:lnw$} {file} {row}:{col}  {cause}",
-                "",
-                lnw = self.p.line_no.to_string().len(),
-                file = pos.p.file.name(),
-                row = pos.p.line_no,
-                col = pos.p.line_pos,
-                cause = pos.p.file.imported,
-            )?;
+            lines.push((
+                format!(
+                    "{file} {row}:{col}",
+                    file = pos.p.file.name(),
+                    row = pos.p.line_no,
+                    col = pos.p.line_pos,
+                ),
+                pos.p.file.imported.to_string(),
+            ));
             nextpos = match &pos.p.file.imported {
                 SourceKind::Root => None,
                 SourceKind::Imported(pos) => Some(pos),
                 SourceKind::Called(_, pos) => Some(pos),
             };
+        }
+        if let Some(whatw) = lines.iter().map(|(what, _why)| what.len()).max()
+        {
+            for (what, why) in lines {
+                write!(
+                    out,
+                    "\n{0:lnw$} {what:whatw$}  {why}",
+                    "",
+                    lnw = self.p.line_no.to_string().len(),
+                    what = what,
+                    whatw = whatw,
+                    why = why,
+                )?;
+            }
         }
         Ok(())
     }
@@ -244,7 +258,7 @@ impl fmt::Display for SourceKind {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
             SourceKind::Root => out.write_str("root stylesheet"),
-            SourceKind::Imported(_) => out.write_str("import"),
+            SourceKind::Imported(_) => out.write_str("@import"),
             SourceKind::Called(name, _) => write!(out, "{}()", name),
         }
     }

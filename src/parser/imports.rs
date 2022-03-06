@@ -6,6 +6,7 @@ use super::util::{ignore_comments, opt_spacelike, semi_or_end};
 use super::value::space_list;
 use super::{media_args, PResult, Span};
 use crate::sass::{Expose, Item, Name, SassString, UseAs, Value};
+use crate::SourcePos;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{map, opt, value};
@@ -19,7 +20,6 @@ pub fn import2(input: Span) -> PResult<Item> {
     map(
         terminated(
             tuple((
-                position,
                 separated_list0(
                     comma,
                     alt((
@@ -30,11 +30,13 @@ pub fn import2(input: Span) -> PResult<Item> {
                     )),
                 ),
                 opt(media_args),
+                position,
             )),
             semi_or_end,
         ),
-        |(position, import, args)| {
-            Item::Import(import, args.unwrap_or(Value::Null), position.into())
+        |(import, args, end)| {
+            let pos = SourcePos::from_to(input, end);
+            Item::Import(import, args.unwrap_or(Value::Null), pos)
         },
     )(input)
 }

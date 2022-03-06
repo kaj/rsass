@@ -9,6 +9,7 @@ project adheres to
 
 ## Unreleased
 
+* Detect `@import` loops.
 * Enable clippy in CI and fix some things it complained about (PR #128).
 * Update sass-spec test suite to 2022-02-24.
 

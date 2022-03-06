@@ -168,6 +168,7 @@ fn handle_item(
                     if let Some((sub_context, path, mut file)) =
                         file_context.find_file_import(x.value())?
                     {
+                        scope.lock_loading(&path, pos.clone())?;
                         let items = parse_imported_scss_file(
                             &mut file,
                             &path,
@@ -190,6 +191,7 @@ fn handle_item(
                             &UseAs::Star,
                             &Expose::All,
                         )?;
+                        scope.unlock_loading(&path);
                         continue 'name;
                     }
                 }

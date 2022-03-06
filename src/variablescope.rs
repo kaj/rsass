@@ -2,7 +2,7 @@
 use crate::css::{CssString, Selectors, Value};
 use crate::output::Format;
 use crate::sass::{Expose, Function, Item, Mixin, Name, UseAs};
-use crate::Error;
+use crate::{Error, SourcePos};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::ops::Deref;
@@ -217,6 +217,8 @@ pub struct Scope {
     selectors: Option<Selectors>,
     forward: Mutex<Option<ScopeRef>>,
     format: Format,
+    // Set of files currently loading. Only used in the root scope.
+    loading: Mutex<BTreeMap<String, SourcePos>>,
 }
 
 impl<'a> Scope {
@@ -235,6 +237,7 @@ impl<'a> Scope {
             selectors: None,
             forward: Default::default(),
             format,
+            loading: Default::default(),
         }
     }
     /// Create a scope for a built-in module.
@@ -266,6 +269,7 @@ impl<'a> Scope {
             selectors: None,
             forward: Default::default(),
             format,
+            loading: Default::default(),
         }
     }
     /// Create a new subscope of a given parent with selectors.
@@ -280,6 +284,7 @@ impl<'a> Scope {
             selectors: Some(selectors),
             forward: Default::default(),
             format,
+            loading: Default::default(),
         }
     }
 
@@ -592,6 +597,31 @@ impl<'a> Scope {
     /// Create a new one if necessary.
     pub fn opt_forward(&self) -> Option<ScopeRef> {
         self.forward.lock().unwrap().clone()
+    }
+    pub(crate) fn lock_loading(
+        &self,
+        name: &str,
+        pos: SourcePos,
+    ) -> Result<(), Error> {
+        if let Some(parent) = &self.parent {
+            parent.lock_loading(name, pos)
+        } else if let Some(old) = self
+            .loading
+            .lock()
+            .unwrap()
+            .insert(name.into(), pos.clone())
+        {
+            Err(Error::ImportLoop(pos, old))
+        } else {
+            Ok(())
+        }
+    }
+    pub(crate) fn unlock_loading(&self, name: &str) {
+        if let Some(parent) = &self.parent {
+            parent.unlock_loading(name)
+        } else {
+            self.loading.lock().unwrap().remove(name);
+        }
     }
 }
 

@@ -482,7 +482,7 @@ mod issue_1797;
 
 mod issue_1798;
 
-// Ignoring "issue_1801", not expected to work yet.
+mod issue_1801;
 
 mod issue_1803;
 

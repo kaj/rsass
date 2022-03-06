@@ -27,6 +27,8 @@ pub enum Error {
     /// The pos here is the function declaration.
     /// This error will be wrapped in a BadCall, giving the pos of the call.
     BadArguments(String, SourcePos),
+    /// Tried to import file at pos while already importing it at pos.
+    ImportLoop(SourcePos, SourcePos),
     /// A range error
     BadRange(RangeError),
     /// Error parsing sass data.
@@ -92,6 +94,13 @@ impl fmt::Display for Error {
                 write!(out, "Error: ${}: {}", name, problem)
             }
             Error::ParseError(ref err) => err.fmt(out),
+            Error::ImportLoop(ref pos, ref oldpos) => {
+                writeln!(out, "Error: This file is already being loaded.")?;
+                pos.show_detail(out, '^', " new load")?;
+                writeln!(out)?;
+                oldpos.show_detail(out, '=', " original load")?;
+                pos.show_files(out)
+            }
             Error::BadCall(ref msg, ref callpos, ref declpos) => {
                 msg.fmt(out)?;
                 writeln!(out)?;
