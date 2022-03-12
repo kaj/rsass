@@ -175,16 +175,19 @@ impl FileContext for FsFileContext {
         let parent = name.parent();
         if let Some(name) = name.file_name().and_then(|n| n.to_str()) {
             for base in &self.path {
-                let full = if let Some(parent) = parent {
-                    base.join(parent).join(name)
-                } else {
-                    base.join(name)
-                };
-                if full.is_file() {
-                    let path = full.display().to_string();
-                    return match Self::File::open(full) {
-                        Ok(file) => Ok(Some((path, file))),
-                        Err(e) => Err(Error::Input(path, e)),
+                use std::fmt::Write;
+                let mut full = String::new();
+                if !base.as_os_str().is_empty() {
+                    write!(&mut full, "{}/", base.display()).unwrap();
+                }
+                if let Some(parent) = parent {
+                    write!(&mut full, "{}/", parent.display()).unwrap();
+                }
+                write!(&mut full, "{}", name).unwrap();
+                if Path::new(&full).is_file() {
+                    return match Self::File::open(&full) {
+                        Ok(file) => Ok(Some((full, file))),
+                        Err(e) => Err(Error::Input(full, e)),
                     };
                 }
             }
