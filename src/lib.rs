@@ -53,8 +53,8 @@ pub use crate::error::Error;
 pub use crate::file_context::{FileContext, FsFileContext};
 use crate::output::Format;
 pub use crate::parser::{
-    parse_scss_data, parse_scss_file, parse_scss_path, parse_value_data,
-    ParseError, SourceName, SourcePos,
+    parse_scss_data, parse_value_data, ParseError, SourceFile, SourceName,
+    SourcePos,
 };
 pub use crate::variablescope::{Scope, ScopeRef};
 
@@ -129,7 +129,7 @@ pub fn compile_scss_path(
     format: Format,
 ) -> Result<Vec<u8>, Error> {
     let file_context = FsFileContext::new();
-    let (sub_context, path) = file_context.file(path);
-    let items = parse_scss_path(&path)?;
-    format.write_root(&items, ScopeRef::new_global(format), &sub_context)
+    let source = file_context.file(path)?;
+    let items = source.parse()?;
+    format.write_root(&items, ScopeRef::new_global(format), &file_context)
 }

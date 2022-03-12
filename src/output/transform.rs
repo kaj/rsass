@@ -9,7 +9,6 @@ use super::cssbuf::{CssBuf, CssHead};
 use crate::css::{BodyItem, Rule, Selectors};
 use crate::error::Error;
 use crate::file_context::FileContext;
-use crate::parser::parse_imported_scss_file;
 use crate::sass::{
     self, get_global_module, Expose, FormalArgs, Function, Item, Mixin, Name,
     UseAs,
@@ -60,11 +59,13 @@ fn handle_item(
                     ));
                 }
                 module
-            } else if let Some((sub_context, path, mut file)) =
-                file_context.find_file_use(name.value())?
-            {
+            } else if let Some(sourcefile) = file_context.find_file_use(
+                name.value(),
+                // TODO: Get a proper pos!
+                crate::parser::code_span(b"").into(),
+            )? {
                 head.load_module(
-                    &path,
+                    sourcefile.path(),
                     |head| {
                         let module = ScopeRef::new_global(format);
                         for (name, value, default) in with {
@@ -84,19 +85,14 @@ fn handle_item(
                                 ));
                             }
                         }
-                        let items = parse_imported_scss_file(
-                            &mut file,
-                            &path,
-                            // TODO: Get a proper pos!
-                            crate::parser::code_span(b"").into(),
-                        )?;
+                        let items = sourcefile.parse()?;
                         handle_body(
                             &items,
                             head,
                             None,
                             buf,
                             module.clone(),
-                            &sub_context,
+                            file_context,
                         )?;
                         Ok(module)
                     })?
@@ -115,11 +111,13 @@ fn handle_item(
                     ));
                 }
                 module
-            } else if let Some((sub_context, path, mut file)) =
-                file_context.find_file_use(name.value())?
-            {
+            } else if let Some(sourcefile) = file_context.find_file_use(
+                name.value(),
+                // TODO: Get a proper pos!
+                crate::parser::code_span(b"").into(),
+            )? {
                 head.load_module(
-                    &path,
+                    sourcefile.path(),
                     |head| {
                         let module = ScopeRef::new_global(format);
                         for (name, value, default) in with {
@@ -139,19 +137,14 @@ fn handle_item(
                                 ));
                             }
                         }
-                        let items = parse_imported_scss_file(
-                            &mut file,
-                            &path,
-                            // TODO: Get a proper pos!
-                            crate::parser::code_span(b"").into(),
-                        )?;
+                        let items = sourcefile.parse()?;
                         handle_body(
                             &items,
                             head,
                             None,
                             buf,
                             module.clone(),
-                            &sub_context,
+                            file_context,
                         )?;
                         Ok(module)
                     })?
@@ -165,15 +158,11 @@ fn handle_item(
             'name: for name in names {
                 if args.is_null() {
                     let x = name.evaluate(scope.clone())?;
-                    if let Some((sub_context, path, mut file)) =
-                        file_context.find_file_import(x.value())?
+                    if let Some(sourcefile) = file_context
+                        .find_file_import(x.value(), pos.clone())?
                     {
-                        scope.lock_loading(&path, pos.clone())?;
-                        let items = parse_imported_scss_file(
-                            &mut file,
-                            &path,
-                            pos.clone(),
-                        )?;
+                        scope.lock_loading(sourcefile.path(), pos.clone())?;
+                        let items = sourcefile.parse()?;
                         let mut thead = CssHead::new(format);
                         let module = ScopeRef::sub(scope.clone());
                         handle_body(
@@ -182,7 +171,7 @@ fn handle_item(
                             rule.as_deref_mut(),
                             buf,
                             module.clone(),
-                            &sub_context,
+                            file_context,
                         )?;
                         head.merge_imports(thead);
                         scope.do_use(
@@ -191,7 +180,7 @@ fn handle_item(
                             &UseAs::Star,
                             &Expose::All,
                         )?;
-                        scope.unlock_loading(&path);
+                        scope.unlock_loading(sourcefile.path());
                         continue 'name;
                     }
                 }

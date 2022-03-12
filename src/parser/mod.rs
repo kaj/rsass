@@ -49,14 +49,46 @@ use nom::multi::{
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::IResult;
 use nom_locate::LocatedSpan;
-use std::fs::File;
 use std::io::Read;
-use std::path::Path;
 use std::str::{from_utf8, Utf8Error};
 
 pub type Span<'a> = LocatedSpan<&'a [u8], &'a SourceName>;
 /// A Parsing Result; ok gives a span for the rest of the data and a parsed T.
 type PResult<'a, T> = IResult<Span<'a>, T>;
+
+/// The full data of a source file.
+///
+/// This type contains both the contents (as a `Vec<u8>`) of a file
+/// and information on from where (and why) it was loaded.
+/// You can create a SourceFile with the [`SourceFile::read`]
+/// constructor, but normally you will get one from a
+/// [`FileContext`][crate::FileContext].
+pub struct SourceFile {
+    data: Vec<u8>,
+    source: SourceName,
+}
+
+impl SourceFile {
+    /// Create a SourceFile from something readable and a name.
+    pub fn read<T: Read>(
+        file: &mut T,
+        source: SourceName,
+    ) -> Result<Self, Error> {
+        let mut data = vec![];
+        file.read_to_end(&mut data)
+            .map_err(|e| Error::Input(source.name().to_string(), e))?;
+        Ok(SourceFile { data, source })
+    }
+
+    /// Parse this scss source.
+    pub fn parse(&self) -> Result<Vec<Item>, Error> {
+        let data = Span::new_extra(&self.data, &self.source);
+        Ok(ParseError::check(sassfile(data))?)
+    }
+    pub(crate) fn path(&self) -> &str {
+        self.source.name()
+    }
+}
 
 pub fn code_span(value: &[u8]) -> Span {
     use lazy_static::lazy_static;
@@ -93,49 +125,6 @@ fn test_parse_value_data_2() -> Result<(), Error> {
     let v = parse_value_data(b"17em;");
     assert!(v.is_err());
     Ok(())
-}
-
-/// Parse a scss file by path.
-///
-/// Returns a vec of the top level items of the file (or an error message).
-pub fn parse_scss_path(path: &Path) -> Result<Vec<Item>, Error> {
-    let source = SourceName::root(path.display());
-    let mut f = File::open(path)
-        .map_err(|e| Error::Input(source.name().to_string(), e))?;
-    do_parse_scss_file(&mut f, &source)
-}
-
-/// Parse a scss file.
-///
-/// Returns a vec of the top level items of the file (or an error message).
-///
-/// **Attention**: Previously, this function took a path to the file
-/// instead of a file itself. That function has been renamed to [`parse_scss_path()`].
-pub fn parse_scss_file<T: Read>(
-    file: &mut T,
-    path: &str,
-) -> Result<Vec<Item>, Error> {
-    do_parse_scss_file(file, &SourceName::root(path))
-}
-
-pub fn parse_imported_scss_file<T: Read>(
-    file: &mut T,
-    path: &str,
-    from: SourcePos,
-) -> Result<Vec<Item>, Error> {
-    let source = SourceName::imported(path, from);
-    do_parse_scss_file(file, &source)
-}
-
-fn do_parse_scss_file<T: Read>(
-    file: &mut T,
-    source: &SourceName,
-) -> Result<Vec<Item>, Error> {
-    let mut data = vec![];
-    file.read_to_end(&mut data)
-        .map_err(|e| Error::Input(source.name().to_string(), e))?;
-    let data = Span::new_extra(&data, source);
-    Ok(ParseError::check(sassfile(data))?)
 }
 
 /// Parse scss data from a buffer.

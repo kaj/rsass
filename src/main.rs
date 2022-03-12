@@ -1,7 +1,7 @@
 use clap::Parser;
 use rsass::{
     output::{Format, Style},
-    parse_scss_path, Error, FsFileContext, ScopeRef,
+    Error, FsFileContext, ScopeRef,
 };
 use std::io::{stdout, Write};
 use std::path::PathBuf;
@@ -82,12 +82,12 @@ impl Args {
             if let Some(include_path) = &self.load_path {
                 file_context.push_path(include_path.as_ref());
             }
-            let (sub_context, path) = file_context.file(name.as_ref());
-            let items = parse_scss_path(&path)?;
+            let source = file_context.file(name.as_ref())?;
+            let items = source.parse()?;
             let result = format.write_root(
                 &items,
                 ScopeRef::new_global(format),
-                &sub_context,
+                &file_context,
             )?;
             let out = stdout();
             out.lock().write_all(&result)?;

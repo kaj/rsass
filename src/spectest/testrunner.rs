@@ -1,5 +1,7 @@
 use rsass::output::Format;
-use rsass::{parse_scss_file, Error, FileContext, FsFileContext, ScopeRef};
+use rsass::{
+    Error, FileContext, FsFileContext, ScopeRef, SourceFile, SourceName,
+};
 use std::collections::BTreeMap;
 
 pub fn runner() -> TestRunner {
@@ -62,7 +64,7 @@ impl FileContext for TestFileContext {
     fn find_file(
         &self,
         name: &str,
-    ) -> Result<Option<(Self, String, Self::File)>, Error> {
+    ) -> Result<Option<(String, Self::File)>, Error> {
         let mut cwd = self.cwd.trim_end_matches('/');
         let mut lname = name;
         while let Some(name) = lname.strip_prefix("../") {
@@ -73,24 +75,15 @@ impl FileContext for TestFileContext {
 
         if let Some(data) = self.mock.get(&tname) {
             return Ok(Some((
-                self.clone(),
-                tname,
+                name.to_string(),
                 Cursor::new(data.as_bytes().to_vec()),
             )));
         }
 
-        Ok(self.parent.find_file(name)?.map(|(ctx, name, mut file)| {
+        Ok(self.parent.find_file(name)?.map(|(name, mut file)| {
             let mut buf = Vec::new();
             file.read_to_end(&mut buf).unwrap();
-            (
-                TestFileContext {
-                    parent: ctx,
-                    mock: BTreeMap::new(),
-                    cwd: Default::default(),
-                },
-                name,
-                Cursor::new(buf),
-            )
+            (name, Cursor::new(buf))
         }))
     }
 }
@@ -146,7 +139,8 @@ impl TestRunner {
     }
 
     fn rsass(&self, input: &str) -> Result<Vec<u8>, Error> {
-        let items = parse_scss_file(&mut input.as_bytes(), "input.scss")?;
+        let name = SourceName::root("input.scss");
+        let items = SourceFile::read(&mut input.as_bytes(), name)?.parse()?;
         self.format.write_root(
             &items,
             ScopeRef::new_global(self.format),
