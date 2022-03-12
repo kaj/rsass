@@ -9,6 +9,19 @@ project adheres to
 
 ## Unreleased
 
+### Breaking changes
+
+* The functions `parse_scss_file` and `parse_scss_path` is removed.
+  Use `SourceFile` (maybe from a `FileContext`) instead (PR #132).
+* Some API changes (mayinly using `SourceFile` as return type) in
+  `FileContext` and `FsF ileContext` (PR #132).
+
+### Improvements
+
+* Refactor source file handling.  Instead of creating new FileContexts
+  wrapping the original for each file for searching for local paths in
+  that file, use the SourceName of the containing file to find local
+  paths (PR #132).
 * Detect `@import` loops.
 * Enable clippy in CI and fix some things it complained about (PR #128).
 * Update sass-spec test suite to 2022-02-24.
