@@ -178,6 +178,9 @@ impl SourcePos {
     pub(crate) fn same_file_as(&self, other: &Self) -> bool {
         self.p.file.name == other.p.file.name
     }
+    pub(crate) fn file_url(&self) -> &str {
+        &self.p.file.name
+    }
 }
 
 impl From<Span<'_>> for SourcePos {

@@ -1,4 +1,4 @@
-use crate::error::Error;
+use crate::{Error, SourceFile, SourceName, SourcePos};
 use std::path::{Path, PathBuf};
 
 /// A file context manages finding and loading files.
@@ -18,9 +18,9 @@ use std::path::{Path, PathBuf};
 ///
 ///     fn find_file(
 ///         &self, name: &str
-///     ) -> Result<Option<(Self, String, Self::File)>, Error> {
+///     ) -> Result<Option<(String, Self::File)>, Error> {
 ///         if let Some(file) = self.files.get(name).map(|data| *data) {
-///             Ok(Some((self.clone(), name.to_string(), file)))
+///             Ok(Some((name.to_string(), file)))
 ///         } else {
 ///             Ok(None)
 ///         }
@@ -37,28 +37,42 @@ pub trait FileContext: Sized + std::fmt::Debug {
     fn find_file_import(
         &self,
         url: &str,
-    ) -> Result<Option<(Self, String, Self::File)>, Error> {
-        do_find_file(
-            self,
-            url,
-            &[
-                // base will either be empty or end with a slash.
-                &|base, name| format!("{}{}.scss", base, name),
-                &|base, name| format!("{}_{}.scss", base, name),
-                &|base, name| format!("{}{}.import.scss", base, name),
-                &|base, name| format!("{}_{}.import.scss", base, name),
-                &|base, name| format!("{}{}/index.scss", base, name),
-                &|base, name| format!("{}{}/_index.scss", base, name),
-            ],
-        )
+        from: SourcePos,
+    ) -> Result<Option<SourceFile>, Error> {
+        let names: &[&dyn Fn(&str, &str) -> String] = &[
+            // base will either be empty or end with a slash.
+            &|base, name| format!("{}{}.scss", base, name),
+            &|base, name| format!("{}_{}.scss", base, name),
+            &|base, name| format!("{}{}.import.scss", base, name),
+            &|base, name| format!("{}_{}.import.scss", base, name),
+            &|base, name| format!("{}{}/index.scss", base, name),
+            &|base, name| format!("{}{}/_index.scss", base, name),
+        ];
+        // Note: Should a "full stack" of bases be used here?
+        // Or is this fine?
+        let base = from.file_url();
+        if let Some((path, mut file)) = base
+            .rfind('/')
+            .map(|p| base.split_at(p + 1).0)
+            .map(|base| {
+                do_find_file(self, &format!("{}{}", base, url), names)
+            })
+            .unwrap_or_else(|| do_find_file(self, url, names))?
+        {
+            let source = SourceName::imported(path, from);
+            Ok(Some(SourceFile::read(&mut file, source)?))
+        } else {
+            Ok(None)
+        }
     }
 
     /// Find a file for `@use`
     fn find_file_use(
         &self,
         url: &str,
-    ) -> Result<Option<(Self, String, Self::File)>, Error> {
-        do_find_file(
+        from: SourcePos,
+    ) -> Result<Option<SourceFile>, Error> {
+        if let Some((path, mut file)) = do_find_file(
             self,
             url,
             &[
@@ -68,7 +82,12 @@ pub trait FileContext: Sized + std::fmt::Debug {
                 &|base, name| format!("{}{}/index.scss", base, name),
                 &|base, name| format!("{}{}/_index.scss", base, name),
             ],
-        )
+        )? {
+            let source = SourceName::imported(path, from);
+            Ok(Some(SourceFile::read(&mut file, source)?))
+        } else {
+            Ok(None)
+        }
     }
 
     /// Find a file.
@@ -82,7 +101,7 @@ pub trait FileContext: Sized + std::fmt::Debug {
     fn find_file(
         &self,
         url: &str,
-    ) -> Result<Option<(Self, String, Self::File)>, Error>;
+    ) -> Result<Option<(String, Self::File)>, Error>;
 }
 
 /// Find a file for `@use`
@@ -90,7 +109,7 @@ fn do_find_file<FC: FileContext>(
     ctx: &FC,
     url: &str,
     names: &[&dyn Fn(&str, &str) -> String],
-) -> Result<Option<(FC, String, FC::File)>, Error> {
+) -> Result<Option<(String, FC::File)>, Error> {
     if let Some(result) = ctx.find_file(url)? {
         return Ok(Some(result));
     }
@@ -113,21 +132,6 @@ fn do_find_file<FC: FileContext>(
 /// When opening an included file, an extended file context is
 /// created, to find further included files relative to the file they
 /// are inlcuded from.
-///
-/// # Example
-/// ```
-/// use rsass::FsFileContext;
-/// use std::path::PathBuf;
-///
-/// let base = FsFileContext::new();
-/// let (base, file1) =
-///     base.file(&PathBuf::from("some").join("dir").join("file.scss"));
-/// // base is now a relative to file1, usefull to open files
-/// // by paths mentioned in file1.
-/// let (base, file2) = base.file("some/other.scss".as_ref());
-/// assert_eq!(file1, PathBuf::from("some").join("dir").join("file.scss"));
-/// assert_eq!(file2, PathBuf::from("some").join("dir").join("some/other.scss"));
-/// ```
 #[derive(Clone, Debug)]
 pub struct FsFileContext {
     path: Vec<PathBuf>,
@@ -151,15 +155,12 @@ impl FsFileContext {
 
     /// Get a file from this context.
     ///
-    /// Get a path and a FsFileContext from this FsFileContext and a path.
-    pub fn file(&self, file: &Path) -> (Self, PathBuf) {
-        let t = self.path[0].join(file);
-        let mut path = vec![];
-        if let Some(dir) = t.parent() {
-            path.push(PathBuf::from(dir));
-        }
-        path.extend_from_slice(&self.path);
-        (Self { path }, t)
+    /// Get a source file from this FsFileContext and a path.
+    pub fn file(&self, path: &Path) -> Result<SourceFile, Error> {
+        let source = SourceName::root(path.display());
+        let mut f = std::fs::File::open(path)
+            .map_err(|e| Error::Input(source.name().to_string(), e))?;
+        SourceFile::read(&mut f, source)
     }
 }
 
@@ -169,9 +170,7 @@ impl FileContext for FsFileContext {
     fn find_file(
         &self,
         name: &str,
-    ) -> Result<Option<(Self, String, Self::File)>, crate::Error> {
-        // TODO Check docs what expansions should be tried!
-        // Files with .sass extension needs another parser.
+    ) -> Result<Option<(String, Self::File)>, Error> {
         let name = Path::new(name);
         let parent = name.parent();
         if let Some(name) = name.file_name().and_then(|n| n.to_str()) {
@@ -182,16 +181,9 @@ impl FileContext for FsFileContext {
                     base.join(name)
                 };
                 if full.is_file() {
-                    let c = if let Some(parent) = parent {
-                        let mut path = vec![PathBuf::from(parent)];
-                        path.extend_from_slice(&self.path);
-                        Self { path }
-                    } else {
-                        self.clone()
-                    };
                     let path = full.display().to_string();
                     return match Self::File::open(full) {
-                        Ok(file) => Ok(Some((c, path, file))),
+                        Ok(file) => Ok(Some((path, file))),
                         Err(e) => Err(Error::Input(path, e)),
                     };
                 }
