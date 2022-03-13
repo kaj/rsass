@@ -11,6 +11,6 @@ pub use self::call_args::CallArgs;
 pub use self::rule::{BodyItem, Rule};
 pub use self::selectors::{BadSelector, Selector, SelectorPart, Selectors};
 pub use self::string::CssString;
-pub use self::value::{Value, ValueMap};
+pub use self::value::{Value, ValueMap, ValueToMapError};
 
 pub(crate) use self::util::is_not;

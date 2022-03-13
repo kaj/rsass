@@ -24,7 +24,7 @@ pub use self::call_args::CallArgs;
 pub use self::formal_args::{ArgsError, FormalArgs};
 pub use self::functions::{get_global_module, Function};
 pub use self::item::{Expose, Item, UseAs};
-pub use self::mixin::Mixin;
+pub use self::mixin::{Mixin, MixinDecl};
 pub use self::name::Name;
 pub use self::selectors::{Selector, SelectorPart, Selectors};
 pub use self::string::{SassString, StringPart};

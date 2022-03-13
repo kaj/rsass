@@ -16,7 +16,7 @@ mod in_input {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn after() {
         let runner = runner().with_cwd("after");
         assert_eq!(
@@ -29,7 +29,7 @@ mod in_input {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn before() {
         let runner = runner().with_cwd("before");
         assert_eq!(
@@ -49,7 +49,7 @@ mod in_other {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn after() {
         let runner = runner().with_cwd("after");
         assert_eq!(
@@ -62,7 +62,7 @@ mod in_other {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn before() {
         let runner = runner().with_cwd("before");
         assert_eq!(

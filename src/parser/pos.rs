@@ -49,13 +49,30 @@ impl SourcePos {
         args: &FormalArgs,
         module: &str,
     ) -> Self {
-        let args = args.to_string();
+        SourcePos::mock_impl(name, "@function", args, module)
+    }
+    pub(crate) fn mock_mixin(
+        name: &Name,
+        args: &FormalArgs,
+        module: &str,
+    ) -> Self {
+        SourcePos::mock_impl(name, "@mixin", args, module)
+    }
+    fn mock_impl(
+        name: &Name,
+        kind: &str,
+        args: &FormalArgs,
+        module: &str,
+    ) -> Self {
+        let line = format!("{} {}{} {{", kind, name, args);
+        let line_pos = kind.chars().count() + 2;
+        let length = line.chars().count() - 1 - line_pos;
         SourcePos {
             p: Arc::new(SourcePosImpl {
-                line: format!("@function {}{} {{", name, args),
+                line,
                 line_no: 1,
-                line_pos: 11,
-                length: name.as_ref().chars().count() + args.chars().count(),
+                line_pos,
+                length,
                 file: SourceName::root(module),
             }),
         }
@@ -228,6 +245,13 @@ impl SourceName {
         SourceName {
             name: name.to_string(),
             imported: SourceKind::Imported(from),
+        }
+    }
+    /// Create a name for a mixin loaded by load_css from a specific pos.
+    pub fn load_css<T: ToString>(name: T, from: SourcePos) -> Self {
+        SourceName {
+            name: name.to_string(),
+            imported: SourceKind::Called("load-css".to_string(), from),
         }
     }
     /// Create a name for a mixin called from a specific pos.

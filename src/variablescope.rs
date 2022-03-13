@@ -1,7 +1,7 @@
 //! A scope is something that contains variable values.
 use crate::css::{CssString, Selectors, Value};
 use crate::output::Format;
-use crate::sass::{Expose, Function, Item, Mixin, Name, UseAs};
+use crate::sass::{Expose, Function, Item, MixinDecl, Name, UseAs};
 use crate::{Error, SourcePos};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -212,7 +212,7 @@ pub struct Scope {
     parent: Option<ScopeRef>,
     modules: Mutex<BTreeMap<String, ScopeRef>>,
     variables: Mutex<BTreeMap<Name, Value>>,
-    mixins: Mutex<BTreeMap<Name, Mixin>>,
+    mixins: Mutex<BTreeMap<Name, MixinDecl>>,
     functions: Mutex<BTreeMap<Name, Function>>,
     selectors: Option<Selectors>,
     forward: Mutex<Option<ScopeRef>>,
@@ -438,7 +438,7 @@ impl<'a> Scope {
     /// Get a mixin by name.
     ///
     /// Returns the formal args and the body of the mixin.
-    pub fn get_mixin(&self, name: &Name) -> Option<Mixin> {
+    pub fn get_mixin(&self, name: &Name) -> Option<MixinDecl> {
         if let Some((modulename, name)) = name.split_module() {
             self.get_module(&modulename)
                 .and_then(|m| m.get_mixin(&name))
@@ -449,7 +449,7 @@ impl<'a> Scope {
         }
     }
     /// Define a mixin.
-    pub fn define_mixin(&self, name: Name, mixin: Mixin) {
+    pub fn define_mixin(&self, name: Name, mixin: MixinDecl) {
         self.mixins.lock().unwrap().insert(name, mixin);
     }
     /// Define a function.

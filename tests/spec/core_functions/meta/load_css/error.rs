@@ -45,7 +45,7 @@ mod from_other {
     }
 
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn extend() {
         let runner = runner().with_cwd("extend");
         assert_eq!(
@@ -64,7 +64,7 @@ mod from_other {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn runtime() {
         let runner = runner().with_cwd("runtime");
         assert_eq!(
@@ -125,7 +125,6 @@ mod load {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn missing() {
         let runner = runner().with_cwd("missing");
         assert_eq!(
@@ -184,7 +183,6 @@ mod member {
     }
 }
 #[test]
-#[ignore] // wrong error
 fn too_few_args() {
     let runner = runner().with_cwd("too_few_args");
     assert_eq!(
@@ -205,7 +203,6 @@ fn too_few_args() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn too_many_args() {
     let runner = runner().with_cwd("too_many_args");
     assert_eq!(
@@ -232,7 +229,6 @@ mod test_type {
     }
 
     #[test]
-    #[ignore] // wrong error
     fn url() {
         let runner = runner().with_cwd("url");
         assert_eq!(
@@ -255,7 +251,6 @@ mod test_type {
         }
 
         #[test]
-        #[ignore] // wrong error
         fn key() {
             let runner = runner().with_cwd("key");
             assert_eq!(
@@ -272,7 +267,6 @@ mod test_type {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn map() {
             let runner = runner().with_cwd("map");
             assert_eq!(
@@ -297,7 +291,7 @@ mod with {
     }
 
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn conflict() {
         let runner = runner().with_cwd("conflict");
         assert_eq!(
@@ -320,7 +314,6 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn core_module() {
         let runner = runner().with_cwd("core_module");
         assert_eq!(
@@ -349,7 +342,7 @@ mod with {
             }
 
             #[test]
-            #[ignore] // wrong error
+            #[ignore] // missing error
             fn both_configured() {
                 let runner = runner().with_cwd("both_configured");
                 assert_eq!(
@@ -369,7 +362,7 @@ mod with {
     );
             }
             #[test]
-            #[ignore] // wrong error
+            #[ignore] // missing error
             fn through_forward() {
                 let runner = runner().with_cwd("through_forward");
                 assert_eq!(
@@ -394,7 +387,7 @@ mod with {
     );
             }
             #[test]
-            #[ignore] // wrong error
+            #[ignore] // missing error
             fn unconfigured_first() {
                 let runner = runner().with_cwd("unconfigured_first");
                 assert_eq!(
@@ -421,7 +414,7 @@ mod with {
             }
 
             #[test]
-            #[ignore] // wrong error
+            #[ignore] // missing error
             fn both_configured() {
                 let runner = runner().with_cwd("both_configured");
                 assert_eq!(
@@ -441,7 +434,7 @@ mod with {
     );
             }
             #[test]
-            #[ignore] // wrong error
+            #[ignore] // missing error
             fn load_first() {
                 let runner = runner().with_cwd("load_first");
                 assert_eq!(
@@ -464,7 +457,7 @@ mod with {
     );
             }
             #[test]
-            #[ignore] // wrong error
+            #[ignore] // missing error
             fn through_forward() {
                 let runner = runner().with_cwd("through_forward");
                 assert_eq!(
@@ -489,7 +482,7 @@ mod with {
     );
             }
             #[test]
-            #[ignore] // wrong error
+            #[ignore] // missing error
             fn unconfigured_first() {
                 let runner = runner().with_cwd("unconfigured_first");
                 assert_eq!(
@@ -528,7 +521,7 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn nested() {
         let runner = runner().with_cwd("nested");
         assert_eq!(
@@ -545,7 +538,7 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn not_default() {
         let runner = runner().with_cwd("not_default");
         assert_eq!(
@@ -562,7 +555,7 @@ mod with {
         );
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn repeated_variable() {
         let runner = runner().with_cwd("repeated_variable");
         assert_eq!(
@@ -585,7 +578,7 @@ mod with {
         }
 
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn test_as() {
             let runner = runner().with_cwd("as");
             assert_eq!(
@@ -602,7 +595,7 @@ mod with {
     );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn hide() {
             let runner = runner().with_cwd("hide");
             assert_eq!(
@@ -619,7 +612,7 @@ mod with {
     );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn show() {
             let runner = runner().with_cwd("show");
             assert_eq!(
@@ -636,7 +629,7 @@ mod with {
     );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn with() {
             let runner = runner().with_cwd("with");
             assert_eq!(
@@ -654,7 +647,7 @@ mod with {
         }
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn undefined() {
         let runner = runner().with_cwd("undefined");
         assert_eq!(

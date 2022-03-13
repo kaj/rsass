@@ -24,7 +24,7 @@ mod load_css {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn different_extend() {
         let runner = runner().with_cwd("different_extend");
         assert_eq!(
@@ -39,7 +39,6 @@ mod load_css {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn different_nesting() {
         let runner = runner().with_cwd("different_nesting");
         assert_eq!(
@@ -55,7 +54,6 @@ mod load_css {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn runs_once() {
         let runner = runner().with_cwd("runs_once");
         assert_eq!(
@@ -88,7 +86,7 @@ mod test_use {
     }
 
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn different_extend() {
         let runner = runner().with_cwd("different_extend");
         assert_eq!(
@@ -104,7 +102,6 @@ mod test_use {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn different_nesting() {
         let runner = runner().with_cwd("different_nesting");
         assert_eq!(
@@ -126,7 +123,6 @@ mod test_use {
         }
 
         #[test]
-        #[ignore] // unexepected error
         fn different_text() {
             let runner = runner().with_cwd("different_text");
             assert_eq!(
@@ -138,7 +134,6 @@ mod test_use {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn same_text() {
             let runner = runner().with_cwd("same_text");
             assert_eq!(

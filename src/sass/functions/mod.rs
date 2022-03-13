@@ -282,7 +282,7 @@ fn get_integer(s: &Scope, name: Name) -> Result<i64, Error> {
     get_checked(s, name, check::unitless_int)
 }
 
-fn get_string(s: &Scope, name: Name) -> Result<CssString, Error> {
+pub fn get_string(s: &Scope, name: Name) -> Result<CssString, Error> {
     get_checked(s, name, check::string)
 }
 
