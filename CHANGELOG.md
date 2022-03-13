@@ -30,7 +30,7 @@ project adheres to
 * Detect `@import` loops.
 * Report undefined variable / module errors better.
 * Enable clippy in CI and fix some things it complained about (PR #128).
-* Update sass-spec test suite to 2022-02-24.
+* Update sass-spec test suite to 2022-03-09.
 
 
 ## Release 0.23.4

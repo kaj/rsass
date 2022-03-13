@@ -1,5 +1,5 @@
 //! Tests auto-converted from "sass-spec/spec"
-//! version f41b9bfb, 2022-02-24 12:24:51 -0800.
+//! version 1022770e, 2022-03-09 20:20:14 +0100.
 //! See <https://github.com/sass/sass-spec> for source material.\n
 //! The following tests are excluded from conversion:
 //! ["core_functions/selector/extend", "core_functions/selector/is_superselector", "core_functions/selector/unify", "directives/extend", "libsass-todo-issues/issue_1801", "libsass-todo-issues/issue_221262.hrx", "libsass-todo-issues/issue_221260.hrx", "libsass-todo-issues/issue_221292.hrx", "libsass/unicode-bom/utf-16-big", "libsass/unicode-bom/utf-16-little", "non_conformant/scss/huge.hrx", "non_conformant/scss/multiline_var.hrx"]
