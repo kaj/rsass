@@ -181,7 +181,9 @@ impl FileContext for FsFileContext {
                     write!(&mut full, "{}/", base.display()).unwrap();
                 }
                 if let Some(parent) = parent {
-                    write!(&mut full, "{}/", parent.display()).unwrap();
+                    if !parent.as_os_str().is_empty() {
+                        write!(&mut full, "{}/", parent.display()).unwrap();
+                    }
                 }
                 write!(&mut full, "{}", name).unwrap();
                 if Path::new(&full).is_file() {
