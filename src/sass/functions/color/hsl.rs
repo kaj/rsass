@@ -29,7 +29,7 @@ pub fn register(f: &mut Scope) {
     def!(f, lightness(color), |s| {
         Ok(percentage(get_color(s, "color")?.to_hsla().lum()))
     });
-    def!(f, grayscale(color), |args| match args.get("color")? {
+    def!(f, grayscale(color), |args| match args.get(&name!(color))? {
         Value::Color(col, _) => {
             let hsla = col.to_hsla();
             Ok(
@@ -81,7 +81,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     def_va!(f, saturate(kwargs), |s| {
         let a1 = FormalArgs::new(vec![one_arg!(color), one_arg!(amount)]);
         let a2 = FormalArgs::new(vec![one_arg!(amount)]);
-        let args = CallArgs::from_value(s.get("kwargs")?)?;
+        let args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
         match a1.eval(s.clone(), args.clone()) {
             Ok(s) => {
                 let col = get_color(&s, "color")?;
@@ -95,7 +95,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
                 let s = a2
                     .eval(s.clone(), args)
                     .map_err(|e| bad_arg(e, &name!(saturate), &a2))?;
-                let sat = s.get("amount")?;
+                let sat = s.get(&name!(amount))?;
                 check_pct(sat.clone()).named(name!(amount))?;
                 Ok(make_call("saturate", vec![sat]))
             }
@@ -134,9 +134,9 @@ fn do_hsla(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
         one_arg!(lightness),
         one_arg!(alpha),
     ]);
-    let args = CallArgs::from_value(s.get("kwargs")?)?;
+    let args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
     match a1.eval(s.clone(), args.clone()) {
-        Ok(s) => Channels::try_from(s.get("channels")?)
+        Ok(s) => Channels::try_from(s.get(&name!(channels))?)
             .map_err(|e| e.conv(&["hue", "saturation", "lightness"]))
             .and_then(|c| match c {
                 Channels::Data([h, s, l, a]) => {
@@ -154,10 +154,10 @@ fn do_hsla(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
 
             hsla_from_values(
                 fn_name,
-                s.get("hue")?,
-                s.get("saturation")?,
-                s.get("lightness")?,
-                s.get("alpha")?,
+                s.get(&name!(hue))?,
+                s.get(&name!(saturation))?,
+                s.get(&name!(lightness))?,
+                s.get(&name!(alpha))?,
             )
         }
     }

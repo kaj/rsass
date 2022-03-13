@@ -225,10 +225,10 @@ lazy_static! {
     static ref FUNCTIONS: FunctionMap = {
         let mut f = BTreeMap::new();
         def!(f, if(condition, if_true, if_false), |s| {
-            if s.get("condition")?.is_true() {
-                Ok(s.get("if_true")?)
+            if s.get(&name!(condition))?.is_true() {
+                Ok(s.get(&name!(if_true))?)
             } else {
-                Ok(s.get("if_false")?)
+                Ok(s.get(&name!(if_false))?)
             }
         });
         color::expose(MODULES.get("sass:color").unwrap(), &mut f);
@@ -257,7 +257,7 @@ fn get_checked<T, F>(s: &Scope, name: Name, check: F) -> Result<T, Error>
 where
     F: Fn(Value) -> Result<T, String>,
 {
-    check(s.get(name.as_ref())?).named(name)
+    check(s.get(&name)?).named(name)
 }
 
 fn get_opt_check<T, F>(
@@ -268,7 +268,7 @@ fn get_opt_check<T, F>(
 where
     F: Fn(Value) -> Result<T, String>,
 {
-    match s.get(name.as_ref())? {
+    match s.get(&name)? {
         Value::Null => Ok(None),
         v => check(v).named(name).map(Some),
     }

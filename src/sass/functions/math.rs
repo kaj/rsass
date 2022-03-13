@@ -17,8 +17,8 @@ pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:math");
 
     def!(f, div(number1, number2), |s| {
-        let a = s.get("number1")?;
-        let b = s.get("number2")?;
+        let a = s.get(&name!(number1))?;
+        let b = s.get(&name!(number2))?;
         use crate::value::Operator;
         match (a, b) {
             (Value::Color(a, _), Value::Numeric(b, _)) if b.is_no_unit() => {

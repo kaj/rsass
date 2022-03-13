@@ -21,8 +21,8 @@ pub fn create_module() -> Scope {
 
     def_va!(f, deep_remove(map, key, keys), |s| {
         let mut map = get_map(s, name!(map))?;
-        let key = s.get("key")?;
-        let keychain = match s.get("keys")? {
+        let key = s.get(&name!(key))?;
+        let keychain = match s.get(&name!(keys))? {
             Value::ArgList(mut args) => {
                 args.positional.insert(0, key);
                 args.positional
@@ -79,15 +79,19 @@ pub fn create_module() -> Scope {
     }
     def_va!(f, get(map, key, keys), |s| {
         let map = get_map(s, name!(map))?;
-        Ok(find_value(&map, &s.get("key")?, &s.get("keys")?)?
-            .cloned()
-            .unwrap_or(Value::Null))
+        Ok(
+            find_value(&map, &s.get(&name!(key))?, &s.get(&name!(keys))?)?
+                .cloned()
+                .unwrap_or(Value::Null),
+        )
     });
     def_va!(f, has_key(map, key, keys), |s| {
         let map = get_map(s, name!(map))?;
-        Ok(find_value(&map, &s.get("key")?, &s.get("keys")?)?
-            .is_some()
-            .into())
+        Ok(
+            find_value(&map, &s.get(&name!(key))?, &s.get(&name!(keys))?)?
+                .is_some()
+                .into(),
+        )
     });
     def!(f, keys(map), |s| {
         let map = get_map(s, name!(map))?;
@@ -99,7 +103,7 @@ pub fn create_module() -> Scope {
     });
     def_va!(g, merge(map1, args), |s| {
         let mut map1 = get_map(s, name!(map1))?;
-        let (keys, map2) = match s.get("args")? {
+        let (keys, map2) = match s.get(&name!(args))? {
             Value::ArgList(mut args) => {
                 if let Some(map2) = args.only_named(&name!(map2)) {
                     (vec![], as_va_map(map2).named(name!(map2))?)
@@ -141,7 +145,7 @@ pub fn create_module() -> Scope {
     });
     def_va!(g, remove(map, keys), |s| {
         let mut map = get_map(s, name!(map))?;
-        match s.get("keys")? {
+        match s.get(&name!(keys))? {
             Value::ArgList(mut args) => {
                 if let Some(key) = args.named.remove(&name!(key)) {
                     if args.positional.is_empty() {
@@ -278,7 +282,7 @@ fn do_deep_remove(map: &mut ValueMap, keys: &[Value]) {
 
 fn set(s: &ScopeRef) -> Result<Value, Error> {
     let map = get_map(s, name!(map))?;
-    match s.get("args")? {
+    match s.get(&name!(args))? {
         Value::ArgList(mut args) => {
             let keys = match args.named.remove(&"keys".into()) {
                 Some(Value::List(v, ..)) => Some(v),

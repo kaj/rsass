@@ -108,7 +108,7 @@ impl Value {
                 Ok(css::Value::Color(rgba.clone().into(), name.clone()))
             }
             Value::Variable(ref name) => {
-                Ok(scope.get(name)?.into_calculated())
+                Ok(scope.get(&name.into())?.into_calculated())
             }
             Value::List(ref v, s, b) => Ok(css::Value::List(
                 v.iter()

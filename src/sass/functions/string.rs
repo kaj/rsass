@@ -115,7 +115,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
     // And special one that isn't part of the string module
     def!(global, url(string = b"null"), |s| {
-        let string = s.get("string")?;
+        let string = s.get(&name!(string))?;
         Ok(format!("url({})", string.format(Default::default())).into())
     });
 }

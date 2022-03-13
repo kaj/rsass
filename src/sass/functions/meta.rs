@@ -37,7 +37,7 @@ pub fn create_module() -> Scope {
         Ok(CssString::new(name, Quotes::Double).into())
     });
     def_va!(f, call(function, args), |s| {
-        let (function, name) = match s.get("function")? {
+        let (function, name) = match s.get(&name!(function))? {
             Value::Function(ref name, ref func) => {
                 (func.clone(), name.clone())
             }
@@ -54,7 +54,7 @@ pub fn create_module() -> Scope {
                     .named(name!(function));
             }
         };
-        let args = CallArgs::from_value(s.get("args")?)?;
+        let args = CallArgs::from_value(s.get(&name!(args))?)?;
         if let Some(function) = function {
             function.call(call_scope(s), args)
         } else {
@@ -89,7 +89,7 @@ pub fn create_module() -> Scope {
         |s| {
             let name = get_string(s, name!(name))?;
             let module = get_opt_check(s, name!(module), check::string)?;
-            if s.get("css")?.is_true() {
+            if s.get(&name!(css))?.is_true() {
                 if module.is_some() {
                     return Err(Error::error(
                         "$css and $module may not both be passed at once.",
@@ -109,7 +109,7 @@ pub fn create_module() -> Scope {
         Ok(module.get_global_or_none(&name.into()).is_some().into())
     });
     def!(f, inspect(value), |s| {
-        Ok(s.get("value")?
+        Ok(s.get(&name!(value))?
             .format(Format::introspect())
             .to_string()
             .into())
@@ -139,7 +139,7 @@ pub fn create_module() -> Scope {
         Ok(module.variables_map())
     });
     def!(f, type_of(value), |s| {
-        Ok(s.get("value")?.type_name().into())
+        Ok(s.get(&name!(value))?.type_name().into())
     });
     def!(f, variable_exists(name), |s| {
         let name = get_string(s, name!(name))?.into();

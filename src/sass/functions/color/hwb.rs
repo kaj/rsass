@@ -26,12 +26,12 @@ pub fn register(f: &mut Scope) {
 }
 
 fn hwb(s: &ScopeRef) -> Result<Value, Error> {
-    let args = CallArgs::from_value(s.get("kwargs")?)?;
+    let args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
     let (hue, w, b, a) = if args.len() < 3 {
         let a1 = FormalArgs::new(vec![one_arg!(channels)]);
         a1.eval(s.clone(), args)
             .map_err(|e| bad_arg(e, &name!(hwb), &a1))
-            .and_then(|s| hwb_from_channels(s.get("channels")?))?
+            .and_then(|s| hwb_from_channels(s.get(&name!(channels))?))?
     } else {
         let a2 = FormalArgs::new(vec![
             one_arg!(hue),
@@ -43,10 +43,10 @@ fn hwb(s: &ScopeRef) -> Result<Value, Error> {
             .map_err(|e| bad_arg(e, &name!(hwb), &a2))
             .and_then(|s| {
                 Ok((
-                    s.get("hue")?,
-                    s.get("whiteness")?,
-                    s.get("blackness")?,
-                    s.get("alpha")?,
+                    s.get(&name!(hue))?,
+                    s.get(&name!(whiteness))?,
+                    s.get(&name!(blackness))?,
+                    s.get(&name!(alpha))?,
                 ))
             })?
     };

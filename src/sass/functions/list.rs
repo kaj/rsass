@@ -8,16 +8,16 @@ use crate::Scope;
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:list");
     def!(f, append(list, val, separator = b"auto"), |s| {
-        let (mut list, sep, bra) = get_list(s.get("list")?);
+        let (mut list, sep, bra) = get_list(s.get(&name!(list))?);
         let sep = get_checked(s, name!(separator), check_separator)?
             .or(sep)
             .unwrap_or(ListSeparator::Space);
-        list.push(s.get("val")?);
+        list.push(s.get(&name!(val))?);
         Ok(Value::List(list, Some(sep), bra))
     });
-    def!(f, index(list, value), |s| match s.get("list")? {
+    def!(f, index(list, value), |s| match s.get(&name!(list))? {
         Value::List(v, _, _) => {
-            let value = s.get("value")?;
+            let value = s.get(&name!(value))?;
             for (i, v) in v.iter().enumerate() {
                 if v == &value {
                     return Ok(Value::scalar(i + 1));
@@ -25,7 +25,7 @@ pub fn create_module() -> Scope {
             }
             Ok(Value::Null)
         }
-        Value::Map(map) => match s.get("value")? {
+        Value::Map(map) => match s.get(&name!(value))? {
             Value::List(ref l, Some(ListSeparator::Space), _)
                 if l.len() == 2 =>
             {
@@ -39,36 +39,38 @@ pub fn create_module() -> Scope {
             _ => Ok(Value::Null),
         },
         v => {
-            if v == s.get("value")? {
+            if v == s.get(&name!(value))? {
                 Ok(Value::scalar(1))
             } else {
                 Ok(Value::Null)
             }
         }
     });
-    def!(f, is_bracketed(list), |s| Ok(match s.get("list")? {
-        Value::List(_, _, true) => Value::True,
-        _ => Value::False,
-    }));
+    def!(f, is_bracketed(list), |s| Ok(
+        match s.get(&name!(list))? {
+            Value::List(_, _, true) => Value::True,
+            _ => Value::False,
+        }
+    ));
     def!(
         f,
         join(list1, list2, separator = b"auto", bracketed = b"auto"),
         |s| {
-            let (mut list1, sep1, bra1) = get_list(s.get("list1")?);
-            let (mut list2, sep2, _bra2) = get_list(s.get("list2")?);
+            let (mut list1, sep1, bra1) = get_list(s.get(&name!(list1))?);
+            let (mut list2, sep2, _bra2) = get_list(s.get(&name!(list2))?);
             let sep = get_checked(s, name!(separator), check_separator)?
                 .or(sep1)
                 .or(sep2)
                 .unwrap_or(ListSeparator::Space);
             list1.append(&mut list2);
-            let bra = match s.get("bracketed")? {
+            let bra = match s.get(&name!(bracketed))? {
                 Value::Literal(ref s) if s.value() == "auto" => bra1,
                 b => b.is_true(),
             };
             Ok(Value::List(list1, Some(sep), bra))
         }
     );
-    def!(f, length(list), |s| match s.get("list")? {
+    def!(f, length(list), |s| match s.get(&name!(list))? {
         Value::ArgList(args) => Ok(Value::scalar(args.len() as i64)),
         Value::List(v, _, _) => Ok(Value::scalar(v.len() as i64)),
         Value::Map(m) => Ok(Value::scalar(m.len() as i64)),
@@ -78,7 +80,7 @@ pub fn create_module() -> Scope {
         _ => Ok(Value::scalar(1)),
     });
     def!(f, separator(list), |s| {
-        let sep = match s.get("list")? {
+        let sep = match s.get(&name!(list))? {
             Value::ArgList(..) => "comma",
             Value::List(_, Some(ListSeparator::Comma), _) => "comma",
             Value::List(_, Some(ListSeparator::Slash), _) => "slash",
@@ -98,7 +100,7 @@ pub fn create_module() -> Scope {
     });
     def!(f, nth(list, n), |s| {
         let n = get_integer(s, name!(n))?;
-        match s.get("list")? {
+        match s.get(&name!(list))? {
             Value::ArgList(arg) => {
                 let i = rust_index(n, arg.len(), name!(n))?;
                 Ok(arg.positional.get(i).cloned().unwrap_or_else(|| {
@@ -133,10 +135,10 @@ pub fn create_module() -> Scope {
         }
     });
     def!(f, set_nth(list, n, value), |s| {
-        let (mut list, sep, bra) = get_list(s.get("list")?);
+        let (mut list, sep, bra) = get_list(s.get(&name!(list))?);
         let n = get_integer(s, name!(n))?;
         let i = list_index(n, &list, name!(n))?;
-        list[i] = s.get("value")?;
+        list[i] = s.get(&name!(value))?;
         Ok(Value::List(list, sep, bra))
     });
     def_va!(f, zip(lists), |s| {

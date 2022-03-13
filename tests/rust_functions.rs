@@ -67,10 +67,10 @@ fn function_with_args() {
                 ("b".into(), Some(sass::Value::scalar(0))),
             ]),
             Arc::new(|s| {
-                let a = s.get("a")?.numeric_value().map_err(|v| {
+                let a = s.get(&"a".into())?.numeric_value().map_err(|v| {
                     Error::bad_arg("a".into(), &v, "is not a number")
                 })?;
-                let b = s.get("b")?.numeric_value().map_err(|v| {
+                let b = s.get(&"b".into())?.numeric_value().map_err(|v| {
                     Error::bad_arg("b".into(), &v, "is not a number")
                 })?;
                 if a.unit == b.unit || b.unit.is_none() {

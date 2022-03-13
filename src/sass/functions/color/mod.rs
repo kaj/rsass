@@ -18,15 +18,15 @@ mod rgb;
 macro_rules! def_adj {
     ($f:expr, $name:ident($arg1:ident, $arg2:ident), $toarg:ident) => {{
         def!($f, $name($arg1, $arg2), |s| {
-            let col = s.get(stringify!($arg1))?;
-            let arg = s.get(stringify!($arg2))?;
+            let col = s.get(&name!($arg1))?;
+            let arg = s.get(&name!($arg2))?;
             Err(not_in_module(&name!($name), &col, &name!($toarg), &arg))
         });
     }};
     ($f:expr, $name:ident($arg1:ident, $arg2:ident), - $toarg:ident) => {{
         def!($f, $name($arg1, $arg2), |s| {
-            let col = s.get(stringify!($arg1))?;
-            let arg = s.get(stringify!($arg2))?;
+            let col = s.get(&name!($arg1))?;
+            let arg = s.get(&name!($arg2))?;
             let arg =
                 Value::UnaryOp(crate::value::Operator::Minus, Box::new(arg));
             Err(not_in_module(&name!($name), &col, &name!($toarg), &arg))

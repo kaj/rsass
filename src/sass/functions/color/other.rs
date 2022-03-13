@@ -19,7 +19,7 @@ pub fn register(f: &mut Scope) {
             }
         }
         let rgba = get_color(s, "color")?;
-        let mut args = CallArgs::from_value(s.get("kwargs")?)?;
+        let mut args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
         if !args.positional.is_empty() {
             return Err(Error::error("Only one positional argument is allowed. \
                                      All other arguments must be passed by name."));
@@ -83,7 +83,7 @@ pub fn register(f: &mut Scope) {
         let ff = Rational::from_integer(255);
 
         let rgba = get_color(s, "color")?;
-        let mut args = CallArgs::from_value(s.get("kwargs")?)?;
+        let mut args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
         if !args.positional.is_empty() {
             return Err(Error::error("Only one positional argument is allowed. \
                                      All other arguments must be passed by name."));
@@ -131,12 +131,12 @@ pub fn register(f: &mut Scope) {
         }
     });
 
-    def!(f, opacity(color), |s| match s.get("color")? {
+    def!(f, opacity(color), |s| match s.get(&name!(color))? {
         Value::Color(ref col, _) => Ok(Value::scalar(col.get_alpha())),
         v => Ok(make_call("opacity", vec![v])),
     });
     def!(f, alpha(color), |s| {
-        let v = s.get("color")?;
+        let v = s.get(&name!(color))?;
         if ok_as_filterarg(&v) {
             Ok(make_call("alpha", vec![v]))
         } else {
@@ -147,7 +147,7 @@ pub fn register(f: &mut Scope) {
 
     def_va!(f, change(color, kwargs), |s| {
         let rgba = get_color(s, "color")?;
-        let mut args = CallArgs::from_value(s.get("kwargs")?)?;
+        let mut args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
         if !args.positional.is_empty() {
             return Err(Error::error("Only one positional argument is allowed. \
                                      All other arguments must be passed by name."));

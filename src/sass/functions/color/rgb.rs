@@ -56,7 +56,7 @@ pub fn register(f: &mut Scope) {
         .into())
     });
     def!(f, invert(color, weight = b"100%"), |s| {
-        match s.get("color")? {
+        match s.get(&name!(color))? {
             Value::Color(col, _) => {
                 let rgba = col.to_rgba();
                 let w = get_checked(s, name!(weight), check_pct_range)?;
@@ -115,9 +115,9 @@ fn do_rgba(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
         one_arg!(blue),
         one_arg!(alpha),
     ]);
-    let args = CallArgs::from_value(s.get("kwargs")?)?;
+    let args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
     match a1.eval(s.clone(), args.clone()) {
-        Ok(s) => Channels::try_from(s.get("channels")?)
+        Ok(s) => Channels::try_from(s.get(&name!(channels))?)
             .map_err(|e| e.conv(&["red", "green", "blue"]))
             .and_then(|c| match c {
                 Channels::Data([h, s, l, a]) => {
@@ -130,8 +130,8 @@ fn do_rgba(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
         Err(err @ ArgsError::Missing(_)) => Err(bad_arg(err, fn_name, &a1)),
         Err(_) => match a1b.eval(s.clone(), args.clone()) {
             Ok(s) => {
-                let c = s.get("color")?;
-                let a = s.get("alpha")?;
+                let c = s.get(&name!(color))?;
+                let a = s.get(&name!(alpha))?;
                 if is_special(&c) || is_special(&a) {
                     if let Ok(c) = check_color(c.clone()) {
                         let c = c.to_rgba();
@@ -160,10 +160,10 @@ fn do_rgba(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
 
                 rgba_from_values(
                     fn_name,
-                    s.get("red")?,
-                    s.get("green")?,
-                    s.get("blue")?,
-                    s.get("alpha")?,
+                    s.get(&name!(red))?,
+                    s.get(&name!(green))?,
+                    s.get(&name!(blue))?,
+                    s.get(&name!(alpha))?,
                 )
             }
         },

@@ -252,7 +252,7 @@ impl<'a> Scope {
         s
     }
     pub(crate) fn get_name(&self) -> String {
-        match self.get_or_none(&Name::from_static("@scope_name@")) {
+        match self.get_local_or_none(&Name::from_static("@scope_name@")) {
             Some(Value::Literal(s)) => s.value().into(),
             _ => "".into(),
         }
@@ -378,23 +378,35 @@ impl<'a> Scope {
                 return module.get_or_none(&name);
             }
         }
+        self.get_local_or_none(name)
+    }
+    fn get_local_or_none(&self, name: &Name) -> Option<Value> {
         self.variables
             .lock()
             .unwrap()
             .get(name)
             .cloned()
             .or_else(|| {
-                self.parent.as_ref().and_then(|p| p.get_or_none(name))
+                self.parent.as_ref().and_then(|p| p.get_local_or_none(name))
             })
     }
 
     /// Get the value for a variable (or an error).
-    pub fn get(&self, name: &str) -> Result<Value, Error> {
-        match self.get_or_none(&name.into()) {
-            Some(value) => Ok(value),
-            None => Err(Error::undefined_variable(name)),
+    pub fn get(&self, name: &Name) -> Result<Value, Error> {
+        if let Some((modulename, name)) = name.split_module() {
+            if let Some(module) = self.get_module(&modulename) {
+                return module.get(&name);
+            } else {
+                return Err(Error::error(format!(
+                    "There is no module with the namespace {:?}.",
+                    modulename
+                )));
+            }
         }
+        self.get_local_or_none(name)
+            .ok_or_else(|| Error::undefined_variable(name.as_ref()))
     }
+
     /// Copy a set of local variables to a temporary holder
     pub fn store_local_values(
         &self,

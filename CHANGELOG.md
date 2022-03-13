@@ -15,6 +15,8 @@ project adheres to
   Use `SourceFile` (maybe from a `FileContext`) instead (PR #132).
 * Some API changes (mayinly using `SourceFile` as return type) in
   `FileContext` and `FsF ileContext` (PR #132).
+* `Scope::get` now takes an `&Name` rather than an `&str` for the
+  variable name.
 
 ### Improvements
 
