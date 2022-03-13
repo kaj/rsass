@@ -84,7 +84,6 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong error
     fn if_args() {
         assert_eq!(
         runner().err(

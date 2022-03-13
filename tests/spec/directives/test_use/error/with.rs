@@ -104,7 +104,6 @@ mod invalid_expression {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn variable_defined_later() {
         let runner = runner().with_cwd("variable_defined_later");
         assert_eq!(

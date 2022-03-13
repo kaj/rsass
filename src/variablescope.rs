@@ -660,8 +660,13 @@ pub mod test {
     #[test]
     fn undefined_variable() {
         assert_eq!(
-            "Undefined variable: \"$x\"",
-            format!("{}", do_evaluate_or_error(&[], b"$x;").err().unwrap())
+            do_evaluate_or_error(&[], b"$x;").err().unwrap().to_string(),
+            "Error: Undefined variable.\
+             \n  ,\
+             \n1 | $x;\
+             \n  | ^^\
+             \n  '\
+             \n  (rsass) 1:1  root stylesheet",
         )
     }
 

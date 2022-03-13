@@ -555,7 +555,6 @@ mod missing {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn variable() {
             let runner = runner().with_cwd("variable");
             assert_eq!(
@@ -629,7 +628,6 @@ mod missing {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn variable_use() {
             let runner = runner().with_cwd("variable_use");
             assert_eq!(

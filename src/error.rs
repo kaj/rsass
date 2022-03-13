@@ -35,6 +35,8 @@ pub enum Error {
     ParseError(ParseError),
     /// An expected variable was not defined.
     UndefinedVariable(String),
+    /// An undefined variable was used at source pos.
+    UndefVar(SourcePos),
     /// An `@error` reached.
     AtError(String, SourcePos),
     /// Fallback error type.
@@ -89,6 +91,10 @@ impl fmt::Display for Error {
             }
             Error::UndefinedVariable(ref name) => {
                 write!(out, "Undefined variable: \"${}\"", name)
+            }
+            Error::UndefVar(ref pos) => {
+                writeln!(out, "Error: Undefined variable.")?;
+                pos.show(out)
             }
             Error::BadArgument(ref name, ref problem) => {
                 write!(out, "Error: ${}: {}", name, problem)

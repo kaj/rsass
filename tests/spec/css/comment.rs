@@ -48,7 +48,6 @@ mod error {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong error
             fn failure() {
                 assert_eq!(
                     runner().err("/* #{$undefined} */\n"),

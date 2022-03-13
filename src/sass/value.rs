@@ -27,7 +27,7 @@ pub enum Value {
     /// The boolean tells if the paren itself should be kept for output.
     Paren(Box<Value>, bool),
     /// A variable reference to be loaded when the value is evaluated.
-    Variable(String),
+    Variable(String, SourcePos),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
     Color(Rgba, Option<String>),
@@ -107,8 +107,14 @@ impl Value {
             Value::Color(ref rgba, ref name) => {
                 Ok(css::Value::Color(rgba.clone().into(), name.clone()))
             }
-            Value::Variable(ref name) => {
-                Ok(scope.get(&name.into())?.into_calculated())
+            Value::Variable(ref name, ref pos) => {
+                let var = scope.get(&name.into()).map_err(|e| match e {
+                    Error::UndefinedVariable(_) => {
+                        Error::UndefVar(pos.clone())
+                    }
+                    e => e,
+                })?;
+                Ok(var.into_calculated())
             }
             Value::List(ref v, s, b) => Ok(css::Value::List(
                 v.iter()
@@ -281,7 +287,7 @@ impl Value {
                         .fmt(out)
                 }
             }
-            Value::Variable(ref name) => {
+            Value::Variable(ref name, ref _pos) => {
                 write!(out, "${}", name)
             }
             Value::List(ref v, s, b) => {

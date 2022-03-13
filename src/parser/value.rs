@@ -362,16 +362,17 @@ pub fn decimal_decimals(input: Span) -> PResult<Number> {
 }
 
 pub fn variable(input: Span) -> PResult<Value> {
-    map(
-        pair(many0(terminated(name, tag("."))), preceded(tag("$"), name)),
-        |(modules, name)| {
-            if modules.is_empty() {
-                Value::Variable(name)
-            } else {
-                Value::Variable(format!("{}.{}", modules.join("."), name))
-            }
-        },
-    )(input)
+    let (rest, (modules, name)) = pair(
+        many0(terminated(name, tag("."))),
+        preceded(tag("$"), name),
+    )(input)?;
+    let name = if modules.is_empty() {
+        name
+    } else {
+        format!("{}.{}", modules.join("."), name)
+    };
+    let pos = SourcePos::from_to(input, rest);
+    Ok((rest, Value::Variable(name, pos)))
 }
 
 fn hex_color(input: Span) -> PResult<Value> {
@@ -528,7 +529,13 @@ mod test {
 
     #[test]
     fn simple_value_variable() {
-        check_expr("$red;", Variable("red".into()))
+        match value_expression(code_span(b"$red;"))
+            .map(|(_, value)| value)
+            .unwrap()
+        {
+            Value::Variable(name, _) => assert_eq!(name, "red"),
+            val => panic!("Unexpected value {:?}", val),
+        }
     }
 
     #[test]

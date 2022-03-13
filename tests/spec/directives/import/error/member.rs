@@ -55,7 +55,6 @@ mod inaccessible {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn variable() {
             let runner = runner().with_cwd("variable");
             assert_eq!(

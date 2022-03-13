@@ -397,7 +397,6 @@ mod import_to_forward {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn variable() {
             let runner = runner().with_cwd("variable");
             assert_eq!(
@@ -486,7 +485,6 @@ mod inaccessible {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn variable() {
             let runner = runner().with_cwd("variable");
             assert_eq!(
@@ -542,7 +540,6 @@ mod inaccessible {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn variable() {
             let runner = runner().with_cwd("variable");
             assert_eq!(
@@ -607,7 +604,6 @@ mod inaccessible {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn variable() {
             let runner = runner().with_cwd("variable");
             assert_eq!(
@@ -647,7 +643,6 @@ mod inaccessible {
                 );
             }
             #[test]
-            #[ignore] // wrong error
             fn variable() {
                 let runner = runner().with_cwd("variable");
                 assert_eq!(

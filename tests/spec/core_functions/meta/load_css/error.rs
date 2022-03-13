@@ -149,7 +149,6 @@ mod member {
     }
 
     #[test]
-    #[ignore] // wrong error
     fn global() {
         let runner = runner().with_cwd("global");
         assert_eq!(
