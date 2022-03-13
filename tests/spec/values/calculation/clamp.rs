@@ -74,7 +74,7 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn four_args() {
             assert_eq!(
                 runner().err("a {b: clamp(1px, 2px, 3px, 4px)}\n"),
@@ -100,7 +100,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn no_args() {
             assert_eq!(
                 runner().err("a {b: clamp()}\n"),
@@ -262,7 +262,6 @@ mod simplified {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn between() {
         assert_eq!(
             runner().ok("a {b: clamp(1px, 2.5px, 3px)}\n"),
@@ -272,7 +271,6 @@ mod simplified {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn compatible_units() {
         assert_eq!(
             runner().ok("a {b: clamp(1px, 1in, 1cm)}\n"),
@@ -286,7 +284,6 @@ mod simplified {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn far_below() {
             assert_eq!(
                 runner().ok("a {b: clamp(1px, 0px, 3px)}\n"),
@@ -296,7 +293,6 @@ mod simplified {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn fuzzy_equal() {
             assert_eq!(
                 runner().ok("a {b: clamp(1px, 1.00000000001px, 3px)}\n"),
@@ -311,7 +307,6 @@ mod simplified {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn far_above() {
             assert_eq!(
                 runner().ok("a {b: clamp(1px, 4px, 3px)}\n"),
@@ -321,7 +316,6 @@ mod simplified {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn fuzzy_equal() {
             assert_eq!(
                 runner().ok("a {b: clamp(1px, 2.99999999999px, 3px)}\n"),

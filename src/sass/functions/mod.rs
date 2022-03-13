@@ -1,4 +1,4 @@
-use crate::css::{is_not, CallArgs, CssString, Value};
+use crate::css::{self, is_not, CallArgs, CssString, Value};
 use crate::error::Error;
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
@@ -230,6 +230,78 @@ lazy_static! {
             } else {
                 Ok(s.get(&name!(if_false))?)
             }
+        });
+        def!(f, calc(expr), |s| {
+            fn pre_calc(v: &Value) -> bool {
+                match v {
+                    Value::Numeric(..) => true,
+                    Value::Call(ref name, _) => css::is_function_name(name),
+                    Value::Literal(s) => s.is_css_calc(),
+                    _ => false,
+                }
+            }
+            fn in_calc(v: Value) -> Value {
+                match v {
+                    Value::Literal(s) => {
+                        if s.quotes() == crate::value::Quotes::None
+                            && s.value().ends_with(')')
+                            && s.value().starts_with("calc(")
+                        {
+                            Value::Paren(Box::new(
+                                s.value()[5..s.value().len() - 1].into(),
+                            ))
+                        } else {
+                            s.into()
+                        }
+                    }
+                    Value::Call(name, args) => {
+                        if name == "calc"
+                            && args.check_no_named().is_ok()
+                            && args.positional.len() == 1
+                        {
+                            Value::Paren(Box::new(
+                                args.positional.into_iter().next().unwrap(),
+                            ))
+                        } else {
+                            Value::Call(name, args)
+                        }
+                    }
+                    Value::BinOp(a, _, op, _, b) => Value::BinOp(
+                        Box::new(in_calc(*a)),
+                        true,
+                        op,
+                        true,
+                        Box::new(in_calc(*b)),
+                    ),
+                    v => v,
+                }
+            }
+            let v = s.get(&name!(expr))?;
+            if pre_calc(&v) {
+                Ok(v)
+            } else {
+                Ok(Value::Call(
+                    "calc".into(),
+                    CallArgs::from_value(in_calc(v))?,
+                ))
+            }
+        });
+        def!(f, clamp(min, number = b"null", max = b"null"), |s| {
+            self::math::clamp_fn(s).or_else(|_| {
+                let mut args = vec![s.get(&name!(min))?];
+                let b = s.get(&name!(number))?;
+                if !b.is_null() {
+                    args.push(b);
+                }
+                let c = s.get(&name!(max))?;
+                if !c.is_null() {
+                    args.push(c);
+                }
+                Ok(css::Value::Call(
+                    "clamp".into(),
+                    css::CallArgs::from_list(args),
+                ))
+            })
         });
         color::expose(MODULES.get("sass:color").unwrap(), &mut f);
         list::expose(MODULES.get("sass:list").unwrap(), &mut f);

@@ -82,7 +82,7 @@ impl Operator {
                         Some(CssString::new(val, Quotes::Double).into())
                     }
                 }
-                (Value::Literal(a), b) => {
+                (Value::Literal(a), b) if !a.is_css_fn() => {
                     let join = format!(
                         "{}{}",
                         a.value(),
@@ -90,7 +90,7 @@ impl Operator {
                     );
                     Some(CssString::new(join, a.quotes()).into())
                 }
-                (a, Value::Literal(b)) => {
+                (a, Value::Literal(b)) if !b.is_css_fn() => {
                     let join = format!(
                         "{}{}",
                         a.format(Default::default()),
@@ -149,13 +149,7 @@ impl Operator {
                     (Value::Numeric(ref a, _), Value::Numeric(ref b, _)) => {
                         Some((a / b).into())
                     }
-                    (a, b) => Some(Value::BinOp(
-                        Box::new(a),
-                        false,
-                        Operator::Div,
-                        false,
-                        Box::new(b),
-                    )),
+                    _ => None,
                 }
             }
             Operator::Div => None,

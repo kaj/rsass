@@ -15,6 +15,10 @@ pub fn create_module() -> Scope {
     // - - - Functions - - -
     def!(f, calc_args(calc), |s| {
         get_checked(s, name!(calc), |v| match v {
+            Value::Call(name, args) if name == "calc" => {
+                // TODO: Maybe allow a single numeric argument to be itself?
+                Ok(args.to_string().into())
+            }
             Value::Call(_, args) => Ok(args.into()),
             Value::Literal(s) if looks_like_call(&s) => {
                 let s = s.value();

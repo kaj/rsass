@@ -6,6 +6,7 @@ use crate::css::{CallArgs, CssString, Value};
 use crate::output::Format;
 use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Rational, Unit, UnitSet};
+use crate::ScopeRef;
 use std::cmp::Ordering;
 use std::f64::consts::{E, PI};
 
@@ -47,30 +48,7 @@ pub fn create_module() -> Scope {
         let val = get_numeric(s, "number")?;
         Ok(number(val.value.ceil(), val.unit))
     });
-    def!(f, clamp(min, number, max), |s| {
-        let min_v = get_numeric(s, "min")?;
-        let check_numeric_compat_unit =
-            |v: Value| -> Result<Numeric, String> {
-                let v = check::numeric(v)?;
-                if (v.is_no_unit() != min_v.is_no_unit())
-                    || !v.unit.is_compatible(&min_v.unit)
-                {
-                    return Err(diff_units_msg(&v, &min_v, name!(min)));
-                }
-                Ok(v)
-            };
-        let mut num =
-            get_checked(s, name!(number), check_numeric_compat_unit)?;
-        let max_v = get_checked(s, name!(max), check_numeric_compat_unit)?;
-
-        if num >= max_v {
-            num = max_v;
-        }
-        if num <= min_v {
-            num = min_v;
-        }
-        Ok(Value::Numeric(num, true))
-    });
+    def!(f, clamp(min, number, max), clamp_fn);
     def!(f, floor(number), |s| {
         let val = get_numeric(s, "number")?;
         Ok(number(val.value.floor(), val.unit))
@@ -370,4 +348,27 @@ fn diff_units_msg(
             ""
         }
     )
+}
+
+pub(crate) fn clamp_fn(s: &ScopeRef) -> Result<Value, Error> {
+    let min_v = get_numeric(s, "min")?;
+    let check_numeric_compat_unit = |v: Value| -> Result<Numeric, String> {
+        let v = check::numeric(v)?;
+        if (v.is_no_unit() != min_v.is_no_unit())
+            || !v.unit.is_compatible(&min_v.unit)
+        {
+            return Err(diff_units_msg(&v, &min_v, name!(min)));
+        }
+        Ok(v)
+    };
+    let mut num = get_checked(s, name!(number), check_numeric_compat_unit)?;
+    let max_v = get_checked(s, name!(max), check_numeric_compat_unit)?;
+
+    if num >= max_v {
+        num = max_v;
+    }
+    if num <= min_v {
+        num = min_v;
+    }
+    Ok(Value::Numeric(num, true))
 }

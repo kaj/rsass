@@ -1,4 +1,4 @@
-use super::{is_not, CallArgs, CssString};
+use super::{is_function_name, is_not, CallArgs, CssString};
 use crate::error::Error;
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
@@ -62,8 +62,12 @@ impl Value {
     pub fn type_name(&self) -> &'static str {
         match *self {
             Value::ArgList(..) => "arglist",
-            Value::Call(..) => "calculation",
+            Value::Call(ref name, _) if is_function_name(name) => {
+                "calculation"
+            }
+            Value::Call(..) => "string",
             Value::Color(..) => "color",
+            Value::Literal(ref s) if s.is_css_calc() => "calculation",
             Value::Literal(..) => "string",
             Value::Map(..) => "map",
             Value::Numeric(..) => "number",

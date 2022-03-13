@@ -10,7 +10,6 @@ mod divide {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn left() {
         assert_eq!(
             runner().ok("a {b: calc(3px / 2 + 1%)}\n"),
@@ -20,7 +19,6 @@ mod divide {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn right() {
         assert_eq!(
             runner().ok("a {b: calc(1% + 3px / 2)}\n"),
@@ -35,7 +33,6 @@ mod invert {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn minus() {
         assert_eq!(
             runner().ok("a {b: calc(1% - -1px)}\n"),
@@ -45,7 +42,6 @@ mod invert {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn plus() {
         assert_eq!(
             runner().ok("a {b: calc(1% + -1px)}\n"),
@@ -60,7 +56,6 @@ mod minus {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn left() {
         assert_eq!(
             runner().ok("a {b: calc(3px - 2px + 1%)}\n"),
@@ -80,7 +75,6 @@ mod minus {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn nested() {
     assert_eq!(
         runner().ok("a {b: calc(1% + calc(1px))}\n"),
@@ -94,7 +88,6 @@ mod plus {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn left() {
         assert_eq!(
             runner().ok("a {b: calc(1px + 2px + 1%)}\n"),
@@ -118,7 +111,6 @@ mod times {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn left() {
         assert_eq!(
             runner().ok("a {b: calc(3px * 2 + 1%)}\n"),
@@ -128,7 +120,6 @@ mod times {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn right() {
         assert_eq!(
             runner().ok("a {b: calc(1% + 3px * 2)}\n"),
