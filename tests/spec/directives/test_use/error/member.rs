@@ -179,7 +179,6 @@ mod before_use {
     );
     }
     #[test]
-    #[ignore] // wrong error
     fn variable_use() {
         let runner = runner().with_cwd("variable_use");
         assert_eq!(

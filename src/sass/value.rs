@@ -4,7 +4,7 @@ use crate::output::Format;
 use crate::parser::SourcePos;
 use crate::sass::{CallArgs, Function, SassString};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
-use crate::ScopeRef;
+use crate::{ScopeError, ScopeRef};
 use num_traits::Zero;
 
 /// A sass value.
@@ -109,10 +109,12 @@ impl Value {
             }
             Value::Variable(ref name, ref pos) => {
                 let var = scope.get(&name.into()).map_err(|e| match e {
-                    Error::UndefinedVariable(_) => {
-                        Error::UndefVar(pos.clone())
+                    ScopeError::NoModule(name) => {
+                        Error::UndefModule(name, pos.clone())
                     }
-                    e => e,
+                    ScopeError::Undefined(_) => {
+                        Error::UndefinedVariable(pos.clone())
+                    }
                 })?;
                 Ok(var.into_calculated())
             }
@@ -127,15 +129,14 @@ impl Value {
                 if name.single_raw() == Some("if") {
                     // Magic: `if` is the only function that evaluates its
                     // arguments lazily.  So it is implemented inline here.
-                    let (name, num) = if args
+                    return if args
                         .evaluate_single(scope.clone(), name!(condition), 0)?
                         .is_true()
                     {
-                        (name!(if_true), 1)
+                        args.evaluate_single(scope, name!(if_true), 1)
                     } else {
-                        (name!(if_false), 2)
+                        args.evaluate_single(scope, name!(if_false), 2)
                     };
-                    return args.evaluate_single(scope, name, num);
                 }
                 let args = args.evaluate(scope.clone())?;
                 if let Some(name) = name.single_raw() {

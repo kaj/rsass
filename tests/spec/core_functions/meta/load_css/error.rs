@@ -166,7 +166,6 @@ mod member {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn namespace() {
         let runner = runner().with_cwd("namespace");
         assert_eq!(

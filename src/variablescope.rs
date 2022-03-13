@@ -392,19 +392,16 @@ impl<'a> Scope {
     }
 
     /// Get the value for a variable (or an error).
-    pub fn get(&self, name: &Name) -> Result<Value, Error> {
+    pub fn get(&self, name: &Name) -> Result<Value, ScopeError> {
         if let Some((modulename, name)) = name.split_module() {
             if let Some(module) = self.get_module(&modulename) {
                 return module.get(&name);
             } else {
-                return Err(Error::error(format!(
-                    "There is no module with the namespace {:?}.",
-                    modulename
-                )));
+                return Err(ScopeError::NoModule(modulename));
             }
         }
         self.get_local_or_none(name)
-            .ok_or_else(|| Error::undefined_variable(name.as_ref()))
+            .ok_or_else(|| ScopeError::Undefined(name.clone()))
     }
 
     /// Copy a set of local variables to a temporary holder
@@ -984,5 +981,34 @@ pub mod test {
             .evaluate(scope)?
             .format(f)
             .to_string())
+    }
+}
+
+/// Tried to get something that does not exist from a scope.
+pub enum ScopeError {
+    /// Tried to access a module that does not exist.
+    NoModule(String),
+    /// Tried to access an undefined name.
+    Undefined(Name),
+}
+use std::fmt::{self, Display};
+impl Display for ScopeError {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ScopeError::NoModule(name) => write!(
+                out,
+                "There is no module with the namespace {:?}.",
+                name
+            ),
+            ScopeError::Undefined(name) => {
+                // Note: Currently true, but may be used for other things.
+                write!(out, "Undefined variable: \"${}\"", name)
+            }
+        }
+    }
+}
+impl From<ScopeError> for Error {
+    fn from(err: ScopeError) -> Error {
+        Error::error(err.to_string())
     }
 }

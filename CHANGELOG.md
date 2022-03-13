@@ -18,6 +18,7 @@ project adheres to
 * `Scope::get` now takes an `&Name` rather than an `&str` for the
   variable name.
 * `sass::Value::Variable` now has a source position.
+* Some changes in the `Error` type to facilitate positions.
 
 ### Improvements
 
@@ -26,6 +27,7 @@ project adheres to
   that file, use the SourceName of the containing file to find local
   paths (PR #132).
 * Detect `@import` loops.
+* Report undefined variable / module errors better.
 * Enable clippy in CI and fix some things it complained about (PR #128).
 * Update sass-spec test suite to 2022-02-24.
 

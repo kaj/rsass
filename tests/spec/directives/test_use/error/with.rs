@@ -87,7 +87,6 @@ mod invalid_expression {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn module_loaded_later() {
         let runner = runner().with_cwd("module_loaded_later");
         assert_eq!(

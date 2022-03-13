@@ -33,10 +33,10 @@ pub enum Error {
     BadRange(RangeError),
     /// Error parsing sass data.
     ParseError(ParseError),
-    /// An expected variable was not defined.
-    UndefinedVariable(String),
     /// An undefined variable was used at source pos.
-    UndefVar(SourcePos),
+    UndefinedVariable(SourcePos),
+    /// Attemt to use an undefined module.
+    UndefModule(String, SourcePos),
     /// An `@error` reached.
     AtError(String, SourcePos),
     /// Fallback error type.
@@ -71,11 +71,6 @@ impl Error {
         )
     }
 
-    /// An expected variable was not defined.
-    pub fn undefined_variable(name: &str) -> Self {
-        Error::UndefinedVariable(name.to_string())
-    }
-
     /// A generic error message.
     pub fn error<T: AsRef<str>>(msg: T) -> Self {
         Error::S(format!("Error: {}", msg.as_ref()))
@@ -89,11 +84,16 @@ impl fmt::Display for Error {
             Error::Input(ref p, ref e) => {
                 write!(out, "Failed to read {:?}: {}", p, e)
             }
-            Error::UndefinedVariable(ref name) => {
-                write!(out, "Undefined variable: \"${}\"", name)
-            }
-            Error::UndefVar(ref pos) => {
+            Error::UndefinedVariable(ref pos) => {
                 writeln!(out, "Error: Undefined variable.")?;
+                pos.show(out)
+            }
+            Error::UndefModule(ref name, ref pos) => {
+                writeln!(
+                    out,
+                    "Error: There is no module with the namespace {:?}.",
+                    name
+                )?;
                 pos.show(out)
             }
             Error::BadArgument(ref name, ref problem) => {
