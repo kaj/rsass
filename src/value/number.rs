@@ -416,6 +416,10 @@ impl Number {
             NumValue::Float(s) => s.abs().into(),
         }
     }
+    /// Return true if this number is less than zero.
+    pub fn is_negative(&self) -> bool {
+        self.value.is_negative()
+    }
 
     /// Returns true if the number is an integer.
     #[deprecated]

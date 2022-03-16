@@ -98,10 +98,13 @@ impl Value {
             Value::Literal(ref s) => Ok(s.evaluate(scope)?.into()),
             Value::Paren(ref v, ref expl) => {
                 let v = v.do_evaluate(scope, !expl)?;
-                if !expl && v != css::Value::Null {
-                    Ok(v)
-                } else {
+                if *expl
+                    || v == css::Value::Null
+                    || matches!(&v, css::Value::Literal(s) if s.is_css_fn())
+                {
                     Ok(css::Value::Paren(Box::new(v)))
+                } else {
+                    Ok(v)
                 }
             }
             Value::Color(ref rgba, ref name) => {

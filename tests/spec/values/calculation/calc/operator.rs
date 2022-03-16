@@ -10,7 +10,6 @@ mod divide {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn no_whitespace() {
         assert_eq!(
             runner().ok("a {b: calc(1px/2)}\n"),
@@ -29,7 +28,6 @@ mod divide {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn simplified() {
         assert_eq!(
             runner().ok("a {b: calc(1px / 2)}\n"),
@@ -48,7 +46,6 @@ mod minus {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn division() {
             assert_eq!(
                 runner().ok("a {b: calc(1px - (2% / var(--c)))}\n"),
@@ -67,7 +64,6 @@ mod minus {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn multiplication() {
             assert_eq!(
                 runner().ok("a {b: calc(1px - (2% * var(--c)))}\n"),
@@ -96,7 +92,6 @@ mod minus {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn simplified() {
         assert_eq!(
             runner().ok("a {b: calc(1px - 2px)}\n"),
@@ -115,7 +110,6 @@ mod plus {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn division() {
             assert_eq!(
                 runner().ok("a {b: calc(1px + (2% / var(--c)))}\n"),
@@ -134,7 +128,6 @@ mod plus {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn multiplication() {
             assert_eq!(
                 runner().ok("a {b: calc(1px + (2% * var(--c)))}\n"),
@@ -153,7 +146,6 @@ mod plus {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn plus() {
             assert_eq!(
                 runner().ok("a {b: calc(1px + (2% + var(--c)))}\n"),
@@ -164,7 +156,6 @@ mod plus {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn simplified() {
         assert_eq!(
             runner().ok("a {b: calc(1px + 2px)}\n"),
@@ -187,7 +178,6 @@ mod precedence {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn lhs() {
                 assert_eq!(
                     runner().ok("a {b: calc(calc(#{c}) + 1)}\n"),
@@ -197,7 +187,6 @@ mod precedence {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn rhs() {
                 assert_eq!(
                     runner().ok("a {b: calc(1 + calc(#{c}))}\n"),
@@ -240,7 +229,6 @@ mod precedence {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn calculation() {
                 assert_eq!(
                     runner().ok("a {b: calc(1px + calc(2% - 3em))}\n"),
@@ -250,7 +238,6 @@ mod precedence {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn parens() {
                 assert_eq!(
                     runner().ok("a {b: calc(1px + (2% - 3em))}\n"),
@@ -265,7 +252,6 @@ mod precedence {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn calculation() {
                 assert_eq!(
                     runner().ok("a {b: calc(1px + calc(2px * var(--c)))}\n"),
@@ -275,7 +261,6 @@ mod precedence {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn parens() {
                 assert_eq!(
                     runner().ok("a {b: calc(1px + (2px * var(--c)))}\n"),
@@ -294,7 +279,6 @@ mod precedence {
                 use super::runner;
 
                 #[test]
-                #[ignore] // wrong result
                 fn calculation() {
                     assert_eq!(
                         runner()
@@ -305,7 +289,6 @@ mod precedence {
                     );
                 }
                 #[test]
-                #[ignore] // wrong result
                 fn parens() {
                     assert_eq!(
                         runner().ok("a {b: calc(1px * (2 / var(--c)))}\n"),
@@ -320,7 +303,6 @@ mod precedence {
                 use super::runner;
 
                 #[test]
-                #[ignore] // wrong result
                 fn calculation() {
                     assert_eq!(
                         runner()
@@ -346,7 +328,6 @@ mod precedence {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn calculation() {
                 assert_eq!(
                     runner().ok("a {b: calc(1px * calc(2 + var(--c)))}\n"),
@@ -371,7 +352,6 @@ mod precedence {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn additive() {
             assert_eq!(
                 runner().ok(
@@ -383,7 +363,6 @@ mod precedence {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn multiplicative() {
             assert_eq!(
                 runner().ok("a {b: calc(2 * 3 / 5 * 7 / 11)}\n"),
@@ -393,7 +372,6 @@ mod precedence {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn multiplicative_and_additive() {
             assert_eq!(
                 runner().ok("a {b: calc(2 * 3 + 4 / 5 - 6)}\n"),
@@ -407,7 +385,6 @@ mod precedence {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn multiplicative() {
                 assert_eq!(
                     runner().ok("a {b: calc(1 / (2 * 3))}\n"),
@@ -417,7 +394,6 @@ mod precedence {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn multiplicative_and_additive() {
                 assert_eq!(
                     runner().ok("a {b: calc(2 * (3 + 4) / (5 - 6))}\n"),
@@ -438,7 +414,6 @@ mod sass_script {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn lhs() {
             assert_eq!(
                 runner().ok("a {b: calc(1px + 1%) + \"\"}\n"),
@@ -463,7 +438,6 @@ mod times {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn no_whitespace() {
         assert_eq!(
             runner().ok("a {b: calc(1px*2)}\n"),
@@ -482,7 +456,6 @@ mod times {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn simplified() {
         assert_eq!(
             runner().ok("a {b: calc(1px * 2)}\n"),
@@ -497,7 +470,6 @@ mod units {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn denominators() {
         assert_eq!(
             runner().ok("a {b: calc(1/2px + 1/4px) * 1px}\n"),
@@ -507,7 +479,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn division() {
         assert_eq!(
             runner().ok("a {b: calc(1px / 2px)}\n"),
@@ -517,7 +488,6 @@ mod units {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn multiplication() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -588,7 +558,6 @@ mod var {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn indirectly_parenthesized() {
         assert_eq!(
             runner().ok("a {b: calc((1 + var(--c)))}\n"),

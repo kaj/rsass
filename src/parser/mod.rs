@@ -8,6 +8,7 @@ macro_rules! check_parse {
 }
 
 pub(crate) mod css;
+mod css_function;
 mod error;
 pub mod formalargs;
 mod imports;

@@ -120,6 +120,20 @@ impl CssString {
     pub fn is_null(&self) -> bool {
         self.value.is_empty() && self.quotes.is_none()
     }
+    /// Return true if this is a css special function call.
+    pub(crate) fn is_css_fn(&self) -> bool {
+        let value = self.value();
+        self.quotes() == Quotes::None
+            && value.ends_with(')')
+            && (value.starts_with("calc(") || value.starts_with("var("))
+    }
+    /// Return true if this is a css special function call.
+    pub(crate) fn is_css_calc(&self) -> bool {
+        let value = self.value();
+        self.quotes() == Quotes::None
+            && value.ends_with(')')
+            && (value.starts_with("calc(") || value.starts_with("clamp("))
+    }
     /// Access the string value
     pub fn value(&self) -> &str {
         &self.value

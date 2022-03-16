@@ -1,4 +1,4 @@
-use super::Value;
+use super::{is_function_name, Value};
 use crate::output::Formatted;
 use crate::value::{ListSeparator, Operator};
 use std::fmt::{self, Display, Write};
@@ -76,13 +76,47 @@ impl<'a> Display for Formatted<'a, Value> {
                 write!(out, "{}({})", name, arg)
             }
             Value::BinOp(ref a, _, Operator::Plus, _, ref b)
-                if a.type_name() != "number" || b.type_name() != "number" =>
+                if add_as_join(a) || add_as_join(b) =>
             {
                 // The plus operator is also a concat operator
                 a.format(self.format).fmt(out)?;
                 b.format(self.format).fmt(out)
             }
             Value::BinOp(ref a, ref s1, ref op, ref s2, ref b) => {
+                use Operator::{Minus, Plus};
+                let (op, b) = match (op, b.as_ref()) {
+                    (Plus, Value::Numeric(v, _)) if v.value.is_negative() => {
+                        (Minus, Value::from(-v))
+                    }
+                    (Minus, Value::Numeric(v, _))
+                        if v.value.is_negative() =>
+                    {
+                        (Plus, Value::from(-v))
+                    }
+                    (op, Value::Paren(p)) => {
+                        if let Some(op2) = is_op(p.as_ref()) {
+                            if op2 > *op {
+                                (op.clone(), *p.clone())
+                            } else {
+                                (op.clone(), *b.clone())
+                            }
+                        } else {
+                            (op.clone(), *b.clone())
+                        }
+                    }
+                    (op, Value::BinOp(_, _, op2, _, _))
+                        if (op2 < op) || (*op == Minus && *op2 == Minus) =>
+                    {
+                        (op.clone(), Value::Paren(b.clone()))
+                    }
+                    (op, v) => (op.clone(), v.clone()),
+                };
+                fn is_op(v: &Value) -> Option<Operator> {
+                    match v {
+                        Value::BinOp(_, _, op, _, _) => Some(op.clone()),
+                        _ => None,
+                    }
+                }
                 a.format(self.format).fmt(out)?;
                 if *s1 {
                     out.write_char(' ')?;
@@ -159,5 +193,18 @@ impl<'a> Display for Formatted<'a, Value> {
                 Ok(())
             }
         }
+    }
+}
+
+fn add_as_join(v: &Value) -> bool {
+    match v {
+        Value::List(..) => true,
+        Value::Literal(ref s) => !s.is_css_fn(),
+        Value::Call(ref name, _) => !is_function_name(name),
+        Value::BinOp(ref a, _, Operator::Plus, _, ref b) => {
+            add_as_join(a) || add_as_join(b)
+        }
+        Value::True | Value::False => true,
+        _ => false,
     }
 }

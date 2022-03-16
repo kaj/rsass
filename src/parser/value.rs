@@ -1,3 +1,4 @@
+use super::css_function::css_function;
 use super::formalargs::call_args;
 use super::strings::{
     name, sass_string_dq, sass_string_ext, sass_string_sq,
@@ -304,7 +305,7 @@ fn sign_prefix(input: Span) -> PResult<Option<&[u8]>> {
         .map(|(r, s)| (r, s.map(|s| *s.fragment())))
 }
 
-fn number(input: Span) -> PResult<Value> {
+pub fn number(input: Span) -> PResult<Value> {
     map(
         tuple((
             sign_prefix,
@@ -413,8 +414,9 @@ pub fn unary_op(input: Span) -> PResult<Value> {
     )(input)
 }
 
-fn special_function(input: Span) -> PResult<Value> {
-    map(special_function_misc, Value::Literal)(input)
+pub fn special_function(input: Span) -> PResult<Value> {
+    // Either a nice semantic css function or a fallback with interpolation.
+    alt((css_function, map(special_function_misc, Value::Literal)))(input)
 }
 
 pub fn function_call(input: Span) -> PResult<Value> {

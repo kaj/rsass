@@ -49,7 +49,6 @@ mod calculation {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn calc() {
             assert_eq!(
                 runner().ok("a {b: type-of(calc(var(--c)))}\n"),
@@ -69,7 +68,6 @@ mod calculation {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn simplified() {
         assert_eq!(
             runner().ok("a {b: type-of(calc(1px))}\n"),

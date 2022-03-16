@@ -200,7 +200,6 @@ mod preserved {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn in_calc() {
                 assert_eq!(
                     runner().ok("a {b: calc(max(1%, 2.5 + 0.9px))}\n"),

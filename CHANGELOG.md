@@ -23,6 +23,7 @@ project adheres to
 ### Improvements
 
 * Basic support for `meta.load-css` mixin (PR #131).
+* Improved `calc` and `clamp` handling (PR #133).
 * Refactor source file handling.  Instead of creating new FileContexts
   wrapping the original for each file for searching for local paths in
   that file, use the SourceName of the containing file to find local

@@ -38,6 +38,14 @@ impl CallArgs {
         Ok(CallArgs { positional, named })
     }
 
+    /// Create a new CallArgs from one single unnamed argument.
+    pub fn new_single(value: Value) -> Self {
+        CallArgs {
+            positional: vec![value],
+            named: Default::default(),
+        }
+    }
+
     /// Evaluate these sass CallArgs to css CallArgs.
     pub fn evaluate(&self, scope: ScopeRef) -> Result<css::CallArgs, Error> {
         let positional = Vec::new();

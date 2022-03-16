@@ -14,7 +14,6 @@ mod calculation {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn preserved() {
             assert_eq!(
                 runner().ok("a {b: calc(calc(1px + 1%))}\n"),
@@ -24,7 +23,6 @@ mod calculation {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn simplified() {
             assert_eq!(
                 runner().ok("a {b: calc(calc(1px))}\n"),
@@ -39,7 +37,6 @@ mod calculation {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn preserved() {
             assert_eq!(
                 runner().ok("a {b: calc(clamp(1%, 2px, 3%))}\n"),
@@ -49,7 +46,6 @@ mod calculation {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn simplified() {
             assert_eq!(
                 runner().ok("a {b: calc(clamp(1px, 2px, 3px))}\n"),
@@ -64,7 +60,6 @@ mod calculation {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn preserved() {
             assert_eq!(
                 runner().ok("a {b: calc(max(1%, 2px))}\n"),
@@ -74,7 +69,6 @@ mod calculation {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn simplified() {
             assert_eq!(
                 runner().ok("a {b: calc(max(1px, 2px))}\n"),
@@ -89,7 +83,6 @@ mod calculation {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn preserved() {
             assert_eq!(
                 runner().ok("a {b: calc(min(1%, 2px))}\n"),
@@ -99,7 +92,6 @@ mod calculation {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn simplified() {
             assert_eq!(
                 runner().ok("a {b: calc(min(1px, 2px))}\n"),
@@ -111,7 +103,6 @@ mod calculation {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn case_insensitive() {
     assert_eq!(
         runner().ok("a {b: CaLc(1px)}\n"),
@@ -121,7 +112,6 @@ fn case_insensitive() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn extra_whitespace() {
     assert_eq!(
         runner().ok("a {b: calc( 1px )}\n"),
@@ -144,7 +134,6 @@ mod function {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn test_if() {
         assert_eq!(
             runner().ok("b {c: calc(if(true, 1, $undefined))}\n"),
@@ -154,7 +143,6 @@ mod function {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn max() {
         assert_eq!(
             runner().ok("b {c: calc(max(1 2 3...))}\n"),
@@ -164,7 +152,6 @@ mod function {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn min() {
         assert_eq!(
             runner().ok("b {c: calc(min(1 2 3...))}\n"),
@@ -178,7 +165,6 @@ mod function {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn global() {
             assert_eq!(
                 runner().ok("@function a() {@return 1px}\n\
@@ -189,7 +175,6 @@ mod function {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn namespace() {
             assert_eq!(
                 runner().ok("@use \"sass:math\";\
@@ -219,7 +204,6 @@ mod interpolation {
     );
     }
     #[test]
-    #[ignore] // wrong result
     fn nested() {
         assert_eq!(
             runner().ok("a {b: calc(calc(#{c}))}\n"),
@@ -265,7 +249,6 @@ mod number {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn leading_digit() {
             assert_eq!(
                 runner().ok("a {b: calc(1.2px)}\n"),
@@ -275,7 +258,6 @@ mod number {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn leading_dot() {
             assert_eq!(
                 runner().ok("a {b: calc(.2px)}\n"),
@@ -296,7 +278,6 @@ mod number {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn integer() {
         assert_eq!(
             runner().ok("a {b: calc(1px)}\n"),
@@ -306,7 +287,6 @@ mod number {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn leading_minus() {
         assert_eq!(
             runner().ok("a {b: calc(-1px)}\n"),
@@ -316,7 +296,6 @@ mod number {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn leading_plus() {
         assert_eq!(
             runner().ok("a {b: calc(+1px)}\n"),
@@ -326,7 +305,6 @@ mod number {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn unitless() {
         assert_eq!(
             runner().ok("a {b: calc(1)}\n"),
@@ -337,7 +315,6 @@ mod number {
     }
 }
 #[test]
-#[ignore] // wrong result
 fn parentheses() {
     assert_eq!(
         runner().ok("a {b: calc((1px))}\n"),
@@ -355,7 +332,6 @@ mod syntax {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn number() {
             assert_eq!(
                 runner().ok("a {b: calc( 1 )}\n"),
@@ -365,7 +341,6 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn parens() {
             assert_eq!(
                 runner().ok("a {b: calc( ( 1 ) )}\n"),
@@ -375,7 +350,6 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn parenthesized_var() {
             assert_eq!(
                 runner().ok("a {b: calc( ( var(--c) ) )}\n"),
@@ -400,7 +374,6 @@ mod var {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn double_parenthesized() {
         assert_eq!(
             runner().ok("a {b: calc(((var(--c))))}\n"),
@@ -424,7 +397,6 @@ mod variable {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn calculation() {
         assert_eq!(
             runner().ok("$a: calc(1px + 1%);\
@@ -435,7 +407,6 @@ mod variable {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn namespace() {
         assert_eq!(
             runner().ok("@use \"sass:math\";\
@@ -450,7 +421,6 @@ mod variable {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn followed_by_parenthesized_interp() {
             assert_eq!(
                 runner().ok("$a: 1;\
@@ -464,7 +434,6 @@ mod variable {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn in_comment() {
             assert_eq!(
         runner().ok(
@@ -480,7 +449,6 @@ mod variable {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn parentheses_in_string() {
             assert_eq!(
         runner().ok(
@@ -503,7 +471,6 @@ mod variable {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn complex_unit() {
             assert_eq!(
                 runner().ok("@use \"sass:math\";\
@@ -515,7 +482,6 @@ mod variable {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn simple_unit() {
             assert_eq!(
                 runner().ok("$a: 1px;\
@@ -527,7 +493,6 @@ mod variable {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn unquoted_string() {
         assert_eq!(
             runner().ok("$a: foobar;\
