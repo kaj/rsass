@@ -63,7 +63,7 @@ pub fn custom_value_inner(input: Span) -> PResult<Vec<StringPart>> {
                 }
             }),
         )),
-        || vec![],
+        Vec::new,
         |mut acc, items: Vec<StringPart>| {
             acc.extend(items);
             acc
