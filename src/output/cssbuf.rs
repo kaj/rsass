@@ -1,5 +1,6 @@
 use super::Format;
 use crate::css::{BodyItem, CssString, Rule, Value};
+use crate::value::Quotes;
 use crate::{Error, ScopeRef};
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
@@ -141,6 +142,19 @@ impl CssBuf {
                     name,
                     if self.format.is_compressed() { "" } else { " " },
                     val.format(self.format).to_string().replace('\n', " "),
+                )?,
+                BodyItem::CustomProperty(ref name, ref val) => write!(
+                    self.buf,
+                    "{}:{}{};",
+                    name,
+                    if val.quotes() != Quotes::None
+                        && !self.format.is_compressed()
+                    {
+                        " "
+                    } else {
+                        ""
+                    },
+                    val,
                 )?,
                 BodyItem::Comment(ref c) => {
                     let indent = self.indent;

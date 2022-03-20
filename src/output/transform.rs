@@ -469,6 +469,22 @@ fn handle_item(
                 return Err(Error::S("Global property not allowed".into()));
             }
         }
+        Item::CustomProperty(ref name, ref value) => {
+            if let Some(rule) = rule {
+                let v = value.evaluate(scope.clone())?;
+                if !v.is_null() {
+                    let name = name.evaluate(scope)?;
+                    rule.push(BodyItem::CustomProperty(
+                        name.value().into(),
+                        v,
+                    ));
+                }
+            } else {
+                return Err(Error::S(
+                    "Global custom property not allowed".into(),
+                ));
+            }
+        }
         Item::NamespaceRule(ref name, ref value, ref body) => {
             if let Some(rule) = rule {
                 let value = value.evaluate(scope.clone())?;

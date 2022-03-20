@@ -18,12 +18,15 @@ project adheres to
 * `Scope::get` now takes an `&Name` rather than an `&str` for the
   variable name.
 * `sass::Value::Variable` now has a source position.
+* `sass::Item` and `css::BodyItem` got new alternatives for custom
+  properties (PR #134).
 * Some changes in the `Error` type to facilitate positions.
 
 ### Improvements
 
 * Basic support for `meta.load-css` mixin (PR #131).
 * Improved `calc` and `clamp` handling (PR #133).
+* Support custom properties (PR #134).
 * Refactor source file handling.  Instead of creating new FileContexts
   wrapping the original for each file for searching for local paths in
   that file, use the SourceName of the containing file to find local

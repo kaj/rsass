@@ -33,6 +33,8 @@ pub enum BodyItem {
     Import(CssString, Value),
     /// A property declaration with a name and a value.
     Property(String, Value),
+    /// A property declaration with a name and a value.
+    CustomProperty(String, CssString),
     /// A comment
     Comment(String),
 }

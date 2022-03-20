@@ -15,7 +15,6 @@ fn at_error() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn custom_property() {
     assert_eq!(
         runner().ok("a {b: feature-exists(custom-property)}\n"),

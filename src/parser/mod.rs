@@ -24,7 +24,9 @@ pub use pos::{SourceName, SourcePos};
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
-use self::strings::{name, sass_string, sass_string_dq, sass_string_sq};
+use self::strings::{
+    custom_value, name, sass_string, sass_string_dq, sass_string_sq,
+};
 use self::util::{
     comment2, ignore_comments, ignore_space, opt_spacelike, semi_or_end,
     spacelike,
@@ -174,15 +176,29 @@ fn rule_start(input: Span) -> PResult<Selectors> {
 }
 
 fn body_item(input: Span) -> PResult<Item> {
-    let (input, tag) =
-        alt((tag("$"), tag("/*"), tag(";"), tag("@"), tag("")))(input)?;
+    let (rest, tag) =
+        alt((tag("$"), tag("/*"), tag(";"), tag("@"), tag("--"), tag("")))(
+            input,
+        )?;
     match *tag.fragment() {
-        b"$" => variable_declaration2(input),
-        b"/*" => comment_item(input),
-        b";" => Ok((input, Item::None)),
-        b"@" => at_rule2(input),
+        b"$" => variable_declaration2(rest),
+        b"/*" => comment_item(rest),
+        b";" => Ok((rest, Item::None)),
+        b"@" => at_rule2(rest),
+        b"--" => {
+            let result = custom_property(rest);
+            if result.is_err() {
+                // Note use of `input` rather than `rest` here.
+                if let Ok((rest, (selectors, body))) =
+                    pair(rule_start, body_block2)(input)
+                {
+                    return Ok((rest, Item::Rule(selectors, body)));
+                }
+            }
+            result
+        }
         b"" => {
-            let (input, selectors) = opt(rule_start)(input)?;
+            let (input, selectors) = opt(rule_start)(rest)?;
             match selectors {
                 Some(selectors) => map(body_block2, |body| {
                     Item::Rule(selectors.clone(), body)
@@ -471,6 +487,15 @@ fn content_stmt2(input: Span) -> PResult<Item> {
     let (rest, _) = opt(tag(";"))(rest)?;
     let pos = SourcePos::from_to(input, rest);
     Ok((rest, Item::Content(pos)))
+}
+
+fn custom_property(input: Span) -> PResult<Item> {
+    let (rest, name) = terminated(opt(sass_string), tag(":"))(input)?;
+    let mut name = name.unwrap_or_else(|| SassString::from(""));
+    name.prepend("--");
+    let (rest, value) =
+        terminated(custom_value, alt((tag(";"), peek(tag("}")))))(rest)?;
+    Ok((rest, Item::CustomProperty(name, value)))
 }
 
 fn property_or_namespace_rule(input: Span) -> PResult<Item> {

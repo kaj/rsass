@@ -83,6 +83,8 @@ pub enum Item {
     NamespaceRule(SassString, Value, Vec<Item>),
     /// A sass property; a name and a value.
     Property(SassString, Value),
+    /// A custom property.
+    CustomProperty(SassString, SassString),
     /// A comment (that might be preserved for the output).
     Comment(SassString),
     /// Nothing
