@@ -18,7 +18,6 @@ fn nested_properties() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn non_conformant() {
     assert_eq!(
         runner().ok(

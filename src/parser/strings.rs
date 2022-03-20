@@ -1,3 +1,4 @@
+use super::util::opt_spacelike;
 use super::value::value_expression;
 use super::{input_to_str, input_to_string, PResult, Span};
 use crate::sass::{SassString, StringPart};
@@ -29,6 +30,73 @@ pub fn sass_string(input: Span) -> PResult<SassString> {
         },
     )(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
+}
+
+pub fn custom_value(input: Span) -> PResult<SassString> {
+    alt((
+        preceded(opt_spacelike, sass_string_dq),
+        preceded(opt_spacelike, sass_string_sq),
+        map(custom_value_inner, |mut parts| {
+            if let Some(StringPart::Raw(last)) = parts.last_mut() {
+                if last.ends_with('\n') {
+                    last.pop();
+                    last.push(' ');
+                }
+            }
+            SassString::new(parts, Quotes::None)
+        }),
+    ))(input)
+}
+pub fn custom_value_inner(input: Span) -> PResult<Vec<StringPart>> {
+    fold_many1(
+        alt((
+            |input| custom_value_paren("[", "]", input),
+            |input| custom_value_paren("{", "}", input),
+            |input| custom_value_paren("(", ")", input),
+            map(string_part_interpolation, |s| vec![s]),
+            map(unquoted_part, |s| vec![StringPart::Raw(s)]),
+            map_opt(is_not("\"#\\;{}()[]"), |s: Span| {
+                if s.is_empty() {
+                    None
+                } else {
+                    Some(vec![StringPart::from(input_to_str(s).ok()?)])
+                }
+            }),
+        )),
+        || vec![],
+        |mut acc, items: Vec<StringPart>| {
+            acc.extend(items);
+            acc
+        },
+    )(input)
+}
+
+fn custom_value_paren<'a>(
+    start: &'static str,
+    end: &'static str,
+    input: Span<'a>,
+) -> PResult<'a, Vec<StringPart>> {
+    map(
+        delimited(
+            tag(start),
+            fold_many0(
+                alt((
+                    map(tag(";"), |_| vec![StringPart::from(";")]),
+                    custom_value_inner,
+                )),
+                || vec![StringPart::Raw(start.into())],
+                |mut acc, items: Vec<StringPart>| {
+                    acc.extend(items);
+                    acc
+                },
+            ),
+            tag(end),
+        ),
+        |mut parts| {
+            parts.push(StringPart::Raw(end.into()));
+            parts
+        },
+    )(input)
 }
 
 pub fn sass_string_ext(input: Span) -> PResult<SassString> {

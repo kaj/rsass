@@ -183,7 +183,7 @@ static IMPLEMENTED_FEATURES: &[&str] = &[
     // The "Custom Properties Level 1" spec is supported. This means
     // that custom properties are parsed statically, with only
     // interpolation treated as SassScript.
-    // "custom-property",
+    "custom-property",
 ];
 
 fn get_module_arg(s: &Scope, use_the: bool) -> Result<ScopeRef, Error> {

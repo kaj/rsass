@@ -14,7 +14,6 @@ mod scss {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn loud() {
         assert_eq!(
             runner().ok("a {\
@@ -26,7 +25,6 @@ mod scss {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn silent() {
         assert_eq!(
             runner().ok("a {\
