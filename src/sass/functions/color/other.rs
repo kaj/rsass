@@ -5,7 +5,7 @@ use super::{
     FunctionMap, Name,
 };
 use crate::css::{CallArgs, Value};
-use crate::value::{Hsla, Hwba, Rational, Rgba};
+use crate::value::{Hsla, Hwba, Rational, RgbFormat, Rgba};
 use crate::Scope;
 use num_traits::{one, zero, Signed};
 
@@ -44,6 +44,7 @@ pub fn register(f: &mut Scope) {
                 opt_add(rgba.green(), gre),
                 opt_add(rgba.blue(), blu),
                 opt_add(rgba.alpha(), a_adj),
+                rgba.source(),
             )
             .into())
         } else if bla.is_some() || whi.is_some() {
@@ -63,6 +64,7 @@ pub fn register(f: &mut Scope) {
                 opt_add(hsla.sat(), sat),
                 opt_add(hsla.lum(), lig),
                 opt_add(hsla.alpha(), a_adj),
+                hsla.hsla_format,
             )
             .into())
         }
@@ -107,6 +109,7 @@ pub fn register(f: &mut Scope) {
                 cmb(rgba.green(), gre, ff),
                 cmb(rgba.blue(), blu, ff),
                 cmb(rgba.alpha(), a_adj, one),
+                RgbFormat::Name,
             )
             .into())
         } else if bla.is_none() && whi.is_none() {
@@ -116,6 +119,7 @@ pub fn register(f: &mut Scope) {
                 cmb(hsla.sat(), sat, one),
                 cmb(hsla.lum(), lig, one),
                 cmb(hsla.alpha(), a_adj, one),
+                hsla.hsla_format,
             )
             .into())
         } else {
@@ -173,6 +177,7 @@ pub fn register(f: &mut Scope) {
                 gre.unwrap_or_else(|| rgba.green()),
                 blu.unwrap_or_else(|| rgba.blue()),
                 alp.unwrap_or_else(|| rgba.alpha()),
+                rgba.source(),
             )
             .into())
         } else if bla.is_none() && whi.is_none() {
@@ -182,6 +187,7 @@ pub fn register(f: &mut Scope) {
                 sat.unwrap_or_else(|| hsla.sat()),
                 lig.unwrap_or_else(|| hsla.lum()),
                 alp.unwrap_or_else(|| hsla.alpha()),
+                false, // hsla.hsla_format,
             )
             .into())
         } else {

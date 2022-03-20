@@ -11,7 +11,7 @@ fn call() {
         runner().ok("@use \"sass:meta\";\
              \na {b: meta.call(meta.get-function(\"rgb\"), 1, 2, 3)}\n"),
         "a {\
-         \n  b: #010203;\
+         \n  b: rgb(1, 2, 3);\
          \n}\n"
     );
 }

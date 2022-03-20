@@ -30,13 +30,13 @@ fn test() {
              \n  boo: invert(#123456);\
              \n}\n"),
         "div {\
-         \n  color: yellow;\
-         \n  background: #7b2d06;\
+         \n  color: rgb(255, 255, 0);\
+         \n  background: rgb(123, 45, 6);\
          \n  grah: rgba(255, 0, 238, 0.5);\
          \n  blah: rgba(1, 2, 3, 0.6);\
-         \n  floo: aqua;\
+         \n  floo: rgb(0, 255, 255);\
          \n  bloo: rgba(0, 255, 255, 0.7);\
-         \n  groo: aqua;\
+         \n  groo: rgb(0, 255, 255);\
          \n  hoo: 123;\
          \n  moo: 45;\
          \n  poo: 6;\

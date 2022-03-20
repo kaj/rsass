@@ -377,23 +377,26 @@ pub fn variable(input: Span) -> PResult<Value> {
 }
 
 fn hex_color(input: Span) -> PResult<Value> {
-    let (rest, rgba) = delimited(
+    let (rest, (r, g, b, a)) = delimited(
         tag("#"),
-        map(
-            alt((
-                tuple((hexchar2, hexchar2, hexchar2, opt(hexchar2))),
-                tuple((hexchar1, hexchar1, hexchar1, opt(hexchar1))),
-            )),
-            |(r, g, b, a): (u8, u8, u8, Option<u8>)| {
-                Rgba::from_rgba(r, g, b, a.unwrap_or(255))
-            },
-        ),
+        alt((
+            tuple((hexchar2, hexchar2, hexchar2, opt(hexchar2))),
+            tuple((hexchar1, hexchar1, hexchar1, opt(hexchar1))),
+        )),
         peek(map(not(alphanumeric1), |_| ())),
     )(input)?;
-    let length = input.fragment().len() - rest.fragment().len();
-    // Unwrap should be ok as only ascii is matched.
-    let raw = from_utf8(&input.fragment()[0..length]).unwrap().to_string();
-    Ok((rest, Value::Color(rgba, Some(raw))))
+
+    if let Some(a) = a {
+        let rgba = Rgba::from_rgba(r, g, b, a);
+        Ok((rest, Value::Color(rgba, None)))
+    } else {
+        let rgba = Rgba::from_rgb(r, g, b);
+        let length = input.fragment().len() - rest.fragment().len();
+        // Unwrap should be ok as only ascii is matched.
+        let raw =
+            from_utf8(&input.fragment()[0..length]).unwrap().to_string();
+        Ok((rest, Value::Color(rgba, Some(raw))))
+    }
 }
 
 pub fn unary_op(input: Span) -> PResult<Value> {

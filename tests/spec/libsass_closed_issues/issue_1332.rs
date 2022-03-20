@@ -18,10 +18,10 @@ fn test() {
              \n    color: rgba(20%, 20%, 20%, 0.7);\
              \n}\n"),
         ".box1 {\
-         \n  color: #333333;\
+         \n  color: rgb(51, 51, 51);\
          \n}\
          \n.box2 {\
-         \n  color: #202020;\
+         \n  color: rgb(32, 32, 32);\
          \n}\
          \n.box3 {\
          \n  color: rgba(51, 51, 51, 0.7);\

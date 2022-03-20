@@ -6,7 +6,7 @@ use super::{
 };
 use crate::css::{CallArgs, Value};
 use crate::sass::{ArgsError, FormalArgs, Name};
-use crate::value::{Rational, Rgba};
+use crate::value::{Rational, RgbFormat, Rgba};
 use crate::{Scope, ScopeRef};
 use num_traits::{one, Zero};
 use std::convert::TryFrom;
@@ -52,6 +52,7 @@ pub fn register(f: &mut Scope) {
             m_c(a.green(), b.green()),
             m_c(a.blue(), b.blue()),
             a.alpha() * w + b.alpha() * (one - w),
+            RgbFormat::Name,
         )
         .into())
     });
@@ -66,6 +67,7 @@ pub fn register(f: &mut Scope) {
                     inv(rgba.green()),
                     inv(rgba.blue()),
                     rgba.alpha(),
+                    rgba.source(),
                 )
                 .into())
             }
@@ -150,6 +152,7 @@ fn do_rgba(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
                 } else {
                     let mut c = check_color(c).named(name!(color))?;
                     c.set_alpha(check_alpha(a).named(name!(alpha))?);
+                    c.reset_source();
                     Ok(c.into())
                 }
             }
@@ -185,6 +188,7 @@ fn rgba_from_values(
             check_channel(g).named(name!(green))?,
             check_channel(b).named(name!(blue))?,
             check_alpha(a).named(name!(alpha))?,
+            RgbFormat::Rgb,
         )
         .into())
     }
@@ -196,19 +200,21 @@ mod test {
 
     #[test]
     fn test_high() {
-        assert_eq!("white", do_evaluate(&[], b"rgb(150%, 300, 256);"));
+        assert_eq!(
+            do_evaluate(&[], b"rgb(150%, 300, 256);"),
+            "rgb(255, 255, 255)"
+        );
     }
 
     #[test]
     fn test_low() {
-        assert_eq!("black", do_evaluate(&[], b"rgb(-3, -2%, 0);"));
+        assert_eq!(do_evaluate(&[], b"rgb(-3, -2%, 0);"), "rgb(0, 0, 0)");
     }
     #[test]
     fn test_mid() {
-        assert_eq!("gray", do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"));
-    }
-    #[test]
-    fn test_named() {
-        assert_eq!("gray", do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"));
+        assert_eq!(
+            do_evaluate(&[], b"rgb(50%, 255/2, 25% + 25);"),
+            "rgb(128, 128, 128)"
+        );
     }
 }

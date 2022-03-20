@@ -52,9 +52,9 @@ fn test() {
          \n  c7: rgba(0, 0, 0, 0.7);\
          \n  c8: rgba(0, 0, 0, 0.8);\
          \n  c9: rgba(0, 0, 0, 0.9);\
-         \n  c10: black;\
-         \n  c11: black;\
-         \n  c12: black;\
+         \n  c10: rgb(0, 0, 0);\
+         \n  c11: rgb(0, 0, 0);\
+         \n  c12: rgb(0, 0, 0);\
          \n}\
          \nfoo {\
          \n  c-1: rgba(0, 0, 0, 0);\

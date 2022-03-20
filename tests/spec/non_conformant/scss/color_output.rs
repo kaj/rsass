@@ -63,9 +63,9 @@ fn test() {
          \n  s: green;\
          \n  t: #00FF00;\
          \n  v: #0f0;\
-         \n  w: lime;\
+         \n  w: rgb(0, 255, 0);\
          \n  x: rgba(0, 255, 0, 0.5);\
-         \n  y: lime;\
+         \n  y: rgb(0, 255, 0);\
          \n  z: #00ff01;\
          \n}\
          \nb {\
@@ -74,9 +74,9 @@ fn test() {
          \n  s: 1px solid green;\
          \n  t: 1px solid #00FF00;\
          \n  v: 1px solid #0f0;\
-         \n  w: 1px solid lime;\
+         \n  w: 1px solid rgb(0, 255, 0);\
          \n  x: 1px solid rgba(0, 255, 0, 0.5);\
-         \n  y: 1px solid lime;\
+         \n  y: 1px solid rgb(0, 255, 0);\
          \n  z: 1px solid #00ff01;\
          \n}\
          \nc {\
@@ -85,9 +85,9 @@ fn test() {
          \n  s: green;\
          \n  t: #00FF00;\
          \n  v: #0f0;\
-         \n  w: lime;\
+         \n  w: rgb(0, 255, 0);\
          \n  x: rgba(0, 255, 0, 0.5);\
-         \n  y: lime;\
+         \n  y: rgb(0, 255, 0);\
          \n  z: #00ff01;\
          \n}\
          \nd {\
@@ -96,9 +96,9 @@ fn test() {
          \n  s: 1px solid green;\
          \n  t: 1px solid #00FF00;\
          \n  v: 1px solid #0f0;\
-         \n  w: 1px solid lime;\
+         \n  w: 1px solid rgb(0, 255, 0);\
          \n  x: 1px solid rgba(0, 255, 0, 0.5);\
-         \n  y: 1px solid lime;\
+         \n  y: 1px solid rgb(0, 255, 0);\
          \n  z: 1px solid #00ff01;\
          \n}\n"
     );

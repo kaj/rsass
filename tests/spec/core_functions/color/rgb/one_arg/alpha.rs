@@ -18,7 +18,7 @@ mod clamped {
             assert_eq!(
                 runner().ok("a {b: rgb(0 0 0 / 1.1)}\n"),
                 "a {\
-         \n  b: black;\
+         \n  b: rgb(0, 0, 0);\
          \n}\n"
             );
         }
@@ -40,7 +40,7 @@ mod clamped {
                 assert_eq!(
                     runner().ok("a {b: rgb(0 0 0 / 250%)}\n"),
                     "a {\
-         \n  b: black;\
+         \n  b: rgb(0, 0, 0);\
          \n}\n"
                 );
             }
@@ -101,7 +101,7 @@ mod in_gamut {
         assert_eq!(
             runner().ok("a {b: rgb(190 173 237 / 1)}\n"),
             "a {\
-         \n  b: #beaded;\
+         \n  b: rgb(190, 173, 237);\
          \n}\n"
         );
     }

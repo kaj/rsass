@@ -858,12 +858,12 @@ pub mod test {
 
     #[test]
     fn color_named_args() {
-        assert_expr!(b"rgb($blue: 3, $red: 1, $green: 2);", "#010203")
+        assert_expr!(b"rgb($blue: 3, $red: 1, $green: 2);", "rgb(1, 2, 3)")
     }
 
     #[test]
     fn color_mixed_args() {
-        assert_expr!(b"rgb(1, $blue: 3, $green: 2);", "#010203")
+        assert_expr!(b"rgb(1, $blue: 3, $green: 2);", "rgb(1, 2, 3)")
     }
 
     #[test]
