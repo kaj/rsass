@@ -7,7 +7,7 @@ impl From<&Hsla> for Rgba {
         let lum = hsla.lum();
         if sat.is_zero() {
             let gray = lum * 255;
-            Rgba::new(gray, gray, gray, hsla.alpha())
+            Rgba::new(gray, gray, gray, hsla.alpha(), RgbFormat::Name)
         } else {
             fn hue2rgb(p: Rational, q: Rational, t: Rational) -> Rational {
                 let t = (t - t.floor()) * 6;
@@ -30,6 +30,7 @@ impl From<&Hsla> for Rgba {
                 hue2rgb(p, q, hue) * 255,
                 hue2rgb(p, q, hue - Rational::new(1, 3)) * 255,
                 hsla.alpha(),
+                RgbFormat::Name,
             )
         }
     }
@@ -51,7 +52,7 @@ impl From<&Hwba> for Hsla {
         } else {
             (Rational::one() - b - l) / std::cmp::min(l, Rational::one() - l)
         };
-        Hsla::new(hwba.hue(), s, l, hwba.alpha())
+        Hsla::new(hwba.hue(), s, l, hwba.alpha(), false)
     }
 }
 
@@ -62,7 +63,7 @@ impl From<&Rgba> for Hsla {
         let (max, min, largest) = max_min_largest(red, green, blue);
 
         if max == min {
-            Hsla::new(zero(), zero(), max, rgba.alpha())
+            Hsla::new(zero(), zero(), max, rgba.alpha(), false)
         } else {
             let d = max - min;
             let hue = match largest {
@@ -72,7 +73,7 @@ impl From<&Rgba> for Hsla {
             } * (360 / 6);
             let mm = max + min;
             let sat = d / if mm > one() { -mm + 2 } else { mm };
-            Hsla::new(hue, sat, mm / 2, rgba.alpha())
+            Hsla::new(hue, sat, mm / 2, rgba.alpha(), false)
         }
     }
 }

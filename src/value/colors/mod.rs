@@ -6,8 +6,8 @@ mod rgba;
 
 pub use self::hsla::Hsla;
 pub use self::hwba::Hwba;
-pub use self::rgba::Rgba;
-use super::{Number, Rational};
+pub use self::rgba::{RgbFormat, Rgba};
+use super::Rational;
 use crate::output::{Format, Formatted};
 use num_traits::{one, zero, One, Zero};
 use std::borrow::Cow;
@@ -90,6 +90,7 @@ impl Color {
                     hsla.sat(),
                     hsla.lum(),
                     hsla.alpha(),
+                    hsla.hsla_format,
                 )
                 .into()
             }
@@ -98,6 +99,7 @@ impl Color {
                 hsla.sat(),
                 hsla.lum(),
                 hsla.alpha(),
+                hsla.hsla_format,
             )
             .into(),
             Color::Hwba(hwba) => Hwba::new(
@@ -107,6 +109,13 @@ impl Color {
                 hwba.alpha(),
             )
             .into(),
+        }
+    }
+    pub(crate) fn reset_source(&mut self) {
+        match self {
+            Color::Rgba(rgba) => rgba.reset_source(),
+            Color::Hsla(hsla) => hsla.reset_source(),
+            _ => (),
         }
     }
     /// Get a reference to this `Value` bound to an output format.
@@ -147,41 +156,12 @@ fn clamp(v: Rational, min: Rational, max: Rational) -> Rational {
 
 impl<'a> Display for Formatted<'a, Color> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        // The byte-version of alpha is not used here.
-        let rgba = self.value.to_rgba();
-        let (r, g, b, _a) = rgba.to_bytes();
-        let a = self.value.get_alpha();
-        if a >= Rational::one() {
-            // E.g. #ff00cc can be written #f0c in css.
-            // 0xff / 0x11 = 0xf.
-            let short = r % 0x11 == 0 && g % 0x11 == 0 && b % 0x11 == 0;
-            let hex_len = if short { 4 } else { 7 };
-            if let Some(name) = rgba.name() {
-                if !(self.format.is_compressed() && name.len() > hex_len) {
-                    return name.fmt(out);
-                }
+        match self.value {
+            Color::Rgba(rgba) => rgba.format(self.format).fmt(out),
+            Color::Hsla(hsla) if hsla.hsla_format => {
+                hsla.format(self.format).fmt(out)
             }
-            if self.format.is_compressed() && short {
-                write!(out, "#{:x}{:x}{:x}", r / 0x11, g / 0x11, b / 0x11)
-            } else {
-                write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
-            }
-        } else if self.format.is_compressed() && rgba.all_zero() {
-            write!(out, "transparent")
-        } else if self.format.is_compressed() {
-            // Note: libsass does not use the format for the alpha like this.
-            let a = Number::from(a);
-            write!(out, "rgba({},{},{},{})", r, g, b, a.format(self.format))
-        } else {
-            let a = Number::from(a);
-            write!(
-                out,
-                "rgba({}, {}, {}, {})",
-                r,
-                g,
-                b,
-                a.format(self.format)
-            )
+            any => any.to_rgba().format(self.format).fmt(out),
         }
     }
 }

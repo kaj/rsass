@@ -9,7 +9,7 @@ mod range;
 mod unit;
 mod unitset;
 
-pub use self::colors::{Color, Hsla, Hwba, Rgba};
+pub use self::colors::{Color, Hsla, Hwba, RgbFormat, Rgba};
 pub use self::list_separator::ListSeparator;
 pub use self::number::{BadNumber, Number, Rational};
 pub use self::numeric::Numeric;

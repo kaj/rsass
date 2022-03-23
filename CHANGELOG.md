@@ -33,8 +33,10 @@ project adheres to
   paths (PR #132).
 * Detect `@import` loops.
 * Report undefined variable / module errors better.
+* Update color formatting.  Sass-spec changed how it decides what
+  format to show a color in (PR #135).
 * Enable clippy in CI and fix some things it complained about (PR #128).
-* Update sass-spec test suite to 2022-03-09.
+* Update sass-spec test suite to 2022-03-17.
 
 
 ## Release 0.23.4

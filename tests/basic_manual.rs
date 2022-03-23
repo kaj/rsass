@@ -367,7 +367,7 @@ mod issue_122 {
     fn reported() {
         check_value(
             "54A444/0+-4444M4#444/-4444/0+-4444M4#444+44/0+444/0+.44444O#444+44/0+4/46",
-            "InfinityA444-4444M4 black/0-4444M4 #444+Infinity+Infinity+0.44444O #444+Infinity+0.0869565217",
+            "InfinityA444-4444M4 #000000/0-4444M4 #444+Infinity+Infinity+0.44444O #444+Infinity+0.0869565217",
         )
     }
     /// https://github.com/kaj/rsass/issues/121 is very similar.

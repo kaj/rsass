@@ -10,7 +10,7 @@ fn four_args() {
     assert_eq!(
         runner().ok("a {b: hsla(180, 60%, 50%, 0.4)}\n"),
         "a {\
-         \n  b: rgba(51, 204, 204, 0.4);\
+         \n  b: hsla(180deg, 60%, 50%, 0.4);\
          \n}\n"
     );
 }
@@ -23,7 +23,7 @@ mod one_arg {
         assert_eq!(
             runner().ok("a {b: hsla(180 60% 50% / 0.4)}\n"),
             "a {\
-         \n  b: rgba(51, 204, 204, 0.4);\
+         \n  b: hsla(180deg, 60%, 50%, 0.4);\
          \n}\n"
         );
     }
@@ -32,7 +32,7 @@ mod one_arg {
         assert_eq!(
             runner().ok("a {b: hsla(180 60% 50%)}\n"),
             "a {\
-         \n  b: #33cccc;\
+         \n  b: hsl(180deg, 60%, 50%);\
          \n}\n"
         );
     }
@@ -42,7 +42,7 @@ fn three_args() {
     assert_eq!(
         runner().ok("a {b: hsla(180, 60%, 50%)}\n"),
         "a {\
-         \n  b: #33cccc;\
+         \n  b: hsl(180deg, 60%, 50%);\
          \n}\n"
     );
 }

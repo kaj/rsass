@@ -31,11 +31,9 @@ pub fn register(f: &mut Scope) {
     });
     def!(f, grayscale(color), |args| match args.get(&name!(color))? {
         Value::Color(col, _) => {
-            let hsla = col.to_hsla();
-            Ok(
-                Hsla::new(hsla.hue(), zero(), hsla.lum(), hsla.alpha())
-                    .into(),
-            )
+            let col = col.to_hsla();
+            Ok(Hsla::new(col.hue(), zero(), col.lum(), col.alpha(), false)
+                .into())
         }
         v @ Value::Numeric(..) => Ok(make_call("grayscale", vec![v])),
         v => Err(is_not(&v, "a color")).named(name!(color)),
@@ -66,17 +64,15 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     });
     def!(f, darken(color, amount), |s| {
         let col = get_color(s, "color")?;
-        let hsla = col.to_hsla();
-        let lum =
-            hsla.lum() - get_checked(s, name!(amount), check_pct_range)?;
-        Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
+        let col = col.to_hsla();
+        let lum = col.lum() - get_checked(s, name!(amount), check_pct_range)?;
+        Ok(Hsla::new(col.hue(), col.sat(), lum, col.alpha(), false).into())
     });
     def!(f, desaturate(color, amount), |s| {
         let col = get_color(s, "color")?;
-        let hsla = col.to_hsla();
-        let sat =
-            hsla.sat() - get_checked(s, name!(amount), check_pct_range)?;
-        Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha()).into())
+        let col = col.to_hsla();
+        let sat = col.sat() - get_checked(s, name!(amount), check_pct_range)?;
+        Ok(Hsla::new(col.hue(), sat, col.lum(), col.alpha(), false).into())
     });
     def_va!(f, saturate(kwargs), |s| {
         let a1 = FormalArgs::new(vec![one_arg!(color), one_arg!(amount)]);
@@ -86,9 +82,9 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
             Ok(s) => {
                 let col = get_color(&s, "color")?;
                 let sat = get_checked(&s, name!(amount), check_pct_range)?;
-                let hsla = col.to_hsla();
-                let sat = hsla.sat() + sat;
-                Ok(Hsla::new(hsla.hue(), sat, hsla.lum(), hsla.alpha())
+                let col = col.to_hsla();
+                let sat = col.sat() + sat;
+                Ok(Hsla::new(col.hue(), sat, col.lum(), col.alpha(), false)
                     .into())
             }
             Err(ArgsError::Missing(_)) => {
@@ -104,10 +100,9 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     });
     def!(f, lighten(color, amount), |s| {
         let col = get_color(s, "color")?;
-        let hsla = col.to_hsla();
-        let lum =
-            hsla.lum() + get_checked(s, name!(amount), check_pct_range)?;
-        Ok(Hsla::new(hsla.hue(), hsla.sat(), lum, hsla.alpha()).into())
+        let col = col.to_hsla();
+        let lum = col.lum() + get_checked(s, name!(amount), check_pct_range)?;
+        Ok(Hsla::new(col.hue(), col.sat(), lum, col.alpha(), false).into())
     });
     for (gname, lname) in &[
         (name!(adjust_hue), name!(adjust_hue)),
@@ -180,6 +175,7 @@ fn hsla_from_values(
             check_pct_opt(s).named(name!(saturation))?,
             check_pct_opt(l).named(name!(lightness))?,
             check_alpha(a).named(name!(alpha))?,
+            true, // ??
         )
         .into())
     }
@@ -206,27 +202,46 @@ fn check_pct_opt(v: Value) -> Result<Rational, String> {
 
 #[test]
 fn test_hsl_black() {
-    assert_eq!("black", do_evaluate(&[], b"hsl(17, 32%, 0%);"))
+    assert_eq!(
+        do_evaluate(&[], b"hsl(17, 32%, 0%);"),
+        "hsl(17deg, 32%, 0%)"
+    )
 }
 #[test]
 fn test_hsl_white() {
-    assert_eq!("white", do_evaluate(&[], b"hsl(300, 82%, 100%);"))
+    assert_eq!(
+        do_evaluate(&[], b"hsl(300, 82%, 100%);"),
+        "hsl(300deg, 82%, 100%)"
+    )
 }
 #[test]
 fn test_hsl_gray() {
-    assert_eq!("gray", do_evaluate(&[], b"hsl(300, 0%, 50%);"))
+    assert_eq!(
+        do_evaluate(&[], b"hsl(300, 0%, 50%);"),
+        "hsl(300deg, 0%, 50%)"
+    )
 }
 #[test]
 fn test_hsl_red() {
-    assert_eq!("#f7c9c9", do_evaluate(&[], b"hsl(0, 75%, 88%);"))
+    assert_eq!(
+        do_evaluate(&[], b"hsl(0, 75%, 88%);"),
+        "hsl(0deg, 75%, 88%)"
+    )
 }
 #[test]
 fn test_hsl_yellow() {
-    assert_eq!("#ffff42", do_evaluate(&[], b"hsl(60, 100%, 63%);"))
+    assert_eq!(
+        do_evaluate(&[], b"hsl(60, 100%, 63%);"),
+        "hsl(60deg, 100%, 63%)"
+    )
 }
+
 #[test]
 fn test_hsl_blue_magenta() {
-    assert_eq!("#6118aa", do_evaluate(&[], b"hsl(270, 75%, 38%);"))
+    assert_eq!(
+        do_evaluate(&[], b"hsl(270, 75%, 38%);"),
+        "hsl(270deg, 75%, 38%)"
+    )
 }
 
 #[cfg(test)]

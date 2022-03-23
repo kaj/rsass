@@ -14,7 +14,7 @@ mod alpha {
         assert_eq!(
             runner().ok("a {b: rgb(0, 0, 0, 1.1)}\n"),
             "a {\
-         \n  b: black;\
+         \n  b: rgb(0, 0, 0);\
          \n}\n"
         );
     }

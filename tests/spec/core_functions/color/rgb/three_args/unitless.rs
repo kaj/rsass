@@ -10,7 +10,7 @@ fn beaded() {
     assert_eq!(
         runner().ok("a {b: rgb(190, 173, 237)}\n"),
         "a {\
-         \n  b: #beaded;\
+         \n  b: rgb(190, 173, 237);\
          \n}\n"
     );
 }
@@ -23,7 +23,7 @@ mod clamped {
         assert_eq!(
             runner().ok("a {b: rgb(0, 0, 9999)}\n"),
             "a {\
-         \n  b: blue;\
+         \n  b: rgb(0, 0, 255);\
          \n}\n"
         );
     }
@@ -32,7 +32,7 @@ mod clamped {
         assert_eq!(
             runner().ok("a {b: rgb(0, -1, 0)}\n"),
             "a {\
-         \n  b: black;\
+         \n  b: rgb(0, 0, 0);\
          \n}\n"
         );
     }
@@ -41,7 +41,7 @@ mod clamped {
         assert_eq!(
             runner().ok("a {b: rgb(256, 0, 0)}\n"),
             "a {\
-         \n  b: red;\
+         \n  b: rgb(255, 0, 0);\
          \n}\n"
         );
     }
@@ -51,7 +51,7 @@ fn named() {
     assert_eq!(
         runner().ok("a {b: rgb($red: 0, $green: 255, $blue: 127)}\n"),
         "a {\
-         \n  b: springgreen;\
+         \n  b: rgb(0, 255, 127);\
          \n}\n"
     );
 }
@@ -60,7 +60,7 @@ fn numbers() {
     assert_eq!(
         runner().ok("a {b: rgb(18, 52, 86)}\n"),
         "a {\
-         \n  b: #123456;\
+         \n  b: rgb(18, 52, 86);\
          \n}\n"
     );
 }
@@ -69,7 +69,7 @@ fn springgreen() {
     assert_eq!(
         runner().ok("a {b: rgb(0, 255, 127)}\n"),
         "a {\
-         \n  b: springgreen;\
+         \n  b: rgb(0, 255, 127);\
          \n}\n"
     );
 }

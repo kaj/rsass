@@ -21,7 +21,7 @@ fn opaque() {
     assert_eq!(
         runner().ok("a {b: rgb(190, 173, 237, 1)}\n"),
         "a {\
-         \n  b: #beaded;\
+         \n  b: rgb(190, 173, 237);\
          \n}\n"
     );
 }

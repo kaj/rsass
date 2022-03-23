@@ -23,8 +23,8 @@ fn test() {
              \n  eight-digit-alpha: alpha(#ABCDEF12);\
              \n}\n"),
         "a {\
-         \n  four-digit: #AbCd;\
-         \n  eight-digit: #aBcDeF12;\
+         \n  four-digit: rgba(170, 187, 204, 0.8666666667);\
+         \n  eight-digit: rgba(171, 205, 239, 0.0705882353);\
          \n  four-digit-red: 170;\
          \n  four-digit-green: 187;\
          \n  four-digit-blue: 204;\

@@ -11,7 +11,7 @@ fn test() {
         runner()
             .ok("a {b: hsl($hue: 0, $saturation: 100%, $lightness: 50%)}\n"),
         "a {\
-         \n  b: red;\
+         \n  b: hsl(0deg, 100%, 50%);\
          \n}\n"
     );
 }

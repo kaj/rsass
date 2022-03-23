@@ -1,23 +1,47 @@
 //! Color names from <https://www.w3.org/TR/css3-color/>
 #![allow(clippy::unreadable_literal)]
 use super::Rational;
+use crate::output::{Format, Formatted};
+use crate::value::Number;
 use lazy_static::lazy_static;
-use num_traits::{one, One, Signed, Zero};
+use num_traits::{one, zero, One, Signed, Zero};
+use std::cmp::Ordering;
 use std::collections::BTreeMap;
+use std::fmt::{self, Display};
 use std::ops::{Add, Div, Sub};
 
 /// A color defined by red, green, blue, and alpha components.
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug)]
 pub struct Rgba {
     red: Rational,
     green: Rational,
     blue: Rational,
     alpha: Rational,
+    source: RgbFormat,
+}
+
+/// The source format of an rgb color.
+#[derive(Copy, Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum RgbFormat {
+    /// Six digit hexadecimal
+    LongHex,
+    /// Three digit hexadecimal
+    ShortHex,
+    /// A well-known named color
+    Name,
+    /// A rgb() or rgba() color specification
+    Rgb,
 }
 
 impl Rgba {
     /// Create a new rgba color.
-    pub fn new(r: Rational, g: Rational, b: Rational, a: Rational) -> Self {
+    pub fn new(
+        r: Rational,
+        g: Rational,
+        b: Rational,
+        a: Rational,
+        s: RgbFormat,
+    ) -> Self {
         let ff = Rational::new(255, 1);
         let one = Rational::one();
         Rgba {
@@ -25,6 +49,7 @@ impl Rgba {
             green: cap(g, &ff),
             blue: cap(b, &ff),
             alpha: cap(a, &one),
+            source: s,
         }
     }
     /// Create a color from rgb byte values.
@@ -34,6 +59,7 @@ impl Rgba {
             green: Rational::from_integer(g.into()),
             blue: Rational::from_integer(b.into()),
             alpha: Rational::one(),
+            source: RgbFormat::LongHex,
         }
     }
     /// Create a color from rgba byte values.
@@ -43,6 +69,7 @@ impl Rgba {
             green: Rational::from_integer(g.into()),
             blue: Rational::from_integer(b.into()),
             alpha: Rational::from_integer(a.into()) / 255,
+            source: RgbFormat::LongHex,
         }
     }
 
@@ -63,11 +90,23 @@ impl Rgba {
         let name = name.to_lowercase();
         let name: &str = &name;
         if name == "transparent" {
-            return Some(Self::from_rgba(0, 0, 0, 0));
+            return Some(Self::new(
+                zero(),
+                zero(),
+                zero(),
+                zero(),
+                RgbFormat::Name,
+            ));
         }
         LOOKUP.n2v.get(name).map(|n| {
             let [_, r, g, b] = n.to_be_bytes();
-            Self::from_rgb(r, g, b)
+            Self::new(
+                i64::from(r).into(),
+                i64::from(g).into(),
+                i64::from(b).into(),
+                one(),
+                RgbFormat::Name,
+            )
         })
     }
 
@@ -110,6 +149,46 @@ impl Rgba {
     pub fn set_alpha(&mut self, alpha: Rational) {
         self.alpha = cap(alpha, &one())
     }
+    /// Get the source type of this color.
+    pub(crate) fn source(&self) -> RgbFormat {
+        self.source
+    }
+    pub(crate) fn reset_source(&mut self) {
+        self.source = RgbFormat::Name;
+    }
+    /// Get a reference to this `Value` bound to an output format.
+    pub fn format(&self, format: Format) -> Formatted<Self> {
+        Formatted {
+            value: self,
+            format,
+        }
+    }
+}
+
+impl PartialEq for Rgba {
+    fn eq(&self, other: &Rgba) -> bool {
+        // ignores source!
+        self.red == other.red
+            && self.green == other.green
+            && self.blue == other.blue
+            && self.alpha == other.alpha
+    }
+}
+impl Eq for Rgba {}
+impl Ord for Rgba {
+    fn cmp(&self, other: &Rgba) -> Ordering {
+        // ignores source!
+        self.red
+            .cmp(&other.red)
+            .then_with(|| self.green.cmp(&other.green))
+            .then_with(|| self.blue.cmp(&other.blue))
+            .then_with(|| self.alpha.cmp(&other.alpha))
+    }
+}
+impl PartialOrd for Rgba {
+    fn partial_cmp(&self, other: &Rgba) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 fn cap(n: Rational, max: &Rational) -> Rational {
@@ -142,6 +221,7 @@ impl Add<Rational> for &Rgba {
             self.green + rhs,
             self.blue + rhs,
             self.alpha,
+            RgbFormat::Name,
         )
     }
 }
@@ -156,6 +236,7 @@ impl Add<&Rgba> for &Rgba {
             self.blue + rhs.blue,
             // TODO Sum or average the alpha?
             self.alpha + rhs.alpha,
+            RgbFormat::Name,
         )
     }
 }
@@ -169,6 +250,7 @@ impl<'a> Div<Rational> for &'a Rgba {
             self.green / rhs,
             self.blue / rhs,
             self.alpha,
+            self.source,
         )
     }
 }
@@ -183,6 +265,7 @@ impl<'a> Sub<Rational> for &'a Rgba {
             self.green - rhs,
             self.blue - rhs,
             self.alpha,
+            RgbFormat::Name,
         )
     }
 }
@@ -196,6 +279,7 @@ impl<'a> Sub<&'a Rgba> for &'a Rgba {
             self.green - rhs.green,
             self.blue - rhs.blue,
             (self.alpha + rhs.alpha) / 2,
+            RgbFormat::Name,
         )
     }
 }
@@ -388,4 +472,71 @@ lazy_static! {
         ("yellow", 0xffff00),
         ("yellowgreen", 0x9acd32),
     ]);
+}
+
+impl<'a> Display for Formatted<'a, Rgba> {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        // The byte-version of alpha is not used here.
+        let rgba = self.value;
+        let (r, g, b, _a) = rgba.to_bytes();
+        let a = self.value.alpha;
+        if a >= Rational::one() {
+            // E.g. #ff00cc can be written #f0c in css.
+            // 0xff / 0x11 = 0xf.
+            let short = r % 0x11 == 0 && g % 0x11 == 0 && b % 0x11 == 0;
+            let hex_len = if short { 4 } else { 7 };
+            if self.format.is_compressed() {
+                if let Some(name) = rgba.name() {
+                    if name.len() <= hex_len {
+                        return name.fmt(out);
+                    }
+                }
+                if short {
+                    write!(out, "#{:x}{:x}{:x}", r / 0x11, g / 0x11, b / 0x11)
+                } else {
+                    write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
+                }
+            } else {
+                match rgba.source {
+                    RgbFormat::LongHex => {
+                        write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
+                    }
+                    RgbFormat::ShortHex => {
+                        write!(
+                            out,
+                            "#{:x}{:x}{:x}",
+                            r / 0x11,
+                            g / 0x11,
+                            b / 0x11
+                        )
+                    }
+                    RgbFormat::Name => {
+                        if let Some(name) = rgba.name() {
+                            return name.fmt(out);
+                        }
+                        write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
+                    }
+                    RgbFormat::Rgb => {
+                        write!(out, "rgb({}, {}, {})", r, g, b)
+                    }
+                }
+            }
+        } else if self.format.is_compressed() && rgba.all_zero() {
+            write!(out, "transparent")
+        } else if self.format.is_compressed() {
+            // Note: libsass does not use the format for the alpha like this.
+            let a = Number::from(a);
+            write!(out, "rgba({},{},{},{})", r, g, b, a.format(self.format))
+        } else {
+            let a = Number::from(a);
+            write!(
+                out,
+                "rgba({}, {}, {}, {})",
+                r,
+                g,
+                b,
+                a.format(self.format)
+            )
+        }
+    }
 }

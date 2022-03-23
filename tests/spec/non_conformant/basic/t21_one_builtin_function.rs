@@ -13,8 +13,8 @@ fn test() {
              \n  background: rgb(123, 45, 6);\
              \n}\n"),
         "div {\
-         \n  color: yellow;\
-         \n  background: #7b2d06;\
+         \n  color: rgb(255, 255, 0);\
+         \n  background: rgb(123, 45, 6);\
          \n}\n"
     );
 }

@@ -111,8 +111,8 @@ fn test() {
          \n  background-image: url(\"/images/a.png\"), url(\"images/b.png\");\
          \n  background-image: url(\"/images/a.png\"), -webkit-linear-gradient(white 0, yellow 50%, transparent 50%);\
          \n  background-image: url(\"/images/a.png\"), linear-gradient( white 0, yellow 50%, transparent 50%);\
-         \n  background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 50%, transparent 50%), -webkit-linear-gradient(#4e7ba3, #3e6181);\
-         \n  background-image: linear-gradient( rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 50%, transparent 50%), linear-gradient( #4e7ba3, #3e6181);\
+         \n  background-image: -webkit-linear-gradient(hsla(0deg, 100%, 100%, 0.25) 0%, hsla(0deg, 100%, 100%, 0.08) 50%, transparent 50%), -webkit-linear-gradient(#4e7ba3, #3e6181);\
+         \n  background-image: linear-gradient( hsla(0deg, 100%, 100%, 0.25) 0%, hsla(0deg, 100%, 100%, 0.08) 50%, transparent 50%), linear-gradient( #4e7ba3, #3e6181);\
          \n  background-image: -webkit-url(\"/images/a.png\")-gradient(center), -webkit-url(\"images/b.png\")-gradient(left);\
          \n  background-image: url(\"/images/a.png\")-gradient( center), url(\"images/b.png\")-gradient( left);\
          \n}\n"

@@ -16,7 +16,7 @@ mod args {
             "a {b: call(get-function(\"rgb\"), $blue: 1, $green: 2, $red: 3)}\n"
         ),
         "a {\
-         \n  b: #030201;\
+         \n  b: rgb(3, 2, 1);\
          \n}\n"
     );
     }
@@ -35,7 +35,7 @@ mod args {
         assert_eq!(
             runner().ok("a {b: call(get-function(\"rgb\"), 1, 2, 3)}\n"),
             "a {\
-         \n  b: #010203;\
+         \n  b: rgb(1, 2, 3);\
          \n}\n"
         );
     }
@@ -52,7 +52,7 @@ mod args {
              \na {b: call(get-function(\"rgb\"), $positional..., $named...)}\n"
         ),
         "a {\
-         \n  b: #010203;\
+         \n  b: rgb(1, 2, 3);\
          \n}\n"
     );
         }
@@ -63,7 +63,7 @@ mod args {
                     .ok("$args: (\"green\": 1, \"blue\": 2, \"red\": 3);\
              \na {b: call(get-function(\"rgb\"), $args...)}\n"),
                 "a {\
-         \n  b: #030102;\
+         \n  b: rgb(3, 1, 2);\
          \n}\n"
             );
         }
@@ -73,7 +73,7 @@ mod args {
                 runner().ok("$args: 1, 2, 3;\
              \na {b: call(get-function(\"rgb\"), $args...)}\n"),
                 "a {\
-         \n  b: #010203;\
+         \n  b: rgb(1, 2, 3);\
          \n}\n"
             );
         }
@@ -148,7 +148,7 @@ fn named() {
             "a {b: call($function: get-function(\"rgb\"), $red: 1, $green: 2, $blue: 3)}\n"
         ),
         "a {\
-         \n  b: #010203;\
+         \n  b: rgb(1, 2, 3);\
          \n}\n"
     );
 }
@@ -161,7 +161,7 @@ mod string {
         assert_eq!(
             runner().ok("a {b: call(\"rgb\", 1, 2, 3)}\n"),
             "a {\
-         \n  b: #010203;\
+         \n  b: rgb(1, 2, 3);\
          \n}\n"
         );
     }
