@@ -293,6 +293,18 @@ mod list {
          \n}\n"
                 );
             }
+            #[test]
+            #[ignore] // wrong result
+            fn test_where() {
+                assert_eq!(
+                    runner().ok(
+                        "a {b: selector-nest(\"c, d\", \":where(&)\")}\n"
+                    ),
+                    "a {\
+         \n  b: :where(c, d);\
+         \n}\n"
+                );
+            }
         }
         #[test]
         fn suffix() {
@@ -416,6 +428,16 @@ mod parent {
          \n}\n"
                 );
             }
+            #[test]
+            fn test_where() {
+                assert_eq!(
+                    runner()
+                        .ok("a {b: selector-nest(\"c d\", \":where(&)\")}\n"),
+                    "a {\
+         \n  b: :where(c d);\
+         \n}\n"
+                );
+            }
         }
         mod simple_parent {
             #[allow(unused)]
@@ -437,6 +459,16 @@ mod parent {
                         .ok("a {b: selector-nest(\"c\", \":matches(&)\")}\n"),
                     "a {\
          \n  b: :matches(c);\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn test_where() {
+                assert_eq!(
+                    runner()
+                        .ok("a {b: selector-nest(\"c\", \":where(&)\")}\n"),
+                    "a {\
+         \n  b: :where(c);\
          \n}\n"
                 );
             }

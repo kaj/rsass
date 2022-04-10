@@ -213,6 +213,22 @@ mod simple {
          \n}\n"
                     );
                 }
+                #[test]
+                fn test_where() {
+                    assert_eq!(
+                        runner().ok(
+                            "$result: selector-parse(\":where(b, c)\");\
+             \na {\
+             \n  result: $result;\
+             \n  structure: $result == (append((), \":where(b, c)\"),);\
+             \n}\n"
+                        ),
+                        "a {\
+         \n  result: :where(b, c);\
+         \n  structure: true;\
+         \n}\n"
+                    );
+                }
             }
         }
         mod element {

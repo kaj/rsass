@@ -9,7 +9,7 @@ project adheres to
 
 ## Unreleased
 
-* ...
+* Update sass-spec test suite to 2022-04-07.
 
 
 ## Release 0.24.0

@@ -401,6 +401,31 @@ mod placeholder {
          \n}\n"
                 );
             }
+            #[test]
+            #[ignore] // wrong result
+            fn solo() {
+                assert_eq!(
+        runner().ok(
+            "// Since `%b` doesn\'t exist, no selectors can match it, so this rule should be\
+             \n// removed.\
+             \na:where(%b) {x: y}\n"
+        ),
+        ""
+    );
+            }
+            #[test]
+            #[ignore] // wrong result
+            fn with_real() {
+                assert_eq!(
+        runner().ok(
+            "// Since `%b` doesn\'t exist, an element matches `%b` or `c` iff it matches `c`.\
+             \na:where(%b, c) {x: y}\n"
+        ),
+        "a:where(c) {\
+         \n  x: y;\
+         \n}\n"
+    );
+            }
         }
     }
 }

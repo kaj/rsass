@@ -458,6 +458,17 @@ mod selector_pseudo {
          \n}\n"
         );
     }
+    #[test]
+    #[ignore] // wrong result
+    fn test_where() {
+        assert_eq!(
+            runner()
+                .ok("a {b: selector-replace(\":where(c)\", \"c\", \"d\")}\n"),
+            "a {\
+         \n  b: :where(d);\
+         \n}\n"
+        );
+    }
 }
 #[test]
 #[ignore] // wrong result
