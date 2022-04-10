@@ -41,7 +41,6 @@ mod media {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn in_style_rule() {
         assert_eq!(
             runner().ok("c {\

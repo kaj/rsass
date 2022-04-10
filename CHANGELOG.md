@@ -9,6 +9,7 @@ project adheres to
 
 ## Unreleased
 
+* Minor fix in whitespace around at-rules.
 * Update sass-spec test suite to 2022-04-07.
 
 

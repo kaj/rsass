@@ -217,7 +217,7 @@ impl CssBuf {
     pub fn do_indent(&mut self) {
         self.add_str(self.format.get_indent(self.indent))
     }
-    fn do_indent_no_nl(&mut self) {
+    pub(crate) fn do_indent_no_nl(&mut self) {
         let stuff = self.format.get_indent(self.indent);
         if stuff.len() > 1 {
             self.add_str(&stuff[1..])

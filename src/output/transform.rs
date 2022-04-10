@@ -220,6 +220,7 @@ fn handle_item(
             ref body,
         } => {
             buf.do_separate();
+            buf.do_indent_no_nl();
             let name = name.evaluate(scope.clone())?;
             write!(buf, "@{}", name.value())?;
             let args = args.evaluate(scope.clone())?;
@@ -252,10 +253,10 @@ fn handle_item(
                     buf.join(sub);
                 }
                 buf.add_str("}");
-                buf.do_indent();
             } else {
                 buf.add_str(";");
             }
+            buf.do_separate();
         }
 
         Item::VariableDeclaration {
