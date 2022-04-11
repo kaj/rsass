@@ -10,7 +10,6 @@ mod function {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn boolean() {
         assert_eq!(
             runner().err(
@@ -26,7 +25,6 @@ mod function {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn color() {
         assert_eq!(
             runner().err(
@@ -42,7 +40,6 @@ mod function {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn function() {
         assert_eq!(
         runner().err(
@@ -59,7 +56,6 @@ mod function {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn list() {
         assert_eq!(
             runner().err(
@@ -75,7 +71,6 @@ mod function {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn map() {
         assert_eq!(
             runner().err(
@@ -91,7 +86,6 @@ mod function {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn null() {
         assert_eq!(
             runner().err(
@@ -107,7 +101,6 @@ mod function {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn quoted_string() {
         assert_eq!(
             runner().err(
@@ -128,7 +121,6 @@ mod variable {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn boolean() {
         assert_eq!(
             runner().err(
@@ -144,7 +136,6 @@ mod variable {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn color() {
         assert_eq!(
             runner().err(
@@ -160,7 +151,6 @@ mod variable {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn function() {
         assert_eq!(
         runner().err(
@@ -177,7 +167,6 @@ mod variable {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn list() {
         assert_eq!(
             runner().err(
@@ -193,7 +182,6 @@ mod variable {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn map() {
         assert_eq!(
             runner().err(
@@ -209,7 +197,6 @@ mod variable {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn null() {
         assert_eq!(
             runner().err(
@@ -225,7 +212,6 @@ mod variable {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn quoted_string() {
         assert_eq!(
             runner().err(

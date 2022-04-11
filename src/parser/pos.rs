@@ -187,6 +187,23 @@ impl SourcePos {
             p.length += len;
         }
     }
+    /// If the position is `calc(some-arg)`, change to only `some-arg`.
+    ///
+    /// This is only used to make errors from rsass more similar to
+    /// dart-sass errors.
+    pub(crate) fn opt_in_calc(mut self) -> Self {
+        let p: &mut SourcePosImpl = Arc::make_mut(&mut self.p);
+        let s = "calc(";
+        let part = &p.line[p.line_pos - 1..];
+        if part.starts_with(s) && part.chars().nth(p.length - 1) == Some(')')
+        {
+            let len = s.chars().count();
+            p.line_pos += len;
+            p.length -= len;
+            p.length -= 1;
+        }
+        self
+    }
 
     /// True if this is the position of something built-in.
     pub fn is_builtin(&self) -> bool {

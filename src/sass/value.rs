@@ -156,7 +156,10 @@ impl Value {
                             let msg = format!("Error: {}", msg);
                             Error::BadCall(msg, pos.clone(), None)
                         }
-                        e => Error::BadCall(e.to_string(), pos.clone(), None),
+                        e => {
+                            let pos = pos.clone().opt_in_calc();
+                            Error::BadCall(e.to_string(), pos, None)
+                        }
                     };
                     let name = name.into();
                     if let Some(f) = scope

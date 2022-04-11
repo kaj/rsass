@@ -19,7 +19,7 @@ pub fn unit(input: Span) -> PResult<Unit> {
             "vmax" => Unit::Vmax,
             "cm" => Unit::Cm,
             "mm" => Unit::Mm,
-            "q" => Unit::Q,
+            "Q" | "q" => Unit::Q,
             "in" => Unit::In,
             "pt" => Unit::Pt,
             "pc" => Unit::Pc,

@@ -23,6 +23,13 @@ impl UnitSet {
     pub fn is_none(&self) -> bool {
         self.units.iter().all(|(u, _)| *u == Unit::None)
     }
+    /// Check if this UnitSet conains only known units.
+    pub fn is_known(&self) -> bool {
+        !self
+            .units
+            .iter()
+            .any(|(u, _)| matches!(u, Unit::Unknown(_)))
+    }
     /// Check if this UnitSet is the percent unit.
     pub fn is_percent(&self) -> bool {
         self.units == [(Unit::Percent, 1)]
@@ -65,6 +72,14 @@ impl UnitSet {
             .into_iter()
             .filter(|(_d, power)| *power != 0)
             .collect::<Vec<_>>()
+    }
+    pub(crate) fn valid_in_css(&self) -> bool {
+        let dim = self.css_dimension();
+        match &dim[..] {
+            [] => true,
+            [(_d, p)] => *p == 1,
+            _ => false,
+        }
     }
 
     /// Get a scaling factor to convert this unit to another unit.
@@ -219,7 +234,11 @@ impl Display for UnitSet {
 
 fn write_one(out: &mut fmt::Formatter, u: &Unit, p: i8) -> fmt::Result {
     u.fmt(out)?;
-    if p != 1 {
+    if (0..=3).contains(&p) {
+        for _ in 1..p {
+            write!(out, "*{}", u)?;
+        }
+    } else {
         write!(out, "^{}", p)?;
     }
     Ok(())

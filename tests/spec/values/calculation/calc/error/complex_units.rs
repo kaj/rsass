@@ -10,7 +10,6 @@ mod denominator {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn from_variable() {
         assert_eq!(
             runner().err(
@@ -27,7 +26,6 @@ mod denominator {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn within_calc() {
         assert_eq!(
             runner().err("a {b: calc(1% + 1 / 2px)}\n"),
@@ -45,7 +43,6 @@ mod multiple_numerator {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn from_variable() {
         assert_eq!(
             runner().err(
@@ -61,7 +58,6 @@ mod multiple_numerator {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn within_calc() {
         assert_eq!(
             runner().err("a {b: calc(1% + 1px * 2px)}\n"),
@@ -79,7 +75,6 @@ mod numerator_and_denominator {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn from_variable() {
         assert_eq!(
             runner().err(
@@ -96,7 +91,6 @@ mod numerator_and_denominator {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn within_calc() {
         assert_eq!(
             runner().err("a {b: calc(1% + 1s / 2px)}\n"),

@@ -3,7 +3,7 @@ use crate::error::Error;
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
 use crate::sass::{FormalArgs, Name};
-use crate::value::Numeric;
+use crate::value::{CssDimension, Numeric, Operator, Quotes};
 use crate::{sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -240,18 +240,32 @@ lazy_static! {
                     _ => false,
                 }
             }
-            fn in_calc(v: Value) -> Value {
+            // Note: None here is for unknown, e.g. the dimension of something that is not a number.
+            fn css_dim(v: &Value) -> Option<Vec<(CssDimension, i8)>> {
                 match v {
-                    Value::Literal(s) => {
-                        if s.quotes() == crate::value::Quotes::None
-                            && s.value().ends_with(')')
-                            && s.value().starts_with("calc(")
-                        {
-                            Value::Paren(Box::new(
-                                s.value()[5..s.value().len() - 1].into(),
-                            ))
+                    // TODO: Handle BinOp recursively (again) (or let in_calc return (Value, CssDimension)?)
+                    Value::Numeric(num, _) => {
+                        let u = &num.unit;
+                        if u.is_known() && !u.is_percent() {
+                            Some(u.css_dimension())
                         } else {
-                            s.into()
+                            None
+                        }
+                    }
+                    _ => None,
+                }
+            }
+            fn in_calc(v: Value) -> Result<Value, Error> {
+                match v {
+                    Value::Literal(s) if s.quotes() == Quotes::None => {
+                        if let Some(arg) = s
+                            .value()
+                            .strip_prefix("calc(")
+                            .and_then(|s| s.strip_suffix(')'))
+                        {
+                            Ok(Value::Paren(Box::new(arg.into())))
+                        } else {
+                            Ok(s.into())
                         }
                     }
                     Value::Call(name, args) => {
@@ -259,21 +273,48 @@ lazy_static! {
                             && args.check_no_named().is_ok()
                             && args.positional.len() == 1
                         {
-                            Value::Paren(Box::new(
+                            Ok(Value::Paren(Box::new(
                                 args.positional.into_iter().next().unwrap(),
-                            ))
+                            )))
                         } else {
-                            Value::Call(name, args)
+                            Ok(Value::Call(name, args))
                         }
                     }
-                    Value::BinOp(a, _, op, _, b) => Value::BinOp(
-                        Box::new(in_calc(*a)),
-                        true,
-                        op,
-                        true,
-                        Box::new(in_calc(*b)),
-                    ),
-                    v => v,
+                    Value::BinOp(a, _, op, _, b) => {
+                        let a = in_calc(*a)?;
+                        let b = in_calc(*b)?;
+                        if let (Some(adim), Some(bdim)) = (css_dim(&a), css_dim(&b)) {
+                            if (op == Operator::Plus || op == Operator::Minus) && adim != bdim {
+                                return Err(Error::error(format!(
+                                    "{} and {} are incompatible.",
+                                    a.format(Format::introspect()),
+                                    b.format(Format::introspect()),
+                                )))
+                            }
+                        }
+                        Ok(Value::BinOp(
+                            Box::new(a),
+                            true,
+                            op,
+                            true,
+                            Box::new(b),
+                        ))
+                    }
+                    Value::Numeric(num, c) => {
+                        if num.unit.valid_in_css() {
+                            Ok(Value::Numeric(num, c))
+                        } else {
+                            Err(Error::error(format!(
+                                "Number {} isn't compatible with CSS calculations.",
+                                num.format(Format::introspect())
+                            )))
+                        }
+                    }
+                    v @ Value::Paren(..) => Ok(v),
+                    v => Err(Error::error(format!(
+                        "Value {} can't be used in a calculation.",
+                        v.format(Format::introspect())
+                    ))),
                 }
             }
             let v = s.get(&name!(expr))?;
@@ -282,7 +323,7 @@ lazy_static! {
             } else {
                 Ok(Value::Call(
                     "calc".into(),
-                    CallArgs::from_value(in_calc(v))?,
+                    CallArgs::from_value(in_calc(v)?)?,
                 ))
             }
         });

@@ -30,7 +30,7 @@ pub enum Unit {
     Cm,
     /// `mm` unit, absolute length.
     Mm,
-    /// `q` unit, absolute length (4q == 1mm).
+    /// `q` unit, absolute length (4Q == 1mm).
     Q,
     /// `in` unit, absolute length in inch.
     In,
@@ -216,7 +216,7 @@ impl fmt::Display for Unit {
             Unit::Vmax => write!(out, "vmax"),
             Unit::Cm => write!(out, "cm"),
             Unit::Mm => write!(out, "mm"),
-            Unit::Q => write!(out, "q"),
+            Unit::Q => write!(out, "Q"),
             Unit::In => write!(out, "in"),
             Unit::Pt => write!(out, "pt"),
             Unit::Pc => write!(out, "pc"),

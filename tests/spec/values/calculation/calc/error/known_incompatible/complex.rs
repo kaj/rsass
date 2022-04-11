@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
 fn denominator_and_denominators() {
     assert_eq!(
         runner().err("a {b: calc(1/1px + 1/1px/1px)}\n"),
@@ -19,7 +18,6 @@ fn denominator_and_denominators() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn mismatched_denominators() {
     assert_eq!(
         runner().err("a {b: calc(1/1px/1s + 1/1px/1px)}\n"),
@@ -32,7 +30,6 @@ fn mismatched_denominators() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn mismatched_numerators() {
     assert_eq!(
         runner().err("a {b: calc(1px*1s + 1px*1px)}\n"),
@@ -45,7 +42,6 @@ fn mismatched_numerators() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn numerator_and_denominator() {
     assert_eq!(
         runner().err("a {b: calc(1px + 1/1px)}\n"),
@@ -58,7 +54,6 @@ fn numerator_and_denominator() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn numerator_and_numerators() {
     assert_eq!(
         runner().err("a {b: calc(1px + 1px*1px)}\n"),
