@@ -10,7 +10,10 @@ project adheres to
 ## Unreleased
 
 * Minor fix in whitespace around at-rules.
+* Fix a typo in LICENSE (Issue #136).
 * Update sass-spec test suite to 2022-04-07.
+
+Thanks to @jonassmedegaard for #136.
 
 
 ## Release 0.24.0
