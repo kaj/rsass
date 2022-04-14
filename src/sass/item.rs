@@ -73,9 +73,15 @@ pub enum Item {
     While(Value, Vec<Item>),
 
     /// An `@use` directive.
-    Use(SassString, UseAs, Vec<(Name, Value, bool)>),
+    Use(SassString, UseAs, Vec<(Name, Value, bool)>, SourcePos),
     /// An `@forward` directive.
-    Forward(SassString, UseAs, Expose, Vec<(Name, Value, bool)>),
+    Forward(
+        SassString,
+        UseAs,
+        Expose,
+        Vec<(Name, Value, bool)>,
+        SourcePos,
+    ),
 
     /// A sass rule; selectors followed by a block of items.
     Rule(Selectors, Vec<Item>),

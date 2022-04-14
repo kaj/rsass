@@ -51,23 +51,28 @@ pub fn use2(input: Span) -> PResult<Item> {
                     with_arg,
                 )),
                 opt(preceded(terminated(tag("as"), opt_spacelike), as_arg)),
+                position,
             )),
             semi_or_end,
         ),
-        |(s, w, n)| {
-            Item::Use(s, n.unwrap_or(UseAs::KeepName), w.unwrap_or_default())
+        |(s, w, n, end)| {
+            Item::Use(
+                s,
+                n.unwrap_or(UseAs::KeepName),
+                w.unwrap_or_default(),
+                SourcePos::from_to(input, end),
+            )
         },
     )(input)
 }
 
 pub fn forward2(input: Span) -> PResult<Item> {
-    let (mut input, path) =
-        terminated(any_sass_string, opt_spacelike)(input)?;
+    let (mut end, path) = terminated(any_sass_string, opt_spacelike)(input)?;
     let mut found_as = None;
     let mut expose = Expose::All;
     let mut found_with = None;
-    while let Ok((rest, arg)) = terminated(name, opt_spacelike)(input) {
-        input = match arg.as_ref() {
+    while let Ok((rest, arg)) = terminated(name, opt_spacelike)(end) {
+        end = match arg.as_ref() {
             "as" if found_as.is_none() => {
                 let (i, a) = as_arg(rest)?;
                 found_as = Some(a);
@@ -90,20 +95,21 @@ pub fn forward2(input: Span) -> PResult<Item> {
             }
             _ => {
                 return Err(nom::Err::Error(nom::error::Error::new(
-                    input,
+                    end,
                     nom::error::ErrorKind::MapRes,
                 )));
             }
         };
     }
-    let (input, ()) = semi_or_end(input)?;
+    let (rest, ()) = semi_or_end(end)?;
     Ok((
-        input,
+        rest,
         Item::Forward(
             path,
             found_as.unwrap_or(UseAs::Star),
             expose,
             found_with.unwrap_or_default(),
+            SourcePos::from_to(input, end),
         ),
     ))
 }

@@ -142,7 +142,6 @@ fn style_rule() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn through_other_mixin() {
     let runner = runner().with_cwd("through_other_mixin");
     assert_eq!(

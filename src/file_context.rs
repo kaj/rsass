@@ -73,19 +73,26 @@ pub trait FileContext: Sized + std::fmt::Debug {
         url: &str,
         from: SourcePos,
     ) -> Result<Option<SourceFile>, Error> {
-        if let Some((path, mut file)) = do_find_file(
-            self,
-            url,
-            &[
-                // base will either be empty or end with a slash.
-                &|base, name| format!("{}{}.scss", base, name),
-                &|base, name| format!("{}_{}.scss", base, name),
-                &|base, name| format!("{}{}/index.scss", base, name),
-                &|base, name| format!("{}{}/_index.scss", base, name),
-                &|base, name| format!("{}{}.css", base, name),
-            ],
-        )? {
-            let source = SourceName::load_css(path, from);
+        let names: &[&dyn Fn(&str, &str) -> String] = &[
+            // base will either be empty or end with a slash.
+            &|base, name| format!("{}{}.scss", base, name),
+            &|base, name| format!("{}_{}.scss", base, name),
+            &|base, name| format!("{}{}/index.scss", base, name),
+            &|base, name| format!("{}{}/_index.scss", base, name),
+            &|base, name| format!("{}{}.css", base, name),
+        ];
+        // Note: Should a "full stack" of bases be used here?
+        // Or is this fine?
+        let base = from.file_url();
+        if let Some((path, mut file)) = base
+            .rfind('/')
+            .map(|p| base.split_at(p + 1).0)
+            .map(|base| {
+                do_find_file(self, &format!("{}{}", base, url), names)
+            })
+            .unwrap_or_else(|| do_find_file(self, url, names))?
+        {
+            let source = SourceName::imported(path, from);
             Ok(Some(SourceFile::read(&mut file, source)?))
         } else {
             Ok(None)

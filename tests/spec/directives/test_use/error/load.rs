@@ -314,7 +314,6 @@ mod test_loop {
     }
 }
 #[test]
-#[ignore] // wrong error
 fn missing() {
     let runner = runner().with_cwd("missing");
     assert_eq!(
@@ -342,7 +341,6 @@ fn no_extension() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn unknown_scheme() {
     let runner = runner().with_cwd("unknown_scheme");
     assert_eq!(

@@ -71,7 +71,7 @@ fn handle_item(
 ) -> Result<(), Error> {
     let format = scope.get_format();
     match item {
-        Item::Use(ref name, ref as_n, ref with) => {
+        Item::Use(ref name, ref as_n, ref with, ref pos) => {
             let name = name.evaluate(scope.clone())?;
             let module = if let Some(module) = get_global_module(name.value())
             {
@@ -81,11 +81,9 @@ fn handle_item(
                     ));
                 }
                 module
-            } else if let Some(sourcefile) = file_context.find_file_use(
-                name.value(),
-                // TODO: Get a proper pos!
-                crate::parser::code_span(b"").into(),
-            )? {
+            } else if let Some(sourcefile) =
+                file_context.find_file_use(name.value(), pos.clone())?
+            {
                 head.load_module(
                     sourcefile.path(),
                     |head| {
@@ -118,11 +116,17 @@ fn handle_item(
                         Ok(module)
                     })?
             } else {
-                return Err(Error::S(format!("Module {} not found", name)));
+                let mut pos = pos.clone();
+                pos.opt_back("@use ");
+                return Err(Error::BadCall(
+                    "Error: Can't find stylesheet to import.".into(),
+                    pos,
+                    None,
+                ));
             };
             scope.do_use(module, name.value(), as_n, &Expose::All)?;
         }
-        Item::Forward(ref name, ref as_n, ref expose, ref with) => {
+        Item::Forward(ref name, ref as_n, ref expose, ref with, ref pos) => {
             let name = name.evaluate(scope.clone())?;
             let module = if let Some(module) = get_global_module(name.value())
             {
@@ -132,11 +136,9 @@ fn handle_item(
                     ));
                 }
                 module
-            } else if let Some(sourcefile) = file_context.find_file_use(
-                name.value(),
-                // TODO: Get a proper pos!
-                crate::parser::code_span(b"").into(),
-            )? {
+            } else if let Some(sourcefile) =
+                file_context.find_file_use(name.value(), pos.clone())?
+            {
                 head.load_module(
                     sourcefile.path(),
                     |head| {
