@@ -76,8 +76,11 @@ fn handle_item(
             let module = if let Some(module) = get_global_module(name.value())
             {
                 if !with.is_empty() {
-                    return Err(Error::error(
-                        "Built-in modules can\'t be configured.",
+                    return Err(Error::BadCall(
+                        "Error: Built-in modules can\'t be configured."
+                            .into(),
+                        pos.clone(),
+                        None,
                     ));
                 }
                 module
@@ -116,11 +119,9 @@ fn handle_item(
                         Ok(module)
                     })?
             } else {
-                let mut pos = pos.clone();
-                pos.opt_back("@use ");
                 return Err(Error::BadCall(
                     "Error: Can't find stylesheet to import.".into(),
-                    pos,
+                    pos.clone(),
                     None,
                 ));
             };
@@ -131,8 +132,11 @@ fn handle_item(
             let module = if let Some(module) = get_global_module(name.value())
             {
                 if !with.is_empty() {
-                    return Err(Error::error(
-                        "Built-in modules can\'t be configured.",
+                    return Err(Error::BadCall(
+                        "Error: Built-in modules can\'t be configured."
+                            .into(),
+                        pos.clone(),
+                        None,
                     ));
                 }
                 module

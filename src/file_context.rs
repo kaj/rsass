@@ -92,7 +92,7 @@ pub trait FileContext: Sized + std::fmt::Debug {
             })
             .unwrap_or_else(|| do_find_file(self, url, names))?
         {
-            let source = SourceName::imported(path, from);
+            let source = SourceName::used(path, from);
             Ok(Some(SourceFile::read(&mut file, source)?))
         } else {
             Ok(None)

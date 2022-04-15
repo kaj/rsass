@@ -43,7 +43,8 @@ pub fn import2(input: Span) -> PResult<Item> {
 
 pub fn use2(input: Span) -> PResult<Item> {
     map(
-        terminated(
+        delimited(
+            terminated(name, opt_spacelike), // the name is "use"
             tuple((
                 terminated(any_sass_string, opt_spacelike),
                 opt(preceded(
@@ -56,18 +57,24 @@ pub fn use2(input: Span) -> PResult<Item> {
             semi_or_end,
         ),
         |(s, w, n, end)| {
+            let mut pos = SourcePos::from_to(input, end);
+            pos.opt_back("@");
             Item::Use(
                 s,
                 n.unwrap_or(UseAs::KeepName),
                 w.unwrap_or_default(),
-                SourcePos::from_to(input, end),
+                pos,
             )
         },
     )(input)
 }
 
 pub fn forward2(input: Span) -> PResult<Item> {
-    let (mut end, path) = terminated(any_sass_string, opt_spacelike)(input)?;
+    let (mut end, path) = delimited(
+        terminated(name, opt_spacelike), // the name is "forward"
+        any_sass_string,
+        opt_spacelike,
+    )(input)?;
     let mut found_as = None;
     let mut expose = Expose::All;
     let mut found_with = None;
@@ -102,6 +109,8 @@ pub fn forward2(input: Span) -> PResult<Item> {
         };
     }
     let (rest, ()) = semi_or_end(end)?;
+    let mut pos = SourcePos::from_to(input, end);
+    pos.opt_back("@");
     Ok((
         rest,
         Item::Forward(
@@ -109,7 +118,7 @@ pub fn forward2(input: Span) -> PResult<Item> {
             found_as.unwrap_or(UseAs::Star),
             expose,
             found_with.unwrap_or_default(),
-            SourcePos::from_to(input, end),
+            pos,
         ),
     ))
 }

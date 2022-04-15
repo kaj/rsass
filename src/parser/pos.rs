@@ -158,6 +158,7 @@ impl SourcePos {
             nextpos = match &pos.p.file.imported {
                 SourceKind::Root => None,
                 SourceKind::Imported(pos) => Some(pos),
+                SourceKind::Used(pos) => Some(pos),
                 SourceKind::Called(_, pos) => Some(pos),
             };
         }
@@ -264,6 +265,13 @@ impl SourceName {
             imported: SourceKind::Imported(from),
         }
     }
+    /// Create a name for a file imported from a specific pos.
+    pub fn used<T: ToString>(name: T, from: SourcePos) -> Self {
+        SourceName {
+            name: name.to_string(),
+            imported: SourceKind::Used(from),
+        }
+    }
     /// Create a name for a mixin loaded by load_css from a specific pos.
     pub fn load_css<T: ToString>(name: T, from: SourcePos) -> Self {
         SourceName {
@@ -295,6 +303,7 @@ impl SourceName {
 enum SourceKind {
     Root,
     Imported(SourcePos),
+    Used(SourcePos),
     Called(String, SourcePos),
 }
 
@@ -303,6 +312,7 @@ impl fmt::Display for SourceKind {
         match self {
             SourceKind::Root => out.write_str("root stylesheet"),
             SourceKind::Imported(_) => out.write_str("@import"),
+            SourceKind::Used(_) => out.write_str("@use"),
             SourceKind::Called(name, _) => write!(out, "{}()", name),
         }
     }

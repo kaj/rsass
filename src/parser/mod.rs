@@ -309,14 +309,14 @@ fn at_rule2(input0: Span) -> PResult<Item> {
             Ok((rest, Item::Error(v, pos)))
         }
         "for" => for_loop2(input),
-        "forward" => forward2(input),
+        "forward" => forward2(input0),
         "function" => function_declaration2(input),
         "if" => if_statement2(input),
         "import" => import2(input),
         "include" => mixin_call2(input),
         "mixin" => mixin_declaration2(input),
         "return" => return_stmt2(input),
-        "use" => use2(input),
+        "use" => use2(input0),
         "warn" => map(expression_argument, Item::Warn)(input),
         "while" => while_loop2(input),
         _ => {
