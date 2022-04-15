@@ -180,13 +180,14 @@ impl SourcePos {
     }
 
     /// If self is preceded (on same line) by `s`, include `s` in self.
-    pub(crate) fn opt_back(&mut self, s: &str) {
+    pub(crate) fn opt_back(mut self, s: &str) -> Self {
         let p: &mut SourcePosImpl = Arc::make_mut(&mut self.p);
         if p.line[..p.line_pos - 1].ends_with(s) {
             let len = s.chars().count();
             p.line_pos -= len;
             p.length += len;
         }
+        self
     }
     /// If the position is `calc(some-arg)`, change to only `some-arg`.
     ///

@@ -305,9 +305,8 @@ fn handle_item(
                 || name == "expression"
                 || name == "url"
             {
-                let mut p = pos.clone();
                 // Ok, this is cheating for the test suite ...
-                p.opt_back("@function ");
+                let p = pos.clone().opt_back("@function ");
                 return Err(Error::InvalidFunctionName(p));
             }
             scope.define_function(

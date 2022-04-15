@@ -57,13 +57,11 @@ pub fn use2(input: Span) -> PResult<Item> {
             semi_or_end,
         ),
         |(s, w, n, end)| {
-            let mut pos = SourcePos::from_to(input, end);
-            pos.opt_back("@");
             Item::Use(
                 s,
                 n.unwrap_or(UseAs::KeepName),
                 w.unwrap_or_default(),
-                pos,
+                SourcePos::from_to(input, end).opt_back("@"),
             )
         },
     )(input)
@@ -109,8 +107,6 @@ pub fn forward2(input: Span) -> PResult<Item> {
         };
     }
     let (rest, ()) = semi_or_end(end)?;
-    let mut pos = SourcePos::from_to(input, end);
-    pos.opt_back("@");
     Ok((
         rest,
         Item::Forward(
@@ -118,7 +114,7 @@ pub fn forward2(input: Span) -> PResult<Item> {
             found_as.unwrap_or(UseAs::Star),
             expose,
             found_with.unwrap_or_default(),
-            pos,
+            SourcePos::from_to(input, end).opt_back("@"),
         ),
     ))
 }

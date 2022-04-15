@@ -282,9 +282,7 @@ fn mixin_call2(input: Span) -> PResult<Item> {
         opt(body_block),
         terminated(opt_spacelike, opt(tag(";"))),
     )(rest)?;
-    let mut pos = SourcePos::from_to(input, rest);
-    // Ok, this is cheating for the test suite ...
-    pos.opt_back("@include ");
+    let pos = SourcePos::from_to(input, rest).opt_back("@include ");
     Ok((
         end,
         Item::MixinCall(name, args.unwrap_or_default(), body, pos),
@@ -303,9 +301,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         "error" => {
             let (end, v) = value_expression(input)?;
             let (rest, _) = opt(tag(";"))(end)?;
-            let mut pos = SourcePos::from_to(input, end);
-            // Ok, this is cheating for the test suite ...
-            pos.opt_back("@error ");
+            let pos = SourcePos::from_to(input, end).opt_back("@error ");
             Ok((rest, Item::Error(v, pos)))
         }
         "for" => for_loop2(input),
