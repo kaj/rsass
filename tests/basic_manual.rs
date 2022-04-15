@@ -465,7 +465,7 @@ fn load_raw_css() {
 }
 
 #[test]
-fn open_by_path() {
+fn open_by_path_and_use() {
     use rsass::compile_scss_path;
     use std::path::PathBuf;
     // Note use of path.join here.  I hope this will expose some
@@ -475,7 +475,25 @@ fn open_by_path() {
         .join("tests")
         .join("basic");
     let result =
-        compile_scss_path(&path.join("file.scss"), Default::default())
+        compile_scss_path(&path.join("using.scss"), Default::default())
+            .unwrap_or_else(|e| panic!("{}", e));
+    assert_eq!(
+        String::from_utf8(result).unwrap(),
+        "em {\n  color: pink;\n}\n"
+    );
+}
+#[test]
+fn open_by_path_and_import() {
+    use rsass::compile_scss_path;
+    use std::path::PathBuf;
+    // Note use of path.join here.  I hope this will expose some
+    // potential windows-only errors where path format differs from
+    // url format.
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("basic");
+    let result =
+        compile_scss_path(&path.join("importing.scss"), Default::default())
             .unwrap_or_else(|e| panic!("{}", e));
     assert_eq!(
         String::from_utf8(result).unwrap(),
