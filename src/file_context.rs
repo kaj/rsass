@@ -34,6 +34,7 @@ pub trait FileContext: Sized + std::fmt::Debug {
     /// Find a file for `@import`
     ///
     /// This includes "import-only" filenames, otherwise the same as [`#find_file_use`].
+    #[tracing::instrument]
     fn find_file_import(
         &self,
         url: &str,
@@ -68,6 +69,7 @@ pub trait FileContext: Sized + std::fmt::Debug {
     }
 
     /// Find a file for `@use`
+    #[tracing::instrument]
     fn find_file_use(
         &self,
         url: &str,
@@ -196,11 +198,13 @@ impl FileContext for FsFileContext {
                 }
                 write!(&mut full, "{}", name).unwrap();
                 if Path::new(&full).is_file() {
+                    tracing::debug!(?full, "opening file");
                     return match Self::File::open(&full) {
                         Ok(file) => Ok(Some((full, file))),
                         Err(e) => Err(Error::Input(full, e)),
                     };
                 }
+                tracing::trace!(?full, "Not found");
             }
         }
         Ok(None)

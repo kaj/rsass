@@ -3,14 +3,31 @@
 //! See `tests/basic/main.rs` for semi-autoimported tests.
 //! This file contains old tests that need special handling.
 use rsass::{compile_scss, compile_scss_path, compile_value};
+use std::path::PathBuf;
+use std::sync::Once;
+
+static INIT: Once = Once::new();
+
+fn init_logger() {
+    INIT.call_once(|| {
+        tracing_subscriber::fmt()
+            .with_max_level(tracing::Level::TRACE)
+            .with_ansi(false)
+            .compact()
+            .with_test_writer()
+            .init();
+    })
+}
 
 #[test]
 fn txx_empty_rule() {
+    init_logger();
     assert_eq!(rsass(b"foo{}").unwrap(), "");
 }
 
 #[test]
 fn use_module_star() {
+    init_logger();
     assert_eq!(
         rsass(
             b"@use 'tests/basic/defs' as *;\
@@ -35,6 +52,7 @@ fn use_module_star() {
 
 #[test]
 fn use_module() {
+    init_logger();
     assert_eq!(
         rsass(
             b"@use 'tests/basic/defs';\
@@ -59,6 +77,7 @@ fn use_module() {
 
 #[test]
 fn t14_imports() {
+    init_logger();
     let path = "tests/basic/14_imports/input.scss";
     assert_eq!(
         String::from_utf8(
@@ -78,6 +97,7 @@ fn t14_imports() {
 
 #[test]
 fn t15_arithmetic_and_lists_abcd() {
+    init_logger();
     assert_eq!(
         rsass(
             b"div {\n  a: 1 + 2;\n  b: 3 + 3/4;\n  c: 1/2 + 1/2;\n  \
@@ -93,6 +113,7 @@ fn t15_arithmetic_and_lists_abcd() {
 
 #[test]
 fn t33_ambigous_imports() {
+    init_logger();
     let path = "tests/basic/33_ambiguous_imports/input.scss";
     assert_eq!(
         String::from_utf8(
@@ -109,6 +130,7 @@ fn t33_ambigous_imports() {
 /// `spec/libsass-closed-issues/issue_760/input.scss`
 #[test]
 fn ti815_str_slice() {
+    init_logger();
     assert_eq!(
         rsass(
             b"foo {\n  foo: str-slice(\"bar\", 1, 2);\
@@ -122,6 +144,7 @@ fn ti815_str_slice() {
 /// From `spec/libsass-closed-issues/issue_574`
 #[test]
 fn ti574_map_trailing_comma() {
+    init_logger();
     assert_eq!(
         rsass(
             b"$flow: left;\n\n\
@@ -136,6 +159,7 @@ fn ti574_map_trailing_comma() {
 /// From `spec/core_functions/invert/weight-parameter`
 #[test]
 fn weight_parameter() {
+    init_logger();
     assert_eq!(
         rsass(
             b".invert-with-weight {\n  zero-percent: invert(#edc, 0%);\n  \
@@ -153,6 +177,7 @@ fn weight_parameter() {
 /// From `spec/libsass-closed-issues/issue_1133/normal`
 #[test]
 fn each_binds_multiple() {
+    init_logger();
     assert_eq!(
         rsass(
             b"@function foo($map) {\n    @return $map;\n}\n\n\
@@ -169,6 +194,7 @@ fn each_binds_multiple() {
 
 #[test]
 fn div_simliar_unit() {
+    init_logger();
     assert_eq!(
         rsass(
             b"p { a: (1cm / 1mm); b: (200grad / 360deg); c: (1in / 1pt); }"
@@ -184,6 +210,7 @@ fn div_simliar_unit() {
 
 #[test]
 fn different_numbers_should_compare_as_same() {
+    init_logger();
     assert_eq!(
         rsass(
             b"@use 'sass:math' as m;\
@@ -207,71 +234,87 @@ fn different_numbers_should_compare_as_same() {
 
 #[test]
 fn test_number_0() {
+    init_logger();
     check_value("0", "0");
 }
 #[test]
 fn test_number_neg0() {
+    init_logger();
     check_value("-0", "0");
 }
 #[test]
 fn test_number_1() {
+    init_logger();
     check_value("1", "1");
 }
 #[test]
 fn test_number_neg1() {
+    init_logger();
     check_value("-1", "-1");
 }
 #[test]
 fn test_number_nines_a() {
+    init_logger();
     check_value("0.999", "0.999");
 }
 #[test]
 fn test_number_nines_b() {
+    init_logger();
     check_value("-0.999", "-0.999");
 }
 #[test]
 fn test_number_nines_c() {
+    init_logger();
     check_value(".9999999999", "0.9999999999");
 }
 #[test]
 fn test_number_nines_d() {
+    init_logger();
     check_value("-.9999999999", "-0.9999999999");
 }
 #[test]
 fn test_number_nines_e() {
+    init_logger();
     check_value("0.99999999999", "1");
 }
 #[test]
 fn test_number_nines_f() {
+    init_logger();
     check_value("-0.99999999999", "-1");
 }
 #[test]
 fn test_number_zeroes_a() {
+    init_logger();
     check_value("0.000000000000000001", "0");
 }
 #[test]
 fn test_number_zeroes_b() {
+    init_logger();
     check_value("-0.000000000000000001", "0");
 }
 
 /// https://github.com/kaj/rsass/issues/98
 #[test]
 fn test_rational_overflow_mul() {
+    init_logger();
     check_value("1.4142135623 * 1.4142135623", "1.9999999998")
 }
 /// https://github.com/kaj/rsass/issues/98
 #[test]
 fn test_rational_overflow_div() {
+    init_logger();
     check_value("1.4142135623 / 1000000000 + 1", "1.0000000014")
 }
 /// https://github.com/kaj/rsass/issues/98
 #[test]
 fn test_rational_overflow_add() {
+    init_logger();
     check_value("4142135623 + 1.4142135623", "4142135624.4142135623")
 }
 /// https://github.com/kaj/rsass/issues/98
 #[test]
 fn test_rational_overflow_sub() {
+    init_logger();
     check_value("4142135623 - 1.4142135623", "4142135621.5857864377")
 }
 
@@ -279,6 +322,7 @@ fn test_rational_overflow_sub() {
 /// map.merge incorrect output for nested map
 #[test]
 fn issue_116() {
+    init_logger();
     assert_eq!(
         rsass(
             b"@use \"sass:map\";\n\
@@ -304,15 +348,17 @@ fn issue_116() {
 /// https://github.com/kaj/rsass/issues/122
 /// A division by zero that causes a panic
 mod issue_122 {
-    use super::check_value;
+    use super::{check_value, init_logger};
     // Note: The important thing here is not to panic, the exact
     // output may be changed in the future, maybe to report an error.
     #[test]
     fn reduced() {
+        init_logger();
         check_value("(#111 + #aaa)/0", "#bbbbbb/0")
     }
     #[test]
     fn reported() {
+        init_logger();
         check_value(
             "54A444/0+-4444M4#444/-4444/0+-4444M4#444+44/0+444/0+.44444O#444+44/0+4/46",
             "InfinityA444-4444M4 #000000/0-4444M4 #444+Infinity+Infinity+0.44444O #444+Infinity+0.0869565217",
@@ -321,6 +367,7 @@ mod issue_122 {
     /// https://github.com/kaj/rsass/issues/121 is very similar.
     #[test]
     fn issue_121() {
+        init_logger();
         check_value(
             "44A-#444/0+-\0\0\0+44/0+444&",
             "44A-#444/0-\u{1}\u{0}\u{0}\u{0}Infinity444",
@@ -331,6 +378,7 @@ mod issue_122 {
 /// Overflow in gcd for subtraction.
 #[test]
 fn issue_120() {
+    init_logger();
     check_value(
         "4444#4444-.4555555555555555555555555",
         "4444 rgba(68, 68, 68, 0.2666666667)",
@@ -340,6 +388,7 @@ fn issue_120() {
 /// Test auto-converted from "sass-spec/spec/libsass/rel.hrx", except one failing unit calculation.
 #[test]
 fn rel() {
+    init_logger();
     assert_eq!(
         rsass(
             b"div {\
@@ -389,6 +438,7 @@ fn rel() {
 
 #[test]
 fn minmax_length_units() {
+    init_logger();
     assert_eq!(
         rsass(
             b"sel {\
@@ -466,8 +516,7 @@ fn load_raw_css() {
 
 #[test]
 fn open_by_path_and_use() {
-    use rsass::compile_scss_path;
-    use std::path::PathBuf;
+    init_logger();
     // Note use of path.join here.  I hope this will expose some
     // potential windows-only errors where path format differs from
     // url format.
@@ -484,8 +533,7 @@ fn open_by_path_and_use() {
 }
 #[test]
 fn open_by_path_and_import() {
-    use rsass::compile_scss_path;
-    use std::path::PathBuf;
+    init_logger();
     // Note use of path.join here.  I hope this will expose some
     // potential windows-only errors where path format differs from
     // url format.
