@@ -10,7 +10,6 @@ mod deg {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn dpcm() {
         assert_eq!(
             runner().err("a {b: calc(1deg + 1dpcm)}\n"),
@@ -23,7 +22,6 @@ mod deg {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn dpi() {
         assert_eq!(
             runner().err("a {b: calc(1deg + 1dpi)}\n"),
@@ -36,7 +34,6 @@ mod deg {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn dppx() {
         assert_eq!(
             runner().err("a {b: calc(1deg + 1dppx)}\n"),
@@ -49,7 +46,6 @@ mod deg {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn hz() {
         assert_eq!(
             runner().err("a {b: calc(1deg + 1Hz)}\n"),
@@ -62,7 +58,6 @@ mod deg {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn khz() {
         assert_eq!(
             runner().err("a {b: calc(1deg + 1kHz)}\n"),
@@ -75,7 +70,6 @@ mod deg {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn ms() {
         assert_eq!(
             runner().err("a {b: calc(1deg + 1ms)}\n"),
@@ -88,7 +82,6 @@ mod deg {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn s() {
         assert_eq!(
             runner().err("a {b: calc(1deg + 1s)}\n"),
@@ -106,7 +99,6 @@ mod grad {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn dpcm() {
         assert_eq!(
             runner().err("a {b: calc(1grad + 1dpcm)}\n"),
@@ -119,7 +111,6 @@ mod grad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn dpi() {
         assert_eq!(
             runner().err("a {b: calc(1grad + 1dpi)}\n"),
@@ -132,7 +123,6 @@ mod grad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn dppx() {
         assert_eq!(
             runner().err("a {b: calc(1grad + 1dppx)}\n"),
@@ -145,7 +135,6 @@ mod grad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn hz() {
         assert_eq!(
             runner().err("a {b: calc(1grad + 1Hz)}\n"),
@@ -158,7 +147,6 @@ mod grad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn khz() {
         assert_eq!(
             runner().err("a {b: calc(1grad + 1kHz)}\n"),
@@ -171,7 +159,6 @@ mod grad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn ms() {
         assert_eq!(
             runner().err("a {b: calc(1grad + 1ms)}\n"),
@@ -184,7 +171,6 @@ mod grad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn s() {
         assert_eq!(
             runner().err("a {b: calc(1grad + 1s)}\n"),
@@ -202,7 +188,6 @@ mod rad {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn dpcm() {
         assert_eq!(
             runner().err("a {b: calc(1rad + 1dpcm)}\n"),
@@ -215,7 +200,6 @@ mod rad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn dpi() {
         assert_eq!(
             runner().err("a {b: calc(1rad + 1dpi)}\n"),
@@ -228,7 +212,6 @@ mod rad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn dppx() {
         assert_eq!(
             runner().err("a {b: calc(1rad + 1dppx)}\n"),
@@ -241,7 +224,6 @@ mod rad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn hz() {
         assert_eq!(
             runner().err("a {b: calc(1rad + 1Hz)}\n"),
@@ -254,7 +236,6 @@ mod rad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn khz() {
         assert_eq!(
             runner().err("a {b: calc(1rad + 1kHz)}\n"),
@@ -267,7 +248,6 @@ mod rad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn ms() {
         assert_eq!(
             runner().err("a {b: calc(1rad + 1ms)}\n"),
@@ -280,7 +260,6 @@ mod rad {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn s() {
         assert_eq!(
             runner().err("a {b: calc(1rad + 1s)}\n"),
@@ -298,7 +277,6 @@ mod turn {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn dpcm() {
         assert_eq!(
             runner().err("a {b: calc(1turn + 1dpcm)}\n"),
@@ -311,7 +289,6 @@ mod turn {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn dpi() {
         assert_eq!(
             runner().err("a {b: calc(1turn + 1dpi)}\n"),
@@ -324,7 +301,6 @@ mod turn {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn dppx() {
         assert_eq!(
             runner().err("a {b: calc(1turn + 1dppx)}\n"),
@@ -337,7 +313,6 @@ mod turn {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn hz() {
         assert_eq!(
             runner().err("a {b: calc(1turn + 1Hz)}\n"),
@@ -350,7 +325,6 @@ mod turn {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn khz() {
         assert_eq!(
             runner().err("a {b: calc(1turn + 1kHz)}\n"),
@@ -363,7 +337,6 @@ mod turn {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn ms() {
         assert_eq!(
             runner().err("a {b: calc(1turn + 1ms)}\n"),
@@ -376,7 +349,6 @@ mod turn {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn s() {
         assert_eq!(
             runner().err("a {b: calc(1turn + 1s)}\n"),

@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
 fn deg() {
     assert_eq!(
         runner().err("a {b: calc(1vmax + 1deg)}\n"),
@@ -19,7 +18,6 @@ fn deg() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn dpcm() {
     assert_eq!(
         runner().err("a {b: calc(1vmax + 1dpcm)}\n"),
@@ -32,7 +30,6 @@ fn dpcm() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn dpi() {
     assert_eq!(
         runner().err("a {b: calc(1vmax + 1dpi)}\n"),
@@ -45,7 +42,6 @@ fn dpi() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn dppx() {
     assert_eq!(
         runner().err("a {b: calc(1vmax + 1dppx)}\n"),
@@ -58,7 +54,6 @@ fn dppx() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn grad() {
     assert_eq!(
         runner().err("a {b: calc(1vmax + 1grad)}\n"),
@@ -71,7 +66,6 @@ fn grad() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn hz() {
     assert_eq!(
         runner().err("a {b: calc(1vmax + 1Hz)}\n"),
@@ -84,7 +78,6 @@ fn hz() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn khz() {
     assert_eq!(
         runner().err("a {b: calc(1vmax + 1kHz)}\n"),
@@ -97,7 +90,6 @@ fn khz() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn ms() {
     assert_eq!(
         runner().err("a {b: calc(1vmax + 1ms)}\n"),
@@ -110,7 +102,6 @@ fn ms() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn rad() {
     assert_eq!(
         runner().err("a {b: calc(1vmax + 1rad)}\n"),
@@ -123,7 +114,6 @@ fn rad() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn s() {
     assert_eq!(
         runner().err("a {b: calc(1vmax + 1s)}\n"),
@@ -136,7 +126,6 @@ fn s() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn turn() {
     assert_eq!(
         runner().err("a {b: calc(1vmax + 1turn)}\n"),
