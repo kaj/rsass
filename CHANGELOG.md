@@ -11,9 +11,10 @@ project adheres to
 
 * Make the `calc(...)` function signal an error when args are known to
   be invalid css (PR #138).
+* Change `map.deep-merge` to match recent change in dart sass.
 * Minor fix in whitespace around at-rules.
 * Fix a typo in LICENSE (Issue #136).
-* Update sass-spec test suite to 2022-04-07.
+* Update sass-spec test suite to 2022-04-25.
 
 Thanks to @jonassmedegaard for #136.
 

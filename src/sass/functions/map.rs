@@ -13,10 +13,10 @@ pub fn create_module() -> Scope {
     let mut g = Scope::new_global(Default::default()); // anonymous
 
     def!(f, deep_merge(map1, map2), |s| {
-        let map1 = get_map(s, name!(map1))?;
-        let mut map2 = get_va_map(s, name!(map2))?;
-        do_deep_merge(&mut map2, &map1);
-        Ok(Value::Map(map2))
+        let mut map1 = get_map(s, name!(map1))?;
+        let map2 = get_va_map(s, name!(map2))?;
+        do_deep_merge(&mut map1, map2);
+        Ok(Value::Map(map1))
     });
 
     def_va!(f, deep_remove(map, key, keys), |s| {
@@ -249,19 +249,18 @@ fn as_va_map(v: Value) -> Result<ValueMap, String> {
     }
 }
 
-fn do_deep_merge(map1: &mut ValueMap, map2: &ValueMap) {
-    for (key, value) in map2.iter() {
-        match (map1.get_mut(key), value) {
-            (Some(Value::Map(m1)), Value::Map(ref m2)) => {
+fn do_deep_merge(map1: &mut ValueMap, map2: ValueMap) {
+    for (key, value) in map2 {
+        match (map1.get_mut(&key), value) {
+            (Some(Value::Map(ref mut m1)), Value::Map(m2)) => {
                 do_deep_merge(m1, m2);
             }
-            (Some(v1), v2) if v1.is_null() => {
-                map1.insert(key.clone(), v2.clone());
+            (Some(Value::Map(_)), Value::List(ref l, ..)) if l.is_empty() => {
+                // nop; empty list is same thing as empty map
             }
-            (None, v2) => {
-                map1.insert(key.clone(), v2.clone());
+            (_, v2) => {
+                map1.insert(key, v2);
             }
-            _ => (),
         }
     }
 }

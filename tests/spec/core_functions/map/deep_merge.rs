@@ -17,7 +17,7 @@ mod deep {
              \na {b: inspect(map.deep-merge((c: (d: e, f: g)), (c: (1: 2, 3: 4))))}\n"
         ),
         "a {\
-         \n  b: (c: (1: 2, 3: 4, d: e, f: g));\
+         \n  b: (c: (d: e, f: g, 1: 2, 3: 4));\
          \n}\n"
     );
     }
@@ -54,7 +54,7 @@ mod deep {
              \na {b: inspect(map.deep-merge((c: (d: (e: (f: g)))), (c: (d: (e: (1: 2))))))}\n"
         ),
         "a {\
-         \n  b: (c: (d: (e: (1: 2, f: g))));\
+         \n  b: (c: (d: (e: (f: g, 1: 2))));\
          \n}\n"
     );
     }
@@ -66,7 +66,7 @@ mod deep {
              \na {b: inspect(map.deep-merge((c: (d: e, f: g, h: i)), (c: (j: 1, f: 2, k: 3))))}\n"
         ),
         "a {\
-         \n  b: (c: (j: 1, f: 2, k: 3, d: e, h: i));\
+         \n  b: (c: (d: e, f: 2, h: i, j: 1, k: 3));\
          \n}\n"
     );
     }
@@ -169,7 +169,7 @@ fn named() {
              \na {b: inspect(map.deep-merge($map1: (c: d), $map2: (1: 2)))}\n"
         ),
         "a {\
-         \n  b: (1: 2, c: d);\
+         \n  b: (c: d, 1: 2);\
          \n}\n"
     );
 }
@@ -183,7 +183,7 @@ mod shallow {
             runner().ok("@use \'sass:map\';\
              \na {b: inspect(map.deep-merge((c: d, e: f), (1: 2, 3: 4)))}\n"),
             "a {\
-         \n  b: (1: 2, 3: 4, c: d, e: f);\
+         \n  b: (c: d, e: f, 1: 2, 3: 4);\
          \n}\n"
         );
     }
@@ -230,7 +230,7 @@ mod shallow {
              \na {b: inspect(map.deep-merge((c: d, e: f, g: h), (i: 1, e: 2, j: 3)))}\n"
         ),
         "a {\
-         \n  b: (i: 1, e: 2, j: 3, c: d, g: h);\
+         \n  b: (c: d, e: 2, g: h, i: 1, j: 3);\
          \n}\n"
     );
     }
