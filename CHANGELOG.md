@@ -9,6 +9,7 @@ project adheres to
 
 ## Unreleased
 
+* Update minimum supported rust version to 1.49.0 (from 1.45.2).
 * Make the `calc(...)` function signal an error when args are known to
   be invalid css (PR #138).
 * Change `map.deep-merge` to match recent change in dart sass.
