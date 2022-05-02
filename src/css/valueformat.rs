@@ -29,7 +29,9 @@ impl<'a> Display for Formatted<'a, Value> {
             Value::List(ref v, sep, brackets) => {
                 let sep = sep.unwrap_or_default();
                 let introspect = self.format.is_introspection();
-                if introspect && v.is_empty() && !brackets {
+                if brackets {
+                    out.write_str("[")?;
+                } else if introspect && v.is_empty() {
                     return out.write_str("()");
                 }
                 let t = v
@@ -38,9 +40,12 @@ impl<'a> Display for Formatted<'a, Value> {
                     .map(|v| {
                         let needs_paren = match *v {
                             Value::List(ref v, inner, false) => {
-                                ((brackets || introspect)
-                                    && (sep <= inner.unwrap_or_default()))
+                                ((brackets
+                                    && (sep < inner.unwrap_or_default()))
+                                    || introspect
+                                        && (sep <= inner.unwrap_or_default()))
                                     && !(introspect && v.len() < 2)
+                                    && (introspect || v.len() != 1)
                             }
                             _ => false,
                         };
@@ -51,22 +56,24 @@ impl<'a> Display for Formatted<'a, Value> {
                         }
                     })
                     .collect::<Vec<_>>();
-                let t = if self.format.is_introspection()
-                    && t.len() == 1
-                    && sep > ListSeparator::Space
-                {
-                    if self.format.is_introspection() && !brackets {
-                        format!("({}{})", t[0], sep.sep(true))
+                if let Some((first, rest)) = t.split_first() {
+                    if rest.is_empty()
+                        && introspect
+                        && sep > ListSeparator::Space
+                    {
+                        if !brackets {
+                            write!(out, "({}{})", first, sep.sep(true))?;
+                        } else {
+                            write!(out, "{}{}", first, sep.sep(true))?;
+                        }
                     } else {
-                        format!("{},", t[0])
+                        write!(out, "{}", first)?;
+                        let sep = sep.sep(self.format.is_compressed());
+                        for i in rest {
+                            write!(out, "{}{}", sep, i)?;
+                        }
                     }
-                } else {
-                    t.join(sep.sep(self.format.is_compressed()))
-                };
-                if brackets {
-                    out.write_str("[")?;
                 }
-                write!(out, "{}", t)?;
                 if brackets {
                     out.write_str("]")?;
                 }

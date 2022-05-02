@@ -68,7 +68,6 @@ mod nested {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn multiple() {
             assert_eq!(
                 runner().ok("a {b: [(c,) (d e)]}\n"),
@@ -78,7 +77,6 @@ mod nested {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn single() {
             assert_eq!(
                 runner().ok("a {b: [(c,)]}\n"),
