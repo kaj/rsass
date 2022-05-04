@@ -6,7 +6,7 @@
 #![allow(clippy::needless_option_as_deref)]
 
 use super::cssbuf::{CssBuf, CssHead};
-use crate::css::{BodyItem, Rule, Selectors};
+use crate::css::{BodyItem, Import, Rule, Selectors};
 use crate::error::Error;
 use crate::file_context::FileContext;
 use crate::sass::{
@@ -163,7 +163,7 @@ fn handle_item(
                     {
                         scope.lock_loading(sourcefile.path(), pos.clone())?;
                         let items = sourcefile.parse()?;
-                        let mut thead = CssHead::new(format);
+                        let mut thead = CssHead::new();
                         let module = ScopeRef::sub(scope.clone());
                         handle_body(
                             &items,
@@ -186,14 +186,15 @@ fn handle_item(
                 }
                 let name = name.evaluate(scope.clone())?;
                 let args = args.evaluate(scope.clone())?;
+                let import = Import::new(name, args);
                 if let Some(ref mut rule) =
                     rule.as_deref_mut().filter(|r| !r.selectors.is_root())
                 {
-                    rule.add_import(name, args);
+                    rule.push(import.into());
                 } else if buf.is_root_level() {
-                    head.add_import(name, args)?;
+                    head.add_import(import);
                 } else {
-                    buf.add_import(name, args)?;
+                    buf.add_import(import)?;
                 }
             }
         }
@@ -211,7 +212,7 @@ fn handle_item(
                 ScopeRef::sub_selectors(scope, selectors),
                 file_context,
             )?;
-            buf.write_rule(&rule, true)?;
+            rule.write(buf, true)?;
             buf.join(sub);
         }
         Item::AtRule {
@@ -243,9 +244,11 @@ fn handle_item(
                 )?;
                 let mut t = CssBuf::new_as(&sub);
                 if has_selectors {
-                    t.write_rule(&rule, false)?;
+                    rule.write(&mut t, false)?;
                 } else {
-                    t.write_body_items(&rule.body)?;
+                    for item in &rule.body {
+                        item.write(&mut t)?;
+                    }
                 };
                 if !t.is_empty() || !sub.is_empty() {
                     buf.join(t);
@@ -456,7 +459,7 @@ fn handle_item(
                 ScopeRef::sub_selectors(scope, selectors),
                 file_context,
             )?;
-            buf.write_rule(&rule, true)?;
+            rule.write(buf, true)?;
             buf.join(sub);
         }
         Item::Property(ref name, ref value) => {
@@ -528,12 +531,12 @@ fn handle_item(
         }
         Item::Comment(ref c) => {
             if !format.is_compressed() {
-                let c = c.evaluate(scope)?;
+                let c = c.evaluate(scope)?.value().into();
                 if let Some(rule) = rule {
-                    rule.push(BodyItem::Comment(c.value().into()));
+                    rule.push(BodyItem::Comment(c));
                 } else {
                     buf.do_separate();
-                    write!(buf, "/*{}*/", c)?;
+                    c.write(buf);
                 }
             }
         }

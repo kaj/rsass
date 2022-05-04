@@ -42,7 +42,7 @@ impl Format {
         globals: ScopeRef,
         file_context: &impl FileContext,
     ) -> Result<Vec<u8>, Error> {
-        let mut head = CssHead::new(*self);
+        let mut head = CssHead::new();
         let mut body = CssBuf::new(*self);
         handle_body(
             items,
