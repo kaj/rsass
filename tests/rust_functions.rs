@@ -5,7 +5,8 @@ use std::sync::Arc;
 
 #[test]
 fn simple_value() {
-    let parsed = parse_scss_data(b"p { color: $color }").unwrap();
+    let parsed =
+        Parsed::Scss(parse_scss_data(b"p { color: $color }").unwrap());
     let format = output::Format {
         style: output::Style::Compressed,
         precision: 5,
@@ -15,7 +16,7 @@ fn simple_value() {
     let file_context = FsFileContext::new();
     assert_eq!(
         String::from_utf8(
-            format.write_root(&parsed, scope, &file_context).unwrap()
+            format.write_root(parsed, scope, &file_context).unwrap()
         )
         .unwrap(),
         "p{color:#000}\n"
@@ -38,11 +39,12 @@ fn simple_function() {
             Arc::new(|_| Ok(css::Value::scalar(42))),
         ),
     );
-    let parsed = parse_scss_data(b"p { x: get_answer(); }").unwrap();
+    let parsed =
+        Parsed::Scss(parse_scss_data(b"p { x: get_answer(); }").unwrap());
     let file_context = FsFileContext::new();
     assert_eq!(
         String::from_utf8(
-            format.write_root(&parsed, scope, &file_context).unwrap()
+            format.write_root(parsed, scope, &file_context).unwrap()
         )
         .unwrap(),
         "p{x:42}\n"
@@ -83,7 +85,8 @@ fn function_with_args() {
             }),
         ),
     );
-    let parsed = parse_scss_data(b"p { x: halfway(10, 18); }").unwrap();
+    let parsed =
+        Parsed::Scss(parse_scss_data(b"p { x: halfway(10, 18); }").unwrap());
     let format = output::Format {
         style: output::Style::Compressed,
         precision: 5,
@@ -91,7 +94,7 @@ fn function_with_args() {
     let file_context = FsFileContext::new();
     assert_eq!(
         String::from_utf8(
-            format.write_root(&parsed, scope, &file_context).unwrap()
+            format.write_root(parsed, scope, &file_context).unwrap()
         )
         .unwrap(),
         "p{x:14}\n"

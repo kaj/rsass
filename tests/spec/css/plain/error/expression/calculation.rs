@@ -41,7 +41,7 @@ fn line_noise() {
     );
 }
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn namespaced_function() {
     let runner = runner().with_cwd("namespaced_function");
     assert_eq!(
@@ -71,7 +71,7 @@ fn variable() {
     );
 }
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn wrong_args() {
     let runner = runner().with_cwd("wrong_args");
     assert_eq!(

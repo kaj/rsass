@@ -14,7 +14,7 @@ use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
     alphanumeric1, multispace0, multispace1, one_of,
 };
-use nom::combinator::{map, map_res, not, opt, peek, recognize, value};
+use nom::combinator::{into, map, map_res, not, opt, peek, recognize, value};
 use nom::multi::{fold_many0, fold_many1, many0, many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use num_traits::Zero;
@@ -239,7 +239,7 @@ fn simple_value(input: Span) -> PResult<Value> {
         value(Value::HereSelector, tag("&")),
         unicode_range,
         bracket_list,
-        number,
+        into(number),
         variable,
         hex_color,
         value(Value::Null, tag("null")),
@@ -305,7 +305,7 @@ fn sign_prefix(input: Span) -> PResult<Option<&[u8]>> {
         .map(|(r, s)| (r, s.map(|s| *s.fragment())))
 }
 
-pub fn number(input: Span) -> PResult<Value> {
+pub fn number(input: Span) -> PResult<Numeric> {
     map(
         tuple((
             sign_prefix,
@@ -317,7 +317,7 @@ pub fn number(input: Span) -> PResult<Value> {
             unit,
         )),
         |(sign, num, unit)| {
-            Value::Numeric(Numeric::new(
+            Numeric::new(
                 if sign == Some(b"-") {
                     // Only f64-based Number can represent negative zero.
                     if num.is_zero() {
@@ -329,7 +329,7 @@ pub fn number(input: Span) -> PResult<Value> {
                     num
                 },
                 unit,
-            ))
+            )
         },
     )(input)
 }

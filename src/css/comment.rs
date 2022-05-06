@@ -2,6 +2,7 @@ use crate::output::CssBuf;
 use std::cmp::Ordering;
 
 /// A comment in a css file.
+#[derive(Clone, Debug)]
 pub struct Comment(String);
 
 impl<T: Into<String>> From<T> for Comment {
@@ -12,7 +13,7 @@ impl<T: Into<String>> From<T> for Comment {
 
 impl Comment {
     /// Write this comment to a css output buffer.
-    pub fn write(&self, buf: &mut CssBuf) {
+    pub(crate) fn write(&self, buf: &mut CssBuf) {
         let indent = buf.indent_level();
         let existing = self
             .0
@@ -29,6 +30,7 @@ impl Comment {
             .min()
             .unwrap_or(indent);
 
+        buf.do_indent_no_nl();
         buf.add_str("/*");
         match indent.cmp(&existing) {
             Ordering::Greater => {
@@ -43,6 +45,6 @@ impl Comment {
                 buf.add_str(&self.0);
             }
         }
-        buf.add_str("*/");
+        buf.add_one("*/\n", "*/");
     }
 }

@@ -9,7 +9,18 @@ project adheres to
 
 ## Unreleased
 
+### Breaking changes
+
 * Update minimum supported rust version to 1.49.0 (from 1.45.2).
+* `SourceFile.parse()` now returns a `Result<Parsed>` rahter than a
+  `Result<Vec<sass::Item>>`, and `Format::write_root` now takes a
+  `Parsed` (PR #140).
+
+### Improvements
+
+* Rsass can now parse (some) plain css as well as scss.  Css files can
+  be referenced in `@use` and `@import` directives, as well as in the
+  `meta.load-css` mixin (PR #140).
 * Make the `calc(...)` function signal an error when args are known to
   be invalid css (PR #138).
 * Change `map.deep-merge` to match recent change in dart sass.

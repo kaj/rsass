@@ -1,9 +1,8 @@
 use super::cssbuf::{CssBuf, CssHead};
-use super::transform::handle_body;
+use super::transform::handle_parsed;
 use super::Style;
 use crate::file_context::FileContext;
-use crate::sass::Item;
-use crate::{Error, ScopeRef};
+use crate::{Error, Parsed, ScopeRef};
 
 /// Specifies the format for outputing css.
 ///
@@ -38,13 +37,13 @@ impl Format {
     /// in the sass file.
     pub fn write_root(
         &self,
-        items: &[Item],
+        items: Parsed,
         globals: ScopeRef,
         file_context: &impl FileContext,
     ) -> Result<Vec<u8>, Error> {
         let mut head = CssHead::new();
         let mut body = CssBuf::new(*self);
-        handle_body(
+        handle_parsed(
             items,
             &mut head,
             None,

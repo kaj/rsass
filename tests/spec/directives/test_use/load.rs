@@ -159,7 +159,7 @@ mod precedence {
         );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn sass_before_css() {
         let runner = runner().with_cwd("sass_before_css");
         assert_eq!(

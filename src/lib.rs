@@ -37,7 +37,6 @@
 //! improving.
 #![forbid(unsafe_code)]
 #![forbid(missing_docs)]
-use std::path::Path;
 
 pub mod css;
 mod error;
@@ -53,10 +52,12 @@ pub use crate::error::Error;
 pub use crate::file_context::{FileContext, FsFileContext};
 use crate::output::Format;
 pub use crate::parser::{
-    parse_scss_data, parse_value_data, ParseError, SourceFile, SourceName,
-    SourcePos,
+    parse_scss_data, parse_value_data, ParseError, Parsed, SourceFile,
+    SourceName, SourcePos,
 };
 pub use crate::variablescope::{Scope, ScopeError, ScopeRef};
+
+use std::path::Path;
 
 /// Parse a scss value from a buffer and write its css representation
 /// in the given format.
@@ -100,8 +101,8 @@ pub fn compile_value(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
 /// ```
 pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
     let file_context = FsFileContext::new();
-    let items = parse_scss_data(input)?;
-    format.write_root(&items, ScopeRef::new_global(format), &file_context)
+    let items = Parsed::Scss(parse_scss_data(input)?);
+    format.write_root(items, ScopeRef::new_global(format), &file_context)
 }
 
 /// Parse a file of scss data and write css in the given style.
@@ -129,7 +130,6 @@ pub fn compile_scss_path(
     format: Format,
 ) -> Result<Vec<u8>, Error> {
     let file_context = FsFileContext::new();
-    let source = file_context.file(path)?;
-    let items = source.parse()?;
-    format.write_root(&items, ScopeRef::new_global(format), &file_context)
+    let source = file_context.file(path)?.parse()?;
+    format.write_root(source, ScopeRef::new_global(format), &file_context)
 }

@@ -10,7 +10,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn function() {
     let runner = runner().with_cwd("function");
     assert_eq!(
@@ -43,7 +42,7 @@ fn parentheses() {
     );
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn simplified() {
     let runner = runner().with_cwd("simplified");
     assert_eq!(

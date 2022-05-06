@@ -3,7 +3,7 @@ use super::{CallArgs, FormalArgs, Item, Name, Value};
 use crate::css::{CssString, ValueToMapError};
 use crate::file_context::FileContext;
 use crate::ordermap::OrderMap;
-use crate::parser::SourcePos;
+use crate::parser::{Parsed, SourcePos};
 use crate::{Error, Scope, ScopeRef};
 use std::convert::TryInto;
 
@@ -76,7 +76,7 @@ impl MixinDecl {
                                 Some(decl.pos.clone()),
                             ),
                         })?,
-                    body: decl.body,
+                    body: Parsed::Scss(decl.body),
                 })
             }
             MixinDecl::NoBody => unreachable!(),
@@ -121,7 +121,7 @@ impl MixinDecl {
                     if with.unwrap_or_default().is_empty() {
                         return Ok(Mixin {
                             scope,
-                            body: vec![],
+                            body: Parsed::Css(vec![]),
                         });
                     } else {
                         return Err(Error::BadCall(
@@ -145,15 +145,16 @@ impl MixinDecl {
                         )
                     })?;
 
-                let body = source.parse()?;
-
                 let scope = ScopeRef::sub(scope);
                 if let Some(with) = with {
                     for (key, value) in with.into_iter() {
                         scope.define(key.into(), &value);
                     }
                 }
-                Ok(Mixin { scope, body })
+                Ok(Mixin {
+                    scope,
+                    body: source.parse()?,
+                })
             }
         }
     }
@@ -168,7 +169,7 @@ pub struct Mixin {
     /// The scope where this mixin is defined.
     pub scope: ScopeRef,
     /// The body of this mixin.
-    pub body: Vec<Item>,
+    pub body: Parsed,
 }
 
 impl Mixin {

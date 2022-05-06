@@ -8,7 +8,7 @@ use crate::value::Operator;
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::multispace0;
-use nom::combinator::{map, not, peek, value};
+use nom::combinator::{into, map, not, peek, value};
 use nom::sequence::{delimited, preceded, terminated, tuple};
 
 pub fn css_function(input: Span) -> PResult<Value> {
@@ -78,7 +78,7 @@ fn single_value(input: Span) -> PResult<Value> {
         value(Value::True, tag("true")),
         value(Value::False, tag("false")),
         value(Value::HereSelector, tag("&")),
-        number,
+        into(number),
         variable,
         value(Value::Null, tag("null")),
         special_function,

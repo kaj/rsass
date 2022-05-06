@@ -82,10 +82,9 @@ impl Args {
             if let Some(include_path) = &self.load_path {
                 file_context.push_path(include_path.as_ref());
             }
-            let source = file_context.file(name.as_ref())?;
-            let items = source.parse()?;
+            let source = file_context.file(name.as_ref())?.parse()?;
             let result = format.write_root(
-                &items,
+                source,
                 ScopeRef::new_global(format),
                 &file_context,
             )?;

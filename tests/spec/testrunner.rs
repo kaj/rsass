@@ -140,9 +140,8 @@ impl TestRunner {
 
     fn rsass(&self, input: &str) -> Result<Vec<u8>, Error> {
         let name = SourceName::root("input.scss");
-        let items = SourceFile::read(&mut input.as_bytes(), name)?.parse()?;
         self.format.write_root(
-            &items,
+            SourceFile::read(&mut input.as_bytes(), name)?.parse()?,
             ScopeRef::new_global(self.format),
             &self.file_context,
         )

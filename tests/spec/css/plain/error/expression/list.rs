@@ -8,7 +8,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn empty() {
     let runner = runner().with_cwd("empty");
     assert_eq!(
@@ -23,7 +23,7 @@ fn empty() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn empty_comma() {
     let runner = runner().with_cwd("empty_comma");
     assert_eq!(

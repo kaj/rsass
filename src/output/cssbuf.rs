@@ -58,10 +58,13 @@ impl CssHead {
         }
         result.extend(buf.buf);
         result.extend(body.buf);
+        while result.last() == Some(&b'\n') {
+            result.pop();
+        }
         if compressed && result.last() == Some(&b';') {
             result.pop();
         }
-        if result.last().unwrap_or(&b'\n') != &b'\n' {
+        if !result.is_empty() {
             result.push(b'\n');
         }
         result
@@ -71,7 +74,7 @@ impl CssHead {
 pub struct CssBuf {
     buf: Vec<u8>,
     format: Format,
-    pub(crate) indent: usize,
+    indent: usize,
     separate: bool,
 }
 
@@ -81,9 +84,6 @@ impl CssBuf {
     }
     pub fn new_as(orig: &Self) -> CssBuf {
         CssBuf::_new(orig.format, orig.indent)
-    }
-    pub fn new_below(orig: &Self) -> CssBuf {
-        CssBuf::_new(orig.format, orig.indent + 2)
     }
     fn _new(format: Format, indent: usize) -> CssBuf {
         CssBuf {
@@ -101,21 +101,21 @@ impl CssBuf {
     }
 
     pub fn start_block(&mut self) {
-        self.add_one(" {", "{");
+        self.add_one(" {\n", "{");
         self.indent += 2;
     }
     pub fn end_block(&mut self) {
+        if self.buf.last() == Some(&b'\n') {
+            self.buf.pop();
+        }
         if self.format.is_compressed() && self.buf.last() == Some(&b';') {
             self.buf.pop();
         }
         self.indent -= 2;
-        self.do_indent();
+        if self.buf.last() != Some(&b'{') {
+            self.do_indent();
+        }
         self.add_one("}\n", "}");
-    }
-
-    pub fn add_import(&mut self, import: Import) -> Result<(), Error> {
-        self.do_indent_no_nl();
-        Ok(import.write(self)?)
     }
 
     pub fn do_separate(&mut self) {

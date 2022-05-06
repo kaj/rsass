@@ -89,7 +89,7 @@ mod at_rule {
     }
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn at_root() {
         let runner = runner().with_cwd("at_root");
         assert_eq!(
@@ -104,7 +104,7 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn content() {
         let runner = runner().with_cwd("content");
         assert_eq!(
@@ -119,7 +119,7 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn debug() {
         let runner = runner().with_cwd("debug");
         assert_eq!(
@@ -149,7 +149,7 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn error() {
         let runner = runner().with_cwd("error");
         assert_eq!(
@@ -164,7 +164,7 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn extend() {
         let runner = runner().with_cwd("extend");
         assert_eq!(
@@ -194,7 +194,7 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn function() {
         let runner = runner().with_cwd("function");
         assert_eq!(
@@ -230,7 +230,7 @@ mod at_rule {
         }
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn interpolated() {
             let runner = runner().with_cwd("interpolated");
             assert_eq!(
@@ -245,7 +245,7 @@ mod at_rule {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn multi() {
             let runner = runner().with_cwd("multi");
             assert_eq!(
@@ -260,7 +260,6 @@ mod at_rule {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn nested() {
             let runner = runner().with_cwd("nested");
             assert_eq!(
@@ -272,7 +271,7 @@ mod at_rule {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn include() {
         let runner = runner().with_cwd("include");
         assert_eq!(
@@ -287,7 +286,7 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn interpolation() {
         let runner = runner().with_cwd("interpolation");
         assert_eq!(
@@ -317,7 +316,7 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn test_return() {
         let runner = runner().with_cwd("return");
         assert_eq!(
@@ -332,7 +331,7 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn warn() {
         let runner = runner().with_cwd("warn");
         assert_eq!(
@@ -390,7 +389,7 @@ mod style_rule {
         }
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn custom_property() {
             let runner = runner().with_cwd("custom_property");
             assert_eq!(
@@ -405,7 +404,7 @@ mod style_rule {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn declaration() {
             let runner = runner().with_cwd("declaration");
             assert_eq!(
@@ -420,7 +419,7 @@ mod style_rule {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn selector() {
             let runner = runner().with_cwd("selector");
             assert_eq!(
@@ -436,7 +435,7 @@ mod style_rule {
         }
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn nested() {
         let runner = runner().with_cwd("nested");
         assert_eq!(
@@ -451,7 +450,7 @@ mod style_rule {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn nested_property() {
         let runner = runner().with_cwd("nested_property");
         assert_eq!(
