@@ -6,19 +6,22 @@ use rsass::{compile_scss, compile_scss_path, compile_value};
 
 #[test]
 fn txx_empty_rule() {
-    check(b"foo{}", "")
+    assert_eq!(rsass(b"foo{}").unwrap(), "");
 }
 
 #[test]
 fn use_module_star() {
-    check(
-        b"@use 'tests/basic/defs' as *;\
-          \ndiv {\
-          \n  color: $color;\
-          \n  col1: foo(1);\
-          \n  col2: foo(0);\
-          \n  @include myem;
-          \n}\n",
+    assert_eq!(
+        rsass(
+            b"@use 'tests/basic/defs' as *;\
+              \ndiv {\
+              \n  color: $color;\
+              \n  col1: foo(1);\
+              \n  col2: foo(0);\
+              \n  @include myem;\
+              \n}\n"
+        )
+        .unwrap(),
         "div {\
          \n  color: purple;\
          \n  col1: purple;\
@@ -26,19 +29,23 @@ fn use_module_star() {
          \n}\
          \ndiv em {\
          \n  color: pink;\
-         \n}\n",
+         \n}\n"
     );
 }
+
 #[test]
 fn use_module() {
-    check(
-        b"@use 'tests/basic/defs';\
-          \ndiv {\
-          \n  color: defs.$color;\
-          \n  col1: defs.foo(1);\
-          \n  col2: defs.foo(0);\
-          \n  @include defs.myem;
-          \n}\n",
+    assert_eq!(
+        rsass(
+            b"@use 'tests/basic/defs';\
+              \ndiv {\
+              \n  color: defs.$color;\
+              \n  col1: defs.foo(1);\
+              \n  col2: defs.foo(0);\
+              \n  @include defs.myem;\
+              \n}\n"
+        )
+        .unwrap(),
         "div {\
          \n  color: purple;\
          \n  col1: purple;\
@@ -46,7 +53,7 @@ fn use_module() {
          \n}\
          \ndiv em {\
          \n  color: pink;\
-         \n}\n",
+         \n}\n"
     );
 }
 
@@ -71,96 +78,17 @@ fn t14_imports() {
 
 #[test]
 fn t15_arithmetic_and_lists_abcd() {
-    check(
-        b"div {\n  a: 1 + 2;\n  b: 3 + 3/4;\n  c: 1/2 + 1/2;\n  \
-            /* shouldn't eval the following \"300\" */\n  \
-            d: 300;\n}",
+    assert_eq!(
+        rsass(
+            b"div {\n  a: 1 + 2;\n  b: 3 + 3/4;\n  c: 1/2 + 1/2;\n  \
+          /* shouldn't eval the following \"300\" */\n  \
+          d: 300;\n}"
+        )
+        .unwrap(),
         "div {\n  a: 3;\n  b: 3.75;\n  c: 1;\n  \
          /* shouldn't eval the following \"300\" */\n  \
-         d: 300;\n}\n",
-    )
-}
-
-#[test]
-fn t15_arithmetic_and_lists_efg() {
-    check(
-        b"div {\n  e: 1 + (5/10 2 3);\n  f: 1 + ((2+(3 4) 5) 6);\n  \
-            g: 1 + ((1+(14/7 8) 9) 6);\n}",
-        "div {\n  e: 15/10 2 3;\n  f: 123 4 5 6;\n  g: 1114/7 8 9 6;\n}\n",
-    )
-}
-#[test]
-fn t15_arithmetic_and_lists_hijklmt_div_or_not() {
-    check(
-        b"$stuff: 1 2 3;\n\
-            $three: 3;\n\
-            div {\n  \
-            /* shouldn't perform the following division */\n  \
-            h: 15 / 3 / 5;\n  \
-            /* should perform the following division now */\n  \
-            i: (15 / 3 / 5);\n  /* this too */\n  j: (15 / 3) / 5;\n  \
-            /* and this */\n  k: 15 / $three;\n  l: 15 / 5 / $three;\n  \
-            m: 1/2, $stuff url(\"www.foo.com/blah.png\") blah blah;\n  \
-            t: 1 + (2 + (3/4 + (4/5 6/7)));\n}",
-        "div {\n  /* shouldn't perform the following division */\n  \
-         h: 15/3/5;\n  \
-         /* should perform the following division now */\n  \
-         i: 1;\n  /* this too */\n  j: 1;\n  /* and this */\n  k: 5;\n  \
-         l: 1;\n  \
-         m: 1/2, 1 2 3 url(\"www.foo.com/blah.png\") blah blah;\n  \
-         t: 120.754/5 6/7;\n}\n",
-    )
-}
-
-#[test]
-fn t15_arithmetic_and_lists_nopqrs() {
-    check(
-        b"$stuff: 1 2 3;\n\
-            div {\n  n: 1 2 3, $stuff 4 5 (6, 7 8 9);\n  \
-            o: 3px + 3px + 3px;\n  p: 4 + 1px;\n  q: (20pt / 10pt);\n  \
-            r: 16em * 4;\n  s: (5em / 2);\n}",
-        "div {\n  n: 1 2 3, 1 2 3 4 5 6, 7 8 9;\n  \
-         o: 9px;\n  p: 5px;\n  q: 2;\n  r: 64em;\n  s: 2.5em;\n}\n",
-    )
-}
-
-#[test]
-fn t15_arithmetic_and_lists() {
-    check(
-        b"$stuff: 1 2 3;\n\n\
-            $three: 3;\n\n\
-            div {\n  \
-            a: 1 + 2;\n  b: 3 + 3/4;\n  c: 1/2 + 1/2;\n  \
-            /* shouldn't eval the following \"300\" */\n  d: 300;\n\
-            /* increasingly jacked-up edge cases that combine \
-            arithmetic with lists */\n  \
-            e: 1 + (5/10 2 3);\n  f: 1 + ((2+(3 4) 5) 6);\n  \
-            g: 1 + ((1+(14/7 8) 9) 6);\n  \
-            /* shouldn't perform the following division */\n  \
-            h: 15 / 3 / 5;\n  \
-            /* should perform the following division now */\n  \
-            i: (15 / 3 / 5);\n  \
-            /* this too */\n  j: (15 / 3) / 5;\n  \
-            /* and this */\n  k: 15 / $three;\n  l: 15 / 5 / $three;\n  \
-            m: 1/2, $stuff url(\"www.foo.com/blah.png\") blah blah;\n  \
-            n: 1 2 3, $stuff 4 5 (6, 7 8 9);\n  \
-            o: 3px + 3px + 3px;\n  p: 4 + 1px;\n  q: (20pt / 10pt);\n  \
-            r: 16em * 4;\n  s: (5em / 2);\n  \
-            t: 1 + (2 + (3/4 + (4/5 6/7)));\n}",
-        "div {\n  a: 3;\n  b: 3.75;\n  c: 1;\n  \
-         /* shouldn't eval the following \"300\" */\n  d: 300;\n  \
-         /* increasingly jacked-up edge cases that combine \
-         arithmetic with lists */\n  \
-         e: 15/10 2 3;\n  f: 123 4 5 6;\n  g: 1114/7 8 9 6;\n  \
-         /* shouldn't perform the following division */\n  \
-         h: 15/3/5;\n  \
-         /* should perform the following division now */\n  i: 1;\n  \
-         /* this too */\n  j: 1;\n  /* and this */\n  k: 5;\n  l: 1;\n  \
-         m: 1/2, 1 2 3 url(\"www.foo.com/blah.png\") blah blah;\n  \
-         n: 1 2 3, 1 2 3 4 5 6, 7 8 9;\n  \
-         o: 9px;\n  p: 5px;\n  q: 2;\n  r: 64em;\n  s: 2.5em;\n  \
-         t: 120.754/5 6/7;\n}\n",
-    )
+         d: 300;\n}\n"
+    );
 }
 
 #[test]
@@ -181,82 +109,100 @@ fn t33_ambigous_imports() {
 /// `spec/libsass-closed-issues/issue_760/input.scss`
 #[test]
 fn ti815_str_slice() {
-    check(
-        b"foo {\n  foo: str-slice(\"bar\", 1, 2);\n  \
-            bar: str-slice(\"bar\", 3);\n}\n",
-        "foo {\n  foo: \"ba\";\n  bar: \"r\";\n}\n",
-    )
+    assert_eq!(
+        rsass(
+            b"foo {\n  foo: str-slice(\"bar\", 1, 2);\
+              \n  bar: str-slice(\"bar\", 3);\n}\n"
+        )
+        .unwrap(),
+        "foo {\n  foo: \"ba\";\n  bar: \"r\";\n}\n"
+    );
 }
 
 /// From `spec/libsass-closed-issues/issue_574`
 #[test]
 fn ti574_map_trailing_comma() {
-    check(
-        b"$flow: left;\n\n\
+    assert_eq!(
+        rsass(
+            b"$flow: left;\n\n\
           $map: (\n  margin-#{$flow}: 3em,\n  foo: bar,\n);\n\n\
-          .test {\n  margin-left: map-get($map, margin-left);\n}\n",
-        ".test {\n  margin-left: 3em;\n}\n",
-    )
+          .test {\n  margin-left: map-get($map, margin-left);\n}\n"
+        )
+        .unwrap(),
+        ".test {\n  margin-left: 3em;\n}\n"
+    );
 }
 
 /// From `spec/core_functions/invert/weight-parameter`
 #[test]
 fn weight_parameter() {
-    check(
-        b".invert-with-weight {\n  zero-percent: invert(#edc, 0%);\n  \
-          ten-percent: invert(#edc, 10%);\n  \
-          keyword: invert(#edc, $weight: 10%);\n  \
-          one-hundred-percent: invert(#edc, 100%);\n}\n",
+    assert_eq!(
+        rsass(
+            b".invert-with-weight {\n  zero-percent: invert(#edc, 0%);\n  \
+              ten-percent: invert(#edc, 10%);\n  \
+              keyword: invert(#edc, $weight: 10%);\n  \
+              one-hundred-percent: invert(#edc, 100%);\n}\n"
+        )
+        .unwrap(),
         ".invert-with-weight {\n  zero-percent: #eeddcc;\n  \
          ten-percent: #d8cabd;\n  keyword: #d8cabd;\n  \
-         one-hundred-percent: #112233;\n}\n",
-    )
+         one-hundred-percent: #112233;\n}\n"
+    );
 }
 
 /// From `spec/libsass-closed-issues/issue_1133/normal`
 #[test]
 fn each_binds_multiple() {
-    check(
-        b"@function foo($map) {\n    @return $map;\n}\n\n\
-          a {\n    $map: foo((this: is, my: map));\n    \
-          @each $k, $v in $map {\n        #{$k}: $v;\n    }\n}\n\n\
-          b {\n    $map: call(\"foo\", (this: is, my: map));\n    \
-          @each $k, $v in $map {\n        #{$k}: $v;\n    }\n}\n",
+    assert_eq!(
+        rsass(
+            b"@function foo($map) {\n    @return $map;\n}\n\n\
+              a {\n    $map: foo((this: is, my: map));\
+              \n    @each $k, $v in $map {\n        #{$k}: $v;\n    }\n}\n\n\
+              b {\n    $map: call(\"foo\", (this: is, my: map));\
+              \n    @each $k, $v in $map {\n        #{$k}: $v;\n    }\n}\n"
+        )
+        .unwrap(),
         "a {\n  this: is;\n  my: map;\n}\n\n\
-         b {\n  this: is;\n  my: map;\n}\n",
-    )
+         b {\n  this: is;\n  my: map;\n}\n"
+    );
 }
 
 #[test]
 fn div_simliar_unit() {
-    check(
-        b"p { a: (1cm / 1mm); b: (200grad / 360deg); c: (1in / 1pt); }",
+    assert_eq!(
+        rsass(
+            b"p { a: (1cm / 1mm); b: (200grad / 360deg); c: (1in / 1pt); }"
+        )
+        .unwrap(),
         "p {\
          \n  a: 10;\
          \n  b: 0.5;\
          \n  c: 72;\
-         \n}\n",
-    )
+         \n}\n"
+    );
 }
 
 #[test]
 fn different_numbers_should_compare_as_same() {
-    check(
-        b"@use 'sass:math' as m;\
-          \np {\
-          \n  $t: 0.2;
-          \n  a: max(1, m.sin(30deg));\
-          \n  b: max(0.2, m.sin(30deg));\
-          \n  c: max($t, 0.23233234232231232312312323231223323);\
-          \n  d: max($t+0.1, 0.23233234232231232312312323231223323);\
-          \n}",
+    assert_eq!(
+        rsass(
+            b"@use 'sass:math' as m;\
+              \np {\
+              \n  $t: 0.2;\
+              \n  a: max(1, m.sin(30deg));\
+              \n  b: max(0.2, m.sin(30deg));\
+              \n  c: max($t, 0.23233234232231232312312323231223323);\
+              \n  d: max($t+0.1, 0.23233234232231232312312323231223323);\
+              \n}"
+        )
+        .unwrap(),
         "p {\
          \n  a: 1;\
          \n  b: 0.5;\
          \n  c: 0.2323323423;\
          \n  d: 0.3;\
-         \n}\n",
-    )
+         \n}\n"
+    );
 }
 
 #[test]
@@ -333,23 +279,25 @@ fn test_rational_overflow_sub() {
 /// map.merge incorrect output for nested map
 #[test]
 fn issue_116() {
-    check(
-        b"@use \"sass:map\";\n\
-         \n$fonts: (\
-         \n  \"Helvetica\": (\
-         \n    \"weights\": (\
-         \n      \"regular\": 400,\
-         \n      \"medium\": 500,\
-         \n      \"bold\": 700\
-         \n    )\
-         \n  )\
-         \n);\n\
-         \na {\
-         \n    color: inspect(map.merge($fonts, \"Helvetica\", \"weights\", \"regular\", (a: 300)));\
-         \n}\n",
+    assert_eq!(
+        rsass(
+            b"@use \"sass:map\";\n\
+              \n$fonts: (\
+              \n  \"Helvetica\": (\
+              \n    \"weights\": (\
+              \n      \"regular\": 400,\
+              \n      \"medium\": 500,\
+              \n      \"bold\": 700\
+              \n    )\
+              \n  )\
+              \n);\n\
+              \na {\
+              \n    color: inspect(map.merge($fonts, \"Helvetica\", \"weights\", \"regular\", (a: 300)));\
+              \n}\n"
+        ).unwrap(),
         "a {\
          \n  color: (\"Helvetica\": (\"weights\": (\"regular\": (a: 300), \"medium\": 500, \"bold\": 700)));\
-         \n}\n",
+         \n}\n"
     );
 }
 
@@ -392,8 +340,9 @@ fn issue_120() {
 /// Test auto-converted from "sass-spec/spec/libsass/rel.hrx", except one failing unit calculation.
 #[test]
 fn rel() {
-    check(
-        b"div {\
+    assert_eq!(
+        rsass(
+            b"div {\
           \n  less: 3px < 3pt;\
           \n  less: (1px / 1pt);\
           \n  less: 23fu < 120;\
@@ -412,7 +361,9 @@ fn rel() {
           \n  lt: 1in < 2.54cm;\
           \n  lt: 2.54cm < 1in;\
           \n  lt: 5 < 4;\
-          \n}\n",
+          \n}\n"
+        )
+        .unwrap(),
         "div {\
          \n  less: true;\
          \n  less: 0.75;\
@@ -432,21 +383,24 @@ fn rel() {
          \n  lt: false;\
          \n  lt: false;\
          \n  lt: false;\
-         \n}\n",
+         \n}\n"
     );
 }
 
 #[test]
 fn minmax_length_units() {
-    check(
-        b"sel {\
+    assert_eq!(
+        rsass(
+            b"sel {\
          \n  a: max(-.8em, -.2vw);\
          \n  a: min(-.8em, -.2vw);\
-         \n}\n",
+         \n}\n"
+        )
+        .unwrap(),
         "sel {\
          \n  a: max(-0.8em, -0.2vw);\
          \n  a: min(-0.8em, -0.2vw);\
-         \n}\n",
+         \n}\n"
     );
 }
 
@@ -460,15 +414,11 @@ fn check_value(input: &str, expected: &str) {
     );
 }
 
-fn check(input: &[u8], expected: &str) {
-    assert_eq!(
-        compile_scss(input, Default::default())
-            .map(|s| String::from_utf8(s).unwrap())
-            .map_err(|e| {
-                eprintln!("{}", e);
-                "rsass failed"
-            })
-            .unwrap(),
-        expected
-    );
+fn rsass(input: &[u8]) -> Result<String, String> {
+    compile_scss(input, Default::default())
+        .map(|s| String::from_utf8(s).unwrap())
+        .map_err(|e| {
+            eprintln!("{}", e);
+            "rsass failed".into()
+        })
 }
