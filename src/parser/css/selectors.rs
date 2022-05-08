@@ -5,7 +5,7 @@ use crate::css::{Selector, SelectorPart, Selectors};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::one_of;
-use nom::combinator::{map, map_res, opt, value};
+use nom::combinator::{into, map, map_res, opt, value};
 use nom::multi::{many1, separated_list1};
 use nom::sequence::{delimited, pair, terminated, tuple};
 
@@ -33,11 +33,17 @@ pub fn selector_part(input: Span) -> PResult<SelectorPart> {
         b"*" => value(SelectorPart::Simple("*".into()), tag(""))(input),
         b"&" => value(SelectorPart::BackRef, tag(""))(input),
         b"::" => map(
-            pair(css_string, opt(delimited(tag("("), selectors, tag(")")))),
+            pair(
+                into(css_string),
+                opt(delimited(tag("("), selectors, tag(")"))),
+            ),
             |(name, arg)| SelectorPart::PseudoElement { name, arg },
         )(input),
         b":" => map(
-            pair(css_string, opt(delimited(tag("("), selectors, tag(")")))),
+            pair(
+                into(css_string),
+                opt(delimited(tag("("), selectors, tag(")"))),
+            ),
             |(name, arg)| SelectorPart::Pseudo { name, arg },
         )(input),
         b"[" => delimited(
@@ -70,7 +76,7 @@ pub fn selector_part(input: Span) -> PResult<SelectorPart> {
                         )),
                     )),
                     |(name, op, val, modifier)| SelectorPart::Attribute {
-                        name,
+                        name: name.into(),
                         op,
                         val,
                         modifier,
@@ -78,7 +84,7 @@ pub fn selector_part(input: Span) -> PResult<SelectorPart> {
                 ),
                 map(terminated(css_string, opt_spacelike), |name| {
                     SelectorPart::Attribute {
-                        name,
+                        name: name.into(),
                         op: "".to_string(),
                         val: "".into(),
                         modifier: None,
@@ -88,7 +94,7 @@ pub fn selector_part(input: Span) -> PResult<SelectorPart> {
             tag("]"),
         )(input),
         b"" => alt((
-            map(css_string, |s| SelectorPart::Simple(s.to_string())),
+            map(css_string, SelectorPart::Simple),
             delimited(
                 opt_spacelike,
                 alt((

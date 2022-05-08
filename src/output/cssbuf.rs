@@ -1,30 +1,24 @@
 use super::Format;
-use crate::css::{BodyItem, CssString, Rule, Value};
-use crate::value::Quotes;
+use crate::css::Import;
 use crate::{Error, ScopeRef};
-use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::io::{self, Write};
 
 /// A [CssBuf] for imports, that also keeps track of loaded modules.
 pub struct CssHead {
-    buf: CssBuf,
+    imports: Vec<Import>,
     modules: BTreeMap<String, ScopeRef>,
 }
 
 impl CssHead {
-    pub fn new(format: Format) -> Self {
+    pub fn new() -> Self {
         CssHead {
-            buf: CssBuf::new(format),
+            imports: Default::default(),
             modules: Default::default(),
         }
     }
-    pub fn add_import(
-        &mut self,
-        name: CssString,
-        args: Value,
-    ) -> Result<(), Error> {
-        self.buf.add_import(name, args)
+    pub fn add_import(&mut self, import: Import) {
+        self.imports.push(import)
     }
 
     pub fn load_module<Init>(
@@ -44,13 +38,17 @@ impl CssHead {
     }
 
     pub fn merge_imports(&mut self, other: Self) {
-        self.buf.buf.extend_from_slice(&other.buf.buf);
+        self.imports.extend(other.imports);
     }
 
     pub fn combine_final(&self, body: CssBuf) -> Vec<u8> {
+        let mut buf = CssBuf::new_as(&body);
+        for i in &self.imports {
+            i.write(&mut buf).unwrap();
+        }
         let mut result = vec![];
-        let compressed = self.buf.format.is_compressed();
-        if !self.buf.is_ascii() || !body.is_ascii() {
+        let compressed = body.format.is_compressed();
+        if !buf.is_ascii() || !body.is_ascii() {
             if compressed {
                 // U+FEFF is byte order mark, used to show encoding.
                 result.extend_from_slice("\u{feff}".as_bytes());
@@ -58,12 +56,15 @@ impl CssHead {
                 result.extend_from_slice(b"@charset \"UTF-8\";\n");
             }
         }
-        result.extend_from_slice(&self.buf.buf);
-        result.extend_from_slice(&body.buf);
+        result.extend(buf.buf);
+        result.extend(body.buf);
+        while result.last() == Some(&b'\n') {
+            result.pop();
+        }
         if compressed && result.last() == Some(&b';') {
             result.pop();
         }
-        if result.last().unwrap_or(&b'\n') != &b'\n' {
+        if !result.is_empty() {
             result.push(b'\n');
         }
         result
@@ -84,9 +85,6 @@ impl CssBuf {
     pub fn new_as(orig: &Self) -> CssBuf {
         CssBuf::_new(orig.format, orig.indent)
     }
-    pub fn new_below(orig: &Self) -> CssBuf {
-        CssBuf::_new(orig.format, orig.indent + 2)
-    }
     fn _new(format: Format, indent: usize) -> CssBuf {
         CssBuf {
             buf: Vec::new(),
@@ -95,114 +93,29 @@ impl CssBuf {
             separate: false,
         }
     }
-
-    pub fn write_rule(
-        &mut self,
-        rule: &Rule,
-        skip_nl: bool,
-    ) -> io::Result<()> {
-        if !rule.body.is_empty() {
-            if skip_nl {
-                self.do_indent_no_nl();
-            } else {
-                self.do_indent();
-            }
-            if self.format.is_compressed() {
-                write!(self.buf, "{:#}{{", rule.selectors)?;
-            } else {
-                write!(self.buf, "{} {{", rule.selectors)?;
-            }
-            self.indent += 2;
-            self.write_body_items(&rule.body)?;
-            self.indent -= 2;
-            self.do_indent();
-            self.add_one("}\n", "}");
-        }
-        Ok(())
+    pub(crate) fn format(&self) -> Format {
+        self.format
+    }
+    pub(crate) fn indent_level(&self) -> usize {
+        self.indent
     }
 
-    pub fn write_body_items(&mut self, items: &[BodyItem]) -> io::Result<()> {
-        for item in items {
-            self.do_indent();
-            match item {
-                BodyItem::Import(ref name, ref args) => {
-                    write!(&mut self.buf, "@import {}", name)?;
-                    if !args.is_null() {
-                        write!(
-                            &mut self.buf,
-                            " {}",
-                            args.format(self.format)
-                        )?;
-                    }
-                    self.add_one(";\n", ";");
-                }
-                BodyItem::Property(ref name, ref val) => write!(
-                    self.buf,
-                    "{}:{}{};",
-                    name,
-                    if self.format.is_compressed() { "" } else { " " },
-                    val.format(self.format).to_string().replace('\n', " "),
-                )?,
-                BodyItem::CustomProperty(ref name, ref val) => write!(
-                    self.buf,
-                    "{}:{}{};",
-                    name,
-                    if val.quotes() != Quotes::None
-                        && !self.format.is_compressed()
-                    {
-                        " "
-                    } else {
-                        ""
-                    },
-                    val,
-                )?,
-                BodyItem::Comment(ref c) => {
-                    let indent = self.indent;
-                    let existing = c
-                        .lines()
-                        .skip(1)
-                        .map(|s| s.bytes().take_while(|b| *b == b' ').count())
-                        .min()
-                        .unwrap_or(indent);
-
-                    self.add_str("/*");
-                    match indent.cmp(&existing) {
-                        Ordering::Greater => {
-                            let start =
-                                self.format.get_indent(indent - existing);
-                            self.add_str(&c.replace('\n', start));
-                        }
-                        Ordering::Less => {
-                            let start =
-                                self.format.get_indent(existing - indent - 1);
-                            self.add_str(&c.replace(start, "\n"));
-                        }
-                        Ordering::Equal => {
-                            self.add_str(c);
-                        }
-                    }
-                    self.add_str("*/");
-                }
-            }
+    pub fn start_block(&mut self) {
+        self.add_one(" {\n", "{");
+        self.indent += 2;
+    }
+    pub fn end_block(&mut self) {
+        if self.buf.last() == Some(&b'\n') {
+            self.buf.pop();
         }
         if self.format.is_compressed() && self.buf.last() == Some(&b';') {
             self.buf.pop();
         }
-        Ok(())
-    }
-
-    pub fn add_import(
-        &mut self,
-        name: CssString,
-        args: Value,
-    ) -> Result<(), Error> {
-        self.do_indent_no_nl();
-        write!(&mut self.buf, "@import {}", name)?;
-        if !args.is_null() {
-            write!(&mut self.buf, " {}", args.format(self.format))?;
+        self.indent -= 2;
+        if self.buf.last() != Some(&b'{') {
+            self.do_indent();
         }
-        self.add_one(";\n", ";");
-        Ok(())
+        self.add_one("}\n", "}");
     }
 
     pub fn do_separate(&mut self) {

@@ -19,7 +19,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn addition() {
     let runner = runner().with_cwd("addition");
     assert_eq!(
@@ -34,7 +34,7 @@ fn addition() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn equals() {
     let runner = runner().with_cwd("equals");
     assert_eq!(
@@ -49,7 +49,7 @@ fn equals() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn greater_than() {
     let runner = runner().with_cwd("greater_than");
     assert_eq!(
@@ -64,7 +64,7 @@ fn greater_than() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn greater_than_or_equal() {
     let runner = runner().with_cwd("greater_than_or_equal");
     assert_eq!(
@@ -94,7 +94,7 @@ fn less_than() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn less_than_or_equal() {
     let runner = runner().with_cwd("less_than_or_equal");
     assert_eq!(
@@ -124,7 +124,7 @@ fn modulo() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn multiplication() {
     let runner = runner().with_cwd("multiplication");
     assert_eq!(
@@ -139,7 +139,7 @@ fn multiplication() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn not_equals() {
     let runner = runner().with_cwd("not_equals");
     assert_eq!(

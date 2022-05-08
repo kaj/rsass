@@ -110,9 +110,10 @@ impl fmt::Display for CallArgs {
             .positional
             .iter()
             .map(|v| format!("{}", v.format(Default::default())));
-        let named = self.named.iter().map(|(k, v)| {
-            format!("${}: {}", k, v.format(Default::default()))
-        });
+        let named = self
+            .named
+            .iter()
+            .map(|(k, v)| format!("{}={}", k, v.format(Default::default())));
         let t = pos.chain(named).collect::<Vec<_>>().join(", ");
         write!(out, "{}", t)
     }

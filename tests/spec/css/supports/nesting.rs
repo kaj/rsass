@@ -58,7 +58,6 @@ mod media {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn top() {
         assert_eq!(
             runner().ok("@media screen {\
@@ -90,7 +89,6 @@ fn style_rule() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn supports() {
     assert_eq!(
         runner().ok("@supports (a: b) {\

@@ -5,23 +5,23 @@ use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, take};
 use nom::character::complete::one_of;
 use nom::combinator::{
-    map, map_opt, map_res, not, opt, peek, recognize, value,
+    into, map, map_opt, map_res, not, opt, peek, recognize, value,
 };
 use nom::multi::{fold_many0, many0, many_m_n};
 use nom::sequence::{delimited, preceded, terminated};
 use std::str::from_utf8;
 
 pub fn css_string_any(input: Span) -> PResult<CssString> {
-    alt((css_string_dq, css_string_sq, css_string))(input)
+    alt((css_string_dq, css_string_sq, into(css_string)))(input)
 }
 
-pub fn css_string(input: Span) -> PResult<CssString> {
+pub fn css_string(input: Span) -> PResult<String> {
     let (input, first) = alt((
         map(selector_plain_part, String::from),
         normalized_first_escaped_char,
         map(hash_no_interpolation, String::from),
     ))(input)?;
-    let (input, first) = fold_many0(
+    fold_many0(
         // Note: This could probably be a whole lot more efficient,
         // but try to get stuff correct before caring too much about that.
         alt((
@@ -34,8 +34,7 @@ pub fn css_string(input: Span) -> PResult<CssString> {
             acc.push_str(&item);
             acc
         },
-    )(input)?;
-    Ok((input, first.into()))
+    )(input)
 }
 
 pub fn css_string_dq(input: Span) -> PResult<CssString> {

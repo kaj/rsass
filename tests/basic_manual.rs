@@ -404,6 +404,66 @@ fn minmax_length_units() {
     );
 }
 
+#[test]
+fn use_raw_css() {
+    assert_eq!(
+        rsass(b"@use 'tests/basic/misc.css'").unwrap(),
+        "/* Some raw css for testing. */\
+         \n@media screen and (min-width: 42em) {\
+         \n  /* Do this for wide viewports */\
+         \n  div.something {\n    display: flex;\n  }\
+         \n}\
+         \n@font-face {\
+         \n  font-family: Cocanut;\n  font-style: regular;\
+         \n  font-weight: regular;\
+         \n  src: local(\"Cocanut.otf\"), url(\"cocanut.otf\");\
+         \n}\
+         \n#foo {\n  /* Draw a border on this. */\
+         \n  border: solid 1px black;\n}\n"
+    );
+}
+#[test]
+fn import_raw_css() {
+    assert_eq!(
+        rsass(b"@import 'tests/basic/misc.css'").unwrap(),
+        "/* Some raw css for testing. */\
+         \n@media screen and (min-width: 42em) {\
+         \n  /* Do this for wide viewports */\
+         \n  div.something {\n    display: flex;\n  }\
+         \n}\
+         \n@font-face {\
+         \n  font-family: Cocanut;\n  font-style: regular;\
+         \n  font-weight: regular;\
+         \n  src: local(\"Cocanut.otf\"), url(\"cocanut.otf\");\
+         \n}\
+         \n#foo {\n  /* Draw a border on this. */\
+         \n  border: solid 1px black;\n}\n"
+    );
+}
+
+#[test]
+fn load_raw_css() {
+    assert_eq!(
+        rsass(
+            b"@use 'sass:meta';\
+              \n@include meta.load-css('tests/basic/misc.css');"
+        )
+        .unwrap(),
+        "/* Some raw css for testing. */\
+         \n@media screen and (min-width: 42em) {\
+         \n  /* Do this for wide viewports */\
+         \n  div.something {\n    display: flex;\n  }\
+         \n}\
+         \n@font-face {\
+         \n  font-family: Cocanut;\n  font-style: regular;\
+         \n  font-weight: regular;\
+         \n  src: local(\"Cocanut.otf\"), url(\"cocanut.otf\");\
+         \n}\
+         \n#foo {\n  /* Draw a border on this. */\
+         \n  border: solid 1px black;\n}\n"
+    );
+}
+
 fn check_value(input: &str, expected: &str) {
     assert_eq!(
         String::from_utf8(

@@ -15,7 +15,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn built_in() {
     let runner = runner().with_cwd("built_in");
     assert_eq!(
@@ -30,7 +30,7 @@ fn built_in() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn keyword_arguments() {
     let runner = runner().with_cwd("keyword_arguments");
     assert_eq!(
@@ -45,7 +45,7 @@ fn keyword_arguments() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn variable_arguments() {
     let runner = runner().with_cwd("variable_arguments");
     assert_eq!(

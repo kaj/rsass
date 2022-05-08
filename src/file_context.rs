@@ -47,6 +47,7 @@ pub trait FileContext: Sized + std::fmt::Debug {
             &|base, name| format!("{}_{}.import.scss", base, name),
             &|base, name| format!("{}{}/index.scss", base, name),
             &|base, name| format!("{}{}/_index.scss", base, name),
+            &|base, name| format!("{}{}.css", base, name),
         ];
         // Note: Should a "full stack" of bases be used here?
         // Or is this fine?
@@ -81,6 +82,7 @@ pub trait FileContext: Sized + std::fmt::Debug {
                 &|base, name| format!("{}_{}.scss", base, name),
                 &|base, name| format!("{}{}/index.scss", base, name),
                 &|base, name| format!("{}{}/_index.scss", base, name),
+                &|base, name| format!("{}{}.css", base, name),
             ],
         )? {
             let source = SourceName::load_css(path, from);

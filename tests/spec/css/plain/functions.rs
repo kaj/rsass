@@ -15,7 +15,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn alpha() {
     let runner = runner().with_cwd("alpha");
     assert_eq!(
@@ -26,7 +25,6 @@ fn alpha() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn defined_elsewhere() {
     let runner = runner().with_cwd("defined_elsewhere");
     assert_eq!(
@@ -38,7 +36,6 @@ fn defined_elsewhere() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn grayscale() {
     let runner = runner().with_cwd("grayscale");
     assert_eq!(
@@ -49,7 +46,6 @@ fn grayscale() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn hsl() {
     let runner = runner().with_cwd("hsl");
     assert_eq!(
@@ -60,7 +56,6 @@ fn hsl() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn hsla() {
     let runner = runner().with_cwd("hsla");
     assert_eq!(
@@ -71,7 +66,6 @@ fn hsla() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn invert() {
     let runner = runner().with_cwd("invert");
     assert_eq!(
@@ -82,7 +76,6 @@ fn invert() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn rgb() {
     let runner = runner().with_cwd("rgb");
     assert_eq!(
@@ -93,7 +86,6 @@ fn rgb() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn rgba() {
     let runner = runner().with_cwd("rgba");
     assert_eq!(
@@ -104,7 +96,6 @@ fn rgba() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn saturate() {
     let runner = runner().with_cwd("saturate");
     assert_eq!(

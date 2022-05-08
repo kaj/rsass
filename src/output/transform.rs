@@ -6,9 +6,10 @@
 #![allow(clippy::needless_option_as_deref)]
 
 use super::cssbuf::{CssBuf, CssHead};
-use crate::css::{BodyItem, Rule, Selectors};
+use crate::css::{BodyItem, Comment, Import, Property, Rule, Selectors};
 use crate::error::Error;
 use crate::file_context::FileContext;
+use crate::parser::Parsed;
 use crate::sass::{
     get_global_module, CallArgs, Expose, Function, Item, MixinDecl, Name,
     UseAs,
@@ -17,7 +18,28 @@ use crate::value::ValueRange;
 use crate::ScopeRef;
 use std::io::Write;
 
-pub fn handle_body(
+pub fn handle_parsed(
+    items: Parsed,
+    head: &mut CssHead,
+    rule: Option<&mut Rule>,
+    buf: &mut CssBuf,
+    scope: ScopeRef,
+    file_context: &impl FileContext,
+) -> Result<(), Error> {
+    match items {
+        Parsed::Scss(items) => {
+            handle_body(&items, head, rule, buf, scope, file_context)
+        }
+        Parsed::Css(items) => {
+            for item in items {
+                item.write(buf)?;
+            }
+            Ok(())
+        }
+    }
+}
+
+fn handle_body(
     items: &[Item],
     head: &mut CssHead,
     rule: Option<&mut Rule>,
@@ -85,9 +107,8 @@ fn handle_item(
                                 ));
                             }
                         }
-                        let items = sourcefile.parse()?;
-                        handle_body(
-                            &items,
+                        handle_parsed(
+                            sourcefile.parse()?,
                             head,
                             None,
                             buf,
@@ -137,9 +158,8 @@ fn handle_item(
                                 ));
                             }
                         }
-                        let items = sourcefile.parse()?;
-                        handle_body(
-                            &items,
+                        handle_parsed(
+                            sourcefile.parse()?,
                             head,
                             None,
                             buf,
@@ -162,38 +182,47 @@ fn handle_item(
                         .find_file_import(x.value(), pos.clone())?
                     {
                         scope.lock_loading(sourcefile.path(), pos.clone())?;
-                        let items = sourcefile.parse()?;
-                        let mut thead = CssHead::new(format);
-                        let module = ScopeRef::sub(scope.clone());
-                        handle_body(
-                            &items,
-                            &mut thead,
-                            rule.as_deref_mut(),
-                            buf,
-                            module.clone(),
-                            file_context,
-                        )?;
-                        head.merge_imports(thead);
-                        scope.do_use(
-                            module,
-                            "",
-                            &UseAs::Star,
-                            &Expose::All,
-                        )?;
+                        match sourcefile.parse()? {
+                            Parsed::Scss(items) => {
+                                let mut thead = CssHead::new();
+                                let module = ScopeRef::sub(scope.clone());
+                                handle_body(
+                                    &items,
+                                    &mut thead,
+                                    rule.as_deref_mut(),
+                                    buf,
+                                    module.clone(),
+                                    file_context,
+                                )?;
+                                head.merge_imports(thead);
+                                scope.do_use(
+                                    module,
+                                    "",
+                                    &UseAs::Star,
+                                    &Expose::All,
+                                )?;
+                            }
+                            Parsed::Css(items) => {
+                                for item in items {
+                                    item.write(buf)?;
+                                }
+                            }
+                        }
                         scope.unlock_loading(sourcefile.path());
                         continue 'name;
                     }
                 }
                 let name = name.evaluate(scope.clone())?;
                 let args = args.evaluate(scope.clone())?;
+                let import = Import::new(name, args);
                 if let Some(ref mut rule) =
                     rule.as_deref_mut().filter(|r| !r.selectors.is_root())
                 {
-                    rule.add_import(name, args);
+                    rule.push(import.into());
                 } else if buf.is_root_level() {
-                    head.add_import(name, args)?;
+                    head.add_import(import);
                 } else {
-                    buf.add_import(name, args)?;
+                    import.write(buf)?;
                 }
             }
         }
@@ -211,7 +240,7 @@ fn handle_item(
                 ScopeRef::sub_selectors(scope, selectors),
                 file_context,
             )?;
-            buf.write_rule(&rule, true)?;
+            rule.write(buf)?;
             buf.join(sub);
         }
         Item::AtRule {
@@ -228,11 +257,11 @@ fn handle_item(
                 write!(buf, " {}", args.format(format))?;
             }
             if let Some(ref body) = *body {
-                buf.add_one(" {", "{");
+                buf.start_block();
                 let selectors = scope.get_selectors().clone();
                 let has_selectors = !selectors.is_root();
                 let mut rule = Rule::new(selectors);
-                let mut sub = CssBuf::new_below(buf);
+                let mut sub = CssBuf::new_as(buf);
                 handle_body(
                     body,
                     head,
@@ -241,22 +270,18 @@ fn handle_item(
                     ScopeRef::sub(scope),
                     file_context,
                 )?;
-                let mut t = CssBuf::new_as(&sub);
                 if has_selectors {
-                    t.write_rule(&rule, false)?;
+                    rule.write(buf)?;
                 } else {
-                    t.write_body_items(&rule.body)?;
+                    for item in &rule.body {
+                        item.write(buf)?;
+                    }
                 };
-                if !t.is_empty() || !sub.is_empty() {
-                    buf.join(t);
-                    buf.do_indent();
-                    buf.join(sub);
-                }
-                buf.add_str("}");
+                buf.join(sub);
+                buf.end_block();
             } else {
-                buf.add_str(";");
+                buf.add_one(";\n", ";");
             }
-            buf.do_separate();
         }
 
         Item::VariableDeclaration {
@@ -311,8 +336,8 @@ fn handle_item(
                     file_context,
                 )?;
                 mixin.define_content(&scope, body, pos);
-                handle_body(
-                    &mixin.body,
+                handle_parsed(
+                    mixin.body,
                     head,
                     rule,
                     buf,
@@ -353,8 +378,8 @@ fn handle_item(
                         pos,
                         file_context,
                     )?;
-                    handle_body(
-                        &mixin.body,
+                    handle_parsed(
+                        mixin.body,
                         head,
                         rule,
                         buf,
@@ -456,7 +481,7 @@ fn handle_item(
                 ScopeRef::sub_selectors(scope, selectors),
                 file_context,
             )?;
-            buf.write_rule(&rule, true)?;
+            rule.write(buf)?;
             buf.join(sub);
         }
         Item::Property(ref name, ref value) => {
@@ -464,7 +489,7 @@ fn handle_item(
                 let v = value.evaluate(scope.clone())?;
                 if !v.is_null() {
                     let name = name.evaluate(scope)?;
-                    rule.push(BodyItem::Property(name.value().into(), v));
+                    rule.push(Property::new(name.value().into(), v).into());
                 }
             } else {
                 return Err(Error::S("Global property not allowed".into()));
@@ -491,10 +516,9 @@ fn handle_item(
                 let value = value.evaluate(scope.clone())?;
                 let name = name.evaluate(scope.clone())?;
                 if !value.is_null() {
-                    rule.push(BodyItem::Property(
-                        name.value().to_string(),
-                        value,
-                    ));
+                    rule.push(
+                        Property::new(name.value().to_string(), value).into(),
+                    );
                 }
                 let mut t = Rule::new(Selectors::root());
                 let mut sub = CssBuf::new(format);
@@ -508,10 +532,9 @@ fn handle_item(
                 )?;
                 for item in t.body {
                     rule.push(match item {
-                        BodyItem::Property(n, v) => BodyItem::Property(
-                            format!("{}-{}", name.value(), n),
-                            v,
-                        ),
+                        BodyItem::Property(prop) => {
+                            prop.prefix(name.value()).into()
+                        }
                         c => c,
                     })
                 }
@@ -528,12 +551,11 @@ fn handle_item(
         }
         Item::Comment(ref c) => {
             if !format.is_compressed() {
-                let c = c.evaluate(scope)?;
+                let c = Comment::from(c.evaluate(scope)?.value());
                 if let Some(rule) = rule {
-                    rule.push(BodyItem::Comment(c.value().into()));
+                    rule.push(c.into());
                 } else {
-                    buf.do_separate();
-                    write!(buf, "/*{}*/", c)?;
+                    c.write(buf);
                 }
             }
         }

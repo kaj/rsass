@@ -31,7 +31,7 @@ fn directory_dot_import() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn no_extension() {
     let runner = runner().with_cwd("no_extension");
     assert_eq!(

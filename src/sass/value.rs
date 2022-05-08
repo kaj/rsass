@@ -355,3 +355,9 @@ impl Value {
         }
     }
 }
+
+impl From<Numeric> for Value {
+    fn from(num: Numeric) -> Self {
+        Value::Numeric(num)
+    }
+}

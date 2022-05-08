@@ -10,7 +10,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn calc() {
     let runner = runner().with_cwd("calc");
     assert_eq!(
@@ -25,7 +25,7 @@ fn calc() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn identifier() {
     let runner = runner().with_cwd("identifier");
     assert_eq!(
@@ -55,7 +55,7 @@ fn quoted_string() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn standalone() {
     let runner = runner().with_cwd("standalone");
     assert_eq!(
