@@ -78,11 +78,11 @@ impl Args {
             precision: self.precision,
         };
         for name in &self.input {
-            let mut file_context = FsFileContext::new();
+            let (mut file_context, source) = FsFileContext::for_path(name)?;
             if let Some(include_path) = &self.load_path {
                 file_context.push_path(include_path.as_ref());
             }
-            let source = file_context.file(name.as_ref())?.parse()?;
+            let source = source.parse()?;
             let result = format.write_root(
                 source,
                 ScopeRef::new_global(format),

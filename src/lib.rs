@@ -129,7 +129,7 @@ pub fn compile_scss_path(
     path: &Path,
     format: Format,
 ) -> Result<Vec<u8>, Error> {
-    let file_context = FsFileContext::new();
-    let source = file_context.file(path)?.parse()?;
+    let (file_context, source) = FsFileContext::for_path(path)?;
+    let source = source.parse()?;
     format.write_root(source, ScopeRef::new_global(format), &file_context)
 }
