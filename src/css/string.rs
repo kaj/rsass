@@ -134,6 +134,13 @@ impl CssString {
             && value.ends_with(')')
             && (value.starts_with("calc(") || value.starts_with("clamp("))
     }
+    /// Return true if this is a css url function call.
+    pub(crate) fn is_css_url(&self) -> bool {
+        let value = self.value();
+        self.quotes() == Quotes::None
+            && value.ends_with(')')
+            && value.starts_with("url(")
+    }
     /// Access the string value
     pub fn value(&self) -> &str {
         &self.value

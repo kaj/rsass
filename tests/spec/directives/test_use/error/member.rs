@@ -538,7 +538,6 @@ mod missing {
         }
 
         #[test]
-        #[ignore] // wrong error
         fn mixin() {
             let runner = runner().with_cwd("mixin");
             assert_eq!(
@@ -594,7 +593,6 @@ mod missing {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn mixin() {
             let runner = runner().with_cwd("mixin");
             assert_eq!(

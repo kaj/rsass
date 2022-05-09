@@ -101,7 +101,7 @@ mod import_only {
     );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn with_extension() {
         let runner = runner().with_cwd("with_extension");
         assert_eq!(

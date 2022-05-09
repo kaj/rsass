@@ -22,6 +22,9 @@ project adheres to
 ### Improvements
 
 * Hopefully improved relative file finding on windows (PR #137).
+* Plain css `@import` rules is only allowed [on a few
+  condtions](https://sass-lang.com/documentation/at-rules/import#plain-css-imports),
+  in other cases an error is reported (Issue #139, PR #137).
 * Rsass can now parse (some) plain css as well as scss.  Css files can
   be referenced in `@use` and `@import` directives, as well as in the
   `meta.load-css` mixin (PR #140).

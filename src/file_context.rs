@@ -42,13 +42,16 @@ pub trait FileContext: Sized + std::fmt::Debug {
     ) -> Result<Option<SourceFile>, Error> {
         let names: &[&dyn Fn(&str, &str) -> String] = &[
             // base will either be empty or end with a slash.
-            &|base, name| format!("{}{}.scss", base, name),
-            &|base, name| format!("{}_{}.scss", base, name),
             &|base, name| format!("{}{}.import.scss", base, name),
             &|base, name| format!("{}_{}.import.scss", base, name),
+            &|base, name| format!("{}{}.scss", base, name),
+            &|base, name| format!("{}_{}.scss", base, name),
+            &|base, name| format!("{}{}/index.import.scss", base, name),
+            &|base, name| format!("{}{}/_index.import.scss", base, name),
             &|base, name| format!("{}{}/index.scss", base, name),
             &|base, name| format!("{}{}/_index.scss", base, name),
             &|base, name| format!("{}{}.css", base, name),
+            &|base, name| format!("{}_{}.css", base, name),
         ];
         // Note: Should a "full stack" of bases be used here?
         // Or is this fine?
@@ -82,6 +85,7 @@ pub trait FileContext: Sized + std::fmt::Debug {
             &|base, name| format!("{}{}/index.scss", base, name),
             &|base, name| format!("{}{}/_index.scss", base, name),
             &|base, name| format!("{}{}.css", base, name),
+            &|base, name| format!("{}_{}.css", base, name),
         ];
         // Note: Should a "full stack" of bases be used here?
         // Or is this fine?

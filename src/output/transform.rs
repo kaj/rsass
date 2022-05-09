@@ -217,6 +217,18 @@ fn handle_item(
                         scope.unlock_loading(sourcefile.path());
                         continue 'name;
                     }
+                    if !(x.value().starts_with("http://")
+                        || x.value().starts_with("https://")
+                        || x.value().starts_with("//")
+                        || x.value().ends_with(".css")
+                        || x.is_css_url())
+                    {
+                        return Err(Error::BadCall(
+                            "Error: Can't find stylesheet to import.".into(),
+                            pos.clone(),
+                            None,
+                        ));
+                    }
                 }
                 let name = name.evaluate(scope.clone())?;
                 let args = args.evaluate(scope.clone())?;
@@ -365,7 +377,7 @@ fn handle_item(
                 })?;
             } else {
                 return Err(Error::BadCall(
-                    format!("Unknown mixin {}", name),
+                    "Error: Undefined mixin.".into(),
                     pos.clone(),
                     None,
                 ));
