@@ -4,7 +4,7 @@ Sass reimplemented in rust with nom.
 The "r" in the name might stand for the Rust programming language, for
 "re-implemented", or possibly for my name Rasmus.
 
-[![Crate](https://meritbadge.herokuapp.com/rsass)](https://crates.io/crates/rsass)
+[![Crate](https://img.shields.io/crates/v/rsass.svg)](https://crates.io/crates/rsass)
 [![docs](https://docs.rs/rsass/badge.svg)](https://docs.rs/rsass)
 [![Github build](https://github.com/kaj/rsass/workflows/CI/badge.svg)](https://github.com/kaj/rsass/actions)
 [![Appveyor build](https://ci.appveyor.com/api/projects/status/w0hfnjwx31f7eoxj/branch/master?svg=true)](https://ci.appveyor.com/project/kaj/rsass/branch/master)
