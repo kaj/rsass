@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("css_before_index")
         .mock_file("index/other.scss", "other {index: true}\n")
         .mock_file("other.css", "other {index: false}\n")
 }

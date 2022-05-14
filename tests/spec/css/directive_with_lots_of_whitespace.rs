@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("directive_with_lots_of_whitespace")
 }
 
 #[test]

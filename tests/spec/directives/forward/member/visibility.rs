@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("visibility")
         .mock_file(
             "hide/mixin/_midstream.scss",
             "@forward \"upstream\" hide b;\n",

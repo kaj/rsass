@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("190_test_semi_placeholder_selector")
 }
 
 #[test]

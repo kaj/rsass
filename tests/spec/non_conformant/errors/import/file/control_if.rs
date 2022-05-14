@@ -2,7 +2,9 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().mock_file("_include.scss", "")
+    super::runner()
+        .with_cwd("control-if")
+        .mock_file("_include.scss", "")
 }
 
 #[test]

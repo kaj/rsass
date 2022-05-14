@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("random")
         .mock_file("_util.scss", "// Calls `random()` one thousand times, and throws an error if `$check` returns\n// `false` for any of the values.\n@mixin check-values($arg, $check) {\n  @for $i from 1 through 1000 {\n    $value: random($arg);\n    @if not call($check, $value) {\n      @error \"#{$value} did not match expectation\";\n    }\n  }\n}\n")
 }
 

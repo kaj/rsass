@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/scss"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("scss")
+}
 
 mod almost_ambiguous_nested_rules_and_declarations;
 

@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("053_test_no_namespace_properties_without_space")
 }
 
 #[test]

@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().mock_file(
+    super::runner().with_cwd("basic-alone-itpl").mock_file(
         "include.scss",
         "#{&} {\r\n  foo {\r\n    bar: baz;\r\n  }\r\n}\r\n",
     )

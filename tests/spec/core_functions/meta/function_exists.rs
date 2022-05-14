@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("function_exists")
         .mock_file(
             "different_module/through_forward/as/_midstream.scss",
             "@forward \"upstream\" as b-*;\n",

@@ -1,6 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/operations/logic_ne/dimensions"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("dimensions")
+}
 
 mod pairs;

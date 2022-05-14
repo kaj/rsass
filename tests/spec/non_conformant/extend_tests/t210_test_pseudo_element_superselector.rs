@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("210_test_pseudo_element_superselector")
 }
 
 #[test]

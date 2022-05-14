@@ -1,6 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/color-functions/other"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("other")
+}
 
 mod change_color;

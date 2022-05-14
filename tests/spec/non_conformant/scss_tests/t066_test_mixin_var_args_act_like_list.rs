@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("066_test_mixin_var_args_act_like_list")
 }
 
 #[test]

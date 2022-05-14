@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/css/unicode_range"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("unicode_range")
+}
 
 mod error;
 

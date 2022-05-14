@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("171_test_loud_comment_in_compressed_mode")
 }
 
 #[test]

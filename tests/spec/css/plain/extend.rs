@@ -2,7 +2,9 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().mock_file("_plain.css", "b {c: d}\n")
+    super::runner()
+        .with_cwd("extend")
+        .mock_file("_plain.css", "b {c: d}\n")
 }
 
 #[test]

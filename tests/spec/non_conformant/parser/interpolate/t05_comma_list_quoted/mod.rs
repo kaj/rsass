@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/05_comma_list_quoted"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("05_comma_list_quoted")
+}
 
 mod t01_inline;
 

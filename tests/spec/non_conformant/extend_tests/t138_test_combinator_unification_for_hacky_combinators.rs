@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("138_test_combinator_unification_for_hacky_combinators")
 }
 
 #[test]

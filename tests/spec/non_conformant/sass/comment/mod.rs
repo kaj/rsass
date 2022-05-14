@@ -1,6 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/sass/comment"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("comment")
+}
 
 mod loud;

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("14_imports")
         .mock_file("a.scss", "div {\n  span {\n    moo: goo;\n  }\n}\n\n$x: boo;")
         .mock_file("b.scss", "hoo {\n  mux: scooba-dee-doo;\n  flux: gooboo $x;\n  @import \"d.scss\";\n}")
         .mock_file("d.scss", "d {\n  inside: d now;\n}")
@@ -10,7 +11,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("@import \"a.scss\";\n\

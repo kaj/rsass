@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/17_escapes_literal_lowercase"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("17_escapes_literal_lowercase")
+}
 
 mod t01_inline;
 

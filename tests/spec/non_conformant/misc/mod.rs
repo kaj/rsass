@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/misc"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("misc")
+}
 
 mod jma_pseudo_test;
 

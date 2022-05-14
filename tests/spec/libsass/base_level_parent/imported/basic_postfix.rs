@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("basic-postfix")
         .mock_file("include.scss", "&post {\n  foo {\n    bar: baz;\n  }\n}")
 }
 

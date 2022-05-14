@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("191_test_placeholder_selector_with_multiple_extenders")
 }
 
 #[test]

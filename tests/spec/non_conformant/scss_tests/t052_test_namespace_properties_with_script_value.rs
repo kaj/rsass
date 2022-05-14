@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("052_test_namespace_properties_with_script_value")
 }
 
 #[test]

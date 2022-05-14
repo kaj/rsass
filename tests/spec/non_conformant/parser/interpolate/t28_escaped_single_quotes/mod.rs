@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/28_escaped_single_quotes"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("28_escaped_single_quotes")
+}
 
 mod t01_inline;
 

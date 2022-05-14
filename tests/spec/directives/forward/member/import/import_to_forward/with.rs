@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("with")
         .mock_file(
             "default/_midstream.scss",
             "@forward \"upstream\" with ($c: midstream);\n",

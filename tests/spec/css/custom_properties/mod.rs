@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/css/custom_properties"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("custom_properties")
+}
 
 mod error;
 

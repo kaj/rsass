@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("keywords")
         .mock_file("_utils.scss", "/// Returns the keyword arguments passed to this function as a map.\n@function args-to-keywords($args...) {\n  @return keywords($args);\n}\n")
 }
 

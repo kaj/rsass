@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("with")
         .mock_file("core_module/indirect/forward/_other.scss", "@forward \"sass:color\";\n\n$c: d !default;\n")
         .mock_file("core_module/indirect/use/_other.scss", "@use \"sass:color\";\n\n$c: d !default;\n")
         .mock_file("dash_insensitive/_other.scss", "$a-b: original !default;\nb {c: $a-b}\n")

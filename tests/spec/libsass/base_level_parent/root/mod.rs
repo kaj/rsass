@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/root"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("root")
+}
 
 mod at_root_alone_itpl;
 

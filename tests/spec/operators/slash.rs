@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("slash")
         .mock_file("namespaced_variables/other.scss", "$a: 1;\n$b: 2;\n")
 }
 

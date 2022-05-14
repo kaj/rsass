@@ -1,6 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/errors/import/url/mixin/control-else"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("control-else")
+}
 
 mod outside;

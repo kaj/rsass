@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("115_test_selector_interpolation_at_attr_end")
 }
 
 #[test]

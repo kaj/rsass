@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("108_test_selector_interpolation_before_element_name")
 }
 
 #[test]

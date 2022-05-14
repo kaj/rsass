@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-todo-tests/errors/unicode/invalid"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("invalid")
+}
 
 // Ignoring "after", tests with expected error not implemented yet.
 

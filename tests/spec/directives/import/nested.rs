@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("nested")
         .mock_file("at_rule/childless/_other.scss", "@b c;\n")
         .mock_file("at_rule/declaration_child/_other.scss", "@b {c: d}\n")
         .mock_file("at_rule/keyframes/_other.scss", "// This should ignore the parent selector, since Sass knows @keyframes is only\n// valid at the root of a document.\n@keyframes b {\n  0% {c: d}\n}\n")

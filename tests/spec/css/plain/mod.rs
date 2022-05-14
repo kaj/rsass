@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/css/plain"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("plain")
+}
 
 mod boolean_operations;
 

@@ -32,7 +32,7 @@ impl TestFileContext {
         }
     }
     fn mock_file(&mut self, name: &str, content: &str) {
-        self.mock.insert(name.into(), content.into());
+        self.mock.insert(url_join(&self.cwd, name), content.into());
     }
     #[allow(unused)] // only used while building tests
     fn has_mock_files(&self) -> bool {

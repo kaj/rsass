@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("variable")
         .mock_file("declaration/plain.css", "$var: value;\n")
         .mock_file("use/plain.css", "a {\n  x: $var;\n}\n")
 }

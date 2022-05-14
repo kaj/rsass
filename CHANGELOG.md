@@ -27,6 +27,8 @@ project adheres to
 * Minor fix in whitespace around at-rules.
 * Fix a typo in LICENSE (Issue #136).
 * Update sass-spec test suite to 2022-04-25.
+* Make rust version of sass-spec more directory-aware (which fixes one
+  of 5825 tests).
 * Use a crates badge that actually works.
 
 Thanks to @jonassmedegaard for #136.

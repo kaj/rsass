@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("almost_ambiguous_nested_rules_and_declarations")
 }
 
 #[test]

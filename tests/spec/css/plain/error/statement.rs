@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("statement")
         .mock_file(
             "at_rule/at_root/plain.css",
             "a {\n  @at-root b {\n    x: y;\n  }\n}\n",

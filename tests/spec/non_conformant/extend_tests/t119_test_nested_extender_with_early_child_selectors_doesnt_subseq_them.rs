@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("119_test_nested_extender_with_early_child_selectors_doesnt_subseq_them")
 }
 
 #[test]

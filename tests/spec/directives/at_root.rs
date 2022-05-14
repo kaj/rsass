@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("at_root")
         .mock_file(
             "load_css/other.scss",
             "@at-root {\n  b {\n    c: d;\n  }\n}\n",

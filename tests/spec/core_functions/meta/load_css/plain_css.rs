@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("plain_css")
         .mock_file("at_rule/_other.scss", "@media screen {a {b: c}}\n")
         .mock_file("empty/user_defined/_other.scss", "// No CSS here!\n")
         .mock_file("named/_other.scss", "a {b: c}\n")

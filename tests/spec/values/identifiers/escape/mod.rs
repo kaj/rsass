@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/values/identifiers/escape"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("escape")
+}
 
 // From "sass-spec/spec/values/identifiers/escape/normalize"
 #[test]

@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/color-functions"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("color-functions")
+}
 
 mod opacity;
 

@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("103_test_nested_extender_chooses_first_subseq")
 }
 
 #[test]

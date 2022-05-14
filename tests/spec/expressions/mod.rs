@@ -1,6 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/expressions"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("expressions")
+}
 
 mod syntax;

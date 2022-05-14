@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("general")
         .mock_file(
             "forward/as/_other.scss",
             "@forward \"sass:math\" as s-*;\n",

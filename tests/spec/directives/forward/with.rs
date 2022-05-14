@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("with")
         .mock_file("core_module/indirect/forward/_midstream.scss", "// Regression test for sass/dart-sass#838.\n@forward \"upstream\" with ($c: e);\n")
         .mock_file("core_module/indirect/forward/_upstream.scss", "@forward \"sass:color\";\n\n$c: d !default;\n")
         .mock_file("core_module/indirect/use/_midstream.scss", "// Regression test for sass/dart-sass#838.\n@forward \"upstream\" with ($c: e);\n")

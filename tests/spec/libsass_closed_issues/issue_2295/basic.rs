@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().mock_file(
+    super::runner().with_cwd("basic").mock_file(
         "include.scss",
         "@if (true) {\r\n  .foo { display: none; }\r\n}",
     )

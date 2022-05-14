@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("131_test_nested_extender_merges_with_same_selector")
 }
 
 #[test]

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("098_test_function_list_of_pairs_splat_treated_as_list")
 }
 
 #[test]

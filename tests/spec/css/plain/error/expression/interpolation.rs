@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("interpolation")
         .mock_file("calc/plain.css", "a {\n  w: calc(#{1px} + 10%);\n}\n")
         .mock_file("identifier/plain.css", "a {\n  w: x#{y}z;\n}\n")
         .mock_file("quoted_string/plain.css", "a {\n  w: \"x#{y}z\";\n}\n")

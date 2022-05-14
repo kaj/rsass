@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("176_test_newline_selector_rendered_multiple_times")
 }
 
 #[test]

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("list")
         .mock_file("empty/plain.css", "a {\n  x: ();\n}\n")
         .mock_file("empty_comma/plain.css", "a {\n  x: (,);\n}\n")
 }

@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hwb/three_args/w3c"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("w3c")
+}
 
 mod blue_magentas;
 

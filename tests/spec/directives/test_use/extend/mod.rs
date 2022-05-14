@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/directives/use/extend"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("extend")
+}
 
 mod diamond;
 

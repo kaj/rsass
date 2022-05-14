@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("183_test_multiple_extender_merges_with_superset_selector")
 }
 
 #[test]

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("function")
         .mock_file("built_in/plain.css", "a {\n  x: index(1 2 3, 1);\n}\n")
         .mock_file(
             "keyword_arguments/plain.css",

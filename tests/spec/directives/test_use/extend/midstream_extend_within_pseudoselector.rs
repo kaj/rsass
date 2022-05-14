@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("midstream_extend_within_pseudoselector")
         .mock_file("three_files/is/_midstream.scss", "@use \"upstream\";\n:is(in-midstream) {@extend in-upstream}\n")
         .mock_file("three_files/is/_upstream.scss", "in-upstream {a: b}\n")
         .mock_file("three_files/matches/_midstream.scss", "@use \"upstream\";\n:matches(in-midstream) {@extend in-upstream}\n")

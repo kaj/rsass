@@ -1,6 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/arguments"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("arguments")
+}
 
 mod invocation;

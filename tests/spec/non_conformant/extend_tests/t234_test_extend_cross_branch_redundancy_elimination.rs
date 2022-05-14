@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("234_test_extend_cross_branch_redundancy_elimination")
 }
 
 #[test]

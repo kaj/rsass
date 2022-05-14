@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("208_test_optional_extend_succeeds_when_extension_fails")
 }
 
 #[test]

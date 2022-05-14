@@ -159,19 +159,21 @@ fn handle_entries(
                             "//! Tests auto-converted from {:?}\n",
                             suitedir.join(entry.file_name()),
                         )?;
+                        writeln!(
+                            rs,
+                            "#[allow(unused)]\
+                             \nfn runner() -> crate::TestRunner {{\
+                             \n    super::runner()",
+                        )?;
+                        writeln!(
+                            rs,
+                            "        .with_cwd({:?})",
+                            entry.file_name()
+                        )?;
                         if let Some(p) = options.precision {
-                            writeln!(
-                                rs,
-                                "fn runner() -> crate::TestRunner {{\
-                                 \n    super::runner().set_precision({})\
-                                 \n}}\n",
-                                p
-                            )?;
-                        } else {
-                            rs.write_all(
-                                b"#[allow(unused)]\nuse super::runner;\n\n",
-                            )?;
+                            writeln!(rs, "    .set_precision({})\n", p)?;
                         }
+                        writeln!(rs, "\n}}\n")?;
                         let precision = options.precision.or(precision);
                         let tt = format!(
                             "{}/",
@@ -215,7 +217,12 @@ fn spec_dir_to_test(
     let specdir = suite.join(test);
     let fixture = load_test_fixture_dir(&specdir, precision)?;
     writeln!(rs, "\n// From {:?}", specdir)?;
-    fixture.write_test(rs, runner())
+    let runner = if let Some(stem) = suite.file_stem() {
+        runner().with_cwd(stem.to_str().unwrap())
+    } else {
+        runner()
+    };
+    fixture.write_test(rs, runner)
 }
 
 fn spec_hrx_to_test(
@@ -229,10 +236,15 @@ fn spec_hrx_to_test(
     eprintln!("Handle {}", suite.display());
     rs.write_all(
         b"#[allow(unused)]\
-                   \nfn runner() -> crate::TestRunner {\
-                   \n    super::runner()\n",
+          \nfn runner() -> crate::TestRunner {\
+          \n    super::runner()\n",
     )?;
-    let mut runner = runner();
+    let mut runner = if let Some(stem) = suite.file_stem() {
+        writeln!(rs, "        .with_cwd({:?})", stem)?;
+        runner().with_cwd(stem.to_str().unwrap())
+    } else {
+        runner()
+    };
     for (name, content) in archive.entries() {
         if ![
             "README.md",

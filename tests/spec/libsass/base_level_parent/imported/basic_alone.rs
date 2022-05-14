@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("basic-alone")
         .mock_file("include.scss", "& {\n  foo {\n    bar: baz;\n  }\n}\n")
 }
 

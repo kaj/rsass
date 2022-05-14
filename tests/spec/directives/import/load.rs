@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("load")
         .mock_file("explicit_extension/sass/other.css", "a {syntax: css}\n")
         .mock_file("explicit_extension/sass/other.sass", "a\n  syntax: sass\n")
         .mock_file("explicit_extension/sass/other.scss", "a {syntax: scss}\n")

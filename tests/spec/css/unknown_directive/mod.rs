@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/css/unknown_directive"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("unknown_directive")
+}
 
 mod error;
 

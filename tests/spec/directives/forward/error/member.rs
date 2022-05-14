@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("member")
         .mock_file(
             "conflict/because_of_as/first/_other1.scss",
             "$b: from other1;\n",

@@ -2,7 +2,9 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd(
+        "007_test_multiple_extends_with_single_extender_and_single_target",
+    )
 }
 
 #[test]

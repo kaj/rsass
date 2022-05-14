@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("use_to_import")
         .mock_file("function/midstream.scss", "@import \"upstream\";\n")
         .mock_file(
             "function/upstream.scss",

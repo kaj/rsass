@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/values/calculation/calc/error/known_incompatible"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("known_incompatible")
+}
 
 mod angle;
 

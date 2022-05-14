@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("issue_1103")
         .mock_file("_import.scss", "foo { bar: baz }\nbaz { bar: foo }\n\n@media screen and (max-width: 2) {\n    foo { bar: baz }\n    baz { bar: foo }\n}\n")
 }
 

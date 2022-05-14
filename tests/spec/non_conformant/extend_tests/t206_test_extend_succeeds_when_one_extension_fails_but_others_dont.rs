@@ -2,7 +2,9 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd(
+        "206_test_extend_succeeds_when_one_extension_fails_but_others_dont",
+    )
 }
 
 #[test]

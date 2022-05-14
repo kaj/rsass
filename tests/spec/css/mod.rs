@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/css"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("css")
+}
 
 mod blockless_directive_without_semicolon;
 

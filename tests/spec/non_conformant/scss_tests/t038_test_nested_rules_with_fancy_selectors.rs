@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("038_test_nested_rules_with_fancy_selectors")
 }
 
 #[test]

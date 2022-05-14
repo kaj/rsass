@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("114_test_nested_extender_finds_common_selectors_around_sibling_selector")
 }
 
 #[test]

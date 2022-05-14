@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("twice")
         .mock_file("load_css/different_extend/_left.scss", "@use \"sass:meta\";\n@include meta.load-css(\"other\");\nleft {@extend a}\n")
         .mock_file("load_css/different_extend/_other.scss", "a {b: c}\n")
         .mock_file("load_css/different_extend/_right.scss", "@use \"sass:meta\";\n@include meta.load-css(\"other\");\nright {@extend a}\n")

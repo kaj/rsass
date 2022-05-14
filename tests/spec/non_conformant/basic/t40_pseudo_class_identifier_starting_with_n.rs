@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("40_pseudo_class_identifier_starting_with_n")
 }
 
 #[test]

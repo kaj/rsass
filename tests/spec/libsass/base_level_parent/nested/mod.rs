@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/base-level-parent/nested"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("nested")
+}
 
 mod at_root_alone_itpl;
 

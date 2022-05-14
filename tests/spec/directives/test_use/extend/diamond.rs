@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("diamond")
         .mock_file("dependency/with_midstream_extend/_left.scss", "@use \"midstream\";\nin-left {\n  @extend in-midstream;\n  w: x;\n}\n")
         .mock_file("dependency/with_midstream_extend/_midstream.scss", "@use \"upstream\";\nin-midstream {@extend in-upstream}\n")
         .mock_file("dependency/with_midstream_extend/_right.scss", "@use \"midstream\";\nin-right {\n  @extend in-midstream;\n  y: z;\n}\n")

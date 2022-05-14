@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("wrapped")
         .mock_file("include.scss", "@if (true) {\r\n  display: none;\r\n}")
 }
 

@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().mock_file(
+    super::runner().with_cwd("same_module").mock_file(
         "through_import/other.scss",
         "@function add-two($v) {@return $v + 2}\n",
     )

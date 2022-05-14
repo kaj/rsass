@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("086.1_test_pseudoelement_goes_lefter_than_not")
 }
 
 #[test]

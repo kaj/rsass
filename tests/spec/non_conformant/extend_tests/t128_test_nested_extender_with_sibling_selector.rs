@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("128_test_nested_extender_with_sibling_selector")
 }
 
 #[test]

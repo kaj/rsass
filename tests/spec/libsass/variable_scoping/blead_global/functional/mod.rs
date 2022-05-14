@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/variable-scoping/blead-global/functional"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("functional")
+}
 
 mod each;
 

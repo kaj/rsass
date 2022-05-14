@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("145_test_combinator_unification_tilde_plus")
 }
 
 #[test]

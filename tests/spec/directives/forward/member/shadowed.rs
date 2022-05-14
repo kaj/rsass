@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("shadowed")
         .mock_file("function/_midstream.scss", "@forward \"upstream\";\n\n@function c() {@return midstream}\n")
         .mock_file("function/_upstream.scss", "@function c() {@return upstream}\n")
         .mock_file("mixin/_midstream.scss", "@forward \"upstream\";\n\n@mixin a() {b {c: midstream}}\n")

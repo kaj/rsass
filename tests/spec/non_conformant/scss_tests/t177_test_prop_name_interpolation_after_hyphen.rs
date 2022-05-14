@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("177_test_prop_name_interpolation_after_hyphen")
 }
 
 #[test]

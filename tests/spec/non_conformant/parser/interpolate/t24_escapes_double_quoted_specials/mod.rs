@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/non_conformant/parser/interpolate/24_escapes_double_quoted_specials"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("24_escapes_double_quoted_specials")
+}
 
 // From "sass-spec/spec/non_conformant/parser/interpolate/24_escapes_double_quoted_specials/01_inline"
 #[test]

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("173_test_parsing_many_numbers_doesnt_take_forever")
 }
 
 #[test]

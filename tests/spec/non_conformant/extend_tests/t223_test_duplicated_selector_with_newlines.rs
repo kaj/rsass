@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("223_test_duplicated_selector_with_newlines")
 }
 
 #[test]

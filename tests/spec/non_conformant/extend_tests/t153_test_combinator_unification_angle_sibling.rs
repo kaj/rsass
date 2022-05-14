@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("153_test_combinator_unification_angle_sibling")
 }
 
 #[test]

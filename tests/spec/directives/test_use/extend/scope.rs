@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("scope")
         .mock_file("diamond/_left.scss", "@use \"shared\";\n\nleft-extendee {@extend in-shared}\nleft-extender {@extend right-extendee !optional}\n")
         .mock_file("diamond/_right.scss", "@use \"shared\";\n\nright-extendee {@extend in-shared}\nright-extender {@extend left-extendee !optional}\n")
         .mock_file("diamond/_shared.scss", "in-shared {x: y}\n")

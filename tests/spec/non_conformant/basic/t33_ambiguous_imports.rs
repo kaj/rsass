@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("33_ambiguous_imports")
         .mock_file("blir/_fudge.scss", "fudge {\n  color: brown;\n}")
         .mock_file(
             "dir.scss",

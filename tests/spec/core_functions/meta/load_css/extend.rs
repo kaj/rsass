@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("extend")
         .mock_file("in_input/after/_other.scss", "a {b: c}\n")
         .mock_file("in_input/before/_other.scss", "a {b: c}\n")
         .mock_file("in_other/after/_other.scss", "d {@extend a !optional}\n")

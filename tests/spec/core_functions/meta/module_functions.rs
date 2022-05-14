@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("module_functions")
         .mock_file("_util.scss", "@use \"sass:meta\";\n\n@mixin print-function-map($functions) {\n  a {\n    @each $name, $function in $functions {\n      #{$name}: meta.call($function);\n    }\n  }\n}\n")
         .mock_file("as/_other.scss", "@function c() {@return c value}\n@function d() {@return d value}\n@function e() {@return e value}\n")
         .mock_file("dash_sensitive/_other.scss", "@function b-c() {@return b-c value}\n@function d_e() {@return d_e value}\n")

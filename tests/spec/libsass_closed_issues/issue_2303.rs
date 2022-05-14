@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("issue_2303")
         .mock_file("_module.scss", ".okay {\r\n  background: green;\r\n}\r\n\r\n@if true {\r\n  .broken {\r\n    background: red;\r\n  }\r\n}")
 }
 

@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("102_test_nested_extender_unifies_common_subseq")
 }
 
 #[test]

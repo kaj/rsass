@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("passing_all_as_keyword_args_in_opposite_order")
 }
 
 #[test]

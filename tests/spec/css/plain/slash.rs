@@ -2,7 +2,9 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().mock_file("plain.css", "a {\n  slash: 1/2/foo/bar;\n}\n")
+    super::runner()
+        .with_cwd("slash")
+        .mock_file("plain.css", "a {\n  slash: 1/2/foo/bar;\n}\n")
 }
 
 #[test]

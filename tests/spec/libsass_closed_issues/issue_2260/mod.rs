@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues/issue_2260"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("issue_2260")
+}
 
 mod inner_parent_no_compound;
 

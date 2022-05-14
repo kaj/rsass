@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/directives/forward/member/import"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("import")
+}
 
 mod forward_to_import;
 

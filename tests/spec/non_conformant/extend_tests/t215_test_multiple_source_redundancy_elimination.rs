@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("215_test_multiple_source_redundancy_elimination")
 }
 
 #[test]

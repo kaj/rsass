@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("order")
         .mock_file("diamond/left.scss", "@use \"shared\";\n\na {file: left}\n")
         .mock_file("diamond/right.scss", "@use \"shared\";\n\na {file: right}\n")
         .mock_file("diamond/shared.scss", "a {file: shared}\n")

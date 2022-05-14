@@ -2,7 +2,9 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd(
+        "227_test_nested_with_child_hack_extender_and_sibling_extendee",
+    )
 }
 
 #[test]

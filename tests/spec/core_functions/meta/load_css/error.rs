@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("error")
         .mock_file("from_other/extend/_other.scss", "a {@extend missing}\n")
         .mock_file("from_other/runtime/_other.scss", "a {b: 1px + 1em}\n")
         .mock_file("from_other/syntax/_other.scss", "a {b: }\n")

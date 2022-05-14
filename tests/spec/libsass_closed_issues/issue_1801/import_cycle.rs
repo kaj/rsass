@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("import-cycle")
         .mock_file("_alpha.scss", "@import 'beta';\n")
         .mock_file("_beta.scss", "@import 'alpha';\n")
 }

@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/unicode-bom"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("unicode-bom")
+}
 
 // Ignoring "utf-16-big", not expected to work yet.
 

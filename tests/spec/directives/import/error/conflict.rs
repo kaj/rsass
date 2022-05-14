@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("conflict")
         .mock_file("all/_other.sass", "a\n  syntax: sass\n  partial: true\n")
         .mock_file("all/_other.scss", "a {syntax: scss; partial: true}\n")
         .mock_file("all/other.sass", "a\n  syntax: sass\n  partial: false\n")

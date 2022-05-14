@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("css")
         .mock_file(
             "css_import_after_style_rule/import.scss",
             "@use \"sass:math\";\n@import url(http://example.com);\n",

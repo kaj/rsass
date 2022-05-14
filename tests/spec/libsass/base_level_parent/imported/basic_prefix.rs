@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().mock_file(
+    super::runner().with_cwd("basic-prefix").mock_file(
         "include.scss",
         "pre& {\r\n  foo {\r\n    bar: baz;\r\n  }\r\n}",
     )

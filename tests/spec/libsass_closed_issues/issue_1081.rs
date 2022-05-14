@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("issue_1081")
         .mock_file("_import.scss", "import-before {\n  foo: $foo;\n}\n\n$foo: baz !global !default;\n\nimport-after {\n  foo: $foo;\n}\n")
 }
 

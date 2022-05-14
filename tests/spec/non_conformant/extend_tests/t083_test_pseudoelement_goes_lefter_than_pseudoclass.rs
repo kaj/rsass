@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("083_test_pseudoelement_goes_lefter_than_pseudoclass")
 }
 
 #[test]

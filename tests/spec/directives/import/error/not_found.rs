@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("not_found")
         .mock_file(
             "directory_dot_import/other.import/index.scss",
             "a {b: c}\n",

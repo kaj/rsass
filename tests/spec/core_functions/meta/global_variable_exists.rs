@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("global_variable_exists")
         .mock_file(
             "different_module/chosen_prefix/_other.scss",
             "$d: null;\n",

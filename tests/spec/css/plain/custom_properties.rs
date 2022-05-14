@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("custom_properties")
         .mock_file(
             "arbitrary_tokens/plain.css",
             "a {--b: `~@#$%^&*()_-+={[]}|?/><}\n",

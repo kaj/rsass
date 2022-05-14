@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("069_test_mixin_splat_args_with_var_args")
 }
 
 #[test]

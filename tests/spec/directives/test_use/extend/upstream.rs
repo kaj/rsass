@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("upstream")
         .mock_file(
             "double/_other.scss",
             "upstream {a: b}\ndownstream {@extend upstream}\n",

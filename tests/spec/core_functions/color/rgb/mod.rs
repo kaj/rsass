@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/rgb"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("rgb")
+}
 
 mod error;
 

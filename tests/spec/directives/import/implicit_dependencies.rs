@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("implicit_dependencies")
         .mock_file(
             "forwarded_first/no_use/first.import.scss",
             "@forward \"first\";\n",

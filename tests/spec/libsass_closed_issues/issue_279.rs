@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("issue_279")
         .mock_file("foo.scss", ".test-hello {\n  color: red;\n}\n\n.test-world {\n  @extend .test-hello;\n}\n")
 }
 

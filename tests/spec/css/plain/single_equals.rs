@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().mock_file(
+    super::runner().with_cwd("single_equals").mock_file(
         "plain.css",
         "a {\n  single-equals: alpha(opacity=65);\n}\n",
     )

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("231_test_extend_redundancy_elimination_when_it_would_preserve_specificity")
 }
 
 #[test]

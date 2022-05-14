@@ -2,7 +2,9 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd(
+        "090_test_function_splat_args_with_var_args_preserves_separator",
+    )
 }
 
 #[test]

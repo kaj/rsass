@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("css")
         .mock_file(
             "forward_into_import/_forwarded.scss",
             "@import \"imported\";\n\nin-forwarded {a: b}\n",

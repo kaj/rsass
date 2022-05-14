@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().set_precision(10)
+    super::runner().with_cwd("initial_digit").set_precision(10)
 }
 
 #[test]

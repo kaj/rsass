@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/color/hsl/one_arg"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("one_arg")
+}
 
 mod alpha;
 

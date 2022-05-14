@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass-closed-issues"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("libsass-closed-issues")
+}
 
 mod t47_str_slice;
 

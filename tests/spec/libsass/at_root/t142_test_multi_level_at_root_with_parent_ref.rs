@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("142_test_multi_level_at_root_with_parent_ref")
 }
 
 #[test]

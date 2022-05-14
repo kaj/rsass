@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("220_test_extend_in_double_nested_media_query")
 }
 
 #[test]

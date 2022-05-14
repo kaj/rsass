@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("operation")
         .mock_file("addition/plain.css", "a {\n  x: y + z;\n}\n")
         .mock_file("equals/plain.css", "a {\n  x: y == z;\n}\n")
         .mock_file("greater_than/plain.css", "a {\n  x: y > z;\n}\n")

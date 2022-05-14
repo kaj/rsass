@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("passing_required_args_as_a_keyword_arg")
 }
 
 #[test]

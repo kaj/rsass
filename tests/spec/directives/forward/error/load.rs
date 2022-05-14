@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("load")
         .mock_file(
             "loop/forward_to_forward/other.scss",
             "@forward \"input\";\n",

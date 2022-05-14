@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("scss_takes_precedence")
         .mock_file("other.css", "other {syntax: css}\n")
         .mock_file("other.scss", "other {syntax: scss}\n")
 }

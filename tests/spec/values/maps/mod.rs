@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/values/maps"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("maps")
+}
 
 mod duplicate_keys;
 

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("198_test_extend_within_disparate_unknown_directive")
 }
 
 #[test]

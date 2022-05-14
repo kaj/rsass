@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/at-root"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("at-root")
+}
 
 mod t135_test_simple_at_root;
 

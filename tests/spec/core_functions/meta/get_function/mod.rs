@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/core_functions/meta/get_function"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("get_function")
+}
 
 mod different_module;
 

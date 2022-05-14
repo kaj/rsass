@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("namespaced")
         .mock_file(
             "default/basename/foo/baz/qux/other.scss",
             "$variable: value;\n",

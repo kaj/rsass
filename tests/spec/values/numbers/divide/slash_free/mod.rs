@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/values/numbers/divide/slash_free"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("slash_free")
+}
 
 mod argument;
 

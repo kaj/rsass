@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("121_test_nested_extender_with_child_selector_unifies")
 }
 
 #[test]

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("199_test_extend_within_disparate_nested_directives")
 }
 
 #[test]

@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/css/supports"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("supports")
+}
 
 mod error;
 

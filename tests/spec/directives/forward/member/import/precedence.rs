@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("precedence")
         .mock_file("nested/_midstream.scss", "@forward \"upstream\";\n")
         .mock_file("nested/_upstream.scss", "$a: in-upstream;\n")
         .mock_file("top_level/_midstream.scss", "@forward \"upstream\";\n")

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("variable_exists")
         .mock_file("conflict/other1.scss", "$member: from other1;\n")
         .mock_file("conflict/other2.scss", "$member: from other2;\n")
         .mock_file(

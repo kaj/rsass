@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("with")
         .mock_file("conflict/_left.scss", "$a: left;\n")
         .mock_file("conflict/_midstream.scss", "@use \"left\" as *;\n@use \"right\" as *;\n\n$a: c !default;\n")
         .mock_file("conflict/_right.scss", "$a: right;\n")

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("101_test_nested_extender_unifies_common_substring")
 }
 
 #[test]

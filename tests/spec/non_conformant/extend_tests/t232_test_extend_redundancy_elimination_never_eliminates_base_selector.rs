@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("232_test_extend_redundancy_elimination_never_eliminates_base_selector")
 }
 
 #[test]

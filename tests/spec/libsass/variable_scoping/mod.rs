@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/variable-scoping"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("variable-scoping")
+}
 
 mod blead_global;
 

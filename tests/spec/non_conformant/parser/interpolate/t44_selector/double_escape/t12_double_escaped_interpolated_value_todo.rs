@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("12_double_escaped_interpolated_value_todo")
 }
 
 #[test]

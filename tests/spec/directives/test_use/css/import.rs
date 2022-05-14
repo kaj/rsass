@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("import")
         .mock_file("import_into_use/_imported.scss", "@use \"used\";\n\nin-imported {a: b}\n")
         .mock_file("import_into_use/_used.scss", "in-used {a: b}\n")
         .mock_file("import_into_use_into_import/_imported-downstream.scss", "@use \"used\";\n\nin-imported-downstream {a: b}\n")

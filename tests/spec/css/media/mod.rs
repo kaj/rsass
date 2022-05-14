@@ -1,6 +1,8 @@
 //! Tests auto-converted from "sass-spec/spec/css/media"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("media")
+}
 
 mod range;

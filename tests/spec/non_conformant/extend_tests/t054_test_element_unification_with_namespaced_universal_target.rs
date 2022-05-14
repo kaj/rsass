@@ -2,7 +2,9 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd(
+        "054_test_element_unification_with_namespaced_universal_target",
+    )
 }
 
 #[test]

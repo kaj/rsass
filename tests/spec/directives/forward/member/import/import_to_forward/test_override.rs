@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("override")
         .mock_file(
             "override/function/_midstream1.scss",
             "@forward \"upstream1\";\n",

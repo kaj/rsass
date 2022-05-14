@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("180_test_interpolation_with_bracket_on_next_line")
 }
 
 #[test]

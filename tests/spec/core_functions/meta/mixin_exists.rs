@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("mixin_exists")
         .mock_file(
             "different_module/chosen_prefix/_other.scss",
             "@mixin d() {}\n",

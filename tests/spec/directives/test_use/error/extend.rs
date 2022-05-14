@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("extend")
         .mock_file("optional_and_mandatory/different_files/_mandatory.scss", "@use \"shared\";\n\ndownstream {@extend %-in-other};\n")
         .mock_file("optional_and_mandatory/different_files/_optional.scss", "@use \"shared\";\n\ndownstream {@extend %-in-other !optional};\n")
         .mock_file("optional_and_mandatory/different_files/_shared.scss", "%-in-other {x: y}\n")

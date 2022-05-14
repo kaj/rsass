@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().mock_file(
+    super::runner().with_cwd("basic-postfix-itpl").mock_file(
         "include.scss",
         "#{&}post {\r\n  foo {\r\n    bar: baz;\r\n  }\r\n}\r\n",
     )

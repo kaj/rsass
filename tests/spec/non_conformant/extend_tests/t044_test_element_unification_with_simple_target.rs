@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("044_test_element_unification_with_simple_target")
 }
 
 #[test]

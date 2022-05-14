@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("079_test_pseudoelement_remains_at_end_of_selector")
 }
 
 #[test]

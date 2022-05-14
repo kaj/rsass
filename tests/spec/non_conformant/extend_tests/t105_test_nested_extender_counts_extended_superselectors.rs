@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("105_test_nested_extender_counts_extended_superselectors")
 }
 
 #[test]

@@ -1,7 +1,9 @@
 //! Tests auto-converted from "sass-spec/spec/libsass/selectors"
 
 #[allow(unused)]
-use super::runner;
+fn runner() -> crate::TestRunner {
+    super::runner().with_cwd("selectors")
+}
 
 mod access;
 

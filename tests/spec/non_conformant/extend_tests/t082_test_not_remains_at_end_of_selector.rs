@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("082_test_not_remains_at_end_of_selector")
 }
 
 #[test]

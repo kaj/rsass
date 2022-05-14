@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("calculation")
         .mock_file("interpolation/plain.css", "a {b: calc(#{1px})}\n")
         .mock_file("line_noise/plain.css", "a {b: calc(#%^&)}\n")
         .mock_file("namespaced_function/plain.css", "a {b: calc(c.d())}\n")

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("237_extend_with_universal_selector_different_namespace")
 }
 
 #[test]

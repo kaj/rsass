@@ -2,7 +2,7 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner()
+    super::runner().with_cwd("css_cdo_and_cdc_ignored_at_toplevel")
 }
 
 #[test]

@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("load")
         .mock_file(
             "conflict/all/_other.css",
             "a {syntax: css; partial: true}\n",

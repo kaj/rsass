@@ -3,6 +3,7 @@
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
     super::runner()
+        .with_cwd("039_test_almost_ambiguous_nested_rules_and_declarations")
 }
 
 #[test]
