@@ -4,15 +4,13 @@ use super::strings::{
 };
 use super::util::{ignore_comments, opt_spacelike, semi_or_end};
 use super::value::space_list;
-use super::{media_args, PResult, Span};
+use super::{media_args, position, PResult, Span};
 use crate::sass::{Expose, Item, Name, SassString, UseAs, Value};
-use crate::SourcePos;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{map, opt, value};
 use nom::multi::{separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
-use nom_locate::position;
 use std::collections::BTreeSet;
 
 /// What follows the `@import` tag.
@@ -35,7 +33,7 @@ pub fn import2(input: Span) -> PResult<Item> {
             semi_or_end,
         ),
         |(import, args, end)| {
-            let pos = SourcePos::from_to(input, end);
+            let pos = input.up_to(&end).to_owned();
             Item::Import(import, args.unwrap_or(Value::Null), pos)
         },
     )(input)
@@ -61,7 +59,7 @@ pub fn use2(input: Span) -> PResult<Item> {
                 s,
                 n.unwrap_or(UseAs::KeepName),
                 w.unwrap_or_default(),
-                SourcePos::from_to(input, end).opt_back("@"),
+                input.up_to(&end).to_owned().opt_back("@"),
             )
         },
     )(input)
@@ -114,7 +112,7 @@ pub fn forward2(input: Span) -> PResult<Item> {
             found_as.unwrap_or(UseAs::Star),
             expose,
             found_with.unwrap_or_default(),
-            SourcePos::from_to(input, end).opt_back("@"),
+            input.up_to(&end).to_owned().opt_back("@"),
         ),
     ))
 }

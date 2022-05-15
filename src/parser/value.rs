@@ -6,7 +6,7 @@ use super::strings::{
 };
 use super::unit::unit;
 use super::util::{comment, ignore_comments, opt_spacelike, spacelike2};
-use super::{input_to_string, sass_string, PResult, SourcePos, Span};
+use super::{input_to_string, sass_string, PResult, Span};
 use crate::sass::{SassString, Value};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use nom::branch::alt;
@@ -43,7 +43,7 @@ pub fn space_list(input: Span) -> PResult<Value> {
         pair(recognize(ignore_comments), se_or_ext_string),
         move || vec![first.clone()],
         |mut list: Vec<Value>, (s, item)| {
-            match (list.last_mut(), *s.fragment(), &item) {
+            match (list.last_mut(), s.fragment(), &item) {
                 (
                     Some(Value::Literal(ref mut s1)),
                     b"",
@@ -309,7 +309,7 @@ fn bracket_list(input: Span) -> PResult<Value> {
 
 fn sign_prefix(input: Span) -> PResult<Option<&[u8]>> {
     opt(alt((tag("-"), tag("+"))))(input)
-        .map(|(r, s)| (r, s.map(|s| *s.fragment())))
+        .map(|(r, s)| (r, s.map(|s| s.fragment())))
 }
 
 pub fn number(input: Span) -> PResult<Numeric> {
@@ -391,7 +391,7 @@ pub fn variable(input: Span) -> PResult<Value> {
     } else {
         format!("{}.{}", modules.join("."), name)
     };
-    let pos = SourcePos::from_to(input, rest);
+    let pos = input.up_to(&rest).to_owned();
     Ok((rest, Value::Variable(name.into(), pos)))
 }
 
@@ -443,7 +443,7 @@ pub fn special_function(input: Span) -> PResult<Value> {
 
 pub fn function_call(input: Span) -> PResult<Value> {
     let (rest, (name, args)) = pair(sass_string, call_args)(input)?;
-    let pos = SourcePos::from_to(input, rest);
+    let pos = input.up_to(&rest).to_owned();
     Ok((rest, Value::Call(name, args, pos)))
 }
 
@@ -553,7 +553,7 @@ mod test {
 
     #[test]
     fn simple_value_variable() {
-        match value_expression(code_span(b"$red;"))
+        match value_expression(code_span(b"$red;").borrow())
             .map(|(_, value)| value)
             .unwrap()
         {
@@ -639,7 +639,7 @@ mod test {
     #[test]
     fn call_no_args() {
         assert_eq!(
-            parse_call("foo();"),
+            parse_call(code_span(b"foo();").borrow()),
             Ok(("foo".into(), CallArgs::default(), ";".as_bytes())),
         );
     }
@@ -647,7 +647,7 @@ mod test {
     #[test]
     fn call_one_arg() {
         assert_eq!(
-            parse_call("foo(17);"),
+            parse_call(code_span(b"foo(17);").borrow()),
             Ok((
                 "foo".into(),
                 CallArgs::new(vec![(None, Value::scalar(17))], false)
@@ -659,10 +659,10 @@ mod test {
 
     // test helper
     fn parse_call(
-        expr: &str,
+        expr: Span,
     ) -> Result<(SassString, CallArgs, &[u8]), String> {
-        let (rest, value) = value_expression(code_span(expr.as_bytes()))
-            .map_err(|e| e.to_string())?;
+        let (rest, value) =
+            value_expression(expr).map_err(|e| e.to_string())?;
         if let Value::Call(name, args, _) = value {
             Ok((name, args, rest.fragment()))
         } else {
@@ -772,9 +772,10 @@ mod test {
 
     fn check_expr(expr: &str, value: Value) {
         assert_eq!(
-            value_expression(code_span(expr.as_bytes()))
-                .map(|(rest, value)| (*rest.fragment(), value)),
-            Ok((&b";"[..], value)),
+            value_expression(code_span(expr.as_bytes()).borrow())
+                .map(|(rest, value)| (rest.fragment(), value))
+                .unwrap(),
+            (&b";"[..], value),
         )
     }
 

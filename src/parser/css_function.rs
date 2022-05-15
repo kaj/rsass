@@ -2,7 +2,7 @@
 //! This should apply to `min`, `max` and `clamp` as well.
 use super::util::{opt_spacelike, spacelike2};
 use super::value::{function_call, number, special_function, variable};
-use super::{ignore_comments, PResult, SourcePos, Span};
+use super::{ignore_comments, PResult, Span};
 use crate::sass::{CallArgs, Value};
 use crate::value::Operator;
 use nom::branch::alt;
@@ -17,7 +17,7 @@ pub fn css_function(input: Span) -> PResult<Value> {
         sum_expression,
         preceded(ignore_comments, tag(")")),
     )(input)?;
-    let pos = SourcePos::from_to(input, rest);
+    let pos = input.up_to(&rest).to_owned();
     Ok((
         rest,
         Value::Call("calc".into(), CallArgs::new_single(arg), pos),

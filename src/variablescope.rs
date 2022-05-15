@@ -1,8 +1,9 @@
 //! A scope is something that contains variable values.
 use crate::css::{CssString, Selectors, Value};
+use crate::input::SourcePos;
 use crate::output::Format;
 use crate::sass::{Expose, Function, Item, MixinDecl, Name, UseAs};
-use crate::{Error, Invalid, SourcePos};
+use crate::{Error, Invalid};
 use arc_swap::ArcSwapOption;
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -133,13 +134,11 @@ impl ScopeRef {
                     None
                 }
                 Item::Error(ref value, ref pos) => {
-                    return Err(Invalid::AtError(
-                        value
-                            .evaluate(self)?
-                            .format(Format::introspect())
-                            .to_string(),
-                    )
-                    .at(pos.clone()));
+                    let msg = value
+                        .evaluate(self)?
+                        .format(Format::introspect())
+                        .to_string();
+                    return Err(Invalid::AtError(msg).at(pos.clone()));
                 }
                 Item::None => None,
                 Item::Comment(..) => None,
@@ -974,14 +973,15 @@ pub mod test {
         let f = Default::default();
         let scope = ScopeRef::new_global(f);
         for &(name, val) in s {
-            let val = value_expression(code_span(val.as_bytes()));
+            let span = code_span(val.as_bytes());
+            let val = value_expression(span.borrow());
             scope.define(
                 Name::from_static(name),
                 ParseError::check(val)?.evaluate(scope.clone())?,
             )?;
         }
-        let expr =
-            terminated(value_expression, tag(";"))(code_span(expression));
+        let span = code_span(expression);
+        let expr = terminated(value_expression, tag(";"))(span.borrow());
         Ok(ParseError::check(expr)?
             .evaluate(scope)?
             .format(f)

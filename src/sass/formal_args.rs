@@ -1,6 +1,7 @@
 use super::{functions::ResolvedArgs, Call, CallError, Name, Value};
 use crate::css::CallArgs;
-use crate::{Error, ScopeError, ScopeRef, SourcePos};
+use crate::input::SourcePos;
+use crate::{Error, ScopeError, ScopeRef};
 use std::fmt;
 
 type Result<T> = std::result::Result<T, ArgsError>;

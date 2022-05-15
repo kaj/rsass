@@ -36,7 +36,7 @@ pub fn file(input: Span) -> PResult<Vec<Item>> {
 
 fn top_level_item(input: Span) -> PResult<Item> {
     let (rest, start) = alt((tag("@"), tag("/*"), tag("")))(input)?;
-    match *start.fragment() {
+    match start.fragment() {
         b"/*" => into(comment)(input),
         b"@" => {
             let (input, name) = strings::css_string(rest)?;

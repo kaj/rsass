@@ -29,7 +29,7 @@ pub fn selector_part(input: Span) -> PResult<SelectorPart> {
         alt((tag("*"), tag("&"), tag("::"), tag(":"), tag("["), tag("")))(
             input,
         )?;
-    match *mark.fragment() {
+    match mark.fragment() {
         b"*" => value(SelectorPart::Simple("*".into()), tag(""))(input),
         b"&" => value(SelectorPart::BackRef, tag(""))(input),
         b"::" => map(

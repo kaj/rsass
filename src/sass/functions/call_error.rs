@@ -1,6 +1,6 @@
 use super::super::{ArgsError, Name};
 use crate::css::BadSelector;
-use crate::parser::SourcePos;
+use crate::input::SourcePos;
 use crate::{Error, Invalid, ScopeError};
 use std::fmt;
 

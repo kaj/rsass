@@ -32,8 +32,7 @@ unimplemented_args = []
 arc-swap = "1.5.0"
 fastrand = "1.4"
 lazy_static = "1.0"
-nom = { version = "7.0", default-features = false }
-nom_locate = "4.0"
+nom = "7.0"
 num-bigint = { version = "0.4.0", default-features = false, features = ["std"] }
 num-integer = "0.1.42"
 num-rational = { version = "0.4.0", default-features = false, features = ["num-bigint"] }

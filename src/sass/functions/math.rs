@@ -287,9 +287,9 @@ fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, CallError> {
         Err(ExtremeError::NonNumeric(v)) => {
             if let Value::Literal(s) = &v {
                 if s.quotes().is_none()
-                    && crate::parser::value::number(input_span(
-                        s.value().as_ref(),
-                    ))
+                    && crate::parser::value::number(
+                        input_span(s.value()).borrow(),
+                    )
                     .is_ok()
                 {
                     return Ok(as_call());

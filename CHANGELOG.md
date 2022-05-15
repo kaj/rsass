@@ -16,6 +16,13 @@ project adheres to
 * Add new variables `$epsilon`, `$max-safe-integer`, `$min-safe-integer`,
   `$max-number`, and `$min-number` in `sass:math`, matching recent dart-sass
   additions.
+* Changed the span type used in parsing to a local type that borrows a
+  `SourceFile` instead of `nom_locate` dependency (PR #158).
+* Changed the type `SourceFile` to be reference counted, so cloned
+  `SourceFile` objects share the same actual data (PR #158).
+* Moved the `SourcePos` type into the `input` module and converted it from
+  keeping a copy of the relevant line to keeping a range with a (reference
+  counted) `SourceFile` (PR #158).
 * Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.
 * Update clap to 4.0 for the command-line interface.
 * Update sass-spec test suite to 2022-09-21.

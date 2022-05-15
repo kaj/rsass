@@ -1,4 +1,5 @@
-use super::{PResult, SourcePos, Span};
+use super::{PResult, Span};
+use crate::input::SourcePos;
 use nom::Finish;
 use std::fmt;
 
@@ -26,25 +27,27 @@ impl ParseError {
         if rest.fragment().is_empty() {
             Ok(value)
         } else {
-            Err(ParseError::new("Expected end of file.", rest))
+            Err(ParseError::new("Expected end of file.", rest.to_owned()))
         }
     }
 
-    fn new<Msg, Pos>(msg: Msg, pos: Pos) -> Self
+    fn new<Msg>(msg: Msg, pos: SourcePos) -> Self
     where
         Msg: Into<String>,
-        Pos: Into<SourcePos>,
     {
         ParseError {
             msg: msg.into(),
-            pos: pos.into(),
+            pos,
         }
     }
 }
 
 impl From<nom::error::Error<Span<'_>>> for ParseError {
     fn from(err: nom::error::Error<Span>) -> Self {
-        ParseError::new(format!("Parse error: {:?}", err.code), err.input)
+        ParseError::new(
+            format!("Parse error: {:?}", err.code),
+            err.input.to_owned(),
+        )
     }
 }
 

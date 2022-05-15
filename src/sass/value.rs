@@ -1,8 +1,8 @@
 use super::{CallArgs, Function, Name, SassString};
 use crate::css;
 use crate::error::Error;
+use crate::input::SourcePos;
 use crate::output::Format;
-use crate::parser::SourcePos;
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use crate::ScopeRef;
 use num_traits::Zero;
