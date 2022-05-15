@@ -236,23 +236,19 @@ fn body_item(input: Span) -> PResult<Item> {
             let result = custom_property(rest);
             if result.is_err() {
                 // Note use of `input` rather than `rest` here.
-                if let Ok((rest, (selectors, body))) =
-                    pair(rule_start, body_block2)(input)
-                {
-                    return Ok((rest, Item::Rule(selectors, body)));
+                if let Ok((rest, rule)) = rule(input) {
+                    return Ok((rest, rule));
                 }
             }
             result
         }
-        b"" => {
-            let (input, selectors) = opt(rule_start)(rest)?;
-            match selectors {
-                Some(selectors) => map(body_block2, |body| {
-                    Item::Rule(selectors.clone(), body)
-                })(input),
-                None => property_or_namespace_rule(input),
+        b"" => match rule_start(rest) {
+            Ok((rest, selectors)) => {
+                let (rest, body) = body_block2(rest)?;
+                Ok((rest, Item::Rule(selectors, body)))
             }
-        }
+            Err(_) => property_or_namespace_rule(rest),
+        },
         _ => unreachable!(),
     }
 }
