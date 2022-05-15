@@ -15,9 +15,16 @@ project adheres to
 * `SourceFile.parse()` now returns a `Result<Parsed>` rahter than a
   `Result<Vec<sass::Item>>`, and `Format::write_root` now takes a
   `Parsed` (PR #140).
+* `FsFileContext::file` is replaced by `FsFileContext::for_path`,
+  which initializes a file context and loads a file from it (PR 137).
+
 
 ### Improvements
 
+* Hopefully improved relative file finding on windows (PR #137).
+* Plain css `@import` rules is only allowed [on a few
+  condtions](https://sass-lang.com/documentation/at-rules/import#plain-css-imports),
+  in other cases an error is reported (Issue #139, PR #137).
 * Rsass can now parse (some) plain css as well as scss.  Css files can
   be referenced in `@use` and `@import` directives, as well as in the
   `meta.load-css` mixin (PR #140).
@@ -25,13 +32,15 @@ project adheres to
   be invalid css (PR #138).
 * Change `map.deep-merge` to match recent change in dart sass.
 * Minor fix in whitespace around at-rules.
+* Instrumented attempted file loading with `tracing` (PR #137).
 * Fix a typo in LICENSE (Issue #136).
 * Update sass-spec test suite to 2022-04-25.
 * Make rust version of sass-spec more directory-aware (which fixes one
   of 5825 tests).
 * Use a crates badge that actually works.
 
-Thanks to @jonassmedegaard for #136.
+Thanks to @jonassmedegaard for #136, and to @fasterthanlime for
+reporting the problem that #137 attempts to fix.
 
 
 ## Release 0.24.0

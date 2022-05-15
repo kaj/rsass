@@ -5,7 +5,7 @@ use std::str::from_utf8;
 use std::sync::Arc;
 
 /// A position in sass input.
-#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(Clone, Eq, PartialEq, PartialOrd, Ord)]
 pub struct SourcePos {
     p: Arc<SourcePosImpl>,
 }
@@ -155,11 +155,7 @@ impl SourcePos {
                 ),
                 pos.p.file.imported.to_string(),
             ));
-            nextpos = match &pos.p.file.imported {
-                SourceKind::Root => None,
-                SourceKind::Imported(pos) => Some(pos),
-                SourceKind::Called(_, pos) => Some(pos),
-            };
+            nextpos = pos.p.file.imported.next();
         }
         if let Some(whatw) = lines.iter().map(|(what, _why)| what.len()).max()
         {
@@ -179,13 +175,14 @@ impl SourcePos {
     }
 
     /// If self is preceded (on same line) by `s`, include `s` in self.
-    pub(crate) fn opt_back(&mut self, s: &str) {
+    pub(crate) fn opt_back(mut self, s: &str) -> Self {
         let p: &mut SourcePosImpl = Arc::make_mut(&mut self.p);
         if p.line[..p.line_pos - 1].ends_with(s) {
             let len = s.chars().count();
             p.line_pos -= len;
             p.length += len;
         }
+        self
     }
     /// If the position is `calc(some-arg)`, change to only `some-arg`.
     ///
@@ -239,6 +236,35 @@ impl From<Span<'_>> for SourcePosImpl {
     }
 }
 
+impl fmt::Debug for SourcePos {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        out.write_char('{')?;
+        let chars = self.p.line.chars();
+        out.write_char('"')?;
+        for (i, c) in chars.enumerate() {
+            if i + 1 == self.p.line_pos {
+                out.write_char('[')?;
+            }
+            write!(out, "{}", c.escape_debug())?;
+            if i + 1 + 1 == self.p.line_pos + self.p.length {
+                out.write_char(']')?;
+            }
+        }
+        out.write_char('"')?;
+        out.write_char(',')?;
+        let mut nextpos = Some(self);
+        while let Some(pos) = nextpos {
+            write!(
+                out,
+                " {}:{} {}",
+                pos.p.file.name, pos.p.line_no, pos.p.file.imported
+            )?;
+            nextpos = pos.p.file.imported.next();
+        }
+        out.write_char('}')
+    }
+}
+
 /// The name of a scss source file.
 ///
 /// This also contains the information if this was the root stylesheet
@@ -262,6 +288,13 @@ impl SourceName {
         SourceName {
             name: name.to_string(),
             imported: SourceKind::Imported(from),
+        }
+    }
+    /// Create a name for a file imported from a specific pos.
+    pub fn used<T: ToString>(name: T, from: SourcePos) -> Self {
+        SourceName {
+            name: name.to_string(),
+            imported: SourceKind::Used(from),
         }
     }
     /// Create a name for a mixin loaded by load_css from a specific pos.
@@ -295,7 +328,19 @@ impl SourceName {
 enum SourceKind {
     Root,
     Imported(SourcePos),
+    Used(SourcePos),
     Called(String, SourcePos),
+}
+
+impl SourceKind {
+    fn next(&self) -> Option<&SourcePos> {
+        match self {
+            SourceKind::Root => None,
+            SourceKind::Imported(pos) => Some(pos),
+            SourceKind::Used(pos) => Some(pos),
+            SourceKind::Called(_, pos) => Some(pos),
+        }
+    }
 }
 
 impl fmt::Display for SourceKind {
@@ -303,6 +348,7 @@ impl fmt::Display for SourceKind {
         match self {
             SourceKind::Root => out.write_str("root stylesheet"),
             SourceKind::Imported(_) => out.write_str("@import"),
+            SourceKind::Used(_) => out.write_str("@use"),
             SourceKind::Called(name, _) => write!(out, "{}()", name),
         }
     }

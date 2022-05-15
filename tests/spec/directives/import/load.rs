@@ -106,7 +106,7 @@ mod index {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn sass() {
         let runner = runner().with_cwd("sass");
         assert_eq!(
@@ -153,7 +153,6 @@ mod precedence {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn explicit_extension() {
             let runner = runner().with_cwd("explicit_extension");
             assert_eq!(
@@ -179,7 +178,6 @@ mod precedence {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn index() {
             let runner = runner().with_cwd("index");
             assert_eq!(
@@ -206,7 +204,6 @@ mod precedence {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn normal_before_partial() {
             let runner = runner().with_cwd("normal_before_partial");
             assert_eq!(
@@ -220,7 +217,6 @@ mod precedence {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn partial_before_normal() {
             let runner = runner().with_cwd("partial_before_normal");
             assert_eq!(

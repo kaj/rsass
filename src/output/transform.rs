@@ -71,21 +71,22 @@ fn handle_item(
 ) -> Result<(), Error> {
     let format = scope.get_format();
     match item {
-        Item::Use(ref name, ref as_n, ref with) => {
+        Item::Use(ref name, ref as_n, ref with, ref pos) => {
             let name = name.evaluate(scope.clone())?;
             let module = if let Some(module) = get_global_module(name.value())
             {
                 if !with.is_empty() {
-                    return Err(Error::error(
-                        "Built-in modules can\'t be configured.",
+                    return Err(Error::BadCall(
+                        "Error: Built-in modules can\'t be configured."
+                            .into(),
+                        pos.clone(),
+                        None,
                     ));
                 }
                 module
-            } else if let Some(sourcefile) = file_context.find_file_use(
-                name.value(),
-                // TODO: Get a proper pos!
-                crate::parser::code_span(b"").into(),
-            )? {
+            } else if let Some(sourcefile) =
+                file_context.find_file_use(name.value(), pos.clone())?
+            {
                 head.load_module(
                     sourcefile.path(),
                     |head| {
@@ -118,25 +119,30 @@ fn handle_item(
                         Ok(module)
                     })?
             } else {
-                return Err(Error::S(format!("Module {} not found", name)));
+                return Err(Error::BadCall(
+                    "Error: Can't find stylesheet to import.".into(),
+                    pos.clone(),
+                    None,
+                ));
             };
             scope.do_use(module, name.value(), as_n, &Expose::All)?;
         }
-        Item::Forward(ref name, ref as_n, ref expose, ref with) => {
+        Item::Forward(ref name, ref as_n, ref expose, ref with, ref pos) => {
             let name = name.evaluate(scope.clone())?;
             let module = if let Some(module) = get_global_module(name.value())
             {
                 if !with.is_empty() {
-                    return Err(Error::error(
-                        "Built-in modules can\'t be configured.",
+                    return Err(Error::BadCall(
+                        "Error: Built-in modules can\'t be configured."
+                            .into(),
+                        pos.clone(),
+                        None,
                     ));
                 }
                 module
-            } else if let Some(sourcefile) = file_context.find_file_use(
-                name.value(),
-                // TODO: Get a proper pos!
-                crate::parser::code_span(b"").into(),
-            )? {
+            } else if let Some(sourcefile) =
+                file_context.find_file_use(name.value(), pos.clone())?
+            {
                 head.load_module(
                     sourcefile.path(),
                     |head| {
@@ -210,6 +216,18 @@ fn handle_item(
                         }
                         scope.unlock_loading(sourcefile.path());
                         continue 'name;
+                    }
+                    if !(x.value().starts_with("http://")
+                        || x.value().starts_with("https://")
+                        || x.value().starts_with("//")
+                        || x.value().ends_with(".css")
+                        || x.is_css_url())
+                    {
+                        return Err(Error::BadCall(
+                            "Error: Can't find stylesheet to import.".into(),
+                            pos.clone(),
+                            None,
+                        ));
                     }
                 }
                 let name = name.evaluate(scope.clone())?;
@@ -299,9 +317,8 @@ fn handle_item(
                 || name == "expression"
                 || name == "url"
             {
-                let mut p = pos.clone();
                 // Ok, this is cheating for the test suite ...
-                p.opt_back("@function ");
+                let p = pos.clone().opt_back("@function ");
                 return Err(Error::InvalidFunctionName(p));
             }
             scope.define_function(
@@ -360,7 +377,7 @@ fn handle_item(
                 })?;
             } else {
                 return Err(Error::BadCall(
-                    format!("Unknown mixin {}", name),
+                    "Error: Undefined mixin.".into(),
                     pos.clone(),
                     None,
                 ));

@@ -39,7 +39,6 @@ mod inaccessible {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn mixin() {
             let runner = runner().with_cwd("mixin");
             assert_eq!(
