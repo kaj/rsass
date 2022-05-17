@@ -18,6 +18,8 @@ pub enum Item {
         default: bool,
         /// true if this is a `!global` variable.
         global: bool,
+        /// The source location of this variable declaration.
+        pos: SourcePos,
     },
 
     /// An `@at-root` directive.

@@ -220,7 +220,7 @@ mod multi_configuration {
     }
 }
 #[test]
-#[ignore] // wrong error
+#[ignore] // missing error
 fn namespace() {
     let runner = runner().with_cwd("namespace");
     assert_eq!(

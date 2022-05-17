@@ -144,7 +144,6 @@ mod before_use {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn variable_declaration() {
         let runner = runner().with_cwd("variable_declaration");
         assert_eq!(
@@ -609,7 +608,6 @@ mod missing {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn variable_declaration() {
             let runner = runner().with_cwd("variable_declaration");
             assert_eq!(

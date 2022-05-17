@@ -27,14 +27,17 @@ project adheres to
 * Setting a variable, `Scope::define` now takes the `Value` by value rather
   than by reference.  Also, `Scope::define_multi` is no longer exposed in
   the api.
-* Renamed one variant of `ScopeError` and added another.
+* Renamed one variant of `ScopeError` and added two others.
 * The sass `Value::Variable` and `Item::VariableDeclaration` variants
   now holds a `Name` rather than just a `String` for the variable name.
+  Also, both now holds a `SourcePos`.
 
 ### Improvements
 
 * The `@content` can have arguments when declaring and calling a mixin
   (PR #146).
+* Variable declartions can be scoped (like `module.$var = value`).  Some
+  error reporting improvements (PR #148).
 * Allow interpolation in css min and max function arguments.
 * The url for `@use` and `@forward` must be quoted.
 * Some `@` rules are now forbidden in some places as they should (PR #145).

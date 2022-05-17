@@ -107,7 +107,7 @@ impl MixinDecl {
                 let scope = ScopeRef::sub(scope);
                 if let Some(with) = with {
                     for (key, value) in with.into_iter() {
-                        scope.define(key.into(), value);
+                        scope.define(key.into(), value)?;
                     }
                 }
                 Ok(Mixin {

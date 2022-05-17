@@ -45,7 +45,7 @@ fn mixin() {
     );
 }
 #[test]
-#[ignore] // unexepected error
+#[ignore] // wrong result
 fn variable_assignment() {
     let runner = runner().with_cwd("variable_assignment");
     assert_eq!(
