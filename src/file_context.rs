@@ -194,28 +194,16 @@ impl FileContext for FsFileContext {
         &self,
         name: &str,
     ) -> Result<Option<(String, Self::File)>, Error> {
-        // TODO: Use rsplit_once when MSRV is 1.52 or above.
-        let (parent, name) = if let Some(pos) = name.find('/') {
-            (Some(&name[..pos + 1]), &name[pos + 1..])
-        } else {
-            (None, name)
-        };
         if !name.is_empty() {
             for base in &self.path {
-                use std::fmt::Write;
-                let mut full = String::new();
-                if !base.as_os_str().is_empty() {
-                    write!(&mut full, "{}/", base.display()).unwrap();
-                }
-                if let Some(parent) = parent {
-                    full.push_str(parent);
-                }
-                full.push_str(name);
+                let full = base.join(name);
                 if Path::new(&full).is_file() {
                     tracing::debug!(?full, "opening file");
                     return match Self::File::open(&full) {
-                        Ok(file) => Ok(Some((full, file))),
-                        Err(e) => Err(Error::Input(full, e)),
+                        Ok(file) => Ok(Some((name.to_string(), file))),
+                        Err(e) => {
+                            Err(Error::Input(full.display().to_string(), e))
+                        }
                     };
                 }
                 tracing::trace!(?full, "Not found");

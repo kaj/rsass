@@ -1,0 +1,8 @@
+$color: purple;
+@use foo with ($color: $color) as *;
+
+@mixin myem {
+    em {
+        color: foo(0);
+    }
+}
