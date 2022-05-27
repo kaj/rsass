@@ -7,7 +7,10 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.25.2
+
+Released 2022-05-27.
+Progress: 4350 of 6552 tests passed in dart-sass compatibility mode.
 
 * Use platform-dependent `path.join` for putting the local part after
   a base path, seems to make slash-separated strings ok as the joined
