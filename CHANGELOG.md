@@ -9,7 +9,12 @@ project adheres to
 
 ## Unreleased
 
+* Use platform-dependent `path.join` for putting the local part after
+  a base path, seems to make slash-separated strings ok as the joined
+  part.  (PR #144, issue #133)
 * Update sass-spec test suite to 2022-05-20.
+
+Thanks to @fasterthanlime for reporting and testing.
 
 
 ## Release 0.25.0

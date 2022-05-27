@@ -1,4 +1,5 @@
 use crate::{Error, SourceFile, SourceName, SourcePos};
+use std::borrow::Cow;
 use std::path::{Path, PathBuf};
 
 /// A file context manages finding and loading files.
@@ -55,15 +56,8 @@ pub trait FileContext: Sized + std::fmt::Debug {
         ];
         // Note: Should a "full stack" of bases be used here?
         // Or is this fine?
-        let base = from.file_url();
-        if let Some((path, mut file)) = base
-            .rfind('/')
-            .map(|p| base.split_at(p + 1).0)
-            .map(|base| {
-                do_find_file(self, &format!("{}{}", base, url), names)
-            })
-            .unwrap_or_else(|| do_find_file(self, url, names))?
-        {
+        let url = relative(from.file_url(), url);
+        if let Some((path, mut file)) = do_find_file(self, &url, names)? {
             let source = SourceName::imported(path, from);
             Ok(Some(SourceFile::read(&mut file, source)?))
         } else {
@@ -89,15 +83,8 @@ pub trait FileContext: Sized + std::fmt::Debug {
         ];
         // Note: Should a "full stack" of bases be used here?
         // Or is this fine?
-        let base = from.file_url();
-        if let Some((path, mut file)) = base
-            .rfind('/')
-            .map(|p| base.split_at(p + 1).0)
-            .map(|base| {
-                do_find_file(self, &format!("{}{}", base, url), names)
-            })
-            .unwrap_or_else(|| do_find_file(self, url, names))?
-        {
+        let url = relative(from.file_url(), url);
+        if let Some((path, mut file)) = do_find_file(self, &url, names)? {
             let source = SourceName::used(path, from);
             Ok(Some(SourceFile::read(&mut file, source)?))
         } else {
@@ -119,7 +106,16 @@ pub trait FileContext: Sized + std::fmt::Debug {
     ) -> Result<Option<(String, Self::File)>, Error>;
 }
 
-/// Find a file for `@use`
+/// Make a url relative to a given base.
+fn relative<'a>(base: &str, url: &'a str) -> Cow<'a, str> {
+    base.rfind('/')
+        .map(|p| base.split_at(p + 1).0)
+        .map(|base| format!("{}{}", base, url).into())
+        .unwrap_or_else(|| url.into())
+}
+
+/// Find a file in a given filecontext matching a url over a set of
+/// name rules.
 fn do_find_file<FC: FileContext>(
     ctx: &FC,
     url: &str,
@@ -194,28 +190,16 @@ impl FileContext for FsFileContext {
         &self,
         name: &str,
     ) -> Result<Option<(String, Self::File)>, Error> {
-        // TODO: Use rsplit_once when MSRV is 1.52 or above.
-        let (parent, name) = if let Some(pos) = name.find('/') {
-            (Some(&name[..pos + 1]), &name[pos + 1..])
-        } else {
-            (None, name)
-        };
         if !name.is_empty() {
             for base in &self.path {
-                use std::fmt::Write;
-                let mut full = String::new();
-                if !base.as_os_str().is_empty() {
-                    write!(&mut full, "{}/", base.display()).unwrap();
-                }
-                if let Some(parent) = parent {
-                    full.push_str(parent);
-                }
-                full.push_str(name);
+                let full = base.join(name);
                 if Path::new(&full).is_file() {
                     tracing::debug!(?full, "opening file");
                     return match Self::File::open(&full) {
-                        Ok(file) => Ok(Some((full, file))),
-                        Err(e) => Err(Error::Input(full, e)),
+                        Ok(file) => Ok(Some((name.to_string(), file))),
+                        Err(e) => {
+                            Err(Error::Input(full.display().to_string(), e))
+                        }
                     };
                 }
                 tracing::trace!(?full, "Not found");
