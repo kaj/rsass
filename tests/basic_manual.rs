@@ -454,6 +454,34 @@ fn minmax_length_units() {
     );
 }
 
+/// If one argument to min or max is an unquoted string
+/// (e.g. interpolation) that looks like a css number, that should be
+/// ok for the css min or max function.
+/// (As of 2022-05-31, this does not seem to be covered by the sass
+/// test suite.)
+#[test]
+fn minmax_interpolation() {
+    init_logger();
+    assert_eq!(
+        rsass(
+            b"$w: 72ch;\
+              \np {\
+              \n  a: min(#{$w}, 100%); b: min($w, 10ch); c: min(#{$w}, 10ch);\
+              \n  x: max(#{$w}, 100%); y: max($w, 10ch); z: max(#{$w}, 10ch);\
+              \n}"
+        )
+        .unwrap(),
+        "p {\
+         \n  a: min(72ch, 100%);\
+         \n  b: 10ch;\
+         \n  c: min(72ch, 10ch);\
+         \n  x: max(72ch, 100%);\
+         \n  y: 72ch;\
+         \n  z: max(72ch, 10ch);\
+         \n}\n"
+    );
+}
+
 #[test]
 fn use_raw_css() {
     assert_eq!(

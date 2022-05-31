@@ -7,6 +7,14 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+* Allow interpolation in css min and max function arguments.
+
+Thanks to @fasterthanlime (again) for reporting the problem with
+interpolation in min and max.
+
+
 ## Release 0.25.2
 
 Released 2022-05-27.

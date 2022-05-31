@@ -4,6 +4,7 @@ use super::{
 };
 use crate::css::{CallArgs, CssString, Value};
 use crate::output::Format;
+use crate::parser::input_span;
 use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Rational, Unit, UnitSet};
 use crate::ScopeRef;
@@ -271,6 +272,16 @@ fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
             Err(Error::error("At least one argument must be passed."))
         }
         Err(ExtremeError::NonNumeric(v)) => {
+            if let Value::Literal(s) = &v {
+                if s.quotes().is_none()
+                    && crate::parser::value::number(input_span(
+                        s.value().as_ref(),
+                    ))
+                    .is_ok()
+                {
+                    return Ok(as_call());
+                }
+            }
             if v.type_name() == "unknown" {
                 Ok(as_call())
             } else {
