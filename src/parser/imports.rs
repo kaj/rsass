@@ -46,7 +46,7 @@ pub fn use2(input: Span) -> PResult<Item> {
         delimited(
             terminated(name, opt_spacelike), // the name is "use"
             tuple((
-                terminated(any_sass_string, opt_spacelike),
+                terminated(quoted_sass_string, opt_spacelike),
                 opt(preceded(
                     terminated(tag("with"), opt_spacelike),
                     with_arg,
@@ -70,7 +70,7 @@ pub fn use2(input: Span) -> PResult<Item> {
 pub fn forward2(input: Span) -> PResult<Item> {
     let (mut end, path) = delimited(
         terminated(name, opt_spacelike), // the name is "forward"
-        any_sass_string,
+        quoted_sass_string,
         opt_spacelike,
     )(input)?;
     let mut found_as = None;
@@ -173,8 +173,8 @@ fn with_arg(input: Span) -> PResult<Vec<(Name, Value, bool)>> {
     )(input)
 }
 
-fn any_sass_string(input: Span) -> PResult<SassString> {
-    alt((sass_string_dq, sass_string_sq, sass_string))(input)
+fn quoted_sass_string(input: Span) -> PResult<SassString> {
+    alt((sass_string_dq, sass_string_sq))(input)
 }
 
 fn comma(input: Span) -> PResult<()> {

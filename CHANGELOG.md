@@ -10,6 +10,7 @@ project adheres to
 ## Unreleased
 
 * Allow interpolation in css min and max function arguments.
+* The url for `@use` and `@forward` must be quoted.
 
 Thanks to @fasterthanlime (again) for reporting the problem with
 interpolation in min and max.
