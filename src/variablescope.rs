@@ -108,7 +108,7 @@ impl ScopeRef {
                     self.set_variable(name.into(), val, default, global);
                     None
                 }
-                Item::Return(ref v) => {
+                Item::Return(ref v, _) => {
                     Some(v.do_evaluate(self.clone(), true)?)
                 }
                 Item::While(ref cond, ref body) => {

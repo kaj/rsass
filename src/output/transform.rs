@@ -262,9 +262,10 @@ fn handle_item(
             buf.join(sub);
         }
         Item::AtRule {
-            ref name,
-            ref args,
-            ref body,
+            name,
+            args,
+            body,
+            pos: _,
         } => {
             buf.do_separate();
             buf.do_indent_no_nl();
@@ -321,6 +322,7 @@ fn handle_item(
                 let p = pos.clone().opt_back("@function ");
                 return Err(Error::InvalidFunctionName(p));
             }
+            check_body(body, true, false)?;
             scope.define_function(
                 name.into(),
                 Function::closure(
@@ -331,13 +333,12 @@ fn handle_item(
                 ),
             );
         }
-        Item::Return(_) => {
-            return Err(Error::S(
-                "Return not allowed in plain context".into(),
-            ));
+        Item::Return(_, ref pos) => {
+            return Err(Error::ForbiddenAtRule(pos.clone()));
         }
 
         Item::MixinDeclaration(ref name, ref args, ref body, ref pos) => {
+            check_body(body, true, true)?;
             scope.define_mixin(
                 name.into(),
                 MixinDecl::new(args, &scope, body, pos),
@@ -413,6 +414,7 @@ fn handle_item(
             handle_body(items, head, rule, buf, scope, file_context)?;
         }
         Item::Each(ref names, ref values, ref body) => {
+            check_body(body, true, true)?;
             let mut rule = rule;
             let pushed = scope.store_local_values(names);
             for value in values.evaluate(scope.clone())?.iter_items() {
@@ -483,6 +485,7 @@ fn handle_item(
         }
 
         Item::Rule(ref selectors, ref body) => {
+            check_body(body, false, true)?;
             if rule.is_none() {
                 buf.do_separate();
             }
@@ -530,6 +533,7 @@ fn handle_item(
         }
         Item::NamespaceRule(ref name, ref value, ref body) => {
             if let Some(rule) = rule {
+                check_body(body, true, true)?;
                 let value = value.evaluate(scope.clone())?;
                 let name = name.evaluate(scope.clone())?;
                 if !value.is_null() {
@@ -578,6 +582,52 @@ fn handle_item(
         }
 
         Item::None => (),
+    }
+    Ok(())
+}
+
+fn check_body(
+    body: &[Item],
+    forbid_unknown: bool,
+    forbid_return: bool,
+) -> Result<(), Error> {
+    for item in body {
+        match item {
+            Item::Forward(_, _, _, _, pos) => {
+                return Err(Error::ForbiddenAtRule(pos.clone()));
+            }
+            Item::Use(_, _, _, pos) => {
+                return Err(Error::ForbiddenAtRule(pos.clone()));
+            }
+            Item::MixinDeclaration(.., ref pos) if forbid_unknown => {
+                return Err(Error::ForbiddenAtRule(
+                    pos.clone().opt_trail_ws().opt_back("@mixin "),
+                ));
+            }
+            Item::FunctionDeclaration(_, _, ref pos, _) if forbid_unknown => {
+                return Err(Error::ForbiddenAtRule(
+                    pos.clone().opt_trail_ws().opt_back("@function "),
+                ));
+            }
+            Item::Return(_, ref pos) if forbid_return => {
+                return Err(Error::ForbiddenAtRule(pos.clone()));
+            }
+            Item::AtRule {
+                name,
+                args: _,
+                body: _,
+                pos,
+            } if forbid_unknown => {
+                let name = name.single_raw();
+                if !(name == Some("supports")
+                    || name == Some("media")
+                    || name == Some("font-face"))
+                {
+                    return Err(Error::ForbiddenAtRule(pos.clone()));
+                }
+            }
+            _ => (),
+        }
     }
     Ok(())
 }

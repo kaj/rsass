@@ -552,7 +552,6 @@ mod within {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn mixin() {
         assert_eq!(
             runner().err(
@@ -569,7 +568,6 @@ mod within {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn style_rule() {
         assert_eq!(
             runner().err(

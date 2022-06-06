@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong error
 fn in_declaration() {
     assert_eq!(
         runner().err(
@@ -26,7 +25,6 @@ fn in_declaration() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn in_function() {
     assert_eq!(
         runner().err(

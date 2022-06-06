@@ -467,7 +467,6 @@ mod within {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn function() {
         assert_eq!(
             runner().err(
@@ -484,7 +483,6 @@ mod within {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn mixin() {
         assert_eq!(
             runner().err(
@@ -501,7 +499,6 @@ mod within {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn style_rule() {
         assert_eq!(
             runner().err(

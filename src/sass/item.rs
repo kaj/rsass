@@ -30,6 +30,8 @@ pub enum Item {
         args: Value,
         /// The directive may have a body.
         body: Option<Vec<Item>>,
+        /// The source location of this at rule.
+        pos: SourcePos,
     },
     /// An `@debug` directive.
     Debug(Value),
@@ -48,7 +50,7 @@ pub enum Item {
     /// An `@function` declaration.
     FunctionDeclaration(String, FormalArgs, SourcePos, Vec<Item>),
     /// An `@return` statement in a function declaration.
-    Return(Value),
+    Return(Value, SourcePos),
 
     /// An `@if` conditional directive.
     IfStatement(Value, Vec<Item>, Vec<Item>),

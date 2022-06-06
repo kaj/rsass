@@ -37,6 +37,8 @@ pub enum Error {
     UndefinedVariable(SourcePos),
     /// Attemt to use an undefined module.
     UndefModule(String, SourcePos),
+    /// This at rule is not allowed here.
+    ForbiddenAtRule(SourcePos),
     /// An `@error` reached.
     AtError(String, SourcePos),
     /// Fallback error type.
@@ -131,6 +133,10 @@ impl fmt::Display for Error {
             }
             Error::InvalidFunctionName(ref pos) => {
                 writeln!(out, "Error: Invalid function name.")?;
+                pos.show(out)
+            }
+            Error::ForbiddenAtRule(ref pos) => {
+                writeln!(out, "Error: This at-rule is not allowed here.")?;
                 pos.show(out)
             }
             Error::AtError(ref value, ref pos) => {
