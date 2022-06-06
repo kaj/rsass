@@ -7,7 +7,7 @@
 
 use super::cssbuf::{CssBuf, CssHead};
 use crate::css::{BodyItem, Comment, Import, Property, Rule, Selectors};
-use crate::error::Error;
+use crate::error::{Error, Invalid};
 use crate::file_context::FileContext;
 use crate::parser::Parsed;
 use crate::sass::{
@@ -320,7 +320,7 @@ fn handle_item(
             {
                 // Ok, this is cheating for the test suite ...
                 let p = pos.clone().opt_back("@function ");
-                return Err(Error::InvalidFunctionName(p));
+                return Err(Invalid::FunctionName.at(p));
             }
             check_body(body, true, false)?;
             scope.define_function(
@@ -334,7 +334,7 @@ fn handle_item(
             );
         }
         Item::Return(_, ref pos) => {
-            return Err(Error::ForbiddenAtRule(pos.clone()));
+            return Err(Invalid::AtRule.at(pos.clone()));
         }
 
         Item::MixinDeclaration(ref name, ref args, ref body, ref pos) => {
@@ -367,10 +367,7 @@ fn handle_item(
                         let pos = pos.in_call(name);
                         Error::BadCall(msg, pos, Some(decl))
                     }
-                    Error::AtError(msg, _pos) => {
-                        let msg = format!("Error: {}", msg);
-                        Error::BadCall(msg, pos.clone(), None)
-                    }
+                    Error::Invalid(err, _) => err.at(pos.clone()),
                     e => {
                         let pos = pos.in_call(name);
                         Error::BadCall(e.to_string(), pos, None)
@@ -478,10 +475,10 @@ fn handle_item(
             eprintln!("WARNING: {}", value.evaluate(scope)?.format(format));
         }
         Item::Error(ref value, ref pos) => {
-            return Err(Error::AtError(
+            return Err(Invalid::AtError(
                 value.evaluate(scope)?.format(format).to_string(),
-                pos.clone(),
-            ));
+            )
+            .at(pos.clone()));
         }
 
         Item::Rule(ref selectors, ref body) => {
@@ -594,23 +591,21 @@ fn check_body(
     for item in body {
         match item {
             Item::Forward(_, _, _, _, pos) => {
-                return Err(Error::ForbiddenAtRule(pos.clone()));
+                return Err(Invalid::AtRule.at(pos.clone()));
             }
             Item::Use(_, _, _, pos) => {
-                return Err(Error::ForbiddenAtRule(pos.clone()));
+                return Err(Invalid::AtRule.at(pos.clone()));
             }
             Item::MixinDeclaration(.., ref pos) if forbid_unknown => {
-                return Err(Error::ForbiddenAtRule(
-                    pos.clone().opt_trail_ws().opt_back("@mixin "),
-                ));
+                return Err(Invalid::AtRule
+                    .at(pos.clone().opt_trail_ws().opt_back("@mixin ")));
             }
             Item::FunctionDeclaration(_, _, ref pos, _) if forbid_unknown => {
-                return Err(Error::ForbiddenAtRule(
-                    pos.clone().opt_trail_ws().opt_back("@function "),
-                ));
+                return Err(Invalid::AtRule
+                    .at(pos.clone().opt_trail_ws().opt_back("@function ")));
             }
             Item::Return(_, ref pos) if forbid_return => {
-                return Err(Error::ForbiddenAtRule(pos.clone()));
+                return Err(Invalid::AtRule.at(pos.clone()));
             }
             Item::AtRule {
                 name,
@@ -623,7 +618,7 @@ fn check_body(
                     || name == Some("media")
                     || name == Some("font-face"))
                 {
-                    return Err(Error::ForbiddenAtRule(pos.clone()));
+                    return Err(Invalid::AtRule.at(pos.clone()));
                 }
             }
             _ => (),

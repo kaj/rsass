@@ -18,8 +18,6 @@ pub enum Error {
     /// A bad call to a builtin function, with call- and optionally
     /// declaration position.
     BadCall(String, SourcePos, Option<SourcePos>),
-    /// Tried to declare a function with a forbidden name.
-    InvalidFunctionName(SourcePos),
     /// Some kind of illegal value.
     BadValue(String),
     /// An illegal value for a specific parameter.
@@ -33,14 +31,8 @@ pub enum Error {
     BadRange(RangeError),
     /// Error parsing sass data.
     ParseError(ParseError),
-    /// An undefined variable was used at source pos.
-    UndefinedVariable(SourcePos),
-    /// Attemt to use an undefined module.
-    UndefModule(String, SourcePos),
-    /// This at rule is not allowed here.
-    ForbiddenAtRule(SourcePos),
-    /// An `@error` reached.
-    AtError(String, SourcePos),
+    /// Something bad at a specific position.
+    Invalid(Invalid, SourcePos),
     /// Fallback error type.
     ///
     /// This just contains a string with some message.
@@ -86,18 +78,6 @@ impl fmt::Display for Error {
             Error::Input(ref p, ref e) => {
                 write!(out, "Failed to read {:?}: {}", p, e)
             }
-            Error::UndefinedVariable(ref pos) => {
-                writeln!(out, "Error: Undefined variable.")?;
-                pos.show(out)
-            }
-            Error::UndefModule(ref name, ref pos) => {
-                writeln!(
-                    out,
-                    "Error: There is no module with the namespace {:?}.",
-                    name
-                )?;
-                pos.show(out)
-            }
             Error::BadArgument(ref name, ref problem) => {
                 write!(out, "Error: ${}: {}", name, problem)
             }
@@ -131,16 +111,8 @@ impl fmt::Display for Error {
                     callpos.show(out)
                 }
             }
-            Error::InvalidFunctionName(ref pos) => {
-                writeln!(out, "Error: Invalid function name.")?;
-                pos.show(out)
-            }
-            Error::ForbiddenAtRule(ref pos) => {
-                writeln!(out, "Error: This at-rule is not allowed here.")?;
-                pos.show(out)
-            }
-            Error::AtError(ref value, ref pos) => {
-                writeln!(out, "Error: {}", value)?;
+            Error::Invalid(ref what, ref pos) => {
+                writeln!(out, "Error: {}", what)?;
                 pos.show(out)
             }
             Error::BadRange(ref err) => err.fmt(out),
@@ -195,5 +167,47 @@ impl From<ParseError> for Error {
 impl From<RangeError> for Error {
     fn from(e: RangeError) -> Self {
         Error::BadRange(e)
+    }
+}
+
+/// Something invalid.
+///
+/// Should be combined with a position to get an [Error].
+#[derive(Debug)]
+#[allow(unused)] // fixme
+pub enum Invalid {
+    /// An undefined variable was used at source pos.
+    UndefinedVariable,
+    /// Attemt to use an undefined module.
+    UndefModule(String),
+    /// Tried to declare a function with a forbidden name.
+    FunctionName,
+    /// This at rule is not allowed here.
+    AtRule,
+    /// An `@error` reached.
+    AtError(String),
+}
+impl Invalid {
+    /// Combine this with a position to get a proper error.
+    pub fn at(self, pos: SourcePos) -> Error {
+        Error::Invalid(self, pos)
+    }
+}
+
+impl fmt::Display for Invalid {
+    fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Invalid::UndefinedVariable => "Undefined variable.".fmt(out),
+            Invalid::UndefModule(name) => {
+                write!(
+                    out,
+                    "There is no module with the namespace {:?}.",
+                    name
+                )
+            }
+            Invalid::FunctionName => "Invalid function name.".fmt(out),
+            Invalid::AtRule => "This at-rule is not allowed here.".fmt(out),
+            Invalid::AtError(msg) => msg.fmt(out),
+        }
     }
 }

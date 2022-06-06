@@ -1,10 +1,10 @@
 use crate::css;
-use crate::error::Error;
+use crate::error::{Error, Invalid};
 use crate::output::Format;
 use crate::parser::SourcePos;
 use crate::sass::{CallArgs, Function, SassString};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
-use crate::{ScopeError, ScopeRef};
+use crate::ScopeRef;
 use num_traits::Zero;
 
 /// A sass value.
@@ -111,14 +111,8 @@ impl Value {
                 Ok(css::Value::Color(rgba.clone().into(), name.clone()))
             }
             Value::Variable(ref name, ref pos) => {
-                let var = scope.get(&name.into()).map_err(|e| match e {
-                    ScopeError::NoModule(name) => {
-                        Error::UndefModule(name, pos.clone())
-                    }
-                    ScopeError::Undefined(_) => {
-                        Error::UndefinedVariable(pos.clone())
-                    }
-                })?;
+                let var =
+                    scope.get(&name.into()).map_err(|e| e.at(pos.clone()))?;
                 Ok(var.into_calculated())
             }
             Value::List(ref v, s, b) => Ok(css::Value::List(
@@ -152,7 +146,7 @@ impl Value {
                             };
                             Error::BadCall(msg, pos, Some(decl))
                         }
-                        Error::AtError(msg, _pos) => {
+                        Error::Invalid(Invalid::AtError(msg), _) => {
                             let msg = format!("Error: {}", msg);
                             Error::BadCall(msg, pos.clone(), None)
                         }

@@ -1,5 +1,6 @@
 //! A scope is something that contains variable values.
 use crate::css::{CssString, Selectors, Value};
+use crate::error::Invalid;
 use crate::output::Format;
 use crate::sass::{Expose, Function, Item, MixinDecl, Name, UseAs};
 use crate::{Error, SourcePos};
@@ -130,13 +131,13 @@ impl ScopeRef {
                     None
                 }
                 Item::Error(ref value, ref pos) => {
-                    return Err(Error::AtError(
+                    return Err(Invalid::AtError(
                         value
                             .evaluate(self)?
                             .format(Format::introspect())
                             .to_string(),
-                        pos.clone(),
-                    ));
+                    )
+                    .at(pos.clone()));
                 }
                 Item::None => None,
                 Item::Comment(..) => None,
@@ -991,6 +992,17 @@ pub enum ScopeError {
     /// Tried to access an undefined name.
     Undefined(Name),
 }
+
+impl ScopeError {
+    /// Make an Error from a ScopeError at a specific position.
+    pub fn at(self, pos: SourcePos) -> Error {
+        match self {
+            ScopeError::NoModule(name) => Invalid::UndefModule(name).at(pos),
+            ScopeError::Undefined(_) => Invalid::UndefinedVariable.at(pos),
+        }
+    }
+}
+
 use std::fmt::{self, Display};
 impl Display for ScopeError {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
