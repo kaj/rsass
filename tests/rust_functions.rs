@@ -1,3 +1,4 @@
+use rsass::output::Format;
 use rsass::sass::{FormalArgs, Function, Name};
 use rsass::value::{Number, Numeric, Rgba};
 use rsass::*;
@@ -70,10 +71,22 @@ fn function_with_args() {
             ]),
             Arc::new(|s| {
                 let a = s.get(&"a".into())?.numeric_value().map_err(|v| {
-                    Error::bad_arg("a".into(), &v, "is not a number")
+                    Error::BadArgument(
+                        "a".into(),
+                        format!(
+                            "{} is not a number",
+                            v.format(Format::introspect())
+                        ),
+                    )
                 })?;
                 let b = s.get(&"b".into())?.numeric_value().map_err(|v| {
-                    Error::bad_arg("b".into(), &v, "is not a number")
+                    Error::BadArgument(
+                        "b".into(),
+                        format!(
+                            "{} is not a number",
+                            v.format(Format::introspect())
+                        ),
+                    )
                 })?;
                 if a.unit == b.unit || b.unit.is_none() {
                     Ok(Numeric::new(avg(a.value, b.value), a.unit).into())

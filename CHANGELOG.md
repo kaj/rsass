@@ -9,8 +9,16 @@ project adheres to
 
 ## Unreleased
 
+### Breaking changes
+
+* Changes in `Error` representation.  Many errors are now constructed
+  like `Invalid::Something.at(pos)` (PR #145).
+
+### Improvements
+
 * Allow interpolation in css min and max function arguments.
 * The url for `@use` and `@forward` must be quoted.
+* Some `@` rules are now forbidden in some places as they should (PR #145).
 
 Thanks to @fasterthanlime (again) for reporting the problem with
 interpolation in min and max.

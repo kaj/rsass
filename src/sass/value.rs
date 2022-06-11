@@ -93,36 +93,35 @@ impl Value {
         scope: ScopeRef,
         arithmetic: bool,
     ) -> Result<css::Value, Error> {
-        match *self {
-            Value::Bang(ref s) => Ok(css::Value::Bang(s.clone())),
-            Value::Literal(ref s) => Ok(s.evaluate(scope)?.into()),
-            Value::Paren(ref v, ref expl) => {
+        Ok(match self {
+            Value::Bang(s) => css::Value::Bang(s.clone()),
+            Value::Literal(s) => s.evaluate(scope)?.into(),
+            Value::Paren(v, expl) => {
                 let v = v.do_evaluate(scope, !expl)?;
                 if *expl
                     || v == css::Value::Null
                     || matches!(&v, css::Value::Literal(s) if s.is_css_fn())
                 {
-                    Ok(css::Value::Paren(Box::new(v)))
+                    css::Value::Paren(Box::new(v))
                 } else {
-                    Ok(v)
+                    v
                 }
             }
-            Value::Color(ref rgba, ref name) => {
-                Ok(css::Value::Color(rgba.clone().into(), name.clone()))
+            Value::Color(rgba, name) => {
+                css::Value::Color(rgba.clone().into(), name.clone())
             }
-            Value::Variable(ref name, ref pos) => {
-                let var =
-                    scope.get(&name.into()).map_err(|e| e.at(pos.clone()))?;
-                Ok(var.into_calculated())
-            }
-            Value::List(ref v, s, b) => Ok(css::Value::List(
+            Value::Variable(name, pos) => scope
+                .get(&name.into())
+                .map_err(|e| e.at(pos.clone()))?
+                .into_calculated(),
+            Value::List(v, s, b) => css::Value::List(
                 v.iter()
                     .map(|v| v.do_evaluate(scope.clone(), false))
                     .collect::<Result<_, _>>()?,
-                s,
-                b,
-            )),
-            Value::Call(ref name, ref args, ref pos) => {
+                *s,
+                *b,
+            ),
+            Value::Call(name, args, pos) => {
                 if name.single_raw() == Some("if") {
                     // Magic: `if` is the only function that evaluates its
                     // arguments lazily.  So it is implemented inline here.
@@ -144,7 +143,7 @@ impl Value {
                             } else {
                                 pos.in_call(name)
                             };
-                            Error::BadCall(msg, pos, Some(decl))
+                            Error::BadCall(msg.to_string(), pos, Some(decl))
                         }
                         Error::Invalid(Invalid::AtError(msg), _) => {
                             let msg = format!("Error: {}", msg);
@@ -165,12 +164,12 @@ impl Value {
                     }
                 }
                 let name = name.evaluate(scope)?;
-                Ok(css::Value::Call(name.value().into(), args))
+                css::Value::Call(name.value().into(), args)
             }
-            Value::Numeric(ref num) => {
-                Ok(css::Value::Numeric(num.clone(), arithmetic))
+            Value::Numeric(num) => {
+                css::Value::Numeric(num.clone(), arithmetic)
             }
-            Value::Map(ref m) => {
+            Value::Map(m) => {
                 let mut items = css::ValueMap::new();
                 for (k, v) in m.iter() {
                     let k = k.do_evaluate(scope.clone(), arithmetic)?;
@@ -179,25 +178,25 @@ impl Value {
                         return Err(Error::error("Duplicate key."));
                     }
                 }
-                Ok(css::Value::Map(items))
+                css::Value::Map(items)
             }
-            Value::Null => Ok(css::Value::Null),
-            Value::True => Ok(css::Value::True),
-            Value::False => Ok(css::Value::False),
-            Value::BinOp(ref a, s1, ref op, s2, ref b) => {
+            Value::Null => css::Value::Null,
+            Value::True => css::Value::True,
+            Value::False => css::Value::False,
+            Value::BinOp(a, s1, op, s2, b) => {
                 if *op == Operator::And {
                     let a = a.do_evaluate(scope.clone(), true)?;
                     if a.is_true() {
-                        b.do_evaluate(scope, true)
+                        b.do_evaluate(scope, true)?
                     } else {
-                        Ok(a)
+                        a
                     }
                 } else if *op == Operator::Or {
                     let a = a.do_evaluate(scope.clone(), true)?;
                     if a.is_true() {
-                        Ok(a)
+                        a
                     } else {
-                        b.do_evaluate(scope, true)
+                        b.do_evaluate(scope, true)?
                     }
                 } else {
                     let (a, b) = {
@@ -216,48 +215,42 @@ impl Value {
                             (aa, b)
                         }
                     };
-                    Ok(op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
+                    op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
                         css::Value::BinOp(
                             Box::new(a),
-                            s1 && op != &Operator::Div
+                            *s1 && op != &Operator::Div
                                 && op != &Operator::Minus,
                             op.clone(),
-                            s2 && op != &Operator::Div
+                            *s2 && op != &Operator::Div
                                 && op != &Operator::Minus,
                             Box::new(b),
                         )
-                    }))
+                    })
                 }
             }
-            Value::UnaryOp(ref op, ref v) => {
+            Value::UnaryOp(op, v) => {
                 let value = v.do_evaluate(scope, true)?;
                 match (op.clone(), value) {
                     (Operator::Not, css::Value::Numeric(v, _)) => {
-                        Ok(v.value.is_zero().into())
+                        v.value.is_zero().into()
                     }
-                    (Operator::Not, css::Value::True) => {
-                        Ok(css::Value::False)
-                    }
-                    (Operator::Not, css::Value::False) => {
-                        Ok(css::Value::True)
-                    }
+                    (Operator::Not, css::Value::True) => css::Value::False,
+                    (Operator::Not, css::Value::False) => css::Value::True,
                     (Operator::Minus, css::Value::Numeric(v, _)) => {
-                        Ok(css::Value::Numeric(-&v, true))
+                        css::Value::Numeric(-&v, true)
                     }
                     (Operator::Plus, css::Value::Numeric(v, _)) => {
-                        Ok(css::Value::Numeric(v, true))
+                        css::Value::Numeric(v, true)
                     }
                     (op, css::Value::Literal(s)) if s.quotes().is_none() => {
-                        Ok(format!("{}{}", op, s).into())
+                        format!("{}{}", op, s).into()
                     }
-                    (op, v) => Ok(css::Value::UnaryOp(op, Box::new(v))),
+                    (op, v) => css::Value::UnaryOp(op, Box::new(v)),
                 }
             }
-            Value::HereSelector => Ok(scope.get_selectors().clone().into()),
-            Value::UnicodeRange(ref s) => {
-                Ok(css::Value::UnicodeRange(s.clone()))
-            }
-        }
+            Value::HereSelector => scope.get_selectors().clone().into(),
+            Value::UnicodeRange(s) => css::Value::UnicodeRange(s.clone()),
+        })
     }
 
     /// Write a string representation of this value

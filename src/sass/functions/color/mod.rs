@@ -174,11 +174,10 @@ fn make_call(name: &str, args: Vec<Value>) -> Value {
 
 fn bad_arg(err: ArgsError, name: &Name, args: &FormalArgs) -> Error {
     match err {
-        ArgsError::Eval(e) => e,
-        ae => Error::BadArguments(
-            ae.to_string(),
-            SourcePos::mock_function(name, args, ""),
-        ),
+        ArgsError::Eval(e) => *e,
+        ae => {
+            Error::BadArguments(ae, SourcePos::mock_function(name, args, ""))
+        }
     }
 }
 

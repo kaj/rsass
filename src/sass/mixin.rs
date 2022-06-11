@@ -64,17 +64,13 @@ impl MixinDecl {
                         .args
                         .eval(
                             ScopeRef::sub_selectors(decl.scope.clone(), sel),
-                            call_args
-                                .evaluate(scope)
-                                .map_err(crate::sass::ArgsError::Eval)?,
+                            call_args.evaluate(scope)?,
                         )
-                        .map_err(|e| match e {
-                            crate::sass::ArgsError::Eval(e) => e,
-                            ae => Error::BadCall(
-                                ae.to_string(),
+                        .map_err(|e| {
+                            e.decl_called(
                                 call_pos.in_call(name),
-                                Some(decl.pos.clone()),
-                            ),
+                                decl.pos.clone(),
+                            )
                         })?,
                     body: Parsed::Scss(decl.body),
                 })
@@ -92,20 +88,8 @@ impl MixinDecl {
                 );
                 let call_pos2 = call_pos.clone();
                 let argscope = fargs
-                    .eval(
-                        scope.clone(),
-                        call_args
-                            .evaluate(scope.clone())
-                            .map_err(crate::sass::ArgsError::Eval)?,
-                    )
-                    .map_err(|e| match e {
-                        crate::sass::ArgsError::Eval(e) => e,
-                        ae => Error::BadCall(
-                            ae.to_string(),
-                            call_pos2,
-                            Some(pos),
-                        ),
-                    })?;
+                    .eval(scope.clone(), call_args.evaluate(scope.clone())?)
+                    .map_err(|e| e.decl_called(call_pos2, pos))?;
                 let call_pos2 = call_pos.clone();
                 let url = get_string(&argscope, name!(url)).map_err(|e| {
                     Error::BadCall(e.to_string(), call_pos2, None)

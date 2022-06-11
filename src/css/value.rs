@@ -148,8 +148,8 @@ impl Value {
                 .value
                 .clone()
                 .into_integer()
-                .map_err(|_| Error::bad_value("an integer", self)),
-            v => Err(Error::bad_value("a number", v)),
+                .map_err(|_| Error::error(is_not(self, "an integer"))),
+            v => Err(Error::error(is_not(v, "a number"))),
         }
     }
 
@@ -191,13 +191,9 @@ impl Value {
             }
             Value::List(v, _, _) => v,
             Value::Map(map) => map
-                .iter()
-                .map(|&(ref k, ref v)| {
-                    Value::List(
-                        vec![k.clone(), v.clone()],
-                        Some(ListSeparator::Space),
-                        false,
-                    )
+                .into_iter()
+                .map(|(k, v)| {
+                    Value::List(vec![k, v], Some(ListSeparator::Space), false)
                 })
                 .collect(),
             Value::Paren(v) => v.iter_items(),

@@ -363,10 +363,6 @@ fn handle_item(
                     file_context,
                 )
                 .map_err(|e: Error| match e {
-                    Error::BadArguments(msg, decl) => {
-                        let pos = pos.in_call(name);
-                        Error::BadCall(msg, pos, Some(decl))
-                    }
                     Error::Invalid(err, _) => err.at(pos.clone()),
                     e => {
                         let pos = pos.in_call(name);

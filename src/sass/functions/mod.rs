@@ -182,10 +182,9 @@ impl Function {
         def: ScopeRef,
         args: CallArgs,
     ) -> Result<ScopeRef, Error> {
-        self.args.eval(def, args).map_err(|e| match e {
-            sass::ArgsError::Eval(e) => e,
-            ae => Error::BadArguments(ae.to_string(), self.pos.clone()),
-        })
+        self.args
+            .eval(def, args)
+            .map_err(|e| e.declared_at(&self.pos))
     }
 }
 

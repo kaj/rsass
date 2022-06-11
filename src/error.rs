@@ -1,7 +1,5 @@
-use crate::css::Value;
-use crate::output::Format;
 use crate::parser::{ParseError, SourcePos};
-use crate::sass::Name;
+use crate::sass::{ArgsError, Name};
 use crate::value::RangeError;
 use std::convert::From;
 use std::{fmt, io};
@@ -18,13 +16,11 @@ pub enum Error {
     /// A bad call to a builtin function, with call- and optionally
     /// declaration position.
     BadCall(String, SourcePos, Option<SourcePos>),
-    /// Some kind of illegal value.
-    BadValue(String),
     /// An illegal value for a specific parameter.
     BadArgument(Name, String),
     /// The pos here is the function declaration.
     /// This error will be wrapped in a BadCall, giving the pos of the call.
-    BadArguments(String, SourcePos),
+    BadArguments(ArgsError, SourcePos),
     /// Tried to import file at pos while already importing it at pos.
     ImportLoop(SourcePos, SourcePos),
     /// A range error
@@ -42,29 +38,6 @@ pub enum Error {
 impl std::error::Error for Error {}
 
 impl Error {
-    /// A bad value with an "(actual) is not (expected)" message.
-    pub fn bad_value(expected: &str, actual: &Value) -> Self {
-        Error::BadValue(format!(
-            "Error: {} is not {}.",
-            actual.format(Format::introspect()),
-            expected,
-        ))
-    }
-
-    /// Wrong kind of argument to a sass function.
-    /// `expected` is a string describing what the parameter should
-    /// have been, `actual` is the argument.
-    pub fn bad_arg(
-        name: Name,
-        actual: &Value,
-        problem: &'static str,
-    ) -> Error {
-        Error::BadArgument(
-            name,
-            format!("{} {}", actual.format(Format::introspect()), problem),
-        )
-    }
-
     /// A generic error message.
     pub fn error<T: AsRef<str>>(msg: T) -> Self {
         Error::S(format!("Error: {}", msg.as_ref()))
@@ -116,7 +89,6 @@ impl fmt::Display for Error {
                 pos.show(out)
             }
             Error::BadRange(ref err) => err.fmt(out),
-            Error::BadValue(ref err) => err.fmt(out),
             // fallback
             ref x => write!(out, "{:?}", x),
         }
@@ -174,7 +146,6 @@ impl From<RangeError> for Error {
 ///
 /// Should be combined with a position to get an [Error].
 #[derive(Debug)]
-#[allow(unused)] // fixme
 pub enum Invalid {
     /// An undefined variable was used at source pos.
     UndefinedVariable,

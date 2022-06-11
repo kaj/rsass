@@ -1,7 +1,7 @@
-use crate::css;
 use crate::error::Error;
 use crate::sass::{Name, Value};
 use crate::ScopeRef;
+use crate::{css, SourcePos};
 use std::fmt;
 
 /// The declared arguments of a mixin or function declaration.
@@ -67,9 +67,7 @@ impl FormalArgs {
                 } else if let Some(default) = default {
                     argscope.define(
                         name.clone(),
-                        &default
-                            .do_evaluate(argscope.clone(), true)
-                            .map_err(ArgsError::Eval)?,
+                        &default.do_evaluate(argscope.clone(), true)?,
                     );
                 } else {
                     return Err(ArgsError::Missing(name.clone()));
@@ -124,7 +122,25 @@ pub enum ArgsError {
     /// Got unexpected named argumet
     Unexpected(Name),
     /// An error evaluating one of the arguments.
-    Eval(Error),
+    Eval(Box<Error>),
+}
+
+impl ArgsError {
+    /// This argument error happend for args declared at the given pos.
+    pub fn declared_at(self, pos: &SourcePos) -> Error {
+        match self {
+            ArgsError::Eval(e) => *e,
+            ae => Error::BadArguments(ae, pos.clone()),
+        }
+    }
+    /// This argument error happened while calling for `call` a function
+    /// declared at `decl` position.
+    pub fn decl_called(self, call: SourcePos, decl: SourcePos) -> Error {
+        match self {
+            ArgsError::Eval(e) => *e,
+            ae => Error::BadCall(ae.to_string(), call, Some(decl)),
+        }
+    }
 }
 
 impl fmt::Display for ArgsError {
@@ -154,6 +170,12 @@ impl fmt::Display for ArgsError {
             }
             ArgsError::Eval(e) => e.fmt(out),
         }
+    }
+}
+
+impl From<Error> for ArgsError {
+    fn from(e: Error) -> ArgsError {
+        ArgsError::Eval(Box::new(e))
     }
 }
 
