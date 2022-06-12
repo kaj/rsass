@@ -17,9 +17,7 @@ mod bubble {
              \na {\
              \n  @keyframes {/**/}\
              \n}\n"),
-            "@keyframes {\
-         \n  /**/\
-         \n}\n"
+            "@keyframes { /**/ }\n"
         );
     }
     #[test]

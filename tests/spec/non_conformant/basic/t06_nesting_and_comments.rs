@@ -6,6 +6,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("$blah: bloo blee;\
@@ -33,18 +34,17 @@ fn test() {
              \n      bloo: bloo;\
              \n    }\
              \n  }\
-             \n  p {\
+             \n  p { /* comment after open brace goes in */\
              \n    padding: 10px 8%;\
              \n    -webkit-box-sizing: $blux;\
-             \n  }\
+             \n  } /* comment after close brace goes out */\
              \n  margin: 10px 5px;\
              \n  h1 {\
              \n    color: $blip;\
              \n  }\
              \n}\
              \n/* last comment, top level again --\
-             \n   compare the indentation! */\
-             \n   \
+             \n   compare the indentation! */\n\
              \ndiv {\
              \n  f: g;\
              \n  empty {\
@@ -65,6 +65,7 @@ fn test() {
          \n  color: red;\
          \n  background: blue;\
          \n  /* the next selector should be indented two spaces */\
+         \n  /* comment after close brace goes out */\
          \n  margin: 10px 5px;\
          \n}\
          \ndiv span {\
@@ -73,8 +74,7 @@ fn test() {
          \n  display: inline-block;\
          \n}\
          \ndiv span a {\
-         \n  text-decoration: none;\
-         \n  /* where will this comment go? */\
+         \n  text-decoration: none; /* where will this comment go? */\
          \n  color: green;\
          \n  /* what about this comment? */\
          \n  border: 1px bloo blee red;\
@@ -83,7 +83,7 @@ fn test() {
          \n  blah: blah;\
          \n  bloo: bloo;\
          \n}\
-         \ndiv p {\
+         \ndiv p { /* comment after open brace goes in */\
          \n  padding: 10px 8%;\
          \n  -webkit-box-sizing: hux;\
          \n}\

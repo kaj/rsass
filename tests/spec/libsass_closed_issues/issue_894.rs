@@ -6,15 +6,14 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok(
             "a {/**/}\
              \nb {content: \'something so I have a non-empty expected output\'}"
         ),
-        "a {\
-         \n  /**/\
-         \n}\
+        "a { /**/ }\
          \nb {\
          \n  content: \"something so I have a non-empty expected output\";\
          \n}\n"

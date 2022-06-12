@@ -15,8 +15,7 @@ fn test() {
              \n    body { line-height: 1.2 }\
              \n}\n"),
         "/* any */\
-         \n@media screen, not print {\
-         \n  /* whatever */\
+         \n@media screen, not print { /* whatever */\
          \n  body {\
          \n    line-height: 1.2;\
          \n  }\

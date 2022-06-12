@@ -14,10 +14,8 @@ fn test() {
              \n\tcolor: #F00; /* 4 */\
              \n}\n"),
         ".one,\
-         \n.two {\
-         \n  /* 3 */\
-         \n  color: #F00;\
-         \n  /* 4 */\
+         \n.two { /* 3 */\
+         \n  color: #F00; /* 4 */\
          \n}\n"
     );
 }

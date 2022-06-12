@@ -11,6 +11,9 @@ fn runner() -> crate::TestRunner {
         .mock_file("scope/function/other.scss", "x {\n  function: local();\n}\n")
         .mock_file("scope/mixin/other.scss", "@include local;\n")
         .mock_file("scope/variable/other.scss", "x {\n  var: $var;\n}\n")
+        .mock_file("with_comment/_a.scss", "/* Y */\n")
+        .mock_file("with_comment/_b.scss", "@import 'a'\n")
+        .mock_file("with_comment/_c.scss", "@import 'a'\n")
 }
 
 mod at_rule {
@@ -129,4 +132,14 @@ mod scope {
          \n}\n"
     );
     }
+}
+#[test]
+fn with_comment() {
+    let runner = runner().with_cwd("with_comment");
+    assert_eq!(
+        runner.ok("@import \'b\';\
+             \n@import \'c\';\n"),
+        "/* Y */\
+         \n/* Y */\n"
+    );
 }
