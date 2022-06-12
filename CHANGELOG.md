@@ -11,8 +11,10 @@ project adheres to
 
 ### Breaking changes
 
-* Changes in `Error` representation.  Many errors are now constructed
-  like `Invalid::Something.at(pos)` (PR #145).
+* Changes in `Error` representation.  Many errors are now constructed like
+  `Invalid::Something.at(pos)` (PR #145).
+* `@extend` is still unsupported, but now some uses of it (e.g. in control
+  structures) will result in an error instead of wrong output.
 
 ### Improvements
 

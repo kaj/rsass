@@ -155,6 +155,14 @@ pub enum Invalid {
     FunctionName,
     /// This at rule is not allowed here.
     AtRule,
+    /// Mixins may not contain mixin declarations.
+    MixinInMixin,
+    /// Mixins may not be declared in control directives.
+    MixinInControl,
+    /// Mixins may not contain function declarations.
+    FunctionInMixin,
+    /// Functions may not be declared in control directives
+    FunctionInControl,
     /// An `@error` reached.
     AtError(String),
 }
@@ -178,6 +186,19 @@ impl fmt::Display for Invalid {
             }
             Invalid::FunctionName => "Invalid function name.".fmt(out),
             Invalid::AtRule => "This at-rule is not allowed here.".fmt(out),
+            Invalid::MixinInMixin => {
+                "Mixins may not contain mixin declarations.".fmt(out)
+            }
+            Invalid::MixinInControl => {
+                "Mixins may not be declared in control directives.".fmt(out)
+            }
+            Invalid::FunctionInMixin => {
+                "Mixins may not contain function declarations.".fmt(out)
+            }
+            Invalid::FunctionInControl => {
+                "Functions may not be declared in control directives."
+                    .fmt(out)
+            }
             Invalid::AtError(msg) => msg.fmt(out),
         }
     }
