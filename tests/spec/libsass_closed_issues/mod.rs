@@ -5,8 +5,6 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("libsass-closed-issues")
 }
 
-mod t47_str_slice;
-
 mod issue_2640;
 
 mod issue_2681;
