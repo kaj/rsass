@@ -11,8 +11,7 @@ use crate::error::{Error, Invalid};
 use crate::file_context::FileContext;
 use crate::parser::Parsed;
 use crate::sass::{
-    get_global_module, CallArgs, Expose, Function, Item, MixinDecl, Name,
-    UseAs,
+    get_global_module, Expose, Function, Item, MixinDecl, Name, UseAs,
 };
 use crate::value::ValueRange;
 use crate::ScopeRef;
@@ -344,7 +343,13 @@ fn handle_item(
                 MixinDecl::new(args, &scope, body, pos),
             )
         }
-        Item::MixinCall(ref name, ref args, ref body, ref pos) => {
+        Item::MixinCall(
+            ref name,
+            ref args,
+            ref body_args,
+            ref body,
+            ref pos,
+        ) => {
             if let Some(mixin) = scope.get_mixin(&name.into()) {
                 let mixin = mixin.get(
                     name,
@@ -353,7 +358,7 @@ fn handle_item(
                     pos,
                     file_context,
                 )?;
-                mixin.define_content(&scope, body, pos);
+                mixin.define_content(&scope, body_args, body, pos);
                 handle_parsed(
                     mixin.body,
                     head,
@@ -377,7 +382,7 @@ fn handle_item(
                 ));
             }
         }
-        Item::Content(pos) => {
+        Item::Content(args, pos) => {
             if let Some(content) =
                 scope.get_mixin(&Name::from_static("%%BODY%%"))
             {
@@ -385,7 +390,7 @@ fn handle_item(
                     let mixin = content.get(
                         "@content",
                         scope,
-                        &CallArgs::new(vec![])?,
+                        args,
                         pos,
                         file_context,
                     )?;

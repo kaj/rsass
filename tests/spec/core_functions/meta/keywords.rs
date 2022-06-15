@@ -142,7 +142,6 @@ mod forwarded {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn content() {
         let runner = runner().with_cwd("content");
         assert_eq!(

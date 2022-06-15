@@ -160,6 +160,7 @@ impl Mixin {
     pub(crate) fn define_content(
         &self,
         scope: &ScopeRef,
+        args: &FormalArgs,
         body: &Option<Vec<Item>>,
         pos: &SourcePos,
     ) {
@@ -167,7 +168,7 @@ impl Mixin {
             Name::from_static("%%BODY%%"),
             match body {
                 Some(body) => MixinDeclImpl {
-                    args: FormalArgs::none(),
+                    args: args.clone(),
                     scope: scope.clone(),
                     body: body.to_vec(),
                     pos: pos.clone(),

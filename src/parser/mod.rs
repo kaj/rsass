@@ -273,15 +273,27 @@ fn mixin_call2(input: Span) -> PResult<Item> {
     let (rest, n2) = opt(preceded(tag("."), name))(rest)?;
     let name = n2.map(|n2| format!("{}.{}", n1, n2)).unwrap_or(n1);
     let (rest, _) = opt_spacelike(rest)?;
-    let (rest, args) = terminated(opt(call_args), opt_spacelike)(rest)?;
-    let (end, body) = terminated(
-        opt(body_block),
-        terminated(opt_spacelike, opt(tag(";"))),
-    )(rest)?;
+    let (rest0, args) = terminated(opt(call_args), opt_spacelike)(rest)?;
+    let (rest, t) = alt((tag("using"), tag("{"), tag("")))(rest0)?;
+    let (end, body_args, body) = match *t.fragment() {
+        b"using" => {
+            let (rest, args) = preceded(opt_spacelike, formal_args)(rest)?;
+            let (rest, body) = preceded(opt_spacelike, body_block)(rest)?;
+            (rest, args, Some(body))
+        }
+        b"{" => {
+            let (rest, body) = body_block(rest0)?;
+            (rest, FormalArgs::none(), Some(body))
+        }
+        _ => {
+            let (rest, _) = opt(tag(";"))(rest)?;
+            (rest, FormalArgs::none(), None)
+        }
+    };
     let pos = SourcePos::from_to(input, rest).opt_back("@include ");
     Ok((
         end,
-        Item::MixinCall(name, args.unwrap_or_default(), body, pos),
+        Item::MixinCall(name, args.unwrap_or_default(), body_args, body, pos),
     ))
 }
 
@@ -526,9 +538,10 @@ fn return_stmt2<'a>(input0: Span<'_>, input: Span<'a>) -> PResult<'a, Item> {
 /// The "rest" of an `@content` statement is just an optional terminator
 fn content_stmt2(input: Span) -> PResult<Item> {
     let (rest, _) = opt_spacelike(input)?;
+    let (rest, args) = opt(call_args)(rest)?;
     let (rest, _) = opt(tag(";"))(rest)?;
     let pos = SourcePos::from_to(input, rest);
-    Ok((rest, Item::Content(pos)))
+    Ok((rest, Item::Content(args.unwrap_or_default(), pos)))
 }
 
 fn custom_property(input: Span) -> PResult<Item> {
