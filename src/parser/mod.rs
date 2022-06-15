@@ -297,7 +297,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         "error" => {
             let (end, v) = value_expression(input)?;
             let (rest, _) = opt(tag(";"))(end)?;
-            let pos = SourcePos::from_to(input, end).opt_back("@error ");
+            let pos = SourcePos::from_to(input0, end).opt_back("@");
             Ok((rest, Item::Error(v, pos)))
         }
         "for" => for_loop2(input),
@@ -307,12 +307,13 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         "import" => import2(input),
         "include" => mixin_call2(input),
         "mixin" => mixin_declaration2(input),
-        "return" => return_stmt2(input),
+        "return" => return_stmt2(input0, input),
         "use" => use2(input0),
         "warn" => map(expression_argument, Item::Warn)(input),
         "while" => while_loop2(input),
         _ => {
             let (input, name) = sass_string(input0)?;
+            let pos = SourcePos::from_to(input0, input).opt_back("@");
             let (input, args) = opt(media_args)(input)?;
             let (input, body) = preceded(
                 opt(ignore_space),
@@ -324,6 +325,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
                     name,
                     args: args.unwrap_or(Value::Null),
                     body,
+                    pos,
                 },
             ))
         }
@@ -513,11 +515,12 @@ fn function_declaration2(input: Span) -> PResult<Item> {
     Ok((rest, Item::FunctionDeclaration(name, args, pos, body)))
 }
 
-fn return_stmt2(input: Span) -> PResult<Item> {
+fn return_stmt2<'a>(input0: Span<'_>, input: Span<'a>) -> PResult<'a, Item> {
     let (input, v) =
         delimited(opt_spacelike, value_expression, opt_spacelike)(input)?;
+    let pos = SourcePos::from_to(input0, input).opt_back("@");
     let (input, _) = opt(tag(";"))(input)?;
-    Ok((input, Item::Return(v)))
+    Ok((input, Item::Return(v, pos)))
 }
 
 /// The "rest" of an `@content` statement is just an optional terminator

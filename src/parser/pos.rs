@@ -184,6 +184,14 @@ impl SourcePos {
         }
         self
     }
+    /// Only to make error messages match dart-sass in peculiar cases.
+    pub(crate) fn opt_trail_ws(mut self) -> Self {
+        let p: &mut SourcePosImpl = Arc::make_mut(&mut self.p);
+        while p.line.chars().nth(p.line_pos + p.length - 1) == Some(' ') {
+            p.length += 1;
+        }
+        self
+    }
     /// If the position is `calc(some-arg)`, change to only `some-arg`.
     ///
     /// This is only used to make errors from rsass more similar to

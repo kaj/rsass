@@ -1,7 +1,5 @@
-use crate::css::Value;
-use crate::output::Format;
 use crate::parser::{ParseError, SourcePos};
-use crate::sass::Name;
+use crate::sass::{ArgsError, Name};
 use crate::value::RangeError;
 use std::convert::From;
 use std::{fmt, io};
@@ -18,27 +16,19 @@ pub enum Error {
     /// A bad call to a builtin function, with call- and optionally
     /// declaration position.
     BadCall(String, SourcePos, Option<SourcePos>),
-    /// Tried to declare a function with a forbidden name.
-    InvalidFunctionName(SourcePos),
-    /// Some kind of illegal value.
-    BadValue(String),
     /// An illegal value for a specific parameter.
     BadArgument(Name, String),
     /// The pos here is the function declaration.
     /// This error will be wrapped in a BadCall, giving the pos of the call.
-    BadArguments(String, SourcePos),
+    BadArguments(ArgsError, SourcePos),
     /// Tried to import file at pos while already importing it at pos.
     ImportLoop(SourcePos, SourcePos),
     /// A range error
     BadRange(RangeError),
     /// Error parsing sass data.
     ParseError(ParseError),
-    /// An undefined variable was used at source pos.
-    UndefinedVariable(SourcePos),
-    /// Attemt to use an undefined module.
-    UndefModule(String, SourcePos),
-    /// An `@error` reached.
-    AtError(String, SourcePos),
+    /// Something bad at a specific position.
+    Invalid(Invalid, SourcePos),
     /// Fallback error type.
     ///
     /// This just contains a string with some message.
@@ -48,29 +38,6 @@ pub enum Error {
 impl std::error::Error for Error {}
 
 impl Error {
-    /// A bad value with an "(actual) is not (expected)" message.
-    pub fn bad_value(expected: &str, actual: &Value) -> Self {
-        Error::BadValue(format!(
-            "Error: {} is not {}.",
-            actual.format(Format::introspect()),
-            expected,
-        ))
-    }
-
-    /// Wrong kind of argument to a sass function.
-    /// `expected` is a string describing what the parameter should
-    /// have been, `actual` is the argument.
-    pub fn bad_arg(
-        name: Name,
-        actual: &Value,
-        problem: &'static str,
-    ) -> Error {
-        Error::BadArgument(
-            name,
-            format!("{} {}", actual.format(Format::introspect()), problem),
-        )
-    }
-
     /// A generic error message.
     pub fn error<T: AsRef<str>>(msg: T) -> Self {
         Error::S(format!("Error: {}", msg.as_ref()))
@@ -83,18 +50,6 @@ impl fmt::Display for Error {
             Error::S(ref s) => write!(out, "{}", s),
             Error::Input(ref p, ref e) => {
                 write!(out, "Failed to read {:?}: {}", p, e)
-            }
-            Error::UndefinedVariable(ref pos) => {
-                writeln!(out, "Error: Undefined variable.")?;
-                pos.show(out)
-            }
-            Error::UndefModule(ref name, ref pos) => {
-                writeln!(
-                    out,
-                    "Error: There is no module with the namespace {:?}.",
-                    name
-                )?;
-                pos.show(out)
             }
             Error::BadArgument(ref name, ref problem) => {
                 write!(out, "Error: ${}: {}", name, problem)
@@ -129,16 +84,11 @@ impl fmt::Display for Error {
                     callpos.show(out)
                 }
             }
-            Error::InvalidFunctionName(ref pos) => {
-                writeln!(out, "Error: Invalid function name.")?;
-                pos.show(out)
-            }
-            Error::AtError(ref value, ref pos) => {
-                writeln!(out, "Error: {}", value)?;
+            Error::Invalid(ref what, ref pos) => {
+                writeln!(out, "Error: {}", what)?;
                 pos.show(out)
             }
             Error::BadRange(ref err) => err.fmt(out),
-            Error::BadValue(ref err) => err.fmt(out),
             // fallback
             ref x => write!(out, "{:?}", x),
         }
@@ -189,5 +139,67 @@ impl From<ParseError> for Error {
 impl From<RangeError> for Error {
     fn from(e: RangeError) -> Self {
         Error::BadRange(e)
+    }
+}
+
+/// Something invalid.
+///
+/// Should be combined with a position to get an [Error].
+#[derive(Debug)]
+pub enum Invalid {
+    /// An undefined variable was used at source pos.
+    UndefinedVariable,
+    /// Attemt to use an undefined module.
+    UndefModule(String),
+    /// Tried to declare a function with a forbidden name.
+    FunctionName,
+    /// This at rule is not allowed here.
+    AtRule,
+    /// Mixins may not contain mixin declarations.
+    MixinInMixin,
+    /// Mixins may not be declared in control directives.
+    MixinInControl,
+    /// Mixins may not contain function declarations.
+    FunctionInMixin,
+    /// Functions may not be declared in control directives
+    FunctionInControl,
+    /// An `@error` reached.
+    AtError(String),
+}
+impl Invalid {
+    /// Combine this with a position to get a proper error.
+    pub fn at(self, pos: SourcePos) -> Error {
+        Error::Invalid(self, pos)
+    }
+}
+
+impl fmt::Display for Invalid {
+    fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Invalid::UndefinedVariable => "Undefined variable.".fmt(out),
+            Invalid::UndefModule(name) => {
+                write!(
+                    out,
+                    "There is no module with the namespace {:?}.",
+                    name
+                )
+            }
+            Invalid::FunctionName => "Invalid function name.".fmt(out),
+            Invalid::AtRule => "This at-rule is not allowed here.".fmt(out),
+            Invalid::MixinInMixin => {
+                "Mixins may not contain mixin declarations.".fmt(out)
+            }
+            Invalid::MixinInControl => {
+                "Mixins may not be declared in control directives.".fmt(out)
+            }
+            Invalid::FunctionInMixin => {
+                "Mixins may not contain function declarations.".fmt(out)
+            }
+            Invalid::FunctionInControl => {
+                "Functions may not be declared in control directives."
+                    .fmt(out)
+            }
+            Invalid::AtError(msg) => msg.fmt(out),
+        }
     }
 }

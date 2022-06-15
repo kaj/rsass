@@ -26,7 +26,8 @@ pub fn create_module() -> Scope {
             (Value::Color(a, _), Value::Numeric(b, _)) if b.is_no_unit() => {
                 let bn = b
                     .as_ratio()
-                    .map_err(|e| Error::BadValue(e.to_string()))?;
+                    .map_err(|e| e.to_string())
+                    .named(name!(number2))?;
                 Ok((a.to_rgba().as_ref() / bn).into())
             }
             (Value::Numeric(ref a, _), Value::Numeric(ref b, _)) => {

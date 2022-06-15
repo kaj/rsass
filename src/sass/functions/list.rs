@@ -92,9 +92,7 @@ pub fn create_module() -> Scope {
     def_va!(f, slash(elements), |s| {
         let list = get_va_list(s, name!(elements))?;
         if list.len() < 2 {
-            return Err(Error::BadValue(
-                "Error: At least two elements are required.".into(),
-            ));
+            return Err(Error::error("At least two elements are required."));
         }
         Ok(Value::List(list, Some(ListSeparator::Slash), false))
     });

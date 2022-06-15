@@ -1,4 +1,4 @@
-use super::Value;
+use super::{is_not, Value};
 use crate::ordermap::OrderMap;
 use crate::sass::{ArgsError, Name};
 use crate::value::ListSeparator;
@@ -59,7 +59,7 @@ impl CallArgs {
                 Value::Literal(s) => {
                     self.named.insert(s.value().into(), v);
                 }
-                x => return Err(Error::bad_value("a string", &x)),
+                x => return Err(Error::error(is_not(&x, "a string"))),
             }
         }
         Ok(())
