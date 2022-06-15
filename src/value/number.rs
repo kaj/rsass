@@ -422,12 +422,6 @@ impl Number {
     }
 
     /// Returns true if the number is an integer.
-    #[deprecated]
-    pub fn is_integer(&self) -> bool {
-        self.clone().into_integer().is_ok()
-    }
-
-    /// Returns true if the number is an integer.
     pub fn into_integer(self) -> Result<i64, Self> {
         fn float_int(s: &f64) -> Option<i64> {
             if (s.round() - s).abs() <= std::f64::EPSILON {

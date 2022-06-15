@@ -15,6 +15,8 @@ project adheres to
   `Invalid::Something.at(pos)` (PR #145).
 * `@extend` is still unsupported, but now some uses of it (e.g. in control
   structures) will result in an error instead of wrong output.
+* Remove deprecated methods `css::Value::integer_value()` and
+  `Number::is_integer()`.
 
 ### Improvements
 

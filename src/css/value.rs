@@ -1,5 +1,4 @@
 use super::{is_function_name, is_not, CallArgs, CssString};
-use crate::error::Error;
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
 use crate::sass::Function;
@@ -137,19 +136,6 @@ impl Value {
         match self {
             Value::Numeric(num, ..) => Ok(num),
             v => Err(v),
-        }
-    }
-
-    /// Check that this value is an integer.
-    #[deprecated]
-    pub fn integer_value(&self) -> Result<i64, Error> {
-        match self {
-            &Value::Numeric(ref num, ..) => num
-                .value
-                .clone()
-                .into_integer()
-                .map_err(|_| Error::error(is_not(self, "an integer"))),
-            v => Err(Error::error(is_not(v, "a number"))),
         }
     }
 
