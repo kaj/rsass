@@ -1,8 +1,8 @@
+use super::{Callable, FormalArgs, Name};
 use crate::css::{self, is_not, CallArgs, CssString, Value};
 use crate::error::Error;
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
-use crate::sass::{FormalArgs, Name};
 use crate::value::{CssDimension, Numeric, Operator, Quotes};
 use crate::{sass, Scope, ScopeRef};
 use lazy_static::lazy_static;
@@ -138,16 +138,11 @@ impl Function {
     ///
     /// The scope is where the function is defined, used to bind any
     /// non-parameter names in the body.
-    pub fn closure(
-        args: FormalArgs,
-        pos: SourcePos,
-        scope: ScopeRef,
-        body: Vec<sass::Item>,
-    ) -> Self {
+    pub fn closure(body: Callable, scope: ScopeRef) -> Self {
         Function {
-            args,
-            pos,
-            body: FuncImpl::UserDefined(scope, body),
+            args: body.args,
+            pos: body.decl,
+            body: FuncImpl::UserDefined(scope, body.body),
         }
     }
 

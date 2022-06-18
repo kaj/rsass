@@ -11,6 +11,7 @@ macro_rules! name {
 }
 
 mod call_args;
+mod callable;
 mod formal_args;
 mod functions;
 mod item;
@@ -21,6 +22,7 @@ mod string;
 mod value;
 
 pub use self::call_args::CallArgs;
+pub use self::callable::Callable;
 pub use self::formal_args::{ArgsError, FormalArgs};
 pub use self::functions::{get_global_module, Function};
 pub use self::item::{Expose, Item, UseAs};

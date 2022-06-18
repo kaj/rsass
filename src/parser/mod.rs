@@ -34,7 +34,7 @@ use self::util::{
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
-use crate::sass::{FormalArgs, Item, Name, Selectors, Value};
+use crate::sass::{Callable, FormalArgs, Item, Name, Selectors, Value};
 use crate::value::ListSeparator;
 #[cfg(test)]
 use crate::value::{Numeric, Rgba, Unit};
@@ -275,25 +275,27 @@ fn mixin_call2(input: Span) -> PResult<Item> {
     let (rest, _) = opt_spacelike(rest)?;
     let (rest0, args) = terminated(opt(call_args), opt_spacelike)(rest)?;
     let (rest, t) = alt((tag("using"), tag("{"), tag("")))(rest0)?;
-    let (end, body_args, body) = match *t.fragment() {
+    let (end, body) = match *t.fragment() {
         b"using" => {
-            let (rest, args) = preceded(opt_spacelike, formal_args)(rest)?;
-            let (rest, body) = preceded(opt_spacelike, body_block)(rest)?;
-            (rest, args, Some(body))
+            let (end, args) = preceded(opt_spacelike, formal_args)(rest)?;
+            let (rest, body) = preceded(opt_spacelike, body_block)(end)?;
+            let decl = SourcePos::from_to(rest0, end);
+            (rest, Some(Callable::new(args, body, decl)))
         }
         b"{" => {
             let (rest, body) = body_block(rest0)?;
-            (rest, FormalArgs::none(), Some(body))
+            let decl = SourcePos::from_to(rest0, rest);
+            (rest, Some(Callable::no_args(body, decl)))
         }
         _ => {
             let (rest, _) = opt(tag(";"))(rest)?;
-            (rest, FormalArgs::none(), None)
+            (rest, None)
         }
     };
     let pos = SourcePos::from_to(input, rest).opt_back("@include ");
     Ok((
         end,
-        Item::MixinCall(name, args.unwrap_or_default(), body_args, body, pos),
+        Item::MixinCall(name, args.unwrap_or_default(), body, pos),
     ))
 }
 
@@ -515,16 +517,22 @@ fn mixin_declaration2(input: Span) -> PResult<Item> {
     let (rest, args) = opt(formal_args)(rest)?;
     let (end, body) = preceded(opt_spacelike, body_block)(rest)?;
     let args = args.unwrap_or_else(FormalArgs::none);
-    let pos = SourcePos::from_to(input, rest);
-    Ok((end, Item::MixinDeclaration(name, args, body, pos)))
+    let decl = SourcePos::from_to(input, rest);
+    Ok((
+        end,
+        Item::MixinDeclaration(name, Callable { args, body, decl }),
+    ))
 }
 
 fn function_declaration2(input: Span) -> PResult<Item> {
     let (end, name) = terminated(name, opt_spacelike)(input)?;
     let (end, args) = formal_args(end)?;
     let (rest, body) = preceded(opt_spacelike, body_block)(end)?;
-    let pos = SourcePos::from_to(input, end);
-    Ok((rest, Item::FunctionDeclaration(name, args, pos, body)))
+    let decl = SourcePos::from_to(input, end);
+    Ok((
+        rest,
+        Item::FunctionDeclaration(name, Callable { args, body, decl }),
+    ))
 }
 
 fn return_stmt2<'a>(input0: Span<'_>, input: Span<'a>) -> PResult<'a, Item> {

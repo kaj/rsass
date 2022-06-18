@@ -311,45 +311,31 @@ fn handle_item(
             let val = val.do_evaluate(scope.clone(), true)?;
             scope.set_variable(name.into(), val, *default, *global);
         }
-        Item::FunctionDeclaration(ref name, ref args, ref pos, ref body) => {
+        Item::FunctionDeclaration(ref name, ref body) => {
             if name == "calc"
                 || name == "element"
                 || name == "expression"
                 || name == "url"
             {
                 // Ok, this is cheating for the test suite ...
-                let p = pos.clone().opt_back("@function ");
+                let p = body.decl.clone().opt_back("@function ");
                 return Err(Invalid::FunctionName.at(p));
             }
-            check_body(body, BodyContext::Function)?;
+            check_body(&body.body, BodyContext::Function)?;
             scope.define_function(
                 name.into(),
-                Function::closure(
-                    args.clone(),
-                    pos.clone(),
-                    scope.clone(),
-                    body.clone(),
-                ),
+                Function::closure(body.clone(), scope.clone()),
             );
         }
         Item::Return(_, ref pos) => {
             return Err(Invalid::AtRule.at(pos.clone()));
         }
 
-        Item::MixinDeclaration(ref name, ref args, ref body, ref pos) => {
-            check_body(body, BodyContext::Mixin)?;
-            scope.define_mixin(
-                name.into(),
-                MixinDecl::new(args, &scope, body, pos),
-            )
+        Item::MixinDeclaration(ref name, ref body) => {
+            check_body(&body.body, BodyContext::Mixin)?;
+            scope.define_mixin(name.into(), MixinDecl::new(body, &scope))
         }
-        Item::MixinCall(
-            ref name,
-            ref args,
-            ref body_args,
-            ref body,
-            ref pos,
-        ) => {
+        Item::MixinCall(ref name, ref args, ref body, ref pos) => {
             if let Some(mixin) = scope.get_mixin(&name.into()) {
                 let mixin = mixin.get(
                     name,
@@ -358,7 +344,7 @@ fn handle_item(
                     pos,
                     file_context,
                 )?;
-                mixin.define_content(&scope, body_args, body, pos);
+                mixin.define_content(&scope, body, pos);
                 handle_parsed(
                     mixin.body,
                     head,
@@ -605,8 +591,8 @@ fn check_body(body: &[Item], context: BodyContext) -> Result<(), Error> {
             Item::Use(_, _, _, pos) => {
                 return Err(Invalid::AtRule.at(pos.clone()));
             }
-            Item::MixinDeclaration(.., ref pos) => {
-                let pos = pos.clone().opt_back("@mixin ");
+            Item::MixinDeclaration(.., ref decl) => {
+                let pos = decl.decl.clone().opt_back("@mixin ");
                 match context {
                     BodyContext::Mixin => {
                         return Err(Invalid::MixinInMixin.at(pos));
@@ -620,8 +606,8 @@ fn check_body(body: &[Item], context: BodyContext) -> Result<(), Error> {
                     }
                 }
             }
-            Item::FunctionDeclaration(_, _, ref pos, _) => {
-                let pos = pos.clone().opt_back("@function ");
+            Item::FunctionDeclaration(_, ref body) => {
+                let pos = body.decl.clone().opt_back("@function ");
                 match context {
                     BodyContext::Mixin => {
                         return Err(Invalid::FunctionInMixin.at(pos));

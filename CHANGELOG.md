@@ -15,11 +15,15 @@ project adheres to
   `Invalid::Something.at(pos)` (PR #145).
 * `@extend` is still unsupported, but now some uses of it (e.g. in control
   structures) will result in an error instead of wrong output.
+* Some `sass::Item` alternatives now contain a `Callable`, combining a
+  `FormalArgs` with a body (a `Vec<Item>`).  And `sass::Item::Call` now has
+  a `CallArgs` (PR #146).
 * Remove deprecated methods `css::Value::integer_value()` and
   `Number::is_integer()`.
 
 ### Improvements
 
+* The `@content` can have arguments when declaring and calling a mixin.
 * Allow interpolation in css min and max function arguments.
 * The url for `@use` and `@forward` must be quoted.
 * Some `@` rules are now forbidden in some places as they should (PR #145).

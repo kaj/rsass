@@ -1,5 +1,5 @@
 use super::functions::get_string;
-use super::{CallArgs, FormalArgs, Item, Name, Value};
+use super::{CallArgs, Callable, FormalArgs, Name, Value};
 use crate::css::{CssString, ValueToMapError};
 use crate::file_context::FileContext;
 use crate::ordermap::OrderMap;
@@ -20,9 +20,8 @@ pub enum MixinDecl {
 
 #[derive(Clone)]
 pub struct MixinDeclImpl {
-    args: FormalArgs,
+    body: Callable,
     scope: ScopeRef,
-    body: Vec<Item>,
     pos: SourcePos,
 }
 
@@ -34,17 +33,11 @@ impl From<MixinDeclImpl> for MixinDecl {
 
 impl MixinDecl {
     /// Create a new Mixin.
-    pub fn new(
-        args: &FormalArgs,
-        scope: &ScopeRef,
-        body: &[Item],
-        pos: &SourcePos,
-    ) -> Self {
+    pub fn new(body: &Callable, scope: &ScopeRef) -> Self {
         MixinDeclImpl {
-            args: args.clone(),
+            body: body.clone(),
             scope: scope.clone(),
-            body: body.to_vec(),
-            pos: pos.clone(),
+            pos: body.decl.clone(),
         }
         .into()
     }
@@ -61,6 +54,7 @@ impl MixinDecl {
                 let sel = scope.get_selectors().clone();
                 Ok(Mixin {
                     scope: decl
+                        .body
                         .args
                         .eval(
                             ScopeRef::sub_selectors(decl.scope.clone(), sel),
@@ -72,7 +66,7 @@ impl MixinDecl {
                                 decl.pos.clone(),
                             )
                         })?,
-                    body: Parsed::Scss(decl.body),
+                    body: Parsed::Scss(decl.body.body),
                 })
             }
             MixinDecl::NoBody => unreachable!(),
@@ -160,17 +154,15 @@ impl Mixin {
     pub(crate) fn define_content(
         &self,
         scope: &ScopeRef,
-        args: &FormalArgs,
-        body: &Option<Vec<Item>>,
+        body: &Option<Callable>,
         pos: &SourcePos,
     ) {
         self.scope.define_mixin(
             Name::from_static("%%BODY%%"),
             match body {
                 Some(body) => MixinDeclImpl {
-                    args: args.clone(),
+                    body: body.clone(),
                     scope: scope.clone(),
-                    body: body.to_vec(),
                     pos: pos.clone(),
                 }
                 .into(),
