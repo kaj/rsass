@@ -1,5 +1,5 @@
 use super::functions::get_string;
-use super::{CallArgs, Callable, FormalArgs, Name, Value};
+use super::{CallArgs, Callable, Closure, FormalArgs, Name, Value};
 use crate::css::{CssString, ValueToMapError};
 use crate::file_context::FileContext;
 use crate::ordermap::OrderMap;
@@ -11,36 +11,20 @@ use std::convert::TryInto;
 #[derive(Clone)]
 pub enum MixinDecl {
     /// an actual mixin
-    Sass(MixinDeclImpl),
+    Sass(Closure),
     /// The body of a mixin call that does not have a body
     NoBody,
     /// The special `load-css` mixin.
     LoadCss,
 }
 
-#[derive(Clone)]
-pub struct MixinDeclImpl {
-    body: Callable,
-    scope: ScopeRef,
-    pos: SourcePos,
-}
-
-impl From<MixinDeclImpl> for MixinDecl {
-    fn from(decl: MixinDeclImpl) -> Self {
+impl From<Closure> for MixinDecl {
+    fn from(decl: Closure) -> Self {
         MixinDecl::Sass(decl)
     }
 }
 
 impl MixinDecl {
-    /// Create a new Mixin.
-    pub fn new(body: &Callable, scope: &ScopeRef) -> Self {
-        MixinDeclImpl {
-            body: body.clone(),
-            scope: scope.clone(),
-            pos: body.decl.clone(),
-        }
-        .into()
-    }
     pub(crate) fn get(
         self,
         name: &str,
@@ -63,13 +47,13 @@ impl MixinDecl {
                         .map_err(|e| {
                             e.decl_called(
                                 call_pos.in_call(name),
-                                decl.pos.clone(),
+                                decl.body.decl.clone(),
                             )
                         })?,
                     body: Parsed::Scss(decl.body.body),
                 })
             }
-            MixinDecl::NoBody => unreachable!(),
+            MixinDecl::NoBody => Ok(Mixin::empty(scope)),
             MixinDecl::LoadCss => {
                 let fargs = FormalArgs::new(vec![
                     (name!(url), None),
@@ -97,10 +81,7 @@ impl MixinDecl {
                     .any(|name| *name == url.value())
                 {
                     if with.unwrap_or_default().is_empty() {
-                        return Ok(Mixin {
-                            scope,
-                            body: Parsed::Css(vec![]),
-                        });
+                        return Ok(Mixin::empty(scope));
                     } else {
                         return Err(Error::BadCall(
                             format!(
@@ -151,21 +132,21 @@ pub struct Mixin {
 }
 
 impl Mixin {
+    fn empty(scope: ScopeRef) -> Self {
+        Mixin {
+            scope,
+            body: Parsed::Css(vec![]),
+        }
+    }
     pub(crate) fn define_content(
         &self,
         scope: &ScopeRef,
         body: &Option<Callable>,
-        pos: &SourcePos,
     ) {
         self.scope.define_mixin(
             Name::from_static("%%BODY%%"),
             match body {
-                Some(body) => MixinDeclImpl {
-                    body: body.clone(),
-                    scope: scope.clone(),
-                    pos: pos.clone(),
-                }
-                .into(),
+                Some(body) => body.closure(scope).into(),
                 None => MixinDecl::NoBody,
             },
         )

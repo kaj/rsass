@@ -1,4 +1,4 @@
-use super::{Callable, FormalArgs, Name};
+use super::{Closure, FormalArgs, Name};
 use crate::css::{self, is_not, CallArgs, CssString, Value};
 use crate::error::Error;
 use crate::output::{Format, Formatted};
@@ -134,18 +134,6 @@ impl Function {
         }
     }
 
-    /// Create a new `Function` from a scss implementation.
-    ///
-    /// The scope is where the function is defined, used to bind any
-    /// non-parameter names in the body.
-    pub fn closure(body: Callable, scope: ScopeRef) -> Self {
-        Function {
-            args: body.args,
-            pos: body.decl,
-            body: FuncImpl::UserDefined(scope, body.body),
-        }
-    }
-
     /// Call the function from a given scope and with a given set of
     /// arguments.
     pub fn call(
@@ -180,6 +168,16 @@ impl Function {
         self.args
             .eval(def, args)
             .map_err(|e| e.declared_at(&self.pos))
+    }
+}
+
+impl From<Closure> for Function {
+    fn from(c: Closure) -> Self {
+        Function {
+            args: c.body.args,
+            pos: c.body.decl,
+            body: FuncImpl::UserDefined(c.scope, c.body.body),
+        }
     }
 }
 

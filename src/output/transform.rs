@@ -10,9 +10,7 @@ use crate::css::{BodyItem, Comment, Import, Property, Rule, Selectors};
 use crate::error::{Error, Invalid};
 use crate::file_context::FileContext;
 use crate::parser::Parsed;
-use crate::sass::{
-    get_global_module, Expose, Function, Item, MixinDecl, Name, UseAs,
-};
+use crate::sass::{get_global_module, Expose, Item, Name, UseAs};
 use crate::value::ValueRange;
 use crate::ScopeRef;
 use std::io::Write;
@@ -322,10 +320,7 @@ fn handle_item(
                 return Err(Invalid::FunctionName.at(p));
             }
             check_body(&body.body, BodyContext::Function)?;
-            scope.define_function(
-                name.into(),
-                Function::closure(body.clone(), scope.clone()),
-            );
+            scope.define_function(name.into(), body.closure(&scope).into());
         }
         Item::Return(_, ref pos) => {
             return Err(Invalid::AtRule.at(pos.clone()));
@@ -333,7 +328,7 @@ fn handle_item(
 
         Item::MixinDeclaration(ref name, ref body) => {
             check_body(&body.body, BodyContext::Mixin)?;
-            scope.define_mixin(name.into(), MixinDecl::new(body, &scope))
+            scope.define_mixin(name.into(), body.closure(&scope).into())
         }
         Item::MixinCall(ref name, ref args, ref body, ref pos) => {
             if let Some(mixin) = scope.get_mixin(&name.into()) {
@@ -344,7 +339,7 @@ fn handle_item(
                     pos,
                     file_context,
                 )?;
-                mixin.define_content(&scope, body, pos);
+                mixin.define_content(&scope, body);
                 handle_parsed(
                     mixin.body,
                     head,
@@ -372,23 +367,21 @@ fn handle_item(
             if let Some(content) =
                 scope.get_mixin(&Name::from_static("%%BODY%%"))
             {
-                if !content.is_no_body() {
-                    let mixin = content.get(
-                        "@content",
-                        scope,
-                        args,
-                        pos,
-                        file_context,
-                    )?;
-                    handle_parsed(
-                        mixin.body,
-                        head,
-                        rule,
-                        buf,
-                        mixin.scope,
-                        file_context,
-                    )?;
-                }
+                let mixin = content.get(
+                    "@content",
+                    scope,
+                    args,
+                    pos,
+                    file_context,
+                )?;
+                handle_parsed(
+                    mixin.body,
+                    head,
+                    rule,
+                    buf,
+                    mixin.scope,
+                    file_context,
+                )?;
             }
         }
 

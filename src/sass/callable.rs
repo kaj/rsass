@@ -1,5 +1,5 @@
 use super::{FormalArgs, Item};
-use crate::SourcePos;
+use crate::{ScopeRef, SourcePos};
 
 /// The callable part of a sass mixin or function.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
@@ -22,4 +22,18 @@ impl Callable {
             decl,
         }
     }
+    /// Combine this callable with a scope to get a closure.
+    pub fn closure(&self, scope: &ScopeRef) -> Closure {
+        Closure {
+            body: self.clone(),
+            scope: scope.clone(),
+        }
+    }
+}
+
+/// A callable combined with the runtime scope where it was declared.
+#[derive(Clone)]
+pub struct Closure {
+    pub(crate) body: Callable,
+    pub(crate) scope: ScopeRef,
 }
