@@ -4,6 +4,7 @@ use crate::error::Invalid;
 use crate::output::Format;
 use crate::sass::{Expose, Function, Item, MixinDecl, Name, UseAs};
 use crate::{Error, SourcePos};
+use arc_swap::ArcSwapOption;
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::ops::Deref;
@@ -218,6 +219,8 @@ pub struct Scope {
     selectors: Option<Selectors>,
     forward: Mutex<Option<ScopeRef>>,
     format: Format,
+    /// The thing to use for `@content` in a mixin.
+    content: ArcSwapOption<MixinDecl>,
     // Set of files currently loading. Only used in the root scope.
     loading: Mutex<BTreeMap<String, SourcePos>>,
 }
@@ -238,6 +241,7 @@ impl<'a> Scope {
             selectors: None,
             forward: Default::default(),
             format,
+            content: None.into(),
             loading: Default::default(),
         }
     }
@@ -270,6 +274,7 @@ impl<'a> Scope {
             selectors: None,
             forward: Default::default(),
             format,
+            content: None.into(),
             loading: Default::default(),
         }
     }
@@ -285,6 +290,7 @@ impl<'a> Scope {
             selectors: Some(selectors),
             forward: Default::default(),
             format,
+            content: None.into(),
             loading: Default::default(),
         }
     }
@@ -632,6 +638,16 @@ impl<'a> Scope {
         } else {
             self.loading.lock().unwrap().remove(name);
         }
+    }
+
+    pub(crate) fn define_content(&self, body: MixinDecl) {
+        self.content.store(Some(Arc::new(body)));
+    }
+    pub(crate) fn get_content(&self) -> Option<MixinDecl> {
+        self.content
+            .load_full()
+            .map(|c| (*c).clone())
+            .or_else(|| self.parent.as_ref().and_then(|p| p.get_content()))
     }
 }
 

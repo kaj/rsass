@@ -10,7 +10,7 @@ use crate::css::{BodyItem, Comment, Import, Property, Rule, Selectors};
 use crate::error::{Error, Invalid};
 use crate::file_context::FileContext;
 use crate::parser::Parsed;
-use crate::sass::{get_global_module, Expose, Item, Name, UseAs};
+use crate::sass::{get_global_module, Expose, Item, UseAs};
 use crate::value::ValueRange;
 use crate::ScopeRef;
 use std::io::Write;
@@ -364,9 +364,7 @@ fn handle_item(
             }
         }
         Item::Content(args, pos) => {
-            if let Some(content) =
-                scope.get_mixin(&Name::from_static("%%BODY%%"))
-            {
+            if let Some(content) = scope.get_content() {
                 let mixin = content.get(
                     "@content",
                     scope,

@@ -3,7 +3,7 @@ use super::{
     CheckedArg, Error, FunctionMap,
 };
 use crate::css::{CallArgs, CssString, Value};
-use crate::sass::{Function, MixinDecl, Name};
+use crate::sass::{Function, MixinDecl};
 use crate::value::Quotes;
 use crate::{Format, Scope, ScopeRef};
 
@@ -66,8 +66,7 @@ pub fn create_module() -> Scope {
         }
     });
     def!(f, content_exists(), |s| {
-        let content = call_scope(s).get_mixin(&Name::from_static("%%BODY%%"));
-        if let Some(content) = content {
+        if let Some(content) = call_scope(s).get_content() {
             Ok((!content.is_no_body()).into())
         } else {
             Err(Error::error(

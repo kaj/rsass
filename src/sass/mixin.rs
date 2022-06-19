@@ -143,13 +143,10 @@ impl Mixin {
         scope: &ScopeRef,
         body: &Option<Callable>,
     ) {
-        self.scope.define_mixin(
-            Name::from_static("%%BODY%%"),
-            match body {
-                Some(body) => body.closure(scope).into(),
-                None => MixinDecl::NoBody,
-            },
-        )
+        self.scope.define_content(match body {
+            Some(body) => body.closure(scope).into(),
+            None => MixinDecl::NoBody,
+        })
     }
 }
 
