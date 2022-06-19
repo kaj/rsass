@@ -4,7 +4,7 @@ use crate::error::Error;
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
 use crate::value::{CssDimension, Numeric, Operator, Quotes};
-use crate::{sass, Scope, ScopeRef};
+use crate::{Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -29,60 +29,65 @@ type BuiltinFn = dyn Fn(&ScopeRef) -> Result<Value, Error> + Send + Sync;
 /// "user defined" (implemented in scss).
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Function {
-    args: FormalArgs,
-    pos: SourcePos,
     body: FuncImpl,
 }
 
-#[derive(Clone)]
-pub enum FuncImpl {
-    Builtin(Arc<BuiltinFn>),
+#[derive(Clone, PartialEq, Eq, PartialOrd)]
+enum FuncImpl {
+    Builtin(Builtin),
     /// A user-defined function is really a closure, it has a scope
     /// where it is defined and a body of items.
-    UserDefined(ScopeRef, Vec<sass::Item>),
+    UserDefined(Closure),
 }
 
-impl PartialOrd for FuncImpl {
-    fn partial_cmp(&self, rhs: &Self) -> Option<cmp::Ordering> {
-        match (self, rhs) {
-            (&FuncImpl::Builtin(..), &FuncImpl::Builtin(..)) => None,
-            (&FuncImpl::Builtin(..), &FuncImpl::UserDefined(..)) => {
-                Some(cmp::Ordering::Less)
-            }
-            (&FuncImpl::UserDefined(..), &FuncImpl::Builtin(..)) => {
-                Some(cmp::Ordering::Greater)
-            }
-            (
-                &FuncImpl::UserDefined(ref _sa, ref a),
-                &FuncImpl::UserDefined(ref _sb, ref b),
-            ) => a.partial_cmp(b),
+#[derive(Clone)]
+struct Builtin {
+    args: FormalArgs,
+    pos: SourcePos,
+    body: Arc<BuiltinFn>,
+}
+
+impl Builtin {
+    fn eval_value(
+        &self,
+        callscope: ScopeRef,
+        callargs: CallArgs,
+    ) -> Result<Value, Error> {
+        let s = self
+            .args
+            .eval(ScopeRef::new_global(callscope.get_format()), callargs)
+            .map_err(|e| e.declared_at(&self.pos))?;
+        s.define_module("%%CALLING_SCOPE%%".into(), callscope);
+        (self.body)(&s)
+    }
+}
+
+impl PartialOrd for Builtin {
+    fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
+        if self == other {
+            Some(cmp::Ordering::Equal)
+        } else {
+            None
         }
     }
 }
 
-impl cmp::PartialEq for FuncImpl {
-    fn eq(&self, rhs: &FuncImpl) -> bool {
-        match (self, rhs) {
-            (
-                &FuncImpl::UserDefined(ref sa, ref a),
-                &FuncImpl::UserDefined(ref sb, ref b),
-            ) => ScopeRef::is_same(sa, sb) && a == b,
-            (&FuncImpl::Builtin(ref a), &FuncImpl::Builtin(ref b)) => {
-                // Each builtin function is only created once, so this
-                // should be ok.
-                #[allow(clippy::vtable_address_comparisons)]
-                Arc::ptr_eq(a, b)
-            }
-            _ => false,
+impl cmp::PartialEq for Builtin {
+    fn eq(&self, other: &Self) -> bool {
+        // Each builtin function is only created once, so this
+        // should be ok.
+        self.args == other.args && self.pos == other.pos && {
+            #[allow(clippy::vtable_address_comparisons)]
+            Arc::ptr_eq(&self.body, &other.body)
         }
     }
 }
-impl cmp::Eq for FuncImpl {}
+impl cmp::Eq for Builtin {}
 
 impl fmt::Debug for FuncImpl {
     fn fmt(&self, out: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
-            FuncImpl::Builtin(_) => write!(out, "(builtin function)"),
+            FuncImpl::Builtin(..) => write!(out, "(builtin function)"),
             FuncImpl::UserDefined(..) => {
                 write!(out, "(user-defined function)")
             }
@@ -128,9 +133,7 @@ impl Function {
     ) -> Self {
         let pos = SourcePos::mock_function(name, &args, module);
         Function {
-            args,
-            pos,
-            body: FuncImpl::Builtin(body),
+            body: FuncImpl::Builtin(Builtin { args, pos, body }),
         }
     }
 
@@ -139,44 +142,24 @@ impl Function {
     pub fn call(
         &self,
         callscope: ScopeRef,
-        args: CallArgs,
+        callargs: CallArgs,
     ) -> Result<Value, Error> {
-        let cs = "%%CALLING_SCOPE%%";
         match self.body {
-            FuncImpl::Builtin(ref body) => {
-                let s = self.do_eval_args(
-                    ScopeRef::new_global(callscope.get_format()),
-                    args,
-                )?;
-                s.define_module(cs.into(), callscope);
-                body(&s)
+            FuncImpl::Builtin(ref builtin) => {
+                builtin.eval_value(callscope, callargs)
             }
-            FuncImpl::UserDefined(ref defscope, ref body) => {
-                let s = self.do_eval_args(defscope.clone(), args)?;
-                s.define_module(cs.into(), callscope);
-                Ok(s.eval_body(body)?.unwrap_or(Value::Null))
+            FuncImpl::UserDefined(ref closure) => {
+                closure.eval_value(callscope, callargs)
             }
         }
         .map(Value::into_calculated)
-    }
-
-    fn do_eval_args(
-        &self,
-        def: ScopeRef,
-        args: CallArgs,
-    ) -> Result<ScopeRef, Error> {
-        self.args
-            .eval(def, args)
-            .map_err(|e| e.declared_at(&self.pos))
     }
 }
 
 impl From<Closure> for Function {
     fn from(c: Closure) -> Self {
         Function {
-            args: c.body.args,
-            pos: c.body.decl,
-            body: FuncImpl::UserDefined(c.scope, c.body.body),
+            body: FuncImpl::UserDefined(c),
         }
     }
 }

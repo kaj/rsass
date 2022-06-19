@@ -1,5 +1,8 @@
 use super::{FormalArgs, Item};
-use crate::{ScopeRef, SourcePos};
+use crate::{
+    css::{CallArgs, Value},
+    Error, ScopeRef, SourcePos,
+};
 
 /// The callable part of a sass mixin or function.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
@@ -36,4 +39,53 @@ impl Callable {
 pub struct Closure {
     pub(crate) body: Callable,
     pub(crate) scope: ScopeRef,
+}
+
+impl Closure {
+    /// Evaluate this callable as a value.
+    ///
+    /// This is used when the callable is a scss function.
+    pub fn eval_value(
+        &self,
+        callscope: ScopeRef,
+        args: CallArgs,
+    ) -> Result<Value, Error> {
+        let s = self.do_eval_args(self.scope.clone(), args)?;
+        s.define_module("%%CALLING_SCOPE%%".into(), callscope);
+        Ok(s.eval_body(&self.body.body)?.unwrap_or(Value::Null))
+    }
+
+    fn do_eval_args(
+        &self,
+        def: ScopeRef,
+        args: CallArgs,
+    ) -> Result<ScopeRef, Error> {
+        self.body
+            .args
+            .eval(def, args)
+            .map_err(|e| e.declared_at(&self.body.decl))
+    }
+}
+
+impl std::cmp::PartialEq for Closure {
+    fn eq(&self, other: &Self) -> bool {
+        ScopeRef::is_same(&self.scope, &other.scope)
+            && self.body == other.body
+    }
+}
+impl std::cmp::Eq for Closure {}
+impl std::cmp::PartialOrd for Closure {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        match self.body.partial_cmp(&other.body) {
+            None => None,
+            Some(std::cmp::Ordering::Equal) => {
+                if ScopeRef::is_same(&self.scope, &other.scope) {
+                    Some(std::cmp::Ordering::Equal)
+                } else {
+                    None
+                }
+            }
+            Some(defined) => Some(defined),
+        }
+    }
 }
