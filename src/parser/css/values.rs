@@ -113,5 +113,12 @@ fn call_args(input: Span) -> PResult<CallArgs> {
         alt((terminated(tag(","), opt_spacelike), peek(tag(")")))),
     ))(rest)?;
 
-    Ok((rest, CallArgs { positional, named }))
+    Ok((
+        rest,
+        CallArgs {
+            positional,
+            named,
+            trailing_comma: false,
+        },
+    ))
 }

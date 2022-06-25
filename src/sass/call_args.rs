@@ -13,13 +13,17 @@ pub struct CallArgs {
     positional: Vec<Value>,
     // Ordered for formattig.
     named: OrderMap<Name, Value>,
+    trailing_comma: bool,
 }
 
 impl CallArgs {
     /// Create a new callargs from a vec of name-value pairs.
     ///
     /// The names is none for positional arguments.
-    pub fn new(v: Vec<(Option<Name>, Value)>) -> Result<Self, Error> {
+    pub fn new(
+        v: Vec<(Option<Name>, Value)>,
+        trailing_comma: bool,
+    ) -> Result<Self, Error> {
         let mut positional = Vec::new();
         let mut named = OrderMap::new();
         for (name, value) in v {
@@ -33,7 +37,11 @@ impl CallArgs {
                 return Err(Error::error("positional arg after named."));
             }
         }
-        Ok(CallArgs { positional, named })
+        Ok(CallArgs {
+            positional,
+            named,
+            trailing_comma,
+        })
     }
 
     /// Create a new CallArgs from one single unnamed argument.
@@ -41,12 +49,12 @@ impl CallArgs {
         CallArgs {
             positional: vec![value],
             named: Default::default(),
+            trailing_comma: false,
         }
     }
 
     /// Evaluate these sass CallArgs to css CallArgs.
     pub fn evaluate(&self, scope: ScopeRef) -> Result<Call, Error> {
-        let positional = Vec::new();
         let named = self.named.iter().try_fold(
             OrderMap::new(),
             |mut acc, (name, arg)| {
@@ -56,7 +64,11 @@ impl CallArgs {
                 })
             },
         )?;
-        let mut result = css::CallArgs { positional, named };
+        let mut result = css::CallArgs {
+            positional: Vec::new(),
+            named,
+            trailing_comma: self.trailing_comma,
+        };
         for arg in &self.positional {
             match is_splat(arg) {
                 Some([one]) => match one.do_evaluate(scope.clone(), true)? {

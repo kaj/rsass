@@ -39,27 +39,32 @@ pub fn formal_args(input: Span) -> PResult<FormalArgs> {
 }
 
 pub fn call_args(input: Span) -> PResult<CallArgs> {
-    let (input, _) = tag("(")(input)?;
-    let (input, v) = map_res(
-        separated_list0(
-            delimited(opt_spacelike, tag(","), opt_spacelike),
+    map_res(
+        delimited(
+            terminated(tag("("), opt_spacelike),
             pair(
-                opt(delimited(
-                    tag("$"),
-                    map(name, Name::from),
-                    preceded(ignore_comments, tag(":")),
-                )),
-                alt((
-                    space_list,
-                    delimited(ignore_comments, space_list, ignore_comments),
-                )),
+                separated_list0(
+                    delimited(opt_spacelike, tag(","), opt_spacelike),
+                    pair(
+                        opt(delimited(
+                            tag("$"),
+                            map(name, Name::from),
+                            preceded(ignore_comments, tag(":")),
+                        )),
+                        alt((
+                            space_list,
+                            delimited(
+                                ignore_comments,
+                                space_list,
+                                ignore_comments,
+                            ),
+                        )),
+                    ),
+                ),
+                delimited(opt_spacelike, opt(tag(",")), opt_spacelike),
             ),
+            tag(")"),
         ),
-        CallArgs::new,
-    )(input)?;
-    let (input, _) = preceded(
-        opt(delimited(opt_spacelike, opt(tag(",")), opt_spacelike)),
-        tag(")"),
-    )(input)?;
-    Ok((input, v))
+        |(args, trail)| CallArgs::new(args, trail.is_some()),
+    )(input)
 }
