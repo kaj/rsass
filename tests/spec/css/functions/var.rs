@@ -30,7 +30,6 @@ mod css_function {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn rest() {
             let runner = runner().with_cwd("rest");
             assert_eq!(
@@ -59,7 +58,6 @@ mod css_function {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn dynamic() {
             let runner = runner().with_cwd("dynamic");
             assert_eq!(
@@ -98,6 +96,7 @@ mod css_function {
                 );
             }
             #[test]
+            #[ignore] // wrong result
             fn whitespace_after() {
                 let runner = runner().with_cwd("whitespace_after");
                 assert_eq!(
@@ -141,7 +140,6 @@ mod css_function {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn rest() {
             let runner = runner().with_cwd("rest");
             assert_eq!(
@@ -178,7 +176,7 @@ mod error {
     }
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn empty_after_keyword() {
         let runner = runner().with_cwd("empty_after_keyword");
         assert_eq!(
@@ -198,7 +196,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn empty_second_before_third() {
         let runner = runner().with_cwd("empty_second_before_third");
         assert_eq!(
@@ -212,7 +210,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn invalid_second_arg_syntax() {
         let runner = runner().with_cwd("invalid_second_arg_syntax");
         assert_eq!(

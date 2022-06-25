@@ -2,7 +2,7 @@ use super::{
     check, get_checked, get_opt_check, get_string, is_not, looks_like_call,
     CheckedArg, Error, FunctionMap,
 };
-use crate::css::{CallArgs, CssString, Value};
+use crate::css::{is_calc_name, CallArgs, CssString, Value};
 use crate::sass::{Call, Function, MixinDecl};
 use crate::value::Quotes;
 use crate::{Format, Scope, ScopeRef};
@@ -19,7 +19,13 @@ pub fn create_module() -> Scope {
                 // TODO: Maybe allow a single numeric argument to be itself?
                 Ok(args.to_string().into())
             }
-            Value::Call(_, args) => Ok(args.into()),
+            Value::Call(name, args) => {
+                if is_calc_name(&name) {
+                    Ok(args.into())
+                } else {
+                    Ok(Value::Call(name, args))
+                }
+            }
             Value::Literal(s) if looks_like_call(&s) => {
                 let s = s.value();
                 let i = s.find('(').unwrap();

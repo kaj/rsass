@@ -18,3 +18,7 @@ where
 pub fn is_function_name(s: &str) -> bool {
     s == "calc" || s == "clamp" || s == "max" || s == "min" || s == "var"
 }
+/// Return true iff s is a valid _css_ function name.
+pub fn is_calc_name(s: &str) -> bool {
+    s == "calc" || s == "clamp" || s == "max" || s == "min"
+}

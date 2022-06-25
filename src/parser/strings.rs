@@ -31,6 +31,21 @@ pub fn sass_string(input: Span) -> PResult<SassString> {
     )(input)?;
     Ok((input, SassString::new(parts, Quotes::None)))
 }
+pub fn var_name(input: Span) -> PResult<SassString> {
+    let (input, _) = tag("--")(input)?;
+    let (input, parts) = fold_many0(
+        alt((
+            string_part_interpolation,
+            map(unquoted_part, StringPart::Raw),
+        )),
+        || vec![StringPart::Raw("--".into())],
+        |mut acc, item| {
+            acc.push(item);
+            acc
+        },
+    )(input)?;
+    Ok((input, SassString::new(parts, Quotes::None)))
+}
 
 pub fn custom_value(input: Span) -> PResult<SassString> {
     alt((
@@ -177,7 +192,6 @@ pub fn special_function_misc(input: Span) -> PResult<SassString> {
                         tag("element"),
                         tag("env"),
                         tag("expression"),
-                        tag("var"),
                     )),
                 )),
                 |_| (),
