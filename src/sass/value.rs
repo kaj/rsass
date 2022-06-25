@@ -134,7 +134,7 @@ impl Value {
                         args.evaluate_single(scope, name!(if_false), 2)
                     };
                 }
-                let args = args.evaluate(scope.clone())?;
+                let call = args.evaluate(scope.clone())?;
                 if let Some(name) = name.single_raw() {
                     let call_err = |e: Error| match e {
                         Error::BadArguments(msg, decl) => {
@@ -160,11 +160,11 @@ impl Value {
                         .map_err(call_err)?
                         .or_else(|| Function::get_builtin(&name).cloned())
                     {
-                        return f.call(scope.clone(), args).map_err(call_err);
+                        return f.call(call).map_err(call_err);
                     }
                 }
                 let name = name.evaluate(scope)?;
-                css::Value::Call(name.value().into(), args)
+                css::Value::Call(name.value().into(), call.args)
             }
             Value::Numeric(num) => {
                 css::Value::Numeric(num.clone(), arithmetic)

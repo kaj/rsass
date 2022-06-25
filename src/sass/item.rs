@@ -1,4 +1,4 @@
-use super::{CallArgs, FormalArgs, Name, SassString, Selectors, Value};
+use super::{CallArgs, Callable, Name, SassString, Selectors, Value};
 use crate::parser::SourcePos;
 use std::collections::BTreeSet;
 
@@ -41,14 +41,14 @@ pub enum Item {
     Error(Value, SourcePos),
 
     /// A `@mixin` directive, declaring a mixin.
-    MixinDeclaration(String, FormalArgs, Vec<Item>, SourcePos),
+    MixinDeclaration(String, Callable),
     /// An `@include` directive, calling a mixin.
-    MixinCall(String, CallArgs, Option<Vec<Item>>, SourcePos),
+    MixinCall(String, CallArgs, Option<Callable>, SourcePos),
     /// An `@content` directive (in a mixin declaration).
-    Content(SourcePos),
+    Content(CallArgs, SourcePos),
 
     /// An `@function` declaration.
-    FunctionDeclaration(String, FormalArgs, SourcePos, Vec<Item>),
+    FunctionDeclaration(String, Callable),
     /// An `@return` statement in a function declaration.
     Return(Value, SourcePos),
 

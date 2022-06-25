@@ -187,12 +187,18 @@ impl<'a> Display for Formatted<'a, Value> {
             Value::ArgList(ref args) => {
                 // Note: named args not included in output.
                 if let Some((first, rest)) = args.positional.split_first() {
-                    first.format(self.format).fmt(out)?;
-                    let sep =
-                        ListSeparator::Comma.sep(self.format.is_compressed());
-                    for item in rest {
-                        out.write_str(sep)?;
-                        item.format(self.format).fmt(out)?;
+                    if self.format.is_introspection() && rest.is_empty() {
+                        out.write_char('(')?;
+                        first.format(self.format).fmt(out)?;
+                        out.write_str(",)")?;
+                    } else {
+                        first.format(self.format).fmt(out)?;
+                        let sep = ListSeparator::Comma
+                            .sep(self.format.is_compressed());
+                        for item in rest {
+                            out.write_str(sep)?;
+                            item.format(self.format).fmt(out)?;
+                        }
                     }
                 } else {
                     out.write_str("()")?;

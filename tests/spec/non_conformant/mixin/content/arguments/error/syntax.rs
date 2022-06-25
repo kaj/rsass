@@ -28,7 +28,7 @@ mod arglist {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn missing() {
         assert_eq!(
             runner().err(

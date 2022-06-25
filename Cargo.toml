@@ -28,6 +28,8 @@ spectest = ["yaml-rust", "deunicode", "hrx-get", "regex"]
 unimplemented_args = []
 
 [dependencies]
+arc-swap = "1.5.0"
+fastrand = "1.4"
 lazy_static = "1.0"
 nom = { version = "7.0", default-features = false }
 nom_locate = "4.0"
@@ -35,12 +37,11 @@ num-bigint = { version = "0.4.0", default-features = false, features = ["std"] }
 num-integer = "0.1.42"
 num-rational = { version = "0.4.0", default-features = false }
 num-traits = "^0.2.0"
-fastrand = "1.4"
+tracing = "0.1.34"
 clap = { version = "3.0.0", features = ["derive", "wrap_help"], optional = true }
 deunicode = { version = "1.0", optional = true }
 hrx-get = { version = "0.2.0", optional = true }
 regex = { version = "1.1.0", optional = true }
-tracing = "0.1.34"
 yaml-rust = { version = "0.4", optional = true }
 
 [badges]
