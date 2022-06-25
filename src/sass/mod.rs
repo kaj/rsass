@@ -22,7 +22,7 @@ mod string;
 mod value;
 
 pub use self::call_args::CallArgs;
-pub use self::callable::{Callable, Closure};
+pub use self::callable::{Call, Callable, Closure};
 pub use self::formal_args::{ArgsError, FormalArgs};
 pub use self::functions::{get_global_module, Function};
 pub use self::item::{Expose, Item, UseAs};

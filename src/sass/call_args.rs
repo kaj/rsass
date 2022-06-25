@@ -1,9 +1,7 @@
-use super::{Name, Value};
-use crate::css;
-use crate::error::Error;
+use super::{Call, Name, Value};
 use crate::ordermap::OrderMap;
 use crate::value::ListSeparator;
-use crate::ScopeRef;
+use crate::{css, Error, ScopeRef};
 use std::default::Default;
 
 /// the actual arguments of a function or mixin call.
@@ -47,7 +45,7 @@ impl CallArgs {
     }
 
     /// Evaluate these sass CallArgs to css CallArgs.
-    pub fn evaluate(&self, scope: ScopeRef) -> Result<css::CallArgs, Error> {
+    pub fn evaluate(&self, scope: ScopeRef) -> Result<Call, Error> {
         let positional = Vec::new();
         let named = self.named.iter().try_fold(
             OrderMap::new(),
@@ -101,7 +99,10 @@ impl CallArgs {
                 }
             }
         }
-        Ok(result)
+        Ok(Call {
+            args: result,
+            scope,
+        })
     }
 
     /// Evaluate a single argument

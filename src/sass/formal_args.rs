@@ -1,7 +1,5 @@
-use crate::error::Error;
-use crate::sass::{Name, Value};
-use crate::ScopeRef;
-use crate::{css, SourcePos};
+use super::{Call, Name, Value};
+use crate::{css, Error, ScopeRef, SourcePos};
 use std::fmt;
 
 /// The declared arguments of a mixin or function declaration.
@@ -32,6 +30,19 @@ impl FormalArgs {
     /// Return true if this formalarg is varargs.
     pub fn is_varargs(&self) -> bool {
         self.1.is_some()
+    }
+
+    /// Evaluate a set of call arguments for a given call.
+    ///
+    /// Returns a Scope that is a sub-scope to the given `scope`.
+    pub(crate) fn evalcall(
+        &self,
+        decl: ScopeRef,
+        call: Call,
+    ) -> Result<ScopeRef, ArgsError> {
+        let s = self.eval(decl, call.args)?;
+        s.define_module("%%CALLING_SCOPE%%".into(), call.scope);
+        Ok(s)
     }
 
     /// Evaluate a set of call arguments for these formal arguments.

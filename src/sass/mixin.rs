@@ -40,7 +40,7 @@ impl MixinDecl {
                     scope: decl
                         .body
                         .args
-                        .eval(
+                        .evalcall(
                             ScopeRef::sub_selectors(decl.scope.clone(), sel),
                             call_args.evaluate(scope)?,
                         )
@@ -66,7 +66,10 @@ impl MixinDecl {
                 );
                 let call_pos2 = call_pos.clone();
                 let argscope = fargs
-                    .eval(scope.clone(), call_args.evaluate(scope.clone())?)
+                    .evalcall(
+                        scope.clone(),
+                        call_args.evaluate(scope.clone())?,
+                    )
                     .map_err(|e| e.decl_called(call_pos2, pos))?;
                 let call_pos2 = call_pos.clone();
                 let url = get_string(&argscope, name!(url)).map_err(|e| {

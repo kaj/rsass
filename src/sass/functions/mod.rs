@@ -1,10 +1,9 @@
-use super::{Closure, FormalArgs, Name};
+use super::{Call, Closure, FormalArgs, Name};
 use crate::css::{self, is_not, CallArgs, CssString, Value};
-use crate::error::Error;
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
 use crate::value::{CssDimension, Numeric, Operator, Quotes};
-use crate::{Scope, ScopeRef};
+use crate::{Error, Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -48,16 +47,11 @@ struct Builtin {
 }
 
 impl Builtin {
-    fn eval_value(
-        &self,
-        callscope: ScopeRef,
-        callargs: CallArgs,
-    ) -> Result<Value, Error> {
+    fn eval_value(&self, call: Call) -> Result<Value, Error> {
         let s = self
             .args
-            .eval(ScopeRef::new_global(callscope.get_format()), callargs)
+            .evalcall(ScopeRef::new_global(call.scope.get_format()), call)
             .map_err(|e| e.declared_at(&self.pos))?;
-        s.define_module("%%CALLING_SCOPE%%".into(), callscope);
         (self.body)(&s)
     }
 }
@@ -87,8 +81,8 @@ impl cmp::Eq for Builtin {}
 impl fmt::Debug for FuncImpl {
     fn fmt(&self, out: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
-            FuncImpl::Builtin(..) => write!(out, "(builtin function)"),
-            FuncImpl::UserDefined(..) => {
+            FuncImpl::Builtin(_) => write!(out, "(builtin function)"),
+            FuncImpl::UserDefined(_) => {
                 write!(out, "(user-defined function)")
             }
         }
@@ -139,18 +133,10 @@ impl Function {
 
     /// Call the function from a given scope and with a given set of
     /// arguments.
-    pub fn call(
-        &self,
-        callscope: ScopeRef,
-        callargs: CallArgs,
-    ) -> Result<Value, Error> {
+    pub fn call(&self, call: Call) -> Result<Value, Error> {
         match self.body {
-            FuncImpl::Builtin(ref builtin) => {
-                builtin.eval_value(callscope, callargs)
-            }
-            FuncImpl::UserDefined(ref closure) => {
-                closure.eval_value(callscope, callargs)
-            }
+            FuncImpl::Builtin(ref builtin) => builtin.eval_value(call),
+            FuncImpl::UserDefined(ref closure) => closure.eval_value(call),
         }
         .map(Value::into_calculated)
     }
@@ -475,7 +461,6 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     let scope = ScopeRef::new_global(Default::default());
     assert_eq!(
         FUNCTIONS.get(&name!(rgb)).unwrap().call(
-            scope.clone(),
             call_args(code_span(b"(17, 0, 225)"))?.1.evaluate(scope)?
         )?,
         Value::Color(Rgba::from_rgb(17, 0, 225).into(), None)

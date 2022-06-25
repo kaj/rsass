@@ -1,8 +1,6 @@
 use super::{FormalArgs, Item};
-use crate::{
-    css::{CallArgs, Value},
-    Error, ScopeRef, SourcePos,
-};
+use crate::css::{CallArgs, Value};
+use crate::{Error, ScopeRef, SourcePos};
 
 /// The callable part of a sass mixin or function.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
@@ -45,25 +43,14 @@ impl Closure {
     /// Evaluate this callable as a value.
     ///
     /// This is used when the callable is a scss function.
-    pub fn eval_value(
-        &self,
-        callscope: ScopeRef,
-        args: CallArgs,
-    ) -> Result<Value, Error> {
-        let s = self.do_eval_args(self.scope.clone(), args)?;
-        s.define_module("%%CALLING_SCOPE%%".into(), callscope);
-        Ok(s.eval_body(&self.body.body)?.unwrap_or(Value::Null))
-    }
-
-    fn do_eval_args(
-        &self,
-        def: ScopeRef,
-        args: CallArgs,
-    ) -> Result<ScopeRef, Error> {
-        self.body
+    pub fn eval_value(&self, call: Call) -> Result<Value, Error> {
+        Ok(self
+            .body
             .args
-            .eval(def, args)
-            .map_err(|e| e.declared_at(&self.body.decl))
+            .evalcall(self.scope.clone(), call)
+            .map_err(|e| e.declared_at(&self.body.decl))?
+            .eval_body(&self.body.body)?
+            .unwrap_or(Value::Null))
     }
 }
 
@@ -88,4 +75,12 @@ impl std::cmp::PartialOrd for Closure {
             Some(defined) => Some(defined),
         }
     }
+}
+
+/// The calling context for a call to a callable.
+///
+/// This is the evaluated argumends and the calling scope.
+pub struct Call {
+    pub(crate) args: CallArgs,
+    pub(crate) scope: ScopeRef,
 }

@@ -3,7 +3,7 @@ use super::{
     CheckedArg, Error, FunctionMap,
 };
 use crate::css::{CallArgs, CssString, Value};
-use crate::sass::{Function, MixinDecl};
+use crate::sass::{Call, Function, MixinDecl};
 use crate::value::Quotes;
 use crate::{Format, Scope, ScopeRef};
 
@@ -60,7 +60,10 @@ pub fn create_module() -> Scope {
         };
         let args = CallArgs::from_value(s.get(&name!(args))?)?;
         if let Some(function) = function {
-            function.call(call_scope(s), args)
+            function.call(Call {
+                args,
+                scope: call_scope(s),
+            })
         } else {
             Ok(Value::Call(name, args))
         }
