@@ -171,6 +171,9 @@ impl Value {
                         false,
                     )
                 }));
+                if args.trailing_comma {
+                    vec.push(Value::Null);
+                }
                 vec
             }
             Value::List(v, _, _) => v,

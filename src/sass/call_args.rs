@@ -95,6 +95,7 @@ impl CallArgs {
                     css::Value::Null => (),
                     item => {
                         result.positional.push(item);
+                        result.trailing_comma = false;
                     }
                 },
                 Some(splat) => {

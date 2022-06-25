@@ -3,7 +3,6 @@ use super::util::{ignore_comments, opt_spacelike};
 use super::value::space_list;
 use super::{PResult, Span};
 use crate::sass::{CallArgs, FormalArgs, Name};
-use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{map, map_res, opt};
 use nom::multi::separated_list0;
@@ -39,32 +38,29 @@ pub fn formal_args(input: Span) -> PResult<FormalArgs> {
 }
 
 pub fn call_args(input: Span) -> PResult<CallArgs> {
-    map_res(
-        delimited(
-            terminated(tag("("), opt_spacelike),
+    delimited(
+        terminated(tag("("), opt_spacelike),
+        map_res(
             pair(
                 separated_list0(
-                    delimited(opt_spacelike, tag(","), opt_spacelike),
+                    terminated(tag(","), opt_spacelike),
                     pair(
                         opt(delimited(
                             tag("$"),
                             map(name, Name::from),
-                            preceded(ignore_comments, tag(":")),
-                        )),
-                        alt((
-                            space_list,
                             delimited(
                                 ignore_comments,
-                                space_list,
-                                ignore_comments,
+                                tag(":"),
+                                opt_spacelike,
                             ),
                         )),
+                        terminated(space_list, opt_spacelike),
                     ),
                 ),
-                delimited(opt_spacelike, opt(tag(",")), opt_spacelike),
+                opt(terminated(tag(","), opt_spacelike)),
             ),
-            tag(")"),
+            |(args, trail)| CallArgs::new(args, trail.is_some()),
         ),
-        |(args, trail)| CallArgs::new(args, trail.is_some()),
+        tag(")"),
     )(input)
 }

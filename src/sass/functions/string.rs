@@ -1,5 +1,6 @@
 use super::{get_integer, get_string, Error, FunctionMap};
 use crate::css::{CssString, Value};
+use crate::sass::functions::get_checked;
 use crate::Scope;
 use lazy_static::lazy_static;
 use std::cmp::min;
@@ -8,7 +9,11 @@ use std::sync::Mutex;
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:string");
     def!(f, quote(string), |s| {
-        Ok(get_string(s, name!(string))?.quote().into())
+        let arg = get_checked(s, name!(string), |v| match v {
+            Value::Null => Ok(CssString::from("")),
+            v => super::check::string(v),
+        })?;
+        Ok(arg.quote().into())
     });
     def!(f, index(string, substring), |s| {
         let string = get_string(s, name!(string))?;
