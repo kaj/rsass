@@ -29,7 +29,7 @@ project adheres to
 * Allow interpolation in css min and max function arguments.
 * The url for `@use` and `@forward` must be quoted.
 * Some `@` rules are now forbidden in some places as they should (PR #145).
-* Update sass-spec test suite to 2022-06-13.
+* Update sass-spec test suite to 2022-06-21.
 
 Thanks to @fasterthanlime (again) for reporting the problem with
 interpolation in min and max.

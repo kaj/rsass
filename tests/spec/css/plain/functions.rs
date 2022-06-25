@@ -6,6 +6,15 @@ fn runner() -> crate::TestRunner {
         .with_cwd("functions")
         .mock_file("alpha/plain.css", "a {b: alpha(0.1)}\n")
         .mock_file("defined_elsewhere/plain.css", "c {d: a()}\n")
+        .mock_file("empty_fallback_var/plain.css", "a {b: var(--c, )}\n")
+        .mock_file(
+            "error/empty_fallback_var/empty_second_before_third/plain.css",
+            "a {b: var(--c, , d)}\n",
+        )
+        .mock_file(
+            "error/empty_fallback_var/invalid_second_arg_syntax/plain.css",
+            "a {b: var(--c, {})}\n",
+        )
         .mock_file("grayscale/plain.css", "a {b: grayscale(0.1)}\n")
         .mock_file("hsl/plain.css", "a {b: hsl(0, 100%, 50%)}\n")
         .mock_file("hsla/plain.css", "a {b: hsla(0, 100%, 50%, 0.5)}\n")
@@ -35,6 +44,61 @@ fn defined_elsewhere() {
          \n  d: a();\
          \n}\n"
     );
+}
+#[test]
+#[ignore] // wrong result
+fn empty_fallback_var() {
+    let runner = runner().with_cwd("empty_fallback_var");
+    assert_eq!(
+        runner.ok("@import \"plain\";\n"),
+        "a {\
+         \n  b: var(--c, );\
+         \n}\n"
+    );
+}
+mod error {
+    #[allow(unused)]
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("error")
+    }
+
+    mod empty_fallback_var {
+        #[allow(unused)]
+        fn runner() -> crate::TestRunner {
+            super::runner().with_cwd("empty_fallback_var")
+        }
+
+        #[test]
+        #[ignore] // wrong error
+        fn empty_second_before_third() {
+            let runner = runner().with_cwd("empty_second_before_third");
+            assert_eq!(
+                runner.err("@import \"plain\";\n"),
+                "Error: Expected expression.\
+         \n  ,\
+         \n1 | a {b: var(--c, , d)}\
+         \n  |                ^\
+         \n  \'\
+         \n  plain.css 1:16  @import\
+         \n  input.scss 1:9  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // wrong error
+        fn invalid_second_arg_syntax() {
+            let runner = runner().with_cwd("invalid_second_arg_syntax");
+            assert_eq!(
+                runner.err("@import \"plain\";\n"),
+                "Error: Expected expression.\
+         \n  ,\
+         \n1 | a {b: var(--c, {})}\
+         \n  |                ^\
+         \n  \'\
+         \n  plain.css 1:16  @import\
+         \n  input.scss 1:9  root stylesheet",
+            );
+        }
+    }
 }
 #[test]
 fn grayscale() {
