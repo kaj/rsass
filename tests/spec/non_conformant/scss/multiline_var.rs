@@ -1,8 +1,8 @@
-//! Tests auto-converted from "sass-spec/spec/non_conformant/scss/multiline-var.hrx"
+//! Tests auto-converted from "sass-spec/spec/non_conformant/scss/multiline_var.hrx"
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().with_cwd("multiline-var")
+    super::runner().with_cwd("multiline_var")
 }
 
 #[test]
@@ -16,10 +16,11 @@ fn test() {
              \n  $var3: a b\
              \n    c;\
              \n  a: $var1;\
-             \n//  b: $var2;\
+             \n  b: $var2;\
              \n  c: $var3; }\n"),
         "foo {\
          \n  a: 3;\
+         \n  b: false;\
          \n  c: a b c;\
          \n}\n"
     );

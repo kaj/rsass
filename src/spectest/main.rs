@@ -24,14 +24,12 @@ fn main() -> Result<(), Error> {
             "core_functions/selector/is_superselector", // not supported
             "core_functions/selector/unify",  // not supported
             "directives/extend", // `@extend` is not supported at all
-            "libsass-todo-issues/issue_1801", // infinite recursion
             "libsass-todo-issues/issue_221262.hrx", // stack overflow
-            "libsass-todo-issues/issue_221260.hrx", // stack overflow
             "libsass-todo-issues/issue_221292.hrx", // stack overflow
             "libsass/unicode-bom/utf-16-big", // rsass only handles utf8
             "libsass/unicode-bom/utf-16-little", // rsass only handles utf8
             "non_conformant/scss/huge.hrx", // stack overflow in debug mode
-            "non_conformant/scss/multiline_var.hrx", // duplicate rust name
+            "non_conformant/scss/multiline-var.hrx", // duplicate rust name
         ],
     )?;
     Ok(())

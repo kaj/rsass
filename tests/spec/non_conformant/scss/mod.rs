@@ -153,9 +153,9 @@ mod mixins_with_args;
 
 mod mixins_with_empty_args;
 
-mod multiline_var;
+// Ignoring "multiline-var.hrx", not expected to work yet.
 
-// Ignoring "multiline_var.hrx", not expected to work yet.
+mod multiline_var;
 
 mod multiple_operators;
 
