@@ -79,10 +79,7 @@ impl MixinDecl {
                 let with = get_opt_map(&argscope, name!(with))
                     .map_err(|e| Error::BadCall(e, call_pos2, None))?;
 
-                if ["sass:color", "sass:list" /*FIXME*/]
-                    .iter()
-                    .any(|name| *name == url.value())
-                {
+                if url.value().starts_with("sass:") {
                     if with.unwrap_or_default().is_empty() {
                         return Ok(Mixin::empty(scope));
                     } else {
