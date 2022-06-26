@@ -117,7 +117,7 @@ impl SourcePos {
         what: &str,
     ) -> fmt::Result {
         let lnw = self.p.line_no.to_string().len();
-        write!(out, "{0:lnw$} ,{arrow}", "", arrow = arrow, lnw = lnw)?;
+        writeln!(out, "{0:lnw$} ,{arrow}", "", arrow = arrow, lnw = lnw)?;
         self.show_inner(out, lnw, marker, what)?;
         write!(out, "{0:lnw$} '", "", lnw = lnw)
     }
@@ -130,7 +130,7 @@ impl SourcePos {
     ) -> fmt::Result {
         writeln!(
             out,
-            "\n{ln:<lnw$} | {line}\
+            "{ln:<lnw$} | {line}\
              \n{0:lnw$} |{0:>lpos$}{mark}{what}",
             "",
             line = self.p.line,
@@ -172,6 +172,10 @@ impl SourcePos {
             }
         }
         Ok(())
+    }
+
+    pub(crate) fn line_no(&self) -> u32 {
+        self.p.line_no
     }
 
     /// If self is preceded (on same line) by `s`, include `s` in self.

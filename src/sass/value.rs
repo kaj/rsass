@@ -101,6 +101,7 @@ impl Value {
                 if *expl
                     || v == css::Value::Null
                     || matches!(&v, css::Value::Literal(s) if s.is_css_fn())
+                    || matches!(&v, css::Value::Call(_, _))
                 {
                     css::Value::Paren(Box::new(v))
                 } else {

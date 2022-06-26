@@ -2,7 +2,7 @@ use super::css_function::css_function;
 use super::formalargs::call_args;
 use super::strings::{
     name, sass_string_dq, sass_string_ext, sass_string_sq,
-    special_function_misc, special_url,
+    special_function_misc, special_url, var_name,
 };
 use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
@@ -247,6 +247,7 @@ fn simple_value(input: Span) -> PResult<Value> {
         special_function,
         // Really ugly special case ... sorry.
         value(Value::Literal("-null".into()), tag("-null")),
+        map(var_name, Value::Literal),
         unary_op,
         function_call,
         // And a bunch of string variants
@@ -631,7 +632,8 @@ mod test {
             parse_call("foo(17);"),
             Ok((
                 "foo".into(),
-                CallArgs::new(vec![(None, Value::scalar(17))]).unwrap(),
+                CallArgs::new(vec![(None, Value::scalar(17))], false)
+                    .unwrap(),
                 ";".as_bytes(),
             )),
         );

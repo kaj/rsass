@@ -19,6 +19,8 @@ project adheres to
   `FormalArgs` with a body (a `Vec<Item>`).  And `sass::Item::Content` now
   has a `CallArgs`.  Also, `MixinDeclImpl` is replaced with
   `sass::Closure`. (PR #146).
+* `sass::CallArgs::new()` has an additional `trailing_comma` boolean
+  argument (PR #147).
 * Remove deprecated methods `css::Value::integer_value()` and
   `Number::is_integer()`.
 
@@ -29,6 +31,11 @@ project adheres to
 * Allow interpolation in css min and max function arguments.
 * The url for `@use` and `@forward` must be quoted.
 * Some `@` rules are now forbidden in some places as they should (PR #145).
+* The css `var(...)` function is now parsed as a proper function, and not
+  as a special string (PR #147).
+* The null value can be quoted as an empty string (PR #147).
+* In error message, don't show ellipses for consecutive lines (PR #147).
+* Somtimes a trailing comma in argument lists is preserved (PR #147).
 * Update sass-spec test suite to 2022-06-21.
 
 Thanks to @fasterthanlime (again) for reporting the problem with

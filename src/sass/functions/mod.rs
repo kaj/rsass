@@ -196,7 +196,7 @@ lazy_static! {
             fn pre_calc(v: &Value) -> bool {
                 match v {
                     Value::Numeric(..) => true,
-                    Value::Call(ref name, _) => css::is_function_name(name),
+                    Value::Call(ref name, _) => css::is_calc_name(name),
                     Value::Literal(s) => s.is_css_calc(),
                     _ => false,
                 }

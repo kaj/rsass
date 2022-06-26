@@ -3,7 +3,6 @@ use super::util::{ignore_comments, opt_spacelike};
 use super::value::space_list;
 use super::{PResult, Span};
 use crate::sass::{CallArgs, FormalArgs, Name};
-use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{map, map_res, opt};
 use nom::multi::separated_list0;
@@ -39,27 +38,29 @@ pub fn formal_args(input: Span) -> PResult<FormalArgs> {
 }
 
 pub fn call_args(input: Span) -> PResult<CallArgs> {
-    let (input, _) = tag("(")(input)?;
-    let (input, v) = map_res(
-        separated_list0(
-            delimited(opt_spacelike, tag(","), opt_spacelike),
+    delimited(
+        terminated(tag("("), opt_spacelike),
+        map_res(
             pair(
-                opt(delimited(
-                    tag("$"),
-                    map(name, Name::from),
-                    preceded(ignore_comments, tag(":")),
-                )),
-                alt((
-                    space_list,
-                    delimited(ignore_comments, space_list, ignore_comments),
-                )),
+                separated_list0(
+                    terminated(tag(","), opt_spacelike),
+                    pair(
+                        opt(delimited(
+                            tag("$"),
+                            map(name, Name::from),
+                            delimited(
+                                ignore_comments,
+                                tag(":"),
+                                opt_spacelike,
+                            ),
+                        )),
+                        terminated(space_list, opt_spacelike),
+                    ),
+                ),
+                opt(terminated(tag(","), opt_spacelike)),
             ),
+            |(args, trail)| CallArgs::new(args, trail.is_some()),
         ),
-        CallArgs::new,
-    )(input)?;
-    let (input, _) = preceded(
-        opt(delimited(opt_spacelike, opt(tag(",")), opt_spacelike)),
         tag(")"),
-    )(input)?;
-    Ok((input, v))
+    )(input)
 }

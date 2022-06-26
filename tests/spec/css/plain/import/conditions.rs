@@ -342,7 +342,6 @@ mod supports {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn value() {
                 assert_eq!(
                     runner().ok("@import \"a.css\" supports(--a: b);\n"),

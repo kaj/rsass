@@ -30,7 +30,6 @@ mod css_function {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn rest() {
             let runner = runner().with_cwd("rest");
             assert_eq!(
@@ -59,7 +58,6 @@ mod css_function {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn dynamic() {
             let runner = runner().with_cwd("dynamic");
             assert_eq!(
@@ -76,7 +74,6 @@ mod css_function {
             }
 
             #[test]
-            #[ignore] // wrong result
             fn case_insensitive() {
                 let runner = runner().with_cwd("case_insensitive");
                 assert_eq!(
@@ -87,7 +84,6 @@ mod css_function {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn no_whitespace() {
                 let runner = runner().with_cwd("no_whitespace");
                 assert_eq!(
@@ -108,7 +104,6 @@ mod css_function {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn whitespace_around() {
                 let runner = runner().with_cwd("whitespace_around");
                 assert_eq!(
@@ -119,7 +114,6 @@ mod css_function {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn whitespace_before() {
                 let runner = runner().with_cwd("whitespace_before");
                 assert_eq!(
@@ -141,7 +135,6 @@ mod css_function {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn rest() {
             let runner = runner().with_cwd("rest");
             assert_eq!(
@@ -178,7 +171,6 @@ mod error {
     }
 
     #[test]
-    #[ignore] // missing error
     fn empty_after_keyword() {
         let runner = runner().with_cwd("empty_after_keyword");
         assert_eq!(
@@ -198,7 +190,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn empty_second_before_third() {
         let runner = runner().with_cwd("empty_second_before_third");
         assert_eq!(
@@ -212,7 +204,7 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn invalid_second_arg_syntax() {
         let runner = runner().with_cwd("invalid_second_arg_syntax");
         assert_eq!(
@@ -338,7 +330,6 @@ mod sass_function {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn doesnt_use_function_if_case_doesnt_match() {
             let runner =
                 runner().with_cwd("doesnt_use_function_if_case_doesnt_match");
