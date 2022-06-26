@@ -171,7 +171,6 @@ mod error {
     }
 
     #[test]
-    #[ignore] // wrong error
     fn empty_after_keyword() {
         let runner = runner().with_cwd("empty_after_keyword");
         assert_eq!(

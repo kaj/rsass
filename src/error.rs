@@ -117,11 +117,16 @@ fn show_in_file2(
     second: &SourcePos,
     second_name: &str,
 ) -> fmt::Result {
-    write!(out, "    ,")?;
-    first.show_inner(out, 3, '=', first_name)?;
-    write!(out, "... |")?;
-    second.show_inner(out, 3, '^', second_name)?;
-    write!(out, "    '")?;
+    let ellipsis = first.line_no() + 1 < second.line_no();
+    let lnw = second.line_no().to_string().len();
+    let lnw = if ellipsis { std::cmp::max(3, lnw) } else { lnw };
+    writeln!(out, "{0:lnw$} ,", "", lnw = lnw)?;
+    first.show_inner(out, lnw, '=', first_name)?;
+    if ellipsis {
+        writeln!(out, "... |")?;
+    }
+    second.show_inner(out, lnw, '^', second_name)?;
+    write!(out, "{0:lnw$} '", "", lnw = lnw)?;
     Ok(())
 }
 

@@ -29,6 +29,7 @@ project adheres to
 * Allow interpolation in css min and max function arguments.
 * The url for `@use` and `@forward` must be quoted.
 * Some `@` rules are now forbidden in some places as they should (PR #145).
+* In error message, don't show ellipses for consecutive lines (PR #147).
 * Update sass-spec test suite to 2022-06-21.
 
 Thanks to @fasterthanlime (again) for reporting the problem with
