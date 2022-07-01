@@ -228,7 +228,9 @@ fn get_function(
     name: &str,
 ) -> Result<Option<Function>, Error> {
     if let Some(module) = module {
-        get_scope(s, Some(module), true)?.get_function(&name.into())
+        get_scope(s, Some(module), true)?
+            .get_function(&name.into())
+            .map_err(|e| Error::error(e.to_string()))
     } else {
         let name = name.into();
         Ok(call_scope(s)

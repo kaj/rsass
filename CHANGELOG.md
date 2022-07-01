@@ -23,6 +23,8 @@ project adheres to
   argument (PR #147).
 * Remove deprecated methods `css::Value::integer_value()` and
   `Number::is_integer()`.
+* Changed the error type of `Scope::get_function()`.
+* Added a variant to `ScopeError`.
 
 ### Improvements
 
@@ -68,7 +70,6 @@ Progress: 4331 of 6523 tests passed in dart-sass compatibility mode.
   `Parsed` (PR #140).
 * `FsFileContext::file` is replaced by `FsFileContext::for_path`,
   which initializes a file context and loads a file from it (PR 137).
-
 
 ### Improvements
 

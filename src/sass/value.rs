@@ -137,31 +137,31 @@ impl Value {
                 }
                 let call = args.evaluate(scope.clone())?;
                 if let Some(name) = name.single_raw() {
-                    let call_err = |e: Error| match e {
-                        Error::BadArguments(msg, decl) => {
-                            let pos = if decl.is_builtin() {
-                                pos.clone()
-                            } else {
-                                pos.in_call(name)
-                            };
-                            Error::BadCall(msg.to_string(), pos, Some(decl))
-                        }
-                        Error::Invalid(Invalid::AtError(msg), _) => {
-                            let msg = format!("Error: {}", msg);
-                            Error::BadCall(msg, pos.clone(), None)
-                        }
-                        e => {
-                            let pos = pos.clone().opt_in_calc();
-                            Error::BadCall(e.to_string(), pos, None)
-                        }
-                    };
                     let name = name.into();
                     if let Some(f) = scope
                         .get_function(&name)
-                        .map_err(call_err)?
+                        .map_err(|e| e.at(pos.clone()))?
                         .or_else(|| Function::get_builtin(&name).cloned())
                     {
-                        return f.call(call).map_err(call_err);
+                        return f.call(call).map_err(|e| match e {
+                            Error::BadArguments(msg, decl) => Error::BadCall(
+                                msg.to_string(),
+                                if decl.is_builtin() {
+                                    pos.clone()
+                                } else {
+                                    pos.in_call(name.as_ref())
+                                },
+                                Some(decl),
+                            ),
+                            Error::Invalid(Invalid::AtError(msg), _) => {
+                                let msg = format!("Error: {}", msg);
+                                Error::BadCall(msg, pos.clone(), None)
+                            }
+                            e => {
+                                let pos = pos.clone().opt_in_calc();
+                                Error::BadCall(e.to_string(), pos, None)
+                            }
+                        });
                     }
                 }
                 let name = name.evaluate(scope)?;

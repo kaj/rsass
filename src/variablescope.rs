@@ -467,19 +467,16 @@ impl<'a> Scope {
     pub fn get_function(
         &self,
         name: &Name,
-    ) -> Result<Option<Function>, Error> {
+    ) -> Result<Option<Function>, ScopeError> {
         if let Some((modulename, name)) = name.split_module() {
             if let Some(module) = self.get_module(&modulename) {
                 if let Some(f) = module.get_function(&name)? {
                     Ok(Some(f))
                 } else {
-                    Err(Error::error("Undefined function."))
+                    Err(ScopeError::UndefinedFunction)
                 }
             } else {
-                return Err(Error::error(format!(
-                    "There is no module with the namespace {:?}.",
-                    modulename
-                )));
+                return Err(ScopeError::NoModule(modulename));
             }
         } else {
             let f = self.functions.lock().unwrap().get(name).cloned();
@@ -1007,6 +1004,8 @@ pub enum ScopeError {
     NoModule(String),
     /// Tried to access an undefined name.
     Undefined(Name),
+    /// Undefined function.
+    UndefinedFunction,
 }
 
 impl ScopeError {
@@ -1015,6 +1014,9 @@ impl ScopeError {
         match self {
             ScopeError::NoModule(name) => Invalid::UndefModule(name).at(pos),
             ScopeError::Undefined(_) => Invalid::UndefinedVariable.at(pos),
+            ScopeError::UndefinedFunction => {
+                Invalid::UndefinedFunction.at(pos)
+            }
         }
     }
 }
@@ -1031,6 +1033,9 @@ impl Display for ScopeError {
             ScopeError::Undefined(name) => {
                 // Note: Currently true, but may be used for other things.
                 write!(out, "Undefined variable: \"${}\"", name)
+            }
+            ScopeError::UndefinedFunction => {
+                write!(out, "Undefined function.")
             }
         }
     }

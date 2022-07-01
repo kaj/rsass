@@ -154,6 +154,8 @@ impl From<RangeError> for Error {
 pub enum Invalid {
     /// An undefined variable was used at source pos.
     UndefinedVariable,
+    /// Undefined function.
+    UndefinedFunction,
     /// Attemt to use an undefined module.
     UndefModule(String),
     /// Tried to declare a function with a forbidden name.
@@ -182,6 +184,7 @@ impl fmt::Display for Invalid {
     fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Invalid::UndefinedVariable => "Undefined variable.".fmt(out),
+            Invalid::UndefinedFunction => "Undefined function.".fmt(out),
             Invalid::UndefModule(name) => {
                 write!(
                     out,
