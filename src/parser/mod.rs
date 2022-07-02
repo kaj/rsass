@@ -630,7 +630,7 @@ fn variable_declaration(input: Span) -> PResult<Item> {
 
 fn variable_declaration2(input: Span) -> PResult<Item> {
     let (input, name) = terminated(
-        name,
+        map(name, Name::from),
         delimited(opt_spacelike, tag(":"), opt_spacelike),
     )(input)?;
     let (input, val) = terminated(value_expression, opt_spacelike)(input)?;

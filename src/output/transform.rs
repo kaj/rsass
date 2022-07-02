@@ -307,7 +307,7 @@ fn handle_item(
             global,
         } => {
             let val = val.do_evaluate(scope.clone(), true)?;
-            scope.set_variable(name.into(), val, *default, *global);
+            scope.set_variable(name.clone(), val, *default, *global);
         }
         Item::FunctionDeclaration(ref name, ref body) => {
             if name == "calc"

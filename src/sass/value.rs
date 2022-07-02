@@ -112,7 +112,7 @@ impl Value {
                 css::Value::Color(rgba.clone().into(), name.clone())
             }
             Value::Variable(name, pos) => scope
-                .get(&name)
+                .get(name)
                 .map_err(|e| e.at(pos.clone()))?
                 .into_calculated(),
             Value::List(v, s, b) => css::Value::List(

@@ -11,7 +11,7 @@ pub enum Item {
     /// A variable declaration.
     VariableDeclaration {
         /// The variable name
-        name: String,
+        name: Name,
         /// The bound value
         val: Value,
         /// true if this is a `!default` variable.

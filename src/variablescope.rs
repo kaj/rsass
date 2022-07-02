@@ -107,7 +107,7 @@ impl ScopeRef {
                     global,
                 } => {
                     let val = val.evaluate(self.clone())?;
-                    self.set_variable(name.into(), val, default, global);
+                    self.set_variable(name.clone(), val, default, global);
                     None
                 }
                 Item::Return(ref v, _) => {
