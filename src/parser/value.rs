@@ -374,7 +374,7 @@ pub fn variable(input: Span) -> PResult<Value> {
         format!("{}.{}", modules.join("."), name)
     };
     let pos = SourcePos::from_to(input, rest);
-    Ok((rest, Value::Variable(name, pos)))
+    Ok((rest, Value::Variable(name.into(), pos)))
 }
 
 fn hex_color(input: Span) -> PResult<Value> {
@@ -539,7 +539,7 @@ mod test {
             .map(|(_, value)| value)
             .unwrap()
         {
-            Value::Variable(name, _) => assert_eq!(name, "red"),
+            Value::Variable(name, _) => assert_eq!(name, "red".into()),
             val => panic!("Unexpected value {:?}", val),
         }
     }

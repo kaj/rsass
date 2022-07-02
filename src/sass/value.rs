@@ -1,8 +1,8 @@
+use super::{CallArgs, Function, Name, SassString};
 use crate::css;
 use crate::error::{Error, Invalid};
 use crate::output::Format;
 use crate::parser::SourcePos;
-use crate::sass::{CallArgs, Function, SassString};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use crate::ScopeRef;
 use num_traits::Zero;
@@ -27,7 +27,7 @@ pub enum Value {
     /// The boolean tells if the paren itself should be kept for output.
     Paren(Box<Value>, bool),
     /// A variable reference to be loaded when the value is evaluated.
-    Variable(String, SourcePos),
+    Variable(Name, SourcePos),
     /// Both a numerical and original string representation,
     /// since case and length should be preserved (#AbC vs #aabbcc).
     Color(Rgba, Option<String>),
@@ -112,7 +112,7 @@ impl Value {
                 css::Value::Color(rgba.clone().into(), name.clone())
             }
             Value::Variable(name, pos) => scope
-                .get(&name.into())
+                .get(&name)
                 .map_err(|e| e.at(pos.clone()))?
                 .into_calculated(),
             Value::List(v, s, b) => css::Value::List(

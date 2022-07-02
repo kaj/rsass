@@ -25,6 +25,7 @@ project adheres to
   `Number::is_integer()`.
 * Changed the error type of `Scope::get_function()`.
 * Added a variant to `ScopeError`.
+* `sass::Value::Variable` now holds a `Name` rather than just a `String`.
 
 ### Improvements
 
