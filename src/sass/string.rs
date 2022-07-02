@@ -3,7 +3,7 @@ use crate::error::Error;
 use crate::sass::Value;
 use crate::value::Quotes;
 use crate::ScopeRef;
-use std::fmt;
+use std::fmt::{self, Write};
 
 /// A string that may contain interpolations.
 ///
@@ -83,7 +83,7 @@ impl SassString {
                                 carry_space = false;
                             }
                             if c == '\\' {
-                                result.push_str(&format!("\\{}", c));
+                                write!(&mut result, "\\{}", c)?;
                             } else if c.is_alphanumeric()
                                 || c.is_ascii_graphic()
                                 || c == ' '
@@ -95,12 +95,10 @@ impl SassString {
                                 && c != '\n'
                                 && c != '\t'
                             {
-                                result.push_str(&format!("\\{}", c));
+                                result.push('\\');
+                                result.push(c);
                             } else {
-                                result.push_str(&format!(
-                                    "\\{:x}",
-                                    u32::from(c)
-                                ));
+                                write!(&mut result, "\\{:x}", u32::from(c))?;
                                 carry_space = true;
                             }
                         }

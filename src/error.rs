@@ -135,6 +135,11 @@ impl From<io::Error> for Error {
         Error::IoError(e)
     }
 }
+impl From<fmt::Error> for Error {
+    fn from(e: fmt::Error) -> Self {
+        Error::IoError(io::Error::new(io::ErrorKind::Other, e))
+    }
+}
 
 impl From<ParseError> for Error {
     fn from(e: ParseError) -> Self {

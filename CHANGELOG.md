@@ -41,6 +41,7 @@ project adheres to
 * In error message, don't show ellipses for consecutive lines (PR #147).
 * Somtimes a trailing comma in argument lists is preserved (PR #147).
 * Update sass-spec test suite to 2022-06-21.
+* Some cleanups.
 
 Thanks to @fasterthanlime (again) for reporting the problem with
 interpolation in min and max.

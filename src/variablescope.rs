@@ -225,7 +225,7 @@ pub struct Scope {
     loading: Mutex<BTreeMap<String, SourcePos>>,
 }
 
-impl<'a> Scope {
+impl Scope {
     /// Create a new global scope.
     ///
     /// A "global" scope is just a scope that have no parent.
@@ -476,7 +476,7 @@ impl<'a> Scope {
                     Err(ScopeError::UndefinedFunction)
                 }
             } else {
-                return Err(ScopeError::NoModule(modulename));
+                Err(ScopeError::NoModule(modulename))
             }
         } else {
             let f = self.functions.lock().unwrap().get(name).cloned();
