@@ -98,7 +98,7 @@ fn handle_item(
                                 value.do_evaluate(scope.clone(), true)
                             })?;
                             if module.get_or_none(name).is_none() {
-                                module.define(name.clone(), &value);
+                                module.define(name.clone(), value);
                             } else {
                                 return Err(Error::error(
                                     "The same variable may only be configured once.",
@@ -154,7 +154,7 @@ fn handle_item(
                                 value.do_evaluate(scope.clone(), true)
                             })?;
                             if module.get_or_none(name).is_none() {
-                                module.define(name.clone(), &value);
+                                module.define(name.clone(), value);
                             } else {
                                 return Err(Error::error(
                                     "The same variable may only be configured once.",
@@ -394,7 +394,7 @@ fn handle_item(
             let mut rule = rule;
             let pushed = scope.store_local_values(names);
             for value in values.evaluate(scope.clone())?.iter_items() {
-                scope.define_multi(names, &value);
+                scope.define_multi(names, value);
                 handle_body(
                     body,
                     head,
@@ -422,7 +422,7 @@ fn handle_item(
             let mut rule = rule;
             for value in range {
                 let scope = ScopeRef::sub(scope.clone());
-                scope.define(name.clone(), &value);
+                scope.define(name.clone(), value);
                 handle_body(
                     body,
                     head,

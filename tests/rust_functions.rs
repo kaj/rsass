@@ -13,7 +13,7 @@ fn simple_value() {
         precision: 5,
     };
     let scope = ScopeRef::new_global(format);
-    scope.define(Name::from_static("color"), &Rgba::from_rgb(0, 0, 0).into());
+    scope.define(Name::from_static("color"), Rgba::from_rgb(0, 0, 0).into());
     let file_context = FsFileContext::new();
     assert_eq!(
         String::from_utf8(

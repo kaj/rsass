@@ -24,6 +24,9 @@ project adheres to
 * Remove deprecated methods `css::Value::integer_value()` and
   `Number::is_integer()`.
 * Changed the error type of `Scope::get_function()`.
+* Setting a variable, `Scope::define` now takes the `Value` by value rather
+  than by reference.  Also, `Scope::define_multi` is no longer exposed in
+  the api.
 * Added a variant to `ScopeError`.
 * The sass `Value::Variable` and `Item::VariableDeclaration` variants
   now holds a `Name` rather than just a `String` for the variable name.

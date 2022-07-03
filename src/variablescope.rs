@@ -72,7 +72,7 @@ impl ScopeRef {
                 Item::Each(ref names, ref values, ref body) => {
                     let s = self.clone();
                     for value in values.evaluate(s.clone())?.iter_items() {
-                        s.define_multi(names, &value);
+                        s.define_multi(names, value);
                         if let Some(r) = s.clone().eval_body(body)? {
                             return Ok(Some(r));
                         }
@@ -93,7 +93,7 @@ impl ScopeRef {
                     )?;
                     let s = self.clone();
                     for value in range {
-                        s.define(name.clone(), &value);
+                        s.define(name.clone(), value);
                         if let Some(r) = s.clone().eval_body(body)? {
                             return Ok(Some(r));
                         }
@@ -184,7 +184,7 @@ impl ScopeRef {
             }
             for (name, value) in &*self.variables.lock().unwrap() {
                 if filter.allow_var(name) {
-                    result.define(name.clone(), value);
+                    result.define(name.clone(), value.clone());
                 }
             }
             result
@@ -319,8 +319,8 @@ impl Scope {
     }
 
     /// Define a none-default, non-global variable.
-    pub fn define(&self, name: Name, val: &Value) {
-        self.set_variable(name, val.clone(), false, false)
+    pub fn define(&self, name: Name, val: Value) {
+        self.set_variable(name, val, false, false)
     }
 
     /// Define a variable with a value.
@@ -355,11 +355,11 @@ impl Scope {
     }
     /// Define multiple names from a value that is a list.
     /// Special case: in names is a single name, value is used directly.
-    pub fn define_multi(&self, names: &[Name], value: &Value) {
+    pub(crate) fn define_multi(&self, names: &[Name], value: Value) {
         if names.len() == 1 {
             self.define(names[0].clone(), value);
         } else {
-            let values = value.clone().iter_items();
+            let values = value.iter_items();
             if values.len() > names.len() {
                 panic!(
                     "Expected {} values, but got {}",
@@ -367,11 +367,11 @@ impl Scope {
                     values.len(),
                 )
             } else {
-                let mut values = values.iter();
+                let mut values = values.into_iter();
                 for name in names {
                     self.define(
                         name.clone(),
-                        values.next().unwrap_or(&Value::Null),
+                        values.next().unwrap_or(Value::Null),
                     )
                 }
             }
@@ -540,7 +540,7 @@ impl Scope {
                 for (name, value) in &*module.variables.lock().unwrap() {
                     let name = format!("{}{}", prefix, name).into();
                     if expose.allow_fun(&name) {
-                        self.define(name, value);
+                        self.define(name, value.clone());
                     }
                 }
                 for (name, m) in &*module.mixins.lock().unwrap() {
@@ -559,7 +559,7 @@ impl Scope {
             self.define_function(name.clone(), function.clone());
         }
         for (name, value) in &*other.variables.lock().unwrap() {
-            self.define(name.clone(), value);
+            self.define(name.clone(), value.clone());
         }
         for (name, m) in &*other.mixins.lock().unwrap() {
             self.define_mixin(name.clone(), m.clone());
@@ -986,7 +986,7 @@ pub mod test {
             let val = value_expression(code_span(val.as_bytes()));
             scope.define(
                 Name::from_static(name),
-                &ParseError::check(val)?.evaluate(scope.clone())?,
+                ParseError::check(val)?.evaluate(scope.clone())?,
             );
         }
         let expr =

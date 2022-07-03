@@ -69,16 +69,16 @@ impl FormalArgs {
         }
         let positional = args.take_positional(self.0.len());
         for ((name, _default), value) in self.0.iter().zip(&positional) {
-            argscope.define(name.clone(), value);
+            argscope.define(name.clone(), value.clone());
         }
         if self.0.len() > positional.len() {
             for (name, default) in &self.0[positional.len()..] {
                 if let Some(v) = args.named.remove(name) {
-                    argscope.define(name.clone(), &v);
+                    argscope.define(name.clone(), v);
                 } else if let Some(default) = default {
                     argscope.define(
                         name.clone(),
-                        &default.do_evaluate(argscope.clone(), true)?,
+                        default.do_evaluate(argscope.clone(), true)?,
                     );
                 } else {
                     return Err(ArgsError::Missing(name.clone()));
@@ -88,7 +88,7 @@ impl FormalArgs {
         if let Some(va_name) = &self.1 {
             argscope.define(
                 va_name.clone(),
-                &args.only_named(va_name).unwrap_or_else(|| args.into()),
+                args.only_named(va_name).unwrap_or_else(|| args.into()),
             );
         } else {
             args.check_no_named()?;
