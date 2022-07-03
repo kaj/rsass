@@ -67,7 +67,6 @@ mod load_css {
     }
 }
 #[test]
-#[ignore] // unexepected error
 fn shares_state() {
     let runner = runner().with_cwd("shares_state");
     assert_eq!(

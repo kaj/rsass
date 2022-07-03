@@ -72,7 +72,7 @@ impl ScopeRef {
                 Item::Each(ref names, ref values, ref body) => {
                     let s = self.clone();
                     for value in values.evaluate(s.clone())?.iter_items() {
-                        s.define_multi(names, value);
+                        s.define_multi(names, value)?;
                         if let Some(r) = s.clone().eval_body(body)? {
                             return Ok(Some(r));
                         }
@@ -93,7 +93,7 @@ impl ScopeRef {
                     )?;
                     let s = self.clone();
                     for value in range {
-                        s.define(name.clone(), value);
+                        s.define(name.clone(), value)?;
                         if let Some(r) = s.clone().eval_body(body)? {
                             return Ok(Some(r));
                         }
@@ -105,9 +105,11 @@ impl ScopeRef {
                     ref val,
                     default,
                     global,
+                    ref pos,
                 } => {
                     let val = val.evaluate(self.clone())?;
-                    self.set_variable(name.clone(), val, default, global);
+                    self.set_variable(name.clone(), val, default, global)
+                        .map_err(|e| e.at(pos.clone()))?;
                     None
                 }
                 Item::Return(ref v, _) => {
@@ -184,7 +186,7 @@ impl ScopeRef {
             }
             for (name, value) in &*self.variables.lock().unwrap() {
                 if filter.allow_var(name) {
-                    result.define(name.clone(), value.clone());
+                    result.define(name.clone(), value.clone()).unwrap();
                 }
             }
             result
@@ -248,12 +250,8 @@ impl Scope {
     /// Create a scope for a built-in module.
     pub fn builtin_module(name: &'static str) -> Self {
         let s = Scope::new_global(Default::default());
-        s.set_variable(
-            Name::from_static("@scope_name@"),
-            name.into(),
-            false,
-            false,
-        );
+        s.define(Name::from_static("@scope_name@"), name.into())
+            .unwrap();
         s
     }
     pub(crate) fn get_name(&self) -> String {
@@ -319,7 +317,7 @@ impl Scope {
     }
 
     /// Define a none-default, non-global variable.
-    pub fn define(&self, name: Name, val: Value) {
+    pub fn define(&self, name: Name, val: Value) -> Result<(), ScopeError> {
         self.set_variable(name, val, false, false)
     }
 
@@ -332,17 +330,39 @@ impl Scope {
         val: Value,
         default: bool,
         global: bool,
-    ) {
+    ) -> Result<(), ScopeError> {
+        if let Some((modulename, name)) = name.split_module() {
+            if let Some(module) = self.get_module(&modulename) {
+                if module
+                    .get_local_or_none(&Name::from_static("@scope_name@"))
+                    .is_some()
+                {
+                    return Err(ScopeError::ModifiedBuiltin);
+                } else {
+                    // Refuse to declare new var from outside module:
+                    let _check_existence = module.get(&name)?;
+                    return module.set_variable(name, val, default, global);
+                }
+            } else {
+                return Err(ScopeError::NoModule(modulename));
+            }
+        }
+        /*if let Some(fwd) = self.opt_forward() {
+            fwd.get_or_none(&name);
+        } else {
+            dbg!("not forwarded");
+        }*/
         if default
             && !matches!(self.get_or_none(&name), Some(Value::Null) | None)
         {
-            return;
+            return Ok(());
         }
         if global {
             self.define_global(name, val);
         } else {
             self.variables.lock().unwrap().insert(name, val);
         }
+        Ok(())
     }
     /// Define a variable in the global scope that is an ultimate
     /// parent of this scope.
@@ -355,9 +375,13 @@ impl Scope {
     }
     /// Define multiple names from a value that is a list.
     /// Special case: in names is a single name, value is used directly.
-    pub(crate) fn define_multi(&self, names: &[Name], value: Value) {
+    pub(crate) fn define_multi(
+        &self,
+        names: &[Name],
+        value: Value,
+    ) -> Result<(), Error> {
         if names.len() == 1 {
-            self.define(names[0].clone(), value);
+            Ok(self.define(names[0].clone(), value)?)
         } else {
             let values = value.iter_items();
             if values.len() > names.len() {
@@ -372,8 +396,9 @@ impl Scope {
                     self.define(
                         name.clone(),
                         values.next().unwrap_or(Value::Null),
-                    )
+                    )?;
                 }
+                Ok(())
             }
         }
     }
@@ -539,7 +564,7 @@ impl Scope {
                 for (name, value) in &*module.variables.lock().unwrap() {
                     let name = format!("{}{}", prefix, name).into();
                     if expose.allow_fun(&name) {
-                        self.define(name, value.clone());
+                        self.define(name, value.clone())?;
                     }
                 }
                 for (name, m) in &*module.mixins.lock().unwrap() {
@@ -558,7 +583,7 @@ impl Scope {
             self.define_function(name.clone(), function.clone());
         }
         for (name, value) in &*other.variables.lock().unwrap() {
-            self.define(name.clone(), value.clone());
+            self.define(name.clone(), value.clone()).unwrap();
         }
         for (name, m) in &*other.mixins.lock().unwrap() {
             self.define_mixin(name.clone(), m.clone());
@@ -604,9 +629,7 @@ impl Scope {
             .get_or_insert_with(|| ScopeRef::new_global(self.get_format()))
             .clone()
     }
-    /// Get the forward scope for this scope.
-    ///
-    /// Create a new one if necessary.
+    /// Get the forward scope for this scope, if any.
     pub fn opt_forward(&self) -> Option<ScopeRef> {
         self.forward.lock().unwrap().clone()
     }
@@ -986,7 +1009,7 @@ pub mod test {
             scope.define(
                 Name::from_static(name),
                 ParseError::check(val)?.evaluate(scope.clone())?,
-            );
+            )?;
         }
         let expr =
             terminated(value_expression, tag(";"))(code_span(expression));
@@ -1006,6 +1029,8 @@ pub enum ScopeError {
     UndefinedVariable,
     /// Undefined function.
     UndefinedFunction,
+    /// Cannot modify built-in variable.
+    ModifiedBuiltin,
 }
 
 impl ScopeError {
@@ -1026,6 +1051,9 @@ impl Display for ScopeError {
             ),
             ScopeError::UndefinedVariable => "Undefined variable.".fmt(out),
             ScopeError::UndefinedFunction => "Undefined function.".fmt(out),
+            ScopeError::ModifiedBuiltin => {
+                "Cannot modify built-in variable.".fmt(out)
+            }
         }
     }
 }

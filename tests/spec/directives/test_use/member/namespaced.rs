@@ -166,7 +166,6 @@ mod default {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn top_level() {
             let runner = runner().with_cwd("top_level");
             assert_eq!(
@@ -250,7 +249,6 @@ mod explicit {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn variable_assignment() {
         let runner = runner().with_cwd("variable_assignment");
         assert_eq!(

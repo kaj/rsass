@@ -134,7 +134,7 @@ mod variable_assignment {
     );
     }
     #[test]
-    #[ignore] // unexepected error
+    #[ignore] // wrong result
     fn top_level() {
         let runner = runner().with_cwd("top_level");
         assert_eq!(

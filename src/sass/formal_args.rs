@@ -1,5 +1,5 @@
 use super::{Call, Name, Value};
-use crate::{css, Error, ScopeRef, SourcePos};
+use crate::{css, Error, ScopeError, ScopeRef, SourcePos};
 use std::fmt;
 
 /// The declared arguments of a mixin or function declaration.
@@ -69,17 +69,17 @@ impl FormalArgs {
         }
         let positional = args.take_positional(self.0.len());
         for ((name, _default), value) in self.0.iter().zip(&positional) {
-            argscope.define(name.clone(), value.clone());
+            argscope.define(name.clone(), value.clone())?;
         }
         if self.0.len() > positional.len() {
             for (name, default) in &self.0[positional.len()..] {
                 if let Some(v) = args.named.remove(name) {
-                    argscope.define(name.clone(), v);
+                    argscope.define(name.clone(), v)?;
                 } else if let Some(default) = default {
                     argscope.define(
                         name.clone(),
                         default.do_evaluate(argscope.clone(), true)?,
-                    );
+                    )?;
                 } else {
                     return Err(ArgsError::Missing(name.clone()));
                 }
@@ -89,7 +89,7 @@ impl FormalArgs {
             argscope.define(
                 va_name.clone(),
                 args.only_named(va_name).unwrap_or_else(|| args.into()),
-            );
+            )?;
         } else {
             args.check_no_named()?;
         }
@@ -187,6 +187,11 @@ impl fmt::Display for ArgsError {
 impl From<Error> for ArgsError {
     fn from(e: Error) -> ArgsError {
         ArgsError::Eval(Box::new(e))
+    }
+}
+impl From<ScopeError> for ArgsError {
+    fn from(e: ScopeError) -> ArgsError {
+        Error::from(e).into()
     }
 }
 

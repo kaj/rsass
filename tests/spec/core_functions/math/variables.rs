@@ -24,7 +24,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn e() {
             assert_eq!(
                 runner().err(
@@ -40,7 +39,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn pi() {
             assert_eq!(
                 runner().err(

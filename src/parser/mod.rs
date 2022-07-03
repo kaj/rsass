@@ -203,7 +203,7 @@ fn top_level_item(input: Span) -> PResult<Item> {
         b"$" => variable_declaration2(input),
         b"/*" => comment_item(input),
         b"@" => at_rule2(input),
-        b"" => rule(input),
+        b"" => alt((variable_declaration_mod, rule))(input),
         _ => unreachable!(),
     }
 }
@@ -623,16 +623,37 @@ fn body_block2(input: Span) -> PResult<Vec<Item>> {
     Ok((input, v))
 }
 
-#[cfg(test)] // TODO: Or remove this?
 fn variable_declaration(input: Span) -> PResult<Item> {
     preceded(tag("$"), variable_declaration2)(input)
 }
 
-fn variable_declaration2(input: Span) -> PResult<Item> {
+fn variable_declaration_mod(input: Span) -> PResult<Item> {
+    map(
+        pair(terminated(name, tag(".")), variable_declaration),
+        |(module, decl)| match decl {
+            Item::VariableDeclaration {
+                name,
+                val,
+                default,
+                global,
+                pos,
+            } => Item::VariableDeclaration {
+                name: format!("{}.{}", module, name).into(),
+                val,
+                default,
+                global,
+                pos: pos.opt_back(&format!("{}.", module)),
+            },
+            _ => unreachable!(),
+        },
+    )(input)
+}
+
+fn variable_declaration2(input0: Span) -> PResult<Item> {
     let (input, name) = terminated(
         map(name, Name::from),
         delimited(opt_spacelike, tag(":"), opt_spacelike),
-    )(input)?;
+    )(input0)?;
     let (input, val) = terminated(value_expression, opt_spacelike)(input)?;
     let (input, (default, global)) = fold_many0(
         terminated(
@@ -645,14 +666,15 @@ fn variable_declaration2(input: Span) -> PResult<Item> {
         || (false, false),
         |(default, global), (d, g)| (default || d, global || g),
     )(input)?;
-    let (input, _) = semi_or_end(input)?;
+    let (trail, _) = semi_or_end(input)?;
     Ok((
-        input,
+        trail,
         Item::VariableDeclaration {
             name,
             val,
             default,
             global,
+            pos: SourcePos::from_to(input0, input).opt_back("$"),
         },
     ))
 }
@@ -721,47 +743,66 @@ fn test_property_2() {
 
 #[test]
 fn test_variable_declaration_simple() {
-    assert_eq!(
-        check_parse!(variable_declaration, b"$foo: bar;"),
+    match check_parse!(variable_declaration, b"$foo: bar;") {
         Item::VariableDeclaration {
-            name: "foo".into(),
-            val: string("bar"),
-            default: false,
-            global: false,
-        },
-    )
+            name,
+            val,
+            default,
+            global,
+            pos: _,
+        } => {
+            assert_eq!(
+                (name, val, default, global),
+                ("foo".into(), string("bar"), false, false)
+            )
+        }
+        _ => panic!(),
+    }
 }
 
 #[test]
 fn test_variable_declaration_global() {
-    assert_eq!(
-        check_parse!(variable_declaration, b"$y: some value !global;"),
+    match check_parse!(variable_declaration, b"$y: some value !global;") {
         Item::VariableDeclaration {
-            name: "y".into(),
-            val: Value::List(
-                vec![string("some"), string("value")],
-                Some(ListSeparator::Space),
-                false,
-            ),
-            default: false,
-            global: true,
-        },
-    )
+            name,
+            val,
+            default,
+            global,
+            pos: _,
+        } => {
+            assert_eq!(
+                (name, val, default, global),
+                (
+                    "y".into(),
+                    Value::List(
+                        vec![string("some"), string("value")],
+                        Some(ListSeparator::Space),
+                        false,
+                    ),
+                    false,
+                    true,
+                )
+            )
+        }
+        _ => panic!(),
+    }
 }
 
 #[test]
 fn test_variable_declaration_default() {
-    assert_eq!(
-        check_parse!(variable_declaration, b"$y: some value !default;"),
+    match check_parse!(variable_declaration, b"$y: value !default;") {
         Item::VariableDeclaration {
-            name: "y".into(),
-            val: Value::List(
-                vec![string("some"), string("value")],
-                Some(ListSeparator::Space),
-                false,
-            ),
-            default: true,
-            global: false,
-        },
-    )
+            name,
+            val,
+            default,
+            global,
+            pos: _,
+        } => {
+            assert_eq!(
+                (name, val, default, global),
+                ("y".into(), string("value"), true, false,)
+            )
+        }
+        _ => panic!(),
+    }
 }

@@ -195,8 +195,8 @@ pub fn create_module() -> Scope {
         }
     });
 
-    f.set_variable(name!(pi), Value::scalar(PI), false, false);
-    f.set_variable(name!(e), Value::scalar(E), false, false);
+    f.define(name!(pi), Value::scalar(PI)).unwrap();
+    f.define(name!(e), Value::scalar(E)).unwrap();
     f
 }
 
