@@ -12,7 +12,7 @@ project adheres to
 ### Breaking changes
 
 * Changes in `Error` representation.  Many errors are now constructed like
-  `Invalid::Something.at(pos)` (PR #145).
+  `Invalid::SomeVariant.at(pos)` (PR #145).
 * `@extend` is still unsupported, but now some uses of it (e.g. in control
   structures) will result in an error instead of wrong output.
 * Some `sass::Item` alternatives now contain a `Callable`, combining
@@ -27,7 +27,7 @@ project adheres to
 * Setting a variable, `Scope::define` now takes the `Value` by value rather
   than by reference.  Also, `Scope::define_multi` is no longer exposed in
   the api.
-* Added a variant to `ScopeError`.
+* Renamed one variant of `ScopeError` and added another.
 * The sass `Value::Variable` and `Item::VariableDeclaration` variants
   now holds a `Name` rather than just a `String` for the variable name.
 

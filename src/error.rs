@@ -1,6 +1,7 @@
 use crate::parser::{ParseError, SourcePos};
 use crate::sass::{ArgsError, Name};
 use crate::value::RangeError;
+use crate::ScopeError;
 use std::convert::From;
 use std::{fmt, io};
 
@@ -157,12 +158,6 @@ impl From<RangeError> for Error {
 /// Should be combined with a position to get an [Error].
 #[derive(Debug)]
 pub enum Invalid {
-    /// An undefined variable was used at source pos.
-    UndefinedVariable,
-    /// Undefined function.
-    UndefinedFunction,
-    /// Attemt to use an undefined module.
-    UndefModule(String),
     /// Tried to declare a function with a forbidden name.
     FunctionName,
     /// This at rule is not allowed here.
@@ -175,6 +170,8 @@ pub enum Invalid {
     FunctionInMixin,
     /// Functions may not be declared in control directives
     FunctionInControl,
+    /// Some invalid scope operation.
+    InScope(ScopeError),
     /// An `@error` reached.
     AtError(String),
 }
@@ -188,15 +185,6 @@ impl Invalid {
 impl fmt::Display for Invalid {
     fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Invalid::UndefinedVariable => "Undefined variable.".fmt(out),
-            Invalid::UndefinedFunction => "Undefined function.".fmt(out),
-            Invalid::UndefModule(name) => {
-                write!(
-                    out,
-                    "There is no module with the namespace {:?}.",
-                    name
-                )
-            }
             Invalid::FunctionName => "Invalid function name.".fmt(out),
             Invalid::AtRule => "This at-rule is not allowed here.".fmt(out),
             Invalid::MixinInMixin => {
@@ -212,6 +200,7 @@ impl fmt::Display for Invalid {
                 "Functions may not be declared in control directives."
                     .fmt(out)
             }
+            Invalid::InScope(err) => err.fmt(out),
             Invalid::AtError(msg) => msg.fmt(out),
         }
     }

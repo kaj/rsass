@@ -401,14 +401,13 @@ impl Scope {
     /// Get the value for a variable (or an error).
     pub fn get(&self, name: &Name) -> Result<Value, ScopeError> {
         if let Some((modulename, name)) = name.split_module() {
-            if let Some(module) = self.get_module(&modulename) {
-                return module.get(&name);
-            } else {
-                return Err(ScopeError::NoModule(modulename));
-            }
+            self.get_module(&modulename)
+                .ok_or_else(|| ScopeError::NoModule(modulename))?
+                .get(&name)
+        } else {
+            self.get_local_or_none(name)
+                .ok_or(ScopeError::UndefinedVariable)
         }
-        self.get_local_or_none(name)
-            .ok_or_else(|| ScopeError::Undefined(name.clone()))
     }
 
     /// Copy a set of local variables to a temporary holder
@@ -999,11 +998,12 @@ pub mod test {
 }
 
 /// Tried to get something that does not exist from a scope.
+#[derive(Debug)]
 pub enum ScopeError {
     /// Tried to access a module that does not exist.
     NoModule(String),
     /// Tried to access an undefined name.
-    Undefined(Name),
+    UndefinedVariable,
     /// Undefined function.
     UndefinedFunction,
 }
@@ -1011,13 +1011,7 @@ pub enum ScopeError {
 impl ScopeError {
     /// Make an Error from a ScopeError at a specific position.
     pub fn at(self, pos: SourcePos) -> Error {
-        match self {
-            ScopeError::NoModule(name) => Invalid::UndefModule(name).at(pos),
-            ScopeError::Undefined(_) => Invalid::UndefinedVariable.at(pos),
-            ScopeError::UndefinedFunction => {
-                Invalid::UndefinedFunction.at(pos)
-            }
-        }
+        Invalid::InScope(self).at(pos)
     }
 }
 
@@ -1030,13 +1024,8 @@ impl Display for ScopeError {
                 "There is no module with the namespace {:?}.",
                 name
             ),
-            ScopeError::Undefined(name) => {
-                // Note: Currently true, but may be used for other things.
-                write!(out, "Undefined variable: \"${}\"", name)
-            }
-            ScopeError::UndefinedFunction => {
-                write!(out, "Undefined function.")
-            }
+            ScopeError::UndefinedVariable => "Undefined variable.".fmt(out),
+            ScopeError::UndefinedFunction => "Undefined function.".fmt(out),
         }
     }
 }
