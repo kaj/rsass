@@ -58,11 +58,6 @@ impl Value {
         Value::Numeric(Numeric::scalar(v))
     }
 
-    #[cfg(test)]
-    pub fn black() -> Self {
-        Value::Color(Rgba::from_rgb(0, 0, 0), Some("black".into()))
-    }
-
     /// All values other than `False` and `Null` should be considered true.
     pub fn is_true(&self) -> bool {
         !matches!(self, Value::False | Value::Null)

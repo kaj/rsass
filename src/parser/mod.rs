@@ -678,12 +678,12 @@ fn string(v: &str) -> Value {
 #[test]
 fn if_with_no_else() {
     assert_eq!(
-        check_parse!(if_statement, b"@if true { p { color: black; } }\n"),
+        check_parse!(if_statement, b"@if true { p { border: solid; } }\n"),
         Item::IfStatement(
             Value::True,
             vec![Item::Rule(
                 selectors(code_span(b"p")).unwrap().1,
-                vec![Item::Property("color".into(), Value::black())],
+                vec![Item::Property("border".into(), string("solid"))],
             )],
             vec![],
         ),
