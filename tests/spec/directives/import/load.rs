@@ -82,7 +82,6 @@ mod index {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn dir_dot_scss() {
         let runner = runner().with_cwd("dir_dot_scss");
         assert_eq!(

@@ -1,3 +1,4 @@
+use rsass::input::{FsContext, SourceFile, SourceName};
 use rsass::output::Format;
 use rsass::sass::{FormalArgs, Function, Name};
 use rsass::value::{Number, Numeric, Rgba};
@@ -6,8 +7,7 @@ use std::sync::Arc;
 
 #[test]
 fn simple_value() {
-    let parsed =
-        Parsed::Scss(parse_scss_data(b"p { color: $color }").unwrap());
+    let parsed = mock_stdin("p { color: $color }").parse().unwrap();
     let format = output::Format {
         style: output::Style::Compressed,
         precision: 5,
@@ -16,10 +16,10 @@ fn simple_value() {
     scope
         .define(Name::from_static("color"), Rgba::from_rgb(0, 0, 0).into())
         .unwrap();
-    let file_context = FsFileContext::new();
+    let mut file_context = FsContext::for_cwd();
     assert_eq!(
         String::from_utf8(
-            format.write_root(parsed, scope, &file_context).unwrap()
+            format.write_root(parsed, scope, &mut file_context).unwrap()
         )
         .unwrap(),
         "p{color:#000}\n"
@@ -42,12 +42,11 @@ fn simple_function() {
             Arc::new(|_| Ok(css::Value::scalar(42))),
         ),
     );
-    let parsed =
-        Parsed::Scss(parse_scss_data(b"p { x: get_answer(); }").unwrap());
-    let file_context = FsFileContext::new();
+    let parsed = mock_stdin("p { x: get_answer(); }").parse().unwrap();
+    let mut file_context = FsContext::for_cwd();
     assert_eq!(
         String::from_utf8(
-            format.write_root(parsed, scope, &file_context).unwrap()
+            format.write_root(parsed, scope, &mut file_context).unwrap()
         )
         .unwrap(),
         "p{x:42}\n"
@@ -100,18 +99,21 @@ fn function_with_args() {
             }),
         ),
     );
-    let parsed =
-        Parsed::Scss(parse_scss_data(b"p { x: halfway(10, 18); }").unwrap());
+    let parsed = mock_stdin("p { x: halfway(10, 18); }").parse().unwrap();
     let format = output::Format {
         style: output::Style::Compressed,
         precision: 5,
     };
-    let file_context = FsFileContext::new();
+    let mut file_context = FsContext::for_cwd();
     assert_eq!(
         String::from_utf8(
-            format.write_root(parsed, scope, &file_context).unwrap()
+            format.write_root(parsed, scope, &mut file_context).unwrap()
         )
         .unwrap(),
         "p{x:14}\n"
     );
+}
+
+fn mock_stdin(data: &str) -> SourceFile {
+    SourceFile::scss_bytes(data.as_bytes(), SourceName::root("-"))
 }

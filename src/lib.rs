@@ -40,7 +40,7 @@
 
 pub mod css;
 mod error;
-mod file_context;
+pub mod input;
 mod ordermap;
 pub mod output;
 mod parser;
@@ -49,14 +49,11 @@ pub mod value;
 mod variablescope;
 
 pub use crate::error::Error;
-pub use crate::file_context::{FileContext, FsFileContext};
-use crate::output::Format;
-pub use crate::parser::{
-    parse_scss_data, parse_value_data, ParseError, Parsed, SourceFile,
-    SourceName, SourcePos,
-};
+pub use crate::parser::{parse_value_data, ParseError, Parsed, SourcePos};
 pub use crate::variablescope::{Scope, ScopeError, ScopeRef};
 
+use crate::input::{FsContext, SourceName};
+use crate::output::Format;
 use std::path::Path;
 
 /// Parse a scss value from a buffer and write its css representation
@@ -100,9 +97,8 @@ pub fn compile_value(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
 /// )
 /// ```
 pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
-    let file_context = FsFileContext::new();
-    let items = Parsed::Scss(parse_scss_data(input)?);
-    format.write_root(items, ScopeRef::new_global(format), &file_context)
+    let input = input::SourceFile::scss_bytes(input, SourceName::root("-"));
+    FsContext::for_cwd().transform(input, format)
 }
 
 /// Parse a file of scss data and write css in the given style.
@@ -129,7 +125,6 @@ pub fn compile_scss_path(
     path: &Path,
     format: Format,
 ) -> Result<Vec<u8>, Error> {
-    let (file_context, source) = FsFileContext::for_path(path)?;
-    let source = source.parse()?;
-    format.write_root(source, ScopeRef::new_global(format), &file_context)
+    let (context, source) = FsContext::for_path(path)?;
+    context.transform(source, format)
 }

@@ -51,6 +51,10 @@ fn runner() -> crate::TestRunner {
         .mock_file("loop/use_to_import/other.scss", "@import \"input\";\n")
         .mock_file("loop/use_to_use/other.scss", "@use \"input\";\n")
         .mock_file("no_extension/other", "a {b: c}\n")
+        .mock_file("loop/import_to_use/input.scss", "@import \"other\";\n")
+        .mock_file("loop/use_self/input.scss", "@use \"input\";\n")
+        .mock_file("loop/use_to_import/input.scss", "@use \"other\";\n")
+        .mock_file("loop/use_to_use/input.scss", "@use \"other\";\n")
 }
 
 mod conflict {
@@ -234,7 +238,6 @@ mod conflicting_namespace {
     }
 }
 #[test]
-#[ignore] // missing error
 fn dir_dot_scss() {
     let runner = runner().with_cwd("dir_dot_scss");
     assert_eq!(
@@ -254,7 +257,6 @@ mod test_loop {
     }
 
     #[test]
-    #[ignore] // wrong error
     fn import_to_use() {
         let runner = runner().with_cwd("import_to_use");
         assert_eq!(
@@ -269,7 +271,6 @@ mod test_loop {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn use_self() {
         let runner = runner().with_cwd("use_self");
         assert_eq!(
@@ -283,7 +284,6 @@ mod test_loop {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn use_to_import() {
         let runner = runner().with_cwd("use_to_import");
         assert_eq!(
@@ -298,7 +298,6 @@ mod test_loop {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn use_to_use() {
         let runner = runner().with_cwd("use_to_use");
         assert_eq!(
@@ -327,7 +326,6 @@ fn missing() {
     );
 }
 #[test]
-#[ignore] // wrong error
 fn no_extension() {
     let runner = runner().with_cwd("no_extension");
     assert_eq!(

@@ -1,5 +1,6 @@
 use deunicode::deunicode;
 use hrx_get::Archive;
+use lazy_regex::regex_is_match;
 use std::ffi::OsStr;
 use std::fs::{create_dir, DirEntry, File};
 use std::io::{self, Read, Write};
@@ -266,11 +267,31 @@ fn spec_hrx_to_test(
             runner = runner.mock_file(name, content);
         }
     }
+    for (name, content) in archive.entries() {
+        if let Some(base) = name.strip_suffix("input.scss") {
+            if references_input(content)
+                || archive.entries().any(|(path, content)| {
+                    path.starts_with(base) && references_input(content)
+                })
+            {
+                writeln!(
+                    rs,
+                    "        .mock_file({:?}, {:#?})",
+                    name, content
+                )?;
+                runner = runner.mock_file(name, content);
+            }
+        }
+    }
     if let Some(p) = precision {
         writeln!(rs, "        .set_precision({})", p)?;
     }
     rs.write_all(b"}\n\n")?;
     handle_hrx_part(rs, suite, &archive, "", precision, runner)
+}
+
+fn references_input(content: &str) -> bool {
+    regex_is_match!("['\"]input['\"]", content)
 }
 
 fn handle_hrx_part(

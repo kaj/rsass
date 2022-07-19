@@ -145,6 +145,10 @@ impl CssString {
     pub fn value(&self) -> &str {
         &self.value
     }
+    /// Take the string value, discarding quote information.
+    pub fn take_value(self) -> String {
+        self.value
+    }
     /// Access the quotes
     pub fn quotes(&self) -> Quotes {
         self.quotes

@@ -32,6 +32,12 @@ project adheres to
   now holds a `Name` rather than just a `String` for the variable name.
   Also, both now holds a `SourcePos`.
 * `Error::error` now takes an `Into<String>` argument (PR #151).
+* The module `input` contains types types with `Context<L>`, `Loader`,
+  `FsLoader`, and `FsContext`, replacing the old `FileContext` and
+  `FsFileContext`.  Also, the types `SourceKind` and `SourceName` are moved
+  from top-level into the `input` module (PR #150).
+* The `parse_value_data` function is removed.  Please create a `SourceFile`
+  and use the `parse` method on that instead (PR #150).
 
 ### Improvements
 
@@ -41,6 +47,9 @@ project adheres to
   error reporting improvements (PR #148).
 * Allow interpolation in css min and max function arguments.
 * The url for `@use` and `@forward` must be quoted.
+* Improve detection of import loops (PR #150).
+* When loading files, Don't apply suffix / index-adding rules if the file
+  name already has a suffix (PR #150).
 * Some `@` rules are now forbidden in some places as they should (PR #145).
 * The css `var(...)` function is now parsed as a proper function, and not
   as a special string (PR #147).
@@ -53,6 +62,9 @@ project adheres to
 * Somtimes a trailing comma in argument lists is preserved (PR #147).
 * Simplified `main` of the command-line by returning a `Result` (PR #151).
 * Update sass-spec test suite to 2022-07-18.
+* Handle tests referencing `input.scss` in spectest (include it among the
+  mock files, if mentioned in itself or any existing mock file) (PR #150).
+* Use `lazy-regex` in spectest (PR #150).
 * Some cleanups.
 
 Thanks to @fasterthanlime (again) for reporting the problem with

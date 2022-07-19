@@ -1,8 +1,6 @@
 use clap::Parser;
-use rsass::{
-    output::{Format, Style},
-    Error, FsFileContext, ScopeRef,
-};
+use rsass::output::{Format, Style};
+use rsass::{input, Error};
 use std::io::{stdout, Write};
 use std::path::PathBuf;
 
@@ -71,18 +69,12 @@ impl Args {
             precision: self.precision,
         };
         for name in &self.input {
-            let (mut file_context, source) = FsFileContext::for_path(name)?;
+            let (mut context, source) = input::FsContext::for_path(name)?;
             if let Some(include_path) = &self.load_path {
-                file_context.push_path(include_path.as_ref());
+                context.push_path(include_path.as_ref());
             }
-            let source = source.parse()?;
-            let result = format.write_root(
-                source,
-                ScopeRef::new_global(format),
-                &file_context,
-            )?;
-            let out = stdout();
-            out.lock().write_all(&result)?;
+            let result = context.transform(source, format)?;
+            stdout().write_all(&result)?;
         }
         Ok(())
     }

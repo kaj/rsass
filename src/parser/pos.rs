@@ -1,4 +1,5 @@
 use super::Span;
+use crate::input::SourceName;
 use crate::sass::{FormalArgs, Name};
 use std::fmt::{self, Write};
 use std::str::from_utf8;
@@ -102,10 +103,10 @@ impl SourcePos {
         marker: char,
         what: &str,
     ) -> fmt::Result {
-        let filename = if self.p.file.name.is_empty() {
+        let filename = if self.file_url().is_empty() {
             String::new()
         } else {
-            format!("--> {}", self.p.file.name)
+            format!("--> {}", self.file_url())
         };
         self.show_impl(out, &filename, marker, what)
     }
@@ -219,10 +220,10 @@ impl SourcePos {
         self.p.file.is_builtin()
     }
     pub(crate) fn same_file_as(&self, other: &Self) -> bool {
-        self.p.file.name == other.p.file.name
+        self.file_url() == other.file_url()
     }
     pub(crate) fn file_url(&self) -> &str {
-        &self.p.file.name
+        self.p.file.name()
     }
 }
 
@@ -269,99 +270,12 @@ impl fmt::Debug for SourcePos {
             write!(
                 out,
                 " {}:{} {}",
-                pos.p.file.name, pos.p.line_no, pos.p.file.imported
+                pos.file_url(),
+                pos.p.line_no,
+                pos.p.file.imported
             )?;
             nextpos = pos.p.file.imported.next();
         }
         out.write_char('}')
-    }
-}
-
-/// The name of a scss source file.
-///
-/// This also contains the information if this was the root stylesheet
-/// or where it was imported from.
-#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-pub struct SourceName {
-    name: String,
-    imported: SourceKind,
-}
-
-impl SourceName {
-    /// Create a new top-level SourceName.
-    pub fn root<T: ToString>(name: T) -> Self {
-        SourceName {
-            name: name.to_string(),
-            imported: SourceKind::Root,
-        }
-    }
-    /// Create a name for a file imported from a specific pos.
-    pub fn imported<T: ToString>(name: T, from: SourcePos) -> Self {
-        SourceName {
-            name: name.to_string(),
-            imported: SourceKind::Imported(from),
-        }
-    }
-    /// Create a name for a file imported from a specific pos.
-    pub fn used<T: ToString>(name: T, from: SourcePos) -> Self {
-        SourceName {
-            name: name.to_string(),
-            imported: SourceKind::Used(from),
-        }
-    }
-    /// Create a name for a mixin loaded by load_css from a specific pos.
-    pub fn load_css<T: ToString>(name: T, from: SourcePos) -> Self {
-        SourceName {
-            name: name.to_string(),
-            imported: SourceKind::Called("load-css".to_string(), from),
-        }
-    }
-    /// Create a name for a mixin called from a specific pos.
-    pub fn called<T: ToString>(name: T, from: SourcePos) -> Self {
-        SourceName {
-            name: from.p.file.name.clone(),
-            imported: SourceKind::Called(name.to_string(), from),
-        }
-    }
-
-    /// Get the name of this source.
-    pub fn name(&self) -> &str {
-        &self.name
-    }
-
-    /// True if this is the position of something built-in.
-    pub fn is_builtin(&self) -> bool {
-        // Note: maybe implement this as a sepate source kind?
-        self.name.starts_with("sass:") || self.name.is_empty()
-    }
-}
-
-#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-enum SourceKind {
-    Root,
-    Imported(SourcePos),
-    Used(SourcePos),
-    Called(String, SourcePos),
-}
-
-impl SourceKind {
-    fn next(&self) -> Option<&SourcePos> {
-        match self {
-            SourceKind::Root => None,
-            SourceKind::Imported(pos) => Some(pos),
-            SourceKind::Used(pos) => Some(pos),
-            SourceKind::Called(_, pos) => Some(pos),
-        }
-    }
-}
-
-impl fmt::Display for SourceKind {
-    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            SourceKind::Root => out.write_str("root stylesheet"),
-            SourceKind::Imported(_) => out.write_str("@import"),
-            SourceKind::Used(_) => out.write_str("@use"),
-            SourceKind::Called(name, _) => write!(out, "{}()", name),
-        }
     }
 }

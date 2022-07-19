@@ -37,6 +37,7 @@ fn runner() -> crate::TestRunner {
         .mock_file("with/through_forward/with/_forwarded.scss", "$a: d !default;\n")
         .mock_file("with/through_forward/with/_used.scss", "@forward \"forwarded\" with ($a: c);\n")
         .mock_file("with/undefined/_other.scss", "// This file defines no variables.\n")
+        .mock_file("load/loop/input.scss", "@use \"sass:meta\";\n@include meta.load-css(\"other\");\n")
 }
 
 mod from_other {
