@@ -20,8 +20,6 @@ fn test() {
              \nul > {\
              \n  @include odd( li, 5 ) { background: #ccc;  }\
              \n}\n"),
-        "ul > + li + li:first-child + li + li {\
-         \n  background: #ccc;\
-         \n}\n"
+        ""
     );
 }

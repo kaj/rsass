@@ -23,6 +23,86 @@ mod complex {
          \n}\n"
         );
     }
+    mod bogus {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn leading() {
+            assert_eq!(
+                runner().ok("$result: selector-parse(\"> b\");\
+             \na {\
+             \n  result: $result;\
+             \n  structure: $result == (\">\" b,);\
+             \n}\n"),
+                "a {\
+         \n  result: > b;\
+         \n  structure: true;\
+         \n}\n"
+            );
+        }
+        mod multiple {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn middle() {
+                assert_eq!(
+                    runner().ok("$result: selector-parse(\"b + ~ c\");\
+             \na {\
+             \n  result: $result;\
+             \n  structure: $result == (b \"+\" \"~\" c,);\
+             \n}\n"),
+                    "a {\
+         \n  result: b + ~ c;\
+         \n  structure: true;\
+         \n}\n"
+                );
+            }
+            #[test]
+            fn trailing() {
+                assert_eq!(
+                    runner().ok("$result: selector-parse(\"b ~~\");\
+             \na {\
+             \n  result: $result;\
+             \n  structure: $result == (b \"~\" \"~\",);\
+             \n}\n"),
+                    "a {\
+         \n  result: b ~ ~;\
+         \n  structure: true;\
+         \n}\n"
+                );
+            }
+        }
+        #[test]
+        fn only() {
+            assert_eq!(
+                runner().ok("$result: selector-parse(\">\");\
+             \na {\
+             \n  result: $result;\
+             \n  structure: $result == (append((), \">\"),);\
+             \n}\n"),
+                "a {\
+         \n  result: >;\
+         \n  structure: true;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn trailing() {
+            assert_eq!(
+                runner().ok("$result: selector-parse(\"b +\");\
+             \na {\
+             \n  result: $result;\
+             \n  structure: $result == (b \"+\",);\
+             \n}\n"),
+                "a {\
+         \n  result: b +;\
+         \n  structure: true;\
+         \n}\n"
+            );
+        }
+    }
     #[test]
     fn child() {
         assert_eq!(

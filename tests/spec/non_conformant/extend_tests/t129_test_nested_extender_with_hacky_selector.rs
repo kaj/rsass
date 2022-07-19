@@ -11,7 +11,7 @@ fn test() {
     assert_eq!(
         runner().ok(".baz .foo {a: b}\
              \nfoo + > > + bar {@extend .foo}\n"),
-        ".baz .foo, .baz foo + > > + bar, foo .baz + > > + bar {\
+        ".baz .foo {\
          \n  a: b;\
          \n}\n"
     );

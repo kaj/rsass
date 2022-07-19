@@ -6,6 +6,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
+#[ignore] // wrong result
 fn test() {
     assert_eq!(
         runner().ok("> > E {\
@@ -19,14 +20,6 @@ fn test() {
              \n    color: red;\
              \n  }\
              \n}"),
-        "> > E {\
-         \n  color: red;\
-         \n}\
-         \nE > > {\
-         \n  color: red;\
-         \n}\
-         \n> > E > > > > F > > {\
-         \n  color: red;\
-         \n}\n"
+        ""
     );
 }

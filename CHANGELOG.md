@@ -52,7 +52,7 @@ project adheres to
 * In error message, don't show ellipses for consecutive lines (PR #147).
 * Somtimes a trailing comma in argument lists is preserved (PR #147).
 * Simplified `main` of the command-line by returning a `Result` (PR #151).
-* Update sass-spec test suite to 2022-06-21.
+* Update sass-spec test suite to 2022-07-18.
 * Some cleanups.
 
 Thanks to @fasterthanlime (again) for reporting the problem with

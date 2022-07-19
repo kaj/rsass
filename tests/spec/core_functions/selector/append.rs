@@ -28,10 +28,109 @@ mod classes {
         );
     }
 }
+mod combinator {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn final_trailing() {
+        assert_eq!(
+            runner().ok("a {b: selector-append(\"c\", \"d ~\")}\n"),
+            "a {\
+         \n  b: cd ~;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn initial_leading() {
+        assert_eq!(
+            runner().ok("a {b: selector-append(\"> c\", \"d\")}\n"),
+            "a {\
+         \n  b: > cd;\
+         \n}\n"
+        );
+    }
+    mod multiple {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn final_trailing() {
+            assert_eq!(
+                runner().ok("a {b: selector-append(\"c\", \"d + >\")}\n"),
+                "a {\
+         \n  b: cd + >;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn initial_leading() {
+            assert_eq!(
+                runner().ok("a {b: selector-append(\"~ ~ c\", \"d\")}\n"),
+                "a {\
+         \n  b: ~ ~ cd;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn middle() {
+            assert_eq!(
+                runner().ok("a {b: selector-append(\"c > > d\", \"e\")}\n"),
+                "a {\
+         \n  b: c > > de;\
+         \n}\n"
+            );
+        }
+    }
+}
 mod error {
     #[allow(unused)]
     use super::runner;
 
+    mod combinator {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn leading() {
+            assert_eq!(
+                runner().err("a {b: selector-append(\".c\", \"> .d\")}\n"),
+                "Error: Can\'t append > .d to .c.\
+         \n  ,\
+         \n1 | a {b: selector-append(\".c\", \"> .d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet",
+            );
+        }
+        #[test]
+        fn only() {
+            assert_eq!(
+                runner()
+                    .err("a {b: selector-append(\".c\", \">\", \".d\")}\n"),
+                "Error: Can\'t append > to .c.\
+         \n  ,\
+         \n1 | a {b: selector-append(\".c\", \">\", \".d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet",
+            );
+        }
+        #[test]
+        #[ignore] // missing error
+        fn trailing() {
+            assert_eq!(
+                runner().err("a {b: selector-append(\".c ~\", \".d\")}\n"),
+                "Error: Parent \".c ~\" is incompatible with this selector.\
+         \n  ,\
+         \n1 | a {b: selector-append(\".c ~\", \".d\")}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 1:7  root stylesheet",
+            );
+        }
+    }
     #[test]
     #[ignore] // wrong error
     fn invalid() {
@@ -46,18 +145,6 @@ mod error {
          \n  ,\
          \n1 | a {b: selector-append(\"[c\", \"d\")}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^\
-         \n  \'\
-         \n  input.scss 1:7  root stylesheet",
-        );
-    }
-    #[test]
-    fn leading_combinator() {
-        assert_eq!(
-            runner().err("a {b: selector-append(\".c\", \"> .d\")}\n"),
-            "Error: Can\'t append > .d to .c.\
-         \n  ,\
-         \n1 | a {b: selector-append(\".c\", \"> .d\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
         );

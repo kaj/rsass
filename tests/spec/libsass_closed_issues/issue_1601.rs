@@ -18,7 +18,7 @@ fn test() {
         ),
         "Error: Parent \".code.ruby >\" is incompatible with this selector.\
          \n  ,\
-         \n2 |     &.ruby {\
+         \n2 |     &.ruby {\r\
          \n  |     ^^^^^^^\
          \n  \'\
          \n  input.scss 2:5  root stylesheet",
