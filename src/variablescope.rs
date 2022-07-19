@@ -427,7 +427,7 @@ impl Scope {
     pub fn get(&self, name: &Name) -> Result<Value, ScopeError> {
         if let Some((modulename, name)) = name.split_module() {
             self.get_module(&modulename)
-                .ok_or_else(|| ScopeError::NoModule(modulename))?
+                .ok_or(ScopeError::NoModule(modulename))?
                 .get(&name)
         } else {
             self.get_local_or_none(name)
