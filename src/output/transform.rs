@@ -74,8 +74,7 @@ fn handle_item(
             {
                 if !with.is_empty() {
                     return Err(Error::BadCall(
-                        "Error: Built-in modules can\'t be configured."
-                            .into(),
+                        "Built-in modules can\'t be configured.".into(),
                         pos.clone(),
                         None,
                     ));
@@ -117,7 +116,7 @@ fn handle_item(
                     })?
             } else {
                 return Err(Error::BadCall(
-                    "Error: Can't find stylesheet to import.".into(),
+                    "Can't find stylesheet to import.".into(),
                     pos.clone(),
                     None,
                 ));
@@ -130,8 +129,7 @@ fn handle_item(
             {
                 if !with.is_empty() {
                     return Err(Error::BadCall(
-                        "Error: Built-in modules can\'t be configured."
-                            .into(),
+                        "Built-in modules can\'t be configured.".into(),
                         pos.clone(),
                         None,
                     ));
@@ -221,7 +219,7 @@ fn handle_item(
                         || x.is_css_url())
                     {
                         return Err(Error::BadCall(
-                            "Error: Can't find stylesheet to import.".into(),
+                            "Can't find stylesheet to import.".into(),
                             pos.clone(),
                             None,
                         ));
@@ -360,7 +358,7 @@ fn handle_item(
                 })?;
             } else {
                 return Err(Error::BadCall(
-                    "Error: Undefined mixin.".into(),
+                    "Undefined mixin.".into(),
                     pos.clone(),
                     None,
                 ));

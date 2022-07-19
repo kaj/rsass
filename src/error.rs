@@ -6,7 +6,6 @@ use std::convert::From;
 use std::{fmt, io};
 
 /// Most functions in rsass that returns a Result uses this Error type.
-#[derive(Debug)]
 pub enum Error {
     /// An IO error encoundered on a specific path
     Input(String, io::Error),
@@ -40,32 +39,37 @@ impl std::error::Error for Error {}
 
 impl Error {
     /// A generic error message.
-    pub fn error<T: AsRef<str>>(msg: T) -> Self {
-        Error::S(format!("Error: {}", msg.as_ref()))
+    pub fn error<T: Into<String>>(msg: T) -> Self {
+        Error::S(msg.into())
     }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        write!(out, "Error: {:?}", self)
+    }
+}
+
+impl fmt::Debug for Error {
+    fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
             Error::S(ref s) => write!(out, "{}", s),
             Error::Input(ref p, ref e) => {
                 write!(out, "Failed to read {:?}: {}", p, e)
             }
             Error::BadArgument(ref name, ref problem) => {
-                write!(out, "Error: ${}: {}", name, problem)
+                write!(out, "${}: {}", name, problem)
             }
             Error::ParseError(ref err) => err.fmt(out),
             Error::ImportLoop(ref pos, ref oldpos) => {
-                writeln!(out, "Error: This file is already being loaded.")?;
+                writeln!(out, "This file is already being loaded.")?;
                 pos.show_detail(out, '^', " new load")?;
                 writeln!(out)?;
                 oldpos.show_detail(out, '=', " original load")?;
                 pos.show_files(out)
             }
             Error::BadCall(ref msg, ref callpos, ref declpos) => {
-                msg.fmt(out)?;
-                writeln!(out)?;
+                writeln!(out, "{}", msg)?;
                 if let Some(declpos) = declpos {
                     if callpos.same_file_as(declpos) {
                         show_in_file(
@@ -86,7 +90,7 @@ impl fmt::Display for Error {
                 }
             }
             Error::Invalid(ref what, ref pos) => {
-                writeln!(out, "Error: {}", what)?;
+                writeln!(out, "{}", what)?;
                 pos.show(out)
             }
             Error::BadRange(ref err) => err.fmt(out),

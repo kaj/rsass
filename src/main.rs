@@ -5,16 +5,9 @@ use rsass::{
 };
 use std::io::{stdout, Write};
 use std::path::PathBuf;
-use std::process::exit;
 
-fn main() {
-    match Args::parse().run() {
-        Ok(()) => (),
-        Err(err) => {
-            eprintln!("{}", err);
-            exit(1);
-        }
-    }
+fn main() -> Result<(), Error> {
+    Args::parse().run()
 }
 
 #[derive(Parser)]

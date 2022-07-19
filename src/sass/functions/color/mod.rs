@@ -183,7 +183,7 @@ fn bad_arg(err: ArgsError, name: &Name, args: &FormalArgs) -> Error {
 
 fn not_in_module(nm: &Name, col: &Value, an: &Name, av: &Value) -> Error {
     Error::S(format!(
-        "Error: The function {0}() isn\'t in the sass:color module.\n\
+        "The function {0}() isn\'t in the sass:color module.\n\
          \nRecommendation: color.adjust({1}, ${2}: {3})\n\
          \nMore info: https://sass-lang.com/documentation/functions/color#{0}",
         nm,

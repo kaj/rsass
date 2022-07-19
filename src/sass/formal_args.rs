@@ -159,7 +159,7 @@ impl fmt::Display for ArgsError {
         match self {
             ArgsError::TooManyPos(n, m) => write!(
                 out,
-                "Error: Only {} positional argument{} allowed, but {} {} passed.",
+                "Only {} positional argument{} allowed, but {} {} passed.",
                 n,
                 if *n != 1 { "s" } else { "" },
                 m,
@@ -167,17 +167,17 @@ impl fmt::Display for ArgsError {
             ),
             ArgsError::TooMany(n, m) => write!(
                 out,
-                "Error: Only {} argument{} allowed, but {} {} passed.",
+                "Only {} argument{} allowed, but {} {} passed.",
                 n,
                 if *n != 1 { "s" } else { "" },
                 m,
                 if *m != 1 { "were" } else { "was" },
             ),
             ArgsError::Missing(name) => {
-                write!(out, "Error: Missing argument ${}.", name)
+                write!(out, "Missing argument ${}.", name)
             }
             ArgsError::Unexpected(name) => {
-                write!(out, "Error: No argument named ${}.", name)
+                write!(out, "No argument named ${}.", name)
             }
             ArgsError::Eval(e) => e.fmt(out),
         }
