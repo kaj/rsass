@@ -31,6 +31,7 @@ project adheres to
 * The sass `Value::Variable` and `Item::VariableDeclaration` variants
   now holds a `Name` rather than just a `String` for the variable name.
   Also, both now holds a `SourcePos`.
+* `Error::error` now takes an `Into<String>` argument (PR #151).
 
 ### Improvements
 
@@ -44,8 +45,13 @@ project adheres to
 * The css `var(...)` function is now parsed as a proper function, and not
   as a special string (PR #147).
 * The null value can be quoted as an empty string (PR #147).
+* Make `Debug` formatting of `rsass::Error` look like the `Display` output,
+  but without the "Error: " prefix. This makes the error display correctly
+  if returned from a main function.  This also removed the "Error: " prefix
+  from a lot of message strings (PR #151).
 * In error message, don't show ellipses for consecutive lines (PR #147).
 * Somtimes a trailing comma in argument lists is preserved (PR #147).
+* Simplified `main` of the command-line by returning a `Result` (PR #151).
 * Update sass-spec test suite to 2022-06-21.
 * Some cleanups.
 

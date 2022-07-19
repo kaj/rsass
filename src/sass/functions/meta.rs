@@ -111,7 +111,7 @@ pub fn create_module() -> Scope {
             } else if let Some(f) = get_function(s, module, name.value())? {
                 Ok(Value::Function(name.value().into(), Some(f)))
             } else {
-                Err(Error::S(format!("Error: Function not found: {}", name)))
+                Err(Error::S(format!("Function not found: {}", name)))
             }
         }
     );

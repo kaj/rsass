@@ -73,7 +73,7 @@ impl MixinDecl {
                     .map_err(|e| e.decl_called(call_pos2, pos))?;
                 let call_pos2 = call_pos.clone();
                 let url = get_string(&argscope, name!(url)).map_err(|e| {
-                    Error::BadCall(e.to_string(), call_pos2, None)
+                    Error::BadCall(format!("{:?}", e), call_pos2, None)
                 })?;
                 let call_pos2 = call_pos.clone();
                 let with = get_opt_map(&argscope, name!(with))
@@ -85,7 +85,7 @@ impl MixinDecl {
                     } else {
                         return Err(Error::BadCall(
                             format!(
-                                "Error: Built-in module {} can't be configured.",
+                                "Built-in module {} can't be configured.",
                                 url.value()
                             ),
                             call_pos.clone(),
@@ -98,7 +98,7 @@ impl MixinDecl {
                     .find_file_use(url.value(), call_pos.clone())?
                     .ok_or_else(|| {
                         Error::BadCall(
-                            "Error: Can't find stylesheet to import.".into(),
+                            "Can't find stylesheet to import.".into(),
                             call_pos2,
                             None,
                         )
@@ -160,10 +160,10 @@ pub(crate) fn get_opt_map(
             .try_into()
             .map_err(|e| match e {
                 ValueToMapError::Root(err) => {
-                    format!("Error: ${}: {}", name, err)
+                    format!("${}: {}", name, err)
                 }
                 ValueToMapError::Key(err) => {
-                    format!("Error: ${} key: {}", name, err)
+                    format!("${} key: {}", name, err)
                 }
             })
             .map(Some),
