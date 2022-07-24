@@ -1,7 +1,7 @@
 use super::functions::get_string;
 use super::{CallArgs, Callable, Closure, FormalArgs, Name, Value};
 use crate::css::{CssString, ValueToMapError};
-use crate::file_context::FileContext;
+use crate::input::{Context, Loader, SourceKind};
 use crate::ordermap::OrderMap;
 use crate::parser::{Parsed, SourcePos};
 use crate::{Error, Scope, ScopeRef};
@@ -31,7 +31,7 @@ impl MixinDecl {
         scope: ScopeRef,
         call_args: &CallArgs,
         call_pos: &SourcePos,
-        file_context: &impl FileContext,
+        file_context: &mut Context<impl Loader>,
     ) -> Result<Mixin, Error> {
         match self {
             MixinDecl::Sass(decl) => {
@@ -95,7 +95,7 @@ impl MixinDecl {
                 }
                 let call_pos2 = call_pos.clone();
                 let source = file_context
-                    .find_file_use(url.value(), call_pos.clone())?
+                    .find_file(url.value(), SourceKind::load_css(call_pos))?
                     .ok_or_else(|| {
                         Error::BadCall(
                             "Can't find stylesheet to import.".into(),
@@ -110,6 +110,7 @@ impl MixinDecl {
                         scope.define(key.into(), value)?;
                     }
                 }
+                file_context.unlock_loading(&source);
                 Ok(Mixin {
                     scope,
                     body: source.parse()?,

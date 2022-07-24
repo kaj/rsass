@@ -8,7 +8,7 @@
 use super::cssbuf::{CssBuf, CssHead};
 use crate::css::{BodyItem, Comment, Import, Property, Rule, Selectors};
 use crate::error::{Error, Invalid};
-use crate::file_context::FileContext;
+use crate::input::{Context, Loader, SourceKind};
 use crate::parser::Parsed;
 use crate::sass::{get_global_module, Expose, Item, UseAs};
 use crate::value::ValueRange;
@@ -21,7 +21,7 @@ pub fn handle_parsed(
     rule: Option<&mut Rule>,
     buf: &mut CssBuf,
     scope: ScopeRef,
-    file_context: &impl FileContext,
+    file_context: &mut Context<impl Loader>,
 ) -> Result<(), Error> {
     match items {
         Parsed::Scss(items) => {
@@ -42,7 +42,7 @@ fn handle_body(
     rule: Option<&mut Rule>,
     buf: &mut CssBuf,
     scope: ScopeRef,
-    file_context: &impl FileContext,
+    file_context: &mut Context<impl Loader>,
 ) -> Result<(), Error> {
     let mut rule = rule;
     for b in items {
@@ -64,14 +64,13 @@ fn handle_item(
     rule: Option<&mut Rule>,
     buf: &mut CssBuf,
     scope: ScopeRef,
-    file_context: &impl FileContext,
+    file_context: &mut Context<impl Loader>,
 ) -> Result<(), Error> {
     let format = scope.get_format();
     match item {
         Item::Use(ref name, ref as_n, ref with, ref pos) => {
-            let name = name.evaluate(scope.clone())?;
-            let module = if let Some(module) = get_global_module(name.value())
-            {
+            let name = name.evaluate(scope.clone())?.take_value();
+            let module = if let Some(module) = get_global_module(&name) {
                 if !with.is_empty() {
                     return Err(Error::BadCall(
                         "Built-in modules can\'t be configured.".into(),
@@ -81,9 +80,9 @@ fn handle_item(
                 }
                 module
             } else if let Some(sourcefile) =
-                file_context.find_file_use(name.value(), pos.clone())?
+                file_context.find_file(&name, SourceKind::Use(pos.clone()))?
             {
-                head.load_module(
+                let module = head.load_module(
                     sourcefile.path(),
                     |head| {
                         let module = ScopeRef::new_global(format);
@@ -113,7 +112,9 @@ fn handle_item(
                             file_context,
                         )?;
                         Ok(module)
-                    })?
+                    })?;
+                file_context.unlock_loading(&sourcefile);
+                module
             } else {
                 return Err(Error::BadCall(
                     "Can't find stylesheet to import.".into(),
@@ -121,12 +122,11 @@ fn handle_item(
                     None,
                 ));
             };
-            scope.do_use(module, name.value(), as_n, &Expose::All)?;
+            scope.do_use(module, &name, as_n, &Expose::All)?;
         }
         Item::Forward(ref name, ref as_n, ref expose, ref with, ref pos) => {
-            let name = name.evaluate(scope.clone())?;
-            let module = if let Some(module) = get_global_module(name.value())
-            {
+            let name = name.evaluate(scope.clone())?.take_value();
+            let module = if let Some(module) = get_global_module(&name) {
                 if !with.is_empty() {
                     return Err(Error::BadCall(
                         "Built-in modules can\'t be configured.".into(),
@@ -135,10 +135,10 @@ fn handle_item(
                     ));
                 }
                 module
-            } else if let Some(sourcefile) =
-                file_context.find_file_use(name.value(), pos.clone())?
+            } else if let Some(sourcefile) = file_context
+                .find_file(&name, SourceKind::Forward(pos.clone()))?
             {
-                head.load_module(
+                let module = head.load_module(
                     sourcefile.path(),
                     |head| {
                         let module = ScopeRef::new_global(format);
@@ -168,21 +168,23 @@ fn handle_item(
                             file_context,
                         )?;
                         Ok(module)
-                    })?
+                    });
+                file_context.unlock_loading(&sourcefile);
+                module?
             } else {
                 return Err(Error::S(format!("Module {} not found", name)));
             };
-            scope.forward().do_use(module, name.value(), as_n, expose)?;
+            scope.forward().do_use(module, &name, as_n, expose)?;
         }
         Item::Import(ref names, ref args, ref pos) => {
             let mut rule = rule;
             'name: for name in names {
+                let name = name.evaluate(scope.clone())?;
                 if args.is_null() {
-                    let x = name.evaluate(scope.clone())?;
+                    let x = name.value();
                     if let Some(sourcefile) = file_context
-                        .find_file_import(x.value(), pos.clone())?
+                        .find_file(x, SourceKind::Import(pos.clone()))?
                     {
-                        scope.lock_loading(sourcefile.path(), pos.clone())?;
                         match sourcefile.parse()? {
                             Parsed::Scss(items) => {
                                 let mut thead = CssHead::new();
@@ -209,14 +211,14 @@ fn handle_item(
                                 }
                             }
                         }
-                        scope.unlock_loading(sourcefile.path());
+                        file_context.unlock_loading(&sourcefile);
                         continue 'name;
                     }
-                    if !(x.value().starts_with("http://")
-                        || x.value().starts_with("https://")
-                        || x.value().starts_with("//")
-                        || x.value().ends_with(".css")
-                        || x.is_css_url())
+                    if !(x.starts_with("http://")
+                        || x.starts_with("https://")
+                        || x.starts_with("//")
+                        || x.ends_with(".css")
+                        || name.is_css_url())
                     {
                         return Err(Error::BadCall(
                             "Can't find stylesheet to import.".into(),
@@ -225,7 +227,6 @@ fn handle_item(
                         ));
                     }
                 }
-                let name = name.evaluate(scope.clone())?;
                 let args = args.evaluate(scope.clone())?;
                 let import = Import::new(name, args);
                 if let Some(ref mut rule) =

@@ -1,7 +1,7 @@
 use super::cssbuf::{CssBuf, CssHead};
 use super::transform::handle_parsed;
 use super::Style;
-use crate::file_context::FileContext;
+use crate::input::{Context, Loader};
 use crate::{Error, Parsed, ScopeRef};
 
 /// Specifies the format for outputing css.
@@ -39,7 +39,7 @@ impl Format {
         &self,
         items: Parsed,
         globals: ScopeRef,
-        file_context: &impl FileContext,
+        file_context: &mut Context<impl Loader>,
     ) -> Result<Vec<u8>, Error> {
         let mut head = CssHead::new();
         let mut body = CssBuf::new(*self);

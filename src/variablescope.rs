@@ -223,8 +223,6 @@ pub struct Scope {
     format: Format,
     /// The thing to use for `@content` in a mixin.
     content: ArcSwapOption<MixinDecl>,
-    // Set of files currently loading. Only used in the root scope.
-    loading: Mutex<BTreeMap<String, SourcePos>>,
 }
 
 impl Scope {
@@ -244,7 +242,6 @@ impl Scope {
             forward: Default::default(),
             format,
             content: None.into(),
-            loading: Default::default(),
         }
     }
     /// Create a scope for a built-in module.
@@ -273,7 +270,6 @@ impl Scope {
             forward: Default::default(),
             format,
             content: None.into(),
-            loading: Default::default(),
         }
     }
     /// Create a new subscope of a given parent with selectors.
@@ -289,7 +285,6 @@ impl Scope {
             forward: Default::default(),
             format,
             content: None.into(),
-            loading: Default::default(),
         }
     }
 
@@ -632,31 +627,6 @@ impl Scope {
     /// Get the forward scope for this scope, if any.
     pub fn opt_forward(&self) -> Option<ScopeRef> {
         self.forward.lock().unwrap().clone()
-    }
-    pub(crate) fn lock_loading(
-        &self,
-        name: &str,
-        pos: SourcePos,
-    ) -> Result<(), Error> {
-        if let Some(parent) = &self.parent {
-            parent.lock_loading(name, pos)
-        } else if let Some(old) = self
-            .loading
-            .lock()
-            .unwrap()
-            .insert(name.into(), pos.clone())
-        {
-            Err(Error::ImportLoop(pos, old))
-        } else {
-            Ok(())
-        }
-    }
-    pub(crate) fn unlock_loading(&self, name: &str) {
-        if let Some(parent) = &self.parent {
-            parent.unlock_loading(name)
-        } else {
-            self.loading.lock().unwrap().remove(name);
-        }
     }
 
     pub(crate) fn define_content(&self, body: MixinDecl) {

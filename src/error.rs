@@ -22,7 +22,9 @@ pub enum Error {
     /// This error will be wrapped in a BadCall, giving the pos of the call.
     BadArguments(ArgsError, SourcePos),
     /// Tried to import file at pos while already importing it at pos.
-    ImportLoop(SourcePos, SourcePos),
+    ///
+    /// The bool is true for a used module and false for an import.
+    ImportLoop(bool, SourcePos, Option<SourcePos>),
     /// A range error
     BadRange(RangeError),
     /// Error parsing sass data.
@@ -60,13 +62,24 @@ impl fmt::Debug for Error {
             Error::BadArgument(ref name, ref problem) => {
                 write!(out, "${}: {}", name, problem)
             }
-            Error::ParseError(ref err) => err.fmt(out),
-            Error::ImportLoop(ref pos, ref oldpos) => {
-                writeln!(out, "This file is already being loaded.")?;
-                pos.show_detail(out, '^', " new load")?;
-                writeln!(out)?;
-                oldpos.show_detail(out, '=', " original load")?;
-                pos.show_files(out)
+            Error::ParseError(ref err) => fmt::Display::fmt(err, out),
+            Error::ImportLoop(ref module, ref pos, ref oldpos) => {
+                if *module {
+                    writeln!(
+                        out,
+                        "Module loop: this module is already being loaded."
+                    )?;
+                } else {
+                    writeln!(out, "This file is already being loaded.")?;
+                }
+                if let Some(oldpos) = oldpos {
+                    pos.show_detail(out, '^', " new load")?;
+                    writeln!(out)?;
+                    oldpos.show_detail(out, '=', " original load")?;
+                    pos.show_files(out)
+                } else {
+                    pos.show(out)
+                }
             }
             Error::BadCall(ref msg, ref callpos, ref declpos) => {
                 writeln!(out, "{}", msg)?;

@@ -13,6 +13,16 @@ fn runner() -> crate::TestRunner {
             "@import \"input\";\n",
         )
         .mock_file("loop/forward_to_use/other.scss", "@use \"input\";\n")
+        .mock_file("loop/forward_self/input.scss", "@forward \"input\";\n")
+        .mock_file(
+            "loop/forward_to_forward/input.scss",
+            "@forward \"other\";\n",
+        )
+        .mock_file(
+            "loop/forward_to_import/input.scss",
+            "@forward \"other\";\n",
+        )
+        .mock_file("loop/forward_to_use/input.scss", "@forward \"other\";\n")
 }
 
 mod test_loop {
@@ -22,7 +32,6 @@ mod test_loop {
     }
 
     #[test]
-    #[ignore] // wrong error
     fn forward_self() {
         let runner = runner().with_cwd("forward_self");
         assert_eq!(
@@ -36,7 +45,6 @@ mod test_loop {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn forward_to_forward() {
         let runner = runner().with_cwd("forward_to_forward");
         assert_eq!(
@@ -51,7 +59,6 @@ mod test_loop {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn forward_to_import() {
         let runner = runner().with_cwd("forward_to_import");
         assert_eq!(
@@ -66,7 +73,6 @@ mod test_loop {
         );
     }
     #[test]
-    #[ignore] // wrong error
     fn forward_to_use() {
         let runner = runner().with_cwd("forward_to_use");
         assert_eq!(

@@ -1,8 +1,8 @@
+use rsass::input::{Context, FsLoader, Loader, SourceFile, SourceName};
 use rsass::output::Format;
-use rsass::{
-    Error, FileContext, FsFileContext, ScopeRef, SourceFile, SourceName,
-};
+use rsass::Error;
 use std::collections::BTreeMap;
+use std::io::{Cursor, Read};
 
 pub fn runner() -> TestRunner {
     TestRunner::new()
@@ -11,21 +11,21 @@ pub fn runner() -> TestRunner {
 #[derive(Clone)]
 pub struct TestRunner {
     format: Format,
-    file_context: TestFileContext,
+    loader: TestLoader,
 }
 
 #[derive(Clone, Debug)]
-struct TestFileContext {
-    parent: FsFileContext,
+struct TestLoader {
+    parent: FsLoader,
     mock: BTreeMap<String, String>,
     cwd: String,
 }
 
-impl TestFileContext {
+impl TestLoader {
     fn new() -> Self {
-        let mut parent = FsFileContext::new();
+        let mut parent = FsLoader::for_cwd();
         parent.push_path("tests/spec".as_ref());
-        TestFileContext {
+        TestLoader {
             parent,
             mock: BTreeMap::new(),
             cwd: String::new(),
@@ -55,16 +55,10 @@ fn url_join(p: &str, c: &str) -> String {
     }
 }
 
-use std::io::Cursor;
-use std::io::Read;
-
-impl FileContext for TestFileContext {
+impl Loader for TestLoader {
     type File = Cursor<Vec<u8>>;
 
-    fn find_file(
-        &self,
-        name: &str,
-    ) -> Result<Option<(String, Self::File)>, Error> {
+    fn find_file(&self, name: &str) -> Result<Option<Self::File>, Error> {
         let mut cwd = self.cwd.trim_end_matches('/');
         let mut lname = name;
         while let Some(name) = lname.strip_prefix("../") {
@@ -74,16 +68,13 @@ impl FileContext for TestFileContext {
         let tname = url_join(cwd, lname);
 
         if let Some(data) = self.mock.get(&tname) {
-            return Ok(Some((
-                name.to_string(),
-                Cursor::new(data.as_bytes().to_vec()),
-            )));
+            return Ok(Some(Cursor::new(data.as_bytes().to_vec())));
         }
 
-        Ok(self.parent.find_file(name)?.map(|(name, mut file)| {
+        Ok(self.parent.find_file(name)?.map(|mut file| {
             let mut buf = Vec::new();
             file.read_to_end(&mut buf).unwrap();
-            (name, Cursor::new(buf))
+            Cursor::new(buf)
         }))
     }
 }
@@ -92,7 +83,7 @@ impl TestRunner {
     pub fn new() -> TestRunner {
         TestRunner {
             format: Default::default(),
-            file_context: TestFileContext::new(),
+            loader: TestLoader::new(),
         }
     }
     pub fn set_precision(mut self, precision: usize) -> Self {
@@ -103,15 +94,15 @@ impl TestRunner {
         self
     }
     pub fn mock_file(mut self, name: &str, content: &str) -> Self {
-        self.file_context.mock_file(name, content);
+        self.loader.mock_file(name, content);
         self
     }
     #[allow(unused)] // only used while building tests
     pub fn has_files(&self) -> bool {
-        self.file_context.has_mock_files()
+        self.loader.has_mock_files()
     }
     pub fn with_cwd(mut self, cwd: &str) -> Self {
-        self.file_context.with_cwd(cwd);
+        self.loader.with_cwd(cwd);
         self
     }
     #[allow(unused)] // only used while executing tests
@@ -140,10 +131,7 @@ impl TestRunner {
 
     fn rsass(&self, input: &str) -> Result<Vec<u8>, Error> {
         let name = SourceName::root("input.scss");
-        self.format.write_root(
-            SourceFile::read(&mut input.as_bytes(), name)?.parse()?,
-            ScopeRef::new_global(self.format),
-            &self.file_context,
-        )
+        let file = SourceFile::read(&mut input.as_bytes(), name)?;
+        Context::for_loader(self.loader.clone()).transform(file, self.format)
     }
 }

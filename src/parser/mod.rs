@@ -20,7 +20,7 @@ pub(crate) mod util;
 pub mod value;
 
 pub use error::ParseError;
-pub use pos::{SourceName, SourcePos};
+pub use pos::SourcePos;
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
@@ -34,6 +34,7 @@ use self::util::{
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
+use crate::input::SourceName;
 use crate::sass::{Callable, FormalArgs, Item, Name, Selectors, Value};
 use crate::value::ListSeparator;
 #[cfg(test)]
@@ -52,85 +53,12 @@ use nom::multi::{
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::IResult;
 use nom_locate::LocatedSpan;
-use std::convert::TryFrom;
-use std::io::Read;
 use std::str::{from_utf8, Utf8Error};
 
 pub type Span<'a> = LocatedSpan<&'a [u8], &'a SourceName>;
 /// A Parsing Result; ok gives a span for the rest of the data and a parsed T.
 type PResult<'a, T> = IResult<Span<'a>, T>;
 
-/// A supported input format.
-///
-/// Rsass handles the scss format and raw css.
-/// TODO: In the future, the sass format may also be supported.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum SourceFormat {
-    /// The scss format is the main input format.
-    Scss,
-    /// The css format
-    Css,
-}
-
-impl TryFrom<&str> for SourceFormat {
-    type Error = Error;
-    fn try_from(name: &str) -> Result<SourceFormat, Error> {
-        if name.ends_with(".scss") {
-            Ok(SourceFormat::Scss)
-        } else if name.ends_with(".css") {
-            Ok(SourceFormat::Css)
-        } else {
-            Err(Error::error(format!("Unknown source format: {:?}", name)))
-        }
-    }
-}
-
-/// The full data of a source file.
-///
-/// This type contains both the contents (as a `Vec<u8>`) of a file
-/// and information on from where (and why) it was loaded.
-/// You can create a SourceFile with the [`SourceFile::read`]
-/// constructor, but normally you will get one from a
-/// [`FileContext`][crate::FileContext].
-pub struct SourceFile {
-    data: Vec<u8>,
-    source: SourceName,
-    format: SourceFormat,
-}
-
-impl SourceFile {
-    /// Create a SourceFile from something readable and a name.
-    pub fn read<T: Read>(
-        file: &mut T,
-        source: SourceName,
-    ) -> Result<Self, Error> {
-        let format = SourceFormat::try_from(source.name())?;
-        let mut data = vec![];
-        file.read_to_end(&mut data)
-            .map_err(|e| Error::Input(source.name().to_string(), e))?;
-        Ok(SourceFile {
-            data,
-            source,
-            format,
-        })
-    }
-
-    /// Parse this scss source.
-    pub fn parse(&self) -> Result<Parsed, Error> {
-        let data = Span::new_extra(&self.data, &self.source);
-        match self.format {
-            SourceFormat::Scss => {
-                Ok(Parsed::Scss(ParseError::check(sassfile(data))?))
-            }
-            SourceFormat::Css => {
-                Ok(Parsed::Css(ParseError::check(css::file(data))?))
-            }
-        }
-    }
-    pub(crate) fn path(&self) -> &str {
-        self.source.name()
-    }
-}
 /// Parsed source that is either css or sass data.
 #[derive(Clone, Debug)]
 pub enum Parsed {
@@ -177,14 +105,7 @@ fn test_parse_value_data_2() -> Result<(), Error> {
     Ok(())
 }
 
-/// Parse scss data from a buffer.
-///
-/// Returns a vec of the top level items of the file (or an error message).
-pub fn parse_scss_data(data: &[u8]) -> Result<Vec<Item>, ParseError> {
-    ParseError::check(sassfile(code_span(data)))
-}
-
-fn sassfile(input: Span) -> PResult<Vec<Item>> {
+pub(crate) fn sassfile(input: Span) -> PResult<Vec<Item>> {
     preceded(
         opt(tag("\u{feff}".as_bytes())),
         map(
