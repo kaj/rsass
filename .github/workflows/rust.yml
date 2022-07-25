@@ -34,7 +34,7 @@ jobs:
       matrix:
         rust:
           - stable
-          - 1.49.0
+          - 1.56.0
           - nightly
     steps:
       - name: Checkout sources
@@ -72,9 +72,9 @@ jobs:
       matrix:
         rust:
           - stable
+          - 1.60.0
+          - 1.58.1
           - 1.56.0
-          - 1.52.0
-          - 1.49.0
           - beta
           - nightly
     steps:

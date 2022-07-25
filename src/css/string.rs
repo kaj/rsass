@@ -46,9 +46,10 @@ impl CssString {
                         }
                     };
                     if got_num {
-                        // TODO: char::REPLACEMENT_CHARACTER from rust 1.52.0
-                        result
-                            .push(char::try_from(val).unwrap_or('\u{fffd}'));
+                        result.push(
+                            char::try_from(val)
+                                .unwrap_or(char::REPLACEMENT_CHARACTER),
+                        );
                     }
                     match nextchar {
                         Some('\n') => {

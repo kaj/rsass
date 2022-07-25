@@ -317,7 +317,7 @@ fn cleanup_escape_ws(parts: &mut [StringPart]) {
 fn normalized_escaped_char_q(input: Span) -> PResult<String> {
     let (rest, c) = escaped_char(input)?;
     let result = if c == '\0' {
-        "\u{fffd}".to_string()
+        char::REPLACEMENT_CHARACTER.to_string()
     } else if c.is_control() && c != '\t' {
         format!("\\{:x} ", u32::from(c))
     } else if c == '-' || c == '\\' || c == ' ' {

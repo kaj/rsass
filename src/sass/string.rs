@@ -88,7 +88,7 @@ impl SassString {
                                 || c.is_ascii_graphic()
                                 || c == ' '
                                 || c == '\t'
-                                || c == '\u{fffd}'
+                                || c == char::REPLACEMENT_CHARACTER
                             {
                                 result.push(c);
                             } else if !c.is_control()
