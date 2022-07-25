@@ -71,6 +71,7 @@ project adheres to
 * Handle tests referencing `input.scss` in spectest (include it among the
   mock files, if mentioned in itself or any existing mock file) (PR #150).
 * Use `lazy-regex` in spectest (PR #150).
+* Rsass now uses rust edition 2021, so MSRV is 1.56.0 (PR #153).
 * Some cleanups.
 
 Thanks to @fasterthanlime (again) for reporting the problem with
