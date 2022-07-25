@@ -73,7 +73,7 @@ impl Args {
             if let Some(include_path) = &self.load_path {
                 context.push_path(include_path.as_ref());
             }
-            let result = context.transform(source, format)?;
+            let result = context.with_format(format).transform(source)?;
             stdout().write_all(&result)?;
         }
         Ok(())

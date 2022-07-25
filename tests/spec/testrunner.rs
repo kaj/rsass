@@ -132,6 +132,8 @@ impl TestRunner {
     fn rsass(&self, input: &str) -> Result<Vec<u8>, Error> {
         let name = SourceName::root("input.scss");
         let file = SourceFile::read(&mut input.as_bytes(), name)?;
-        Context::for_loader(self.loader.clone()).transform(file, self.format)
+        Context::for_loader(self.loader.clone())
+            .with_format(self.format)
+            .transform(file)
     }
 }

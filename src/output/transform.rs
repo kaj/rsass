@@ -1,5 +1,5 @@
 //! This module provides `handle_body` (and internally `handle_item`),
-//! that does most of the work for [`super::Format::write_root`].
+//! that does most of the work for [`crate::input::Context::transform`].
 
 // https://github.com/rust-lang/rust-clippy/issues/7846
 // https://users.rust-lang.org/t/using-an-option-mut-t-in-a-loop-clippy-complains/72481/2
