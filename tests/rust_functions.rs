@@ -1,39 +1,31 @@
 use rsass::input::{FsContext, SourceFile, SourceName};
-use rsass::output::Format;
+use rsass::output::{Format, Style};
 use rsass::sass::{FormalArgs, Function, Name};
 use rsass::value::{Number, Numeric, Rgba};
 use rsass::*;
 use std::sync::Arc;
 
 #[test]
-fn simple_value() {
-    let parsed = mock_stdin("p { color: $color }").parse().unwrap();
-    let format = output::Format {
-        style: output::Style::Compressed,
+fn simple_value() -> Result<(), Error> {
+    let mut context = FsContext::for_cwd().with_format(Format {
+        style: Style::Compressed,
         precision: 5,
-    };
-    let scope = ScopeRef::new_global(format);
-    scope
-        .define(Name::from_static("color"), Rgba::from_rgb(0, 0, 0).into())
-        .unwrap();
-    let mut file_context = FsContext::for_cwd();
-    assert_eq!(
-        String::from_utf8(
-            format.write_root(parsed, scope, &mut file_context).unwrap()
-        )
-        .unwrap(),
-        "p{color:#000}\n"
-    );
+    });
+    context
+        .get_scope()
+        .define(Name::from_static("color"), Rgba::from_rgb(0, 0, 0).into())?;
+    let output = context.transform(mock_stdin("p { color: $color }"))?;
+    assert_eq!(String::from_utf8(output).unwrap(), "p{color:#000}\n");
+    Ok(())
 }
 
 #[test]
-fn simple_function() {
-    let format = output::Format {
-        style: output::Style::Compressed,
+fn simple_function() -> Result<(), Error> {
+    let mut context = FsContext::for_cwd().with_format(Format {
+        style: Style::Compressed,
         precision: 5,
-    };
-    let scope = ScopeRef::new_global(format);
-    scope.define_function(
+    });
+    context.get_scope().define_function(
         Name::from_static("get_answer"),
         Function::builtin(
             "",
@@ -42,15 +34,9 @@ fn simple_function() {
             Arc::new(|_| Ok(css::Value::scalar(42))),
         ),
     );
-    let parsed = mock_stdin("p { x: get_answer(); }").parse().unwrap();
-    let mut file_context = FsContext::for_cwd();
-    assert_eq!(
-        String::from_utf8(
-            format.write_root(parsed, scope, &mut file_context).unwrap()
-        )
-        .unwrap(),
-        "p{x:42}\n"
-    );
+    let output = context.transform(mock_stdin("p { x: get_answer(); }"))?;
+    assert_eq!(String::from_utf8(output).unwrap(), "p{x:42}\n");
+    Ok(())
 }
 
 #[cfg(test)]
@@ -59,9 +45,12 @@ fn avg(a: Number, b: Number) -> Number {
 }
 
 #[test]
-fn function_with_args() {
-    let scope = ScopeRef::new_global(Default::default());
-    scope.define_function(
+fn function_with_args() -> Result<(), Error> {
+    let mut context = FsContext::for_cwd().with_format(Format {
+        style: Style::Compressed,
+        precision: 5,
+    });
+    context.get_scope().define_function(
         Name::from_static("halfway"),
         Function::builtin(
             "",
@@ -99,19 +88,10 @@ fn function_with_args() {
             }),
         ),
     );
-    let parsed = mock_stdin("p { x: halfway(10, 18); }").parse().unwrap();
-    let format = output::Format {
-        style: output::Style::Compressed,
-        precision: 5,
-    };
-    let mut file_context = FsContext::for_cwd();
-    assert_eq!(
-        String::from_utf8(
-            format.write_root(parsed, scope, &mut file_context).unwrap()
-        )
-        .unwrap(),
-        "p{x:14}\n"
-    );
+    let output =
+        context.transform(mock_stdin("p { x: halfway(10, 18); }"))?;
+    assert_eq!(String::from_utf8(output).unwrap(), "p{x:14}\n");
+    Ok(())
 }
 
 fn mock_stdin(data: &str) -> SourceFile {

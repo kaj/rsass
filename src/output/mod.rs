@@ -4,6 +4,8 @@ mod format;
 mod style;
 mod transform;
 
-pub(crate) use cssbuf::CssBuf;
 pub use format::{Format, Formatted};
 pub use style::Style;
+
+pub(crate) use cssbuf::{CssBuf, CssHead};
+pub(crate) use transform::handle_parsed;

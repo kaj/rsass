@@ -1,13 +1,57 @@
 use super::{FsLoader, Loader, SourceFile, SourceKind};
-use crate::output::Format;
+use crate::output::{handle_parsed, CssBuf, CssHead, Format};
 use crate::{Error, ScopeRef};
-use std::{borrow::Cow, collections::BTreeMap, path::Path};
+use std::{borrow::Cow, collections::BTreeMap, fmt, path::Path};
 use tracing::instrument;
 
 /// Utility keeping track of loading files.
-#[derive(Debug)]
+///
+/// # Examples
+///
+/// The Context here is a [`FsContext`].
+/// Input is usually a scss file.
+///
+/// ```
+/// # use rsass::input::{FsContext, SourceFile, SourceName};
+/// # use rsass::output::{Format, Style};
+/// # fn main() -> Result<(), rsass::Error> {
+/// let context = FsContext::for_cwd()
+///     .with_format(Format { style: Style::Compressed, precision: 2 });
+/// let scss_input = SourceFile::scss_bytes(
+///     "$gap: 4em / 3;
+///     \np {\
+///     \n    margin: $gap 0;
+///     \n}\n",
+///     SourceName::root("-")
+/// );
+/// assert_eq!(
+///     context.transform(scss_input)?,
+///     b"p{margin:1.33em 0}\n"
+/// );
+/// # Ok(()) }
+/// ```
+///
+/// This method can also be used as a plain css compression.
+/// ```
+/// # use rsass::input::{FsContext, SourceFile, SourceName};
+/// # use rsass::output::{Format, Style};
+/// # fn main() -> Result<(), rsass::Error> {
+/// # let context = FsContext::for_cwd().with_format(Format { style: Style::Compressed, precision: 2 });
+/// let css_input = SourceFile::css_bytes(
+///     "p {\
+///     \n    margin: 1.333333333em 0;\
+///     \n}\n",
+///     SourceName::root("-")
+/// );
+/// assert_eq!(
+///     context.transform(css_input)?,
+///     b"p{margin:1.33em 0}\n"
+/// );
+/// # Ok(()) }
+/// ```
 pub struct Context<FileC> {
     file_context: FileC,
+    scope: Option<ScopeRef>,
     loading: BTreeMap<String, SourceKind>,
     // TODO: Maybe have a map to loaded SourceFiles as well?  Or even Parsed?
 }
@@ -41,6 +85,7 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
     pub fn for_loader(fc: AnyLoader) -> Self {
         Context {
             file_context: fc,
+            scope: None,
             loading: Default::default(),
         }
     }
@@ -48,61 +93,49 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
     /// Transform some input source to css.
     ///
     /// The css output is returned as a raw byte vector.
-    ///
-    /// # Examples
-    ///
-    /// Input is usually a scss file.
-    ///
-    /// ```
-    /// # use rsass::input::{FsContext, SourceFile, SourceName};
-    /// # use rsass::output::{Format, Style};
-    /// # fn main() -> Result<(), rsass::Error> {
-    /// # let context = FsContext::for_cwd();
-    /// let compressed = Format { style: Style::Compressed, precision: 2 };
-    /// let scss_input = SourceFile::scss_bytes(
-    ///     "$gap: 4em / 3;
-    ///     \np {\
-    ///     \n    margin: $gap 0;
-    ///     \n}\n",
-    ///     SourceName::root("-")
-    /// );
-    /// assert_eq!(
-    ///     context.transform(scss_input, compressed)?,
-    ///     b"p{margin:1.33em 0}\n"
-    /// );
-    /// # Ok(()) }
-    /// ```
-    ///
-    /// This method can also be used as a plain css compression.
-    /// ```
-    /// # use rsass::input::{FsContext, SourceFile, SourceName};
-    /// # use rsass::output::{Format, Style};
-    /// # fn main() -> Result<(), rsass::Error> {
-    /// # let context = FsContext::for_cwd();
-    /// # let compressed = Format { style: Style::Compressed, precision: 2 };
-    /// let css_input = SourceFile::css_bytes(
-    ///     "p {\
-    ///     \n    margin: 1.333333333em 0;\
-    ///     \n}\n",
-    ///     SourceName::root("-")
-    /// );
-    /// assert_eq!(
-    ///     context.transform(css_input, compressed)?,
-    ///     b"p{margin:1.33em 0}\n"
-    /// );
-    /// # Ok(()) }
-    /// ```
-    pub fn transform(
-        mut self,
-        file: SourceFile,
-        format: Format,
-    ) -> Result<Vec<u8>, Error> {
-        let scope = ScopeRef::new_global(format);
+    pub fn transform(mut self, file: SourceFile) -> Result<Vec<u8>, Error> {
+        let scope = self
+            .scope
+            .clone()
+            .unwrap_or_else(|| ScopeRef::new_global(Default::default()));
         self.lock_loading(&file, false)?;
-        let source = file.parse()?;
-        let result = format.write_root(source, scope, &mut self);
+        let mut head = CssHead::new();
+        let mut body = CssBuf::new(scope.get_format());
+        handle_parsed(
+            file.parse()?,
+            &mut head,
+            None,
+            &mut body,
+            scope,
+            &mut self,
+        )?;
         self.unlock_loading(&file);
-        result
+        Ok(head.combine_final(body))
+    }
+
+    /// Set the output format for this context.
+    ///
+    /// Note that this resets the scope.  If you use both `with_format` and
+    /// [`get_scope`][Self::get_scope], you need to call `with_format`
+    /// _before_ `get_scope`.
+    pub fn with_format(mut self, format: Format) -> Self {
+        self.scope = Some(ScopeRef::new_global(format));
+        self
+    }
+
+    /// Get the scope for this context.
+    ///
+    /// A ScopeRef dereferences to a [`crate::Scope`], which uses internal
+    /// mutability.
+    /// So this can be used for predefining variables, functions, mixins,
+    /// or modules before transforming some scss input.
+    ///
+    /// Note that if you use both [`with_format`][Self::with_format] and
+    /// `get_scope`, you need to call `with_format` _before_ `get_scope`.
+    pub fn get_scope(&mut self) -> ScopeRef {
+        self.scope
+            .get_or_insert_with(|| ScopeRef::new_global(Default::default()))
+            .clone()
     }
 
     /// Find a file.
@@ -239,4 +272,17 @@ fn relative<'a>(base: &SourceKind, url: &'a str) -> Cow<'a, str> {
                 .map(|base| format!("{}{}", base, url).into())
         })
         .unwrap_or_else(|| url.into())
+}
+
+impl<T: fmt::Debug> fmt::Debug for Context<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Context")
+            .field("loader", &self.file_context)
+            .field(
+                "scope",
+                &if self.scope.is_some() { "loaded" } else { "no" },
+            )
+            .field("locked", &self.loading.keys())
+            .finish()
+    }
 }

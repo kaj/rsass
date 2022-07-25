@@ -1,8 +1,4 @@
-use super::cssbuf::{CssBuf, CssHead};
-use super::transform::handle_parsed;
 use super::Style;
-use crate::input::{Context, Loader};
-use crate::{Error, Parsed, ScopeRef};
 
 /// Specifies the format for outputing css.
 ///
@@ -31,27 +27,6 @@ impl Format {
     /// Return true if this is an introspection format.
     pub fn is_introspection(&self) -> bool {
         self.style == Style::Introspection
-    }
-    /// Write a slice of sass items in this format.
-    /// The `file_context` is needed if there are `@import` statements
-    /// in the sass file.
-    pub fn write_root(
-        &self,
-        items: Parsed,
-        globals: ScopeRef,
-        file_context: &mut Context<impl Loader>,
-    ) -> Result<Vec<u8>, Error> {
-        let mut head = CssHead::new();
-        let mut body = CssBuf::new(*self);
-        handle_parsed(
-            items,
-            &mut head,
-            None,
-            &mut body,
-            globals,
-            file_context,
-        )?;
-        Ok(head.combine_final(body))
     }
 
     /// Get a newline followed by len spaces, unles self is compressed.

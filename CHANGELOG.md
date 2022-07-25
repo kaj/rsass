@@ -38,9 +38,15 @@ project adheres to
   from top-level into the `input` module (PR #150).
 * The `parse_value_data` function is removed.  Please create a `SourceFile`
   and use the `parse` method on that instead (PR #150).
+* The `Format::write_root` method are removed, `Context::transform`
+  should be used instad (PR #152).
 
 ### Improvements
 
+* `input::Context` is the new main interface to rsass.
+  Create a context suitable for how files should be loaded, configure it
+  with an output format and optionally extend the global scope before
+  calling `Context::transform` with an input file (PR #151, PR #152).
 * The `@content` can have arguments when declaring and calling a mixin
   (PR #146).
 * Variable declartions can be scoped (like `module.$var = value`).  Some

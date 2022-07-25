@@ -97,8 +97,9 @@ pub fn compile_value(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
 /// )
 /// ```
 pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
-    let input = input::SourceFile::scss_bytes(input, SourceName::root("-"));
-    FsContext::for_cwd().transform(input, format)
+    FsContext::for_cwd().with_format(format).transform(
+        input::SourceFile::scss_bytes(input, SourceName::root("-")),
+    )
 }
 
 /// Parse a file of scss data and write css in the given style.
@@ -126,5 +127,5 @@ pub fn compile_scss_path(
     format: Format,
 ) -> Result<Vec<u8>, Error> {
     let (context, source) = FsContext::for_path(path)?;
-    context.transform(source, format)
+    context.with_format(format).transform(source)
 }
