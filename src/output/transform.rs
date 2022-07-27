@@ -8,8 +8,7 @@
 use super::cssbuf::{CssBuf, CssHead};
 use crate::css::{BodyItem, Comment, Import, Property, Rule, Selectors};
 use crate::error::{Error, Invalid};
-use crate::input::{Context, Loader, SourceKind};
-use crate::parser::Parsed;
+use crate::input::{Context, Loader, Parsed, SourceKind};
 use crate::sass::{get_global_module, Expose, Item, UseAs};
 use crate::value::ValueRange;
 use crate::ScopeRef;

@@ -1,6 +1,6 @@
 use super::SourceName;
 use crate::parser::{css, sassfile, Span};
-use crate::{Error, ParseError, Parsed};
+use crate::{Error, ParseError};
 use std::convert::TryFrom;
 use std::io::Read;
 
@@ -121,4 +121,13 @@ impl TryFrom<&str> for SourceFormat {
             Err(Error::error(format!("Unknown source format: {:?}", name)))
         }
     }
+}
+
+/// Parsed source that is either css or sass data.
+#[derive(Clone, Debug)]
+pub enum Parsed {
+    /// Raw css data.
+    Css(Vec<crate::css::Item>),
+    /// Sass (scss) data.
+    Scss(Vec<crate::sass::Item>),
 }

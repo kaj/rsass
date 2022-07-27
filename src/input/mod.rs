@@ -6,5 +6,5 @@ mod sourcename;
 
 pub use context::{Context, FsContext};
 pub use loader::{FsLoader, Loader};
-pub use sourcefile::SourceFile;
+pub use sourcefile::{Parsed, SourceFile};
 pub use sourcename::{SourceKind, SourceName};

@@ -59,15 +59,6 @@ pub type Span<'a> = LocatedSpan<&'a [u8], &'a SourceName>;
 /// A Parsing Result; ok gives a span for the rest of the data and a parsed T.
 type PResult<'a, T> = IResult<Span<'a>, T>;
 
-/// Parsed source that is either css or sass data.
-#[derive(Clone, Debug)]
-pub enum Parsed {
-    /// Raw css data.
-    Css(Vec<crate::css::Item>),
-    /// Sass (scss) data.
-    Scss(Vec<crate::sass::Item>),
-}
-
 pub fn code_span(value: &[u8]) -> Span {
     use lazy_static::lazy_static;
     lazy_static! {

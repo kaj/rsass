@@ -1,9 +1,9 @@
 use super::functions::get_string;
 use super::{CallArgs, Callable, Closure, FormalArgs, Name, Value};
 use crate::css::{CssString, ValueToMapError};
-use crate::input::{Context, Loader, SourceKind};
+use crate::input::{Context, Loader, Parsed, SourceKind};
 use crate::ordermap::OrderMap;
-use crate::parser::{Parsed, SourcePos};
+use crate::parser::SourcePos;
 use crate::{Error, Scope, ScopeRef};
 use std::convert::TryInto;
 
