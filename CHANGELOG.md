@@ -34,8 +34,8 @@ project adheres to
 * `Error::error` now takes an `Into<String>` argument (PR #151).
 * The module `input` contains types types with `Context<L>`, `Loader`,
   `FsLoader`, and `FsContext`, replacing the old `FileContext` and
-  `FsFileContext`.  Also, the types `SourceKind` and `SourceName` are moved
-  from top-level into the `input` module (PR #150).
+  `FsFileContext`.  Also, the types `SourceKind`, `SourceName` and `Parsed`
+  are moved from top-level into the `input` module (PR #150).
 * The `parse_value_data` function is removed.  Please create a `SourceFile`
   and use the `parse` method on that instead (PR #150).
 * The `Format::write_root` method are removed, `Context::transform`
