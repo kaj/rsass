@@ -73,6 +73,7 @@ project adheres to
 * Use `lazy-regex` in spectest (PR #150).
 * Rsass now uses rust edition 2021, so MSRV is 1.56.0 (PR #153).
 * Some cleanups.
+* The main branch is now named `main` rather than `master`.
 
 Thanks to @fasterthanlime (again) for reporting the problem with
 interpolation in min and max.
