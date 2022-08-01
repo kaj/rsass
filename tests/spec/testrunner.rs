@@ -1,8 +1,11 @@
-use rsass::input::{Context, FsLoader, Loader, SourceFile, SourceName};
+use rsass::input::{
+    Context, FsLoader, LoadError, Loader, SourceFile, SourceName,
+};
 use rsass::output::Format;
 use rsass::Error;
 use std::collections::BTreeMap;
 use std::io::{Cursor, Read};
+use std::sync::Arc;
 
 pub fn runner() -> TestRunner {
     TestRunner::new()
@@ -16,7 +19,7 @@ pub struct TestRunner {
 
 #[derive(Clone, Debug)]
 struct TestLoader {
-    parent: FsLoader,
+    parent: Arc<FsLoader>,
     mock: BTreeMap<String, String>,
     cwd: String,
 }
@@ -26,7 +29,7 @@ impl TestLoader {
         let mut parent = FsLoader::for_cwd();
         parent.push_path("tests/spec".as_ref());
         TestLoader {
-            parent,
+            parent: Arc::new(parent),
             mock: BTreeMap::new(),
             cwd: String::new(),
         }
@@ -58,7 +61,7 @@ fn url_join(p: &str, c: &str) -> String {
 impl Loader for TestLoader {
     type File = Cursor<Vec<u8>>;
 
-    fn find_file(&self, name: &str) -> Result<Option<Self::File>, Error> {
+    fn find_file(&self, name: &str) -> Result<Option<Self::File>, LoadError> {
         let mut cwd = self.cwd.trim_end_matches('/');
         let mut lname = name;
         while let Some(name) = lname.strip_prefix("../") {
