@@ -67,7 +67,7 @@ impl FsLoader {
         self.path.push(path.into());
     }
 
-    /// Create a FsFilecontext and a SourceFile from a given Path.
+    /// Create a Loader and a SourceFile from a given Path.
     pub fn for_path(path: &Path) -> Result<(Self, SourceFile), Error> {
         let mut f = std::fs::File::open(&path)
             .map_err(|e| Error::Input(path.display().to_string(), e))?;
