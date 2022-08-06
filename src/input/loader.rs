@@ -1,13 +1,11 @@
-use super::{SourceFile, SourceName};
-use crate::Error;
-use std::path::{Path, PathBuf};
+use std::fmt;
 
 /// A file context manages finding and loading files.
 ///
 /// # Example
 /// ```
 /// use std::collections::HashMap;
-/// use rsass::{input::Loader, Error};
+/// use rsass::input::{Loader, LoadError};
 ///
 /// #[derive(Clone, Debug)]
 /// struct MemoryLoader<'a> {
@@ -17,7 +15,7 @@ use std::path::{Path, PathBuf};
 /// impl<'a> Loader for MemoryLoader<'a> {
 ///     type File = &'a [u8];
 ///
-///     fn find_file(&self, name: &str) -> Result<Option<Self::File>, Error> {
+///     fn find_file(&self, name: &str) -> Result<Option<Self::File>, LoadError> {
 ///         Ok(self.files.get(name).map(|data| *data))
 ///     }
 /// }
@@ -42,69 +40,39 @@ pub trait Loader: Sized + std::fmt::Debug {
     /// The official Sass specification prescribes that files are loaded by
     /// url instead of by path to ensure universal compatibility of style sheets.
     /// This effectively mandates the use of forward slashes on all platforms.
-    fn find_file(&self, url: &str) -> Result<Option<Self::File>, Error>;
+    fn find_file(&self, url: &str) -> Result<Option<Self::File>, LoadError>;
 }
 
-/// A [`Loader`] that loads files from the filesystem.
-#[derive(Clone, Debug)]
-pub struct FsLoader {
-    path: Vec<PathBuf>,
+/// An error loading a file.
+#[non_exhaustive]
+pub enum LoadError {
+    /// Reading {0} failed: {1}
+    Input(String, std::io::Error),
+    /// {0} is not a css or sass file.
+    UnknownFormat(String),
+    /// Expected a cargo environment, but none found.
+    NotCalledFromCargo,
 }
+impl std::error::Error for LoadError {}
 
-impl FsLoader {
-    /// Create a new FsFileContext.
-    ///
-    /// Files will be resolved from the current working directory.
-    #[allow(clippy::new_without_default)]
-    pub fn for_cwd() -> Self {
-        Self {
-            path: vec![PathBuf::new()],
-        }
-    }
-
-    /// Add a path to search for files.
-    pub fn push_path(&mut self, path: &Path) {
-        self.path.push(path.into());
-    }
-
-    /// Create a Loader and a SourceFile from a given Path.
-    pub fn for_path(path: &Path) -> Result<(Self, SourceFile), Error> {
-        let mut f = std::fs::File::open(&path)
-            .map_err(|e| Error::Input(path.display().to_string(), e))?;
-        let (path, name) = if let Some(base) = path.parent() {
-            (
-                vec![base.to_path_buf(), PathBuf::new()],
-                path.strip_prefix(base).unwrap(),
-            )
-        } else {
-            (vec![PathBuf::new()], path)
-        };
-        let ctx = Self { path };
-        let source = SourceName::root(name.display().to_string());
-        let source = SourceFile::read(&mut f, source)?;
-        Ok((ctx, source))
+impl fmt::Display for LoadError {
+    fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        write!(out, "Error: {:?}", self)
     }
 }
 
-impl Loader for FsLoader {
-    type File = std::fs::File;
-
-    fn find_file(&self, name: &str) -> Result<Option<Self::File>, Error> {
-        if !name.is_empty() {
-            for base in &self.path {
-                let full = base.join(name);
-                if full.is_file() {
-                    tracing::debug!(?full, "opening file");
-                    return match Self::File::open(&full) {
-                        Ok(file) => Ok(Some(file)),
-                        Err(e) => {
-                            Err(Error::Input(full.display().to_string(), e))
-                        }
-                    };
-                }
-                tracing::trace!(?full, "Not found");
+impl fmt::Debug for LoadError {
+    fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            LoadError::Input(path, err) => {
+                write!(out, "Reading {:?} failed: {}", path, err)
+            }
+            LoadError::UnknownFormat(name) => {
+                write!(out, "{:?} is not a css or sass file.", name)
+            }
+            LoadError::NotCalledFromCargo => {
+                write!(out, "Expected a cargo environment, but none found.")
             }
         }
-        Ok(None)
     }
 }

@@ -47,6 +47,8 @@ project adheres to
   Create a context suitable for how files should be loaded, configure it
   with an output format and optionally extend the global scope before
   calling `Context::transform` with an input file (PR #151, PR #152).
+* Also provide `CargoContext` / `CargoLoader` for convenient use in
+  build scripts (PR #154).
 * The `@content` can have arguments when declaring and calling a mixin
   (PR #146).
 * Variable declartions can be scoped (like `module.$var = value`).  Some

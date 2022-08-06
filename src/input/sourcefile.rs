@@ -1,4 +1,4 @@
-use super::SourceName;
+use super::{LoadError, SourceName};
 use crate::parser::{css, sassfile, Span};
 use crate::{Error, ParseError};
 use std::convert::TryFrom;
@@ -34,11 +34,11 @@ impl SourceFile {
     pub fn read<T: Read>(
         file: &mut T,
         source: SourceName,
-    ) -> Result<Self, Error> {
+    ) -> Result<Self, LoadError> {
         let format = SourceFormat::try_from(source.name())?;
         let mut data = vec![];
         file.read_to_end(&mut data)
-            .map_err(|e| Error::Input(source.name().to_string(), e))?;
+            .map_err(|e| LoadError::Input(source.name().to_string(), e))?;
         Ok(SourceFile {
             data,
             source,
@@ -111,14 +111,14 @@ enum SourceFormat {
 }
 
 impl TryFrom<&str> for SourceFormat {
-    type Error = Error;
-    fn try_from(name: &str) -> Result<SourceFormat, Error> {
+    type Error = LoadError;
+    fn try_from(name: &str) -> Result<SourceFormat, LoadError> {
         if name.ends_with(".scss") {
             Ok(SourceFormat::Scss)
         } else if name.ends_with(".css") {
             Ok(SourceFormat::Css)
         } else {
-            Err(Error::error(format!("Unknown source format: {:?}", name)))
+            Err(LoadError::UnknownFormat(name.into()))
         }
     }
 }

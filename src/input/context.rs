@@ -1,10 +1,17 @@
-use super::{FsLoader, Loader, SourceFile, SourceKind};
+use super::{
+    CargoLoader, FsLoader, LoadError, Loader, SourceFile, SourceKind,
+};
 use crate::output::{handle_parsed, CssBuf, CssHead, Format};
 use crate::{Error, ScopeRef};
 use std::{borrow::Cow, collections::BTreeMap, fmt, path::Path};
 use tracing::instrument;
 
 /// Utility keeping track of loading files.
+///
+/// The context is generic over the [`Loader`].
+/// [`FsContext`] and [`CargoContext`] are type aliases for `Context`
+/// where the loader is a [`FsLoader`] or [`CargoLoader`],
+/// respectively.
 ///
 /// # Examples
 ///
@@ -49,8 +56,8 @@ use tracing::instrument;
 /// );
 /// # Ok(()) }
 /// ```
-pub struct Context<FileC> {
-    file_context: FileC,
+pub struct Context<Loader> {
+    loader: Loader,
     scope: Option<ScopeRef>,
     loading: BTreeMap<String, SourceKind>,
     // TODO: Maybe have a map to loaded SourceFiles as well?  Or even Parsed?
@@ -59,7 +66,7 @@ pub struct Context<FileC> {
 /// A file-system based [`Context`].
 pub type FsContext = Context<FsLoader>;
 
-impl Context<FsLoader> {
+impl FsContext {
     /// Create a new `Context`, loading files based on the current
     /// working directory.
     pub fn for_cwd() -> Self {
@@ -69,22 +76,62 @@ impl Context<FsLoader> {
     /// Create a new `Context` and load a file.
     ///
     /// The directory part of `path` is used as a base directory for the loader.
-    pub fn for_path(path: &Path) -> Result<(Self, SourceFile), Error> {
+    pub fn for_path(path: &Path) -> Result<(Self, SourceFile), LoadError> {
         let (file_context, file) = FsLoader::for_path(path)?;
         Ok((Context::for_loader(file_context), file))
     }
 
     /// Add a path to search for files.
     pub fn push_path(&mut self, path: &Path) {
-        self.file_context.push_path(path);
+        self.loader.push_path(path);
+    }
+}
+
+/// A file-system based [`Context`] for use in cargo build scripts.
+///
+/// This is very similar to a [`FsContext`], but has a
+/// `for_crate` constructor that uses the `CARGO_MANIFEST_DIR`
+/// environment variable instead of the current working directory, and
+/// it prints `cargo:rerun-if-changed` messages for each path that it
+/// loads.
+pub type CargoContext = Context<CargoLoader>;
+
+impl CargoContext {
+    /// Create a new `Context`, loading files based in the manifest
+    /// directory of the current crate.
+    ///
+    /// Relative paths will be resolved from the directory containing the
+    /// manifest of your package.
+    /// This assumes the program is called by `cargo` as a build script, so
+    /// the `CARGO_MANIFEST_DIR` environment variable is set.
+    pub fn for_crate() -> Result<Self, LoadError> {
+        Ok(Context::for_loader(CargoLoader::for_crate()?))
+    }
+
+    /// Create a new `Context` and load a file.
+    ///
+    /// The directory part of `path` is used as a base directory for the loader.
+    /// If `path` is relative, it will be resolved from the directory
+    /// containing the manifest of your package.
+    pub fn for_path(path: &Path) -> Result<(Self, SourceFile), LoadError> {
+        let (file_context, file) = CargoLoader::for_path(path)?;
+        Ok((Context::for_loader(file_context), file))
+    }
+
+    /// Add a path to search for files.
+    ///
+    /// If `path` is relative, it will be resolved from the directory
+    /// containing the manifest of your package.
+    pub fn push_path(&mut self, path: &Path) -> Result<(), LoadError> {
+        self.loader.push_path(path)
     }
 }
 
 impl<AnyLoader: Loader> Context<AnyLoader> {
     /// Create a new `Context` for a given file [`Loader`].
-    pub fn for_loader(fc: AnyLoader) -> Self {
+    pub fn for_loader(loader: AnyLoader) -> Self {
         Context {
-            file_context: fc,
+            loader,
             scope: None,
             loading: Default::default(),
         }
@@ -211,12 +258,12 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
         &self,
         url: &str,
         names: &[&dyn Fn(&str, &str) -> String],
-    ) -> Result<Option<(String, AnyLoader::File)>, Error> {
+    ) -> Result<Option<(String, AnyLoader::File)>, LoadError> {
         if url.ends_with(".css")
             || url.ends_with(".sass")
             || url.ends_with(".scss")
         {
-            self.file_context
+            self.loader
                 .find_file(url)
                 .map(|file| file.map(|file| (url.into(), file)))
         } else {
@@ -226,7 +273,7 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
                 .unwrap_or(("", url));
 
             for name in names.iter().map(|f| f(base, name)) {
-                if let Some(result) = self.file_context.find_file(&name)? {
+                if let Some(result) = self.loader.find_file(&name)? {
                     return Ok(Some((name, result)));
                 }
             }
@@ -277,7 +324,7 @@ fn relative<'a>(base: &SourceKind, url: &'a str) -> Cow<'a, str> {
 impl<T: fmt::Debug> fmt::Debug for Context<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("Context")
-            .field("loader", &self.file_context)
+            .field("loader", &self.loader)
             .field(
                 "scope",
                 &if self.scope.is_some() { "loaded" } else { "no" },

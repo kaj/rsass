@@ -1,3 +1,4 @@
+use crate::input::LoadError;
 use crate::parser::{ParseError, SourcePos};
 use crate::sass::{ArgsError, Name};
 use crate::value::RangeError;
@@ -8,7 +9,7 @@ use std::{fmt, io};
 /// Most functions in rsass that returns a Result uses this Error type.
 pub enum Error {
     /// An IO error encoundered on a specific path
-    Input(String, io::Error),
+    Input(LoadError),
     /// An IO error without specifying a path.
     ///
     /// This is (probably) an error writing output.
@@ -56,9 +57,7 @@ impl fmt::Debug for Error {
     fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
             Error::S(ref s) => write!(out, "{}", s),
-            Error::Input(ref p, ref e) => {
-                write!(out, "Failed to read {:?}: {}", p, e)
-            }
+            Error::Input(ref load) => load.fmt(out),
             Error::BadArgument(ref name, ref problem) => {
                 write!(out, "${}: {}", name, problem)
             }
@@ -167,6 +166,12 @@ impl From<ParseError> for Error {
 impl From<RangeError> for Error {
     fn from(e: RangeError) -> Self {
         Error::BadRange(e)
+    }
+}
+
+impl From<LoadError> for Error {
+    fn from(err: LoadError) -> Self {
+        Error::Input(err)
     }
 }
 
