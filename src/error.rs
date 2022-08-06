@@ -175,6 +175,14 @@ impl From<LoadError> for Error {
     }
 }
 
+// FIXME: This is temporary and should be removed before merge!
+impl From<String> for Error {
+    fn from(msg: String) -> Self {
+        Error::error(msg)
+    }
+}
+
+
 /// Something invalid.
 ///
 /// Should be combined with a position to get an [Error].
