@@ -7,4 +7,6 @@ fn runner() -> crate::TestRunner {
 
 mod expression;
 
+mod media;
+
 mod statement;

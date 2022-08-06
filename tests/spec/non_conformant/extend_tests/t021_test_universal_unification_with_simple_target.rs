@@ -12,7 +12,7 @@ fn test() {
     assert_eq!(
         runner().ok("%-a .foo {a: b}\
              \n*|* {@extend .foo} -a {@extend %-a}\n"),
-        "-a .foo, -a *|* {\
+        "-a *|* {\
          \n  a: b;\
          \n}\n"
     );

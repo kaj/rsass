@@ -21,6 +21,8 @@ mod hacks;
 
 mod import;
 
+mod media;
+
 mod null;
 
 mod single_equals;

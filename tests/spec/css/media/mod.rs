@@ -5,4 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("media")
 }
 
+mod logic;
+
 mod range;
+
+mod test_type;
