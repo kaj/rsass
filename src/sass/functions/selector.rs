@@ -8,10 +8,13 @@ pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:selector");
     // TODO: is_superselector
     def_va!(f, append(selectors), |s| {
-        get_selectors(s, name!(selectors))?
-            .into_iter()
-            .try_fold(Selectors::root(), |base, ext| base.append(ext))
-            .map(Into::into)
+        let mut s = get_selectors(s, name!(selectors))?.into_iter();
+        if let Some(base) = s.next() {
+            Ok(s.try_fold(base, |base, ext| base.append(ext))?.into())
+        } else {
+            // Not really reachable, get_selectors requires at least one item.
+            Ok(Selectors::root().into())
+        }
     });
     // TODO: extend
     def_va!(f, nest(selectors), |s| {

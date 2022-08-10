@@ -42,7 +42,6 @@ mod combinator {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn initial_leading() {
         assert_eq!(
             runner().ok("a {b: selector-append(\"> c\", \"d\")}\n"),
@@ -150,7 +149,6 @@ mod error {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn namespace() {
         assert_eq!(
             runner().err("a {b: selector-append(\"c\", \"|d\")}\n"),

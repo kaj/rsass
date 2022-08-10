@@ -61,18 +61,24 @@ impl Selectors {
         self.s.first().cloned().unwrap_or_else(Selector::root)
     }
 
-    pub(crate) fn append(self, ext: Self) -> Result<Self, crate::Error> {
+    pub(crate) fn append(self, ext: Self) -> Result<Self, BadSelector> {
         let ext = ext.css_ok()?;
         Ok(Selectors::new(
             self.s
                 .into_iter()
                 .flat_map(|b| {
                     ext.s.iter().map(move |e| {
-                        if e.0[0].is_operator() || e.0[0].is_wildcard() {
-                            return Err(crate::Error::error(&format!(
-                                "Can't append {} to {}.",
-                                e, b
-                            )));
+                        if e.0[0].is_operator()
+                            || e.0[0].is_wildcard()
+                            || matches!(
+                                &e.0[0],
+                                SelectorPart::Simple(s) if s.starts_with('|')
+                            )
+                        {
+                            return Err(BadSelector::Append(
+                                e.clone(),
+                                b.clone(),
+                            ));
                         }
                         parse_selector(&format!("{}{}", b, e))
                     })
@@ -601,6 +607,8 @@ pub enum BadSelector {
     Parse(ParseError),
     /// A backref (`&`) were present but not allowed there.
     Backref(SourcePos),
+    /// Cant append extenstion to base.
+    Append(Selector, Selector),
 }
 
 impl fmt::Display for BadSelector {
@@ -615,6 +623,9 @@ impl fmt::Display for BadSelector {
             BadSelector::Backref(pos) => {
                 writeln!(out, "Parent selectors aren\'t allowed here.")?;
                 pos.show(out)
+            }
+            BadSelector::Append(e, b) => {
+                write!(out, "Can't append {} to {}.", e, b)
             }
         }
     }
@@ -632,6 +643,6 @@ impl From<ParseError> for BadSelector {
         BadSelector::Parse(e)
     }
 }
-fn parse_selector(s: &str) -> Result<Selector, crate::Error> {
+fn parse_selector(s: &str) -> Result<Selector, BadSelector> {
     Ok(ParseError::check(selector(input_span(s.as_bytes())))?)
 }
