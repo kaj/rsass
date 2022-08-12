@@ -1,10 +1,12 @@
 use super::functions::get_string;
-use super::{CallArgs, Callable, Closure, FormalArgs, Name, Value};
-use crate::css::{CssString, ValueToMapError};
+use super::{
+    CallArgs, CallError, Callable, Closure, FormalArgs, Name, Value,
+};
+use crate::css::{self, CssString, ValueToMapError};
 use crate::input::{Context, Loader, Parsed, SourceKind};
 use crate::ordermap::OrderMap;
 use crate::parser::SourcePos;
-use crate::{Error, Scope, ScopeRef};
+use crate::{Scope, ScopeRef};
 use std::convert::TryInto;
 
 /// A declared mixin
@@ -27,12 +29,11 @@ impl From<Closure> for MixinDecl {
 impl MixinDecl {
     pub(crate) fn get(
         self,
-        name: &str,
         scope: ScopeRef,
         call_args: &CallArgs,
         call_pos: &SourcePos,
         file_context: &mut Context<impl Loader>,
-    ) -> Result<Mixin, Error> {
+    ) -> Result<Mixin, CallError> {
         match self {
             MixinDecl::Sass(decl) => {
                 let sel = scope.get_selectors().clone();
@@ -44,12 +45,7 @@ impl MixinDecl {
                             ScopeRef::sub_selectors(decl.scope.clone(), sel),
                             call_args.evaluate(scope)?,
                         )
-                        .map_err(|e| {
-                            e.decl_called(
-                                call_pos.in_call(name),
-                                decl.body.decl.clone(),
-                            )
-                        })?,
+                        .map_err(|e| e.declared_at(&decl.body.decl))?,
                     body: Parsed::Scss(decl.body.body),
                 })
             }
@@ -64,44 +60,29 @@ impl MixinDecl {
                     &fargs,
                     "sass:meta",
                 );
-                let call_pos2 = call_pos.clone();
                 let argscope = fargs
                     .evalcall(
                         scope.clone(),
                         call_args.evaluate(scope.clone())?,
                     )
-                    .map_err(|e| e.decl_called(call_pos2, pos))?;
-                let call_pos2 = call_pos.clone();
-                let url = get_string(&argscope, name!(url)).map_err(|e| {
-                    Error::BadCall(format!("{:?}", e), call_pos2, None)
-                })?;
-                let call_pos2 = call_pos.clone();
-                let with = get_opt_map(&argscope, name!(with))
-                    .map_err(|e| Error::BadCall(e, call_pos2, None))?;
+                    .map_err(|e| e.declared_at(&pos))?;
+                let url = get_string(&argscope, name!(url))?;
+                let with = get_opt_map(&argscope, name!(with))?;
 
                 if url.value().starts_with("sass:") {
                     if with.unwrap_or_default().is_empty() {
                         return Ok(Mixin::empty(scope));
                     } else {
-                        return Err(Error::BadCall(
-                            format!(
-                                "Built-in module {} can't be configured.",
-                                url.value()
-                            ),
-                            call_pos.clone(),
-                            None,
-                        ));
+                        return Err(CallError::msg(format!(
+                            "Built-in module {} can't be configured.",
+                            url.value()
+                        )));
                     }
                 }
-                let call_pos2 = call_pos.clone();
                 let source = file_context
                     .find_file(url.value(), SourceKind::load_css(call_pos))?
                     .ok_or_else(|| {
-                        Error::BadCall(
-                            "Can't find stylesheet to import.".into(),
-                            call_pos2,
-                            None,
-                        )
+                        CallError::msg("Can't find stylesheet to import.")
                     })?;
 
                 let scope = ScopeRef::sub(scope);
@@ -154,19 +135,14 @@ impl Mixin {
 pub(crate) fn get_opt_map(
     s: &Scope,
     name: Name,
-) -> Result<Option<OrderMap<CssString, crate::css::Value>>, String> {
-    match s.get(&name).map_err(|e| e.to_string())? {
-        crate::css::Value::Null => Ok(None),
-        v => v
-            .try_into()
-            .map_err(|e| match e {
-                ValueToMapError::Root(err) => {
-                    format!("${}: {}", name, err)
-                }
-                ValueToMapError::Key(err) => {
-                    format!("${} key: {}", name, err)
-                }
-            })
-            .map(Some),
+) -> Result<Option<OrderMap<CssString, crate::css::Value>>, CallError> {
+    match s.get(&name)? {
+        css::Value::Null => Ok(None),
+        v => v.try_into().map(Some).map_err(|e| match e {
+            ValueToMapError::Root(err) => CallError::BadArgument(name, err),
+            ValueToMapError::Key(err) => {
+                CallError::msg(format!("${} key: {}", name, err))
+            }
+        }),
     }
 }

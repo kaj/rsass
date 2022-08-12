@@ -1,6 +1,4 @@
-use super::{
-    check, get_checked, get_integer, get_va_list, Error, FunctionMap, Name,
-};
+use super::{check, get_checked, get_va_list, CallError, FunctionMap, Name};
 use crate::css::Value;
 use crate::value::ListSeparator;
 use crate::Scope;
@@ -92,18 +90,19 @@ pub fn create_module() -> Scope {
     def_va!(f, slash(elements), |s| {
         let list = get_va_list(s, name!(elements))?;
         if list.len() < 2 {
-            return Err(Error::error("At least two elements are required."));
+            return Err(CallError::msg(
+                "At least two elements are required.",
+            ));
         }
         Ok(Value::List(list, Some(ListSeparator::Slash), false))
     });
     def!(f, nth(list, n), |s| {
-        let n = get_integer(s, name!(n))?;
         match s.get(&name!(list))? {
             Value::ArgList(arg) => {
-                let i = rust_index(n, arg.len(), name!(n))?;
-                Ok(arg.positional.get(i).cloned().unwrap_or_else(|| {
+                let n = get_index(s, name!(n), arg.len())?;
+                Ok(arg.positional.get(n).cloned().unwrap_or_else(|| {
                     arg.named
-                        .get_item(i - arg.positional.len())
+                        .get_item(n - arg.positional.len())
                         .map(|(k, v)| {
                             Value::List(
                                 vec![Value::from(k.as_ref()), v.clone()],
@@ -115,10 +114,10 @@ pub fn create_module() -> Scope {
                 }))
             }
             Value::List(list, _, _) => {
-                Ok(list[list_index(n, &list, name!(n))?].clone())
+                Ok(list[get_index(s, name!(n), list.len())?].clone())
             }
             Value::Map(map) => {
-                let n = rust_index(n, map.len(), name!(n))?;
+                let n = get_index(s, name!(n), map.len())?;
                 if let Some(&(ref k, ref v)) = map.get_item(n) {
                     Ok(Value::List(
                         vec![k.clone(), v.clone()],
@@ -129,13 +128,12 @@ pub fn create_module() -> Scope {
                     Ok(Value::Null)
                 }
             }
-            v => Ok(if n == 1 { v } else { Value::Null }),
+            v => get_index(s, name!(n), 1).map(|_| v),
         }
     });
     def!(f, set_nth(list, n, value), |s| {
         let (mut list, sep, bra) = get_list(s.get(&name!(list))?);
-        let n = get_integer(s, name!(n))?;
-        let i = list_index(n, &list, name!(n))?;
+        let i = get_index(s, name!(n), list.len())?;
         list[i] = s.get(&name!(value))?;
         Ok(Value::List(list, sep, bra))
     });
@@ -225,24 +223,22 @@ fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
     }
 }
 
-fn list_index(n: i64, list: &[Value], name: Name) -> Result<usize, Error> {
-    let len = list.len();
-    rust_index(n, len, name)
-}
-
-fn rust_index(n: i64, len: usize, name: Name) -> Result<usize, Error> {
-    if n > 0 && n as usize <= len {
-        Ok((n - 1) as usize)
-    } else if n < 0 && n >= -(len as i64) {
-        Ok((len as i64 + n) as usize)
-    } else {
-        let msg = if n == 0 {
-            "List index may not be 0.".into()
+fn get_index(s: &Scope, name: Name, len: usize) -> Result<usize, CallError> {
+    get_checked(s, name, |v| {
+        let n = check::unitless_int(v)?;
+        if n.is_positive() && n as usize <= len {
+            Ok((n - 1) as usize)
+        } else if n.is_negative() && n >= -(len as i64) {
+            Ok((len as i64 + n) as usize)
+        } else if n == 0 {
+            Err("List index may not be 0.".into())
         } else {
-            format!("Invalid index {} for a list with {} elements.", n, len)
-        };
-        Err(Error::BadArgument(name, msg))
-    }
+            Err(format!(
+                "Invalid index {} for a list with {} elements.",
+                n, len
+            ))
+        }
+    })
 }
 
 #[cfg(test)]

@@ -1,9 +1,8 @@
 //! A scope is something that contains variable values.
 use crate::css::{CssString, Selectors, Value};
-use crate::error::Invalid;
 use crate::output::Format;
 use crate::sass::{Expose, Function, Item, MixinDecl, Name, UseAs};
-use crate::{Error, SourcePos};
+use crate::{Error, Invalid, SourcePos};
 use arc_swap::ArcSwapOption;
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -374,7 +373,7 @@ impl Scope {
         &self,
         names: &[Name],
         value: Value,
-    ) -> Result<(), Error> {
+    ) -> Result<(), ScopeError> {
         if names.len() == 1 {
             Ok(self.define(names[0].clone(), value)?)
         } else {

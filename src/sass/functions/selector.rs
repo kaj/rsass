@@ -1,4 +1,4 @@
-use super::{check, get_checked, Error, FunctionMap};
+use super::{check, get_checked, CallError, FunctionMap};
 use crate::css::{BadSelector, Selectors, Value};
 use crate::sass::Name;
 use crate::Scope;
@@ -29,7 +29,7 @@ pub fn create_module() -> Scope {
     f
 }
 
-fn get_selectors(s: &Scope, name: Name) -> Result<Vec<Selectors>, Error> {
+fn get_selectors(s: &Scope, name: Name) -> Result<Vec<Selectors>, CallError> {
     Ok(get_checked(s, name, check::va_list_nonempty)?
         .into_iter()
         .map(|v| v.try_into())

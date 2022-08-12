@@ -1,13 +1,12 @@
 use super::{
     check, expected_to, get_checked, get_opt_check, is_not, is_special,
-    CheckedArg, Error, FunctionMap,
+    CallError, CheckedArg, FunctionMap,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
-use crate::parser::SourcePos;
 use crate::sass::{ArgsError, FormalArgs, Name};
 use crate::value::{Color, Number, Numeric, Rational, Unit};
-use crate::Scope;
+use crate::{Scope, SourcePos};
 use num_traits::{one, zero, Signed};
 mod channels;
 mod hsl;
@@ -58,7 +57,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     other::expose(m, global);
 }
 
-fn get_color(s: &Scope, name: &'static str) -> Result<Color, Error> {
+fn get_color(s: &Scope, name: &'static str) -> Result<Color, CallError> {
     get_checked(s, Name::from_static(name), check_color)
 }
 fn check_color(v: Value) -> Result<Color, String> {
@@ -172,17 +171,12 @@ fn make_call(name: &str, args: Vec<Value>) -> Value {
     )
 }
 
-fn bad_arg(err: ArgsError, name: &Name, args: &FormalArgs) -> Error {
-    match err {
-        ArgsError::Eval(e) => *e,
-        ae => {
-            Error::BadArguments(ae, SourcePos::mock_function(name, args, ""))
-        }
-    }
+fn bad_arg(err: ArgsError, name: &Name, args: &FormalArgs) -> CallError {
+    err.declared_at(&SourcePos::mock_function(name, args, ""))
 }
 
-fn not_in_module(nm: &Name, col: &Value, an: &Name, av: &Value) -> Error {
-    Error::S(format!(
+fn not_in_module(nm: &Name, col: &Value, an: &Name, av: &Value) -> CallError {
+    CallError::msg(format!(
         "The function {0}() isn\'t in the sass:color module.\n\
          \nRecommendation: color.adjust({1}, ${2}: {3})\n\
          \nMore info: https://sass-lang.com/documentation/functions/color#{0}",

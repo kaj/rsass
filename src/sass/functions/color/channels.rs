@@ -1,7 +1,6 @@
-use super::is_special;
+use super::{is_special, CallError};
 use crate::css::Value;
 use crate::value::ListSeparator;
-use crate::Error;
 use std::convert::TryFrom;
 
 /// Channels data is either four values of parsable data, or one value
@@ -118,28 +117,28 @@ pub enum ChaError {
 }
 
 impl ChaError {
-    pub fn conv(self, names: &[&'static str; 3]) -> Error {
+    pub fn conv(self, names: &[&'static str; 3]) -> CallError {
         match self {
             Self::Bracketed => {
-                Error::error("$channels must be an unbracketed list.")
+                CallError::msg("$channels must be an unbracketed list.")
             }
             Self::BadSep => {
-                Error::error("$channels must be a space-separated list.")
+                CallError::msg("$channels must be a space-separated list.")
             }
             Self::Missing0 => {
-                Error::error(format!("Missing element ${}.", names[0]))
+                CallError::msg(format!("Missing element ${}.", names[0]))
             }
             Self::Missing1 => {
-                Error::error(format!("Missing element ${}.", names[1]))
+                CallError::msg(format!("Missing element ${}.", names[1]))
             }
             Self::Missing2 => {
-                Error::error(format!("Missing element ${}.", names[2]))
+                CallError::msg(format!("Missing element ${}.", names[2]))
             }
-            Self::BadNum(n) => Error::error(format!(
+            Self::BadNum(n) => CallError::msg(format!(
                 "Only 3 elements allowed, but {} were passed.",
                 n
             )),
-            Self::SlashBadNum(n) => Error::error(format!(
+            Self::SlashBadNum(n) => CallError::msg(format!(
                 "Only 2 slash-separated elements allowed, but {} {} passed.",
                 n,
                 if n == 1 { "was" } else { "were" },

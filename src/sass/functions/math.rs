@@ -1,6 +1,6 @@
 use super::{
     check, expected_to, get_checked, get_numeric, get_opt_check, get_va_list,
-    is_not, is_special, CheckedArg, Error, FunctionMap, Scope,
+    is_not, is_special, CallError, CheckedArg, FunctionMap, Scope,
 };
 use crate::css::{CallArgs, CssString, Value};
 use crate::output::Format;
@@ -94,7 +94,7 @@ pub fn create_module() -> Scope {
                 }
                 Ok(number(sum.sqrt(), unit))
             } else {
-                Err(Error::error("At least one argument must be passed."))
+                Err(CallError::msg("At least one argument must be passed."))
             }
         }
     });
@@ -224,7 +224,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn get_radians(s: &Scope, name: &str) -> Result<f64, Error> {
+fn get_radians(s: &Scope, name: &str) -> Result<f64, CallError> {
     get_checked(s, name.into(), |v| {
         let v = check::numeric(v)?;
         v.as_unit_def(Unit::Rad).map(Into::into).ok_or_else(|| {
@@ -233,13 +233,13 @@ fn get_radians(s: &Scope, name: &str) -> Result<f64, Error> {
     })
 }
 
-fn get_unitless(s: &Scope, name: &str) -> Result<f64, Error> {
+fn get_unitless(s: &Scope, name: &str) -> Result<f64, CallError> {
     get_checked(s, name.into(), |v| Ok(check::unitless(v)?.into()))
 }
 
 // Only used by hypot function, which treats arguments as unnamed.
-fn as_numeric(v: &Value) -> Result<Numeric, Error> {
-    check::numeric(v.clone()).map_err(Error::error)
+fn as_numeric(v: &Value) -> Result<Numeric, CallError> {
+    check::numeric(v.clone()).map_err(CallError::msg)
 }
 
 fn number(v: impl Into<Number>, unit: impl Into<UnitSet>) -> Value {
@@ -252,7 +252,7 @@ fn deg_value(rad: f64) -> Value {
     number(rad.to_degrees(), Unit::Deg)
 }
 
-fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
+fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, CallError> {
     let as_call = || {
         Value::Call(
             if pref == Ordering::Greater {
@@ -270,7 +270,7 @@ fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
     match find_extreme_inner(v, pref) {
         Ok(Some(v)) => Ok(v.into()),
         Ok(None) => {
-            Err(Error::error("At least one argument must be passed."))
+            Err(CallError::msg("At least one argument must be passed."))
         }
         Err(ExtremeError::NonNumeric(v)) => {
             if let Value::Literal(s) = &v {
@@ -286,7 +286,7 @@ fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
             if v.type_name() == "unknown" {
                 Ok(as_call())
             } else {
-                Err(Error::error(is_not(&v, "a number")))
+                Err(CallError::msg(is_not(&v, "a number")))
             }
         }
         Err(ExtremeError::Incompatible(a, b)) => {
@@ -295,7 +295,7 @@ fn find_extreme(v: &[Value], pref: Ordering) -> Result<Value, Error> {
             if a_dim.is_empty() || b_dim.is_empty() || a_dim == b_dim {
                 Ok(as_call())
             } else {
-                Err(Error::error(format!(
+                Err(CallError::msg(format!(
                     "{} and {} have incompatible units.",
                     a.format(Format::introspect()),
                     b.format(Format::introspect()),
@@ -362,7 +362,7 @@ fn diff_units_msg(
     )
 }
 
-pub(crate) fn clamp_fn(s: &ScopeRef) -> Result<Value, Error> {
+pub(crate) fn clamp_fn(s: &ScopeRef) -> Result<Value, CallError> {
     let min_v = get_numeric(s, "min")?;
     let check_numeric_compat_unit = |v: Value| -> Result<Numeric, String> {
         let v = check::numeric(v)?;

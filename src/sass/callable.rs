@@ -1,4 +1,4 @@
-use super::{FormalArgs, Item};
+use super::{CallError, FormalArgs, Item};
 use crate::css::{CallArgs, Value};
 use crate::{Error, ScopeRef, SourcePos};
 
@@ -43,13 +43,17 @@ impl Closure {
     /// Evaluate this callable as a value.
     ///
     /// This is used when the callable is a scss function.
-    pub fn eval_value(&self, call: Call) -> Result<Value, Error> {
+    pub fn eval_value(&self, call: Call) -> Result<Value, CallError> {
         Ok(self
             .body
             .args
             .evalcall(self.scope.clone(), call)
             .map_err(|e| e.declared_at(&self.body.decl))?
-            .eval_body(&self.body.body)?
+            .eval_body(&self.body.body)
+            .map_err(|e| match e {
+                Error::Invalid(err, _pos) => CallError::Invalid(err),
+                e => CallError::from(e),
+            })?
             .unwrap_or(Value::Null))
     }
 }

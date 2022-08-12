@@ -1,6 +1,6 @@
 use super::{CallArgs, Function, Name, SassString};
 use crate::css;
-use crate::error::{Error, Invalid};
+use crate::error::Error;
 use crate::output::Format;
 use crate::parser::SourcePos;
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
@@ -130,36 +130,25 @@ impl Value {
                         args.evaluate_single(scope, name!(if_false), 2)
                     };
                 }
-                let call = args.evaluate(scope.clone())?;
+                let call = args.evaluate(scope.clone());
+
                 if let Some(name) = name.single_raw() {
-                    let name = name.into();
+                    let call = call.map_err(|e| e.called_from(pos, name))?;
+                    let nname = Name::from(name);
                     if let Some(f) = scope
-                        .get_function(&name)
+                        .get_function(&nname)
                         .map_err(|e| e.at(pos.clone()))?
-                        .or_else(|| Function::get_builtin(&name).cloned())
+                        .or_else(|| Function::get_builtin(&nname).cloned())
                     {
-                        return f.call(call).map_err(|e| match e {
-                            Error::BadArguments(msg, decl) => Error::BadCall(
-                                msg.to_string(),
-                                if decl.is_builtin() {
-                                    pos.clone()
-                                } else {
-                                    pos.in_call(name.as_ref())
-                                },
-                                Some(decl),
-                            ),
-                            Error::Invalid(Invalid::AtError(msg), _) => {
-                                Error::BadCall(msg, pos.clone(), None)
-                            }
-                            e => {
-                                let pos = pos.clone().opt_in_calc();
-                                Error::BadCall(format!("{:?}", e), pos, None)
-                            }
-                        });
+                        f.call(call).map_err(|e| e.called_from(pos, name))?
+                    } else {
+                        css::Value::Call(name.to_string(), call.args)
                     }
+                } else {
+                    let name = name.evaluate(scope)?.value().to_string();
+                    let call = call.map_err(|e| e.called_from(pos, &name))?;
+                    css::Value::Call(name, call.args)
                 }
-                let name = name.evaluate(scope)?;
-                css::Value::Call(name.value().into(), call.args)
             }
             Value::Numeric(num) => {
                 css::Value::Numeric(num.clone(), arithmetic)

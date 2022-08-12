@@ -1,9 +1,9 @@
-use super::{Call, Closure, FormalArgs, Name};
+use super::{ArgsError, Call, Closure, FormalArgs, Name};
 use crate::css::{self, is_not, CallArgs, CssString, Value};
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
 use crate::value::{CssDimension, Numeric, Operator, Quotes};
-use crate::{Error, Scope, ScopeRef};
+use crate::{Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -12,6 +12,7 @@ use std::{cmp, fmt};
 #[macro_use]
 mod macros;
 
+mod call_error;
 mod color;
 mod list;
 mod map;
@@ -20,7 +21,9 @@ mod meta;
 mod selector;
 mod string;
 
-type BuiltinFn = dyn Fn(&ScopeRef) -> Result<Value, Error> + Send + Sync;
+pub use call_error::CallError;
+
+type BuiltinFn = dyn Fn(&ScopeRef) -> Result<Value, CallError> + Send + Sync;
 
 /// A function that can be called from a sass value.
 ///
@@ -47,7 +50,7 @@ struct Builtin {
 }
 
 impl Builtin {
-    fn eval_value(&self, call: Call) -> Result<Value, Error> {
+    fn eval_value(&self, call: Call) -> Result<Value, CallError> {
         let s = self
             .args
             .evalcall(ScopeRef::new_global(call.scope.get_format()), call)
@@ -133,7 +136,7 @@ impl Function {
 
     /// Call the function from a given scope and with a given set of
     /// arguments.
-    pub fn call(&self, call: Call) -> Result<Value, Error> {
+    pub fn call(&self, call: Call) -> Result<Value, CallError> {
         match self.body {
             FuncImpl::Builtin(ref builtin) => builtin.eval_value(call),
             FuncImpl::UserDefined(ref closure) => closure.eval_value(call),
@@ -216,7 +219,7 @@ lazy_static! {
                     _ => None,
                 }
             }
-            fn in_calc(v: Value) -> Result<Value, Error> {
+            fn in_calc(v: Value) -> Result<Value, CallError> {
                 match v {
                     Value::Literal(s) if s.quotes() == Quotes::None => {
                         if let Some(arg) = s
@@ -246,7 +249,7 @@ lazy_static! {
                         let b = in_calc(*b)?;
                         if let (Some(adim), Some(bdim)) = (css_dim(&a), css_dim(&b)) {
                             if (op == Operator::Plus || op == Operator::Minus) && adim != bdim {
-                                return Err(Error::error(format!(
+                                return Err(CallError::msg(format!(
                                     "{} and {} are incompatible.",
                                     a.format(Format::introspect()),
                                     b.format(Format::introspect()),
@@ -265,14 +268,14 @@ lazy_static! {
                         if num.unit.valid_in_css() {
                             Ok(Value::Numeric(num, c))
                         } else {
-                            Err(Error::error(format!(
+                            Err(CallError::msg(format!(
                                 "Number {} isn't compatible with CSS calculations.",
                                 num.format(Format::introspect())
                             )))
                         }
                     }
                     v @ Value::Paren(..) => Ok(v),
-                    v => Err(Error::error(format!(
+                    v => Err(CallError::msg(format!(
                         "Value {} can't be used in a calculation.",
                         v.format(Format::introspect())
                     ))),
@@ -284,7 +287,7 @@ lazy_static! {
             } else {
                 Ok(Value::Call(
                     "calc".into(),
-                    CallArgs::from_value(in_calc(v)?)?,
+                    CallArgs::from_value(in_calc(v)?).map_err(CallError::msg)?,
                 ))
             }
         });
@@ -319,15 +322,15 @@ lazy_static! {
 // argument helpers for the actual functions
 
 trait CheckedArg<T> {
-    fn named(self, name: Name) -> Result<T, Error>;
+    fn named(self, name: Name) -> Result<T, CallError>;
 }
 impl<T> CheckedArg<T> for Result<T, String> {
-    fn named(self, name: Name) -> Result<T, Error> {
-        self.map_err(|e| Error::BadArgument(name, e))
+    fn named(self, name: Name) -> Result<T, CallError> {
+        self.map_err(|e| CallError::BadArgument(name, e))
     }
 }
 
-fn get_checked<T, F>(s: &Scope, name: Name, check: F) -> Result<T, Error>
+fn get_checked<T, F>(s: &Scope, name: Name, check: F) -> Result<T, CallError>
 where
     F: Fn(Value) -> Result<T, String>,
 {
@@ -338,7 +341,7 @@ fn get_opt_check<T, F>(
     s: &Scope,
     name: Name,
     check: F,
-) -> Result<Option<T>, Error>
+) -> Result<Option<T>, CallError>
 where
     F: Fn(Value) -> Result<T, String>,
 {
@@ -348,19 +351,19 @@ where
     }
 }
 
-fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, Error> {
+fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, CallError> {
     get_checked(s, name.into(), check::numeric)
 }
 
-fn get_integer(s: &Scope, name: Name) -> Result<i64, Error> {
+fn get_integer(s: &Scope, name: Name) -> Result<i64, CallError> {
     get_checked(s, name, check::unitless_int)
 }
 
-pub fn get_string(s: &Scope, name: Name) -> Result<CssString, Error> {
+pub fn get_string(s: &Scope, name: Name) -> Result<CssString, CallError> {
     get_checked(s, name, check::string)
 }
 
-fn get_va_list(s: &Scope, name: Name) -> Result<Vec<Value>, Error> {
+fn get_va_list(s: &Scope, name: Name) -> Result<Vec<Value>, CallError> {
     get_checked(s, name, check::va_list)
 }
 

@@ -1,7 +1,7 @@
-use super::{Call, Name, Value};
+use super::{Call, CallError, Name, Value};
 use crate::ordermap::OrderMap;
 use crate::value::ListSeparator;
-use crate::{css, Error, ScopeRef};
+use crate::{css, Error, Invalid, ScopeRef};
 use std::default::Default;
 
 /// the actual arguments of a function or mixin call.
@@ -23,18 +23,18 @@ impl CallArgs {
     pub fn new(
         v: Vec<(Option<Name>, Value)>,
         trailing_comma: bool,
-    ) -> Result<Self, Error> {
+    ) -> Result<Self, Invalid> {
         let mut positional = Vec::new();
         let mut named = OrderMap::new();
         for (name, value) in v {
             if let Some(name) = name {
                 if let Some(_old) = named.insert(name, value) {
-                    return Err(Error::error("Duplicate argument."));
+                    return Err(Invalid::DuplicateArgument);
                 }
             } else if named.is_empty() || is_splat(&value).is_some() {
                 positional.push(value);
             } else {
-                return Err(Error::error("positional arg after named."));
+                return Err(Invalid::PositionalArgAfterNamed);
             }
         }
         Ok(CallArgs {
@@ -54,14 +54,13 @@ impl CallArgs {
     }
 
     /// Evaluate these sass CallArgs to css CallArgs.
-    pub fn evaluate(&self, scope: ScopeRef) -> Result<Call, Error> {
+    pub fn evaluate(&self, scope: ScopeRef) -> Result<Call, CallError> {
         let named = self.named.iter().try_fold(
             OrderMap::new(),
             |mut acc, (name, arg)| {
-                arg.do_evaluate(scope.clone(), true).map(|arg| {
-                    acc.insert(name.clone(), arg);
-                    acc
-                })
+                let arg = arg.do_evaluate(scope.clone(), true)?;
+                acc.insert(name.clone(), arg);
+                Ok::<_, Error>(acc)
             },
         )?;
         let mut result = css::CallArgs {
@@ -78,14 +77,14 @@ impl CallArgs {
                             if let Some(_existing) =
                                 result.named.insert(name, value)
                             {
-                                return Err(Error::error(
-                                    "Duplicate argument.",
-                                ));
+                                return Err(Invalid::DuplicateArgument.into());
                             }
                         }
                     }
                     css::Value::Map(map) => {
-                        result.add_from_value_map(map)?;
+                        result
+                            .add_from_value_map(map)
+                            .map_err(CallError::msg)?;
                     }
                     css::Value::List(items, ..) => {
                         for item in items {
