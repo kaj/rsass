@@ -1,27 +1,29 @@
 use crate::input::LoadError;
 use crate::parser::{ParseError, SourcePos};
-use crate::sass::{ArgsError, Name};
 use crate::value::RangeError;
 use crate::ScopeError;
 use std::convert::From;
 use std::{fmt, io};
 
-/// Most functions in rsass that returns a Result uses this Error type.
+/// Many functions in rsass that returns a Result uses this Error type.
+///
+/// Other errors in rsass, such as [`CallError`][crate::sass::CallError] or
+/// [`Invalid`] can be converted to this Error type, often with
+/// a method providing some context rather than with just an `Into`
+/// implementation.
+/// E.g. [`CallError::called_from`][crate::sass::CallError::called_from]
+/// also takes a [`SourcePos`] and a function name, defining the call
+/// that went wrong.
 pub enum Error {
-    /// An IO error encoundered on a specific path
+    /// Failed to load a file.
     Input(LoadError),
     /// An IO error without specifying a path.
     ///
     /// This is (probably) an error writing output.
     IoError(io::Error),
-    /// A bad call to a builtin function, with call- and optionally
-    /// declaration position.
+    /// A failed function call, with call- and optionally declaration
+    /// position.
     BadCall(String, SourcePos, Option<SourcePos>),
-    /// An illegal value for a specific parameter.
-    BadArgument(Name, String),
-    /// The pos here is the function declaration.
-    /// This error will be wrapped in a BadCall, giving the pos of the call.
-    BadArguments(ArgsError, SourcePos),
     /// Tried to import file at pos while already importing it at pos.
     ///
     /// The bool is true for a used module and false for an import.
@@ -58,9 +60,6 @@ impl fmt::Debug for Error {
         match *self {
             Error::S(ref s) => write!(out, "{}", s),
             Error::Input(ref load) => load.fmt(out),
-            Error::BadArgument(ref name, ref problem) => {
-                write!(out, "${}: {}", name, problem)
-            }
             Error::ParseError(ref err) => fmt::Display::fmt(err, out),
             Error::ImportLoop(ref module, ref pos, ref oldpos) => {
                 if *module {
@@ -106,8 +105,7 @@ impl fmt::Debug for Error {
                 pos.show(out)
             }
             Error::BadRange(ref err) => err.fmt(out),
-            // fallback
-            ref x => write!(out, "{:?}", x),
+            Error::IoError(ref err) => err.fmt(out),
         }
     }
 }
@@ -179,6 +177,7 @@ impl From<LoadError> for Error {
 ///
 /// Should be combined with a position to get an [Error].
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum Invalid {
     /// Tried to declare a function with a forbidden name.
     FunctionName,
@@ -190,19 +189,26 @@ pub enum Invalid {
     MixinInControl,
     /// Mixins may not contain function declarations.
     FunctionInMixin,
-    /// Functions may not be declared in control directives
+    /// Functions may not be declared in control directives.
     FunctionInControl,
+    /// Duplicate argument.
+    DuplicateArgument,
+    /// Positional arguments must come before keyword arguments.
+    PositionalArgAfterNamed,
     /// Some invalid scope operation.
     InScope(ScopeError),
     /// An `@error` reached.
     AtError(String),
 }
+
 impl Invalid {
-    /// Combine this with a position to get a proper error.
+    /// Combine this with a position to get an [`Error`].
     pub fn at(self, pos: SourcePos) -> Error {
         Error::Invalid(self, pos)
     }
 }
+
+impl std::error::Error for Invalid {}
 
 impl fmt::Display for Invalid {
     fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -220,6 +226,11 @@ impl fmt::Display for Invalid {
             }
             Invalid::FunctionInControl => {
                 "Functions may not be declared in control directives."
+                    .fmt(out)
+            }
+            Invalid::DuplicateArgument => "Duplicate argument.".fmt(out),
+            Invalid::PositionalArgAfterNamed => {
+                "Positional arguments must come before keyword arguments."
                     .fmt(out)
             }
             Invalid::InScope(err) => err.fmt(out),

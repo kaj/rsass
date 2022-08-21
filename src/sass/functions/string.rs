@@ -1,6 +1,5 @@
-use super::{get_integer, get_string, Error, FunctionMap};
+use super::{get_checked, get_integer, get_string, CallError, FunctionMap};
 use crate::css::{CssString, Value};
-use crate::sass::functions::get_checked;
 use crate::Scope;
 use lazy_static::lazy_static;
 use std::cmp::min;
@@ -66,7 +65,10 @@ pub fn create_module() -> Scope {
                 st.chars().skip(start_at).take(end_at - start_at).collect();
             Ok(CssString::new(part, string.quotes()).into())
         } else {
-            Err(Error::S(format!("Bad indexes: {}..{}", start_at, end_at)))
+            Err(CallError::msg(format!(
+                "Bad indexes: {}..{}",
+                start_at, end_at
+            )))
         }
     });
     def!(f, to_upper_case(string), |s| {

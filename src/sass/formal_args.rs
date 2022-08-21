@@ -1,4 +1,4 @@
-use super::{Call, Name, Value};
+use super::{Call, CallError, Name, Value};
 use crate::{css, Error, ScopeError, ScopeRef, SourcePos};
 use std::fmt;
 
@@ -138,18 +138,10 @@ pub enum ArgsError {
 
 impl ArgsError {
     /// This argument error happend for args declared at the given pos.
-    pub fn declared_at(self, pos: &SourcePos) -> Error {
+    pub fn declared_at(self, pos: &SourcePos) -> CallError {
         match self {
-            ArgsError::Eval(e) => *e,
-            ae => Error::BadArguments(ae, pos.clone()),
-        }
-    }
-    /// This argument error happened while calling for `call` a function
-    /// declared at `decl` position.
-    pub fn decl_called(self, call: SourcePos, decl: SourcePos) -> Error {
-        match self {
-            ArgsError::Eval(e) => *e,
-            ae => Error::BadCall(ae.to_string(), call, Some(decl)),
+            ArgsError::Eval(e) => CallError::Wrap(e),
+            ae => CallError::Args(ae, pos.clone()),
         }
     }
 }
@@ -192,13 +184,5 @@ impl From<Error> for ArgsError {
 impl From<ScopeError> for ArgsError {
     fn from(e: ScopeError) -> ArgsError {
         Error::from(e).into()
-    }
-}
-
-// Note: this is only for some special cases, normally the "context"
-// of a function declaration pos is required.
-impl From<ArgsError> for Error {
-    fn from(e: ArgsError) -> Error {
-        Error::S(e.to_string())
     }
 }

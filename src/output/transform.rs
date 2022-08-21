@@ -7,11 +7,10 @@
 
 use super::cssbuf::{CssBuf, CssHead};
 use crate::css::{BodyItem, Comment, Import, Property, Rule, Selectors};
-use crate::error::{Error, Invalid};
 use crate::input::{Context, Loader, Parsed, SourceKind};
 use crate::sass::{get_global_module, Expose, Item, UseAs};
 use crate::value::ValueRange;
-use crate::ScopeRef;
+use crate::{Error, Invalid, ScopeRef};
 use std::io::Write;
 
 pub fn handle_parsed(
@@ -333,13 +332,9 @@ fn handle_item(
         }
         Item::MixinCall(ref name, ref args, ref body, ref pos) => {
             if let Some(mixin) = scope.get_mixin(&name.into()) {
-                let mixin = mixin.get(
-                    name,
-                    scope.clone(),
-                    args,
-                    pos,
-                    file_context,
-                )?;
+                let mixin = mixin
+                    .get(scope.clone(), args, pos, file_context)
+                    .map_err(|e| e.called_from(pos, name))?;
                 mixin.define_content(&scope, body);
                 handle_parsed(
                     mixin.body,
@@ -351,9 +346,12 @@ fn handle_item(
                 )
                 .map_err(|e: Error| match e {
                     Error::Invalid(err, _) => err.at(pos.clone()),
+                    Error::BadCall(msg, pos, p2) => {
+                        Error::BadCall(msg, pos.in_call(name), p2)
+                    }
                     e => {
                         let pos = pos.in_call(name);
-                        Error::BadCall(e.to_string(), pos, None)
+                        Error::BadCall(format!("{:?}", e), pos, None)
                     }
                 })?;
             } else {
@@ -366,13 +364,9 @@ fn handle_item(
         }
         Item::Content(args, pos) => {
             if let Some(content) = scope.get_content() {
-                let mixin = content.get(
-                    "@content",
-                    scope,
-                    args,
-                    pos,
-                    file_context,
-                )?;
+                let mixin = content
+                    .get(scope, args, pos, file_context)
+                    .map_err(|e| e.called_from(pos, "@content"))?;
                 handle_parsed(
                     mixin.body,
                     head,
@@ -491,7 +485,9 @@ fn handle_item(
                     rule.push(Property::new(name.value().into(), v).into());
                 }
             } else {
-                return Err(Error::S("Global property not allowed".into()));
+                return Err(Error::error(
+                    "Declarations may only be used within style rules.",
+                ));
             }
         }
         Item::CustomProperty(ref name, ref value) => {
@@ -505,8 +501,8 @@ fn handle_item(
                     ));
                 }
             } else {
-                return Err(Error::S(
-                    "Global custom property not allowed".into(),
+                return Err(Error::error(
+                    "Global custom property not allowed",
                 ));
             }
         }
@@ -539,13 +535,13 @@ fn handle_item(
                     })
                 }
                 if !sub.is_empty() {
-                    return Err(Error::S(
-                        "Unexpected content in namespace rule".into(),
+                    return Err(Error::error(
+                        "Unexpected content in namespace rule",
                     ));
                 }
             } else {
-                return Err(Error::S(
-                    "Global namespaced property not allowed".into(),
+                return Err(Error::error(
+                    "Global namespaced property not allowed",
                 ));
             }
         }

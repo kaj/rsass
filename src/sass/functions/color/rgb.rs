@@ -1,8 +1,8 @@
 use super::channels::Channels;
 use super::{
     bad_arg, check_alpha, check_channel, check_color, check_pct_range,
-    get_checked, get_color, is_not, is_special, make_call, CheckedArg, Error,
-    FunctionMap,
+    get_checked, get_color, is_not, is_special, make_call, CallError,
+    CheckedArg, FunctionMap,
 };
 use crate::css::{CallArgs, Value};
 use crate::sass::{ArgsError, FormalArgs, Name};
@@ -81,7 +81,7 @@ pub fn register(f: &mut Scope) {
                         v => Err(is_not(&v, "a color")).named(name!(color)),
                     }
                 } else {
-                    Err(Error::error("Only one argument may be passed to the plain-CSS invert() function."))
+                    Err(CallError::msg("Only one argument may be passed to the plain-CSS invert() function."))
                 }
             }
         }
@@ -102,7 +102,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn do_rgba(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
+fn do_rgba(fn_name: &Name, s: &ScopeRef) -> Result<Value, CallError> {
     let a1 = FormalArgs::new(vec![one_arg!(channels)]);
     let a1b = FormalArgs::new(vec![one_arg!(color), one_arg!(alpha)]);
     let a2 = FormalArgs::new(vec![
@@ -117,7 +117,7 @@ fn do_rgba(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
         one_arg!(blue),
         one_arg!(alpha),
     ]);
-    let args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
+    let args = get_checked(s, name!(kwargs), CallArgs::from_value)?;
     match a1.eval(s.clone(), args.clone()) {
         Ok(s) => Channels::try_from(s.get(&name!(channels))?)
             .map_err(|e| e.conv(&["red", "green", "blue"]))
@@ -179,7 +179,7 @@ fn rgba_from_values(
     g: Value,
     b: Value,
     a: Value,
-) -> Result<Value, Error> {
+) -> Result<Value, CallError> {
     if is_special(&r) || is_special(&g) || is_special(&b) || is_special(&a) {
         Ok(make_call(fn_name.as_ref(), vec![r, g, b, a]))
     } else {

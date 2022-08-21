@@ -2,13 +2,13 @@ use super::channels::Channels;
 use super::{
     bad_arg, check_alpha, check_pct, check_pct_range, check_rational,
     get_checked, get_color, get_opt_check, is_not, is_special, make_call,
-    CheckedArg, FunctionMap,
+    CallError, CheckedArg, FunctionMap,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::{ArgsError, FormalArgs, Name};
 use crate::value::{Hsla, Numeric, Rational, Unit};
-use crate::{Error, Scope, ScopeRef};
+use crate::{Scope, ScopeRef};
 use num_traits::zero;
 use std::convert::TryFrom;
 
@@ -77,7 +77,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     def_va!(f, saturate(kwargs), |s| {
         let a1 = FormalArgs::new(vec![one_arg!(color), one_arg!(amount)]);
         let a2 = FormalArgs::new(vec![one_arg!(amount)]);
-        let args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
+        let args = get_checked(s, name!(kwargs), CallArgs::from_value)?;
         match a1.eval(s.clone(), args.clone()) {
             Ok(s) => {
                 let col = get_color(&s, "color")?;
@@ -115,7 +115,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn do_hsla(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
+fn do_hsla(fn_name: &Name, s: &ScopeRef) -> Result<Value, CallError> {
     let a1 = FormalArgs::new(vec![one_arg!(channels)]);
     let a2 = FormalArgs::new(vec![
         one_arg!(hue),
@@ -129,7 +129,7 @@ fn do_hsla(fn_name: &Name, s: &ScopeRef) -> Result<Value, Error> {
         one_arg!(lightness),
         one_arg!(alpha),
     ]);
-    let args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
+    let args = get_checked(s, name!(kwargs), CallArgs::from_value)?;
     match a1.eval(s.clone(), args.clone()) {
         Ok(s) => Channels::try_from(s.get(&name!(channels))?)
             .map_err(|e| e.conv(&["hue", "saturation", "lightness"]))
@@ -164,11 +164,11 @@ fn hsla_from_values(
     s: Value,
     l: Value,
     a: Value,
-) -> Result<Value, Error> {
+) -> Result<Value, CallError> {
     if is_special(&h) || is_special(&s) || is_special(&l) || is_special(&a) {
         Ok(make_call(fn_name.as_ref(), vec![h, s, l, a]))
     } else if l == Value::Null {
-        Err(Error::error("Missing argument $lightness."))
+        Err(CallError::msg("Missing argument $lightness."))
     } else {
         Ok(Hsla::new(
             check_rational(h).named(name!(hue))?,

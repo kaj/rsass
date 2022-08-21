@@ -1,6 +1,6 @@
 use super::{
     check, get_checked, get_opt_check, get_string, is_not, looks_like_call,
-    CheckedArg, Error, FunctionMap,
+    CallError, CheckedArg, FunctionMap,
 };
 use crate::css::{is_calc_name, CallArgs, CssString, Value};
 use crate::sass::{Call, Function, MixinDecl};
@@ -64,7 +64,7 @@ pub fn create_module() -> Scope {
                     .named(name!(function));
             }
         };
-        let args = CallArgs::from_value(s.get(&name!(args))?)?;
+        let args = get_checked(s, name!(args), CallArgs::from_value)?;
         if let Some(function) = function {
             function.call(Call {
                 args,
@@ -78,7 +78,7 @@ pub fn create_module() -> Scope {
         if let Some(content) = call_scope(s).get_content() {
             Ok((!content.is_no_body()).into())
         } else {
-            Err(Error::error(
+            Err(CallError::msg(
                 "content-exists() may only be called within a mixin.",
             ))
         }
@@ -103,7 +103,7 @@ pub fn create_module() -> Scope {
             let module = get_opt_check(s, name!(module), check::string)?;
             if s.get(&name!(css))?.is_true() {
                 if module.is_some() {
-                    return Err(Error::error(
+                    return Err(CallError::msg(
                         "$css and $module may not both be passed at once.",
                     ));
                 }
@@ -111,7 +111,7 @@ pub fn create_module() -> Scope {
             } else if let Some(f) = get_function(s, module, name.value())? {
                 Ok(Value::Function(name.value().into(), Some(f)))
             } else {
-                Err(Error::S(format!("Function not found: {}", name)))
+                Err(CallError::msg(format!("Function not found: {}", name)))
             }
         }
     );
@@ -194,7 +194,7 @@ static IMPLEMENTED_FEATURES: &[&str] = &[
     "custom-property",
 ];
 
-fn get_module_arg(s: &Scope, use_the: bool) -> Result<ScopeRef, Error> {
+fn get_module_arg(s: &Scope, use_the: bool) -> Result<ScopeRef, CallError> {
     let module = get_opt_check(s, name!(module), check::string)?;
     get_scope(s, module, use_the)
 }
@@ -208,10 +208,10 @@ fn get_scope(
     s: &Scope,
     module: Option<CssString>,
     the: bool,
-) -> Result<ScopeRef, Error> {
+) -> Result<ScopeRef, CallError> {
     if let Some(module) = module {
         call_scope(s).get_module(module.value()).ok_or_else(|| {
-            Error::error(format!(
+            CallError::msg(format!(
                 "There is no module with {}namespace {}.",
                 if the { "the " } else { "" },
                 module
@@ -226,11 +226,11 @@ fn get_function(
     s: &Scope,
     module: Option<CssString>,
     name: &str,
-) -> Result<Option<Function>, Error> {
+) -> Result<Option<Function>, CallError> {
     if let Some(module) = module {
         get_scope(s, Some(module), true)?
             .get_function(&name.into())
-            .map_err(|e| Error::error(e.to_string()))
+            .map_err(CallError::msg)
     } else {
         let name = name.into();
         Ok(call_scope(s)

@@ -1,13 +1,13 @@
 use super::hsl::percentage;
 use super::{
-    bad_arg, check, check_alpha, check_expl_pct, get_color, is_not,
-    CheckedArg,
+    bad_arg, check, check_alpha, check_expl_pct, get_checked, get_color,
+    is_not, CallError, CheckedArg,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::FormalArgs;
 use crate::value::{Hwba, ListSeparator, Rational, Unit};
-use crate::{Error, Scope, ScopeRef};
+use crate::{Scope, ScopeRef};
 
 pub fn register(f: &mut Scope) {
     def_va!(f, hwb(kwargs), hwb);
@@ -25,8 +25,8 @@ pub fn register(f: &mut Scope) {
     });
 }
 
-fn hwb(s: &ScopeRef) -> Result<Value, Error> {
-    let args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
+fn hwb(s: &ScopeRef) -> Result<Value, CallError> {
+    let args = get_checked(s, name!(kwargs), CallArgs::from_value)?;
     let (hue, w, b, a) = if args.len() < 3 {
         let a1 = FormalArgs::new(vec![one_arg!(channels)]);
         a1.eval(s.clone(), args)
@@ -59,20 +59,20 @@ fn hwb(s: &ScopeRef) -> Result<Value, Error> {
 
 fn hwb_from_channels(
     v: Value,
-) -> Result<(Value, Value, Value, Value), Error> {
+) -> Result<(Value, Value, Value, Value), CallError> {
     match v {
         Value::List(_, _, true) => {
-            Err(Error::error("$channels must be an unbracketed list."))
+            Err(CallError::msg("$channels must be an unbracketed list."))
         }
         Value::List(_, Some(ListSeparator::Comma), _) => {
-            Err(Error::error("$channels must be a space-separated list."))
+            Err(CallError::msg("$channels must be a space-separated list."))
         }
         Value::List(vec, s, p) => {
             use crate::value::Operator::Div;
             match vec.len() {
-                0 => Err(Error::error("Missing element $hue.")),
-                1 => Err(Error::error("Missing element $whiteness.")),
-                2 => Err(Error::error("Missing element $blackness.")),
+                0 => Err(CallError::msg("Missing element $hue.")),
+                1 => Err(CallError::msg("Missing element $whiteness.")),
+                2 => Err(CallError::msg("Missing element $blackness.")),
                 3 => {
                     if let Value::BinOp(a, _, Div, _, b) = &vec[2] {
                         if let (Value::Numeric(..), Value::Numeric(..)) =
@@ -96,18 +96,18 @@ fn hwb_from_channels(
                         ))
                     }
                 }
-                n => Err(Error::error(format!(
+                n => Err(CallError::msg(format!(
                     "Only 3 elements allowed, but {} were passed.",
                     n
                 ))),
             }
         }
-        _hue => Err(Error::error("Missing element $whiteness.")),
+        _hue => Err(CallError::msg("Missing element $whiteness.")),
     }
 }
 
-fn badchannels(v: &Value) -> Error {
-    Error::error(format!(
+fn badchannels(v: &Value) -> CallError {
+    CallError::msg(format!(
         "Expected numeric channels, got \"hwb({})\".",
         v.format(Format::introspect()),
     ))

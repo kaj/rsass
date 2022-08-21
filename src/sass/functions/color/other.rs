@@ -1,7 +1,7 @@
 use super::{
     check, check_alpha_pm, check_alpha_range, check_channel_pm,
     check_channel_range, check_color, check_expl_pct, check_rational,
-    expected_to, get_checked, get_color, make_call, CheckedArg, Error,
+    expected_to, get_checked, get_color, make_call, CallError, CheckedArg,
     FunctionMap, Name,
 };
 use crate::css::{CallArgs, Value};
@@ -19,10 +19,10 @@ pub fn register(f: &mut Scope) {
             }
         }
         let rgba = get_color(s, "color")?;
-        let mut args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
+        let mut args = get_checked(s, name!(kwargs), CallArgs::from_value)?;
         if !args.positional.is_empty() {
-            return Err(Error::error("Only one positional argument is allowed. \
-                                     All other arguments must be passed by name."));
+            return Err(CallError::msg("Only one positional argument is allowed. \
+                                       All other arguments must be passed by name."));
         }
         let red = take_opt(&mut args, name!(red), check_channel_pm)?;
         let gre = take_opt(&mut args, name!(green), check_channel_pm)?;
@@ -33,7 +33,7 @@ pub fn register(f: &mut Scope) {
         let bla = take_opt(&mut args, name!(blackness), check_pct_expl_pm)?;
         let whi = take_opt(&mut args, name!(whiteness), check_pct_expl_pm)?;
         let a_adj = take_opt(&mut args, name!(alpha), check_alpha_pm)?;
-        args.check_no_named()?;
+        args.check_no_named().map_err(CallError::msg)?;
 
         if red.is_some() || gre.is_some() || blu.is_some() {
             check_none(&[bla, whi], "RGB", "HWB")?;
@@ -85,10 +85,10 @@ pub fn register(f: &mut Scope) {
         let ff = Rational::from_integer(255);
 
         let rgba = get_color(s, "color")?;
-        let mut args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
+        let mut args = get_checked(s, name!(kwargs), CallArgs::from_value)?;
         if !args.positional.is_empty() {
-            return Err(Error::error("Only one positional argument is allowed. \
-                                     All other arguments must be passed by name."));
+            return Err(CallError::msg("Only one positional argument is allowed. \
+                                       All other arguments must be passed by name."));
         }
         let red = take_opt(&mut args, name!(red), check_pct_expl_pm)?;
         let gre = take_opt(&mut args, name!(green), check_pct_expl_pm)?;
@@ -98,7 +98,7 @@ pub fn register(f: &mut Scope) {
         let bla = take_opt(&mut args, name!(blackness), check_pct_expl_pm)?;
         let whi = take_opt(&mut args, name!(whiteness), check_pct_expl_pm)?;
         let a_adj = take_opt(&mut args, name!(alpha), check_pct_expl_pm)?;
-        args.check_no_named()?;
+        args.check_no_named().map_err(CallError::msg)?;
 
         if red.is_some() || gre.is_some() || blu.is_some() {
             check_none(&[bla, whi], "RGB", "HWB")?;
@@ -151,10 +151,10 @@ pub fn register(f: &mut Scope) {
 
     def_va!(f, change(color, kwargs), |s| {
         let rgba = get_color(s, "color")?;
-        let mut args = CallArgs::from_value(s.get(&name!(kwargs))?)?;
+        let mut args = get_checked(s, name!(kwargs), CallArgs::from_value)?;
         if !args.positional.is_empty() {
-            return Err(Error::error("Only one positional argument is allowed. \
-                                     All other arguments must be passed by name."));
+            return Err(CallError::msg("Only one positional argument is allowed. \
+                                       All other arguments must be passed by name."));
         }
         let red = take_opt(&mut args, name!(red), check_channel_range)?;
         let gre = take_opt(&mut args, name!(green), check_channel_range)?;
@@ -166,7 +166,7 @@ pub fn register(f: &mut Scope) {
         let bla = take_opt(&mut args, name!(blackness), check_expl_pct)?;
         let whi = take_opt(&mut args, name!(whiteness), check_expl_pct)?;
         let alp = take_opt(&mut args, name!(alpha), check_alpha_range)?;
-        args.check_no_named()?;
+        args.check_no_named().map_err(CallError::msg)?;
 
         if red.is_some() || gre.is_some() || blu.is_some() {
             check_none(&[hue, sat, lig], "RGB", "HSL")?;
@@ -246,11 +246,11 @@ fn check_none(
     args: &[Option<Rational>],
     kind: &str,
     with_kind: &str,
-) -> Result<(), Error> {
+) -> Result<(), CallError> {
     if args.iter().all(|v| v.is_none()) {
         Ok(())
     } else {
-        Err(Error::error(format!(
+        Err(CallError::msg(format!(
             "{} parameters may not be passed along with {} parameters.",
             kind, with_kind
         )))
@@ -261,7 +261,7 @@ fn take_opt<T, F>(
     args: &mut CallArgs,
     name: Name,
     check: F,
-) -> Result<Option<T>, Error>
+) -> Result<Option<T>, CallError>
 where
     F: Fn(Value) -> Result<T, String>,
 {

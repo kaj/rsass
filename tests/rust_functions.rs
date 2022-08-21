@@ -1,6 +1,6 @@
 use rsass::input::{FsContext, SourceFile, SourceName};
 use rsass::output::{Format, Style};
-use rsass::sass::{FormalArgs, Function, Name};
+use rsass::sass::{CallError, FormalArgs, Function, Name};
 use rsass::value::{Number, Numeric, Rgba};
 use rsass::*;
 use std::sync::Arc;
@@ -61,7 +61,7 @@ fn function_with_args() -> Result<(), Error> {
             ]),
             Arc::new(|s| {
                 let a = s.get(&"a".into())?.numeric_value().map_err(|v| {
-                    Error::BadArgument(
+                    CallError::BadArgument(
                         "a".into(),
                         format!(
                             "{} is not a number",
@@ -70,7 +70,7 @@ fn function_with_args() -> Result<(), Error> {
                     )
                 })?;
                 let b = s.get(&"b".into())?.numeric_value().map_err(|v| {
-                    Error::BadArgument(
+                    CallError::BadArgument(
                         "b".into(),
                         format!(
                             "{} is not a number",
@@ -83,7 +83,7 @@ fn function_with_args() -> Result<(), Error> {
                 } else if a.unit.is_none() {
                     Ok(Numeric::new(avg(a.value, b.value), b.unit).into())
                 } else {
-                    Err(Error::error("Incopatible args."))
+                    Err(CallError::msg("Incopatible args."))
                 }
             }),
         ),

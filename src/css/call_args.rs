@@ -2,7 +2,6 @@ use super::{is_not, Value};
 use crate::ordermap::OrderMap;
 use crate::sass::{ArgsError, Name};
 use crate::value::ListSeparator;
-use crate::Error;
 use std::default::Default;
 use std::fmt;
 
@@ -21,7 +20,7 @@ impl CallArgs {
     /// Create args from a Value.
     ///
     /// The value may be a list of arguments or a single argument.
-    pub fn from_value(v: Value) -> Result<Self, Error> {
+    pub fn from_value(v: Value) -> Result<Self, String> {
         match v {
             Value::ArgList(args) => Ok(args),
             Value::List(v, Some(ListSeparator::Comma), false) => {
@@ -53,14 +52,14 @@ impl CallArgs {
     pub(crate) fn add_from_value_map(
         &mut self,
         map: OrderMap<Value, Value>,
-    ) -> Result<(), Error> {
+    ) -> Result<(), String> {
         for (k, v) in map {
             match k {
                 Value::Null => self.positional.push(v),
                 Value::Literal(s) => {
                     self.named.insert(s.value().into(), v);
                 }
-                x => return Err(Error::error(is_not(&x, "a string"))),
+                x => return Err(is_not(&x, "a string")),
             }
         }
         Ok(())

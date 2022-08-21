@@ -630,14 +630,6 @@ impl fmt::Display for BadSelector {
         }
     }
 }
-impl From<BadSelector> for crate::Error {
-    fn from(e: BadSelector) -> crate::Error {
-        match e {
-            BadSelector::Parse(e) => e.into(),
-            e => crate::Error::error(e.to_string()),
-        }
-    }
-}
 impl From<ParseError> for BadSelector {
     fn from(e: ParseError) -> Self {
         BadSelector::Parse(e)
