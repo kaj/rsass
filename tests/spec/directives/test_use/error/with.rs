@@ -11,6 +11,17 @@ fn runner() -> crate::TestRunner {
         .mock_file("invalid_expression/module_loaded_later/_configured.scss", "$a: c !default;\n")
         .mock_file("invalid_expression/module_loaded_later/_other.scss", "$b: d;\n")
         .mock_file("invalid_expression/variable_defined_later/_other.scss", "$a: d !default;\n")
+        .mock_file("missing_distributed_vars/multi_use/module/_index.scss", "@forward './a/a1';\n@forward './a/a2';\n@forward './b/b';\n")
+        .mock_file("missing_distributed_vars/multi_use/module/a/_variables.scss", "$a: default !default;\n")
+        .mock_file("missing_distributed_vars/multi_use/module/a/a1.scss", "@forward './variables';\n@use './variables' as *;\n\n.a1 {\n  content: #{$a};\n}\n")
+        .mock_file("missing_distributed_vars/multi_use/module/a/a2.scss", "@forward './variables';\n@use './variables' as *;\n\n.a2 {\n  content: #{$a};\n}\n")
+        .mock_file("missing_distributed_vars/multi_use/module/b/_variables.scss", "$b: default !default;\n")
+        .mock_file("missing_distributed_vars/multi_use/module/b/b.scss", "@forward './variables';\n@use './variables' as *;\n\n.b {\n  content: #{$b};\n}\n")
+        .mock_file("missing_distributed_vars/single_use/module/_index.scss", "@forward './a/a';\n@forward './b/b';\n")
+        .mock_file("missing_distributed_vars/single_use/module/a/_variables.scss", "$a: default !default;\n")
+        .mock_file("missing_distributed_vars/single_use/module/a/a.scss", "@forward './variables';\n@use './variables' as *;\n\n.a {\n  content: #{$a};\n}\n")
+        .mock_file("missing_distributed_vars/single_use/module/b/_variables.scss", "$b: default !default;\n")
+        .mock_file("missing_distributed_vars/single_use/module/b/b.scss", "@forward './variables';\n@use './variables' as *;\n\n.b {\n  content: #{$b};\n}\n")
         .mock_file("multi_configuration/multi_file/_left.scss", "@use \"other\" with ($a: b);\n")
         .mock_file("multi_configuration/multi_file/_other.scss", "$a: c !default;\n")
         .mock_file("multi_configuration/multi_file/_right.scss", "@use \"other\" with ($a: b);\n")
@@ -30,6 +41,8 @@ fn runner() -> crate::TestRunner {
         .mock_file("through_forward/show/_used.scss", "@forward \"forwarded\" show $b;\n")
         .mock_file("through_forward/with/_forwarded.scss", "$a: d !default;\n")
         .mock_file("through_forward/with/_used.scss", "@forward \"forwarded\" with ($a: c);\n")
+        .mock_file("through_forward_twice/with/_forwarded.scss", "$a: forwarded a !default;\n$b: forwarded b !default;\n")
+        .mock_file("through_forward_twice/with/_used.scss", "@forward \"forwarded\" with ($a: used a 1 !default);\n@forward \"forwarded\" with ($a: used a 2 !default);\n")
         .mock_file("undefined/_other.scss", "// This file defines no variables.\n")
 }
 
@@ -117,6 +130,53 @@ mod invalid_expression {
          \n  \'\
          \n  input.scss 1:24  root stylesheet",
         );
+    }
+}
+mod missing_distributed_vars {
+    #[allow(unused)]
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("missing_distributed_vars")
+    }
+
+    #[test]
+    #[ignore] // missing error
+    fn multi_use() {
+        let runner = runner().with_cwd("multi_use");
+        assert_eq!(
+        runner.err(
+            "@use \'module\' with (\
+             \n  $a: \'a\',\
+             \n  $b: \'b\',\
+             \n  $missing: \'c\',\
+             \n);\n"
+        ),
+        "Error: This variable was not declared with !default in the @used module.\
+         \n  ,\
+         \n4 |   $missing: \'c\',\
+         \n  |   ^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:3  root stylesheet",
+    );
+    }
+    #[test]
+    #[ignore] // missing error
+    fn single_use() {
+        let runner = runner().with_cwd("single_use");
+        assert_eq!(
+        runner.err(
+            "@use \'module\' with (\
+             \n  $a: \'a\',\
+             \n  $b: \'b\',\
+             \n  $missing: \'c\',\
+             \n);\n"
+        ),
+        "Error: This variable was not declared with !default in the @used module.\
+         \n  ,\
+         \n4 |   $missing: \'c\',\
+         \n  |   ^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 4:3  root stylesheet",
+    );
     }
 }
 mod multi_configuration {
@@ -340,6 +400,32 @@ mod through_forward {
          \n  |                   ^^^^^\
          \n  \'\
          \n  input.scss 1:19  root stylesheet",
+    );
+    }
+}
+mod through_forward_twice {
+    #[allow(unused)]
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("through_forward_twice")
+    }
+
+    #[test]
+    #[ignore] // missing error
+    fn with() {
+        let runner = runner().with_cwd("with");
+        assert_eq!(
+        runner.err(
+            "@use \"used\" with ($a: input a);\n"
+        ),
+        "Error: This module was already loaded, so it can\'t be configured using \"with\".\
+         \n  ,\
+         \n1 | @forward \"forwarded\" with ($a: used a 1 !default);\
+         \n  | ================================================= original load\
+         \n2 | @forward \"forwarded\" with ($a: used a 2 !default);\
+         \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ new load\
+         \n  \'\
+         \n  _used.scss 2:1  @use\
+         \n  input.scss 1:1  root stylesheet",
     );
     }
 }

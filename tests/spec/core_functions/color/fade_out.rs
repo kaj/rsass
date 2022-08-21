@@ -37,6 +37,22 @@ mod error {
          \n  input.scss 1:7  root stylesheet",
             );
         }
+        #[test]
+        fn unit() {
+            assert_eq!(
+        runner().err(
+            "// This test covers sass/dart-sass#1745, but should be removed once units are\
+             \n// fully forbidden (sass/sass#3374).\
+             \na {b: fade-out(red, 50%)}\n"
+        ),
+        "Error: $amount: Expected 50% to be within 0 and 1.\
+         \n  ,\
+         \n3 | a {b: fade-out(red, 50%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+    );
+        }
     }
     #[test]
     fn too_few_args() {

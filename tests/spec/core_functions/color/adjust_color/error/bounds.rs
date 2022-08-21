@@ -33,6 +33,22 @@ mod alpha {
          \n  input.scss 1:7  root stylesheet",
         );
     }
+    #[test]
+    fn unit() {
+        assert_eq!(
+        runner().err(
+            "// This test covers sass/dart-sass#1745, but should be removed once units are\
+             \n// fully forbidden (sass/sass#3374).\
+             \na {b: adjust-color(red, $alpha: 50%)}\n"
+        ),
+        "Error: $alpha: Expected 50% to be within -1 and 1.\
+         \n  ,\
+         \n3 | a {b: adjust-color(red, $alpha: 50%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+    );
+    }
 }
 mod blackness {
     #[allow(unused)]
@@ -95,6 +111,22 @@ mod blue {
          \n  input.scss 1:7  root stylesheet",
         );
     }
+    #[test]
+    fn unit() {
+        assert_eq!(
+        runner().err(
+            "// This test covers sass/dart-sass#1745, but should be removed once units are\
+             \n// fully forbidden (sass/sass#3374).\
+             \na {b: adjust-color(blue, $blue: 300px)}\n"
+        ),
+        "Error: $blue: Expected 300px to be within -255 and 255.\
+         \n  ,\
+         \n3 | a {b: adjust-color(blue, $blue: 300px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+    );
+    }
 }
 mod green {
     #[allow(unused)]
@@ -123,6 +155,22 @@ mod green {
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
         );
+    }
+    #[test]
+    fn unit() {
+        assert_eq!(
+        runner().err(
+            "// This test covers sass/dart-sass#1745, but should be removed once units are\
+             \n// fully forbidden (sass/sass#3374).\
+             \na {b: adjust-color(green, $green: 300px)}\n"
+        ),
+        "Error: $green: Expected 300px to be within -255 and 255.\
+         \n  ,\
+         \n3 | a {b: adjust-color(green, $green: 300px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+    );
     }
 }
 mod lightness {
@@ -157,6 +205,30 @@ mod lightness {
          \n  input.scss 1:7  root stylesheet",
     );
     }
+    #[test]
+    #[ignore] // wrong error
+    fn unit() {
+        assert_eq!(
+        runner().err(
+            "// This test covers sass/dart-sass#1745, but should be removed once units are\
+             \n// fully forbidden (sass/sass#3374).\
+             \na {b: adjust-color(red, $lightness: 200px)}\n"
+        ),
+        "DEPRECATION WARNING: $lightness: Passing a number without unit % (200px) is deprecated.\n\
+         \nTo preserve current behavior: $lightness / 1px * 1%\n\
+         \n  ,\
+         \n3 | a {b: adjust-color(red, $lightness: 200px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 3:7  root stylesheet\n\
+         \nError: $lightness: Expected 200px to be within -100% and 100%.\
+         \n  ,\
+         \n3 | a {b: adjust-color(red, $lightness: 200px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+    );
+    }
 }
 mod red {
     #[allow(unused)]
@@ -185,6 +257,22 @@ mod red {
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
         );
+    }
+    #[test]
+    fn unit() {
+        assert_eq!(
+        runner().err(
+            "// This test covers sass/dart-sass#1745, but should be removed once units are\
+             \n// fully forbidden (sass/sass#3374).\
+             \na {b: adjust-color(red, $red: 300px)}\n"
+        ),
+        "Error: $red: Expected 300px to be within -255 and 255.\
+         \n  ,\
+         \n3 | a {b: adjust-color(red, $red: 300px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
+    );
     }
 }
 mod saturation {
@@ -217,6 +305,30 @@ mod saturation {
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
+    );
+    }
+    #[test]
+    #[ignore] // wrong error
+    fn unit() {
+        assert_eq!(
+        runner().err(
+            "// This test covers sass/dart-sass#1745, but should be removed once units are\
+             \n// fully forbidden (sass/sass#3374).\
+             \na {b: adjust-color(red, $saturation: 200px)}\n"
+        ),
+        "DEPRECATION WARNING: $saturation: Passing a number without unit % (200px) is deprecated.\n\
+         \nTo preserve current behavior: $saturation / 1px * 1%\n\
+         \n  ,\
+         \n3 | a {b: adjust-color(red, $saturation: 200px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 3:7  root stylesheet\n\
+         \nError: $saturation: Expected 200px to be within -100% and 100%.\
+         \n  ,\
+         \n3 | a {b: adjust-color(red, $saturation: 200px)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 3:7  root stylesheet",
     );
     }
 }

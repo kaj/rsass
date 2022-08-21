@@ -19,7 +19,7 @@ fn test() {
              \n  @extend .a;\
              \n  @extend .c;\
              \n}\n"),
-        ".a, .d > .e, .b .c, .b .d > .e {\
+        ".a, .d > .e, .b .c {\
          \n  top: 0;\
          \n}\n"
     );

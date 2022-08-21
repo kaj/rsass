@@ -7,6 +7,17 @@ fn runner() -> crate::TestRunner {
         .mock_file("core_module/indirect/forward/_other.scss", "@forward \"sass:color\";\n\n$c: d !default;\n")
         .mock_file("core_module/indirect/use/_other.scss", "@use \"sass:color\";\n\n$c: d !default;\n")
         .mock_file("dash_insensitive/_other.scss", "$a-b: original !default;\nb {c: $a-b}\n")
+        .mock_file("distributed_vars/repeated/module/_index.scss", "@forward './a/a1';\n@forward './a/a2';\n@forward './b/b';\n")
+        .mock_file("distributed_vars/repeated/module/a/_variables.scss", "$a: default !default;\n")
+        .mock_file("distributed_vars/repeated/module/a/a1.scss", "@forward './variables';\n@use './variables' as *;\n\n.a1 {\n  content: #{$a};\n}\n")
+        .mock_file("distributed_vars/repeated/module/a/a2.scss", "@forward './variables';\n@use './variables' as *;\n\n.a2 {\n  content: #{$a};\n}\n")
+        .mock_file("distributed_vars/repeated/module/b/_variables.scss", "$b: default !default;\n")
+        .mock_file("distributed_vars/repeated/module/b/b.scss", "@forward './variables';\n@use './variables' as *;\n\n.b {\n  content: #{$b};\n}\n")
+        .mock_file("distributed_vars/single_use/module/_index.scss", "@forward './a/a';\n@forward './b/b';\n")
+        .mock_file("distributed_vars/single_use/module/a/_variables.scss", "$a: default !default;\n")
+        .mock_file("distributed_vars/single_use/module/a/a.scss", "@forward './variables';\n@use './variables' as *;\n\n.a {\n  content: #{$a};\n}\n")
+        .mock_file("distributed_vars/single_use/module/b/_variables.scss", "$b: default !default;\n")
+        .mock_file("distributed_vars/single_use/module/b/b.scss", "@forward './variables';\n@use './variables' as *;\n\n.b {\n  content: #{$b};\n}\n")
         .mock_file("doesnt_run_default/_other.scss", "// This will throw an error if it's evaluated, but it shouldn't be because `$a`\n// already has a value.\n$a: 1px + 1em !default;\nb {c: $a}\n")
         .mock_file("from_variable/_other.scss", "$a: original a !default;\nb {c: $a}\n")
         .mock_file("multi_load/forward/_midstream.scss", "@forward \"upstream\";\n")
@@ -106,6 +117,50 @@ fn dash_insensitive() {
          \n  c: configured;\
          \n}\n"
     );
+}
+mod distributed_vars {
+    #[allow(unused)]
+    fn runner() -> crate::TestRunner {
+        super::runner().with_cwd("distributed_vars")
+    }
+
+    #[test]
+    #[ignore] // wrong result
+    fn repeated() {
+        let runner = runner().with_cwd("repeated");
+        assert_eq!(
+            runner.ok("@use \'module\' with (\
+             \n  $a: \'a\',\
+             \n  $b: \'b\',\
+             \n);\n"),
+            ".a1 {\
+         \n  content: a;\
+         \n}\
+         \n.a2 {\
+         \n  content: a;\
+         \n}\
+         \n.b {\
+         \n  content: b;\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
+    fn single_use() {
+        let runner = runner().with_cwd("single_use");
+        assert_eq!(
+            runner.ok("@use \'module\' with (\
+             \n  $a: \'a\',\
+             \n  $b: \'b\',\
+             \n);\n"),
+            ".a {\
+         \n  content: a;\
+         \n}\
+         \n.b {\
+         \n  content: b;\
+         \n}\n"
+        );
+    }
 }
 #[test]
 fn doesnt_run_default() {

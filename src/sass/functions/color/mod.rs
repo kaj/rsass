@@ -82,23 +82,21 @@ fn check_alpha(v: Value) -> Result<Rational, String> {
 }
 /// Get a rational number in the 0..1 range.
 fn check_alpha_range(v: Value) -> Result<Rational, String> {
-    let val = check::numeric(v)?;
-    let a = val
-        .as_unit_def(Unit::None)
-        .ok_or_else(|| expected_to(&val, "have no units or \"%\""))?
-        .as_ratio()?;
-    if a < zero() || a > one() {
-        Err(expected_to(&val, "be within 0 and 1"))
+    let v = check::numeric(v)?;
+    let r = v.as_ratio()?;
+    if r < zero() || r > one() {
+        Err(expected_to(&v, "be within 0 and 1"))
     } else {
-        Ok(a)
+        Ok(r)
     }
 }
 fn check_alpha_pm(v: Value) -> Result<Rational, String> {
-    let v = check_rational(v)?;
-    if v.abs() > one() {
-        Err(expected_to(&Number::from(v), "be within -1 and 1"))
+    let v = check::numeric(v)?;
+    let r = v.as_ratio()?;
+    if r.abs() > one() {
+        Err(expected_to(&v, "be within -1 and 1"))
     } else {
-        Ok(v)
+        Ok(r)
     }
 }
 
