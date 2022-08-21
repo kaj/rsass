@@ -137,11 +137,20 @@ impl Function {
     /// Call the function from a given scope and with a given set of
     /// arguments.
     pub fn call(&self, call: Call) -> Result<Value, CallError> {
-        match self.body {
+        let result = match self.body {
             FuncImpl::Builtin(ref builtin) => builtin.eval_value(call),
             FuncImpl::UserDefined(ref closure) => closure.eval_value(call),
+        };
+        // The result of a calc function is either a calc function call or an
+        // "atomic" number, i.e. one that is _not_ marked as "calculated".
+        if Some(self) == FUNCTIONS.get(&name!(calc)) {
+            match result {
+                Ok(Value::Numeric(v, _)) => Ok(Value::Numeric(v, false)),
+                result => result,
+            }
+        } else {
+            result.map(Value::into_calculated)
         }
-        .map(Value::into_calculated)
     }
 }
 

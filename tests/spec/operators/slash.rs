@@ -74,7 +74,6 @@ mod separator {
             }
 
             #[test]
-            #[ignore] // wrong result
             fn both() {
                 let runner = runner().with_cwd("both");
                 assert_eq!(
@@ -85,7 +84,6 @@ mod separator {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn left() {
                 let runner = runner().with_cwd("left");
                 assert_eq!(
@@ -96,7 +94,6 @@ mod separator {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn right() {
                 let runner = runner().with_cwd("right");
                 assert_eq!(
