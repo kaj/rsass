@@ -1,8 +1,7 @@
-use super::{get_checked, is_not, CallError, CheckedArg, FunctionMap, Name};
+use super::{is_not, CallError, CheckedArg, FunctionMap, ResolvedArgs};
 use crate::css::{Value, ValueMap};
 use crate::value::ListSeparator;
-use crate::{Scope, ScopeRef};
-use std::convert::TryInto;
+use crate::Scope;
 
 /// Create the `sass:map` standard module.
 ///
@@ -13,16 +12,16 @@ pub fn create_module() -> Scope {
     let mut g = Scope::new_global(Default::default()); // anonymous
 
     def!(f, deep_merge(map1, map2), |s| {
-        let mut map1 = get_map(s, name!(map1))?;
-        let map2 = get_va_map(s, name!(map2))?;
+        let mut map1 = s.get(name!(map1))?;
+        let map2 = s.get_map(name!(map2), as_va_map)?;
         do_deep_merge(&mut map1, map2);
         Ok(Value::Map(map1))
     });
 
     def_va!(f, deep_remove(map, key, keys), |s| {
-        let mut map = get_map(s, name!(map))?;
-        let key = s.get(&name!(key))?;
-        let keychain = match s.get(&name!(keys))? {
+        let mut map = s.get(name!(map))?;
+        let key = s.get(name!(key))?;
+        let keychain = match s.get(name!(keys))? {
             Value::ArgList(mut args) => {
                 args.positional.insert(0, key);
                 args.positional
@@ -78,23 +77,19 @@ pub fn create_module() -> Scope {
         Ok(val)
     }
     def_va!(f, get(map, key, keys), |s| {
-        let map = get_map(s, name!(map))?;
-        Ok(
-            find_value(&map, &s.get(&name!(key))?, &s.get(&name!(keys))?)?
-                .cloned()
-                .unwrap_or(Value::Null),
-        )
+        let map = s.get(name!(map))?;
+        Ok(find_value(&map, &s.get(name!(key))?, &s.get(name!(keys))?)?
+            .cloned()
+            .unwrap_or(Value::Null))
     });
     def_va!(f, has_key(map, key, keys), |s| {
-        let map = get_map(s, name!(map))?;
-        Ok(
-            find_value(&map, &s.get(&name!(key))?, &s.get(&name!(keys))?)?
-                .is_some()
-                .into(),
-        )
+        let map = s.get(name!(map))?;
+        Ok(find_value(&map, &s.get(name!(key))?, &s.get(name!(keys))?)?
+            .is_some()
+            .into())
     });
     def!(f, keys(map), |s| {
-        let map = get_map(s, name!(map))?;
+        let map: ValueMap = s.get(name!(map))?;
         Ok(Value::List(
             map.keys().cloned().collect(),
             Some(ListSeparator::Comma),
@@ -102,8 +97,8 @@ pub fn create_module() -> Scope {
         ))
     });
     def_va!(g, merge(map1, args), |s| {
-        let mut map1 = get_map(s, name!(map1))?;
-        let (keys, map2) = match s.get(&name!(args))? {
+        let mut map1 = s.get(name!(map1))?;
+        let (keys, map2) = match s.get(name!(args))? {
             Value::ArgList(mut args) => {
                 if let Some(map2) = args.only_named(&name!(map2)) {
                     (vec![], as_va_map(map2).named(name!(map2))?)
@@ -144,8 +139,8 @@ pub fn create_module() -> Scope {
         Ok(Value::Map(map1))
     });
     def_va!(g, remove(map, keys), |s| {
-        let mut map = get_map(s, name!(map))?;
-        match s.get(&name!(keys))? {
+        let mut map: ValueMap = s.get(name!(map))?;
+        match s.get(name!(keys))? {
             Value::ArgList(mut args) => {
                 if let Some(key) = args.named.remove(&name!(key)) {
                     if args.positional.is_empty() {
@@ -174,7 +169,7 @@ pub fn create_module() -> Scope {
     });
     def_va!(g, set(map, args), set);
     def!(f, values(map), |s| {
-        let map = get_map(s, name!(map))?;
+        let map: ValueMap = s.get(name!(map))?;
         Ok(Value::List(
             map.values().cloned().collect(),
             Some(ListSeparator::Comma),
@@ -199,24 +194,16 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn get_map(s: &Scope, name: Name) -> Result<ValueMap, CallError> {
-    get_checked(s, name, TryInto::try_into)
-}
-
-impl TryInto<ValueMap> for Value {
+impl TryFrom<Value> for ValueMap {
     type Error = String;
-    fn try_into(self) -> Result<ValueMap, String> {
-        match self {
+    fn try_from(v: Value) -> Result<Self, String> {
+        match v {
             Value::Map(m) => Ok(m),
             // An empty map and an empty list looks the same
             Value::List(ref l, ..) if l.is_empty() => Ok(ValueMap::new()),
             v => Err(is_not(&v, "a map")),
         }
     }
-}
-
-fn get_va_map(s: &Scope, name: Name) -> Result<ValueMap, CallError> {
-    get_checked(s, name, as_va_map)
 }
 
 fn as_va_map(v: Value) -> Result<ValueMap, String> {
@@ -279,9 +266,9 @@ fn do_deep_remove(map: &mut ValueMap, keys: &[Value]) {
     }
 }
 
-fn set(s: &ScopeRef) -> Result<Value, CallError> {
-    let map = get_map(s, name!(map))?;
-    match s.get(&name!(args))? {
+fn set(s: &ResolvedArgs) -> Result<Value, CallError> {
+    let map = s.get(name!(map))?;
+    match s.get(name!(args))? {
         Value::ArgList(mut args) => {
             let keys = match args.named.remove(&"keys".into()) {
                 Some(Value::List(v, ..)) => Some(v),

@@ -1,6 +1,9 @@
-use super::{Call, CallError, Name, Value};
-use crate::{css, Error, ScopeError, ScopeRef, SourcePos};
+use super::{functions::ResolvedArgs, Call, CallError, Name, Value};
+use crate::css::CallArgs;
+use crate::{Error, ScopeError, ScopeRef, SourcePos};
 use std::fmt;
+
+type Result<T> = std::result::Result<T, ArgsError>;
 
 /// The declared arguments of a mixin or function declaration.
 ///
@@ -35,24 +38,18 @@ impl FormalArgs {
     /// Evaluate a set of call arguments for a given call.
     ///
     /// Returns a Scope that is a sub-scope to the given `scope`.
-    pub(crate) fn evalcall(
+    pub fn eval_call(
         &self,
         decl: ScopeRef,
         call: Call,
-    ) -> Result<ScopeRef, ArgsError> {
-        let s = self.eval(decl, call.args)?;
-        s.define_module("%%CALLING_SCOPE%%".into(), call.scope);
-        Ok(s)
+    ) -> Result<ResolvedArgs> {
+        Ok(ResolvedArgs::new(self.eval(decl, call.args)?, call.scope))
     }
 
     /// Evaluate a set of call arguments for these formal arguments.
     ///
     /// Returns a Scope that is a sub-scope to the given `scope`.
-    pub fn eval(
-        &self,
-        scope: ScopeRef,
-        args: css::CallArgs,
-    ) -> Result<ScopeRef, ArgsError> {
+    pub fn eval(&self, scope: ScopeRef, args: CallArgs) -> Result<ScopeRef> {
         let mut args = args;
         let argscope = ScopeRef::sub(scope);
         if !self.is_varargs() {

@@ -276,6 +276,25 @@ impl From<String> for Value {
         CssString::from(s).into()
     }
 }
+impl TryFrom<Value> for CssString {
+    type Error = String;
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::Literal(s) => Ok(s),
+            Value::Call(name, args) => {
+                Ok(format!("{}({})", name, args).into())
+            }
+            v => Err(is_not(&v, "a string")),
+        }
+    }
+}
+impl TryFrom<Value> for String {
+    type Error = String;
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        CssString::try_from(value).map(|s| s.take_value())
+    }
+}
+
 impl From<Numeric> for Value {
     fn from(v: Numeric) -> Value {
         Value::Numeric(v, true)
@@ -285,6 +304,27 @@ impl From<Numeric> for Value {
 impl<C: Into<Color>> From<C> for Value {
     fn from(c: C) -> Value {
         Value::Color(c.into(), None)
+    }
+}
+impl TryFrom<Value> for Color {
+    type Error = String;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::Color(col, _) => Ok(col),
+            v => Err(is_not(&v, "a color")),
+        }
+    }
+}
+
+impl TryFrom<Value> for Numeric {
+    type Error = String;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::Numeric(num, ..) => Ok(num),
+            v => Err(is_not(&v, "a number")),
+        }
     }
 }
 

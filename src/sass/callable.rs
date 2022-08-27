@@ -40,15 +40,23 @@ pub struct Closure {
 }
 
 impl Closure {
+    pub(crate) fn eval_args(
+        &self,
+        scope: ScopeRef,
+        args: CallArgs,
+    ) -> Result<ScopeRef, CallError> {
+        self.body
+            .args
+            .eval(scope, args)
+            .map_err(|e| e.declared_at(&self.body.decl))
+    }
+
     /// Evaluate this callable as a value.
     ///
     /// This is used when the callable is a scss function.
     pub fn eval_value(&self, call: Call) -> Result<Value, CallError> {
         Ok(self
-            .body
-            .args
-            .evalcall(self.scope.clone(), call)
-            .map_err(|e| e.declared_at(&self.body.decl))?
+            .eval_args(self.scope.clone(), call.args)?
             .eval_body(&self.body.body)
             .map_err(|e| match e {
                 Error::Invalid(err, _pos) => CallError::Invalid(err),

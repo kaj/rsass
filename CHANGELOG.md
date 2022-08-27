@@ -13,6 +13,8 @@ project adheres to
 
 * Changes in `Error` representation.  Many errors are now constructed like
   `Invalid::SomeVariant.at(pos)` (PR #145).
+* A `BuiltinFn` now takes a `&ResolvedArgs` rather than a `&ScopeRef` as
+  argument (PR #157).
 * `@extend` is still unsupported, but now some uses of it (e.g. in control
   structures) will result in an error instead of wrong output.
 * Some `sass::Item` alternatives now contain a `Callable`, combining
@@ -49,6 +51,11 @@ project adheres to
   calling `Context::transform` with an input file (PR #151, PR #152).
 * Also provide `CargoContext` / `CargoLoader` for convenient use in
   build scripts (PR #154).
+* The way to get argument values from the implementation of a builtin
+  function is refactored to handle both any type that implements
+  `TryFrom<Value>` and explicit validation/conversion methods nicer, and is
+  now availiable for implementing builtin functions (extensions) outside of
+  rsass itself (PR #157).
 * The `@content` can have arguments when declaring and calling a mixin
   (PR #146).
 * Variable declartions can be scoped (like `module.$var = value`).  Some

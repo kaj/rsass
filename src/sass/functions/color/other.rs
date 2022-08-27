@@ -1,11 +1,10 @@
 use super::{
-    check, check_alpha_pm, check_alpha_range, check_channel_pm,
-    check_channel_range, check_color, check_expl_pct, check_rational,
-    expected_to, get_checked, get_color, make_call, CallError, CheckedArg,
-    FunctionMap, Name,
+    check_alpha_pm, check_alpha_range, check_channel_pm, check_channel_range,
+    check_expl_pct, check_rational, expected_to, make_call, CallError,
+    CheckedArg, FunctionMap, Name,
 };
 use crate::css::{CallArgs, Value};
-use crate::value::{Hsla, Hwba, Rational, RgbFormat, Rgba};
+use crate::value::{Color, Hsla, Hwba, Numeric, Rational, RgbFormat, Rgba};
 use crate::Scope;
 use num_traits::{one, zero, Signed};
 
@@ -18,8 +17,8 @@ pub fn register(f: &mut Scope) {
                 a
             }
         }
-        let rgba = get_color(s, "color")?;
-        let mut args = get_checked(s, name!(kwargs), CallArgs::from_value)?;
+        let rgba: Color = s.get(name!(color))?;
+        let mut args = s.get_map(name!(kwargs), CallArgs::from_value)?;
         if !args.positional.is_empty() {
             return Err(CallError::msg("Only one positional argument is allowed. \
                                        All other arguments must be passed by name."));
@@ -84,8 +83,8 @@ pub fn register(f: &mut Scope) {
         let one: Rational = one();
         let ff = Rational::from_integer(255);
 
-        let rgba = get_color(s, "color")?;
-        let mut args = get_checked(s, name!(kwargs), CallArgs::from_value)?;
+        let rgba: Color = s.get(name!(color))?;
+        let mut args = s.get_map(name!(kwargs), CallArgs::from_value)?;
         if !args.positional.is_empty() {
             return Err(CallError::msg("Only one positional argument is allowed. \
                                        All other arguments must be passed by name."));
@@ -135,23 +134,23 @@ pub fn register(f: &mut Scope) {
         }
     });
 
-    def!(f, opacity(color), |s| match s.get(&name!(color))? {
+    def!(f, opacity(color), |s| match s.get(name!(color))? {
         Value::Color(ref col, _) => Ok(Value::scalar(col.get_alpha())),
         v => Ok(make_call("opacity", vec![v])),
     });
     def!(f, alpha(color), |s| {
-        let v = s.get(&name!(color))?;
+        let v = s.get(name!(color))?;
         if ok_as_filterarg(&v) {
             Ok(make_call("alpha", vec![v]))
         } else {
-            let color = check_color(v).named(name!(color))?;
+            let color = Color::try_from(v).named(name!(color))?;
             Ok(Value::scalar(color.get_alpha()))
         }
     });
 
     def_va!(f, change(color, kwargs), |s| {
-        let rgba = get_color(s, "color")?;
-        let mut args = get_checked(s, name!(kwargs), CallArgs::from_value)?;
+        let rgba: Color = s.get(name!(color))?;
+        let mut args = s.get_map(name!(kwargs), CallArgs::from_value)?;
         if !args.positional.is_empty() {
             return Err(CallError::msg("Only one positional argument is allowed. \
                                        All other arguments must be passed by name."));
@@ -203,7 +202,8 @@ pub fn register(f: &mut Scope) {
         }
     });
     def!(f, ie_hex_str(color), |s| {
-        let (r, g, b, alpha) = get_color(s, "color")?.to_rgba().to_bytes();
+        let (r, g, b, alpha) =
+            Color::to_rgba(&s.get(name!(color))?).to_bytes();
         Ok(format!("#{:02X}{:02X}{:02X}{:02X}", alpha, r, g, b).into())
     });
 }
@@ -221,14 +221,14 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
     let mut f = Scope::builtin_module("sass:color");
     def!(f, fade_in(color, amount), |s| {
-        let mut col = get_color(s, "color")?;
-        let amount = get_checked(s, name!(amount), check_alpha_range)?;
+        let mut col: Color = s.get(name!(color))?;
+        let amount = s.get_map(name!(amount), check_alpha_range)?;
         col.set_alpha(col.get_alpha() + amount);
         Ok(col.into())
     });
     def!(f, fade_out(color, amount), |s| {
-        let mut col = get_color(s, "color")?;
-        let amount = get_checked(s, name!(amount), check_alpha_range)?;
+        let mut col: Color = s.get(name!(color))?;
+        let amount = s.get_map(name!(amount), check_alpha_range)?;
         col.set_alpha(col.get_alpha() - amount);
         Ok(col.into())
     });
@@ -265,14 +265,11 @@ fn take_opt<T, F>(
 where
     F: Fn(Value) -> Result<T, String>,
 {
-    args.named
-        .remove(&name)
-        .map(|v| check(v).named(name))
-        .transpose()
+    args.named.remove(&name).map(check).transpose().named(name)
 }
 
 fn check_pct_pm(v: Value) -> Result<Rational, String> {
-    let val = check::numeric(v)?;
+    let val = Numeric::try_from(v)?;
     if val.value.clone().abs() > 100.into() {
         Err(expected_to(&val, "be within -100% and 100%"))
     } else {
@@ -280,7 +277,7 @@ fn check_pct_pm(v: Value) -> Result<Rational, String> {
     }
 }
 fn check_pct_expl_pm(v: Value) -> Result<Rational, String> {
-    let val = check::numeric(v)?;
+    let val = Numeric::try_from(v)?;
     if !val.unit.is_percent() {
         return Err(expected_to(&val, "have unit \"%\""));
     }
@@ -292,7 +289,7 @@ fn check_pct_expl_pm(v: Value) -> Result<Rational, String> {
 }
 
 fn check_pct_opt_range(v: Value) -> Result<Rational, String> {
-    let val = check::numeric(v)?;
+    let val = Numeric::try_from(v)?;
     if val.value < zero() || val.value > 100.into() {
         Err(expected_to(&val, "be within 0% and 100%"))
     } else {

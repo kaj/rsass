@@ -1,7 +1,6 @@
 use super::{is_special, CallError};
 use crate::css::Value;
 use crate::value::ListSeparator;
-use std::convert::TryFrom;
 
 /// Channels data is either four values of parsable data, or one value
 /// of "special" data, that is probably a sass list.

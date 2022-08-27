@@ -1,7 +1,6 @@
 use super::{LoadError, SourceName};
 use crate::parser::{css, sassfile, Span};
 use crate::{Error, ParseError};
-use std::convert::TryFrom;
 use std::io::Read;
 
 /// The full data of a source file.

@@ -11,7 +11,6 @@ use crate::parser::css::{selector, selector_part, selectors};
 use crate::parser::input_span;
 use crate::parser::{ParseError, SourcePos};
 use crate::value::ListSeparator;
-use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::io::Write;
 

@@ -24,7 +24,9 @@ mod value;
 pub use self::call_args::CallArgs;
 pub use self::callable::{Call, Callable, Closure};
 pub use self::formal_args::{ArgsError, FormalArgs};
-pub use self::functions::{get_global_module, CallError, Function};
+pub use self::functions::{
+    get_global_module, CallError, Function, ResolvedArgs,
+};
 pub use self::item::{Expose, Item, UseAs};
 pub use self::mixin::{Mixin, MixinDecl};
 pub use self::name::Name;

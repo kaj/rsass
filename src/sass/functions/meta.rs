@@ -1,9 +1,6 @@
-use super::{
-    check, get_checked, get_opt_check, get_string, is_not, looks_like_call,
-    CallError, CheckedArg, FunctionMap,
-};
+use super::{is_not, looks_like_call, CallError, FunctionMap, ResolvedArgs};
 use crate::css::{is_calc_name, CallArgs, CssString, Value};
-use crate::sass::{Call, Function, MixinDecl};
+use crate::sass::{Call, Function, MixinDecl, Name};
 use crate::value::Quotes;
 use crate::{Format, Scope, ScopeRef};
 
@@ -14,7 +11,7 @@ pub fn create_module() -> Scope {
 
     // - - - Functions - - -
     def!(f, calc_args(calc), |s| {
-        get_checked(s, name!(calc), |v| match v {
+        s.get_map(name!(calc), |v| match v {
             Value::Call(name, args) if name == "calc" => {
                 // TODO: Maybe allow a single numeric argument to be itself?
                 Ok(args.to_string().into())
@@ -35,7 +32,7 @@ pub fn create_module() -> Scope {
         })
     });
     def!(f, calc_name(calc), |s| {
-        let name = get_checked(s, name!(calc), |v| match v {
+        let name = s.get_map(name!(calc), |v| match v {
             Value::Call(name, _) => Ok(name),
             Value::Literal(s) if looks_like_call(&s) => {
                 let s = s.value();
@@ -47,35 +44,34 @@ pub fn create_module() -> Scope {
         Ok(CssString::new(name, Quotes::Double).into())
     });
     def_va!(f, call(function, args), |s| {
-        let (function, name) = match s.get(&name!(function))? {
+        let (function, name) = s.get_map(name!(function), |v| match v {
             Value::Function(ref name, ref func) => {
-                (func.clone(), name.clone())
+                Ok((Some(func.clone()), name.clone()))
             }
             Value::Literal(name) => {
                 dep_warn!(
                     "Passing a string to call() is deprecated and \
                      will be illegal"
                 );
-                let name = name.value();
-                (get_function(s, None, name)?, name.into())
+                Ok((None, name.value().into()))
             }
-            ref v => {
-                return Err(is_not(v, "a function reference"))
-                    .named(name!(function));
-            }
-        };
-        let args = get_checked(s, name!(args), CallArgs::from_value)?;
+            ref v => Err(is_not(v, "a function reference")),
+        })?;
+        let function = function
+            .ok_or(())
+            .or_else(|_| get_function(s, None, &name))?;
+        let args = s.get_map(name!(args), CallArgs::from_value)?;
         if let Some(function) = function {
             function.call(Call {
                 args,
-                scope: call_scope(s),
+                scope: s.call_scope(),
             })
         } else {
             Ok(Value::Call(name, args))
         }
     });
     def!(f, content_exists(), |s| {
-        if let Some(content) = call_scope(s).get_content() {
+        if let Some(content) = s.call_scope().get_content() {
             Ok((!content.is_no_body()).into())
         } else {
             Err(CallError::msg(
@@ -84,50 +80,47 @@ pub fn create_module() -> Scope {
         }
     });
     def!(f, feature_exists(feature), |s| {
-        let feature = get_string(s, name!(feature))?;
-        Ok(IMPLEMENTED_FEATURES
-            .iter()
-            .any(|s| *s == feature.value())
-            .into())
+        let feature: String = s.get(name!(feature))?;
+        Ok(IMPLEMENTED_FEATURES.iter().any(|s| s == &feature).into())
     });
     def!(f, function_exists(name, module = b"null"), |s| {
-        let name = get_string(s, name!(name))?;
-        let module = get_opt_check(s, name!(module), check::string)?;
-        Ok(get_function(s, module, name.value())?.is_some().into())
+        let name: String = s.get(name!(name))?;
+        let module = s.get_opt(name!(module))?;
+        Ok(get_function(s, module, &name)?.is_some().into())
     });
     def!(
         f,
         get_function(name, css = b"false", module = b"null"),
         |s| {
-            let name = get_string(s, name!(name))?;
-            let module = get_opt_check(s, name!(module), check::string)?;
-            if s.get(&name!(css))?.is_true() {
+            let name: CssString = s.get(name!(name))?;
+            let module = s.get_opt(name!(module))?;
+            if Value::is_true(&s.get(name!(css))?) {
                 if module.is_some() {
                     return Err(CallError::msg(
                         "$css and $module may not both be passed at once.",
                     ));
                 }
-                Ok(Value::Function(name.value().into(), None))
+                Ok(Value::Function(name.take_value(), None))
             } else if let Some(f) = get_function(s, module, name.value())? {
-                Ok(Value::Function(name.value().into(), Some(f)))
+                Ok(Value::Function(name.take_value(), Some(f)))
             } else {
                 Err(CallError::msg(format!("Function not found: {}", name)))
             }
         }
     );
     def!(f, global_variable_exists(name, module = b"null"), |s| {
-        let name = get_string(s, name!(name))?;
+        let name: String = s.get(name!(name))?;
         let module = get_module_arg(s, true)?;
         Ok(module.get_global_or_none(&name.into()).is_some().into())
     });
     def!(f, inspect(value), |s| {
-        Ok(s.get(&name!(value))?
+        Ok(s.get::<Value>(name!(value))?
             .format(Format::introspect())
             .to_string()
             .into())
     });
     def!(f, keywords(args), |s| {
-        let args = get_checked(s, name!(args), |v| match v {
+        let args = s.get_map(name!(args), |v| match v {
             Value::ArgList(args) => Ok(args.named),
             v => Err(is_not(&v, "an argument list")),
         })?;
@@ -138,9 +131,9 @@ pub fn create_module() -> Scope {
         ))
     });
     def!(f, mixin_exists(name, module = b"null"), |s| {
-        let name = get_string(s, name!(name))?.into();
+        let name: String = s.get(name!(name))?;
         let module = get_module_arg(s, true)?;
-        Ok(module.get_mixin(&name).is_some().into())
+        Ok(module.get_mixin(&name.into()).is_some().into())
     });
     def!(f, module_functions(module), |s| {
         let module = get_module_arg(s, false)?;
@@ -151,11 +144,11 @@ pub fn create_module() -> Scope {
         Ok(module.variables_map())
     });
     def!(f, type_of(value), |s| {
-        Ok(s.get(&name!(value))?.type_name().into())
+        Ok(s.get::<Value>(name!(value))?.type_name().into())
     });
     def!(f, variable_exists(name), |s| {
-        let name = get_string(s, name!(name))?.into();
-        Ok(call_scope(s).get_or_none(&name).is_some().into())
+        let name: String = s.get(name!(name))?;
+        Ok(s.call_scope().get_or_none(&name.into()).is_some().into())
     });
     f
 }
@@ -194,23 +187,21 @@ static IMPLEMENTED_FEATURES: &[&str] = &[
     "custom-property",
 ];
 
-fn get_module_arg(s: &Scope, use_the: bool) -> Result<ScopeRef, CallError> {
-    let module = get_opt_check(s, name!(module), check::string)?;
-    get_scope(s, module, use_the)
-}
-
-fn call_scope(s: &Scope) -> ScopeRef {
-    s.get_module("%%CALLING_SCOPE%%").unwrap()
+fn get_module_arg(
+    s: &ResolvedArgs,
+    use_the: bool,
+) -> Result<ScopeRef, CallError> {
+    get_scope(s, s.get_opt(name!(module))?, use_the)
 }
 
 // Note: `the` is compensating for an inconsistensy in sass-spec
 fn get_scope(
-    s: &Scope,
+    s: &ResolvedArgs,
     module: Option<CssString>,
     the: bool,
 ) -> Result<ScopeRef, CallError> {
     if let Some(module) = module {
-        call_scope(s).get_module(module.value()).ok_or_else(|| {
+        s.call_scope().get_module(module.value()).ok_or_else(|| {
             CallError::msg(format!(
                 "There is no module with {}namespace {}.",
                 if the { "the " } else { "" },
@@ -218,22 +209,22 @@ fn get_scope(
             ))
         })
     } else {
-        Ok(call_scope(s))
+        Ok(s.call_scope())
     }
 }
 
 fn get_function(
-    s: &Scope,
+    s: &ResolvedArgs,
     module: Option<CssString>,
     name: &str,
 ) -> Result<Option<Function>, CallError> {
+    let name = Name::from(name);
     if let Some(module) = module {
         get_scope(s, Some(module), true)?
-            .get_function(&name.into())
+            .get_function(&name)
             .map_err(CallError::msg)
     } else {
-        let name = name.into();
-        Ok(call_scope(s)
+        Ok(s.call_scope()
             .get_function(&name)?
             .or_else(|| Function::get_builtin(&name).cloned()))
     }

@@ -1,37 +1,36 @@
 use super::hsl::percentage;
 use super::{
-    bad_arg, check, check_alpha, check_expl_pct, get_checked, get_color,
-    is_not, CallError, CheckedArg,
+    check_alpha, check_expl_pct, eval_inner, is_not, CallError, CheckedArg,
+    ResolvedArgs,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
 use crate::sass::FormalArgs;
-use crate::value::{Hwba, ListSeparator, Rational, Unit};
-use crate::{Scope, ScopeRef};
+use crate::value::{Color, Hwba, ListSeparator, Numeric, Rational, Unit};
+use crate::Scope;
 
 pub fn register(f: &mut Scope) {
     def_va!(f, hwb(kwargs), hwb);
     def!(f, blackness(color), |s| {
         // Blackness of the rgb approximation that can be represented in css.
-        let (r, g, b, _a) = get_color(s, "color")?.to_rgba().to_bytes();
+        let (r, g, b, _a) = Color::to_rgba(&s.get(name!(color))?).to_bytes();
         let max_c = *[r, g, b].iter().max().unwrap();
         Ok(percentage(Rational::new((255 - max_c).into(), 255)))
     });
     def!(f, whiteness(color), |s| {
         // Whiteness of the rgb approximation that can be represented in css.
-        let (r, g, b, _a) = get_color(s, "color")?.to_rgba().to_bytes();
+        let (r, g, b, _a) = Color::to_rgba(&s.get(name!(color))?).to_bytes();
         let min_c = *[r, g, b].iter().min().unwrap();
         Ok(percentage(Rational::new(min_c.into(), 255)))
     });
 }
 
-fn hwb(s: &ScopeRef) -> Result<Value, CallError> {
-    let args = get_checked(s, name!(kwargs), CallArgs::from_value)?;
+fn hwb(s: &ResolvedArgs) -> Result<Value, CallError> {
+    let args = s.get_map(name!(kwargs), CallArgs::from_value)?;
     let (hue, w, b, a) = if args.len() < 3 {
         let a1 = FormalArgs::new(vec![one_arg!(channels)]);
-        a1.eval(s.clone(), args)
-            .map_err(|e| bad_arg(e, &name!(hwb), &a1))
-            .and_then(|s| hwb_from_channels(s.get(&name!(channels))?))?
+        eval_inner(&name!(hwb), &a1, s, args)
+            .and_then(|s| hwb_from_channels(s.get(name!(channels))?))?
     } else {
         let a2 = FormalArgs::new(vec![
             one_arg!(hue),
@@ -39,16 +38,14 @@ fn hwb(s: &ScopeRef) -> Result<Value, CallError> {
             one_arg!(blackness),
             one_arg!(alpha = b"1"),
         ]);
-        a2.eval(s.clone(), args)
-            .map_err(|e| bad_arg(e, &name!(hwb), &a2))
-            .and_then(|s| {
-                Ok((
-                    s.get(&name!(hue))?,
-                    s.get(&name!(whiteness))?,
-                    s.get(&name!(blackness))?,
-                    s.get(&name!(alpha))?,
-                ))
-            })?
+        eval_inner(&name!(hwb), &a2, s, args).and_then(|s| {
+            Ok((
+                s.get(name!(hue))?,
+                s.get(name!(whiteness))?,
+                s.get(name!(blackness))?,
+                s.get(name!(alpha))?,
+            ))
+        })?
     };
     let hue = check_hue(hue).named(name!(hue))?;
     let w = check_expl_pct(w).named(name!(whiteness))?;
@@ -114,7 +111,7 @@ fn badchannels(v: &Value) -> CallError {
 }
 
 fn check_hue(v: Value) -> Result<Rational, String> {
-    let vv = check::numeric(v)?;
+    let vv = Numeric::try_from(v)?;
     if let Some(scaled) = vv.as_unit_def(Unit::Deg) {
         Ok(scaled.as_ratio()?)
     } else {

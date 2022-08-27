@@ -1,5 +1,4 @@
 use crate::value::Quotes;
-use std::convert::TryFrom;
 use std::fmt::{self, Write};
 
 /// A string in css.  May be quoted.
