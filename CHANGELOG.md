@@ -69,7 +69,7 @@ project adheres to
 * In error message, don't show ellipses for consecutive lines (PR #147).
 * Somtimes a trailing comma in argument lists is preserved (PR #147).
 * Simplified `main` of the command-line by returning a `Result` (PR #151).
-* Update sass-spec test suite to 2022-08-18.
+* Update sass-spec test suite to 2022-08-29.
 * Handle tests referencing `input.scss` in spectest (include it among the
   mock files, if mentioned in itself or any existing mock file) (PR #150).
 * Use `lazy-regex` in spectest (PR #150).

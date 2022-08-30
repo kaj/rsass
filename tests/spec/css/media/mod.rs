@@ -5,6 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("media")
 }
 
+mod bubbling;
+
 mod logic;
 
 mod range;
