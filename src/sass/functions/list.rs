@@ -1,4 +1,4 @@
-use super::{check, get_checked, get_va_list, CallError, FunctionMap, Name};
+use super::{check, CallError, FunctionMap};
 use crate::css::Value;
 use crate::value::ListSeparator;
 use crate::Scope;
@@ -6,16 +6,17 @@ use crate::Scope;
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:list");
     def!(f, append(list, val, separator = b"auto"), |s| {
-        let (mut list, sep, bra) = get_list(s.get(&name!(list))?);
-        let sep = get_checked(s, name!(separator), check_separator)?
+        let (mut list, sep, bra) = get_list(s.get(name!(list))?);
+        let sep = s
+            .get_map(name!(separator), check_separator)?
             .or(sep)
             .unwrap_or(ListSeparator::Space);
-        list.push(s.get(&name!(val))?);
+        list.push(s.get(name!(val))?);
         Ok(Value::List(list, Some(sep), bra))
     });
-    def!(f, index(list, value), |s| match s.get(&name!(list))? {
+    def!(f, index(list, value), |s| match s.get(name!(list))? {
         Value::List(v, _, _) => {
-            let value = s.get(&name!(value))?;
+            let value = s.get(name!(value))?;
             for (i, v) in v.iter().enumerate() {
                 if v == &value {
                     return Ok(Value::scalar(i + 1));
@@ -23,7 +24,7 @@ pub fn create_module() -> Scope {
             }
             Ok(Value::Null)
         }
-        Value::Map(map) => match s.get(&name!(value))? {
+        Value::Map(map) => match s.get(name!(value))? {
             Value::List(ref l, Some(ListSeparator::Space), _)
                 if l.len() == 2 =>
             {
@@ -37,38 +38,37 @@ pub fn create_module() -> Scope {
             _ => Ok(Value::Null),
         },
         v => {
-            if v == s.get(&name!(value))? {
+            if v == s.get(name!(value))? {
                 Ok(Value::scalar(1))
             } else {
                 Ok(Value::Null)
             }
         }
     });
-    def!(f, is_bracketed(list), |s| Ok(
-        match s.get(&name!(list))? {
-            Value::List(_, _, true) => Value::True,
-            _ => Value::False,
-        }
-    ));
+    def!(f, is_bracketed(list), |s| Ok(match s.get(name!(list))? {
+        Value::List(_, _, true) => Value::True,
+        _ => Value::False,
+    }));
     def!(
         f,
         join(list1, list2, separator = b"auto", bracketed = b"auto"),
         |s| {
-            let (mut list1, sep1, bra1) = get_list(s.get(&name!(list1))?);
-            let (mut list2, sep2, _bra2) = get_list(s.get(&name!(list2))?);
-            let sep = get_checked(s, name!(separator), check_separator)?
+            let (mut list1, sep1, bra1) = get_list(s.get(name!(list1))?);
+            let (mut list2, sep2, _bra2) = get_list(s.get(name!(list2))?);
+            let sep = s
+                .get_map(name!(separator), check_separator)?
                 .or(sep1)
                 .or(sep2)
                 .unwrap_or(ListSeparator::Space);
             list1.append(&mut list2);
-            let bra = match s.get(&name!(bracketed))? {
+            let bra = match s.get(name!(bracketed))? {
                 Value::Literal(ref s) if s.value() == "auto" => bra1,
                 b => b.is_true(),
             };
             Ok(Value::List(list1, Some(sep), bra))
         }
     );
-    def!(f, length(list), |s| match s.get(&name!(list))? {
+    def!(f, length(list), |s| match s.get(name!(list))? {
         Value::ArgList(args) => Ok(Value::scalar(args.len() as i64)),
         Value::List(v, _, _) => Ok(Value::scalar(v.len() as i64)),
         Value::Map(m) => Ok(Value::scalar(m.len() as i64)),
@@ -78,7 +78,7 @@ pub fn create_module() -> Scope {
         _ => Ok(Value::scalar(1)),
     });
     def!(f, separator(list), |s| {
-        let sep = match s.get(&name!(list))? {
+        let sep = match s.get(name!(list))? {
             Value::ArgList(..) => "comma",
             Value::List(_, Some(ListSeparator::Comma), _) => "comma",
             Value::List(_, Some(ListSeparator::Slash), _) => "slash",
@@ -88,7 +88,7 @@ pub fn create_module() -> Scope {
         Ok(sep.into())
     });
     def_va!(f, slash(elements), |s| {
-        let list = get_va_list(s, name!(elements))?;
+        let list = s.get_map(name!(elements), check::va_list)?;
         if list.len() < 2 {
             return Err(CallError::msg(
                 "At least two elements are required.",
@@ -97,9 +97,9 @@ pub fn create_module() -> Scope {
         Ok(Value::List(list, Some(ListSeparator::Slash), false))
     });
     def!(f, nth(list, n), |s| {
-        match s.get(&name!(list))? {
+        match s.get(name!(list))? {
             Value::ArgList(arg) => {
-                let n = get_index(s, name!(n), arg.len())?;
+                let n = s.get_map(name!(n), |v| index_of(v, arg.len()))?;
                 Ok(arg.positional.get(n).cloned().unwrap_or_else(|| {
                     arg.named
                         .get_item(n - arg.positional.len())
@@ -114,10 +114,11 @@ pub fn create_module() -> Scope {
                 }))
             }
             Value::List(list, _, _) => {
-                Ok(list[get_index(s, name!(n), list.len())?].clone())
+                let n = s.get_map(name!(n), |v| index_of(v, list.len()))?;
+                Ok(list[n].clone())
             }
             Value::Map(map) => {
-                let n = get_index(s, name!(n), map.len())?;
+                let n = s.get_map(name!(n), |v| index_of(v, map.len()))?;
                 if let Some(&(ref k, ref v)) = map.get_item(n) {
                     Ok(Value::List(
                         vec![k.clone(), v.clone()],
@@ -128,17 +129,18 @@ pub fn create_module() -> Scope {
                     Ok(Value::Null)
                 }
             }
-            v => get_index(s, name!(n), 1).map(|_| v),
+            v => s.get_map(name!(n), |v| index_of(v, 1)).map(|_| v),
         }
     });
     def!(f, set_nth(list, n, value), |s| {
-        let (mut list, sep, bra) = get_list(s.get(&name!(list))?);
-        let i = get_index(s, name!(n), list.len())?;
-        list[i] = s.get(&name!(value))?;
+        let (mut list, sep, bra) = get_list(s.get(name!(list))?);
+        let i = s.get_map(name!(n), |v| index_of(v, list.len()))?;
+        list[i] = s.get(name!(value))?;
         Ok(Value::List(list, sep, bra))
     });
     def_va!(f, zip(lists), |s| {
-        let lists = get_va_list(s, name!(lists))?
+        let lists = s
+            .get_map(name!(lists), check::va_list)?
             .into_iter()
             .map(|v| v.iter_items())
             .collect::<Vec<_>>();
@@ -171,7 +173,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
 }
 
 fn check_separator(v: Value) -> Result<Option<ListSeparator>, String> {
-    match check::string(v)?.value() {
+    match String::try_from(v)?.as_ref() {
         "comma" => Ok(Some(ListSeparator::Comma)),
         "slash" => Ok(Some(ListSeparator::Slash)),
         "space" => Ok(Some(ListSeparator::Space)),
@@ -223,22 +225,20 @@ fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
     }
 }
 
-fn get_index(s: &Scope, name: Name, len: usize) -> Result<usize, CallError> {
-    get_checked(s, name, |v| {
-        let n = check::unitless_int(v)?;
-        if n.is_positive() && n as usize <= len {
-            Ok((n - 1) as usize)
-        } else if n.is_negative() && n >= -(len as i64) {
-            Ok((len as i64 + n) as usize)
-        } else if n == 0 {
-            Err("List index may not be 0.".into())
-        } else {
-            Err(format!(
-                "Invalid index {} for a list with {} elements.",
-                n, len
-            ))
-        }
-    })
+fn index_of(v: Value, len: usize) -> Result<usize, String> {
+    let n = check::unitless_int(v)?;
+    if n.is_positive() && n as usize <= len {
+        Ok((n - 1) as usize)
+    } else if n.is_negative() && n >= -(len as i64) {
+        Ok((len as i64 + n) as usize)
+    } else if n == 0 {
+        Err("List index may not be 0.".into())
+    } else {
+        Err(format!(
+            "Invalid index {} for a list with {} elements.",
+            n, len
+        ))
+    }
 }
 
 #[cfg(test)]

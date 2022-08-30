@@ -1,12 +1,12 @@
-use super::functions::get_string;
 use super::{
-    CallArgs, CallError, Callable, Closure, FormalArgs, Name, Value,
+    CallArgs, CallError, Callable, Closure, FormalArgs, Name, ResolvedArgs,
+    Value,
 };
 use crate::css::{self, CssString, ValueToMapError};
 use crate::input::{Context, Loader, Parsed, SourceKind};
 use crate::ordermap::OrderMap;
 use crate::parser::SourcePos;
-use crate::{Scope, ScopeRef};
+use crate::ScopeRef;
 use std::convert::TryInto;
 
 /// A declared mixin
@@ -38,14 +38,10 @@ impl MixinDecl {
             MixinDecl::Sass(decl) => {
                 let sel = scope.get_selectors().clone();
                 Ok(Mixin {
-                    scope: decl
-                        .body
-                        .args
-                        .evalcall(
-                            ScopeRef::sub_selectors(decl.scope.clone(), sel),
-                            call_args.evaluate(scope)?,
-                        )
-                        .map_err(|e| e.declared_at(&decl.body.decl))?,
+                    scope: decl.eval_args(
+                        ScopeRef::sub_selectors(decl.scope.clone(), sel),
+                        call_args.evaluate(scope)?.args,
+                    )?,
                     body: Parsed::Scss(decl.body.body),
                 })
             }
@@ -61,12 +57,12 @@ impl MixinDecl {
                     "sass:meta",
                 );
                 let argscope = fargs
-                    .evalcall(
+                    .eval_call(
                         scope.clone(),
                         call_args.evaluate(scope.clone())?,
                     )
                     .map_err(|e| e.declared_at(&pos))?;
-                let url = get_string(&argscope, name!(url))?;
+                let url: CssString = argscope.get(name!(url))?;
                 let with = get_opt_map(&argscope, name!(with))?;
 
                 if url.value().starts_with("sass:") {
@@ -132,11 +128,11 @@ impl Mixin {
     }
 }
 
-pub(crate) fn get_opt_map(
-    s: &Scope,
+fn get_opt_map(
+    s: &ResolvedArgs,
     name: Name,
-) -> Result<Option<OrderMap<CssString, crate::css::Value>>, CallError> {
-    match s.get(&name)? {
+) -> Result<Option<OrderMap<CssString, css::Value>>, CallError> {
+    match s.get(name.clone())? {
         css::Value::Null => Ok(None),
         v => v.try_into().map(Some).map_err(|e| match e {
             ValueToMapError::Root(err) => CallError::BadArgument(name, err),

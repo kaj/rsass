@@ -1,8 +1,8 @@
-use super::{ArgsError, Call, Closure, FormalArgs, Name};
+use super::{Call, Closure, FormalArgs, Name};
 use crate::css::{self, is_not, CallArgs, CssString, Value};
 use crate::output::{Format, Formatted};
 use crate::parser::SourcePos;
-use crate::value::{CssDimension, Numeric, Operator, Quotes};
+use crate::value::{CssDimension, Operator, Quotes};
 use crate::{Scope, ScopeRef};
 use lazy_static::lazy_static;
 use std::collections::BTreeMap;
@@ -18,12 +18,15 @@ mod list;
 mod map;
 mod math;
 mod meta;
+mod resolvedargs;
 mod selector;
 mod string;
 
 pub use call_error::CallError;
+pub use resolvedargs::ResolvedArgs;
 
-type BuiltinFn = dyn Fn(&ScopeRef) -> Result<Value, CallError> + Send + Sync;
+type BuiltinFn =
+    dyn Fn(&ResolvedArgs) -> Result<Value, CallError> + Send + Sync;
 
 /// A function that can be called from a sass value.
 ///
@@ -53,7 +56,7 @@ impl Builtin {
     fn eval_value(&self, call: Call) -> Result<Value, CallError> {
         let s = self
             .args
-            .evalcall(ScopeRef::new_global(call.scope.get_format()), call)
+            .eval_call(ScopeRef::new_global(call.scope.get_format()), call)
             .map_err(|e| e.declared_at(&self.pos))?;
         (self.body)(&s)
     }
@@ -198,10 +201,10 @@ lazy_static! {
     static ref FUNCTIONS: FunctionMap = {
         let mut f = BTreeMap::new();
         def!(f, if(condition, if_true, if_false), |s| {
-            if s.get(&name!(condition))?.is_true() {
-                Ok(s.get(&name!(if_true))?)
+            if Value::is_true(&s.get(name!(condition))?) {
+                Ok(s.get(name!(if_true))?)
             } else {
-                Ok(s.get(&name!(if_false))?)
+                Ok(s.get(name!(if_false))?)
             }
         });
         def!(f, calc(expr), |s| {
@@ -290,7 +293,7 @@ lazy_static! {
                     ))),
                 }
             }
-            let v = s.get(&name!(expr))?;
+            let v = s.get(name!(expr))?;
             if pre_calc(&v) {
                 Ok(v)
             } else {
@@ -302,13 +305,11 @@ lazy_static! {
         });
         def!(f, clamp(min, number = b"null", max = b"null"), |s| {
             self::math::clamp_fn(s).or_else(|_| {
-                let mut args = vec![s.get(&name!(min))?];
-                let b = s.get(&name!(number))?;
-                if !b.is_null() {
+                let mut args = vec![s.get(name!(min))?];
+                if let Some(b) = s.get_opt(name!(number))? {
                     args.push(b);
                 }
-                let c = s.get(&name!(max))?;
-                if !c.is_null() {
+                if let Some(c) = s.get_opt(name!(max))? {
                     args.push(c);
                 }
                 Ok(css::Value::Call(
@@ -333,47 +334,10 @@ lazy_static! {
 trait CheckedArg<T> {
     fn named(self, name: Name) -> Result<T, CallError>;
 }
-impl<T> CheckedArg<T> for Result<T, String> {
+impl<T, E: ToString> CheckedArg<T> for Result<T, E> {
     fn named(self, name: Name) -> Result<T, CallError> {
-        self.map_err(|e| CallError::BadArgument(name, e))
+        self.map_err(|e| CallError::BadArgument(name, e.to_string()))
     }
-}
-
-fn get_checked<T, F>(s: &Scope, name: Name, check: F) -> Result<T, CallError>
-where
-    F: Fn(Value) -> Result<T, String>,
-{
-    check(s.get(&name)?).named(name)
-}
-
-fn get_opt_check<T, F>(
-    s: &Scope,
-    name: Name,
-    check: F,
-) -> Result<Option<T>, CallError>
-where
-    F: Fn(Value) -> Result<T, String>,
-{
-    match s.get(&name)? {
-        Value::Null => Ok(None),
-        v => check(v).named(name).map(Some),
-    }
-}
-
-fn get_numeric(s: &Scope, name: &str) -> Result<Numeric, CallError> {
-    get_checked(s, name.into(), check::numeric)
-}
-
-fn get_integer(s: &Scope, name: Name) -> Result<i64, CallError> {
-    get_checked(s, name, check::unitless_int)
-}
-
-pub fn get_string(s: &Scope, name: Name) -> Result<CssString, CallError> {
-    get_checked(s, name, check::string)
-}
-
-fn get_va_list(s: &Scope, name: Name) -> Result<Vec<Value>, CallError> {
-    get_checked(s, name, check::va_list)
 }
 
 fn expected_to<'a, T>(value: &'a T, cond: &str) -> String
@@ -407,21 +371,18 @@ fn looks_like_call(s: &CssString) -> bool {
 
 mod check {
     use super::{expected_to, is_not};
-    use crate::css::{CssString, Value};
+    use crate::css::Value;
     use crate::value::{ListSeparator, Number, Numeric};
 
-    pub fn numeric(v: Value) -> Result<Numeric, String> {
-        v.numeric_value().map_err(|v| is_not(&v, "a number"))
-    }
     pub fn int(v: Value) -> Result<i64, String> {
-        numeric(v)?
+        Numeric::try_from(v)?
             .value
             .into_integer()
             .map_err(|v| is_not(&v, "an int"))
     }
 
     pub fn unitless(v: Value) -> Result<Number, String> {
-        let val = numeric(v)?;
+        let val = Numeric::try_from(v)?;
         if val.is_no_unit() {
             Ok(val.value)
         } else {
@@ -432,16 +393,6 @@ mod check {
         unitless(v)?
             .into_integer()
             .map_err(|v| is_not(&v, "an int"))
-    }
-
-    pub fn string(v: Value) -> Result<CssString, String> {
-        match v {
-            Value::Literal(s) => Ok(s),
-            Value::Call(name, args) => {
-                Ok(format!("{}({})", name, args).into())
-            }
-            v => Err(is_not(&v, "a string")),
-        }
     }
 
     pub fn va_list(v: Value) -> Result<Vec<Value>, String> {

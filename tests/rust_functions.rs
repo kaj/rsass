@@ -1,7 +1,7 @@
 use rsass::input::{FsContext, SourceFile, SourceName};
 use rsass::output::{Format, Style};
 use rsass::sass::{CallError, FormalArgs, Function, Name};
-use rsass::value::{Number, Numeric, Rgba};
+use rsass::value::{Numeric, Rgba};
 use rsass::*;
 use std::sync::Arc;
 
@@ -39,11 +39,6 @@ fn simple_function() -> Result<(), Error> {
     Ok(())
 }
 
-#[cfg(test)]
-fn avg(a: Number, b: Number) -> Number {
-    (a + b) / 2
-}
-
 #[test]
 fn function_with_args() -> Result<(), Error> {
     let mut context = FsContext::for_cwd().with_format(Format {
@@ -60,31 +55,16 @@ fn function_with_args() -> Result<(), Error> {
                 ("b".into(), Some(sass::Value::scalar(0))),
             ]),
             Arc::new(|s| {
-                let a = s.get(&"a".into())?.numeric_value().map_err(|v| {
-                    CallError::BadArgument(
-                        "a".into(),
-                        format!(
-                            "{} is not a number",
-                            v.format(Format::introspect())
-                        ),
-                    )
-                })?;
-                let b = s.get(&"b".into())?.numeric_value().map_err(|v| {
-                    CallError::BadArgument(
-                        "b".into(),
-                        format!(
-                            "{} is not a number",
-                            v.format(Format::introspect())
-                        ),
-                    )
-                })?;
-                if a.unit == b.unit || b.unit.is_none() {
-                    Ok(Numeric::new(avg(a.value, b.value), a.unit).into())
+                let a: Numeric = s.get("a".into())?;
+                let b: Numeric = s.get("b".into())?;
+                let unit = if a.unit == b.unit || b.unit.is_none() {
+                    a.unit
                 } else if a.unit.is_none() {
-                    Ok(Numeric::new(avg(a.value, b.value), b.unit).into())
+                    b.unit
                 } else {
-                    Err(CallError::msg("Incopatible args."))
-                }
+                    return Err(CallError::msg("Incopatible args."));
+                };
+                Ok(Numeric::new((a.value + b.value) / 2, unit).into())
             }),
         ),
     );

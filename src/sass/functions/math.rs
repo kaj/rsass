@@ -1,13 +1,12 @@
 use super::{
-    check, expected_to, get_checked, get_numeric, get_opt_check, get_va_list,
-    is_not, is_special, CallError, CheckedArg, FunctionMap, Scope,
+    check, expected_to, is_not, is_special, CallError, CheckedArg,
+    FunctionMap, ResolvedArgs, Scope,
 };
 use crate::css::{CallArgs, CssString, Value};
 use crate::output::Format;
 use crate::parser::input_span;
 use crate::sass::Name;
 use crate::value::{Number, Numeric, Quotes, Rational, Unit, UnitSet};
-use crate::ScopeRef;
 use std::cmp::Ordering;
 use std::f64::consts::{E, PI};
 
@@ -19,8 +18,8 @@ pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:math");
 
     def!(f, div(number1, number2), |s| {
-        let a = s.get(&name!(number1))?;
-        let b = s.get(&name!(number2))?;
+        let a = s.get(name!(number1))?;
+        let b = s.get(name!(number2))?;
         use crate::value::Operator;
         match (a, b) {
             (Value::Color(a, _), Value::Numeric(b, _)) if b.is_no_unit() => {
@@ -47,31 +46,34 @@ pub fn create_module() -> Scope {
     });
     // - - - Boundig Functions - - -
     def!(f, ceil(number), |s| {
-        let val = get_numeric(s, "number")?;
+        let val: Numeric = s.get(name!(number))?;
         Ok(number(val.value.ceil(), val.unit))
     });
     def!(f, clamp(min, number, max), clamp_fn);
     def!(f, floor(number), |s| {
-        let val = get_numeric(s, "number")?;
+        let val: Numeric = s.get(name!(number))?;
         Ok(number(val.value.floor(), val.unit))
     });
     def_va!(f, max(numbers), |s| {
-        find_extreme(&get_va_list(s, name!(numbers))?, Ordering::Greater)
+        let numbers = s.get_map(name!(numbers), check::va_list)?;
+        find_extreme(&numbers, Ordering::Greater)
     });
     def_va!(f, min(numbers), |s| {
-        find_extreme(&get_va_list(s, name!(numbers))?, Ordering::Less)
+        let numbers = s.get_map(name!(numbers), check::va_list)?;
+        find_extreme(&numbers, Ordering::Less)
     });
     def!(f, round(number), |s| {
-        let val = get_numeric(s, "number")?;
+        let val: Numeric = s.get(name!(number))?;
         Ok(number(val.value.round(), val.unit))
     });
 
     // - - - Distance Functions - - -
     def!(f, abs(number), |s| {
-        let v = get_numeric(s, "number")?;
+        let v: Numeric = s.get(name!(number))?;
         Ok(number(v.value.abs(), v.unit))
     });
-    def_va!(f, hypot(number), |s| match get_va_list(s, name!(number))?
+    def_va!(f, hypot(number), |s| match s
+        .get_map(name!(number), check::va_list)?
         .as_slice()
     {
         [Value::Numeric(v, _)] =>
@@ -102,7 +104,8 @@ pub fn create_module() -> Scope {
     // - - - Exponential Functions - - -
     def!(f, log(number, base = b"null"), |s| {
         let num = get_unitless(s, "number")?;
-        let base = get_opt_check(s, name!(base), check::unitless)?
+        let base = s
+            .get_opt_map(name!(base), check::unitless)?
             .map(Into::into)
             .unwrap_or(E);
         Ok(Value::scalar(num.log(base)))
@@ -124,13 +127,13 @@ pub fn create_module() -> Scope {
 
     // - - - Trigonometric Functions - - -
     def!(f, cos(number), |s| {
-        Ok(Value::scalar(get_radians(s, "number")?.cos()))
+        Ok(Value::scalar(s.get_map(name!(number), radians)?.cos()))
     });
     def!(f, sin(number), |s| {
-        Ok(Value::scalar(get_radians(s, "number")?.sin()))
+        Ok(Value::scalar(s.get_map(name!(number), radians)?.sin()))
     });
     def!(f, tan(number), |s| {
-        let ans = get_radians(s, "number")?.tan();
+        let ans = s.get_map(name!(number), radians)?.tan();
         let ans = if ans.abs() > 1e15 {
             ans.signum() * f64::INFINITY
         } else {
@@ -149,9 +152,9 @@ pub fn create_module() -> Scope {
         Ok(deg_value(get_unitless(s, "number")?.atan()))
     });
     def!(f, atan2(y, x), |s| {
-        let y = get_numeric(s, "y")?;
-        let x = get_checked(s, name!(x), |v| {
-            let v = check::numeric(v)?;
+        let y: Numeric = s.get(name!(y))?;
+        let x = s.get_map(name!(x), |v| {
+            let v = Numeric::try_from(v)?;
             v.as_unitset(&y.unit)
                 .ok_or_else(|| diff_units_msg(&v, &y, name!(y)))
         })?;
@@ -160,26 +163,26 @@ pub fn create_module() -> Scope {
 
     // - - - Unit Functions - - -
     def!(f, compatible(number1, number2), |s| {
-        let u1 = get_numeric(s, "number1")?.unit;
-        let u2 = get_numeric(s, "number2")?.unit;
+        let u1 = s.get::<Numeric>(name!(number1))?.unit;
+        let u2 = s.get::<Numeric>(name!(number2))?.unit;
         Ok(u1.is_compatible(&u2).into())
     });
     def!(f, is_unitless(number), |s| {
-        Ok((get_numeric(s, "number")?.is_no_unit()).into())
+        Ok((s.get::<Numeric>(name!(number))?.is_no_unit()).into())
     });
     def!(f, unit(number), |s| {
-        let mut unit = get_numeric(s, "number")?.unit;
+        let mut unit = s.get::<Numeric>(name!(number))?.unit;
         unit.simplify();
         Ok(CssString::new(unit.to_string(), Quotes::Double).into())
     });
 
     // - - - Other Functions - - -
     def!(f, percentage(number), |s| {
-        let val = get_checked(s, name!(number), check::unitless)?;
+        let val = s.get_map(name!(number), check::unitless)?;
         Ok(Numeric::new(val * 100, Unit::Percent).into())
     });
     def!(f, random(limit = b"null"), |s| {
-        match get_opt_check(s, name!(limit), |v| {
+        match s.get_opt_map(name!(limit), |v| {
             let v = check::int(v)?;
             if v > 0 {
                 Ok(v)
@@ -224,22 +227,20 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     }
 }
 
-fn get_radians(s: &Scope, name: &str) -> Result<f64, CallError> {
-    get_checked(s, name.into(), |v| {
-        let v = check::numeric(v)?;
-        v.as_unit_def(Unit::Rad).map(Into::into).ok_or_else(|| {
-            expected_to(&v, "have an angle unit (deg, grad, rad, turn)")
-        })
+fn radians(v: Value) -> Result<f64, String> {
+    let v = Numeric::try_from(v)?;
+    v.as_unit_def(Unit::Rad).map(Into::into).ok_or_else(|| {
+        expected_to(&v, "have an angle unit (deg, grad, rad, turn)")
     })
 }
 
-fn get_unitless(s: &Scope, name: &str) -> Result<f64, CallError> {
-    get_checked(s, name.into(), |v| Ok(check::unitless(v)?.into()))
+fn get_unitless(s: &ResolvedArgs, name: &str) -> Result<f64, CallError> {
+    s.get_map(name.into(), check::unitless).map(Into::into)
 }
 
 // Only used by hypot function, which treats arguments as unnamed.
 fn as_numeric(v: &Value) -> Result<Numeric, CallError> {
-    check::numeric(v.clone()).map_err(CallError::msg)
+    Numeric::try_from(v.clone()).map_err(CallError::msg)
 }
 
 fn number(v: impl Into<Number>, unit: impl Into<UnitSet>) -> Value {
@@ -311,7 +312,7 @@ fn find_extreme_inner(
     pref: Ordering,
 ) -> Result<Option<Numeric>, ExtremeError> {
     if let Some((first, rest)) = v.split_first() {
-        let va = check::numeric(first.clone())
+        let va = Numeric::try_from(first.clone())
             .map_err(|_| ExtremeError::NonNumeric(first.clone()))?;
         if let Some(vb) = find_extreme_inner(rest, pref)? {
             if let Some(o) = va.partial_cmp(&vb) {
@@ -362,10 +363,10 @@ fn diff_units_msg(
     )
 }
 
-pub(crate) fn clamp_fn(s: &ScopeRef) -> Result<Value, CallError> {
-    let min_v = get_numeric(s, "min")?;
+pub(crate) fn clamp_fn(s: &ResolvedArgs) -> Result<Value, CallError> {
+    let min_v = s.get::<Numeric>(name!(min))?;
     let check_numeric_compat_unit = |v: Value| -> Result<Numeric, String> {
-        let v = check::numeric(v)?;
+        let v = Numeric::try_from(v)?;
         if (v.is_no_unit() != min_v.is_no_unit())
             || !v.unit.is_compatible(&min_v.unit)
         {
@@ -373,8 +374,8 @@ pub(crate) fn clamp_fn(s: &ScopeRef) -> Result<Value, CallError> {
         }
         Ok(v)
     };
-    let mut num = get_checked(s, name!(number), check_numeric_compat_unit)?;
-    let max_v = get_checked(s, name!(max), check_numeric_compat_unit)?;
+    let mut num = s.get_map(name!(number), check_numeric_compat_unit)?;
+    let max_v = s.get_map(name!(max), check_numeric_compat_unit)?;
 
     if num >= max_v {
         num = max_v;

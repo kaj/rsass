@@ -1,11 +1,11 @@
 use super::{
-    check, expected_to, get_checked, get_opt_check, is_not, is_special,
-    CallError, CheckedArg, FunctionMap,
+    expected_to, is_not, is_special, CallError, CheckedArg, FunctionMap,
+    ResolvedArgs,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
-use crate::sass::{ArgsError, FormalArgs, Name};
-use crate::value::{Color, Number, Numeric, Rational, Unit};
+use crate::sass::{FormalArgs, Name};
+use crate::value::{Number, Numeric, Rational, Unit};
 use crate::{Scope, SourcePos};
 use num_traits::{one, zero, Signed};
 mod channels;
@@ -17,15 +17,15 @@ mod rgb;
 macro_rules! def_adj {
     ($f:expr, $name:ident($arg1:ident, $arg2:ident), $toarg:ident) => {{
         def!($f, $name($arg1, $arg2), |s| {
-            let col = s.get(&name!($arg1))?;
-            let arg = s.get(&name!($arg2))?;
+            let col = s.get(name!($arg1))?;
+            let arg = s.get(name!($arg2))?;
             Err(not_in_module(&name!($name), &col, &name!($toarg), &arg))
         });
     }};
     ($f:expr, $name:ident($arg1:ident, $arg2:ident), - $toarg:ident) => {{
         def!($f, $name($arg1, $arg2), |s| {
-            let col = s.get(&name!($arg1))?;
-            let arg = s.get(&name!($arg2))?;
+            let col = s.get(name!($arg1))?;
+            let arg = s.get(name!($arg2))?;
             let arg =
                 Value::UnaryOp(crate::value::Operator::Minus, Box::new(arg));
             Err(not_in_module(&name!($name), &col, &name!($toarg), &arg))
@@ -57,23 +57,13 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     other::expose(m, global);
 }
 
-fn get_color(s: &Scope, name: &'static str) -> Result<Color, CallError> {
-    get_checked(s, Name::from_static(name), check_color)
-}
-fn check_color(v: Value) -> Result<Color, String> {
-    match v {
-        Value::Color(col, _) => Ok(col),
-        v => Err(is_not(&v, "a color")),
-    }
-}
-
 /// For the alpha parameter of rgba, hsla, hwba functions
 /// Special perk: Defaults to 1.0 if the value is null.
 fn check_alpha(v: Value) -> Result<Rational, String> {
     Ok(match v {
         Value::Null => one(),
         v => {
-            let num = check::numeric(v)?;
+            let num = Numeric::try_from(v)?;
             num.as_unit(Unit::None)
                 .ok_or_else(|| expected_to(&num, "have no units or \"%\""))?
                 .as_ratio()?
@@ -82,7 +72,7 @@ fn check_alpha(v: Value) -> Result<Rational, String> {
 }
 /// Get a rational number in the 0..1 range.
 fn check_alpha_range(v: Value) -> Result<Rational, String> {
-    let v = check::numeric(v)?;
+    let v = Numeric::try_from(v)?;
     let r = v.as_ratio()?;
     if r < zero() || r > one() {
         Err(expected_to(&v, "be within 0 and 1"))
@@ -91,7 +81,7 @@ fn check_alpha_range(v: Value) -> Result<Rational, String> {
     }
 }
 fn check_alpha_pm(v: Value) -> Result<Rational, String> {
-    let v = check::numeric(v)?;
+    let v = Numeric::try_from(v)?;
     let r = v.as_ratio()?;
     if r.abs() > one() {
         Err(expected_to(&v, "be within -1 and 1"))
@@ -101,13 +91,13 @@ fn check_alpha_pm(v: Value) -> Result<Rational, String> {
 }
 
 fn check_pct(v: Value) -> Result<Number, String> {
-    let val = check::numeric(v)?;
+    let val = Numeric::try_from(v)?;
     val.as_unit_def(Unit::Percent)
         .ok_or_else(|| expected_to(&val, "have unit \"%\""))
 }
 
 fn check_expl_pct(v: Value) -> Result<Rational, String> {
-    let val = check::numeric(v)?;
+    let val = Numeric::try_from(v)?;
     if !val.unit.is_percent() {
         return Err(expected_to(&val, "have unit \"%\""));
     }
@@ -127,14 +117,14 @@ fn check_pct_range(v: Value) -> Result<Rational, String> {
     }
 }
 fn check_rational(v: Value) -> Result<Rational, String> {
-    Ok(check::numeric(v)?.as_ratio()?)
+    Ok(Numeric::try_from(v)?.as_ratio()?)
 }
 
 fn check_channel(v: Value) -> Result<Rational, String> {
-    num2chan(&check::numeric(v)?)
+    num2chan(&Numeric::try_from(v)?)
 }
 fn check_channel_range(v: Value) -> Result<Rational, String> {
-    let v = check::numeric(v)?;
+    let v = Numeric::try_from(v)?;
     let r = num2chan(&v)?;
     if r > Rational::from_integer(255) || r < zero() {
         Err(expected_to(&v, "be within 0 and 255"))
@@ -143,7 +133,7 @@ fn check_channel_range(v: Value) -> Result<Rational, String> {
     }
 }
 fn check_channel_pm(v: Value) -> Result<Rational, String> {
-    let v = check::numeric(v)?;
+    let v = Numeric::try_from(v)?;
     let r = num2chan(&v)?;
     if r.abs() > Rational::from_integer(255) {
         Err(expected_to(&v, "be within -255 and 255"))
@@ -169,8 +159,18 @@ fn make_call(name: &str, args: Vec<Value>) -> Value {
     )
 }
 
-fn bad_arg(err: ArgsError, name: &Name, args: &FormalArgs) -> CallError {
-    err.declared_at(&SourcePos::mock_function(name, args, ""))
+pub(crate) fn eval_inner(
+    name: &Name,
+    decl: &FormalArgs,
+    outer: &ResolvedArgs,
+    args: CallArgs,
+) -> Result<ResolvedArgs, CallError> {
+    Ok(ResolvedArgs::new(
+        decl.eval(outer.raw(), args).map_err(|e| {
+            e.declared_at(&SourcePos::mock_function(name, decl, ""))
+        })?,
+        outer.call_scope(),
+    ))
 }
 
 fn not_in_module(nm: &Name, col: &Value, an: &Name, av: &Value) -> CallError {

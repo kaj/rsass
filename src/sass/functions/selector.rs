@@ -1,8 +1,7 @@
-use super::{check, get_checked, CallError, FunctionMap};
+use super::{check, CallError, FunctionMap, ResolvedArgs};
 use crate::css::{BadSelector, Selectors, Value};
 use crate::sass::Name;
 use crate::Scope;
-use std::convert::{TryFrom, TryInto};
 
 pub fn create_module() -> Scope {
     let mut f = Scope::builtin_module("sass:selector");
@@ -23,14 +22,17 @@ pub fn create_module() -> Scope {
         Ok(v.fold(first, |b, e| e.inside(&b)).into())
     });
     def!(f, parse(selector), |s| {
-        Ok(get_checked(s, name!(selector), parse_selectors_x)?.into())
+        Ok(s.get_map(name!(selector), parse_selectors_x)?.into())
     });
     // TODO: replace, unify, simple_selectors
     f
 }
 
-fn get_selectors(s: &Scope, name: Name) -> Result<Vec<Selectors>, CallError> {
-    Ok(get_checked(s, name, check::va_list_nonempty)?
+fn get_selectors(
+    s: &ResolvedArgs,
+    name: Name,
+) -> Result<Vec<Selectors>, CallError> {
+    Ok(s.get_map(name, check::va_list_nonempty)?
         .into_iter()
         .map(|v| v.try_into())
         .collect::<Result<_, BadSelector>>()?)
