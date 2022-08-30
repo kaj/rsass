@@ -51,7 +51,7 @@ project adheres to
   build scripts (PR #154).
 * The `@content` can have arguments when declaring and calling a mixin
   (PR #146).
-* Variable declartions can be scoped (like `module.$var = value`).  Some
+* Variable declartions can be scoped (like `module.$var: value`).  Some
   error reporting improvements (PR #148).
 * Allow interpolation in css min and max function arguments.
 * The url for `@use` and `@forward` must be quoted.
