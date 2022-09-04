@@ -31,18 +31,15 @@ impl SourcePos {
         let mut result = SourcePosImpl::from(start);
         result.length =
             std::cmp::max(1, end.location_offset() - start.location_offset());
-        SourcePos {
-            p: Arc::new(result),
-        }
+        result.into()
     }
 
     pub(crate) fn in_call(&self, name: &str) -> Self {
-        SourcePos {
-            p: Arc::new(SourcePosImpl {
-                file: SourceName::called(name, self.clone()),
-                ..(*self.p).clone()
-            }),
+        SourcePosImpl {
+            file: SourceName::called(name, self.clone()),
+            ..(*self.p).clone()
         }
+        .into()
     }
 
     pub(crate) fn mock_function(
@@ -68,15 +65,14 @@ impl SourcePos {
         let line = format!("{} {}{} {{", kind, name, args);
         let line_pos = kind.chars().count() + 2;
         let length = line.chars().count() - 1 - line_pos;
-        SourcePos {
-            p: Arc::new(SourcePosImpl {
-                line,
-                line_no: 1,
-                line_pos,
-                length,
-                file: SourceName::root(module),
-            }),
+        SourcePosImpl {
+            line,
+            line_no: 1,
+            line_pos,
+            length,
+            file: SourceName::root(module),
         }
+        .into()
     }
 
     /// Show this source position.
@@ -227,11 +223,15 @@ impl SourcePos {
     }
 }
 
+impl From<SourcePosImpl> for SourcePos {
+    fn from(p: SourcePosImpl) -> Self {
+        SourcePos { p: Arc::new(p) }
+    }
+}
+
 impl From<Span<'_>> for SourcePos {
     fn from(span: Span) -> Self {
-        SourcePos {
-            p: Arc::new(SourcePosImpl::from(span)),
-        }
+        SourcePosImpl::from(span).into()
     }
 }
 impl From<Span<'_>> for SourcePosImpl {
