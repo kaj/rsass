@@ -29,7 +29,7 @@ fn main() -> Result<(), Error> {
             "libsass-todo-issues/issue_221292.hrx", // stack overflow
             "libsass/unicode-bom/utf-16-big", // rsass only handles utf8
             "libsass/unicode-bom/utf-16-little", // rsass only handles utf8
-            "non_conformant/scss/huge.hrx", // stack overflow in debug mode
+            "non_conformant/scss/huge", // stack overflow in debug mode
             "non_conformant/scss/multiline-var.hrx", // duplicate rust name
         ],
     )?;
