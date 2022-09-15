@@ -15,7 +15,7 @@ fn test() {
         ),
         "Error: compound selectors may no longer be extended.\
          \nConsider `@extend .foo, .bar` instead.\
-         \nSee http://bit.ly/ExtendCompound for details.\n\
+         \nSee https://sass-lang.com/d/extend-compound for details.\n\
          \n  ,\
          \n2 | a.baz {@extend .foo.bar}\
          \n  |                ^^^^^^^^\
