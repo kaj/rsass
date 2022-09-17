@@ -45,9 +45,35 @@ fn test() {
              \n  baz: #{1  %  2}  %  3;\r\
              \n}"
         ),
-        "Error: Undefined operation \"2 * 3\".\
+        "DEPRECATION WARNING on line 11, column 10 of input.scss: \
+         \nThis operation is parsed as:\n\
+         \n    1 + 2\n\
+         \nbut you may have intended it to mean:\n\
+         \n    1 (+2)\n\
+         \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
+         \nit in parentheses to make it a unary operation. This will be an error in future\
+         \nversions of Sass.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/strict-unary\
          \n   ,\
-         \n23 |   baz: #{1*2}*3;\
+         \n11 |   baz: #{1  +2}  +3;\r\
+         \n   |          ^^^^^\
+         \n   \'\n\
+         \nDEPRECATION WARNING on line 11, column 8 of input.scss: \
+         \nThis operation is parsed as:\n\
+         \n    #{1 + 2} + 3\n\
+         \nbut you may have intended it to mean:\n\
+         \n    #{1 + 2} (+3)\n\
+         \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
+         \nit in parentheses to make it a unary operation. This will be an error in future\
+         \nversions of Sass.\n\
+         \nMore info and automated migrator: https://sass-lang.com/d/strict-unary\
+         \n   ,\
+         \n11 |   baz: #{1  +2}  +3;\r\
+         \n   |        ^^^^^^^^^^^^\
+         \n   \'\n\
+         \nError: Undefined operation \"2 * 3\".\
+         \n   ,\
+         \n23 |   baz: #{1*2}*3;\r\
          \n   |        ^^^^^^^^\
          \n   \'\
          \n  input.scss 23:8  root stylesheet",

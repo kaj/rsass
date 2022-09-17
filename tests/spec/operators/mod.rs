@@ -5,4 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("operators")
 }
 
+mod minus;
+
+mod plus;
+
 mod slash;
