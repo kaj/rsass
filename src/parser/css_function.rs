@@ -33,7 +33,7 @@ fn sum_expression(input: Span) -> PResult<Value> {
                 value(Operator::Plus, tag("+")),
                 value(Operator::Minus, tag("-")),
             )),
-            map(multispace0, |s: Span| !s.fragment().is_empty()),
+            ignore_comments,
             term,
         )),
         tuple((
@@ -42,7 +42,7 @@ fn sum_expression(input: Span) -> PResult<Value> {
                 value(Operator::Plus, tag("+")),
                 value(Operator::Minus, terminated(tag("-"), spacelike2)),
             )),
-            alt((value(true, spacelike2), value(false, tag("")))),
+            ignore_comments,
             term,
         )),
     ))(rest)

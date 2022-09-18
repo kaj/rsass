@@ -22,7 +22,7 @@ pub fn spacelike(input: Span) -> PResult<()> {
 }
 
 pub fn spacelike2(input: Span) -> PResult<()> {
-    terminated(spacelike, ignore_comments)(input)
+    map_res(ignore_comments, |s| if s { Ok(()) } else { Err(()) })(input)
 }
 
 pub fn opt_spacelike(input: Span) -> PResult<()> {
@@ -31,11 +31,11 @@ pub fn opt_spacelike(input: Span) -> PResult<()> {
     )
 }
 
-pub fn ignore_comments(input: Span) -> PResult<()> {
+pub fn ignore_comments(input: Span) -> PResult<bool> {
     fold_many0(
         alt((ignore_space, ignore_lcomment, map(comment, |_| ()))),
-        || (),
-        |(), ()| (),
+        || false,
+        |_, ()| true,
     )(input)
 }
 

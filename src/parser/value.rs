@@ -5,7 +5,7 @@ use super::strings::{
     special_function_misc, special_url, var_name,
 };
 use super::unit::unit;
-use super::util::{ignore_comments, opt_spacelike, spacelike2};
+use super::util::{comment, ignore_comments, opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string, PResult, SourcePos, Span};
 use crate::sass::{SassString, Value};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
@@ -135,51 +135,57 @@ fn logic_expression(input: Span) -> PResult<Value> {
 }
 
 fn sum_expression(input: Span) -> PResult<Value> {
-    let (mut rest, mut v) = term_value(input)?;
-    while let Ok((nrest, (s1, op, s2, v2))) = alt((
-        tuple((
-            value(false, tag("")),
-            alt((
-                value(Operator::Plus, tag("+")),
-                value(Operator::Minus, tag("-")),
+    let (rest, v) = term_value(input)?;
+    fold_many0(
+        alt((
+            tuple((
+                map(opt(comment), |_| false),
+                alt((
+                    value(Operator::Plus, tag("+")),
+                    value(Operator::Minus, tag("-")),
+                )),
+                ignore_comments,
+                term_value,
             )),
-            map(multispace0, |s: Span| !s.fragment().is_empty()),
-            term_value,
-        )),
-        tuple((
-            value(true, spacelike2),
-            alt((
-                value(Operator::Plus, tag("+")),
-                value(Operator::Minus, terminated(tag("-"), spacelike2)),
+            tuple((
+                ignore_comments,
+                alt((
+                    value(Operator::Plus, tag("+")),
+                    value(Operator::Minus, terminated(tag("-"), spacelike2)),
+                )),
+                ignore_comments,
+                term_value,
             )),
-            alt((value(true, spacelike2), value(false, tag("")))),
-            term_value,
         )),
-    ))(rest)
-    {
-        v = Value::BinOp(Box::new(v), s1, op, s2, Box::new(v2));
-        rest = nrest;
-    }
-    Ok((rest, v))
+        move || v.clone(),
+        |v, (s1, op, s2, v2)| {
+            let s1 = s1 && s2;
+            Value::BinOp(Box::new(v), s1, op, s2, Box::new(v2))
+        },
+    )(rest)
 }
 
 fn term_value(input: Span) -> PResult<Value> {
-    let (mut rest, mut v) = single_value(input)?;
-    while let Ok((nrest, (s1, op, s2, v2))) = tuple((
-        map(multispace0, |s: Span| !s.fragment().is_empty()),
-        alt((
-            value(Operator::Multiply, tag("*")),
-            value(Operator::Div, terminated(tag("/"), peek(not(tag("/"))))),
-            value(Operator::Modulo, tag("%")),
+    let (rest, v) = single_value(input)?;
+    fold_many0(
+        tuple((
+            ignore_comments,
+            alt((
+                value(Operator::Multiply, tag("*")),
+                value(
+                    Operator::Div,
+                    terminated(tag("/"), peek(not(tag("/")))),
+                ),
+                value(Operator::Modulo, tag("%")),
+            )),
+            ignore_comments,
+            single_value,
         )),
-        map(multispace0, |s: Span| !s.fragment().is_empty()),
-        single_value,
-    ))(rest)
-    {
-        rest = nrest;
-        v = Value::BinOp(Box::new(v), s1, op, s2, Box::new(v2));
-    }
-    Ok((rest, v))
+        move || v.clone(),
+        |v1, (s1, op, s2, v2)| {
+            Value::BinOp(Box::new(v1), s1, op, s2, Box::new(v2))
+        },
+    )(rest)
 }
 
 pub fn single_value(input: Span) -> PResult<Value> {

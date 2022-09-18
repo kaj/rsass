@@ -14,7 +14,6 @@ mod syntax {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn both() {
             assert_eq!(
                 runner().ok("a {b: c/**/-/**/d}\n"),
@@ -24,7 +23,6 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn left() {
             assert_eq!(
                 runner().ok("a {b: c/**/-(d)}\n"),
@@ -34,7 +32,6 @@ mod syntax {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn right() {
             assert_eq!(
                 runner().ok("a {b: (c)-/**/d}\n"),
