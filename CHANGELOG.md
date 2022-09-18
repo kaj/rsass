@@ -7,12 +7,14 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.26.0
+
+Released 2022-09-18.
+Progress: 4500 of 6843 tests passed (or 4673 if ignoring some
+deprecation messages).
 
 ### Breaking changes
 
-* Changes in `Error` representation.  Many errors are now constructed like
-  `Invalid::SomeVariant.at(pos)` (PR #145).
 * A `BuiltinFn` now takes a `&ResolvedArgs` rather than a `&ScopeRef` as
   argument (PR #157).
 * `@extend` is still unsupported, but now some uses of it (e.g. in control
@@ -33,6 +35,8 @@ project adheres to
 * The sass `Value::Variable` and `Item::VariableDeclaration` variants
   now holds a `Name` rather than just a `String` for the variable name.
   Also, both now holds a `SourcePos`.
+* Changes in `Error` representation.  Many errors are now constructed like
+  `Invalid::SomeVariant.at(pos)` (PR #145).
 * `Error::error` now takes an `Into<String>` argument (PR #151).
 * The module `input` contains types types with `Context<L>`, `Loader`,
   `FsLoader`, and `FsContext`, replacing the old `FileContext` and
