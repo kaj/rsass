@@ -24,7 +24,7 @@ pub fn create_module() -> Scope {
         let index = s.get_map(name!(index), check::unitless_int)?;
         let index = if index.is_negative() {
             let len = string.value().chars().count();
-            len.saturating_sub(index.abs() as usize - 1)
+            len.saturating_sub(index.unsigned_abs() as usize - 1)
         } else {
             (index as usize).saturating_sub(1)
         };
@@ -44,7 +44,7 @@ pub fn create_module() -> Scope {
         let len = st.chars().count();
         let start_at = s.get_map(name!(start_at), check::unitless_int)?;
         let start_at = if start_at.is_negative() {
-            len.saturating_sub(start_at.abs() as usize)
+            len.saturating_sub(start_at.unsigned_abs() as usize)
         } else if start_at.is_positive() {
             min(start_at as usize - 1, len)
         } else {
@@ -52,7 +52,7 @@ pub fn create_module() -> Scope {
         };
         let end_at = s.get_map(name!(end_at), check::unitless_int)?;
         let end_at = if end_at.is_negative() {
-            len.saturating_sub(end_at.abs() as usize - 1)
+            len.saturating_sub(end_at.unsigned_abs() as usize - 1)
         } else {
             end_at as usize
         };

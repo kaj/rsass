@@ -95,7 +95,7 @@ impl Value {
         match self {
             Value::Numeric(num, _) => Value::Numeric(num, true),
             Value::BinOp(a, s1, op, s2, b) => {
-                match op.eval((&*a).clone().into_calculated(), (&*b).clone())
+                match op.eval((*a).clone().into_calculated(), (*b).clone())
                 {
                     Some(v) => v,
                     None => Value::BinOp(a, s1, op, s2, b),

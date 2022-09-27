@@ -9,7 +9,7 @@ project adheres to
 
 ## Unreleased
 
-* Nothing yet.
+* Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.
 
 ## Release 0.26.0
 
