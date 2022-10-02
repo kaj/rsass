@@ -9,11 +9,11 @@ fn main() -> Result<(), Error> {
 }
 
 #[derive(Parser)]
-#[clap(
+#[command(
     about,
     author,
     version,
-    mut_arg("version", |v| v.short('v')),
+    disable_version_flag = true,
     after_help = "For information about rsass and its current state of \
                   development, please refer to https://github.com/kaj/rsass/ .\
                   \n\n\
@@ -21,20 +21,22 @@ fn main() -> Result<(), Error> {
                   https://sass-lang.com/ ."
 )]
 struct Args {
-    /// How many digits of precision to use when outputting decimal numbers.
-    #[clap(long, default_value = "5")]
+    /// Print version informaion
+    #[arg(long, short, action = clap::ArgAction::Version)]
+    _version: bool,
+
+    /// How many digits of precision to use when outputting decimal numbers
+    #[arg(long, default_value = "5")]
     precision: usize,
 
-    /// How to format output.
-    #[clap(long, short = 't', ignore_case = true,
-                default_value = "expanded",
-                possible_values = Style::variants())]
-    style: Style,
+    /// How to format output
+    #[arg(long, short = 't', value_enum, default_value_t = StyleArg::Expanded)]
+    style: StyleArg,
 
     /// Some kind of forced ascii output
     /// (Not implemented, but set by the sass-spec test runner)
     #[cfg(feature = "unimplemented_args")]
-    #[clap(long)]
+    #[arg(long)]
     #[allow(unused)]
     no_unicode: bool,
 
@@ -42,30 +44,30 @@ struct Args {
     /// (not that there is any support for color in error messages
     /// anyway yet, but the test runner uses this flag)
     #[cfg(feature = "unimplemented_args")]
-    #[clap(long)]
+    #[arg(long)]
     #[allow(unused)]
     no_color: bool,
 
     /// Verbose diagnostics
     /// (Always on, but set by the sass-spec test runner)
     #[cfg(feature = "unimplemented_args")]
-    #[clap(long)]
+    #[arg(long)]
     #[allow(unused)]
     verbose: bool,
 
     /// Where to search for included resources.
-    #[clap(long, short = 'I')]
+    #[arg(long, short = 'I')]
     load_path: Option<PathBuf>,
 
     /// Sass file(s) to translate
-    #[clap(required = true)]
+    #[arg(required = true)]
     input: Vec<PathBuf>,
 }
 
 impl Args {
     fn run(self) -> Result<(), Error> {
         let format = Format {
-            style: self.style,
+            style: self.style.into(),
             precision: self.precision,
         };
         for name in &self.input {
@@ -77,5 +79,22 @@ impl Args {
             stdout().write_all(&result)?;
         }
         Ok(())
+    }
+}
+
+#[derive(Clone, clap::ValueEnum)]
+enum StyleArg {
+    /// The expanded format, nice readable css.
+    Expanded,
+    /// The compressed format, saves download size.
+    Compressed,
+}
+
+impl From<StyleArg> for Style {
+    fn from(arg: StyleArg) -> Self {
+        match arg {
+            StyleArg::Expanded => Style::Expanded,
+            StyleArg::Compressed => Style::Compressed,
+        }
     }
 }

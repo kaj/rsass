@@ -10,6 +10,7 @@ project adheres to
 ## Unreleased
 
 * Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.
+* Update clap to 4.0 for the command-line interface.
 
 ## Release 0.26.0
 
