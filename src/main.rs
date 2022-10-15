@@ -23,7 +23,7 @@ fn main() -> Result<(), Error> {
 struct Args {
     /// Print version informaion
     #[arg(long, short, action = clap::ArgAction::Version)]
-    _version: bool,
+    _version: Option<bool>,
 
     /// How many digits of precision to use when outputting decimal numbers
     #[arg(long, default_value = "5")]
