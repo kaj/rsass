@@ -33,14 +33,4 @@ mod selector_only_interpolation;
 
 mod trailing_comma_in_selector;
 
-// From "sass-spec/spec/non_conformant/misc/unicode_variables"
-#[test]
-fn unicode_variables() {
-    assert_eq!(
-        runner().ok("$vär: foo;\n\
-             \nblat {a: $vär}\n"),
-        "blat {\
-         \n  a: foo;\
-         \n}\n"
-    );
-}
+mod unicode_variables;

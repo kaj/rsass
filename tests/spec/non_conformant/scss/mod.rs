@@ -99,7 +99,7 @@ mod hey1;
 
 mod hey2;
 
-// Ignoring "huge", not expected to work yet.
+// Ignoring "huge.hrx", not expected to work yet.
 
 mod hyphen_interpolated;
 

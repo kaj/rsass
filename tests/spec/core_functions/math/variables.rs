@@ -8,10 +8,26 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn e() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
-             \na {b: math.$e}\n"),
+        runner().ok(
+            "@use \"sass:math\" as math;\
+             \n// Multiplied by 1e15 so Sass\'s serialization doesn\'t remove the precision\
+             \na {b: math.$e * 1e15}\n"
+        ),
         "a {\
-         \n  b: 2.7182818285;\
+         \n  b: 2718281828459045;\
+         \n}\n"
+    );
+}
+#[test]
+fn epsilon() {
+    assert_eq!(
+        runner().ok(
+            "@use \"sass:math\" as math;\
+             \n// Multiplied by 1e31 so Sass\'s serialization doesn\'t remove the precision\
+             \na {b: math.$epsilon * 1e31}\n"
+        ),
+        "a {\
+         \n  b: 2220446049250313;\
          \n}\n"
     );
 }
@@ -39,6 +55,81 @@ mod error {
             );
         }
         #[test]
+        fn epsilon() {
+            assert_eq!(
+                runner().err(
+                    "@use \"sass:math\" as math;\
+             \nmath.$epsilon: 0;\n"
+                ),
+                "Error: Cannot modify built-in variable.\
+         \n  ,\
+         \n2 | math.$epsilon: 0;\
+         \n  | ^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet",
+            );
+        }
+        #[test]
+        fn max_number() {
+            assert_eq!(
+                runner().err(
+                    "@use \"sass:math\" as math;\
+             \nmath.$max-number: 0;\n"
+                ),
+                "Error: Cannot modify built-in variable.\
+         \n  ,\
+         \n2 | math.$max-number: 0;\
+         \n  | ^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet",
+            );
+        }
+        #[test]
+        fn max_safe_integer() {
+            assert_eq!(
+                runner().err(
+                    "@use \"sass:math\" as math;\
+             \nmath.$max-safe-integer: 0;\n"
+                ),
+                "Error: Cannot modify built-in variable.\
+         \n  ,\
+         \n2 | math.$max-safe-integer: 0;\
+         \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet",
+            );
+        }
+        #[test]
+        fn min_number() {
+            assert_eq!(
+                runner().err(
+                    "@use \"sass:math\" as math;\
+             \nmath.$min-number: 0;\n"
+                ),
+                "Error: Cannot modify built-in variable.\
+         \n  ,\
+         \n2 | math.$min-number: 0;\
+         \n  | ^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet",
+            );
+        }
+        #[test]
+        fn min_safe_integer() {
+            assert_eq!(
+                runner().err(
+                    "@use \"sass:math\" as math;\
+             \nmath.$min-safe-integer: 0;\n"
+                ),
+                "Error: Cannot modify built-in variable.\
+         \n  ,\
+         \n2 | math.$min-safe-integer: 0;\
+         \n  | ^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:1  root stylesheet",
+            );
+        }
+        #[test]
         fn pi() {
             assert_eq!(
                 runner().err(
@@ -56,12 +147,62 @@ mod error {
     }
 }
 #[test]
-fn pi() {
+fn max_number() {
+    assert_eq!(
+        runner().ok(
+            "@use \"sass:math\" as math;\
+             \na {b: math.$max-number}\n"
+        ),
+        "a {\
+         \n  b: 179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;\
+         \n}\n"
+    );
+}
+#[test]
+fn max_safe_integer() {
     assert_eq!(
         runner().ok("@use \"sass:math\" as math;\
-             \na {b: math.$pi}\n"),
+             \na {b: math.$max-safe-integer}\n"),
         "a {\
-         \n  b: 3.1415926536;\
+         \n  b: 9007199254740991;\
+         \n}\n"
+    );
+}
+#[test]
+#[ignore] // wrong result
+fn min_number() {
+    assert_eq!(
+        runner().ok(
+            "@use \"sass:math\" as math;\
+             \n// Multiplied by 1e339 so Sass\'s serialization doesn\'t remove the precision.\
+             \n// But 1e339 is too big for a double, so we multiply it multiple times.\
+             \na {b: math.$min-number * 1e300 * 1e39}\n"
+        ),
+        "a {\
+         \n  b: 4940656458412465;\
+         \n}\n"
+    );
+}
+#[test]
+fn min_safe_integer() {
+    assert_eq!(
+        runner().ok("@use \"sass:math\" as math;\
+             \na {b: math.$min-safe-integer}\n"),
+        "a {\
+         \n  b: -9007199254740991;\
+         \n}\n"
+    );
+}
+#[test]
+fn pi() {
+    assert_eq!(
+        runner().ok(
+            "@use \"sass:math\" as math;\
+             \n// Multiplied by 1e15 so Sass\'s serialization doesn\'t remove the precision\
+             \na {b: math.$pi * 1e15}\n"
+        ),
+        "a {\
+         \n  b: 3141592653589793;\
          \n}\n"
     );
 }

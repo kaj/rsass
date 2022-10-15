@@ -19,7 +19,7 @@ mod fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.pow(-0.000000000001, 0.5)}\n"),
                 "a {\
-         \n  b: 0;\
+         \n  b: NaN;\
          \n}\n"
             );
         }
@@ -49,7 +49,7 @@ mod fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.pow(-0.000000000001, -0.5)}\n"),
                 "a {\
-         \n  b: Infinity;\
+         \n  b: NaN;\
          \n}\n"
             );
         }
@@ -59,7 +59,7 @@ mod fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.pow(-0.000000000001, -2)}\n"),
                 "a {\
-         \n  b: Infinity;\
+         \n  b: 1000000000000000000000000;\
          \n}\n"
             );
         }
@@ -79,7 +79,7 @@ mod fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.pow(-0.000000000001, -3)}\n"),
                 "a {\
-         \n  b: -Infinity;\
+         \n  b: -1000000000000000000000000000000000000;\
          \n}\n"
             );
         }
@@ -205,7 +205,7 @@ mod with_exponent {
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.pow(-0.0, -3.000000000001)}\n"),
             "a {\
-         \n  b: -Infinity;\
+         \n  b: Infinity;\
          \n}\n"
         );
     }
@@ -245,7 +245,7 @@ mod with_exponent {
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.pow(-0.0, 0.000000000001)}\n"),
             "a {\
-         \n  b: 1;\
+         \n  b: 0;\
          \n}\n"
         );
     }

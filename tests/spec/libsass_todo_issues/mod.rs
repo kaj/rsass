@@ -19,7 +19,7 @@ mod issue_1798;
 
 mod issue_1801;
 
-// Ignoring "issue_2016", tests with expected error not implemented yet.
+mod issue_2016;
 
 mod issue_2023;
 
@@ -31,7 +31,7 @@ mod issue_221260;
 
 // Ignoring "issue_221262.hrx", not expected to work yet.
 
-// Ignoring "issue_221264", tests with expected error not implemented yet.
+// Ignoring "issue_221264.hrx", not expected to work yet.
 
 // Ignoring "issue_221267", tests with expected error not implemented yet.
 

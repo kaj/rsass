@@ -15,7 +15,7 @@ mod asymptote {
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.tan(0.5rad * math.$pi)}\n"),
             "a {\
-         \n  b: Infinity;\
+         \n  b: 16331239353195370;\
          \n}\n"
         );
     }
@@ -143,7 +143,7 @@ mod negative_asymptote {
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.tan(-0.5rad * math.$pi)}\n"),
             "a {\
-         \n  b: -Infinity;\
+         \n  b: -16331239353195370;\
          \n}\n"
         );
     }

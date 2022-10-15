@@ -69,7 +69,7 @@ mod negative {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(-1, -0.000000000001)}\n"),
                 "a {\
-         \n  b: -90deg;\
+         \n  b: -90.0000000001deg;\
          \n}\n"
             );
         }
@@ -89,7 +89,7 @@ mod negative {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(-1, 0.000000000001)}\n"),
                 "a {\
-         \n  b: -90deg;\
+         \n  b: -89.9999999999deg;\
          \n}\n"
             );
         }
@@ -159,7 +159,7 @@ mod positive {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(1, -0.000000000001)}\n"),
                 "a {\
-         \n  b: 90deg;\
+         \n  b: 90.0000000001deg;\
          \n}\n"
             );
         }
@@ -179,7 +179,7 @@ mod positive {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(1, 0.000000000001)}\n"),
                 "a {\
-         \n  b: 90deg;\
+         \n  b: 89.9999999999deg;\
          \n}\n"
             );
         }

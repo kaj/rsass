@@ -41,8 +41,8 @@ mod down {
         assert_eq!(
         runner().ok(
             "// This is the largest number that\'s representable as a float and outside the\
-             \n// precision range to be considered equal to 5.\
-             \na {b: round(1.49999999999)}\n"
+             \n// precision range to be considered equal to 1.5.\
+             \na {b: round(1.4999999999949998)}\n"
         ),
         "a {\
          \n  b: 1;\
@@ -165,19 +165,5 @@ mod up {
          \n  b: 0;\
          \n}\n"
         );
-    }
-    #[test]
-    #[ignore] // wrong result
-    fn within_precision() {
-        assert_eq!(
-        runner().ok(
-            "// This is the smallest number that\'s representable as a float and in the\
-             \n// precision range to be considered equal to 5.\
-             \na {b: round(0.4999999999900001)}\n"
-        ),
-        "a {\
-         \n  b: 1;\
-         \n}\n"
-    );
     }
 }

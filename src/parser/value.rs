@@ -321,22 +321,26 @@ pub fn number(input: Span) -> PResult<Numeric> {
                 decimal_decimals,
                 decimal_integer,
             )),
+            opt(preceded(tag("e"), tuple((sign_prefix, decimal_i32)))),
             unit,
         )),
-        |(sign, num, unit)| {
-            Numeric::new(
-                if sign == Some(b"-") {
-                    // Only f64-based Number can represent negative zero.
-                    if num.is_zero() {
-                        (-0.0).into()
-                    } else {
-                        -num
-                    }
+        |(sign, num, exp, unit)| {
+            let value = if sign == Some(b"-") {
+                // Only f64-based Number can represent negative zero.
+                if num.is_zero() {
+                    (-0.0).into()
                 } else {
-                    num
-                },
-                unit,
-            )
+                    -num
+                }
+            } else {
+                num
+            };
+            if let Some((e_sign, e_val)) = exp {
+                let e_val = if e_sign == Some(b"-") { -e_val } else { e_val };
+                Numeric::new(value * Number::from(10f64.powi(e_val)), unit)
+            } else {
+                Numeric::new(value, unit)
+            }
         },
     )(input)
 }
@@ -347,6 +351,14 @@ pub fn decimal_integer(input: Span) -> PResult<Number> {
         one_of("0123456789"),
         || Number::from(0),
         |r, d| (r * 10) + Number::from(i64::from(d as u8 - b'0')),
+    )(input)
+}
+pub fn decimal_i32(input: Span) -> PResult<i32> {
+    fold_many1(
+        // Note: We should use bytes directly, one_of returns a char.
+        one_of("0123456789"),
+        || 0,
+        |r, d| (r * 10) + i32::from(d as u8 - b'0'),
     )(input)
 }
 

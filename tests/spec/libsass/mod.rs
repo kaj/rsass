@@ -23,19 +23,7 @@ mod bool;
 
 mod bourbon;
 
-// From "sass-spec/spec/libsass/charset"
-#[test]
-fn charset() {
-    assert_eq!(
-        runner().ok("div {\
-             \n  content: to-upper-case(\"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\");\
-             \n}\n"),
-        "@charset \"UTF-8\";\
-         \ndiv {\
-         \n  content: \"øáéíóúüñ¿éàŤǅǂɊɱʭʬѪ҈ݓ\";\
-         \n}\n"
-    );
-}
+mod charset;
 
 mod color_functions;
 
@@ -45,19 +33,7 @@ mod css_import;
 
 mod css_nth_selectors;
 
-// From "sass-spec/spec/libsass/css_unicode"
-#[test]
-fn css_unicode() {
-    assert_eq!(
-        runner().ok("@charset \"UTF-8\";\
-             \nfoo {\
-             \n  bar: föö bâr; }\n"),
-        "@charset \"UTF-8\";\
-         \nfoo {\
-         \n  bar: föö bâr;\
-         \n}\n"
-    );
-}
+mod css_unicode;
 
 mod debug_directive_nested;
 

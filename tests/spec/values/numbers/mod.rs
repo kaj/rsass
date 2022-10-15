@@ -5,6 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("numbers")
 }
 
+mod bounds;
+
 mod divide;
 
 mod modulo;

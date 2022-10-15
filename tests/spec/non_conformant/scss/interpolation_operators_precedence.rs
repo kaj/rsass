@@ -61,9 +61,9 @@ fn test() {
         ),
         "DEPRECATION WARNING on line 4, column 9 of input.scss: \
          \nThis operation is parsed as:\n\
-         \n    #{a} + 5.0%\n\
+         \n    #{a} + 5%\n\
          \nbut you may have intended it to mean:\n\
-         \n    #{a} (+5.0%)\n\
+         \n    #{a} (+5%)\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
@@ -74,9 +74,9 @@ fn test() {
          \n  \'\n\
          \nDEPRECATION WARNING on line 8, column 9 of input.scss: \
          \nThis operation is parsed as:\n\
-         \n    5 + 2.0% + #{a}\n\
+         \n    5 + 2% + #{a}\n\
          \nbut you may have intended it to mean:\n\
-         \n    5 + 2.0% (+#{a})\n\
+         \n    5 + 2% (+#{a})\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
@@ -87,9 +87,9 @@ fn test() {
          \n  \'\n\
          \nDEPRECATION WARNING on line 10, column 9 of input.scss: \
          \nThis operation is parsed as:\n\
-         \n    #{a} + 5.0%\n\
+         \n    #{a} + 5%\n\
          \nbut you may have intended it to mean:\n\
-         \n    #{a} (+5.0%)\n\
+         \n    #{a} (+5%)\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
@@ -100,9 +100,9 @@ fn test() {
          \n   \'\n\
          \nDEPRECATION WARNING on line 14, column 9 of input.scss: \
          \nThis operation is parsed as:\n\
-         \n    #{a} + 5.0%\n\
+         \n    #{a} + 5%\n\
          \nbut you may have intended it to mean:\n\
-         \n    #{a} (+5.0%)\n\
+         \n    #{a} (+5%)\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
@@ -113,9 +113,9 @@ fn test() {
          \n   \'\n\
          \nDEPRECATION WARNING on line 18, column 9 of input.scss: \
          \nThis operation is parsed as:\n\
-         \n    #{a} + 5.0% / 2\n\
+         \n    #{a} + 5% / 2\n\
          \nbut you may have intended it to mean:\n\
-         \n    #{a} (+5.0% / 2)\n\
+         \n    #{a} (+5% / 2)\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
@@ -126,9 +126,9 @@ fn test() {
          \n   \'\n\
          \nDEPRECATION WARNING on line 22, column 9 of input.scss: \
          \nThis operation is parsed as:\n\
-         \n    #{a} + 5.0% * 2\n\
+         \n    #{a} + 5% * 2\n\
          \nbut you may have intended it to mean:\n\
-         \n    #{a} (+5.0% * 2)\n\
+         \n    #{a} (+5% * 2)\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
@@ -139,9 +139,9 @@ fn test() {
          \n   \'\n\
          \nDEPRECATION WARNING on line 26, column 9 of input.scss: \
          \nThis operation is parsed as:\n\
-         \n    5 + 2.0% + #{a}\n\
+         \n    5 + 2% + #{a}\n\
          \nbut you may have intended it to mean:\n\
-         \n    5 + 2.0% (+#{a})\n\
+         \n    5 + 2% (+#{a})\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
@@ -152,9 +152,9 @@ fn test() {
          \n   \'\n\
          \nDEPRECATION WARNING on line 30, column 9 of input.scss: \
          \nThis operation is parsed as:\n\
-         \n    5 - 2.0% + #{a}\n\
+         \n    5 - 2% + #{a}\n\
          \nbut you may have intended it to mean:\n\
-         \n    5 - 2.0% (+#{a})\n\
+         \n    5 - 2% (+#{a})\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
@@ -165,9 +165,9 @@ fn test() {
          \n   \'\n\
          \nDEPRECATION WARNING on line 34, column 9 of input.scss: \
          \nThis operation is parsed as:\n\
-         \n    5% / 2.0 + #{a}\n\
+         \n    5% / 2 + #{a}\n\
          \nbut you may have intended it to mean:\n\
-         \n    5% / 2.0 (+#{a})\n\
+         \n    5% / 2 (+#{a})\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\
@@ -178,9 +178,9 @@ fn test() {
          \n   \'\n\
          \nDEPRECATION WARNING on line 38, column 9 of input.scss: \
          \nThis operation is parsed as:\n\
-         \n    5 * 2.0% + #{a}\n\
+         \n    5 * 2% + #{a}\n\
          \nbut you may have intended it to mean:\n\
-         \n    5 * 2.0% (+#{a})\n\
+         \n    5 * 2% (+#{a})\n\
          \nAdd a space after + to clarify that it\'s meant to be a binary operation, or wrap\
          \nit in parentheses to make it a unary operation. This will be an error in future\
          \nversions of Sass.\n\

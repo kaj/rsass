@@ -268,7 +268,6 @@ mod number {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn exponent() {
         assert_eq!(
             runner().ok("a {b: calc(1e2px)}\n"),

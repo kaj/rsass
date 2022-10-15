@@ -109,7 +109,7 @@ mod negative_fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(-0.000000000001, 1)}\n"),
                 "a {\
-         \n  b: 0deg;\
+         \n  b: -0.0000000001deg;\
          \n}\n"
             );
         }
@@ -129,7 +129,7 @@ mod negative_fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(-0.000000000001, -1)}\n"),
                 "a {\
-         \n  b: -180deg;\
+         \n  b: -179.9999999999deg;\
          \n}\n"
             );
         }
@@ -149,7 +149,7 @@ mod negative_fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(-0.000000000001, -0.0)}\n"),
                 "a {\
-         \n  b: -180deg;\
+         \n  b: -90deg;\
          \n}\n"
             );
         }
@@ -159,7 +159,7 @@ mod negative_fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(-0.000000000001, 0)}\n"),
                 "a {\
-         \n  b: 0deg;\
+         \n  b: -90deg;\
          \n}\n"
             );
         }
@@ -269,7 +269,7 @@ mod positive_fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(0.000000000001, 1)}\n"),
                 "a {\
-         \n  b: 0deg;\
+         \n  b: 0.0000000001deg;\
          \n}\n"
             );
         }
@@ -289,7 +289,7 @@ mod positive_fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(0.000000000001, -1)}\n"),
                 "a {\
-         \n  b: 180deg;\
+         \n  b: 179.9999999999deg;\
          \n}\n"
             );
         }
@@ -309,7 +309,7 @@ mod positive_fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(0.000000000001, -0.0)}\n"),
                 "a {\
-         \n  b: 180deg;\
+         \n  b: 90deg;\
          \n}\n"
             );
         }
@@ -319,7 +319,7 @@ mod positive_fuzzy {
                 runner().ok("@use \"sass:math\" as math;\
              \na {b: math.atan2(0.000000000001, 0)}\n"),
                 "a {\
-         \n  b: 0deg;\
+         \n  b: 90deg;\
          \n}\n"
             );
         }

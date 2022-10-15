@@ -4,7 +4,8 @@ use num_integer::Integer;
 use num_rational::Ratio;
 pub use num_rational::Rational64 as Rational;
 use num_traits::{
-    CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, One, Signed, Zero,
+    CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, One, Signed, ToPrimitive,
+    Zero,
 };
 use std::cmp::Ordering;
 use std::fmt::{self, Write};
@@ -96,17 +97,9 @@ impl PartialOrd for NumValue {
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 s.partial_cmp(r)
             }
-            (NumValue::Float(s), r) => f64_cmp(s, &r.into()),
-            (s, NumValue::Float(r)) => f64_cmp(&s.into(), r),
+            (NumValue::Float(s), r) => s.partial_cmp(&r.into()),
+            (s, NumValue::Float(r)) => f64::from(s).partial_cmp(r),
         }
-    }
-}
-
-fn f64_cmp(a: &f64, b: &f64) -> Option<Ordering> {
-    match a.partial_cmp(b) {
-        // Rust considers inf == inf, and sass doesn't
-        Some(Ordering::Equal) if !a.is_normal() || !b.is_normal() => None,
-        result => result,
     }
 }
 
@@ -144,7 +137,9 @@ impl Mul<&Rational> for &NumValue {
         match self {
             NumValue::Rational(s) => (s * rhs).into(),
             NumValue::BigRational(s) => (s * biggen(rhs)).into(),
-            NumValue::Float(s) => (s * ratio_to_float(rhs)).into(),
+            NumValue::Float(s) => {
+                rhs.to_f64().map(|r| s * r).unwrap_or(f64::NAN).into()
+            }
         }
     }
 }
@@ -291,8 +286,8 @@ impl Sub for &NumValue {
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 (s - r).into()
             }
-            (NumValue::Float(s), r) => (s + f64::from(r)).into(),
-            (s, NumValue::Float(r)) => (f64::from(s) + r).into(),
+            (NumValue::Float(s), r) => (s - f64::from(r)).into(),
+            (s, NumValue::Float(r)) => (f64::from(s) - r).into(),
         }
     }
 }
@@ -422,9 +417,10 @@ impl Number {
 
     /// Returns true if the number is an integer.
     pub fn into_integer(self) -> Result<i64, Self> {
-        fn float_int(s: &f64) -> Option<i64> {
-            if (s.round() - s).abs() <= std::f64::EPSILON {
-                Some(s.round() as i64)
+        fn float_int(s: f64) -> Option<i64> {
+            let sr = s.round();
+            if (sr - s).abs() <= std::f32::EPSILON.into() {
+                Some(sr as i64)
             } else {
                 None
             }
@@ -434,17 +430,17 @@ impl Number {
                 if s.is_integer() {
                     Ok(s.to_integer())
                 } else {
-                    float_int(&ratio_to_float(s)).ok_or(self)
+                    s.to_f64().and_then(float_int).ok_or(self)
                 }
             }
             NumValue::BigRational(s) => {
                 if s.is_integer() {
                     i64::try_from(s.to_integer()).map_err(|_| self)
                 } else {
-                    float_int(&ratio_to_float(s)).ok_or(self)
+                    s.to_f64().and_then(float_int).ok_or(self)
                 }
             }
-            NumValue::Float(s) => float_int(s).ok_or(self),
+            NumValue::Float(s) => float_int(*s).ok_or(self),
         }
     }
 
@@ -571,28 +567,10 @@ impl From<NumValue> for f64 {
 impl From<&NumValue> for f64 {
     fn from(val: &NumValue) -> f64 {
         match val {
-            NumValue::Rational(s) => ratio_to_float(s),
-            NumValue::BigRational(s) => ratio_to_float(s),
+            NumValue::Rational(s) => s.to_f64().unwrap_or(f64::NAN),
+            NumValue::BigRational(s) => s.to_f64().unwrap_or(f64::NAN),
             NumValue::Float(s) => *s,
         }
-    }
-}
-
-fn ratio_to_float<T: TryInto<i32> + Div<i64, Output = T> + Signed + Clone>(
-    val: &Ratio<T>,
-) -> f64 {
-    let numer: T = val.numer().clone();
-    let sign = f64::from(numer.signum().try_into().unwrap_or(1));
-    let mut numer = numer.abs();
-    let mut denom: T = val.denom().clone();
-    loop {
-        let tn = numer.clone().try_into();
-        let td = denom.clone().try_into();
-        if let (Ok(n), Ok(d)) = (tn, td) {
-            return sign * (f64::from(n) / f64::from(d));
-        }
-        numer = numer / 32;
-        denom = denom / 32;
     }
 }
 

@@ -134,7 +134,7 @@ fn one_fuzzy() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.acos(1.000000000001)}\n"),
         "a {\
-         \n  b: 0deg;\
+         \n  b: NaNdeg;\
          \n}\n"
     );
 }

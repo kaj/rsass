@@ -145,7 +145,7 @@ mod with_exponent {
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.pow(math.div(1, 0), 0.000000000001)}\n"),
             "a {\
-         \n  b: 1;\
+         \n  b: Infinity;\
          \n}\n"
         );
     }

@@ -13,17 +13,7 @@ mod t003_test_variables;
 
 mod t004_test_variables;
 
-// From "sass-spec/spec/non_conformant/scss-tests/005_test_unicode_variables"
-#[test]
-fn t005_test_unicode_variables() {
-    assert_eq!(
-        runner().ok("$vär: foo;\n\
-             \nblat {a: $vär}\n"),
-        "blat {\
-         \n  a: foo;\
-         \n}\n"
-    );
-}
+mod t005_test_unicode_variables;
 
 mod t006_test_guard_assign;
 

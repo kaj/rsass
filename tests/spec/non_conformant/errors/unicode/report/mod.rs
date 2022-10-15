@@ -5,6 +5,6 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("report")
 }
 
-// Ignoring "after", tests with expected error not implemented yet.
+mod after;
 
-// Ignoring "before", tests with expected error not implemented yet.
+mod before;

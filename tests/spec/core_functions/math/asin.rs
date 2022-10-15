@@ -134,7 +134,7 @@ fn negative_zero_fuzzy() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.asin(-0.000000000001)}\n"),
         "a {\
-         \n  b: 0deg;\
+         \n  b: -0.0000000001deg;\
          \n}\n"
     );
 }
@@ -154,7 +154,7 @@ fn one_fuzzy() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.asin(1.000000000001)}\n"),
         "a {\
-         \n  b: 90deg;\
+         \n  b: NaNdeg;\
          \n}\n"
     );
 }
@@ -174,7 +174,7 @@ fn zero_fuzzy() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.asin(0.000000000001)}\n"),
         "a {\
-         \n  b: 0deg;\
+         \n  b: 0.0000000001deg;\
          \n}\n"
     );
 }

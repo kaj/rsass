@@ -133,7 +133,7 @@ mod base {
                     runner().ok("@use \"sass:math\" as math;\
              \na {b: math.pow(1, math.div(1, 0))}\n"),
                     "a {\
-         \n  b: NaN;\
+         \n  b: 1;\
          \n}\n"
                 );
             }
@@ -143,7 +143,7 @@ mod base {
                     runner().ok("@use \"sass:math\" as math;\
              \na {b: math.pow(1, math.div(-1, 0))}\n"),
                     "a {\
-         \n  b: NaN;\
+         \n  b: 1;\
          \n}\n"
                 );
             }
@@ -163,7 +163,7 @@ mod base {
                     runner().ok("@use \"sass:math\" as math;\
              \na {b: math.pow(1.000000000001, math.div(1, 0))}\n"),
                     "a {\
-         \n  b: NaN;\
+         \n  b: Infinity;\
          \n}\n"
                 );
             }
@@ -173,7 +173,7 @@ mod base {
                     runner().ok("@use \"sass:math\" as math;\
              \na {b: math.pow(1.000000000001, math.div(-1, 0))}\n"),
                     "a {\
-         \n  b: NaN;\
+         \n  b: 0;\
          \n}\n"
                 );
             }

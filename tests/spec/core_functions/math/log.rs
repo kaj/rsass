@@ -50,12 +50,13 @@ mod base {
         );
     }
     #[test]
+    #[ignore] // wrong result
     fn one_fuzzy() {
         assert_eq!(
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.log(2, 1.000000000001)}\n"),
             "a {\
-         \n  b: Infinity;\
+         \n  b: 693085564849.9645;\
          \n}\n"
         );
     }
@@ -85,7 +86,7 @@ mod base {
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.log(2, 0.000000000001)}\n"),
             "a {\
-         \n  b: 0;\
+         \n  b: -0.025085833;\
          \n}\n"
         );
     }
@@ -254,7 +255,7 @@ fn zero_fuzzy() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.log(0.000000000001)}\n"),
         "a {\
-         \n  b: -Infinity;\
+         \n  b: -27.6310211159;\
          \n}\n"
     );
 }

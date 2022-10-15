@@ -14,7 +14,7 @@ mod infinity {
         assert_eq!(
             runner().ok("a {b: inspect(map-get(((-1/0): b), -1/0))}\n"),
             "a {\
-         \n  b: null;\
+         \n  b: b;\
          \n}\n"
         );
     }
@@ -23,7 +23,7 @@ mod infinity {
         assert_eq!(
             runner().ok("a {b: inspect(map-get(((1/0): b), 1/0))}\n"),
             "a {\
-         \n  b: null;\
+         \n  b: b;\
          \n}\n"
         );
     }

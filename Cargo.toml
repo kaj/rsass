@@ -36,7 +36,7 @@ nom = { version = "7.0", default-features = false }
 nom_locate = "4.0"
 num-bigint = { version = "0.4.0", default-features = false, features = ["std"] }
 num-integer = "0.1.42"
-num-rational = { version = "0.4.0", default-features = false }
+num-rational = { version = "0.4.0", default-features = false, features = ["num-bigint"] }
 num-traits = "^0.2.0"
 tracing = "0.1.34"
 # Note: The 3 will fail, it's just an ugly hack to be able to compile

@@ -113,13 +113,7 @@ pub fn create_module() -> Scope {
     def!(f, pow(base, exponent), |s| {
         let base = get_unitless(s, "base")?;
         let exponent = get_unitless(s, "exponent")?;
-        let result =
-            if exponent.is_infinite() && (base.abs() - 1.0).abs() < 1e-7 {
-                f64::NAN
-            } else {
-                base.powf(exponent)
-            };
-        Ok(Value::scalar(result))
+        Ok(Value::scalar(base.powf(exponent)))
     });
     def!(f, sqrt(number), |s| {
         Ok(Value::scalar(get_unitless(s, "number")?.sqrt()))
@@ -133,13 +127,8 @@ pub fn create_module() -> Scope {
         Ok(Value::scalar(s.get_map(name!(number), radians)?.sin()))
     });
     def!(f, tan(number), |s| {
-        let ans = s.get_map(name!(number), radians)?.tan();
-        let ans = if ans.abs() > 1e15 {
-            ans.signum() * f64::INFINITY
-        } else {
-            ans
-        };
-        Ok(Value::scalar(ans))
+        let number = s.get_map(name!(number), radians)?;
+        Ok(Value::scalar(number.tan()))
     });
 
     def!(f, acos(number), |s| {
@@ -200,6 +189,28 @@ pub fn create_module() -> Scope {
 
     f.define(name!(pi), Value::scalar(PI)).unwrap();
     f.define(name!(e), Value::scalar(E)).unwrap();
+    f.define(name!(epsilon), Value::scalar(f64::EPSILON))
+        .unwrap();
+    f.define(name!(max_safe_integer), Value::scalar(9007199254740991f64))
+        .unwrap();
+    f.define(name!(min_safe_integer), Value::scalar(-9007199254740991f64))
+        .unwrap();
+    f.define(name!(max_number), Value::scalar(f64::MAX))
+        .unwrap();
+    f.define(
+        name!(min_number),
+        // Note: This value is the smallest number that a f32 can
+        // express, but it is a "subnormal" number.  This is
+        // compatible with dart sass, but maybe it would be better to
+        // just use `f64::MIN_POSITIVE`, the smallest number an f64
+        // can handle as a "normal" number.
+        // See https://users.rust-lang.org/t/what-is-f64-min-positive/82725
+        Value::scalar(
+            2.0f64.powi(1 - (f64::MANTISSA_DIGITS as i32))
+                * f64::MIN_POSITIVE,
+        ),
+    )
+    .unwrap();
     f
 }
 

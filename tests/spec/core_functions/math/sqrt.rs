@@ -124,7 +124,7 @@ fn negative_zero_fuzzy() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.sqrt(-0.000000000001)}\n"),
         "a {\
-         \n  b: 0;\
+         \n  b: NaN;\
          \n}\n"
     );
 }
@@ -154,7 +154,7 @@ fn zero_fuzzy() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.sqrt(0.000000000001)}\n"),
         "a {\
-         \n  b: 0;\
+         \n  b: 0.000001;\
          \n}\n"
     );
 }

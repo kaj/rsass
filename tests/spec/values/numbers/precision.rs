@@ -83,7 +83,6 @@ mod very_close_to_int {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn bigger_than_boundary() {
                 assert_eq!(
                     runner().ok("@use \'sass:math\';\
@@ -199,7 +198,6 @@ mod very_close_to_int {
                 );
             }
             #[test]
-            #[ignore] // wrong result
             fn bigger_than_boundary() {
                 assert_eq!(
                     runner().ok("@use \'sass:math\';\

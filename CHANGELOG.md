@@ -9,8 +9,17 @@ project adheres to
 
 ## Unreleased
 
+* Update numeric handing (mainly conversions to/from `f64`) to match
+  improvements in how dart-sass handles numerics.  This is mainly done by
+  removing some special cases as dart-sass and rust now agrees on more of
+  those.
+* Add new variables `$epsilon`, `$max-safe-integer`, `$min-safe-integer`,
+  `$max-number`, and `$min-number` in `sass:math`, matching recent dart-sass
+  additions.
 * Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.
 * Update clap to 4.0 for the command-line interface.
+* Update sass-spec test suite to 2022-09-21.
+
 
 ## Release 0.26.0
 
