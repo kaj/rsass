@@ -451,10 +451,8 @@ fn handle_item(
             eprintln!("WARNING: {}", value.evaluate(scope)?.format(format));
         }
         Item::Error(ref value, ref pos) => {
-            return Err(Invalid::AtError(
-                value.evaluate(scope)?.format(format).to_string(),
-            )
-            .at(pos.clone()));
+            let msg = value.evaluate(scope)?.format(format).to_string();
+            return Err(Invalid::AtError(msg).at(pos.clone()));
         }
 
         Item::Rule(ref selectors, ref body) => {
