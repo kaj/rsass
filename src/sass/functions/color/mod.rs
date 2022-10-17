@@ -3,10 +3,11 @@ use super::{
     ResolvedArgs,
 };
 use crate::css::{CallArgs, Value};
+use crate::input::SourcePos;
 use crate::output::Format;
 use crate::sass::{FormalArgs, Name};
 use crate::value::{Number, Numeric, Rational, Unit};
-use crate::{Scope, SourcePos};
+use crate::Scope;
 use num_traits::{one, zero, Signed};
 mod channels;
 mod hsl;

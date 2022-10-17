@@ -2,6 +2,7 @@ use super::{LoadError, SourceName};
 use crate::parser::{css, sassfile, Span};
 use crate::{Error, ParseError};
 use std::io::Read;
+use std::sync::Arc;
 
 /// The full data of a source file.
 ///
@@ -16,7 +17,14 @@ use std::io::Read;
 /// Currently, the `scss` and `css` formats are supported.
 /// If rsass adds support for the `sass` (indented) format, it will
 /// also be supported by this type.
+///
+/// This type is internally reference counted.
+#[derive(Clone)]
 pub struct SourceFile {
+    data: Arc<Impl>,
+}
+
+struct Impl {
     data: Vec<u8>,
     source: SourceName,
     format: SourceFormat,
@@ -38,11 +46,7 @@ impl SourceFile {
         let mut data = vec![];
         file.read_to_end(&mut data)
             .map_err(|e| LoadError::Input(source.name().to_string(), e))?;
-        Ok(SourceFile {
-            data,
-            source,
-            format,
-        })
+        Ok(Self::new(data, source, format))
     }
 
     /// Handle some raw byte data as an input file with a given source
@@ -52,11 +56,7 @@ impl SourceFile {
     /// does not need a suffix (e.g. it can be `SourceName::root("-")`
     /// as per convention for standard input).
     pub fn scss_bytes(data: impl Into<Vec<u8>>, source: SourceName) -> Self {
-        SourceFile {
-            data: data.into(),
-            source,
-            format: SourceFormat::Scss,
-        }
+        Self::new(data.into(), source, SourceFormat::Scss)
     }
 
     /// Handle some raw byte data as an input file with a given source
@@ -66,10 +66,16 @@ impl SourceFile {
     /// does not need a suffix (e.g. it can be `SourceName::root("-")`
     /// as per convention for standard input).
     pub fn css_bytes(data: impl Into<Vec<u8>>, source: SourceName) -> Self {
+        Self::new(data.into(), source, SourceFormat::Css)
+    }
+
+    fn new(data: Vec<u8>, source: SourceName, format: SourceFormat) -> Self {
         SourceFile {
-            data: data.into(),
-            source,
-            format: SourceFormat::Css,
+            data: Arc::new(Impl {
+                data,
+                source,
+                format,
+            }),
         }
     }
 
@@ -78,8 +84,8 @@ impl SourceFile {
     /// The correct parser will be applied based on the (known) format
     /// of this `SourceFile`.
     pub fn parse(&self) -> Result<Parsed, Error> {
-        let data = Span::new_extra(&self.data, &self.source);
-        match self.format {
+        let data = Span::new(self);
+        match self.data.format {
             SourceFormat::Scss => {
                 Ok(Parsed::Scss(ParseError::check(sassfile(data))?))
             }
@@ -89,13 +95,33 @@ impl SourceFile {
         }
     }
 
+    pub(crate) fn data(&self) -> &[u8] {
+        &self.data.data
+    }
     pub(crate) fn source(&self) -> &SourceName {
-        &self.source
+        &self.data.source
     }
     pub(crate) fn path(&self) -> &str {
-        self.source.name()
+        self.data.source.name()
     }
 }
+
+impl Ord for SourceFile {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.data.source.cmp(&other.data.source)
+    }
+}
+impl PartialOrd for SourceFile {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl PartialEq for SourceFile {
+    fn eq(&self, other: &Self) -> bool {
+        self.data.source == other.data.source
+    }
+}
+impl Eq for SourceFile {}
 
 /// A supported input format.
 ///

@@ -2,7 +2,7 @@
 macro_rules! check_parse {
     ($parser:ident, $value:expr) => {{
         use crate::parser::{code_span, ParseError};
-        ParseError::check($parser(code_span($value)))
+        ParseError::check($parser(code_span($value).borrow()))
             .unwrap_or_else(|e| panic!("{}", e))
     }};
 }
@@ -12,15 +12,16 @@ mod css_function;
 mod error;
 pub mod formalargs;
 mod imports;
-mod pos;
 pub mod selectors;
+mod span;
 pub(crate) mod strings;
 mod unit;
 pub(crate) mod util;
 pub mod value;
 
 pub use error::ParseError;
-pub use pos::SourcePos;
+pub(crate) use span::DebugBytes;
+pub(crate) use span::{position, Span};
 
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
@@ -34,7 +35,7 @@ use self::util::{
 use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
-use crate::input::SourceName;
+use crate::input::{SourceFile, SourceName, SourcePos};
 use crate::sass::{Callable, FormalArgs, Item, Name, Selectors, Value};
 use crate::value::ListSeparator;
 #[cfg(test)]
@@ -52,26 +53,17 @@ use nom::multi::{
 };
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::IResult;
-use nom_locate::LocatedSpan;
 use std::str::{from_utf8, Utf8Error};
 
-pub type Span<'a> = LocatedSpan<&'a [u8], &'a SourceName>;
 /// A Parsing Result; ok gives a span for the rest of the data and a parsed T.
 type PResult<'a, T> = IResult<Span<'a>, T>;
 
-pub fn code_span(value: &[u8]) -> Span {
-    use lazy_static::lazy_static;
-    lazy_static! {
-        static ref SOURCE: SourceName = SourceName::root("(rsass)");
-    }
-    Span::new_extra(value, &SOURCE)
+pub(crate) fn code_span(value: &[u8]) -> SourcePos {
+    SourceFile::scss_bytes(value, SourceName::root("(rsass)")).into()
 }
-pub fn input_span(value: &[u8]) -> Span {
-    use lazy_static::lazy_static;
-    lazy_static! {
-        static ref SOURCE: SourceName = SourceName::root("-");
-    }
-    Span::new_extra(value, &SOURCE)
+
+pub(crate) fn input_span(value: impl Into<Vec<u8>>) -> SourcePos {
+    SourceFile::scss_bytes(value, SourceName::root("-")).into()
 }
 
 /// Parse a scss value.
@@ -79,7 +71,8 @@ pub fn input_span(value: &[u8]) -> Span {
 /// Returns a single value (or an error).
 pub fn parse_value_data(data: &[u8]) -> Result<Value, Error> {
     let data = code_span(data);
-    Ok(ParseError::check(all_consuming(value_expression)(data))?)
+    let value = all_consuming(value_expression)(data.borrow());
+    Ok(ParseError::check(value)?)
 }
 
 #[test]
@@ -111,7 +104,7 @@ pub(crate) fn sassfile(input: Span) -> PResult<Vec<Item>> {
 
 fn top_level_item(input: Span) -> PResult<Item> {
     let (input, tag) = alt((tag("$"), tag("/*"), tag("@"), tag("")))(input)?;
-    match *tag.fragment() {
+    match tag.fragment() {
         b"$" => variable_declaration2(input),
         b"/*" => comment_item(input),
         b"@" => at_rule2(input),
@@ -139,7 +132,7 @@ fn body_item(input: Span) -> PResult<Item> {
         alt((tag("$"), tag("/*"), tag(";"), tag("@"), tag("--"), tag("")))(
             input,
         )?;
-    match *tag.fragment() {
+    match tag.fragment() {
         b"$" => variable_declaration2(rest),
         b"/*" => comment_item(rest),
         b";" => Ok((rest, Item::None)),
@@ -187,16 +180,16 @@ fn mixin_call2(input: Span) -> PResult<Item> {
     let (rest, _) = opt_spacelike(rest)?;
     let (rest0, args) = terminated(opt(call_args), opt_spacelike)(rest)?;
     let (rest, t) = alt((tag("using"), tag("{"), tag("")))(rest0)?;
-    let (end, body) = match *t.fragment() {
+    let (end, body) = match t.fragment() {
         b"using" => {
             let (end, args) = preceded(opt_spacelike, formal_args)(rest)?;
             let (rest, body) = preceded(opt_spacelike, body_block)(end)?;
-            let decl = SourcePos::from_to(rest0, end);
+            let decl = rest0.up_to(&end).to_owned();
             (rest, Some(Callable::new(args, body, decl)))
         }
         b"{" => {
             let (rest, body) = body_block(rest0)?;
-            let decl = SourcePos::from_to(rest0, rest);
+            let decl = rest0.up_to(&rest).to_owned();
             (rest, Some(Callable::no_args(body, decl)))
         }
         _ => {
@@ -204,7 +197,7 @@ fn mixin_call2(input: Span) -> PResult<Item> {
             (rest, None)
         }
     };
-    let pos = SourcePos::from_to(input, rest).opt_back("@include ");
+    let pos = input.up_to(&rest).to_owned().opt_back("@include ");
     Ok((
         end,
         Item::MixinCall(name, args.unwrap_or_default(), body, pos),
@@ -223,7 +216,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         "error" => {
             let (end, v) = value_expression(input)?;
             let (rest, _) = opt(tag(";"))(end)?;
-            let pos = SourcePos::from_to(input0, end).opt_back("@");
+            let pos = input0.up_to(&end).to_owned().opt_back("@");
             Ok((rest, Item::Error(v, pos)))
         }
         "for" => for_loop2(input),
@@ -239,7 +232,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         "while" => while_loop2(input),
         _ => {
             let (input, name) = sass_string(input0)?;
-            let pos = SourcePos::from_to(input0, input).opt_back("@");
+            let pos = input0.up_to(&input).to_owned().opt_back("@");
             let (input, args) = opt(media_args)(input)?;
             let (input, body) = preceded(
                 opt(ignore_space),
@@ -429,7 +422,7 @@ fn mixin_declaration2(input: Span) -> PResult<Item> {
     let (rest, args) = opt(formal_args)(rest)?;
     let (end, body) = preceded(opt_spacelike, body_block)(rest)?;
     let args = args.unwrap_or_else(FormalArgs::none);
-    let decl = SourcePos::from_to(input, rest);
+    let decl = input.up_to(&rest).to_owned();
     Ok((
         end,
         Item::MixinDeclaration(name, Callable { args, body, decl }),
@@ -440,7 +433,7 @@ fn function_declaration2(input: Span) -> PResult<Item> {
     let (end, name) = terminated(name, opt_spacelike)(input)?;
     let (end, args) = formal_args(end)?;
     let (rest, body) = preceded(opt_spacelike, body_block)(end)?;
-    let decl = SourcePos::from_to(input, end);
+    let decl = input.up_to(&end).to_owned();
     Ok((
         rest,
         Item::FunctionDeclaration(name, Callable { args, body, decl }),
@@ -450,7 +443,7 @@ fn function_declaration2(input: Span) -> PResult<Item> {
 fn return_stmt2<'a>(input0: Span<'_>, input: Span<'a>) -> PResult<'a, Item> {
     let (input, v) =
         delimited(opt_spacelike, value_expression, opt_spacelike)(input)?;
-    let pos = SourcePos::from_to(input0, input).opt_back("@");
+    let pos = input0.up_to(&input).to_owned().opt_back("@");
     let (input, _) = opt(tag(";"))(input)?;
     Ok((input, Item::Return(v, pos)))
 }
@@ -460,7 +453,7 @@ fn content_stmt2(input: Span) -> PResult<Item> {
     let (rest, _) = opt_spacelike(input)?;
     let (rest, args) = opt(call_args)(rest)?;
     let (rest, _) = opt(tag(";"))(rest)?;
-    let pos = SourcePos::from_to(input, rest);
+    let pos = input.up_to(&rest).to_owned();
     Ok((rest, Item::Content(args.unwrap_or_default(), pos)))
 }
 
@@ -494,7 +487,7 @@ fn property_or_namespace_rule(input: Span) -> PResult<Item> {
         tag("{")(input)?
     };
 
-    let (input, body) = match *next.fragment() {
+    let (input, body) = match next.fragment() {
         b"{" => map(body_block2, Some)(input)?,
         b";" => (input, None),
         b"" => (input, None),
@@ -586,7 +579,7 @@ fn variable_declaration2(input0: Span) -> PResult<Item> {
             val,
             default,
             global,
-            pos: SourcePos::from_to(input0, input).opt_back("$"),
+            pos: input0.up_to(&input).to_owned().opt_back("$"),
         },
     ))
 }
@@ -616,7 +609,7 @@ fn if_with_no_else() {
         Item::IfStatement(
             Value::True,
             vec![Item::Rule(
-                selectors(code_span(b"p")).unwrap().1,
+                selectors(code_span(b"p").borrow()).unwrap().1,
                 vec![Item::Property("border".into(), string("solid"))],
             )],
             vec![],

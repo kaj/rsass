@@ -1,5 +1,5 @@
-use crate::input::LoadError;
-use crate::parser::{ParseError, SourcePos};
+use crate::input::{LoadError, SourcePos};
+use crate::parser::ParseError;
 use crate::value::RangeError;
 use crate::ScopeError;
 use std::convert::From;
@@ -71,10 +71,13 @@ impl fmt::Debug for Error {
                     writeln!(out, "This file is already being loaded.")?;
                 }
                 if let Some(oldpos) = oldpos {
-                    pos.show_detail(out, '^', " new load")?;
-                    writeln!(out)?;
-                    oldpos.show_detail(out, '=', " original load")?;
-                    pos.show_files(out)
+                    SourcePos::show_two(
+                        out,
+                        pos,
+                        "new load",
+                        oldpos,
+                        "original load",
+                    )
                 } else {
                     pos.show(out)
                 }
@@ -82,20 +85,13 @@ impl fmt::Debug for Error {
             Error::BadCall(ref msg, ref callpos, ref declpos) => {
                 writeln!(out, "{}", msg)?;
                 if let Some(declpos) = declpos {
-                    if callpos.same_file_as(declpos) {
-                        show_in_file(
-                            out,
-                            callpos,
-                            " invocation",
-                            declpos,
-                            " declaration",
-                        )?;
-                    } else {
-                        callpos.show_detail(out, '^', " invocation")?;
-                        writeln!(out)?;
-                        declpos.show_detail(out, '=', " declaration")?;
-                    }
-                    callpos.show_files(out)
+                    SourcePos::show_two(
+                        out,
+                        callpos,
+                        "invocation",
+                        declpos,
+                        "declaration",
+                    )
                 } else {
                     callpos.show(out)
                 }
@@ -108,41 +104,6 @@ impl fmt::Debug for Error {
             Error::IoError(ref err) => err.fmt(out),
         }
     }
-}
-
-/// Output multiple positions from the same file.
-fn show_in_file(
-    out: &mut fmt::Formatter,
-    one: &SourcePos,
-    one_name: &str,
-    other: &SourcePos,
-    other_name: &str,
-) -> fmt::Result {
-    if one < other {
-        show_in_file2(out, one, one_name, other, other_name)
-    } else {
-        show_in_file2(out, other, other_name, one, one_name)
-    }
-}
-
-fn show_in_file2(
-    out: &mut fmt::Formatter,
-    first: &SourcePos,
-    first_name: &str,
-    second: &SourcePos,
-    second_name: &str,
-) -> fmt::Result {
-    let ellipsis = first.line_no() + 1 < second.line_no();
-    let lnw = second.line_no().to_string().len();
-    let lnw = if ellipsis { std::cmp::max(3, lnw) } else { lnw };
-    writeln!(out, "{0:lnw$} ,", "", lnw = lnw)?;
-    first.show_inner(out, lnw, '=', first_name)?;
-    if ellipsis {
-        writeln!(out, "... |")?;
-    }
-    second.show_inner(out, lnw, '^', second_name)?;
-    write!(out, "{0:lnw$} '", "", lnw = lnw)?;
-    Ok(())
 }
 
 impl From<io::Error> for Error {

@@ -305,7 +305,9 @@ fn ok_as_filterarg(v: &Value) -> bool {
             use nom::bytes::complete::tag;
             use nom::sequence::tuple;
             let span = code_span(s.value().as_ref());
-            tuple((unitname, opt_spacelike, tag("=")))(span).is_ok()
+            let b = tuple((unitname, opt_spacelike, tag("=")))(span.borrow())
+                .is_ok();
+            b
         }
         Value::List(..) => true,
         _ => false,

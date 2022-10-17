@@ -1,6 +1,7 @@
 use super::{CallError, FormalArgs, Item};
 use crate::css::{CallArgs, Value};
-use crate::{Error, ScopeRef, SourcePos};
+use crate::input::SourcePos;
+use crate::{Error, ScopeRef};
 
 /// The callable part of a sass mixin or function.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]

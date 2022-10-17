@@ -3,9 +3,8 @@ use super::{
     Value,
 };
 use crate::css::{self, CssString, ValueToMapError};
-use crate::input::{Context, Loader, Parsed, SourceKind};
+use crate::input::{Context, Loader, Parsed, SourceKind, SourcePos};
 use crate::ordermap::OrderMap;
-use crate::parser::SourcePos;
 use crate::ScopeRef;
 use std::convert::TryInto;
 

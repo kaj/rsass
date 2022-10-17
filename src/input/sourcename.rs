@@ -1,4 +1,4 @@
-use crate::SourcePos;
+use super::SourcePos;
 use std::fmt;
 
 /// The name of a source file.

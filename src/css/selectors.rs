@@ -7,9 +7,9 @@
 //! This _may_ change to a something like a tree of operators with
 //! leafs of simple selectors in some future release.
 use super::{is_not, CssString, Value};
+use crate::input::SourcePos;
 use crate::parser::css::{selector, selector_part, selectors};
-use crate::parser::input_span;
-use crate::parser::{ParseError, SourcePos};
+use crate::parser::{input_span, ParseError};
 use crate::value::ListSeparator;
 use std::fmt;
 use std::io::Write;
@@ -49,7 +49,7 @@ impl Selectors {
     pub fn css_ok(self) -> Result<Self, BadSelector> {
         if self.has_backref() {
             let sel = self.to_string();
-            Err(BadSelector::Backref(input_span(sel.as_bytes()).into()))
+            Err(BadSelector::Backref(input_span(sel)))
         } else {
             Ok(self)
         }
@@ -211,8 +211,8 @@ fn value_to_selectors(v: &Value) -> Result<Selectors, BadSelector0> {
             if s.value().is_empty() {
                 Ok(Selectors::root())
             } else {
-                let span = input_span(s.value().as_bytes());
-                Ok(ParseError::check(selectors(span))?)
+                let span = input_span(s.value());
+                Ok(ParseError::check(selectors(span.borrow()))?)
             }
         }
         _ => Err(BadSelector0::Value),
@@ -225,8 +225,8 @@ fn check_selector_str(v: &Value) -> Result<Selector, BadSelector0> {
             if s.value().is_empty() {
                 Ok(Selector::root())
             } else {
-                let span = input_span(s.value().as_bytes());
-                Ok(ParseError::check(selector(span))?)
+                let span = input_span(s.value());
+                Ok(ParseError::check(selector(span.borrow()))?)
             }
         }
         _ => Err(BadSelector0::Value),
@@ -238,8 +238,8 @@ fn parse_selectors_str(v: &Value) -> Result<Selectors, BadSelector0> {
             if s.value().is_empty() {
                 Ok(Selectors::root())
             } else {
-                let span = input_span(s.value().as_bytes());
-                Ok(ParseError::check(selectors(span))?)
+                let span = input_span(s.value());
+                Ok(ParseError::check(selectors(span.borrow()))?)
             }
         }
         _ => Err(BadSelector0::Value),
@@ -309,8 +309,8 @@ fn value_to_selector(v: &Value) -> Result<Selector, BadSelector0> {
             if s.value().is_empty() {
                 Ok(Selector::root())
             } else {
-                let span = input_span(s.value().as_bytes());
-                Ok(ParseError::check(selector(span))?)
+                let span = input_span(s.value());
+                Ok(ParseError::check(selector(span.borrow()))?)
             }
         }
         _ => Err(BadSelector0::Value),
@@ -443,7 +443,7 @@ impl TryInto<SelectorPart> for Value {
 fn value_to_selector_part(v: &Value) -> Result<SelectorPart, BadSelector0> {
     match v {
         Value::Literal(s) => Ok(ParseError::check(selector_part(
-            input_span(s.value().as_bytes()),
+            input_span(s.value()).borrow(),
         ))?),
         _ => Err(BadSelector0::Value),
     }
@@ -635,5 +635,5 @@ impl From<ParseError> for BadSelector {
     }
 }
 fn parse_selector(s: &str) -> Result<Selector, BadSelector> {
-    Ok(ParseError::check(selector(input_span(s.as_bytes())))?)
+    Ok(ParseError::check(selector(input_span(s).borrow()))?)
 }

@@ -1,7 +1,7 @@
 use super::{Call, Closure, FormalArgs, Name};
 use crate::css::{self, is_not, CallArgs, CssString, Value};
+use crate::input::SourcePos;
 use crate::output::{Format, Formatted};
-use crate::parser::SourcePos;
 use crate::value::{CssDimension, Operator, Quotes};
 use crate::{Scope, ScopeRef};
 use lazy_static::lazy_static;
@@ -424,7 +424,10 @@ fn test_rgb() -> Result<(), Box<dyn std::error::Error>> {
     let scope = ScopeRef::new_global(Default::default());
     assert_eq!(
         FUNCTIONS.get(&name!(rgb)).unwrap().call(
-            call_args(code_span(b"(17, 0, 225)"))?.1.evaluate(scope)?
+            call_args(code_span(b"(17, 0, 225)").borrow())
+                .unwrap()
+                .1
+                .evaluate(scope)?
         )?,
         Value::Color(Rgba::from_rgb(17, 0, 225).into(), None)
     );
