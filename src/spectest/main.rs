@@ -241,7 +241,12 @@ fn spec_hrx_to_test(
     )?;
     let mut runner = if let Some(stem) = suite.file_stem() {
         writeln!(rs, "        .with_cwd({:?})", stem)?;
-        runner().with_cwd(stem.to_str().unwrap())
+        let base = suite
+            .strip_prefix("sass-spec/spec")?
+            .parent()
+            .unwrap()
+            .join(stem);
+        runner().with_cwd(base.to_str().unwrap())
     } else {
         runner()
     };

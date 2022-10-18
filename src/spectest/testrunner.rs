@@ -70,11 +70,12 @@ impl Loader for TestLoader {
             lname = name;
         }
         let tname = url_join(cwd, lname);
-
         if let Some(data) = self.mock.get(&tname) {
             return Ok(Some(Cursor::new(data.as_bytes().to_vec())));
         }
-
+        if let Some(data) = self.mock.get(lname) {
+            return Ok(Some(Cursor::new(data.as_bytes().to_vec())));
+        }
         Ok(self.parent.find_file(name)?.map(|mut file| {
             let mut buf = Vec::new();
             file.read_to_end(&mut buf).unwrap();

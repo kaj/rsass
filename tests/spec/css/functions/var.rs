@@ -234,7 +234,6 @@ mod sass_function {
         }
 
         #[test]
-        #[ignore] // unexepected error
         fn empty_after_named() {
             let runner = runner().with_cwd("empty_after_named");
             assert_eq!(
@@ -250,7 +249,6 @@ mod sass_function {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn empty_after_rest() {
             let runner = runner().with_cwd("empty_after_rest");
             assert_eq!(
@@ -274,7 +272,6 @@ mod sass_function {
         }
 
         #[test]
-        #[ignore] // unexepected error
         fn expression() {
             let runner = runner().with_cwd("expression");
             assert_eq!(
@@ -290,7 +287,6 @@ mod sass_function {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn rest() {
             let runner = runner().with_cwd("rest");
             assert_eq!(
@@ -308,7 +304,6 @@ mod sass_function {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn three_argument() {
         let runner = runner().with_cwd("three_argument");
         assert_eq!(
@@ -342,7 +337,6 @@ mod sass_function {
             );
         }
         #[test]
-        #[ignore] // unexepected error
         fn dynamic() {
             let runner = runner().with_cwd("dynamic");
             assert_eq!(
@@ -358,7 +352,6 @@ mod sass_function {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn empty() {
             let runner = runner().with_cwd("empty");
             assert_eq!(
@@ -374,7 +367,6 @@ mod sass_function {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn expressions() {
             let runner = runner().with_cwd("expressions");
             assert_eq!(
@@ -390,7 +382,6 @@ mod sass_function {
     );
         }
         #[test]
-        #[ignore] // unexepected error
         fn rest() {
             let runner = runner().with_cwd("rest");
             assert_eq!(
@@ -408,7 +399,6 @@ mod sass_function {
         }
     }
     #[test]
-    #[ignore] // unexepected error
     fn zero_argument() {
         let runner = runner().with_cwd("zero_argument");
         assert_eq!(
