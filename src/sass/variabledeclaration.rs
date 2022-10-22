@@ -92,7 +92,7 @@ pub(crate) mod parser {
                 default,
                 global,
                 pos,
-            }
+            },
         ))
     }
 
