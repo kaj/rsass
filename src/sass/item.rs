@@ -1,4 +1,7 @@
-use super::{CallArgs, Callable, Name, SassString, Selectors, Value};
+use super::{
+    CallArgs, Callable, Name, SassString, Selectors, Value,
+    VariableDeclaration,
+};
 use crate::input::SourcePos;
 use std::collections::BTreeSet;
 
@@ -9,18 +12,7 @@ pub enum Item {
     /// An `@import` directive.
     Import(Vec<SassString>, Value, SourcePos),
     /// A variable declaration.
-    VariableDeclaration {
-        /// The variable name
-        name: Name,
-        /// The bound value
-        val: Value,
-        /// true if this is a `!default` variable.
-        default: bool,
-        /// true if this is a `!global` variable.
-        global: bool,
-        /// The source location of this variable declaration.
-        pos: SourcePos,
-    },
+    VariableDeclaration(VariableDeclaration),
 
     /// An `@at-root` directive.
     AtRoot(Selectors, Vec<Item>),
@@ -99,6 +91,12 @@ pub enum Item {
     Comment(SassString),
     /// Nothing
     None,
+}
+
+impl From<VariableDeclaration> for Item {
+    fn from(value: VariableDeclaration) -> Self {
+        Item::VariableDeclaration(value)
+    }
 }
 
 /// How an `@forward`-ed module should be exposed.

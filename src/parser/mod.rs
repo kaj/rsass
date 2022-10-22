@@ -10,6 +10,7 @@ mod unit;
 pub(crate) mod util;
 pub mod value;
 
+pub(crate) use self::strings::name;
 pub use error::ParseError;
 pub(crate) use span::DebugBytes;
 pub(crate) use span::{position, Span};
@@ -17,7 +18,7 @@ pub(crate) use span::{position, Span};
 use self::formalargs::{call_args, formal_args};
 use self::selectors::selectors;
 use self::strings::{
-    custom_value, name, sass_string, sass_string_dq, sass_string_sq,
+    custom_value, sass_string, sass_string_dq, sass_string_sq,
 };
 use self::util::{
     comment2, ignore_comments, ignore_space, opt_spacelike, semi_or_end,
@@ -27,6 +28,7 @@ use self::value::{
     dictionary, function_call, single_value, value_expression,
 };
 use crate::input::{SourceFile, SourceName, SourcePos};
+use crate::sass::parser::{variable_declaration2, variable_declaration_mod};
 use crate::sass::{Callable, FormalArgs, Item, Name, Selectors, Value};
 use crate::value::ListSeparator;
 #[cfg(test)]
@@ -37,17 +39,15 @@ use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
 use nom::character::complete::one_of;
 use nom::combinator::{
-    all_consuming, map, map_res, opt, peek, value, verify,
+    all_consuming, into, map, map_res, opt, peek, value, verify,
 };
-use nom::multi::{
-    fold_many0, many0, many_till, separated_list0, separated_list1,
-};
+use nom::multi::{many0, many_till, separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::IResult;
 use std::str::{from_utf8, Utf8Error};
 
 /// A Parsing Result; ok gives a span for the rest of the data and a parsed T.
-type PResult<'a, T> = IResult<Span<'a>, T>;
+pub(crate) type PResult<'a, T> = IResult<Span<'a>, T>;
 
 pub(crate) fn code_span(value: &[u8]) -> SourcePos {
     SourceFile::scss_bytes(value, SourceName::root("(rsass)")).into()
@@ -96,10 +96,10 @@ pub(crate) fn sassfile(input: Span) -> PResult<Vec<Item>> {
 fn top_level_item(input: Span) -> PResult<Item> {
     let (input, tag) = alt((tag("$"), tag("/*"), tag("@"), tag("")))(input)?;
     match tag.fragment() {
-        b"$" => variable_declaration2(input),
+        b"$" => into(variable_declaration2)(input),
         b"/*" => comment_item(input),
         b"@" => at_rule2(input),
-        b"" => alt((variable_declaration_mod, rule))(input),
+        b"" => alt((into(variable_declaration_mod), rule))(input),
         _ => unreachable!(),
     }
 }
@@ -124,7 +124,7 @@ fn body_item(input: Span) -> PResult<Item> {
             input,
         )?;
     match tag.fragment() {
-        b"$" => variable_declaration2(rest),
+        b"$" => into(variable_declaration2)(rest),
         b"/*" => comment_item(rest),
         b";" => Ok((rest, Item::None)),
         b"@" => at_rule2(rest),
@@ -314,7 +314,7 @@ fn media_args(input: Span) -> PResult<Value> {
 }
 
 #[cfg(test)]
-fn check_parse<T>(
+pub(crate) fn check_parse<T>(
     parser: impl Fn(Span) -> PResult<T>,
     value: &[u8],
 ) -> Result<T, ParseError> {
@@ -529,62 +529,6 @@ fn body_block2(input: Span) -> PResult<Vec<Item>> {
     Ok((input, v))
 }
 
-fn variable_declaration(input: Span) -> PResult<Item> {
-    preceded(tag("$"), variable_declaration2)(input)
-}
-
-fn variable_declaration_mod(input: Span) -> PResult<Item> {
-    map(
-        pair(terminated(name, tag(".")), variable_declaration),
-        |(module, decl)| match decl {
-            Item::VariableDeclaration {
-                name,
-                val,
-                default,
-                global,
-                pos,
-            } => Item::VariableDeclaration {
-                name: format!("{}.{}", module, name).into(),
-                val,
-                default,
-                global,
-                pos: pos.opt_back(&format!("{}.", module)),
-            },
-            _ => unreachable!(),
-        },
-    )(input)
-}
-
-fn variable_declaration2(input0: Span) -> PResult<Item> {
-    let (input, name) = terminated(
-        map(name, Name::from),
-        delimited(opt_spacelike, tag(":"), opt_spacelike),
-    )(input0)?;
-    let (input, val) = terminated(value_expression, opt_spacelike)(input)?;
-    let (input, (default, global)) = fold_many0(
-        terminated(
-            alt((
-                map(tag("!default"), |_| (true, false)),
-                map(tag("!global"), |_| (false, true)),
-            )),
-            opt_spacelike,
-        ),
-        || (false, false),
-        |(default, global), (d, g)| (default || d, global || g),
-    )(input)?;
-    let (trail, _) = semi_or_end(input)?;
-    Ok((
-        trail,
-        Item::VariableDeclaration {
-            name,
-            val,
-            default,
-            global,
-            pos: input0.up_to(&input).to_owned().opt_back("$"),
-        },
-    ))
-}
-
 fn input_to_str(s: Span) -> Result<&str, Utf8Error> {
     from_utf8(s.fragment())
 }
@@ -645,70 +589,4 @@ fn test_property_2() {
             ),
         )),
     )
-}
-
-#[test]
-fn test_variable_declaration_simple() {
-    match check_parse(variable_declaration, b"$foo: bar;") {
-        Ok(Item::VariableDeclaration {
-            name,
-            val,
-            default,
-            global,
-            pos: _,
-        }) => {
-            assert_eq!(
-                (name, val, default, global),
-                ("foo".into(), string("bar"), false, false)
-            )
-        }
-        _ => panic!(),
-    }
-}
-
-#[test]
-fn test_variable_declaration_global() {
-    match check_parse(variable_declaration, b"$y: some value !global;") {
-        Ok(Item::VariableDeclaration {
-            name,
-            val,
-            default,
-            global,
-            pos: _,
-        }) => {
-            assert_eq!(
-                (name, val, default, global),
-                (
-                    "y".into(),
-                    Value::List(
-                        vec![string("some"), string("value")],
-                        Some(ListSeparator::Space),
-                        false,
-                    ),
-                    false,
-                    true,
-                )
-            )
-        }
-        _ => panic!(),
-    }
-}
-
-#[test]
-fn test_variable_declaration_default() {
-    match check_parse(variable_declaration, b"$y: value !default;") {
-        Ok(Item::VariableDeclaration {
-            name,
-            val,
-            default,
-            global,
-            pos: _,
-        }) => {
-            assert_eq!(
-                (name, val, default, global),
-                ("y".into(), string("value"), true, false,)
-            )
-        }
-        _ => panic!(),
-    }
 }

@@ -100,16 +100,8 @@ impl ScopeRef {
                     }
                     None
                 }
-                Item::VariableDeclaration {
-                    ref name,
-                    ref val,
-                    default,
-                    global,
-                    ref pos,
-                } => {
-                    let val = val.evaluate(self.clone())?;
-                    self.set_variable(name.clone(), val, default, global)
-                        .map_err(|e| e.at(pos.clone()))?;
+                Item::VariableDeclaration(ref var) => {
+                    var.evaluate(&self)?;
                     None
                 }
                 Item::Return(ref v, _) => {

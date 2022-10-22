@@ -296,18 +296,8 @@ fn handle_item(
                 buf.add_one(";\n", ";");
             }
         }
-
-        Item::VariableDeclaration {
-            ref name,
-            ref val,
-            default,
-            global,
-            ref pos,
-        } => {
-            let val = val.do_evaluate(scope.clone(), true)?;
-            scope
-                .set_variable(name.clone(), val, *default, *global)
-                .map_err(|e| e.at(pos.clone()))?;
+        Item::VariableDeclaration(ref var) => {
+            var.evaluate(&scope)?;
         }
         Item::FunctionDeclaration(ref name, ref body) => {
             if name == "calc"

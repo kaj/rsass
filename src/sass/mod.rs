@@ -20,6 +20,7 @@ mod name;
 mod selectors;
 mod string;
 mod value;
+mod variabledeclaration;
 
 pub use self::call_args::CallArgs;
 pub use self::callable::{Call, Callable, Closure};
@@ -33,3 +34,8 @@ pub use self::name::Name;
 pub use self::selectors::{Selector, SelectorPart, Selectors};
 pub use self::string::{SassString, StringPart};
 pub use self::value::Value;
+pub use self::variabledeclaration::VariableDeclaration;
+
+pub(crate) mod parser {
+    pub(crate) use super::variabledeclaration::parser::*;
+}
