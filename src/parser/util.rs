@@ -84,26 +84,29 @@ fn ignore_lcomment(input: Span) -> PResult<()> {
 
 #[cfg(test)]
 mod test {
-    use super::comment;
+    use super::{super::check_parse, comment};
 
     #[test]
     fn comment_simple() {
-        assert_eq!(check_parse!(comment, b"/* hello */"), " hello ".into());
+        assert_eq!(
+            check_parse(comment, b"/* hello */"),
+            Ok(" hello ".into())
+        );
     }
 
     #[test]
     fn comment_with_stars() {
         assert_eq!(
-            check_parse!(comment, b"/**** hello ****/"),
-            "*** hello ***".into()
+            check_parse(comment, b"/**** hello ****/"),
+            Ok("*** hello ***".into())
         )
     }
 
     #[test]
     fn comment_with_stars2() {
         assert_eq!(
-            check_parse!(comment, b"/* / * / * / * hello * \\ * \\ * \\ */"),
-            " / * / * / * hello * \\ * \\ * \\ ".into()
+            check_parse(comment, b"/* / * / * / * hello * \\ * \\ * \\ */"),
+            Ok(" / * / * / * hello * \\ * \\ * \\ ".into())
         )
     }
 }

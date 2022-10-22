@@ -119,6 +119,7 @@ pub(crate) fn selector_part(input: Span) -> PResult<SelectorPart> {
 
 #[cfg(test)]
 mod test {
+    use super::super::check_parse;
     use super::*;
     use crate::sass::{SassString, StringPart};
     use crate::value::Quotes;
@@ -126,47 +127,47 @@ mod test {
     #[test]
     fn simple_selector() {
         assert_eq!(
-            check_parse!(selector, b"foo "),
-            Selector::new(vec![SelectorPart::Simple("foo".into())]),
+            check_parse(selector, b"foo "),
+            Ok(Selector::new(vec![SelectorPart::Simple("foo".into())])),
         )
     }
     #[test]
     fn escaped_simple_selector() {
         assert_eq!(
-            check_parse!(selector, b"\\E9m "),
-            Selector::new(vec![SelectorPart::Simple("ém".into())]),
+            check_parse(selector, b"\\E9m "),
+            Ok(Selector::new(vec![SelectorPart::Simple("ém".into())])),
         )
     }
 
     #[test]
     fn selector2() {
         assert_eq!(
-            check_parse!(selector, b"foo bar "),
-            Selector::new(vec![
+            check_parse(selector, b"foo bar "),
+            Ok(Selector::new(vec![
                 SelectorPart::Simple("foo".into()),
                 SelectorPart::Descendant,
                 SelectorPart::Simple("bar".into()),
-            ]),
+            ])),
         )
     }
 
     #[test]
     fn child_selector() {
         assert_eq!(
-            check_parse!(selector, b"foo > bar "),
-            Selector::new(vec![
+            check_parse(selector, b"foo > bar "),
+            Ok(Selector::new(vec![
                 SelectorPart::Simple("foo".into()),
                 SelectorPart::RelOp(b'>'),
                 SelectorPart::Simple("bar".into()),
-            ]),
+            ])),
         )
     }
 
     #[test]
     fn foo1_selector() {
         assert_eq!(
-            check_parse!(selector, b"[data-icon='test-1'] "),
-            Selector::new(vec![SelectorPart::Attribute {
+            check_parse(selector, b"[data-icon='test-1'] "),
+            Ok(Selector::new(vec![SelectorPart::Attribute {
                 name: "data-icon".into(),
                 op: "=".into(),
                 val: SassString::new(
@@ -174,42 +175,42 @@ mod test {
                     Quotes::Single,
                 ),
                 modifier: None,
-            }]),
+            }])),
         )
     }
 
     #[test]
     fn pseudo_selector() {
         assert_eq!(
-            check_parse!(selector, b":before "),
-            Selector::new(vec![SelectorPart::Pseudo {
+            check_parse(selector, b":before "),
+            Ok(Selector::new(vec![SelectorPart::Pseudo {
                 name: "before".into(),
                 arg: None,
-            }]),
+            }])),
         )
     }
     #[test]
     fn pseudo_on_simple_selector() {
         assert_eq!(
-            check_parse!(selector, b"figure:before "),
-            Selector::new(vec![
+            check_parse(selector, b"figure:before "),
+            Ok(Selector::new(vec![
                 SelectorPart::Simple("figure".into()),
                 SelectorPart::Pseudo {
                     name: "before".into(),
                     arg: None,
                 },
-            ]),
+            ])),
         )
     }
 
     #[test]
     fn selectors_simple() {
         assert_eq!(
-            check_parse!(selectors, b"foo, bar "),
-            Selectors::new(vec![
+            check_parse(selectors, b"foo, bar "),
+            Ok(Selectors::new(vec![
                 Selector::new(vec![SelectorPart::Simple("foo".into())]),
                 Selector::new(vec![SelectorPart::Simple("bar".into())]),
-            ]),
+            ])),
         )
     }
 }

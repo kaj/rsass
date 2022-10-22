@@ -1,12 +1,3 @@
-#[cfg(test)]
-macro_rules! check_parse {
-    ($parser:ident, $value:expr) => {{
-        use crate::parser::{code_span, ParseError};
-        ParseError::check($parser(code_span($value).borrow()))
-            .unwrap_or_else(|e| panic!("{}", e))
-    }};
-}
-
 pub(crate) mod css;
 mod css_function;
 mod error;
@@ -322,16 +313,26 @@ fn media_args(input: Span) -> PResult<Value> {
     ))
 }
 
+#[cfg(test)]
+fn check_parse<T>(
+    parser: impl Fn(Span) -> PResult<T>,
+    value: &[u8],
+) -> Result<T, ParseError> {
+    ParseError::check(parser(code_span(value).borrow()))
+}
+
 #[test]
 fn test_media_args_1() {
-    check_parse!(media_args, b"#{$media} and ($key + \"-foo\": $value + 5)");
+    check_parse(media_args, b"#{$media} and ($key + \"-foo\": $value + 5)")
+        .unwrap();
 }
 #[test]
 fn test_media_args_2() {
-    check_parse!(
+    check_parse(
         media_args,
-        b"print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen"
-    );
+        b"print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen",
+    )
+    .unwrap();
 }
 
 #[cfg(test)] // TODO: Or remove this?
@@ -605,57 +606,57 @@ fn string(v: &str) -> Value {
 #[test]
 fn if_with_no_else() {
     assert_eq!(
-        check_parse!(if_statement, b"@if true { p { border: solid; } }\n"),
-        Item::IfStatement(
+        check_parse(if_statement, b"@if true { p { border: solid; } }\n"),
+        Ok(Item::IfStatement(
             Value::True,
             vec![Item::Rule(
                 selectors(code_span(b"p").borrow()).unwrap().1,
                 vec![Item::Property("border".into(), string("solid"))],
             )],
             vec![],
-        ),
+        )),
     )
 }
 
 #[test]
 fn test_simple_property() {
     assert_eq!(
-        check_parse!(property_or_namespace_rule, b"color: red;\n"),
-        Item::Property(
+        check_parse(property_or_namespace_rule, b"color: red;\n"),
+        Ok(Item::Property(
             "color".into(),
             Value::Color(Rgba::from_rgb(255, 0, 0), Some("red".into())),
-        ),
+        )),
     )
 }
 
 #[test]
 fn test_property_2() {
     assert_eq!(
-        check_parse!(
+        check_parse(
             property_or_namespace_rule,
             b"background-position: 90% 50%;\n"
         ),
-        Item::Property(
+        Ok(Item::Property(
             "background-position".into(),
             Value::List(
                 vec![percentage(90), percentage(50)],
                 Some(ListSeparator::Space),
                 false,
             ),
-        ),
+        )),
     )
 }
 
 #[test]
 fn test_variable_declaration_simple() {
-    match check_parse!(variable_declaration, b"$foo: bar;") {
-        Item::VariableDeclaration {
+    match check_parse(variable_declaration, b"$foo: bar;") {
+        Ok(Item::VariableDeclaration {
             name,
             val,
             default,
             global,
             pos: _,
-        } => {
+        }) => {
             assert_eq!(
                 (name, val, default, global),
                 ("foo".into(), string("bar"), false, false)
@@ -667,14 +668,14 @@ fn test_variable_declaration_simple() {
 
 #[test]
 fn test_variable_declaration_global() {
-    match check_parse!(variable_declaration, b"$y: some value !global;") {
-        Item::VariableDeclaration {
+    match check_parse(variable_declaration, b"$y: some value !global;") {
+        Ok(Item::VariableDeclaration {
             name,
             val,
             default,
             global,
             pos: _,
-        } => {
+        }) => {
             assert_eq!(
                 (name, val, default, global),
                 (
@@ -695,14 +696,14 @@ fn test_variable_declaration_global() {
 
 #[test]
 fn test_variable_declaration_default() {
-    match check_parse!(variable_declaration, b"$y: value !default;") {
-        Item::VariableDeclaration {
+    match check_parse(variable_declaration, b"$y: value !default;") {
+        Ok(Item::VariableDeclaration {
             name,
             val,
             default,
             global,
             pos: _,
-        } => {
+        }) => {
             assert_eq!(
                 (name, val, default, global),
                 ("y".into(), string("value"), true, false,)
