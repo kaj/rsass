@@ -1,7 +1,7 @@
 use super::strings;
 use super::{opt_spacelike, PResult, Span};
 use crate::css::{CallArgs, Value};
-use crate::parser::value::number;
+use crate::parser::value::numeric;
 use crate::value::ListSeparator;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
@@ -74,7 +74,7 @@ pub fn space_list(input: Span) -> PResult<Value> {
 }
 
 fn single(input: Span) -> PResult<Value> {
-    if let Ok((rest, num)) = number(input) {
+    if let Ok((rest, num)) = numeric(input) {
         return Ok((rest, num.into()));
     }
     let (rest, string) = strings::css_string_any(input)?;

@@ -245,7 +245,7 @@ fn simple_value(input: Span) -> PResult<Value> {
         value(Value::HereSelector, tag("&")),
         unicode_range,
         bracket_list,
-        into(number),
+        into(numeric),
         variable,
         hex_color,
         value(Value::Null, tag("null")),
@@ -312,7 +312,13 @@ fn sign_prefix(input: Span) -> PResult<Option<&[u8]>> {
         .map(|(r, s)| (r, s.map(|s| s.fragment())))
 }
 
-pub fn number(input: Span) -> PResult<Numeric> {
+pub fn numeric(input: Span) -> PResult<Numeric> {
+    map(pair(number, unit), |(number, unit)| {
+        Numeric::new(number, unit)
+    })(input)
+}
+
+pub fn number(input: Span) -> PResult<Number> {
     map(
         tuple((
             sign_prefix,
@@ -321,10 +327,12 @@ pub fn number(input: Span) -> PResult<Numeric> {
                 decimal_decimals,
                 decimal_integer,
             )),
-            opt(preceded(tag("e"), tuple((sign_prefix, decimal_i32)))),
-            unit,
+            opt(preceded(
+                alt((tag("e"), tag("E"))),
+                tuple((sign_prefix, decimal_i32)),
+            )),
         )),
-        |(sign, num, exp, unit)| {
+        |(sign, num, exp)| {
             let value = if sign == Some(b"-") {
                 // Only f64-based Number can represent negative zero.
                 if num.is_zero() {
@@ -337,9 +345,9 @@ pub fn number(input: Span) -> PResult<Numeric> {
             };
             if let Some((e_sign, e_val)) = exp {
                 let e_val = if e_sign == Some(b"-") { -e_val } else { e_val };
-                Numeric::new(value * Number::from(10f64.powi(e_val)), unit)
+                value * Number::from(10f64.powi(e_val))
             } else {
-                Numeric::new(value, unit)
+                value
             }
         },
     )(input)

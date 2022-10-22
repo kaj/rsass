@@ -1,7 +1,7 @@
 //! The `calc` function is special.  A css function that is partially evaluated in sass.
 //! This should apply to `min`, `max` and `clamp` as well.
 use super::util::{opt_spacelike, spacelike2};
-use super::value::{function_call, number, special_function, variable};
+use super::value::{function_call, numeric, special_function, variable};
 use super::{ignore_comments, PResult, Span};
 use crate::sass::{CallArgs, Value};
 use crate::value::Operator;
@@ -78,7 +78,7 @@ fn single_value(input: Span) -> PResult<Value> {
         value(Value::True, tag("true")),
         value(Value::False, tag("false")),
         value(Value::HereSelector, tag("&")),
-        into(number),
+        into(numeric),
         variable,
         value(Value::Null, tag("null")),
         special_function,
