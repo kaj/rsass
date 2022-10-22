@@ -120,6 +120,13 @@ pub fn sass_string_ext(input: Span) -> PResult<SassString> {
     Ok((input, SassString::new(parts, Quotes::None)))
 }
 
+/// An unquoted string that may contain the `$` sign.
+pub fn sass_string_ext2(input: Span) -> PResult<SassString> {
+    let (input, parts) =
+        many0(alt((string_part_interpolation, extended_part2)))(input)?;
+    Ok((input, SassString::new(parts, Quotes::None)))
+}
+
 fn unquoted_first_part(input: Span) -> PResult<String> {
     let (input, first) = alt((
         map(str_plain_part, String::from),
@@ -409,6 +416,17 @@ pub fn extended_part(input: Span) -> PResult<StringPart> {
     let (input, part) = map_res(
         recognize(pair(
             verify(take_char, is_ext_str_start_char),
+            many0(verify(take_char, is_ext_str_char)),
+        )),
+        input_to_string,
+    )(input)?;
+    Ok((input, StringPart::Raw(part)))
+}
+
+fn extended_part2(input: Span) -> PResult<StringPart> {
+    let (input, part) = map_res(
+        recognize(pair(
+            verify(take_char, |c| is_ext_str_start_char(c) || *c == '$'),
             many0(verify(take_char, is_ext_str_char)),
         )),
         input_to_string,
