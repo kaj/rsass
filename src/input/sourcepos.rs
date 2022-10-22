@@ -161,7 +161,7 @@ impl SourcePos {
             ln = line_no,
             lnw = lnw,
             lpos = self.start - start, // TODO: Count visible char width
-            mark = marker.to_string().repeat(self.end - self.start), // DITO
+            mark = marker.to_string().repeat((self.end - self.start).max(1)), // DITO
         )?;
         if what.is_empty() {
             writeln!(out)

@@ -46,7 +46,7 @@ impl From<nom::error::Error<Span<'_>>> for ParseError {
     fn from(err: nom::error::Error<Span>) -> Self {
         ParseError::new(
             format!("Parse error: {:?}", err.code),
-            err.input.to_owned(),
+            err.input.up_to(&err.input).to_owned(),
         )
     }
 }
