@@ -23,6 +23,7 @@ project adheres to
 * Moved the `SourcePos` type into the `input` module and converted it from
   keeping a copy of the relevant line to keeping a range with a (reference
   counted) `SourceFile` (PR #158).
+* Changed `css::Item::AtRule` to wrap the new type `css::AtRule`.
 * Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.
 * Updated clap to 4.0 for the command-line interface.
 * Updated sass-spec test suite to 2022-09-21.

@@ -1,4 +1,5 @@
 //! Types for css values and rules.
+mod atrule;
 mod call_args;
 mod comment;
 mod item;
@@ -9,6 +10,7 @@ mod util;
 mod value;
 mod valueformat;
 
+pub use self::atrule::{AtRule, AtRuleBodyItem};
 pub use self::call_args::CallArgs;
 pub use self::comment::Comment;
 pub use self::item::{Import, Item};

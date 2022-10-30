@@ -1,4 +1,4 @@
-use super::{Comment, CssString, Property, Rule, Value};
+use super::{AtRule, Comment, CssString, Rule, Value};
 use crate::output::CssBuf;
 use std::io::{self, Write};
 
@@ -12,7 +12,7 @@ pub enum Item {
     /// A css rule.
     Rule(Rule),
     /// An `@` rule, e.g. `@media ... { ... }`
-    AtRule(String, String, Vec<AtRuleBodyItem>),
+    AtRule(AtRule),
 }
 
 impl Item {
@@ -21,17 +21,7 @@ impl Item {
             Item::Comment(comment) => comment.write(buf),
             Item::Import(import) => import.write(buf)?,
             Item::Rule(rule) => rule.write(buf)?,
-            Item::AtRule(name, args, body) => {
-                write!(buf, "@{}", name)?;
-                if !args.is_empty() {
-                    write!(buf, " {}", args)?;
-                }
-                buf.start_block();
-                for item in body {
-                    item.write(buf)?;
-                }
-                buf.end_block();
-            }
+            Item::AtRule(atrule) => atrule.write(buf)?,
         }
         Ok(())
     }
@@ -52,43 +42,9 @@ impl From<Rule> for Item {
         Item::Rule(rule)
     }
 }
-
-#[derive(Clone, Debug)]
-pub enum AtRuleBodyItem {
-    Import(Import),
-    Comment(Comment),
-    Rule(Rule),
-    Property(Property),
-}
-impl AtRuleBodyItem {
-    pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
-        match self {
-            AtRuleBodyItem::Import(import) => import.write(buf)?,
-            AtRuleBodyItem::Comment(comment) => comment.write(buf),
-            AtRuleBodyItem::Rule(rule) => rule.write(buf)?,
-            AtRuleBodyItem::Property(property) => property.write(buf),
-        }
-        Ok(())
-    }
-}
-impl From<Rule> for AtRuleBodyItem {
-    fn from(rule: Rule) -> Self {
-        AtRuleBodyItem::Rule(rule)
-    }
-}
-impl From<Comment> for AtRuleBodyItem {
-    fn from(rule: Comment) -> Self {
-        AtRuleBodyItem::Comment(rule)
-    }
-}
-impl From<Import> for AtRuleBodyItem {
-    fn from(rule: Import) -> Self {
-        AtRuleBodyItem::Import(rule)
-    }
-}
-impl From<Property> for AtRuleBodyItem {
-    fn from(rule: Property) -> Self {
-        AtRuleBodyItem::Property(rule)
+impl From<AtRule> for Item {
+    fn from(value: AtRule) -> Self {
+        Item::AtRule(value)
     }
 }
 

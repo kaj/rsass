@@ -6,7 +6,7 @@ mod values;
 pub(crate) use self::selectors::{selector, selector_part, selectors};
 
 use super::{util::opt_spacelike, PResult, Span};
-use crate::css::{Comment, Import, Item, Value};
+use crate::css::{AtRule, Comment, Import, Item, Value};
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, tag_no_case};
 use nom::combinator::{
@@ -65,7 +65,10 @@ fn top_level_item(input: Span) -> PResult<Item> {
                         map(tag(";"), |_| Vec::new()),
                     )),
                 )(input)?;
-                Ok((input, Item::AtRule(name, args.trim().to_string(), body)))
+                Ok((
+                    input,
+                    AtRule::new(name, args.trim().to_string(), body).into(),
+                ))
             }
         }
         _ => into(rule::rule)(input),
