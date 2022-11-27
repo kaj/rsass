@@ -34,11 +34,11 @@ mod error {
         #[test]
         fn too_high() {
             assert_eq!(
-                runner().err("a {b: invert(red, 100.001)}\n"),
-                "Error: $weight: Expected 100.001 to be within 0 and 100.\
+                runner().err("a {b: invert(red, 100.001%)}\n"),
+                "Error: $weight: Expected 100.001% to be within 0% and 100%.\
          \n  ,\
-         \n1 | a {b: invert(red, 100.001)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^\
+         \n1 | a {b: invert(red, 100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
             );
@@ -46,11 +46,11 @@ mod error {
         #[test]
         fn too_low() {
             assert_eq!(
-                runner().err("a {b: invert(red, -0.001)}\n"),
-                "Error: $weight: Expected -0.001 to be within 0 and 100.\
+                runner().err("a {b: invert(red, -0.001%)}\n"),
+                "Error: $weight: Expected -0.001% to be within 0% and 100%.\
          \n  ,\
-         \n1 | a {b: invert(red, -0.001)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^\
+         \n1 | a {b: invert(red, -0.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
             );
@@ -167,6 +167,34 @@ fn turquoise() {
          \n  b: #bf1f2f;\
          \n}\n"
     );
+}
+mod units {
+    #[allow(unused)]
+    use super::runner;
+
+    mod weight {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn unitless() {
+            assert_eq!(
+                runner().ok("a {b: invert(turquoise, 10)}\n"),
+                "a {\
+         \n  b: #4dcdc0;\
+         \n}\n"
+            );
+        }
+        #[test]
+        fn unknown() {
+            assert_eq!(
+                runner().ok("a {b: invert(turquoise, 10px)}\n"),
+                "a {\
+         \n  b: #4dcdc0;\
+         \n}\n"
+            );
+        }
+    }
 }
 mod weighted {
     #[allow(unused)]

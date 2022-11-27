@@ -101,11 +101,10 @@ mod raw {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn lowercase() {
             assert_eq!(
                 runner().ok("@media ((a) and (b)) {x {y: z}}\n"),
-                "@media (b) {\
+                "@media ((a) and (b)) {\
          \n  x {\
          \n    y: z;\
          \n  }\
@@ -117,7 +116,7 @@ mod raw {
         fn mixed_case() {
             assert_eq!(
                 runner().ok("@media ((a) AnD (b)) {x {y: z}}\n"),
-                "@media (a AnD b) {\
+                "@media ((a) and (b)) {\
          \n  x {\
          \n    y: z;\
          \n  }\
@@ -126,11 +125,10 @@ mod raw {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn different_than_top_level() {
         assert_eq!(
             runner().ok("@media (a) and ((b) or (c)) {x {y: z}}\n"),
-            "@media (a) and (b) {\
+            "@media (a) and ((b) or (c)) {\
          \n  x {\
          \n    y: z;\
          \n  }\
@@ -146,7 +144,7 @@ mod raw {
         fn lowercase() {
             assert_eq!(
                 runner().ok("@media (not (a)) {x {y: z}}\n"),
-                "@media (false) {\
+                "@media not (a) {\
          \n  x {\
          \n    y: z;\
          \n  }\
@@ -158,7 +156,7 @@ mod raw {
         fn mixed_case() {
             assert_eq!(
                 runner().ok("@media (NoT (a)) {x {y: z}}\n"),
-                "@media (NoT a) {\
+                "@media not (a) {\
          \n  x {\
          \n    y: z;\
          \n  }\
@@ -171,11 +169,10 @@ mod raw {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn lowercase() {
             assert_eq!(
                 runner().ok("@media ((a) or (b)) {x {y: z}}\n"),
-                "@media (a) {\
+                "@media ((a) or (b)) {\
          \n  x {\
          \n    y: z;\
          \n  }\
@@ -187,7 +184,7 @@ mod raw {
         fn mixed_case() {
             assert_eq!(
                 runner().ok("@media ((a) Or (b)) {x {y: z}}\n"),
-                "@media (a Or b) {\
+                "@media ((a) or (b)) {\
          \n  x {\
          \n    y: z;\
          \n  }\

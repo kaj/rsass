@@ -1,6 +1,6 @@
 use super::{clamp, Rational};
 use crate::output::{Format, Formatted};
-use crate::value::Number;
+use crate::value::{Number, Numeric, Unit};
 use num_traits::{one, zero, Signed};
 use std::fmt::{self, Display};
 
@@ -82,14 +82,14 @@ fn deg_mod(value: Rational) -> Rational {
 
 impl<'a> Display for Formatted<'a, Hsla> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        // The byte-version of alpha is not used here.
         let hsla = self.value;
+        let hue = Numeric::new(hsla.hue, Unit::Deg);
         let a = hsla.alpha;
         if a >= one() {
             write!(
                 out,
-                "hsl({}deg, {}%, {}%)",
-                hsla.hue,
+                "hsl({}, {}%, {}%)",
+                hue.format(self.format),
                 hsla.sat * 100,
                 hsla.lum * 100
             )
@@ -97,8 +97,8 @@ impl<'a> Display for Formatted<'a, Hsla> {
             let a = Number::from(a);
             write!(
                 out,
-                "hsla({}deg, {}%, {}%, {})",
-                hsla.hue,
+                "hsla({}, {}%, {}%, {})",
+                hue.format(self.format),
                 hsla.sat * 100,
                 hsla.lum * 100,
                 a.format(self.format)

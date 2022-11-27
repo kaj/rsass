@@ -31,13 +31,12 @@ mod hue {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn rad() {
         assert_eq!(
             runner().ok("@use \'sass:color\';\
              \na {b: color.hwb(1rad, 30%, 40%)}\n"),
             "a {\
-         \n  b: #994e4d;\
+         \n  b: #99964d;\
          \n}\n"
         );
     }

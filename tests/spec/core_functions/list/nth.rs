@@ -228,3 +228,13 @@ fn non_list() {
          \n}\n"
     );
 }
+#[test]
+#[ignore] // unexepected error
+fn units() {
+    assert_eq!(
+        runner().ok("a {b: nth(c d, 1px)}\n"),
+        "a {\
+         \n  b: c;\
+         \n}\n"
+    );
+}

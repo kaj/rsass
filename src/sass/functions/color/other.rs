@@ -1,7 +1,7 @@
 use super::{
     check_alpha_pm, check_alpha_range, check_channel_pm, check_channel_range,
-    check_expl_pct, check_rational, expected_to, make_call, CallError,
-    CheckedArg, FunctionMap, Name,
+    check_expl_pct, check_hue, expected_to, make_call, CallError, CheckedArg,
+    FunctionMap, Name,
 };
 use crate::css::{CallArgs, Value};
 use crate::value::{Color, Hsla, Hwba, Numeric, Rational, RgbFormat, Rgba};
@@ -26,7 +26,7 @@ pub fn register(f: &mut Scope) {
         let red = take_opt(&mut args, name!(red), check_channel_pm)?;
         let gre = take_opt(&mut args, name!(green), check_channel_pm)?;
         let blu = take_opt(&mut args, name!(blue), check_channel_pm)?;
-        let hue = take_opt(&mut args, name!(hue), check_rational)?;
+        let hue = take_opt(&mut args, name!(hue), check_hue)?;
         let sat = take_opt(&mut args, name!(saturation), check_pct_pm)?;
         let lig = take_opt(&mut args, name!(lightness), check_pct_pm)?;
         let bla = take_opt(&mut args, name!(blackness), check_pct_expl_pm)?;
@@ -158,7 +158,7 @@ pub fn register(f: &mut Scope) {
         let red = take_opt(&mut args, name!(red), check_channel_range)?;
         let gre = take_opt(&mut args, name!(green), check_channel_range)?;
         let blu = take_opt(&mut args, name!(blue), check_channel_range)?;
-        let hue = take_opt(&mut args, name!(hue), check_rational)?;
+        let hue = take_opt(&mut args, name!(hue), check_hue)?;
         let sat =
             take_opt(&mut args, name!(saturation), check_pct_opt_range)?;
         let lig = take_opt(&mut args, name!(lightness), check_pct_opt_range)?;

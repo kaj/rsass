@@ -34,6 +34,7 @@ mod alpha {
         );
     }
     #[test]
+    #[ignore] // wrong error
     fn unit() {
         assert_eq!(
         runner().err(
@@ -41,7 +42,15 @@ mod alpha {
              \n// fully forbidden (sass/sass#3374).\
              \na {b: adjust-color(red, $alpha: 50%)}\n"
         ),
-        "Error: $alpha: Expected 50% to be within -1 and 1.\
+        "DEPRECATION WARNING: $alpha: Passing a number with unit % is deprecated.\n\
+         \nTo preserve current behavior: calc($alpha / 1%)\n\
+         \nMore info: https://sass-lang.com/d/function-units\n\
+         \n  ,\
+         \n3 | a {b: adjust-color(red, $alpha: 50%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n    input.scss 3:7  root stylesheet\n\
+         \nError: $alpha: Expected 50% to be within -1 and 1.\
          \n  ,\
          \n3 | a {b: adjust-color(red, $alpha: 50%)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -215,7 +224,8 @@ mod lightness {
              \na {b: adjust-color(red, $lightness: 200px)}\n"
         ),
         "DEPRECATION WARNING: $lightness: Passing a number without unit % (200px) is deprecated.\n\
-         \nTo preserve current behavior: $lightness / 1px * 1%\n\
+         \nTo preserve current behavior: calc($lightness / 1px * 1%)\n\
+         \nMore info: https://sass-lang.com/d/function-units\n\
          \n  ,\
          \n3 | a {b: adjust-color(red, $lightness: 200px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
@@ -317,7 +327,8 @@ mod saturation {
              \na {b: adjust-color(red, $saturation: 200px)}\n"
         ),
         "DEPRECATION WARNING: $saturation: Passing a number without unit % (200px) is deprecated.\n\
-         \nTo preserve current behavior: $saturation / 1px * 1%\n\
+         \nTo preserve current behavior: calc($saturation / 1px * 1%)\n\
+         \nMore info: https://sass-lang.com/d/function-units\n\
          \n  ,\
          \n3 | a {b: adjust-color(red, $saturation: 200px)}\
          \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\

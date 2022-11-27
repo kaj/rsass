@@ -24,9 +24,11 @@ project adheres to
   keeping a copy of the relevant line to keeping a range with a (reference
   counted) `SourceFile` (PR #158).
 * Changed `css::Item::AtRule` to wrap the new type `css::AtRule`.
+* Changed handling of `hue` arguments to color functions, to allow
+  different angle units, matching updates in sass-spec.
 * Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.
 * Updated clap to 4.0 for the command-line interface.
-* Updated sass-spec test suite to 2022-09-21.
+* Updated sass-spec test suite to 2022-11-10.
 
 
 ## Release 0.26.0

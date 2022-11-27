@@ -14,7 +14,7 @@ mod hue {
         assert_eq!(
             runner().ok("a {b: hsl(60rad, 100%, 50%)}\n"),
             "a {\
-         \n  b: hsl(60deg, 100%, 50%);\
+         \n  b: hsl(197.7467707849deg, 100%, 50%);\
          \n}\n"
         );
     }

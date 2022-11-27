@@ -24,7 +24,7 @@ fn test() {
          \n    foo: bar;\
          \n  }\
          \n}\
-         \n@media (false), print and (color) {\
+         \n@media not (color), print and (color) {\
          \n  a {\
          \n    foo: bar;\
          \n  }\

@@ -1,8 +1,7 @@
 use super::channels::Channels;
 use super::{
-    check_alpha, check_pct, check_pct_range, check_rational, eval_inner,
-    is_not, is_special, make_call, CallError, CheckedArg, FunctionMap,
-    ResolvedArgs,
+    check_alpha, check_amount, check_hue, check_pct, eval_inner, is_not,
+    is_special, make_call, CallError, CheckedArg, FunctionMap, ResolvedArgs,
 };
 use crate::css::{CallArgs, Value};
 use crate::output::Format;
@@ -54,7 +53,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     let mut f = Scope::builtin_module("sass:color");
     def!(f, adjust_hue(color, degrees), |s| {
         let col = s.get::<Color>(name!(color))?;
-        if let Some(adj) = s.get_opt_map(name!(degrees), check_rational)? {
+        if let Some(adj) = s.get_opt_map(name!(degrees), check_hue)? {
             Ok(col.rotate_hue(adj).into())
         } else {
             Ok(col.into())
@@ -63,13 +62,13 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     def!(f, darken(color, amount), |s| {
         let col = s.get::<Color>(name!(color))?;
         let col = col.to_hsla();
-        let lum = col.lum() - s.get_map(name!(amount), check_pct_range)?;
+        let lum = col.lum() - s.get_map(name!(amount), check_amount)?;
         Ok(Hsla::new(col.hue(), col.sat(), lum, col.alpha(), false).into())
     });
     def!(f, desaturate(color, amount), |s| {
         let col = s.get::<Color>(name!(color))?;
         let col = col.to_hsla();
-        let sat = col.sat() - s.get_map(name!(amount), check_pct_range)?;
+        let sat = col.sat() - s.get_map(name!(amount), check_amount)?;
         Ok(Hsla::new(col.hue(), sat, col.lum(), col.alpha(), false).into())
     });
     def_va!(f, saturate(kwargs), |s| {
@@ -79,7 +78,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         match eval_inner(&name!(saturate), &a1, s, args.clone()) {
             Ok(s) => {
                 let col = s.get::<Color>(name!(color))?;
-                let sat = s.get_map(name!(amount), check_pct_range)?;
+                let sat = s.get_map(name!(amount), check_amount)?;
                 let col = col.to_hsla();
                 let sat = col.sat() + sat;
                 Ok(Hsla::new(col.hue(), sat, col.lum(), col.alpha(), false)
@@ -98,7 +97,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     def!(f, lighten(color, amount), |s| {
         let col = s.get::<Color>(name!(color))?;
         let col = col.to_hsla();
-        let lum = col.lum() + s.get_map(name!(amount), check_pct_range)?;
+        let lum = col.lum() + s.get_map(name!(amount), check_amount)?;
         Ok(Hsla::new(col.hue(), col.sat(), lum, col.alpha(), false).into())
     });
     for (gname, lname) in &[
@@ -167,7 +166,7 @@ fn hsla_from_values(
         Err(CallError::msg("Missing argument $lightness."))
     } else {
         Ok(Hsla::new(
-            check_rational(h).named(name!(hue))?,
+            check_hue(h).named(name!(hue))?,
             check_pct_opt(s).named(name!(saturation))?,
             check_pct_opt(l).named(name!(lightness))?,
             check_alpha(a).named(name!(alpha))?,
@@ -189,8 +188,11 @@ fn check_pct_opt(v: Value) -> Result<Rational, String> {
         // Note: The deprecation warning should include the parameter name
         // and line of call, but we don't have that here.
         dep_warn!(
-            "Passing a number without unit % ({}) is deprecated.",
-            v.format(Format::introspect())
+            "Passing a number without unit % ({}) is deprecated.\
+             \nTo preserve current behavior: calc($weight / 1{} * 1%)\
+             \nMore info: https://sass-lang.com/d/function-units",
+            v.format(Format::introspect()),
+            v.unit
         );
     }
     Ok(v.as_ratio()? / 100)

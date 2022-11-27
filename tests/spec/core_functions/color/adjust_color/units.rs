@@ -5,6 +5,38 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("units")
 }
 
+mod alpha {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn percent() {
+        assert_eq!(
+            runner().ok("a {b: adjust-color(red, $alpha: -0.3%)}\n"),
+            "a {\
+         \n  b: rgba(255, 0, 0, 0.7);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn unitless() {
+        assert_eq!(
+            runner().ok("a {b: adjust-color(red, $alpha: -0.3)}\n"),
+            "a {\
+         \n  b: rgba(255, 0, 0, 0.7);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn unknown() {
+        assert_eq!(
+            runner().ok("a {b: adjust-color(red, $alpha: -0.3px)}\n"),
+            "a {\
+         \n  b: rgba(255, 0, 0, 0.7);\
+         \n}\n"
+        );
+    }
+}
 mod hue {
     #[allow(unused)]
     use super::runner;
@@ -14,7 +46,7 @@ mod hue {
         assert_eq!(
             runner().ok("a {b: adjust-color(red, $hue: 60rad)}\n"),
             "a {\
-         \n  b: yellow;\
+         \n  b: #00b4ff;\
          \n}\n"
         );
     }

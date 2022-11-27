@@ -243,3 +243,13 @@ fn non_list() {
          \n}\n"
     );
 }
+#[test]
+#[ignore] // unexepected error
+fn units() {
+    assert_eq!(
+        runner().ok("a {b: set-nth(c d, 1px, e)}\n"),
+        "a {\
+         \n  b: e d;\
+         \n}\n"
+    );
+}

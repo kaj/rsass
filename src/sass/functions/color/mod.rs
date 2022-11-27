@@ -91,10 +91,39 @@ fn check_alpha_pm(v: Value) -> Result<Rational, String> {
     }
 }
 
+fn check_hue(v: Value) -> Result<Rational, String> {
+    let v = Numeric::try_from(v)?;
+    let v = match v.as_unit_def(Unit::Deg) {
+        Some(v) => v,
+        None => {
+            dep_warn!(
+                "$hue: Passing a unit other than deg ({}) is deprecated.\
+                 \nTo preserve current behavior: calc($hue / 1{})\
+                 \nSee https://sass-lang.com/d/function-units",
+                v.format(Format::introspect()),
+                v.unit
+            );
+            v.value
+        }
+    };
+    v.as_ratio().map_err(|e| e.to_string())
+}
+
 fn check_pct(v: Value) -> Result<Number, String> {
     let val = Numeric::try_from(v)?;
-    val.as_unit_def(Unit::Percent)
-        .ok_or_else(|| expected_to(&val, "have unit \"%\""))
+    match val.as_unit_def(Unit::Percent) {
+        Some(v) => Ok(v),
+        None => {
+            dep_warn!(
+                "Passing a number without unit % ({}) is deprecated.\
+                 \nTo preserve current behavior: calc($weight / 1{} * 1%)\
+                 \nMore info: https://sass-lang.com/d/function-units",
+                val.format(Format::introspect()),
+                val.unit
+            );
+            Ok(val.value)
+        }
+    }
 }
 
 fn check_expl_pct(v: Value) -> Result<Rational, String> {
@@ -112,13 +141,22 @@ fn check_expl_pct(v: Value) -> Result<Rational, String> {
 fn check_pct_range(v: Value) -> Result<Rational, String> {
     let val = check_pct(v)?;
     if val < zero() || val > 100.into() {
-        Err(expected_to(&val, "be within 0 and 100"))
+        Err(expected_to(
+            &Numeric::new(val, Unit::Percent),
+            "be within 0% and 100%",
+        ))
     } else {
         Ok(val.as_ratio()? / 100)
     }
 }
-fn check_rational(v: Value) -> Result<Rational, String> {
-    Ok(Numeric::try_from(v)?.as_ratio()?)
+
+fn check_amount(v: Value) -> Result<Rational, String> {
+    let val = check_pct(v)?;
+    if val < zero() || val > 100.into() {
+        Err(expected_to(&val, "be within 0 and 100"))
+    } else {
+        Ok(val.as_ratio()? / 100)
+    }
 }
 
 fn check_channel(v: Value) -> Result<Rational, String> {

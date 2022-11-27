@@ -152,7 +152,7 @@ mod units {
         assert_eq!(
             runner().ok("a {b: adjust-hue(red, 60rad)}\n"),
             "a {\
-         \n  b: yellow;\
+         \n  b: #00b4ff;\
          \n}\n"
         );
     }

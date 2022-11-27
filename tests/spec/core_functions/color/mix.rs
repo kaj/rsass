@@ -165,11 +165,11 @@ mod error {
         #[test]
         fn too_high() {
             assert_eq!(
-                runner().err("a {b: mix(red, blue, 100.001)}\n"),
-                "Error: $weight: Expected 100.001 to be within 0 and 100.\
+                runner().err("a {b: mix(red, blue, 100.001%)}\n"),
+                "Error: $weight: Expected 100.001% to be within 0% and 100%.\
          \n  ,\
-         \n1 | a {b: mix(red, blue, 100.001)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n1 | a {b: mix(red, blue, 100.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
             );
@@ -177,11 +177,11 @@ mod error {
         #[test]
         fn too_low() {
             assert_eq!(
-                runner().err("a {b: mix(red, blue, -0.001)}\n"),
-                "Error: $weight: Expected -0.001 to be within 0 and 100.\
+                runner().err("a {b: mix(red, blue, -0.001%)}\n"),
+                "Error: $weight: Expected -0.001% to be within 0% and 100%.\
          \n  ,\
-         \n1 | a {b: mix(red, blue, -0.001)}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n1 | a {b: mix(red, blue, -0.001%)}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 1:7  root stylesheet",
             );
@@ -322,27 +322,32 @@ fn named() {
          \n}\n"
     );
 }
-mod unitless_weight {
+mod units {
     #[allow(unused)]
     use super::runner;
 
-    #[test]
-    fn firstwards() {
-        assert_eq!(
-            runner().ok("a {b: mix(#91e16f, #0144bf, 92)}\n"),
-            "a {\
-         \n  b: #85d475;\
+    mod weight {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn unitless() {
+            assert_eq!(
+                runner().ok("a {b: mix(#91e16f, #0144bf, 50)}\n"),
+                "a {\
+         \n  b: #499397;\
          \n}\n"
-        );
-    }
-    #[test]
-    fn lastwards() {
-        assert_eq!(
-            runner().ok("a {b: mix(#91e16f, #0144bf, 43)}\n"),
-            "a {\
-         \n  b: #3f889d;\
+            );
+        }
+        #[test]
+        fn unknown() {
+            assert_eq!(
+                runner().ok("a {b: mix(#91e16f, #0144bf, 50px)}\n"),
+                "a {\
+         \n  b: #499397;\
          \n}\n"
-        );
+            );
+        }
     }
 }
 mod unweighted {

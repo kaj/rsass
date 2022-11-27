@@ -7,6 +7,8 @@ fn runner() -> crate::TestRunner {
 
 mod bubbling;
 
+mod indentation;
+
 mod logic;
 
 mod range;
