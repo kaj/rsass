@@ -156,6 +156,14 @@ pub enum Invalid {
     DuplicateArgument,
     /// Positional arguments must come before keyword arguments.
     PositionalArgAfterNamed,
+    /// Declarations may only be used within style rules.
+    DeclarationOutsideRule,
+    /// Only properties are valid inside namespace rules.
+    InNsRule,
+    /// Global custom property not allowed.
+    GlobalCustomProperty,
+    /// Global namespaced property not allowed.
+    GlobalNsProperty,
     /// Some invalid scope operation.
     InScope(ScopeError),
     /// An `@error` reached.
@@ -194,8 +202,36 @@ impl fmt::Display for Invalid {
                 "Positional arguments must come before keyword arguments."
                     .fmt(out)
             }
+            Invalid::DeclarationOutsideRule => {
+                "Declarations may only be used within style rules.".fmt(out)
+            }
+            Invalid::InNsRule => {
+                "Only properties are valid inside namespace rules.".fmt(out)
+            }
+            Invalid::GlobalCustomProperty => {
+                "Global custom property not allowed.".fmt(out)
+            }
+            Invalid::GlobalNsProperty => {
+                "Global namespaced property not allowed.".fmt(out)
+            }
             Invalid::InScope(err) => err.fmt(out),
             Invalid::AtError(msg) => msg.fmt(out),
         }
+    }
+}
+
+pub(crate) trait ResultPos<T> {
+    /// Someting bad happened at a given source position.
+    fn at(self, pos: &SourcePos) -> Result<T, Error>;
+    /// Something bad happened, but we don't know the position.
+    /// This is probably room for improvement in rsass error handling.
+    fn no_pos(self) -> Result<T, Error>;
+}
+impl<T> ResultPos<T> for Result<T, Invalid> {
+    fn at(self, pos: &SourcePos) -> Result<T, Error> {
+        self.map_err(|e| e.at(pos.clone()))
+    }
+    fn no_pos(self) -> Result<T, Error> {
+        self.map_err(|e| Error::error(e.to_string()))
     }
 }

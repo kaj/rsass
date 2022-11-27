@@ -1,4 +1,4 @@
-use super::{Comment, Import, Property, Rule};
+use super::{Comment, Import, Property, Rule, Value};
 use crate::output::CssBuf;
 use std::io::{self, Write};
 
@@ -9,28 +9,37 @@ use std::io::{self, Write};
 #[derive(Clone, Debug)]
 pub struct AtRule {
     name: String,
-    args: String, // TODO: More typed?  Value? Or separate types for @media etc?
-    body: Vec<AtRuleBodyItem>,
+    args: Value,
+    // Some<[]> outputs "{}", None outputs ";".
+    body: Option<Vec<AtRuleBodyItem>>,
 }
 
 impl AtRule {
     pub(crate) fn new(
         name: String,
-        args: String,
-        body: Vec<AtRuleBodyItem>,
+        args: Value,
+        body: Option<Vec<AtRuleBodyItem>>,
     ) -> Self {
         AtRule { name, args, body }
     }
+    pub(crate) fn no_body(&self) -> bool {
+        self.body.is_none()
+    }
     pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
+        buf.do_indent_no_nl();
         write!(buf, "@{}", self.name)?;
-        if !self.args.is_empty() {
-            write!(buf, " {}", self.args)?;
+        if !self.args.is_null() {
+            write!(buf, " {}", self.args.format(buf.format()))?;
         }
-        buf.start_block();
-        for item in &self.body {
-            item.write(buf)?;
+        if let Some(body) = &self.body {
+            buf.start_block();
+            for item in body {
+                item.write(buf)?;
+            }
+            buf.end_block();
+        } else {
+            buf.add_one(";\n", ";");
         }
-        buf.end_block();
         Ok(())
     }
 }
@@ -46,6 +55,8 @@ pub enum AtRuleBodyItem {
     Rule(Rule),
     /// A raw property.
     Property(Property),
+    /// An `@` rule.
+    AtRule(AtRule),
 }
 
 impl AtRuleBodyItem {
@@ -55,6 +66,7 @@ impl AtRuleBodyItem {
             AtRuleBodyItem::Comment(comment) => comment.write(buf),
             AtRuleBodyItem::Rule(rule) => rule.write(buf)?,
             AtRuleBodyItem::Property(property) => property.write(buf),
+            AtRuleBodyItem::AtRule(rule) => rule.write(buf)?,
         }
         Ok(())
     }
@@ -77,5 +89,10 @@ impl From<Import> for AtRuleBodyItem {
 impl From<Property> for AtRuleBodyItem {
     fn from(rule: Property) -> Self {
         AtRuleBodyItem::Property(rule)
+    }
+}
+impl From<AtRule> for AtRuleBodyItem {
+    fn from(rule: AtRule) -> Self {
+        AtRuleBodyItem::AtRule(rule)
     }
 }

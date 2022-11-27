@@ -116,20 +116,22 @@ impl ScopeRef {
                     }
                     None
                 }
+                Item::Debug(ref value) => {
+                    eprintln!(
+                        "DEBUG: {}",
+                        value.evaluate(self.clone())?.introspect()
+                    );
+                    None
+                }
                 Item::Warn(ref value) => {
                     eprintln!(
                         "WARNING: {}",
-                        value
-                            .evaluate(self.clone())?
-                            .format(self.get_format())
+                        value.evaluate(self.clone())?.introspect()
                     );
                     None
                 }
                 Item::Error(ref value, ref pos) => {
-                    let msg = value
-                        .evaluate(self)?
-                        .format(Format::introspect())
-                        .to_string();
+                    let msg = value.evaluate(self)?.introspect().to_string();
                     return Err(Invalid::AtError(msg).at(pos.clone()));
                 }
                 Item::None => None,

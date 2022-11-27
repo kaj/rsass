@@ -1,4 +1,4 @@
-use super::{Comment, CssString, Import, Selectors, Value};
+use super::{AtRule, Comment, CssString, Import, Selectors, Value};
 use crate::output::CssBuf;
 use std::io::{self, Write};
 
@@ -55,6 +55,8 @@ pub enum BodyItem {
     CustomProperty(String, CssString),
     /// A comment
     Comment(Comment),
+    /// Empty at-rules are allowed in a rule body.
+    ARule(AtRule),
 }
 
 impl BodyItem {
@@ -80,6 +82,7 @@ impl BodyItem {
                 )?;
                 buf.add_one(";\n", ";");
             }
+            BodyItem::ARule(rule) => rule.write(buf)?,
         }
         Ok(())
     }
@@ -101,6 +104,18 @@ impl From<Property> for BodyItem {
     }
 }
 
+impl TryFrom<AtRule> for BodyItem {
+    type Error = AtRule;
+
+    fn try_from(value: AtRule) -> Result<Self, Self::Error> {
+        if value.no_body() {
+            Ok(BodyItem::ARule(value))
+        } else {
+            Err(value)
+        }
+    }
+}
+
 /// A css property; a name and [Value].
 #[derive(Clone, Debug)]
 pub struct Property {
@@ -112,15 +127,6 @@ impl Property {
     /// Create a new Property.
     pub fn new(name: String, value: Value) -> Self {
         Property { name, value }
-    }
-    /// Return this property but with a prefix.
-    ///
-    /// The prefix is separated from the old name with a dash.
-    pub fn prefix(self, prefix: &str) -> Self {
-        Property {
-            name: format!("{}-{}", prefix, self.name),
-            value: self.value,
-        }
     }
     pub(crate) fn write(&self, buf: &mut CssBuf) {
         buf.do_indent_no_nl();

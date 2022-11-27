@@ -23,7 +23,6 @@ mod at_rule {
     }
 
     #[test]
-    #[ignore] // wrong result
     fn childless() {
         let runner = runner().with_cwd("childless");
         assert_eq!(
