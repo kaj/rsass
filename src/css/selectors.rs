@@ -300,9 +300,7 @@ impl TryInto<Selector> for Value {
 // Internal, the api is try_into.
 fn value_to_selector(v: &Value) -> Result<Selector, BadSelector0> {
     match v {
-        Value::List(list, sep, _)
-            if sep == &None || sep == &Some(ListSeparator::Space) =>
-        {
+        Value::List(list, None | Some(ListSeparator::Space), _) => {
             list_to_selector(list)
         }
         Value::Literal(s) => {
