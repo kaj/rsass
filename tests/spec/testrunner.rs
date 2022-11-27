@@ -49,7 +49,7 @@ impl TestLoader {
 fn url_join(p: &str, c: &str) -> String {
     let c = c.trim_start_matches("./").replace("/./", "/");
     if p.is_empty() {
-        c.to_string()
+        c
     } else if c.is_empty() {
         p.to_string()
     } else if p.ends_with('/') {

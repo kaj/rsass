@@ -24,7 +24,7 @@ impl FsLoader {
 
     /// Create a Loader and a SourceFile from a given Path.
     pub fn for_path(path: &Path) -> Result<(Self, SourceFile), LoadError> {
-        let mut f = std::fs::File::open(&path)
+        let mut f = std::fs::File::open(path)
             .map_err(|e| LoadError::Input(path.display().to_string(), e))?;
         let (path, name) = if let Some(base) = path.parent() {
             (vec![base.to_path_buf()], path.strip_prefix(base).unwrap())

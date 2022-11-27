@@ -55,7 +55,7 @@ fn handle_suite(
         suitedir,
         String::from_utf8(
             Command::new("git")
-                .args(&["log", "-1", "--format=%h, %ai."])
+                .args(["log", "-1", "--format=%h, %ai."])
                 .current_dir(base)
                 .output()?
                 .stdout
@@ -402,9 +402,7 @@ fn fn_name(name: &str) -> String {
     let t = deunicode(name)
         .to_lowercase()
         .replace(".hrx", "")
-        .replace('/', "_")
-        .replace('-', "_")
-        .replace('.', "_");
+        .replace(['/', '-', '.'], "_");
     if t.chars().next().unwrap_or('0').is_numeric() {
         format!("t{}", t)
     } else if RUST_WORDS.contains(&t) {
