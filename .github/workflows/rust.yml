@@ -9,23 +9,12 @@ jobs:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-
-      - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          override: true
-
-      - name: Install rustfmt
-        run: rustup component add rustfmt
-
-      - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+          components: rustfmt
+      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
+      - run: cargo fmt --all -- --check
 
   check:
     name: Check
@@ -37,33 +26,22 @@ jobs:
           - 1.56.0
           - nightly
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-
-      - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
-
-      - name: Run cargo check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
+      - run: cargo check
 
   clippy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
-        components: clippy
-    - uses: actions-rs/cargo@v1
-      with:
-        command: clippy
-        args: --all-features
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
+      - run: cargo clippy --all-features
 
   test:
     name: Test Suite
@@ -78,19 +56,12 @@ jobs:
           - beta
           - nightly
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-
-      - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
-
-      - name: Run cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
+      - run: cargo test
 
   commandline:
     name: Build cli
@@ -101,17 +72,9 @@ jobs:
           - stable
           - nightly
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-
-      - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
-
-      - name: Run cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --features=commandline
+      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
+      - run: cargo build --features=commandline
