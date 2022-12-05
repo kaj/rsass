@@ -49,11 +49,7 @@ fn handle_item(
             let name = name.evaluate(scope.clone())?.take_value();
             let module = if let Some(module) = get_global_module(&name) {
                 if !with.is_empty() {
-                    return Err(Error::BadCall(
-                        "Built-in modules can\'t be configured.".into(),
-                        pos.clone(),
-                        None,
-                    ));
+                    return Err(Invalid::ConfigBuiltin).at(pos);
                 }
                 module
             } else if let Some(sourcefile) =
@@ -103,11 +99,7 @@ fn handle_item(
             let name = name.evaluate(scope.clone())?.take_value();
             let module = if let Some(module) = get_global_module(&name) {
                 if !with.is_empty() {
-                    return Err(Error::BadCall(
-                        "Built-in modules can\'t be configured.".into(),
-                        pos.clone(),
-                        None,
-                    ));
+                    return Err(Invalid::ConfigBuiltin).at(pos);
                 }
                 module
             } else if let Some(sourcefile) = file_context

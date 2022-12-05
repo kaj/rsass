@@ -27,6 +27,7 @@ project adheres to
   a tree representation of the css (and serialize it to text as a
   final step) (PR #159).
 * Changed `css::Item::AtRule` to wrap the new type `css::AtRule`.
+* More varaints of `Invalid`, slightly fewer stringy errors.
 * Changed handling of `hue` arguments to color functions, to allow
   different angle units, matching updates in sass-spec.
 * Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.

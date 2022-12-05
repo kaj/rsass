@@ -164,6 +164,8 @@ pub enum Invalid {
     GlobalCustomProperty,
     /// Global namespaced property not allowed.
     GlobalNsProperty,
+    /// Built-in modules can't be configured.
+    ConfigBuiltin,
     /// Some invalid scope operation.
     InScope(ScopeError),
     /// An `@error` reached.
@@ -213,6 +215,9 @@ impl fmt::Display for Invalid {
             }
             Invalid::GlobalNsProperty => {
                 "Global namespaced property not allowed.".fmt(out)
+            }
+            Invalid::ConfigBuiltin => {
+                "Built-in modules can\'t be configured.".fmt(out)
             }
             Invalid::InScope(err) => err.fmt(out),
             Invalid::AtError(msg) => msg.fmt(out),
