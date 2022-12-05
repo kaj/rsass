@@ -1,7 +1,7 @@
 use super::{
     CargoLoader, FsLoader, LoadError, Loader, SourceFile, SourceKind,
 };
-use crate::output::{handle_parsed, CssBuf, CssHead, Format};
+use crate::output::{handle_parsed, CssData, Format};
 use crate::{Error, ScopeRef};
 use std::{borrow::Cow, collections::BTreeMap, fmt, path::Path};
 use tracing::instrument;
@@ -146,18 +146,11 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
             .clone()
             .unwrap_or_else(|| ScopeRef::new_global(Default::default()));
         self.lock_loading(&file, false)?;
-        let mut head = CssHead::new();
-        let mut body = CssBuf::new(scope.get_format());
-        handle_parsed(
-            file.parse()?,
-            &mut head,
-            None,
-            &mut body,
-            scope,
-            &mut self,
-        )?;
+        let mut css = CssData::new();
+        let format = scope.get_format();
+        handle_parsed(file.parse()?, &mut css, scope, &mut self)?;
         self.unlock_loading(&file);
-        Ok(head.combine_final(body))
+        css.into_buffer(format)
     }
 
     /// Set the output format for this context.

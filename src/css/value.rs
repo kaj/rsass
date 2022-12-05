@@ -208,6 +208,10 @@ impl Value {
             format,
         }
     }
+    /// Format this value for error messages.
+    pub fn introspect(&self) -> Formatted<Value> {
+        self.format(Format::introspect())
+    }
 }
 
 /// Some Values are equal according to spec even with some

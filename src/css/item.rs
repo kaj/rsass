@@ -13,6 +13,8 @@ pub enum Item {
     Rule(Rule),
     /// An `@` rule, e.g. `@media ... { ... }`
     AtRule(AtRule),
+    /// An extra newline for grouping (unless compressed format).
+    Separator,
 }
 
 impl Item {
@@ -22,6 +24,7 @@ impl Item {
             Item::Import(import) => import.write(buf)?,
             Item::Rule(rule) => rule.write(buf)?,
             Item::AtRule(atrule) => atrule.write(buf)?,
+            Item::Separator => buf.opt_nl(),
         }
         Ok(())
     }

@@ -49,25 +49,31 @@ fn top_level_item(input: Span) -> PResult<Item> {
                 let (input, body) = preceded(
                     opt_spacelike,
                     alt((
-                        delimited(
-                            terminated(tag("{"), opt_spacelike),
-                            many0(terminated(
-                                alt((
-                                    into(comment),
-                                    into(preceded(tag("@import"), import2)),
-                                    into(rule::rule),
-                                    into(rule::property),
+                        map(
+                            delimited(
+                                terminated(tag("{"), opt_spacelike),
+                                many0(terminated(
+                                    alt((
+                                        into(comment),
+                                        into(preceded(
+                                            tag("@import"),
+                                            import2,
+                                        )),
+                                        into(rule::rule),
+                                        into(rule::property),
+                                    )),
+                                    opt_spacelike,
                                 )),
-                                opt_spacelike,
-                            )),
-                            tag("}"),
+                                tag("}"),
+                            ),
+                            Some,
                         ),
-                        map(tag(";"), |_| Vec::new()),
+                        map(tag(";"), |_| None),
                     )),
                 )(input)?;
                 Ok((
                     input,
-                    AtRule::new(name, args.trim().to_string(), body).into(),
+                    AtRule::new(name, args.trim().into(), body).into(),
                 ))
             }
         }
