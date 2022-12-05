@@ -75,7 +75,7 @@ impl<'a> CssDestination for RuleDest<'a> {
         let selectors = self.rule.selectors.clone();
         AtRuleDest {
             parent: self,
-            name: name.into(),
+            name,
             args,
             rule: Some(Rule::new(selectors)),
             body: Vec::new(),
@@ -215,7 +215,7 @@ impl<'a> CssDestination for AtRuleDest<'a> {
         let rule = self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()));
         AtRuleDest {
             parent: self,
-            name: name.into(),
+            name,
             args,
             rule,
             body: Vec::new(),
