@@ -50,7 +50,6 @@ mod base {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn one_fuzzy() {
         assert_eq!(
             runner().ok("@use \"sass:math\" as math;\

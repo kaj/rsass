@@ -651,7 +651,8 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                     });
 
                     if !frac.is_zero() {
-                        for _ in 0..(self.format.precision - 1) {
+                        let max_decimals = 16 - whole.log10().ceil() as usize;
+                        for _ in 1..max_decimals.min(self.format.precision) {
                             frac *= 10.;
                             write!(dec, "{}", (frac as i8).abs())?;
                             frac = frac.fract();
