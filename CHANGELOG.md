@@ -32,7 +32,7 @@ project adheres to
   different angle units, matching updates in sass-spec.
 * Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.
 * Updated clap to 4.0 for the command-line interface.
-* Updated sass-spec test suite to 2022-11-10.
+* Updated sass-spec test suite to 2022-12-08.
 
 
 ## Release 0.26.0
