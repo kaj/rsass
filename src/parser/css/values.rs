@@ -5,7 +5,7 @@ use crate::parser::value::numeric;
 use crate::value::ListSeparator;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
-use nom::combinator::{opt, peek};
+use nom::combinator::{into, peek};
 use nom::multi::{fold_many0, many0};
 use nom::sequence::{delimited, pair, preceded, terminated};
 
@@ -74,23 +74,22 @@ pub fn space_list(input: Span) -> PResult<Value> {
 }
 
 fn single(input: Span) -> PResult<Value> {
-    if let Ok((rest, num)) = numeric(input) {
-        return Ok((rest, num.into()));
-    }
+    alt((into(numeric), string_or_call))(input)
+}
+
+fn string_or_call(input: Span) -> PResult<Value> {
     let (rest, string) = strings::css_string_any(input)?;
-    if let Ok((rest, args)) = delimited(
-        terminated(tag("("), opt_spacelike),
-        opt(terminated(call_args, opt_spacelike)),
-        tag(")"),
-    )(rest)
-    {
-        Ok((
-            rest,
-            Value::Call(string.to_string(), args.unwrap_or_default()),
-        ))
-    } else {
-        Ok((rest, string.into()))
+    if string.quotes().is_none() {
+        if let Ok((rest, args)) = delimited(
+            terminated(tag("("), opt_spacelike),
+            terminated(call_args, opt_spacelike),
+            tag(")"),
+        )(rest)
+        {
+            return Ok((rest, Value::Call(string.take_value(), args)));
+        }
     }
+    Ok((rest, string.into()))
 }
 
 fn call_args(input: Span) -> PResult<CallArgs> {
