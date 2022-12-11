@@ -6,6 +6,8 @@ use crate::{Error, ScopeRef};
 use std::{borrow::Cow, collections::BTreeMap, fmt, path::Path};
 use tracing::instrument;
 
+type Combine = &'static dyn Fn(&str, &str) -> String;
+
 /// Utility keeping track of loading files.
 ///
 /// The context is generic over the [`Loader`].
@@ -206,7 +208,7 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
         url: &str,
         from: SourceKind,
     ) -> Result<Option<SourceFile>, Error> {
-        let names: &[&dyn Fn(&str, &str) -> String] = if from.is_import() {
+        let names: &[Combine] = if from.is_import() {
             &[
                 // base will either be empty or end with a slash.
                 &|base, name| format!("{}{}.import.scss", base, name),
@@ -250,7 +252,7 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
     fn do_find_file(
         &self,
         url: &str,
-        names: &[&dyn Fn(&str, &str) -> String],
+        names: &[Combine],
     ) -> Result<Option<(String, AnyLoader::File)>, LoadError> {
         if url.ends_with(".css")
             || url.ends_with(".sass")
