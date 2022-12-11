@@ -1,11 +1,10 @@
 use super::{CallArgs, Function, Name, SassString};
-use crate::css;
-use crate::error::Error;
 use crate::input::SourcePos;
 use crate::output::Format;
-use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
-use crate::ScopeRef;
+use crate::value::{BadOp, ListSeparator, Number, Numeric, Operator, Rgba};
+use crate::{css, Error, Invalid, ScopeRef};
 use num_traits::Zero;
+use std::fmt::{self, Write};
 
 /// A sass value.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
@@ -95,7 +94,7 @@ impl Value {
                 if *expl
                     || v == css::Value::Null
                     || matches!(&v, css::Value::Literal(s) if s.is_css_fn())
-                    || matches!(&v, css::Value::Call(_, _))
+                    || matches!(&v, css::Value::Call(name, _) if name == "var")
                 {
                     css::Value::Paren(Box::new(v))
                 } else {
@@ -195,8 +194,8 @@ impl Value {
     /// Write a string representation of this value
     ///
     /// This does _not_ evaluate the value.
-    pub fn inspect(&self, out: &mut std::fmt::Formatter) -> std::fmt::Result {
-        use std::fmt::Display;
+    pub fn inspect(&self, out: &mut fmt::Formatter) -> fmt::Result {
+        use fmt::Display;
         match *self {
             Value::Bang(ref s) => write!(out, "!{}", s),
             Value::Literal(ref s) => {
@@ -267,7 +266,7 @@ impl Value {
             Value::Null => out.write_str("null"),
             Value::True => out.write_str("true"),
             Value::False => out.write_str("false"),
-            Value::BinOp(ref binop) => binop.inspect(out),
+            Value::BinOp(ref binop) => Inspect(binop).fmt(out),
             Value::UnaryOp(ref op, ref v) => {
                 op.fmt(out)?;
                 v.inspect(out)
@@ -292,6 +291,7 @@ pub struct BinOp {
     op: Operator,
     s2: bool,
     b: Value,
+    pos: SourcePos,
 }
 
 impl BinOp {
@@ -301,8 +301,16 @@ impl BinOp {
         op: Operator,
         s2: bool,
         b: Value,
+        pos: SourcePos,
     ) -> Self {
-        BinOp { a, s1, op, s2, b }
+        BinOp {
+            a,
+            s1,
+            op,
+            s2,
+            b,
+            pos,
+        }
     }
     fn eval(
         &self,
@@ -337,36 +345,54 @@ impl BinOp {
                     (aa, b)
                 }
             };
-            self.op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
-                css::BinOp::new(
-                    a,
-                    self.s1
-                        && self.op != Operator::Div
-                        && self.op != Operator::Minus,
-                    self.op,
-                    self.s2
-                        && self.op != Operator::Div
-                        && self.op != Operator::Minus,
-                    b,
-                )
-                .into()
-            })
+            self.op
+                .eval(a.clone(), b.clone())
+                .map_err(|e| match e {
+                    BadOp::UndefinedOperation => Invalid::AtError(format!(
+                        "Undefined operation \"{}\".",
+                        Inspect(self)
+                    ))
+                    .at(self.pos.clone()),
+                    BadOp::Invalid(e) => {
+                        Invalid::AtError(e.to_string()).at(self.pos.clone())
+                    }
+                })?
+                .unwrap_or_else(|| {
+                    let sx = (self.op == Operator::Plus)
+                        || ((self.op != Operator::Div)
+                            && a.type_name() != "string"
+                            && b.type_name() != "string");
+                    css::BinOp::new(
+                        a,
+                        self.s1 && sx,
+                        self.op,
+                        self.s2 && sx,
+                        b,
+                    )
+                    .into()
+                })
         })
-    }
-
-    /// Write a string representation of this value
-    ///
-    /// This does _not_ evaluate the value.
-    pub fn inspect(&self, out: &mut std::fmt::Formatter) -> std::fmt::Result {
-        use std::fmt::Display;
-        self.a.inspect(out)?;
-        self.op.fmt(out)?;
-        self.b.inspect(out)
     }
 }
 
 impl From<BinOp> for Value {
     fn from(value: BinOp) -> Self {
         Value::BinOp(Box::new(value))
+    }
+}
+
+struct Inspect<'a>(&'a BinOp);
+
+impl<'a> fmt::Display for Inspect<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0.a.inspect(f)?;
+        if self.0.s1 {
+            f.write_char(' ')?
+        }
+        self.0.op.fmt(f)?;
+        if self.0.s2 {
+            f.write_char(' ')?
+        }
+        self.0.b.inspect(f)
     }
 }

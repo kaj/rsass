@@ -82,7 +82,7 @@ impl<'a> Display for Formatted<'a, Value> {
             Value::Call(ref name, ref arg) => {
                 write!(out, "{}({})", name, arg)
             }
-            Value::BinOp(ref op) => op.format(out, self.format),
+            Value::BinOp(ref op) => op.format(self.format).fmt(out),
             Value::UnaryOp(ref op, ref v) => {
                 op.fmt(out)?;
                 if *op == Operator::Not {

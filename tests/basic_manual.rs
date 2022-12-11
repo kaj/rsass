@@ -345,46 +345,6 @@ fn issue_116() {
     );
 }
 
-/// https://github.com/kaj/rsass/issues/122
-/// A division by zero that causes a panic
-mod issue_122 {
-    use super::{check_value, init_logger};
-    // Note: The important thing here is not to panic, the exact
-    // output may be changed in the future, maybe to report an error.
-    #[test]
-    fn reduced() {
-        init_logger();
-        check_value("(#111 + #aaa)/0", "#bbbbbb/0")
-    }
-    #[test]
-    fn reported() {
-        init_logger();
-        check_value(
-            "54A444/0+-4444M4#444/-4444/0+-4444M4#444+44/0+444/0+.44444O#444+44/0+4/46",
-            "InfinityA444-4444M4 #000000/0-4444M4 #444+Infinity+Infinity+0.44444O #444+Infinity+0.0869565217",
-        )
-    }
-    /// https://github.com/kaj/rsass/issues/121 is very similar.
-    #[test]
-    fn issue_121() {
-        init_logger();
-        check_value(
-            "44A-#444/0+-\0\0\0+44/0+444&",
-            "44A-#444/0-\u{1}\u{0}\u{0}\u{0}Infinity444",
-        )
-    }
-}
-
-/// Overflow in gcd for subtraction.
-#[test]
-fn issue_120() {
-    init_logger();
-    check_value(
-        "4444#4444-.4555555555555555555555555",
-        "4444 rgba(68, 68, 68, 0.2666666667)",
-    )
-}
-
 /// Test auto-converted from "sass-spec/spec/libsass/rel.hrx", except one failing unit calculation.
 #[test]
 fn rel() {

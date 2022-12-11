@@ -128,7 +128,7 @@ mod argument {
     }
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn conflict() {
     let runner = runner().with_cwd("conflict");
     assert_eq!(
@@ -151,7 +151,6 @@ fn conflict() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn division() {
     let runner = runner().with_cwd("division");
     assert_eq!(

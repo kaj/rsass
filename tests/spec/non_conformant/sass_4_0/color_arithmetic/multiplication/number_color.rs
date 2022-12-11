@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
 fn test() {
     assert_eq!(
         runner().err("$v: 1 * #123;\n"),

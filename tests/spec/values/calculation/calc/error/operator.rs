@@ -10,7 +10,6 @@ mod greater_than {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn both() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) > calc(var(--d))}\n"),
@@ -23,7 +22,6 @@ mod greater_than {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn lhs() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) > 1}\n"),
@@ -36,7 +34,6 @@ mod greater_than {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn rhs() {
         assert_eq!(
             runner().err("a {b: 1 > calc(var(--c))}\n"),
@@ -54,7 +51,6 @@ mod greater_than_or_equals {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn both() {
         assert_eq!(
         runner().err(
@@ -69,7 +65,6 @@ mod greater_than_or_equals {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn lhs() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) >= 1}\n"),
@@ -82,7 +77,6 @@ mod greater_than_or_equals {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn rhs() {
         assert_eq!(
             runner().err("a {b: 1 >= calc(var(--c))}\n"),
@@ -100,7 +94,6 @@ mod less_than {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn both() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) < calc(var(--d))}\n"),
@@ -113,7 +106,6 @@ mod less_than {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn lhs() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) < 1}\n"),
@@ -126,7 +118,6 @@ mod less_than {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn rhs() {
         assert_eq!(
             runner().err("a {b: 1 < calc(var(--c))}\n"),
@@ -144,7 +135,6 @@ mod less_than_or_equals {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn both() {
         assert_eq!(
         runner().err(
@@ -159,7 +149,6 @@ mod less_than_or_equals {
     );
     }
     #[test]
-    #[ignore] // missing error
     fn lhs() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) <= 1}\n"),
@@ -172,7 +161,6 @@ mod less_than_or_equals {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn rhs() {
         assert_eq!(
             runner().err("a {b: 1 <= calc(var(--c))}\n"),
@@ -190,7 +178,6 @@ mod minus {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn both() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) - calc(var(--d))}\n"),
@@ -203,7 +190,6 @@ mod minus {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn lhs() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) - 1}\n"),
@@ -216,7 +202,6 @@ mod minus {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn rhs() {
         assert_eq!(
             runner().err("a {b: 1 - calc(var(--c))}\n"),
@@ -234,7 +219,6 @@ mod test_mod {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn both() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) % calc(var(--d))}\n"),
@@ -247,7 +231,6 @@ mod test_mod {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn lhs() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) % 1}\n"),
@@ -260,7 +243,6 @@ mod test_mod {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn rhs() {
         assert_eq!(
             runner().err("a {b: 1 % calc(var(--c))}\n"),
@@ -278,7 +260,6 @@ mod plus {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn both() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) + calc(var(--d))}\n"),
@@ -291,7 +272,6 @@ mod plus {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn lhs() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) + 1}\n"),
@@ -304,7 +284,6 @@ mod plus {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn rhs() {
         assert_eq!(
             runner().err("a {b: 1 + calc(var(--c))}\n"),
@@ -322,7 +301,6 @@ mod times {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
     fn both() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) * calc(var(--d))}\n"),
@@ -335,7 +313,6 @@ mod times {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn lhs() {
         assert_eq!(
             runner().err("a {b: calc(var(--c)) * 1}\n"),
@@ -348,7 +325,6 @@ mod times {
         );
     }
     #[test]
-    #[ignore] // missing error
     fn rhs() {
         assert_eq!(
             runner().err("a {b: 1 * calc(var(--c))}\n"),
@@ -362,7 +338,6 @@ mod times {
     }
 }
 #[test]
-#[ignore] // missing error
 fn unary_minus() {
     assert_eq!(
         runner().err("a {b: -(calc(var(--c)))}\n"),
@@ -375,7 +350,6 @@ fn unary_minus() {
     );
 }
 #[test]
-#[ignore] // missing error
 fn unary_plus() {
     assert_eq!(
         runner().err("a {b: +calc(var(--c))}\n"),

@@ -353,11 +353,13 @@ fn handle_item(
             let scope = ScopeRef::sub_selectors(scope, selectors);
             handle_body(body, &mut dest, scope, file_context)?;
         }
-        Item::Property(ref name, ref value) => {
+        Item::Property(ref name, ref value, ref pos) => {
             let v = value.evaluate(scope.clone())?;
             if !v.is_null() {
                 let name = name.evaluate(scope)?.take_value();
-                dest.push_property(name, v).no_pos()?;
+                // Note: inner pos here is correctly the value pos,
+                // but the outher should probably be the entire property.
+                dest.push_property(name, v.valid_css().at(pos)?).at(pos)?;
             }
         }
         Item::CustomProperty(ref name, ref value) => {

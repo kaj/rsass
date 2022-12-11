@@ -8,7 +8,6 @@ use num_traits::{one, zero, One, Signed, Zero};
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::fmt::{self, Display};
-use std::ops::{Add, Div, Sub};
 
 /// A color defined by red, green, blue, and alpha components.
 #[derive(Clone, Debug)]
@@ -198,89 +197,6 @@ fn cap(n: Rational, max: &Rational) -> Rational {
         Rational::zero()
     } else {
         n
-    }
-}
-
-fn limit_denom(v: Rational) -> Rational {
-    let spare_bits = v.denom().leading_zeros();
-    if spare_bits < 10 {
-        let shift = 12 - spare_bits;
-        Rational::new(v.numer() >> shift, v.denom() >> shift)
-    } else {
-        v
-    }
-}
-
-impl Add<Rational> for &Rgba {
-    type Output = Rgba;
-
-    fn add(self, rhs: Rational) -> Rgba {
-        let rhs = limit_denom(rhs);
-        Rgba::new(
-            self.red + rhs,
-            self.green + rhs,
-            self.blue + rhs,
-            self.alpha,
-            RgbFormat::Name,
-        )
-    }
-}
-
-impl Add<&Rgba> for &Rgba {
-    type Output = Rgba;
-
-    fn add(self, rhs: &Rgba) -> Rgba {
-        Rgba::new(
-            self.red + rhs.red,
-            self.green + rhs.green,
-            self.blue + rhs.blue,
-            // TODO Sum or average the alpha?
-            self.alpha + rhs.alpha,
-            RgbFormat::Name,
-        )
-    }
-}
-
-impl<'a> Div<Rational> for &'a Rgba {
-    type Output = Rgba;
-
-    fn div(self, rhs: Rational) -> Rgba {
-        Rgba::new(
-            self.red / rhs,
-            self.green / rhs,
-            self.blue / rhs,
-            self.alpha,
-            self.source,
-        )
-    }
-}
-
-impl<'a> Sub<Rational> for &'a Rgba {
-    type Output = Rgba;
-
-    fn sub(self, rhs: Rational) -> Rgba {
-        let rhs = limit_denom(rhs);
-        Rgba::new(
-            self.red - rhs,
-            self.green - rhs,
-            self.blue - rhs,
-            self.alpha,
-            RgbFormat::Name,
-        )
-    }
-}
-
-impl<'a> Sub<&'a Rgba> for &'a Rgba {
-    type Output = Rgba;
-
-    fn sub(self, rhs: &'a Rgba) -> Rgba {
-        Rgba::new(
-            self.red - rhs.red,
-            self.green - rhs.green,
-            self.blue - rhs.blue,
-            (self.alpha + rhs.alpha) / 2,
-            RgbFormat::Name,
-        )
     }
 }
 

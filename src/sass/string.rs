@@ -1,5 +1,5 @@
 use crate::css::CssString;
-use crate::error::Error;
+use crate::error::{Error, ResultPos};
 use crate::sass::Value;
 use crate::value::Quotes;
 use crate::ScopeRef;
@@ -59,14 +59,16 @@ impl SassString {
         for part in &self.parts {
             match *part {
                 StringPart::Interpolation(ref v) => {
-                    let v = v
-                        .evaluate(scope.clone())?
-                        .unquote()
-                        .format(scope.get_format())
-                        .to_string();
+                    let v = v.evaluate(scope.clone())?.unquote();
                     if self.quotes == Quotes::None {
+                        let v = v
+                            .valid_css()
+                            .no_pos()? // TODO: Get the position.
+                            .format(scope.get_format())
+                            .to_string();
                         result.push_str(&v);
                     } else {
+                        let v = v.format(scope.get_format()).to_string();
                         let mut carry_space = false;
                         for c in v.chars() {
                             if carry_space {

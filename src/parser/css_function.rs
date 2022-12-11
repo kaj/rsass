@@ -6,7 +6,7 @@
 use super::strings::sass_string;
 use super::util::{opt_spacelike, spacelike2};
 use super::value::{function_call, numeric, special_function, variable};
-use super::{ignore_comments, PResult, Span};
+use super::{ignore_comments, position, PResult, Span};
 use crate::sass::{BinOp, CallArgs, Value};
 use crate::value::Operator;
 use nom::branch::alt;
@@ -40,7 +40,7 @@ fn one_arg(input: Span) -> PResult<Value> {
 
 fn sum_expression(input: Span) -> PResult<Value> {
     let (mut rest, mut v) = term(input)?;
-    while let Ok((nrest, (s1, op, s2, v2))) = alt((
+    while let Ok((nrest, (s1, op, s2, v2, end))) = alt((
         tuple((
             value(false, tag("")),
             alt((
@@ -49,6 +49,7 @@ fn sum_expression(input: Span) -> PResult<Value> {
             )),
             ignore_comments,
             term,
+            position,
         )),
         tuple((
             value(true, spacelike2),
@@ -58,10 +59,12 @@ fn sum_expression(input: Span) -> PResult<Value> {
             )),
             ignore_comments,
             term,
+            position,
         )),
     ))(rest)
     {
-        v = BinOp::new(v, s1, op, s2, v2).into();
+        let pos = input.up_to(&end).to_owned();
+        v = BinOp::new(v, s1, op, s2, v2, pos).into();
         rest = nrest;
     }
     Ok((rest, v))
@@ -69,7 +72,7 @@ fn sum_expression(input: Span) -> PResult<Value> {
 
 fn term(input: Span) -> PResult<Value> {
     let (mut rest, mut v) = single_value(input)?;
-    while let Ok((nrest, (s1, op, s2, v2))) = tuple((
+    while let Ok((nrest, (s1, op, s2, v2, end))) = tuple((
         map(multispace0, |s: Span| !s.fragment().is_empty()),
         alt((
             value(Operator::Multiply, tag("*")),
@@ -78,10 +81,12 @@ fn term(input: Span) -> PResult<Value> {
         )),
         map(multispace0, |s: Span| !s.fragment().is_empty()),
         single_value,
+        position,
     ))(rest)
     {
+        let pos = input.up_to(&end).to_owned();
         rest = nrest;
-        v = BinOp::new(v, s1, op, s2, v2).into();
+        v = BinOp::new(v, s1, op, s2, v2, pos).into();
     }
     Ok((rest, v))
 }

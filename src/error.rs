@@ -1,3 +1,4 @@
+use crate::css::InvalidCss;
 use crate::input::{LoadError, SourcePos};
 use crate::parser::ParseError;
 use crate::value::RangeError;
@@ -235,6 +236,14 @@ pub(crate) trait ResultPos<T> {
 impl<T> ResultPos<T> for Result<T, Invalid> {
     fn at(self, pos: &SourcePos) -> Result<T, Error> {
         self.map_err(|e| e.at(pos.clone()))
+    }
+    fn no_pos(self) -> Result<T, Error> {
+        self.map_err(|e| Error::error(e.to_string()))
+    }
+}
+impl<T> ResultPos<T> for Result<T, InvalidCss> {
+    fn at(self, pos: &SourcePos) -> Result<T, Error> {
+        self.map_err(|e| Invalid::AtError(e.to_string()).at(pos.clone()))
     }
     fn no_pos(self) -> Result<T, Error> {
         self.map_err(|e| Error::error(e.to_string()))

@@ -361,6 +361,8 @@ fn selector_string(input: Span) -> PResult<String> {
 }
 
 fn selector_plain_part(input: Span) -> PResult<&str> {
+    // TODO: This should include "%", but then it needs to be handled
+    // specially for keyframes percentages and placeholder selectors.
     map_res(is_not("\r\n\t >$\"'\\#+*/()[]{}:;,=!&@"), input_to_str)(input)
 }
 
