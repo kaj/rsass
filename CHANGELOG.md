@@ -30,6 +30,7 @@ project adheres to
 * More varaints of `Invalid`, slightly fewer stringy errors.
 * Changed handling of `hue` arguments to color functions, to allow
   different angle units, matching updates in sass-spec.
+* Minor correctness improvent in the `calc` function handling.
 * Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.
 * Updated clap to 4.0 for the command-line interface.
 * Updated sass-spec test suite to 2022-12-08.

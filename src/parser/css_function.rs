@@ -1,5 +1,9 @@
 //! The `calc` function is special.  A css function that is partially evaluated in sass.
 //! This should apply to `min`, `max` and `clamp` as well.
+//!
+//! Note that function calls in actual css is different, and implementented
+//! in [crate::parser::css].
+use super::strings::sass_string;
 use super::util::{opt_spacelike, spacelike2};
 use super::value::{function_call, numeric, special_function, variable};
 use super::{ignore_comments, PResult, Span};
@@ -14,7 +18,7 @@ use nom::sequence::{delimited, preceded, terminated, tuple};
 pub fn css_function(input: Span) -> PResult<Value> {
     let (rest, arg) = delimited(
         terminated(tag_no_case("calc("), ignore_comments),
-        sum_expression,
+        one_arg,
         preceded(ignore_comments, tag(")")),
     )(input)?;
     let pos = input.up_to(&rest).to_owned();
@@ -22,6 +26,16 @@ pub fn css_function(input: Span) -> PResult<Value> {
         rest,
         Value::Call("calc".into(), CallArgs::new_single(arg), pos),
     ))
+}
+
+fn one_arg(input: Span) -> PResult<Value> {
+    alt((
+        map(delimited(tag("("), one_arg, tag(")")), |v| {
+            Value::Paren(v.into(), true)
+        }),
+        sum_expression,
+        map(sass_string, Value::Literal),
+    ))(input)
 }
 
 fn sum_expression(input: Span) -> PResult<Value> {

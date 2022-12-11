@@ -213,6 +213,7 @@ lazy_static! {
                     Value::Numeric(..) => true,
                     Value::Call(ref name, _) => css::is_calc_name(name),
                     Value::Literal(s) => s.is_css_calc(),
+                    Value::Paren(s) => pre_calc(s),
                     _ => false,
                 }
             }
@@ -286,7 +287,12 @@ lazy_static! {
                             )))
                         }
                     }
-                    v @ Value::Paren(..) => Ok(v),
+                    Value::Paren(v) => match v.as_ref() {
+                        l @ Value::Literal(_) => Ok(l.clone()),
+                        l @ Value::Paren(_) => Ok(l.clone()),
+                        l @ Value::BinOp(..) => Ok(l.clone()),
+                        _ => Ok(Value::Paren(v)),
+                    }
                     v => Err(CallError::msg(format!(
                         "Value {} can't be used in a calculation.",
                         v.format(Format::introspect())
@@ -295,7 +301,10 @@ lazy_static! {
             }
             let v = s.get(name!(expr))?;
             if pre_calc(&v) {
-                Ok(v)
+                match v {
+                    Value::Paren(v) => Ok(*v),
+                    v => Ok(v),
+                }
             } else {
                 Ok(Value::Call(
                     "calc".into(),
