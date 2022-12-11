@@ -169,7 +169,7 @@ impl Value {
             Value::BinOp(binop) => binop.eval(&scope, arithmetic)?,
             Value::UnaryOp(op, v) => {
                 let value = v.do_evaluate(scope, true)?;
-                match (op.clone(), value) {
+                match (op, value) {
                     (Operator::Not, css::Value::Numeric(v, _)) => {
                         v.value.is_zero().into()
                     }
@@ -184,7 +184,7 @@ impl Value {
                     (op, css::Value::Literal(s)) if s.quotes().is_none() => {
                         format!("{}{}", op, s).into()
                     }
-                    (op, v) => css::Value::UnaryOp(op, Box::new(v)),
+                    (op, v) => css::Value::UnaryOp(*op, Box::new(v)),
                 }
             }
             Value::HereSelector => scope.get_selectors().clone().into(),
@@ -338,17 +338,18 @@ impl BinOp {
                 }
             };
             self.op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
-                css::Value::BinOp(
-                    Box::new(a),
+                css::BinOp::new(
+                    a,
                     self.s1
                         && self.op != Operator::Div
                         && self.op != Operator::Minus,
-                    self.op.clone(),
+                    self.op,
                     self.s2
                         && self.op != Operator::Div
                         && self.op != Operator::Minus,
-                    Box::new(b),
+                    b,
                 )
+                .into()
             })
         })
     }

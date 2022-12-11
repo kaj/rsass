@@ -51,9 +51,9 @@ impl TryFrom<Value> for Channels {
                 }
             } else {
                 match vec.as_slice() {
-                    [r, g, BinOp(b, _, Div, _, a)] => Ok(
+                    [r, g, BinOp(op)] if op.op() == Div => Ok(
                         if let (b @ Numeric(..), a @ Numeric(..)) =
-                            (&**b, &**a)
+                            (op.a(), op.b())
                         {
                             Channels::Data([
                                 r.clone(),

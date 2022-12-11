@@ -1,5 +1,5 @@
 use super::{Call, Closure, FormalArgs, Name};
-use crate::css::{self, is_not, CallArgs, CssString, Value};
+use crate::css::{self, is_not, BinOp, CallArgs, CssString, Value};
 use crate::input::SourcePos;
 use crate::output::{Format, Formatted};
 use crate::value::{CssDimension, Operator, Quotes};
@@ -257,9 +257,10 @@ lazy_static! {
                             Ok(Value::Call(name, args))
                         }
                     }
-                    Value::BinOp(a, _, op, _, b) => {
-                        let a = in_calc(*a)?;
-                        let b = in_calc(*b)?;
+                    Value::BinOp(op) => {
+                        let a = in_calc(op.a().clone())?;
+                        let b = in_calc(op.b().clone())?;
+                        let op = op.op();
                         if let (Some(adim), Some(bdim)) = (css_dim(&a), css_dim(&b)) {
                             if (op == Operator::Plus || op == Operator::Minus) && adim != bdim {
                                 return Err(CallError::msg(format!(
@@ -269,13 +270,13 @@ lazy_static! {
                                 )))
                             }
                         }
-                        Ok(Value::BinOp(
-                            Box::new(a),
+                        Ok(BinOp::new(
+                            a,
                             true,
                             op,
                             true,
-                            Box::new(b),
-                        ))
+                            b,
+                        ).into())
                     }
                     Value::Numeric(num, c) => {
                         if num.unit.valid_in_css() {
