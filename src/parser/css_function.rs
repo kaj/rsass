@@ -7,7 +7,7 @@ use super::strings::sass_string;
 use super::util::{opt_spacelike, spacelike2};
 use super::value::{function_call, numeric, special_function, variable};
 use super::{ignore_comments, PResult, Span};
-use crate::sass::{CallArgs, Value};
+use crate::sass::{BinOp, CallArgs, Value};
 use crate::value::Operator;
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
@@ -61,7 +61,7 @@ fn sum_expression(input: Span) -> PResult<Value> {
         )),
     ))(rest)
     {
-        v = Value::BinOp(Box::new(v), s1, op, s2, Box::new(v2));
+        v = BinOp::new(v, s1, op, s2, v2).into();
         rest = nrest;
     }
     Ok((rest, v))
@@ -81,7 +81,7 @@ fn term(input: Span) -> PResult<Value> {
     ))(rest)
     {
         rest = nrest;
-        v = Value::BinOp(Box::new(v), s1, op, s2, Box::new(v2));
+        v = BinOp::new(v, s1, op, s2, v2).into();
     }
     Ok((rest, v))
 }

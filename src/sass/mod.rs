@@ -33,7 +33,7 @@ pub use self::mixin::{Mixin, MixinDecl};
 pub use self::name::Name;
 pub use self::selectors::{Selector, SelectorPart, Selectors};
 pub use self::string::{SassString, StringPart};
-pub use self::value::Value;
+pub use self::value::{BinOp, Value};
 pub use self::variabledeclaration::VariableDeclaration;
 
 pub(crate) mod parser {
