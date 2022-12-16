@@ -4,6 +4,7 @@ use crate::sass::Value;
 use crate::value::Quotes;
 use crate::ScopeRef;
 use std::fmt::{self, Write};
+use std::mem::swap;
 
 /// A string that may contain interpolations.
 ///
@@ -36,22 +37,16 @@ impl SassString {
                 StringPart::Raw(s) => buf.push_str(&s),
                 interpolation => {
                     if !buf.is_empty() {
-                        p2.push(StringPart::Raw(special_unescape(&buf)));
-                        buf.clear();
+                        let mut buf2 = String::new();
+                        swap(&mut buf, &mut buf2);
+                        p2.push(StringPart::Raw(buf2));
                     }
                     p2.push(interpolation);
                 }
             }
         }
         if !buf.is_empty() {
-            p2.push(StringPart::Raw(special_unescape(&buf)));
-        }
-        fn special_unescape(s: &str) -> String {
-            if s.contains("\\#{") && !s.contains('}') {
-                s.replace("\\#{", "#{")
-            } else {
-                s.to_string()
-            }
+            p2.push(StringPart::Raw(buf));
         }
         SassString { parts: p2, quotes }
     }
@@ -61,11 +56,9 @@ impl SassString {
     /// All interpolated values are interpolated in the given `scope`.
     pub fn evaluate(&self, scope: ScopeRef) -> Result<CssString, Error> {
         let mut result = String::new();
-        let mut interpolated = false;
         for part in &self.parts {
             match *part {
                 StringPart::Interpolation(ref v) => {
-                    interpolated = true;
                     let v = v
                         .evaluate(scope.clone())?
                         .unquote()
@@ -109,15 +102,7 @@ impl SassString {
                 }
             }
         }
-        if interpolated
-            && self.quotes == Quotes::Double
-            && result.contains('"')
-            && !result.contains('\'')
-        {
-            Ok(CssString::new(result, Quotes::Single))
-        } else {
-            Ok(CssString::new(result, self.quotes))
-        }
+        Ok(CssString::new(result, self.quotes))
     }
 
     /// Return true if self represents an unquoted string.
