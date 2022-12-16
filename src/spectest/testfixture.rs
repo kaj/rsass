@@ -117,7 +117,7 @@ impl TestFixture {
     /// Execute the test here and now, return None for success or Some reason to fail.
     fn is_failure(&self, runner: TestRunner) -> Option<&'static str> {
         let runner = if let Some(precision) = self.options.precision {
-            runner.set_precision(precision as usize)
+            runner.set_precision(precision)
         } else {
             runner
         };
