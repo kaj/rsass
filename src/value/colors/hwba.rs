@@ -1,4 +1,4 @@
-use super::{clamp, Rational};
+use super::Rational;
 use num_traits::{one, zero};
 
 /// A color defined by hue, whiteness, blackness, and alpha.
@@ -27,8 +27,8 @@ impl Hwba {
         b: Rational,
         alpha: Rational,
     ) -> Hwba {
-        let mut w = clamp(w, zero(), one());
-        let mut b = clamp(b, zero(), one());
+        let mut w = w.clamp(zero(), one());
+        let mut b = b.clamp(zero(), one());
         let wbsum = w + b;
         if w + b > one() {
             w /= wbsum;
@@ -38,7 +38,7 @@ impl Hwba {
             hue,
             w,
             b,
-            alpha: clamp(alpha, zero(), one()),
+            alpha: alpha.clamp(zero(), one()),
         }
     }
 
@@ -68,6 +68,6 @@ impl Hwba {
     ///
     /// Zero is fully transparent, one is fully opaque.
     pub fn set_alpha(&mut self, alpha: Rational) {
-        self.alpha = clamp(alpha, zero(), one())
+        self.alpha = alpha.clamp(zero(), one())
     }
 }

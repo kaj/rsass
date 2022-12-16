@@ -1,6 +1,5 @@
-use super::{clamp, Rational};
 use crate::output::{Format, Formatted};
-use crate::value::{Number, Numeric, Unit};
+use crate::value::{Number, Numeric, Rational, Unit};
 use num_traits::{one, zero, Signed};
 use std::fmt::{self, Display};
 
@@ -25,9 +24,9 @@ impl Hsla {
     ) -> Hsla {
         Hsla {
             hue: deg_mod(hue),
-            sat: clamp(sat, zero(), one()),
-            lum: clamp(lum, zero(), one()),
-            alpha: clamp(alpha, zero(), one()),
+            sat: sat.clamp(zero(), one()),
+            lum: lum.clamp(zero(), one()),
+            alpha: alpha.clamp(zero(), one()),
             hsla_format,
         }
     }
@@ -54,7 +53,7 @@ impl Hsla {
     ///
     /// Zero is fully transparent, one is fully opaque.
     pub fn set_alpha(&mut self, alpha: Rational) {
-        self.alpha = clamp(alpha, zero(), one())
+        self.alpha = alpha.clamp(zero(), one())
     }
     pub(crate) fn reset_source(&mut self) {
         self.hsla_format = false;

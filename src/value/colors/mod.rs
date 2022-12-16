@@ -73,7 +73,7 @@ impl Color {
     ///
     /// The alpha channel is a rational value between 0 and 1.
     pub fn set_alpha(&mut self, alpha: Rational) {
-        let alpha = clamp(alpha, zero(), one());
+        let alpha = alpha.clamp(zero(), one());
         match self {
             Color::Rgba(ref mut rgba) => rgba.set_alpha(alpha),
             Color::Hsla(ref mut hsla) => hsla.set_alpha(alpha),
@@ -140,17 +140,6 @@ impl From<Hsla> for Color {
 impl From<Hwba> for Color {
     fn from(hwba: Hwba) -> Color {
         Color::Hwba(hwba)
-    }
-}
-
-fn clamp(v: Rational, min: Rational, max: Rational) -> Rational {
-    // Note: Ord.clamp is in std from 1.50.0.
-    if v >= max {
-        max
-    } else if v <= min {
-        min
-    } else {
-        v
     }
 }
 
