@@ -55,7 +55,7 @@ fn test() {
          \nversions of Sass.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/strict-unary\
          \n   ,\
-         \n11 |   baz: 3  +#{1  +2};\r\
+         \n11 |   baz: 3  +#{1  +2};\
          \n   |              ^^^^^\
          \n   \'\n\
          \nDEPRECATION WARNING on line 11, column 8 of input.scss: \
@@ -68,12 +68,12 @@ fn test() {
          \nversions of Sass.\n\
          \nMore info and automated migrator: https://sass-lang.com/d/strict-unary\
          \n   ,\
-         \n11 |   baz: 3  +#{1  +2};\r\
+         \n11 |   baz: 3  +#{1  +2};\
          \n   |        ^^^^^^^^^^^^\
          \n   \'\n\
          \nError: Undefined operation \"3 * 2\".\
          \n   ,\
-         \n23 |   baz: 3*#{1*2};\r\
+         \n23 |   baz: 3*#{1*2};\
          \n   |        ^^^^^^^^\
          \n   \'\
          \n  input.scss 23:8  root stylesheet",

@@ -27,7 +27,7 @@ mod issue_2051;
 
 mod issue_2096;
 
-mod issue_221260;
+// Ignoring "issue_221260.hrx", not expected to work yet.
 
 // Ignoring "issue_221262.hrx", not expected to work yet.
 

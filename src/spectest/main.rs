@@ -25,6 +25,7 @@ fn main() -> Result<(), Error> {
             "core_functions/selector/is_superselector", // not supported
             "core_functions/selector/unify",  // not supported
             "directives/extend", // `@extend` is not supported at all
+            "libsass-todo-issues/issue_221260.hrx", // stack overflow
             "libsass-todo-issues/issue_221262.hrx", // stack overflow
             "libsass-todo-issues/issue_221264.hrx", // stack overflow
             "libsass-todo-issues/issue_221292.hrx", // stack overflow
@@ -448,7 +449,7 @@ fn load_test_fixture_dir(
             return Ok(TestFixture::new_err(
                 name,
                 input,
-                content(&path)?.trim().to_string(),
+                &content(&path)?,
                 options,
             ));
         }
@@ -488,7 +489,7 @@ fn load_test_fixture_hrx(
             return Ok(TestFixture::new_err(
                 name,
                 input.to_string(),
-                error.trim().to_string(),
+                error,
                 options,
             ));
         }
@@ -508,7 +509,7 @@ fn load_test_fixture_hrx(
             return Ok(TestFixture::new_err(
                 name,
                 input.to_string(),
-                error.trim().to_string(),
+                error,
                 options,
             ));
         }

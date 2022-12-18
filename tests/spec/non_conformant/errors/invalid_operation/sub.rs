@@ -16,7 +16,7 @@ fn test() {
         ),
         "Error: 2px and 4px*px have incompatible units.\
          \n  ,\
-         \n2 |   err: 2px - 2px*2px;\r\
+         \n2 |   err: 2px - 2px*2px;\
          \n  |        ^^^^^^^^^^^^^\
          \n  \'\
          \n  input.scss 2:8  root stylesheet",

@@ -36,13 +36,13 @@ impl TestFixture {
     pub fn new_err(
         name: Option<String>,
         input: String,
-        error: String,
+        error: &str,
         options: Options,
     ) -> Self {
         TestFixture {
             name,
             input,
-            expectation: ExpectedError(error),
+            expectation: ExpectedError(error.trim().replace("\r\n", "\n")),
             options,
         }
     }
