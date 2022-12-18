@@ -2,7 +2,7 @@ use super::{
     check, expected_to, is_not, is_special, CallError, CheckedArg,
     FunctionMap, ResolvedArgs, Scope,
 };
-use crate::css::{CallArgs, CssString, Value};
+use crate::css::{BinOp, CallArgs, CssString, Value};
 use crate::output::Format;
 use crate::parser::input_span;
 use crate::sass::Name;
@@ -32,16 +32,10 @@ pub fn create_module() -> Scope {
             (Value::Numeric(ref a, _), Value::Numeric(ref b, _)) => {
                 Ok((a / b).into())
             }
-            (a, b) => Ok(Value::BinOp(
-                Box::new(a),
-                false,
-                Operator::Div,
-                false,
-                Box::new(b),
-            )
-            .format(Format::introspect())
-            .to_string()
-            .into()),
+            (a, b) => {
+                // Note: Or maybe this should be evaluated to a string?
+                Ok(BinOp::new(a, false, Operator::Div, false, b).into())
+            }
         }
     });
     // - - - Boundig Functions - - -

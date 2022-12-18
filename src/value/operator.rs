@@ -4,7 +4,7 @@ use num_traits::Zero;
 use std::fmt;
 
 /// An operator that can be used in a sass value.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Operator {
     /// The boolean (value propagating) `and` operator.
     And,

@@ -71,15 +71,18 @@ fn hwb_from_channels(
                 1 => Err(CallError::msg("Missing element $whiteness.")),
                 2 => Err(CallError::msg("Missing element $blackness.")),
                 3 => {
-                    if let Value::BinOp(a, _, Div, _, b) = &vec[2] {
-                        if let (Value::Numeric(..), Value::Numeric(..)) =
-                            (&**a, &**b)
+                    if let Value::BinOp(op) = &vec[2] {
+                        if let (
+                            Div,
+                            a @ Value::Numeric(..),
+                            b @ Value::Numeric(..),
+                        ) = (op.op(), op.a(), op.b())
                         {
                             Ok((
                                 vec[0].clone(),
                                 vec[1].clone(),
-                                *a.clone(),
-                                *b.clone(),
+                                a.clone(),
+                                b.clone(),
                             ))
                         } else {
                             Err(badchannels(&Value::List(vec, s, p)))

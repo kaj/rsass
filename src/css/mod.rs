@@ -17,6 +17,6 @@ pub use self::item::{Import, Item};
 pub use self::rule::{BodyItem, Property, Rule};
 pub use self::selectors::{BadSelector, Selector, SelectorPart, Selectors};
 pub use self::string::CssString;
-pub use self::value::{Value, ValueMap, ValueToMapError};
+pub use self::value::{BinOp, Value, ValueMap, ValueToMapError};
 
 pub(crate) use self::util::{is_calc_name, is_function_name, is_not};

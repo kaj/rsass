@@ -26,6 +26,8 @@ project adheres to
 * Changed css creation from just writing to a text buffer to building
   a tree representation of the css (and serialize it to text as a
   final step) (PR #159).
+* Changed `BinOp` value in both sass and css from a tuple variant with
+  boxed values to a single boxed struct variant.
 * Changed `css::Item::AtRule` to wrap the new type `css::AtRule`.
 * More varaints of `Invalid`, slightly fewer stringy errors.
 * Changed handling of `hue` arguments to color functions, to allow

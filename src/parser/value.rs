@@ -7,7 +7,7 @@ use super::strings::{
 use super::unit::unit;
 use super::util::{comment, ignore_comments, opt_spacelike, spacelike2};
 use super::{input_to_string, sass_string, PResult, Span};
-use crate::sass::{SassString, Value};
+use crate::sass::{BinOp, SassString, Value};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
@@ -107,7 +107,7 @@ fn single_expression(input: Span) -> PResult<Value> {
             single_expression,
         ),
         move || a.clone(),
-        |a, (op, b)| Value::BinOp(Box::new(a), false, op, false, Box::new(b)),
+        |a, (op, b)| BinOp::new(a, false, op, false, b).into(),
     )(input)
 }
 
@@ -130,7 +130,7 @@ fn logic_expression(input: Span) -> PResult<Value> {
             sum_expression,
         ),
         move || a.clone(),
-        |a, (op, b)| Value::BinOp(Box::new(a), false, op, false, Box::new(b)),
+        |a, (op, b)| BinOp::new(a, false, op, false, b).into(),
     )(input)
 }
 
@@ -160,7 +160,7 @@ fn sum_expression(input: Span) -> PResult<Value> {
         move || v.clone(),
         |v, (s1, op, s2, v2)| {
             let s1 = s1 && s2;
-            Value::BinOp(Box::new(v), s1, op, s2, Box::new(v2))
+            BinOp::new(v, s1, op, s2, v2).into()
         },
     )(rest)
 }
@@ -182,9 +182,7 @@ fn term_value(input: Span) -> PResult<Value> {
             single_value,
         )),
         move || v.clone(),
-        |v1, (s1, op, s2, v2)| {
-            Value::BinOp(Box::new(v1), s1, op, s2, Box::new(v2))
-        },
+        |v1, (s1, op, s2, v2)| BinOp::new(v1, s1, op, s2, v2).into(),
     )(rest)
 }
 
@@ -506,7 +504,7 @@ mod test {
     use super::super::{code_span, parse_value_data};
     use super::*;
     use crate::sass::CallArgs;
-    use crate::sass::Value::*;
+    use crate::sass::Value::{Color, List, Literal, Map, Paren};
     use crate::value::Rational;
     use crate::ScopeRef;
 
@@ -684,13 +682,14 @@ mod test {
             "15/10 2 3;",
             List(
                 vec![
-                    BinOp(
-                        Box::new(Value::scalar(15)),
+                    BinOp::new(
+                        Value::scalar(15),
                         false,
                         Operator::Div,
                         false,
-                        Box::new(Value::scalar(10)),
-                    ),
+                        Value::scalar(10),
+                    )
+                    .into(),
                     Value::scalar(2),
                     Value::scalar(3),
                 ],
@@ -704,19 +703,21 @@ mod test {
     fn double_div() {
         check_expr(
             "15/5/3;",
-            BinOp(
-                Box::new(BinOp(
-                    Box::new(Value::scalar(15)),
+            BinOp::new(
+                BinOp::new(
+                    Value::scalar(15),
                     false,
                     Operator::Div,
                     false,
-                    Box::new(Value::scalar(5)),
-                )),
+                    Value::scalar(5),
+                )
+                .into(),
                 false,
                 Operator::Div,
                 false,
-                Box::new(Value::scalar(3)),
-            ),
+                Value::scalar(3),
+            )
+            .into(),
         )
     }
 

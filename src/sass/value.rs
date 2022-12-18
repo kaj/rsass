@@ -38,8 +38,7 @@ pub enum Value {
     /// The false boolean value.
     False,
     /// A binary operation, two operands and an operator.
-    /// The boolean represents possible whitespace.
-    BinOp(Box<Value>, bool, Operator, bool, Box<Value>),
+    BinOp(Box<BinOp>),
     /// A unary operator and its operand.
     UnaryOp(Operator, Box<Value>),
     /// A map in sass source is just a list of key/value parirs.
@@ -167,54 +166,10 @@ impl Value {
             Value::Null => css::Value::Null,
             Value::True => css::Value::True,
             Value::False => css::Value::False,
-            Value::BinOp(a, s1, op, s2, b) => {
-                if *op == Operator::And {
-                    let a = a.do_evaluate(scope.clone(), true)?;
-                    if a.is_true() {
-                        b.do_evaluate(scope, true)?
-                    } else {
-                        a
-                    }
-                } else if *op == Operator::Or {
-                    let a = a.do_evaluate(scope.clone(), true)?;
-                    if a.is_true() {
-                        a
-                    } else {
-                        b.do_evaluate(scope, true)?
-                    }
-                } else {
-                    let (a, b) = {
-                        let arithmetic = arithmetic | (*op != Operator::Div);
-                        let aa = a.do_evaluate(scope.clone(), arithmetic)?;
-                        let b = b.do_evaluate(
-                            scope.clone(),
-                            arithmetic || aa.is_calculated(),
-                        )?;
-                        if !arithmetic
-                            && b.is_calculated()
-                            && !aa.is_calculated()
-                        {
-                            (a.do_evaluate(scope, true)?, b)
-                        } else {
-                            (aa, b)
-                        }
-                    };
-                    op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
-                        css::Value::BinOp(
-                            Box::new(a),
-                            *s1 && op != &Operator::Div
-                                && op != &Operator::Minus,
-                            op.clone(),
-                            *s2 && op != &Operator::Div
-                                && op != &Operator::Minus,
-                            Box::new(b),
-                        )
-                    })
-                }
-            }
+            Value::BinOp(binop) => binop.eval(&scope, arithmetic)?,
             Value::UnaryOp(op, v) => {
                 let value = v.do_evaluate(scope, true)?;
-                match (op.clone(), value) {
+                match (op, value) {
                     (Operator::Not, css::Value::Numeric(v, _)) => {
                         v.value.is_zero().into()
                     }
@@ -229,7 +184,7 @@ impl Value {
                     (op, css::Value::Literal(s)) if s.quotes().is_none() => {
                         format!("{}{}", op, s).into()
                     }
-                    (op, v) => css::Value::UnaryOp(op, Box::new(v)),
+                    (op, v) => css::Value::UnaryOp(*op, Box::new(v)),
                 }
             }
             Value::HereSelector => scope.get_selectors().clone().into(),
@@ -312,11 +267,7 @@ impl Value {
             Value::Null => out.write_str("null"),
             Value::True => out.write_str("true"),
             Value::False => out.write_str("false"),
-            Value::BinOp(ref a, _, ref op, _, ref b) => {
-                a.inspect(out)?;
-                op.fmt(out)?;
-                b.inspect(out)
-            }
+            Value::BinOp(ref binop) => binop.inspect(out),
             Value::UnaryOp(ref op, ref v) => {
                 op.fmt(out)?;
                 v.inspect(out)
@@ -330,5 +281,92 @@ impl Value {
 impl From<Numeric> for Value {
     fn from(num: Numeric) -> Self {
         Value::Numeric(num)
+    }
+}
+
+/// A binary operation.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
+pub struct BinOp {
+    a: Value,
+    s1: bool,
+    op: Operator,
+    s2: bool,
+    b: Value,
+}
+
+impl BinOp {
+    pub(crate) fn new(
+        a: Value,
+        s1: bool,
+        op: Operator,
+        s2: bool,
+        b: Value,
+    ) -> Self {
+        BinOp { a, s1, op, s2, b }
+    }
+    fn eval(
+        &self,
+        scope: &ScopeRef,
+        arithmetic: bool,
+    ) -> Result<css::Value, Error> {
+        Ok(if self.op == Operator::And {
+            let a = self.a.do_evaluate(scope.clone(), true)?;
+            if a.is_true() {
+                self.b.do_evaluate(scope.clone(), true)?
+            } else {
+                a
+            }
+        } else if self.op == Operator::Or {
+            let a = self.a.do_evaluate(scope.clone(), true)?;
+            if a.is_true() {
+                a
+            } else {
+                self.b.do_evaluate(scope.clone(), true)?
+            }
+        } else {
+            let (a, b) = {
+                let arithmetic = arithmetic | (self.op != Operator::Div);
+                let aa = self.a.do_evaluate(scope.clone(), arithmetic)?;
+                let b = self.b.do_evaluate(
+                    scope.clone(),
+                    arithmetic || aa.is_calculated(),
+                )?;
+                if !arithmetic && b.is_calculated() && !aa.is_calculated() {
+                    (self.a.do_evaluate(scope.clone(), true)?, b)
+                } else {
+                    (aa, b)
+                }
+            };
+            self.op.eval(a.clone(), b.clone()).unwrap_or_else(|| {
+                css::BinOp::new(
+                    a,
+                    self.s1
+                        && self.op != Operator::Div
+                        && self.op != Operator::Minus,
+                    self.op,
+                    self.s2
+                        && self.op != Operator::Div
+                        && self.op != Operator::Minus,
+                    b,
+                )
+                .into()
+            })
+        })
+    }
+
+    /// Write a string representation of this value
+    ///
+    /// This does _not_ evaluate the value.
+    pub fn inspect(&self, out: &mut std::fmt::Formatter) -> std::fmt::Result {
+        use std::fmt::Display;
+        self.a.inspect(out)?;
+        self.op.fmt(out)?;
+        self.b.inspect(out)
+    }
+}
+
+impl From<BinOp> for Value {
+    fn from(value: BinOp) -> Self {
+        Value::BinOp(Box::new(value))
     }
 }

@@ -1,9 +1,10 @@
-use super::{is_calc_name, is_not, CallArgs, CssString};
+use super::{is_calc_name, is_function_name, is_not, CallArgs, CssString};
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
 use crate::sass::Function;
 use crate::value::{Color, ListSeparator, Number, Numeric, Operator};
 use std::convert::TryInto;
+use std::fmt::{self, Display, Write};
 
 /// A css value.
 #[derive(Clone, Debug, Eq, PartialOrd)]
@@ -34,7 +35,7 @@ pub enum Value {
     False,
     /// A binary operation, two operands and an operator.
     /// The booleans represents possible whitespace.
-    BinOp(Box<Value>, bool, Operator, bool, Box<Value>),
+    BinOp(Box<BinOp>),
     /// A unary operator and its operand.
     UnaryOp(Operator, Box<Value>),
     /// A map of values.
@@ -66,6 +67,7 @@ impl Value {
             Value::Color(..) => "color",
             Value::Literal(ref s) if s.is_css_calc() => "calculation",
             Value::Literal(..) => "string",
+            Value::BinOp(_) => "string",
             Value::Map(..) => "map",
             Value::Numeric(..) => "number",
             Value::List(..) => "list",
@@ -94,12 +96,7 @@ impl Value {
     pub fn into_calculated(self) -> Self {
         match self {
             Value::Numeric(num, _) => Value::Numeric(num, true),
-            Value::BinOp(a, s1, op, s2, b) => {
-                match op.eval((*a).clone().into_calculated(), (*b).clone()) {
-                    Some(v) => v,
-                    None => Value::BinOp(a, s1, op, s2, b),
-                }
-            }
+            Value::BinOp(op) => op.into_calculated(),
             other => other,
         }
     }
@@ -239,10 +236,7 @@ impl PartialEq for Value {
             (Value::UnaryOp(a, av), Value::UnaryOp(b, bv)) => {
                 a == b && av == bv
             }
-            (
-                Value::BinOp(aa, _, ao, _, ab),
-                Value::BinOp(ba, _, bo, _, bb),
-            ) => ao == bo && aa == ba && ab == bb,
+            (Value::BinOp(a), Value::BinOp(b)) => a == b,
             (Value::UnicodeRange(a), Value::UnicodeRange(b)) => a == b,
             (Value::Paren(a), Value::Paren(b)) => a == b,
             (Value::List(a, ..), Value::Map(b)) => {
@@ -358,4 +352,131 @@ pub enum ValueToMapError {
     Root(String),
     /// One key value was not convertible to the key type.
     Key(String),
+}
+
+/// A binary operation.
+#[derive(Clone, Debug, Eq, PartialOrd)]
+pub struct BinOp {
+    a: Value,
+    s1: bool,
+    op: Operator,
+    s2: bool,
+    b: Value,
+}
+
+impl BinOp {
+    pub(crate) fn new(
+        a: Value,
+        s1: bool,
+        op: Operator,
+        s2: bool,
+        b: Value,
+    ) -> Self {
+        BinOp { a, s1, op, s2, b }
+    }
+
+    pub(crate) fn op(&self) -> Operator {
+        self.op
+    }
+    pub(crate) fn a(&self) -> &Value {
+        &self.a
+    }
+    pub(crate) fn b(&self) -> &Value {
+        &self.b
+    }
+
+    /// Get this value, but marked as calculated.
+    ///
+    /// Make sure arithmetic operators are evaluated.
+    pub fn into_calculated(self) -> Value {
+        match self
+            .op
+            .eval(self.a.clone().into_calculated(), self.b.clone())
+        {
+            Some(v) => v,
+            None => self.into(),
+        }
+    }
+
+    pub(crate) fn format(
+        &self,
+        out: &mut fmt::Formatter,
+        format: Format,
+    ) -> fmt::Result {
+        if dbg!(self.op) == Operator::Plus
+            && (add_as_join(&self.a) || add_as_join(&self.b))
+        {
+            // The plus operator is also a concat operator
+            self.a.format(format).fmt(out)?;
+            self.b.format(format).fmt(out)
+        } else {
+            use Operator::{Minus, Plus};
+            let (op, b) = match (self.op, &self.b) {
+                (Plus, Value::Numeric(v, _)) if v.value.is_negative() => {
+                    (Minus, Value::from(-v))
+                }
+                (Minus, Value::Numeric(v, _)) if v.value.is_negative() => {
+                    (Plus, Value::from(-v))
+                }
+                (op, Value::Paren(p)) => {
+                    if let Some(op2) = is_op(p.as_ref()) {
+                        if op2 > op {
+                            (op, *p.clone())
+                        } else {
+                            (op, self.b.clone())
+                        }
+                    } else {
+                        (op, self.b.clone())
+                    }
+                }
+                (op, Value::BinOp(op2))
+                    if (op2.op < op) || (op == Minus && op2.op == Minus) =>
+                {
+                    (op, Value::Paren(Box::new(self.b.clone())))
+                }
+                (op, v) => (op, v.clone()),
+            };
+            fn is_op(v: &Value) -> Option<Operator> {
+                match v {
+                    Value::BinOp(op) => Some(op.op),
+                    _ => None,
+                }
+            }
+            self.a.format(format).fmt(out)?;
+            if dbg!(self.s1) {
+                out.write_char(' ')?;
+            }
+            dbg!(op).fmt(out)?;
+            if dbg!(self.s2) {
+                out.write_char(' ')?;
+            }
+            b.format(format).fmt(out)
+        }
+    }
+}
+
+impl PartialEq for BinOp {
+    fn eq(&self, other: &BinOp) -> bool {
+        self.op == other.op && self.a == other.a && self.b == other.b
+    }
+}
+
+impl From<BinOp> for Value {
+    fn from(value: BinOp) -> Self {
+        Value::BinOp(Box::new(value))
+    }
+}
+
+fn add_as_join(v: &Value) -> bool {
+    match v {
+        Value::List(..) => true,
+        Value::Literal(ref s) => !s.is_css_fn(),
+        Value::Call(ref name, _) => !is_function_name(name),
+        Value::BinOp(op) => {
+            op.op == Operator::Plus
+                && (add_as_join(&op.a) || add_as_join(&op.b))
+        }
+        Value::True | Value::False => true,
+        _ => false,
+    }
 }
