@@ -783,75 +783,8 @@ pub mod test {
     }
 
     #[test]
-    fn color_add_each_component() {
-        assert_expr!(b"#AbC + 1;", "#abbccd")
-    }
-    #[test]
-    fn color_add_each_component_overflow() {
-        assert_expr!(b"#00f + 1;", "#0101ff")
-    }
-
-    #[test]
-    fn color_add_components() {
-        assert_expr!(b"#AbC + #001;", "#aabbdd")
-    }
-
-    #[test]
-    fn color_add_components_overflow() {
-        assert_expr!(b"#1000ff + #001;", "#1000ff")
-    }
-
-    #[test]
-    fn color_add_components_to_named_overflow() {
-        assert_expr!(b"#0000ff + #001;", "blue")
-    }
-    #[test]
-    fn color_add_components_to_named() {
-        assert_expr!(b"#00f + #0f0 + #f00;", "white")
-    }
-
-    #[test]
     fn color_simple_rgba() {
         assert_expr!(b"rgba(1,2,3,.6);", "rgba(1, 2, 3, 0.6)")
-    }
-
-    #[test]
-    fn color_add_to_rgba() {
-        assert_expr!(b"rgba(0, 0, 0, 1) + #111;", "#111111")
-    }
-
-    #[test]
-    fn color_subtract() {
-        assert_expr!(b"#fff - 1;", "#fefefe")
-    }
-
-    #[test]
-    fn color_subtract_underflow() {
-        assert_expr!(b"#000 - 1;", "black")
-    }
-
-    #[test]
-    fn color_subtract_components() {
-        assert_expr!(b"#fff - #ff8;", "#000077") // Or should it be #007?
-    }
-
-    #[test]
-    fn color_subtract_components_underflow() {
-        assert_expr!(b"#000001 - #001;", "black")
-    }
-
-    #[test]
-    fn color_division() {
-        assert_expr!(b"(#101010 / 7);", "#020202")
-    }
-
-    #[test]
-    fn color_add_rgb_1() {
-        assert_expr!(b"rgb(10,10,10) + #010001;", "#0b0a0b")
-    }
-    #[test]
-    fn color_add_rgb_2() {
-        assert_expr!(b"#010000 + rgb(255, 255, 255);", "white")
     }
 
     #[test]
@@ -883,11 +816,6 @@ pub mod test {
     #[test]
     fn value_multiple_dashes() {
         assert_expr!(b"foo-bar-baz 17%;", "foo-bar-baz 17%")
-    }
-
-    #[test]
-    fn color_arithemtic_by_name() {
-        assert_expr!(b"red + blue;", "fuchsia")
     }
 
     #[test]

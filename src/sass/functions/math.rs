@@ -20,22 +20,11 @@ pub fn create_module() -> Scope {
     def!(f, div(number1, number2), |s| {
         let a = s.get(name!(number1))?;
         let b = s.get(name!(number2))?;
-        use crate::value::Operator;
-        match (a, b) {
-            (Value::Color(a, _), Value::Numeric(b, _)) if b.is_no_unit() => {
-                let bn = b
-                    .as_ratio()
-                    .map_err(|e| e.to_string())
-                    .named(name!(number2))?;
-                Ok((a.to_rgba().as_ref() / bn).into())
-            }
-            (Value::Numeric(ref a, _), Value::Numeric(ref b, _)) => {
-                Ok((a / b).into())
-            }
-            (a, b) => {
-                // Note: Or maybe this should be evaluated to a string?
-                Ok(BinOp::new(a, false, Operator::Div, false, b).into())
-            }
+        if let (Value::Numeric(a, _), Value::Numeric(b, _)) = (&a, &b) {
+            Ok((a / b).into())
+        } else {
+            use crate::value::Operator;
+            Ok(BinOp::new(a, false, Operator::Div, false, b).into())
         }
     });
     // - - - Boundig Functions - - -

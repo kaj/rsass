@@ -28,6 +28,9 @@ project adheres to
   final step) (PR #159).
 * Changed `BinOp` value in both sass and css from a tuple variant with
   boxed values to a single boxed struct variant.
+* Improved value checking; Report an error if trying to output invalid
+  css values in some cases. Also, arithmetic involving colors that
+  used to be calculated is now correctly invalid (PR #161).
 * Changed `css::Item::AtRule` to wrap the new type `css::AtRule`.
 * More varaints of `Invalid`, slightly fewer stringy errors.
 * Changed handling of `hue` arguments to color functions, to allow

@@ -32,7 +32,7 @@ use crate::sass::parser::{variable_declaration2, variable_declaration_mod};
 use crate::sass::{Callable, FormalArgs, Item, Name, Selectors, Value};
 use crate::value::ListSeparator;
 #[cfg(test)]
-use crate::value::{Numeric, Rgba, Unit};
+use crate::value::{Numeric, Unit};
 use crate::Error;
 use imports::{forward2, import2, use2};
 use nom::branch::alt;
@@ -335,11 +335,6 @@ fn test_media_args_2() {
     .unwrap();
 }
 
-#[cfg(test)] // TODO: Or remove this?
-fn if_statement(input: Span) -> PResult<Item> {
-    preceded(tag("@if "), if_statement2)(input)
-}
-
 fn if_statement_inner(input: Span) -> PResult<Item> {
     preceded(
         terminated(verify(name, |n: &String| n == "if"), opt_spacelike),
@@ -468,7 +463,7 @@ fn custom_property(input: Span) -> PResult<Item> {
 }
 
 fn property_or_namespace_rule(input: Span) -> PResult<Item> {
-    let (input, name) = terminated(
+    let (start_val, name) = terminated(
         alt((
             map(preceded(tag("*"), sass_string), |mut s| {
                 s.prepend("*");
@@ -479,8 +474,9 @@ fn property_or_namespace_rule(input: Span) -> PResult<Item> {
         delimited(ignore_comments, tag(":"), ignore_comments),
     )(input)?;
 
-    let (input, val) =
-        opt(terminated(value_expression, opt_spacelike))(input)?;
+    let (input, val) = opt(value_expression)(start_val)?;
+    let pos = start_val.up_to(&input).to_owned();
+    let (input, _) = opt_spacelike(input)?;
 
     let (input, next) = if val.is_some() {
         alt((tag("{"), tag(";"), tag("")))(input)?
@@ -495,8 +491,7 @@ fn property_or_namespace_rule(input: Span) -> PResult<Item> {
         _ => (input, None), // error?
     };
     let (input, _) = opt_spacelike(input)?;
-
-    Ok((input, ns_or_prop_item(name, val, body)))
+    Ok((input, ns_or_prop_item(name, val, body, pos)))
 }
 
 use crate::sass::SassString;
@@ -504,11 +499,12 @@ fn ns_or_prop_item(
     name: SassString,
     value: Option<Value>,
     body: Option<Vec<Item>>,
+    pos: SourcePos,
 ) -> Item {
     if let Some(body) = body {
         Item::NamespaceRule(name, value.unwrap_or(Value::Null), body)
     } else if let Some(value) = value {
-        Item::Property(name, value)
+        Item::Property(name, value, pos)
     } else {
         unreachable!()
     }
@@ -535,58 +531,4 @@ fn input_to_str(s: Span) -> Result<&str, Utf8Error> {
 
 fn input_to_string(s: Span) -> Result<String, Utf8Error> {
     from_utf8(s.fragment()).map(String::from)
-}
-
-#[cfg(test)]
-fn percentage(v: i64) -> Value {
-    Value::Numeric(Numeric::new(v, Unit::Percent))
-}
-
-#[cfg(test)]
-fn string(v: &str) -> Value {
-    Value::Literal(v.into())
-}
-
-#[test]
-fn if_with_no_else() {
-    assert_eq!(
-        check_parse(if_statement, b"@if true { p { border: solid; } }\n"),
-        Ok(Item::IfStatement(
-            Value::True,
-            vec![Item::Rule(
-                selectors(code_span(b"p").borrow()).unwrap().1,
-                vec![Item::Property("border".into(), string("solid"))],
-            )],
-            vec![],
-        )),
-    )
-}
-
-#[test]
-fn test_simple_property() {
-    assert_eq!(
-        check_parse(property_or_namespace_rule, b"color: red;\n"),
-        Ok(Item::Property(
-            "color".into(),
-            Value::Color(Rgba::from_rgb(255, 0, 0), Some("red".into())),
-        )),
-    )
-}
-
-#[test]
-fn test_property_2() {
-    assert_eq!(
-        check_parse(
-            property_or_namespace_rule,
-            b"background-position: 90% 50%;\n"
-        ),
-        Ok(Item::Property(
-            "background-position".into(),
-            Value::List(
-                vec![percentage(90), percentage(50)],
-                Some(ListSeparator::Space),
-                false,
-            ),
-        )),
-    )
 }

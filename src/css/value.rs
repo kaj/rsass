@@ -1,10 +1,8 @@
-use super::{is_calc_name, is_function_name, is_not, CallArgs, CssString};
+use super::{is_calc_name, is_not, BinOp, CallArgs, CssString};
 use crate::ordermap::OrderMap;
 use crate::output::{Format, Formatted};
 use crate::sass::Function;
 use crate::value::{Color, ListSeparator, Number, Numeric, Operator};
-use std::convert::TryInto;
-use std::fmt::{self, Display, Write};
 
 /// A css value.
 #[derive(Clone, Debug, Eq, PartialOrd)]
@@ -58,14 +56,48 @@ impl Value {
         Value::Numeric(Numeric::scalar(v), true)
     }
 
+    /// Check that the value is valid in css.
+    pub fn valid_css(self) -> Result<Self, InvalidCss> {
+        match self {
+            Value::Numeric(ref num, _) => {
+                if !num.unit.valid_in_css() {
+                    Err(InvalidCss::Value(self))
+                } else {
+                    Ok(self)
+                }
+            }
+            Value::BinOp(op) => Ok(op.valid_css()?.into()),
+            Value::UnaryOp(_, ref v) if v.is_calculation() => {
+                Err(InvalidCss::UndefOp(self))
+            }
+            Value::Function(..) => Err(InvalidCss::Value(self)),
+            Value::Call(ref name, ref args) => {
+                if name != "calc" {
+                    for arg in &args.positional {
+                        arg.clone().valid_css()?;
+                    }
+                }
+                Ok(self)
+            }
+            Value::List(ref v, _, false) => {
+                if v.is_empty() {
+                    Err(InvalidCss::Value(self))
+                } else {
+                    Ok(self)
+                }
+            }
+            Value::Map(_) => Err(InvalidCss::Value(self)),
+            _ => Ok(self),
+        }
+    }
+
     /// Get the type name of this value.
     pub fn type_name(&self) -> &'static str {
         match *self {
+            ref v if v.is_calculation() => "calculation",
             Value::ArgList(..) => "arglist",
-            Value::Call(ref name, _) if is_calc_name(name) => "calculation",
             Value::Call(..) => "string",
             Value::Color(..) => "color",
-            Value::Literal(ref s) if s.is_css_calc() => "calculation",
             Value::Literal(..) => "string",
             Value::BinOp(_) => "string",
             Value::Map(..) => "map",
@@ -75,6 +107,15 @@ impl Value {
             Value::True | Value::False => "bool",
             Value::Null => "null",
             _ => "unknown",
+        }
+    }
+
+    /// Returns true if this is a css `calc(...)` function.
+    pub fn is_calculation(&self) -> bool {
+        match *self {
+            Value::Call(ref name, _) if is_calc_name(name) => true,
+            Value::Literal(ref s) if s.is_css_calc() => true,
+            _ => false,
         }
     }
 
@@ -354,129 +395,33 @@ pub enum ValueToMapError {
     Key(String),
 }
 
-/// A binary operation.
-#[derive(Clone, Debug, Eq, PartialOrd)]
-pub struct BinOp {
-    a: Value,
-    s1: bool,
-    op: Operator,
-    s2: bool,
-    b: Value,
+/// An value is not valid for use in css.
+#[derive(Debug)]
+pub enum InvalidCss {
+    /// Value contains an undefined operation.
+    UndefOp(Value),
+    /// Value isn't a valid css value.
+    Value(Value),
+    /// {} and {} have incompatible units.
+    Incompat(Numeric, Numeric),
 }
 
-impl BinOp {
-    pub(crate) fn new(
-        a: Value,
-        s1: bool,
-        op: Operator,
-        s2: bool,
-        b: Value,
-    ) -> Self {
-        BinOp { a, s1, op, s2, b }
-    }
-
-    pub(crate) fn op(&self) -> Operator {
-        self.op
-    }
-    pub(crate) fn a(&self) -> &Value {
-        &self.a
-    }
-    pub(crate) fn b(&self) -> &Value {
-        &self.b
-    }
-
-    /// Get this value, but marked as calculated.
-    ///
-    /// Make sure arithmetic operators are evaluated.
-    pub fn into_calculated(self) -> Value {
-        match self
-            .op
-            .eval(self.a.clone().into_calculated(), self.b.clone())
-        {
-            Some(v) => v,
-            None => self.into(),
-        }
-    }
-
-    pub(crate) fn format(
-        &self,
-        out: &mut fmt::Formatter,
-        format: Format,
-    ) -> fmt::Result {
-        if dbg!(self.op) == Operator::Plus
-            && (add_as_join(&self.a) || add_as_join(&self.b))
-        {
-            // The plus operator is also a concat operator
-            self.a.format(format).fmt(out)?;
-            self.b.format(format).fmt(out)
-        } else {
-            use Operator::{Minus, Plus};
-            let (op, b) = match (self.op, &self.b) {
-                (Plus, Value::Numeric(v, _)) if v.value.is_negative() => {
-                    (Minus, Value::from(-v))
-                }
-                (Minus, Value::Numeric(v, _)) if v.value.is_negative() => {
-                    (Plus, Value::from(-v))
-                }
-                (op, Value::Paren(p)) => {
-                    if let Some(op2) = is_op(p.as_ref()) {
-                        if op2 > op {
-                            (op, *p.clone())
-                        } else {
-                            (op, self.b.clone())
-                        }
-                    } else {
-                        (op, self.b.clone())
-                    }
-                }
-                (op, Value::BinOp(op2))
-                    if (op2.op < op) || (op == Minus && op2.op == Minus) =>
-                {
-                    (op, Value::Paren(Box::new(self.b.clone())))
-                }
-                (op, v) => (op, v.clone()),
-            };
-            fn is_op(v: &Value) -> Option<Operator> {
-                match v {
-                    Value::BinOp(op) => Some(op.op),
-                    _ => None,
-                }
+impl std::error::Error for InvalidCss {}
+impl std::fmt::Display for InvalidCss {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            InvalidCss::UndefOp(v) => {
+                write!(f, "Undefined operation \"{}\".", v.introspect())
             }
-            self.a.format(format).fmt(out)?;
-            if dbg!(self.s1) {
-                out.write_char(' ')?;
+            InvalidCss::Value(v) => {
+                write!(f, "{} isn't a valid CSS value.", v.introspect())
             }
-            dbg!(op).fmt(out)?;
-            if dbg!(self.s2) {
-                out.write_char(' ')?;
-            }
-            b.format(format).fmt(out)
+            InvalidCss::Incompat(a, b) => write!(
+                f,
+                "{} and {} have incompatible units.",
+                a.format(Format::introspect()),
+                b.format(Format::introspect()),
+            ),
         }
-    }
-}
-
-impl PartialEq for BinOp {
-    fn eq(&self, other: &BinOp) -> bool {
-        self.op == other.op && self.a == other.a && self.b == other.b
-    }
-}
-
-impl From<BinOp> for Value {
-    fn from(value: BinOp) -> Self {
-        Value::BinOp(Box::new(value))
-    }
-}
-
-fn add_as_join(v: &Value) -> bool {
-    match v {
-        Value::List(..) => true,
-        Value::Literal(ref s) => !s.is_css_fn(),
-        Value::Call(ref name, _) => !is_function_name(name),
-        Value::BinOp(op) => {
-            op.op == Operator::Plus
-                && (add_as_join(&op.a) || add_as_join(&op.b))
-        }
-        Value::True | Value::False => true,
-        _ => false,
     }
 }

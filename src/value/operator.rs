@@ -1,6 +1,5 @@
-use crate::css::{CssString, Value};
-use crate::value::{ListSeparator, Numeric, Quotes};
-use num_traits::Zero;
+use crate::css::{is_function_name, CssString, InvalidCss, Value};
+use crate::value::{ListSeparator, Numeric};
 use std::fmt;
 
 /// An operator that can be used in a sass value.
@@ -41,28 +40,35 @@ pub enum Operator {
 impl Operator {
     /// Evaluate this operator with two operands.
     ///
-    /// Some operations cannot be evaluated but should remain as is.
-    /// In that case, eval returns None.
-    pub fn eval(&self, a: Value, b: Value) -> Option<Value> {
-        match *self {
+    /// Some operations are known to be invalid, and for those an
+    /// error is returned.
+    /// Other operations cannot be evaluated but may be valid as is
+    /// e.g. in a `calc(...)` value.  In that case, eval returns
+    /// Ok(None).
+    pub fn eval(&self, a: Value, b: Value) -> Result<Option<Value>, BadOp> {
+        fn cmp(
+            a: Value,
+            b: Value,
+            op: &dyn Fn(Value, Value) -> bool,
+        ) -> Option<Value> {
+            match (&a, &b) {
+                (Value::Numeric(..), Value::Numeric(..))
+                | (Value::Literal(_), Value::Literal(..)) => {
+                    Some(Value::from(op(a, b)))
+                }
+                _ => None,
+            }
+        }
+        Ok(match *self {
             Operator::And => Some(if !a.is_true() { a } else { b }),
             Operator::Or => Some(if a.is_true() { a } else { b }),
             Operator::Equal => Some(Value::from(a == b)),
             Operator::NotEqual => Some(Value::from(a != b)),
-            Operator::Greater => Some(Value::from(a > b)),
-            Operator::GreaterE => Some(Value::from(a >= b)),
-            Operator::Lesser => Some(Value::from(a < b)),
-            Operator::LesserE => Some(Value::from(a <= b)),
+            Operator::Greater => cmp(a, b, &|a, b| a > b),
+            Operator::GreaterE => cmp(a, b, &|a, b| a >= b),
+            Operator::Lesser => cmp(a, b, &|a, b| a < b),
+            Operator::LesserE => cmp(a, b, &|a, b| a <= b),
             Operator::Plus => match (a, b) {
-                (Value::Color(a, _), Value::Numeric(b, _))
-                    if b.is_no_unit() =>
-                {
-                    let b = b.as_ratio().ok()?;
-                    Some((a.to_rgba().as_ref() + b).into())
-                }
-                (Value::Color(a, _), Value::Color(b, _)) => {
-                    Some((a.to_rgba().as_ref() + b.to_rgba().as_ref()).into())
-                }
                 (Value::Numeric(a, _), Value::Numeric(b, _)) => {
                     if a.unit == b.unit || b.is_no_unit() {
                         Some(Numeric::new(a.value + b.value, a.unit).into())
@@ -76,11 +82,7 @@ impl Operator {
                 }
                 (Value::Literal(a), Value::Literal(b)) => {
                     let val = format!("{}{}", a.value(), b.value());
-                    if a.quotes().is_none() {
-                        Some(CssString::new(val, Quotes::None).into())
-                    } else {
-                        Some(CssString::new(val, Quotes::Double).into())
-                    }
+                    Some(CssString::new(val, a.quotes()).into())
                 }
                 (Value::Literal(a), b) if !a.is_css_fn() => {
                     let join = format!(
@@ -98,18 +100,19 @@ impl Operator {
                     );
                     Some(CssString::new(join, b.quotes()).into())
                 }
-                _ => None,
+                (a, b) => {
+                    if (add_as_join(&a) || add_as_join(&b))
+                        || (valid_operand(&a) && valid_operand(&b))
+                    {
+                        None
+                    } else {
+                        a.valid_css()?;
+                        b.valid_css()?;
+                        return Err(BadOp::UndefinedOperation);
+                    }
+                }
             },
             Operator::Minus => match (a, b) {
-                (Value::Color(a, _), Value::Numeric(b, _))
-                    if b.is_no_unit() =>
-                {
-                    let b = b.as_ratio().ok()?;
-                    Some((a.to_rgba().as_ref() - b).into())
-                }
-                (Value::Color(a, _), Value::Color(b, _)) => {
-                    Some((a.to_rgba().as_ref() - b.to_rgba().as_ref()).into())
-                }
                 (Value::Numeric(a, _), Value::Numeric(b, _)) => {
                     if a.unit == b.unit || b.is_no_unit() {
                         Some(Numeric::new(&a.value - &b.value, a.unit).into())
@@ -130,29 +133,40 @@ impl Operator {
                         false,
                     ))
                 }
-                _ => None,
+                (Value::UnicodeRange(..), Value::Numeric(..)) => None,
+                (a, b) => {
+                    if (add_as_join(&a) || add_as_join(&b))
+                        || (valid_operand(&a) && valid_operand(&b))
+                    {
+                        None
+                    } else {
+                        a.valid_css()?;
+                        b.valid_css()?;
+                        return Err(BadOp::UndefinedOperation);
+                    }
+                }
             },
             Operator::Multiply => match (a, b) {
                 (Value::Numeric(ref a, _), Value::Numeric(ref b, _)) => {
                     Some((a * b).into())
                 }
+                (a, b) if valid_operand(&a) && valid_operand(&b) => None,
+                _ => return Err(BadOp::UndefinedOperation),
+            },
+            Operator::Div => match (a, b) {
+                (Value::Color(..), Value::Numeric(..)) => {
+                    return Err(BadOp::UndefinedOperation)
+                }
+                (Value::Color(..), Value::Color(..)) => {
+                    return Err(BadOp::UndefinedOperation)
+                }
+                (Value::Numeric(ref a, a_c), Value::Numeric(ref b, b_c))
+                    if a_c || b_c =>
+                {
+                    Some((a / b).into())
+                }
                 _ => None,
             },
-            Operator::Div if a.is_calculated() || b.is_calculated() => {
-                match (a, b) {
-                    (Value::Color(a, _), Value::Numeric(b, _))
-                        if b.is_no_unit() && !b.value.is_zero() =>
-                    {
-                        let bn = b.as_ratio().ok()?;
-                        Some((a.to_rgba().as_ref() / bn).into())
-                    }
-                    (Value::Numeric(ref a, _), Value::Numeric(ref b, _)) => {
-                        Some((a / b).into())
-                    }
-                    _ => None,
-                }
-            }
-            Operator::Div => None,
             Operator::Modulo => match (&a, &b) {
                 (&Value::Numeric(ref a, _), &Value::Numeric(ref b, _)) => {
                     if a.unit == b.unit {
@@ -166,10 +180,33 @@ impl Operator {
                         None
                     }
                 }
-                _ => None,
+                (a, b) if valid_operand(a) && valid_operand(b) => None,
+                _ => return Err(BadOp::UndefinedOperation),
             },
-            Operator::Not => panic!("not is a unary operator only"),
-        }
+            Operator::Not => return Err(BadOp::UndefinedOperation),
+        })
+    }
+}
+
+fn valid_operand(v: &Value) -> bool {
+    match v {
+        Value::Numeric(..) => true,
+        Value::Call(..) => true,
+        Value::BinOp(_) => true,
+        Value::Literal(s) => s.is_css_fn(),
+        Value::Paren(v) => valid_operand(v),
+        _ => false,
+    }
+}
+
+fn add_as_join(v: &Value) -> bool {
+    match v {
+        Value::List(..) => true,
+        Value::Literal(ref s) => !s.is_css_fn(),
+        Value::Call(ref name, _) => !is_function_name(name),
+        Value::BinOp(op) => op.add_as_join(),
+        Value::True | Value::False => true,
+        _ => false,
     }
 }
 
@@ -191,5 +228,19 @@ impl fmt::Display for Operator {
             Operator::Div => "/",
             Operator::Not => "not",
         })
+    }
+}
+
+/// Something went wrong when evaluating an operator.
+pub enum BadOp {
+    /// An undefined operation (e.g. adding incompatible units) were attempted.
+    UndefinedOperation,
+    /// A potentially valid operation, but with invalid operands.
+    Invalid(InvalidCss),
+}
+
+impl From<InvalidCss> for BadOp {
+    fn from(value: InvalidCss) -> Self {
+        BadOp::Invalid(value)
     }
 }

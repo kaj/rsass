@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
 fn test() {
     assert_eq!(
         runner().err("$map: (a:b,c:d) + 1;\r\n"),

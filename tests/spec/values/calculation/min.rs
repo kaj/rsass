@@ -10,7 +10,7 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn complex_unit() {
         assert_eq!(
             runner().err("a {b: min(1px*1px, 2%*2%)}\n"),

@@ -6,7 +6,7 @@ use super::strings::{
 };
 use super::unit::unit;
 use super::util::{comment, ignore_comments, opt_spacelike, spacelike2};
-use super::{input_to_string, sass_string, PResult, Span};
+use super::{input_to_string, position, sass_string, PResult, Span};
 use crate::sass::{BinOp, SassString, Value};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use nom::branch::alt;
@@ -93,9 +93,9 @@ fn se_or_ext_string(input: Span) -> PResult<Value> {
 }
 
 fn single_expression(input: Span) -> PResult<Value> {
-    let (input, a) = logic_expression(input)?;
+    let (input1, a) = logic_expression(input)?;
     fold_many0(
-        pair(
+        tuple((
             delimited(
                 multispace0,
                 alt((
@@ -105,16 +105,20 @@ fn single_expression(input: Span) -> PResult<Value> {
                 multispace1,
             ),
             single_expression,
-        ),
+            position,
+        )),
         move || a.clone(),
-        |a, (op, b)| BinOp::new(a, false, op, false, b).into(),
-    )(input)
+        |a, (op, b, end)| {
+            let pos = input.up_to(&end).to_owned();
+            BinOp::new(a, false, op, false, b, pos).into()
+        },
+    )(input1)
 }
 
 fn logic_expression(input: Span) -> PResult<Value> {
-    let (input, a) = sum_expression(input)?;
+    let (input1, a) = sum_expression(input)?;
     fold_many0(
-        pair(
+        tuple((
             delimited(
                 multispace0,
                 alt((
@@ -128,10 +132,14 @@ fn logic_expression(input: Span) -> PResult<Value> {
                 multispace0,
             ),
             sum_expression,
-        ),
+            position,
+        )),
         move || a.clone(),
-        |a, (op, b)| BinOp::new(a, false, op, false, b).into(),
-    )(input)
+        |a, (op, b, end)| {
+            let pos = input.up_to(&end).to_owned();
+            BinOp::new(a, true, op, true, b, pos).into()
+        },
+    )(input1)
 }
 
 fn sum_expression(input: Span) -> PResult<Value> {
@@ -146,6 +154,7 @@ fn sum_expression(input: Span) -> PResult<Value> {
                 )),
                 ignore_comments,
                 term_value,
+                position,
             )),
             tuple((
                 ignore_comments,
@@ -155,12 +164,14 @@ fn sum_expression(input: Span) -> PResult<Value> {
                 )),
                 ignore_comments,
                 term_value,
+                position,
             )),
         )),
         move || v.clone(),
-        |v, (s1, op, s2, v2)| {
-            let s1 = s1 && s2;
-            BinOp::new(v, s1, op, s2, v2).into()
+        |v, (s1, op, s2, v2, end)| {
+            let pos = input.up_to(&end).to_owned();
+            let s2 = s2 || (s1 && op == Operator::Minus);
+            BinOp::new(v, s1, op, s2, v2, pos).into()
         },
     )(rest)
 }
@@ -180,9 +191,13 @@ fn term_value(input: Span) -> PResult<Value> {
             )),
             ignore_comments,
             single_value,
+            position,
         )),
         move || v.clone(),
-        |v1, (s1, op, s2, v2)| BinOp::new(v1, s1, op, s2, v2).into(),
+        |v1, (s1, op, s2, v2, end)| {
+            let pos = input.up_to(&end).to_owned();
+            BinOp::new(v1, s1, op, s2, v2, pos).into()
+        },
     )(rest)
 }
 
@@ -674,51 +689,6 @@ mod test {
         } else {
             Err(format!("Not a call parse result: {:?} {:?}", value, rest))
         }
-    }
-
-    #[test]
-    fn multi_expression() {
-        check_expr(
-            "15/10 2 3;",
-            List(
-                vec![
-                    BinOp::new(
-                        Value::scalar(15),
-                        false,
-                        Operator::Div,
-                        false,
-                        Value::scalar(10),
-                    )
-                    .into(),
-                    Value::scalar(2),
-                    Value::scalar(3),
-                ],
-                Some(ListSeparator::Space),
-                false,
-            ),
-        )
-    }
-
-    #[test]
-    fn double_div() {
-        check_expr(
-            "15/5/3;",
-            BinOp::new(
-                BinOp::new(
-                    Value::scalar(15),
-                    false,
-                    Operator::Div,
-                    false,
-                    Value::scalar(5),
-                )
-                .into(),
-                false,
-                Operator::Div,
-                false,
-                Value::scalar(3),
-            )
-            .into(),
-        )
     }
 
     #[test]

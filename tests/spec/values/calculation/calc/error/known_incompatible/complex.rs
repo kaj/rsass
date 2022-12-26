@@ -70,7 +70,7 @@ mod unitless {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn and_denominator() {
         assert_eq!(
             runner().err("a {b: calc(1 + 1/1px)}\n"),

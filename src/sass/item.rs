@@ -84,7 +84,8 @@ pub enum Item {
     /// A sass namespace rule; a name followed by a block of properties.
     NamespaceRule(SassString, Value, Vec<Item>),
     /// A sass property; a name and a value.
-    Property(SassString, Value),
+    /// The position is the full value.
+    Property(SassString, Value, SourcePos),
     /// A custom property.
     CustomProperty(SassString, SassString),
     /// A comment (that might be preserved for the output).
