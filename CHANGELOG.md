@@ -16,6 +16,7 @@ project adheres to
 * Added new variables `$epsilon`, `$max-safe-integer`, `$min-safe-integer`,
   `$max-number`, and `$min-number` in `sass:math`, matching recent dart-sass
   additions.
+* Added new `split()` function in `sass:string` module.
 * Changed the span type used in parsing to a local type that borrows a
   `SourceFile` instead of `nom_locate` dependency (PR #158).
 * Changed the type `SourceFile` to be reference counted, so cloned
@@ -38,7 +39,7 @@ project adheres to
 * Minor correctness improvent in the `calc` function handling.
 * Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.
 * Updated clap to 4.0 for the command-line interface.
-* Updated sass-spec test suite to 2022-12-08.
+* Updated sass-spec test suite to 2022-12-20.
 
 
 ## Release 0.26.0

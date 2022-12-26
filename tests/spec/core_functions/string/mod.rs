@@ -15,6 +15,8 @@ mod quote;
 
 mod slice;
 
+mod split;
+
 mod to_lower_case;
 
 mod to_upper_case;

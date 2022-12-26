@@ -1,5 +1,6 @@
 use super::{check, CallError, FunctionMap};
 use crate::css::{CssString, Value};
+use crate::value::ListSeparator;
 use crate::Scope;
 use lazy_static::lazy_static;
 use std::cmp::min;
@@ -66,6 +67,40 @@ pub fn create_module() -> Scope {
                 start_at, end_at
             )))
         }
+    });
+    def!(f, split(string, separator, limit = b"null"), |s| {
+        let string: CssString = s.get(name!(string))?;
+        let q = string.quotes();
+        let string = string.take_value();
+        let separator: CssString = s.get(name!(separator))?;
+        let separator = separator.value();
+        let limit = s.get_opt_map(name!(limit), |v| {
+            let v = check::unitless_int(v)?;
+            if v > 0 {
+                Ok(v as usize)
+            } else {
+                Err(format!("Must be 1 or greater, was {}.", v))
+            }
+        })?;
+        let v = if string.is_empty() {
+            vec![]
+        } else {
+            let mut v = string.splitn(
+                limit.unwrap_or(usize::MAX).saturating_add(1),
+                separator,
+            );
+            if separator.is_empty() {
+                v.next();
+            }
+            let mut v = v
+                .map(|s| CssString::new(s.into(), q).into())
+                .collect::<Vec<_>>();
+            if separator.is_empty() {
+                v.pop();
+            }
+            v
+        };
+        Ok(Value::List(v, Some(ListSeparator::Comma), true))
     });
     def!(f, to_upper_case(string), |s| {
         let v: CssString = s.get(name!(string))?;
