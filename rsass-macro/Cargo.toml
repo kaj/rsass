@@ -1,0 +1,13 @@
+[package]
+name = "rsass-macro"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "1.0.106", features = ["full", "extra-traits"] }
+quote = "1.0.22"
+proc-macro2 = "1.0.32"
+rsass = { path = ".." }
