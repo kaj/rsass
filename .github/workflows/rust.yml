@@ -21,17 +21,22 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        package:
+          - rsass
         rust:
           - stable
           - 1.56.0
           - nightly
+        include:
+          - package: spectest
+            rust: stable
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo check
+      - run: cargo check --package ${{ matrix.package }}
 
   clippy:
     runs-on: ubuntu-latest
@@ -61,7 +66,7 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo test
+      - run: cargo test --package rsass
 
   commandline:
     name: Build cli
