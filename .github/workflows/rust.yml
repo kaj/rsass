@@ -17,8 +17,8 @@ jobs:
       - run: cargo fmt --all -- --check
 
   check:
-    name: Check
-    needs: [rustfmt, clippy]
+    name: Clippy
+    needs: rustfmt
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -26,7 +26,7 @@ jobs:
           - rsass
         rust:
           - stable
-          - 1.56.0
+          - 1.56.1
           - nightly
         include:
           - package: spectest
@@ -36,18 +36,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo check --package ${{ matrix.package }}
-
-  clippy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
-        with:
           components: clippy
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo clippy --all-features
+      - run: cargo clippy --package ${{ matrix.package }} --all-features
 
   test:
     name: Test Suite
@@ -59,7 +50,7 @@ jobs:
           - stable
           - 1.60.0
           - 1.58.1
-          - 1.56.0
+          - 1.56.1
           - beta
           - nightly
     steps:
