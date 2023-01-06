@@ -18,6 +18,7 @@ jobs:
 
   check:
     name: Check
+    needs: [rustfmt, clippy]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -50,6 +51,7 @@ jobs:
 
   test:
     name: Test Suite
+    needs: check
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -70,6 +72,7 @@ jobs:
 
   commandline:
     name: Build cli
+    needs: check
     runs-on: ubuntu-latest
     strategy:
       matrix:
