@@ -19,7 +19,6 @@ jobs:
   # Run clippy on stable only
   clippy:
     name: Clippy
-    needs: rustfmt
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

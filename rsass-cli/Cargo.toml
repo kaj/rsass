@@ -1,5 +1,5 @@
 [package]
-name = "rsass-bin"
+name = "rsass-cli"
 version = "0.26.1-PRE"
 authors = ["Rasmus Kaj <kaj@kth.se>"]
 description = "Converts sass-spec to rust tests."
