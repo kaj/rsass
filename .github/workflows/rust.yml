@@ -16,21 +16,31 @@ jobs:
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
       - run: cargo fmt --all -- --check
 
-  check:
+  # Run clippy on stable only
+  clippy:
     name: Clippy
+    needs: rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
+      - run: cargo clippy --all-features
+
+  # Run check on everything supported except where clippy is used instead.
+  check:
+    name: Check
     needs: rustfmt
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package:
-          - rsass
         rust:
-          - stable
-          - 1.56.1
           - nightly
         include:
-          - package: spectest
-            rust: stable
+          - rust: 1.56.1
+            only: --package rsass
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@master
@@ -38,11 +48,11 @@ jobs:
           toolchain: ${{ matrix.rust }}
           components: clippy
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo clippy --package ${{ matrix.package }} --all-features
+      - run: cargo check ${{ matrix.only }} --all-features
 
   test:
     name: Test Suite
-    needs: check
+    needs: [clippy, check]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -63,7 +73,7 @@ jobs:
 
   commandline:
     name: Build cli
-    needs: check
+    needs: [clippy, check]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -76,4 +86,4 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo build --features=commandline
+      - run: cargo build --package rsass-cli

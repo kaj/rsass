@@ -1,0 +1,20 @@
+[package]
+name = "rsass-bin"
+version = "0.26.1-PRE"
+authors = ["Rasmus Kaj <kaj@kth.se>"]
+description = "Converts sass-spec to rust tests."
+edition = "2021"
+rust-version = "1.60.0"
+
+[[bin]]
+name = "rsass"
+path = "src/main.rs"
+
+[features]
+unimplemented_args = []
+
+[dependencies]
+rsass = { path = "../rsass" }
+# Note: The 3 will fail, it's just an ugly hack to be able to compile
+# the library with rust versions not supported by clap 4.
+clap = { version = "<5.0.0", features = ["derive", "wrap_help"] }
