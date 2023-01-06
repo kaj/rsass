@@ -28,30 +28,9 @@ jobs:
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
       - run: cargo clippy --all-features
 
-  # Run check on everything supported except where clippy is used instead.
-  check:
-    name: Check
-    needs: rustfmt
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust:
-          - nightly
-        include:
-          - rust: 1.56.1
-            only: --package rsass
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust }}
-          components: clippy
-      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo check ${{ matrix.only }} --all-features
-
   test:
     name: Test Suite
-    needs: [clippy, check]
+    needs: [clippy, rustfmt]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -72,7 +51,7 @@ jobs:
 
   commandline:
     name: Build cli
-    needs: [clippy, check]
+    needs: [clippy, rustfmt]
     runs-on: ubuntu-latest
     strategy:
       matrix:
