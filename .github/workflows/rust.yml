@@ -28,8 +28,8 @@ jobs:
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
       - run: cargo clippy --all-features
 
-  test:
-    name: Test Suite
+  test-all:
+    name: All Tests
     needs: [clippy, rustfmt]
     runs-on: ubuntu-latest
     strategy:
@@ -37,10 +37,59 @@ jobs:
         rust:
           - stable
           - 1.60.0
-          - 1.58.1
-          - 1.56.1
           - beta
           - nightly
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
+      - run: cargo test
+
+  test-windows:
+    name: Test on Windows
+    needs: [clippy, rustfmt]
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - 1.60.0
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
+      - run: cargo test
+
+  test-macos:
+    name: Test on MacOS
+    needs: [clippy, rustfmt]
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - 1.60.0
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+      - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
+      - run: cargo test
+
+  test-lib:
+    name: Lib Tests
+    needs: [clippy, rustfmt]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - 1.58.1
+          - 1.56.1
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@master
