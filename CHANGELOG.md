@@ -9,6 +9,13 @@ project adheres to
 
 ## Unreleased
 
+* Changed repo structure to a monorepo (PR #164).
+  - The commandline interface now lives in the separate crate rsass-cli.
+  - The test updater also have a separate crate, but not intended for
+    publication.
+  - Tests are restructured to fail faster for simple things, while
+    macos and windows testing is added to the github action (appveyor
+    is removed).
 * Changed numeric handing (mainly conversions to/from `f64`) to match
   improvements in how dart-sass handles numerics.  This is mainly done by
   removing some special cases as dart-sass and rust now agrees on more of
@@ -895,7 +902,7 @@ Changes since version 0.8.0 includes:
 * Fix some clippy complaints.
 * Minor documentation updates.
 * Some updates to travis build script and test structure.
-* Add appveyour (windows) continous integration testing.
+* Add appveyor (windows) continous integration testing.
 * Depedency updates: num-rational 0.2.1, nom 4.0 (PR #23) and rand 0.5.
 
 Thanks to @killercup and rust-fuzz/targets#119 for identifying some

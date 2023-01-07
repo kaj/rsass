@@ -4,28 +4,14 @@ Sass reimplemented in rust with nom.
 The "r" in the name might stand for the Rust programming language, for
 "re-implemented", or possibly for my name Rasmus.
 
-[![Crate](https://img.shields.io/crates/v/rsass.svg)](https://crates.io/crates/rsass)
-[![docs](https://docs.rs/rsass/badge.svg)](https://docs.rs/rsass)
-[![Github build](https://github.com/kaj/rsass/workflows/CI/badge.svg)](https://github.com/kaj/rsass/actions)
-
-## Commandline and library
-
-To make compiling faster when rsass is used as a library crate (which
-is probably the dominant use-case), I have made the commandline
-interface a separate crate.
-When building the monorepo, both the library and the cli are built by
-default.
-To install the cli, use:
+This is the `rsass-cli` binary crate.
+To use it, install it and run the binary.
 
     cargo install rsass-cli
+    rsass --help
 
-Note: currently the separate crate is not yet released, so for now, use:
-
-    cargo install --features commandline rsass
-
-To use the rust library, add `rsass` to your dependencies.
-
-    cargo add rsass
+[![Crate](https://img.shields.io/crates/v/rsass-cli.svg)](https://crates.io/crates/rsass-cli)
+[![Github build](https://github.com/kaj/rsass/workflows/CI/badge.svg)](https://github.com/kaj/rsass/actions)
 
 ## Sass language and implementation status
 
@@ -35,13 +21,11 @@ This implementation is incomplete but getting there, if slowly.
 
 Progress: 4500 of 6843 tests passed.
 
-If you need _complete_ sass support, you'll need
-[dart sass](https://sass-lang.com/dart-sass).
-Another alternative is [grass](https://crates.io/crates/grass)
-which is another incomplete pure rust implementation.
-That said, this implementation has reached a version where I find it
-usable for my personal projects, and the number of working tests are
-improving.
+If you want a standalone sass executable, you're probably better of
+with [dart sass](https://sass-lang.com/dart-sass).
+If a rust crate is easier to install or something, feel free to use
+this crate.
+
 
 ## Contributing
 

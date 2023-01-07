@@ -30,7 +30,7 @@ fi
 
 IMPL=dart-sass
 check() {
-    cargo build --release --features=commandline,unimplemented_args >&2 || exit 1
+    cargo build --release --bin rsass --features=unimplemented_args >&2 || exit 1
     echo "About to test $1"
     (cd sass-spec && \
          npm install && \
@@ -61,7 +61,7 @@ case "$1" in
             | bash
         ;;
     "update-tests")
-	cargo run --release --features=spectest --bin=spectest && cargo fmt
+	cargo run --release --bin=spectest && cargo fmt
 	;;
     *)
         check spec/$1

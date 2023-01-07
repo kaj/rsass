@@ -1,0 +1,30 @@
+[package]
+name = "rsass"
+version = "0.26.1-PRE"
+authors = ["Rasmus Kaj <kaj@kth.se>"]
+categories = ["web-programming"]
+keywords = ["scss", "sass", "css", "web"]
+description = "Sass implementation in pure rust (not complete yet)"
+documentation = "https://docs.rs/rsass"
+repository = "https://github.com/kaj/rsass"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+rust-version = "1.56.0"
+
+[dependencies]
+arc-swap = "1.5.0"
+fastrand = "1.4"
+lazy_static = "1.0"
+nom = "7.0"
+num-bigint = { version = "0.4.0", default-features = false, features = ["std"] }
+num-integer = "0.1.42"
+num-rational = { version = "0.4.0", default-features = false, features = ["num-bigint"] }
+num-traits = "^0.2.0"
+tracing = "0.1.34"
+
+[badges]
+maintenance = { status = "actively-developed" }
+
+[dev-dependencies]
+tracing-subscriber = "0.3.11"

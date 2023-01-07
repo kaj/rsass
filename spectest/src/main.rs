@@ -1,9 +1,10 @@
 use deunicode::deunicode;
 use hrx_get::Archive;
 use lazy_regex::regex_is_match;
+use std::env::set_current_dir;
 use std::ffi::OsStr;
-use std::fs::{create_dir, DirEntry, File};
-use std::io::{self, Read, Write};
+use std::fs::{create_dir, read_to_string, DirEntry, File};
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -16,7 +17,8 @@ use testrunner::{runner, TestRunner};
 mod writestr;
 
 fn main() -> Result<(), Error> {
-    let base = PathBuf::from("sass-spec");
+    let base = PathBuf::from("..").join("sass-spec");
+    set_current_dir("rsass")?;
     handle_suite(
         &base,
         "spec",
@@ -47,13 +49,13 @@ fn handle_suite(
     let suitedir = base.join(suite);
     let rssuitedir = PathBuf::from("tests").join(fn_name(suite));
     let _may_exist = create_dir(&rssuitedir);
-    let mut rs = File::create(rssuitedir.join("main.rs"))?;
+    let mut rs = create(&rssuitedir.join("main.rs"))?;
     writeln!(
         rs,
         "//! Tests auto-converted from {:?}\
          \n//! version {}\
          \n//! See <https://github.com/sass/sass-spec> for source material.\\n",
-        suitedir,
+        suitedir.strip_prefix("..")?,
         String::from_utf8(
             Command::new("git")
                 .args(["log", "-1", "--format=%h, %ai."])
@@ -74,7 +76,7 @@ fn handle_suite(
         b"mod testrunner;\nuse testrunner::{runner, TestRunner};\n\n",
     )?;
     {
-        let mut tr = File::create(rssuitedir.join("testrunner.rs"))?;
+        let mut tr = create(&rssuitedir.join("testrunner.rs"))?;
         tr.write_all(include_bytes!("testrunner.rs"))?;
     }
     handle_entries(&mut rs, base, &suitedir, &rssuitedir, None, ignored)
@@ -102,12 +104,11 @@ fn handle_entries(
         {
             let name = fn_name_os(&entry.file_name());
             writeln!(rs, "\nmod {};", name)?;
-            let mut rs =
-                File::create(rssuitedir.join(format!("{}.rs", name)))?;
+            let mut rs = create(&rssuitedir.join(format!("{}.rs", name)))?;
             writeln!(
                 rs,
                 "//! Tests auto-converted from {:?}\n",
-                suitedir.join(entry.file_name()),
+                suitedir.strip_prefix("..")?.join(entry.file_name()),
             )?;
             spec_hrx_to_test(&mut rs, &entry.path(), precision).map_err(
                 |e| {
@@ -154,11 +155,13 @@ fn handle_entries(
                         writeln!(rs, "\nmod {};", name)?;
                         let rssuitedir = rssuitedir.join(name);
                         let _may_exist = create_dir(&rssuitedir);
-                        let mut rs = File::create(rssuitedir.join("mod.rs"))?;
+                        let mut rs = create(&rssuitedir.join("mod.rs"))?;
                         writeln!(
                             rs,
                             "//! Tests auto-converted from {:?}\n",
-                            suitedir.join(entry.file_name()),
+                            suitedir
+                                .strip_prefix("..")?
+                                .join(entry.file_name()),
                         )?;
                         writeln!(
                             rs,
@@ -217,7 +220,7 @@ fn spec_dir_to_test(
 ) -> Result<(), Error> {
     let specdir = suite.join(test);
     let fixture = load_test_fixture_dir(&specdir, precision)?;
-    writeln!(rs, "\n// From {:?}", specdir)?;
+    writeln!(rs, "\n// From {:?}", specdir.strip_prefix("..")?)?;
     let runner = if let Some(stem) = suite.file_stem() {
         runner().with_cwd(stem.to_str().unwrap())
     } else {
@@ -243,7 +246,7 @@ fn spec_hrx_to_test(
     let mut runner = if let Some(stem) = suite.file_stem() {
         writeln!(rs, "        .with_cwd({:?})", stem)?;
         let base = suite
-            .strip_prefix("sass-spec/spec")?
+            .strip_prefix("../sass-spec/spec")?
             .parent()
             .unwrap()
             .join(stem);
@@ -534,10 +537,12 @@ fn load_options(path: &Path) -> Result<Options, Error> {
     }
 }
 
-fn content(path: &Path) -> Result<String, io::Error> {
-    let mut buf = String::new();
-    File::open(path)?.read_to_string(&mut buf)?;
-    Ok(buf)
+fn create(path: &Path) -> Result<File, Error> {
+    File::create(path).map_err(|err| Error(format!("{path:?}: {err}")))
+}
+
+fn content(path: &Path) -> Result<String, Error> {
+    read_to_string(path).map_err(|err| Error(format!("{path:?}: {err}")))
 }
 
 #[derive(Debug)]

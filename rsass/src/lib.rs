@@ -21,7 +21,7 @@
 //! # Sass language and implemetation status
 //!
 //! The sass language [is defined in its reference
-//! doc](http://sass-lang.com/documentation/file.SASS_REFERENCE.html).
+//! doc](http://sass-lang.com/documentation/).
 //! This implementation is incomplete but getting there, if slowly.
 //!
 //! Progress: 4500 of 6843 tests passed.
