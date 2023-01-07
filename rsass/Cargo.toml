@@ -2,8 +2,8 @@
 name = "rsass"
 version = "0.26.1-PRE"
 authors = ["Rasmus Kaj <kaj@kth.se>"]
-categories = ["command-line-utilities", "web-programming"]
-keywords = ["scss", "sass", "css"]
+categories = ["web-programming"]
+keywords = ["scss", "sass", "css", "web"]
 description = "Sass implementation in pure rust (not complete yet)"
 documentation = "https://docs.rs/rsass"
 repository = "https://github.com/kaj/rsass"

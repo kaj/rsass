@@ -59,7 +59,7 @@ fn handle_suite(
         String::from_utf8(
             Command::new("git")
                 .args(["log", "-1", "--format=%h, %ai."])
-                .current_dir(dbg!(base))
+                .current_dir(base)
                 .output()?
                 .stdout
         )?.trim(),

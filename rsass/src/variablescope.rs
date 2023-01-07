@@ -689,9 +689,8 @@ pub mod test {
         assert_expr!(&[("four", "4")], b"2 + 3 * $four;", "14")
     }
 
-    // The following tests are from aboud division are from
-    // http://sass-lang.com/documentation/file.SASS_REFERENCE.html ,
-    // Section "Divison and /"
+    // The following tests about division are from
+    // http://sass-lang.com/documentation/ , Section "Divison and /"
     #[test]
     fn div_slash_1() {
         assert_expr!(b"10px/8px;", "10px/8px")
