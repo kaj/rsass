@@ -1,0 +1,21 @@
+[package]
+name = "rsass-macros"
+version = "0.1.0"
+categories = ["web-programming"]
+keywords = ["scss", "sass", "css", "web", "macro"]
+description = "Sass as a rust function-like macro."
+documentation = "https://docs.rs/rsass-macros"
+repository = "https://github.com/kaj/rsass"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+rust-version = "1.60.0"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+rsass = { path = "../rsass", version = "0.26.1-PRE" }
+proc-macro2 = "1.0.32"
+quote = "1.0.22"
+syn = "1.0.106"

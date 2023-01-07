@@ -16,6 +16,9 @@ project adheres to
   - Tests are restructured to fail faster for simple things, while
     macos and windows testing is added to the github action (appveyor
     is removed).
+* Added macros (PR #163, #165).
+  - The workspace now includes a `rsass-macros` crate that can be used to
+    compile sass to css strings at compile time in rust crates.
 * Changed numeric handing (mainly conversions to/from `f64`) to match
   improvements in how dart-sass handles numerics.  This is mainly done by
   removing some special cases as dart-sass and rust now agrees on more of
@@ -47,6 +50,8 @@ project adheres to
 * Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.
 * Updated clap to 4.0 for the command-line interface.
 * Updated sass-spec test suite to 2022-12-20.
+
+Thanks to @Wicpar for the initial macros implementation.
 
 
 ## Release 0.26.0
