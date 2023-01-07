@@ -3,5 +3,6 @@
 members = [
    "rsass",
    "rsass-cli",
+   "rsass-macros",
    "spectest",
 ]

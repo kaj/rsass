@@ -1,10 +1,20 @@
-extern crate proc_macro;
+//! Convert scss to css at compile-type.
+//! Implemented with [rsass].
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::ToTokens;
-use syn::{Error, LitStr, parse_macro_input};
 use rsass::output::{Format, Style};
+use syn::{parse_macro_input, Error, LitStr};
 
+/// Convert a scss string to css at compile time.
+///
+/// # Examples
+///
+/// ````
+/// use rsass_macros::scss;
+/// const CSS: &str = scss!("p { em { font-style: italic; } font: serif; }");
+/// assert_eq!(CSS, "p{font:serif}p em{font-style:italic}\n");
+/// ````
 #[proc_macro]
 pub fn scss(tokens: TokenStream) -> TokenStream {
     let input = parse_macro_input!(tokens as LitStr);
