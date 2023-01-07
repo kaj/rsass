@@ -31,11 +31,9 @@ pub fn scss(tokens: TokenStream) -> TokenStream {
                 .to_token_stream()
                 .into()
         }
-        Err(err) => {
-            Error::new(Span::call_site(), format!("{err:?}"))
-                .into_compile_error()
-                .into()
-        }
+        Err(err) => Error::new(Span::call_site(), format!("{err:?}"))
+            .into_compile_error()
+            .into(),
     }
 }
 
@@ -66,10 +64,8 @@ pub fn include_scss(tokens: TokenStream) -> TokenStream {
                 .to_token_stream()
                 .into()
         }
-        Err(err) => {
-            Error::new(Span::call_site(), format!("{err:?}"))
-                .into_compile_error()
-                .into()
-        }
+        Err(err) => Error::new(Span::call_site(), format!("{err:?}"))
+            .into_compile_error()
+            .into(),
     }
 }
