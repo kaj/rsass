@@ -9,6 +9,8 @@ mod bounds;
 
 mod divide;
 
+mod error;
+
 mod modulo;
 
 mod precision;

@@ -14,6 +14,10 @@ impl<T: Into<String>> From<T> for Comment {
 impl Comment {
     /// Write this comment to a css output buffer.
     pub(crate) fn write(&self, buf: &mut CssBuf) {
+        if self.0.starts_with('#') {
+            buf.add_one("\n", "");
+            return;
+        }
         let indent = buf.indent_level();
         let existing = self
             .0

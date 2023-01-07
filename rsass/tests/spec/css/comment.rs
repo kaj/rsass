@@ -171,6 +171,44 @@ fn multiple_stars() {
          \n}\n"
     );
 }
+mod sourcemap {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn between_loads() {
+        assert_eq!(
+            runner().ok("@use \'sass:math\';\
+             \n/*# sourceMappingURL=whatever */\
+             \n@use \'sass:list\';\n\
+             \na { b: c }\n"),
+            "\
+         \na {\
+         \n  b: c;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn sourcemappingurl() {
+        assert_eq!(
+            runner().ok("a { b: c }\
+             \n/*# sourceMappingURL=whatever */\n"),
+            "a {\
+         \n  b: c;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn sourceurl() {
+        assert_eq!(
+            runner().ok("a { b: c }\
+             \n/*# sourceURL=whatever */\n"),
+            "a {\
+         \n  b: c;\
+         \n}\n"
+        );
+    }
+}
 #[test]
 fn weird_indentation() {
     assert_eq!(

@@ -49,7 +49,7 @@ project adheres to
 * Minor correctness improvent in the `calc` function handling.
 * Clippy now takes MSRV from Cargo.toml.  Slightly more recent lints allowed.
 * Updated clap to 4.0 for the command-line interface.
-* Updated sass-spec test suite to 2022-12-20.
+* Updated sass-spec test suite to 2023-01-06.
 
 Thanks to @Wicpar for the initial macros implementation.
 
