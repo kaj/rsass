@@ -6,6 +6,8 @@ description = "Commandline interface for rsass, compiles scss to css."
 categories = ["command-line-utilities", "web-programming"]
 keywords = ["scss", "sass", "css", "web"]
 repository = "https://github.com/kaj/rsass"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
 edition = "2021"
 rust-version = "1.64.0"
 
