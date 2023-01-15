@@ -36,7 +36,7 @@ jobs:
       matrix:
         rust:
           - stable
-          - 1.60.0
+          - 1.64.0
           - beta
           - nightly
     steps:
@@ -45,7 +45,7 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo test
+      - run: cargo test -q
 
   test-windows:
     name: Test on Windows
@@ -55,14 +55,14 @@ jobs:
       matrix:
         rust:
           - stable
-          - 1.60.0
+          - 1.64.0
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo test
+      - run: cargo test -q
 
   test-macos:
     name: Test on MacOS
@@ -72,14 +72,14 @@ jobs:
       matrix:
         rust:
           - stable
-          - 1.60.0
+          - 1.64.0
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo test
+      - run: cargo test -q
 
   test-lib:
     name: Lib Tests
@@ -88,15 +88,17 @@ jobs:
     strategy:
       matrix:
         rust:
+          - 1.62.1
+          - 1.60.0
           - 1.58.1
-          - 1.56.1
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
       - run: echo "::add-matcher::.github/workflows/rust-problem-matcher.json"
-      - run: cargo test --package rsass
+      - run: sed -i 's/"rsass-cli",/# \0/' Cargo.toml
+      - run: cargo test --package rsass -q
 
   commandline:
     name: Build cli
