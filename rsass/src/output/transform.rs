@@ -1,10 +1,6 @@
 //! This module provides `handle_body` (and internally `handle_item`),
 //! that does most of the work for [`crate::input::Context::transform`].
 
-// https://github.com/rust-lang/rust-clippy/issues/7846
-// https://users.rust-lang.org/t/using-an-option-mut-t-in-a-loop-clippy-complains/72481/2
-#![allow(clippy::needless_option_as_deref)]
-
 use super::cssdest::CssDestination;
 use super::CssData;
 use crate::css::{self, AtRule, Import};
