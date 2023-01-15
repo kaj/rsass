@@ -24,10 +24,6 @@ impl CssData {
     pub fn into_iter(self) -> impl Iterator<Item = Item> {
         self.imports.into_iter().map(Into::into).chain(self.body)
     }
-    pub fn add_import(&mut self, import: Import) {
-        self.imports.push(import)
-    }
-
     pub fn load_module<Init>(
         &mut self,
         path: &str,
@@ -97,7 +93,7 @@ impl CssDestination for CssData {
     }
 
     fn push_import(&mut self, import: Import) {
-        self.add_import(import);
+        self.imports.push(import)
     }
 
     fn push_comment(&mut self, c: Comment) {
