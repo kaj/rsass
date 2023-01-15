@@ -7,24 +7,28 @@ use std::sync::Arc;
 
 #[test]
 fn simple_value() -> Result<(), Error> {
-    let mut context = FsContext::for_cwd().with_format(Format {
+    let format = Format {
         style: Style::Compressed,
         precision: 5,
-    });
+    };
+    let mut context = FsContext::for_cwd().with_format(format);
     context
         .get_scope()
         .define(Name::from_static("color"), Rgba::from_rgb(0, 0, 0).into())?;
-    let output = context.transform(mock_stdin("p { color: $color }"))?;
+    let output = context
+        .transform(mock_stdin("p { color: $color }"))?
+        .into_buffer(format)?;
     assert_eq!(String::from_utf8(output).unwrap(), "p{color:#000}\n");
     Ok(())
 }
 
 #[test]
 fn simple_function() -> Result<(), Error> {
-    let mut context = FsContext::for_cwd().with_format(Format {
+    let format = Format {
         style: Style::Compressed,
         precision: 5,
-    });
+    };
+    let mut context = FsContext::for_cwd().with_format(format);
     context.get_scope().define_function(
         Name::from_static("get_answer"),
         Function::builtin(
@@ -34,17 +38,20 @@ fn simple_function() -> Result<(), Error> {
             Arc::new(|_| Ok(css::Value::scalar(42))),
         ),
     );
-    let output = context.transform(mock_stdin("p { x: get_answer(); }"))?;
+    let output = context
+        .transform(mock_stdin("p { x: get_answer(); }"))?
+        .into_buffer(format)?;
     assert_eq!(String::from_utf8(output).unwrap(), "p{x:42}\n");
     Ok(())
 }
 
 #[test]
 fn function_with_args() -> Result<(), Error> {
-    let mut context = FsContext::for_cwd().with_format(Format {
+    let format = Format {
         style: Style::Compressed,
         precision: 5,
-    });
+    };
+    let mut context = FsContext::for_cwd().with_format(format);
     context.get_scope().define_function(
         Name::from_static("halfway"),
         Function::builtin(
@@ -68,8 +75,9 @@ fn function_with_args() -> Result<(), Error> {
             }),
         ),
     );
-    let output =
-        context.transform(mock_stdin("p { x: halfway(10, 18); }"))?;
+    let output = context
+        .transform(mock_stdin("p { x: halfway(10, 18); }"))?
+        .into_buffer(format)?;
     assert_eq!(String::from_utf8(output).unwrap(), "p{x:14}\n");
     Ok(())
 }

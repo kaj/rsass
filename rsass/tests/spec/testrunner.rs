@@ -139,6 +139,7 @@ impl TestRunner {
         let file = SourceFile::read(&mut input.as_bytes(), name)?;
         Context::for_loader(self.loader.clone())
             .with_format(self.format)
-            .transform(file)
+            .transform(file)?
+            .into_buffer(self.format)
     }
 }

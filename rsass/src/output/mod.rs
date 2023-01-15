@@ -6,9 +6,9 @@ mod format;
 mod style;
 mod transform;
 
+pub use cssdata::CssData;
 pub use format::{Format, Formatted};
 pub use style::Style;
 
 pub(crate) use cssbuf::CssBuf;
-pub(crate) use cssdata::CssData;
 pub(crate) use transform::handle_parsed;

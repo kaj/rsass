@@ -24,8 +24,8 @@ type Combine = &'static dyn Fn(&str, &str) -> String;
 /// # use rsass::input::{FsContext, SourceFile, SourceName};
 /// # use rsass::output::{Format, Style};
 /// # fn main() -> Result<(), rsass::Error> {
-/// let context = FsContext::for_cwd()
-///     .with_format(Format { style: Style::Compressed, precision: 2 });
+/// let format = Format { style: Style::Compressed, precision: 2 };
+/// let context = FsContext::for_cwd().with_format(format);
 /// let scss_input = SourceFile::scss_bytes(
 ///     "$gap: 4em / 3;
 ///     \np {\
@@ -34,7 +34,7 @@ type Combine = &'static dyn Fn(&str, &str) -> String;
 ///     SourceName::root("-")
 /// );
 /// assert_eq!(
-///     context.transform(scss_input)?,
+///     context.transform(scss_input)?.into_buffer(format)?,
 ///     b"p{margin:1.33em 0}\n"
 /// );
 /// # Ok(()) }
@@ -45,7 +45,8 @@ type Combine = &'static dyn Fn(&str, &str) -> String;
 /// # use rsass::input::{FsContext, SourceFile, SourceName};
 /// # use rsass::output::{Format, Style};
 /// # fn main() -> Result<(), rsass::Error> {
-/// # let context = FsContext::for_cwd().with_format(Format { style: Style::Compressed, precision: 2 });
+/// # let format = Format { style: Style::Compressed, precision: 2 };
+/// # let context = FsContext::for_cwd().with_format(format);
 /// let css_input = SourceFile::css_bytes(
 ///     "p {\
 ///     \n    margin: 1.333333333em 0;\
@@ -53,7 +54,7 @@ type Combine = &'static dyn Fn(&str, &str) -> String;
 ///     SourceName::root("-")
 /// );
 /// assert_eq!(
-///     context.transform(css_input)?,
+///     context.transform(css_input)?.into_buffer(format)?,
 ///     b"p{margin:1.33em 0}\n"
 /// );
 /// # Ok(()) }
@@ -141,18 +142,18 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
 
     /// Transform some input source to css.
     ///
-    /// The css output is returned as a raw byte vector.
-    pub fn transform(mut self, file: SourceFile) -> Result<Vec<u8>, Error> {
+    /// The css output is returned as a data structure that can be
+    /// serialized to a raw byte vector given a format.
+    pub fn transform(mut self, file: SourceFile) -> Result<CssData, Error> {
         let scope = self
             .scope
             .clone()
             .unwrap_or_else(|| ScopeRef::new_global(Default::default()));
         self.lock_loading(&file, false)?;
         let mut css = CssData::new();
-        let format = scope.get_format();
         handle_parsed(file.parse()?, &mut css, scope, &mut self)?;
         self.unlock_loading(&file);
-        css.into_buffer(format)
+        Ok(css)
     }
 
     /// Set the output format for this context.

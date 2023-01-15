@@ -52,7 +52,7 @@ pub use crate::error::{Error, Invalid};
 pub use crate::parser::{parse_value_data, ParseError};
 pub use crate::variablescope::{Scope, ScopeError, ScopeRef};
 
-use crate::input::{FsContext, SourceName};
+use crate::input::{FsContext, SourceFile, SourceName};
 use crate::output::Format;
 use std::path::Path;
 
@@ -97,9 +97,10 @@ pub fn compile_value(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
 /// )
 /// ```
 pub fn compile_scss(input: &[u8], format: Format) -> Result<Vec<u8>, Error> {
-    FsContext::for_cwd().with_format(format).transform(
-        input::SourceFile::scss_bytes(input, SourceName::root("-")),
-    )
+    FsContext::for_cwd()
+        .with_format(format)
+        .transform(SourceFile::scss_bytes(input, SourceName::root("-")))?
+        .into_buffer(format)
 }
 
 /// Parse a file of scss data and write css in the given style.
@@ -127,5 +128,8 @@ pub fn compile_scss_path(
     format: Format,
 ) -> Result<Vec<u8>, Error> {
     let (context, source) = FsContext::for_path(path)?;
-    context.with_format(format).transform(source)
+    context
+        .with_format(format)
+        .transform(source)?
+        .into_buffer(format)
 }

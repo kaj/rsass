@@ -7,6 +7,9 @@ use std::collections::BTreeMap;
 type Result<T, E = Invalid> = std::result::Result<T, E>;
 
 /// A holder for css data.
+///
+/// This is basically a sequnece of [Item]s, plus some extra state
+/// used internally in rsass when creating it.
 pub struct CssData {
     imports: Vec<Import>,
     body: Vec<Item>,
@@ -14,6 +17,7 @@ pub struct CssData {
 }
 
 impl CssData {
+    /// Create a new css data holder.
     pub fn new() -> Self {
         CssData {
             imports: Default::default(),
@@ -21,10 +25,12 @@ impl CssData {
             modules: Default::default(),
         }
     }
+    /// Iterate over the the css items of this data.
     pub fn into_iter(self) -> impl Iterator<Item = Item> {
         self.imports.into_iter().map(Into::into).chain(self.body)
     }
-    pub fn load_module<Init>(
+
+    pub(crate) fn load_module<Init>(
         &mut self,
         path: &str,
         init: Init,
@@ -40,6 +46,11 @@ impl CssData {
         Ok(module)
     }
 
+    /// Serialize this css data into a byte buffer.
+    ///
+    /// The given format decides how to serialize the data.
+    /// For all css normally handled or created by rsass, the byte
+    /// buffer will be valid utf-8.
     pub fn into_buffer(self, format: Format) -> Result<Vec<u8>, Error> {
         let mut buf = CssBuf::new(format);
         for i in &self.imports {
