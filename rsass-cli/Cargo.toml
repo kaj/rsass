@@ -7,7 +7,7 @@ categories = ["command-line-utilities", "web-programming"]
 keywords = ["scss", "sass", "css", "web"]
 repository = "https://github.com/kaj/rsass"
 edition = "2021"
-rust-version = "1.60.0"
+rust-version = "1.64.0"
 
 [[bin]]
 name = "rsass"
@@ -18,6 +18,4 @@ unimplemented_args = []
 
 [dependencies]
 rsass = { path = "../rsass" }
-# Note: The 3 will fail, it's just an ugly hack to be able to compile
-# the library with rust versions not supported by clap 4.
-clap = { version = "<5.0.0", features = ["derive", "wrap_help"] }
+clap = { version = "4.1.1", features = ["derive", "wrap_help"] }
