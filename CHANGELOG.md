@@ -7,7 +7,11 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.27.0
+
+Released 2023-01-17.
+See also <https://rasmus.krats.se/2023/rsass027.en>
+Progress: 4604 of 6925 tests passed.
 
 * Changed repo structure to a monorepo (PR #164).
   - The commandline interface now lives in the separate crate rsass-cli.
