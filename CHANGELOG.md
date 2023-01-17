@@ -57,6 +57,7 @@ Thanks to @Wicpar for the initial macros implementation.
 ## Release 0.26.0
 
 Released 2022-09-18.
+See also <https://rasmus.krats.se/2022/rsass026.en>
 Progress: 4500 of 6843 tests passed (or 4673 if ignoring some
 deprecation messages).
 
