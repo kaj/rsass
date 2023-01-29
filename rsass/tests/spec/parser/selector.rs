@@ -27,3 +27,15 @@ mod error {
         );
     }
 }
+#[test]
+fn escaped_backslash() {
+    assert_eq!(
+        runner().ok("// Regression test for sass/dart-sass#1855.\
+             \n\\\\{\
+             \n  b: c;\
+             \n}\n"),
+        "\\\\ {\
+         \n  b: c;\
+         \n}\n"
+    );
+}

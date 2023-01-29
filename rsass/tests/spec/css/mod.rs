@@ -33,6 +33,8 @@ mod ms_long_filter_syntax;
 
 mod plain;
 
+mod propset;
+
 mod selector;
 
 mod supports;
