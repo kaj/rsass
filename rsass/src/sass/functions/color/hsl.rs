@@ -200,37 +200,28 @@ fn check_pct_opt(v: Value) -> Result<Rational, String> {
 
 #[test]
 fn test_hsl_black() {
-    assert_eq!(
-        do_evaluate(&[], b"hsl(17, 32%, 0%);"),
-        "hsl(17deg, 32%, 0%)"
-    )
+    assert_eq!(do_evaluate(&[], b"hsl(17, 32%, 0%);"), "hsl(17, 32%, 0%)")
 }
 #[test]
 fn test_hsl_white() {
     assert_eq!(
         do_evaluate(&[], b"hsl(300, 82%, 100%);"),
-        "hsl(300deg, 82%, 100%)"
+        "hsl(300, 82%, 100%)"
     )
 }
 #[test]
 fn test_hsl_gray() {
-    assert_eq!(
-        do_evaluate(&[], b"hsl(300, 0%, 50%);"),
-        "hsl(300deg, 0%, 50%)"
-    )
+    assert_eq!(do_evaluate(&[], b"hsl(300, 0%, 50%);"), "hsl(300, 0%, 50%)")
 }
 #[test]
 fn test_hsl_red() {
-    assert_eq!(
-        do_evaluate(&[], b"hsl(0, 75%, 88%);"),
-        "hsl(0deg, 75%, 88%)"
-    )
+    assert_eq!(do_evaluate(&[], b"hsl(0, 75%, 88%);"), "hsl(0, 75%, 88%)")
 }
 #[test]
 fn test_hsl_yellow() {
     assert_eq!(
         do_evaluate(&[], b"hsl(60, 100%, 63%);"),
-        "hsl(60deg, 100%, 63%)"
+        "hsl(60, 100%, 63%)"
     )
 }
 
@@ -238,7 +229,7 @@ fn test_hsl_yellow() {
 fn test_hsl_blue_magenta() {
     assert_eq!(
         do_evaluate(&[], b"hsl(270, 75%, 38%);"),
-        "hsl(270deg, 75%, 38%)"
+        "hsl(270, 75%, 38%)"
     )
 }
 

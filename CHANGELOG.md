@@ -9,7 +9,8 @@ project adheres to
 
 ## Unreleased
 
-* Updated sass-spec test suite to 2023-01-24.
+* The `deg` unit is no longer spelled out in `hsl` / `hsla` colors.
+* Updated sass-spec test suite to 2023-03-03.
 
 
 ## Release 0.27.0

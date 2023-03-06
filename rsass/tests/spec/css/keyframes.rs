@@ -22,6 +22,29 @@ mod bubble {
     }
     #[test]
     #[ignore] // wrong result
+    fn in_mixin() {
+        assert_eq!(
+            runner().ok("@mixin a {\
+             \n  @keyframes b {\
+             \n    to { c: d }\
+             \n  }\
+             \n}\
+             \ne {\
+             \n  f: g;\
+             \n  @include a;\
+             \n}\n\n"),
+            "e {\
+         \n  f: g;\
+         \n}\
+         \n@keyframes b {\
+         \n  to {\
+         \n    c: d;\
+         \n  }\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // wrong result
     fn rules() {
         assert_eq!(
             runner().ok("// Regression test for sass/libsass#472\

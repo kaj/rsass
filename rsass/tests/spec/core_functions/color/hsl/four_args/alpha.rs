@@ -14,7 +14,7 @@ mod percent {
         assert_eq!(
             runner().ok("a {b: hsl(0, 0%, 0%, 250%)}\n"),
             "a {\
-         \n  b: hsl(0deg, 0%, 0%);\
+         \n  b: hsl(0, 0%, 0%);\
          \n}\n"
         );
     }
@@ -23,7 +23,7 @@ mod percent {
         assert_eq!(
             runner().ok("a {b: hsl(0, 0%, 0%, 100%)}\n"),
             "a {\
-         \n  b: hsl(0deg, 0%, 0%);\
+         \n  b: hsl(0, 0%, 0%);\
          \n}\n"
         );
     }
@@ -32,7 +32,7 @@ mod percent {
         assert_eq!(
             runner().ok("a {b: hsl(0, 0%, 0%, 0%)}\n"),
             "a {\
-         \n  b: hsla(0deg, 0%, 0%, 0);\
+         \n  b: hsla(0, 0%, 0%, 0);\
          \n}\n"
         );
     }
@@ -41,7 +41,7 @@ mod percent {
         assert_eq!(
             runner().ok("a {b: hsl(0, 0%, 0%, -10%)}\n"),
             "a {\
-         \n  b: hsla(0deg, 0%, 0%, 0);\
+         \n  b: hsla(0, 0%, 0%, 0);\
          \n}\n"
         );
     }
@@ -50,7 +50,7 @@ mod percent {
         assert_eq!(
             runner().ok("a {b: hsl(0, 0%, 0%, 45.6%)}\n"),
             "a {\
-         \n  b: hsla(0deg, 0%, 0%, 0.456);\
+         \n  b: hsla(0, 0%, 0%, 0.456);\
          \n}\n"
         );
     }
@@ -64,7 +64,7 @@ mod unitless {
         assert_eq!(
             runner().ok("a {b: hsl(0, 0%, 0%, 250)}\n"),
             "a {\
-         \n  b: hsl(0deg, 0%, 0%);\
+         \n  b: hsl(0, 0%, 0%);\
          \n}\n"
         );
     }
@@ -73,7 +73,7 @@ mod unitless {
         assert_eq!(
             runner().ok("a {b: hsl(0, 0%, 0%, 1)}\n"),
             "a {\
-         \n  b: hsl(0deg, 0%, 0%);\
+         \n  b: hsl(0, 0%, 0%);\
          \n}\n"
         );
     }
@@ -82,7 +82,7 @@ mod unitless {
         assert_eq!(
             runner().ok("a {b: hsl(0, 0%, 0%, 0)}\n"),
             "a {\
-         \n  b: hsla(0deg, 0%, 0%, 0);\
+         \n  b: hsla(0, 0%, 0%, 0);\
          \n}\n"
         );
     }
@@ -91,7 +91,7 @@ mod unitless {
         assert_eq!(
             runner().ok("a {b: hsl(0, 0%, 0%, -10)}\n"),
             "a {\
-         \n  b: hsla(0deg, 0%, 0%, 0);\
+         \n  b: hsla(0, 0%, 0%, 0);\
          \n}\n"
         );
     }
@@ -100,7 +100,7 @@ mod unitless {
         assert_eq!(
             runner().ok("a {b: hsl(0, 0%, 0%, 0.456)}\n"),
             "a {\
-         \n  b: hsla(0deg, 0%, 0%, 0.456);\
+         \n  b: hsla(0, 0%, 0%, 0.456);\
          \n}\n"
         );
     }

@@ -14,7 +14,7 @@ mod lightness {
         assert_eq!(
             runner().ok("a {b: hsl(0, 100%, 500%)}\n"),
             "a {\
-         \n  b: hsl(0deg, 100%, 100%);\
+         \n  b: hsl(0, 100%, 100%);\
          \n}\n"
         );
     }
@@ -23,7 +23,7 @@ mod lightness {
         assert_eq!(
             runner().ok("a {b: hsl(0, 100%, -100%)}\n"),
             "a {\
-         \n  b: hsl(0deg, 100%, 0%);\
+         \n  b: hsl(0, 100%, 0%);\
          \n}\n"
         );
     }
@@ -37,7 +37,7 @@ mod saturation {
         assert_eq!(
             runner().ok("a {b: hsl(0, 500%, 50%)}\n"),
             "a {\
-         \n  b: hsl(0deg, 100%, 50%);\
+         \n  b: hsl(0, 100%, 50%);\
          \n}\n"
         );
     }
@@ -46,7 +46,7 @@ mod saturation {
         assert_eq!(
             runner().ok("a {b: hsl(0, -100%, 50%)}\n"),
             "a {\
-         \n  b: hsl(0deg, 0%, 50%);\
+         \n  b: hsl(0, 0%, 50%);\
          \n}\n"
         );
     }

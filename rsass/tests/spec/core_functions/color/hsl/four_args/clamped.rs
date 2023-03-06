@@ -14,7 +14,7 @@ mod alpha {
         assert_eq!(
             runner().ok("a {b: hsl(0, 100%, 50%, 1.1)}\n"),
             "a {\
-         \n  b: hsl(0deg, 100%, 50%);\
+         \n  b: hsl(0, 100%, 50%);\
          \n}\n"
         );
     }
@@ -23,7 +23,7 @@ mod alpha {
         assert_eq!(
             runner().ok("a {b: hsla(0, 100%, 50%, -0.1)}\n"),
             "a {\
-         \n  b: hsla(0deg, 100%, 50%, 0);\
+         \n  b: hsla(0, 100%, 50%, 0);\
          \n}\n"
         );
     }
@@ -33,7 +33,7 @@ fn blue() {
     assert_eq!(
         runner().ok("a {b: hsl(0, 100%, 9999%, 0.5)}\n"),
         "a {\
-         \n  b: hsla(0deg, 100%, 100%, 0.5);\
+         \n  b: hsla(0, 100%, 100%, 0.5);\
          \n}\n"
     );
 }
@@ -42,7 +42,7 @@ fn saturation() {
     assert_eq!(
         runner().ok("a {b: hsl(0, -0.1%, 50%, 0.5)}\n"),
         "a {\
-         \n  b: hsla(0deg, 0%, 50%, 0.5);\
+         \n  b: hsla(0, 0%, 50%, 0.5);\
          \n}\n"
     );
 }

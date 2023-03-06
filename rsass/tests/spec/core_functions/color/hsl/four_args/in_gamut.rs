@@ -12,7 +12,7 @@ fn named() {
             "a {b: hsl($hue: 180, $saturation: 60%, $lightness: 50%, $alpha: 0.4)}\n"
         ),
         "a {\
-         \n  b: hsla(180deg, 60%, 50%, 0.4);\
+         \n  b: hsla(180, 60%, 50%, 0.4);\
          \n}\n"
     );
 }
@@ -21,7 +21,7 @@ fn opaque() {
     assert_eq!(
         runner().ok("a {b: hsl(180, 60%, 50%, 1)}\n"),
         "a {\
-         \n  b: hsl(180deg, 60%, 50%);\
+         \n  b: hsl(180, 60%, 50%);\
          \n}\n"
     );
 }
@@ -30,7 +30,7 @@ fn partial() {
     assert_eq!(
         runner().ok("a {b: hsl(180, 60%, 50%, 0.5)}\n"),
         "a {\
-         \n  b: hsla(180deg, 60%, 50%, 0.5);\
+         \n  b: hsla(180, 60%, 50%, 0.5);\
          \n}\n"
     );
 }
@@ -39,7 +39,7 @@ fn transparent() {
     assert_eq!(
         runner().ok("a {b: hsl(180, 60%, 50%, 0)}\n"),
         "a {\
-         \n  b: hsla(180deg, 60%, 50%, 0);\
+         \n  b: hsla(180, 60%, 50%, 0);\
          \n}\n"
     );
 }

@@ -14,7 +14,7 @@ mod hue {
         assert_eq!(
             runner().ok("a {b: hsl(60rad, 100%, 50%)}\n"),
             "a {\
-         \n  b: hsl(197.7467707849deg, 100%, 50%);\
+         \n  b: hsl(197.7467707849, 100%, 50%);\
          \n}\n"
         );
     }
@@ -23,7 +23,7 @@ mod hue {
         assert_eq!(
             runner().ok("a {b: hsl(0deg, 100%, 50%)}\n"),
             "a {\
-         \n  b: hsl(0deg, 100%, 50%);\
+         \n  b: hsl(0, 100%, 50%);\
          \n}\n"
         );
     }
@@ -32,7 +32,7 @@ mod hue {
         assert_eq!(
             runner().ok("a {b: hsl(60, 100%, 50%)}\n"),
             "a {\
-         \n  b: hsl(60deg, 100%, 50%);\
+         \n  b: hsl(60, 100%, 50%);\
          \n}\n"
         );
     }
@@ -41,7 +41,7 @@ mod hue {
         assert_eq!(
             runner().ok("a {b: hsl(60in, 100%, 50%)}\n"),
             "a {\
-         \n  b: hsl(60deg, 100%, 50%);\
+         \n  b: hsl(60, 100%, 50%);\
          \n}\n"
         );
     }
@@ -55,7 +55,7 @@ mod lightness {
         assert_eq!(
             runner().ok("a {b: hsl(0, 100%, 50)}\n"),
             "a {\
-         \n  b: hsl(0deg, 100%, 50%);\
+         \n  b: hsl(0, 100%, 50%);\
          \n}\n"
         );
     }
@@ -64,7 +64,7 @@ mod lightness {
         assert_eq!(
             runner().ok("a {b: hsl(0, 100%, 50in)}\n"),
             "a {\
-         \n  b: hsl(0deg, 100%, 50%);\
+         \n  b: hsl(0, 100%, 50%);\
          \n}\n"
         );
     }
@@ -78,7 +78,7 @@ mod saturation {
         assert_eq!(
             runner().ok("a {b: hsl(0, 50, 50%)}\n"),
             "a {\
-         \n  b: hsl(0deg, 50%, 50%);\
+         \n  b: hsl(0, 50%, 50%);\
          \n}\n"
         );
     }
@@ -87,7 +87,7 @@ mod saturation {
         assert_eq!(
             runner().ok("a {b: hsl(0, 50in, 50%)}\n"),
             "a {\
-         \n  b: hsl(0deg, 50%, 50%);\
+         \n  b: hsl(0, 50%, 50%);\
          \n}\n"
         );
     }

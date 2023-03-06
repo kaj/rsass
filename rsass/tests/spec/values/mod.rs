@@ -18,3 +18,5 @@ mod lists;
 mod maps;
 
 mod numbers;
+
+mod strings;

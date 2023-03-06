@@ -17,6 +17,8 @@ mod empty_block_directive;
 
 mod escape;
 
+mod font_face;
+
 mod function_name_identifiers;
 
 mod functions;

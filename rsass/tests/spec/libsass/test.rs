@@ -104,10 +104,10 @@ fn test() {
          \n  e: a b c d e f;\
          \n  f: #102005;\
          \n  g: #782005;\
-         \n  h: hsl(25deg, 100%, 80%);\
+         \n  h: hsl(25, 100%, 80%);\
          \n  h: rgba(204, 86, 0, 0.8);\
          \n  h: rgba(204, 85, 0, 0.8);\
-         \n  i: hsla(25deg, 100%, 40%, 0.8);\
+         \n  i: hsla(25, 100%, 40%, 0.8);\
          \n  foo: url(\"http://blah/flah/grah\");\
          \n  foo: url(http://foo/bar/buzz.css);\
          \n  foo: url(hey4ho.css);\

@@ -18,7 +18,7 @@ mod clamped {
             assert_eq!(
                 runner().ok("a {b: hsl(0 100% 50% / 1.1)}\n"),
                 "a {\
-         \n  b: hsl(0deg, 100%, 50%);\
+         \n  b: hsl(0, 100%, 50%);\
          \n}\n"
             );
         }
@@ -27,7 +27,7 @@ mod clamped {
             assert_eq!(
                 runner().ok("a {b: hsl(0 100% 50% / -0.1)}\n"),
                 "a {\
-         \n  b: hsla(0deg, 100%, 50%, 0);\
+         \n  b: hsla(0, 100%, 50%, 0);\
          \n}\n"
             );
         }
@@ -37,7 +37,7 @@ mod clamped {
         assert_eq!(
             runner().ok("a {b: hsl(0 100% 9999% / 0.5)}\n"),
             "a {\
-         \n  b: hsla(0deg, 100%, 100%, 0.5);\
+         \n  b: hsla(0, 100%, 100%, 0.5);\
          \n}\n"
         );
     }
@@ -46,7 +46,7 @@ mod clamped {
         assert_eq!(
             runner().ok("a {b: hsl(0 -0.1% 50% / 0.5)}\n"),
             "a {\
-         \n  b: hsla(0deg, 0%, 50%, 0.5);\
+         \n  b: hsla(0, 0%, 50%, 0.5);\
          \n}\n"
         );
     }
@@ -60,7 +60,7 @@ mod in_gamut {
         assert_eq!(
             runner().ok("a {b: hsl($channels: 180 60% 50% / 0.4)}\n"),
             "a {\
-         \n  b: hsla(180deg, 60%, 50%, 0.4);\
+         \n  b: hsla(180, 60%, 50%, 0.4);\
          \n}\n"
         );
     }
@@ -69,7 +69,7 @@ mod in_gamut {
         assert_eq!(
             runner().ok("a {b: hsl(180 60% 50% / 1)}\n"),
             "a {\
-         \n  b: hsl(180deg, 60%, 50%);\
+         \n  b: hsl(180, 60%, 50%);\
          \n}\n"
         );
     }
@@ -81,7 +81,7 @@ mod in_gamut {
              \na {b: (hsl(180 60% 50% / 0.4))}\n"
         ),
         "a {\
-         \n  b: hsla(180deg, 60%, 50%, 0.4);\
+         \n  b: hsla(180, 60%, 50%, 0.4);\
          \n}\n"
     );
     }
@@ -90,7 +90,7 @@ mod in_gamut {
         assert_eq!(
             runner().ok("a {b: hsl(180 60% 50% / 0.5)}\n"),
             "a {\
-         \n  b: hsla(180deg, 60%, 50%, 0.5);\
+         \n  b: hsla(180, 60%, 50%, 0.5);\
          \n}\n"
         );
     }
@@ -99,7 +99,7 @@ mod in_gamut {
         assert_eq!(
             runner().ok("a {b: hsl(180 60% 50% / 0)}\n"),
             "a {\
-         \n  b: hsla(180deg, 60%, 50%, 0);\
+         \n  b: hsla(180, 60%, 50%, 0);\
          \n}\n"
         );
     }
@@ -110,7 +110,7 @@ fn slash_list() {
         runner().ok("@use \"sass:list\";\
              \na {b: hsl(list.slash(180 60% 50%, 0))}\n"),
         "a {\
-         \n  b: hsla(180deg, 60%, 50%, 0);\
+         \n  b: hsla(180, 60%, 50%, 0);\
          \n}\n"
     );
 }

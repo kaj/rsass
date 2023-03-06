@@ -14,9 +14,9 @@ fn blue() {
              \n  step-3: hsl(240, 100%, 50%);\
              \n}\n"),
         "a {\
-         \n  step-1: hsl(240deg, 20%, 50%);\
-         \n  step-2: hsl(240deg, 60%, 50%);\
-         \n  step-3: hsl(240deg, 100%, 50%);\
+         \n  step-1: hsl(240, 20%, 50%);\
+         \n  step-2: hsl(240, 60%, 50%);\
+         \n  step-3: hsl(240, 100%, 50%);\
          \n}\n"
     );
 }
@@ -29,9 +29,9 @@ fn cyan() {
              \n  step-3: hsl(180, 100%, 50%);\
              \n}\n"),
         "a {\
-         \n  step-1: hsl(180deg, 20%, 50%);\
-         \n  step-2: hsl(180deg, 60%, 50%);\
-         \n  step-3: hsl(180deg, 100%, 50%);\
+         \n  step-1: hsl(180, 20%, 50%);\
+         \n  step-2: hsl(180, 60%, 50%);\
+         \n  step-3: hsl(180, 100%, 50%);\
          \n}\n"
     );
 }
@@ -44,9 +44,9 @@ fn green() {
              \n  step-3: hsl(120, 100%, 50%);\
              \n}\n"),
         "a {\
-         \n  step-1: hsl(120deg, 20%, 50%);\
-         \n  step-2: hsl(120deg, 60%, 50%);\
-         \n  step-3: hsl(120deg, 100%, 50%);\
+         \n  step-1: hsl(120, 20%, 50%);\
+         \n  step-2: hsl(120, 60%, 50%);\
+         \n  step-3: hsl(120, 100%, 50%);\
          \n}\n"
     );
 }
@@ -59,9 +59,9 @@ fn purple() {
              \n  step-3: hsl(300, 100%, 50%);\
              \n}\n"),
         "a {\
-         \n  step-1: hsl(300deg, 20%, 50%);\
-         \n  step-2: hsl(300deg, 60%, 50%);\
-         \n  step-3: hsl(300deg, 100%, 50%);\
+         \n  step-1: hsl(300, 20%, 50%);\
+         \n  step-2: hsl(300, 60%, 50%);\
+         \n  step-3: hsl(300, 100%, 50%);\
          \n}\n"
     );
 }
@@ -74,9 +74,9 @@ fn red() {
              \n  step-3: hsl(0, 100%, 50%);\
              \n}\n"),
         "a {\
-         \n  step-1: hsl(0deg, 20%, 50%);\
-         \n  step-2: hsl(0deg, 60%, 50%);\
-         \n  step-3: hsl(0deg, 100%, 50%);\
+         \n  step-1: hsl(0, 20%, 50%);\
+         \n  step-2: hsl(0, 60%, 50%);\
+         \n  step-3: hsl(0, 100%, 50%);\
          \n}\n"
     );
 }
@@ -89,9 +89,9 @@ fn yellow() {
              \n  step-3: hsl(60, 100%, 50%);\
              \n}\n"),
         "a {\
-         \n  step-1: hsl(60deg, 20%, 50%);\
-         \n  step-2: hsl(60deg, 60%, 50%);\
-         \n  step-3: hsl(60deg, 100%, 50%);\
+         \n  step-1: hsl(60, 20%, 50%);\
+         \n  step-2: hsl(60, 60%, 50%);\
+         \n  step-3: hsl(60, 100%, 50%);\
          \n}\n"
     );
 }
