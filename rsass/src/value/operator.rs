@@ -167,20 +167,20 @@ impl Operator {
                 }
                 _ => None,
             },
-            Operator::Modulo => match (&a, &b) {
-                (&Value::Numeric(ref a, _), &Value::Numeric(ref b, _)) => {
+            Operator::Modulo => match (a, b) {
+                (Value::Numeric(a, _), Value::Numeric(b, _)) => {
                     if a.unit == b.unit {
                         Some(Value::scalar(&a.value % &b.value))
                     } else if b.is_no_unit() {
                         Some(
-                            Numeric::new(&a.value % &b.value, a.unit.clone())
+                            Numeric::new(&a.value % &b.value, a.unit)
                                 .into(),
                         )
                     } else {
                         None
                     }
                 }
-                (a, b) if valid_operand(a) && valid_operand(b) => None,
+                (a, b) if valid_operand(&a) && valid_operand(&b) => None,
                 _ => return Err(BadOp::UndefinedOperation),
             },
             Operator::Not => return Err(BadOp::UndefinedOperation),

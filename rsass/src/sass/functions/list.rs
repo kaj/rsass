@@ -28,7 +28,7 @@ pub fn create_module() -> Scope {
             Value::List(ref l, Some(ListSeparator::Space), _)
                 if l.len() == 2 =>
             {
-                for (i, &(ref k, ref v)) in map.iter().enumerate() {
+                for (i, (k, v)) in map.iter().enumerate() {
                     if *k == l[0] && *v == l[1] {
                         return Ok(Value::scalar(i + 1));
                     }
@@ -119,7 +119,7 @@ pub fn create_module() -> Scope {
             }
             Value::Map(map) => {
                 let n = s.get_map(name!(n), |v| index_of(v, map.len()))?;
-                if let Some(&(ref k, ref v)) = map.get_item(n) {
+                if let Some((k, v)) = map.get_item(n) {
                     Ok(Value::List(
                         vec![k.clone(), v.clone()],
                         Some(ListSeparator::Space),
@@ -207,10 +207,10 @@ fn get_list(value: Value) -> (Vec<Value>, Option<ListSeparator>, bool) {
                 (vec![], None, false)
             } else {
                 (
-                    map.iter()
-                        .map(|&(ref k, ref v)| {
+                    map.into_iter()
+                        .map(|(k, v)| {
                             Value::List(
-                                vec![k.clone(), v.clone()],
+                                vec![k, v],
                                 Some(ListSeparator::Space),
                                 false,
                             )

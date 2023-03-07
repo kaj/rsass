@@ -28,13 +28,13 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
         self.0.iter()
     }
     pub fn keys(&self) -> impl Iterator<Item = &'_ K> {
-        self.0.iter().map(|&(ref k, ref _v)| k)
+        self.0.iter().map(|(k, _v)| k)
     }
     pub fn values(&self) -> impl Iterator<Item = &'_ V> {
-        self.0.iter().map(|&(ref _k, ref v)| v)
+        self.0.iter().map(|(_k, v)| v)
     }
     pub fn get(&self, key: &K) -> Option<&V> {
-        for &(ref k, ref v) in &self.0 {
+        for (k, v) in &self.0 {
             if k == key {
                 return Some(v);
             }
@@ -58,12 +58,7 @@ impl<K: Clone + PartialEq, V: Clone> OrderMap<K, V> {
         None
     }
     pub fn contains_key(&self, key: &K) -> bool {
-        for &(ref k, ref _v) in &self.0 {
-            if k == key {
-                return true;
-            }
-        }
-        false
+        self.0.iter().any(|(k, _v)| k == key)
     }
     pub fn len(&self) -> usize {
         self.0.len()

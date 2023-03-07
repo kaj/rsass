@@ -12,6 +12,7 @@ project adheres to
 * The `deg` unit is no longer spelled out in `hsl` / `hsla` colors.
 * MSRV of rsass (the lib crate) is now 1.59.0 (required by trancient
   dev dependency thread_local).
+* Minor internal cleanup.
 * Updated sass-spec test suite to 2023-03-03.
 
 
