@@ -90,7 +90,7 @@ jobs:
         rust:
           - 1.62.1
           - 1.60.0
-          - 1.58.1
+          - 1.59.0
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@master
