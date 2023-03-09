@@ -33,7 +33,7 @@ pub fn property(input: Span) -> PResult<BodyItem> {
     let (rest, name) = terminated(property_name, tag(":"))(input)?;
     if name.starts_with("--") {
         let (rest, value) = terminated(custom_value, opt(tag(";")))(rest)?;
-        Ok((rest, CustomProperty::new(name, value.into()).into()))
+        Ok((rest, CustomProperty::new(name, value).into()))
     } else {
         let (rest, value) =
             delimited(opt_spacelike, values::any, opt(tag(";")))(rest)?;
