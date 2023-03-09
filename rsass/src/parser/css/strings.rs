@@ -1,5 +1,6 @@
 use super::super::{input_to_str, input_to_string, PResult, Span};
 use crate::css::CssString;
+use crate::parser::util::opt_spacelike;
 use crate::value::Quotes;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, take};
@@ -7,7 +8,7 @@ use nom::character::complete::one_of;
 use nom::combinator::{
     into, map, map_opt, map_res, not, opt, peek, recognize, value,
 };
-use nom::multi::{fold_many0, many0, many_m_n};
+use nom::multi::{fold_many0, fold_many1, many0, many_m_n};
 use nom::sequence::{delimited, preceded, terminated};
 use std::str::from_utf8;
 
@@ -142,4 +143,67 @@ fn single_char(data: Span) -> Option<char> {
     from_utf8(data.fragment())
         .ok()
         .and_then(|s| s.chars().next())
+}
+
+pub fn custom_value(input: Span) -> PResult<CssString> {
+    alt((
+        preceded(opt_spacelike, css_string_dq),
+        preceded(opt_spacelike, css_string_sq),
+        map(custom_value_inner, |mut raw| {
+            if raw.ends_with('\n') {
+                raw.pop();
+                raw.push(' ');
+            }
+            CssString::new(raw, Quotes::None)
+        }),
+    ))(input)
+}
+pub fn custom_value_inner(input: Span) -> PResult<String> {
+    fold_many1(
+        alt((
+            |input| custom_value_paren("[", "]", input),
+            |input| custom_value_paren("{", "}", input),
+            |input| custom_value_paren("(", ")", input),
+            map_opt(is_not("\"\\;{}()[]"), |s: Span| {
+                if s.is_empty() {
+                    None
+                } else {
+                    Some(String::from(input_to_str(s).ok()?))
+                }
+            }),
+        )),
+        String::new,
+        |mut acc, items: String| {
+            acc.push_str(&items);
+            acc
+        },
+    )(input)
+}
+
+fn custom_value_paren<'a>(
+    start: &'static str,
+    end: &'static str,
+    input: Span<'a>,
+) -> PResult<'a, String> {
+    map(
+        delimited(
+            tag(start),
+            fold_many0(
+                alt((
+                    map(tag(";"), |_| String::from(";")),
+                    custom_value_inner,
+                )),
+                || String::from(start),
+                |mut acc, items: String| {
+                    acc.push_str(&items);
+                    acc
+                },
+            ),
+            tag(end),
+        ),
+        |mut parts| {
+            parts.push_str(end);
+            parts
+        },
+    )(input)
 }

@@ -1,4 +1,6 @@
-use super::{Comment, Import, Property, Rule, Value};
+use super::{
+    BodyItem, Comment, CustomProperty, Import, Property, Rule, Value,
+};
 use crate::output::CssBuf;
 use std::io::{self, Write};
 
@@ -55,6 +57,8 @@ pub enum AtRuleBodyItem {
     Rule(Rule),
     /// A raw property.
     Property(Property),
+    /// A custom property declaration with a name and a value.
+    CustomProperty(CustomProperty),
     /// An `@` rule.
     AtRule(AtRule),
 }
@@ -66,6 +70,7 @@ impl AtRuleBodyItem {
             AtRuleBodyItem::Comment(comment) => comment.write(buf),
             AtRuleBodyItem::Rule(rule) => rule.write(buf)?,
             AtRuleBodyItem::Property(property) => property.write(buf),
+            AtRuleBodyItem::CustomProperty(cp) => cp.write(buf),
             AtRuleBodyItem::AtRule(rule) => rule.write(buf)?,
         }
         Ok(())
@@ -94,5 +99,16 @@ impl From<Property> for AtRuleBodyItem {
 impl From<AtRule> for AtRuleBodyItem {
     fn from(rule: AtRule) -> Self {
         AtRuleBodyItem::AtRule(rule)
+    }
+}
+impl From<BodyItem> for AtRuleBodyItem {
+    fn from(value: BodyItem) -> Self {
+        match value {
+            BodyItem::Import(i) => AtRuleBodyItem::Import(i),
+            BodyItem::Property(p) => AtRuleBodyItem::Property(p),
+            BodyItem::CustomProperty(p) => AtRuleBodyItem::CustomProperty(p),
+            BodyItem::Comment(c) => AtRuleBodyItem::Comment(c),
+            BodyItem::ARule(r) => AtRuleBodyItem::AtRule(r),
+        }
     }
 }

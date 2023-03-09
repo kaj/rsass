@@ -1,7 +1,7 @@
 use super::CssData;
 use crate::css::{
-    AtRule, AtRuleBodyItem, Comment, CssString, Import, Item, Property, Rule,
-    Selectors, Value,
+    AtRule, AtRuleBodyItem, Comment, CssString, CustomProperty, Import, Item,
+    Property, Rule, Selectors, Value,
 };
 use crate::Invalid;
 
@@ -114,8 +114,7 @@ impl<'a> CssDestination for RuleDest<'a> {
         name: String,
         value: CssString,
     ) -> Result {
-        self.rule
-            .push(crate::css::BodyItem::CustomProperty(name, value));
+        self.rule.push(CustomProperty::new(name, value).into());
         Ok(())
     }
 }
@@ -264,7 +263,7 @@ impl<'a> CssDestination for AtRuleDest<'a> {
         value: CssString,
     ) -> Result {
         if let Some(rule) = &mut self.rule {
-            rule.push(crate::css::BodyItem::CustomProperty(name, value));
+            rule.push(CustomProperty::new(name, value).into());
             Ok(())
         } else {
             Err(Invalid::GlobalCustomProperty)

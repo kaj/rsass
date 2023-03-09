@@ -14,7 +14,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // unexepected error
 fn arbitrary_tokens() {
     let runner = runner().with_cwd("arbitrary_tokens");
     assert_eq!(
@@ -45,7 +44,6 @@ fn identifier() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn nested() {
     let runner = runner().with_cwd("nested");
     assert_eq!(

@@ -51,8 +51,8 @@ pub enum BodyItem {
     Import(Import),
     /// A property declaration with a name and a value.
     Property(Property),
-    /// A property declaration with a name and a value.
-    CustomProperty(String, CssString),
+    /// A custom property declaration with a name and a value.
+    CustomProperty(CustomProperty),
     /// A comment
     Comment(Comment),
     /// Empty at-rules are allowed in a rule body.
@@ -66,22 +66,7 @@ impl BodyItem {
             BodyItem::Comment(c) => c.write(buf),
             BodyItem::Import(import) => import.write(buf)?,
             BodyItem::Property(property) => property.write(buf),
-            BodyItem::CustomProperty(ref name, ref val) => {
-                buf.do_indent_no_nl();
-                write!(
-                    buf,
-                    "{}:{}{}",
-                    name,
-                    if val.quotes().is_none() || buf.format().is_compressed()
-                    {
-                        ""
-                    } else {
-                        " "
-                    },
-                    val,
-                )?;
-                buf.add_one(";\n", ";");
-            }
+            BodyItem::CustomProperty(property) => property.write(buf),
             BodyItem::ARule(rule) => rule.write(buf)?,
         }
         Ok(())
@@ -101,6 +86,11 @@ impl From<Import> for BodyItem {
 impl From<Property> for BodyItem {
     fn from(property: Property) -> BodyItem {
         BodyItem::Property(property)
+    }
+}
+impl From<CustomProperty> for BodyItem {
+    fn from(property: CustomProperty) -> BodyItem {
+        BodyItem::CustomProperty(property)
     }
 }
 
@@ -139,6 +129,30 @@ impl Property {
                 .to_string()
                 .replace('\n', " "),
         );
+        buf.add_one(";\n", ";");
+    }
+}
+
+/// A css custom property (css variable); a name and a literal value.
+#[derive(Clone, Debug)]
+pub struct CustomProperty {
+    name: String,
+    value: CssString,
+}
+
+impl CustomProperty {
+    /// Construct a new custom property.
+    pub fn new(name: String, value: CssString) -> Self {
+        CustomProperty { name, value }
+    }
+    pub(crate) fn write(&self, buf: &mut CssBuf) {
+        buf.do_indent_no_nl();
+        buf.add_str(&self.name);
+        buf.add_str(":");
+        if !(self.value.quotes().is_none() || buf.format().is_compressed()) {
+            buf.add_str(" ");
+        }
+        buf.add_str(&self.value.to_string());
         buf.add_one(";\n", ";");
     }
 }

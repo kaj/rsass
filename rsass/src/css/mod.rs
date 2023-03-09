@@ -16,7 +16,7 @@ pub use self::binop::BinOp;
 pub use self::call_args::CallArgs;
 pub use self::comment::Comment;
 pub use self::item::{Import, Item};
-pub use self::rule::{BodyItem, Property, Rule};
+pub use self::rule::{BodyItem, CustomProperty, Property, Rule};
 pub use self::selectors::{BadSelector, Selector, SelectorPart, Selectors};
 pub use self::string::CssString;
 pub use self::value::{InvalidCss, Value, ValueMap, ValueToMapError};

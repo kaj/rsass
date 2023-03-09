@@ -10,6 +10,7 @@ project adheres to
 ## Unreleased
 
 * The `deg` unit is no longer spelled out in `hsl` / `hsla` colors.
+* Improved handling of custom properties in raw css input.
 * MSRV of rsass (the lib crate) is now 1.59.0 (required by trancient
   dev dependency thread_local).
 * Minor internal cleanup.

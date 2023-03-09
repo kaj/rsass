@@ -390,7 +390,7 @@ mod style_rule {
         }
 
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn custom_property() {
             let runner = runner().with_cwd("custom_property");
             assert_eq!(
