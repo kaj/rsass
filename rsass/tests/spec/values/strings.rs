@@ -10,7 +10,7 @@ mod new_line {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn cr() {
         assert_eq!(
             runner().err(
@@ -28,7 +28,6 @@ mod new_line {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn escaped() {
         assert_eq!(
             runner().ok("a {\
@@ -58,7 +57,7 @@ mod new_line {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn raw() {
         assert_eq!(
             runner().err(

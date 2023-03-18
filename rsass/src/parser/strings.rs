@@ -283,6 +283,7 @@ pub fn sass_string_sq(input: Span) -> PResult<SassString> {
             map(hash_no_interpolation, StringPart::from),
             value(StringPart::from("'"), tag("\\'")),
             value(StringPart::from("\""), tag("\"")),
+            value(StringPart::from(""), tag("\\\n")),
             map(normalized_escaped_char_q, StringPart::Raw),
         ))),
         tag("'"),
@@ -335,7 +336,8 @@ pub fn string_part_interpolation(input: Span) -> PResult<StringPart> {
 }
 
 fn simple_qstring_part(input: Span) -> PResult<StringPart> {
-    let (input, part) = map_res(is_not("\\#'\""), input_to_string)(input)?;
+    let (input, part) =
+        map_res(is_not("\\#'\"\n\r"), input_to_string)(input)?;
     Ok((input, StringPart::Raw(part)))
 }
 
