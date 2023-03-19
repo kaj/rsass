@@ -15,6 +15,7 @@ project adheres to
   dev dependency thread_local).
 * Improved parsing of quoted strings (some syntax errors was accepted).
 * Minor internal cleanup.
+* Updated syn in rsass-macros to 2.0.2.
 * Updated sass-spec test suite to 2023-03-03.
 
 
