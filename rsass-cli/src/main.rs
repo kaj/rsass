@@ -17,7 +17,7 @@ fn main() -> Result<(), Error> {
     after_help = "For information about rsass and its current state of \
                   development, please refer to https://github.com/kaj/rsass/ .\
                   \n\n\
-                  The sass / scss languate itself is documented at \
+                  The sass / scss language itself is documented at \
                   https://sass-lang.com/ ."
 )]
 struct Args {
