@@ -14,6 +14,7 @@ project adheres to
 * MSRV of rsass (the lib crate) is now 1.59.0 (required by trancient
   dev dependency thread_local).
 * Improved parsing of quoted strings (some syntax errors was accepted).
+* Fixed a typo in help text, thanks @greyhillman (PR #170).
 * Minor internal cleanup.
 * Updated syn in rsass-macros to 2.0.2.
 * Updated sass-spec test suite to 2023-03-03.
