@@ -240,6 +240,7 @@ pub fn special_url(input: Span) -> PResult<SassString> {
     let (input, _trim) = many0(is_a(" "))(input)?;
     let (input, mut parts) = many1(alt((
         string_part_interpolation,
+        map(map_res(tag("\\)"), input_to_string), StringPart::Raw),
         map(selector_string, StringPart::Raw),
         map(
             map_res(is_a("\":.;,!+/="), input_to_string),

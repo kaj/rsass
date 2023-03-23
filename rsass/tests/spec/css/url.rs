@@ -19,7 +19,6 @@ mod escape {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn close_paren() {
         assert_eq!(
             runner().ok("a {b: url(\\))}\n"),
