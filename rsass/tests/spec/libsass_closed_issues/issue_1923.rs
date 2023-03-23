@@ -34,6 +34,8 @@ fn test() {
          \n13 |     @extend %btnBase;\
          \n   |     ^^^^^^^^^^^^^^^^\
          \n   \'\
-         \n  input.scss 13:5  root stylesheet",
+         \n  input.scss 13:5  @content\
+         \n  input.scss 7:5   mobile()\
+         \n  input.scss 11:1  root stylesheet",
     );
 }

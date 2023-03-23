@@ -20,7 +20,7 @@ mod error {
             ),
             "Error: Expected identifier.\
          \n  ,\
-         \n1 | %{\
+         \n1 | % {\
          \n  |  ^\
          \n  \'\
          \n  input.scss 1:2  root stylesheet",

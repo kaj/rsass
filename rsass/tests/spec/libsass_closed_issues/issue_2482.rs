@@ -21,9 +21,8 @@ fn test() {
         ),
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n  ,\
-         \n3 | /     & .class\
-         \n4 | |     {\
-         \n  | \'----^\
+         \n3 |     & .class\
+         \n  |     ^\
          \n  \'\
          \n  input.scss 3:2  mixin()\
          \n  input.scss 9:1  root stylesheet",

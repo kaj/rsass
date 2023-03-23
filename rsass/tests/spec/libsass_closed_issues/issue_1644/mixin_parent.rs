@@ -22,10 +22,10 @@ fn test() {
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n  ,\
          \n6 |   body.immobile & {\
-         \n  |   ^^^^^^^^^^^^^^^^\
+         \n  |                 ^\
          \n  \'\
-         \n  input.scss 6:3  @content\
-         \n  input.scss 2:3  parent()\
-         \n  input.scss 5:1  root stylesheet",
+         \n  input.scss 6:17  @content\
+         \n  input.scss 2:3   parent()\
+         \n  input.scss 5:1   root stylesheet",
     );
 }

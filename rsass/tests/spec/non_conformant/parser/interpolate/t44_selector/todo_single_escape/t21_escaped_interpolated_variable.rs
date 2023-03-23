@@ -15,10 +15,14 @@ fn test() {
              \n.test21#{$suffix1} { content: \'2.1\'; }\n"
         ),
         "Error: expected selector.\
-         \n  ,\
-         \n3 | .test21@bar{ content: \'2.1\'; }\
-         \n  |        ^\
+         \n  ,--> input.scss\
+         \n3 | .test21#{$suffix1} { content: \'2.1\'; }\
+         \n  |          ^^^^^^^^ \
          \n  \'\
-         \n  input.scss 3:8  root stylesheet",
+         \n  ,\
+         \n1 | .test21@bar \
+         \n  |        = error in interpolated output\
+         \n  \'\
+         \n  input.scss 3:10  root stylesheet",
     );
 }

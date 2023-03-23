@@ -15,7 +15,7 @@ fn test() {
         runner().err("@import \"include.scss\";"),
         "Error: \"&\" may only used at the beginning of a compound selector.\
          \n  ,\
-         \n1 | pre&{\
+         \n1 | pre& {\
          \n  |    ^\
          \n  \'\
          \n  include.scss 1:4  @import\

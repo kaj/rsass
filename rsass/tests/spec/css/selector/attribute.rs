@@ -60,7 +60,7 @@ mod error {
         ),
         "Error: expected \"]\".\
          \n  ,\
-         \n2 | [a=b 1]{c: d}\
+         \n2 | [a=b 1] {c: d}\
          \n  |      ^\
          \n  \'\
          \n  input.scss 2:6  root stylesheet",
@@ -73,7 +73,7 @@ mod error {
                 runner().err("[a b] {c: d}\n"),
                 "Error: Expected \"]\".\
          \n  ,\
-         \n1 | [a b]{c: d}\
+         \n1 | [a b] {c: d}\
          \n  |    ^\
          \n  \'\
          \n  input.scss 1:4  root stylesheet",
@@ -89,7 +89,7 @@ mod error {
                 ),
                 "Error: expected \"]\".\
          \n  ,\
-         \n2 | [a=b cd]{e: f}\
+         \n2 | [a=b cd] {e: f}\
          \n  |       ^\
          \n  \'\
          \n  input.scss 2:7  root stylesheet",
@@ -105,7 +105,7 @@ mod error {
         ),
         "Error: expected \"]\".\
          \n  ,\
-         \n2 | [a=b _]{c: d}\
+         \n2 | [a=b _] {c: d}\
          \n  |      ^\
          \n  \'\
          \n  input.scss 2:6  root stylesheet",
@@ -121,7 +121,7 @@ mod error {
         ),
         "Error: expected \"]\".\
          \n  ,\
-         \n2 | [a=b ï]{c: d}\
+         \n2 | [a=b ï] {c: d}\
          \n  |      ^\
          \n  \'\
          \n  input.scss 2:6  root stylesheet",

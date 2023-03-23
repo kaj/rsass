@@ -15,10 +15,10 @@ fn test() {
         runner().err("@import \"include.scss\";"),
         "Error: expected selector.\
          \n  ,\
-         \n1 | {\
-         \n  | ^\
+         \n1 | #{&} {\
+         \n  |      ^\
          \n  \'\
-         \n  include.scss 1:1  @import\
+         \n  include.scss 1:6  @import\
          \n  input.scss 1:9    root stylesheet",
     );
 }

@@ -16,11 +16,13 @@ fn test() {
              \n    }\r\
              \n}"
         ),
-        "Error: Parent \".code.ruby >\" is incompatible with this selector.\
+        "Error: Selector \".code.ruby >\" can\'t be used as a parent in a compound selector.\
          \n  ,\
+         \n1 | .code.ruby > {\
+         \n  | ^^^^^^^^^^^^ outer selector\
          \n2 |     &.ruby {\
-         \n  |     ^^^^^^^\
+         \n  |     = parent selector\
          \n  \'\
-         \n  input.scss 2:5  root stylesheet",
+         \n  input.scss 1:1  root stylesheet",
     );
 }

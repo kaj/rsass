@@ -16,7 +16,7 @@ fn test() {
         ),
         "Error: expected selector.\
          \n  ,\
-         \n1 | 1a{\
+         \n1 | 1a {\
          \n  | ^\
          \n  \'\
          \n  input.scss 1:1  root stylesheet",

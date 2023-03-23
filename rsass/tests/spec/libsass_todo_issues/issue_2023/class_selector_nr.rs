@@ -16,7 +16,7 @@ fn test() {
         ),
         "Error: Expected identifier.\
          \n  ,\
-         \n1 | .3{\
+         \n1 | .3 {\
          \n  |  ^\
          \n  \'\
          \n  input.scss 1:2  root stylesheet",

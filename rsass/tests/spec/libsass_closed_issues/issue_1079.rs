@@ -12,9 +12,9 @@ fn test() {
         runner().err("#{hdr(2,5)} { color: #08c; }"),
         "Error: expected selector.\
          \n  ,\
-         \n1 | hdr(2, 5){ color: #08c; }\
-         \n  |    ^\
+         \n1 | #{hdr(2,5)} { color: #08c; }\
+         \n  |   ^^^^^^^^\
          \n  \'\
-         \n  input.scss 1:4  root stylesheet",
+         \n  input.scss 1:3  root stylesheet",
     );
 }

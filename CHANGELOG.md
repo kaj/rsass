@@ -17,7 +17,7 @@ project adheres to
 * Fixed a typo in help text, thanks @greyhillman (PR #170).
 * Minor internal cleanup.
 * Updated syn in rsass-macros to 2.0.2.
-* Updated sass-spec test suite to 2023-03-03.
+* Updated sass-spec test suite to 2023-03-20.
 
 
 ## Release 0.27.0

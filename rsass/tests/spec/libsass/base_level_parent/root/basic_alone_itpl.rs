@@ -18,9 +18,9 @@ fn test() {
         ),
         "Error: expected selector.\
          \n  ,\
-         \n1 | {\
-         \n  | ^\
+         \n1 | #{&} {\
+         \n  |      ^\
          \n  \'\
-         \n  input.scss 1:1  root stylesheet",
+         \n  input.scss 1:6  root stylesheet",
     );
 }

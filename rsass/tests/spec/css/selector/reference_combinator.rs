@@ -18,7 +18,7 @@ fn test() {
         ),
         "Error: expected selector.\
          \n  ,\
-         \n3 | .foo /bar/ .baz{\
+         \n3 | .foo /bar/ .baz {\
          \n  |      ^\
          \n  \'\
          \n  input.scss 3:6  root stylesheet",

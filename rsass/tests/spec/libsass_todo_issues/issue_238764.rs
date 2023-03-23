@@ -20,7 +20,7 @@ fn test() {
         ),
         "Error: expected selector.\
          \n  ,\
-         \n2 |   @at-root @bar{a: b}\
+         \n2 |   @at-root @bar {a: b}\
          \n  |            ^\
          \n  \'\
          \n  input.scss 2:12  bar()\

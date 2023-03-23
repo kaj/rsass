@@ -26,10 +26,14 @@ fn test() {
          \n  \'\
          \n    input.scss 2:7  root stylesheet\n\
          \nError: Expected identifier.\
-         \n  ,\
-         \n2 |   &.#ff0{\
-         \n  |     ^\
+         \n  ,--> input.scss\
+         \n2 |   &.#{#ff0} {\
+         \n  |       ^^^^ \
          \n  \'\
-         \n  input.scss 2:5  root stylesheet",
+         \n  ,\
+         \n1 | &.#ff0 \
+         \n  |   = error in interpolated output\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
     );
 }

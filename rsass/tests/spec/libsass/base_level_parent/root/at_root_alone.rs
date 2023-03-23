@@ -21,7 +21,7 @@ fn test() {
         "Error: Top-level selectors may not contain the parent selector \"&\".\
          \n  ,\
          \n2 |   & {\
-         \n  |   ^^\
+         \n  |   ^\
          \n  \'\
          \n  input.scss 2:3  root stylesheet",
     );

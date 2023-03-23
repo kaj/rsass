@@ -473,7 +473,7 @@ mod style_rule {
             runner.err("@import \'plain\'"),
             "Error: Parent selectors aren\'t allowed here.\
          \n  ,\
-         \n1 | &.foo{\
+         \n1 | &.foo {\
          \n  | ^\
          \n  \'\
          \n  plain.css 1:1   @import\
@@ -488,7 +488,7 @@ mod style_rule {
             runner.err("@import \'plain\'"),
             "Error: Placeholder selectors aren\'t allowed here.\
          \n  ,\
-         \n1 | %foo{\
+         \n1 | %foo {\
          \n  | ^^^^\
          \n  \'\
          \n  plain.css 1:1   @import\

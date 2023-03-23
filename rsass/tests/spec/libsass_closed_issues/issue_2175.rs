@@ -16,7 +16,7 @@ fn test() {
         ),
         "Error: Expected \"n\".\
          \n  ,\
-         \n1 | a:nth-child(){\
+         \n1 | a:nth-child() {\
          \n  |             ^\
          \n  \'\
          \n  input.scss 1:13  root stylesheet",

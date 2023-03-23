@@ -22,7 +22,7 @@ fn test() {
         ),
         "Error: \"&\" may only used at the beginning of a compound selector.\
          \n  ,\
-         \n3 |     pre&{\
+         \n3 |     pre& {\
          \n  |        ^\
          \n  \'\
          \n  input.scss 3:8  root stylesheet",

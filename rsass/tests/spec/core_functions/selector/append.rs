@@ -120,14 +120,20 @@ mod error {
         #[ignore] // missing error
         fn trailing() {
             assert_eq!(
-                runner().err("a {b: selector-append(\".c ~\", \".d\")}\n"),
-                "Error: Parent \".c ~\" is incompatible with this selector.\
+        runner().err(
+            "a {b: selector-append(\".c ~\", \".d\")}\n"
+        ),
+        "Error: Selector \".c ~\" can\'t be used as a parent in a compound selector.\
          \n  ,\
-         \n1 | a {b: selector-append(\".c ~\", \".d\")}\
-         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n1 | .c ~\
+         \n  | ^^^^ outer selector\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
-            );
+         \n  ,--> input.scss\
+         \n1 | a {b: selector-append(\".c ~\", \".d\")}\
+         \n  |       ============================= parent selector\
+         \n  \'\
+         \n  - 1:1  root stylesheet",
+    );
         }
     }
     #[test]
