@@ -9,6 +9,9 @@ pub fn create_module() -> Scope {
     def_va!(f, append(selectors), |s| {
         let mut s = get_selectors(s, name!(selectors))?.into_iter();
         if let Some(base) = s.next() {
+            if base.has_trailing_combinator() {
+                return Err(CallError::msg(format!("Selector \"{base}\" can't be used as a parent in a compound selector.")));
+            }
             Ok(s.try_fold(base, |base, ext| base.append(ext))?.into())
         } else {
             // Not really reachable, get_selectors requires at least one item.

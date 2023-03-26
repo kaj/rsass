@@ -114,6 +114,10 @@ impl Selectors {
             backref: context,
         })
     }
+    /// Return true if any of these selectors ends with a combinator
+    pub fn has_trailing_combinator(&self) -> bool {
+        self.s.iter().any(|s| s.has_trailing_combinator())
+    }
 }
 
 impl From<Selectors> for Value {
@@ -288,6 +292,10 @@ impl Selector {
 
     fn has_backref(&self) -> bool {
         self.0.iter().any(|p| p.has_backref())
+    }
+    /// Return true if this selector ends with a combinator
+    pub fn has_trailing_combinator(&self) -> bool {
+        matches!(self.0.last(), Some(SelectorPart::RelOp(_)))
     }
 }
 

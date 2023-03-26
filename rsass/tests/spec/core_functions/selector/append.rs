@@ -117,7 +117,7 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn trailing() {
             assert_eq!(
         runner().err(
