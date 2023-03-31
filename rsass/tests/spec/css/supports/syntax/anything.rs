@@ -89,7 +89,6 @@ fn no_space() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn only_space() {
     assert_eq!(
         runner().ok("@supports (a ) {@b}\n"),

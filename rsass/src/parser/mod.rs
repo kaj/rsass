@@ -240,7 +240,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         }
         _ => {
             let pos = input0.up_to(&input).to_owned().opt_back("@");
-            let (input, args) = opt(media_args)(input)?;
+            let (input, args) = opt(unknown_rule_args)(input)?;
             fn x_args(value: Value) -> Value {
                 match value {
                     Value::Variable(name, _pos) => Value::Literal(
@@ -292,6 +292,55 @@ fn charset2(input: Span) -> PResult<Item> {
             })
         },
     )(input)
+}
+
+/// Arguments to an unkown at rule.
+fn unknown_rule_args(input: Span) -> PResult<Value> {
+    let (input, args) = separated_list0(
+        preceded(tag(","), opt_spacelike),
+        map(
+            many0(preceded(
+                opt(ignore_space),
+                alt((
+                    terminated(
+                        alt((
+                            function_call,
+                            dictionary,
+                            map(
+                                delimited(tag("("), media_args, tag(")")),
+                                |v| Value::Paren(Box::new(v), true),
+                            ),
+                            map(sass_string, Value::Literal),
+                            map(sass_string_dq, Value::Literal),
+                            map(sass_string_sq, Value::Literal),
+                        )),
+                        alt((
+                            value((), all_consuming(tag(""))),
+                            value((), peek(one_of(") \r\n\t{,;"))),
+                        )),
+                    ),
+                    map(map_res(is_not("\"'{};#"), input_to_str), |s| {
+                        Value::Literal(s.trim_end().into())
+                    }),
+                )),
+            )),
+            |args| {
+                if args.len() == 1 {
+                    args.into_iter().next().unwrap()
+                } else {
+                    Value::List(args, Some(ListSeparator::Space), false)
+                }
+            },
+        ),
+    )(input)?;
+    Ok((
+        input,
+        if args.len() == 1 {
+            args.into_iter().next().unwrap()
+        } else {
+            Value::List(args, Some(ListSeparator::Comma), false)
+        },
+    ))
 }
 
 fn media_args(input: Span) -> PResult<Value> {
