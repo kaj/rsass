@@ -11,7 +11,7 @@ mod util;
 mod value;
 mod valueformat;
 
-pub use self::atrule::{AtRule, AtRuleBodyItem};
+pub use self::atrule::{AtRule, AtRuleBodyItem, MediaArgs, MediaRule};
 pub use self::binop::BinOp;
 pub use self::call_args::CallArgs;
 pub use self::comment::Comment;

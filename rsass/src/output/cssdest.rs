@@ -241,6 +241,7 @@ impl<'a> CssDestination for AtRuleDest<'a> {
             Item::Comment(c) => c.into(),
             Item::Import(i) => i.into(),
             Item::Rule(r) => r.into(),
+            Item::MediaRule(r) => r.into(),
             Item::AtRule(r) => r.into(),
             Item::Separator => return Ok(()), // Not pushed?
         });

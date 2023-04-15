@@ -4,6 +4,95 @@ use super::{
 use crate::output::CssBuf;
 use std::io::{self, Write};
 
+/// An `@media rule in css.
+#[derive(Clone, Debug)]
+pub struct MediaRule {
+    args: MediaArgs,
+    body: Vec<AtRuleBodyItem>,
+}
+
+impl MediaRule {
+    pub(crate) fn new(args: MediaArgs, body: Vec<AtRuleBodyItem>) -> Self {
+        MediaRule { args, body }
+    }
+    pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
+        buf.do_indent_no_nl();
+        buf.add_str("@media ");
+        self.args.write(buf)?;
+        //if !self.args.is_null() {
+        //write!(buf, " {}", self.args.format(buf.format()))?;
+        //}
+        buf.start_block();
+        for item in &self.body {
+            item.write(buf)?;
+        }
+        buf.end_block();
+        Ok(())
+    }
+}
+
+/// The media selection argument of an `@media` rule.
+#[derive(Clone, Debug)]
+pub enum MediaArgs {
+    /// `all` media.
+    Name(String),
+    /// `(cond: valud)` media.
+    Condition(String, Value),
+    /// unary logic
+    Only(Box<MediaArgs>),
+    /// Any media subquery in parenthesis.
+    Paren(Box<MediaArgs>),
+    /// unary logic
+    Not(Box<MediaArgs>),
+    /// a and b and c media.
+    And(Vec<MediaArgs>),
+    /// a or b or c media.
+    Or(Vec<MediaArgs>),
+}
+
+impl MediaArgs {
+    pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
+        match self {
+            MediaArgs::Name(name) => write!(buf, "{name}")?,
+            MediaArgs::Only(a) => {
+                buf.add_str("only ");
+                a.write(buf)?;
+            }
+            MediaArgs::Not(a) => {
+                buf.add_str("not ");
+                a.write(buf)?;
+            }
+            MediaArgs::Condition(c, v) => {
+                write!(buf, "({c}: {})", v.format(buf.format()))?
+            }
+            MediaArgs::And(args) => {
+                if let Some((first, rest)) = args.split_first() {
+                    first.write(buf)?;
+                    for arg in rest {
+                        buf.add_str(" and ");
+                        arg.write(buf)?;
+                    }
+                }
+            }
+            MediaArgs::Or(args) => {
+                if let Some((first, rest)) = args.split_first() {
+                    first.write(buf)?;
+                    for arg in rest {
+                        buf.add_str(" or ");
+                        arg.write(buf)?;
+                    }
+                }
+            }
+            MediaArgs::Paren(a) => {
+                buf.add_str("(");
+                a.write(buf)?;
+                buf.add_str(")");
+            }
+        }
+        Ok(())
+    }
+}
+
 /// An `@something` rule in css.
 ///
 /// Note that some well-known at rules (`@media`, `@keyframes`, ...)
@@ -99,6 +188,11 @@ impl From<Property> for AtRuleBodyItem {
 impl From<AtRule> for AtRuleBodyItem {
     fn from(rule: AtRule) -> Self {
         AtRuleBodyItem::AtRule(rule)
+    }
+}
+impl From<MediaRule> for AtRuleBodyItem {
+    fn from(_: MediaRule) -> Self {
+        todo!("This should not be needed")
     }
 }
 impl From<BodyItem> for AtRuleBodyItem {

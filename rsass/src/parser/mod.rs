@@ -230,8 +230,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
             )(input)?;
             Ok((
                 input,
-                Item::AtRule {
-                    name,
+                Item::AtMedia {
                     args: args.unwrap_or(Value::Null),
                     body,
                     pos,

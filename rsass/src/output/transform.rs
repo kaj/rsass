@@ -213,6 +213,19 @@ fn handle_item(
                 handle_body(body, dest, subscope, file_context)?;
             }
         }
+        Item::AtMedia { args, body, pos } => {
+            let args = args.evaluate(scope.clone())?;
+            let name = "media".into();
+            // TODO: Make specific AtRule item for css as well!
+            if let Some(ref body) = *body {
+                let mut atrule = dest.start_atrule(name, args);
+                let local = ScopeRef::sub(scope);
+                handle_body(body, &mut atrule, local, file_context)?;
+            } else {
+                dest.push_item(AtRule::new(name, args, None).into())
+                    .at(pos)?;
+            }
+        }
         Item::AtRule {
             name,
             args,
