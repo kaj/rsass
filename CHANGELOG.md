@@ -9,6 +9,9 @@ project adheres to
 
 ## Unreleased
 
+* Changed output format of non-finite numbers to match sass spec.
+  They are now wrapped in `calc`, like `calc(infinite)` or
+  `calc(NaN * 1deg)`.
 * The `deg` unit is no longer spelled out in `hsl` / `hsla` colors.
 * Improved handling of custom properties in raw css input.
 * MSRV of rsass (the lib crate) is now 1.59.0 (required by trancient
@@ -18,7 +21,7 @@ project adheres to
 * Added an input check in selectors.append function.
 * Minor internal cleanup.
 * Updated syn in rsass-macros to 2.0.2.
-* Updated sass-spec test suite to 2023-03-20.
+* Updated sass-spec test suite to 2023-04-27.
 
 
 ## Release 0.27.0

@@ -94,7 +94,7 @@ fn greater_than_one() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.acos(2)}\n"),
         "a {\
-         \n  b: NaNdeg;\
+         \n  b: calc(NaN * 1deg);\
          \n}\n"
     );
 }
@@ -104,7 +104,7 @@ fn less_than_negative_one() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.acos(-2)}\n"),
         "a {\
-         \n  b: NaNdeg;\
+         \n  b: calc(NaN * 1deg);\
          \n}\n"
     );
 }
@@ -134,7 +134,7 @@ fn one_fuzzy() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.acos(1.000000000001)}\n"),
         "a {\
-         \n  b: NaNdeg;\
+         \n  b: calc(NaN * 1deg);\
          \n}\n"
     );
 }

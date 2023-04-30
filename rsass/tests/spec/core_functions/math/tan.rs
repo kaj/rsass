@@ -119,7 +119,7 @@ fn infinity() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.tan(math.div(1, 0))}\n"),
         "a {\
-         \n  b: NaN;\
+         \n  b: calc(NaN);\
          \n}\n"
     );
 }
@@ -154,7 +154,7 @@ fn negative_infinity() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.tan(math.div(-1, 0))}\n"),
         "a {\
-         \n  b: NaN;\
+         \n  b: calc(NaN);\
          \n}\n"
     );
 }

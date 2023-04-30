@@ -74,15 +74,16 @@ mod error {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong error
         fn invalid_arg() {
             assert_eq!(
-                runner().err("a {b: min(c)}\n"),
-                "Error: c is not a number.\
+                runner().err("a {b: min($)}\n"),
+                "Error: Expected identifier.\
          \n  ,\
-         \n1 | a {b: min(c)}\
-         \n  |       ^^^^^^\
+         \n1 | a {b: min($)}\
+         \n  |            ^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 1:12  root stylesheet",
             );
         }
         #[test]

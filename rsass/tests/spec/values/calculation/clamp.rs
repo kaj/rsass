@@ -87,13 +87,13 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn invalid_arg() {
             assert_eq!(
-                runner().err("a {b: clamp(1px, c, 2px)}\n"),
-                "Error: Expected \"(\" or \".\".\
+                runner().err("a {b: clamp(1px, $, 2px)}\n"),
+                "Error: Expected identifier.\
          \n  ,\
-         \n1 | a {b: clamp(1px, c, 2px)}\
+         \n1 | a {b: clamp(1px, $, 2px)}\
          \n  |                   ^\
          \n  \'\
          \n  input.scss 1:19  root stylesheet",

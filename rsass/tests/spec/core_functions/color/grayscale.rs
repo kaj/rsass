@@ -62,6 +62,26 @@ mod error {
          \n  input.scss 1:7  root stylesheet",
         );
     }
+    mod with_module {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        fn test_type() {
+            assert_eq!(
+                runner().err(
+                    "@use \'sass:color\';\
+             \na {b: color.grayscale(var(--c))}\n"
+                ),
+                "Error: $color: var(--c) is not a color.\
+         \n  ,\
+         \n2 | a {b: color.grayscale(var(--c))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
+    }
 }
 #[test]
 fn max_saturation() {
@@ -131,6 +151,35 @@ fn number() {
         ),
         "a {\
          \n  b: grayscale(15%);\
+         \n}\n"
+    );
+}
+#[test]
+fn with_calc() {
+    assert_eq!(
+        runner().ok("a {b: grayscale(calc(1 + 2))}\n"),
+        "a {\
+         \n  b: grayscale(3);\
+         \n}\n"
+    );
+}
+#[test]
+#[ignore] // unexepected error
+fn with_css_var() {
+    assert_eq!(
+        runner().ok("a {b: grayscale(var(--c))}\n"),
+        "a {\
+         \n  b: grayscale(var(--c));\
+         \n}\n"
+    );
+}
+#[test]
+#[ignore] // unexepected error
+fn with_unquoted_calc() {
+    assert_eq!(
+        runner().ok("a {b: grayscale(unquote(\'calc(1)\'))}\n"),
+        "a {\
+         \n  b: grayscale(calc(1));\
          \n}\n"
     );
 }

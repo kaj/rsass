@@ -25,7 +25,7 @@ mod base {
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.log(2, -1)}\n"),
             "a {\
-         \n  b: NaN;\
+         \n  b: calc(NaN);\
          \n}\n"
         );
     }
@@ -45,7 +45,7 @@ mod base {
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.log(2, 1)}\n"),
             "a {\
-         \n  b: Infinity;\
+         \n  b: calc(infinity);\
          \n}\n"
         );
     }
@@ -184,7 +184,7 @@ fn infinity() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.log(math.div(1, 0))}\n"),
         "a {\
-         \n  b: Infinity;\
+         \n  b: calc(infinity);\
          \n}\n"
     );
 }
@@ -224,7 +224,7 @@ fn negative() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.log(-1)}\n"),
         "a {\
-         \n  b: NaN;\
+         \n  b: calc(NaN);\
          \n}\n"
     );
 }
@@ -244,7 +244,7 @@ fn zero() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.log(0)}\n"),
         "a {\
-         \n  b: -Infinity;\
+         \n  b: calc(-infinity);\
          \n}\n"
     );
 }

@@ -123,6 +123,35 @@ mod error {
             }
         }
     }
+    mod with_module {
+        #[allow(unused)]
+        use super::runner;
+
+        mod one_arg {
+            #[allow(unused)]
+            use super::runner;
+
+            #[test]
+            fn test_type() {
+                assert_eq!(
+                    runner().err(
+                        "@use \'sass:color\';\
+             \na {b: color.saturate(var(--c))}\n"
+                    ),
+                    "Error: Missing argument $amount.\
+         \n  ,--> input.scss\
+         \n2 | a {b: color.saturate(var(--c))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^^ invocation\
+         \n  \'\
+         \n  ,--> sass:color\
+         \n1 | @function saturate($color, $amount) {\
+         \n  |           ========================= declaration\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+                );
+            }
+        }
+    }
 }
 mod one_arg {
     #[allow(unused)]
@@ -152,6 +181,45 @@ mod one_arg {
             runner().ok("a {b: saturate(1)}\n"),
             "a {\
          \n  b: saturate(1);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn with_calc() {
+        assert_eq!(
+            runner().ok("a {b: saturate(calc(1 + 2))}\n"),
+            "a {\
+         \n  b: saturate(3);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn with_css_var() {
+        assert_eq!(
+            runner().ok("a {b: saturate(var(--c))}\n"),
+            "a {\
+         \n  b: saturate(var(--c));\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn with_sass_var() {
+        assert_eq!(
+            runner().ok("$c: 1;\
+             \na {b: saturate($c)}\n"),
+            "a {\
+         \n  b: saturate(1);\
+         \n}\n"
+        );
+    }
+    #[test]
+    #[ignore] // unexepected error
+    fn with_unquoted_calc() {
+        assert_eq!(
+            runner().ok("a {b: saturate(unquote(\'calc(1)\'))}\n"),
+            "a {\
+         \n  b: saturate(calc(1));\
          \n}\n"
         );
     }

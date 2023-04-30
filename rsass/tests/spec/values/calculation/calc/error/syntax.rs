@@ -57,19 +57,6 @@ fn hash() {
          \n  input.scss 1:12  root stylesheet",
     );
 }
-#[test]
-#[ignore] // missing error
-fn identifier() {
-    assert_eq!(
-        runner().err("a {b: calc(c)}\n"),
-        "Error: Expected \"(\" or \".\".\
-         \n  ,\
-         \n1 | a {b: calc(c)}\
-         \n  |             ^\
-         \n  \'\
-         \n  input.scss 1:13  root stylesheet",
-    );
-}
 mod interpolation {
     #[allow(unused)]
     use super::runner;

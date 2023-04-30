@@ -7,6 +7,8 @@ fn runner() -> crate::TestRunner {
 
 mod bounds;
 
+mod degenerate;
+
 mod divide;
 
 mod error;

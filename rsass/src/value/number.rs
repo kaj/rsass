@@ -415,6 +415,15 @@ impl Number {
         self.value.is_negative()
     }
 
+    /// Return true if this value is neither inifinte nor NaN.
+    pub fn is_finite(&self) -> bool {
+        match self.value {
+            NumValue::Rational(_) => true,
+            NumValue::BigRational(_) => true,
+            NumValue::Float(r) => r.is_finite(),
+        }
+    }
+
     /// Returns true if the number is an integer.
     pub fn into_integer(self) -> Result<i64, Self> {
         fn float_int(s: f64) -> Option<i64> {
@@ -638,7 +647,7 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                 } else if s.is_infinite() {
                     write!(
                         out,
-                        "{}Infinity",
+                        "{}infinity",
                         if s.is_sign_negative() { "-" } else { "" }
                     )
                 } else {

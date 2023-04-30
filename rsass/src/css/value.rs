@@ -119,6 +119,14 @@ impl Value {
         }
     }
 
+    pub(crate) fn needs_calc(&self) -> bool {
+        if let Value::Numeric(Numeric { value, unit: _ }, _) = self {
+            !value.is_finite()
+        } else {
+            false
+        }
+    }
+
     /// Return true if this is a calculated value.
     ///
     /// The return of functions or operators are calculated, verbatim

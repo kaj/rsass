@@ -257,7 +257,7 @@ mod infinity {
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.hypot(math.div(1, 0), 1, 1)}\n"),
             "a {\
-         \n  b: Infinity;\
+         \n  b: calc(infinity);\
          \n}\n"
         );
     }
@@ -267,7 +267,7 @@ mod infinity {
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.hypot(1, math.div(1, 0), 1)}\n"),
             "a {\
-         \n  b: Infinity;\
+         \n  b: calc(infinity);\
          \n}\n"
         );
     }
@@ -277,7 +277,7 @@ mod infinity {
             runner().ok("@use \"sass:math\" as math;\
              \na {b: math.hypot(1, 1, math.div(1, 0))}\n"),
             "a {\
-         \n  b: Infinity;\
+         \n  b: calc(infinity);\
          \n}\n"
         );
     }

@@ -122,13 +122,13 @@ impl Property {
         buf.do_indent_no_nl();
         buf.add_str(&self.name);
         buf.add_one(": ", ":");
-        buf.add_str(
-            &self
-                .value
-                .format(buf.format())
-                .to_string()
-                .replace('\n', " "),
-        );
+        let value_fmt = self.value.format(buf.format());
+        let value_str = if self.value.needs_calc() {
+            format!("calc({value_fmt})")
+        } else {
+            value_fmt.to_string()
+        };
+        buf.add_str(&value_str.replace('\n', " "));
         buf.add_one(";\n", ";");
     }
 }

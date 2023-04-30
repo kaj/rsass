@@ -73,10 +73,10 @@ fn test() {
          \n  r: 64em;\
          \n  s: 2.5em;\
          \n  t: 120.754/5 6/7;\
-         \n  one-over-zero: Infinity;\
-         \n  zero-over-zero: NaN;\
-         \n  one-mod-zero: NaN;\
-         \n  zero-mod-zero: NaN;\
+         \n  one-over-zero: calc(infinity);\
+         \n  zero-over-zero: calc(NaN);\
+         \n  one-mod-zero: calc(NaN);\
+         \n  zero-mod-zero: calc(NaN);\
          \n}\n"
     );
 }

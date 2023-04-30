@@ -84,7 +84,7 @@ fn infinity() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.sqrt(math.div(1, 0))}\n"),
         "a {\
-         \n  b: Infinity;\
+         \n  b: calc(infinity);\
          \n}\n"
     );
 }
@@ -104,7 +104,7 @@ fn negative() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.sqrt(-1)}\n"),
         "a {\
-         \n  b: NaN;\
+         \n  b: calc(NaN);\
          \n}\n"
     );
 }
@@ -124,7 +124,7 @@ fn negative_zero_fuzzy() {
         runner().ok("@use \"sass:math\" as math;\
              \na {b: math.sqrt(-0.000000000001)}\n"),
         "a {\
-         \n  b: NaN;\
+         \n  b: calc(NaN);\
          \n}\n"
     );
 }

@@ -7,6 +7,8 @@ fn runner() -> crate::TestRunner {
 
 mod has;
 
+mod is;
+
 mod leading;
 
 mod middle;

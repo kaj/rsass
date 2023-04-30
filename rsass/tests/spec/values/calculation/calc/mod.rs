@@ -5,6 +5,8 @@ fn runner() -> crate::TestRunner {
     super::runner().with_cwd("calc")
 }
 
+mod constant;
+
 mod error;
 
 mod no_operator;

@@ -9,29 +9,68 @@ mod leading {
     #[allow(unused)]
     use super::runner;
 
-    #[test]
-    #[ignore] // wrong result
-    fn multiple() {
-        assert_eq!(runner().ok(":is(+ ~ a) {b: c}\n"), "");
+    mod multiple {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // wrong result
+        fn direct() {
+            assert_eq!(runner().ok(":has(+ ~ a) {b: c}\n"), "");
+        }
+        #[test]
+        #[ignore] // wrong result
+        fn parent() {
+            assert_eq!(
+                runner().ok("~ a {\
+             \n  :has(+ &) {b: c}\
+             \n}\n"),
+                ""
+            );
+        }
     }
     mod single {
         #[allow(unused)]
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn child() {
-            assert_eq!(runner().ok(":is(> a) {b: c}\n"), "");
+            assert_eq!(
+                runner().ok(":has(> a) {b: c}\n"),
+                ":has(> a) {\
+         \n  b: c;\
+         \n}\n"
+            );
         }
         #[test]
-        #[ignore] // wrong result
         fn next_sibling() {
-            assert_eq!(runner().ok(":is(+ a) {b: c}\n"), "");
+            assert_eq!(
+                runner().ok(":has(+ a) {b: c}\n"),
+                ":has(+ a) {\
+         \n  b: c;\
+         \n}\n"
+            );
         }
         #[test]
-        #[ignore] // wrong result
+        fn parent() {
+            assert_eq!(
+                runner().ok("// Regression test for sass/sass#3546\
+             \na {\
+             \n  :has(~ &) {b: c}\
+             \n}\n"),
+                ":has(~ a) {\
+         \n  b: c;\
+         \n}\n"
+            );
+        }
+        #[test]
         fn sibling() {
-            assert_eq!(runner().ok(":is(~ a) {b: c}\n"), "");
+            assert_eq!(
+                runner().ok(":has(~ a) {b: c}\n"),
+                ":has(~ a) {\
+         \n  b: c;\
+         \n}\n"
+            );
         }
     }
 }

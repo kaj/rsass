@@ -130,6 +130,21 @@ mod error {
          \n  input.scss 1:7  root stylesheet",
             );
         }
+        #[test]
+        fn with_module() {
+            assert_eq!(
+                runner().err(
+                    "@use \'sass:color\';\
+             \na {b: color.invert(var(--c))}\n"
+                ),
+                "Error: $color: var(--c) is not a color.\
+         \n  ,\
+         \n2 | a {b: color.invert(var(--c))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
     }
 }
 #[test]
@@ -252,6 +267,35 @@ fn white() {
         runner().ok("a {b: invert(white)}\n"),
         "a {\
          \n  b: black;\
+         \n}\n"
+    );
+}
+#[test]
+fn with_calc() {
+    assert_eq!(
+        runner().ok("a {b: invert(calc(1 + 2))}\n"),
+        "a {\
+         \n  b: invert(3);\
+         \n}\n"
+    );
+}
+#[test]
+#[ignore] // unexepected error
+fn with_css_var() {
+    assert_eq!(
+        runner().ok("a {b: invert(var(--c))}\n"),
+        "a {\
+         \n  b: invert(var(--c));\
+         \n}\n"
+    );
+}
+#[test]
+#[ignore] // unexepected error
+fn with_unquoted_calc() {
+    assert_eq!(
+        runner().ok("a {b: invert(unquote(\'calc(1)\'))}\n"),
+        "a {\
+         \n  b: invert(calc(1));\
          \n}\n"
     );
 }

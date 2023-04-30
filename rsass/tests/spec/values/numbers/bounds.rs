@@ -35,7 +35,7 @@ mod int {
              \n}\n"
         ),
         "a {\
-         \n  b: Infinity;\
+         \n  b: calc(infinity);\
          \n}\n"
     );
         }
@@ -66,7 +66,7 @@ mod int {
              \n}\n"
         ),
         "a {\
-         \n  b: -Infinity;\
+         \n  b: calc(-infinity);\
          \n}\n"
     );
         }

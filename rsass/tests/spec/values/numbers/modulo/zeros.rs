@@ -56,7 +56,7 @@ fn zero_divider() {
              \n  b: inspect(1 % 0);\
              \n}\n"),
         "a {\
-         \n  b: NaN;\
+         \n  b: calc(NaN);\
          \n}\n"
     );
 }

@@ -129,6 +129,27 @@ mod error {
             );
         }
     }
+    mod with_module {
+        #[allow(unused)]
+        use super::runner;
+
+        #[test]
+        #[ignore] // missing error
+        fn test_type() {
+            assert_eq!(
+                runner().err(
+                    "@use \'sass:color\';\
+             \na {b: color.opacity(var(--c))}\n"
+                ),
+                "Error: $color: var(--c) is not a color.\
+         \n  ,\
+         \n2 | a {b: color.opacity(var(--c))}\
+         \n  |       ^^^^^^^^^^^^^^^^^^^^^^^\
+         \n  \'\
+         \n  input.scss 2:7  root stylesheet",
+            );
+        }
+    }
 }
 mod filter {
     #[allow(unused)]
@@ -190,6 +211,33 @@ mod opacity {
             runner().ok("a {b: opacity(rgba(red, 0.2))}\n"),
             "a {\
          \n  b: 0.2;\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn with_calc() {
+        assert_eq!(
+            runner().ok("a {b: opacity(calc(1 + 2))}\n"),
+            "a {\
+         \n  b: opacity(3);\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn with_css_var() {
+        assert_eq!(
+            runner().ok("a {b: opacity(var(--c))}\n"),
+            "a {\
+         \n  b: opacity(var(--c));\
+         \n}\n"
+        );
+    }
+    #[test]
+    fn with_unquoted_calc() {
+        assert_eq!(
+            runner().ok("a {b: opacity(unquote(\'calc(1)\'))}\n"),
+            "a {\
+         \n  b: opacity(calc(1));\
          \n}\n"
         );
     }

@@ -7,6 +7,33 @@ fn runner() -> crate::TestRunner {
 
 #[test]
 #[ignore] // wrong result
+fn preserve_merge_after_bubble() {
+    assert_eq!(
+        runner().ok("// Regression test for sass/dart-sass#777\
+             \n@media (a: b) {\
+             \n  @media (c: d) {\
+             \n    e {f: g}\
+             \n  }\n\
+             \n  h {i: j}\
+             \n  k {l: m}\
+             \n}\n"),
+        "@media (a: b) and (c: d) {\
+         \n  e {\
+         \n    f: g;\
+         \n  }\
+         \n}\
+         \n@media (a: b) {\
+         \n  h {\
+         \n    i: j;\
+         \n  }\
+         \n  k {\
+         \n    l: m;\
+         \n  }\
+         \n}\n"
+    );
+}
+#[test]
+#[ignore] // wrong result
 fn unmergeable_and_merged() {
     assert_eq!(
         runner().ok(

@@ -88,15 +88,16 @@ mod error {
         use super::runner;
 
         #[test]
+        #[ignore] // wrong error
         fn invalid_arg() {
             assert_eq!(
-                runner().err("a {b: max(c)}\n"),
-                "Error: c is not a number.\
+                runner().err("a {b: max($)}\n"),
+                "Error: Expected identifier.\
          \n  ,\
-         \n1 | a {b: max(c)}\
-         \n  |       ^^^^^^\
+         \n1 | a {b: max($)}\
+         \n  |            ^\
          \n  \'\
-         \n  input.scss 1:7  root stylesheet",
+         \n  input.scss 1:12  root stylesheet",
             );
         }
         #[test]
