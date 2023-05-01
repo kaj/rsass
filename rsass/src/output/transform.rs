@@ -337,7 +337,7 @@ fn handle_item(
             eprintln!("WARNING: {}", value.evaluate(scope)?.introspect());
         }
         Item::Error(ref value, ref pos) => {
-            let msg = value.evaluate(scope)?.introspect().to_string();
+            let msg = value.evaluate(scope)?.introspect();
             return Err(Invalid::AtError(msg).at(pos.clone()));
         }
 

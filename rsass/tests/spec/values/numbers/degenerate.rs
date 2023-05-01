@@ -14,7 +14,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn denominator_unit() {
             assert_eq!(
                 runner().err(
@@ -30,7 +29,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn multiple_numerator_units() {
             assert_eq!(
                 runner().err(
@@ -67,7 +65,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn denominator_unit() {
             assert_eq!(
                 runner().err(
@@ -83,7 +80,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn multiple_numerator_units() {
             assert_eq!(
                 runner().err(
@@ -120,7 +116,6 @@ mod error {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong error
         fn denominator_unit() {
             assert_eq!(
                 runner().err(
@@ -136,7 +131,6 @@ mod error {
             );
         }
         #[test]
-        #[ignore] // wrong error
         fn multiple_numerator_units() {
             assert_eq!(
                 runner().err(

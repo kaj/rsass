@@ -131,7 +131,7 @@ impl ScopeRef {
                     None
                 }
                 Item::Error(ref value, ref pos) => {
-                    let msg = value.evaluate(self)?.introspect().to_string();
+                    let msg = value.evaluate(self)?.introspect();
                     return Err(Invalid::AtError(msg).at(pos.clone()));
                 }
                 Item::None => None,

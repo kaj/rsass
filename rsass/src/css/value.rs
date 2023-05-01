@@ -119,7 +119,16 @@ impl Value {
         }
     }
 
-    pub(crate) fn needs_calc(&self) -> bool {
+    pub(crate) fn to_string(&self, format: Format) -> String {
+        let value = self.format(format);
+        if self.needs_calc() {
+            format!("calc({value})")
+        } else {
+            value.to_string()
+        }
+    }
+
+    fn needs_calc(&self) -> bool {
         if let Value::Numeric(Numeric { value, unit: _ }, _) = self {
             !value.is_finite()
         } else {
@@ -255,8 +264,12 @@ impl Value {
         }
     }
     /// Format this value for error messages.
-    pub fn introspect(&self) -> Formatted<Value> {
-        self.format(Format::introspect())
+    pub fn introspect(&self) -> String {
+        // Note: The replaceing here is a silly workaround for
+        // https://github.com/sass/sass-spec/issues/1905
+        self.to_string(Format::introspect())
+            .replace("infinity * 1", "Infinity")
+            .replace("NaN * 1", "NaN")
     }
 }
 

@@ -115,13 +115,7 @@ pub fn create_module() -> Scope {
     });
     def!(f, inspect(value), |s| {
         let value = s.get::<Value>(name!(value))?;
-        let value_f = value.format(Format::introspect());
-        Ok(if value.needs_calc() {
-            format!("calc({value_f})")
-        } else {
-            value_f.to_string()
-        }
-        .into())
+        Ok(value.to_string(Format::introspect()).into())
     });
     def!(f, keywords(args), |s| {
         let args = s.get_map(name!(args), |v| match v {
