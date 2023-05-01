@@ -12,6 +12,8 @@ project adheres to
 * Changed output format of non-finite numbers to match sass spec.
   They are now wrapped in `calc`, like `calc(infinite)` or
   `calc(NaN * 1deg)`.
+* Fixed some difference between module and builtin color functions
+  `grayscale` and `invert`.
 * The `deg` unit is no longer spelled out in `hsl` / `hsla` colors.
 * Improved handling of custom properties in raw css input.
 * MSRV of rsass (the lib crate) is now 1.59.0 (required by trancient

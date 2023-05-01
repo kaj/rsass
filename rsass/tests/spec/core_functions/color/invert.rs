@@ -280,7 +280,6 @@ fn with_calc() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn with_css_var() {
     assert_eq!(
         runner().ok("a {b: invert(var(--c))}\n"),
@@ -290,7 +289,6 @@ fn with_css_var() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn with_unquoted_calc() {
     assert_eq!(
         runner().ok("a {b: invert(unquote(\'calc(1)\'))}\n"),

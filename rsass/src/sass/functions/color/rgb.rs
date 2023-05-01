@@ -57,17 +57,8 @@ pub fn register(f: &mut Scope) {
     def!(f, invert(color, weight = b"100%"), |s| {
         match s.get(name!(color))? {
             Value::Color(col, _) => {
-                let rgba = col.to_rgba();
                 let w = s.get_map(name!(weight), check_pct_range)?;
-                let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
-                Ok(Rgba::new(
-                    inv(rgba.red()),
-                    inv(rgba.green()),
-                    inv(rgba.blue()),
-                    rgba.alpha(),
-                    rgba.source(),
-                )
-                .into())
+                Ok(do_invert(col, w))
             }
             col => {
                 let w = s.get_map(name!(weight), check_pct_range)?;
@@ -92,12 +83,53 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(rgba), name!(_rgba)),
         (name!(blue), name!(blue)),
         (name!(green), name!(green)),
-        (name!(invert), name!(invert)),
         (name!(mix), name!(mix)),
         (name!(red), name!(red)),
     ] {
         global.insert(gname.clone(), m.get_lfunction(lname));
     }
+    let mut f = Scope::builtin_module("sass:color");
+    def!(f, invert(color, weight = b"100%"), |s| {
+        match s.get(name!(color))? {
+            Value::Color(col, _) => {
+                let w = s.get_map(name!(weight), check_pct_range)?;
+                Ok(do_invert(col, w))
+            }
+            col => {
+                let w = s.get_map(name!(weight), check_pct_range)?;
+                if w == one() {
+                    match col {
+                        v @ Value::Numeric(..) => {
+                            Ok(make_call("invert", vec![v]))
+                        }
+                        v if is_special(&v) => {
+                            Ok(make_call("invert", vec![v]))
+                        }
+                        v => Err(is_not(&v, "a color")).named(name!(color)),
+                    }
+                } else {
+                    Err(CallError::msg("Only one argument may be passed to the plain-CSS invert() function."))
+                }
+            }
+        }
+    });
+    for name in [name!(invert)] {
+        let f = f.get_lfunction(&name);
+        global.insert(name, f);
+    }
+}
+
+fn do_invert(col: Color, w: Rational) -> Value {
+    let rgba = col.to_rgba();
+    let inv = |v: Rational| -(v - 255) * w + v * -(w - 1);
+    Rgba::new(
+        inv(rgba.red()),
+        inv(rgba.green()),
+        inv(rgba.blue()),
+        rgba.alpha(),
+        rgba.source(),
+    )
+    .into()
 }
 
 fn do_rgba(fn_name: &Name, s: &ResolvedArgs) -> Result<Value, CallError> {

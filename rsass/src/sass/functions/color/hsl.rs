@@ -43,7 +43,6 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         (name!(hsl), name!(_hsl)),
         (name!(hsla), name!(_hsla)),
         (name!(complement), name!(complement)),
-        (name!(grayscale), name!(grayscale)),
         (name!(hue), name!(hue)),
         (name!(lightness), name!(lightness)),
         (name!(saturation), name!(saturation)),
@@ -71,6 +70,17 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
         let sat = col.sat() - s.get_map(name!(amount), check_amount)?;
         Ok(Hsla::new(col.hue(), sat, col.lum(), col.alpha(), false).into())
     });
+    def!(f, grayscale(color), |args| match args.get(name!(color))? {
+        Value::Color(col, _) => {
+            let col = col.to_hsla();
+            Ok(Hsla::new(col.hue(), zero(), col.lum(), col.alpha(), false)
+                .into())
+        }
+        v @ Value::Numeric(..) => Ok(make_call("grayscale", vec![v])),
+        v if dbg!(is_special(dbg!(&v))) =>
+            Ok(make_call("grayscale", vec![v])),
+        v => Err(is_not(&v, "a color")).named(name!(color)),
+    });
     def_va!(f, saturate(kwargs), |s| {
         let a1 = FormalArgs::new(vec![one_arg!(color), one_arg!(amount)]);
         let a2 = FormalArgs::new(vec![one_arg!(amount)]);
@@ -87,7 +97,11 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
             Err(CallError::Args(ArgsError::Missing(_), _)) => {
                 let s = eval_inner(&name!(saturate), &a2, s, args)?;
                 let sat = s.get_map(name!(amount), |v| {
-                    check_pct(v.clone()).map(|_| v) // validate only
+                    if is_special(&v) {
+                        Ok(v)
+                    } else {
+                        check_pct(v.clone()).map(|_| v) // validate only
+                    }
                 })?;
                 Ok(make_call("saturate", vec![sat]))
             }
@@ -103,6 +117,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
     for (gname, lname) in &[
         (name!(adjust_hue), name!(adjust_hue)),
         (name!(darken), name!(darken)),
+        (name!(grayscale), name!(grayscale)),
         (name!(desaturate), name!(desaturate)),
         (name!(lighten), name!(lighten)),
         (name!(saturate), name!(saturate)),
