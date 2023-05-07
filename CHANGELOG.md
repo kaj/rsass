@@ -21,6 +21,7 @@ project adheres to
 * Improved parsing of quoted strings (some syntax errors was accepted).
 * Fixed a typo in help text, thanks @greyhillman (PR #170).
 * Added an input check in selectors.append function.
+* Changed `Number` internals to make values smaller in memory.
 * Minor internal cleanup.
 * Updated syn in rsass-macros to 2.0.2.
 * Updated sass-spec test suite to 2023-04-27.

@@ -24,7 +24,11 @@ pub struct Number {
 #[derive(Clone, Debug)]
 enum NumValue {
     Rational(Rational),
-    BigRational(Ratio<BigInt>),
+    // Note: Using a Box here is essentially a double indirection, but
+    // it also makes the size of a NumValue a lot smaller (24 bytes
+    // for a Ratio<i64> plus denominator and padding rather than the
+    // 48 bytes (two Vec headers) that is put in this box.
+    BigRational(Box<Ratio<BigInt>>),
     Float(f64),
 }
 
@@ -40,7 +44,7 @@ impl From<i64> for NumValue {
 }
 impl From<Ratio<BigInt>> for NumValue {
     fn from(value: Ratio<BigInt>) -> NumValue {
-        NumValue::BigRational(value)
+        NumValue::BigRational(Box::new(value))
     }
 }
 impl From<f64> for NumValue {
@@ -70,7 +74,7 @@ impl Neg for &Number {
     fn neg(self) -> Number {
         match &self.value {
             NumValue::Rational(s) => (-s).into(),
-            NumValue::BigRational(s) => (-s).into(),
+            NumValue::BigRational(s) => (-s.as_ref()).into(),
             NumValue::Float(s) => (-s).into(),
         }
     }
@@ -92,7 +96,7 @@ impl PartialOrd for NumValue {
                 biggen(s).partial_cmp(r)
             }
             (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                s.partial_cmp(&biggen(r))
+                s.as_ref().partial_cmp(&biggen(r))
             }
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
                 s.partial_cmp(r)
@@ -118,13 +122,13 @@ impl Mul for &NumValue {
                 .map(Into::into)
                 .unwrap_or_else(|| (biggen(s) * biggen(r)).into()),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(s) * r).into()
+                (biggen(s) * r.as_ref()).into()
             }
             (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s * biggen(r)).into()
+                (s.as_ref() * biggen(r)).into()
             }
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
-                (s * r).into()
+                (s.as_ref() * r.as_ref()).into()
             }
             (NumValue::Float(s), r) => (s * f64::from(r)).into(),
             (s, NumValue::Float(r)) => (f64::from(s) * r).into(),
@@ -136,7 +140,7 @@ impl Mul<&Rational> for &NumValue {
     fn mul(self, rhs: &Rational) -> NumValue {
         match self {
             NumValue::Rational(s) => (s * rhs).into(),
-            NumValue::BigRational(s) => (s * biggen(rhs)).into(),
+            NumValue::BigRational(s) => (s.as_ref() * biggen(rhs)).into(),
             NumValue::Float(s) => {
                 rhs.to_f64().map(|r| s * r).unwrap_or(f64::NAN).into()
             }
@@ -148,7 +152,9 @@ impl Mul<i64> for NumValue {
     fn mul(self, rhs: i64) -> Self {
         match self {
             s @ NumValue::Rational(_) => s * NumValue::from(rhs),
-            NumValue::BigRational(s) => (s * BigInt::from(rhs)).into(),
+            NumValue::BigRational(s) => {
+                (s.as_ref() * BigInt::from(rhs)).into()
+            }
             NumValue::Float(s) => (s * (rhs as f64)).into(),
         }
     }
@@ -185,13 +191,13 @@ impl Rem for &NumValue {
         match (self, rhs) {
             (NumValue::Rational(s), NumValue::Rational(r)) => (s % r).into(),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(s) % r).into()
+                (biggen(s) % r.as_ref()).into()
             }
             (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s % biggen(r)).into()
+                (s.as_ref() % biggen(r)).into()
             }
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
-                (s % r).into()
+                (s.as_ref() % r.as_ref()).into()
             }
             (NumValue::Float(s), r) => (s % f64::from(r)).into(),
             (s, NumValue::Float(r)) => (f64::from(s) % r).into(),
@@ -216,13 +222,13 @@ impl Div for &NumValue {
                 .map(Into::into)
                 .unwrap_or_else(|| (biggen(s) / biggen(r)).into()),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(s) / r).into()
+                (biggen(s) / r.as_ref()).into()
             }
             (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s / biggen(r)).into()
+                (s.as_ref() / biggen(r)).into()
             }
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
-                (s / r).into()
+                (s.as_ref() / r.as_ref()).into()
             }
             (NumValue::Float(s), r) => (s / f64::from(r)).into(),
             (s, NumValue::Float(r)) => (f64::from(s) / r).into(),
@@ -235,7 +241,9 @@ impl Div<i64> for NumValue {
     fn div(self, rhs: i64) -> Self {
         match self {
             NumValue::Rational(s) => (s / rhs).into(),
-            NumValue::BigRational(s) => (s / BigInt::from(rhs)).into(),
+            NumValue::BigRational(s) => {
+                (s.as_ref() / BigInt::from(rhs)).into()
+            }
             NumValue::Float(s) => (s / (rhs as f64)).into(),
         }
     }
@@ -250,13 +258,13 @@ impl Add for NumValue {
                 .map(Into::into)
                 .unwrap_or_else(|| (biggen(&s) + biggen(&r)).into()),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(&s) + r).into()
+                (biggen(&s) + r.as_ref()).into()
             }
             (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s + biggen(&r)).into()
+                (s.as_ref() + biggen(&r)).into()
             }
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
-                (s + r).into()
+                (s.as_ref() + r.as_ref()).into()
             }
             (NumValue::Float(s), r) => (s + f64::from(r)).into(),
             (s, NumValue::Float(r)) => (f64::from(s) + r).into(),
@@ -278,13 +286,13 @@ impl Sub for &NumValue {
                 .map(Into::into)
                 .unwrap_or_else(|| (biggen(s) - biggen(r)).into()),
             (NumValue::Rational(s), NumValue::BigRational(r)) => {
-                (biggen(s) - r).into()
+                (biggen(s) - r.as_ref()).into()
             }
             (NumValue::BigRational(s), NumValue::Rational(r)) => {
-                (s - biggen(r)).into()
+                (s.as_ref() - biggen(r)).into()
             }
             (NumValue::BigRational(s), NumValue::BigRational(r)) => {
-                (s - r).into()
+                (s.as_ref() - r.as_ref()).into()
             }
             (NumValue::Float(s), r) => (s - f64::from(r)).into(),
             (s, NumValue::Float(r)) => (f64::from(s) - r).into(),
