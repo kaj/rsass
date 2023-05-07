@@ -295,7 +295,7 @@ mod missing_whitespace {
         }
 
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn after_type() {
             let runner = runner().with_cwd("after_type");
             assert_eq!(
@@ -310,7 +310,7 @@ mod missing_whitespace {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn first() {
             let runner = runner().with_cwd("first");
             assert_eq!(
@@ -325,7 +325,7 @@ mod missing_whitespace {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn later() {
             let runner = runner().with_cwd("later");
             assert_eq!(
@@ -347,7 +347,7 @@ mod missing_whitespace {
         }
 
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn test_type() {
             let runner = runner().with_cwd("type");
             assert_eq!(
@@ -362,7 +362,7 @@ mod missing_whitespace {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn type_and_modifier() {
             let runner = runner().with_cwd("type_and_modifier");
             assert_eq!(
@@ -378,7 +378,7 @@ mod missing_whitespace {
         }
     }
     #[test]
-    #[ignore] // wrong error
+    #[ignore] // missing error
     fn not() {
         let runner = runner().with_cwd("not");
         assert_eq!(
@@ -399,7 +399,7 @@ mod missing_whitespace {
         }
 
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn first() {
             let runner = runner().with_cwd("first");
             assert_eq!(
@@ -414,7 +414,7 @@ mod missing_whitespace {
             );
         }
         #[test]
-        #[ignore] // wrong error
+        #[ignore] // missing error
         fn later() {
             let runner = runner().with_cwd("later");
             assert_eq!(

@@ -5,12 +5,18 @@ use std::ops::{Div, Mul, Neg};
 
 /// A Numeric value is a [`Number`] with a [`Unit`] (which may be
 /// Unit::None).
-#[derive(Clone, Debug, Eq)]
+#[derive(Clone, Eq)]
 pub struct Numeric {
     /// The number value of this numeric.
     pub value: Number,
     /// The unit of this numeric.
     pub unit: UnitSet,
+}
+
+impl fmt::Debug for Numeric {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}; {:?}", self.value, self.unit)
+    }
 }
 
 impl Numeric {

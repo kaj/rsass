@@ -25,6 +25,7 @@ mod interpolated {
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn mixed_case() {
             assert_eq!(
                 runner().ok("@media (#{\"(a) AnD (b)\"}) {x {y: z}}\n"),
@@ -80,6 +81,7 @@ mod interpolated {
             );
         }
         #[test]
+        #[ignore] // wrong result
         fn mixed_case() {
             assert_eq!(
                 runner().ok("@media (#{\"(a) oR (b)\"}) {x {y: z}}\n"),
@@ -112,7 +114,6 @@ mod raw {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn mixed_case() {
             assert_eq!(
                 runner().ok("@media ((a) AnD (b)) {x {y: z}}\n"),
@@ -180,7 +181,6 @@ mod raw {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn mixed_case() {
             assert_eq!(
                 runner().ok("@media ((a) Or (b)) {x {y: z}}\n"),

@@ -11,6 +11,8 @@ pub enum Operator {
     Or,
     /// The `==` operator.
     Equal,
+    /// The `=` operator.  Used insted of Equal in media queries.
+    EqualSingle,
     /// The `!=` operator.
     NotEqual,
     /// The `>` operator.
@@ -63,6 +65,7 @@ impl Operator {
             Operator::And => Some(if !a.is_true() { a } else { b }),
             Operator::Or => Some(if a.is_true() { a } else { b }),
             Operator::Equal => Some(Value::from(a == b)),
+            Operator::EqualSingle => cmp(a, b, &|a, b| a == b),
             Operator::NotEqual => Some(Value::from(a != b)),
             Operator::Greater => cmp(a, b, &|a, b| a > b),
             Operator::GreaterE => cmp(a, b, &|a, b| a >= b),
@@ -183,6 +186,18 @@ impl Operator {
             Operator::Not => return Err(BadOp::UndefinedOperation),
         })
     }
+    pub(crate) fn is_cmp(&self) -> bool {
+        matches!(
+            self,
+            Operator::Equal
+                | Operator::EqualSingle
+                | Operator::NotEqual
+                | Operator::Greater
+                | Operator::GreaterE
+                | Operator::Lesser
+                | Operator::LesserE
+        )
+    }
 }
 
 fn valid_operand(v: &Value) -> bool {
@@ -213,6 +228,7 @@ impl fmt::Display for Operator {
             Operator::And => "and",
             Operator::Or => "or",
             Operator::Equal => "==",
+            Operator::EqualSingle => "=",
             Operator::NotEqual => "!=",
             Operator::Greater => ">",
             Operator::GreaterE => ">=",

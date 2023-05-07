@@ -6,7 +6,6 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
 fn comment_after() {
     assert_eq!(
         runner().ok("@media (a) or/**/(b) {x {y: z}}\n"),
@@ -29,7 +28,6 @@ fn interpolation() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn mixed_case() {
     assert_eq!(
         runner().ok("@media (a) oR (b) {x {y: z}}\n"),
@@ -52,7 +50,6 @@ fn multiple() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn no_whitespace_before() {
     assert_eq!(
         runner().ok("@media (a)or (b) {x {y: z}}\n"),

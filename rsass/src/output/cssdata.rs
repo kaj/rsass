@@ -1,6 +1,10 @@
-use super::cssdest::{AtRuleDest, CssDestination, NsRuleDest, RuleDest};
+use super::cssdest::{
+    AtMediaDest, AtRuleDest, CssDestination, NsRuleDest, RuleDest,
+};
 use super::{CssBuf, Format};
-use crate::css::{Comment, CssString, Import, Item, Selectors, Value};
+use crate::css::{
+    Comment, CssString, Import, Item, MediaArgs, Selectors, Value,
+};
 use crate::{Error, Invalid, ScopeRef};
 use std::collections::BTreeMap;
 
@@ -84,6 +88,9 @@ impl CssDestination for CssData {
 
     fn start_rule(&mut self, selectors: Selectors) -> Result<RuleDest> {
         Ok(RuleDest::new(self, selectors))
+    }
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
+        AtMediaDest::new(self, args)
     }
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
         AtRuleDest::new(self, name, args)

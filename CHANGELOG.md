@@ -9,6 +9,8 @@ project adheres to
 
 ## Unreleased
 
+* `@media` rules are now handled specifically as `@media` rules,
+  rather than as unknown `@`-rules (PR #172).
 * Changed output format of non-finite numbers to match sass spec.
   They are now wrapped in `calc`, like `calc(infinite)` or
   `calc(NaN * 1deg)`.

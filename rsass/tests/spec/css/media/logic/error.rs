@@ -169,7 +169,7 @@ mod nothing_after {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn after_interpolation() {
             assert_eq!(
                 runner().err("@media #{a} and {x {y: z}}\n"),
@@ -182,7 +182,7 @@ mod nothing_after {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn after_paren() {
             assert_eq!(
                 runner().err("@media (a) and {x {y: z}}\n"),
@@ -195,7 +195,7 @@ mod nothing_after {
             );
         }
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn after_type() {
             assert_eq!(
                 runner().err("@media a and {x {y: z}}\n"),
@@ -235,7 +235,7 @@ mod nothing_after {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn or() {
         assert_eq!(
             runner().err("@media (a) or {x {y: z}}\n"),

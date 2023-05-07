@@ -4,7 +4,7 @@ use super::strings::{
 };
 use super::util::{ignore_comments, opt_spacelike, semi_or_end};
 use super::value::space_list;
-use super::{media_args, position, PResult, Span};
+use super::{media, position, PResult, Span};
 use crate::sass::{Expose, Item, Name, SassString, UseAs, Value};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
@@ -27,7 +27,7 @@ pub fn import2(input: Span) -> PResult<Item> {
                         sass_string,
                     )),
                 ),
-                opt(media_args),
+                opt(media::args),
                 position,
             )),
             semi_or_end,

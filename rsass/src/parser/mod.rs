@@ -3,6 +3,7 @@ mod css_function;
 mod error;
 pub mod formalargs;
 mod imports;
+mod media;
 pub mod selectors;
 mod span;
 pub(crate) mod strings;
@@ -221,22 +222,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         "use" => use2(input0),
         "warn" => map(expression_argument, Item::Warn)(input),
         "while" => while_loop2(input),
-        "media" => {
-            let pos = input0.up_to(&input).to_owned().opt_back("@");
-            let (input, args) = opt(media_args)(input)?;
-            let (input, body) = preceded(
-                opt(ignore_space),
-                alt((map(body_block, Some), value(None, semi_or_end))),
-            )(input)?;
-            Ok((
-                input,
-                Item::AtMedia {
-                    args: args.unwrap_or(Value::Null),
-                    body,
-                    pos,
-                },
-            ))
-        }
+        "media" => media::rule(input0),
         _ => {
             let pos = input0.up_to(&input).to_owned().opt_back("@");
             let (input, args) = opt(unknown_rule_args)(input)?;
@@ -306,7 +292,7 @@ fn unknown_rule_args(input: Span) -> PResult<Value> {
                             function_call,
                             dictionary,
                             map(
-                                delimited(tag("("), media_args, tag(")")),
+                                delimited(tag("("), media::args, tag(")")),
                                 |v| Value::Paren(Box::new(v), true),
                             ),
                             map(sass_string, Value::Literal),
@@ -342,74 +328,12 @@ fn unknown_rule_args(input: Span) -> PResult<Value> {
     ))
 }
 
-fn media_args(input: Span) -> PResult<Value> {
-    let (input, args) = separated_list0(
-        preceded(tag(","), opt_spacelike),
-        map(
-            many0(preceded(
-                opt(ignore_space),
-                alt((
-                    terminated(
-                        alt((
-                            function_call,
-                            dictionary,
-                            map(
-                                delimited(tag("("), media_args, tag(")")),
-                                |v| Value::Paren(Box::new(v), true),
-                            ),
-                            map(sass_string, Value::Literal),
-                            map(sass_string_dq, Value::Literal),
-                            map(sass_string_sq, Value::Literal),
-                        )),
-                        alt((
-                            value((), all_consuming(tag(""))),
-                            value((), peek(one_of(") \r\n\t{,;"))),
-                        )),
-                    ),
-                    map(map_res(is_not("#()\"'{};, "), input_to_str), |s| {
-                        Value::Literal(s.trim_end().into())
-                    }),
-                )),
-            )),
-            |args| {
-                if args.len() == 1 {
-                    args.into_iter().next().unwrap()
-                } else {
-                    Value::List(args, Some(ListSeparator::Space), false)
-                }
-            },
-        ),
-    )(input)?;
-    Ok((
-        input,
-        if args.len() == 1 {
-            args.into_iter().next().unwrap()
-        } else {
-            Value::List(args, Some(ListSeparator::Comma), false)
-        },
-    ))
-}
-
 #[cfg(test)]
 pub(crate) fn check_parse<T>(
     parser: impl Fn(Span) -> PResult<T>,
     value: &[u8],
 ) -> Result<T, ParseError> {
     ParseError::check(parser(code_span(value).borrow()))
-}
-
-#[test]
-fn test_media_args_1() {
-    check_parse(media_args, b"#{$media} and ($key + \"-foo\": $value + 5)")
-        .unwrap();
-}
-#[test]
-fn test_media_args_2() {
-    check_parse(
-        media_args,
-        b"print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen",
-    )
-    .unwrap();
 }
 
 fn if_statement_inner(input: Span) -> PResult<Item> {

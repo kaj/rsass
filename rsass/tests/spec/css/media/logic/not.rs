@@ -10,7 +10,6 @@ mod not {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn comment_after() {
         assert_eq!(
             runner().ok("@media not/**/(a) {x {y: z}}\n"),
@@ -33,7 +32,6 @@ mod not {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn mixed_case() {
         assert_eq!(
             runner().ok("@media NoT (a) {x {y: z}}\n"),

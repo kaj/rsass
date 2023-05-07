@@ -10,7 +10,7 @@ mod invalid_binary_operator {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn before_colon() {
         assert_eq!(
         runner().err(
@@ -67,7 +67,7 @@ mod invalid_binary_operator {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn in_subexpression() {
         assert_eq!(
         runner().err(
@@ -116,7 +116,7 @@ mod invalid_comparison {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn gte() {
         assert_eq!(
             runner().err("@media (width > = 100px) {a {b: c}}\n"),
@@ -129,7 +129,7 @@ mod invalid_comparison {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn lte() {
         assert_eq!(
             runner().err("@media (width < = 100px) {a {b: c}}\n"),
@@ -142,7 +142,7 @@ mod invalid_comparison {
         );
     }
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn range_gte() {
         assert_eq!(
             runner().err("@media (10px > width > = 1px) {a {b: c}}\n"),
