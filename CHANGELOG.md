@@ -24,7 +24,7 @@ project adheres to
 * Changed `Number` internals to make values smaller in memory.
 * Minor internal cleanup.
 * Updated syn in rsass-macros to 2.0.2.
-* Updated sass-spec test suite to 2023-04-27.
+* Updated sass-spec test suite to 2023-05-17.
 
 
 ## Release 0.27.0
