@@ -16,8 +16,8 @@ project adheres to
   `grayscale` and `invert`.
 * The `deg` unit is no longer spelled out in `hsl` / `hsla` colors.
 * Improved handling of custom properties in raw css input.
-* MSRV of rsass (the lib crate) is now 1.59.0 (required by trancient
-  dev dependency thread_local).
+* MSRV of rsass (the lib crate) is now 1.60.0 (required by trancient
+  dev dependency log).
 * Improved parsing of quoted strings (some syntax errors was accepted).
 * Fixed a typo in help text, thanks @greyhillman (PR #170).
 * Added an input check in selectors.append function.
