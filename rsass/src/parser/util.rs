@@ -33,9 +33,13 @@ pub fn opt_spacelike(input: Span) -> PResult<()> {
 
 pub fn ignore_comments(input: Span) -> PResult<bool> {
     fold_many0(
-        alt((ignore_space, ignore_lcomment, map(comment, |_| ()))),
+        alt((
+            map(ignore_space, |()| true),
+            map(ignore_lcomment, |()| true),
+            map(comment, |_| false),
+        )),
         || false,
-        |_, ()| true,
+        |a, b| a || b,
     )(input)
 }
 

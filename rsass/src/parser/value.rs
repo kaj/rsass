@@ -5,7 +5,7 @@ use super::strings::{
     special_function_misc, special_url, var_name,
 };
 use super::unit::unit;
-use super::util::{comment, ignore_comments, opt_spacelike, spacelike2};
+use super::util::{ignore_comments, opt_spacelike, spacelike2};
 use super::{input_to_string, position, sass_string, PResult, Span};
 use crate::sass::{BinOp, SassString, Value};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
@@ -14,7 +14,9 @@ use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{
     alphanumeric1, multispace0, multispace1, one_of,
 };
-use nom::combinator::{into, map, map_res, not, opt, peek, recognize, value};
+use nom::combinator::{
+    into, map, map_res, not, opt, peek, recognize, value, verify,
+};
 use nom::multi::{fold_many0, fold_many1, many0, many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 use num_traits::Zero;
@@ -145,32 +147,24 @@ fn logic_expression(input: Span) -> PResult<Value> {
 fn sum_expression(input: Span) -> PResult<Value> {
     let (rest, v) = term_value(input)?;
     fold_many0(
-        alt((
-            tuple((
-                map(opt(comment), |_| false),
-                alt((
-                    value(Operator::Plus, tag("+")),
-                    value(Operator::Minus, tag("-")),
+        tuple((
+            verify(
+                tuple((
+                    ignore_comments,
+                    alt((
+                        value(Operator::Plus, tag("+")),
+                        value(Operator::Minus, tag("-")),
+                    )),
+                    ignore_comments,
                 )),
-                ignore_comments,
-                term_value,
-                position,
-            )),
-            tuple((
-                ignore_comments,
-                alt((
-                    value(Operator::Plus, tag("+")),
-                    value(Operator::Minus, terminated(tag("-"), spacelike2)),
-                )),
-                ignore_comments,
-                term_value,
-                position,
-            )),
+                |(s1, op, s2)| op == &Operator::Plus || !*s1 || *s2,
+            ),
+            term_value,
+            position,
         )),
         move || v.clone(),
-        |v, (s1, op, s2, v2, end)| {
+        |v, ((s1, op, s2), v2, end)| {
             let pos = input.up_to(&end).to_owned();
-            let s2 = s2 || (s1 && op == Operator::Minus);
             BinOp::new(v, s1, op, s2, v2, pos).into()
         },
     )(rest)
