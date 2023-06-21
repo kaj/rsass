@@ -77,8 +77,7 @@ pub fn expose(m: &Scope, global: &mut FunctionMap) {
                 .into())
         }
         v @ Value::Numeric(..) => Ok(make_call("grayscale", vec![v])),
-        v if dbg!(is_special(dbg!(&v))) =>
-            Ok(make_call("grayscale", vec![v])),
+        v if is_special(&v) => Ok(make_call("grayscale", vec![v])),
         v => Err(is_not(&v, "a color")).named(name!(color)),
     });
     def_va!(f, saturate(kwargs), |s| {
