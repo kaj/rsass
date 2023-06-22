@@ -4,6 +4,8 @@ use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::ToTokens;
 use rsass::output::{Format, Style};
+use std::env::var_os;
+use std::path::PathBuf;
 use syn::{parse_macro_input, Error, LitStr};
 
 /// Convert a scss string to css at compile time.
@@ -40,8 +42,9 @@ pub fn scss(tokens: TokenStream) -> TokenStream {
 /// Load and convert a scss string to css at compile time.
 ///
 /// The only argument is a path given as a literal string.
-/// The path is evaluated from the crate root of the code calling the
-/// macro (the directory containing your `Cargo.toml` file).
+/// The path is evaluated from the crate manifest directory of the
+/// code calling the macro (the directory containing your `Cargo.toml`
+/// file).
 ///
 /// # Examples
 ///
@@ -57,7 +60,10 @@ pub fn include_scss(tokens: TokenStream) -> TokenStream {
         style: Style::Compressed,
         precision: 10,
     };
-    match rsass::compile_scss_path(path.value().as_ref(), format) {
+    let path =
+        PathBuf::from(var_os("CARGO_MANIFEST_DIR").unwrap_or_default())
+            .join(path.value());
+    match rsass::compile_scss_path(&path, format) {
         Ok(output) => {
             let output = core::str::from_utf8(&output).unwrap();
             LitStr::new(output, Span::call_site())
