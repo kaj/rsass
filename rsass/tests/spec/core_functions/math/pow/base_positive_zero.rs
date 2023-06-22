@@ -16,7 +16,7 @@ mod fuzzy {
         #[test]
         fn decimal() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0.000000000001, 0.5)}\n"),
                 "a {\
          \n  b: 0.000001;\
@@ -26,7 +26,7 @@ mod fuzzy {
         #[test]
         fn even_integer() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0.000000000001, 2)}\n"),
                 "a {\
          \n  b: 0;\
@@ -36,7 +36,7 @@ mod fuzzy {
         #[test]
         fn infinity() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0.000000000001, math.div(1, 0))}\n"),
                 "a {\
          \n  b: 0;\
@@ -46,7 +46,7 @@ mod fuzzy {
         #[test]
         fn negative_decimal() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0.000000000001, -0.5)}\n"),
                 "a {\
          \n  b: 1000000;\
@@ -56,7 +56,7 @@ mod fuzzy {
         #[test]
         fn negative_even_integer() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0.000000000001, -2)}\n"),
                 "a {\
          \n  b: 1000000000000000000000000;\
@@ -66,7 +66,7 @@ mod fuzzy {
         #[test]
         fn negative_infinity() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0.000000000001, math.div(-1, 0))}\n"),
                 "a {\
          \n  b: calc(infinity);\
@@ -76,7 +76,7 @@ mod fuzzy {
         #[test]
         fn negative_odd_integer() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0.000000000001, -3)}\n"),
                 "a {\
          \n  b: 1000000000000000000000000000000000000;\
@@ -86,7 +86,7 @@ mod fuzzy {
         #[test]
         fn odd_integer() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0.000000000001, 3)}\n"),
                 "a {\
          \n  b: 0;\
@@ -96,7 +96,7 @@ mod fuzzy {
         #[test]
         fn zero() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0.000000000001, 0)}\n"),
                 "a {\
          \n  b: 1;\
@@ -112,7 +112,7 @@ mod with_exponent {
     #[test]
     fn decimal() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, 0.5)}\n"),
             "a {\
          \n  b: 0;\
@@ -122,7 +122,7 @@ mod with_exponent {
     #[test]
     fn even_integer() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, 2)}\n"),
             "a {\
          \n  b: 0;\
@@ -132,7 +132,7 @@ mod with_exponent {
     #[test]
     fn even_integer_fuzzy() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, 2.000000000001)}\n"),
             "a {\
          \n  b: 0;\
@@ -142,7 +142,7 @@ mod with_exponent {
     #[test]
     fn infinity() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, math.div(1, 0))}\n"),
             "a {\
          \n  b: 0;\
@@ -152,7 +152,7 @@ mod with_exponent {
     #[test]
     fn negative_decimal() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, -0.5)}\n"),
             "a {\
          \n  b: calc(infinity);\
@@ -162,7 +162,7 @@ mod with_exponent {
     #[test]
     fn negative_even_integer() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, -2)}\n"),
             "a {\
          \n  b: calc(infinity);\
@@ -172,7 +172,7 @@ mod with_exponent {
     #[test]
     fn negative_even_integer_fuzzy() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, -2.000000000001)}\n"),
             "a {\
          \n  b: calc(infinity);\
@@ -182,7 +182,7 @@ mod with_exponent {
     #[test]
     fn negative_infinity() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, math.div(-1, 0))}\n"),
             "a {\
          \n  b: calc(infinity);\
@@ -192,7 +192,7 @@ mod with_exponent {
     #[test]
     fn negative_odd_integer() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, -3)}\n"),
             "a {\
          \n  b: calc(infinity);\
@@ -202,7 +202,7 @@ mod with_exponent {
     #[test]
     fn negative_odd_integer_fuzzy() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, -3.000000000001)}\n"),
             "a {\
          \n  b: calc(infinity);\
@@ -212,7 +212,7 @@ mod with_exponent {
     #[test]
     fn odd_integer() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, 3)}\n"),
             "a {\
          \n  b: 0;\
@@ -222,7 +222,7 @@ mod with_exponent {
     #[test]
     fn odd_integer_fuzzy() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, 3.000000000001)}\n"),
             "a {\
          \n  b: 0;\
@@ -232,7 +232,7 @@ mod with_exponent {
     #[test]
     fn zero() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, 0)}\n"),
             "a {\
          \n  b: 1;\
@@ -242,7 +242,7 @@ mod with_exponent {
     #[test]
     fn zero_fuzzy() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.pow(0, 0.000000000001)}\n"),
             "a {\
          \n  b: 0;\

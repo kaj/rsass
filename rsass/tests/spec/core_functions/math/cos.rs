@@ -8,7 +8,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn deg() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.cos(1deg)}\n"),
         "a {\
          \n  b: 0.9998476952;\
@@ -23,7 +23,7 @@ mod error {
     fn too_many_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.cos(0, 0)}\n"
             ),
             "Error: Only 1 argument allowed, but 2 were passed.\
@@ -42,7 +42,7 @@ mod error {
     fn test_type() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.cos(\"0\")}\n"
             ),
             "Error: $number: \"0\" is not a number.\
@@ -57,7 +57,7 @@ mod error {
     fn unit() {
         assert_eq!(
         runner().err(
-            "@use \"sass:math\" as math;\
+            "@use \"sass:math\";\
              \na {b: math.cos(1px)}\n"
         ),
         "Error: $number: Expected 1px to have an angle unit (deg, grad, rad, turn).\
@@ -72,7 +72,7 @@ mod error {
     fn zero_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.cos()}\n"
             ),
             "Error: Missing argument $number.\
@@ -91,7 +91,7 @@ mod error {
 #[test]
 fn grad() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.cos(1grad)}\n"),
         "a {\
          \n  b: 0.9998766325;\
@@ -101,7 +101,7 @@ fn grad() {
 #[test]
 fn infinity() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.cos(math.div(1, 0))}\n"),
         "a {\
          \n  b: calc(NaN);\
@@ -111,7 +111,7 @@ fn infinity() {
 #[test]
 fn named_arg() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.cos($number: 1)}\n"),
         "a {\
          \n  b: 0.5403023059;\
@@ -121,7 +121,7 @@ fn named_arg() {
 #[test]
 fn negative_infinity() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.cos(math.div(-1, 0))}\n"),
         "a {\
          \n  b: calc(NaN);\
@@ -131,7 +131,7 @@ fn negative_infinity() {
 #[test]
 fn rad() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.cos(1rad)}\n"),
         "a {\
          \n  b: 0.5403023059;\
@@ -141,7 +141,7 @@ fn rad() {
 #[test]
 fn turn() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.cos(1turn)}\n"),
         "a {\
          \n  b: 1;\
@@ -151,7 +151,7 @@ fn turn() {
 #[test]
 fn unitless() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.cos(1)}\n"),
         "a {\
          \n  b: 0.5403023059;\

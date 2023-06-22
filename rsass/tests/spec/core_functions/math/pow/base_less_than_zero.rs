@@ -20,7 +20,7 @@ mod base {
             #[test]
             fn infinity() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-0.5, math.div(1, 0))}\n"),
                     "a {\
          \n  b: 0;\
@@ -30,7 +30,7 @@ mod base {
             #[test]
             fn negative_infinity() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-0.5, math.div(-1, 0))}\n"),
                     "a {\
          \n  b: calc(infinity);\
@@ -50,7 +50,7 @@ mod base {
             #[test]
             fn decimal() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-2, 0.5)}\n"),
                     "a {\
          \n  b: calc(NaN);\
@@ -60,7 +60,7 @@ mod base {
             #[test]
             fn infinity() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-2, math.div(1, 0))}\n"),
                     "a {\
          \n  b: calc(infinity);\
@@ -70,7 +70,7 @@ mod base {
             #[test]
             fn integer() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-2, 2)}\n"),
                     "a {\
          \n  b: 4;\
@@ -80,7 +80,7 @@ mod base {
             #[test]
             fn integer_fuzzy() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-2, 2.000000000001)}\n"),
                     "a {\
          \n  b: calc(NaN);\
@@ -90,7 +90,7 @@ mod base {
             #[test]
             fn negative_infinity() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-2, math.div(-1, 0))}\n"),
                     "a {\
          \n  b: 0;\
@@ -100,7 +100,7 @@ mod base {
             #[test]
             fn zero() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-2, 0)}\n"),
                     "a {\
          \n  b: 1;\
@@ -110,7 +110,7 @@ mod base {
             #[test]
             fn zero_fuzzy() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-2, 0.000000000001)}\n"),
                     "a {\
          \n  b: calc(NaN);\
@@ -130,7 +130,7 @@ mod base {
             #[test]
             fn infinity() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-1, math.div(1, 0))}\n"),
                     "a {\
          \n  b: 1;\
@@ -140,7 +140,7 @@ mod base {
             #[test]
             fn negative_infinity() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-1, math.div(-1, 0))}\n"),
                     "a {\
          \n  b: 1;\
@@ -160,7 +160,7 @@ mod base {
             #[test]
             fn infinity() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-1.000000000001, math.div(1, 0))}\n"),
                     "a {\
          \n  b: calc(infinity);\
@@ -170,7 +170,7 @@ mod base {
             #[test]
             fn negative_infinity() {
                 assert_eq!(
-                    runner().ok("@use \"sass:math\" as math;\
+                    runner().ok("@use \"sass:math\";\
              \na {b: math.pow(-1.000000000001, math.div(-1, 0))}\n"),
                     "a {\
          \n  b: 0;\

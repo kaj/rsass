@@ -12,7 +12,7 @@ mod asymptote {
     #[test]
     fn radian() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.tan(0.5rad * math.$pi)}\n"),
             "a {\
          \n  b: 16331239353195370;\
@@ -23,7 +23,7 @@ mod asymptote {
 #[test]
 fn deg() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan(1deg)}\n"),
         "a {\
          \n  b: 0.0174550649;\
@@ -38,7 +38,7 @@ mod error {
     fn too_many_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.tan(0, 0)}\n"
             ),
             "Error: Only 1 argument allowed, but 2 were passed.\
@@ -57,7 +57,7 @@ mod error {
     fn test_type() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.tan(\"0\")}\n"
             ),
             "Error: $number: \"0\" is not a number.\
@@ -72,7 +72,7 @@ mod error {
     fn unit() {
         assert_eq!(
         runner().err(
-            "@use \"sass:math\" as math;\
+            "@use \"sass:math\";\
              \na {b: math.tan(1px)}\n"
         ),
         "Error: $number: Expected 1px to have an angle unit (deg, grad, rad, turn).\
@@ -87,7 +87,7 @@ mod error {
     fn zero_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.tan()}\n"
             ),
             "Error: Missing argument $number.\
@@ -106,7 +106,7 @@ mod error {
 #[test]
 fn grad() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan(1grad)}\n"),
         "a {\
          \n  b: 0.0157092553;\
@@ -116,7 +116,7 @@ fn grad() {
 #[test]
 fn infinity() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan(math.div(1, 0))}\n"),
         "a {\
          \n  b: calc(NaN);\
@@ -126,7 +126,7 @@ fn infinity() {
 #[test]
 fn named_arg() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan($number: 1)}\n"),
         "a {\
          \n  b: 1.5574077247;\
@@ -140,7 +140,7 @@ mod negative_asymptote {
     #[test]
     fn radian() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.tan(-0.5rad * math.$pi)}\n"),
             "a {\
          \n  b: -16331239353195370;\
@@ -151,7 +151,7 @@ mod negative_asymptote {
 #[test]
 fn negative_infinity() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan(math.div(-1, 0))}\n"),
         "a {\
          \n  b: calc(NaN);\
@@ -161,7 +161,7 @@ fn negative_infinity() {
 #[test]
 fn negative_zero() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan(-0.0)}\n"),
         "a {\
          \n  b: 0;\
@@ -171,7 +171,7 @@ fn negative_zero() {
 #[test]
 fn negative_zero_fuzzy() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan(-0.000000000001)}\n"),
         "a {\
          \n  b: 0;\
@@ -181,7 +181,7 @@ fn negative_zero_fuzzy() {
 #[test]
 fn rad() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan(1rad)}\n"),
         "a {\
          \n  b: 1.5574077247;\
@@ -191,7 +191,7 @@ fn rad() {
 #[test]
 fn turn() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan(1turn)}\n"),
         "a {\
          \n  b: 0;\
@@ -201,7 +201,7 @@ fn turn() {
 #[test]
 fn unitless() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan(1)}\n"),
         "a {\
          \n  b: 1.5574077247;\
@@ -211,7 +211,7 @@ fn unitless() {
 #[test]
 fn zero() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan(0)}\n"),
         "a {\
          \n  b: 0;\
@@ -221,7 +221,7 @@ fn zero() {
 #[test]
 fn zero_fuzzy() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.tan(0.000000000001)}\n"),
         "a {\
          \n  b: 0;\

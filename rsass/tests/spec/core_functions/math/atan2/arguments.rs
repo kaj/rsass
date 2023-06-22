@@ -8,7 +8,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn compatible_units() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(1cm, -10mm)}\n"),
         "a {\
          \n  b: 135deg;\
@@ -23,7 +23,7 @@ mod error {
     fn incompatible_units() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.atan2(1px, 1deg)}\n"
             ),
             "Error: $x: 1deg and $y: 1px have incompatible units.\
@@ -38,7 +38,7 @@ mod error {
     fn one_arg() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.atan2(0)}\n"
             ),
             "Error: Missing argument $x.\
@@ -57,7 +57,7 @@ mod error {
     fn too_many_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.atan2(0, 0, 0)}\n"
             ),
             "Error: Only 2 arguments allowed, but 3 were passed.\
@@ -76,7 +76,7 @@ mod error {
     fn unitless_x() {
         assert_eq!(
         runner().err(
-            "@use \"sass:math\" as math;\
+            "@use \"sass:math\";\
              \na {b: math.atan2(1px, 1)}\n"
         ),
         "Error: $x: 1 and $y: 1px have incompatible units (one has units and the other doesn\'t).\
@@ -91,7 +91,7 @@ mod error {
     fn unitless_y() {
         assert_eq!(
         runner().err(
-            "@use \"sass:math\" as math;\
+            "@use \"sass:math\";\
              \na {b: math.atan2(1, 1px)}\n"
         ),
         "Error: $x: 1px and $y: 1 have incompatible units (one has units and the other doesn\'t).\
@@ -106,7 +106,7 @@ mod error {
     fn x_type() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.atan2(0, \"0\")}\n"
             ),
             "Error: $x: \"0\" is not a number.\
@@ -121,7 +121,7 @@ mod error {
     fn y_type() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.atan2(\"0\", 0)}\n"
             ),
             "Error: $y: \"0\" is not a number.\
@@ -136,7 +136,7 @@ mod error {
     fn zero_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.atan2()}\n"
             ),
             "Error: Missing argument $y.\
@@ -155,7 +155,7 @@ mod error {
 #[test]
 fn named_args() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.atan2($y: 1, $x: -1)}\n"),
         "a {\
          \n  b: 135deg;\

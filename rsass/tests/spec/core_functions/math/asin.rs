@@ -8,7 +8,7 @@ fn runner() -> crate::TestRunner {
 #[test]
 fn decimal() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.asin(0.5)}\n"),
         "a {\
          \n  b: 30deg;\
@@ -23,7 +23,7 @@ mod error {
     fn too_many_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.asin(0, 0)}\n"
             ),
             "Error: Only 1 argument allowed, but 2 were passed.\
@@ -42,7 +42,7 @@ mod error {
     fn test_type() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.asin(\"0\")}\n"
             ),
             "Error: $number: \"0\" is not a number.\
@@ -57,7 +57,7 @@ mod error {
     fn units() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.asin(1px)}\n"
             ),
             "Error: $number: Expected 1px to have no units.\
@@ -72,7 +72,7 @@ mod error {
     fn zero_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.asin()}\n"
             ),
             "Error: Missing argument $number.\
@@ -91,7 +91,7 @@ mod error {
 #[test]
 fn greater_than_one() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.asin(2)}\n"),
         "a {\
          \n  b: calc(NaN * 1deg);\
@@ -101,7 +101,7 @@ fn greater_than_one() {
 #[test]
 fn less_than_negative_one() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.asin(-2)}\n"),
         "a {\
          \n  b: calc(NaN * 1deg);\
@@ -111,7 +111,7 @@ fn less_than_negative_one() {
 #[test]
 fn negative_decimal() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.asin(-0.5)}\n"),
         "a {\
          \n  b: -30deg;\
@@ -121,7 +121,7 @@ fn negative_decimal() {
 #[test]
 fn negative_zero() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.asin(-0.0)}\n"),
         "a {\
          \n  b: 0deg;\
@@ -131,7 +131,7 @@ fn negative_zero() {
 #[test]
 fn negative_zero_fuzzy() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.asin(-0.000000000001)}\n"),
         "a {\
          \n  b: -0.0000000001deg;\
@@ -141,7 +141,7 @@ fn negative_zero_fuzzy() {
 #[test]
 fn one() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.asin(1)}\n"),
         "a {\
          \n  b: 90deg;\
@@ -151,7 +151,7 @@ fn one() {
 #[test]
 fn one_fuzzy() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.asin(1.000000000001)}\n"),
         "a {\
          \n  b: calc(NaN * 1deg);\
@@ -161,7 +161,7 @@ fn one_fuzzy() {
 #[test]
 fn zero() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.asin(0)}\n"),
         "a {\
          \n  b: 0deg;\
@@ -171,7 +171,7 @@ fn zero() {
 #[test]
 fn zero_fuzzy() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.asin(0.000000000001)}\n"),
         "a {\
          \n  b: 0.0000000001deg;\

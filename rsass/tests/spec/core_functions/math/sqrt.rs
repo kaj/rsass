@@ -13,7 +13,7 @@ mod error {
     fn too_many_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.sqrt(0, 0)}\n"
             ),
             "Error: Only 1 argument allowed, but 2 were passed.\
@@ -32,7 +32,7 @@ mod error {
     fn test_type() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.sqrt(\"0\")}\n"
             ),
             "Error: $number: \"0\" is not a number.\
@@ -47,7 +47,7 @@ mod error {
     fn units() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.sqrt(1px)}\n"
             ),
             "Error: $number: Expected 1px to have no units.\
@@ -62,7 +62,7 @@ mod error {
     fn zero_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.sqrt()}\n"
             ),
             "Error: Missing argument $number.\
@@ -81,7 +81,7 @@ mod error {
 #[test]
 fn infinity() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.sqrt(math.div(1, 0))}\n"),
         "a {\
          \n  b: calc(infinity);\
@@ -91,7 +91,7 @@ fn infinity() {
 #[test]
 fn named_arg() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.sqrt($number: 2)}\n"),
         "a {\
          \n  b: 1.4142135624;\
@@ -101,7 +101,7 @@ fn named_arg() {
 #[test]
 fn negative() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.sqrt(-1)}\n"),
         "a {\
          \n  b: calc(NaN);\
@@ -111,7 +111,7 @@ fn negative() {
 #[test]
 fn negative_zero() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.sqrt(-0.0)}\n"),
         "a {\
          \n  b: 0;\
@@ -121,7 +121,7 @@ fn negative_zero() {
 #[test]
 fn negative_zero_fuzzy() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.sqrt(-0.000000000001)}\n"),
         "a {\
          \n  b: calc(NaN);\
@@ -131,7 +131,7 @@ fn negative_zero_fuzzy() {
 #[test]
 fn positive() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.sqrt(2)}\n"),
         "a {\
          \n  b: 1.4142135624;\
@@ -141,7 +141,7 @@ fn positive() {
 #[test]
 fn zero() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.sqrt(0)}\n"),
         "a {\
          \n  b: 0;\
@@ -151,7 +151,7 @@ fn zero() {
 #[test]
 fn zero_fuzzy() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.sqrt(0.000000000001)}\n"),
         "a {\
          \n  b: 0.000001;\

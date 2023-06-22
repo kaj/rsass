@@ -12,7 +12,7 @@ mod base {
     #[test]
     fn between_zero_and_one() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.log(2, 0.5)}\n"),
             "a {\
          \n  b: -1;\
@@ -22,7 +22,7 @@ mod base {
     #[test]
     fn negative() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.log(2, -1)}\n"),
             "a {\
          \n  b: calc(NaN);\
@@ -32,7 +32,7 @@ mod base {
     #[test]
     fn null() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.log(2, null)}\n"),
             "a {\
          \n  b: 0.6931471806;\
@@ -42,7 +42,7 @@ mod base {
     #[test]
     fn one() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.log(2, 1)}\n"),
             "a {\
          \n  b: calc(infinity);\
@@ -52,7 +52,7 @@ mod base {
     #[test]
     fn one_fuzzy() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.log(2, 1.000000000001)}\n"),
             "a {\
          \n  b: 693085564849.9645;\
@@ -62,7 +62,7 @@ mod base {
     #[test]
     fn positive() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.log(2, 10)}\n"),
             "a {\
          \n  b: 0.3010299957;\
@@ -72,7 +72,7 @@ mod base {
     #[test]
     fn zero() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.log(2, 0)}\n"),
             "a {\
          \n  b: 0;\
@@ -82,7 +82,7 @@ mod base {
     #[test]
     fn zero_fuzzy() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.log(2, 0.000000000001)}\n"),
             "a {\
          \n  b: -0.025085833;\
@@ -98,7 +98,7 @@ mod error {
     fn base_has_units() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.log(1, 1px)}\n"
             ),
             "Error: $base: Expected 1px to have no units.\
@@ -113,7 +113,7 @@ mod error {
     fn number_has_units() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.log(1px)}\n"
             ),
             "Error: $number: Expected 1px to have no units.\
@@ -128,7 +128,7 @@ mod error {
     fn too_many_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.log(0, 0, 0)}\n"
             ),
             "Error: Only 2 arguments allowed, but 3 were passed.\
@@ -147,7 +147,7 @@ mod error {
     fn test_type() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.log(\"0\")}\n"
             ),
             "Error: $number: \"0\" is not a number.\
@@ -162,7 +162,7 @@ mod error {
     fn zero_args() {
         assert_eq!(
             runner().err(
-                "@use \"sass:math\" as math;\
+                "@use \"sass:math\";\
              \na {b: math.log()}\n"
             ),
             "Error: Missing argument $number.\
@@ -181,7 +181,7 @@ mod error {
 #[test]
 fn infinity() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.log(math.div(1, 0))}\n"),
         "a {\
          \n  b: calc(infinity);\
@@ -195,7 +195,7 @@ mod named_arg {
     #[test]
     fn number() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.log($number: 2)}\n"),
             "a {\
          \n  b: 0.6931471806;\
@@ -210,7 +210,7 @@ mod named_args {
     #[test]
     fn number_with_base() {
         assert_eq!(
-            runner().ok("@use \"sass:math\" as math;\
+            runner().ok("@use \"sass:math\";\
              \na {b: math.log($number: 2, $base: 10)}\n"),
             "a {\
          \n  b: 0.3010299957;\
@@ -221,7 +221,7 @@ mod named_args {
 #[test]
 fn negative() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.log(-1)}\n"),
         "a {\
          \n  b: calc(NaN);\
@@ -231,7 +231,7 @@ fn negative() {
 #[test]
 fn positive() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.log(2)}\n"),
         "a {\
          \n  b: 0.6931471806;\
@@ -241,7 +241,7 @@ fn positive() {
 #[test]
 fn zero() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.log(0)}\n"),
         "a {\
          \n  b: calc(-infinity);\
@@ -251,7 +251,7 @@ fn zero() {
 #[test]
 fn zero_fuzzy() {
     assert_eq!(
-        runner().ok("@use \"sass:math\" as math;\
+        runner().ok("@use \"sass:math\";\
              \na {b: math.log(0.000000000001)}\n"),
         "a {\
          \n  b: -27.6310211159;\

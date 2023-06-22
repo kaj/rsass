@@ -16,7 +16,7 @@ mod negative {
         #[test]
         fn finite() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(-1, 0), 1)}\n"),
                 "a {\
          \n  b: -90deg;\
@@ -26,7 +26,7 @@ mod negative {
         #[test]
         fn infinity() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(-1, 0), math.div(1, 0))}\n"),
                 "a {\
          \n  b: -45deg;\
@@ -36,7 +36,7 @@ mod negative {
         #[test]
         fn negative_finite() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(-1, 0), -1)}\n"),
                 "a {\
          \n  b: -90deg;\
@@ -46,7 +46,7 @@ mod negative {
         #[test]
         fn negative_infinity() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(-1, 0), math.div(-1, 0))}\n"),
                 "a {\
          \n  b: -135deg;\
@@ -56,7 +56,7 @@ mod negative {
         #[test]
         fn negative_zero() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(-1, 0), -0.0)}\n"),
                 "a {\
          \n  b: -90deg;\
@@ -66,7 +66,7 @@ mod negative {
         #[test]
         fn zero() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(-1, 0), 0)}\n"),
                 "a {\
          \n  b: -90deg;\
@@ -86,7 +86,7 @@ mod positive {
         #[test]
         fn finite() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(1, 0), 1)}\n"),
                 "a {\
          \n  b: 90deg;\
@@ -96,7 +96,7 @@ mod positive {
         #[test]
         fn infinity() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(1, 0), math.div(1, 0))}\n"),
                 "a {\
          \n  b: 45deg;\
@@ -106,7 +106,7 @@ mod positive {
         #[test]
         fn negative_finite() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(1, 0), -1)}\n"),
                 "a {\
          \n  b: 90deg;\
@@ -116,7 +116,7 @@ mod positive {
         #[test]
         fn negative_infinity() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(1, 0), math.div(-1, 0))}\n"),
                 "a {\
          \n  b: 135deg;\
@@ -126,7 +126,7 @@ mod positive {
         #[test]
         fn negative_zero() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(1, 0), -0.0)}\n"),
                 "a {\
          \n  b: 90deg;\
@@ -136,7 +136,7 @@ mod positive {
         #[test]
         fn negative_zero_fuzzy() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(1, 0), -0.000000000001)}\n"),
                 "a {\
          \n  b: 90deg;\
@@ -146,7 +146,7 @@ mod positive {
         #[test]
         fn zero() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(1, 0), 0)}\n"),
                 "a {\
          \n  b: 90deg;\
@@ -156,7 +156,7 @@ mod positive {
         #[test]
         fn zero_fuzzy() {
             assert_eq!(
-                runner().ok("@use \"sass:math\" as math;\
+                runner().ok("@use \"sass:math\";\
              \na {b: math.atan2(math.div(1, 0), 0.000000000001)}\n"),
                 "a {\
          \n  b: 90deg;\
