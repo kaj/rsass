@@ -228,12 +228,9 @@ impl Value {
                 }
                 if let Some((first, rest)) = v.split_first() {
                     first.inspect(out)?;
+                    let s = s.unwrap_or(ListSeparator::Space).sep(false);
                     for i in rest {
-                        out.write_str(if s == Some(ListSeparator::Comma) {
-                            ", "
-                        } else {
-                            " "
-                        })?;
+                        out.write_str(s)?;
                         i.inspect(out)?;
                     }
                 }
