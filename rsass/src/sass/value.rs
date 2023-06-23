@@ -1,4 +1,5 @@
 use super::{CallArgs, Function, Name, SassString};
+use crate::error::ResultPos;
 use crate::input::SourcePos;
 use crate::output::Format;
 use crate::value::{BadOp, ListSeparator, Number, Numeric, Operator, Rgba};
@@ -314,23 +315,43 @@ impl BinOp {
         scope: &ScopeRef,
         arithmetic: bool,
     ) -> Result<css::Value, Error> {
-        Ok(if self.op == Operator::And {
+        if self.op == Operator::And {
             let a = self.a.do_evaluate(scope.clone(), true)?;
-            if a.is_true() {
+            Ok(if a.is_true() {
                 self.b.do_evaluate(scope.clone(), true)?
             } else {
                 a
-            }
+            })
         } else if self.op == Operator::Or {
             let a = self.a.do_evaluate(scope.clone(), true)?;
-            if a.is_true() {
+            Ok(if a.is_true() {
                 a
             } else {
                 self.b.do_evaluate(scope.clone(), true)?
-            }
+            })
+        } else if self.op.is_cmp() {
+            let aa = self.a.do_evaluate(scope.clone(), true)?;
+            let ba = self.b.do_evaluate(scope.clone(), true)?;
+            self.op
+                .eval(aa, ba)
+                .map_err(|e| match e {
+                    BadOp::UndefinedOperation => Invalid::AtError(format!(
+                        "Undefined operation \"{}\".",
+                        Inspect(self)
+                    )),
+                    BadOp::Invalid(e) => Invalid::AtError(e.to_string()),
+                })
+                .at(&self.pos)?
+                .ok_or(())
+                .or_else(|()| {
+                    let a = self.a.do_evaluate(scope.clone(), arithmetic)?;
+                    let b = self.b.do_evaluate(scope.clone(), arithmetic)?;
+                    Ok(css::BinOp::new(a, self.s1, self.op, self.s2, b)
+                        .into())
+                })
         } else {
             let (a, b) = {
-                let arithmetic = arithmetic | (self.op != Operator::Div);
+                let arithmetic = arithmetic || (self.op != Operator::Div);
                 let aa = self.a.do_evaluate(scope.clone(), arithmetic)?;
                 let b = self.b.do_evaluate(
                     scope.clone(),
@@ -342,23 +363,26 @@ impl BinOp {
                     (aa, b)
                 }
             };
-            self.op
+            Ok(self
+                .op
                 .eval(a.clone(), b.clone())
                 .map_err(|e| match e {
                     BadOp::UndefinedOperation => Invalid::AtError(format!(
                         "Undefined operation \"{}\".",
                         Inspect(self)
-                    ))
-                    .at(self.pos.clone()),
-                    BadOp::Invalid(e) => {
-                        Invalid::AtError(e.to_string()).at(self.pos.clone())
-                    }
-                })?
+                    )),
+                    BadOp::Invalid(e) => Invalid::AtError(e.to_string()),
+                })
+                .at(&self.pos)?
                 .unwrap_or_else(|| {
-                    let sx = (self.op == Operator::Plus)
-                        || ((self.op != Operator::Div)
-                            && a.type_name() != "string"
-                            && b.type_name() != "string");
+                    let sx = match self.op {
+                        Operator::Div => false,
+                        Operator::Minus => {
+                            a.type_name() != "string"
+                                && b.type_name() != "string"
+                        }
+                        _ => true,
+                    };
                     css::BinOp::new(
                         a,
                         self.s1 && sx,
@@ -367,8 +391,8 @@ impl BinOp {
                         b,
                     )
                     .into()
-                })
-        })
+                }))
+        }
     }
 }
 

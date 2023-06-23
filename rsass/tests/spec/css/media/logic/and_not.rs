@@ -43,7 +43,6 @@ mod comment_after {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn after_type() {
         assert_eq!(
             runner().ok("@media a and not/**/(b) {x {y: z}}\n"),
@@ -55,7 +54,6 @@ mod comment_after {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn after_type_and_modifier() {
         assert_eq!(
             runner().ok("@media only a and not/**/(b) {x {y: z}}\n"),
@@ -79,7 +77,6 @@ fn interpolation() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn mixed_case() {
     assert_eq!(
         runner().ok("@media a AnD nOt (b) {x {y: z}}\n"),

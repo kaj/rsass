@@ -6,6 +6,8 @@ pub enum ListSeparator {
     Space,
     /// The list is slash-separated.
     Slash,
+    /// The list is slash-separated without whitespace.
+    SlashNoSpace,
     /// The list is comma-separated.
     Comma,
 }
@@ -17,6 +19,7 @@ impl ListSeparator {
             ListSeparator::Comma if compressed => ",",
             ListSeparator::Comma => ", ",
             ListSeparator::Slash if compressed => "/",
+            ListSeparator::SlashNoSpace => "/",
             ListSeparator::Slash => " / ",
             ListSeparator::Space => " ",
         }

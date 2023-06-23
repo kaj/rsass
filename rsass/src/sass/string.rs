@@ -179,3 +179,11 @@ impl From<&str> for SassString {
         }
     }
 }
+impl From<String> for SassString {
+    fn from(value: String) -> Self {
+        SassString {
+            parts: vec![StringPart::Raw(value)],
+            quotes: Quotes::None,
+        }
+    }
+}

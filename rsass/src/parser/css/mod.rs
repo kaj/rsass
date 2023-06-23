@@ -1,3 +1,4 @@
+pub(crate) mod media;
 mod rule;
 mod selectors;
 mod strings;
@@ -5,8 +6,9 @@ mod values;
 
 pub(crate) use self::selectors::{selector, selector_part, selectors};
 
-use super::{util::opt_spacelike, PResult, Span};
-use crate::css::{AtRule, Comment, Import, Item, Value};
+use super::util::{opt_spacelike, spacelike};
+use super::{PResult, Span};
+use crate::css::{AtRule, Comment, Import, Item, MediaRule, Value};
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, tag_no_case};
 use nom::combinator::{
@@ -40,41 +42,58 @@ fn top_level_item(input: Span) -> PResult<Item> {
         b"/*" => into(comment)(input),
         b"@" => {
             let (input, name) = strings::css_string(rest)?;
-            if name == "import" {
-                into(import2)(input)
-            } else {
-                let (input, args) = map_res(media_args, |s| {
-                    std::str::from_utf8(s.fragment())
-                })(input)?;
-                let (input, body) = preceded(
-                    opt_spacelike,
-                    alt((
-                        map(
-                            delimited(
-                                terminated(tag("{"), opt_spacelike),
-                                many0(terminated(
-                                    alt((
-                                        into(comment),
-                                        into(preceded(
-                                            tag("@import"),
-                                            import2,
-                                        )),
-                                        into(rule::rule),
-                                        into(rule::property),
-                                    )),
-                                    opt_spacelike,
-                                )),
-                                tag("}"),
-                            ),
-                            Some,
+            match name.as_ref() {
+                "import" => into(import2)(input),
+                "media" => {
+                    let (input, args) =
+                        preceded(spacelike, media::args)(input)?;
+                    let (input, body) = preceded(
+                        opt_spacelike,
+                        delimited(
+                            terminated(tag("{"), opt_spacelike),
+                            many0(terminated(
+                                alt((into(comment), into(rule::rule))),
+                                opt_spacelike,
+                            )),
+                            tag("}"),
                         ),
-                        map(tag(";"), |_| None),
-                    )),
-                )(input)?;
-                Ok((
-                    input,
-                    AtRule::new(name, args.trim().into(), body).into(),
-                ))
+                    )(input)?;
+                    Ok((input, MediaRule::new(args, body).into()))
+                }
+                _ => {
+                    let (input, args) = map_res(atrule_args, |s| {
+                        std::str::from_utf8(s.fragment())
+                    })(input)?;
+                    let (input, body) = preceded(
+                        opt_spacelike,
+                        alt((
+                            map(
+                                delimited(
+                                    terminated(tag("{"), opt_spacelike),
+                                    many0(terminated(
+                                        alt((
+                                            into(comment),
+                                            into(preceded(
+                                                tag("@import"),
+                                                import2,
+                                            )),
+                                            into(rule::rule),
+                                            into(rule::property),
+                                        )),
+                                        opt_spacelike,
+                                    )),
+                                    tag("}"),
+                                ),
+                                Some,
+                            ),
+                            map(tag(";"), |_| None),
+                        )),
+                    )(input)?;
+                    Ok((
+                        input,
+                        AtRule::new(name, args.trim().into(), body).into(),
+                    ))
+                }
             }
         }
         _ => into(rule::rule)(input),
@@ -93,12 +112,13 @@ fn import2(input: Span) -> PResult<Import> {
     )(input)
 }
 
-fn media_args(input: Span) -> PResult<Span> {
+// Arguments for unknwn at-rules.  Should probably be more permitting.
+fn atrule_args(input: Span) -> PResult<Span> {
     recognize(preceded(
         is_not("()/{}"),
         opt(terminated(
-            delimited(tag("("), media_args, tag(")")),
-            media_args,
+            delimited(tag("("), atrule_args, tag(")")),
+            atrule_args,
         )),
     ))(input)
 }

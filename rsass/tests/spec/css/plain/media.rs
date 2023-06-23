@@ -68,7 +68,6 @@ mod logic {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn mixed_case() {
             let runner = runner().with_cwd("mixed_case");
             assert_eq!(
@@ -93,7 +92,6 @@ mod logic {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn no_whitespace_before() {
             let runner = runner().with_cwd("no_whitespace_before");
             assert_eq!(
@@ -201,7 +199,6 @@ mod logic {
         }
 
         #[test]
-        #[ignore] // wrong result
         fn mixed_case() {
             let runner = runner().with_cwd("mixed_case");
             assert_eq!(
@@ -226,7 +223,6 @@ mod logic {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn no_whitespace_before() {
             let runner = runner().with_cwd("no_whitespace_before");
             assert_eq!(

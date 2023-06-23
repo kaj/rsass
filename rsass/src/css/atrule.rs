@@ -1,5 +1,6 @@
 use super::{
-    BodyItem, Comment, CustomProperty, Import, Property, Rule, Value,
+    BodyItem, Comment, CustomProperty, Import, MediaRule, Property, Rule,
+    Value,
 };
 use crate::output::CssBuf;
 use std::io::{self, Write};
@@ -59,6 +60,8 @@ pub enum AtRuleBodyItem {
     Property(Property),
     /// A custom property declaration with a name and a value.
     CustomProperty(CustomProperty),
+    /// An `@media` rule.
+    MediaRule(MediaRule),
     /// An `@` rule.
     AtRule(AtRule),
 }
@@ -71,6 +74,7 @@ impl AtRuleBodyItem {
             AtRuleBodyItem::Rule(rule) => rule.write(buf)?,
             AtRuleBodyItem::Property(property) => property.write(buf),
             AtRuleBodyItem::CustomProperty(cp) => cp.write(buf),
+            AtRuleBodyItem::MediaRule(rule) => rule.write(buf)?,
             AtRuleBodyItem::AtRule(rule) => rule.write(buf)?,
         }
         Ok(())
@@ -99,6 +103,11 @@ impl From<Property> for AtRuleBodyItem {
 impl From<AtRule> for AtRuleBodyItem {
     fn from(rule: AtRule) -> Self {
         AtRuleBodyItem::AtRule(rule)
+    }
+}
+impl From<MediaRule> for AtRuleBodyItem {
+    fn from(rule: MediaRule) -> Self {
+        AtRuleBodyItem::MediaRule(rule)
     }
 }
 impl From<BodyItem> for AtRuleBodyItem {

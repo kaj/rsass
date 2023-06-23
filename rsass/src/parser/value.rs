@@ -121,18 +121,7 @@ fn logic_expression(input: Span) -> PResult<Value> {
     let (input1, a) = sum_expression(input)?;
     fold_many0(
         tuple((
-            delimited(
-                multispace0,
-                alt((
-                    value(Operator::Equal, tag("==")),
-                    value(Operator::NotEqual, tag("!=")),
-                    value(Operator::GreaterE, tag(">=")),
-                    value(Operator::Greater, tag(">")),
-                    value(Operator::LesserE, tag("<=")),
-                    value(Operator::Lesser, tag("<")),
-                )),
-                multispace0,
-            ),
+            delimited(multispace0, relational_operator, multispace0),
             sum_expression,
             position,
         )),
@@ -144,8 +133,26 @@ fn logic_expression(input: Span) -> PResult<Value> {
     )(input1)
 }
 
+fn relational_operator(input: Span) -> PResult<Operator> {
+    alt((
+        value(Operator::Equal, tag("==")),
+        value(Operator::NotEqual, tag("!=")),
+        value(Operator::GreaterE, tag(">=")),
+        value(Operator::Greater, tag(">")),
+        value(Operator::LesserE, tag("<=")),
+        value(Operator::Lesser, tag("<")),
+    ))(input)
+}
+
 fn sum_expression(input: Span) -> PResult<Value> {
-    let (rest, v) = term_value(input)?;
+    any_additive_expr(term_value, input)
+}
+
+pub fn any_additive_expr<F>(term: F, input: Span) -> PResult<Value>
+where
+    F: Fn(Span) -> PResult<Value>,
+{
+    let (rest, v) = term(input)?;
     fold_many0(
         tuple((
             verify(
@@ -159,7 +166,7 @@ fn sum_expression(input: Span) -> PResult<Value> {
                 )),
                 |(s1, op, s2)| op == &Operator::Plus || !*s1 || *s2,
             ),
-            term_value,
+            term,
             position,
         )),
         move || v.clone(),
@@ -171,7 +178,14 @@ fn sum_expression(input: Span) -> PResult<Value> {
 }
 
 fn term_value(input: Span) -> PResult<Value> {
-    let (rest, v) = single_value(input)?;
+    any_product(single_value, input)
+}
+
+pub fn any_product<F>(factor: F, input: Span) -> PResult<Value>
+where
+    F: Fn(Span) -> PResult<Value>,
+{
+    let (rest, v) = factor(input)?;
     fold_many0(
         tuple((
             ignore_comments,
@@ -184,7 +198,7 @@ fn term_value(input: Span) -> PResult<Value> {
                 value(Operator::Modulo, tag("%")),
             )),
             ignore_comments,
-            single_value,
+            factor,
             position,
         )),
         move || v.clone(),
@@ -299,7 +313,7 @@ fn unicode_range(input: Span) -> PResult<Value> {
     ))
 }
 
-fn bracket_list(input: Span) -> PResult<Value> {
+pub fn bracket_list(input: Span) -> PResult<Value> {
     let (input, content) =
         delimited(tag("["), opt(value_expression), tag("]"))(input)?;
     Ok((
@@ -498,7 +512,7 @@ pub fn dictionary_inner(input: Span) -> PResult<Value> {
             pair(
                 sum_expression,
                 preceded(
-                    delimited(opt_spacelike, tag(":"), opt_spacelike),
+                    delimited(ignore_comments, tag(":"), opt_spacelike),
                     space_list,
                 ),
             ),

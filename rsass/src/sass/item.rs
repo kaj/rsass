@@ -16,6 +16,15 @@ pub enum Item {
 
     /// An `@at-root` directive.
     AtRoot(Selectors, Vec<Item>),
+    /// An `@media` directive.
+    AtMedia {
+        /// Any arguments
+        args: Value,
+        /// The directive may have a body.
+        body: Option<Vec<Item>>,
+        /// The source location of this at rule.
+        pos: SourcePos,
+    },
     /// A generic `@` directive.
     AtRule {
         /// The name of this directive

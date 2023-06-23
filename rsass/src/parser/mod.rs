@@ -3,6 +3,7 @@ mod css_function;
 mod error;
 pub mod formalargs;
 mod imports;
+mod media;
 pub mod selectors;
 mod span;
 pub(crate) mod strings;
@@ -197,8 +198,8 @@ fn mixin_call2(input: Span) -> PResult<Item> {
 
 /// What follows an `@` sign
 fn at_rule2(input0: Span) -> PResult<Item> {
-    let (input, name) = terminated(name, opt_spacelike)(input0)?;
-    match name.as_ref() {
+    let (input, name) = terminated(sass_string, opt_spacelike)(input0)?;
+    match name.single_raw().unwrap_or("") {
         "at-root" => at_root2(input),
         "charset" => charset2(input),
         "content" => content_stmt2(input),
@@ -221,10 +222,23 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         "use" => use2(input0),
         "warn" => map(expression_argument, Item::Warn)(input),
         "while" => while_loop2(input),
+        "media" => media::rule(input0),
         _ => {
-            let (input, name) = sass_string(input0)?;
             let pos = input0.up_to(&input).to_owned().opt_back("@");
-            let (input, args) = opt(media_args)(input)?;
+            let (input, args) = opt(unknown_rule_args)(input)?;
+            fn x_args(value: Value) -> Value {
+                match value {
+                    Value::Variable(name, _pos) => Value::Literal(
+                        SassString::from(format!("${}", name).as_str()),
+                    ),
+                    Value::Map(map) => Value::Map(
+                        map.into_iter()
+                            .map(|(k, v)| (x_args(k), x_args(v)))
+                            .collect(),
+                    ),
+                    value => value,
+                }
+            }
             let (input, body) = preceded(
                 opt(ignore_space),
                 alt((map(body_block, Some), value(None, semi_or_end))),
@@ -233,7 +247,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
                 input,
                 Item::AtRule {
                     name,
-                    args: args.unwrap_or(Value::Null),
+                    args: args.map(x_args).unwrap_or(Value::Null),
                     body,
                     pos,
                 },
@@ -265,7 +279,8 @@ fn charset2(input: Span) -> PResult<Item> {
     )(input)
 }
 
-fn media_args(input: Span) -> PResult<Value> {
+/// Arguments to an unkown at rule.
+fn unknown_rule_args(input: Span) -> PResult<Value> {
     let (input, args) = separated_list0(
         preceded(tag(","), opt_spacelike),
         map(
@@ -277,7 +292,7 @@ fn media_args(input: Span) -> PResult<Value> {
                             function_call,
                             dictionary,
                             map(
-                                delimited(tag("("), media_args, tag(")")),
+                                delimited(tag("("), media::args, tag(")")),
                                 |v| Value::Paren(Box::new(v), true),
                             ),
                             map(sass_string, Value::Literal),
@@ -289,7 +304,7 @@ fn media_args(input: Span) -> PResult<Value> {
                             value((), peek(one_of(") \r\n\t{,;"))),
                         )),
                     ),
-                    map(map_res(is_not("#()\"'{};, "), input_to_str), |s| {
+                    map(map_res(is_not("\"'{};#"), input_to_str), |s| {
                         Value::Literal(s.trim_end().into())
                     }),
                 )),
@@ -319,20 +334,6 @@ pub(crate) fn check_parse<T>(
     value: &[u8],
 ) -> Result<T, ParseError> {
     ParseError::check(parser(code_span(value).borrow()))
-}
-
-#[test]
-fn test_media_args_1() {
-    check_parse(media_args, b"#{$media} and ($key + \"-foo\": $value + 5)")
-        .unwrap();
-}
-#[test]
-fn test_media_args_2() {
-    check_parse(
-        media_args,
-        b"print and (foo: 1 2 3), (bar: 3px hux(muz)), not screen",
-    )
-    .unwrap();
 }
 
 fn if_statement_inner(input: Span) -> PResult<Item> {

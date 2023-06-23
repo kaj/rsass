@@ -10,7 +10,6 @@ mod custom_prop {
     use super::runner;
 
     #[test]
-    #[ignore] // unexepected error
     fn comma() {
         assert_eq!(
             runner().ok("@supports (--a: ,) {@c}\n"),
@@ -29,7 +28,6 @@ mod custom_prop {
         );
     }
     #[test]
-    #[ignore] // unexepected error
     fn whitespace() {
         assert_eq!(
             runner().ok("@supports (--a: ) {@c}\n"),

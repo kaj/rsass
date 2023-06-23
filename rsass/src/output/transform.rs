@@ -213,6 +213,14 @@ fn handle_item(
                 handle_body(body, dest, subscope, file_context)?;
             }
         }
+        Item::AtMedia { args, body, pos: _ } => {
+            let args = args.evaluate(scope.clone())?;
+            let mut atmedia = dest.start_atmedia(args.try_into()?);
+            if let Some(ref body) = *body {
+                let local = ScopeRef::sub(scope);
+                handle_body(body, &mut atmedia, local, file_context)?;
+            }
+        }
         Item::AtRule {
             name,
             args,

@@ -144,7 +144,9 @@ impl Display for Formatted<'_, BinOp> {
                     }
                 }
                 (op, Value::BinOp(op2))
-                    if (op2.op < op) || (op == Minus && op2.op == Minus) =>
+                    if ((op2.op < op)
+                        || (op == Minus && op2.op == Minus))
+                        && !(op.is_cmp() && op2.op.is_cmp()) =>
                 {
                     (op, Value::Paren(Box::new(self.value.b.clone())))
                 }

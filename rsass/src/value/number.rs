@@ -877,10 +877,7 @@ fn debug_int_value() {
     assert_eq!(
         format!("{:#?}", crate::sass::Value::scalar(17)),
         "Numeric(\
-         \n    Numeric {\
-         \n        value: Number 17 / 1,\
-         \n        unit: UnitSet [],\
-         \n    },\
+         \n    Number 17 / 1; UnitSet [],\
          \n)",
     );
 }

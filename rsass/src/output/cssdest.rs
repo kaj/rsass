@@ -1,7 +1,7 @@
 use super::CssData;
 use crate::css::{
     AtRule, AtRuleBodyItem, Comment, CssString, CustomProperty, Import, Item,
-    Property, Rule, Selectors, Value,
+    MediaArgs, MediaRule, Property, Rule, Selectors, Value,
 };
 use crate::Invalid;
 
@@ -11,6 +11,7 @@ pub trait CssDestination {
     fn head(&mut self) -> &mut CssData;
 
     fn start_rule(&mut self, selectors: Selectors) -> Result<RuleDest>;
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest;
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest;
     fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest>;
 
@@ -71,6 +72,15 @@ impl<'a> CssDestination for RuleDest<'a> {
     fn start_rule(&mut self, selectors: Selectors) -> Result<RuleDest> {
         Ok(RuleDest::new(self, selectors))
     }
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
+        let selectors = self.rule.selectors.clone();
+        AtMediaDest {
+            parent: self,
+            args,
+            rule: Some(Rule::new(selectors)),
+            body: Vec::new(),
+        }
+    }
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
         let selectors = self.rule.selectors.clone();
         AtRuleDest {
@@ -130,6 +140,9 @@ impl<'a> CssDestination for NsRuleDest<'a> {
     }
     fn start_rule(&mut self, _selectors: Selectors) -> Result<RuleDest> {
         Err(Invalid::InNsRule)
+    }
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
+        AtMediaDest::new(self, args)
     }
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
         AtRuleDest {
@@ -210,6 +223,15 @@ impl<'a> CssDestination for AtRuleDest<'a> {
     fn start_rule(&mut self, selectors: Selectors) -> Result<RuleDest> {
         Ok(RuleDest::new(self, selectors))
     }
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
+        let rule = self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()));
+        AtMediaDest {
+            parent: self,
+            args,
+            rule,
+            body: Vec::new(),
+        }
+    }
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
         let rule = self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()));
         AtRuleDest {
@@ -241,6 +263,125 @@ impl<'a> CssDestination for AtRuleDest<'a> {
             Item::Comment(c) => c.into(),
             Item::Import(i) => i.into(),
             Item::Rule(r) => r.into(),
+            // FIXME: This should bubble or something?
+            Item::MediaRule(r) => r.into(),
+            Item::AtRule(r) => r.into(),
+            Item::Separator => return Ok(()), // Not pushed?
+        });
+        Ok(())
+    }
+
+    fn push_property(&mut self, name: String, value: Value) -> Result {
+        let prop = Property::new(name, value);
+        if let Some(rule) = &mut self.rule {
+            rule.push(prop.into());
+        } else {
+            self.body.push(prop.into());
+        }
+        Ok(())
+    }
+
+    fn push_custom_property(
+        &mut self,
+        name: String,
+        value: CssString,
+    ) -> Result {
+        if let Some(rule) = &mut self.rule {
+            rule.push(CustomProperty::new(name, value).into());
+            Ok(())
+        } else {
+            Err(Invalid::GlobalCustomProperty)
+        }
+    }
+}
+
+pub struct AtMediaDest<'a> {
+    parent: &'a mut dyn CssDestination,
+    args: MediaArgs,
+    rule: Option<Rule>,
+    body: Vec<AtRuleBodyItem>,
+}
+impl<'a> AtMediaDest<'a> {
+    pub fn new(parent: &'a mut dyn CssDestination, args: MediaArgs) -> Self {
+        AtMediaDest {
+            parent,
+            args,
+            rule: None,
+            body: Vec::new(),
+        }
+    }
+}
+
+impl<'a> Drop for AtMediaDest<'a> {
+    fn drop(&mut self) {
+        let mut body = Vec::new();
+        std::mem::swap(&mut self.body, &mut body);
+        let mut args = MediaArgs::Name(String::new());
+        std::mem::swap(&mut self.args, &mut args);
+        if let Some(rule) = &self.rule {
+            if !rule.body.is_empty() {
+                body.insert(0, rule.clone().into());
+            }
+        }
+        let result = MediaRule::new(args, body);
+        if let Err(err) = self.parent.push_item(result.into()) {
+            eprintln!("Error ending AtRuleDest: {}", err);
+        }
+        self.parent.separate();
+    }
+}
+
+impl<'a> CssDestination for AtMediaDest<'a> {
+    fn head(&mut self) -> &mut CssData {
+        self.parent.head()
+    }
+
+    fn start_rule(&mut self, selectors: Selectors) -> Result<RuleDest> {
+        Ok(RuleDest::new(self, selectors))
+    }
+    fn start_atmedia(&mut self, args: MediaArgs) -> AtMediaDest {
+        let rule = self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()));
+        AtMediaDest {
+            parent: self,
+            args,
+            rule,
+            body: Vec::new(),
+        }
+    }
+    fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
+        let rule = self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()));
+        AtRuleDest {
+            parent: self,
+            name,
+            args,
+            rule,
+            body: Vec::new(),
+        }
+    }
+    fn start_nsrule(&mut self, name: String) -> Result<NsRuleDest> {
+        Ok(NsRuleDest { parent: self, name })
+    }
+
+    fn push_import(&mut self, import: Import) {
+        self.body.push(import.into());
+    }
+
+    fn push_comment(&mut self, c: Comment) {
+        if let Some(rule) = &mut self.rule {
+            rule.push(c.into());
+        } else {
+            self.body.push(c.into());
+        }
+    }
+
+    fn push_item(&mut self, item: Item) -> Result {
+        self.body.push(match item {
+            Item::Comment(c) => c.into(),
+            Item::Import(i) => i.into(),
+            Item::Rule(r) => r.into(),
+            // FIXME: Check if the args can be merged!
+            // Or is that a separate pass after building a first css tree?
+            Item::MediaRule(r) => r.into(),
             Item::AtRule(r) => r.into(),
             Item::Separator => return Ok(()), // Not pushed?
         });
