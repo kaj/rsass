@@ -16,7 +16,7 @@ mod extended {
     }
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn from_other_file() {
         let runner = runner().with_cwd("from_other_file");
         assert_eq!(
@@ -28,7 +28,7 @@ mod extended {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn from_same_file() {
         let runner = runner().with_cwd("from_same_file");
         assert_eq!(

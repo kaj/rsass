@@ -88,6 +88,9 @@ pub enum Item {
         SourcePos,
     ),
 
+    /// Extend rule (not really supported yet).
+    Extend(Selectors),
+
     /// A sass rule; selectors followed by a block of items.
     Rule(Selectors, Vec<Item>),
     /// A sass namespace rule; a name followed by a block of properties.

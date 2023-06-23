@@ -35,7 +35,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn diamond() {
     let runner = runner().with_cwd("diamond");
     assert_eq!(
@@ -52,7 +52,7 @@ fn diamond() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn downstream() {
     let runner = runner().with_cwd("downstream");
     assert_eq!(
@@ -79,7 +79,7 @@ fn isolated_through_import() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn private() {
     let runner = runner().with_cwd("private");
     assert_eq!(
@@ -91,7 +91,7 @@ fn private() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn sibling() {
     let runner = runner().with_cwd("sibling");
     assert_eq!(
@@ -106,7 +106,7 @@ fn sibling() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn use_and_import_into_diamond_extend() {
     let runner = runner().with_cwd("use_and_import_into_diamond_extend");
     assert_eq!(
@@ -125,7 +125,7 @@ fn use_and_import_into_diamond_extend() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn use_into_use_and_import_into_import() {
     let runner = runner().with_cwd("use_into_use_and_import_into_import");
     assert_eq!(
@@ -140,7 +140,7 @@ fn use_into_use_and_import_into_import() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn use_into_use_and_import_into_use() {
     let runner = runner().with_cwd("use_into_use_and_import_into_use");
     assert_eq!(
@@ -155,7 +155,7 @@ fn use_into_use_and_import_into_use() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn use_into_use_and_use_into_import() {
     let runner = runner().with_cwd("use_into_use_and_use_into_import");
     assert_eq!(
@@ -170,7 +170,7 @@ fn use_into_use_and_use_into_import() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn use_into_use_and_use_into_import_into_use() {
     let runner =
         runner().with_cwd("use_into_use_and_use_into_import_into_use");

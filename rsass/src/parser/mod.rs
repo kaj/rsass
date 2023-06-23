@@ -211,18 +211,26 @@ fn at_rule2(input0: Span) -> PResult<Item> {
             let pos = input0.up_to(&end).to_owned().opt_back("@");
             Ok((rest, Item::Error(v, pos)))
         }
+        "extend" => map(
+            delimited(
+                opt_spacelike,
+                selectors,
+                preceded(opt_spacelike, tag(";")),
+            ),
+            Item::Extend,
+        )(input),
         "for" => for_loop2(input),
         "forward" => forward2(input0),
         "function" => function_declaration2(input),
         "if" => if_statement2(input),
         "import" => import2(input),
         "include" => mixin_call2(input),
+        "media" => media::rule(input0),
         "mixin" => mixin_declaration2(input),
         "return" => return_stmt2(input0, input),
         "use" => use2(input0),
         "warn" => map(expression_argument, Item::Warn)(input),
         "while" => while_loop2(input),
-        "media" => media::rule(input0),
         _ => {
             let pos = input0.up_to(&input).to_owned().opt_back("@");
             let (input, args) = opt(unknown_rule_args)(input)?;
