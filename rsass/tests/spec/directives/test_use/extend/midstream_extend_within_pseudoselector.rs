@@ -19,7 +19,7 @@ mod three_files {
     }
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn is() {
         let runner = runner().with_cwd("is");
         assert_eq!(
@@ -37,7 +37,7 @@ mod three_files {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn matches() {
         let runner = runner().with_cwd("matches");
         assert_eq!(
@@ -62,7 +62,7 @@ mod two_files {
     }
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn is() {
         let runner = runner().with_cwd("is");
         assert_eq!(
@@ -81,7 +81,7 @@ mod two_files {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn matches() {
         let runner = runner().with_cwd("matches");
         assert_eq!(

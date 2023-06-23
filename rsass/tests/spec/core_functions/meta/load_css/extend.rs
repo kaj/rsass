@@ -30,7 +30,7 @@ mod in_input {
     }
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn after() {
         let runner = runner().with_cwd("after");
         assert_eq!(
@@ -43,7 +43,7 @@ mod in_input {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn before() {
         let runner = runner().with_cwd("before");
         assert_eq!(
@@ -63,7 +63,7 @@ mod in_other {
     }
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn after() {
         let runner = runner().with_cwd("after");
         assert_eq!(
@@ -76,7 +76,7 @@ mod in_other {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn before() {
         let runner = runner().with_cwd("before");
         assert_eq!(
@@ -90,7 +90,7 @@ mod in_other {
     }
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn shared_cssless_midstream() {
     let runner = runner().with_cwd("shared_cssless_midstream");
     assert_eq!(

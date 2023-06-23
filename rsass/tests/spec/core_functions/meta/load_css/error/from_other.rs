@@ -10,7 +10,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn extend() {
     let runner = runner().with_cwd("extend");
     assert_eq!(

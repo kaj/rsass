@@ -348,6 +348,9 @@ fn handle_item(
             let msg = value.evaluate(scope)?.introspect();
             return Err(Invalid::AtError(msg).at(pos.clone()));
         }
+        Item::Extend(_selectors) => {
+            return Err(Error::error("@extend is not supported yet"));
+        }
 
         Item::Rule(ref selectors, ref body) => {
             check_body(body, BodyContext::Rule)?;

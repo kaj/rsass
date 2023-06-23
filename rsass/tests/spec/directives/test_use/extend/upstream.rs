@@ -15,7 +15,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn double() {
     let runner = runner().with_cwd("double");
     assert_eq!(
@@ -28,7 +28,7 @@ fn double() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn far() {
     let runner = runner().with_cwd("far");
     assert_eq!(
@@ -40,7 +40,7 @@ fn far() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn near() {
     let runner = runner().with_cwd("near");
     assert_eq!(
@@ -52,7 +52,7 @@ fn near() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn placeholder() {
     let runner = runner().with_cwd("placeholder");
     assert_eq!(

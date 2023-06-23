@@ -27,7 +27,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn forward_into_import() {
     let runner = runner().with_cwd("forward_into_import");
     assert_eq!(
@@ -39,7 +39,7 @@ fn forward_into_import() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn forward_into_use() {
     let runner = runner().with_cwd("forward_into_use");
     assert_eq!(
@@ -51,7 +51,7 @@ fn forward_into_use() {
     );
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn upstream() {
     let runner = runner().with_cwd("upstream");
     assert_eq!(

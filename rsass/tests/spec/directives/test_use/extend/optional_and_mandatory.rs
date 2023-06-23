@@ -38,7 +38,7 @@ mod different_files {
     }
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn mandatory_first() {
         let runner = runner().with_cwd("mandatory_first");
         assert_eq!(
@@ -50,7 +50,7 @@ mod different_files {
         );
     }
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn optional_first() {
         let runner = runner().with_cwd("optional_first");
         assert_eq!(
@@ -63,7 +63,7 @@ mod different_files {
     }
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn same_file() {
     let runner = runner().with_cwd("same_file");
     assert_eq!(

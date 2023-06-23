@@ -25,7 +25,7 @@ mod load_css {
     }
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn different_extend() {
         let runner = runner().with_cwd("different_extend");
         assert_eq!(
@@ -86,7 +86,7 @@ mod test_use {
     }
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn different_extend() {
         let runner = runner().with_cwd("different_extend");
         assert_eq!(

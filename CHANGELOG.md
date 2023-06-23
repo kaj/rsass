@@ -11,6 +11,8 @@ project adheres to
 
 * `@media` rules are now handled specifically as `@media` rules,
   rather than as unknown `@`-rules (PR #172).
+* `@extend` is now explicitly unsupported (gives an error message,
+  rather than behaving as an unknown `@` rule) (PR #173).
 * Changed output format of non-finite numbers to match sass spec.
   They are now wrapped in `calc`, like `calc(infinite)` or
   `calc(NaN * 1deg)`.

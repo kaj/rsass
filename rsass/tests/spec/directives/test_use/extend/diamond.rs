@@ -20,7 +20,7 @@ mod dependency {
     }
 
     #[test]
-    #[ignore] // wrong result
+    #[ignore] // unexepected error
     fn with_midstream_extend() {
         let runner = runner().with_cwd("with_midstream_extend");
         assert_eq!(
@@ -39,7 +39,7 @@ mod dependency {
     }
 }
 #[test]
-#[ignore] // wrong result
+#[ignore] // unexepected error
 fn merge() {
     let runner = runner().with_cwd("merge");
     assert_eq!(
