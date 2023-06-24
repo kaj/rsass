@@ -14,7 +14,7 @@ rust-version = "1.60.0"
 
 [dependencies]
 arc-swap = "1.5.0"
-fastrand = "1.4"
+fastrand = "2.0"
 lazy_static = "1.0"
 nom = "7.0"
 num-bigint = { version = "0.4.0", default-features = false, features = ["std"] }
