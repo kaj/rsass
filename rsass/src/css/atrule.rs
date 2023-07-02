@@ -35,11 +35,18 @@ impl AtRule {
             write!(buf, " {}", self.args.format(buf.format()))?;
         }
         if let Some(body) = &self.body {
-            buf.start_block();
-            for item in body {
-                item.write(buf)?;
+            if let [AtRuleBodyItem::Comment(c)] = &body[..] {
+                buf.add_one(" { ", "{");
+                c.write(buf);
+                buf.pop_nl();
+                buf.add_one(" }\n", "}");
+            } else {
+                buf.start_block();
+                for item in body {
+                    item.write(buf)?;
+                }
+                buf.end_block();
             }
-            buf.end_block();
         } else {
             buf.add_one(";\n", ";");
         }

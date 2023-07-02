@@ -82,12 +82,16 @@ impl<'a> CssDestination for RuleDest<'a> {
         }
     }
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
-        let selectors = self.rule.selectors.clone();
+        let rule = if name == "font-face" {
+            None
+        } else {
+            Some(Rule::new(self.rule.selectors.clone()))
+        };
         AtRuleDest {
             parent: self,
             name,
             args,
-            rule: Some(Rule::new(selectors)),
+            rule,
             body: Vec::new(),
         }
     }
@@ -233,7 +237,11 @@ impl<'a> CssDestination for AtRuleDest<'a> {
         }
     }
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
-        let rule = self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()));
+        let rule = if name == "font-face" {
+            None
+        } else {
+            self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()))
+        };
         AtRuleDest {
             parent: self,
             name,
@@ -349,7 +357,11 @@ impl<'a> CssDestination for AtMediaDest<'a> {
         }
     }
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
-        let rule = self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()));
+        let rule = if name == "font-face" {
+            None
+        } else {
+            self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()))
+        };
         AtRuleDest {
             parent: self,
             name,

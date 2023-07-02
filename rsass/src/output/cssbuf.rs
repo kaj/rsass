@@ -30,9 +30,7 @@ impl CssBuf {
         self.indent += 2;
     }
     pub fn end_block(&mut self) {
-        if self.buf.last() == Some(&b'\n') {
-            self.buf.pop();
-        }
+        self.pop_nl();
         if self.format.is_compressed() && self.buf.last() == Some(&b';') {
             self.buf.pop();
         }
@@ -41,6 +39,11 @@ impl CssBuf {
             self.do_indent();
         }
         self.add_one("}\n", "}");
+    }
+    pub fn pop_nl(&mut self) {
+        if self.buf.last() == Some(&b'\n') {
+            self.buf.pop();
+        }
     }
 
     pub fn do_indent(&mut self) {
