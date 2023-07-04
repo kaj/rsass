@@ -10,7 +10,6 @@ mod bubble {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn empty() {
         assert_eq!(
             runner().ok("// Regression test for sass/dart-sass#611.\
@@ -21,7 +20,6 @@ mod bubble {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn in_mixin() {
         assert_eq!(
             runner().ok("@mixin a {\
@@ -44,7 +42,6 @@ mod bubble {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn rules() {
         assert_eq!(
             runner().ok("// Regression test for sass/libsass#472\

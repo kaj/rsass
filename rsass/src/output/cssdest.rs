@@ -82,7 +82,7 @@ impl<'a> CssDestination for RuleDest<'a> {
         }
     }
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
-        let rule = if name == "font-face" {
+        let rule = if is_flat_rule(&name) {
             None
         } else {
             Some(Rule::new(self.rule.selectors.clone()))
@@ -237,7 +237,7 @@ impl<'a> CssDestination for AtRuleDest<'a> {
         }
     }
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
-        let rule = if name == "font-face" {
+        let rule = if is_flat_rule(&name) {
             None
         } else {
             self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()))
@@ -357,7 +357,7 @@ impl<'a> CssDestination for AtMediaDest<'a> {
         }
     }
     fn start_atrule(&mut self, name: String, args: Value) -> AtRuleDest {
-        let rule = if name == "font-face" {
+        let rule = if is_flat_rule(&name) {
             None
         } else {
             self.rule.as_ref().map(|r| Rule::new(r.selectors.clone()))
@@ -422,4 +422,8 @@ impl<'a> CssDestination for AtMediaDest<'a> {
             Err(Invalid::GlobalCustomProperty)
         }
     }
+}
+
+fn is_flat_rule(name: &str) -> bool {
+    name == "font-face" || name == "keyframes"
 }

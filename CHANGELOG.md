@@ -13,6 +13,7 @@ project adheres to
   rather than as unknown `@`-rules (PR #172).
 * `@extend` is now explicitly unsupported (gives an error message,
   rather than behaving as an unknown `@` rule) (PR #173).
+* Improved handling of `@keyframes` and `@font-face`.
 * Changed output format of non-finite numbers to match sass spec.
   They are now wrapped in `calc`, like `calc(infinite)` or
   `calc(NaN * 1deg)`.

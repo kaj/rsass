@@ -45,7 +45,6 @@ mod at_rule {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn keyframes() {
         let runner = runner().with_cwd("keyframes");
         assert_eq!(
