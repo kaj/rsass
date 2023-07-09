@@ -7,7 +7,11 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.28.0
+
+Released 2023-07-09.
+See also <https://rasmus.krats.se/2023/rsass028.en>
+Progress: 4697 of 7032 tests passed.
 
 * `@media` rules are now handled specifically as `@media` rules,
   rather than as unknown `@`-rules (PR #172).

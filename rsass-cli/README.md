@@ -19,7 +19,7 @@ The sass language [is defined in its reference
 doc](http://sass-lang.com/documentation/).
 This implementation is incomplete but getting there, if slowly.
 
-Progress: 4604 of 6925 tests passed.
+Progress: 4697 of 7032 tests passed.
 
 If you want a standalone sass executable, you're probably better of
 with [dart sass](https://sass-lang.com/dart-sass).
