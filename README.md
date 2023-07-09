@@ -19,10 +19,6 @@ To install the cli, use:
 
     cargo install rsass-cli
 
-Note: currently the separate crate is not yet released, so for now, use:
-
-    cargo install --features commandline rsass
-
 To use the rust library, add `rsass` to your dependencies.
 
     cargo add rsass
