@@ -24,6 +24,10 @@ project adheres to
 * MSRV of rsass (the lib crate) is now 1.60.0 (required by trancient
   dev dependency log).
 * Improved parsing of quoted strings (some syntax errors was accepted).
+* Removed the `Error::error(_)` shortcut for creating text-only errors
+  (some text only errors remains, created directly as the
+  `Error::S(String)` variant, that should probably be removed too in
+  the future).
 * Fixed a typo in help text, thanks @greyhillman (PR #170).
 * Added an input check in selectors.append function.
 * Changed `Number` internals to make values smaller in memory.

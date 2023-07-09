@@ -949,6 +949,6 @@ impl Display for ScopeError {
 }
 impl From<ScopeError> for Error {
     fn from(err: ScopeError) -> Error {
-        Error::error(err.to_string())
+        Error::S(err.to_string())
     }
 }

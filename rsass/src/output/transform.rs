@@ -67,8 +67,8 @@ fn handle_item(
                             if module.get_or_none(name).is_none() {
                                 module.define(name.clone(), value)?;
                             } else {
-                                return Err(Error::error(
-                                    "The same variable may only be configured once.",
+                                return Err(Error::S(
+                                    "The same variable may only be configured once.".to_string(),
                                 ));
                             }
                         }
@@ -117,8 +117,8 @@ fn handle_item(
                             if module.get_or_none(name).is_none() {
                                 module.define(name.clone(), value)?;
                             } else {
-                                return Err(Error::error(
-                                    "The same variable may only be configured once.",
+                                return Err(Error::S(
+                                    "The same variable may only be configured once.".to_string(),
                                 ));
                             }
                         }
@@ -353,7 +353,7 @@ fn handle_item(
             return Err(Invalid::AtError(msg).at(pos.clone()));
         }
         Item::Extend(_selectors) => {
-            return Err(Error::error("@extend is not supported yet"));
+            return Err(Error::S("@extend is not supported yet".to_string()));
         }
 
         Item::Rule(ref selectors, ref body) => {

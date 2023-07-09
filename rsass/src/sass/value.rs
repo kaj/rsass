@@ -158,7 +158,7 @@ impl Value {
                     let k = k.do_evaluate(scope.clone(), arithmetic)?;
                     let v = v.do_evaluate(scope.clone(), arithmetic)?;
                     if items.insert(k, v).is_some() {
-                        return Err(Error::error("Duplicate key."));
+                        return Err(Error::S("Duplicate key.".to_string()));
                     }
                 }
                 css::Value::Map(items)

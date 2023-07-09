@@ -38,17 +38,12 @@ pub enum Error {
     /// Fallback error type.
     ///
     /// This just contains a string with some message.
+    ///
+    /// Note: This variant should probably be removed in the future.
     S(String),
 }
 
 impl std::error::Error for Error {}
-
-impl Error {
-    /// A generic error message.
-    pub fn error<T: Into<String>>(msg: T) -> Self {
-        Error::S(msg.into())
-    }
-}
 
 impl fmt::Display for Error {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
@@ -238,7 +233,7 @@ impl<T> ResultPos<T> for Result<T, Invalid> {
         self.map_err(|e| e.at(pos.clone()))
     }
     fn no_pos(self) -> Result<T, Error> {
-        self.map_err(|e| Error::error(e.to_string()))
+        self.map_err(|e| Error::S(e.to_string()))
     }
 }
 impl<T> ResultPos<T> for Result<T, InvalidCss> {
@@ -246,6 +241,6 @@ impl<T> ResultPos<T> for Result<T, InvalidCss> {
         self.map_err(|e| Invalid::AtError(e.to_string()).at(pos.clone()))
     }
     fn no_pos(self) -> Result<T, Error> {
-        self.map_err(|e| Error::error(e.to_string()))
+        self.map_err(|e| Error::S(e.to_string()))
     }
 }
