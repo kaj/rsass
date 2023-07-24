@@ -2,7 +2,7 @@
 //! This should apply to `min`, `max` and `clamp` as well.
 //!
 //! Note that function calls in actual css is different, and implementented
-//! in [crate::parser::css].
+//! in [`crate::parser::css`].
 use super::strings::sass_string;
 use super::util::{opt_spacelike, spacelike2};
 use super::value::{function_call, numeric, special_function, variable};

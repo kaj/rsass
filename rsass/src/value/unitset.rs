@@ -14,28 +14,28 @@ pub struct UnitSet {
 }
 
 impl UnitSet {
-    /// An empty UnitSet for a scalar value.
+    /// An empty `UnitSet` for a scalar value.
     pub fn scalar() -> Self {
         UnitSet { units: vec![] }
     }
 
-    /// Check if this UnitSet is empty.
+    /// Check if this `UnitSet` is empty.
     pub fn is_none(&self) -> bool {
         self.units.iter().all(|(u, _)| *u == Unit::None)
     }
-    /// Check if this UnitSet conains only known units.
+    /// Check if this `UnitSet` conains only known units.
     pub fn is_known(&self) -> bool {
         !self
             .units
             .iter()
             .any(|(u, _)| matches!(u, Unit::Unknown(_)))
     }
-    /// Check if this UnitSet is the percent unit.
+    /// Check if this `UnitSet` is the percent unit.
     pub fn is_percent(&self) -> bool {
         self.units == [(Unit::Percent, 1)]
     }
 
-    /// Check if this UnitSet is compatible with another UnitSet.
+    /// Check if this `UnitSet` is compatible with another `UnitSet`.
     pub fn is_compatible(&self, other: &Self) -> bool {
         self.is_none()
             || other.is_none()
@@ -236,10 +236,10 @@ fn write_one(out: &mut fmt::Formatter, u: &Unit, p: i8) -> fmt::Result {
     u.fmt(out)?;
     if (0..=3).contains(&p) {
         for _ in 1..p {
-            write!(out, "*{}", u)?;
+            write!(out, "*{u}")?;
         }
     } else {
-        write!(out, "^{}", p)?;
+        write!(out, "^{p}")?;
     }
     Ok(())
 }

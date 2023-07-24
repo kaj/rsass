@@ -80,9 +80,7 @@ fn handle_suite(
         tr.write_all(include_bytes!("testrunner.rs"))?;
     }
     handle_entries(&mut rs, base, &suitedir, &rssuitedir, None, ignored)
-        .map_err(|e| {
-            Error(format!("Failed to handle suite {:?}: {}", suite, e))
-        })
+        .map_err(|e| Error(format!("Failed to handle suite {suite:?}: {e}")))
 }
 
 fn handle_entries(
@@ -104,7 +102,7 @@ fn handle_entries(
         {
             let name = fn_name_os(&entry.file_name());
             writeln!(rs, "\nmod {};", name)?;
-            let mut rs = create(&rssuitedir.join(format!("{}.rs", name)))?;
+            let mut rs = create(&rssuitedir.join(format!("{name}.rs")))?;
             writeln!(
                 rs,
                 "//! Tests auto-converted from {:?}\n",
@@ -235,7 +233,7 @@ fn spec_hrx_to_test(
     precision: Option<usize>,
 ) -> Result<(), Error> {
     let archive = Archive::load(suite)
-        .map_err(|e| Error(format!("Failed to load hrx: {}", e)))?;
+        .map_err(|e| Error(format!("Failed to load hrx: {e}")))?;
 
     eprintln!("Handle {}", suite.display());
     rs.write_all(
@@ -335,13 +333,13 @@ fn handle_hrx_part(
     };
 
     let mut options = archive
-        .get(&format!("{}options.yml", prefix))
+        .get(&format!("{prefix}options.yml"))
         .map(Options::parse)
         .transpose()?
         .unwrap_or_default();
     options.precision = options.precision.or(precision);
 
-    if archive.get(&format!("{}input.scss", prefix)).is_some() {
+    if archive.get(&format!("{prefix}input.scss")).is_some() {
         let fixture = load_test_fixture_hrx(
             name.map(str::to_owned),
             archive,
@@ -378,7 +376,7 @@ fn handle_hrx_part(
                     rs,
                     suite,
                     archive,
-                    &format!("{}{}", prefix, name),
+                    &format!("{prefix}{name}"),
                     options.precision,
                     runner.clone().with_cwd(name),
                 )?;
@@ -408,9 +406,9 @@ fn fn_name(name: &str) -> String {
         .replace(".hrx", "")
         .replace(['/', '-', '.'], "_");
     if t.chars().next().unwrap_or('0').is_numeric() {
-        format!("t{}", t)
+        format!("t{t}")
     } else if RUST_WORDS.contains(&t) {
-        format!("test_{}", t)
+        format!("test_{t}")
     } else {
         t
     }
@@ -484,10 +482,8 @@ fn load_test_fixture_hrx(
     static EXPECTED_OUTPUT_FILENAMES: &[&str] =
         &["output-dart-sass.css", "output.css"];
 
-    if let Some(input) = archive.get(&format!("{}{}", prefix, INPUT_FILENAME))
-    {
-        if let Some(error) =
-            archive.get(&format!("{}{}", prefix, "error-dart-sass"))
+    if let Some(input) = archive.get(&format!("{prefix}{INPUT_FILENAME}")) {
+        if let Some(error) = archive.get(&format!("{prefix}error-dart-sass"))
         {
             return Ok(TestFixture::new_err(
                 name,
@@ -497,8 +493,7 @@ fn load_test_fixture_hrx(
             ));
         }
         for filename in EXPECTED_OUTPUT_FILENAMES {
-            if let Some(output) =
-                archive.get(&format!("{}{}", prefix, filename))
+            if let Some(output) = archive.get(&format!("{prefix}{filename}"))
             {
                 return Ok(TestFixture::new_ok(
                     name,
@@ -508,7 +503,7 @@ fn load_test_fixture_hrx(
                 ));
             }
         }
-        if let Some(error) = archive.get(&format!("{}{}", prefix, "error")) {
+        if let Some(error) = archive.get(&format!("{prefix}error")) {
             return Ok(TestFixture::new_err(
                 name,
                 input.to_string(),
@@ -517,11 +512,10 @@ fn load_test_fixture_hrx(
             ));
         }
         return Err(Error(format!(
-            "No expected CSS / error found for {:?}",
-            prefix,
+            "No expected CSS / error found for {prefix:?}"
         )));
     }
-    Err(Error(format!("No input found for {:?}", prefix)))
+    Err(Error(format!("No input found for {prefix:?}")))
 }
 
 /// Load options from options.yml.
@@ -551,27 +545,27 @@ use std::convert::From;
 
 impl From<io::Error> for Error {
     fn from(e: io::Error) -> Self {
-        Error(format!("io error: {}", e))
+        Error(format!("io error: {e}"))
     }
 }
 impl From<std::string::FromUtf8Error> for Error {
     fn from(e: std::string::FromUtf8Error) -> Self {
-        Error(format!("utf8 error: {}", e))
+        Error(format!("utf8 error: {e}"))
     }
 }
 impl From<yaml_rust::ScanError> for Error {
     fn from(e: yaml_rust::ScanError) -> Self {
-        Error(format!("utf8 error: {}", e))
+        Error(format!("utf8 error: {e}"))
     }
 }
 impl From<std::num::ParseFloatError> for Error {
     fn from(e: std::num::ParseFloatError) -> Self {
-        Error(format!("utf8 error: {}", e))
+        Error(format!("utf8 error: {e}"))
     }
 }
 impl From<std::path::StripPrefixError> for Error {
     fn from(e: std::path::StripPrefixError) -> Self {
-        Error(format!("{}", e))
+        Error(e.to_string())
     }
 }
 impl From<std::num::TryFromIntError> for Error {

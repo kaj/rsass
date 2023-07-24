@@ -47,14 +47,14 @@ impl std::error::Error for Error {}
 
 impl fmt::Display for Error {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        write!(out, "Error: {:?}", self)
+        write!(out, "Error: {self:?}")
     }
 }
 
 impl fmt::Debug for Error {
     fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
-            Error::S(ref s) => write!(out, "{}", s),
+            Error::S(ref s) => write!(out, "{s}"),
             Error::Input(ref load) => load.fmt(out),
             Error::ParseError(ref err) => fmt::Display::fmt(err, out),
             Error::ImportLoop(ref module, ref pos, ref oldpos) => {
@@ -79,7 +79,7 @@ impl fmt::Debug for Error {
                 }
             }
             Error::BadCall(ref msg, ref callpos, ref declpos) => {
-                writeln!(out, "{}", msg)?;
+                writeln!(out, "{msg}")?;
                 if let Some(declpos) = declpos {
                     SourcePos::show_two(
                         out,
@@ -93,7 +93,7 @@ impl fmt::Debug for Error {
                 }
             }
             Error::Invalid(ref what, ref pos) => {
-                writeln!(out, "{}", what)?;
+                writeln!(out, "{what}")?;
                 pos.show(out)
             }
             Error::BadRange(ref err) => err.fmt(out),

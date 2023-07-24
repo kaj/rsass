@@ -133,7 +133,7 @@ fn handle_item(
                 file_context.unlock_loading(&sourcefile);
                 module?
             } else {
-                return Err(Error::S(format!("Module {} not found", name)));
+                return Err(Error::S(format!("Module {name} not found")));
             };
             scope.forward().do_use(module, &name, as_n, expose)?;
         }
@@ -178,7 +178,7 @@ fn handle_item(
                                 )?;
                             }
                             Parsed::Css(items) => {
-                                push_items(dest, items).at(pos)?
+                                push_items(dest, items).at(pos)?;
                             }
                         }
                         file_context.unlock_loading(&sourcefile);
@@ -264,7 +264,7 @@ fn handle_item(
 
         Item::MixinDeclaration(ref name, ref body) => {
             check_body(&body.body, BodyContext::Mixin)?;
-            scope.define_mixin(name.into(), body.closure(&scope).into())
+            scope.define_mixin(name.into(), body.closure(&scope).into());
         }
         Item::MixinCall(ref name, ref args, ref body, ref pos) => {
             if let Some(mixin) = scope.get_mixin(&name.into()) {
@@ -280,7 +280,7 @@ fn handle_item(
                         }
                         e => {
                             let pos = pos.in_call(name);
-                            Error::BadCall(format!("{:?}", e), pos, None)
+                            Error::BadCall(format!("{e:?}"), pos, None)
                         }
                     })?;
             } else {
@@ -343,7 +343,7 @@ fn handle_item(
         }
 
         Item::Debug(ref value) => {
-            eprintln!("DEBUG: {}", value.evaluate(scope)?.introspect())
+            eprintln!("DEBUG: {}", value.evaluate(scope)?.introspect());
         }
         Item::Warn(ref value) => {
             eprintln!("WARNING: {}", value.evaluate(scope)?.introspect());
@@ -459,8 +459,7 @@ fn check_body(body: &[Item], context: BodyContext) -> Result<(), Error> {
             } if context != BodyContext::Rule => {
                 if !name
                     .single_raw()
-                    .map(|name| CSS_AT_RULES.contains(&name))
-                    .unwrap_or(false)
+                    .map_or(false, |name| CSS_AT_RULES.contains(&name))
                 {
                     return Err(Invalid::AtRule.at(pos.clone()));
                 }

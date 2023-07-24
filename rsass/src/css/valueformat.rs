@@ -6,7 +6,7 @@ use std::fmt::{self, Display, Write};
 impl<'a> Display for Formatted<'a, Value> {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self.value {
-            Value::Bang(ref s) => write!(out, "!{}", s),
+            Value::Bang(ref s) => write!(out, "!{s}"),
             Value::Literal(ref s) => s.fmt(out),
             Value::Function(ref n, ref _f) => {
                 let name = n
@@ -16,7 +16,7 @@ impl<'a> Display for Formatted<'a, Value> {
                         c => vec![c],
                     })
                     .collect::<String>();
-                write!(out, "get-function(\"{}\")", name)
+                write!(out, "get-function(\"{name}\")")
             }
             Value::Numeric(ref num, _) => num.format(self.format).fmt(out),
             Value::Color(ref rgba, ref name) => {
@@ -61,16 +61,16 @@ impl<'a> Display for Formatted<'a, Value> {
                         && introspect
                         && sep > ListSeparator::Space
                     {
-                        if !brackets {
-                            write!(out, "({}{})", first, sep.sep(true))?;
-                        } else {
+                        if brackets {
                             write!(out, "{}{}", first, sep.sep(true))?;
+                        } else {
+                            write!(out, "({}{})", first, sep.sep(true))?;
                         }
                     } else {
-                        write!(out, "{}", first)?;
+                        write!(out, "{first}")?;
                         let sep = sep.sep(self.format.is_compressed());
                         for i in rest {
-                            write!(out, "{}{}", sep, i)?;
+                            write!(out, "{sep}{i}")?;
                         }
                     }
                 }
@@ -80,7 +80,7 @@ impl<'a> Display for Formatted<'a, Value> {
                 Ok(())
             }
             Value::Call(ref name, ref arg) => {
-                write!(out, "{}({})", name, arg)
+                write!(out, "{name}({arg})")
             }
             Value::BinOp(ref op) => op.format(self.format).fmt(out),
             Value::UnaryOp(ref op, ref v) => {
@@ -127,7 +127,7 @@ impl<'a> Display for Formatted<'a, Value> {
                 }
                 out.write_char(')')
             }
-            Value::UnicodeRange(ref s) => write!(out, "{}", s),
+            Value::UnicodeRange(ref s) => write!(out, "{s}"),
             Value::Paren(ref v) => {
                 out.write_char('(')?;
                 v.format(self.format).fmt(out)?;

@@ -53,7 +53,7 @@ impl Hsla {
     ///
     /// Zero is fully transparent, one is fully opaque.
     pub fn set_alpha(&mut self, alpha: Rational) {
-        self.alpha = alpha.clamp(zero(), one())
+        self.alpha = alpha.clamp(zero(), one());
     }
     pub(crate) fn reset_source(&mut self) {
         self.hsla_format = false;

@@ -14,7 +14,7 @@ pub struct CargoLoader {
 }
 
 impl CargoLoader {
-    /// Create a new FsFileContext.
+    /// Create a new `FsFileContext`.
     ///
     /// Files will be resolved from the directory containing the
     /// manifest of your package.
@@ -39,7 +39,7 @@ impl CargoLoader {
         Ok(())
     }
 
-    /// Create a Loader and a SourceFile from a given Path.
+    /// Create a loader and a `SourceFile` from a given `Path`.
     ///
     /// The path can be relative to the crate manifest directory, or
     /// absolute.

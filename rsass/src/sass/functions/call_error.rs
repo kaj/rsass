@@ -33,10 +33,10 @@ impl CallError {
                 Error::BadCall(msg, call_pos.clone().opt_in_calc(), None)
             }
             CallError::Invalid(err) => {
-                Error::BadCall(format!("{:?}", err), call_pos.clone(), None)
+                Error::BadCall(format!("{err:?}"), call_pos.clone(), None)
             }
             CallError::BadArgument(name, problem) => Error::BadCall(
-                format!("${}: {}", name, problem),
+                format!("${name}: {problem}"),
                 call_pos.clone(),
                 None,
             ),
@@ -78,6 +78,6 @@ impl From<Error> for CallError {
 }
 impl fmt::Display for CallError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Error: {:?}", self)
+        write!(f, "Error: {self:?}")
     }
 }

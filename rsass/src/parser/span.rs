@@ -58,8 +58,7 @@ impl<'a> Span<'a> {
         (0..self.start)
             .rev()
             .find(|i| self.source.data().get(*i) == Some(&b'\n'))
-            .map(|s| self.start - s)
-            .unwrap_or(self.start + 1)
+            .map_or(self.start + 1, |s| self.start - s)
     }
     pub fn to_owned(self) -> SourcePos {
         SourcePos::new_range(self.source.clone(), self.range())
@@ -103,7 +102,7 @@ impl<'a> AsRef<[u8]> for Span<'a> {
 impl<'a> InputTake for Span<'a> {
     fn take(&self, count: usize) -> Self {
         let end = self.start + count;
-        assert!(end <= self.end, "Tried to take {} from {:?}", count, self);
+        assert!(end <= self.end, "Tried to take {count} from {self:?}");
         Span {
             start: self.start,
             end,
@@ -112,12 +111,7 @@ impl<'a> InputTake for Span<'a> {
     }
     fn take_split(&self, count: usize) -> (Self, Self) {
         let mid = self.start + count;
-        assert!(
-            mid <= self.end,
-            "Tried to take_split {} from {:?}",
-            count,
-            self
-        );
+        assert!(mid <= self.end, "Tried to take_split {count} from {self:?}");
         (
             Span {
                 start: mid,
@@ -288,12 +282,12 @@ impl<'a> std::fmt::Debug for DebugBytes<'a> {
                 b'\n' => f.write_str("\\n"),
                 b'\t' => f.write_str("\\t"),
                 b'\'' | b'\"' | b'\\' => {
-                    write!(f, "\\{}", b)
+                    write!(f, "\\{b}")
                 }
                 b if b.is_ascii_graphic() || *b == b' ' => {
                     f.write_char(*b as char)
                 }
-                b => write!(f, "\\{:02x}", b),
+                b => write!(f, "\\{b:02x}"),
             }?;
         }
         f.write_char('"')

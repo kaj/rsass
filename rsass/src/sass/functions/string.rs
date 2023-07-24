@@ -16,8 +16,9 @@ pub fn create_module() -> Scope {
         let string: String = s.get(name!(string))?;
         Ok(string
             .find(&s.get::<String>(name!(substring))?)
-            .map(|i| Value::scalar(1 + string[0..i].chars().count()))
-            .unwrap_or(Value::Null))
+            .map_or(Value::Null, |i| {
+                Value::scalar(1 + string[0..i].chars().count())
+            }))
     });
     def!(f, insert(string, insert, index), |s| {
         let string: CssString = s.get(name!(string))?;
@@ -62,10 +63,7 @@ pub fn create_module() -> Scope {
                 st.chars().skip(start_at).take(end_at - start_at).collect();
             Ok(CssString::new(part, string.quotes()).into())
         } else {
-            Err(CallError::msg(format!(
-                "Bad indexes: {}..{}",
-                start_at, end_at
-            )))
+            Err(CallError::msg(format!("Bad indexes: {start_at}..{end_at}")))
         }
     });
     def!(f, split(string, separator, limit = b"null"), |s| {
@@ -79,7 +77,7 @@ pub fn create_module() -> Scope {
             if v > 0 {
                 Ok(v as usize)
             } else {
-                Err(format!("Must be 1 or greater, was {}.", v))
+                Err(format!("Must be 1 or greater, was {v}."))
             }
         })?;
         let v = if string.is_empty() {
@@ -128,7 +126,7 @@ pub fn create_module() -> Scope {
             *v += 1;
             *v
         };
-        Ok(format!("x{:x}", v).into())
+        Ok(format!("x{v:x}").into())
     });
     def!(f, unquote(string), |s| {
         Ok(s.get::<CssString>(name!(string))?.unquote().into())

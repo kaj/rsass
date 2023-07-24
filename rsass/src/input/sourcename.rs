@@ -12,7 +12,7 @@ pub struct SourceName {
 }
 
 impl SourceName {
-    /// Create a new top-level SourceName.
+    /// Create a new top-level `SourceName`.
     pub fn root<T: ToString>(name: T) -> Self {
         SourceName {
             name: name.to_string(),
@@ -88,7 +88,7 @@ impl fmt::Display for SourceKind {
             SourceKind::Import(_) => out.write_str("@import"),
             SourceKind::Use(_) => out.write_str("@use"),
             SourceKind::Forward(_) => out.write_str("@forward"),
-            SourceKind::Call(name, _) => write!(out, "{}()", name),
+            SourceKind::Call(name, _) => write!(out, "{name}()"),
         }
     }
 }

@@ -9,7 +9,7 @@ pub struct CssString {
 }
 
 impl CssString {
-    /// Create a new CssString.
+    /// Create a new `CssString`.
     pub fn new(value: String, quotes: Quotes) -> Self {
         CssString { value, quotes }
     }
@@ -61,7 +61,7 @@ impl CssString {
                         None => (),
                     }
                 } else {
-                    result.push(c)
+                    result.push(c);
                 }
             }
             result
@@ -70,9 +70,7 @@ impl CssString {
     /// If the value is name-like, make it unquoted.
     pub fn opt_unquote(self) -> Self {
         let mut chars = self.value.chars();
-        let t = chars.next()
-            .map(|c| c.is_alphabetic()) // first letter
-            .unwrap_or(false) // not empty
+        let t = chars.next().map_or(false, char::is_alphabetic)
             && chars.all(|c| c.is_alphanumeric() || c == '-');
         CssString {
             value: self.value,

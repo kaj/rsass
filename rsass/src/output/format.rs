@@ -35,7 +35,7 @@ impl Format {
         if self.is_compressed() {
             ""
         } else {
-            &INDENT[..(len + 1)]
+            &INDENT[..=len]
         }
     }
 }

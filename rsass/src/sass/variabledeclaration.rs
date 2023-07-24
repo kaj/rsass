@@ -56,7 +56,7 @@ pub(crate) mod parser {
             pair(terminated(name, tag(".")), variable_declaration),
             |(module, decl)| VariableDeclaration {
                 name: format!("{}.{}", module, decl.name).into(),
-                pos: decl.pos.opt_back(&format!("{}.", module)),
+                pos: decl.pos.opt_back(&format!("{module}.")),
                 ..decl
             },
         )(input)

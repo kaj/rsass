@@ -57,7 +57,7 @@ impl std::error::Error for LoadError {}
 
 impl fmt::Display for LoadError {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
-        write!(out, "Error: {:?}", self)
+        write!(out, "Error: {self:?}")
     }
 }
 
@@ -65,10 +65,10 @@ impl fmt::Debug for LoadError {
     fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             LoadError::Input(path, err) => {
-                write!(out, "Reading {:?} failed: {}", path, err)
+                write!(out, "Reading {path:?} failed: {err}")
             }
             LoadError::UnknownFormat(name) => {
-                write!(out, "{:?} is not a css or sass file.", name)
+                write!(out, "{name:?} is not a css or sass file.")
             }
             LoadError::NotCalledFromCargo => {
                 write!(out, "Expected a cargo environment, but none found.")

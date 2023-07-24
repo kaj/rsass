@@ -161,9 +161,9 @@ fn unquoted_part(input: Span) -> PResult<String> {
 fn normalized_first_escaped_char(input: Span) -> PResult<String> {
     let (rest, c) = escaped_char(input)?;
     let result = if c.is_alphabetic() || u32::from(c) >= 0xa1 {
-        format!("{}", c)
+        format!("{c}")
     } else if !c.is_control() && !c.is_numeric() && c != '\n' && c != '\t' {
-        format!("\\{}", c)
+        format!("\\{c}")
     } else {
         format!("\\{:x} ", u32::from(c))
     };
@@ -172,9 +172,9 @@ fn normalized_first_escaped_char(input: Span) -> PResult<String> {
 fn normalized_escaped_char(input: Span) -> PResult<String> {
     let (rest, c) = escaped_char(input)?;
     let result = if c.is_alphanumeric() || c == '-' || u32::from(c) >= 0xa1 {
-        format!("{}", c)
+        format!("{c}")
     } else if !c.is_control() && c != '\n' && c != '\t' {
-        format!("\\{}", c)
+        format!("\\{c}")
     } else {
         format!("\\{:x} ", u32::from(c))
     };
@@ -323,7 +323,7 @@ fn normalized_escaped_char_q(input: Span) -> PResult<String> {
     } else if c.is_control() && c != '\t' {
         format!("\\{:x} ", u32::from(c))
     } else if c == '-' || c == '\\' || c == ' ' {
-        format!("\\{}", c)
+        format!("\\{c}")
     } else {
         c.to_string()
     };
@@ -352,7 +352,7 @@ fn selector_string(input: Span) -> PResult<String> {
             map(tag("\\\""), |_| "\\\"".to_string()),
             map(tag("\\\'"), |_| "\\\'".to_string()),
             map(tag("\\\\"), |_| "\\\\".to_string()),
-            map(escaped_char, |c| format!("{}", c)),
+            map(escaped_char, |c| format!("{c}")),
             map(hash_no_interpolation, String::from),
         )),
         String::new,

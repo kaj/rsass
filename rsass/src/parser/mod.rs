@@ -168,7 +168,7 @@ fn at_root2(input: Span) -> PResult<Item> {
 fn mixin_call2(input: Span) -> PResult<Item> {
     let (rest, n1) = terminated(name, opt_spacelike)(input)?;
     let (rest, n2) = opt(preceded(tag("."), name))(rest)?;
-    let name = n2.map(|n2| format!("{}.{}", n1, n2)).unwrap_or(n1);
+    let name = n2.map(|n2| format!("{n1}.{n2}")).unwrap_or(n1);
     let (rest, _) = opt_spacelike(rest)?;
     let (rest0, args) = terminated(opt(call_args), opt_spacelike)(rest)?;
     let (rest, t) = alt((tag("using"), tag("{"), tag("")))(rest0)?;
@@ -236,9 +236,9 @@ fn at_rule2(input0: Span) -> PResult<Item> {
             let (input, args) = opt(unknown_rule_args)(input)?;
             fn x_args(value: Value) -> Value {
                 match value {
-                    Value::Variable(name, _pos) => Value::Literal(
-                        SassString::from(format!("${}", name).as_str()),
-                    ),
+                    Value::Variable(name, _pos) => {
+                        Value::Literal(SassString::from(format!("${name}")))
+                    }
                     Value::Map(map) => Value::Map(
                         map.into_iter()
                             .map(|(k, v)| (x_args(k), x_args(v)))
@@ -255,7 +255,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
                 input,
                 Item::AtRule {
                     name,
-                    args: args.map(x_args).unwrap_or(Value::Null),
+                    args: args.map_or(Value::Null, x_args),
                     body,
                     pos,
                 },
@@ -359,7 +359,7 @@ fn if_statement2(input: Span) -> PResult<Item> {
         name,
         opt_spacelike,
     ))(input)?;
-    match word.as_ref().map(|w| w.as_ref()) {
+    match word.as_ref().map(AsRef::as_ref) {
         Some("else") => {
             let (input2, else_body) = alt((
                 body_block,

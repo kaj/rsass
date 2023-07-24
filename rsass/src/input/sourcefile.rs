@@ -8,7 +8,7 @@ use std::sync::Arc;
 ///
 /// This type contains both the contents (internally as a `Vec<u8>`)
 /// of a file and information on from where (and why) it was loaded.
-/// You can create a SourceFile with the [`SourceFile::read`]
+/// You can create a `SourceFile` with the [`SourceFile::read`]
 /// constructor, but normally you will get one from an
 /// [`input::Context`][crate::input::Context].
 ///
@@ -31,7 +31,7 @@ struct Impl {
 }
 
 impl SourceFile {
-    /// Create a SourceFile from something readable and a name.
+    /// Create a `SourceFile` from something readable and a name.
     ///
     /// The format will be determined from the suffix of the `source`
     /// file name.

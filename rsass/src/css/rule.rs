@@ -22,7 +22,7 @@ impl Rule {
     }
     /// Add an item to the body of this rule.
     pub fn push(&mut self, item: BodyItem) {
-        self.body.push(item)
+        self.body.push(item);
     }
 
     /// Write this rule to a css output buffer.

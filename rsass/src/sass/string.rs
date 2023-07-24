@@ -51,7 +51,7 @@ impl SassString {
         SassString { parts: p2, quotes }
     }
 
-    /// Evaluate this SassString to a CssString.
+    /// Evaluate this `SassString` to a `CssString`.
     ///
     /// All interpolated values are interpolated in the given `scope`.
     pub fn evaluate(&self, scope: ScopeRef) -> Result<CssString, Error> {
@@ -78,7 +78,7 @@ impl SassString {
                                 carry_space = false;
                             }
                             if c == '\\' {
-                                write!(&mut result, "\\{}", c)?;
+                                write!(&mut result, "\\{c}")?;
                             } else if c.is_alphanumeric()
                                 || c.is_ascii_graphic()
                                 || c == ' '
@@ -111,7 +111,7 @@ impl SassString {
     pub fn is_unquoted(&self) -> bool {
         self.quotes == Quotes::None
     }
-    /// Check if this SassString is a single raw value.
+    /// Check if this `SassString` is a single raw value.
     ///
     /// If so, return a reference to it.
     pub fn single_raw(&self) -> Option<&str> {
@@ -148,7 +148,7 @@ impl fmt::Display for SassString {
             match *part {
                 StringPart::Raw(ref s) => s.fmt(out)?,
                 StringPart::Interpolation(ref v) => {
-                    panic!("Interpolation should be evaluated: {:?}", v)
+                    panic!("Interpolation should be evaluated: {v:?}")
                 }
             }
         }

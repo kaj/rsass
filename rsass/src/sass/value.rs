@@ -70,7 +70,7 @@ impl Value {
         match *self {
             Value::Null => true,
             Value::List(ref list, _, false) => {
-                list.iter().all(|v| v.is_null())
+                list.iter().all(Value::is_null)
             }
             _ => false,
         }
@@ -182,7 +182,7 @@ impl Value {
                         css::Value::Numeric(v, true)
                     }
                     (op, css::Value::Literal(s)) if s.quotes().is_none() => {
-                        format!("{}{}", op, s).into()
+                        format!("{op}{s}").into()
                     }
                     (op, v) => css::Value::UnaryOp(*op, Box::new(v)),
                 }
@@ -198,12 +198,12 @@ impl Value {
     pub fn inspect(&self, out: &mut fmt::Formatter) -> fmt::Result {
         use fmt::Display;
         match *self {
-            Value::Bang(ref s) => write!(out, "!{}", s),
+            Value::Bang(ref s) => write!(out, "!{s}"),
             Value::Literal(ref s) => {
                 if let Some(s) = s.single_raw() {
                     out.write_str(s)
                 } else {
-                    write!(out, "{:?}", s)
+                    write!(out, "{s:?}")
                 }
             }
             Value::Paren(ref v, _expl) => {
@@ -221,7 +221,7 @@ impl Value {
                 }
             }
             Value::Variable(ref name, ref _pos) => {
-                write!(out, "${}", name)
+                write!(out, "${name}")
             }
             Value::List(ref v, s, b) => {
                 if b {
@@ -241,7 +241,7 @@ impl Value {
                 Ok(())
             }
             Value::Call(ref name, ref args, ref _pos) => {
-                write!(out, "{}({:?})", name, args)
+                write!(out, "{name}({args:?})")
             }
             Value::Numeric(ref num) => {
                 num.format(Format::introspect()).fmt(out)
@@ -408,11 +408,11 @@ impl<'a> fmt::Display for Inspect<'a> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.a.inspect(f)?;
         if self.0.s1 {
-            f.write_char(' ')?
+            f.write_char(' ')?;
         }
         self.0.op.fmt(f)?;
         if self.0.s2 {
-            f.write_char(' ')?
+            f.write_char(' ')?;
         }
         self.0.b.inspect(f)
     }

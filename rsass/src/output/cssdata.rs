@@ -54,7 +54,9 @@ impl CssData {
         }
         let buf = buf.take();
         let compressed = format.is_compressed();
-        let mut result = if !buf.is_ascii() {
+        let mut result = if buf.is_ascii() {
+            buf
+        } else {
             let mark = if compressed {
                 // U+FEFF is byte order mark, used to show encoding.
                 "\u{feff}"
@@ -65,8 +67,6 @@ impl CssData {
             result.extend_from_slice(mark.as_bytes());
             result.extend(buf);
             result
-        } else {
-            buf
         };
         while result.last() == Some(&b'\n') {
             result.pop();
@@ -100,11 +100,11 @@ impl CssDestination for CssData {
     }
 
     fn push_import(&mut self, import: Import) {
-        self.imports.push(import)
+        self.imports.push(import);
     }
 
     fn push_comment(&mut self, c: Comment) {
-        self.body.push(c.into())
+        self.body.push(c.into());
     }
 
     fn push_item(&mut self, item: Item) -> Result<()> {

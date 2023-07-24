@@ -146,7 +146,7 @@ impl Rgba {
     ///
     /// Zero is fully transparent, one is fully opaque.
     pub fn set_alpha(&mut self, alpha: Rational) {
-        self.alpha = cap(alpha, &one())
+        self.alpha = cap(alpha, &one());
     }
     /// Get the source type of this color.
     pub(crate) fn source(&self) -> RgbFormat {
@@ -410,12 +410,12 @@ impl<'a> Display for Formatted<'a, Rgba> {
                 if short {
                     write!(out, "#{:x}{:x}{:x}", r / 0x11, g / 0x11, b / 0x11)
                 } else {
-                    write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
+                    write!(out, "#{r:02x}{g:02x}{b:02x}")
                 }
             } else {
                 match rgba.source {
                     RgbFormat::LongHex => {
-                        write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
+                        write!(out, "#{r:02x}{g:02x}{b:02x}")
                     }
                     RgbFormat::ShortHex => {
                         write!(
@@ -430,10 +430,10 @@ impl<'a> Display for Formatted<'a, Rgba> {
                         if let Some(name) = rgba.name() {
                             return name.fmt(out);
                         }
-                        write!(out, "#{:02x}{:02x}{:02x}", r, g, b)
+                        write!(out, "#{r:02x}{g:02x}{b:02x}")
                     }
                     RgbFormat::Rgb => {
-                        write!(out, "rgb({}, {}, {})", r, g, b)
+                        write!(out, "rgb({r}, {g}, {b})")
                     }
                 }
             }

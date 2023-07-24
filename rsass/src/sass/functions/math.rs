@@ -89,8 +89,7 @@ pub fn create_module() -> Scope {
         let num = get_unitless(s, "number")?;
         let base = s
             .get_opt_map(name!(base), check::unitless)?
-            .map(Into::into)
-            .unwrap_or(E);
+            .map_or(E, Into::into);
         Ok(Value::scalar(num.log(base)))
     });
     def!(f, pow(base, exponent), |s| {
@@ -159,7 +158,7 @@ pub fn create_module() -> Scope {
             if v > 0 {
                 Ok(v)
             } else {
-                Err(format!("Must be greater than 0, was {}.", v))
+                Err(format!("Must be greater than 0, was {v}."))
             }
         })? {
             None => {

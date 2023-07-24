@@ -138,8 +138,7 @@ impl ScopeRef {
                 Item::Comment(..) => None,
                 ref x => {
                     return Err(Error::S(format!(
-                        "Not implemented in function: {:?}",
-                        x
+                        "Not implemented in function: {x:?}",
                     )))
                 }
             };
@@ -512,10 +511,7 @@ impl Scope {
             static ref ROOT: Selectors = Selectors::root();
         }
         self.selectors.as_ref().unwrap_or_else(|| {
-            self.parent
-                .as_ref()
-                .map(|p| p.get_selectors())
-                .unwrap_or_else(|| &ROOT)
+            self.parent.as_ref().map_or(&ROOT, |p| p.get_selectors())
         })
     }
 
@@ -531,8 +527,7 @@ impl Scope {
             UseAs::KeepName => {
                 let name = name
                     .rfind(|c| c == ':' || c == '/')
-                    .map(|i| &name[i + 1..])
-                    .unwrap_or(name);
+                    .map_or(name, |i| &name[i + 1..]);
                 self.define_module(name.into(), module.expose(expose));
             }
             UseAs::Star => {
@@ -543,19 +538,19 @@ impl Scope {
             }
             UseAs::Prefix(prefix) => {
                 for (name, function) in &*module.functions.lock().unwrap() {
-                    let name = format!("{}{}", prefix, name).into();
+                    let name = format!("{prefix}{name}").into();
                     if expose.allow_var(&name) {
                         self.define_function(name, function.clone());
                     }
                 }
                 for (name, value) in &*module.variables.lock().unwrap() {
-                    let name = format!("{}{}", prefix, name).into();
+                    let name = format!("{prefix}{name}").into();
                     if expose.allow_fun(&name) {
                         self.define(name, value.clone())?;
                     }
                 }
                 for (name, m) in &*module.mixins.lock().unwrap() {
-                    let name = format!("{}{}", prefix, name).into();
+                    let name = format!("{prefix}{name}").into();
                     if expose.allow_fun(&name) {
                         self.define_mixin(name, m.clone());
                     }
@@ -924,7 +919,7 @@ pub enum ScopeError {
 }
 
 impl ScopeError {
-    /// Make an Error from a ScopeError at a specific position.
+    /// Make an `Error` from a `ScopeError` at a specific position.
     pub fn at(self, pos: SourcePos) -> Error {
         Invalid::InScope(self).at(pos)
     }
@@ -934,11 +929,9 @@ use std::fmt::{self, Display};
 impl Display for ScopeError {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ScopeError::NoModule(name) => write!(
-                out,
-                "There is no module with the namespace {:?}.",
-                name
-            ),
+            ScopeError::NoModule(name) => {
+                write!(out, "There is no module with the namespace {name:?}.",)
+            }
             ScopeError::UndefinedVariable => "Undefined variable.".fmt(out),
             ScopeError::UndefinedFunction => "Undefined function.".fmt(out),
             ScopeError::ModifiedBuiltin => {

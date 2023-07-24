@@ -44,7 +44,7 @@ impl CallArgs {
         })
     }
 
-    /// Create a new CallArgs from one single unnamed argument.
+    /// Create a new `CallArgs` from one single unnamed argument.
     pub fn new_single(value: Value) -> Self {
         CallArgs {
             positional: vec![value],
@@ -53,7 +53,7 @@ impl CallArgs {
         }
     }
 
-    /// Evaluate these sass CallArgs to css CallArgs.
+    /// Evaluate these sass `CallArgs` to css `CallArgs`.
     pub fn evaluate(&self, scope: ScopeRef) -> Result<Call, CallError> {
         let named = self.named.iter().try_fold(
             OrderMap::new(),

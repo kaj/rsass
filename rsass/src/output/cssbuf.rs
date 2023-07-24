@@ -47,24 +47,24 @@ impl CssBuf {
     }
 
     pub fn do_indent(&mut self) {
-        self.add_str(self.format.get_indent(self.indent))
+        self.add_str(self.format.get_indent(self.indent));
     }
     pub(crate) fn do_indent_no_nl(&mut self) {
         let stuff = self.format.get_indent(self.indent);
         if stuff.len() > 1 {
-            self.add_str(&stuff[1..])
+            self.add_str(&stuff[1..]);
         }
     }
 
     pub fn add_str(&mut self, sub: &str) {
-        self.buf.extend_from_slice(sub.as_bytes())
+        self.buf.extend_from_slice(sub.as_bytes());
     }
     pub fn add_one(&mut self, normal: &str, compressed: &str) {
         self.add_str(if self.format.is_compressed() {
             compressed
         } else {
             normal
-        })
+        });
     }
     pub fn opt_nl(&mut self) {
         if !self.format.is_compressed()

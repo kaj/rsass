@@ -124,6 +124,12 @@ impl Display for Formatted<'_, BinOp> {
             self.value.b.format(self.format).fmt(out)
         } else {
             use Operator::{Minus, Plus};
+            fn is_op(v: &Value) -> Option<Operator> {
+                match v {
+                    Value::BinOp(op) => Some(op.op),
+                    _ => None,
+                }
+            }
             // TODO: This simplification should probably be done in eval.
             let (op, b) = match (self.value.op, &self.value.b) {
                 (Plus, Value::Numeric(v, _)) if v.value.is_negative() => {
@@ -152,12 +158,6 @@ impl Display for Formatted<'_, BinOp> {
                 }
                 (op, v) => (op, v.clone()),
             };
-            fn is_op(v: &Value) -> Option<Operator> {
-                match v {
-                    Value::BinOp(op) => Some(op.op),
-                    _ => None,
-                }
-            }
             self.value.a.format(self.format).fmt(out)?;
             if self.value.s1 {
                 out.write_char(' ')?;

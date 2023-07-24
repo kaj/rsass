@@ -79,7 +79,7 @@ impl Selectors {
                                 b.clone(),
                             ));
                         }
-                        parse_selector(&format!("{}{}", b, e))
+                        parse_selector(&format!("{b}{e}"))
                     })
                 })
                 .collect::<Result<_, _>>()?,
@@ -102,7 +102,7 @@ impl Selectors {
 
     /// True if any of the selectors contains a backref (`&`).
     pub(crate) fn has_backref(&self) -> bool {
-        self.s.iter().any(|s| s.has_backref())
+        self.s.iter().any(Selector::has_backref)
     }
 
     /// Get these selectors with a specific backref selector.
@@ -116,7 +116,7 @@ impl Selectors {
     }
     /// Return true if any of these selectors ends with a combinator
     pub fn has_trailing_combinator(&self) -> bool {
-        self.s.iter().any(|s| s.has_trailing_combinator())
+        self.s.iter().any(Selector::has_trailing_combinator)
     }
 }
 
@@ -151,7 +151,7 @@ impl From<Selectors> for Value {
                             }
                             part => {
                                 last = Some(match last {
-                                    Some(last) => format!("{}{}", last, part),
+                                    Some(last) => format!("{last}{part}"),
                                     None => part.to_string(),
                                 });
                             }
@@ -191,7 +191,7 @@ fn value_to_selectors(v: &Value) -> Result<Selectors, BadSelector0> {
                     |a, v: &Value| {
                         let (mut outer, mut a) = a?;
                         if let Ok(ref mut s) = check_selector_str(v) {
-                            push_descendant(&mut a, s)
+                            push_descendant(&mut a, s);
                         } else {
                             let mut s = parse_selectors_str(v)?;
                             if let Some(f) = s.s.first_mut() {
@@ -252,7 +252,7 @@ fn parse_selectors_str(v: &Value) -> Result<Selectors, BadSelector0> {
 
 fn push_descendant(to: &mut Vec<SelectorPart>, from: &mut Selector) {
     if !to.is_empty() {
-        to.push(SelectorPart::Descendant)
+        to.push(SelectorPart::Descendant);
     }
     to.append(&mut from.0);
 }
@@ -281,7 +281,7 @@ impl Selector {
         } else {
             let mut result = self.0.clone();
             if !result.is_empty()
-                && !other.0.first().map(|p| p.is_operator()).unwrap_or(false)
+                && !other.0.first().map_or(false, SelectorPart::is_operator)
             {
                 result.push(SelectorPart::Descendant);
             }
@@ -291,7 +291,7 @@ impl Selector {
     }
 
     fn has_backref(&self) -> bool {
-        self.0.iter().any(|p| p.has_backref())
+        self.0.iter().any(SelectorPart::has_backref)
     }
     /// Return true if this selector ends with a combinator
     pub fn has_trailing_combinator(&self) -> bool {
@@ -329,7 +329,7 @@ fn list_to_selector(list: &[Value]) -> Result<Selector, BadSelector0> {
         |a, v| {
             let mut a = a?;
             if !a.is_empty() {
-                a.push(SelectorPart::Descendant)
+                a.push(SelectorPart::Descendant);
             }
             a.push(value_to_selector_part(v)?);
             Ok(a)
@@ -405,16 +405,15 @@ impl SelectorPart {
             SelectorPart::PseudoElement { ref arg, .. }
             | SelectorPart::Pseudo { ref arg, .. } => arg
                 .as_ref()
-                .map(|a| a.s.iter().any(|s| s.has_backref()))
-                .unwrap_or(false),
+                .map_or(false, |a| a.s.iter().any(Selector::has_backref)),
         }
     }
     fn clone_in(&self, context: &Selector) -> Vec<SelectorPart> {
         match self {
-            s @ SelectorPart::Descendant
-            | s @ SelectorPart::RelOp(_)
-            | s @ SelectorPart::Simple(_)
-            | s @ SelectorPart::Attribute { .. } => vec![s.clone()],
+            s @ (SelectorPart::Descendant
+            | SelectorPart::RelOp(_)
+            | SelectorPart::Simple(_)
+            | SelectorPart::Attribute { .. }) => vec![s.clone()],
             SelectorPart::BackRef => context.0.clone(),
             SelectorPart::PseudoElement { name, arg } => {
                 vec![SelectorPart::PseudoElement {
@@ -477,9 +476,9 @@ impl fmt::Display for Selector {
         let mut buf = vec![];
         for p in &self.0 {
             if out.alternate() {
-                write!(&mut buf, "{:#}", p).map_err(|_| fmt::Error)?;
+                write!(&mut buf, "{p:#}").map_err(|_| fmt::Error)?;
             } else {
-                write!(&mut buf, "{}", p).map_err(|_| fmt::Error)?;
+                write!(&mut buf, "{p}").map_err(|_| fmt::Error)?;
             }
         }
         if buf.ends_with(b"> ") {
@@ -496,7 +495,7 @@ impl fmt::Display for Selector {
 impl fmt::Display for SelectorPart {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            SelectorPart::Simple(ref s) => write!(out, "{}", s),
+            SelectorPart::Simple(ref s) => write!(out, "{s}"),
             SelectorPart::Descendant => write!(out, " "),
             SelectorPart::RelOp(ref c) => {
                 if out.alternate() && *c != b'~' {
@@ -512,40 +511,37 @@ impl fmt::Display for SelectorPart {
                 ref modifier,
             } => write!(
                 out,
-                "[{}{}{}{}]",
-                name,
-                op,
-                val,
-                modifier.map(|m| format!(" {}", m)).unwrap_or_default()
+                "[{name}{op}{val}{}]",
+                modifier.map(|m| format!(" {m}")).unwrap_or_default()
             ),
             SelectorPart::PseudoElement { ref name, ref arg } => {
-                write!(out, "::{}", name)?;
+                write!(out, "::{name}")?;
                 if let Some(ref arg) = *arg {
                     if out.alternate() {
-                        write!(out, "({:#})", arg)?
+                        write!(out, "({arg:#})")?;
                     } else {
-                        write!(out, "({})", arg)?
+                        write!(out, "({arg})")?;
                     }
                 }
                 Ok(())
             }
             SelectorPart::Pseudo { ref name, ref arg } => {
-                let name = format!("{}", name);
+                let name = name.to_string();
                 if let Some(ref arg) = *arg {
                     // It seems some pseudo-classes should always have
                     // their arg in compact form.  Maybe we need more
                     // hard-coded names here, or maybe the condition
                     // should be on the argument rather than the name?
                     if out.alternate() || name == "nth-of-type" {
-                        write!(out, ":{}({:#})", name, arg)
+                        write!(out, ":{name}({arg:#})",)
                     } else if name == "nth-child" {
-                        let arg = format!("{:#}", arg);
-                        write!(out, ":{}({})", name, arg.replace(',', ", "))
+                        let arg = format!("{arg:#}");
+                        write!(out, ":{name}({})", arg.replace(',', ", "))
                     } else {
-                        write!(out, ":{}({})", name, arg)
+                        write!(out, ":{name}({arg})")
                     }
                 } else {
-                    write!(out, ":{}", name)
+                    write!(out, ":{name}")
                 }
             }
             SelectorPart::BackRef => write!(out, "&"),
@@ -630,7 +626,7 @@ impl fmt::Display for BadSelector {
                 pos.show(out)
             }
             BadSelector::Append(e, b) => {
-                write!(out, "Can't append {} to {}.", e, b)
+                write!(out, "Can't append {e} to {b}.")
             }
         }
     }

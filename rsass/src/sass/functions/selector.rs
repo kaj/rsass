@@ -12,7 +12,7 @@ pub fn create_module() -> Scope {
             if base.has_trailing_combinator() {
                 return Err(CallError::msg(format!("Selector \"{base}\" can't be used as a parent in a compound selector.")));
             }
-            Ok(s.try_fold(base, |base, ext| base.append(ext))?.into())
+            Ok(s.try_fold(base, Selectors::append)?.into())
         } else {
             // Not really reachable, get_selectors requires at least one item.
             Ok(Selectors::root().into())
@@ -37,7 +37,7 @@ fn get_selectors(
 ) -> Result<Vec<Selectors>, CallError> {
     Ok(s.get_map(name, check::va_list_nonempty)?
         .into_iter()
-        .map(|v| v.try_into())
+        .map(TryInto::try_into)
         .collect::<Result<_, BadSelector>>()?)
 }
 

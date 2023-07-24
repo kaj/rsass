@@ -115,7 +115,7 @@ impl fmt::Display for CallArgs {
             .iter()
             .map(|(k, v)| format!("{}={}", k, v.format(Default::default())));
         let t = pos.chain(named).collect::<Vec<_>>().join(", ");
-        write!(out, "{}", t)?;
+        write!(out, "{t}")?;
         if self.trailing_comma {
             write!(out, ", ")?;
         }

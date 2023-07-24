@@ -46,7 +46,7 @@ impl Selectors {
         use crate::parser::input_span;
         // TODO: Get the span from the source of self!
         Ok(ParseError::check(selectors(
-            input_span(format!("{} ", s)).borrow(),
+            input_span(format!("{s} ")).borrow(),
         ))?)
     }
 }

@@ -97,8 +97,7 @@ fn hwb_from_channels(
                     }
                 }
                 n => Err(CallError::msg(format!(
-                    "Only 3 elements allowed, but {} were passed.",
-                    n
+                    "Only 3 elements allowed, but {n} were passed.",
                 ))),
             }
         }

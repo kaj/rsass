@@ -8,7 +8,7 @@ use std::ops::Range;
 /// A specific part of input.
 ///
 /// This is represented as start and end offsets into [`SourceFile`].
-/// The sourcefile is internally reference counted, so a SourcePos can
+/// The sourcefile is internally reference counted, so a `SourcePos` can
 /// be cheaply cloned, but does not implement copy.
 #[derive(Clone)]
 pub struct SourcePos {
@@ -49,8 +49,7 @@ impl SourcePos {
         let start = (0..self.start)
             .rev()
             .find(|i| data.get(*i) == Some(&b'\n'))
-            .map(|n| n + 1)
-            .unwrap_or(0);
+            .map_or(0, |n| n + 1);
         self.start - start + 1
     }
 
@@ -117,7 +116,7 @@ impl SourcePos {
         let filename = if filename.is_empty() {
             String::new()
         } else {
-            format!("--> {}", filename)
+            format!("--> {filename}")
         };
         self.show_impl(out, &filename, marker, what)
     }
@@ -145,8 +144,7 @@ impl SourcePos {
         let start = (0..self.start)
             .rev()
             .find(|i| data.get(*i) == Some(&b'\n'))
-            .map(|n| n + 1)
-            .unwrap_or(0);
+            .map_or(0, |n| n + 1);
         let end = (self.start..)
             .find(|i| data.get(*i).unwrap_or(&b'\n') == &b'\n')
             .unwrap();
@@ -166,7 +164,7 @@ impl SourcePos {
         if what.is_empty() {
             writeln!(out)
         } else {
-            writeln!(out, " {}", what)
+            writeln!(out, " {what}")
         }
     }
 
@@ -272,7 +270,7 @@ impl SourcePos {
         args: &FormalArgs,
         module: &str,
     ) -> Self {
-        let line = format!("{} {}{} {{", kind, name, args);
+        let line = format!("{kind} {name}{args} {{");
         SourcePos {
             start: kind.as_bytes().len() + 1,
             end: line.len() - 2,

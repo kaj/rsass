@@ -17,11 +17,11 @@ impl TryFrom<Value> for Channels {
         if is_special(&channels) {
             Ok(Channels::Special(channels))
         } else if let Value::List(vec, sep, bracketed) = channels.clone() {
+            use crate::value::Operator::Div;
+            use Value::{BinOp, Numeric};
             if bracketed {
                 return Err(ChaError::Bracketed);
             }
-            use crate::value::Operator::Div;
-            use Value::{BinOp, Numeric};
             if sep == Some(ListSeparator::Comma) {
                 return Err(ChaError::BadSep);
             }
@@ -34,11 +34,12 @@ impl TryFrom<Value> for Channels {
                         if i_s.unwrap_or_default() != ListSeparator::Space {
                             return Err(ChaError::BadSep);
                         }
-                        Ok(inner_channels(inner)?
-                            .map(|[c1, c2, c3]| {
+                        Ok(inner_channels(inner)?.map_or_else(
+                            || Channels::Special(channels),
+                            |[c1, c2, c3]| {
                                 Channels::Data([c1, c2, c3, a.clone()])
-                            })
-                            .unwrap_or_else(|| Channels::Special(channels)))
+                            },
+                        ))
                     }
                     [h, _a] => {
                         if is_special(h) {
@@ -134,12 +135,10 @@ impl ChaError {
                 CallError::msg(format!("Missing element ${}.", names[2]))
             }
             Self::BadNum(n) => CallError::msg(format!(
-                "Only 3 elements allowed, but {} were passed.",
-                n
+                "Only 3 elements allowed, but {n} were passed.",
             )),
             Self::SlashBadNum(n) => CallError::msg(format!(
-                "Only 2 slash-separated elements allowed, but {} {} passed.",
-                n,
+                "Only 2 slash-separated elements allowed, but {n} {} passed.",
                 if n == 1 { "was" } else { "were" },
             )),
         }

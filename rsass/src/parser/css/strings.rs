@@ -67,9 +67,9 @@ pub fn css_string_sq(input: Span) -> PResult<CssString> {
 fn normalized_first_escaped_char(input: Span) -> PResult<String> {
     let (rest, c) = escaped_char(input)?;
     let result = if c.is_alphabetic() || u32::from(c) >= 0xa1 {
-        format!("{}", c)
+        format!("{c}")
     } else if !c.is_control() && !c.is_numeric() && c != '\n' && c != '\t' {
-        format!("\\{}", c)
+        format!("\\{c}")
     } else {
         format!("\\{:x} ", u32::from(c))
     };
@@ -78,9 +78,9 @@ fn normalized_first_escaped_char(input: Span) -> PResult<String> {
 fn normalized_escaped_char(input: Span) -> PResult<String> {
     let (rest, c) = escaped_char(input)?;
     let result = if c.is_alphanumeric() || c == '-' || u32::from(c) >= 0xa1 {
-        format!("{}", c)
+        format!("{c}")
     } else if !c.is_control() && c != '\n' && c != '\t' {
-        format!("\\{}", c)
+        format!("\\{c}")
     } else {
         format!("\\{:x} ", u32::from(c))
     };
@@ -94,7 +94,7 @@ fn normalized_escaped_char_q(input: Span) -> PResult<String> {
     } else if c.is_control() && c != '\t' {
         format!("\\{:x} ", u32::from(c))
     } else if c == '-' || c == '\\' || c == ' ' {
-        format!("\\{}", c)
+        format!("\\{c}")
     } else {
         c.to_string()
     };

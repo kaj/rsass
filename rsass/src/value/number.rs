@@ -142,7 +142,7 @@ impl Mul<&Rational> for &NumValue {
             NumValue::Rational(s) => (s * rhs).into(),
             NumValue::BigRational(s) => (s.as_ref() * biggen(rhs)).into(),
             NumValue::Float(s) => {
-                rhs.to_f64().map(|r| s * r).unwrap_or(f64::NAN).into()
+                rhs.to_f64().map_or(f64::NAN, |r| s * r).into()
             }
         }
     }
@@ -705,7 +705,7 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
                                     }
                                 }
                             } else {
-                                write!(dec, "{}", end)?;
+                                write!(dec, "{end}")?;
                             }
                         }
                     }
@@ -718,11 +718,11 @@ impl<'a> fmt::Display for Formatted<'a, Number> {
 
                     let skip_zero = self.format.is_compressed();
                     if !(whole.is_zero() && skip_zero && !dec.is_empty()) {
-                        write!(out, "{}", whole)?;
+                        write!(out, "{whole}")?;
                     }
 
                     if !dec.is_empty() {
-                        write!(out, ".{}", dec)?;
+                        write!(out, ".{dec}")?;
                     }
                     Ok(())
                 }
@@ -786,7 +786,7 @@ where
                     }
                 }
             } else {
-                write!(dec, "{}", end)?;
+                write!(dec, "{end}")?;
             }
         }
     }
@@ -797,11 +797,11 @@ where
 
     let skip_zero = format.is_compressed();
     if !(whole.is_zero() && skip_zero && !dec.is_empty()) {
-        write!(out, "{}", whole)?;
+        write!(out, "{whole}")?;
     }
 
     if !dec.is_empty() {
-        write!(out, ".{}", dec)?;
+        write!(out, ".{dec}")?;
     }
     Ok(())
 }
@@ -842,7 +842,7 @@ impl fmt::Display for BadNumber {
     fn fmt(&self, out: &mut fmt::Formatter) -> fmt::Result {
         match self {
             BadNumber::TooLarge => out.write_str("Number too large"),
-            BadNumber::BadFloat(f) => write!(out, "Bad float: {}", f),
+            BadNumber::BadFloat(f) => write!(out, "Bad float: {f}"),
         }
     }
 }

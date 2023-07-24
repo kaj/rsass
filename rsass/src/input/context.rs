@@ -1,5 +1,6 @@
 use super::{
     CargoLoader, FsLoader, LoadError, Loader, SourceFile, SourceKind,
+    SourcePos,
 };
 use crate::output::{handle_parsed, CssData, Format};
 use crate::{Error, ScopeRef};
@@ -167,7 +168,7 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
 
     /// Get the scope for this context.
     ///
-    /// A ScopeRef dereferences to a [`crate::Scope`], which uses internal
+    /// A `ScopeRef` dereferences to a [`crate::Scope`], which uses internal
     /// mutability.
     /// So this can be used for predefining variables, functions, mixins,
     /// or modules before transforming some scss input.
@@ -211,26 +212,26 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
         let names: &[Combine] = if from.is_import() {
             &[
                 // base will either be empty or end with a slash.
-                &|base, name| format!("{}{}.import.scss", base, name),
-                &|base, name| format!("{}_{}.import.scss", base, name),
-                &|base, name| format!("{}{}.scss", base, name),
-                &|base, name| format!("{}_{}.scss", base, name),
-                &|base, name| format!("{}{}/index.import.scss", base, name),
-                &|base, name| format!("{}{}/_index.import.scss", base, name),
-                &|base, name| format!("{}{}/index.scss", base, name),
-                &|base, name| format!("{}{}/_index.scss", base, name),
-                &|base, name| format!("{}{}.css", base, name),
-                &|base, name| format!("{}_{}.css", base, name),
+                &|base, name| format!("{base}{name}.import.scss"),
+                &|base, name| format!("{base}_{name}.import.scss"),
+                &|base, name| format!("{base}{name}.scss"),
+                &|base, name| format!("{base}_{name}.scss"),
+                &|base, name| format!("{base}{name}/index.import.scss"),
+                &|base, name| format!("{base}{name}/_index.import.scss"),
+                &|base, name| format!("{base}{name}/index.scss"),
+                &|base, name| format!("{base}{name}/_index.scss"),
+                &|base, name| format!("{base}{name}.css"),
+                &|base, name| format!("{base}_{name}.css"),
             ]
         } else {
             &[
                 // base will either be empty or end with a slash.
-                &|base, name| format!("{}{}.scss", base, name),
-                &|base, name| format!("{}_{}.scss", base, name),
-                &|base, name| format!("{}{}/index.scss", base, name),
-                &|base, name| format!("{}{}/_index.scss", base, name),
-                &|base, name| format!("{}{}.css", base, name),
-                &|base, name| format!("{}_{}.css", base, name),
+                &|base, name| format!("{base}{name}.scss"),
+                &|base, name| format!("{base}_{name}.scss"),
+                &|base, name| format!("{base}{name}/index.scss"),
+                &|base, name| format!("{base}{name}/_index.scss"),
+                &|base, name| format!("{base}{name}.css"),
+                &|base, name| format!("{base}_{name}.css"),
             ]
         };
         // Note: Should a "full stack" of bases be used here?
@@ -262,10 +263,8 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
                 .find_file(url)
                 .map(|file| file.map(|file| (url.into(), file)))
         } else {
-            let (base, name) = url
-                .rfind('/')
-                .map(|p| url.split_at(p + 1))
-                .unwrap_or(("", url));
+            let (base, name) =
+                url.rfind('/').map_or(("", url), |p| url.split_at(p + 1));
 
             for name in names.iter().map(|f| f(base, name)) {
                 if let Some(result) = self.loader.find_file(&name)? {
@@ -307,11 +306,11 @@ impl<AnyLoader: Loader> Context<AnyLoader> {
 /// Make a url relative to a given base.
 fn relative<'a>(base: &SourceKind, url: &'a str) -> Cow<'a, str> {
     base.next()
-        .map(|pos| pos.file_url())
+        .map(SourcePos::file_url)
         .and_then(|base| {
             base.rfind('/')
                 .map(|p| base.split_at(p + 1).0)
-                .map(|base| format!("{}{}", base, url).into())
+                .map(|base| format!("{base}{url}").into())
         })
         .unwrap_or_else(|| url.into())
 }

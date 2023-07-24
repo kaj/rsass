@@ -14,7 +14,7 @@ type Result<T> = std::result::Result<T, ArgsError>;
 pub struct FormalArgs(Vec<(Name, Option<Value>)>, Option<Name>);
 
 impl FormalArgs {
-    /// Create a new FormalArgs.
+    /// Create a new `FormalArgs`.
     ///
     /// The given arg-pairs each have a name and an optional default value.
     pub fn new(args: Vec<(Name, Option<Value>)>) -> FormalArgs {
@@ -105,7 +105,7 @@ impl fmt::Display for FormalArgs {
                 default.inspect(out)?;
             }
             for (name, default) in rest {
-                write!(out, ", ${}", name)?;
+                write!(out, ", ${name}")?;
                 if let Some(default) = default {
                     out.write_str(": ")?;
                     default.inspect(out)?;
@@ -113,7 +113,7 @@ impl fmt::Display for FormalArgs {
             }
         }
         if let Some(va) = &self.1 {
-            write!(out, ", ${}...", va)?;
+            write!(out, ", ${va}...")?;
         }
         out.write_str(")")
     }
@@ -164,10 +164,10 @@ impl fmt::Display for ArgsError {
                 if *m != 1 { "were" } else { "was" },
             ),
             ArgsError::Missing(name) => {
-                write!(out, "Missing argument ${}.", name)
+                write!(out, "Missing argument ${name}.")
             }
             ArgsError::Unexpected(name) => {
-                write!(out, "No argument named ${}.", name)
+                write!(out, "No argument named ${name}.")
             }
             ArgsError::Eval(e) => e.fmt(out),
         }

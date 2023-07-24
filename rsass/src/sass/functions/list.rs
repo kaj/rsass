@@ -101,16 +101,16 @@ pub fn create_module() -> Scope {
             Value::ArgList(arg) => {
                 let n = s.get_map(name!(n), |v| index_of(v, arg.len()))?;
                 Ok(arg.positional.get(n).cloned().unwrap_or_else(|| {
-                    arg.named
-                        .get_item(n - arg.positional.len())
-                        .map(|(k, v)| {
+                    arg.named.get_item(n - arg.positional.len()).map_or(
+                        Value::Null,
+                        |(k, v)| {
                             Value::List(
                                 vec![Value::from(k.as_ref()), v.clone()],
                                 Some(ListSeparator::Space),
                                 false,
                             )
-                        })
-                        .unwrap_or(Value::Null)
+                        },
+                    )
                 }))
             }
             Value::List(list, _, _) => {
@@ -142,9 +142,9 @@ pub fn create_module() -> Scope {
         let lists = s
             .get_map(name!(lists), check::va_list)?
             .into_iter()
-            .map(|v| v.iter_items())
+            .map(Value::iter_items)
             .collect::<Vec<_>>();
-        let len = lists.iter().map(|v| v.len()).min().unwrap_or(0);
+        let len = lists.iter().map(Vec::len).min().unwrap_or(0);
         let result = (0..len)
             .map(|i| {
                 let items = lists.iter().map(|v| v[i].clone()).collect();
@@ -234,10 +234,7 @@ fn index_of(v: Value, len: usize) -> Result<usize, String> {
     } else if n == 0 {
         Err("List index may not be 0.".into())
     } else {
-        Err(format!(
-            "Invalid index {} for a list with {} elements.",
-            n, len
-        ))
+        Err(format!("Invalid index {n} for a list with {len} elements."))
     }
 }
 

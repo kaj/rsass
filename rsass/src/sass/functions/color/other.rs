@@ -204,7 +204,7 @@ pub fn register(f: &mut Scope) {
     def!(f, ie_hex_str(color), |s| {
         let (r, g, b, alpha) =
             Color::to_rgba(&s.get(name!(color))?).to_bytes();
-        Ok(format!("#{:02X}{:02X}{:02X}{:02X}", alpha, r, g, b).into())
+        Ok(format!("#{alpha:02X}{r:02X}{g:02X}{b:02X}").into())
     });
 }
 
@@ -247,12 +247,11 @@ fn check_none(
     kind: &str,
     with_kind: &str,
 ) -> Result<(), CallError> {
-    if args.iter().all(|v| v.is_none()) {
+    if args.iter().all(Option::is_none) {
         Ok(())
     } else {
         Err(CallError::msg(format!(
-            "{} parameters may not be passed along with {} parameters.",
-            kind, with_kind
+            "{kind} parameters may not be passed along with {with_kind} parameters."
         )))
     }
 }

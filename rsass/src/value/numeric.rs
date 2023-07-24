@@ -4,7 +4,7 @@ use std::fmt::{self, Display};
 use std::ops::{Div, Mul, Neg};
 
 /// A Numeric value is a [`Number`] with a [`Unit`] (which may be
-/// Unit::None).
+/// `Unit::None`).
 #[derive(Clone, Eq)]
 pub struct Numeric {
     /// The number value of this numeric.
@@ -67,7 +67,7 @@ impl Numeric {
 
     /// Convert this numeric value to a given unit, if possible.
     ///
-    /// Like [as_unit](Self::as_unit), except a unitless numeric is
+    /// Like [`as_unit`](Self::as_unit), except a unitless numeric is
     /// considered to be the expected unit.
     pub fn as_unit_def(&self, unit: Unit) -> Option<Number> {
         if self.is_no_unit() {

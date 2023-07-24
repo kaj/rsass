@@ -82,7 +82,7 @@ impl MixinDecl {
 
                 let scope = ScopeRef::sub(scope);
                 if let Some(with) = with {
-                    for (key, value) in with.into_iter() {
+                    for (key, value) in with {
                         scope.define(key.into(), value)?;
                     }
                 }
@@ -123,7 +123,7 @@ impl Mixin {
         self.scope.define_content(match body {
             Some(body) => body.closure(scope).into(),
             None => MixinDecl::NoBody,
-        })
+        });
     }
 }
 
@@ -136,7 +136,7 @@ fn get_opt_map(
         v => v.try_into().map(Some).map_err(|e| match e {
             ValueToMapError::Root(err) => CallError::BadArgument(name, err),
             ValueToMapError::Key(err) => {
-                CallError::msg(format!("${} key: {}", name, err))
+                CallError::msg(format!("${name} key: {err}"))
             }
         }),
     }

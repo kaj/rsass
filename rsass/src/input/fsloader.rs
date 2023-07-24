@@ -8,7 +8,7 @@ pub struct FsLoader {
 }
 
 impl FsLoader {
-    /// Create a new FsFileContext.
+    /// Create a new `FsFileContext`.
     ///
     /// Files will be resolved from the current working directory.
     pub fn for_cwd() -> Self {
@@ -22,7 +22,7 @@ impl FsLoader {
         self.path.push(path.into());
     }
 
-    /// Create a Loader and a SourceFile from a given Path.
+    /// Create a loader and a `SourceFile` from a given `Path`.
     pub fn for_path(path: &Path) -> Result<(Self, SourceFile), LoadError> {
         let mut f = std::fs::File::open(path)
             .map_err(|e| LoadError::Input(path.display().to_string(), e))?;

@@ -67,7 +67,7 @@ impl MediaArgs {
                 a.write(buf)?;
             }
             MediaArgs::Condition(c, v) => {
-                write!(buf, "({c}: {})", v.format(buf.format()))?
+                write!(buf, "({c}: {})", v.format(buf.format()))?;
             }
             MediaArgs::Comma(args) => {
                 if let Some((first, rest)) = args.split_first() {
@@ -113,7 +113,7 @@ impl MediaArgs {
                         &first.to_string(buf.format()).replace('\n', " "),
                     );
                     for (op, val) in rest {
-                        write!(buf, " {} ", op)?;
+                        write!(buf, " {op} ")?;
                         buf.add_str(
                             &val.to_string(buf.format()).replace('\n', " "),
                         );

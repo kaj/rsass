@@ -25,7 +25,7 @@ pub trait CssDestination {
         value: CssString,
     ) -> Result;
 
-    /// Nop in default implementation, adds a spacer in CssHead.
+    /// Nop in default implementation, adds a spacer in `CssHead`.
     fn separate(&mut self) {}
 }
 
@@ -60,7 +60,7 @@ impl<'a> Drop for RuleDest<'a> {
             Ok(())
         }
         if let Err(err) = end(self) {
-            eprintln!("Error in ending RuleDest: {}", err);
+            eprintln!("Error in ending RuleDest: {err}");
         }
     }
 }
@@ -104,7 +104,7 @@ impl<'a> CssDestination for RuleDest<'a> {
     }
 
     fn push_comment(&mut self, c: Comment) {
-        self.rule.push(c.into())
+        self.rule.push(c.into());
     }
 
     fn push_item(&mut self, item: Item) -> Result {
@@ -162,10 +162,10 @@ impl<'a> CssDestination for NsRuleDest<'a> {
     }
 
     fn push_import(&mut self, import: Import) {
-        self.parent.push_import(import)
+        self.parent.push_import(import);
     }
     fn push_comment(&mut self, c: Comment) {
-        self.parent.push_comment(c)
+        self.parent.push_comment(c);
     }
     fn push_item(&mut self, _item: Item) -> Result {
         Err(Invalid::InNsRule)
@@ -215,7 +215,7 @@ impl<'a> Drop for AtRuleDest<'a> {
         }
         let result = AtRule::new(name, args, Some(body));
         if let Err(err) = self.parent.push_item(result.into()) {
-            eprintln!("Error ending AtRuleDest: {}", err);
+            eprintln!("Error ending AtRuleDest: {err}");
         }
         self.parent.separate();
     }
@@ -333,7 +333,7 @@ impl<'a> Drop for AtMediaDest<'a> {
         }
         let result = MediaRule::new(args, body);
         if let Err(err) = self.parent.push_item(result.into()) {
-            eprintln!("Error ending AtRuleDest: {}", err);
+            eprintln!("Error ending AtRuleDest: {err}");
         }
         self.parent.separate();
     }

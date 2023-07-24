@@ -82,11 +82,7 @@ impl fmt::Display for RangeError {
                 )
             }
             RangeError::IncompatibleUnits(a, b) => {
-                write!(
-                    out,
-                    "for loop needs compatible units, got {}..{}",
-                    a, b,
-                )
+                write!(out, "for loop needs compatible units, got {a}..{b}")
             }
         }
     }

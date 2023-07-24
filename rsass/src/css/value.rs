@@ -47,7 +47,7 @@ pub enum Value {
     ArgList(super::CallArgs),
 }
 
-/// An OrderMap where both the keys and the values are css values.
+/// An `OrderMap` where both the keys and the values are css values.
 pub type ValueMap = OrderMap<Value, Value>;
 
 impl Value {
@@ -60,10 +60,10 @@ impl Value {
     pub fn valid_css(self) -> Result<Self, InvalidCss> {
         match self {
             Value::Numeric(ref num, _) => {
-                if !num.unit.valid_in_css() {
-                    Err(InvalidCss::Value(self))
-                } else {
+                if num.unit.valid_in_css() {
                     Ok(self)
+                } else {
+                    Err(InvalidCss::Value(self))
                 }
             }
             Value::BinOp(op) => Ok(op.valid_css()?.into()),
@@ -172,7 +172,7 @@ impl Value {
         match *self {
             Value::Null => true,
             Value::List(ref list, _, false) => {
-                list.iter().all(|v| v.is_null())
+                list.iter().all(Value::is_null)
             }
             Value::Literal(ref s) => s.is_null(),
             Value::Paren(ref v) => v.is_null(),
@@ -198,7 +198,7 @@ impl Value {
         match self {
             Value::Literal(s) => s.unquote().into(),
             Value::List(list, s, b) => Value::List(
-                list.into_iter().map(|v| v.unquote()).collect(),
+                list.into_iter().map(Value::unquote).collect(),
                 s,
                 b,
             ),
@@ -244,8 +244,8 @@ impl Value {
 
     /// Get a reference to this `Value` bound to an output format.
     ///
-    /// The bound referene implements `Display`, so it can be written
-    /// with the rust `format!(...) macros or coverted with the
+    /// The bound reference implements `Display`, so it can be written
+    /// with the rust `format!(...)` macros or coverted with the
     /// `to_string()` method.
     ///
     /// # Example
@@ -340,9 +340,7 @@ impl TryFrom<Value> for CssString {
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
             Value::Literal(s) => Ok(s),
-            Value::Call(name, args) => {
-                Ok(format!("{}({})", name, args).into())
-            }
+            Value::Call(name, args) => Ok(format!("{name}({args})").into()),
             v => Err(is_not(&v, "a string")),
         }
     }
@@ -350,7 +348,7 @@ impl TryFrom<Value> for CssString {
 impl TryFrom<Value> for String {
     type Error = String;
     fn try_from(value: Value) -> Result<Self, Self::Error> {
-        CssString::try_from(value).map(|s| s.take_value())
+        CssString::try_from(value).map(CssString::take_value)
     }
 }
 
@@ -407,10 +405,10 @@ impl TryInto<OrderMap<CssString, Value>> for Value {
     }
 }
 
-/// Specific error type for converting a Value to an OrderMap.
+/// Specific error type for converting a `Value` to a `ValueMap`.
 #[derive(Debug)]
 pub enum ValueToMapError {
-    /// The Value was not convertible to a ValueMap.
+    /// The `Value` was not convertible to a `ValueMap`.
     Root(String),
     /// One key value was not convertible to the key type.
     Key(String),
