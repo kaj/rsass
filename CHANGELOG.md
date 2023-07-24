@@ -7,6 +7,11 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+* Updated sass-spec test suite to 2023-07-21.
+
+
 ## Release 0.28.0
 
 Released 2023-07-09.

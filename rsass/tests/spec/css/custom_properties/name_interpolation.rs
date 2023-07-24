@@ -2,13 +2,28 @@
 
 #[allow(unused)]
 fn runner() -> crate::TestRunner {
-    super::runner().with_cwd("name_interpolation")
+    super::runner()
+        .with_cwd("name_interpolation")
+        .mock_file("import_nesting_use/bar.scss", "a { #{--}: b c }\n")
+        .mock_file("import_nesting_use/foo.scss", "@use 'bar';\n")
 }
 
 #[test]
-fn nested_properties() {
+fn import_nesting_use() {
+    let runner = runner().with_cwd("import_nesting_use");
     assert_eq!(
-        runner().ok("// Regression test for sass/dart-sass#1095\
+        runner.ok("// Regression test for sass/dart-sass#2023\
+             \n@import \'foo\';\n"),
+        "a {\
+         \n  --: b c;\
+         \n}\n"
+    );
+}
+#[test]
+fn nested_properties() {
+    let runner = runner().with_cwd("nested_properties");
+    assert_eq!(
+        runner.ok("// Regression test for sass/dart-sass#1095\
              \na {\
              \n  #{--b}: {c: d}\
              \n}\n"),
@@ -19,8 +34,9 @@ fn nested_properties() {
 }
 #[test]
 fn non_conformant() {
+    let runner = runner().with_cwd("non_conformant");
     assert_eq!(
-        runner().ok(
+        runner.ok(
             "// TODO: rewrite these test cases to follow the style guide.\n\
              \n.name-interpolation {\
              \n  // If the entire name is interpolated, SassScript is allowed on the\
