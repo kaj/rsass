@@ -52,8 +52,12 @@ impl CargoLoader {
         let mut f = std::fs::File::open(&path)
             .map_err(|e| LoadError::Input(path.display().to_string(), e))?;
         cargo_watch(&path);
-        let (path, name) = if let Some(base) = path.parent() {
-            (vec![base.to_path_buf()], path.strip_prefix(base).unwrap())
+
+        let (path, name) = if let Some((base, path)) = path
+            .parent()
+            .and_then(|base| Some((base, path.strip_prefix(base).ok()?)))
+        {
+            (vec![base.to_path_buf()], path)
         } else {
             (vec![get_pkg_base()?], path.as_ref())
         };

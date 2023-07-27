@@ -26,11 +26,16 @@ impl FsLoader {
     pub fn for_path(path: &Path) -> Result<(Self, SourceFile), LoadError> {
         let mut f = std::fs::File::open(path)
             .map_err(|e| LoadError::Input(path.display().to_string(), e))?;
-        let (path, name) = if let Some(base) = path.parent() {
-            (vec![base.to_path_buf()], path.strip_prefix(base).unwrap())
-        } else {
-            (vec![PathBuf::new()], path)
-        };
+
+        let (path, name) = path
+            .parent()
+            .and_then(|base| {
+                Some((
+                    vec![base.to_path_buf()],
+                    path.strip_prefix(base).ok()?,
+                ))
+            })
+            .unwrap_or_else(|| (vec![PathBuf::new()], path));
         let loader = Self { path };
         let source = SourceName::root(name.display().to_string());
         let source = SourceFile::read(&mut f, source)?;

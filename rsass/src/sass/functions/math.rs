@@ -68,11 +68,11 @@ pub fn create_module() -> Scope {
                 let mut sum = f64::from(first.value.clone()).powi(2);
                 let unit = first.unit.clone();
                 for (i, v) in rest.iter().enumerate() {
-                    let num = as_numeric(v)?;
-                    let scaled = num
+                    let v = as_numeric(v)?;
+                    let scaled = v
                         .as_unitset(&unit)
                         .ok_or_else(|| {
-                            diff_units_msg(&num, &first, "numbers[1]".into())
+                            diff_units_msg(&v, &first, "numbers[1]".into())
                         })
                         .named(format!("numbers[{}]", i + 2).into())?;
                     sum += f64::from(scaled).powi(2);

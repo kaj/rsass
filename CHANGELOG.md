@@ -9,6 +9,7 @@ project adheres to
 
 ## Unreleased
 
+* Some more (minor, mostly clippy-pedantic-suggested) internal cleanup.
 * Updated sass-spec test suite to 2023-07-21.
 
 

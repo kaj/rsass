@@ -34,7 +34,7 @@ impl CallArgs {
                 result.add_from_value_map(args)?;
                 Ok(result)
             }
-            Value::Null => Ok(Default::default()),
+            Value::Null => Ok(CallArgs::default()),
             v => Ok(CallArgs {
                 positional: vec![v],
                 ..Default::default()

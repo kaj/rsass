@@ -70,7 +70,6 @@ impl Value {
             Value::UnaryOp(_, ref v) if v.is_calculation() => {
                 Err(InvalidCss::UndefOp(self))
             }
-            Value::Function(..) => Err(InvalidCss::Value(self)),
             Value::Call(ref name, ref args) => {
                 if name != "calc" {
                     for arg in &args.positional {
@@ -86,7 +85,9 @@ impl Value {
                     Ok(self)
                 }
             }
-            Value::Map(_) => Err(InvalidCss::Value(self)),
+            Value::Function(..) | Value::Map(_) => {
+                Err(InvalidCss::Value(self))
+            }
             _ => Ok(self),
         }
     }
@@ -281,9 +282,9 @@ impl PartialEq for Value {
             (Value::Bang(a), Value::Bang(b)) => a == b,
             (Value::Numeric(a, _), Value::Numeric(b, _)) => a == b,
             (Value::Literal(a), Value::Literal(b)) => a == b,
-            (Value::Null, Value::Null) => true,
-            (Value::True, Value::True) => true,
-            (Value::False, Value::False) => true,
+            (Value::True, Value::True)
+            | (Value::False, Value::False)
+            | (Value::Null, Value::Null) => true,
             (Value::Color(a, _), Value::Color(b, _)) => a == b,
             (Value::Call(af, aa), Value::Call(bf, ba)) => {
                 af == bf && aa == ba
