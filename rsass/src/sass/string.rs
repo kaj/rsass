@@ -139,6 +139,9 @@ impl SassString {
     pub(crate) fn append(&mut self, other: &Self) {
         self.parts.extend_from_slice(&other.parts);
     }
+    pub(crate) fn parts(self) -> Vec<StringPart> {
+        self.parts
+    }
 }
 
 impl fmt::Display for SassString {

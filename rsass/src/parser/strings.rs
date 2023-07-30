@@ -1,4 +1,3 @@
-use super::util::opt_spacelike;
 use super::value::value_expression;
 use super::{input_to_str, input_to_string, PResult, Span};
 use crate::sass::{SassString, StringPart};
@@ -48,19 +47,15 @@ pub fn var_name(input: Span) -> PResult<SassString> {
 }
 
 pub fn custom_value(input: Span) -> PResult<SassString> {
-    alt((
-        preceded(opt_spacelike, sass_string_dq),
-        preceded(opt_spacelike, sass_string_sq),
-        map(custom_value_inner, |mut parts| {
-            if let Some(StringPart::Raw(last)) = parts.last_mut() {
-                if last.ends_with('\n') {
-                    last.pop();
-                    last.push(' ');
-                }
+    map(custom_value_inner, |mut parts| {
+        if let Some(StringPart::Raw(last)) = parts.last_mut() {
+            if last.ends_with('\n') {
+                last.pop();
+                last.push(' ');
             }
-            SassString::new(parts, Quotes::None)
-        }),
-    ))(input)
+        }
+        SassString::new(parts, Quotes::None)
+    })(input)
 }
 pub fn custom_value_inner(input: Span) -> PResult<Vec<StringPart>> {
     fold_many1(
@@ -68,9 +63,19 @@ pub fn custom_value_inner(input: Span) -> PResult<Vec<StringPart>> {
             |input| custom_value_paren("[", "]", input),
             |input| custom_value_paren("{", "}", input),
             |input| custom_value_paren("(", ")", input),
+            map(sass_string_dq, |mut s| {
+                s.prepend("\"");
+                s.append_str("\"");
+                s.parts()
+            }),
+            map(sass_string_sq, |mut s| {
+                s.prepend("'");
+                s.append_str("'");
+                s.parts()
+            }),
             map(string_part_interpolation, |s| vec![s]),
             map(unquoted_part, |s| vec![StringPart::Raw(s)]),
-            map_opt(is_not("\"#\\;{}()[]"), |s: Span| {
+            map_opt(is_not("\"'#\\;{}()[]"), |s: Span| {
                 if s.is_empty() {
                     None
                 } else {
