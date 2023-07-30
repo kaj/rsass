@@ -102,6 +102,9 @@ fn normalized_escaped_char_q(input: Span) -> PResult<String> {
 }
 
 fn selector_plain_part(input: Span) -> PResult<&str> {
+    // FIXME: This should be the other way around, allowing only
+    // letters and digits (and not starting with a digit).
+    // Or at the very least, it should forbid ".".
     map_res(is_not("\r\n\t >$\"'\\#+*/()[]{}:;,=!&@"), input_to_str)(input)
 }
 
