@@ -465,6 +465,7 @@ fn content_stmt2(input: Span) -> PResult<Item> {
 fn custom_property(input: Span) -> PResult<Item> {
     let (rest, name) = terminated(opt(sass_string), tag(":"))(input)?;
     let mut name = name.unwrap_or_else(|| SassString::from(""));
+    // The dashes was parsed before calling this method.
     name.prepend("--");
     let (rest, value) =
         terminated(custom_value, alt((tag(";"), peek(tag("}")))))(rest)?;

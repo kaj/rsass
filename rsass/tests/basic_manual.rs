@@ -345,6 +345,40 @@ fn issue_116() {
     );
 }
 
+mod issue_175 {
+    use super::{init_logger, rsass};
+    #[test]
+    fn single() {
+        init_logger();
+        assert_eq!(
+            rsass(
+                b":root {\
+                  \n    --main-font: 'Times New Roman', serif;\
+                  \n}\n",
+            )
+            .unwrap(),
+            ":root {\
+             \n  --main-font: 'Times New Roman', serif;\
+             \n}\n"
+        );
+    }
+    #[test]
+    fn double() {
+        init_logger();
+        assert_eq!(
+            rsass(
+                b":root {\
+                  \n    --main-font: \"Times New Roman\", serif;\
+                  \n}\n",
+            )
+            .unwrap(),
+            ":root {\
+             \n  --main-font: \"Times New Roman\", serif;\
+             \n}\n"
+        );
+    }
+}
+
 /// Test auto-converted from "sass-spec/spec/libsass/rel.hrx", except one failing unit calculation.
 #[test]
 fn rel() {

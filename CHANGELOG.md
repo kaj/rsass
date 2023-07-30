@@ -9,6 +9,9 @@ project adheres to
 
 ## Unreleased
 
+* Quoted strings can now be part of custom values (earlier, a custom value
+  could be _either_ a quoted string or something else).  Thanks @kartikynwa
+  for reporting (issue #175, PR #176).
 * Some more (minor, mostly clippy-pedantic-suggested) internal cleanup.
 * Updated sass-spec test suite to 2023-07-21.
 
