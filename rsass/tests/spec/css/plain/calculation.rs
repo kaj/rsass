@@ -21,7 +21,6 @@ fn function() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn operation() {
     let runner = runner().with_cwd("operation");
     assert_eq!(
@@ -32,7 +31,6 @@ fn operation() {
     );
 }
 #[test]
-#[ignore] // unexepected error
 fn parentheses() {
     let runner = runner().with_cwd("parentheses");
     assert_eq!(

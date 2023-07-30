@@ -24,10 +24,7 @@ impl CallArgs {
         match v {
             Value::ArgList(args) => Ok(args),
             Value::List(v, Some(ListSeparator::Comma), false) => {
-                Ok(CallArgs {
-                    positional: v,
-                    ..Default::default()
-                })
+                Ok(CallArgs::from_list(v))
             }
             Value::Map(args) => {
                 let mut result = CallArgs::default();
@@ -35,11 +32,12 @@ impl CallArgs {
                 Ok(result)
             }
             Value::Null => Ok(CallArgs::default()),
-            v => Ok(CallArgs {
-                positional: vec![v],
-                ..Default::default()
-            }),
+            v => Ok(CallArgs::from_single(v)),
         }
+    }
+    /// Create args that is one single positional argument.
+    pub(crate) fn from_single(arg: Value) -> Self {
+        CallArgs::from_list(vec![arg])
     }
 
     pub(crate) fn from_list(positional: Vec<Value>) -> Self {

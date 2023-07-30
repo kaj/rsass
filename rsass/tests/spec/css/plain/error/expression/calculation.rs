@@ -72,7 +72,7 @@ fn variable() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn wrong_args() {
     let runner = runner().with_cwd("wrong_args");
     assert_eq!(
