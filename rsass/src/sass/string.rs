@@ -111,6 +111,13 @@ impl SassString {
     pub fn is_unquoted(&self) -> bool {
         self.quotes == Quotes::None
     }
+    /// Return true if self contains any string interpolation(s).
+    pub fn is_interpolated(&self) -> bool {
+        self.parts
+            .iter()
+            .any(|p| matches!(p, StringPart::Interpolation(_)))
+    }
+
     /// Check if this `SassString` is a single raw value.
     ///
     /// If so, return a reference to it.

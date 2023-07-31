@@ -205,7 +205,7 @@ fn valid_operand(v: &Value) -> bool {
         Value::Numeric(..) => true,
         Value::Call(..) => true,
         Value::BinOp(_) => true,
-        Value::Literal(s) => s.is_css_fn(),
+        Value::Literal(_) => true,
         Value::Paren(v) => valid_operand(v),
         _ => false,
     }

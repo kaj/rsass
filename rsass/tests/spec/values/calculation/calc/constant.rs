@@ -10,7 +10,6 @@ mod e {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn alone() {
         assert_eq!(
             runner().ok("a {b: calc(e)}\n"),
@@ -20,7 +19,6 @@ mod e {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn case_insensitive() {
         assert_eq!(
             runner().ok("a {b: calc(E)}\n"),
@@ -30,7 +28,6 @@ mod e {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn equals_max_precision() {
         assert_eq!(
         runner().ok(
@@ -47,7 +44,6 @@ mod e {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn simplified() {
             assert_eq!(
                 runner().ok("a {b: calc(e * 2)}\n"),
@@ -57,7 +53,6 @@ mod e {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn unsimplified() {
             assert_eq!(
                 runner().ok("a {b: calc(e * (1% + 1px))}\n"),
@@ -82,7 +77,6 @@ mod infinity {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn case_insensitive() {
         assert_eq!(
             runner().ok("a {b: calc(InFiNiTy)}\n"),
@@ -96,7 +90,6 @@ mod infinity {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn simplified() {
             assert_eq!(
                 runner().ok("a {b: calc(infinity * 2)}\n"),
@@ -110,7 +103,6 @@ mod infinity {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn computed() {
                 assert_eq!(
                     runner().ok("a {b: calc((1/0) * (1% + 1px))}\n"),
@@ -142,7 +134,6 @@ mod infinity {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn test_type() {
         assert_eq!(
             runner().ok("@use \'sass:meta\';\
@@ -167,7 +158,6 @@ mod minus_infinity {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn case_insensitive() {
         assert_eq!(
             runner().ok("a {b: calc(-iNfInItY)}\n"),
@@ -181,7 +171,6 @@ mod minus_infinity {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn simplified() {
             assert_eq!(
                 runner().ok("a {b: calc(-infinity * 2)}\n"),
@@ -195,7 +184,6 @@ mod minus_infinity {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn computed() {
                 assert_eq!(
                     runner().ok("a {b: calc((-1/0) * (1% + 1px))}\n"),
@@ -227,7 +215,6 @@ mod minus_infinity {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn test_type() {
         assert_eq!(
             runner().ok("@use \'sass:meta\';\
@@ -252,7 +239,6 @@ mod nan {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn case_insensitive() {
         assert_eq!(
             runner().ok("a {b: calc(nan)}\n"),
@@ -266,7 +252,6 @@ mod nan {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn simplified() {
             assert_eq!(
                 runner().ok("a {b: calc(NaN * 2)}\n"),
@@ -280,7 +265,6 @@ mod nan {
             use super::runner;
 
             #[test]
-            #[ignore] // wrong result
             fn computed() {
                 assert_eq!(
                     runner().ok("a {b: calc((0/0) * (1% + 1px))}\n"),
@@ -312,7 +296,6 @@ mod nan {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn test_type() {
         assert_eq!(
             runner().ok("@use \'sass:meta\';\
@@ -328,7 +311,6 @@ mod pi {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn alone() {
         assert_eq!(
             runner().ok("a {b: calc(pi)}\n"),
@@ -338,7 +320,6 @@ mod pi {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn case_insensitive() {
         assert_eq!(
             runner().ok("a {b: calc(pI)}\n"),
@@ -348,7 +329,6 @@ mod pi {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn equals_max_precision() {
         assert_eq!(
         runner().ok(
@@ -365,7 +345,6 @@ mod pi {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn simplified() {
             assert_eq!(
                 runner().ok("a {b: calc(pi * 2)}\n"),
@@ -375,7 +354,6 @@ mod pi {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn unsimplified() {
             assert_eq!(
                 runner().ok("a {b: calc(pi * (1% + 1px))}\n"),
@@ -414,7 +392,6 @@ mod precedence {
         }
     }
     #[test]
-    #[ignore] // wrong result
     fn after_minus() {
         assert_eq!(
             runner().ok("a {b: calc(1% - (infinity * 1px))}\n"),
@@ -424,7 +401,6 @@ mod precedence {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn after_plus() {
         assert_eq!(
             runner().ok("a {b: calc(1% + (infinity * 1px))}\n"),
@@ -434,7 +410,6 @@ mod precedence {
         );
     }
     #[test]
-    #[ignore] // wrong result
     fn after_times() {
         assert_eq!(
             runner().ok("a {b: calc(var(--c) * (infinity * 1px))}\n"),

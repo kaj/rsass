@@ -232,11 +232,21 @@ lazy_static! {
                     _ => None,
                 }
             }
-            fn in_calc(v: Value) -> Result<Value, CallError> {
+            fn do_eval(v: Value) -> Result<Value, CallError> {
                 match v {
                     Value::Literal(s) if s.quotes() == Quotes::None => {
-                        if let Some(arg) = s
-                            .value()
+                        let s = s.value();
+                        if s.eq_ignore_ascii_case("e") {
+                            Ok(Value::scalar(std::f64::consts::E))
+                        } else if s.eq_ignore_ascii_case("pi") {
+                            Ok(Value::scalar(std::f64::consts::PI))
+                        } else if s.eq_ignore_ascii_case("infinity") {
+                            Ok(Value::scalar(f64::INFINITY))
+                        } else if s.eq_ignore_ascii_case("-infinity") {
+                            Ok(Value::scalar(-f64::INFINITY))
+                        } else if s.eq_ignore_ascii_case("NaN") {
+                            Ok(Value::scalar(f64::NAN))
+                        } else if let Some(arg) = s
                             .strip_prefix("calc(")
                             .and_then(|s| s.strip_suffix(')'))
                         {
@@ -250,12 +260,51 @@ lazy_static! {
                             && args.check_no_named().is_ok()
                             && args.positional.len() == 1
                         {
+                            let arg =
+                                args.positional.into_iter().next().unwrap();
                             Ok(Value::Paren(Box::new(
-                                args.positional.into_iter().next().unwrap(),
+                                do_eval(arg)?,
                             )))
                         } else {
                             Ok(Value::Call(name, args))
                         }
+                    }
+                    Value::BinOp(op) => {
+                        let a = do_eval(op.a().clone())?;
+                        let b = do_eval(op.b().clone())?;
+                        let op = op.op();
+                        if let Ok(Some(result)) = op.eval(a.clone(), b.clone()) {
+                            return Ok(result);
+                        }
+                        Ok(BinOp::new(
+                            a,
+                            true,
+                            op,
+                            true,
+                            b,
+                        ).into())
+                    }
+                    Value::Numeric(num, c) => {
+                        Ok(Value::Numeric(num, c))
+                    }
+                    Value::Paren(v) => match v.as_ref() {
+                        l @ Value::Paren(_) => Ok(l.clone()),
+                        l @ Value::BinOp(..) => Ok(l.clone()),
+                        _ => Ok(Value::Paren(v)),
+                    }
+                    v => Err(CallError::msg(format!(
+                        "Value {} can't be used in a calculation.",
+                        v.format(Format::introspect())
+                    ))),
+                }
+            }
+            fn in_calc(v: Value) -> Result<Value, CallError> {
+                match v {
+                    Value::Literal(s) if s.quotes() == Quotes::None => {
+                        Ok(s.into())
+                    }
+                    Value::Call(name, args) => {
+                        Ok(Value::Call(name, args))
                     }
                     Value::BinOp(op) => {
                         let a = in_calc(op.a().clone())?;
@@ -289,7 +338,6 @@ lazy_static! {
                         }
                     }
                     Value::Paren(v) => match v.as_ref() {
-                        l @ Value::Literal(_) => Ok(l.clone()),
                         l @ Value::Paren(_) => Ok(l.clone()),
                         l @ Value::BinOp(..) => Ok(l.clone()),
                         _ => Ok(Value::Paren(v)),
@@ -301,15 +349,20 @@ lazy_static! {
                 }
             }
             let v = s.get(name!(expr))?;
+            let v = do_eval(v)?;
             if pre_calc(&v) {
                 match v {
                     Value::Paren(v) => Ok(*v),
                     v => Ok(v),
                 }
             } else {
+                let arg = match in_calc(v)? {
+                    Value::Paren(arg) if !matches!(arg.as_ref(), Value::Call(..)) => *arg,
+                    arg => arg,
+                };
                 Ok(Value::Call(
                     "calc".into(),
-                    CallArgs::from_value(in_calc(v)?).map_err(CallError::msg)?,
+                    CallArgs::from_single(arg),
                 ))
             }
         });

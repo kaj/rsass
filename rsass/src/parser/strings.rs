@@ -186,27 +186,39 @@ fn normalized_escaped_char(input: Span) -> PResult<String> {
     Ok((rest, result))
 }
 
+/// Some special css functions are parsed as plain strings.
+///
+/// For the `calc` function, it is parsed as a string if the arguments
+/// contain a string interpolation, otherwise it is refused by this parser,
+/// so that it can end up beeing parsed as a normal function call.
 pub fn special_function_misc(input: Span) -> PResult<SassString> {
-    let (input, start) = recognize(terminated(
-        alt((
-            map(
-                tuple((
-                    opt(delimited(tag("-"), alphanumeric1, tag("-"))),
-                    alt((
-                        tag("calc"),
-                        tag("element"),
-                        tag("env"),
-                        tag("expression"),
-                    )),
+    let (input, (start, mut args, end)) = verify(
+        tuple((
+            recognize(terminated(
+                alt((
+                    map(
+                        tuple((
+                            opt(delimited(tag("-"), alphanumeric1, tag("-"))),
+                            alt((
+                                tag("calc"),
+                                tag("element"),
+                                tag("env"),
+                                tag("expression"),
+                            )),
+                        )),
+                        |_| (),
+                    ),
+                    map(preceded(tag("progid:"), selector_string), |_| ()),
                 )),
-                |_| (),
-            ),
-            map(preceded(tag("progid:"), selector_string), |_| ()),
+                tag("("),
+            )),
+            special_args,
+            alt((tag(")"), tag(""))),
         )),
-        tag("("),
-    ))(input)?;
-    let (input, mut args) = special_args(input)?;
-    let (input, end) = alt((tag(")"), tag("")))(input)?;
+        |(start, args, _end)| {
+            start.fragment() != b"calc(" || args.is_interpolated()
+        },
+    )(input)?;
 
     args.prepend(from_utf8(start.fragment()).unwrap());
     args.append_str(from_utf8(end.fragment()).unwrap());
