@@ -7,7 +7,10 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## Release 0.28.2.
+
+Released 2023-08-03.  This is a minor release of only rsass itself.
+Progress: 4725 of 7033 tests passed
 
 * Quoted strings can now be part of custom values (earlier, a custom value
   could be _either_ a quoted string or something else).  Thanks @kartikynwa
