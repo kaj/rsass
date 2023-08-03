@@ -5,8 +5,8 @@ use crate::parser::value::numeric;
 use crate::value::{ListSeparator, Operator};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
-use nom::combinator::{into, map, peek, value};
-use nom::multi::{fold_many0, many0};
+use nom::combinator::{into, map, opt, peek, value};
+use nom::multi::{fold_many0, many0, separated_list0};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 
 pub fn any(input: Span) -> PResult<Value> {
@@ -203,17 +203,15 @@ fn call_args(input: Span) -> PResult<CallArgs> {
         .into_iter()
         .map(|(name, val)| (name.into(), val))
         .collect();
-    let (rest, positional) = many0(terminated(
-        single,
-        alt((terminated(tag(","), opt_spacelike), peek(tag(")")))),
-    ))(rest)?;
-
+    let (rest, positional) =
+        separated_list0(terminated(tag(","), opt_spacelike), single)(rest)?;
+    let (rest, trail) = opt(tag(","))(rest)?;
     Ok((
         rest,
         CallArgs {
             positional,
             named,
-            trailing_comma: false,
+            trailing_comma: trail.is_some(),
         },
     ))
 }

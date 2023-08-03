@@ -46,7 +46,6 @@ fn defined_elsewhere() {
     );
 }
 #[test]
-#[ignore] // wrong result
 fn empty_fallback_var() {
     let runner = runner().with_cwd("empty_fallback_var");
     assert_eq!(
