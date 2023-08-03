@@ -16,7 +16,7 @@ project adheres to
 * Improved handling of non-interpolated `calc(...)` expressions in scss,
   they are now properly evaluated (PR #177).
 * Some more (minor, mostly clippy-pedantic-suggested) internal cleanup.
-* Updated sass-spec test suite to 2023-07-21.
+* Updated sass-spec test suite to 2023-08-01.
 
 
 ## Release 0.28.0
