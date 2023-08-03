@@ -13,6 +13,8 @@ project adheres to
   could be _either_ a quoted string or something else).  Thanks @kartikynwa
   for reporting (issue #175, PR #176).
 * Improved handling of `calc(...)` expressions in plain css.
+* Improved handling of non-interpolated `calc(...)` expressions in scss,
+  they are now properly evaluated (PR #177).
 * Some more (minor, mostly clippy-pedantic-suggested) internal cleanup.
 * Updated sass-spec test suite to 2023-07-21.
 

@@ -6,7 +6,7 @@ fn runner() -> crate::TestRunner {
 }
 
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn dollar() {
     assert_eq!(
         runner().err("a {b: calc($)}\n"),
@@ -19,7 +19,7 @@ fn dollar() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn double_operator() {
     assert_eq!(
         runner().err("a {b: calc(1px ** 2px)}\n"),
@@ -32,7 +32,7 @@ fn double_operator() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn empty() {
     assert_eq!(
         runner().err("a {b: calc()}\n"),
@@ -115,7 +115,7 @@ fn leading_operator() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn multiple_args() {
     assert_eq!(
         runner().err("a {b: calc(1px, 2px)}\n"),
@@ -136,7 +136,7 @@ mod no_whitespace {
         use super::runner;
 
         #[test]
-        #[ignore] // missing error
+        #[ignore] // wrong error
         fn after() {
             assert_eq!(
         runner().err(
@@ -233,7 +233,7 @@ mod no_whitespace {
     }
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn trailing_operator() {
     assert_eq!(
         runner().err("a {b: calc(1px *)}\n"),

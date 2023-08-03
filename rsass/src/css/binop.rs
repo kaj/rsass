@@ -123,7 +123,7 @@ impl Display for Formatted<'_, BinOp> {
             self.value.a.format(self.format).fmt(out)?;
             self.value.b.format(self.format).fmt(out)
         } else {
-            use Operator::{Minus, Plus};
+            use Operator::{Div, Minus, Plus};
             fn is_op(v: &Value) -> Option<Operator> {
                 match v {
                     Value::BinOp(op) => Some(op.op),
@@ -137,6 +137,14 @@ impl Display for Formatted<'_, BinOp> {
                 }
                 (Minus, Value::Numeric(v, _)) if v.value.is_negative() => {
                     (Plus, Value::from(-v))
+                }
+                (Div, Value::Numeric(v, c))
+                    if !v.value.is_finite() && !v.is_no_unit() =>
+                {
+                    (
+                        Div,
+                        Value::Paren(Box::new(Value::Numeric(v.clone(), *c))),
+                    )
                 }
                 (op, Value::Paren(p)) => {
                     if let Some(op2) = is_op(p.as_ref()) {
