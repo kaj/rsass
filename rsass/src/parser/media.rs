@@ -1,10 +1,10 @@
 use super::css::media::relational_operator;
 use super::span::Span;
-use super::strings::{sass_string, sass_string_dq, sass_string_sq};
+use super::strings::{sass_string_dq, sass_string_sq};
 use super::util::{ignore_comments, opt_spacelike, semi_or_end};
 use super::value::{
     self, any_additive_expr, any_product, bracket_list, dictionary,
-    function_call, variable,
+    function_call_or_string, variable,
 };
 use super::{body_block, name, PResult};
 use crate::sass::{BinOp, Item, Value};
@@ -43,7 +43,6 @@ pub fn args(input: Span) -> PResult<Value> {
             many0(preceded(
                 opt(ignore_comments),
                 alt((
-                    function_call,
                     dictionary,
                     delimited(
                         tag("("),
@@ -55,8 +54,8 @@ pub fn args(input: Span) -> PResult<Value> {
                     bracket_list,
                     into(value::numeric),
                     variable,
-                    map(sass_string, |s| {
-                        Value::Literal({
+                    map(function_call_or_string, |s| match s {
+                        Value::Literal(s) => Value::Literal({
                             let lower = s
                                 .single_raw()
                                 .unwrap_or_default()
@@ -66,7 +65,8 @@ pub fn args(input: Span) -> PResult<Value> {
                             } else {
                                 s
                             }
-                        })
+                        }),
+                        call => call,
                     }),
                     map(sass_string_dq, Value::Literal),
                     map(sass_string_sq, Value::Literal),

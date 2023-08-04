@@ -7,6 +7,13 @@ The format is based on
 project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+* Handle trailing comma in function arguments in plain css correctly.
+* Refactored function name/plain string handling in scss values to not parse
+  the same unquoted string twice.
+
+
 ## Release 0.28.2.
 
 Released 2023-08-03.  This is a minor release of only rsass itself.

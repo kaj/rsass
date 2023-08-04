@@ -276,9 +276,7 @@ fn simple_value(input: Span) -> PResult<Value> {
         value(Value::Literal("-null".into()), tag("-null")),
         map(var_name, Value::Literal),
         unary_op,
-        function_call,
-        // And a bunch of string variants
-        map(sass_string, literal_or_color),
+        function_call_or_string,
         map(sass_string_dq, Value::Literal),
         map(sass_string_sq, Value::Literal),
     ))(input)
@@ -470,10 +468,13 @@ pub fn special_function(input: Span) -> PResult<Value> {
     alt((css_function, map(special_function_misc, Value::Literal)))(input)
 }
 
-pub fn function_call(input: Span) -> PResult<Value> {
-    let (rest, (name, args)) = pair(sass_string, call_args)(input)?;
-    let pos = input.up_to(&rest).to_owned();
-    Ok((rest, Value::Call(name, args, pos)))
+pub fn function_call_or_string(input: Span) -> PResult<Value> {
+    let (rest, name) = sass_string(input)?;
+    if let Ok((rest, args)) = call_args(rest) {
+        let pos = input.up_to(&rest).to_owned();
+        return Ok((rest, Value::Call(name, args, pos)));
+    }
+    Ok((rest, literal_or_color(name)))
 }
 
 fn literal_or_color(s: SassString) -> Value {

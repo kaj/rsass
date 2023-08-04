@@ -26,7 +26,7 @@ use self::util::{
     spacelike,
 };
 use self::value::{
-    dictionary, function_call, single_value, value_expression,
+    dictionary, function_call_or_string, single_value, value_expression,
 };
 use crate::input::{SourceFile, SourceName, SourcePos};
 use crate::sass::parser::{variable_declaration2, variable_declaration_mod};
@@ -297,13 +297,12 @@ fn unknown_rule_args(input: Span) -> PResult<Value> {
                 alt((
                     terminated(
                         alt((
-                            function_call,
+                            function_call_or_string,
                             dictionary,
                             map(
                                 delimited(tag("("), media::args, tag(")")),
                                 |v| Value::Paren(Box::new(v), true),
                             ),
-                            map(sass_string, Value::Literal),
                             map(sass_string_dq, Value::Literal),
                             map(sass_string_sq, Value::Literal),
                         )),

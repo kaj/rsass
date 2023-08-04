@@ -3,17 +3,18 @@
 //!
 //! Note that function calls in actual css is different, and implementented
 //! in [`crate::parser::css`].
-use super::strings::sass_string;
 use super::util::{opt_spacelike, spacelike2};
-use super::value::{function_call, numeric, special_function, variable};
-use super::{ignore_comments, position, PResult, Span};
+use super::value::{numeric, special_function, variable};
+use super::{
+    call_args, ignore_comments, position, sass_string, PResult, Span,
+};
 use crate::sass::{BinOp, CallArgs, Value};
 use crate::value::Operator;
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::multispace0;
 use nom::combinator::{into, map, not, peek, value};
-use nom::sequence::{delimited, preceded, terminated, tuple};
+use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 
 pub fn css_function(input: Span) -> PResult<Value> {
     let (rest, arg) = delimited(
@@ -114,4 +115,10 @@ fn paren(input: Span) -> PResult<Value> {
         ),
         |inner| Value::Paren(Box::new(inner), false),
     )(input)
+}
+
+fn function_call(input: Span) -> PResult<Value> {
+    let (rest, (name, args)) = pair(sass_string, call_args)(input)?;
+    let pos = input.up_to(&rest).to_owned();
+    Ok((rest, Value::Call(name, args, pos)))
 }
