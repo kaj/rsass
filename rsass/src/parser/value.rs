@@ -259,27 +259,29 @@ fn end_paren(input: Span) -> PResult<Span> {
 }
 
 fn simple_value(input: Span) -> PResult<Value> {
-    alt((
-        bang,
-        value(Value::True, tag("true")),
-        value(Value::False, tag("false")),
-        value(Value::HereSelector, tag("&")),
-        unicode_range,
-        bracket_list,
-        into(numeric),
-        variable,
-        hex_color,
-        value(Value::Null, tag("null")),
-        map(special_url, Value::Literal),
-        special_function,
-        // Really ugly special case ... sorry.
-        value(Value::Literal("-null".into()), tag("-null")),
-        map(var_name, Value::Literal),
-        unary_op,
-        function_call_or_string,
-        map(sass_string_dq, Value::Literal),
-        map(sass_string_sq, Value::Literal),
-    ))(input)
+    match input.first() {
+        Some(b'!') => bang(input),
+        Some(b'&') => value(Value::HereSelector, tag("&"))(input),
+        Some(b'"') => map(sass_string_dq, Value::Literal)(input),
+        Some(b'\'') => map(sass_string_sq, Value::Literal)(input),
+        Some(b'[') => bracket_list(input),
+        _ => alt((
+            value(Value::True, tag("true")),
+            value(Value::False, tag("false")),
+            unicode_range,
+            into(numeric),
+            variable,
+            hex_color,
+            value(Value::Null, tag("null")),
+            map(special_url, Value::Literal),
+            special_function,
+            // Really ugly special case ... sorry.
+            value(Value::Literal("-null".into()), tag("-null")),
+            map(var_name, Value::Literal),
+            unary_op,
+            function_call_or_string,
+        ))(input),
+    }
 }
 
 fn bang(input: Span) -> PResult<Value> {
@@ -470,6 +472,16 @@ pub fn special_function(input: Span) -> PResult<Value> {
 
 pub fn function_call_or_string(input: Span) -> PResult<Value> {
     let (rest, name) = sass_string(input)?;
+    /* TODO: true, false and null should end up here, but can't as long as '.' is a normal part of a string.
+    if let Some(special) = name.single_raw().and_then(|s| match dbg!(s) {
+        "true" => return Some(Value::True),
+        "false" => return Some(Value::False),
+        "null" => return Some(Value::Null),
+        _ => None,
+    }) {
+        return Ok((rest, special));
+    }
+     */
     if let Ok((rest, args)) = call_args(rest) {
         let pos = input.up_to(&rest).to_owned();
         return Ok((rest, Value::Call(name, args, pos)));
