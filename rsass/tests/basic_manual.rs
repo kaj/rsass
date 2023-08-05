@@ -571,6 +571,20 @@ fn open_by_path_and_import() {
     );
 }
 
+#[test]
+fn skip_placeholders() {
+    assert_eq!(
+        rsass(
+            b"%p { color: pink; }\
+              \n%p, p { margin: 0 auto 1em 0; }\n"
+        )
+        .unwrap(),
+        "p {\
+         \n  margin: 0 auto 1em 0;\
+         \n}\n",
+    );
+}
+
 fn check_value(input: &str, expected: &str) {
     assert_eq!(
         String::from_utf8(

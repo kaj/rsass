@@ -9,6 +9,9 @@ project adheres to
 
 ## Unreleased
 
+* Filter out placeholder selectors when writing the resulting css
+  (they are still parsed of the internal data representation, so they
+  can be used when implementing `@extend`) (PR #180).
 * Handle trailing comma in function arguments in plain css correctly.
 * Refactored function name/plain string handling in scss values to not parse
   the same unquoted string twice.

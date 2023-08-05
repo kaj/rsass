@@ -93,6 +93,21 @@ impl Selectors {
     pub(crate) fn has_backref(&self) -> bool {
         self.s.iter().any(Selector::has_backref)
     }
+
+    /// Get a vec of the non-placeholder selectors in self.
+    pub fn no_placeholder(&self) -> Option<Self> {
+        let s = self
+            .s
+            .iter()
+            .filter_map(|s| s.no_placeholder())
+            .collect::<Vec<_>>();
+        if s.is_empty() {
+            None
+        } else {
+            Some(Selectors { s })
+        }
+    }
+
     /// Get these selectors with a specific backref selector.
     ///
     /// Used to create `@at-root` contexts, to have `&` work in them.
@@ -344,6 +359,30 @@ impl Selector {
     fn has_backref(&self) -> bool {
         self.0.iter().any(SelectorPart::has_backref)
     }
+
+    /// Return this selector without placeholders.
+    ///
+    /// For most plain selectors, this returns Some(clone of self).
+    /// For placeholder selectors, it returns None.
+    /// For some selectors containing e.g. `p:matches(%a,.foo)` it
+    /// returns a modified selector (in that case, `p:matches(.foo)`).
+    fn no_placeholder(&self) -> Option<Self> {
+        let v = self
+            .0
+            .iter()
+            .map(|s| s.no_placeholder())
+            .collect::<Option<Vec<_>>>()?;
+        let mut v2 = Vec::with_capacity(v.len());
+        let mut has_sel = false;
+        for part in v {
+            if has_sel && part.is_wildcard() {
+                continue;
+            }
+            has_sel = !part.is_operator();
+            v2.push(part);
+        }
+        Some(Self(v2))
+    }
     /// Return true if this selector ends with a combinator
     pub fn has_trailing_combinator(&self) -> bool {
         matches!(self.0.last(), Some(SelectorPart::RelOp(_)))
@@ -457,6 +496,48 @@ impl SelectorPart {
             | SelectorPart::Pseudo { ref arg, .. } => arg
                 .as_ref()
                 .map_or(false, |a| a.s.iter().any(Selector::has_backref)),
+        }
+    }
+    /// Return this selectorpart without placeholders.
+    ///
+    /// For most parts, this returns either Some(clone of self) or None if
+    /// it was a placeholder selector, but some pseudoselectors are
+    /// converted to a version without the placeholder parts.
+    fn no_placeholder(&self) -> Option<Self> {
+        match self {
+            SelectorPart::Simple(s) => {
+                if !s.starts_with('%') {
+                    Some(SelectorPart::Simple(s.clone()))
+                } else {
+                    None
+                }
+            }
+            SelectorPart::Pseudo { name, arg } => match name.value() {
+                "is" | "matches" | "any" | "where" => arg
+                    .as_ref()
+                    .and_then(|a| a.no_placeholder())
+                    .map(|arg| SelectorPart::Pseudo {
+                        name: name.clone(),
+                        arg: Some(arg),
+                    }),
+                "not" => {
+                    if let Some(arg) =
+                        arg.as_ref().and_then(|a| a.no_placeholder())
+                    {
+                        Some(SelectorPart::Pseudo {
+                            name: name.clone(),
+                            arg: Some(arg),
+                        })
+                    } else {
+                        Some(SelectorPart::Simple("*".into()))
+                    }
+                }
+                _ => Some(SelectorPart::Pseudo {
+                    name: name.clone(),
+                    arg: arg.clone(),
+                }),
+            },
+            x => Some(x.clone()),
         }
     }
     fn clone_in(&self, context: &Selector) -> Vec<SelectorPart> {
