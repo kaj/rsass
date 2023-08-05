@@ -95,10 +95,10 @@ pub(crate) fn sassfile(input: Span) -> PResult<Vec<Item>> {
 }
 
 fn top_level_item(input: Span) -> PResult<Item> {
-    let (input, tag) = alt((tag("$"), tag("/*"), tag("@"), tag("")))(input)?;
+    let (rest, tag) = alt((tag("$"), tag("/*"), tag("@"), tag("")))(input)?;
     match tag.fragment() {
-        b"$" => into(variable_declaration2)(input),
-        b"/*" => comment_item(input),
+        b"$" => into(variable_declaration2)(rest),
+        b"/*" => comment_item(rest),
         b"@" => at_rule2(input),
         b"" => alt((into(variable_declaration_mod), rule))(input),
         _ => unreachable!(),
@@ -128,7 +128,7 @@ fn body_item(input: Span) -> PResult<Item> {
         b"$" => into(variable_declaration2)(rest),
         b"/*" => comment_item(rest),
         b";" => Ok((rest, Item::None)),
-        b"@" => at_rule2(rest),
+        b"@" => at_rule2(input),
         b"--" => {
             let result = custom_property(rest);
             if result.is_err() {
@@ -165,7 +165,7 @@ fn at_root2(input: Span) -> PResult<Item> {
 }
 
 /// What follows the `@include` tag.
-fn mixin_call2(input: Span) -> PResult<Item> {
+fn mixin_call<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
     let (rest, n1) = terminated(name, opt_spacelike)(input)?;
     let (rest, n2) = opt(preceded(tag("."), name))(rest)?;
     let name = n2.map(|n2| format!("{n1}.{n2}")).unwrap_or(n1);
@@ -189,16 +189,17 @@ fn mixin_call2(input: Span) -> PResult<Item> {
             (rest, None)
         }
     };
-    let pos = input.up_to(&rest).to_owned().opt_back("@include ");
+    let pos = start.up_to(&rest).to_owned();
     Ok((
         end,
         Item::MixinCall(name, args.unwrap_or_default(), body, pos),
     ))
 }
 
-/// What follows an `@` sign
+/// When we know that `input0` starts with an `@` sign.
 fn at_rule2(input0: Span) -> PResult<Item> {
-    let (input, name) = terminated(sass_string, opt_spacelike)(input0)?;
+    let (input, name) =
+        delimited(tag("@"), sass_string, opt_spacelike)(input0)?;
     match name.single_raw().unwrap_or("") {
         "at-root" => at_root2(input),
         "charset" => charset2(input),
@@ -208,7 +209,7 @@ fn at_rule2(input0: Span) -> PResult<Item> {
         "error" => {
             let (end, v) = value_expression(input)?;
             let (rest, _) = opt(tag(";"))(end)?;
-            let pos = input0.up_to(&end).to_owned().opt_back("@");
+            let pos = input0.up_to(&end).to_owned();
             Ok((rest, Item::Error(v, pos)))
         }
         "extend" => map(
@@ -220,48 +221,54 @@ fn at_rule2(input0: Span) -> PResult<Item> {
             Item::Extend,
         )(input),
         "for" => for_loop2(input),
-        "forward" => forward2(input0),
+        "forward" => forward2(input0, input),
         "function" => function_declaration2(input),
         "if" => if_statement2(input),
         "import" => import2(input),
-        "include" => mixin_call2(input),
-        "media" => media::rule(input0),
+        "include" => mixin_call(input0, input),
+        "media" => media::rule(input0, input),
         "mixin" => mixin_declaration2(input),
         "return" => return_stmt2(input0, input),
-        "use" => use2(input0),
+        "use" => use2(input0, input),
         "warn" => map(expression_argument, Item::Warn)(input),
         "while" => while_loop2(input),
-        _ => {
-            let pos = input0.up_to(&input).to_owned().opt_back("@");
-            let (input, args) = opt(unknown_rule_args)(input)?;
-            fn x_args(value: Value) -> Value {
-                match value {
-                    Value::Variable(name, _pos) => {
-                        Value::Literal(SassString::from(format!("${name}")))
-                    }
-                    Value::Map(map) => Value::Map(
-                        map.into_iter()
-                            .map(|(k, v)| (x_args(k), x_args(v)))
-                            .collect(),
-                    ),
-                    value => value,
-                }
+        _ => unknown_atrule(name, input0, input),
+    }
+}
+fn unknown_atrule<'a>(
+    name: SassString,
+    start: Span,
+    input: Span<'a>,
+) -> PResult<'a, Item> {
+    let (input, args) =
+        terminated(opt(unknown_rule_args), opt(ignore_space))(input)?;
+    fn x_args(value: Value) -> Value {
+        match value {
+            Value::Variable(name, _pos) => {
+                Value::Literal(SassString::from(format!("${name}")))
             }
-            let (input, body) = preceded(
-                opt(ignore_space),
-                alt((map(body_block, Some), value(None, semi_or_end))),
-            )(input)?;
-            Ok((
-                input,
-                Item::AtRule {
-                    name,
-                    args: args.map_or(Value::Null, x_args),
-                    body,
-                    pos,
-                },
-            ))
+            Value::Map(map) => Value::Map(
+                map.into_iter()
+                    .map(|(k, v)| (x_args(k), x_args(v)))
+                    .collect(),
+            ),
+            value => value,
         }
     }
+    let (rest, body) = if input.first() == Some(&b'{') {
+        map(body_block, Some)(input)?
+    } else {
+        value(None, semi_or_end)(input)?
+    };
+    Ok((
+        rest,
+        Item::AtRule {
+            name,
+            args: args.map_or(Value::Null, x_args),
+            body,
+            pos: start.up_to(&input).to_owned(),
+        },
+    ))
 }
 
 fn expression_argument(input: Span) -> PResult<Value> {
@@ -444,10 +451,10 @@ fn function_declaration2(input: Span) -> PResult<Item> {
     ))
 }
 
-fn return_stmt2<'a>(input0: Span<'_>, input: Span<'a>) -> PResult<'a, Item> {
+fn return_stmt2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
     let (input, v) =
         delimited(opt_spacelike, value_expression, opt_spacelike)(input)?;
-    let pos = input0.up_to(&input).to_owned().opt_back("@");
+    let pos = start.up_to(&input).to_owned();
     let (input, _) = opt(tag(";"))(input)?;
     Ok((input, Item::Return(v, pos)))
 }

@@ -39,10 +39,9 @@ pub fn import2(input: Span) -> PResult<Item> {
     )(input)
 }
 
-pub fn use2(input: Span) -> PResult<Item> {
+pub fn use2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
     map(
-        delimited(
-            terminated(name, opt_spacelike), // the name is "use"
+        terminated(
             tuple((
                 terminated(quoted_sass_string, opt_spacelike),
                 opt(preceded(
@@ -59,18 +58,15 @@ pub fn use2(input: Span) -> PResult<Item> {
                 s,
                 n.unwrap_or(UseAs::KeepName),
                 w.unwrap_or_default(),
-                input.up_to(&end).to_owned().opt_back("@"),
+                start.up_to(&end).to_owned(),
             )
         },
     )(input)
 }
 
-pub fn forward2(input: Span) -> PResult<Item> {
-    let (mut end, path) = delimited(
-        terminated(name, opt_spacelike), // the name is "forward"
-        quoted_sass_string,
-        opt_spacelike,
-    )(input)?;
+pub fn forward2<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
+    let (mut end, path) =
+        terminated(quoted_sass_string, opt_spacelike)(input)?;
     let mut found_as = None;
     let mut expose = Expose::All;
     let mut found_with = None;
@@ -112,7 +108,7 @@ pub fn forward2(input: Span) -> PResult<Item> {
             found_as.unwrap_or(UseAs::Star),
             expose,
             found_with.unwrap_or_default(),
-            input.up_to(&end).to_owned().opt_back("@"),
+            start.up_to(&end).to_owned(),
         ),
     ))
 }

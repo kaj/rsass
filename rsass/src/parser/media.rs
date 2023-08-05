@@ -6,7 +6,7 @@ use super::value::{
     self, any_additive_expr, any_product, bracket_list, dictionary,
     function_call_or_string, variable,
 };
-use super::{body_block, name, PResult};
+use super::{body_block, PResult};
 use crate::sass::{BinOp, Item, Value};
 use crate::value::ListSeparator;
 use nom::branch::alt;
@@ -18,10 +18,9 @@ use nom::sequence::{delimited, preceded, terminated, tuple};
 #[cfg(test)]
 use super::check_parse;
 
-pub fn rule(input: Span) -> PResult<Item> {
-    let (rest, _media) = name(input)?;
-    let pos = input.up_to(&rest).to_owned().opt_back("@");
-    let (input, args) = opt(terminated(args, opt_spacelike))(rest)?;
+pub fn rule<'a>(start: Span, input: Span<'a>) -> PResult<'a, Item> {
+    let pos = start.up_to(&input).to_owned();
+    let (input, args) = opt(terminated(args, opt_spacelike))(input)?;
     let (input, body) = preceded(
         opt_spacelike,
         alt((map(body_block, Some), value(None, semi_or_end))),
