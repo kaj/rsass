@@ -6,71 +6,21 @@ use crate::value::{ListSeparator, Operator};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{into, map, opt, peek, value};
-use nom::multi::{fold_many0, many0, separated_list0};
+use nom::multi::{fold_many0, many0, separated_list0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, terminated, tuple};
 
 pub fn any(input: Span) -> PResult<Value> {
-    let (input, first) = slash_list(input)?;
-    let (input, list) = fold_many0(
-        preceded(
-            delimited(opt_spacelike, tag(","), opt_spacelike),
-            slash_list,
-        ),
-        move || vec![first.clone()],
-        |mut list: Vec<Value>, item| {
-            list.push(item);
-            list
-        },
-    )(input)?;
-    Ok((
-        input,
-        if list.len() == 1 {
-            list.into_iter().next().unwrap()
-        } else {
-            Value::List(list, Some(ListSeparator::Comma), false)
-        },
-    ))
+    let (input, list) = separated_list1(spaced(","), slash_list)(input)?;
+    Ok((input, list_or_single(list, ListSeparator::Comma)))
 }
 pub fn slash_list(input: Span) -> PResult<Value> {
-    let (input, first) = slash_list_no_space(input)?;
-    let (input, list) = fold_many0(
-        preceded(
-            delimited(opt_spacelike, tag("/"), opt_spacelike),
-            slash_list_no_space,
-        ),
-        move || vec![first.clone()],
-        |mut list: Vec<Value>, item| {
-            list.push(item);
-            list
-        },
-    )(input)?;
-    Ok((
-        input,
-        if list.len() == 1 {
-            list.into_iter().next().unwrap()
-        } else {
-            Value::List(list, Some(ListSeparator::Slash), false)
-        },
-    ))
+    let (input, list) =
+        separated_list1(spaced("/"), slash_list_no_space)(input)?;
+    Ok((input, list_or_single(list, ListSeparator::Slash)))
 }
 pub fn slash_list_no_space(input: Span) -> PResult<Value> {
-    let (input, first) = space_list(input)?;
-    let (input, list) = fold_many0(
-        preceded(tag("/"), space_list),
-        move || vec![first.clone()],
-        |mut list: Vec<Value>, item| {
-            list.push(item);
-            list
-        },
-    )(input)?;
-    Ok((
-        input,
-        if list.len() == 1 {
-            list.into_iter().next().unwrap()
-        } else {
-            Value::List(list, Some(ListSeparator::SlashNoSpace), false)
-        },
-    ))
+    let (input, list) = separated_list1(tag("/"), space_list)(input)?;
+    Ok((input, list_or_single(list, ListSeparator::SlashNoSpace)))
 }
 pub fn space_list(input: Span) -> PResult<Value> {
     let (input, first) = single(input)?;
@@ -82,14 +32,15 @@ pub fn space_list(input: Span) -> PResult<Value> {
             list
         },
     )(input)?;
-    Ok((
-        input,
-        if list.len() == 1 {
-            list.into_iter().next().unwrap()
-        } else {
-            Value::List(list, Some(ListSeparator::Space), false)
-        },
-    ))
+    Ok((input, list_or_single(list, ListSeparator::Space)))
+}
+
+fn list_or_single(list: Vec<Value>, sep: ListSeparator) -> Value {
+    if list.len() == 1 {
+        list.into_iter().next().unwrap()
+    } else {
+        Value::List(list, Some(sep), false)
+    }
 }
 
 pub fn single(input: Span) -> PResult<Value> {
@@ -190,21 +141,14 @@ fn single_term(input: Span) -> PResult<Value> {
 
 fn call_args(input: Span) -> PResult<CallArgs> {
     let (rest, named) = many0(pair(
-        terminated(
-            strings::css_string,
-            delimited(opt_spacelike, tag("="), opt_spacelike),
-        ),
-        terminated(
-            single,
-            alt((terminated(tag(","), opt_spacelike), peek(tag(")")))),
-        ),
+        terminated(strings::css_string, spaced("=")),
+        terminated(single, alt((spaced(","), peek(tag(")"))))),
     ))(input)?;
     let named = named
         .into_iter()
         .map(|(name, val)| (name.into(), val))
         .collect();
-    let (rest, positional) =
-        separated_list0(terminated(tag(","), opt_spacelike), single)(rest)?;
+    let (rest, positional) = separated_list0(spaced(","), single)(rest)?;
     let (rest, trail) = opt(tag(","))(rest)?;
     Ok((
         rest,
@@ -214,4 +158,10 @@ fn call_args(input: Span) -> PResult<CallArgs> {
             trailing_comma: trail.is_some(),
         },
     ))
+}
+
+fn spaced<'a>(
+    the_tag: &'static str,
+) -> impl FnMut(Span<'a>) -> PResult<Span<'a>> {
+    delimited(opt_spacelike, tag(the_tag), opt_spacelike)
 }
