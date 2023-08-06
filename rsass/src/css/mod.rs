@@ -23,4 +23,5 @@ pub use self::selectors::{BadSelector, Selector, SelectorPart, Selectors};
 pub use self::string::CssString;
 pub use self::value::{InvalidCss, Value, ValueMap, ValueToMapError};
 
+pub(crate) use self::selectors::SelectorCtx;
 pub(crate) use self::util::{is_calc_name, is_function_name, is_not};

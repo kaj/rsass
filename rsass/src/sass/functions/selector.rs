@@ -22,7 +22,7 @@ pub fn create_module() -> Scope {
     def_va!(f, nest(selectors), |s| {
         let mut v = get_selectors(s, name!(selectors))?.into_iter();
         let first = v.next().unwrap().css_ok()?;
-        Ok(v.fold(first, |b, e| e.inside(&b)).into())
+        Ok(v.fold(first, |b, e| e.inside(&b.into())).into())
     });
     def!(f, parse(selector), |s| {
         Ok(s.get_map(name!(selector), parse_selectors_x)?.into())

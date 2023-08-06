@@ -14,34 +14,32 @@ use crate::value::ListSeparator;
 use std::fmt;
 use std::io::Write;
 
-/// A full set of selectors
+/// A full set of selectors.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Selectors {
-    /// The actual selectors.
     s: Vec<Selector>,
-    backref: Selector,
 }
 
 impl Selectors {
     /// Create a root (empty) selector.
     pub fn root() -> Self {
-        Selectors::new(vec![Selector::root()])
+        Selectors {
+            s: vec![Selector::root()],
+        }
     }
     /// Return true if this is a root (empty) selector.
     pub fn is_root(&self) -> bool {
-        self.s == [Selector::root()] && self.backref == Selector::root()
+        self.s == [Selector::root()]
     }
-    /// Create a new Selectors from a vec of selectors.
+    /// Create a new `Selectors` from a vec of selectors.
     pub fn new(s: Vec<Selector>) -> Self {
-        Selectors {
-            s: if s.is_empty() {
-                vec![Selector::root()]
-            } else {
-                s
-            },
-            backref: Selector::root(),
+        if s.is_empty() {
+            Selectors::root()
+        } else {
+            Selectors { s }
         }
     }
+
     /// Validate that this selector is ok to use in css.
     ///
     /// `Selectors` can contain backref (`&`), but those must be
@@ -55,7 +53,7 @@ impl Selectors {
         }
     }
 
-    /// Remove the first of these selectors (or the root selector if empty).
+    /// Get the first of these selectors (or the root selector if empty).
     pub(crate) fn one(&self) -> Selector {
         self.s.first().cloned().unwrap_or_else(Selector::root)
     }
@@ -87,31 +85,21 @@ impl Selectors {
     }
 
     /// Create the full selector for when self is used inside a parent selector.
-    pub(crate) fn inside(&self, parent: &Self) -> Self {
-        let mut result = Vec::new();
-        for p in &parent.s {
-            for s in &self.s {
-                result.push(p.join(s, &parent.backref));
-            }
-        }
-        Selectors {
-            s: result,
-            backref: parent.backref.clone(),
-        }
+    pub(crate) fn inside(&self, parent: &SelectorCtx) -> Self {
+        SelectorCtx::from(self.clone()).inside(parent).real()
     }
 
     /// True if any of the selectors contains a backref (`&`).
     pub(crate) fn has_backref(&self) -> bool {
         self.s.iter().any(Selector::has_backref)
     }
-
     /// Get these selectors with a specific backref selector.
     ///
     /// Used to create `@at-root` contexts, to have `&` work in them.
-    pub(crate) fn with_backref(self, context: Selector) -> Self {
-        self.inside(&Selectors {
-            s: vec![Selector::root()],
-            backref: context,
+    pub(crate) fn with_backref(self, context: Selector) -> SelectorCtx {
+        SelectorCtx::from(self).inside(&SelectorCtx {
+            s: Selectors::root(),
+            backref: context.clone(),
         })
     }
     /// Return true if any of these selectors ends with a combinator
@@ -169,6 +157,69 @@ impl From<Selectors> for Value {
     }
 }
 
+/// A full set of selectors with a separate backref.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
+pub struct SelectorCtx {
+    /// The actual selectors.
+    s: Selectors,
+    backref: Selector,
+}
+
+impl SelectorCtx {
+    /// Create a root (empty) selector.
+    pub fn root() -> Self {
+        Selectors::root().into()
+    }
+    pub(crate) fn root_with_backref(context: Selector) -> Self {
+        SelectorCtx {
+            s: Selectors::root(),
+            backref: context,
+        }
+    }
+    /// Return true if this is a root (empty) selector.
+    pub fn is_root(&self) -> bool {
+        self.s.is_root() && self.backref == Selector::root()
+    }
+
+    pub(crate) fn real(&self) -> Selectors {
+        self.s.clone()
+    }
+
+    /// Remove the first of these selectors (or the root selector if empty).
+    pub(crate) fn one(&self) -> Selector {
+        self.s.one()
+    }
+
+    /// Create the full selector for when self is used inside a parent selector.
+    pub(crate) fn inside(&self, parent: &Self) -> Self {
+        let mut result = Vec::new();
+        for p in &parent.s.s {
+            for s in &self.s.s {
+                result.push(p.join(s, &parent.backref));
+            }
+        }
+        SelectorCtx {
+            s: Selectors::new(result),
+            backref: parent.backref.clone(),
+        }
+    }
+}
+
+impl From<Selectors> for SelectorCtx {
+    fn from(value: Selectors) -> Self {
+        SelectorCtx {
+            s: value,
+            backref: Selector::root(),
+        }
+    }
+}
+
+impl TryFrom<Value> for SelectorCtx {
+    type Error = BadSelector;
+    fn try_from(v: Value) -> Result<Self, Self::Error> {
+        Selectors::try_from(v).map(Into::into)
+    }
+}
 impl TryFrom<Value> for Selectors {
     type Error = BadSelector;
     fn try_from(v: Value) -> Result<Self, Self::Error> {
@@ -257,7 +308,7 @@ fn push_descendant(to: &mut Vec<SelectorPart>, from: &mut Selector) {
     to.append(&mut from.0);
 }
 
-/// A css (or sass) selector.
+/// A single css selector.
 ///
 /// A selector does not contain `,`.  If it does, it is a `Selectors`,
 /// where each of the parts separated by the comma is a `Selector`.
@@ -419,9 +470,9 @@ impl SelectorPart {
                 vec![SelectorPart::PseudoElement {
                     name: name.clone(),
                     arg: arg.as_ref().map(|a| {
-                        a.inside(
-                            &Selectors::root().with_backref(context.clone()),
-                        )
+                        a.inside(&SelectorCtx::root_with_backref(
+                            context.clone(),
+                        ))
                     }),
                 }]
             }
@@ -429,9 +480,9 @@ impl SelectorPart {
                 vec![SelectorPart::Pseudo {
                     name: name.clone(),
                     arg: arg.as_ref().map(|a| {
-                        a.inside(
-                            &Selectors::root().with_backref(context.clone()),
-                        )
+                        a.inside(&SelectorCtx::root_with_backref(
+                            context.clone(),
+                        ))
                     }),
                 }]
             }
