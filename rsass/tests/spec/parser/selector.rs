@@ -10,7 +10,7 @@ mod error {
     use super::runner;
 
     #[test]
-    #[ignore] // missing error
+    #[ignore] // wrong error
     fn empty_placeholder() {
         assert_eq!(
             runner().err(

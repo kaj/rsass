@@ -14,7 +14,6 @@ mod pseudoselectors {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn solo() {
             assert_eq!(
         runner().ok(
@@ -26,7 +25,6 @@ mod pseudoselectors {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn with_real() {
             assert_eq!(
         runner().ok(
@@ -44,7 +42,6 @@ mod pseudoselectors {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn solo() {
             assert_eq!(
         runner().ok(
@@ -56,7 +53,6 @@ mod pseudoselectors {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn with_real() {
             assert_eq!(
         runner().ok(
@@ -74,7 +70,6 @@ mod pseudoselectors {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn solo() {
             assert_eq!(
         runner().ok(
@@ -87,7 +82,6 @@ mod pseudoselectors {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn universal() {
             assert_eq!(
         runner().ok(
@@ -100,7 +94,6 @@ mod pseudoselectors {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn with_real() {
             assert_eq!(
         runner().ok(
@@ -131,7 +124,6 @@ mod pseudoselectors {
             );
         }
         #[test]
-        #[ignore] // wrong result
         fn solo() {
             assert_eq!(
         runner().ok(
@@ -143,7 +135,6 @@ mod pseudoselectors {
     );
         }
         #[test]
-        #[ignore] // wrong result
         fn with_real() {
             assert_eq!(
         runner().ok(

@@ -28,17 +28,19 @@ impl Rule {
     /// Write this rule to a css output buffer.
     pub(crate) fn write(&self, buf: &mut CssBuf) -> io::Result<()> {
         if !self.body.is_empty() {
-            buf.do_indent_no_nl();
-            if buf.format().is_compressed() {
-                write!(buf, "{:#}", self.selectors)?;
-            } else {
-                write!(buf, "{}", self.selectors)?;
+            if let Some(selectors) = self.selectors.no_placeholder() {
+                buf.do_indent_no_nl();
+                if buf.format().is_compressed() {
+                    write!(buf, "{selectors:#}")?;
+                } else {
+                    write!(buf, "{selectors}")?;
+                }
+                buf.start_block();
+                for item in &self.body {
+                    item.write(buf)?;
+                }
+                buf.end_block();
             }
-            buf.start_block();
-            for item in &self.body {
-                item.write(buf)?;
-            }
-            buf.end_block();
         }
         Ok(())
     }

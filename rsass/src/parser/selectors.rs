@@ -27,7 +27,18 @@ pub fn selector(input: Span) -> PResult<Selector> {
 
 pub(crate) fn selector_part(input: Span) -> PResult<SelectorPart> {
     alt((
-        map(sass_string, SelectorPart::Simple),
+        map(
+            tuple((opt(tag("%")), sass_string, opt(tag("%")))),
+            |(pre, mut s, post)| {
+                if pre.is_some() {
+                    s.prepend("%");
+                }
+                if post.is_some() {
+                    s.append_str("%");
+                }
+                SelectorPart::Simple(s)
+            },
+        ),
         value(SelectorPart::Simple("*".into()), tag("*")),
         map(
             preceded(
