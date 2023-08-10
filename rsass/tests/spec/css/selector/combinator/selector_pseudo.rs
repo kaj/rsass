@@ -10,7 +10,6 @@ mod leading {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn multiple() {
         assert_eq!(runner().ok(":is(+ ~ a) {b: c}\n"), "");
     }
@@ -19,17 +18,14 @@ mod leading {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn child() {
             assert_eq!(runner().ok(":is(> a) {b: c}\n"), "");
         }
         #[test]
-        #[ignore] // wrong result
         fn next_sibling() {
             assert_eq!(runner().ok(":is(+ a) {b: c}\n"), "");
         }
         #[test]
-        #[ignore] // wrong result
         fn sibling() {
             assert_eq!(runner().ok(":is(~ a) {b: c}\n"), "");
         }
@@ -40,7 +36,6 @@ mod middle {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn multiple() {
         assert_eq!(runner().ok(":is(a > + b) {c: d}\n"), "");
     }
@@ -82,7 +77,6 @@ mod trailing {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn multiple() {
         assert_eq!(runner().ok(":is(a +) {b: c}\n"), "");
     }
@@ -91,17 +85,14 @@ mod trailing {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn child() {
             assert_eq!(runner().ok(":is(a >) {b: c}\n"), "");
         }
         #[test]
-        #[ignore] // wrong result
         fn next_sibling() {
             assert_eq!(runner().ok(":is(a +) {b: c}\n"), "");
         }
         #[test]
-        #[ignore] // wrong result
         fn sibling() {
             assert_eq!(runner().ok(":is(a ~) {b: c}\n"), "");
         }
