@@ -94,7 +94,7 @@ pub fn selector_part(input: Span) -> PResult<SelectorPart> {
             tag("]"),
         )(input),
         b"" => alt((
-            map(css_string, SelectorPart::Simple),
+            map(simple_part, SelectorPart::Simple),
             delimited(
                 opt_spacelike,
                 alt((
@@ -109,4 +109,16 @@ pub fn selector_part(input: Span) -> PResult<SelectorPart> {
         ))(input),
         _ => unreachable!(),
     }
+}
+
+fn simple_part(input: Span) -> PResult<String> {
+    let (rest, (pre, mut s, post)) =
+        tuple((opt(tag("%")), css_string, opt(tag("%"))))(input)?;
+    if pre.is_some() {
+        s.insert(0, '%');
+    }
+    if post.is_some() {
+        s.push('%');
+    }
+    Ok((rest, s))
 }

@@ -382,7 +382,7 @@ fn selector_string(input: Span) -> PResult<String> {
 
 fn selector_plain_part(input: Span) -> PResult<&str> {
     // TODO: This should probably be based on unicode alphanumeric.
-    map_res(is_not("\r\n\t %<>$\"'\\#+*/()[]{}:;,=!&@"), input_to_str)(input)
+    map_res(is_not("\r\n\t %<>$\"'\\#+*/()[]{}:;,=!&@~"), input_to_str)(input)
 }
 
 fn hash_no_interpolation(input: Span) -> PResult<&str> {
