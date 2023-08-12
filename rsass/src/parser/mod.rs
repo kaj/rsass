@@ -323,23 +323,10 @@ fn unknown_rule_args(input: Span) -> PResult<Value> {
                     }),
                 )),
             )),
-            |args| {
-                if args.len() == 1 {
-                    args.into_iter().next().unwrap()
-                } else {
-                    Value::List(args, Some(ListSeparator::Space), false)
-                }
-            },
+            |args| list_or_single(args, ListSeparator::Space),
         ),
     )(input)?;
-    Ok((
-        input,
-        if args.len() == 1 {
-            args.into_iter().next().unwrap()
-        } else {
-            Value::List(args, Some(ListSeparator::Comma), false)
-        },
-    ))
+    Ok((input, list_or_single(args, ListSeparator::Comma)))
 }
 
 #[cfg(test)]
@@ -547,4 +534,12 @@ fn input_to_str(s: Span) -> Result<&str, Utf8Error> {
 
 fn input_to_string(s: Span) -> Result<String, Utf8Error> {
     from_utf8(s.fragment()).map(String::from)
+}
+
+fn list_or_single(list: Vec<Value>, sep: ListSeparator) -> Value {
+    if list.len() == 1 {
+        list.into_iter().next().unwrap()
+    } else {
+        Value::List(list, Some(sep), false)
+    }
 }

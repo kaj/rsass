@@ -6,7 +6,7 @@ use super::value::{
     self, any_additive_expr, any_product, bracket_list, dictionary,
     function_call_or_string, variable,
 };
-use super::{body_block, PResult};
+use super::{body_block, list_or_single, PResult};
 use crate::sass::{BinOp, Item, Value};
 use crate::value::ListSeparator;
 use nom::branch::alt;
@@ -71,23 +71,10 @@ pub fn args(input: Span) -> PResult<Value> {
                     map(sass_string_sq, Value::Literal),
                 )),
             )),
-            |args| {
-                if args.len() == 1 {
-                    args.into_iter().next().unwrap()
-                } else {
-                    Value::List(args, Some(ListSeparator::Space), false)
-                }
-            },
+            |args| list_or_single(args, ListSeparator::Space),
         ),
     )(input)?;
-    Ok((
-        input,
-        if args.len() == 1 {
-            args.into_iter().next().unwrap()
-        } else {
-            Value::List(args, Some(ListSeparator::Comma), false)
-        },
-    ))
+    Ok((input, list_or_single(args, ListSeparator::Comma)))
 }
 
 fn media_relation(input: Span) -> PResult<Value> {

@@ -6,7 +6,9 @@ use super::strings::{
 };
 use super::unit::unit;
 use super::util::{ignore_comments, opt_spacelike, spacelike2};
-use super::{input_to_string, position, sass_string, PResult, Span};
+use super::{
+    input_to_string, list_or_single, position, sass_string, PResult, Span,
+};
 use crate::sass::{BinOp, SassString, Value};
 use crate::value::{ListSeparator, Number, Numeric, Operator, Rgba};
 use nom::branch::alt;
@@ -60,14 +62,7 @@ pub fn space_list(input: Span) -> PResult<Value> {
             list
         },
     )(input)?;
-    Ok((
-        input,
-        if list.len() == 1 {
-            list.into_iter().next().unwrap()
-        } else {
-            Value::List(list, Some(ListSeparator::Space), false)
-        },
-    ))
+    Ok((input, list_or_single(list, ListSeparator::Space)))
 }
 
 pub fn simple_space_list(input: Span) -> PResult<Value> {
@@ -80,14 +75,7 @@ pub fn simple_space_list(input: Span) -> PResult<Value> {
             list
         },
     )(input)?;
-    Ok((
-        input,
-        if list.len() == 1 {
-            list.into_iter().next().unwrap()
-        } else {
-            Value::List(list, Some(ListSeparator::Space), false)
-        },
-    ))
+    Ok((input, list_or_single(list, ListSeparator::Space)))
 }
 
 fn se_or_ext_string(input: Span) -> PResult<Value> {
