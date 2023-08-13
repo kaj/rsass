@@ -113,7 +113,7 @@ mod error {
             );
         }
     }
-    mod unitless_and_unit {
+    mod unitless_and_real {
         #[allow(unused)]
         use super::runner;
 
@@ -152,6 +152,22 @@ mod extra_whitespace {
             runner().ok("a {b: max( 1px )}\n"),
             "a {\
          \n  b: 1px;\
+         \n}\n"
+        );
+    }
+}
+mod math {
+    #[allow(unused)]
+    use super::runner;
+
+    #[test]
+    fn slash_as_division() {
+        assert_eq!(
+            runner().ok("b { \
+             \n  a: 2px / max(1.5);\
+             \n}\n"),
+            "b {\
+         \n  a: 1.3333333333px;\
          \n}\n"
         );
     }
@@ -196,7 +212,7 @@ mod preserved {
         #[allow(unused)]
         use super::runner;
 
-        mod unitless_and_unit {
+        mod unitless_and_real {
             #[allow(unused)]
             use super::runner;
 
@@ -308,7 +324,7 @@ mod simplified {
         use super::runner;
 
         #[test]
-        fn unitless_and_unit() {
+        fn unitless_and_real() {
             assert_eq!(
                 runner().ok("a {b: max(1px, 2.5 + 0.9px)}\n"),
                 "a {\
@@ -336,7 +352,7 @@ mod simplified {
         );
     }
     #[test]
-    fn unitless_and_unit() {
+    fn unitless_and_real() {
         assert_eq!(
             runner().ok("a {b: max(1px, 2.5, 0.9px)}\n"),
             "a {\
