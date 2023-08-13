@@ -108,6 +108,15 @@ impl Selectors {
         }
     }
 
+    fn no_leading_combinator(mut self) -> Option<Self> {
+        self.s.retain(|s| !s.has_leading_combinator());
+        if self.s.is_empty() {
+            None
+        } else {
+            Some(self)
+        }
+    }
+
     /// Get these selectors with a specific backref selector.
     ///
     /// Used to create `@at-root` contexts, to have `&` work in them.
@@ -381,11 +390,25 @@ impl Selector {
             has_sel = !part.is_operator();
             v2.push(part);
         }
-        Some(Self(v2))
+        let result = Selector(v2);
+        if result.has_trailing_combinator() || result.has_double_combinator()
+        {
+            None
+        } else {
+            Some(result)
+        }
+    }
+    fn has_leading_combinator(&self) -> bool {
+        matches!(self.0.first(), Some(SelectorPart::RelOp(_)))
     }
     /// Return true if this selector ends with a combinator
     pub fn has_trailing_combinator(&self) -> bool {
         matches!(self.0.last(), Some(SelectorPart::RelOp(_)))
+    }
+    fn has_double_combinator(&self) -> bool {
+        self.0.windows(2).any(|w| {
+            matches!(w, [SelectorPart::RelOp(_), SelectorPart::RelOp(_)])
+        })
     }
 }
 
@@ -513,7 +536,15 @@ impl SelectorPart {
                 }
             }
             SelectorPart::Pseudo { name, arg } => match name.value() {
-                "is" | "matches" | "any" | "where" => arg
+                "is" => arg
+                    .as_ref()
+                    .and_then(|a| a.no_placeholder())
+                    .and_then(|a| a.no_leading_combinator())
+                    .map(|arg| SelectorPart::Pseudo {
+                        name: name.clone(),
+                        arg: Some(arg),
+                    }),
+                "matches" | "any" | "where" | "has" => arg
                     .as_ref()
                     .and_then(|a| a.no_placeholder())
                     .map(|arg| SelectorPart::Pseudo {

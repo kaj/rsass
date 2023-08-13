@@ -14,12 +14,10 @@ mod leading {
         use super::runner;
 
         #[test]
-        #[ignore] // wrong result
         fn direct() {
             assert_eq!(runner().ok(":has(+ ~ a) {b: c}\n"), "");
         }
         #[test]
-        #[ignore] // wrong result
         fn parent() {
             assert_eq!(
                 runner().ok("~ a {\

@@ -80,7 +80,7 @@ fn greater_than_or_equal() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn less_than() {
     let runner = runner().with_cwd("less_than");
     assert_eq!(
@@ -110,7 +110,7 @@ fn less_than_or_equal() {
     );
 }
 #[test]
-#[ignore] // missing error
+#[ignore] // wrong error
 fn modulo() {
     let runner = runner().with_cwd("modulo");
     assert_eq!(

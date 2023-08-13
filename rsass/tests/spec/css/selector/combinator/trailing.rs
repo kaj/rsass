@@ -10,12 +10,10 @@ mod multiple {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn no_whitespace() {
         assert_eq!(runner().ok("a > > {b: c}\n"), "");
     }
     #[test]
-    #[ignore] // wrong result
     fn whitespace() {
         assert_eq!(runner().ok("a + ~ {b: c}\n"), "");
     }
@@ -25,17 +23,14 @@ mod single {
     use super::runner;
 
     #[test]
-    #[ignore] // wrong result
     fn child() {
         assert_eq!(runner().ok("a > {b: c}\n"), "");
     }
     #[test]
-    #[ignore] // wrong result
     fn next_sibling() {
         assert_eq!(runner().ok("a + {b: c}\n"), "");
     }
     #[test]
-    #[ignore] // wrong result
     fn sibling() {
         assert_eq!(runner().ok("a ~ {b: c}\n"), "");
     }
